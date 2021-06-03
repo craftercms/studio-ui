@@ -244,6 +244,11 @@ export interface GlobalState {
     publishing: {
       submissionCommentMaxLength: number;
     };
+    siteTools: {
+      error: AjaxError;
+      tools: Array<{ icon: SystemIconDescriptor; id: string }>;
+      isFetching: boolean;
+    };
   };
   pathNavigator: {
     [id: string]: PathNavigatorStateProps;

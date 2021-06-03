@@ -14,16 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
-import Graphi from '../GraphiQL';
-import { useActiveSiteId, useEnv } from '../../utils/hooks';
+export { default } from './SiteToolsApp';
 
-interface SiteGraphiQLProps {
-  embedded?: boolean;
-}
-
-export default function SiteGraphiQL(props: SiteGraphiQLProps) {
-  const site = useActiveSiteId();
-  const { guestBase } = useEnv();
-  return <Graphi storageKey={site} url={`${guestBase}/api/1/site/graphql`} embedded={props.embedded} />;
-}
+export * from './SiteToolsApp';

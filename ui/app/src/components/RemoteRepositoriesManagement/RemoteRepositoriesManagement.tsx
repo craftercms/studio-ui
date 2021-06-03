@@ -16,7 +16,7 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import GlobalAppToolbar from '../GlobalAppToolbar';
-import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add';
 import { Repository, RepositoryStatus } from '../../models/Repository';
@@ -32,51 +32,16 @@ import NewRemoteRepositoryDialog from '../NewRemoteRepositoryDialog';
 import { showSystemNotification } from '../../state/actions/system';
 import { useDispatch } from 'react-redux';
 import Alert from '@material-ui/lab/Alert';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
+import useStyles from './styles';
+import translations from './translations';
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    root: {
-      padding: theme.spacing(2)
-    },
-    statusAlert: {
-      marginTop: theme.spacing(2),
-      marginBottom: theme.spacing(2)
-    },
-    statusNote: {
-      display: 'flex',
-      justifyContent: 'center',
-      color: theme.palette.text.secondary,
-      marginTop: theme.spacing(2)
-    }
-  })
-);
+interface RemoteRepositoriesManagementProps {
+  embedded?: boolean;
+}
 
-const messages = defineMessages({
-  remoteCreateSuccessMessage: {
-    id: 'repositories.remoteCreateSuccessMessage',
-    defaultMessage: 'Remote repository created successfully.'
-  },
-  noConflicts: {
-    id: 'repositories.noConflicts',
-    defaultMessage: 'Local repository is free of conflicts.'
-  },
-  conflictsExist: {
-    id: 'repositories.conflictsExist',
-    defaultMessage: 'Repository operations are disabled while conflicts exist. Please resolve conflicts.'
-  },
-  pendingCommit: {
-    id: 'repositories.pendingCommit',
-    defaultMessage: 'Repo contains files pending commit. See Repository status below for details.'
-  },
-  unstagedFiles: {
-    id: 'repositories.unstagedFiles',
-    defaultMessage: 'There are unstaged files in your repository.'
-  }
-});
-
-export default function RemoteRepositoriesManagement() {
+export default function RemoteRepositoriesManagement(props: RemoteRepositoriesManagementProps) {
+  const { embedded } = props;
   const [fetchingRepositories, setFetchingRepositories] = useState(false);
   const [errorRepositories, setErrorRepositories] = useState<ApiResponse>();
   const [repositories, setRepositories] = useState<Array<Repository>>(null);
@@ -143,7 +108,7 @@ export default function RemoteRepositoriesManagement() {
     setOpenNewRemoteDialog(false);
     dispatch(
       showSystemNotification({
-        message: formatMessage(messages.remoteCreateSuccessMessage)
+        message: formatMessage(translations.remoteCreateSuccessMessage)
       })
     );
   };
@@ -195,7 +160,7 @@ export default function RemoteRepositoriesManagement() {
   return (
     <section className={classes.root}>
       <GlobalAppToolbar
-        title={<FormattedMessage id="repositories.title" defaultMessage="Remote Repositories" />}
+        title={!embedded && <FormattedMessage id="repositories.title" defaultMessage="Remote Repositories" />}
         leftContent={
           <Button
             startIcon={<AddIcon />}
@@ -206,59 +171,62 @@ export default function RemoteRepositoriesManagement() {
             <FormattedMessage id="repositories.newRepository" defaultMessage="New Remote" />
           </Button>
         }
-        showHamburgerMenuButton={false}
-        showAppsButton={false}
+        showHamburgerMenuButton={!embedded}
+        showAppsButton={!embedded}
       />
-
-      {currentStatusValue && (
-        <Alert severity={currentStatusValue === 'noConflicts' ? 'success' : 'warning'} className={classes.statusAlert}>
-          {formatMessage(messages[currentStatusValue])}
-        </Alert>
-      )}
-
-      <SuspenseWithEmptyState
-        resource={resource}
-        suspenseProps={{
-          fallback: <RemoteRepositoriesGridSkeletonTable />
-        }}
-      >
-        <RemoteRepositoriesGrid
-          resource={resource}
-          fetchStatus={fetchRepositoriesStatus}
-          fetchRepositories={fetchRepositories}
-          disableActions={repositoriesStatus?.conflicting.length > 0}
-        />
-      </SuspenseWithEmptyState>
-
-      {repositoriesStatus &&
-        repositoriesStatus.conflicting.length < 1 &&
-        repositoriesStatus.uncommittedChanges.length < 1 && (
-          <Typography variant="caption" className={classes.statusNote}>
-            <FormattedMessage
-              id="repository.statusNote"
-              defaultMessage="Do not use Studio as a git merge and conflict resolution platform. All merge conflicts should be resolved upstream before getting pulled into Studio."
-            />
-          </Typography>
+      <section className={classes.wrapper}>
+        {currentStatusValue && (
+          <Alert
+            severity={currentStatusValue === 'noConflicts' ? 'success' : 'warning'}
+            className={classes.statusAlert}
+          >
+            {formatMessage(translations[currentStatusValue])}
+          </Alert>
         )}
+        <SuspenseWithEmptyState
+          resource={resource}
+          suspenseProps={{
+            fallback: <RemoteRepositoriesGridSkeletonTable />
+          }}
+        >
+          <RemoteRepositoriesGrid
+            resource={resource}
+            fetchStatus={fetchRepositoriesStatus}
+            fetchRepositories={fetchRepositories}
+            disableActions={repositoriesStatus?.conflicting.length > 0}
+          />
+        </SuspenseWithEmptyState>
 
-      <SuspenseWithEmptyState
-        resource={statusResource}
-        suspenseProps={{
-          fallback: <RemoteRepositoriesStatusSkeleton />
-        }}
-      >
-        <StudioRepositoryStatus
+        {repositoriesStatus &&
+          repositoriesStatus.conflicting.length < 1 &&
+          repositoriesStatus.uncommittedChanges.length < 1 && (
+            <Typography variant="caption" className={classes.statusNote}>
+              <FormattedMessage
+                id="repository.statusNote"
+                defaultMessage="Do not use Studio as a git merge and conflict resolution platform. All merge conflicts should be resolved upstream before getting pulled into Studio."
+              />
+            </Typography>
+          )}
+
+        <SuspenseWithEmptyState
           resource={statusResource}
-          setFetching={setFetchingStatus}
-          onActionSuccess={updateRepositoriesStatus}
-        />
-      </SuspenseWithEmptyState>
+          suspenseProps={{
+            fallback: <RemoteRepositoriesStatusSkeleton />
+          }}
+        >
+          <StudioRepositoryStatus
+            resource={statusResource}
+            setFetching={setFetchingStatus}
+            onActionSuccess={updateRepositoriesStatus}
+          />
+        </SuspenseWithEmptyState>
 
-      <NewRemoteRepositoryDialog
-        open={openNewRemoteDialog}
-        onClose={() => setOpenNewRemoteDialog(false)}
-        onCreateSuccess={onCreateSuccess}
-      />
+        <NewRemoteRepositoryDialog
+          open={openNewRemoteDialog}
+          onClose={() => setOpenNewRemoteDialog(false)}
+          onCreateSuccess={onCreateSuccess}
+        />
+      </section>
     </section>
   );
 }

@@ -19,7 +19,9 @@ import { getStoredGlobalAppOpenSidebar, setStoredGlobalAppOpenSidebar } from '..
 
 type Context = { openSidebar: boolean };
 type ContextType = [Context, Dispatch<SetStateAction<Partial<Context>>>];
+
 const GlobalAppContext = createContext<ContextType>([{ openSidebar: true }, null]);
+
 export const GlobalAppContextProvider = ({ children }) => {
   const user = useActiveUser();
   const [state, setState] = useSpreadState(null, () => ({
@@ -27,10 +29,14 @@ export const GlobalAppContextProvider = ({ children }) => {
       ? getStoredGlobalAppOpenSidebar(user.username) === 'true'
       : true
   }));
+
   useEffect(() => {
     setStoredGlobalAppOpenSidebar(user.username, state.openSidebar);
   }, [state.openSidebar, user.username]);
+
   const value = useMemo<ContextType>(() => [state, setState], [state, setState]);
+
   return <GlobalAppContext.Provider value={value}>{children}</GlobalAppContext.Provider>;
 };
+
 export const useGlobalAppState = () => useContext(GlobalAppContext);

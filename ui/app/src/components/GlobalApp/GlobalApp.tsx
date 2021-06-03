@@ -36,10 +36,11 @@ import { useGlobalNavigation } from '../../utils/hooks';
 import { urlMapping } from '../LauncherSection';
 import EmptyState from '../SystemStatus/EmptyState';
 import { FormattedMessage } from 'react-intl';
-import { useGlobalAppState } from './GlobalContext';
+import { useGlobalAppState } from './GlobalAppContext';
 import Typography from '@material-ui/core/Typography';
 import CrafterCMSLogo from '../Icons/CrafterCMSLogo';
 import LoadingState from '../SystemStatus/LoadingState';
+import LauncherOpenerButton from '../LauncherOpenerButton';
 
 interface GlobalAppProps {
   passwordRequirementsRegex: string;
@@ -132,16 +133,21 @@ export default function GlobalApp(props: GlobalAppProps) {
           <Route
             render={() => {
               return (
-                <EmptyState
-                  styles={{
-                    root: {
-                      height: '100%',
-                      margin: 0
-                    }
-                  }}
-                  title="404"
-                  subtitle={<FormattedMessage id={'globalApp.routeNotFound'} defaultMessage={'Route not found'} />}
-                />
+                <Box display="flex" flexDirection="column" height="100%">
+                  <section className={classes.launcher}>
+                    <LauncherOpenerButton sitesRailPosition="left" icon="apps" />
+                  </section>
+                  <EmptyState
+                    styles={{
+                      root: {
+                        height: '100%',
+                        margin: 0
+                      }
+                    }}
+                    title="404"
+                    subtitle={<FormattedMessage id={'globalApp.routeNotFound'} defaultMessage={'Route not found'} />}
+                  />
+                </Box>
               );
             }}
           />

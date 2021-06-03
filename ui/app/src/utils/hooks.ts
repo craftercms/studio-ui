@@ -44,7 +44,7 @@ import { fetchSiteLocales } from '../state/actions/translation';
 import { fetchSiteUiConfig } from '../state/actions/configuration';
 import { MessageDescriptor, useIntl } from 'react-intl';
 import { FormatXMLElementFn, PrimitiveType } from 'intl-messageformat';
-import { fetchGlobalMenu } from '../state/actions/system';
+import { fetchGlobalMenu, fetchSiteTools } from '../state/actions/system';
 import TranslationOrText from '../models/TranslationOrText';
 
 export function useShallowEqualSelector<T = any>(selector: (state: GlobalState) => T): T {
@@ -342,6 +342,19 @@ export function useSiteLocales(): GlobalState['uiConfig']['siteLocales'] {
     }
   }, [dispatch, siteLocales.error, siteLocales.isFetching, siteLocales.localeCodes]);
   return siteLocales;
+}
+
+export function useSiteTools(): GlobalState['uiConfig']['siteTools'] {
+  const siteTools = useSelection((state) => state.uiConfig.siteTools);
+
+  const site = useActiveSiteId();
+  const dispatch = useDispatch();
+  useEffect(() => {
+    if (!siteTools.tools && !siteTools.isFetching && !siteTools.error) {
+      dispatch(fetchSiteTools());
+    }
+  }, [dispatch, siteTools.error, siteTools.isFetching, siteTools.tools, site]);
+  return siteTools;
 }
 
 export function useLocale(): GlobalState['uiConfig']['locale'] {

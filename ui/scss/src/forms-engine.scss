@@ -220,3 +220,21 @@ h6,
 .h6 {
   font-weight: 600;
 }
+
+.btn-outlined {
+  border: 1px solid rgba(0, 0, 0, 0.23);
+  padding: 5px 15px;
+  background: none;
+}
+
+.btn-outlined-primary {
+  color: var(--craftercms-blue);
+  border: 1px solid rgba(0, 122, 255, 0.5);
+}
+
+.btn-outlined-primary:hover,
+.btn-outlined-primary:focus {
+  color: var(--craftercms-blue);
+  border: 1px solid var(--craftercms-blue);
+  background-color: rgba(0, 122, 255, 0.04);
+}

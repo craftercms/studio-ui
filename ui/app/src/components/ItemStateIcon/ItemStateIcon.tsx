@@ -41,6 +41,7 @@ export type ItemStateIconClassKey =
   | 'stateSubmittedIcon'
   | 'stateScheduledIcon'
   | 'publishingIcon';
+
 export type ItemStateIconStyles = Partial<Record<ItemStateIconClassKey, CSSProperties>>;
 
 export interface ItemStateIconProps {
@@ -72,7 +73,7 @@ const useStyles = makeStyles(() =>
       ...styles.stateLockedIcon
     }),
     stateSystemProcessingIcon: (styles) => ({
-      color: palette.pink.main,
+      color: palette.indigo.main,
       ...styles.stateSystemProcessingIcon
     }),
     stateSubmittedIcon: (styles) => ({
@@ -95,6 +96,11 @@ export default function ItemStateIcon(props: ItemStateIconProps) {
   let TheIcon = UnknownStateIcon;
   let stateSpecificClass;
   switch (true) {
+    // TODO: Check for changes when recycle bin is implemented
+    case item.stateMap.deleted:
+      TheIcon = DeletedStateIcon;
+      stateSpecificClass = classes.stateDeletedIcon;
+      break;
     case item.stateMap.systemProcessing:
       TheIcon = SystemProcessingStateIcon;
       stateSpecificClass = classes.stateSystemProcessingIcon;
@@ -103,14 +109,6 @@ export default function ItemStateIcon(props: ItemStateIconProps) {
       TheIcon = LockedStateIcon;
       stateSpecificClass = classes.stateLockedIcon;
       break;
-    case item.stateMap.deleted:
-      TheIcon = DeletedStateIcon;
-      stateSpecificClass = classes.stateDeletedIcon;
-      break;
-    case item.stateMap.modified:
-      TheIcon = EditedStateIcon;
-      stateSpecificClass = classes.stateModifiedIcon;
-      break;
     case item.stateMap.scheduled:
       TheIcon = ScheduledStateIcon;
       stateSpecificClass = classes.stateScheduledIcon;
@@ -118,6 +116,10 @@ export default function ItemStateIcon(props: ItemStateIconProps) {
     case item.stateMap.submitted:
       TheIcon = SubmittedStateIcon;
       stateSpecificClass = classes.stateSubmittedIcon;
+      break;
+    case item.stateMap.modified:
+      TheIcon = EditedStateIcon;
+      stateSpecificClass = classes.stateModifiedIcon;
       break;
     case item.stateMap.new:
       TheIcon = NewStateIcon;

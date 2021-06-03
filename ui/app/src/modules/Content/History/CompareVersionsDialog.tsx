@@ -41,6 +41,7 @@ import Typography from '@material-ui/core/Typography';
 import SingleItemSelector from '../Authoring/SingleItemSelector';
 import Dialog from '@material-ui/core/Dialog';
 import { CompareVersions, CompareVersionsResource } from './CompareVersions';
+import clsx from 'clsx';
 
 const translations = defineMessages({
   backToSelectRevision: {
@@ -54,6 +55,9 @@ const useStyles = makeStyles(() =>
     dialogBody: {
       overflow: 'auto',
       minHeight: '50vh'
+    },
+    noPadding: {
+      padding: 0
     },
     singleItemSelector: {
       marginBottom: '10px'
@@ -90,8 +94,9 @@ export interface CompareVersionsDialogStateProps extends CompareVersionsDialogBa
 }
 
 export default function CompareVersionsDialogWrapper(props: CompareVersionsDialogProps) {
+  const isCompareMode = props.selectedA && props.selectedB;
   return (
-    <Dialog open={props.open} onClose={props.onClose} fullWidth maxWidth="md">
+    <Dialog open={props.open} onClose={props.onClose} fullWidth maxWidth={isCompareMode ? 'xl' : 'md'}>
       <CompareVersionsDialog {...props} />
     </Dialog>
   );
@@ -202,7 +207,7 @@ function CompareVersionsDialog(props: CompareVersionsDialogProps) {
         rightActions={rightActions}
         onDismiss={onDismiss}
       />
-      <DialogBody className={classes.dialogBody}>
+      <DialogBody className={clsx(classes.dialogBody, compareMode && classes.noPadding)}>
         {!compareMode && (
           <SingleItemSelector
             classes={{ root: classes.singleItemSelector }}

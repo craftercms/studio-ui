@@ -15,15 +15,16 @@
  */
 
 import React from 'react';
-import Graphi from '../GraphiQL';
-import { useActiveSiteId, useEnv } from '../../utils/hooks';
+import { HashRouter } from 'react-router-dom';
+import { GlobalAppContextProvider } from '../components/GlobalApp';
+import SiteToolsApp from '../components/SiteToolsApp';
 
-interface SiteGraphiQLProps {
-  embedded?: boolean;
-}
-
-export default function SiteGraphiQL(props: SiteGraphiQLProps) {
-  const site = useActiveSiteId();
-  const { guestBase } = useEnv();
-  return <Graphi storageKey={site} url={`${guestBase}/api/1/site/graphql`} embedded={props.embedded} />;
+export default function SiteTools(topProps: any) {
+  return (
+    <GlobalAppContextProvider>
+      <HashRouter>
+        <SiteToolsApp {...topProps} />
+      </HashRouter>
+    </GlobalAppContextProvider>
+  );
 }

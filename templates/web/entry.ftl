@@ -22,8 +22,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="theme-color" content="#000000"/>
   <title>${contentModel['internal-name']} - ${contentModel['common-title']!''}</title>
-  <link href="/studio/static-assets/styles/typography.css"
-        rel="stylesheet">
   <style>
     html, body, #root {
       margin: 0;

@@ -48,13 +48,6 @@ export default function LogConsole(props: LogConsoleManagementProps) {
   const [paused, setPaused] = useState(false);
   const dispatch = useDispatch();
 
-  useMount(() => {
-    let since = moment()
-      .subtract(1, 'hour')
-      .valueOf();
-    fetchPreviewLog(site, since).subscribe();
-  });
-
   const refresh = useCallback(
     (since?: number) => {
       since =
@@ -140,8 +133,8 @@ export default function LogConsole(props: LogConsoleManagementProps) {
             </Button>
           </>
         }
-        showHamburgerMenuButton={logType === 'studio'}
-        showAppsButton={logType === 'studio'}
+        showHamburgerMenuButton={!embedded}
+        showAppsButton={!embedded}
       />
       <ConditionalLoadingState isLoading={!logEvents}>
         <LogConsoleGridUI logEvents={logEvents} onLogEventDetails={onLogEventDetails} />

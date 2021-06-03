@@ -22,8 +22,11 @@ export const useStyles = makeStyles((theme) =>
       height: '100vh',
       width: '100%'
     },
-    launcher: {
-      margin: '10px 12px 0 auto'
+    nav: {
+      overflow: 'auto'
+    },
+    icon: {
+      marginRight: '10px'
     },
     footerDescription: {
       color: theme.palette.text.secondary,
@@ -46,8 +49,13 @@ export const useStyles = makeStyles((theme) =>
       justifyContent: 'space-between'
     },
     drawerPaper: {
-      top: '0',
+      top: '0 !important',
       padding: theme.spacing(2)
+    },
+    launcher: {
+      margin: '10px 12px 0 auto'
     }
   })
 );
+
+export default useStyles;

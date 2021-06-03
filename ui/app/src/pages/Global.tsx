@@ -15,8 +15,7 @@
  */
 import React from 'react';
 import { HashRouter } from 'react-router-dom';
-import GlobalApp from '../components/GlobalApp';
-import { GlobalAppContextProvider } from '../components/GlobalApp/GlobalContext';
+import GlobalApp, { GlobalAppContextProvider } from '../components/GlobalApp';
 
 export default function Global(topProps: any) {
   return (

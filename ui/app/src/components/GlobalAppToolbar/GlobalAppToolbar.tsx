@@ -23,7 +23,7 @@ import LauncherOpenerButton from '../LauncherOpenerButton';
 import LogoAndMenuBundleButton from '../LogoAndMenuBundleButton';
 import { defineMessages, useIntl } from 'react-intl';
 import ViewToolbar, { ViewToolbarClassKey } from '../ViewToolbar/ViewToolbar';
-import { useGlobalAppState } from '../GlobalApp/GlobalContext';
+import { useGlobalAppState } from '../GlobalApp';
 
 type GlobalAppToolbarClassKey = ViewToolbarClassKey | 'title' | 'leftContent' | 'rightContent' | 'ellipsis';
 
