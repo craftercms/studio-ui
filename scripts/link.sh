@@ -89,6 +89,7 @@ if [[ $LINK_ONLY != true ]]; then
   rm -rf "$STATIC_ASSETS/images"
   rm -rf "$DEFAULT_SITE/site"
   rm -rf "$STATIC_ASSETS/yui"
+  rm -rf "$STATIC_ASSETS/css"
 fi
 
 if [[ $REMOVE_ONLY != true ]]; then
@@ -105,6 +106,7 @@ if [[ $REMOVE_ONLY != true ]]; then
   ln -s "$SRC/static-assets/images" "$STATIC_ASSETS/images"
   ln -s "$SRC/site" "$DEFAULT_SITE/site"
   ln -s "$SRC/static-assets/yui" "$STATIC_ASSETS/yui"
+  ln -s "$SRC/static-assets/css" "$STATIC_ASSETS/css"
 fi
 
 cd "$currentDir" || exit 1

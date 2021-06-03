@@ -54,7 +54,8 @@ import { debounceTime, filter, map, pluck, switchMap, take, tap } from 'rxjs/ope
 import { IntlShape } from 'react-intl/src/types';
 import * as messages from './i18n-legacy';
 import { translateElements } from './i18n-legacy';
-import { jssPreset, makeStyles, ThemeOptions } from '@material-ui/core/styles';
+import { ThemeOptions } from '@material-ui/core/styles';
+import * as mui from '@material-ui/core';
 import { defaultThemeOptions, generateClassName } from '../styles/theme';
 import getStore, { CrafterCMSStore } from '../state/store';
 import { useDispatch, useSelector, useStore } from 'react-redux';
@@ -222,14 +223,7 @@ export function createCodebaseBridge() {
       getStore
     },
 
-    mui: {
-      core: {
-        styles: {
-          makeStyles,
-          jssPreset
-        }
-      }
-    },
+    mui,
 
     assets: {
       logoIcon: require('../assets/crafter-icon.svg')
