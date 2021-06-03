@@ -104,7 +104,7 @@ export default function SiteToolsApp(props: SiteToolsAppProps) {
           />
         </footer>
       </ResizeableDrawer>
-      <Box height="100%" width="100%" paddingLeft={openSidebar ? `${width}px` : 0}>
+      <Box className={classes.wrapper} height="100%" width="100%" paddingLeft={openSidebar ? `${width}px` : 0}>
         <Switch>
           <Route path="/content-types" component={ContentTypeManagement} />
           <Route path="/encrypt-tool" component={SiteEncryptTool} />

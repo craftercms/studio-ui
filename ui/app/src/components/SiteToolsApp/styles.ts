@@ -22,6 +22,12 @@ export const useStyles = makeStyles((theme) =>
       height: '100vh',
       width: '100%'
     },
+    wrapper: {
+      transition: theme.transitions.create('padding-left', {
+        easing: theme.transitions.easing.easeOut,
+        duration: theme.transitions.duration.enteringScreen
+      })
+    },
     nav: {
       overflow: 'auto'
     },
