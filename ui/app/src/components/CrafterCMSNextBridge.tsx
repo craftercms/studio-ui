@@ -25,6 +25,7 @@ import en from '../translations/locales/en.json';
 import es from '../translations/locales/es.json';
 import de from '../translations/locales/de.json';
 import ko from '../translations/locales/ko.json';
+import { createGenerateClassName, StylesProvider } from '@material-ui/core';
 
 const Locales: any = {
   en,
@@ -67,6 +68,10 @@ export function getCurrentLocale() {
   return locale ? locale : 'en';
 }
 
+const generateClassName = createGenerateClassName({
+  productionPrefix: 'craftercms-'
+});
+
 function CrafterCMSNextBridge(props: PropsWithChildren<{}>) {
   const [, update] = useState();
 
@@ -75,7 +80,9 @@ function CrafterCMSNextBridge(props: PropsWithChildren<{}>) {
   return (
     <RawIntlProvider value={intl}>
       <ThemeProvider theme={theme}>
-        <Suspense fallback="">{props.children}</Suspense>
+        <StylesProvider generateClassName={generateClassName}>
+          <Suspense fallback="">{props.children}</Suspense>
+        </StylesProvider>
       </ThemeProvider>
     </RawIntlProvider>
   );
