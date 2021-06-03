@@ -40,6 +40,7 @@ const useStyles = makeStyles((theme) =>
     }),
     drawerBody: (styles) => ({
       width: '100%',
+      overflowY: 'auto',
       ...styles.drawerBody
     }),
     drawerPaper: (styles) => ({

@@ -21,9 +21,15 @@ import { toQueryString } from '../utils/object';
 import { SandboxItem } from '../models/Item';
 import { PagedArray } from '../models/PagedArray';
 import { createItemActionMap, createItemStateMap } from '../utils/content';
+import PaginationOptions from '../models/PaginationOptions';
 
-export function fetchItemStates(siteId: string, path?: string, state?: number): Observable<PagedArray<SandboxItem>> {
-  const qs = toQueryString({ siteId, path, state });
+export function fetchItemStates(
+  siteId: string,
+  path?: string,
+  state?: number,
+  options?: PaginationOptions
+): Observable<PagedArray<SandboxItem>> {
+  const qs = toQueryString({ siteId, path, state, ...options });
   return get(`/studio/api/2/workflow/item_states${qs}`).pipe(
     pluck('response'),
     map(({ items, total, offset, limit }) =>
@@ -36,7 +42,7 @@ export function fetchItemStates(siteId: string, path?: string, state?: number): 
         {
           total,
           offset,
-          limit
+          limit: limit < options.limit ? options.limit : limit
         }
       )
     )

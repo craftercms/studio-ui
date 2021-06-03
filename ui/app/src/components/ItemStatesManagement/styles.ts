@@ -18,8 +18,39 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles((theme) =>
   createStyles({
+    wrapper: {
+      transition: theme.transitions.create('width', {
+        easing: theme.transitions.easing.easeOut,
+        duration: theme.transitions.duration.enteringScreen
+      })
+    },
     filterButton: {
       marginRight: '12px'
-    }
+    },
+    drawerPaper: {
+      padding: theme.spacing(2)
+    },
+    iconLabel: {
+      display: 'flex',
+      alignItems: 'center',
+      '& svg': {
+        marginRight: '5px'
+      }
+    },
+    inputPath: {
+      marginTop: '20px'
+    },
+    helperText: {
+      marginLeft: 0
+    },
+    formControl: {
+      marginTop: '20px'
+    },
+    formLabel: {
+      color: theme.palette.text.primary,
+      textTransform: 'uppercase',
+      marginBottom: '10px'
+    },
+    formGroup: {}
   })
 );
