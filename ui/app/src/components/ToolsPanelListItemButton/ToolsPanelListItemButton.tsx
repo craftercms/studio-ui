@@ -55,12 +55,14 @@ export default function ToolsPanelListItemButton(props: ToolsPanelListItemButton
         primaryTypographyProps={{ noWrap: true }}
         secondaryTypographyProps={{ noWrap: true }}
       />
-      {displaySecondaryAction && (
+      {displaySecondaryAction ? (
         <ListItemSecondaryAction style={{ right: '5px' }}>
           <IconButton size="small" onClick={onSecondaryActionClick ?? onClick}>
             {secondaryActionIcon}
           </IconButton>
         </ListItemSecondaryAction>
+      ) : (
+        <ChevronRounded />
       )}
     </ListItem>
   );

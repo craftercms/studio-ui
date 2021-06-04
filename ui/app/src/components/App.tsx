@@ -40,7 +40,7 @@ export default function App() {
 const useStyles = makeStyles((theme) =>
   createStyles({
     '@global': {
-      'body, html, #studioAppRootElement': {
+      'body, html, #root': {
         display: 'flex',
         height: '100%',
         textAlign: 'center',

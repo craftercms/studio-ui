@@ -22,17 +22,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="theme-color" content="#000000"/>
   <title>${contentModel['internal-name']} - ${contentModel['common-title']!''}</title>
-  <style>
-    html, body, #root {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-  </style>
 </head>
 <body>
 <div id="root"></div>

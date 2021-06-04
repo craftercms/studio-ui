@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ItemStateMap } from '../../models/Item';
+import { ItemStateMap, ItemStates } from '../../models/Item';
 import { FormattedMessage } from 'react-intl';
 import * as React from 'react';
 
@@ -29,23 +29,51 @@ export function getItemPublishingTargetText(stateMap: ItemStateMap) {
 }
 
 export function getItemStateText(stateMap: ItemStateMap) {
+  let map: { [key in ItemStates]: any };
+  map = {
+    new: () => <FormattedMessage id="itemState.new" defaultMessage="New" />,
+    modified: () => <FormattedMessage id="itemState.modified" defaultMessage="Modified" />,
+    deleted: () => <FormattedMessage id="itemState.deleted" defaultMessage="Deleted" />,
+    locked: () => <FormattedMessage id="itemState.locked" defaultMessage="Locked" />,
+    systemProcessing: () => <FormattedMessage id="itemState.systemProcessing" defaultMessage="System Processing" />,
+    submitted: () => <FormattedMessage id="itemState.submitted" defaultMessage="Submitted" />,
+    scheduled: () => <FormattedMessage id="itemState.scheduled" defaultMessage="Scheduled" />,
+    staged: null,
+    live: null,
+    translationUpToDate: null,
+    translationPending: null,
+    translationInProgress: null
+  };
+  return map[getItemStateId(stateMap)]?.() ?? <FormattedMessage id="words.unknown" defaultMessage="Unknown" />;
+}
+
+export function getItemStateId(stateMap): ItemStates {
   switch (true) {
-    // TODO: Check for changes when recycle bin is implemented
     case stateMap.deleted:
-      return <FormattedMessage id="itemState.deleted" defaultMessage="Deleted" />;
+      return 'deleted';
     case stateMap.systemProcessing:
-      return <FormattedMessage id="itemState.systemProcessing" defaultMessage="System Processing" />;
+      return 'systemProcessing';
     case stateMap.locked:
-      return <FormattedMessage id="itemState.locked" defaultMessage="Locked" />;
+      return 'locked';
     case stateMap.scheduled:
-      return <FormattedMessage id="itemState.scheduled" defaultMessage="Scheduled" />;
+      return 'scheduled';
     case stateMap.submitted:
-      return <FormattedMessage id="itemState.submitted" defaultMessage="Submitted" />;
+      return 'submitted';
     case stateMap.modified:
-      return <FormattedMessage id="itemState.modified" defaultMessage="Modified" />;
+      return 'modified';
     case stateMap.new:
-      return <FormattedMessage id="itemState.new" defaultMessage="New" />;
+      return 'new';
+    case stateMap.staged:
+      return 'staged';
+    case stateMap.live:
+      return 'live';
+    case stateMap.translationUpToDate:
+      return 'translationUpToDate';
+    case stateMap.translationPending:
+      return 'translationPending';
+    case stateMap.translationInProgress:
+      return 'translationInProgress';
     default:
-      return <FormattedMessage id="words.unknown" defaultMessage="Unknown" />;
+      return null;
   }
 }
