@@ -26,6 +26,8 @@ export type ResizeableDrawerClassKey =
   | 'root'
   | 'drawerBody'
   | 'drawerPaper'
+  | 'drawerPaperLeft'
+  | 'drawerPaperRight'
   | 'drawerPaperBelowToolbar'
   | 'resizeHandle'
   | 'resizeHandleActive'
@@ -66,6 +68,14 @@ const useStyles = makeStyles((theme) =>
       zIndex: theme.zIndex.appBar - 1,
       ...styles
     }),
+    drawerPaperLeft: (styles) => ({
+      borderRight: 'none',
+      ...styles.drawerPaperLeft
+    }),
+    drawerPaperRight: (styles) => ({
+      borderLeft: 'none',
+      ...styles.drawerPaperRight
+    }),
     resizeHandle: (styles) => ({
       width: '1px',
       cursor: 'ew-resize',
@@ -84,11 +94,11 @@ const useStyles = makeStyles((theme) =>
       ...styles.resizeHandle
     }),
     resizeHandleLeft: (styles) => ({
-      left: -1,
+      left: 0,
       ...styles.resizeHandleLeft
     }),
     resizeHandleRight: (styles) => ({
-      right: -1,
+      right: 0,
       ...styles.resizeHandleRight
     }),
     resizeHandleActive: (styles) => ({
@@ -167,7 +177,8 @@ export default function ResizeableDrawer(props: ResizeableDrawerProps) {
           classes.drawerPaper,
           belowToolbar && classes.drawerPaperBelowToolbar,
           drawerPaper,
-          belowToolbar && drawerPaperBelowToolbar
+          belowToolbar && drawerPaperBelowToolbar,
+          anchor === 'left' ? classes.drawerPaperLeft : classes.drawerPaperRight
         )
       }}
       PaperProps={{ ...PaperProps, style: { width } }}
