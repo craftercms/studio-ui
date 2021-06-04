@@ -31,7 +31,7 @@ import GlobalState from '../../models/GlobalState';
 import { renderWidgets, WidgetDescriptor } from '../../components/Widget';
 import { Resource } from '../../models/Resource';
 import { SuspenseWithEmptyState } from '../../components/SystemStatus/Suspencified';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 
 defineMessages({
   previewSiteExplorerPanelTitle: {
@@ -40,7 +40,7 @@ defineMessages({
   }
 });
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     emptyState: {
       margin: `${theme.spacing(4)}px ${theme.spacing(1)}px`
@@ -76,6 +76,7 @@ export default function ToolsPanel() {
 
   return (
     <ResizeableDrawer
+      belowToolbar
       open={showToolsPanel}
       width={toolsPanelWidth}
       onWidthChange={(width) => {

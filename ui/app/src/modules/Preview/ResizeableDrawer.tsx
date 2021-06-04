@@ -26,6 +26,7 @@ export type ResizeableDrawerClassKey =
   | 'root'
   | 'drawerBody'
   | 'drawerPaper'
+  | 'drawerPaperBelowToolbar'
   | 'resizeHandle'
   | 'resizeHandleActive'
   | 'resizeHandleLeft'
@@ -36,6 +37,7 @@ export type ResizeableDrawerStyles = Partial<Record<ResizeableDrawerClassKey, CS
 interface ResizeableDrawerProps extends DrawerProps {
   open: boolean;
   width: number;
+  belowToolbar?: boolean;
   classes?: DrawerProps['classes'] & Partial<Record<ResizeableDrawerClassKey, string>>;
   styles?: ResizeableDrawerStyles;
   onWidthChange(width: number): void;
@@ -49,16 +51,20 @@ const useStyles = makeStyles((theme) =>
     }),
     drawerBody: (styles) => ({
       width: '100%',
+      height: '100%',
       overflowY: 'auto',
       ...styles.drawerBody
     }),
     drawerPaper: (styles) => ({
-      top: 64,
       bottom: 0,
-      height: 'auto',
       overflow: 'hidden',
-      zIndex: theme.zIndex.appBar - 1,
       ...styles.drawerPaper
+    }),
+    drawerPaperBelowToolbar: (styles) => ({
+      top: 64,
+      height: 'auto',
+      zIndex: theme.zIndex.appBar - 1,
+      ...styles
     }),
     resizeHandle: (styles) => ({
       width: '1px',
@@ -109,6 +115,7 @@ export default function ResizeableDrawer(props: ResizeableDrawerProps) {
     classes: propsClasses = {},
     PaperProps,
     anchor = 'left',
+    belowToolbar = false,
     ...rest
   } = props;
 
@@ -116,6 +123,7 @@ export default function ResizeableDrawer(props: ResizeableDrawerProps) {
     root,
     drawerBody,
     drawerPaper,
+    drawerPaperBelowToolbar,
     resizeHandle,
     resizeHandleActive,
     resizeHandleLeft,
@@ -153,7 +161,15 @@ export default function ResizeableDrawer(props: ResizeableDrawerProps) {
       anchor={anchor}
       variant="persistent"
       className={clsx(classes.root, className)}
-      classes={{ ...drawerClasses, paper: clsx(classes.drawerPaper, drawerPaper) }}
+      classes={{
+        ...drawerClasses,
+        paper: clsx(
+          classes.drawerPaper,
+          belowToolbar && classes.drawerPaperBelowToolbar,
+          drawerPaper,
+          belowToolbar && drawerPaperBelowToolbar
+        )
+      }}
       PaperProps={{ ...PaperProps, style: { width } }}
       {...rest}
     >

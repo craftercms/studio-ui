@@ -444,6 +444,7 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
         />
       )}
       <ResizeableDrawer
+        belowToolbar
         open={openDrawer}
         width={width}
         classes={{ drawerPaper: clsx(classes.drawerPaper, embedded && 'embedded') }}

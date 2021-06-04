@@ -43,15 +43,12 @@ export const useStyles = makeStyles((theme) =>
       margin: '0 auto 10px auto'
     },
     drawerBody: {
-      height: '100%',
       display: 'flex',
       flexDirection: 'column',
-      justifyContent: 'space-between'
-    },
-    drawerPaper: {
-      top: '0 !important',
+      justifyContent: 'space-between',
       padding: theme.spacing(2)
     },
+    drawerPaper: {},
     launcher: {
       margin: '10px 12px 0 auto'
     }

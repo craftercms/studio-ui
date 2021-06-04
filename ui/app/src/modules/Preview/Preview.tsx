@@ -32,7 +32,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 function Preview(props) {
-  const classes = useStyles({});
+  const classes = useStyles();
   usePreviewUrlControl(props.history);
   return (
     <>
