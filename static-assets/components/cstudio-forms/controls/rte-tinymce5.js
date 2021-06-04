@@ -309,7 +309,9 @@ CStudioAuthoring.Module.requireModule(
 
           const codeEditorWrap = rteConfig.codeEditorWrap ? rteConfig.codeEditorWrap === 'true' : false;
 
-          const external = {};
+          const external = {
+            acecode: '/studio/static-assets/js/tinymce-plugins/ace/plugin.min.js'
+          };
           if (rteConfig.external_plugins) {
             Object.entries(rteConfig.external_plugins).forEach((entry) => {
               external[entry[0]] = CStudioAuthoring.StringUtils.keyFormat(entry[1], {
