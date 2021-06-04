@@ -52,6 +52,9 @@ const useStyles = makeStyles((theme) =>
     loadingViewRoot: {
       flex: 1,
       flexDirection: 'row'
+    },
+    drawerBody: {
+      paddingBottom: 50
     }
   })
 );
@@ -79,6 +82,7 @@ export default function ToolsPanel() {
       belowToolbar
       open={showToolsPanel}
       width={toolsPanelWidth}
+      classes={{ drawerBody: classes.drawerBody }}
       onWidthChange={(width) => {
         dispatch(
           updateToolsPanelWidth({
