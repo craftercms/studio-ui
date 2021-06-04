@@ -1710,6 +1710,8 @@ var CStudioForms =
                         }
                       }
                     });
+                } else {
+                  CStudioAuthoring.InContextEdit.unstackDialog(editorId);
                 }
               }
             }
