@@ -15,8 +15,8 @@
  */
 
 import { Observable } from 'rxjs';
-import { get } from '../utils/ajax';
-import { map, pluck } from 'rxjs/operators';
+import { get, postJSON } from '../utils/ajax';
+import { map, mapTo, pluck } from 'rxjs/operators';
 import { toQueryString } from '../utils/object';
 import { SandboxItem } from '../models/Item';
 import { PagedArray } from '../models/PagedArray';
@@ -47,4 +47,19 @@ export function fetchItemStates(
       )
     )
   );
+}
+
+export interface StatesToUpdate {
+  clearSystemProcessing?: boolean;
+  clearUserLocked?: boolean;
+  live?: boolean;
+  staged?: boolean;
+}
+
+export function setItemStates(siteId: string, items: string[], { ...rest }: StatesToUpdate) {
+  return postJSON('/studio/api/2/workflow/item_states', {
+    siteId,
+    items: items,
+    ...rest
+  }).pipe(mapTo(true));
 }

@@ -36,7 +36,7 @@ import LookupTable from '../../models/LookupTable';
 export interface WorkflowStatesGridUIProps {
   resource: Resource<PagedArray<SandboxItem>>;
   rowsPerPageOptions?: number[];
-  selectedItems: LookupTable<boolean>;
+  selectedItems: LookupTable<SandboxItem>;
   onItemSelected(item: SandboxItem, value: boolean): void;
   onChangePage(page: number): void;
   onChangeRowsPerPage?: React.ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
@@ -108,7 +108,10 @@ export default function ItemStatesGridUI(props: WorkflowStatesGridUIProps) {
             {itemStates.map((item) => (
               <GlobalAppGridRow key={item.id}>
                 <GlobalAppGridCell align="center" className="padded10">
-                  <Checkbox checked={selectedItems[item.id]} onChange={(e) => onItemSelected(item, e.target.checked)} />
+                  <Checkbox
+                    checked={Boolean(selectedItems[item.path])}
+                    onChange={(e) => onItemSelected(item, e.target.checked)}
+                  />
                 </GlobalAppGridCell>
                 <GlobalAppGridCell className="ellipsis maxWidth300">
                   <ItemDisplay item={item} />

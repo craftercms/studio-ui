@@ -17,12 +17,14 @@
 import React from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import { SetWorkflowStateDialogContainer } from './SetWorkFlowStateDialogContainer';
+import { StatesToUpdate } from '../../services/workflowStates';
 
 export interface SetWorkflowStateDialogProps {
   open: boolean;
   title: React.ReactNode;
   onClose(): void;
   onClosed?(): void;
+  onConfirm(update: StatesToUpdate): void;
 }
 
 export default function SetWorkflowStateDialog(props: SetWorkflowStateDialogProps) {

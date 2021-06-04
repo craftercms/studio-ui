@@ -17,7 +17,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import ApiResponse from '../../models/ApiResponse';
 import { useActiveSiteId, useDebouncedInput, useLogicResource, useSpreadState } from '../../utils/hooks';
-import { fetchItemStates } from '../../services/workflowStates';
+import { fetchItemStates, setItemStates, StatesToUpdate } from '../../services/workflowStates';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
@@ -54,10 +54,10 @@ interface ItemStatesManagementProps {
 export default function ItemStatesManagement(props: ItemStatesManagementProps) {
   const { embedded } = props;
   const [fetching, setFetching] = useState(false);
-  const [itemStates, setItemStates] = useState<PagedArray<SandboxItem>>(null);
+  const [items, setItems] = useState<PagedArray<SandboxItem>>(null);
   const [error, setError] = useState<ApiResponse>();
   const siteId = useActiveSiteId();
-  const [openSetStateDialog, setOpenSetStateDialog] = useState(true);
+  const [openSetStateDialog, setOpenSetStateDialog] = useState(false);
   const [openFiltersDrawer, setOpenFiltersDrawer] = useState(false);
   const [filtersLookup, setFiltersLookup] = useSpreadState<LookupTable<boolean>>(createPresenceTable(states, false));
   const [pathRegex, setPathRegex] = useState('');
@@ -65,11 +65,13 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
   const [offset, setOffset] = useState(0);
   const [limit, setLimit] = useState(10);
   const [drawerTopPosition, setDrawerTopPosition] = useState(64);
-  const [selectedItems, setSelectedItems] = useSpreadState<LookupTable<boolean>>({});
+  const [selectedItems, setSelectedItems] = useSpreadState<LookupTable<SandboxItem>>({});
   const classes = useStyles();
   const { formatMessage } = useIntl();
 
   const hasSelectedItems = useMemo(() => Object.values(selectedItems).some((value) => value), [selectedItems]);
+  const selectedItemsLength = useMemo(() => Object.values(selectedItems).length, [selectedItems]);
+  const firstSelectedItem = useMemo<SandboxItem>(() => Object.values(selectedItems)[0], [selectedItems]);
 
   const rootRef = useRef<HTMLDivElement>();
 
@@ -79,7 +81,7 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
     setFetching(true);
     fetchItemStates(siteId, debouncePathRegex, stateMask ? stateMask : null, { limit, offset }).subscribe(
       (states) => {
-        setItemStates(states);
+        setItems(states);
         setFetching(false);
       },
       ({ response }) => {
@@ -97,7 +99,7 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
     PagedArray<SandboxItem>,
     { states: PagedArray<SandboxItem>; error: ApiResponse; fetching: boolean }
   >(
-    useMemo(() => ({ states: itemStates, error, fetching }), [itemStates, error, fetching]),
+    useMemo(() => ({ states: items, error, fetching }), [items, error, fetching]),
     {
       shouldResolve: (source) => Boolean(source.states) && !fetching,
       shouldReject: ({ error }) => Boolean(error),
@@ -145,7 +147,7 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
   };
 
   const onItemSelected = (item: SandboxItem, value: boolean) => {
-    setSelectedItems({ [item.path]: value });
+    setSelectedItems({ [item.path]: value ? item : null });
   };
 
   const onEditStatesClicked = (option: string) => {
@@ -155,6 +157,15 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
   };
 
   const onToggleSelectAllItems = () => {};
+
+  const onSetWorkflowStateDialogConfirm = (update: StatesToUpdate) => {
+    setItemStates(
+      siteId,
+      Object.values(selectedItems).map((item) => item.path),
+      update
+    ).subscribe(() => {});
+    setOpenSetStateDialog(false);
+  };
 
   useEffect(() => {
     if (rootRef.current) {
@@ -331,9 +342,19 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
         </PersistentDrawer>
       </Box>
       <SetWorkflowStateDialog
-        title={<FormattedMessage id="workflowStates.setState" defaultMessage='Set State for "home"' />}
+        title={
+          <FormattedMessage
+            id="workflowStates.setState"
+            defaultMessage='{count, plural, one {Set State for "{name}"} other {Set State for Items}}'
+            values={{
+              count: selectedItemsLength,
+              name: firstSelectedItem?.label
+            }}
+          />
+        }
         open={openSetStateDialog}
         onClose={() => setOpenSetStateDialog(false)}
+        onConfirm={onSetWorkflowStateDialogConfirm}
       />
     </section>
   );
