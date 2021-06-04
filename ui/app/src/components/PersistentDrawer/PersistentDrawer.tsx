@@ -40,14 +40,12 @@ const useStyles = makeStyles((theme) =>
     }),
     drawerBody: (styles) => ({
       width: '100%',
-      overflowY: 'auto',
       ...styles.drawerBody
     }),
     drawerPaper: (styles) => ({
       top: 64,
       bottom: 0,
       height: 'auto',
-      overflow: 'hidden',
       zIndex: theme.zIndex.appBar - 1,
       ...styles.drawerPaper
     })

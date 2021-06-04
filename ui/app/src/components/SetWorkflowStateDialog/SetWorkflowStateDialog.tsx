@@ -16,24 +16,20 @@
 
 import React from 'react';
 import Dialog from '@material-ui/core/Dialog';
-import { FormattedMessage } from 'react-intl';
-import DialogHeader from '../Dialogs/DialogHeader';
-import DialogBody from '../Dialogs/DialogBody';
+import { SetWorkflowStateDialogContainer } from './SetWorkFlowStateDialogContainer';
 
 export interface SetWorkflowStateDialogProps {
   open: boolean;
+  title: React.ReactNode;
   onClose(): void;
+  onClosed?(): void;
 }
 
 export default function SetWorkflowStateDialog(props: SetWorkflowStateDialogProps) {
   const { open, onClose } = props;
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
-      <DialogHeader
-        title={<FormattedMessage id="workflowStates.setState" defaultMessage="Set State" />}
-        onDismiss={onClose}
-      />
-      <DialogBody />;
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+      <SetWorkflowStateDialogContainer {...props} />
     </Dialog>
   );
 }

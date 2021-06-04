@@ -19,7 +19,7 @@ import ApiResponse from '../../models/ApiResponse';
 import { useActiveSiteId, useDebouncedInput, useLogicResource, useSpreadState } from '../../utils/hooks';
 import { fetchItemStates } from '../../services/workflowStates';
 import GlobalAppToolbar from '../GlobalAppToolbar';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import ItemStatesGridUI, { drawerWidth, ItemStatesGridSkeletonTable, states } from '../ItemStatesGrid';
 import SetWorkflowStateDialog from '../SetWorkflowStateDialog';
@@ -44,6 +44,8 @@ import { Divider } from '@material-ui/core';
 import ItemPublishingTargetIcon from '../ItemPublishingTargetIcon';
 import { getItemPublishingTargetText, getItemStateText } from '../ItemDisplay/utils';
 import ItemStateIcon from '../ItemStateIcon';
+import ActionsBar from '../ActionsBar';
+import translations from './translations';
 
 interface ItemStatesManagementProps {
   embedded?: boolean;
@@ -55,15 +57,19 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
   const [itemStates, setItemStates] = useState<PagedArray<SandboxItem>>(null);
   const [error, setError] = useState<ApiResponse>();
   const siteId = useActiveSiteId();
-  const [openSetStateDialog, setOpenSetStateDialog] = useState(false);
-  const [openFiltersDrawer, setOpenFiltersDrawer] = useState(true);
+  const [openSetStateDialog, setOpenSetStateDialog] = useState(true);
+  const [openFiltersDrawer, setOpenFiltersDrawer] = useState(false);
   const [filtersLookup, setFiltersLookup] = useSpreadState<LookupTable<boolean>>(createPresenceTable(states, false));
   const [pathRegex, setPathRegex] = useState('');
   const [debouncePathRegex, setDebouncePathRegex] = useState('');
   const [offset, setOffset] = useState(0);
   const [limit, setLimit] = useState(10);
   const [drawerTopPosition, setDrawerTopPosition] = useState(64);
+  const [selectedItems, setSelectedItems] = useSpreadState<LookupTable<boolean>>({});
   const classes = useStyles();
+  const { formatMessage } = useIntl();
+
+  const hasSelectedItems = useMemo(() => Object.values(selectedItems).some((value) => value), [selectedItems]);
 
   const rootRef = useRef<HTMLDivElement>();
 
@@ -71,7 +77,7 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
     let stateMask = getStateMask(filtersLookup as ItemStateMap);
 
     setFetching(true);
-    fetchItemStates(siteId, debouncePathRegex, stateMask, { limit, offset }).subscribe(
+    fetchItemStates(siteId, debouncePathRegex, stateMask ? stateMask : null, { limit, offset }).subscribe(
       (states) => {
         setItemStates(states);
         setFetching(false);
@@ -138,6 +144,18 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
     setLimit(e.target.value);
   };
 
+  const onItemSelected = (item: SandboxItem, value: boolean) => {
+    setSelectedItems({ [item.path]: value });
+  };
+
+  const onEditStatesClicked = (option: string) => {
+    if (option === 'editStates') {
+      setOpenSetStateDialog(true);
+    }
+  };
+
+  const onToggleSelectAllItems = () => {};
+
   useEffect(() => {
     if (rootRef.current) {
       rootRef.current.onscroll = () => {
@@ -171,7 +189,26 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
         flexGrow={1}
         width={`calc(100% - ${openFiltersDrawer ? drawerWidth : 0}px)`}
         className={classes.wrapper}
+        position="relative"
       >
+        {hasSelectedItems && (
+          <ActionsBar
+            classes={{
+              root: classes.actionsBarRoot,
+              checkbox: classes.actionsBarCheckbox
+            }}
+            options={[
+              {
+                id: 'editStates',
+                label: formatMessage(translations.editStates)
+              }
+            ]}
+            isIndeterminate={false}
+            isChecked={hasSelectedItems}
+            onOptionClicked={onEditStatesClicked}
+            toggleSelectAll={onToggleSelectAllItems}
+          />
+        )}
         <SuspenseWithEmptyState
           resource={resource}
           withEmptyStateProps={{
@@ -192,6 +229,8 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
           <ItemStatesGridUI
             resource={resource}
             rowsPerPageOptions={[5, 10, 15]}
+            selectedItems={selectedItems}
+            onItemSelected={onItemSelected}
             onChangePage={onChangePage}
             onChangeRowsPerPage={onChangeRowsPerPage}
           />
@@ -291,7 +330,11 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
           </form>
         </PersistentDrawer>
       </Box>
-      <SetWorkflowStateDialog open={openSetStateDialog} onClose={() => setOpenSetStateDialog(false)} />
+      <SetWorkflowStateDialog
+        title={<FormattedMessage id="workflowStates.setState" defaultMessage='Set State for "home"' />}
+        open={openSetStateDialog}
+        onClose={() => setOpenSetStateDialog(false)}
+      />
     </section>
   );
 }

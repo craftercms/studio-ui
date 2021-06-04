@@ -31,10 +31,13 @@ import { ItemStates, SandboxItem } from '../../models/Item';
 import { PagedArray } from '../../models/PagedArray';
 import Pagination from '../Pagination';
 import clsx from 'clsx';
+import LookupTable from '../../models/LookupTable';
 
 export interface WorkflowStatesGridUIProps {
   resource: Resource<PagedArray<SandboxItem>>;
   rowsPerPageOptions?: number[];
+  selectedItems: LookupTable<boolean>;
+  onItemSelected(item: SandboxItem, value: boolean): void;
   onChangePage(page: number): void;
   onChangeRowsPerPage?: React.ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
 }
@@ -54,7 +57,14 @@ export const states: ItemStates[] = [
 ];
 
 export default function ItemStatesGridUI(props: WorkflowStatesGridUIProps) {
-  const { resource, onChangePage, onChangeRowsPerPage, rowsPerPageOptions = [5, 10, 15] } = props;
+  const {
+    resource,
+    onChangePage,
+    onChangeRowsPerPage,
+    rowsPerPageOptions = [5, 10, 15],
+    selectedItems,
+    onItemSelected
+  } = props;
   const itemStates = resource.read();
   const classes = useStyles();
 
@@ -98,7 +108,7 @@ export default function ItemStatesGridUI(props: WorkflowStatesGridUIProps) {
             {itemStates.map((item) => (
               <GlobalAppGridRow key={item.id}>
                 <GlobalAppGridCell align="center" className="padded10">
-                  <Checkbox />
+                  <Checkbox checked={selectedItems[item.id]} onChange={(e) => onItemSelected(item, e.target.checked)} />
                 </GlobalAppGridCell>
                 <GlobalAppGridCell className="ellipsis maxWidth300">
                   <ItemDisplay item={item} />

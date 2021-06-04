@@ -24,6 +24,16 @@ export const useStyles = makeStyles((theme) =>
       display: 'flex',
       flexDirection: 'column'
     },
+    actionsBarRoot: {
+      left: '0',
+      right: '0',
+      zIndex: 1,
+      position: 'absolute',
+      height: '62px'
+    },
+    actionsBarCheckbox: {
+      margin: '10px 16px'
+    },
     wrapper: {
       transition: theme.transitions.create('width', {
         easing: theme.transitions.easing.easeOut,

@@ -14,8 +14,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './SetWorkflowStateDialog';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 
-export * from './SetWorkflowStateDialog';
-
-export * from './SetWorkFlowStateDialogContainer';
+export const useStyles = makeStyles((theme) =>
+  createStyles({
+    paddedLeft: {
+      paddingLeft: '22px'
+    }
+  })
+);

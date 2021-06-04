@@ -45,7 +45,7 @@ interface ActionsBarProps {
   options: Action[];
   isIndeterminate: boolean;
   isChecked: boolean;
-  classes?: Partial<Record<'root', string>>;
+  classes?: Partial<Record<'root' | 'checkbox', string>>;
   onOptionClicked(option: string): void;
   toggleSelectAll(): void;
 }
@@ -61,7 +61,7 @@ export default function ActionsBar(props: ActionsBarProps) {
         color="primary"
         indeterminate={isIndeterminate}
         checked={isChecked}
-        className={classes.checkbox}
+        className={clsx(classes.checkbox, props.classes?.checkbox)}
         onChange={toggleSelectAll}
       />
       {options.map((option: Action) => (
