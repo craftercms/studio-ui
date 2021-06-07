@@ -15,6 +15,7 @@
  */
 
 import { createStyles, makeStyles } from '@material-ui/core/styles';
+import palette from '../../styles/palette';
 
 export const useStyles = makeStyles((theme) =>
   createStyles({
@@ -23,6 +24,9 @@ export const useStyles = makeStyles((theme) =>
       overflow: 'hidden',
       textOverflow: 'ellipsis',
       whiteSpace: 'nowrap'
+    },
+    rowSelected: {
+      backgroundColor: palette.blue.highlight
     },
     iconRoot: {
       fontSize: '1em'

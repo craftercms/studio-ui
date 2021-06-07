@@ -110,7 +110,11 @@ export default function ItemStatesGridUI(props: WorkflowStatesGridUIProps) {
           </TableHead>
           <TableBody>
             {itemStates.map((item) => (
-              <GlobalAppGridRow key={item.id} onClick={() => onRowSelected(item)}>
+              <GlobalAppGridRow
+                key={item.id}
+                onClick={() => onRowSelected(item)}
+                className={clsx(Boolean(selectedItems[item.path]) && classes.rowSelected)}
+              >
                 <GlobalAppGridCell align="center" className="padded10">
                   <Checkbox
                     checked={Boolean(selectedItems[item.path])}
