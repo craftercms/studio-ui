@@ -27,12 +27,12 @@ export const useStyles = makeStyles((theme) =>
     actionsBarRoot: {
       left: '0',
       right: '0',
-      zIndex: 1,
+      zIndex: 2,
       position: 'absolute',
       height: '62px'
     },
     actionsBarCheckbox: {
-      margin: '10px 16px'
+      margin: '10px 12px'
     },
     wrapper: {
       transition: theme.transitions.create('width', {

@@ -37,8 +37,10 @@ export interface WorkflowStatesGridUIProps {
   resource: Resource<PagedArray<SandboxItem>>;
   rowsPerPageOptions?: number[];
   selectedItems: LookupTable<SandboxItem>;
+  onToggleSelectedItems(): void;
   onItemSelected(item: SandboxItem, value: boolean): void;
   onChangePage(page: number): void;
+  onRowSelected(item: SandboxItem): void;
   onChangeRowsPerPage?: React.ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
 }
 
@@ -63,7 +65,9 @@ export default function ItemStatesGridUI(props: WorkflowStatesGridUIProps) {
     onChangeRowsPerPage,
     rowsPerPageOptions = [5, 10, 15],
     selectedItems,
-    onItemSelected
+    onItemSelected,
+    onRowSelected,
+    onToggleSelectedItems
   } = props;
   const itemStates = resource.read();
   const classes = useStyles();
@@ -75,7 +79,7 @@ export default function ItemStatesGridUI(props: WorkflowStatesGridUIProps) {
           <TableHead>
             <GlobalAppGridRow className="hoverDisabled">
               <GlobalAppGridCell align="center" className="bordered padded10">
-                <Checkbox />
+                <Checkbox checked={false} onClick={(e) => onToggleSelectedItems()} />
               </GlobalAppGridCell>
               <GlobalAppGridCell className="bordered width60">
                 <Typography variant="subtitle2">
@@ -106,11 +110,16 @@ export default function ItemStatesGridUI(props: WorkflowStatesGridUIProps) {
           </TableHead>
           <TableBody>
             {itemStates.map((item) => (
-              <GlobalAppGridRow key={item.id}>
+              <GlobalAppGridRow key={item.id} onClick={() => onRowSelected(item)}>
                 <GlobalAppGridCell align="center" className="padded10">
                   <Checkbox
                     checked={Boolean(selectedItems[item.path])}
-                    onChange={(e) => onItemSelected(item, e.target.checked)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                    onChange={(e) => {
+                      onItemSelected(item, e.target.checked);
+                    }}
                   />
                 </GlobalAppGridCell>
                 <GlobalAppGridCell className="ellipsis maxWidth300">

@@ -63,3 +63,14 @@ export function setItemStates(siteId: string, items: string[], { ...rest }: Stat
     ...rest
   }).pipe(mapTo(true));
 }
+
+export function setItemStatesByQuery(siteId: string, states: number, update: StatesToUpdate, path?: string) {
+  return postJSON('/studio/api/2/workflow/update_item_states_by_query', {
+    query: {
+      siteId,
+      ...(path && { path }),
+      states
+    },
+    update
+  }).pipe(mapTo(true));
+}

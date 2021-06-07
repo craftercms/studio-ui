@@ -65,13 +65,24 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
   const [offset, setOffset] = useState(0);
   const [limit, setLimit] = useState(10);
   const [drawerTopPosition, setDrawerTopPosition] = useState(64);
-  const [selectedItems, setSelectedItems] = useSpreadState<LookupTable<SandboxItem>>({});
+  const [selectedItems, setSelectedItems] = useState<LookupTable<SandboxItem>>({});
+  const [selectedItem, setSelectedItem] = useState<SandboxItem>(null);
+  const [isSelectedItemsOnAllPages, setIsSelectedItemsOnAllPages] = useState(false);
   const classes = useStyles();
   const { formatMessage } = useIntl();
 
   const hasSelectedItems = useMemo(() => Object.values(selectedItems).some((value) => value), [selectedItems]);
-  const selectedItemsLength = useMemo(() => Object.values(selectedItems).length, [selectedItems]);
-  const firstSelectedItem = useMemo<SandboxItem>(() => Object.values(selectedItems)[0], [selectedItems]);
+  const selectedItemsLength = useMemo(() => Object.values(selectedItems).filter((value) => value).length, [
+    selectedItems
+  ]);
+  const isThisPageIndeterminate = useMemo(() => items?.some((item) => !selectedItems[item.path]), [
+    items,
+    selectedItems
+  ]);
+  const hasThisPageItemsChecked = useMemo(() => items?.some((item) => selectedItems[item.path]), [
+    items,
+    selectedItems
+  ]);
 
   const rootRef = useRef<HTMLDivElement>();
 
@@ -112,6 +123,7 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
   const onPathRegex$ = useDebouncedInput(
     useCallback(
       (keyword: string) => {
+        clearSelectedItems();
         setDebouncePathRegex(keyword);
       },
       [setDebouncePathRegex]
@@ -125,6 +137,7 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
   };
 
   const onFilterChecked = (id: string, value: boolean) => {
+    clearSelectedItems();
     if (id === 'all') {
       setFiltersLookup(createPresenceTable(states, value));
     } else {
@@ -147,23 +160,67 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
   };
 
   const onItemSelected = (item: SandboxItem, value: boolean) => {
-    setSelectedItems({ [item.path]: value ? item : null });
+    setSelectedItems({ ...selectedItems, [item.path]: value ? item : null });
   };
 
-  const onEditStatesClicked = (option: string) => {
+  const onRowSelected = (item: SandboxItem) => {
+    setSelectedItem(item);
+    setOpenSetStateDialog(true);
+  };
+
+  const onOptionClicked = (option: string) => {
     if (option === 'editStates') {
+      setSelectedItem(null);
       setOpenSetStateDialog(true);
+    } else if (option === 'clearSelected') {
+      clearSelectedItems();
+      setIsSelectedItemsOnAllPages(false);
+    } else if ('selectAll') {
+      clearSelectedItems();
+      setIsSelectedItemsOnAllPages(true);
     }
   };
 
-  const onToggleSelectAllItems = () => {};
+  const clearSelectedItems = () => {
+    setSelectedItems({});
+  };
+
+  const onToggleSelectAllItems = () => {
+    const selectedItemsOnPage = {};
+    if (isThisPageIndeterminate) {
+      items.forEach((item) => (selectedItemsOnPage[item.path] = true));
+    } else {
+      items.forEach((item) => (selectedItemsOnPage[item.path] = null));
+    }
+    setSelectedItems({ ...selectedItems, ...selectedItemsOnPage });
+  };
+
+  const onToggleSelectedItemsOnPage = () => {
+    const selectedItemsOnPage = {};
+    items.forEach((item) => (selectedItemsOnPage[item.path] = true));
+    setSelectedItems({ ...selectedItems, ...selectedItemsOnPage });
+  };
 
   const onSetWorkflowStateDialogConfirm = (update: StatesToUpdate) => {
-    setItemStates(
-      siteId,
-      Object.values(selectedItems).map((item) => item.path),
-      update
-    ).subscribe(() => {});
+    if (selectedItem) {
+      setItemStates(siteId, [selectedItem.path], update).subscribe(() => {
+        fetchStates();
+      });
+    } else {
+      setItemStates(
+        siteId,
+        Object.values(selectedItems).map((item) => item.path),
+        update
+      ).subscribe(() => {
+        fetchStates();
+      });
+    }
+
+    setOpenSetStateDialog(false);
+  };
+
+  const onSetWorkflowStateDialogClose = () => {
+    setSelectedItem(null);
     setOpenSetStateDialog(false);
   };
 
@@ -174,6 +231,12 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
       };
     }
   }, []);
+
+  useEffect(() => {
+    if (selectedItemsLength) {
+      setIsSelectedItemsOnAllPages(false);
+    }
+  }, [selectedItemsLength]);
 
   return (
     <section ref={rootRef} className={classes.root}>
@@ -202,7 +265,7 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
         className={classes.wrapper}
         position="relative"
       >
-        {hasSelectedItems && (
+        {(hasSelectedItems || isSelectedItemsOnAllPages) && (
           <ActionsBar
             classes={{
               root: classes.actionsBarRoot,
@@ -211,12 +274,26 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
             options={[
               {
                 id: 'editStates',
-                label: formatMessage(translations.editStates)
-              }
+                label: formatMessage(translations.editStates, {
+                  count: isSelectedItemsOnAllPages ? items.total : selectedItemsLength
+                })
+              },
+              {
+                id: 'clearSelected',
+                label: formatMessage(translations.clearSelected)
+              },
+              ...(isSelectedItemsOnAllPages
+                ? []
+                : [
+                    {
+                      id: 'selectAll',
+                      label: formatMessage(translations.selectAll, { count: items.total })
+                    }
+                  ])
             ]}
-            isIndeterminate={false}
-            isChecked={hasSelectedItems}
-            onOptionClicked={onEditStatesClicked}
+            isIndeterminate={hasThisPageItemsChecked ? isThisPageIndeterminate : false}
+            isChecked={hasThisPageItemsChecked}
+            onOptionClicked={onOptionClicked}
             toggleSelectAll={onToggleSelectAllItems}
           />
         )}
@@ -242,8 +319,10 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
             rowsPerPageOptions={[5, 10, 15]}
             selectedItems={selectedItems}
             onItemSelected={onItemSelected}
+            onToggleSelectedItems={onToggleSelectedItemsOnPage}
             onChangePage={onChangePage}
             onChangeRowsPerPage={onChangeRowsPerPage}
+            onRowSelected={onRowSelected}
           />
         </SuspenseWithEmptyState>
         <PersistentDrawer
@@ -347,13 +426,13 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
             id="workflowStates.setState"
             defaultMessage='{count, plural, one {Set State for "{name}"} other {Set State for Items}}'
             values={{
-              count: selectedItemsLength,
-              name: firstSelectedItem?.label
+              count: selectedItem ? 1 : selectedItemsLength,
+              name: selectedItem?.label
             }}
           />
         }
         open={openSetStateDialog}
-        onClose={() => setOpenSetStateDialog(false)}
+        onClose={onSetWorkflowStateDialogClose}
         onConfirm={onSetWorkflowStateDialogConfirm}
       />
     </section>

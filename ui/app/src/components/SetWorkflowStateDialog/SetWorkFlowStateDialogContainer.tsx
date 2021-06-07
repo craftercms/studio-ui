@@ -30,19 +30,29 @@ import PrimaryButton from '../PrimaryButton';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import { CSSProperties } from '@material-ui/styles';
-import { StatesToUpdate } from '../../services/workflowStates';
 
 export function SetWorkflowStateDialogContainer(props: SetWorkflowStateDialogProps) {
-  const { onClose, onClosed, title, onConfirm } = props;
+  const { onClose, onClosed, title } = props;
   const classes = useStyles();
-  const [update, setUpdate] = useSpreadState<StatesToUpdate>({
+  const [update, setUpdate] = useSpreadState({
     clearSystemProcessing: false,
     clearUserLocked: false,
-    live: true,
+    clearLive: false,
+    clearStaged: false,
+    live: false,
     staged: false
   });
 
   useUnmount(onClosed);
+
+  const onConfirm = (update) => {
+    props.onConfirm({
+      ...(update.clearSystemProcessing && { clearSystemProcessing: update.clearSystemProcessing }),
+      ...(update.clearUserLocked && { clearUserLocked: update.clearUserLocked }),
+      ...((update.clearLive || update.live) && { live: update.live }),
+      ...((update.clearStaged || update.staged) && { staged: update.staged })
+    });
+  };
 
   return (
     <>
@@ -89,7 +99,7 @@ export function SetWorkflowStateDialogContainer(props: SetWorkflowStateDialogPro
                     checked={update.live}
                     color="primary"
                     onChange={(e) => {
-                      setUpdate({ live: e.target.checked });
+                      setUpdate({ live: e.target.checked, clearLive: e.target.checked ? false : update.clearLive });
                     }}
                   />
                 }
@@ -103,10 +113,10 @@ export function SetWorkflowStateDialogContainer(props: SetWorkflowStateDialogPro
               <FormControlLabel
                 control={
                   <Switch
-                    checked={!update.live}
+                    checked={update.clearLive}
                     color="primary"
                     onChange={(e) => {
-                      setUpdate({ live: !e.target.checked });
+                      setUpdate({ clearLive: e.target.checked, live: e.target.checked ? false : update.live });
                     }}
                   />
                 }
@@ -128,7 +138,10 @@ export function SetWorkflowStateDialogContainer(props: SetWorkflowStateDialogPro
                     checked={update.staged}
                     color="primary"
                     onChange={(e) => {
-                      setUpdate({ staged: e.target.checked });
+                      setUpdate({
+                        staged: e.target.checked,
+                        clearStaged: e.target.checked ? false : update.clearStaged
+                      });
                     }}
                   />
                 }
@@ -142,10 +155,10 @@ export function SetWorkflowStateDialogContainer(props: SetWorkflowStateDialogPro
               <FormControlLabel
                 control={
                   <Switch
-                    checked={!update.staged}
+                    checked={update.clearStaged}
                     color="primary"
                     onChange={(e) => {
-                      setUpdate({ staged: !e.target.checked });
+                      setUpdate({ clearStaged: e.target.checked, staged: e.target.checked ? false : update.staged });
                     }}
                   />
                 }
@@ -164,7 +177,7 @@ export function SetWorkflowStateDialogContainer(props: SetWorkflowStateDialogPro
         <SecondaryButton onClick={() => onClose()}>
           <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
         </SecondaryButton>
-        <PrimaryButton onClick={() => onConfirm(update)}>
+        <PrimaryButton disabled={!Object.values(update).some((value) => value)} onClick={() => onConfirm(update)}>
           <FormattedMessage id="words.confirm" defaultMessage="Confirm" />
         </PrimaryButton>
       </DialogFooter>
