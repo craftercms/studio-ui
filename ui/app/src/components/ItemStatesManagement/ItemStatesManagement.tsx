@@ -17,7 +17,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import ApiResponse from '../../models/ApiResponse';
 import { useActiveSiteId, useDebouncedInput, useLogicResource, useSpreadState } from '../../utils/hooks';
-import { fetchItemStates, setItemStates, StatesToUpdate } from '../../services/workflowStates';
+import { fetchItemStates, setItemStates, setItemStatesByQuery, StatesToUpdate } from '../../services/workflowStates';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
@@ -204,6 +204,11 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
   const onSetWorkflowStateDialogConfirm = (update: StatesToUpdate) => {
     if (selectedItem) {
       setItemStates(siteId, [selectedItem.path], update).subscribe(() => {
+        fetchStates();
+      });
+    } else if (isSelectedItemsOnAllPages) {
+      let stateMask = getStateMask(filtersLookup as ItemStateMap);
+      setItemStatesByQuery(siteId, stateMask ? stateMask : null, update, debouncePathRegex).subscribe(() => {
         fetchStates();
       });
     } else {
