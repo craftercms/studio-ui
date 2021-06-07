@@ -618,8 +618,8 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
         if (cursorPosition > -1 && cursorPosition < 3) {
           if (hourValue.charAt(0) == '0') hourValue = hourValue.charAt(1);
 
-          if (hourValue === "11") {
-            amPmValue = amPmValue === 'am' ? 'pm': 'am';
+          if (hourValue === '11') {
+            amPmValue = amPmValue === 'am' ? 'pm' : 'am';
           }
           hourValue = (parseInt(hourValue, 10) % 12) + 1;
 
@@ -690,8 +690,8 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
         if (cursorPosition > -1 && cursorPosition < 3) {
           if (hourValue.charAt(0) == '0') hourValue = hourValue.charAt(1);
 
-          if (hourValue === "12") {
-            amPmValue = amPmValue === 'am' ? 'pm': 'am';
+          if (hourValue === '12') {
+            amPmValue = amPmValue === 'am' ? 'pm' : 'am';
           }
 
           if (parseInt(hourValue, 10) == 1) {
@@ -1048,8 +1048,11 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
       }
 
       timezoneEl.id = divPrefix + 'timezoneCode';
-      zoneWrapper.appendChild(timezoneEl);
-      controlWidgetContainerEl.appendChild(zoneWrapper);
+
+      if (this.useCustomTimezone) {
+        zoneWrapper.appendChild(timezoneEl);
+        controlWidgetContainerEl.appendChild(zoneWrapper);
+      }
     }
 
     if (this.showNowLink && !this.readonly) {
