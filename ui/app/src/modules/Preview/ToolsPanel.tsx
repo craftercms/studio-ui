@@ -27,7 +27,6 @@ import {
   useSiteUIConfig
 } from '../../utils/hooks';
 import ResizeableDrawer from './ResizeableDrawer';
-import GlobalState from '../../models/GlobalState';
 import { renderWidgets, WidgetDescriptor } from '../../components/Widget';
 import { Resource } from '../../models/Resource';
 import { SuspenseWithEmptyState } from '../../components/SystemStatus/Suspencified';
@@ -69,12 +68,12 @@ export default function ToolsPanel() {
   const uiConfig = useSiteUIConfig();
   const baseUrl = useSelection<string>((state) => state.env.authoringBase);
 
-  const resource = useLogicResource<WidgetDescriptor[], GlobalState['uiConfig']>(uiConfig, {
-    errorSelector: (source) => source.error,
-    resultSelector: (source) => source.preview.toolsPanel.widgets,
-    shouldReject: (source) => Boolean(source.error),
-    shouldResolve: (source) => Boolean(source.preview.toolsPanel.widgets),
-    shouldRenew: (source, resource) => source.isFetching || resource.complete
+  const resource = useLogicResource<WidgetDescriptor[], WidgetDescriptor[]>(uiConfig.preview.toolsPanel.widgets, {
+    errorSelector: (source) => uiConfig.error,
+    resultSelector: (source) => source,
+    shouldReject: (source) => false,
+    shouldResolve: (source) => Boolean(source),
+    shouldRenew: (source, resource) => uiConfig.isFetching || resource.complete
   });
 
   return (
