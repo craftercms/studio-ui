@@ -22,13 +22,6 @@ import I18nProvider from '../components/I18nProvider';
 
 const useStyles = makeStyles(() =>
   createStyles({
-    '@global': {
-      'html, body, #root, #studioAppRootElement': {
-        margin: 0,
-        padding: 0,
-        height: '100%'
-      }
-    },
     root: {
       height: '100%',
       background: 'url("/studio/static-assets/images/cogs.jpg") 0 0 no-repeat',

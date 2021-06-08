@@ -25,11 +25,12 @@ import UnknownStateIcon from '@material-ui/icons/HelpOutlineRounded';
 import Tooltip from '@material-ui/core/Tooltip/Tooltip';
 import clsx from 'clsx';
 import * as React from 'react';
-import { getItemStateText } from '../ItemDisplay/utils';
+import { useMemo } from 'react';
+import { getItemStateId, getItemStateText } from '../ItemDisplay/utils';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import palette from '../../styles/palette';
 import { CSSProperties } from '@material-ui/styles';
-import { DetailedItem, SandboxItem } from '../../models/Item';
+import { DetailedItem, ItemStates, SandboxItem } from '../../models/Item';
 
 export type ItemStateIconClassKey =
   | 'root'
@@ -93,44 +94,36 @@ const useStyles = makeStyles(() =>
 export default function ItemStateIcon(props: ItemStateIconProps) {
   const { item, classes: propClasses, styles, className } = props;
   const classes = useStyles(styles);
-  let TheIcon = UnknownStateIcon;
-  let stateSpecificClass;
-  switch (true) {
-    // TODO: Check for changes when recycle bin is implemented
-    case item.stateMap.deleted:
-      TheIcon = DeletedStateIcon;
-      stateSpecificClass = classes.stateDeletedIcon;
-      break;
-    case item.stateMap.systemProcessing:
-      TheIcon = SystemProcessingStateIcon;
-      stateSpecificClass = classes.stateSystemProcessingIcon;
-      break;
-    case item.stateMap.locked:
-      TheIcon = LockedStateIcon;
-      stateSpecificClass = classes.stateLockedIcon;
-      break;
-    case item.stateMap.scheduled:
-      TheIcon = ScheduledStateIcon;
-      stateSpecificClass = classes.stateScheduledIcon;
-      break;
-    case item.stateMap.submitted:
-      TheIcon = SubmittedStateIcon;
-      stateSpecificClass = classes.stateSubmittedIcon;
-      break;
-    case item.stateMap.modified:
-      TheIcon = EditedStateIcon;
-      stateSpecificClass = classes.stateModifiedIcon;
-      break;
-    case item.stateMap.new:
-      TheIcon = NewStateIcon;
-      stateSpecificClass = classes.stateNewIcon;
-      break;
-  }
+  const { Icon, stateSpecificClass } = useMemo(() => {
+    let map: { [key in ItemStates]: any };
+    map = {
+      new: { Icon: NewStateIcon, stateSpecificClass: classes.stateNewIcon },
+      modified: { Icon: EditedStateIcon, stateSpecificClass: classes.stateModifiedIcon },
+      deleted: { Icon: DeletedStateIcon, stateSpecificClass: classes.stateDeletedIcon },
+      locked: { Icon: LockedStateIcon, stateSpecificClass: classes.stateLockedIcon },
+      systemProcessing: { Icon: SystemProcessingStateIcon, stateSpecificClass: classes.stateSystemProcessingIcon },
+      submitted: { Icon: SubmittedStateIcon, stateSpecificClass: classes.stateSubmittedIcon },
+      scheduled: { Icon: ScheduledStateIcon, stateSpecificClass: classes.stateScheduledIcon },
+      staged: null,
+      live: null,
+      translationUpToDate: null,
+      translationPending: null,
+      translationInProgress: null
+    };
+    return map[getItemStateId(item.stateMap)] ?? { Icon: UnknownStateIcon, stateSpecificClass: null };
+  }, [
+    classes.stateDeletedIcon,
+    classes.stateLockedIcon,
+    classes.stateModifiedIcon,
+    classes.stateNewIcon,
+    classes.stateScheduledIcon,
+    classes.stateSubmittedIcon,
+    classes.stateSystemProcessingIcon,
+    item.stateMap
+  ]);
   return (
     <Tooltip title={getItemStateText(item.stateMap)}>
-      <TheIcon
-        className={clsx(classes.root, propClasses?.root, className, classes.publishingIcon, stateSpecificClass)}
-      />
+      <Icon className={clsx(classes.root, propClasses?.root, className, classes.publishingIcon, stateSpecificClass)} />
     </Tooltip>
   );
 }

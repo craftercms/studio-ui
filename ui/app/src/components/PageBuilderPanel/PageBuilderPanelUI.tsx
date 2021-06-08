@@ -30,7 +30,7 @@ export interface PageBuilderPanelUIProps {
 export function PageBuilderPanelUI(props: PageBuilderPanelUIProps) {
   const { width, open, anchor = 'right', onWidthChange, widgets, userRolesInSite } = props;
   return (
-    <ResizeableDrawer open={open} anchor={anchor} width={width} onWidthChange={onWidthChange}>
+    <ResizeableDrawer open={open} belowToolbar anchor={anchor} width={width} onWidthChange={onWidthChange}>
       {renderWidgets(widgets, userRolesInSite)}
     </ResizeableDrawer>
   );

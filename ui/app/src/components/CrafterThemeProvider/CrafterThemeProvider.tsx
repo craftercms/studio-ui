@@ -54,6 +54,9 @@ export function CrafterThemeProvider(props: CrafterThemeProviderProps) {
         secondary: {
           main: prefersDarkMode ? palette.indigo.tint : palette.purple.tint
         },
+        action: {
+          selected: palette.blue.highlight
+        },
         ...props.themeOptions?.palette
       },
       overrides: extend(
