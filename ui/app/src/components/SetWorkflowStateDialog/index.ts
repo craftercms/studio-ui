@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './SetWorkflowStateDialog';
+export { default } from './SetItemStateDialog';
 
-export * from './SetWorkflowStateDialog';
+export * from './SetItemStateDialog';
 
-export * from './SetWorkFlowStateDialogContainer';
+export * from './SetItemStateDialogContainer';

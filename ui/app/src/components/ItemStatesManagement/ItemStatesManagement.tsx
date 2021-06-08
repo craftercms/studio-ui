@@ -17,12 +17,12 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import ApiResponse from '../../models/ApiResponse';
 import { useActiveSiteId, useDebouncedInput, useLogicResource, useSpreadState } from '../../utils/hooks';
-import { fetchItemStates, setItemStates, setItemStatesByQuery, StatesToUpdate } from '../../services/workflowStates';
+import { fetchItemStates, setItemStates, setItemStatesByQuery, StatesToUpdate } from '../../services/workflow';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import ItemStatesGridUI, { drawerWidth, ItemStatesGridSkeletonTable, states } from '../ItemStatesGrid';
-import SetWorkflowStateDialog from '../SetWorkflowStateDialog';
+import SetItemStateDialog from '../SetWorkflowStateDialog';
 import Button from '@material-ui/core/Button';
 import FilterListRoundedIcon from '@material-ui/icons/FilterListRounded';
 import { useStyles } from './styles';
@@ -32,7 +32,6 @@ import { getStateMask } from './utils';
 import { ItemStateMap, SandboxItem } from '../../models/Item';
 import { PagedArray } from '../../models/PagedArray';
 import Box from '@material-ui/core/Box';
-import PersistentDrawer from '../PersistentDrawer';
 import CloseIcon from '@material-ui/icons/Close';
 import TextField from '@material-ui/core/TextField';
 import FormControl from '@material-ui/core/FormControl';
@@ -46,6 +45,7 @@ import { getItemPublishingTargetText, getItemStateText } from '../ItemDisplay/ut
 import ItemStateIcon from '../ItemStateIcon';
 import ActionsBar from '../ActionsBar';
 import translations from './translations';
+import ResizeableDrawer from '../../modules/Preview/ResizeableDrawer';
 
 interface ItemStatesManagementProps {
   embedded?: boolean;
@@ -201,7 +201,7 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
     setSelectedItems({ ...selectedItems, ...selectedItemsOnPage });
   };
 
-  const onSetWorkflowStateDialogConfirm = (update: StatesToUpdate) => {
+  const onSetItemStateDialogConfirm = (update: StatesToUpdate) => {
     if (selectedItem) {
       setItemStates(siteId, [selectedItem.path], update).subscribe(() => {
         fetchStates();
@@ -224,7 +224,7 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
     setOpenSetStateDialog(false);
   };
 
-  const onSetWorkflowStateDialogClose = () => {
+  const onSetItemStateDialogClose = () => {
     setSelectedItem(null);
     setOpenSetStateDialog(false);
   };
@@ -330,12 +330,19 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
             onRowSelected={onRowSelected}
           />
         </SuspenseWithEmptyState>
-        <PersistentDrawer
+        <ResizeableDrawer
           open={openFiltersDrawer}
+          belowToolbar
           width={drawerWidth}
           anchor="right"
           styles={{
+            drawerBody: {
+              overflowY: 'inherit'
+            },
             drawerPaper: {
+              overflow: 'inherit'
+            },
+            drawerPaperBelowToolbar: {
               top: drawerTopPosition,
               transition: 'top 250ms ease-out 0ms'
             }
@@ -423,9 +430,9 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
               </FormGroup>
             </FormControl>
           </form>
-        </PersistentDrawer>
+        </ResizeableDrawer>
       </Box>
-      <SetWorkflowStateDialog
+      <SetItemStateDialog
         title={
           <FormattedMessage
             id="workflowStates.setState"
@@ -437,8 +444,8 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
           />
         }
         open={openSetStateDialog}
-        onClose={onSetWorkflowStateDialogClose}
-        onConfirm={onSetWorkflowStateDialogConfirm}
+        onClose={onSetItemStateDialogClose}
+        onConfirm={onSetItemStateDialogConfirm}
       />
     </section>
   );

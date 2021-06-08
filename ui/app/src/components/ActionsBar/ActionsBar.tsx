@@ -22,7 +22,6 @@ import { getPossibleTranslation } from '../../utils/i18n';
 import clsx from 'clsx';
 import Button from '@material-ui/core/Button';
 import TranslationOrText from '../../models/TranslationOrText';
-import palette from '../../styles/palette';
 
 const styles = makeStyles((theme) =>
   createStyles({
@@ -31,7 +30,7 @@ const styles = makeStyles((theme) =>
     },
     itemHeader: {
       display: 'flex',
-      background: palette.blue.highlight
+      background: theme.palette.action.selected
     },
     checkbox: {
       color: theme.palette.primary.main,

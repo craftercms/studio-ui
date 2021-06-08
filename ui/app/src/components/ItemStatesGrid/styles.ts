@@ -15,7 +15,6 @@
  */
 
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import palette from '../../styles/palette';
 
 export const useStyles = makeStyles((theme) =>
   createStyles({
@@ -26,7 +25,7 @@ export const useStyles = makeStyles((theme) =>
       whiteSpace: 'nowrap'
     },
     rowSelected: {
-      backgroundColor: palette.blue.highlight
+      backgroundColor: theme.palette.action.selected
     },
     iconRoot: {
       fontSize: '1em'

@@ -16,10 +16,10 @@
 
 import React from 'react';
 import Dialog from '@material-ui/core/Dialog';
-import { SetWorkflowStateDialogContainer } from './SetWorkFlowStateDialogContainer';
-import { StatesToUpdate } from '../../services/workflowStates';
+import { SetItemStateDialogContainer } from './SetItemStateDialogContainer';
+import { StatesToUpdate } from '../../services/workflow';
 
-export interface SetWorkflowStateDialogProps {
+export interface SetItemStateDialogProps {
   open: boolean;
   title: React.ReactNode;
   onClose(): void;
@@ -27,11 +27,11 @@ export interface SetWorkflowStateDialogProps {
   onConfirm(update: StatesToUpdate): void;
 }
 
-export default function SetWorkflowStateDialog(props: SetWorkflowStateDialogProps) {
+export default function SetItemStateDialog(props: SetItemStateDialogProps) {
   const { open, onClose } = props;
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <SetWorkflowStateDialogContainer {...props} />
+      <SetItemStateDialogContainer {...props} />
     </Dialog>
   );
 }

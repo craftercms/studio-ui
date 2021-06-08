@@ -19,7 +19,7 @@ import DialogHeader from '../Dialogs/DialogHeader';
 import { FormattedMessage } from 'react-intl';
 import DialogBody from '../Dialogs/DialogBody';
 import React from 'react';
-import { SetWorkflowStateDialogProps } from './SetWorkflowStateDialog';
+import { SetItemStateDialogProps } from './SetItemStateDialog';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
@@ -31,7 +31,7 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import { CSSProperties } from '@material-ui/styles';
 
-export function SetWorkflowStateDialogContainer(props: SetWorkflowStateDialogProps) {
+export function SetItemStateDialogContainer(props: SetItemStateDialogProps) {
   const { onClose, onClosed, title } = props;
   const classes = useStyles();
   const [update, setUpdate] = useSpreadState({
