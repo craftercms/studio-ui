@@ -24,7 +24,7 @@ import GlobalAppGridRow from '../GlobalAppGridRow';
 import GlobalAppGridCell from '../GlobalAppGridCell';
 import Typography from '@material-ui/core/Typography/Typography';
 import { FormattedMessage } from 'react-intl';
-import { Box, IconButton, TableBody } from '@material-ui/core';
+import { Box, Collapse, IconButton, TableBody } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMoreRounded';
 import { LegacyItem } from '../../models/Item';
 
@@ -81,16 +81,31 @@ export default function DashboardItemsApprovalGridUI(props: DashboardItemsApprov
         </TableHead>
         <TableBody>
           {items.map((item, i) => (
-            <GlobalAppGridRow key={i} onClick={() => {}}>
-              <GlobalAppGridCell colSpan={7}>
-                <Box display="flex">
-                  <IconButton size="small">
-                    <ExpandMoreIcon />
-                  </IconButton>
-                  <Typography>{item.name}</Typography>
-                </Box>
-              </GlobalAppGridCell>
-            </GlobalAppGridRow>
+            <>
+              <GlobalAppGridRow key={i} onClick={() => {}}>
+                <GlobalAppGridCell colSpan={7}>
+                  <Box display="flex">
+                    <IconButton size="small">
+                      <ExpandMoreIcon />
+                    </IconButton>
+                    <Typography>{item.name}</Typography>
+                  </Box>
+                </GlobalAppGridCell>
+              </GlobalAppGridRow>
+              <Collapse in={true}>
+                {item.children.map((item) => (
+                  <GlobalAppGridRow>
+                    <GlobalAppGridCell>{item.name}</GlobalAppGridCell>
+                    <GlobalAppGridCell>view</GlobalAppGridCell>
+                    <GlobalAppGridCell>{item.uri}</GlobalAppGridCell>
+                    <GlobalAppGridCell>target</GlobalAppGridCell>
+                    <GlobalAppGridCell>11111</GlobalAppGridCell>
+                    <GlobalAppGridCell>editedBy</GlobalAppGridCell>
+                    <GlobalAppGridCell>lastEdited</GlobalAppGridCell>
+                  </GlobalAppGridRow>
+                ))}
+              </Collapse>
+            </>
           ))}
         </TableBody>
       </Table>
