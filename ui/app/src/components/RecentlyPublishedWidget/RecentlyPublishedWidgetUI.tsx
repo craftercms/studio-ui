@@ -26,14 +26,32 @@ import { FormattedMessage } from 'react-intl';
 import Typography from '@material-ui/core/Typography';
 import { Resource } from '../../models/Resource';
 import { LegacyDeploymentHistoryResponse } from '../../models/Dashboard';
+import IconButton from '@material-ui/core/IconButton';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandLessIcon from '@material-ui/icons/ExpandLess';
+import GlobalState from '../../models/GlobalState';
+import LookupTable from '../../models/LookupTable';
+import Collapse from '@material-ui/core/Collapse';
+import { useStyles } from './RecentlyPublishedWidget';
+import TableRow from '@material-ui/core/TableRow';
 
 export interface RecentlyPublishedWidgetUIProps {
   resource: Resource<LegacyDeploymentHistoryResponse>;
+  localeBranch: GlobalState['uiConfig']['locale'];
+  expandedItems: LookupTable<boolean>;
+  setExpandedItems(itemExpanded): void;
 }
 
 export default function RecentlyPublishedWidgetUi(props: RecentlyPublishedWidgetUIProps) {
-  const { resource } = props;
+  const { resource, expandedItems, setExpandedItems } = props;
   const history = resource.read();
+  const classes = useStyles();
+
+  console.log('history', history);
+
+  const toggleExpand = (name) => {
+    setExpandedItems({ [name]: !expandedItems[name] });
+  };
 
   return (
     <TableContainer>
@@ -46,11 +64,6 @@ export default function RecentlyPublishedWidgetUi(props: RecentlyPublishedWidget
             <GlobalAppGridCell>
               <Typography variant="subtitle2">
                 <FormattedMessage id="recentlyPublished.itemName" defaultMessage="Item Name" />
-              </Typography>
-            </GlobalAppGridCell>
-            <GlobalAppGridCell>
-              <Typography variant="subtitle2">
-                <FormattedMessage id="words.edit" defaultMessage="Edit" />
               </Typography>
             </GlobalAppGridCell>
             <GlobalAppGridCell>
@@ -76,9 +89,36 @@ export default function RecentlyPublishedWidgetUi(props: RecentlyPublishedWidget
           </GlobalAppGridRow>
         </TableHead>
         <TableBody>
-          <GlobalAppGridRow>
-            <GlobalAppGridCell></GlobalAppGridCell>
-          </GlobalAppGridRow>
+          {history.documents.map((document) => (
+            <>
+              <GlobalAppGridRow key={document.internalName} onClick={() => toggleExpand(document.internalName)}>
+                <GlobalAppGridCell colSpan={7}>
+                  <IconButton size="small">
+                    {expandedItems[document.internalName] ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                  </IconButton>
+                  {document.internalName}
+                </GlobalAppGridCell>
+              </GlobalAppGridRow>
+              <TableRow hover={false}>
+                <GlobalAppGridCell colSpan={6} className={classes.collapseCell}>
+                  <Collapse in={expandedItems[document.internalName]}>
+                    <Table size="small">
+                      <TableBody>
+                        {document.children.map((item) => (
+                          <GlobalAppGridRow>
+                            <GlobalAppGridCell>
+                              <Checkbox />
+                            </GlobalAppGridCell>
+                            <GlobalAppGridCell>{item.name}</GlobalAppGridCell>
+                          </GlobalAppGridRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </Collapse>
+                </GlobalAppGridCell>
+              </TableRow>
+            </>
+          ))}
         </TableBody>
       </Table>
     </TableContainer>

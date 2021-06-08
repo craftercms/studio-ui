@@ -14,11 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import RecentlyPublishedWidgetUI from './RecentlyPublishedWidgetUI';
 import ApiResponse from '../../models/ApiResponse';
 import { LegacyDeploymentHistoryResponse, LegacyDeploymentHistoryType } from '../../models/Dashboard';
-import { useActiveSiteId, useLogicResource } from '../../utils/hooks';
+import { useActiveSiteId, useLocale, useLogicResource, useSpreadState } from '../../utils/hooks';
 import { fetchLegacyDeploymentHistory } from '../../services/dashboard';
 import Paper from '@material-ui/core/Paper';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
@@ -28,8 +28,27 @@ import AccordionDetails from '@material-ui/core/AccordionDetails';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { FormattedMessage } from 'react-intl';
+import SecondaryButton from '../SecondaryButton';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 
 export interface RecentlyPublishedWidgetProps {}
+
+export const useStyles = makeStyles((theme) =>
+  createStyles({
+    summary: {
+      alignItems: 'center'
+    },
+    options: {
+      marginLeft: 'auto',
+      '& > button:first-child': {
+        marginRight: '10px'
+      }
+    },
+    collapseCell: {
+      padding: '0 !important'
+    }
+  })
+);
 
 export default function RecentlyPublishedWidget(props: RecentlyPublishedWidgetProps) {
   const [expandedWidget, setExpandedWidget] = useState(true);
@@ -38,21 +57,41 @@ export default function RecentlyPublishedWidget(props: RecentlyPublishedWidgetPr
   const [history, setHistory] = useState<LegacyDeploymentHistoryResponse>();
   const [filterBy, setFilterBy] = useState<LegacyDeploymentHistoryType>('page');
   const [numItems, setNumItems] = useState(20);
+  const [expandedItems, setExpandedItems] = useSpreadState({});
   const siteId = useActiveSiteId();
+  const localeBranch = useLocale();
+  const classes = useStyles();
+
+  const toggleCollapseAllItems = useCallback(
+    (documents, expanded) => {
+      documents.forEach((document) => {
+        setExpandedItems({
+          [document.internalName]: expanded
+        });
+      });
+    },
+    [setExpandedItems]
+  );
 
   useEffect(() => {
     setFetchingHistory(true);
     fetchLegacyDeploymentHistory(siteId, 'eventDate', false, 30, numItems, filterBy).subscribe(
       (history) => {
-        setFetchingHistory(false);
         setHistory(history);
+        toggleCollapseAllItems(history.documents, true);
+        setFetchingHistory(false);
       },
       (e) => {
         setErrorHistory(e);
         setFetchingHistory(false);
       }
     );
-  }, [siteId, filterBy, numItems]); // TODO: pagination pending
+  }, [siteId, filterBy, numItems, toggleCollapseAllItems]); // TODO: pagination pending
+
+  const onCollapseAll = (e) => {
+    e.stopPropagation();
+    toggleCollapseAllItems(history.documents, false);
+  };
 
   const resource = useLogicResource<
     LegacyDeploymentHistoryResponse,
@@ -75,10 +114,15 @@ export default function RecentlyPublishedWidget(props: RecentlyPublishedWidgetPr
   return (
     <Paper elevation={2}>
       <Accordion expanded={expandedWidget} onChange={() => setExpandedWidget(!expandedWidget)}>
-        <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
+        <AccordionSummary expandIcon={<ExpandMoreIcon />} classes={{ content: classes.summary }}>
           <Typography variant="body1">
             <FormattedMessage id="recentlyPublished.title" defaultMessage="Recently Published" />
           </Typography>
+          <section className={classes.options}>
+            <SecondaryButton onClick={onCollapseAll}>
+              <FormattedMessage id="recentlyPublished.collapseAll" defaultMessage="Collapse All" />
+            </SecondaryButton>
+          </section>
         </AccordionSummary>
         <AccordionDetails>
           <SuspenseWithEmptyState
@@ -87,7 +131,12 @@ export default function RecentlyPublishedWidget(props: RecentlyPublishedWidgetPr
               fallback: <></> // TODO: skeleton
             }}
           >
-            <RecentlyPublishedWidgetUI resource={resource} />
+            <RecentlyPublishedWidgetUI
+              resource={resource}
+              localeBranch={localeBranch}
+              expandedItems={expandedItems}
+              setExpandedItems={setExpandedItems}
+            />
           </SuspenseWithEmptyState>
         </AccordionDetails>
       </Accordion>
