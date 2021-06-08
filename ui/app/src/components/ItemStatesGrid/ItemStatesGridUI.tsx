@@ -37,6 +37,7 @@ export interface WorkflowStatesGridUIProps {
   resource: Resource<PagedArray<SandboxItem>>;
   rowsPerPageOptions?: number[];
   selectedItems: LookupTable<SandboxItem>;
+  allItemsSelected: boolean;
   onToggleSelectedItems(): void;
   onItemSelected(item: SandboxItem, value: boolean): void;
   onChangePage(page: number): void;
@@ -67,7 +68,8 @@ export default function ItemStatesGridUI(props: WorkflowStatesGridUIProps) {
     selectedItems,
     onItemSelected,
     onRowSelected,
-    onToggleSelectedItems
+    onToggleSelectedItems,
+    allItemsSelected
   } = props;
   const itemStates = resource.read();
   const classes = useStyles();
@@ -113,11 +115,11 @@ export default function ItemStatesGridUI(props: WorkflowStatesGridUIProps) {
               <GlobalAppGridRow
                 key={item.id}
                 onClick={() => onRowSelected(item)}
-                className={clsx(Boolean(selectedItems[item.path]) && classes.rowSelected)}
+                className={clsx((Boolean(selectedItems[item.path]) || allItemsSelected) && classes.rowSelected)}
               >
                 <GlobalAppGridCell align="center" className="padded10">
                   <Checkbox
-                    checked={Boolean(selectedItems[item.path])}
+                    checked={allItemsSelected || Boolean(selectedItems[item.path])}
                     onClick={(e) => {
                       e.stopPropagation();
                     }}

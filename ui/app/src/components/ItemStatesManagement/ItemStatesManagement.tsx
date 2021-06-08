@@ -159,8 +159,19 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
     setLimit(e.target.value);
   };
 
-  const onItemSelected = (item: SandboxItem, value: boolean) => {
-    setSelectedItems({ ...selectedItems, [item.path]: value ? item : null });
+  const onItemSelected = (selectedItem: SandboxItem, value: boolean) => {
+    if (isSelectedItemsOnAllPages) {
+      const selectedItemsOnPage = {};
+      setIsSelectedItemsOnAllPages(false);
+      items.forEach((item) => {
+        if (item.path !== selectedItem.path) {
+          selectedItemsOnPage[item.path] = true;
+        }
+      });
+      setSelectedItems({ ...selectedItems, ...selectedItemsOnPage });
+    } else {
+      setSelectedItems({ ...selectedItems, [selectedItem.path]: value ? selectedItem : null });
+    }
   };
 
   const onRowSelected = (item: SandboxItem) => {
@@ -186,13 +197,17 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
   };
 
   const onToggleSelectAllItems = () => {
-    const selectedItemsOnPage = {};
-    if (isThisPageIndeterminate) {
-      items.forEach((item) => (selectedItemsOnPage[item.path] = true));
+    if (isSelectedItemsOnAllPages) {
+      setIsSelectedItemsOnAllPages(false);
     } else {
-      items.forEach((item) => (selectedItemsOnPage[item.path] = null));
+      const selectedItemsOnPage = {};
+      if (isThisPageIndeterminate) {
+        items.forEach((item) => (selectedItemsOnPage[item.path] = true));
+      } else {
+        items.forEach((item) => (selectedItemsOnPage[item.path] = null));
+      }
+      setSelectedItems({ ...selectedItems, ...selectedItemsOnPage });
     }
-    setSelectedItems({ ...selectedItems, ...selectedItemsOnPage });
   };
 
   const onToggleSelectedItemsOnPage = () => {
@@ -236,12 +251,6 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
       };
     }
   }, []);
-
-  useEffect(() => {
-    if (selectedItemsLength) {
-      setIsSelectedItemsOnAllPages(false);
-    }
-  }, [selectedItemsLength]);
 
   return (
     <section ref={rootRef} className={classes.root}>
@@ -297,7 +306,7 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
                   ])
             ]}
             isIndeterminate={hasThisPageItemsChecked ? isThisPageIndeterminate : false}
-            isChecked={hasThisPageItemsChecked}
+            isChecked={isSelectedItemsOnAllPages || hasThisPageItemsChecked}
             onOptionClicked={onOptionClicked}
             toggleSelectAll={onToggleSelectAllItems}
           />
@@ -323,6 +332,7 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
             resource={resource}
             rowsPerPageOptions={[5, 10, 15]}
             selectedItems={selectedItems}
+            allItemsSelected={isSelectedItemsOnAllPages}
             onItemSelected={onItemSelected}
             onToggleSelectedItems={onToggleSelectedItemsOnPage}
             onChangePage={onChangePage}
