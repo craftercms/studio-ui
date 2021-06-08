@@ -24,9 +24,12 @@ import GlobalAppGridRow from '../GlobalAppGridRow';
 import GlobalAppGridCell from '../GlobalAppGridCell';
 import Typography from '@material-ui/core/Typography/Typography';
 import { FormattedMessage } from 'react-intl';
+import { Box, IconButton, TableBody } from '@material-ui/core';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMoreRounded';
+import { LegacyItem } from '../../models/Item';
 
 interface DashboardItemsApprovalGridUIProps {
-  resource: Resource<any>;
+  resource: Resource<LegacyItem[]>;
 }
 
 export default function DashboardItemsApprovalGridUI(props: DashboardItemsApprovalGridUIProps) {
@@ -76,6 +79,20 @@ export default function DashboardItemsApprovalGridUI(props: DashboardItemsApprov
             </GlobalAppGridCell>
           </GlobalAppGridRow>
         </TableHead>
+        <TableBody>
+          {items.map((item, i) => (
+            <GlobalAppGridRow key={i} onClick={() => {}}>
+              <GlobalAppGridCell colSpan={7}>
+                <Box display="flex">
+                  <IconButton size="small">
+                    <ExpandMoreIcon />
+                  </IconButton>
+                  <Typography>{item.name}</Typography>
+                </Box>
+              </GlobalAppGridCell>
+            </GlobalAppGridRow>
+          ))}
+        </TableBody>
       </Table>
     </TableContainer>
   );
