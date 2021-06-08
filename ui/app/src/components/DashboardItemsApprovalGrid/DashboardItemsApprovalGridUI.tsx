@@ -92,19 +92,27 @@ export default function DashboardItemsApprovalGridUI(props: DashboardItemsApprov
                   </Box>
                 </GlobalAppGridCell>
               </GlobalAppGridRow>
-              <Collapse in={true}>
-                {item.children.map((item) => (
-                  <GlobalAppGridRow>
-                    <GlobalAppGridCell>{item.name}</GlobalAppGridCell>
-                    <GlobalAppGridCell>view</GlobalAppGridCell>
-                    <GlobalAppGridCell>{item.uri}</GlobalAppGridCell>
-                    <GlobalAppGridCell>target</GlobalAppGridCell>
-                    <GlobalAppGridCell>11111</GlobalAppGridCell>
-                    <GlobalAppGridCell>editedBy</GlobalAppGridCell>
-                    <GlobalAppGridCell>lastEdited</GlobalAppGridCell>
-                  </GlobalAppGridRow>
-                ))}
-              </Collapse>
+              <GlobalAppGridRow>
+                <GlobalAppGridCell colSpan={7}>
+                  <Collapse in={true}>
+                    <Table>
+                      <TableBody>
+                        {item.children.map((item) => (
+                          <GlobalAppGridRow>
+                            <GlobalAppGridCell>{item.name}</GlobalAppGridCell>
+                            <GlobalAppGridCell>view</GlobalAppGridCell>
+                            <GlobalAppGridCell>{item.uri}</GlobalAppGridCell>
+                            <GlobalAppGridCell>target</GlobalAppGridCell>
+                            <GlobalAppGridCell>11111</GlobalAppGridCell>
+                            <GlobalAppGridCell>editedBy</GlobalAppGridCell>
+                            <GlobalAppGridCell>lastEdited</GlobalAppGridCell>
+                          </GlobalAppGridRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </Collapse>
+                </GlobalAppGridCell>
+              </GlobalAppGridRow>
             </>
           ))}
         </TableBody>
