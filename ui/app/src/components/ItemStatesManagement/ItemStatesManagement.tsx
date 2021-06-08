@@ -165,7 +165,7 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
       setIsSelectedItemsOnAllPages(false);
       items.forEach((item) => {
         if (item.path !== selectedItem.path) {
-          selectedItemsOnPage[item.path] = true;
+          selectedItemsOnPage[item.path] = item;
         }
       });
       setSelectedItems({ ...selectedItems, ...selectedItemsOnPage });
@@ -202,7 +202,7 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
     } else {
       const selectedItemsOnPage = {};
       if (isThisPageIndeterminate) {
-        items.forEach((item) => (selectedItemsOnPage[item.path] = true));
+        items.forEach((item) => (selectedItemsOnPage[item.path] = item));
       } else {
         items.forEach((item) => (selectedItemsOnPage[item.path] = null));
       }
@@ -212,7 +212,7 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
 
   const onToggleSelectedItemsOnPage = () => {
     const selectedItemsOnPage = {};
-    items.forEach((item) => (selectedItemsOnPage[item.path] = true));
+    items.forEach((item) => (selectedItemsOnPage[item.path] = item));
     setSelectedItems({ ...selectedItems, ...selectedItemsOnPage });
   };
 
@@ -446,9 +446,9 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
         title={
           <FormattedMessage
             id="workflowStates.setState"
-            defaultMessage='{count, plural, one {Set State for "{name}"} other {Set State for Items}}'
+            defaultMessage='{count, plural, one {Set State for "{name}"} other {Set State for Items ({count})}}'
             values={{
-              count: selectedItem ? 1 : selectedItemsLength,
+              count: selectedItem ? 1 : isSelectedItemsOnAllPages ? items?.total : selectedItemsLength,
               name: selectedItem?.label
             }}
           />
