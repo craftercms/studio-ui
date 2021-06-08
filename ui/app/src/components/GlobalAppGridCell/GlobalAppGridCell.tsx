@@ -20,9 +20,6 @@ import TableCell from '@material-ui/core/TableCell';
 const GlobalAppGridCell = withStyles((theme: Theme) =>
   createStyles({
     root: {
-      padding: '4px',
-      borderBottom: 0,
-      height: '56px',
       '&.avatar': {
         padding: 0,
         width: '60px'
