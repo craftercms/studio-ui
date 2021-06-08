@@ -64,7 +64,6 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
   const [debouncePathRegex, setDebouncePathRegex] = useState('');
   const [offset, setOffset] = useState(0);
   const [limit, setLimit] = useState(10);
-  const [drawerTopPosition, setDrawerTopPosition] = useState(64);
   const [selectedItems, setSelectedItems] = useState<LookupTable<SandboxItem>>({});
   const [selectedItem, setSelectedItem] = useState<SandboxItem>(null);
   const [isSelectedItemsOnAllPages, setIsSelectedItemsOnAllPages] = useState(false);
@@ -244,14 +243,6 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
     setOpenSetStateDialog(false);
   };
 
-  useEffect(() => {
-    if (rootRef.current) {
-      rootRef.current.onscroll = () => {
-        setDrawerTopPosition(rootRef.current.scrollTop > 64 ? 0 : 64 - rootRef.current.scrollTop);
-      };
-    }
-  }, []);
-
   return (
     <section ref={rootRef} className={classes.root}>
       <GlobalAppToolbar
@@ -275,7 +266,7 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
         display="flex"
         flexDirection="column"
         flexGrow={1}
-        width={`calc(100% - ${openFiltersDrawer ? drawerWidth : 0}px)`}
+        paddingRight={openFiltersDrawer ? `${drawerWidth}px` : 0}
         className={classes.wrapper}
         position="relative"
       >
@@ -342,7 +333,6 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
         </SuspenseWithEmptyState>
         <ResizeableDrawer
           open={openFiltersDrawer}
-          belowToolbar
           width={drawerWidth}
           anchor="right"
           styles={{
@@ -350,11 +340,8 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
               overflowY: 'inherit'
             },
             drawerPaper: {
-              overflow: 'inherit'
-            },
-            drawerPaperBelowToolbar: {
-              top: drawerTopPosition,
-              transition: 'top 250ms ease-out 0ms'
+              overflow: 'inherit',
+              position: 'absolute'
             }
           }}
           classes={{

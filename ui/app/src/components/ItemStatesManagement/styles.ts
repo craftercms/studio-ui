@@ -35,7 +35,7 @@ export const useStyles = makeStyles((theme) =>
       margin: '10px 12px'
     },
     wrapper: {
-      transition: theme.transitions.create('width', {
+      transition: theme.transitions.create('padding-right', {
         easing: theme.transitions.easing.easeOut,
         duration: theme.transitions.duration.enteringScreen
       })
