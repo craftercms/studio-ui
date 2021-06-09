@@ -104,7 +104,7 @@ export default function DashboardItemsApprovalGridUI(props: DashboardItemsApprov
               </GlobalAppGridRow>
               <GlobalAppGridRow className="hoverDisabled">
                 <GlobalAppGridCell colSpan={8} className="padded0">
-                  <Collapse in={expandedLookup[item.uri] ?? false}>
+                  <Collapse in={expandedLookup[item.uri]}>
                     <Table size="small" className={classes.tableRoot}>
                       <TableBody>
                         {item.children.map((item, i) => (
