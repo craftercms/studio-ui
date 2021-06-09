@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import UnknownStateIcon from '@material-ui/core/SvgIcon/SvgIcon';
+import UnknownStateIcon from '@material-ui/icons/HelpOutlineRounded';
 import Js from '../Icons/Js';
 import JsonIcon from '../Icons/Json';
 import Groovy from '../Icons/Groovy';

@@ -40,6 +40,7 @@ import ContentTypeManagement from '../ContentTypesManagement';
 import LauncherOpenerButton from '../LauncherOpenerButton';
 import CrafterCMSLogo from '../Icons/CrafterCMSLogo';
 import RemoteRepositoriesManagement from '../RemoteRepositoriesManagement';
+import ItemStatesManagement from '../ItemStatesManagement';
 
 interface SiteToolsAppProps {
   footerHtml: string;
@@ -104,13 +105,13 @@ export default function SiteToolsApp(props: SiteToolsAppProps) {
           />
         </footer>
       </ResizeableDrawer>
-      <Box height="100%" width="100%" paddingLeft={openSidebar ? `${width}px` : 0}>
+      <Box className={classes.wrapper} height="100%" width="100%" paddingLeft={openSidebar ? `${width}px` : 0}>
         <Switch>
           <Route path="/content-types" component={ContentTypeManagement} />
           <Route path="/encrypt-tool" component={SiteEncryptTool} />
           <Route path="/configuration" component={SiteConfigurationManagement} />
           <Route path="/audit" component={SiteAuditManagement} />
-          <Route path="/item-states" component={SiteEncryptTool} />
+          <Route path="/item-states" component={ItemStatesManagement} />
           <Route path="/log" render={() => <LogConsole logType="preview" />} />
           <Route path="/publishing" component={PublishingDashboard} />
           <Route path="/remote-repositories" component={RemoteRepositoriesManagement} />
