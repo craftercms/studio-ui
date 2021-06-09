@@ -15,12 +15,11 @@
  */
 
 import React, { ElementType, PropsWithChildren } from 'react';
-import Accordion from '@material-ui/core/Accordion';
+import Accordion, { AccordionProps } from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMoreRounded';
 import useStyles from './styles';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
-import { AccordionProps } from '@material-ui/core/Accordion/Accordion';
 import Typography from '@material-ui/core/Typography';
 
 export type DashletProps = PropsWithChildren<
@@ -30,23 +29,14 @@ export type DashletProps = PropsWithChildren<
     expanded: boolean;
     icon?: ElementType;
     onToggleExpanded(): void;
-    accordionProps?: AccordionProps;
   }
 >;
 
 export default function Dashlet(props: DashletProps) {
-  const {
-    expanded,
-    icon: Icon = ExpandMoreIcon,
-    title,
-    headerRightSection,
-    onToggleExpanded,
-    children,
-    ...rest
-  } = props;
+  const { icon: Icon = ExpandMoreIcon, title, headerRightSection, onToggleExpanded, children, ...rest } = props;
   const classes = useStyles();
   return (
-    <Accordion expanded={expanded} {...rest}>
+    <Accordion {...rest}>
       <AccordionSummary expandIcon={<Icon />} classes={{ content: classes.summary }} onClick={onToggleExpanded}>
         <Typography>{title}</Typography>
         {headerRightSection && <section className={classes.rightSection}>{headerRightSection}</section>}
