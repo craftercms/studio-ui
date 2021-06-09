@@ -17,7 +17,7 @@
 import '../styles/index.scss';
 
 import React, { PropsWithChildren, ReactNode, Suspense, useLayoutEffect, useState } from 'react';
-import { makeStyles, ThemeOptions } from '@material-ui/core/styles';
+import { createStyles, makeStyles, ThemeOptions } from '@material-ui/core/styles';
 import { setRequestForgeryToken } from '../utils/auth';
 import { CrafterCMSStore, getStore } from '../state/store';
 import GlobalDialogManager from './SystemStatus/GlobalDialogManager';
@@ -32,11 +32,13 @@ import SnackbarCloseButton from './SnackbarCloseButton';
 import LegacyConcierge from './LegacyConcierge';
 import { GenerateId } from 'jss';
 
-const useStyles = makeStyles({
-  topSnackbar: {
-    top: '80px'
-  }
-});
+const useStyles = makeStyles(() =>
+  createStyles({
+    topSnackbar: {
+      top: '80px'
+    }
+  })
+);
 
 function Bridge(
   props: PropsWithChildren<{
@@ -73,8 +75,11 @@ function Bridge(
               action={(id) => <SnackbarCloseButton id={id} />}
               children={body}
               classes={{
-                containerAnchorOriginTopRight: classes.topSnackbar,
-                containerAnchorOriginTopLeft: classes.topSnackbar
+                // TODO: For some reason, these classes are not getting applied by notistack.
+                // containerAnchorOriginTopRight: classes.topSnackbar,
+                // containerAnchorOriginTopLeft: classes.topSnackbar,
+                // containerAnchorOriginTopCenter: classes.topSnackbar,
+                containerRoot: classes.topSnackbar
               }}
             />
           ) : (
