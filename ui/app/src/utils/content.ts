@@ -229,7 +229,7 @@ export function parseLegacyItemToSandBoxItem(item: LegacyItem | LegacyItem[]): S
     creator: null,
     dateCreated: null,
     modifier: item.user,
-    dateModified: null,
+    dateModified: item.lastEditDate,
     commitId: null,
     sizeInBytes: null
   };
@@ -249,7 +249,7 @@ export function parseLegacyItemToDetailedItem(item: LegacyItem | LegacyItem[]): 
       creator: null,
       dateCreated: null,
       modifier: item.user,
-      dateModified: null,
+      dateModified: item.lastEditDate,
       commitId: null,
       sizeInBytes: null
     },

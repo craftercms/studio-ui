@@ -29,11 +29,11 @@ export function getStoredGlobalMenuSiteViewPreference(user: string): 'grid' | 'l
 
 export function getStateMapFromLegacyItem(item: LegacyItem): ItemStateMap {
   return {
-    live: false,
+    live: item.endpoint === 'live',
     locked: false,
     modified: false,
-    new: false,
-    staged: false,
+    new: item.isNew,
+    staged: item.endpoint === 'live' || item.endpoint === 'staged',
     systemProcessing: false,
     translationInProgress: false,
     translationPending: false,

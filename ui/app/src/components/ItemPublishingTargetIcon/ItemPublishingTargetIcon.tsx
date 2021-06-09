@@ -44,13 +44,13 @@ const useStyles = makeStyles(() =>
       color: palette.gray.medium2,
       ...styles.root
     }),
-    publishingTargetLive: (styles) => ({
-      color: palette.green.main,
-      ...styles.publishingTargetLive
-    }),
     publishingTargetStaged: (styles) => ({
       color: palette.blue.main,
       ...styles.publishingTargetStaged
+    }),
+    publishingTargetLive: (styles) => ({
+      color: palette.green.main,
+      ...styles.publishingTargetLive
     }),
     publishingIcon: (styles) => ({
       ...styles.publishingIcon
