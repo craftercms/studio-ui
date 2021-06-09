@@ -21,6 +21,11 @@ const GlobalAppGridCell = withStyles((theme: Theme) =>
   createStyles({
     root: {
       borderBottom: 0,
+      '&.checkbox': {
+        width: '52px',
+        textAlign: 'center',
+        padding: 0
+      },
       '&.avatar': {
         padding: 0,
         width: '60px'
@@ -39,8 +44,14 @@ const GlobalAppGridCell = withStyles((theme: Theme) =>
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap'
       },
+      '&.padded0': {
+        padding: 0
+      },
       '&.padded10': {
         padding: '10px 16px'
+      },
+      '&.expandableCell': {
+        paddingLeft: '10'
       },
       '&.paddedLeft': {
         paddingLeft: '20px'
