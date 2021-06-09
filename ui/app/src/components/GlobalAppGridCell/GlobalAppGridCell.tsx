@@ -20,9 +20,12 @@ import TableCell from '@material-ui/core/TableCell';
 const GlobalAppGridCell = withStyles((theme: Theme) =>
   createStyles({
     root: {
-      padding: '4px',
       borderBottom: 0,
-      height: '56px',
+      '&.checkbox': {
+        width: '52px',
+        textAlign: 'center',
+        padding: 0
+      },
       '&.avatar': {
         padding: 0,
         width: '60px'
@@ -41,14 +44,23 @@ const GlobalAppGridCell = withStyles((theme: Theme) =>
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap'
       },
+      '&.padded0': {
+        padding: 0
+      },
       '&.padded10': {
         padding: '10px 16px'
+      },
+      '&.expandableCell': {
+        paddingLeft: '0'
       },
       '&.paddedLeft': {
         paddingLeft: '20px'
       },
       '&.width10': {
         width: '10%'
+      },
+      '&.width15': {
+        width: '15%'
       },
       '&.width20': {
         width: '20%'
@@ -59,14 +71,44 @@ const GlobalAppGridCell = withStyles((theme: Theme) =>
       '&.width30': {
         width: '30%'
       },
+      '&.width35': {
+        width: '35%'
+      },
       '&.width40': {
         width: '40%'
+      },
+      '&.width45': {
+        width: '45%'
       },
       '&.width50': {
         width: '50%'
       },
+      '&.width55': {
+        width: '55%'
+      },
       '&.width60': {
         width: '60%'
+      },
+      '&.width65': {
+        width: '65%'
+      },
+      '&.width70': {
+        width: '70%'
+      },
+      '&.width75': {
+        width: '75%'
+      },
+      '&.width80': {
+        width: '80%'
+      },
+      '&.width85': {
+        width: '85%'
+      },
+      '&.width90': {
+        width: '80%'
+      },
+      '&.width95': {
+        width: '95%'
       },
       '&.width100': {
         width: '100%'

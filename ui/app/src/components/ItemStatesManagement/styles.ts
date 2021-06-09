@@ -19,46 +19,54 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 export const useStyles = makeStyles((theme) =>
   createStyles({
     root: {
-      height: '100vh',
-      width: '100%'
+      height: '100%',
+      overflow: 'auto',
+      display: 'flex',
+      flexDirection: 'column'
+    },
+    actionsBarRoot: {
+      left: '0',
+      right: '0',
+      zIndex: 2,
+      position: 'absolute',
+      height: '62px'
+    },
+    actionsBarCheckbox: {
+      margin: '10px 12px'
     },
     wrapper: {
-      transition: theme.transitions.create('padding-left', {
+      transition: theme.transitions.create('padding-right', {
         easing: theme.transitions.easing.easeOut,
         duration: theme.transitions.duration.enteringScreen
       })
     },
-    nav: {
-      overflow: 'auto'
+    filterButton: {
+      marginRight: '12px'
     },
-    icon: {
-      marginRight: '10px'
-    },
-    footerDescription: {
-      color: theme.palette.text.secondary,
-      '& > a': {
-        textDecoration: 'none',
-        color: theme.palette.primary.main
-      }
-    },
-    footer: {
-      padding: '20px 0',
-      textAlign: 'center'
-    },
-    logo: {
-      margin: '0 auto 10px auto'
-    },
-    drawerBody: {
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'space-between',
+    drawerPaper: {
       padding: theme.spacing(2)
     },
-    drawerPaper: {},
-    launcher: {
-      margin: '10px 12px 0 auto'
-    }
+    iconLabel: {
+      display: 'flex',
+      alignItems: 'center',
+      '& svg': {
+        marginRight: '5px'
+      }
+    },
+    inputPath: {
+      marginTop: '20px'
+    },
+    helperText: {
+      marginLeft: 0
+    },
+    formControl: {
+      marginTop: '20px'
+    },
+    formLabel: {
+      color: theme.palette.text.primary,
+      textTransform: 'uppercase',
+      marginBottom: '10px'
+    },
+    formGroup: {}
   })
 );
-
-export default useStyles;

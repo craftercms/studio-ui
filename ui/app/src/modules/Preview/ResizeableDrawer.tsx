@@ -42,7 +42,7 @@ interface ResizeableDrawerProps extends DrawerProps {
   belowToolbar?: boolean;
   classes?: DrawerProps['classes'] & Partial<Record<ResizeableDrawerClassKey, string>>;
   styles?: ResizeableDrawerStyles;
-  onWidthChange(width: number): void;
+  onWidthChange?(width: number): void;
 }
 
 const useStyles = makeStyles((theme) =>
@@ -66,7 +66,7 @@ const useStyles = makeStyles((theme) =>
       top: 64,
       height: 'auto',
       zIndex: theme.zIndex.appBar - 1,
-      ...styles
+      ...styles.drawerPaperBelowToolbar
     }),
     drawerPaperLeft: (styles) => ({
       borderRight: 'none',
@@ -143,26 +143,30 @@ export default function ResizeableDrawer(props: ResizeableDrawerProps) {
 
   const handleMouseMove = useCallback(
     (e) => {
-      e.preventDefault();
-      const newWidth =
-        (anchor === 'left'
-          ? e.clientX - drawerRef.current.getBoundingClientRect().left
-          : window.innerWidth - (e.clientX - drawerRef.current.getBoundingClientRect().left)) + 5;
-      onWidthChange(newWidth);
+      if (onWidthChange) {
+        e.preventDefault();
+        const newWidth =
+          (anchor === 'left'
+            ? e.clientX - drawerRef.current.getBoundingClientRect().left
+            : window.innerWidth - (e.clientX - drawerRef.current.getBoundingClientRect().left)) + 5;
+        onWidthChange(newWidth);
+      }
     },
     [anchor, onWidthChange]
   );
 
-  const handleMouseDown = () => {
-    setResizeActive(true);
-    const handleMouseUp = () => {
-      setResizeActive(false);
-      document.removeEventListener('mouseup', handleMouseUp, true);
-      document.removeEventListener('mousemove', handleMouseMove, true);
-    };
-    document.addEventListener('mouseup', handleMouseUp, true);
-    document.addEventListener('mousemove', handleMouseMove, true);
-  };
+  const handleMouseDown = onWidthChange
+    ? () => {
+        setResizeActive(true);
+        const handleMouseUp = () => {
+          setResizeActive(false);
+          document.removeEventListener('mouseup', handleMouseUp, true);
+          document.removeEventListener('mousemove', handleMouseMove, true);
+        };
+        document.addEventListener('mouseup', handleMouseUp, true);
+        document.addEventListener('mousemove', handleMouseMove, true);
+      }
+    : null;
 
   return (
     <Drawer
@@ -178,20 +182,22 @@ export default function ResizeableDrawer(props: ResizeableDrawerProps) {
           belowToolbar && classes.drawerPaperBelowToolbar,
           drawerPaper,
           belowToolbar && drawerPaperBelowToolbar,
-          anchor === 'left' ? classes.drawerPaperLeft : classes.drawerPaperRight
+          onWidthChange && (anchor === 'left' ? classes.drawerPaperLeft : classes.drawerPaperRight)
         )
       }}
       PaperProps={{ ...PaperProps, style: { width } }}
       {...rest}
     >
-      <div
-        onMouseDown={handleMouseDown}
-        className={clsx(
-          classes.resizeHandle,
-          resizeActive && classes.resizeHandleActive,
-          anchor === 'left' ? classes.resizeHandleRight : classes.resizeHandleLeft
-        )}
-      />
+      {onWidthChange && (
+        <div
+          onMouseDown={handleMouseDown}
+          className={clsx(
+            classes.resizeHandle,
+            resizeActive && classes.resizeHandleActive,
+            anchor === 'left' ? classes.resizeHandleRight : classes.resizeHandleLeft
+          )}
+        />
+      )}
       <section className={clsx(classes.drawerBody, drawerBody)}>{children}</section>
     </Drawer>
   );
