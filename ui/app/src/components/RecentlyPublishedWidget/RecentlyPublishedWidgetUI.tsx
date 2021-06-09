@@ -33,11 +33,11 @@ import GlobalState from '../../models/GlobalState';
 import LookupTable from '../../models/LookupTable';
 import Collapse from '@material-ui/core/Collapse';
 import { useStyles } from './RecentlyPublishedWidget';
-import TableRow from '@material-ui/core/TableRow';
 import Pagination from '../Pagination/Pagination';
 import { DetailedItem } from '../../models/Item';
 import ItemDisplay from '../ItemDisplay';
 import MoreVertRounded from '@material-ui/icons/MoreVertRounded';
+import Box from '@material-ui/core/Box';
 
 export interface RecentlyPublishedWidgetUIProps {
   resource: Resource<LegacyDeploymentHistoryResponse>;
@@ -70,67 +70,69 @@ export default function RecentlyPublishedWidgetUi(props: RecentlyPublishedWidget
 
   return (
     <TableContainer>
-      <Table size="small">
+      <Table size="small" className={classes.tableRoot}>
         <TableHead>
-          <GlobalAppGridRow>
-            <GlobalAppGridCell>
+          <GlobalAppGridRow className="hoverDisabled">
+            <GlobalAppGridCell className="checkbox bordered">
               <Checkbox />
             </GlobalAppGridCell>
-            <GlobalAppGridCell>
+            <GlobalAppGridCell className="bordered width60">
               <Typography variant="subtitle2">
                 <FormattedMessage id="recentlyPublished.itemName" defaultMessage="Item Name" />
               </Typography>
             </GlobalAppGridCell>
-            <GlobalAppGridCell>
+            <GlobalAppGridCell className="bordered width10">
               <Typography variant="subtitle2">
                 <FormattedMessage id="recentlyPublished.publishingTarget" defaultMessage="Publishing Target" />
               </Typography>
             </GlobalAppGridCell>
-            <GlobalAppGridCell>
+            <GlobalAppGridCell className="bordered width10">
               <Typography variant="subtitle2">
                 <FormattedMessage id="recentlyPublished.publishDate" defaultMessage="Publish Date" />
               </Typography>
             </GlobalAppGridCell>
-            <GlobalAppGridCell>
+            <GlobalAppGridCell className="bordered width10">
               <Typography variant="subtitle2">
                 <FormattedMessage id="recentlyPublished.publishedBy" defaultMessage="Published By" />
               </Typography>
             </GlobalAppGridCell>
-            <GlobalAppGridCell />
+            <GlobalAppGridCell className="bordered" />
           </GlobalAppGridRow>
         </TableHead>
         <TableBody>
           {history.documents.map((document, i) => (
             <Fragment key={i}>
               <GlobalAppGridRow key={document.internalName} onClick={() => toggleExpand(document.internalName)}>
-                <GlobalAppGridCell colSpan={6}>
-                  <IconButton size="small">
-                    {expandedItems[document.internalName] ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                  </IconButton>
-                  {document.internalName}
+                <GlobalAppGridCell colSpan={6} className="expandableCell">
+                  <Box display="flex">
+                    <IconButton size="small">
+                      {expandedItems[document.internalName] ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                    </IconButton>
+                    <Typography>{document.internalName}</Typography>
+                  </Box>
                 </GlobalAppGridCell>
               </GlobalAppGridRow>
-              <TableRow hover={false}>
-                <GlobalAppGridCell colSpan={6} className={classes.collapseCell}>
+              <GlobalAppGridRow className="hoverDisabled">
+                <GlobalAppGridCell colSpan={6} className="padded0">
                   <Collapse in={expandedItems[document.internalName]}>
-                    <Table size="small">
+                    <Table size="small" className={classes.tableRoot}>
                       <TableBody>
                         {itemsLookup[document.internalName].map((item) => (
                           <GlobalAppGridRow key={item.id}>
-                            <GlobalAppGridCell>
+                            <GlobalAppGridCell className="checkbox">
                               <Checkbox />
                             </GlobalAppGridCell>
-                            <GlobalAppGridCell>
+                            <GlobalAppGridCell className="ellipsis width60 padded0">
                               <ItemDisplay item={item} />
                             </GlobalAppGridCell>
-                            <GlobalAppGridCell>
+                            <GlobalAppGridCell className="width10">
                               {item.live ? (
                                 <FormattedMessage id="words.live" defaultMessage="Live" />
                               ) : (
                                 <FormattedMessage id="words.staging" defaultMessage="Staging" />
                               )}
                             </GlobalAppGridCell>
-                            <GlobalAppGridCell>
+                            <GlobalAppGridCell className="width10">
                               {new Intl.DateTimeFormat(
                                 localeBranch.localeCode,
                                 localeBranch.dateTimeFormatOptions
@@ -138,7 +140,7 @@ export default function RecentlyPublishedWidgetUi(props: RecentlyPublishedWidget
                                 new Date(item.live ? item.live.lastPublishedDate : item.staging.lastPublishedDate)
                               )}
                             </GlobalAppGridCell>
-                            <GlobalAppGridCell>
+                            <GlobalAppGridCell className="width10">
                               {item.live ? item.live.publisher : item.staging.publisher}
                             </GlobalAppGridCell>
                             <GlobalAppGridCell>
@@ -150,17 +152,17 @@ export default function RecentlyPublishedWidgetUi(props: RecentlyPublishedWidget
                         ))}
                       </TableBody>
                     </Table>
-                    <Pagination
+                    {/* <Pagination
                       count={document.numOfChildren}
                       rowsPerPage={10}
                       rowsPerPageOptions={rowsPerPageOptions}
                       page={0}
                       onChangePage={() => {}}
                       classes={{ root: classes.paginationRoot }}
-                    />
+                    /> */}
                   </Collapse>
                 </GlobalAppGridCell>
-              </TableRow>
+              </GlobalAppGridRow>
             </Fragment>
           ))}
         </TableBody>

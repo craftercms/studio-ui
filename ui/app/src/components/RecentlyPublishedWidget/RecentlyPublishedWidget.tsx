@@ -22,11 +22,6 @@ import { useActiveSiteId, useLocale, useLogicResource, useSpreadState } from '..
 import { fetchLegacyDeploymentHistory } from '../../services/dashboard';
 import Paper from '@material-ui/core/Paper';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import Typography from '@material-ui/core/Typography';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { FormattedMessage } from 'react-intl';
 import SecondaryButton from '../SecondaryButton';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
@@ -39,22 +34,17 @@ import { MediaItem } from '../../models/Search';
 import { completeDetailedItem } from '../../state/actions/content';
 import { showItemMegaMenu } from '../../state/actions/dialogs';
 import { useDispatch } from 'react-redux';
+import Dashlet from '../Dashlet';
 
 export interface RecentlyPublishedWidgetProps {}
 
 export const useStyles = makeStyles((theme) =>
   createStyles({
-    summary: {
-      alignItems: 'center'
-    },
     options: {
       marginLeft: 'auto',
       '& > button:first-child': {
         marginRight: '10px'
       }
-    },
-    collapseCell: {
-      padding: '0 !important'
     },
     filterSelectRoot: {
       padding: '8.5px 14px'
@@ -66,6 +56,9 @@ export const useStyles = makeStyles((theme) =>
     paginationRoot: {
       marginLeft: 'auto',
       marginRight: '20px'
+    },
+    tableRoot: {
+      tableLayout: 'fixed'
     }
   })
 );
@@ -166,12 +159,12 @@ export default function RecentlyPublishedWidget(props: RecentlyPublishedWidgetPr
 
   return (
     <Paper elevation={2}>
-      <Accordion expanded={expandedWidget} onChange={() => setExpandedWidget(!expandedWidget)}>
-        <AccordionSummary expandIcon={<ExpandMoreIcon />} classes={{ content: classes.summary }}>
-          <Typography variant="body1">
-            <FormattedMessage id="recentlyPublished.title" defaultMessage="Recently Published" />
-          </Typography>
-          <section className={classes.options}>
+      <Dashlet
+        title="Recently Published"
+        onToggleExpanded={() => setExpandedWidget(!expandedWidget)}
+        expanded={expandedWidget}
+        headerRightSection={
+          <>
             <SecondaryButton onClick={onCollapseAll}>
               <FormattedMessage id="recentlyPublished.collapseAll" defaultMessage="Collapse All" />
             </SecondaryButton>
@@ -188,26 +181,25 @@ export default function RecentlyPublishedWidget(props: RecentlyPublishedWidgetPr
               <MenuItem value={'document'}>Documents</MenuItem>
               <MenuItem value={'all'}>All</MenuItem>
             </Select>
-          </section>
-        </AccordionSummary>
-        <AccordionDetails>
-          <SuspenseWithEmptyState
+          </>
+        }
+      >
+        <SuspenseWithEmptyState
+          resource={resource}
+          suspenseProps={{
+            fallback: <></> // TODO: skeleton
+          }}
+        >
+          <RecentlyPublishedWidgetUI
             resource={resource}
-            suspenseProps={{
-              fallback: <></> // TODO: skeleton
-            }}
-          >
-            <RecentlyPublishedWidgetUI
-              resource={resource}
-              itemsLookup={itemsLookup}
-              localeBranch={localeBranch}
-              expandedItems={expandedItems}
-              setExpandedItems={setExpandedItems}
-              onOptionsButtonClick={onOptionsButtonClick}
-            />
-          </SuspenseWithEmptyState>
-        </AccordionDetails>
-      </Accordion>
+            itemsLookup={itemsLookup}
+            localeBranch={localeBranch}
+            expandedItems={expandedItems}
+            setExpandedItems={setExpandedItems}
+            onOptionsButtonClick={onOptionsButtonClick}
+          />
+        </SuspenseWithEmptyState>
+      </Dashlet>
     </Paper>
   );
 }
