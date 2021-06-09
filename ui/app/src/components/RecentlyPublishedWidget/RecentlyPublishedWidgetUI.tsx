@@ -104,7 +104,7 @@ export default function RecentlyPublishedWidgetUi(props: RecentlyPublishedWidget
             <Fragment key={i}>
               <GlobalAppGridRow key={document.internalName} onClick={() => toggleExpand(document.internalName)}>
                 <GlobalAppGridCell colSpan={6} className="expandableCell">
-                  <Box display="flex">
+                  <Box display="flex" className={classes.expandableCellBox}>
                     <IconButton size="small">
                       {expandedItems[document.internalName] ? <ExpandLessIcon /> : <ExpandMoreIcon />}
                     </IconButton>
@@ -124,6 +124,14 @@ export default function RecentlyPublishedWidgetUi(props: RecentlyPublishedWidget
                             </GlobalAppGridCell>
                             <GlobalAppGridCell className="ellipsis width60 padded0">
                               <ItemDisplay item={item} />
+                              <Typography
+                                title={item.path}
+                                variant="caption"
+                                component="p"
+                                className={classes.itemPath}
+                              >
+                                {item.path}
+                              </Typography>
                             </GlobalAppGridCell>
                             <GlobalAppGridCell className="width10">
                               {item.live ? (

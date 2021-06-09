@@ -40,11 +40,8 @@ export interface RecentlyPublishedWidgetProps {}
 
 export const useStyles = makeStyles((theme) =>
   createStyles({
-    options: {
-      marginLeft: 'auto',
-      '& > button:first-child': {
-        marginRight: '10px'
-      }
+    collapseAllButton: {
+      marginRight: theme.spacing(1)
     },
     filterSelectRoot: {
       padding: '8.5px 14px'
@@ -59,6 +56,12 @@ export const useStyles = makeStyles((theme) =>
     },
     tableRoot: {
       tableLayout: 'fixed'
+    },
+    expandableCellBox: {
+      alignItems: 'center'
+    },
+    itemPath: {
+      color: theme.palette.text.secondary
     }
   })
 );
@@ -165,7 +168,7 @@ export default function RecentlyPublishedWidget(props: RecentlyPublishedWidgetPr
         expanded={expandedWidget}
         headerRightSection={
           <>
-            <SecondaryButton onClick={onCollapseAll}>
+            <SecondaryButton onClick={onCollapseAll} className={classes.collapseAllButton}>
               <FormattedMessage id="recentlyPublished.collapseAll" defaultMessage="Collapse All" />
             </SecondaryButton>
             <Select
