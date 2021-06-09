@@ -22,27 +22,33 @@ import useStyles from './styles';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import { AccordionProps } from '@material-ui/core/Accordion/Accordion';
 
-export type DashletProps = PropsWithChildren<{
-  title: React.ReactNode;
-  rightSection?: React.ReactNode;
-  expanded: boolean;
-  icon?: ElementType;
-  onExpanded(value: boolean): void;
-  accordionProps?: AccordionProps;
-}>;
+export type DashletProps = PropsWithChildren<
+  AccordionProps & {
+    title: React.ReactNode;
+    headerRightSection?: React.ReactNode;
+    expanded: boolean;
+    icon?: ElementType;
+    onToggleExpanded(): void;
+    accordionProps?: AccordionProps;
+  }
+>;
 
 export default function Dashlet(props: DashletProps) {
-  const { expanded, icon: Icon = ExpandMoreIcon, title, rightSection, onExpanded, children, accordionProps } = props;
+  const {
+    expanded,
+    icon: Icon = ExpandMoreIcon,
+    title,
+    headerRightSection,
+    onToggleExpanded,
+    children,
+    ...rest
+  } = props;
   const classes = useStyles();
   return (
-    <Accordion expanded={expanded} {...accordionProps}>
-      <AccordionSummary
-        expandIcon={<Icon />}
-        classes={{ content: classes.summary }}
-        onClick={() => onExpanded(!expanded)}
-      >
+    <Accordion expanded={expanded} {...rest}>
+      <AccordionSummary expandIcon={<Icon />} classes={{ content: classes.summary }} onClick={onToggleExpanded}>
         {title}
-        {rightSection && <section className={classes.rightSection}>{rightSection}</section>}
+        {headerRightSection && <section className={classes.rightSection}>{headerRightSection}</section>}
       </AccordionSummary>
       <AccordionDetails className={classes.details}>{children}</AccordionDetails>
     </Accordion>
