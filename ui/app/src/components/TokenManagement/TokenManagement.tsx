@@ -327,7 +327,7 @@ export default function TokenManagement() {
       />
       <ConditionalLoadingState isLoading={tokens === null}>
         {tokens?.length ? (
-          <TableContainer>
+          <TableContainer style={{ position: 'relative' }}>
             {checkedCount > 0 && (
               <ActionsBar
                 onOptionClicked={onOptionClicked}
