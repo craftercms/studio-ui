@@ -27,20 +27,21 @@ import IconButton from '@material-ui/core/IconButton';
 import Collapse from '@material-ui/core/Collapse';
 import Box from '@material-ui/core/Box';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMoreRounded';
-import { LegacyItem } from '../../models/Item';
+import { SandboxItem } from '../../models/Item';
 import GlobalAppGridRow from '../GlobalAppGridRow';
 import GlobalAppGridCell from '../GlobalAppGridCell';
 import LookupTable from '../../models/LookupTable';
 import Checkbox from '@material-ui/core/Checkbox';
 
 interface DashboardItemsApprovalGridUIProps {
-  resource: Resource<LegacyItem[]>;
+  resource: Resource<{ label: string; path: string }[]>;
+  itemsLookup: LookupTable<SandboxItem[]>;
   onExpandedRow(path: string, value: boolean): void;
   expandedLookup: LookupTable<boolean>;
 }
 
 export default function DashboardItemsApprovalGridUI(props: DashboardItemsApprovalGridUIProps) {
-  const { resource, onExpandedRow, expandedLookup } = props;
+  const { resource, onExpandedRow, expandedLookup, itemsLookup } = props;
   const items = resource.read();
   const classes = useStyles();
 
@@ -52,19 +53,9 @@ export default function DashboardItemsApprovalGridUI(props: DashboardItemsApprov
             <GlobalAppGridCell className="checkbox bordered">
               <Checkbox />
             </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered width25 padded0">
+            <GlobalAppGridCell className="bordered width50 padded0">
               <Typography variant="subtitle2">
                 <FormattedMessage id="dashboardItemsApproval.itemName" defaultMessage="Item Name" />
-              </Typography>
-            </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered width10">
-              <Typography variant="subtitle2">
-                <FormattedMessage id="dashboardItemsApproval.view" defaultMessage="View" />
-              </Typography>
-            </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered width25">
-              <Typography variant="subtitle2">
-                <FormattedMessage id="dashboardItemsApproval.url" defaultMessage="Url" />
               </Typography>
             </GlobalAppGridCell>
             <GlobalAppGridCell className="bordered width10">
@@ -87,38 +78,42 @@ export default function DashboardItemsApprovalGridUI(props: DashboardItemsApprov
                 <FormattedMessage id="dashboardItemsApproval.lastEdited" defaultMessage="Last Edited" />
               </Typography>
             </GlobalAppGridCell>
+            <GlobalAppGridCell className="bordered width10">
+              <Typography variant="subtitle2">
+                <FormattedMessage id="dashboardItemsApproval.menu" defaultMessage="Menu" />
+              </Typography>
+            </GlobalAppGridCell>
           </GlobalAppGridRow>
         </TableHead>
         <TableBody>
           {items.map((item, i) => (
             <Fragment key={i}>
-              <GlobalAppGridRow onClick={() => onExpandedRow(item.uri, !expandedLookup[item.uri])}>
-                <GlobalAppGridCell colSpan={8} className="expandableCell">
+              <GlobalAppGridRow onClick={() => onExpandedRow(item.path, !expandedLookup[item.path])}>
+                <GlobalAppGridCell colSpan={7} className="expandableCell">
                   <Box display="flex">
                     <IconButton size="small">
                       <ExpandMoreIcon />
                     </IconButton>
-                    <Typography>{item.name}</Typography>
+                    <Typography>{item.label}</Typography>
                   </Box>
                 </GlobalAppGridCell>
               </GlobalAppGridRow>
               <GlobalAppGridRow className="hoverDisabled">
-                <GlobalAppGridCell colSpan={8} className="padded0">
-                  <Collapse in={expandedLookup[item.uri]}>
+                <GlobalAppGridCell colSpan={7} className="padded0">
+                  <Collapse in={expandedLookup[item.path]}>
                     <Table size="small" className={classes.tableRoot}>
                       <TableBody>
-                        {item.children.map((item, i) => (
+                        {itemsLookup[item.path].map((item, i) => (
                           <GlobalAppGridRow key={i}>
                             <GlobalAppGridCell className="checkbox">
                               <Checkbox />
                             </GlobalAppGridCell>
-                            <GlobalAppGridCell className="ellipsis width25 padded0">{item.name}</GlobalAppGridCell>
-                            <GlobalAppGridCell className="width10">view</GlobalAppGridCell>
-                            <GlobalAppGridCell className="ellipsis width25">{item.uri}</GlobalAppGridCell>
+                            <GlobalAppGridCell className="ellipsis width50 padded0">{item.label}</GlobalAppGridCell>
                             <GlobalAppGridCell className="width10">target</GlobalAppGridCell>
                             <GlobalAppGridCell className="width10">11111</GlobalAppGridCell>
                             <GlobalAppGridCell className="width10">editedBy</GlobalAppGridCell>
                             <GlobalAppGridCell className="width10">lastEdited</GlobalAppGridCell>
+                            <GlobalAppGridCell className="width10"></GlobalAppGridCell>
                           </GlobalAppGridRow>
                         ))}
                       </TableBody>

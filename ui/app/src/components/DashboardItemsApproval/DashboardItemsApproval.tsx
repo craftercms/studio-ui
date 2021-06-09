@@ -25,25 +25,39 @@ import SecondaryButton from '../SecondaryButton';
 import { FormattedMessage } from 'react-intl';
 import { fetchLegacyGetGoLiveItems } from '../../services/dashboard';
 import { useActiveSiteId, useLogicResource, useSpreadState } from '../../utils/hooks';
-import { LegacyItem } from '../../models/Item';
+import { SandboxItem } from '../../models/Item';
 import DashboardItemsApprovalGridUI from '../DashboardItemsApprovalGrid';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import LookupTable from '../../models/LookupTable';
+import { parseLegacyItemToSandBoxItem } from '../../utils/content';
+
+export interface DashboardItem {
+  label: string;
+  path: string;
+}
 
 export default function DashboardItemsApproval() {
   const classes = useStyles();
   const site = useActiveSiteId();
-  const [items, setItems] = useState<LegacyItem[]>();
+  const [parentItems, setParentItems] = useState<DashboardItem[]>();
   const [expanded, setExpanded] = useState(true);
   const [expandedLookup, setExpandedLookup] = useSpreadState<LookupTable<boolean>>({});
+  const [itemsLookup, setItemsLookup] = useState<LookupTable<SandboxItem[]>>({});
 
   useEffect(() => {
     fetchLegacyGetGoLiveItems(site, 'eventDate').subscribe((response) => {
-      setItems(response.documents);
+      const items: DashboardItem[] = [];
+      const lookup = {};
+      response.documents.forEach((item) => {
+        items.push({ label: item.name, path: item.uri });
+        lookup[item.uri] = item.children.map((item) => parseLegacyItemToSandBoxItem(item));
+      });
+      setParentItems(items);
+      setItemsLookup(lookup);
     });
   }, [site]);
 
-  const resource = useLogicResource<LegacyItem[], LegacyItem[]>(items, {
+  const resource = useLogicResource<DashboardItem[], DashboardItem[]>(parentItems, {
     shouldResolve: (source) => Boolean(source),
     shouldReject: (source) => false,
     shouldRenew: (source, resource) => resource.complete,
@@ -90,6 +104,7 @@ export default function DashboardItemsApproval() {
           <DashboardItemsApprovalGridUI
             resource={resource}
             expandedLookup={expandedLookup}
+            itemsLookup={itemsLookup}
             onExpandedRow={onExpandedRow}
           />
         </SuspenseWithEmptyState>
