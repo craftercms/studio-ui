@@ -25,9 +25,12 @@ import TranslationOrText from '../../models/TranslationOrText';
 
 const styles = makeStyles((theme) =>
   createStyles({
+    root: {
+      background: theme.palette.background.paper
+    },
     itemHeader: {
       display: 'flex',
-      background: '#e8f1ff'
+      background: theme.palette.action.selected
     },
     checkbox: {
       color: theme.palette.primary.main,
@@ -45,7 +48,7 @@ interface ActionsBarProps {
   options: Action[];
   isIndeterminate: boolean;
   isChecked: boolean;
-  classes?: Partial<Record<'root', string>>;
+  classes?: Partial<Record<'root' | 'header' | 'checkbox', string>>;
   onOptionClicked(option: string): void;
   toggleSelectAll(): void;
 }
@@ -56,19 +59,21 @@ export default function ActionsBar(props: ActionsBarProps) {
   const { options, onOptionClicked, isIndeterminate, toggleSelectAll, isChecked } = props;
 
   return (
-    <header className={clsx(classes.itemHeader, props.classes?.root)}>
-      <Checkbox
-        color="primary"
-        indeterminate={isIndeterminate}
-        checked={isChecked}
-        className={classes.checkbox}
-        onChange={toggleSelectAll}
-      />
-      {options.map((option: Action) => (
-        <Button color="primary" variant="text" key={option.id} onClick={() => onOptionClicked(option.id)}>
-          {getPossibleTranslation(option.label, formatMessage)}
-        </Button>
-      ))}
-    </header>
+    <section className={clsx(classes.root, props.classes?.root)}>
+      <header className={clsx(classes.itemHeader, props.classes?.header)}>
+        <Checkbox
+          color="primary"
+          indeterminate={isIndeterminate}
+          checked={isChecked}
+          className={clsx(classes.checkbox, props.classes?.checkbox)}
+          onChange={toggleSelectAll}
+        />
+        {options.map((option: Action) => (
+          <Button color="primary" variant="text" key={option.id} onClick={() => onOptionClicked(option.id)}>
+            {getPossibleTranslation(option.label, formatMessage)}
+          </Button>
+        ))}
+      </header>
+    </section>
   );
 }
