@@ -32,16 +32,20 @@ import GlobalAppGridRow from '../GlobalAppGridRow';
 import GlobalAppGridCell from '../GlobalAppGridCell';
 import LookupTable from '../../models/LookupTable';
 import Checkbox from '@material-ui/core/Checkbox';
+import MoreVertRounded from '@material-ui/icons/MoreVertRounded';
+import ItemDisplay from '../ItemDisplay';
+import clsx from 'clsx';
 
 interface DashboardItemsApprovalGridUIProps {
   resource: Resource<{ label: string; path: string }[]>;
   itemsLookup: LookupTable<SandboxItem[]>;
   onExpandedRow(path: string, value: boolean): void;
+  onItemMenuClick(event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, item: SandboxItem): void;
   expandedLookup: LookupTable<boolean>;
 }
 
 export default function DashboardItemsApprovalGridUI(props: DashboardItemsApprovalGridUIProps) {
-  const { resource, onExpandedRow, expandedLookup, itemsLookup } = props;
+  const { resource, onExpandedRow, expandedLookup, itemsLookup, onItemMenuClick } = props;
   const items = resource.read();
   const classes = useStyles();
 
@@ -53,36 +57,22 @@ export default function DashboardItemsApprovalGridUI(props: DashboardItemsApprov
             <GlobalAppGridCell className="checkbox bordered">
               <Checkbox />
             </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered width50 padded0">
-              <Typography variant="subtitle2">
-                <FormattedMessage id="dashboardItemsApproval.itemName" defaultMessage="Item Name" />
-              </Typography>
+            <GlobalAppGridCell className="bordered width35 padded0">
+              <FormattedMessage id="dashboardItemsApproval.itemName" defaultMessage="Item Name" />
             </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered width10">
-              <Typography variant="subtitle2">
-                <FormattedMessage id="dashboardItemsApproval.publishingTarget" defaultMessage="Publishing Target" />
-              </Typography>
+            <GlobalAppGridCell className="bordered width15 ellipsis">
+              <FormattedMessage id="dashboardItemsApproval.publishingTarget" defaultMessage="Publishing Target" />
             </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered width10">
-              <Typography variant="subtitle2">
-                <FormattedMessage id="dashboardItemsApproval.publishingDate" defaultMessage="Publishing Date" />
-              </Typography>
+            <GlobalAppGridCell className="bordered width15 ellipsis">
+              <FormattedMessage id="dashboardItemsApproval.publishingDate" defaultMessage="Publishing Date" />
             </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered width10">
-              <Typography variant="subtitle2">
-                <FormattedMessage id="dashboardItemsApproval.lastEditedBy" defaultMessage="Last Edited By" />
-              </Typography>
+            <GlobalAppGridCell className="bordered width20 ellipsis">
+              <FormattedMessage id="dashboardItemsApproval.lastEditedBy" defaultMessage="Last Edited By" />
             </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered width10">
-              <Typography variant="subtitle2">
-                <FormattedMessage id="dashboardItemsApproval.lastEdited" defaultMessage="Last Edited" />
-              </Typography>
+            <GlobalAppGridCell className="bordered width15 ellipsis">
+              <FormattedMessage id="dashboardItemsApproval.lastEdited" defaultMessage="Last Edited" />
             </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered width10">
-              <Typography variant="subtitle2">
-                <FormattedMessage id="dashboardItemsApproval.menu" defaultMessage="Menu" />
-              </Typography>
-            </GlobalAppGridCell>
+            <GlobalAppGridCell className="bordered checkbox"></GlobalAppGridCell>
           </GlobalAppGridRow>
         </TableHead>
         <TableBody>
@@ -108,12 +98,28 @@ export default function DashboardItemsApprovalGridUI(props: DashboardItemsApprov
                             <GlobalAppGridCell className="checkbox">
                               <Checkbox />
                             </GlobalAppGridCell>
-                            <GlobalAppGridCell className="ellipsis width50 padded0">{item.label}</GlobalAppGridCell>
-                            <GlobalAppGridCell className="width10">target</GlobalAppGridCell>
-                            <GlobalAppGridCell className="width10">11111</GlobalAppGridCell>
-                            <GlobalAppGridCell className="width10">editedBy</GlobalAppGridCell>
-                            <GlobalAppGridCell className="width10">lastEdited</GlobalAppGridCell>
-                            <GlobalAppGridCell className="width10"></GlobalAppGridCell>
+                            <GlobalAppGridCell className="ellipsis width35 padded0">
+                              <ItemDisplay item={item} showNavigableAsLinks={false} />
+                              <Typography
+                                title={item.path}
+                                variant="caption"
+                                component="p"
+                                className={clsx(classes.itemPath, classes.ellipsis)}
+                              >
+                                {item.path}
+                              </Typography>
+                            </GlobalAppGridCell>
+                            <GlobalAppGridCell className="width15">target</GlobalAppGridCell>
+                            <GlobalAppGridCell className="width15">11111</GlobalAppGridCell>
+                            <GlobalAppGridCell className="width20 ellipsis" title={item.modifier}>
+                              {item.modifier}
+                            </GlobalAppGridCell>
+                            <GlobalAppGridCell className="width15">lastEdited</GlobalAppGridCell>
+                            <GlobalAppGridCell className="checkbox">
+                              <IconButton size="small" onClick={(e) => onItemMenuClick(e, item)}>
+                                <MoreVertRounded />
+                              </IconButton>
+                            </GlobalAppGridCell>
                           </GlobalAppGridRow>
                         ))}
                       </TableBody>

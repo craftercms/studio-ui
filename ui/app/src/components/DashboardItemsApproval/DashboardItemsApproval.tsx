@@ -25,11 +25,14 @@ import SecondaryButton from '../SecondaryButton';
 import { FormattedMessage } from 'react-intl';
 import { fetchLegacyGetGoLiveItems } from '../../services/dashboard';
 import { useActiveSiteId, useLogicResource, useSpreadState } from '../../utils/hooks';
-import { SandboxItem } from '../../models/Item';
+import { DetailedItem, SandboxItem } from '../../models/Item';
 import DashboardItemsApprovalGridUI from '../DashboardItemsApprovalGrid';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import LookupTable from '../../models/LookupTable';
-import { parseLegacyItemToSandBoxItem } from '../../utils/content';
+import { getNumOfMenuOptionsForItem, getSystemTypeFromPath, parseLegacyItemToSandBoxItem } from '../../utils/content';
+import { completeDetailedItem } from '../../state/actions/content';
+import { showItemMegaMenu } from '../../state/actions/dialogs';
+import { useDispatch } from 'react-redux';
 
 export interface DashboardItem {
   label: string;
@@ -43,6 +46,7 @@ export default function DashboardItemsApproval() {
   const [expanded, setExpanded] = useState(true);
   const [expandedLookup, setExpandedLookup] = useSpreadState<LookupTable<boolean>>({});
   const [itemsLookup, setItemsLookup] = useState<LookupTable<SandboxItem[]>>({});
+  const dispatch = useDispatch();
 
   useEffect(() => {
     fetchLegacyGetGoLiveItems(site, 'eventDate').subscribe((response) => {
@@ -77,6 +81,22 @@ export default function DashboardItemsApproval() {
     setExpandedLookup({ [path]: value });
   };
 
+  const onItemMenuClick = (event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, item: SandboxItem) => {
+    const path = item.path;
+    dispatch(completeDetailedItem({ path }));
+    dispatch(
+      showItemMegaMenu({
+        path,
+        anchorReference: 'anchorPosition',
+        anchorPosition: { top: event.clientY, left: event.clientX },
+        numOfLoaderItems: getNumOfMenuOptionsForItem({
+          path: item.path,
+          systemType: getSystemTypeFromPath(item.path)
+        } as DetailedItem)
+      })
+    );
+  };
+
   return (
     <Accordion expanded={expanded}>
       <AccordionSummary
@@ -106,6 +126,7 @@ export default function DashboardItemsApproval() {
             expandedLookup={expandedLookup}
             itemsLookup={itemsLookup}
             onExpandedRow={onExpandedRow}
+            onItemMenuClick={onItemMenuClick}
           />
         </SuspenseWithEmptyState>
       </AccordionDetails>

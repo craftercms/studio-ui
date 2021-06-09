@@ -20,6 +20,14 @@ export const useStyles = makeStyles((theme) =>
   createStyles({
     tableRoot: {
       tableLayout: 'fixed'
+    },
+    ellipsis: {
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap'
+    },
+    itemPath: {
+      color: theme.palette.text.secondary
     }
   })
 );
