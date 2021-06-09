@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { Fragment } from 'react';
 import Table from '@material-ui/core/Table';
 import TableHead from '@material-ui/core/TableHead';
 import GlobalAppGridRow from '../GlobalAppGridRow';
@@ -34,20 +34,35 @@ import LookupTable from '../../models/LookupTable';
 import Collapse from '@material-ui/core/Collapse';
 import { useStyles } from './RecentlyPublishedWidget';
 import TableRow from '@material-ui/core/TableRow';
+import Pagination from '../Pagination/Pagination';
+import { DetailedItem } from '../../models/Item';
+import ItemDisplay from '../ItemDisplay';
+import MoreVertRounded from '@material-ui/icons/MoreVertRounded';
 
 export interface RecentlyPublishedWidgetUIProps {
   resource: Resource<LegacyDeploymentHistoryResponse>;
+  itemsLookup: LookupTable<DetailedItem[]>;
   localeBranch: GlobalState['uiConfig']['locale'];
   expandedItems: LookupTable<boolean>;
+  rowsPerPageOptions?: number[];
   setExpandedItems(itemExpanded): void;
+  onOptionsButtonClick?: any;
 }
 
 export default function RecentlyPublishedWidgetUi(props: RecentlyPublishedWidgetUIProps) {
-  const { resource, expandedItems, setExpandedItems } = props;
+  const {
+    resource,
+    expandedItems,
+    setExpandedItems,
+    rowsPerPageOptions = [5, 10, 15],
+    itemsLookup,
+    onOptionsButtonClick,
+    localeBranch
+  } = props;
   const history = resource.read();
   const classes = useStyles();
 
-  console.log('history', history);
+  console.log('itemsLookup', itemsLookup);
 
   const toggleExpand = (name) => {
     setExpandedItems({ [name]: !expandedItems[name] });
@@ -68,11 +83,6 @@ export default function RecentlyPublishedWidgetUi(props: RecentlyPublishedWidget
             </GlobalAppGridCell>
             <GlobalAppGridCell>
               <Typography variant="subtitle2">
-                <FormattedMessage id="words.url" defaultMessage="URL" />
-              </Typography>
-            </GlobalAppGridCell>
-            <GlobalAppGridCell>
-              <Typography variant="subtitle2">
                 <FormattedMessage id="recentlyPublished.publishingTarget" defaultMessage="Publishing Target" />
               </Typography>
             </GlobalAppGridCell>
@@ -86,13 +96,14 @@ export default function RecentlyPublishedWidgetUi(props: RecentlyPublishedWidget
                 <FormattedMessage id="recentlyPublished.publishedBy" defaultMessage="Published By" />
               </Typography>
             </GlobalAppGridCell>
+            <GlobalAppGridCell />
           </GlobalAppGridRow>
         </TableHead>
         <TableBody>
-          {history.documents.map((document) => (
-            <>
+          {history.documents.map((document, i) => (
+            <Fragment key={i}>
               <GlobalAppGridRow key={document.internalName} onClick={() => toggleExpand(document.internalName)}>
-                <GlobalAppGridCell colSpan={7}>
+                <GlobalAppGridCell colSpan={6}>
                   <IconButton size="small">
                     {expandedItems[document.internalName] ? <ExpandLessIcon /> : <ExpandMoreIcon />}
                   </IconButton>
@@ -104,20 +115,53 @@ export default function RecentlyPublishedWidgetUi(props: RecentlyPublishedWidget
                   <Collapse in={expandedItems[document.internalName]}>
                     <Table size="small">
                       <TableBody>
-                        {document.children.map((item) => (
-                          <GlobalAppGridRow>
+                        {itemsLookup[document.internalName].map((item) => (
+                          <GlobalAppGridRow key={item.id}>
                             <GlobalAppGridCell>
                               <Checkbox />
                             </GlobalAppGridCell>
-                            <GlobalAppGridCell>{item.name}</GlobalAppGridCell>
+                            <GlobalAppGridCell>
+                              <ItemDisplay item={item} />
+                            </GlobalAppGridCell>
+                            <GlobalAppGridCell>
+                              {item.live ? (
+                                <FormattedMessage id="words.live" defaultMessage="Live" />
+                              ) : (
+                                <FormattedMessage id="words.staging" defaultMessage="Staging" />
+                              )}
+                            </GlobalAppGridCell>
+                            <GlobalAppGridCell>
+                              {new Intl.DateTimeFormat(
+                                localeBranch.localeCode,
+                                localeBranch.dateTimeFormatOptions
+                              ).format(
+                                new Date(item.live ? item.live.lastPublishedDate : item.staging.lastPublishedDate)
+                              )}
+                            </GlobalAppGridCell>
+                            <GlobalAppGridCell>
+                              {item.live ? item.live.publisher : item.staging.publisher}
+                            </GlobalAppGridCell>
+                            <GlobalAppGridCell>
+                              <IconButton onClick={(e) => onOptionsButtonClick(e, item)}>
+                                <MoreVertRounded />
+                              </IconButton>
+                            </GlobalAppGridCell>
                           </GlobalAppGridRow>
                         ))}
                       </TableBody>
                     </Table>
+                    <Pagination
+                      count={document.numOfChildren}
+                      rowsPerPage={10}
+                      rowsPerPageOptions={rowsPerPageOptions}
+                      page={0}
+                      onChangePage={() => {}}
+                      classes={{ root: classes.paginationRoot }}
+                    />
                   </Collapse>
                 </GlobalAppGridCell>
               </TableRow>
-            </>
+            </Fragment>
           ))}
         </TableBody>
       </Table>
