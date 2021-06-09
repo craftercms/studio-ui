@@ -21,6 +21,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMoreRounded';
 import useStyles from './styles';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import { AccordionProps } from '@material-ui/core/Accordion/Accordion';
+import Typography from '@material-ui/core/Typography';
 
 export type DashletProps = PropsWithChildren<
   AccordionProps & {
@@ -47,7 +48,7 @@ export default function Dashlet(props: DashletProps) {
   return (
     <Accordion expanded={expanded} {...rest}>
       <AccordionSummary expandIcon={<Icon />} classes={{ content: classes.summary }} onClick={onToggleExpanded}>
-        {title}
+        <Typography>{title}</Typography>
         {headerRightSection && <section className={classes.rightSection}>{headerRightSection}</section>}
       </AccordionSummary>
       <AccordionDetails className={classes.details}>{children}</AccordionDetails>
