@@ -24,28 +24,24 @@ import useStyles from './styles';
 import SecondaryButton from '../SecondaryButton';
 import { FormattedMessage } from 'react-intl';
 import { fetchLegacyGetGoLiveItems } from '../../services/dashboard';
-import { useActiveSiteId, useLogicResource } from '../../utils/hooks';
+import { useActiveSiteId, useLogicResource, useSpreadState } from '../../utils/hooks';
 import { LegacyItem } from '../../models/Item';
 import DashboardItemsApprovalGridUI from '../DashboardItemsApprovalGrid';
+import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
+import LookupTable from '../../models/LookupTable';
 
 export default function DashboardItemsApproval() {
   const classes = useStyles();
   const site = useActiveSiteId();
   const [items, setItems] = useState<LegacyItem[]>();
+  const [expanded, setExpanded] = useState(true);
+  const [expandedLookup, setExpandedLookup] = useSpreadState<LookupTable<boolean>>({});
 
   useEffect(() => {
     fetchLegacyGetGoLiveItems(site, 'eventDate').subscribe((response) => {
       setItems(response.documents);
     });
   }, [site]);
-
-  const onCollapseAll = (e) => {
-    e.stopPropagation();
-  };
-
-  const onShowInProgress = (e) => {
-    e.stopPropagation();
-  };
 
   const resource = useLogicResource<LegacyItem[], LegacyItem[]>(items, {
     shouldResolve: (source) => Boolean(source),
@@ -55,9 +51,25 @@ export default function DashboardItemsApproval() {
     errorSelector: (source) => null
   });
 
+  const onCollapseAll = (e) => {
+    e.stopPropagation();
+  };
+
+  const onShowInProgress = (e) => {
+    e.stopPropagation();
+  };
+
+  const onExpandedRow = (path: string, value: boolean) => {
+    setExpandedLookup({ [path]: value });
+  };
+
   return (
-    <Accordion expanded={true}>
-      <AccordionSummary expandIcon={<ExpandMoreIcon />} classes={{ content: classes.summary }}>
+    <Accordion expanded={expanded}>
+      <AccordionSummary
+        expandIcon={<ExpandMoreIcon />}
+        classes={{ content: classes.summary }}
+        onClick={() => setExpanded(!expanded)}
+      >
         <Typography>
           <FormattedMessage
             id="dashboardItemsApproval.itemsWaitingForApproval"
@@ -74,7 +86,13 @@ export default function DashboardItemsApproval() {
         </section>
       </AccordionSummary>
       <AccordionDetails>
-        <DashboardItemsApprovalGridUI resource={resource} />
+        <SuspenseWithEmptyState resource={resource}>
+          <DashboardItemsApprovalGridUI
+            resource={resource}
+            expandedLookup={expandedLookup}
+            onExpandedRow={onExpandedRow}
+          />
+        </SuspenseWithEmptyState>
       </AccordionDetails>
     </Accordion>
   );
