@@ -27,7 +27,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Collapse from '@material-ui/core/Collapse';
 import Box from '@material-ui/core/Box';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMoreRounded';
-import { SandboxItem } from '../../models/Item';
+import { DetailedItem } from '../../models/Item';
 import GlobalAppGridRow from '../GlobalAppGridRow';
 import GlobalAppGridCell from '../GlobalAppGridCell';
 import LookupTable from '../../models/LookupTable';
@@ -35,19 +35,22 @@ import Checkbox from '@material-ui/core/Checkbox';
 import MoreVertRounded from '@material-ui/icons/MoreVertRounded';
 import ItemDisplay from '../ItemDisplay';
 import clsx from 'clsx';
+import { useLocale } from '../../utils/hooks';
 
 interface DashboardItemsApprovalGridUIProps {
   resource: Resource<{ label: string; path: string }[]>;
-  itemsLookup: LookupTable<SandboxItem[]>;
-  onExpandedRow(path: string, value: boolean): void;
-  onItemMenuClick(event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, item: SandboxItem): void;
+  itemsLookup: LookupTable<DetailedItem[]>;
   expandedLookup: LookupTable<boolean>;
+  publishingTargetLookup: LookupTable<string>;
+  onExpandedRow(path: string, value: boolean): void;
+  onItemMenuClick(event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, item: DetailedItem): void;
 }
 
 export default function DashboardItemsApprovalGridUI(props: DashboardItemsApprovalGridUIProps) {
-  const { resource, onExpandedRow, expandedLookup, itemsLookup, onItemMenuClick } = props;
+  const { resource, onExpandedRow, expandedLookup, publishingTargetLookup, itemsLookup, onItemMenuClick } = props;
   const items = resource.read();
   const classes = useStyles();
+  const locale = useLocale();
 
   return (
     <TableContainer>
@@ -57,7 +60,7 @@ export default function DashboardItemsApprovalGridUI(props: DashboardItemsApprov
             <GlobalAppGridCell className="checkbox bordered">
               <Checkbox />
             </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered width35 padded0">
+            <GlobalAppGridCell className="bordered width40 padded0">
               <FormattedMessage id="dashboardItemsApproval.itemName" defaultMessage="Item Name" />
             </GlobalAppGridCell>
             <GlobalAppGridCell className="bordered width15 ellipsis">
@@ -66,7 +69,7 @@ export default function DashboardItemsApprovalGridUI(props: DashboardItemsApprov
             <GlobalAppGridCell className="bordered width15 ellipsis">
               <FormattedMessage id="dashboardItemsApproval.publishingDate" defaultMessage="Publishing Date" />
             </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered width20 ellipsis">
+            <GlobalAppGridCell className="bordered width15 ellipsis">
               <FormattedMessage id="dashboardItemsApproval.lastEditedBy" defaultMessage="Last Edited By" />
             </GlobalAppGridCell>
             <GlobalAppGridCell className="bordered width15 ellipsis">
@@ -98,8 +101,8 @@ export default function DashboardItemsApprovalGridUI(props: DashboardItemsApprov
                             <GlobalAppGridCell className="checkbox">
                               <Checkbox />
                             </GlobalAppGridCell>
-                            <GlobalAppGridCell className="ellipsis width35 padded0">
-                              <ItemDisplay item={item} showNavigableAsLinks={false} />
+                            <GlobalAppGridCell className="ellipsis width40 padded0">
+                              <ItemDisplay item={item} showNavigableAsLinks={false} showPublishingTarget={false} />
                               <Typography
                                 title={item.path}
                                 variant="caption"
@@ -109,12 +112,23 @@ export default function DashboardItemsApprovalGridUI(props: DashboardItemsApprov
                                 {item.path}
                               </Typography>
                             </GlobalAppGridCell>
-                            <GlobalAppGridCell className="width15">target</GlobalAppGridCell>
-                            <GlobalAppGridCell className="width15">11111</GlobalAppGridCell>
-                            <GlobalAppGridCell className="width20 ellipsis" title={item.modifier}>
-                              {item.modifier}
+                            <GlobalAppGridCell className="width15">
+                              {publishingTargetLookup[item.path]}
                             </GlobalAppGridCell>
-                            <GlobalAppGridCell className="width15">lastEdited</GlobalAppGridCell>
+                            <GlobalAppGridCell className="width15">11111</GlobalAppGridCell>
+                            <GlobalAppGridCell className="width15 ellipsis" title={item.sandbox.modifier}>
+                              {item.sandbox.modifier}
+                            </GlobalAppGridCell>
+                            <GlobalAppGridCell
+                              className="width15 ellipsis"
+                              title={new Intl.DateTimeFormat(locale.localeCode, locale.dateTimeFormatOptions).format(
+                                new Date(item.sandbox.dateModified)
+                              )}
+                            >
+                              {new Intl.DateTimeFormat(locale.localeCode, locale.dateTimeFormatOptions).format(
+                                new Date(item.sandbox.dateModified)
+                              )}
+                            </GlobalAppGridCell>
                             <GlobalAppGridCell className="checkbox">
                               <IconButton size="small" onClick={(e) => onItemMenuClick(e, item)}>
                                 <MoreVertRounded />

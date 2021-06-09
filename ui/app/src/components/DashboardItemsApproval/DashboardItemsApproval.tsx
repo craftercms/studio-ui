@@ -14,25 +14,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useState } from 'react';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMoreRounded';
-import Typography from '@material-ui/core/Typography';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
+import React, { useEffect, useMemo, useState } from 'react';
 import useStyles from './styles';
 import SecondaryButton from '../SecondaryButton';
 import { FormattedMessage } from 'react-intl';
 import { fetchLegacyGetGoLiveItems } from '../../services/dashboard';
 import { useActiveSiteId, useLogicResource, useSpreadState } from '../../utils/hooks';
-import { DetailedItem, SandboxItem } from '../../models/Item';
+import { DetailedItem } from '../../models/Item';
 import DashboardItemsApprovalGridUI from '../DashboardItemsApprovalGrid';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import LookupTable from '../../models/LookupTable';
-import { getNumOfMenuOptionsForItem, getSystemTypeFromPath, parseLegacyItemToSandBoxItem } from '../../utils/content';
+import { getNumOfMenuOptionsForItem, getSystemTypeFromPath, parseLegacyItemToDetailedItem } from '../../utils/content';
 import { completeDetailedItem } from '../../state/actions/content';
 import { showItemMegaMenu } from '../../state/actions/dialogs';
 import { useDispatch } from 'react-redux';
+import Dashlet from '../Dashlet';
+import { createPresenceTable } from '../../utils/array';
 
 export interface DashboardItem {
   label: string;
@@ -40,26 +37,37 @@ export interface DashboardItem {
 }
 
 export default function DashboardItemsApproval() {
-  const classes = useStyles();
   const site = useActiveSiteId();
+  const classes = useStyles();
   const [parentItems, setParentItems] = useState<DashboardItem[]>();
   const [expanded, setExpanded] = useState(true);
   const [expandedLookup, setExpandedLookup] = useSpreadState<LookupTable<boolean>>({});
-  const [itemsLookup, setItemsLookup] = useState<LookupTable<SandboxItem[]>>({});
+  const [itemsLookup, setItemsLookup] = useState<LookupTable<DetailedItem[]>>({});
+  const [publishingTargetLookup, setPublishingTargetLookup] = useState<LookupTable<string>>({});
   const dispatch = useDispatch();
 
+  const showExpanded = useMemo(() => Object.values(expandedLookup).some((value) => !value), [expandedLookup]);
+
   useEffect(() => {
-    fetchLegacyGetGoLiveItems(site, 'eventDate').subscribe((response) => {
+    fetchLegacyGetGoLiveItems(site, 'eventDate', null, false, null).subscribe((response) => {
       const items: DashboardItem[] = [];
       const lookup = {};
+      const targetLookup = {};
       response.documents.forEach((item) => {
-        items.push({ label: item.name, path: item.uri });
-        lookup[item.uri] = item.children.map((item) => parseLegacyItemToSandBoxItem(item));
+        if (item.children.length) {
+          items.push({ label: item.name, path: item.uri });
+          lookup[item.uri] = item.children.map((item) => {
+            targetLookup[item.uri] = item.submittedToEnvironment;
+            return parseLegacyItemToDetailedItem(item);
+          });
+        }
       });
+      setExpandedLookup(createPresenceTable(Object.keys(lookup)));
+      setPublishingTargetLookup(targetLookup);
       setParentItems(items);
       setItemsLookup(lookup);
     });
-  }, [site]);
+  }, [setExpandedLookup, site]);
 
   const resource = useLogicResource<DashboardItem[], DashboardItem[]>(parentItems, {
     shouldResolve: (source) => Boolean(source),
@@ -69,8 +77,13 @@ export default function DashboardItemsApproval() {
     errorSelector: (source) => null
   });
 
-  const onCollapseAll = (e) => {
+  const onToggleCollapse = (e) => {
     e.stopPropagation();
+    const lookup = {};
+    Object.keys(expandedLookup).forEach((path) => {
+      lookup[path] = showExpanded;
+    });
+    setExpandedLookup(lookup);
   };
 
   const onShowInProgress = (e) => {
@@ -81,7 +94,7 @@ export default function DashboardItemsApproval() {
     setExpandedLookup({ [path]: value });
   };
 
-  const onItemMenuClick = (event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, item: SandboxItem) => {
+  const onItemMenuClick = (event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, item: DetailedItem) => {
     const path = item.path;
     dispatch(completeDetailedItem({ path }));
     dispatch(
@@ -97,39 +110,44 @@ export default function DashboardItemsApproval() {
     );
   };
 
+  console.log(publishingTargetLookup);
+
   return (
-    <Accordion expanded={expanded}>
-      <AccordionSummary
-        expandIcon={<ExpandMoreIcon />}
-        classes={{ content: classes.summary }}
-        onClick={() => setExpanded(!expanded)}
-      >
-        <Typography>
-          <FormattedMessage
-            id="dashboardItemsApproval.itemsWaitingForApproval"
-            defaultMessage="Items Waiting For Approval"
-          />
-        </Typography>
-        <section className={classes.options}>
-          <SecondaryButton onClick={onCollapseAll}>
-            <FormattedMessage id="dashboardItemsApproval.collapseAll" defaultMessage="Collapse All" />
+    <Dashlet
+      title={
+        // <FormattedMessage
+        //   id="dashboardItemsApproval.itemsWaitingForApproval"
+        //   defaultMessage="Items Waiting For Approval"
+        // />
+        'Items Waiting For Approval'
+      }
+      expanded={expanded}
+      onToggleExpanded={() => setExpanded(!expanded)}
+      headerRightSection={
+        <>
+          <SecondaryButton onClick={onToggleCollapse} className={classes.collapseAll}>
+            {showExpanded ? (
+              <FormattedMessage id="dashboardItemsApproval.expandedAll" defaultMessage="Expand All" />
+            ) : (
+              <FormattedMessage id="dashboardItemsApproval.collapseAll" defaultMessage="Collapse All" />
+            )}
           </SecondaryButton>
           <SecondaryButton onClick={onShowInProgress}>
             <FormattedMessage id="dashboardItemsApproval.showInProgress" defaultMessage='Show "In-Progress" items' />
           </SecondaryButton>
-        </section>
-      </AccordionSummary>
-      <AccordionDetails>
-        <SuspenseWithEmptyState resource={resource}>
-          <DashboardItemsApprovalGridUI
-            resource={resource}
-            expandedLookup={expandedLookup}
-            itemsLookup={itemsLookup}
-            onExpandedRow={onExpandedRow}
-            onItemMenuClick={onItemMenuClick}
-          />
-        </SuspenseWithEmptyState>
-      </AccordionDetails>
-    </Accordion>
+        </>
+      }
+    >
+      <SuspenseWithEmptyState resource={resource}>
+        <DashboardItemsApprovalGridUI
+          resource={resource}
+          expandedLookup={expandedLookup}
+          publishingTargetLookup={publishingTargetLookup}
+          itemsLookup={itemsLookup}
+          onExpandedRow={onExpandedRow}
+          onItemMenuClick={onItemMenuClick}
+        />
+      </SuspenseWithEmptyState>
+    </Dashlet>
   );
 }
