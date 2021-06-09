@@ -25,26 +25,26 @@ import Checkbox from '@material-ui/core/Checkbox';
 import { FormattedMessage } from 'react-intl';
 import Typography from '@material-ui/core/Typography';
 import { Resource } from '../../models/Resource';
-import { LegacyDeploymentHistoryResponse } from '../../models/Dashboard';
 import IconButton from '@material-ui/core/IconButton';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import GlobalState from '../../models/GlobalState';
 import LookupTable from '../../models/LookupTable';
 import Collapse from '@material-ui/core/Collapse';
-import { useStyles } from './RecentlyPublishedWidget';
-import Pagination from '../Pagination/Pagination';
+import { DashboardItem, useStyles } from './RecentlyPublishedWidget';
 import { DetailedItem } from '../../models/Item';
 import ItemDisplay from '../ItemDisplay';
 import MoreVertRounded from '@material-ui/icons/MoreVertRounded';
 import Box from '@material-ui/core/Box';
+import clsx from 'clsx';
 
 export interface RecentlyPublishedWidgetUIProps {
-  resource: Resource<LegacyDeploymentHistoryResponse>;
+  resource: Resource<DashboardItem[]>;
   itemsLookup: LookupTable<DetailedItem[]>;
   localeBranch: GlobalState['uiConfig']['locale'];
   expandedItems: LookupTable<boolean>;
-  rowsPerPageOptions?: number[];
+  selectedItems: LookupTable<boolean>;
+  setSelectedItems(item): void;
   setExpandedItems(itemExpanded): void;
   onOptionsButtonClick?: any;
 }
@@ -54,18 +54,23 @@ export default function RecentlyPublishedWidgetUi(props: RecentlyPublishedWidget
     resource,
     expandedItems,
     setExpandedItems,
-    rowsPerPageOptions = [5, 10, 15],
     itemsLookup,
     onOptionsButtonClick,
-    localeBranch
+    localeBranch,
+    selectedItems,
+    setSelectedItems
   } = props;
-  const history = resource.read();
+  const parentItems = resource.read();
   const classes = useStyles();
-
-  console.log('itemsLookup', itemsLookup);
 
   const toggleExpand = (name) => {
     setExpandedItems({ [name]: !expandedItems[name] });
+  };
+
+  const handleCheckboxChange = (itemId, event: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedItems({
+      [itemId]: event.target.checked
+    });
   };
 
   return (
@@ -73,20 +78,20 @@ export default function RecentlyPublishedWidgetUi(props: RecentlyPublishedWidget
       <Table size="small" className={classes.tableRoot}>
         <TableHead>
           <GlobalAppGridRow className="hoverDisabled">
-            <GlobalAppGridCell className="checkbox bordered">
+            <GlobalAppGridCell className="checkbox bordered width5">
               <Checkbox />
             </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered width60">
+            <GlobalAppGridCell className="bordered width40">
               <Typography variant="subtitle2">
-                <FormattedMessage id="recentlyPublished.itemName" defaultMessage="Item Name" />
+                <FormattedMessage id="words.item" defaultMessage="Item" />
               </Typography>
             </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered width10">
+            <GlobalAppGridCell className="bordered width20">
               <Typography variant="subtitle2">
-                <FormattedMessage id="recentlyPublished.publishingTarget" defaultMessage="Publishing Target" />
+                <FormattedMessage id="recentlyPublished.publishedTo" defaultMessage="Published To" />
               </Typography>
             </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered width10">
+            <GlobalAppGridCell className="bordered width20">
               <Typography variant="subtitle2">
                 <FormattedMessage id="recentlyPublished.publishDate" defaultMessage="Publish Date" />
               </Typography>
@@ -96,62 +101,77 @@ export default function RecentlyPublishedWidgetUi(props: RecentlyPublishedWidget
                 <FormattedMessage id="recentlyPublished.publishedBy" defaultMessage="Published By" />
               </Typography>
             </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered" />
+            <GlobalAppGridCell className="bordered width5" />
           </GlobalAppGridRow>
         </TableHead>
         <TableBody>
-          {history.documents.map((document, i) => (
+          {parentItems.map((item, i) => (
             <Fragment key={i}>
-              <GlobalAppGridRow key={document.internalName} onClick={() => toggleExpand(document.internalName)}>
+              <GlobalAppGridRow key={item.label} onClick={() => toggleExpand(item.label)}>
                 <GlobalAppGridCell colSpan={6} className="expandableCell">
                   <Box display="flex" className={classes.expandableCellBox}>
                     <IconButton size="small">
-                      {expandedItems[document.internalName] ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                      {expandedItems[item.label] ? <ExpandLessIcon /> : <ExpandMoreIcon />}
                     </IconButton>
-                    <Typography>{document.internalName}</Typography>
+                    <Typography>{item.label}</Typography>
                   </Box>
                 </GlobalAppGridCell>
               </GlobalAppGridRow>
               <GlobalAppGridRow className="hoverDisabled">
                 <GlobalAppGridCell colSpan={6} className="padded0">
-                  <Collapse in={expandedItems[document.internalName]}>
+                  <Collapse in={expandedItems[item.label]}>
                     <Table size="small" className={classes.tableRoot}>
                       <TableBody>
-                        {itemsLookup[document.internalName].map((item) => (
+                        {itemsLookup[item.label].map((item) => (
                           <GlobalAppGridRow key={item.id}>
-                            <GlobalAppGridCell className="checkbox">
-                              <Checkbox />
+                            <GlobalAppGridCell className="checkbox width5">
+                              <Checkbox
+                                checked={Boolean(selectedItems[item.id])}
+                                onChange={(e) => handleCheckboxChange(item.id, e)}
+                              />
                             </GlobalAppGridCell>
-                            <GlobalAppGridCell className="ellipsis width60 padded0">
+                            <GlobalAppGridCell className="ellipsis width40 padded0">
                               <ItemDisplay item={item} />
                               <Typography
                                 title={item.path}
                                 variant="caption"
                                 component="p"
-                                className={classes.itemPath}
+                                className={clsx(classes.itemPath, classes.ellipsis)}
                               >
                                 {item.path}
                               </Typography>
                             </GlobalAppGridCell>
-                            <GlobalAppGridCell className="width10">
-                              {item.live ? (
+                            <GlobalAppGridCell className="width20">
+                              {item.stateMap.live ? (
                                 <FormattedMessage id="words.live" defaultMessage="Live" />
                               ) : (
                                 <FormattedMessage id="words.staging" defaultMessage="Staging" />
                               )}
                             </GlobalAppGridCell>
-                            <GlobalAppGridCell className="width10">
+                            <GlobalAppGridCell
+                              className="width20 ellipsis"
+                              title={new Intl.DateTimeFormat(
+                                localeBranch.localeCode,
+                                localeBranch.dateTimeFormatOptions
+                              ).format(
+                                new Date(
+                                  item.stateMap.live ? item.live.lastPublishedDate : item.staging.lastPublishedDate
+                                )
+                              )}
+                            >
                               {new Intl.DateTimeFormat(
                                 localeBranch.localeCode,
                                 localeBranch.dateTimeFormatOptions
                               ).format(
-                                new Date(item.live ? item.live.lastPublishedDate : item.staging.lastPublishedDate)
+                                new Date(
+                                  item.stateMap.live ? item.live.lastPublishedDate : item.staging.lastPublishedDate
+                                )
                               )}
                             </GlobalAppGridCell>
                             <GlobalAppGridCell className="width10">
-                              {item.live ? item.live.publisher : item.staging.publisher}
+                              {item.stateMap.live ? item.live.publisher : item.staging.publisher}
                             </GlobalAppGridCell>
-                            <GlobalAppGridCell>
+                            <GlobalAppGridCell className="width5">
                               <IconButton onClick={(e) => onOptionsButtonClick(e, item)}>
                                 <MoreVertRounded />
                               </IconButton>
@@ -160,14 +180,6 @@ export default function RecentlyPublishedWidgetUi(props: RecentlyPublishedWidget
                         ))}
                       </TableBody>
                     </Table>
-                    {/* <Pagination
-                      count={document.numOfChildren}
-                      rowsPerPage={10}
-                      rowsPerPageOptions={rowsPerPageOptions}
-                      page={0}
-                      onChangePage={() => {}}
-                      classes={{ root: classes.paginationRoot }}
-                    /> */}
                   </Collapse>
                 </GlobalAppGridCell>
               </GlobalAppGridRow>

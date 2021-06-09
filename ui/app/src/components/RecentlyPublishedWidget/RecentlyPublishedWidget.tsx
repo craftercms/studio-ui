@@ -17,10 +17,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import RecentlyPublishedWidgetUI from './RecentlyPublishedWidgetUI';
 import ApiResponse from '../../models/ApiResponse';
-import { LegacyDeploymentHistoryResponse, LegacyDeploymentHistoryType } from '../../models/Dashboard';
+import { LegacyDeploymentHistoryType } from '../../models/Dashboard';
 import { useActiveSiteId, useLocale, useLogicResource, useSpreadState } from '../../utils/hooks';
 import { fetchLegacyDeploymentHistory } from '../../services/dashboard';
-import Paper from '@material-ui/core/Paper';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import { FormattedMessage } from 'react-intl';
 import SecondaryButton from '../SecondaryButton';
@@ -36,7 +35,14 @@ import { showItemMegaMenu } from '../../state/actions/dialogs';
 import { useDispatch } from 'react-redux';
 import Dashlet from '../Dashlet';
 
-export interface RecentlyPublishedWidgetProps {}
+export interface RecentlyPublishedWidgetProps {
+  selectedItems: LookupTable<boolean>;
+  setSelectedItems(item): void;
+}
+
+export interface DashboardItem {
+  label: string;
+}
 
 export const useStyles = makeStyles((theme) =>
   createStyles({
@@ -62,15 +68,21 @@ export const useStyles = makeStyles((theme) =>
     },
     itemPath: {
       color: theme.palette.text.secondary
+    },
+    ellipsis: {
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap'
     }
   })
 );
 
 export default function RecentlyPublishedWidget(props: RecentlyPublishedWidgetProps) {
+  const { selectedItems, setSelectedItems } = props;
   const [expandedWidget, setExpandedWidget] = useState(true);
   const [fetchingHistory, setFetchingHistory] = useState(false);
   const [errorHistory, setErrorHistory] = useState<ApiResponse>();
-  const [history, setHistory] = useState<LegacyDeploymentHistoryResponse>();
+  const [parentItems, setParentItems] = useState<DashboardItem[]>();
   const [itemsLookup, setItemsLookup] = useSpreadState<LookupTable<DetailedItem[]>>({});
   const [filterBy, setFilterBy] = useState<LegacyDeploymentHistoryType>('page');
   const [numItems, setNumItems] = useState(20);
@@ -84,7 +96,7 @@ export default function RecentlyPublishedWidget(props: RecentlyPublishedWidgetPr
     (documents, expanded) => {
       documents.forEach((document) => {
         setExpandedItems({
-          [document.internalName]: expanded
+          [document.label]: expanded
         });
       });
     },
@@ -114,25 +126,26 @@ export default function RecentlyPublishedWidget(props: RecentlyPublishedWidgetPr
 
   const onCollapseAll = (e) => {
     e.stopPropagation();
-    toggleCollapseAllItems(history.documents, false);
+    toggleCollapseAllItems(parentItems, false);
   };
 
   useEffect(() => {
     setFetchingHistory(true);
     fetchLegacyDeploymentHistory(siteId, 'eventDate', false, 30, numItems, filterBy).subscribe(
       (history) => {
-        setHistory(history);
-        toggleCollapseAllItems(history.documents, true);
+        const items = [];
         history.documents.forEach((document) => {
-          const items = [];
+          const childrenItems = [];
+          items.push({ label: document.internalName });
           document.children.forEach((legacyItem) => {
-            items.push(parseLegacyItemToDetailedItem(legacyItem));
+            childrenItems.push(parseLegacyItemToDetailedItem(legacyItem));
           });
           setItemsLookup({
-            [document.internalName]: items
+            [document.internalName]: childrenItems
           });
         });
-
+        setParentItems(items);
+        toggleCollapseAllItems(items, true);
         setFetchingHistory(false);
       },
       (e) => {
@@ -142,67 +155,64 @@ export default function RecentlyPublishedWidget(props: RecentlyPublishedWidgetPr
     );
   }, [siteId, filterBy, numItems, toggleCollapseAllItems, setItemsLookup]); // TODO: pagination pending
 
-  const resource = useLogicResource<
-    LegacyDeploymentHistoryResponse,
-    { history: LegacyDeploymentHistoryResponse; error: ApiResponse; fetching: boolean }
-  >(
-    useMemo(() => ({ history, error: errorHistory, fetching: fetchingHistory }), [
-      history,
+  const resource = useLogicResource<DashboardItem[], { items: DashboardItem[]; error: ApiResponse; fetching: boolean }>(
+    useMemo(() => ({ items: parentItems, error: errorHistory, fetching: fetchingHistory }), [
+      parentItems,
       errorHistory,
       fetchingHistory
     ]),
     {
-      shouldResolve: (source) => Boolean(source.history) && !fetchingHistory,
+      shouldResolve: (source) => Boolean(source.items) && !fetchingHistory,
       shouldReject: ({ error }) => Boolean(error),
       shouldRenew: (source, resource) => fetchingHistory && resource.complete,
-      resultSelector: (source) => source.history,
+      resultSelector: (source) => source.items,
       errorSelector: () => errorHistory
     }
   );
 
   return (
-    <Paper elevation={2}>
-      <Dashlet
-        title="Recently Published"
-        onToggleExpanded={() => setExpandedWidget(!expandedWidget)}
-        expanded={expandedWidget}
-        headerRightSection={
-          <>
-            <SecondaryButton onClick={onCollapseAll} className={classes.collapseAllButton}>
-              <FormattedMessage id="recentlyPublished.collapseAll" defaultMessage="Collapse All" />
-            </SecondaryButton>
-            <Select
-              value={filterBy}
-              onChange={onFilterChange}
-              classes={{
-                root: classes.filterSelectRoot,
-                select: classes.filterSelectInput
-              }}
-            >
-              <MenuItem value={'page'}>Pages</MenuItem>
-              <MenuItem value={'component'}>Components</MenuItem>
-              <MenuItem value={'document'}>Documents</MenuItem>
-              <MenuItem value={'all'}>All</MenuItem>
-            </Select>
-          </>
-        }
+    <Dashlet
+      title="Recently Published"
+      onToggleExpanded={() => setExpandedWidget(!expandedWidget)}
+      expanded={expandedWidget}
+      headerRightSection={
+        <>
+          <SecondaryButton onClick={onCollapseAll} className={classes.collapseAllButton}>
+            <FormattedMessage id="recentlyPublished.collapseAll" defaultMessage="Collapse All" />
+          </SecondaryButton>
+          <Select
+            value={filterBy}
+            onChange={onFilterChange}
+            classes={{
+              root: classes.filterSelectRoot,
+              select: classes.filterSelectInput
+            }}
+          >
+            <MenuItem value={'page'}>Pages</MenuItem>
+            <MenuItem value={'component'}>Components</MenuItem>
+            <MenuItem value={'document'}>Documents</MenuItem>
+            <MenuItem value={'all'}>All</MenuItem>
+          </Select>
+        </>
+      }
+    >
+      <SuspenseWithEmptyState
+        resource={resource}
+        suspenseProps={{
+          fallback: <></> // TODO: skeleton
+        }}
       >
-        <SuspenseWithEmptyState
+        <RecentlyPublishedWidgetUI
           resource={resource}
-          suspenseProps={{
-            fallback: <></> // TODO: skeleton
-          }}
-        >
-          <RecentlyPublishedWidgetUI
-            resource={resource}
-            itemsLookup={itemsLookup}
-            localeBranch={localeBranch}
-            expandedItems={expandedItems}
-            setExpandedItems={setExpandedItems}
-            onOptionsButtonClick={onOptionsButtonClick}
-          />
-        </SuspenseWithEmptyState>
-      </Dashlet>
-    </Paper>
+          itemsLookup={itemsLookup}
+          localeBranch={localeBranch}
+          expandedItems={expandedItems}
+          setExpandedItems={setExpandedItems}
+          onOptionsButtonClick={onOptionsButtonClick}
+          selectedItems={selectedItems}
+          setSelectedItems={setSelectedItems}
+        />
+      </SuspenseWithEmptyState>
+    </Dashlet>
   );
 }
