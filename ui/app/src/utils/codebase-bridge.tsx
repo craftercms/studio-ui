@@ -207,7 +207,7 @@ export function createCodebaseBridge() {
       About: lazy(() => import('../components/AboutCrafterCMSView')),
       ContentTypesManagement: lazy(() => import('../components/AccountManagement')),
       ConfigurationManagement: lazy(() => import('../components/AccountManagement')),
-      WorkflowStatesManagement: lazy(() => import('../components/AccountManagement')),
+      ItemStatesManagement: lazy(() => import('../components/ItemStatesManagement')),
       RemotesManagement: lazy(() => import('../components/RemoteRepositoriesManagement')),
       GraphQLPlayground: lazy(() => import('../components/AccountManagement')),
       PublishingDashboard: lazy(() => import('../components/PublishingDashboard')),

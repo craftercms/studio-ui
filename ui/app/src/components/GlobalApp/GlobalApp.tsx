@@ -95,7 +95,7 @@ export default function GlobalApp(props: GlobalAppProps) {
           />
         </footer>
       </ResizeableDrawer>
-      <Box height="100%" width="100%" paddingLeft={openSidebar ? `${width}px` : 0}>
+      <Box className={classes.wrapper} height="100%" width="100%" paddingLeft={openSidebar ? `${width}px` : 0}>
         <Switch>
           <Route path="/sites" component={SitesManagement} />
           <Route
