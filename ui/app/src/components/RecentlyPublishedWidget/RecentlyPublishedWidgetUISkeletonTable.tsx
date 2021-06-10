@@ -49,8 +49,6 @@ export default function RecentlyPublishedWidgetUiSkeletonTable(props: RecentlyPu
       }));
   const expandedLookup = props.expandedLookup ?? {};
 
-  console.log(items);
-
   return (
     <TableContainer>
       <Table size="small" className={classes.tableRoot}>
