@@ -31,10 +31,11 @@ import { useDispatch } from 'react-redux';
 import Dashlet from '../Dashlet';
 import ApiResponse from '../../models/ApiResponse';
 import DashboardItemsApprovalSkeletonTable from '../DashboardItemsApprovalGrid/DashboardItemsApprovalSkeletonTable';
+import { createPresenceTable } from '../../utils/array';
 
 export interface DashboardItemsApprovalProps {
   selectedLookup: LookupTable<boolean>;
-  onItemChecked(path: string, value: boolean, lookup?: LookupTable<boolean>): void;
+  onItemChecked(lookup: LookupTable<boolean>): void;
 }
 
 export interface DashboardItem {
@@ -66,10 +67,10 @@ export default function DashboardItemsApproval(props: DashboardItemsApprovalProp
   const dispatch = useDispatch();
 
   const showExpanded = useMemo(() => Object.values(expandedLookup).some((value) => !value), [expandedLookup]);
-  // const isAllChecked = useMemo(
-  //   () => Object.values(state.itemsLookup).some((items) => !items.some((item) => !selectedLookup[item.path])),
-  //   [selectedLookup, state.itemsLookup]
-  // );
+  const isAllChecked = useMemo(() => !Object.keys(state.itemsLookup).some((path) => !selectedLookup[path]), [
+    selectedLookup,
+    state.itemsLookup
+  ]);
 
   // console.log(isAllChecked);
   // const isIndeterminate = useMemo(() => Object.values(state.itemsLookup).map(), []);
@@ -164,7 +165,7 @@ export default function DashboardItemsApproval(props: DashboardItemsApprovalProp
   };
 
   const onToggleCheckedAll = () => {
-    // onItemChecked();
+    onItemChecked(createPresenceTable(Object.keys(state.itemsLookup), !isAllChecked));
   };
 
   return (
@@ -210,7 +211,7 @@ export default function DashboardItemsApproval(props: DashboardItemsApprovalProp
           itemsLookup={state.itemsLookup}
           selectedLookup={selectedLookup}
           onToggleCheckedAll={onToggleCheckedAll}
-          isAllChecked={false}
+          isAllChecked={isAllChecked}
           onExpandedRow={onExpandedRow}
           onItemMenuClick={onItemMenuClick}
           onItemChecked={onItemChecked}

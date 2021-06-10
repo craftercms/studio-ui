@@ -48,7 +48,7 @@ interface DashboardItemsApprovalGridUIProps {
   isAllChecked: boolean;
   onToggleCheckedAll(): void;
   onExpandedRow(path: string, value: boolean): void;
-  onItemChecked(path: string, value: boolean): void;
+  onItemChecked(lookup: LookupTable<boolean>): void;
   onItemMenuClick(event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, item: DetailedItem): void;
 }
 
@@ -130,12 +130,11 @@ export default function DashboardItemsApprovalGridUI(props: DashboardItemsApprov
                                       e.stopPropagation();
                                     }}
                                     onChange={() => {
-                                      onItemChecked(
-                                        itemsLookup[path].path,
-                                        nnou(selectedLookup[itemsLookup[path].path])
+                                      onItemChecked({
+                                        [itemsLookup[path].path]: nnou(selectedLookup[itemsLookup[path].path])
                                           ? !selectedLookup[itemsLookup[path].path]
                                           : true
-                                      );
+                                      });
                                     }}
                                   />
                                 </GlobalAppGridCell>
