@@ -27,7 +27,7 @@ import {
   STATE_SYSTEM_PROCESSING_MASK
 } from '../../utils/constants';
 
-export function getStateMask(stateMap: ItemStateMap): number {
+export function getStateBitmap(stateMap: ItemStateMap): number {
   let mask = 0;
   if (stateMap.new) {
     mask += STATE_NEW_MASK;
