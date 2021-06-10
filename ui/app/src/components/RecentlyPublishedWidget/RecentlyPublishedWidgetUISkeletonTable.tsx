@@ -26,15 +26,14 @@ import Box from '@material-ui/core/Box';
 import GlobalAppGridRow from '../GlobalAppGridRow';
 import GlobalAppGridCell from '../GlobalAppGridCell';
 import Skeleton from '@material-ui/lab/Skeleton';
-import { DetailedItem } from '../../models/Item';
 import LookupTable from '../../models/LookupTable';
 import { rand } from '../PathNavigator/utils';
 import Typography from '@material-ui/core/Typography';
+import { DashboardItem } from './RecentlyPublishedWidget';
 
 export interface RecentlyPublishedWidgetUiSkeletonTableProps {
   numOfItems?: number;
-  items?: { label: string }[];
-  itemsLookup?: LookupTable<DetailedItem[]>;
+  items?: DashboardItem[];
   expandedLookup?: LookupTable<boolean>;
 }
 
@@ -46,10 +45,11 @@ export default function RecentlyPublishedWidgetUiSkeletonTable(props: RecentlyPu
     ? props.items
     : new Array(numOfItems).fill(null).map((x, i) => ({
         label: i.toString(),
-        path: i.toString()
+        children: []
       }));
   const expandedLookup = props.expandedLookup ?? {};
-  const itemsLookup = props.itemsLookup ?? {};
+
+  console.log(items);
 
   return (
     <TableContainer>
@@ -98,7 +98,7 @@ export default function RecentlyPublishedWidgetUiSkeletonTable(props: RecentlyPu
                   <Collapse in={expandedLookup[item.label]}>
                     <Table size="small" className={classes.tableRoot}>
                       <TableBody>
-                        {itemsLookup[item.label]?.map((item, i) => (
+                        {item.children.map((item, i) => (
                           <GlobalAppGridRow key={i}>
                             <GlobalAppGridCell className="checkbox">
                               <Skeleton variant="circle" width={30} height={30} className={classes.skeletonCheckbox} />

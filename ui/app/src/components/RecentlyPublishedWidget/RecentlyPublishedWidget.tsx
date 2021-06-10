@@ -194,13 +194,7 @@ export default function RecentlyPublishedWidget(props: RecentlyPublishedWidgetPr
       <SuspenseWithEmptyState
         resource={resource}
         suspenseProps={{
-          fallback: (
-            <RecentlyPublishedWidgetUiSkeletonTable
-              items={parentItems}
-              expandedLookup={expandedItems}
-              // itemsLookup={itemsLookup} // TODO: pending change to itemsLookup: LookupTable<DetailedItem>
-            />
-          )
+          fallback: <RecentlyPublishedWidgetUiSkeletonTable items={parentItems} expandedLookup={expandedItems} />
         }}
       >
         <RecentlyPublishedWidgetUI
