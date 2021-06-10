@@ -31,6 +31,7 @@ import { useDispatch } from 'react-redux';
 import Dashlet from '../Dashlet';
 import { createPresenceTable } from '../../utils/array';
 import ApiResponse from '../../models/ApiResponse';
+import DashboardItemsApprovalSkeletonTable from '../DashboardItemsApprovalGrid/DashboardItemsApprovalSkeletonTable';
 
 export interface DashboardItemsApprovalProps {
   selectedLookup: LookupTable<boolean>;
@@ -174,7 +175,18 @@ export default function DashboardItemsApproval(props: DashboardItemsApprovalProp
         </>
       }
     >
-      <SuspenseWithEmptyState resource={resource}>
+      <SuspenseWithEmptyState
+        resource={resource}
+        suspenseProps={{
+          fallback: (
+            <DashboardItemsApprovalSkeletonTable
+              items={state.parentItems}
+              expandedLookup={expandedLookup}
+              itemsLookup={state.itemsLookup}
+            />
+          )
+        }}
+      >
         <DashboardItemsApprovalGridUI
           resource={resource}
           expandedLookup={expandedLookup}

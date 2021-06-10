@@ -28,6 +28,9 @@ export const useStyles = makeStyles((theme) =>
     },
     itemPath: {
       color: theme.palette.text.secondary
+    },
+    skeletonCheckbox: {
+      margin: '6px 10px'
     }
   })
 );
