@@ -29,24 +29,29 @@ import { completeDetailedItem } from '../../state/actions/content';
 import { showItemMegaMenu } from '../../state/actions/dialogs';
 import { useDispatch } from 'react-redux';
 import Dashlet from '../Dashlet';
-import { createPresenceTable } from '../../utils/array';
 import ApiResponse from '../../models/ApiResponse';
 import DashboardItemsApprovalSkeletonTable from '../DashboardItemsApprovalGrid/DashboardItemsApprovalSkeletonTable';
 
 export interface DashboardItemsApprovalProps {
   selectedLookup: LookupTable<boolean>;
-  onItemChecked(path: string, value: boolean): void;
+  onItemChecked(path: string, value: boolean, lookup?: LookupTable<boolean>): void;
 }
 
 export interface DashboardItem {
   label: string;
   path: string;
+  children: string[];
 }
 
 export default function DashboardItemsApproval(props: DashboardItemsApprovalProps) {
   const site = useActiveSiteId();
   const classes = useStyles();
-  const [state, setState] = useState({
+  const [state, setState] = useState<{
+    itemsLookup: LookupTable<DetailedItem>;
+    publishingTargetLookup: LookupTable<string>;
+    parentItems: DashboardItem[];
+    total: number;
+  }>({
     publishingTargetLookup: {},
     itemsLookup: {},
     parentItems: null,
@@ -61,29 +66,41 @@ export default function DashboardItemsApproval(props: DashboardItemsApprovalProp
   const dispatch = useDispatch();
 
   const showExpanded = useMemo(() => Object.values(expandedLookup).some((value) => !value), [expandedLookup]);
+  // const isAllChecked = useMemo(
+  //   () => Object.values(state.itemsLookup).some((items) => !items.some((item) => !selectedLookup[item.path])),
+  //   [selectedLookup, state.itemsLookup]
+  // );
+
+  // console.log(isAllChecked);
   // const isIndeterminate = useMemo(() => Object.values(state.itemsLookup).map(), []);
 
   useEffect(() => {
     setIsFetching(true);
     fetchLegacyGetGoLiveItems(site, 'eventDate', null, showInProgressItems, null).subscribe(
       (response) => {
-        const items: DashboardItem[] = [];
-        const lookup = {};
-        const targetLookup = {};
+        const parentItems: DashboardItem[] = [];
+        const itemsLookup = {};
+        const publishingTargetLookup = {};
+        const expandedLookup = {};
         response.documents.forEach((item) => {
           if (item.children.length) {
-            items.push({ label: item.name, path: item.uri });
-            lookup[item.uri] = item.children.map((item) => {
-              targetLookup[item.uri] = item.submittedToEnvironment;
-              return parseLegacyItemToDetailedItem(item);
+            expandedLookup[item.uri] = true;
+            parentItems.push({
+              label: item.name,
+              path: item.uri,
+              children: item.children.map((item) => {
+                publishingTargetLookup[item.uri] = item.submittedToEnvironment;
+                itemsLookup[item.uri] = parseLegacyItemToDetailedItem(item);
+                return item.uri;
+              })
             });
           }
         });
-        setExpandedLookup(createPresenceTable(Object.keys(lookup)));
+        setExpandedLookup(expandedLookup);
         setState({
-          publishingTargetLookup: targetLookup,
-          itemsLookup: lookup,
-          parentItems: items,
+          publishingTargetLookup,
+          itemsLookup,
+          parentItems,
           total: response.total
         });
         setIsFetching(false);
@@ -97,7 +114,7 @@ export default function DashboardItemsApproval(props: DashboardItemsApprovalProp
   const resource = useLogicResource<
     DashboardItem[],
     {
-      items: DetailedItem[];
+      items: DashboardItem[];
       error: ApiResponse;
       isFetching: boolean;
     }
@@ -146,6 +163,10 @@ export default function DashboardItemsApproval(props: DashboardItemsApprovalProp
     );
   };
 
+  const onToggleCheckedAll = () => {
+    // onItemChecked();
+  };
+
   return (
     <Dashlet
       title={
@@ -179,13 +200,7 @@ export default function DashboardItemsApproval(props: DashboardItemsApprovalProp
       <SuspenseWithEmptyState
         resource={resource}
         suspenseProps={{
-          fallback: (
-            <DashboardItemsApprovalSkeletonTable
-              items={state.parentItems}
-              expandedLookup={expandedLookup}
-              itemsLookup={state.itemsLookup}
-            />
-          )
+          fallback: <DashboardItemsApprovalSkeletonTable items={state.parentItems} expandedLookup={expandedLookup} />
         }}
       >
         <DashboardItemsApprovalGridUI
@@ -194,6 +209,8 @@ export default function DashboardItemsApproval(props: DashboardItemsApprovalProp
           publishingTargetLookup={state.publishingTargetLookup}
           itemsLookup={state.itemsLookup}
           selectedLookup={selectedLookup}
+          onToggleCheckedAll={onToggleCheckedAll}
+          isAllChecked={false}
           onExpandedRow={onExpandedRow}
           onItemMenuClick={onItemMenuClick}
           onItemChecked={onItemChecked}

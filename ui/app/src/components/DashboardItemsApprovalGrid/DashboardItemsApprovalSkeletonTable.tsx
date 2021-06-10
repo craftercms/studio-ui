@@ -26,14 +26,13 @@ import Box from '@material-ui/core/Box';
 import GlobalAppGridRow from '../GlobalAppGridRow';
 import GlobalAppGridCell from '../GlobalAppGridCell';
 import Skeleton from '@material-ui/lab/Skeleton';
-import { DetailedItem } from '../../models/Item';
 import LookupTable from '../../models/LookupTable';
 import { rand } from '../PathNavigator/utils';
+import { DashboardItem } from '../DashboardItemsApproval';
 
 interface DashboardItemsApprovalGridUIProps {
   numOfItems?: number;
-  items?: { label: string; path: string }[];
-  itemsLookup?: LookupTable<DetailedItem[]>;
+  items?: DashboardItem[];
   expandedLookup?: LookupTable<boolean>;
 }
 
@@ -45,10 +44,10 @@ export default function DashboardItemsApprovalSkeletonTable(props: DashboardItem
     ? props.items
     : new Array(numOfItems).fill(null).map((x, i) => ({
         label: i.toString(),
-        path: i.toString()
+        path: i.toString(),
+        children: []
       }));
   const expandedLookup = props.expandedLookup ?? {};
-  const itemsLookup = props.itemsLookup ?? {};
 
   return (
     <TableContainer>
@@ -77,7 +76,7 @@ export default function DashboardItemsApprovalSkeletonTable(props: DashboardItem
           </GlobalAppGridRow>
         </TableHead>
         <TableBody>
-          {items.map((item, i) => (
+          {items.map((dashboardItem, i) => (
             <Fragment key={i}>
               <GlobalAppGridRow>
                 <GlobalAppGridCell colSpan={7} className="expandableCell">
@@ -89,10 +88,10 @@ export default function DashboardItemsApprovalSkeletonTable(props: DashboardItem
               </GlobalAppGridRow>
               <GlobalAppGridRow className="hoverDisabled">
                 <GlobalAppGridCell colSpan={7} className="padded0">
-                  <Collapse in={expandedLookup[item.path]}>
+                  <Collapse in={expandedLookup[dashboardItem.path]}>
                     <Table size="small" className={classes.tableRoot}>
                       <TableBody>
-                        {itemsLookup[item.path]?.map((item, i) => (
+                        {dashboardItem.children.map((item, i) => (
                           <GlobalAppGridRow key={i}>
                             <GlobalAppGridCell className="checkbox">
                               <Skeleton variant="circle" width={30} height={30} className={classes.skeletonCheckbox} />

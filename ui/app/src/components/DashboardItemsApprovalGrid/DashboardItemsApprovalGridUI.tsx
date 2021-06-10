@@ -37,13 +37,16 @@ import ItemDisplay from '../ItemDisplay';
 import clsx from 'clsx';
 import { useLocale } from '../../utils/hooks';
 import { nnou } from '../../utils/object';
+import { DashboardItem } from '../DashboardItemsApproval';
 
 interface DashboardItemsApprovalGridUIProps {
-  resource: Resource<{ label: string; path: string }[]>;
-  itemsLookup: LookupTable<DetailedItem[]>;
+  resource: Resource<DashboardItem[]>;
+  itemsLookup: LookupTable<DetailedItem>;
   expandedLookup: LookupTable<boolean>;
   selectedLookup: LookupTable<boolean>;
   publishingTargetLookup: LookupTable<string>;
+  isAllChecked: boolean;
+  onToggleCheckedAll(): void;
   onExpandedRow(path: string, value: boolean): void;
   onItemChecked(path: string, value: boolean): void;
   onItemMenuClick(event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, item: DetailedItem): void;
@@ -58,7 +61,9 @@ export default function DashboardItemsApprovalGridUI(props: DashboardItemsApprov
     itemsLookup,
     selectedLookup,
     onItemMenuClick,
-    onItemChecked
+    onItemChecked,
+    isAllChecked,
+    onToggleCheckedAll
   } = props;
   const items = resource.read();
   const classes = useStyles();
@@ -70,7 +75,7 @@ export default function DashboardItemsApprovalGridUI(props: DashboardItemsApprov
         <TableHead>
           <GlobalAppGridRow className="hoverDisabled">
             <GlobalAppGridCell className="checkbox bordered">
-              <Checkbox />
+              <Checkbox checked={isAllChecked} onChange={onToggleCheckedAll} />
             </GlobalAppGridCell>
             <GlobalAppGridCell className="bordered width40 padded0">
               <FormattedMessage id="dashboardItemsApproval.itemName" defaultMessage="Item Name" />
@@ -91,76 +96,93 @@ export default function DashboardItemsApprovalGridUI(props: DashboardItemsApprov
           </GlobalAppGridRow>
         </TableHead>
         <TableBody>
-          {items.map((item, i) => (
+          {items.map((dashboardItem, i) => (
             <Fragment key={i}>
-              <GlobalAppGridRow onClick={() => onExpandedRow(item.path, !expandedLookup[item.path])}>
+              <GlobalAppGridRow onClick={() => onExpandedRow(dashboardItem.path, !expandedLookup[dashboardItem.path])}>
                 <GlobalAppGridCell colSpan={7} className="expandableCell">
                   <Box display="flex">
                     <IconButton size="small">
                       <ExpandMoreIcon />
                     </IconButton>
                     <Typography>
-                      {item.label} ({itemsLookup[item.path].length})
+                      {dashboardItem.label} ({dashboardItem.children.length})
                     </Typography>
                   </Box>
                 </GlobalAppGridCell>
               </GlobalAppGridRow>
               <GlobalAppGridRow className="hoverDisabled">
                 <GlobalAppGridCell colSpan={7} className="padded0">
-                  <Collapse in={expandedLookup[item.path]}>
+                  <Collapse in={expandedLookup[dashboardItem.path]}>
                     <Table size="small" className={classes.tableRoot}>
                       <TableBody>
-                        {itemsLookup[item.path].map((item, i) => (
-                          <GlobalAppGridRow key={i}>
-                            <GlobalAppGridCell className="checkbox">
-                              <Checkbox
-                                checked={nnou(selectedLookup[item.path]) ? selectedLookup[item.path] : false}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                }}
-                                onChange={() => {
-                                  onItemChecked(
-                                    item.path,
-                                    nnou(selectedLookup[item.path]) ? !selectedLookup[item.path] : true
-                                  );
-                                }}
-                              />
-                            </GlobalAppGridCell>
-                            <GlobalAppGridCell className="ellipsis width40 padded0">
-                              <ItemDisplay item={item} showNavigableAsLinks={false} showPublishingTarget={false} />
-                              <Typography
-                                title={item.path}
-                                variant="caption"
-                                component="p"
-                                className={clsx(classes.itemPath, classes.ellipsis)}
-                              >
-                                {item.path}
-                              </Typography>
-                            </GlobalAppGridCell>
-                            <GlobalAppGridCell className="width15">
-                              {publishingTargetLookup[item.path]}
-                            </GlobalAppGridCell>
-                            <GlobalAppGridCell className="width15">11111</GlobalAppGridCell>
-                            <GlobalAppGridCell className="width15 ellipsis" title={item.sandbox.modifier}>
-                              {item.sandbox.modifier}
-                            </GlobalAppGridCell>
-                            <GlobalAppGridCell
-                              className="width15 ellipsis"
-                              title={new Intl.DateTimeFormat(locale.localeCode, locale.dateTimeFormatOptions).format(
-                                new Date(item.sandbox.dateModified)
-                              )}
-                            >
-                              {new Intl.DateTimeFormat(locale.localeCode, locale.dateTimeFormatOptions).format(
-                                new Date(item.sandbox.dateModified)
-                              )}
-                            </GlobalAppGridCell>
-                            <GlobalAppGridCell className="checkbox">
-                              <IconButton size="small" onClick={(e) => onItemMenuClick(e, item)}>
-                                <MoreVertRounded />
-                              </IconButton>
-                            </GlobalAppGridCell>
-                          </GlobalAppGridRow>
-                        ))}
+                        {dashboardItem.children.map(
+                          (path, i) =>
+                            itemsLookup[path] && (
+                              <GlobalAppGridRow key={i}>
+                                <GlobalAppGridCell className="checkbox">
+                                  <Checkbox
+                                    checked={
+                                      nnou(selectedLookup[itemsLookup[path].path])
+                                        ? selectedLookup[itemsLookup[path].path]
+                                        : false
+                                    }
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                    }}
+                                    onChange={() => {
+                                      onItemChecked(
+                                        itemsLookup[path].path,
+                                        nnou(selectedLookup[itemsLookup[path].path])
+                                          ? !selectedLookup[itemsLookup[path].path]
+                                          : true
+                                      );
+                                    }}
+                                  />
+                                </GlobalAppGridCell>
+                                <GlobalAppGridCell className="ellipsis width40 padded0">
+                                  <ItemDisplay
+                                    item={itemsLookup[path]}
+                                    showNavigableAsLinks={false}
+                                    showPublishingTarget={false}
+                                  />
+                                  <Typography
+                                    title={itemsLookup[path].path}
+                                    variant="caption"
+                                    component="p"
+                                    className={clsx(classes.itemPath, classes.ellipsis)}
+                                  >
+                                    {itemsLookup[path].path}
+                                  </Typography>
+                                </GlobalAppGridCell>
+                                <GlobalAppGridCell className="width15">
+                                  {publishingTargetLookup[itemsLookup[path].path]}
+                                </GlobalAppGridCell>
+                                <GlobalAppGridCell className="width15">11111</GlobalAppGridCell>
+                                <GlobalAppGridCell
+                                  className="width15 ellipsis"
+                                  title={itemsLookup[path].sandbox.modifier}
+                                >
+                                  {itemsLookup[path].sandbox.modifier}
+                                </GlobalAppGridCell>
+                                <GlobalAppGridCell
+                                  className="width15 ellipsis"
+                                  title={new Intl.DateTimeFormat(
+                                    locale.localeCode,
+                                    locale.dateTimeFormatOptions
+                                  ).format(new Date(itemsLookup[path].sandbox.dateModified))}
+                                >
+                                  {new Intl.DateTimeFormat(locale.localeCode, locale.dateTimeFormatOptions).format(
+                                    new Date(itemsLookup[path].sandbox.dateModified)
+                                  )}
+                                </GlobalAppGridCell>
+                                <GlobalAppGridCell className="checkbox">
+                                  <IconButton size="small" onClick={(e) => onItemMenuClick(e, itemsLookup[path])}>
+                                    <MoreVertRounded />
+                                  </IconButton>
+                                </GlobalAppGridCell>
+                              </GlobalAppGridRow>
+                            )
+                        )}
                       </TableBody>
                     </Table>
                   </Collapse>
