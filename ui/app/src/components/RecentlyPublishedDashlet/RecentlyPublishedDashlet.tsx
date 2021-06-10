@@ -166,7 +166,7 @@ export default function RecentlyPublishedDashlet(props: RecentlyPublishedWidgetP
 
   return (
     <Dashlet
-      title="Recently Published"
+      title={<FormattedMessage id="recentlyPublished.recentlyPublished" defaultMessage="RecentlyPublished" />}
       onToggleExpanded={() => setExpandedWidget(!expandedWidget)}
       expanded={expandedWidget}
       headerRightSection={
