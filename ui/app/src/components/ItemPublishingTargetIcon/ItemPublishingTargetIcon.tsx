@@ -44,13 +44,13 @@ const useStyles = makeStyles(() =>
       color: palette.gray.medium2,
       ...styles.root
     }),
-    publishingTargetStaged: (styles) => ({
-      color: palette.blue.main,
-      ...styles.publishingTargetStaged
-    }),
     publishingTargetLive: (styles) => ({
       color: palette.green.main,
       ...styles.publishingTargetLive
+    }),
+    publishingTargetStaged: (styles) => ({
+      color: palette.blue.main,
+      ...styles.publishingTargetStaged
     }),
     publishingIcon: (styles) => ({
       ...styles.publishingIcon
@@ -70,8 +70,11 @@ export default function ItemPublishingTargetIcon(props: ItemPublishingTargetIcon
           classes.publishingIcon,
           propClasses?.root,
           className,
-          item.stateMap.live && classes.publishingTargetLive,
-          item.stateMap.staged && classes.publishingTargetStaged
+          item.stateMap.live
+            ? classes.publishingTargetLive
+            : item.stateMap.staged
+            ? classes.publishingTargetStaged
+            : false
         )}
       />
     </Tooltip>
