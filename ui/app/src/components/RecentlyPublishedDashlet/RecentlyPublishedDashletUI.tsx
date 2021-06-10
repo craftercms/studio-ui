@@ -31,7 +31,7 @@ import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import GlobalState from '../../models/GlobalState';
 import LookupTable from '../../models/LookupTable';
 import Collapse from '@material-ui/core/Collapse';
-import { DashboardItem } from './RecentlyPublishedWidget';
+import { DashboardItem } from './RecentlyPublishedDashlet';
 import { DetailedItem } from '../../models/Item';
 import ItemDisplay from '../ItemDisplay';
 import MoreVertRounded from '@material-ui/icons/MoreVertRounded';
@@ -53,7 +53,7 @@ export interface RecentlyPublishedWidgetUIProps {
   onClickSelectAll(): void;
 }
 
-export default function RecentlyPublishedWidgetUi(props: RecentlyPublishedWidgetUIProps) {
+export default function RecentlyPublishedDashletUI(props: RecentlyPublishedWidgetUIProps) {
   const {
     resource,
     expandedItems,

@@ -29,7 +29,7 @@ import Skeleton from '@material-ui/lab/Skeleton';
 import LookupTable from '../../models/LookupTable';
 import { rand } from '../PathNavigator/utils';
 import Typography from '@material-ui/core/Typography';
-import { DashboardItem } from './RecentlyPublishedWidget';
+import { DashboardItem } from './RecentlyPublishedDashlet';
 
 export interface RecentlyPublishedWidgetUiSkeletonTableProps {
   numOfItems?: number;
@@ -37,7 +37,7 @@ export interface RecentlyPublishedWidgetUiSkeletonTableProps {
   expandedLookup?: LookupTable<boolean>;
 }
 
-export default function RecentlyPublishedWidgetUiSkeletonTable(props: RecentlyPublishedWidgetUiSkeletonTableProps) {
+export default function RecentlyPublishedDashletUISkeletonTable(props: RecentlyPublishedWidgetUiSkeletonTableProps) {
   const classes = useStyles();
   const { numOfItems = 2 } = props;
 

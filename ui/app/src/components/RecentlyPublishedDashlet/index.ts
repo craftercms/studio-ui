@@ -14,10 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './RecentlyPublishedWidget';
+export { default } from './RecentlyPublishedDashlet';
 
-export * from './RecentlyPublishedWidget';
+export * from './RecentlyPublishedDashlet';
 
-export * from './RecentlyPublishedWidgetUI';
+export * from './RecentlyPublishedDashletUI';
 
-export * from './RecentlyPublishedWidgetUISkeletonTable';
+export * from './RecentlyPublishedDashletUISkeletonTable';

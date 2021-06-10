@@ -15,7 +15,7 @@
  */
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import RecentlyPublishedWidgetUI from './RecentlyPublishedWidgetUI';
+import RecentlyPublishedWidgetUI from './RecentlyPublishedDashletUI';
 import ApiResponse from '../../models/ApiResponse';
 import { LegacyDeploymentHistoryType } from '../../models/Dashboard';
 import { useActiveSiteId, useLocale, useLogicResource, useSpreadState } from '../../utils/hooks';
@@ -34,7 +34,7 @@ import { showItemMegaMenu } from '../../state/actions/dialogs';
 import { useDispatch } from 'react-redux';
 import Dashlet from '../Dashlet';
 import useStyles from './styles';
-import RecentlyPublishedWidgetUiSkeletonTable from './RecentlyPublishedWidgetUISkeletonTable';
+import RecentlyPublishedDashletUISkeletonTable from './RecentlyPublishedDashletUISkeletonTable';
 import Typography from '@material-ui/core/Typography';
 
 export interface RecentlyPublishedWidgetProps {
@@ -47,7 +47,7 @@ export interface DashboardItem {
   children: string[];
 }
 
-export default function RecentlyPublishedWidget(props: RecentlyPublishedWidgetProps) {
+export default function RecentlyPublishedDashlet(props: RecentlyPublishedWidgetProps) {
   const { selectedLookup, onItemChecked } = props;
   const [expandedWidget, setExpandedWidget] = useState(true);
   const [fetchingHistory, setFetchingHistory] = useState(false);
@@ -194,7 +194,7 @@ export default function RecentlyPublishedWidget(props: RecentlyPublishedWidgetPr
       <SuspenseWithEmptyState
         resource={resource}
         suspenseProps={{
-          fallback: <RecentlyPublishedWidgetUiSkeletonTable items={parentItems} expandedLookup={expandedItems} />
+          fallback: <RecentlyPublishedDashletUISkeletonTable items={parentItems} expandedLookup={expandedItems} />
         }}
       >
         <RecentlyPublishedWidgetUI
