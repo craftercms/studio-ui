@@ -158,7 +158,17 @@ export default function AwaitingApprovalDashletGridUI(props: AwaitingApprovalDas
                                 <GlobalAppGridCell className="width15">
                                   {publishingTargetLookup[itemsLookup[path].path]}
                                 </GlobalAppGridCell>
-                                <GlobalAppGridCell className="width15">11111</GlobalAppGridCell>
+                                <GlobalAppGridCell
+                                  className="width15"
+                                  title={new Intl.DateTimeFormat(
+                                    locale.localeCode,
+                                    locale.dateTimeFormatOptions
+                                  ).format(new Date(itemsLookup[path].live.lastPublishedDate))}
+                                >
+                                  {new Intl.DateTimeFormat(locale.localeCode, locale.dateTimeFormatOptions).format(
+                                    new Date(itemsLookup[path].live.lastPublishedDate)
+                                  )}
+                                </GlobalAppGridCell>
                                 <GlobalAppGridCell
                                   className="width15 ellipsis"
                                   title={itemsLookup[path].sandbox.modifier}
