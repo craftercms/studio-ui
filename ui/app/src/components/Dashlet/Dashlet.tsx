@@ -23,10 +23,9 @@ import AccordionDetails from '@material-ui/core/AccordionDetails';
 import Typography from '@material-ui/core/Typography';
 
 export type DashletProps = PropsWithChildren<
-  AccordionProps & {
+  Omit<AccordionProps, 'title'> & {
     title: React.ReactNode;
     headerRightSection?: React.ReactNode;
-    expanded: boolean;
     icon?: ElementType;
     onToggleExpanded(): void;
   }
