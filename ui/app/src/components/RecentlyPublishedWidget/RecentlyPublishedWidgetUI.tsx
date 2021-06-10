@@ -31,12 +31,13 @@ import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import GlobalState from '../../models/GlobalState';
 import LookupTable from '../../models/LookupTable';
 import Collapse from '@material-ui/core/Collapse';
-import { DashboardItem, useStyles } from './RecentlyPublishedWidget';
+import { DashboardItem } from './RecentlyPublishedWidget';
 import { DetailedItem } from '../../models/Item';
 import ItemDisplay from '../ItemDisplay';
 import MoreVertRounded from '@material-ui/icons/MoreVertRounded';
 import Box from '@material-ui/core/Box';
 import clsx from 'clsx';
+import useStyles from './styles';
 
 export interface RecentlyPublishedWidgetUIProps {
   resource: Resource<DashboardItem[]>;

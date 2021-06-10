@@ -23,7 +23,6 @@ import { fetchLegacyDeploymentHistory } from '../../services/dashboard';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import { FormattedMessage } from 'react-intl';
 import SecondaryButton from '../SecondaryButton';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import { DetailedItem } from '../../models/Item';
@@ -34,6 +33,8 @@ import { completeDetailedItem } from '../../state/actions/content';
 import { showItemMegaMenu } from '../../state/actions/dialogs';
 import { useDispatch } from 'react-redux';
 import Dashlet from '../Dashlet';
+import useStyles from './styles';
+import RecentlyPublishedWidgetUiSkeletonTable from './RecentlyPublishedWidgetUISkeletonTable';
 
 export interface RecentlyPublishedWidgetProps {
   selectedItems: LookupTable<boolean>;
@@ -43,39 +44,6 @@ export interface RecentlyPublishedWidgetProps {
 export interface DashboardItem {
   label: string;
 }
-
-export const useStyles = makeStyles((theme) =>
-  createStyles({
-    collapseAllButton: {
-      marginRight: theme.spacing(1)
-    },
-    filterSelectRoot: {
-      padding: '8.5px 14px'
-    },
-    filterSelectInput: {
-      fontSize: theme.typography.button.fontSize,
-      fontWeight: theme.typography.button.fontWeight
-    },
-    paginationRoot: {
-      marginLeft: 'auto',
-      marginRight: '20px'
-    },
-    tableRoot: {
-      tableLayout: 'fixed'
-    },
-    expandableCellBox: {
-      alignItems: 'center'
-    },
-    itemPath: {
-      color: theme.palette.text.secondary
-    },
-    ellipsis: {
-      overflow: 'hidden',
-      textOverflow: 'ellipsis',
-      whiteSpace: 'nowrap'
-    }
-  })
-);
 
 export default function RecentlyPublishedWidget(props: RecentlyPublishedWidgetProps) {
   const { selectedItems, onItemSelected } = props;
@@ -88,7 +56,7 @@ export default function RecentlyPublishedWidget(props: RecentlyPublishedWidgetPr
   const [itemsLookup, setItemsLookup] = useSpreadState<LookupTable<DetailedItem[]>>({});
   const [filterBy, setFilterBy] = useState<LegacyDeploymentHistoryType>('page');
   const [numItems, setNumItems] = useState(20);
-  const [expandedItems, setExpandedItems] = useSpreadState({});
+  const [expandedItems, setExpandedItems] = useSpreadState<LookupTable<boolean>>({});
   const siteId = useActiveSiteId();
   const localeBranch = useLocale();
   const classes = useStyles();
@@ -226,7 +194,13 @@ export default function RecentlyPublishedWidget(props: RecentlyPublishedWidgetPr
       <SuspenseWithEmptyState
         resource={resource}
         suspenseProps={{
-          fallback: <></> // TODO: skeleton
+          fallback: (
+            <RecentlyPublishedWidgetUiSkeletonTable
+              items={parentItems}
+              expandedLookup={expandedItems}
+              itemsLookup={itemsLookup}
+            />
+          )
         }}
       >
         <RecentlyPublishedWidgetUI
