@@ -20,7 +20,6 @@ import TableCell from '@material-ui/core/TableCell';
 const GlobalAppGridCell = withStyles((theme: Theme) =>
   createStyles({
     root: {
-      borderBottom: 0,
       '&.checkbox': {
         width: '52px',
         textAlign: 'center',
@@ -50,7 +49,7 @@ const GlobalAppGridCell = withStyles((theme: Theme) =>
       '&.padded10': {
         padding: '10px 16px'
       },
-      '&.expandableCell': {
+      '&.pl0': {
         paddingLeft: 0
       },
       '&.paddedLeft': {

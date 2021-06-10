@@ -36,7 +36,6 @@ import MoreVertRounded from '@material-ui/icons/MoreVertRounded';
 import ItemDisplay from '../ItemDisplay';
 import clsx from 'clsx';
 import { useLocale } from '../../utils/hooks';
-import { nnou } from '../../utils/object';
 import { DashboardItem } from '../DashboardItemsApproval';
 
 interface DashboardItemsApprovalGridUIProps {
@@ -46,9 +45,10 @@ interface DashboardItemsApprovalGridUIProps {
   selectedLookup: LookupTable<boolean>;
   publishingTargetLookup: LookupTable<string>;
   isAllChecked: boolean;
+  isIndeterminate: boolean;
   onToggleCheckedAll(): void;
   onExpandedRow(path: string, value: boolean): void;
-  onItemChecked(lookup: LookupTable<boolean>): void;
+  onItemChecked(path: string): void;
   onItemMenuClick(event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, item: DetailedItem): void;
 }
 
@@ -63,6 +63,7 @@ export default function DashboardItemsApprovalGridUI(props: DashboardItemsApprov
     onItemMenuClick,
     onItemChecked,
     isAllChecked,
+    isIndeterminate,
     onToggleCheckedAll
   } = props;
   const items = resource.read();
@@ -75,9 +76,13 @@ export default function DashboardItemsApprovalGridUI(props: DashboardItemsApprov
         <TableHead>
           <GlobalAppGridRow className="hoverDisabled">
             <GlobalAppGridCell className="checkbox bordered">
-              <Checkbox checked={isAllChecked} onChange={onToggleCheckedAll} />
+              <Checkbox
+                indeterminate={isIndeterminate}
+                checked={isAllChecked || isIndeterminate}
+                onChange={onToggleCheckedAll}
+              />
             </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered width40 padded0">
+            <GlobalAppGridCell className="bordered width40 pl0">
               <FormattedMessage id="dashboardItemsApproval.itemName" defaultMessage="Item Name" />
             </GlobalAppGridCell>
             <GlobalAppGridCell className="bordered width15 ellipsis">
@@ -92,14 +97,14 @@ export default function DashboardItemsApprovalGridUI(props: DashboardItemsApprov
             <GlobalAppGridCell className="bordered width15 ellipsis">
               <FormattedMessage id="dashboardItemsApproval.lastEdited" defaultMessage="Last Edited" />
             </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered checkbox"></GlobalAppGridCell>
+            <GlobalAppGridCell className="bordered checkbox" />
           </GlobalAppGridRow>
         </TableHead>
         <TableBody>
           {items.map((dashboardItem, i) => (
             <Fragment key={i}>
               <GlobalAppGridRow onClick={() => onExpandedRow(dashboardItem.path, !expandedLookup[dashboardItem.path])}>
-                <GlobalAppGridCell colSpan={7} className="expandableCell">
+                <GlobalAppGridCell colSpan={7}>
                   <Box display="flex">
                     <IconButton size="small">
                       <ExpandMoreIcon />
@@ -121,24 +126,16 @@ export default function DashboardItemsApprovalGridUI(props: DashboardItemsApprov
                               <GlobalAppGridRow key={i}>
                                 <GlobalAppGridCell className="checkbox">
                                   <Checkbox
-                                    checked={
-                                      nnou(selectedLookup[itemsLookup[path].path])
-                                        ? selectedLookup[itemsLookup[path].path]
-                                        : false
-                                    }
+                                    checked={Boolean(selectedLookup[itemsLookup[path].path])}
                                     onClick={(e) => {
                                       e.stopPropagation();
                                     }}
                                     onChange={() => {
-                                      onItemChecked({
-                                        [itemsLookup[path].path]: nnou(selectedLookup[itemsLookup[path].path])
-                                          ? !selectedLookup[itemsLookup[path].path]
-                                          : true
-                                      });
+                                      onItemChecked(path);
                                     }}
                                   />
                                 </GlobalAppGridCell>
-                                <GlobalAppGridCell className="ellipsis width40 padded0">
+                                <GlobalAppGridCell className="ellipsis width40 pl0">
                                   <ItemDisplay
                                     item={itemsLookup[path]}
                                     showNavigableAsLinks={false}

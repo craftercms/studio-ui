@@ -31,11 +31,10 @@ import { useDispatch } from 'react-redux';
 import Dashlet from '../Dashlet';
 import ApiResponse from '../../models/ApiResponse';
 import DashboardItemsApprovalSkeletonTable from '../DashboardItemsApprovalGrid/DashboardItemsApprovalSkeletonTable';
-import { createPresenceTable } from '../../utils/array';
 
 export interface DashboardItemsApprovalProps {
   selectedLookup: LookupTable<boolean>;
-  onItemChecked(lookup: LookupTable<boolean>): void;
+  onItemChecked(paths: string[], forceChecked?: boolean): void;
 }
 
 export interface DashboardItem {
@@ -43,6 +42,8 @@ export interface DashboardItem {
   path: string;
   children: string[];
 }
+
+// AwaitingApprovalDashlet
 
 export default function DashboardItemsApproval(props: DashboardItemsApprovalProps) {
   const site = useActiveSiteId();
@@ -71,9 +72,10 @@ export default function DashboardItemsApproval(props: DashboardItemsApprovalProp
     selectedLookup,
     state.itemsLookup
   ]);
-
-  // console.log(isAllChecked);
-  // const isIndeterminate = useMemo(() => Object.values(state.itemsLookup).map(), []);
+  const isIndeterminate = useMemo(
+    () => Object.keys(state.itemsLookup).some((path) => selectedLookup[path]) && !isAllChecked,
+    [isAllChecked, selectedLookup, state.itemsLookup]
+  );
 
   useEffect(() => {
     setIsFetching(true);
@@ -165,7 +167,11 @@ export default function DashboardItemsApproval(props: DashboardItemsApprovalProp
   };
 
   const onToggleCheckedAll = () => {
-    onItemChecked(createPresenceTable(Object.keys(state.itemsLookup), !isAllChecked));
+    onItemChecked(Object.keys(state.itemsLookup), !isAllChecked);
+  };
+
+  const handleItemChecked = (path: string) => {
+    onItemChecked([path]);
   };
 
   return (
@@ -212,9 +218,10 @@ export default function DashboardItemsApproval(props: DashboardItemsApprovalProp
           selectedLookup={selectedLookup}
           onToggleCheckedAll={onToggleCheckedAll}
           isAllChecked={isAllChecked}
+          isIndeterminate={isIndeterminate}
           onExpandedRow={onExpandedRow}
           onItemMenuClick={onItemMenuClick}
-          onItemChecked={onItemChecked}
+          onItemChecked={handleItemChecked}
         />
       </SuspenseWithEmptyState>
     </Dashlet>
