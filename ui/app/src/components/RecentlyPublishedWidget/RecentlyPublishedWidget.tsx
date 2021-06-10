@@ -37,7 +37,7 @@ import Dashlet from '../Dashlet';
 
 export interface RecentlyPublishedWidgetProps {
   selectedItems: LookupTable<boolean>;
-  setSelectedItems(item): void;
+  onItemSelected(path: string, selected: boolean): void;
 }
 
 export interface DashboardItem {
@@ -78,7 +78,9 @@ export const useStyles = makeStyles((theme) =>
 );
 
 export default function RecentlyPublishedWidget(props: RecentlyPublishedWidgetProps) {
-  const { selectedItems, setSelectedItems } = props;
+  const { selectedItems, onItemSelected } = props;
+  const [numSelectedItems, setNumSelectedItems] = useState(0);
+  const [totalItems, setTotalItems] = useState(0);
   const [expandedWidget, setExpandedWidget] = useState(true);
   const [fetchingHistory, setFetchingHistory] = useState(false);
   const [errorHistory, setErrorHistory] = useState<ApiResponse>();
@@ -129,22 +131,45 @@ export default function RecentlyPublishedWidget(props: RecentlyPublishedWidgetPr
     toggleCollapseAllItems(parentItems, false);
   };
 
+  const toggleSelectAllItems = () => {
+    const selectAll = numSelectedItems === 0 || numSelectedItems < totalItems;
+    Object.values(itemsLookup).forEach((value) => {
+      value.forEach((item) => {
+        onItemSelected(item.path, selectAll);
+      });
+    });
+  };
+
+  useEffect(() => {
+    let numSelectedItems = 0;
+    Object.values(itemsLookup).forEach((value) => {
+      value.forEach((item) => {
+        numSelectedItems = Boolean(selectedItems[item.id]) ? numSelectedItems + 1 : numSelectedItems;
+      });
+    });
+
+    setNumSelectedItems(numSelectedItems);
+  }, [selectedItems, itemsLookup]);
+
   useEffect(() => {
     setFetchingHistory(true);
     fetchLegacyDeploymentHistory(siteId, 'eventDate', false, 30, numItems, filterBy).subscribe(
       (history) => {
         const items = [];
+        let totalChildrenItems = 0;
         history.documents.forEach((document) => {
           const childrenItems = [];
           items.push({ label: document.internalName });
           document.children.forEach((legacyItem) => {
             childrenItems.push(parseLegacyItemToDetailedItem(legacyItem));
+            totalChildrenItems++;
           });
           setItemsLookup({
             [document.internalName]: childrenItems
           });
         });
         setParentItems(items);
+        setTotalItems(totalChildrenItems);
         toggleCollapseAllItems(items, true);
         setFetchingHistory(false);
       },
@@ -153,7 +178,7 @@ export default function RecentlyPublishedWidget(props: RecentlyPublishedWidgetPr
         setFetchingHistory(false);
       }
     );
-  }, [siteId, filterBy, numItems, toggleCollapseAllItems, setItemsLookup]); // TODO: pagination pending
+  }, [siteId, filterBy, numItems, toggleCollapseAllItems, setItemsLookup]);
 
   const resource = useLogicResource<DashboardItem[], { items: DashboardItem[]; error: ApiResponse; fetching: boolean }>(
     useMemo(() => ({ items: parentItems, error: errorHistory, fetching: fetchingHistory }), [
@@ -210,7 +235,10 @@ export default function RecentlyPublishedWidget(props: RecentlyPublishedWidgetPr
           setExpandedItems={setExpandedItems}
           onOptionsButtonClick={onOptionsButtonClick}
           selectedItems={selectedItems}
-          setSelectedItems={setSelectedItems}
+          onItemSelected={onItemSelected}
+          numSelectedItems={numSelectedItems}
+          totalItems={totalItems}
+          onClickSelectAll={toggleSelectAllItems}
         />
       </SuspenseWithEmptyState>
     </Dashlet>

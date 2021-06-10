@@ -43,10 +43,13 @@ export interface RecentlyPublishedWidgetUIProps {
   itemsLookup: LookupTable<DetailedItem[]>;
   localeBranch: GlobalState['uiConfig']['locale'];
   expandedItems: LookupTable<boolean>;
+  numSelectedItems: number;
+  totalItems: number;
   selectedItems: LookupTable<boolean>;
-  setSelectedItems(item): void;
+  onItemSelected(path: string, selected: boolean): void;
   setExpandedItems(itemExpanded): void;
   onOptionsButtonClick?: any;
+  onClickSelectAll(): void;
 }
 
 export default function RecentlyPublishedWidgetUi(props: RecentlyPublishedWidgetUIProps) {
@@ -58,7 +61,10 @@ export default function RecentlyPublishedWidgetUi(props: RecentlyPublishedWidget
     onOptionsButtonClick,
     localeBranch,
     selectedItems,
-    setSelectedItems
+    onItemSelected,
+    numSelectedItems,
+    totalItems,
+    onClickSelectAll
   } = props;
   const parentItems = resource.read();
   const classes = useStyles();
@@ -67,19 +73,17 @@ export default function RecentlyPublishedWidgetUi(props: RecentlyPublishedWidget
     setExpandedItems({ [name]: !expandedItems[name] });
   };
 
-  const handleCheckboxChange = (itemId, event: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedItems({
-      [itemId]: event.target.checked
-    });
-  };
-
   return (
     <TableContainer>
       <Table size="small" className={classes.tableRoot}>
         <TableHead>
           <GlobalAppGridRow className="hoverDisabled">
             <GlobalAppGridCell className="checkbox bordered width5">
-              <Checkbox />
+              <Checkbox
+                indeterminate={numSelectedItems > 0 && numSelectedItems < totalItems}
+                checked={numSelectedItems === totalItems}
+                onChange={() => onClickSelectAll()}
+              />
             </GlobalAppGridCell>
             <GlobalAppGridCell className="bordered width40">
               <Typography variant="subtitle2">
@@ -126,8 +130,8 @@ export default function RecentlyPublishedWidgetUi(props: RecentlyPublishedWidget
                           <GlobalAppGridRow key={item.id}>
                             <GlobalAppGridCell className="checkbox width5">
                               <Checkbox
-                                checked={Boolean(selectedItems[item.id])}
-                                onChange={(e) => handleCheckboxChange(item.id, e)}
+                                checked={Boolean(selectedItems[item.path])}
+                                onChange={(e) => onItemSelected(item.path, e.target.checked)}
                               />
                             </GlobalAppGridCell>
                             <GlobalAppGridCell className="ellipsis width40 padded0">
