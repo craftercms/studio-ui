@@ -38,23 +38,22 @@ import RecentlyPublishedWidgetUiSkeletonTable from './RecentlyPublishedWidgetUIS
 import Typography from '@material-ui/core/Typography';
 
 export interface RecentlyPublishedWidgetProps {
-  selectedItems: LookupTable<boolean>;
-  onItemSelected(lookup: LookupTable<boolean>): void;
+  selectedLookup: LookupTable<boolean>;
+  onItemChecked(paths: string[], forceChecked?: boolean): void;
 }
 
 export interface DashboardItem {
   label: string;
+  children: string[];
 }
 
 export default function RecentlyPublishedWidget(props: RecentlyPublishedWidgetProps) {
-  const { selectedItems, onItemSelected } = props;
-  const [numSelectedItems, setNumSelectedItems] = useState(0);
-  const [totalItems, setTotalItems] = useState(0);
+  const { selectedLookup, onItemChecked } = props;
   const [expandedWidget, setExpandedWidget] = useState(true);
   const [fetchingHistory, setFetchingHistory] = useState(false);
   const [errorHistory, setErrorHistory] = useState<ApiResponse>();
   const [parentItems, setParentItems] = useState<DashboardItem[]>();
-  const [itemsLookup, setItemsLookup] = useSpreadState<LookupTable<DetailedItem[]>>({});
+  const [itemsLookup, setItemsLookup] = useSpreadState<LookupTable<DetailedItem>>({});
   const [filterBy, setFilterBy] = useState<LegacyDeploymentHistoryType>('page');
   const [numItems, setNumItems] = useState(20);
   const [expandedItems, setExpandedItems] = useSpreadState<LookupTable<boolean>>({});
@@ -62,6 +61,15 @@ export default function RecentlyPublishedWidget(props: RecentlyPublishedWidgetPr
   const localeBranch = useLocale();
   const classes = useStyles();
   const dispatch = useDispatch();
+
+  const isAllChecked = useMemo(() => !Object.keys(itemsLookup).some((path) => !selectedLookup[path]), [
+    itemsLookup,
+    selectedLookup
+  ]);
+  const isIntedeteminate = useMemo(
+    () => Object.keys(itemsLookup).some((path) => selectedLookup[path]) && !isAllChecked,
+    [itemsLookup, selectedLookup, isAllChecked]
+  );
 
   const toggleCollapseAllItems = useCallback(
     (documents, expanded) => {
@@ -74,14 +82,15 @@ export default function RecentlyPublishedWidget(props: RecentlyPublishedWidgetPr
     [setExpandedItems]
   );
 
-  const onOptionsButtonClick = (event: any, item: MediaItem) => {
+  const onOptionsButtonClick = (e: any, item: MediaItem) => {
+    e.stopPropagation();
     const path = item.path;
     dispatch(completeDetailedItem({ path }));
     dispatch(
       showItemMegaMenu({
         path,
         anchorReference: 'anchorPosition',
-        anchorPosition: { top: event.clientY, left: event.clientX },
+        anchorPosition: { top: e.clientY, left: e.clientX },
         numOfLoaderItems: getNumOfMenuOptionsForItem({
           path: item.path,
           systemType: getSystemTypeFromPath(item.path)
@@ -106,47 +115,31 @@ export default function RecentlyPublishedWidget(props: RecentlyPublishedWidgetPr
   };
 
   const toggleSelectAllItems = () => {
-    const selectAll = numSelectedItems === 0 || numSelectedItems < totalItems;
-    const selectLookup: LookupTable<boolean> = {};
-    Object.values(itemsLookup).forEach((value) => {
-      value.forEach((item) => {
-        selectLookup[item.path] = selectAll;
-      });
-    });
-    onItemSelected(selectLookup);
+    const checkedPaths = [];
+    Object.keys(itemsLookup).forEach((path) => checkedPaths.push(path));
+    onItemChecked(checkedPaths, !isAllChecked);
   };
-
-  useEffect(() => {
-    let numSelectedItems = 0;
-    Object.values(itemsLookup).forEach((value) => {
-      value.forEach((item) => {
-        numSelectedItems = Boolean(selectedItems[item.id]) ? numSelectedItems + 1 : numSelectedItems;
-      });
-    });
-
-    setNumSelectedItems(numSelectedItems);
-  }, [selectedItems, itemsLookup]);
 
   useEffect(() => {
     setFetchingHistory(true);
     fetchLegacyDeploymentHistory(siteId, 'eventDate', false, 30, numItems, filterBy).subscribe(
       (history) => {
-        const items = [];
-        let totalChildrenItems = 0;
+        const parentItems = [];
+        const childrenLookup = {};
         history.documents.forEach((document) => {
-          const childrenItems = [];
-          items.push({ label: document.internalName });
-          document.children.forEach((legacyItem) => {
-            childrenItems.push(parseLegacyItemToDetailedItem(legacyItem));
-            totalChildrenItems++;
-          });
-          setItemsLookup({
-            [document.internalName]: childrenItems
-          });
+          if (document.children.length) {
+            parentItems.push({
+              label: document.internalName,
+              children: document.children.map((item) => {
+                childrenLookup[item.uri] = parseLegacyItemToDetailedItem(item);
+                return item.uri;
+              })
+            });
+          }
+          setItemsLookup(childrenLookup);
         });
-        setParentItems(items);
-        setTotalItems(totalChildrenItems);
-        toggleCollapseAllItems(items, true);
+        setParentItems(parentItems);
+        toggleCollapseAllItems(parentItems, true);
         setFetchingHistory(false);
       },
       (e) => {
@@ -205,7 +198,7 @@ export default function RecentlyPublishedWidget(props: RecentlyPublishedWidgetPr
             <RecentlyPublishedWidgetUiSkeletonTable
               items={parentItems}
               expandedLookup={expandedItems}
-              itemsLookup={itemsLookup}
+              // itemsLookup={itemsLookup} // TODO: pending change to itemsLookup: LookupTable<DetailedItem>
             />
           )
         }}
@@ -217,11 +210,11 @@ export default function RecentlyPublishedWidget(props: RecentlyPublishedWidgetPr
           expandedItems={expandedItems}
           setExpandedItems={setExpandedItems}
           onOptionsButtonClick={onOptionsButtonClick}
-          selectedItems={selectedItems}
-          onItemSelected={onItemSelected}
-          numSelectedItems={numSelectedItems}
-          totalItems={totalItems}
+          selectedItems={selectedLookup}
+          onItemChecked={onItemChecked}
           onClickSelectAll={toggleSelectAllItems}
+          isAllChecked={isAllChecked}
+          isIndeterminate={isIntedeteminate}
         />
       </SuspenseWithEmptyState>
       <div className={classes.showSelectorContainer}>

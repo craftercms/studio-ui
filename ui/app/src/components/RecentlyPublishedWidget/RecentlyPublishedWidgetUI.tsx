@@ -41,15 +41,15 @@ import useStyles from './styles';
 
 export interface RecentlyPublishedWidgetUIProps {
   resource: Resource<DashboardItem[]>;
-  itemsLookup: LookupTable<DetailedItem[]>;
+  itemsLookup: LookupTable<DetailedItem>;
   localeBranch: GlobalState['uiConfig']['locale'];
   expandedItems: LookupTable<boolean>;
-  numSelectedItems: number;
-  totalItems: number;
   selectedItems: LookupTable<boolean>;
-  onItemSelected(lookup: LookupTable<boolean>): void;
-  setExpandedItems(itemExpanded): void;
+  isAllChecked: boolean;
+  isIndeterminate: boolean;
   onOptionsButtonClick?: any;
+  setExpandedItems(itemExpanded): void;
+  onItemChecked(paths: string[], forceChecked?: boolean): void;
   onClickSelectAll(): void;
 }
 
@@ -62,10 +62,10 @@ export default function RecentlyPublishedWidgetUi(props: RecentlyPublishedWidget
     onOptionsButtonClick,
     localeBranch,
     selectedItems,
-    onItemSelected,
-    numSelectedItems,
-    totalItems,
-    onClickSelectAll
+    onItemChecked,
+    onClickSelectAll,
+    isAllChecked,
+    isIndeterminate
   } = props;
   const parentItems = resource.read();
   const classes = useStyles();
@@ -80,11 +80,7 @@ export default function RecentlyPublishedWidgetUi(props: RecentlyPublishedWidget
         <TableHead>
           <GlobalAppGridRow className="hoverDisabled">
             <GlobalAppGridCell className="checkbox bordered width5">
-              <Checkbox
-                indeterminate={numSelectedItems > 0 && numSelectedItems < totalItems}
-                checked={numSelectedItems === totalItems}
-                onChange={() => onClickSelectAll()}
-              />
+              <Checkbox indeterminate={isIndeterminate} checked={isAllChecked} onChange={() => onClickSelectAll()} />
             </GlobalAppGridCell>
             <GlobalAppGridCell className="bordered width40">
               <Typography variant="subtitle2">
@@ -127,27 +123,24 @@ export default function RecentlyPublishedWidgetUi(props: RecentlyPublishedWidget
                   <Collapse in={expandedItems[item.label]}>
                     <Table size="small" className={classes.tableRoot}>
                       <TableBody>
-                        {itemsLookup[item.label].map((item) => (
-                          <GlobalAppGridRow key={item.id}>
+                        {item.children.map((path, i) => (
+                          <GlobalAppGridRow key={i} onClick={() => onItemChecked([path])}>
                             <GlobalAppGridCell className="checkbox width5">
-                              <Checkbox
-                                checked={Boolean(selectedItems[item.path])}
-                                onChange={(e) => onItemSelected({ [item.path]: e.target.checked })}
-                              />
+                              <Checkbox checked={Boolean(selectedItems[itemsLookup[path].path])} />
                             </GlobalAppGridCell>
                             <GlobalAppGridCell className="ellipsis width40 padded0">
-                              <ItemDisplay item={item} />
+                              <ItemDisplay item={itemsLookup[path]} />
                               <Typography
-                                title={item.path}
+                                title={itemsLookup[path].path}
                                 variant="caption"
                                 component="p"
                                 className={clsx(classes.itemPath, classes.ellipsis)}
                               >
-                                {item.path}
+                                {itemsLookup[path].path}
                               </Typography>
                             </GlobalAppGridCell>
                             <GlobalAppGridCell className="width20">
-                              {item.stateMap.live ? (
+                              {itemsLookup[path].stateMap.live ? (
                                 <FormattedMessage id="words.live" defaultMessage="Live" />
                               ) : (
                                 <FormattedMessage id="words.staging" defaultMessage="Staging" />
@@ -160,7 +153,9 @@ export default function RecentlyPublishedWidgetUi(props: RecentlyPublishedWidget
                                 localeBranch.dateTimeFormatOptions
                               ).format(
                                 new Date(
-                                  item.stateMap.live ? item.live.lastPublishedDate : item.staging.lastPublishedDate
+                                  itemsLookup[path].stateMap.live
+                                    ? itemsLookup[path].live.lastPublishedDate
+                                    : itemsLookup[path].staging.lastPublishedDate
                                 )
                               )}
                             >
@@ -169,15 +164,19 @@ export default function RecentlyPublishedWidgetUi(props: RecentlyPublishedWidget
                                 localeBranch.dateTimeFormatOptions
                               ).format(
                                 new Date(
-                                  item.stateMap.live ? item.live.lastPublishedDate : item.staging.lastPublishedDate
+                                  itemsLookup[path].stateMap.live
+                                    ? itemsLookup[path].live.lastPublishedDate
+                                    : itemsLookup[path].staging.lastPublishedDate
                                 )
                               )}
                             </GlobalAppGridCell>
                             <GlobalAppGridCell className="width10">
-                              {item.stateMap.live ? item.live.publisher : item.staging.publisher}
+                              {itemsLookup[path].stateMap.live
+                                ? itemsLookup[path].live.publisher
+                                : itemsLookup[path].staging.publisher}
                             </GlobalAppGridCell>
                             <GlobalAppGridCell className="width5">
-                              <IconButton onClick={(e) => onOptionsButtonClick(e, item)}>
+                              <IconButton onClick={(e) => onOptionsButtonClick(e, itemsLookup[path])}>
                                 <MoreVertRounded />
                               </IconButton>
                             </GlobalAppGridCell>
