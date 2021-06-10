@@ -30,52 +30,85 @@ import { showItemMegaMenu } from '../../state/actions/dialogs';
 import { useDispatch } from 'react-redux';
 import Dashlet from '../Dashlet';
 import { createPresenceTable } from '../../utils/array';
+import ApiResponse from '../../models/ApiResponse';
+
+export interface DashboardItemsApprovalProps {
+  selectedLookup: LookupTable<boolean>;
+  onItemChecked(path: string): void;
+}
 
 export interface DashboardItem {
   label: string;
   path: string;
 }
 
-export default function DashboardItemsApproval() {
+export default function DashboardItemsApproval(props: DashboardItemsApprovalProps) {
   const site = useActiveSiteId();
   const classes = useStyles();
-  const [parentItems, setParentItems] = useState<DashboardItem[]>();
+  const [state, setState] = useState({
+    publishingTargetLookup: {},
+    itemsLookup: {},
+    parentItems: null,
+    total: null
+  });
+  const { selectedLookup, onItemChecked } = props;
   const [expanded, setExpanded] = useState(true);
   const [expandedLookup, setExpandedLookup] = useSpreadState<LookupTable<boolean>>({});
-  const [itemsLookup, setItemsLookup] = useState<LookupTable<DetailedItem[]>>({});
-  const [publishingTargetLookup, setPublishingTargetLookup] = useState<LookupTable<string>>({});
+  const [error, setError] = useState<ApiResponse>();
+  const [showInProgressItems, setShowInProgressItems] = useState(false);
+  const [isFetching, setIsFetching] = useState(false);
   const dispatch = useDispatch();
 
   const showExpanded = useMemo(() => Object.values(expandedLookup).some((value) => !value), [expandedLookup]);
 
   useEffect(() => {
-    fetchLegacyGetGoLiveItems(site, 'eventDate', null, false, null).subscribe((response) => {
-      const items: DashboardItem[] = [];
-      const lookup = {};
-      const targetLookup = {};
-      response.documents.forEach((item) => {
-        if (item.children.length) {
-          items.push({ label: item.name, path: item.uri });
-          lookup[item.uri] = item.children.map((item) => {
-            targetLookup[item.uri] = item.submittedToEnvironment;
-            return parseLegacyItemToDetailedItem(item);
-          });
-        }
-      });
-      setExpandedLookup(createPresenceTable(Object.keys(lookup)));
-      setPublishingTargetLookup(targetLookup);
-      setParentItems(items);
-      setItemsLookup(lookup);
-    });
-  }, [setExpandedLookup, site]);
+    setIsFetching(true);
+    fetchLegacyGetGoLiveItems(site, 'eventDate', null, showInProgressItems, null).subscribe(
+      (response) => {
+        const items: DashboardItem[] = [];
+        const lookup = {};
+        const targetLookup = {};
+        response.documents.forEach((item) => {
+          if (item.children.length) {
+            items.push({ label: item.name, path: item.uri });
+            lookup[item.uri] = item.children.map((item) => {
+              targetLookup[item.uri] = item.submittedToEnvironment;
+              return parseLegacyItemToDetailedItem(item);
+            });
+          }
+        });
+        setExpandedLookup(createPresenceTable(Object.keys(lookup)));
+        setState({
+          publishingTargetLookup: targetLookup,
+          itemsLookup: lookup,
+          parentItems: items,
+          total: response.total
+        });
+        setIsFetching(false);
+      },
+      ({ response }) => {
+        setError(response);
+      }
+    );
+  }, [setExpandedLookup, site, showInProgressItems]);
 
-  const resource = useLogicResource<DashboardItem[], DashboardItem[]>(parentItems, {
-    shouldResolve: (source) => Boolean(source),
-    shouldReject: (source) => false,
-    shouldRenew: (source, resource) => resource.complete,
-    resultSelector: (source) => source,
-    errorSelector: (source) => null
-  });
+  const resource = useLogicResource<
+    DashboardItem[],
+    {
+      items: DetailedItem[];
+      error: ApiResponse;
+      isFetching: boolean;
+    }
+  >(
+    useMemo(() => ({ items: state.parentItems, error, isFetching }), [state.parentItems, error, isFetching]),
+    {
+      shouldResolve: (source) => Boolean(source.items) && !isFetching,
+      shouldReject: (source) => Boolean(source.error),
+      shouldRenew: (source, resource) => source.isFetching && resource.complete,
+      resultSelector: (source) => source.items,
+      errorSelector: (source) => source.error
+    }
+  );
 
   const onToggleCollapse = (e) => {
     e.stopPropagation();
@@ -88,6 +121,7 @@ export default function DashboardItemsApproval() {
 
   const onShowInProgress = (e) => {
     e.stopPropagation();
+    setShowInProgressItems(!showInProgressItems);
   };
 
   const onExpandedRow = (path: string, value: boolean) => {
@@ -110,29 +144,32 @@ export default function DashboardItemsApproval() {
     );
   };
 
-  console.log(publishingTargetLookup);
-
   return (
     <Dashlet
       title={
         <FormattedMessage
           id="dashboardItemsApproval.itemsWaitingForApproval"
-          defaultMessage="Items Waiting For Approval"
+          defaultMessage="Items Waiting For Approval ({count})"
+          values={{ count: state.total }}
         />
       }
       expanded={expanded}
       onToggleExpanded={() => setExpanded(!expanded)}
       headerRightSection={
         <>
-          <SecondaryButton onClick={onToggleCollapse} className={classes.collapseAll}>
+          <SecondaryButton disabled={isFetching} onClick={onToggleCollapse} className={classes.collapseAll}>
             {showExpanded ? (
               <FormattedMessage id="dashboardItemsApproval.expandedAll" defaultMessage="Expand All" />
             ) : (
               <FormattedMessage id="dashboardItemsApproval.collapseAll" defaultMessage="Collapse All" />
             )}
           </SecondaryButton>
-          <SecondaryButton onClick={onShowInProgress}>
-            <FormattedMessage id="dashboardItemsApproval.showInProgress" defaultMessage='Show "In-Progress" items' />
+          <SecondaryButton disabled={isFetching} onClick={onShowInProgress}>
+            {showInProgressItems ? (
+              <FormattedMessage id="dashboardItemsApproval.hideInProgress" defaultMessage='Hide "In-Progress" items' />
+            ) : (
+              <FormattedMessage id="dashboardItemsApproval.showInProgress" defaultMessage='Show "In-Progress" items' />
+            )}
           </SecondaryButton>
         </>
       }
@@ -141,10 +178,12 @@ export default function DashboardItemsApproval() {
         <DashboardItemsApprovalGridUI
           resource={resource}
           expandedLookup={expandedLookup}
-          publishingTargetLookup={publishingTargetLookup}
-          itemsLookup={itemsLookup}
+          publishingTargetLookup={state.publishingTargetLookup}
+          itemsLookup={state.itemsLookup}
+          selectedLookup={selectedLookup}
           onExpandedRow={onExpandedRow}
           onItemMenuClick={onItemMenuClick}
+          onItemChecked={onItemChecked}
         />
       </SuspenseWithEmptyState>
     </Dashlet>
