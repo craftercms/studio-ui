@@ -115,11 +115,10 @@ export default function DashboardItemsApproval() {
   return (
     <Dashlet
       title={
-        // <FormattedMessage
-        //   id="dashboardItemsApproval.itemsWaitingForApproval"
-        //   defaultMessage="Items Waiting For Approval"
-        // />
-        'Items Waiting For Approval'
+        <FormattedMessage
+          id="dashboardItemsApproval.itemsWaitingForApproval"
+          defaultMessage="Items Waiting For Approval"
+        />
       }
       expanded={expanded}
       onToggleExpanded={() => setExpanded(!expanded)}
