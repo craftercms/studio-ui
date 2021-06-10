@@ -35,6 +35,7 @@ import { useDispatch } from 'react-redux';
 import Dashlet from '../Dashlet';
 import useStyles from './styles';
 import RecentlyPublishedWidgetUiSkeletonTable from './RecentlyPublishedWidgetUISkeletonTable';
+import Typography from '@material-ui/core/Typography';
 
 export interface RecentlyPublishedWidgetProps {
   selectedItems: LookupTable<boolean>;
@@ -92,6 +93,11 @@ export default function RecentlyPublishedWidget(props: RecentlyPublishedWidgetPr
   const onFilterChange = (e) => {
     e.stopPropagation();
     setFilterBy(e.target.value);
+  };
+
+  const onNumItemsChange = (e) => {
+    e.stopPropagation();
+    setNumItems(e.target.value);
   };
 
   const onCollapseAll = (e) => {
@@ -178,6 +184,7 @@ export default function RecentlyPublishedWidget(props: RecentlyPublishedWidgetPr
           <Select
             value={filterBy}
             onChange={onFilterChange}
+            className={classes.filterSelectBtn}
             classes={{
               root: classes.filterSelectRoot,
               select: classes.filterSelectInput
@@ -217,6 +224,25 @@ export default function RecentlyPublishedWidget(props: RecentlyPublishedWidgetPr
           onClickSelectAll={toggleSelectAllItems}
         />
       </SuspenseWithEmptyState>
+      <div className={classes.showSelectorContainer}>
+        <Typography variant="subtitle2" className={classes.showLabel}>
+          <FormattedMessage id="words.show" defaultMessage="Show" />
+        </Typography>
+        <Select
+          value={numItems}
+          onChange={onNumItemsChange}
+          className={classes.filterSelectBtn}
+          classes={{
+            root: classes.filterSelectRoot,
+            select: classes.filterSelectInput
+          }}
+        >
+          <MenuItem value={10}>10</MenuItem>
+          <MenuItem value={20}>20</MenuItem>
+          <MenuItem value={50}>50</MenuItem>
+          <MenuItem value={100}>100</MenuItem>
+        </Select>
+      </div>
     </Dashlet>
   );
 }

@@ -21,6 +21,9 @@ export const useStyles = makeStyles((theme) =>
     collapseAllButton: {
       marginRight: theme.spacing(1)
     },
+    filterSelectBtn: {
+      verticalAlign: 'middle'
+    },
     filterSelectRoot: {
       padding: '8.5px 14px'
     },
@@ -48,6 +51,15 @@ export const useStyles = makeStyles((theme) =>
     },
     skeletonCheckbox: {
       margin: '6px 10px'
+    },
+    showSelectorContainer: {
+      display: 'flex',
+      justifyContent: 'flex-end',
+      alignItems: 'center',
+      padding: theme.spacing(1)
+    },
+    showLabel: {
+      marginRight: theme.spacing(1)
     }
   })
 );
