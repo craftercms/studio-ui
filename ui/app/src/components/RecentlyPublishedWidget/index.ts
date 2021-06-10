@@ -19,3 +19,5 @@ export { default } from './RecentlyPublishedWidget';
 export * from './RecentlyPublishedWidget';
 
 export * from './RecentlyPublishedWidgetUI';
+
+export * from './RecentlyPublishedWidgetUISkeletonTable';
