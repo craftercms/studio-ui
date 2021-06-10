@@ -36,6 +36,7 @@ import MoreVertRounded from '@material-ui/icons/MoreVertRounded';
 import ItemDisplay from '../ItemDisplay';
 import clsx from 'clsx';
 import { useLocale } from '../../utils/hooks';
+import { nnou } from '../../utils/object';
 
 interface DashboardItemsApprovalGridUIProps {
   resource: Resource<{ label: string; path: string }[]>;
@@ -113,12 +114,15 @@ export default function DashboardItemsApprovalGridUI(props: DashboardItemsApprov
                           <GlobalAppGridRow key={i}>
                             <GlobalAppGridCell className="checkbox">
                               <Checkbox
-                                checked={selectedLookup[item.path]}
+                                checked={nnou(selectedLookup[item.path]) ? selectedLookup[item.path] : false}
                                 onClick={(e) => {
                                   e.stopPropagation();
                                 }}
                                 onChange={() => {
-                                  onItemChecked(item.path, !selectedLookup[item.path]);
+                                  onItemChecked(
+                                    item.path,
+                                    nnou(selectedLookup[item.path]) ? !selectedLookup[item.path] : true
+                                  );
                                 }}
                               />
                             </GlobalAppGridCell>

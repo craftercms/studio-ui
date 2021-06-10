@@ -107,7 +107,7 @@ export default function DashboardItemsApprovalSkeletonTable(props: DashboardItem
                             <GlobalAppGridCell className="width15">
                               <Skeleton variant="text" width={`${rand(50, 60)}%`} />
                             </GlobalAppGridCell>
-                            <GlobalAppGridCell className="width15 ellipsis" title={item.sandbox.modifier}>
+                            <GlobalAppGridCell className="width15 ellipsis">
                               <Skeleton variant="text" width={`${rand(50, 60)}%`} />
                             </GlobalAppGridCell>
                             <GlobalAppGridCell className="width15 ellipsis">

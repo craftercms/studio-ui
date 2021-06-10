@@ -35,7 +35,7 @@ import DashboardItemsApprovalSkeletonTable from '../DashboardItemsApprovalGrid/D
 
 export interface DashboardItemsApprovalProps {
   selectedLookup: LookupTable<boolean>;
-  onItemChecked(path: string): void;
+  onItemChecked(path: string, value: boolean): void;
 }
 
 export interface DashboardItem {
@@ -61,6 +61,7 @@ export default function DashboardItemsApproval(props: DashboardItemsApprovalProp
   const dispatch = useDispatch();
 
   const showExpanded = useMemo(() => Object.values(expandedLookup).some((value) => !value), [expandedLookup]);
+  // const isIndeterminate = useMemo(() => Object.values(state.itemsLookup).map(), []);
 
   useEffect(() => {
     setIsFetching(true);
