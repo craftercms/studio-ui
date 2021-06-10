@@ -28,7 +28,7 @@ import FilterListRoundedIcon from '@material-ui/icons/FilterListRounded';
 import { useStyles } from './styles';
 import LookupTable from '../../models/LookupTable';
 import { createPresenceTable } from '../../utils/array';
-import { getStateMask } from './utils';
+import { getStateBitmap } from './utils';
 import { ItemStateMap, SandboxItem } from '../../models/Item';
 import { PagedArray } from '../../models/PagedArray';
 import Box from '@material-ui/core/Box';
@@ -86,10 +86,10 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
   const rootRef = useRef<HTMLDivElement>();
 
   const fetchStates = useCallback(() => {
-    let stateMask = getStateMask(filtersLookup as ItemStateMap);
+    let stateBitmap = getStateBitmap(filtersLookup as ItemStateMap);
 
     setFetching(true);
-    fetchItemStates(siteId, debouncePathRegex, stateMask ? stateMask : null, { limit, offset }).subscribe(
+    fetchItemStates(siteId, debouncePathRegex, stateBitmap ? stateBitmap : null, { limit, offset }).subscribe(
       (states) => {
         setItems(states);
         setFetching(false);
@@ -221,8 +221,8 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
         fetchStates();
       });
     } else if (isSelectedItemsOnAllPages) {
-      let stateMask = getStateMask(filtersLookup as ItemStateMap);
-      setItemStatesByQuery(siteId, stateMask ? stateMask : null, update, debouncePathRegex).subscribe(() => {
+      let stateBitmap = getStateBitmap(filtersLookup as ItemStateMap);
+      setItemStatesByQuery(siteId, stateBitmap ? stateBitmap : null, update, debouncePathRegex).subscribe(() => {
         fetchStates();
       });
     } else {

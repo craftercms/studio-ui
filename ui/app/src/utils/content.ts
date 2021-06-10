@@ -64,6 +64,7 @@ import {
   STATE_TRANSLATION_UP_TO_DATE_MASK
 } from './constants';
 import { SystemType } from '../models/SystemType';
+import { getStateBitmap } from '../components/ItemStatesManagement/utils';
 
 export function isEditableAsset(path: string) {
   return (
@@ -195,6 +196,8 @@ function getLegacyItemSystemType(item: LegacyItem): SystemType {
 }
 
 export function parseLegacyItemToBaseItem(item: LegacyItem): BaseItem {
+  const stateMap = getStateMapFromLegacyItem(item);
+  const state = getStateBitmap(stateMap);
   return {
     id: item.uri ?? item.path,
     label: item.internalName ?? item.name,
@@ -205,14 +208,14 @@ export function parseLegacyItemToBaseItem(item: LegacyItem): BaseItem {
     previewUrl: item.uri?.includes('index.xml') ? item.browserUri || '/' : null,
     systemType: getLegacyItemSystemType(item),
     mimeType: item.mimeType,
-    state: null,
-    stateMap: getStateMapFromLegacyItem(item),
+    state,
+    stateMap,
     lockOwner: null,
     disabled: null,
     localeCode: 'en',
     translationSourceId: null,
-    availableActions: 0,
-    availableActionsMap: {} as ItemActionsMap
+    availableActions: null,
+    availableActionsMap: null
   };
 }
 
