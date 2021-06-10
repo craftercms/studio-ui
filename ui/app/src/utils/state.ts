@@ -30,8 +30,8 @@ export function getStoredGlobalMenuSiteViewPreference(user: string): 'grid' | 'l
 export function getStateMapFromLegacyItem(item: LegacyItem): ItemStateMap {
   return {
     live: item.endpoint === 'live',
-    locked: false,
-    modified: false,
+    locked: Boolean(item.lockOwner),
+    modified: item.isInProgress,
     new: item.isNew,
     staged: item.endpoint === 'live' || item.endpoint === 'staged',
     systemProcessing: false,
