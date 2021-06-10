@@ -46,7 +46,7 @@ export interface RecentlyPublishedWidgetUIProps {
   numSelectedItems: number;
   totalItems: number;
   selectedItems: LookupTable<boolean>;
-  onItemSelected(path: string, selected: boolean): void;
+  onItemSelected(lookup: LookupTable<boolean>): void;
   setExpandedItems(itemExpanded): void;
   onOptionsButtonClick?: any;
   onClickSelectAll(): void;
@@ -131,7 +131,7 @@ export default function RecentlyPublishedWidgetUi(props: RecentlyPublishedWidget
                             <GlobalAppGridCell className="checkbox width5">
                               <Checkbox
                                 checked={Boolean(selectedItems[item.path])}
-                                onChange={(e) => onItemSelected(item.path, e.target.checked)}
+                                onChange={(e) => onItemSelected({ [item.path]: e.target.checked })}
                               />
                             </GlobalAppGridCell>
                             <GlobalAppGridCell className="ellipsis width40 padded0">

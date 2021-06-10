@@ -37,7 +37,7 @@ import Dashlet from '../Dashlet';
 
 export interface RecentlyPublishedWidgetProps {
   selectedItems: LookupTable<boolean>;
-  onItemSelected(path: string, selected: boolean): void;
+  onItemSelected(lookup: LookupTable<boolean>): void;
 }
 
 export interface DashboardItem {
@@ -133,11 +133,13 @@ export default function RecentlyPublishedWidget(props: RecentlyPublishedWidgetPr
 
   const toggleSelectAllItems = () => {
     const selectAll = numSelectedItems === 0 || numSelectedItems < totalItems;
+    const selectLookup: LookupTable<boolean> = {};
     Object.values(itemsLookup).forEach((value) => {
       value.forEach((item) => {
-        onItemSelected(item.path, selectAll);
+        selectLookup[item.path] = selectAll;
       });
     });
+    onItemSelected(selectLookup);
   };
 
   useEffect(() => {
