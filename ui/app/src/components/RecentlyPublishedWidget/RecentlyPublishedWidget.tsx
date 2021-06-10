@@ -66,7 +66,7 @@ export default function RecentlyPublishedWidget(props: RecentlyPublishedWidgetPr
     itemsLookup,
     selectedLookup
   ]);
-  const isIntedeteminate = useMemo(
+  const isIndeterminate = useMemo(
     () => Object.keys(itemsLookup).some((path) => selectedLookup[path]) && !isAllChecked,
     [itemsLookup, selectedLookup, isAllChecked]
   );
@@ -208,7 +208,7 @@ export default function RecentlyPublishedWidget(props: RecentlyPublishedWidgetPr
           onItemChecked={onItemChecked}
           onClickSelectAll={toggleSelectAllItems}
           isAllChecked={isAllChecked}
-          isIndeterminate={isIntedeteminate}
+          isIndeterminate={isIndeterminate}
         />
       </SuspenseWithEmptyState>
       <div className={classes.showSelectorContainer}>
