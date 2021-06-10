@@ -16,7 +16,7 @@
 
 import React, { useEffect, useRef } from 'react';
 import Box from '@material-ui/core/Box';
-import DashboardItemsApproval from '../DashboardItemsApproval';
+import AwaitingApprovalDashlet from '../AwaitingApprovalDashlet';
 import LookupTable from '../../models/LookupTable';
 import { useSpreadState } from '../../utils/hooks';
 
@@ -38,7 +38,7 @@ export default function DashboardApp(props: DashboardAppProps) {
 
   return (
     <Box padding="20px">
-      <DashboardItemsApproval selectedLookup={selectedLookup} onItemChecked={onItemChecked} />
+      <AwaitingApprovalDashlet selectedLookup={selectedLookup} onItemChecked={onItemChecked} />
     </Box>
   );
 }

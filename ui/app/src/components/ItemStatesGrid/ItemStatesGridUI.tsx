@@ -80,30 +80,30 @@ export default function ItemStatesGridUI(props: WorkflowStatesGridUIProps) {
         <Table>
           <TableHead>
             <GlobalAppGridRow className="hoverDisabled">
-              <GlobalAppGridCell align="center" className="bordered padded10">
+              <GlobalAppGridCell align="center">
                 <Checkbox checked={false} onClick={(e) => onToggleSelectedItems()} />
               </GlobalAppGridCell>
-              <GlobalAppGridCell className="bordered width60">
+              <GlobalAppGridCell className="width60">
                 <Typography variant="subtitle2">
                   <FormattedMessage id="words.item" defaultMessage="Item" />
                 </Typography>
               </GlobalAppGridCell>
-              <GlobalAppGridCell className="bordered width20 padded10">
+              <GlobalAppGridCell className="width20">
                 <Typography variant="subtitle2">
                   <FormattedMessage id="words.processing" defaultMessage="Processing" />
                 </Typography>
               </GlobalAppGridCell>
-              <GlobalAppGridCell className="bordered width40 padded10">
+              <GlobalAppGridCell className="width40">
                 <Typography variant="subtitle2">
                   <FormattedMessage id="words.locked" defaultMessage="Locked" />
                 </Typography>
               </GlobalAppGridCell>
-              <GlobalAppGridCell className="bordered width20 padded10">
+              <GlobalAppGridCell className="width20">
                 <Typography variant="subtitle2">
                   <FormattedMessage id="words.live" defaultMessage="Live" />
                 </Typography>
               </GlobalAppGridCell>
-              <GlobalAppGridCell className="bordered width20 padded10">
+              <GlobalAppGridCell className="width20">
                 <Typography variant="subtitle2">
                   <FormattedMessage id="words.staged" defaultMessage="Staged" />
                 </Typography>
@@ -117,7 +117,7 @@ export default function ItemStatesGridUI(props: WorkflowStatesGridUIProps) {
                 onClick={() => onRowSelected(item)}
                 className={clsx((Boolean(selectedItems[item.path]) || allItemsSelected) && classes.rowSelected)}
               >
-                <GlobalAppGridCell align="center" className="padded10">
+                <GlobalAppGridCell align="center">
                   <Checkbox
                     checked={allItemsSelected || Boolean(selectedItems[item.path])}
                     onClick={(e) => {
@@ -139,7 +139,7 @@ export default function ItemStatesGridUI(props: WorkflowStatesGridUIProps) {
                     {item.path}
                   </Typography>
                 </GlobalAppGridCell>
-                <GlobalAppGridCell className="padded10">
+                <GlobalAppGridCell>
                   <Typography variant="body2">
                     {item.stateMap.systemProcessing ? (
                       <FormattedMessage id="words.yes" defaultMessage="Yes" />
@@ -148,7 +148,7 @@ export default function ItemStatesGridUI(props: WorkflowStatesGridUIProps) {
                     )}
                   </Typography>
                 </GlobalAppGridCell>
-                <GlobalAppGridCell className="padded10">
+                <GlobalAppGridCell>
                   <Typography variant="body2" className={classes.ellipsis} title={item.lockOwner}>
                     {item.stateMap.locked ? (
                       <FormattedMessage
@@ -163,7 +163,7 @@ export default function ItemStatesGridUI(props: WorkflowStatesGridUIProps) {
                     )}
                   </Typography>
                 </GlobalAppGridCell>
-                <GlobalAppGridCell className="padded10">
+                <GlobalAppGridCell>
                   <Typography variant="body2">
                     {item.stateMap.live ? (
                       <FormattedMessage id="words.yes" defaultMessage="Yes" />
@@ -172,7 +172,7 @@ export default function ItemStatesGridUI(props: WorkflowStatesGridUIProps) {
                     )}
                   </Typography>
                 </GlobalAppGridCell>
-                <GlobalAppGridCell className="padded10">
+                <GlobalAppGridCell>
                   <Typography variant="body2">
                     {item.stateMap.staged ? (
                       <FormattedMessage id="words.yes" defaultMessage="Yes" />

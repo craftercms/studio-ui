@@ -36,9 +36,9 @@ import MoreVertRounded from '@material-ui/icons/MoreVertRounded';
 import ItemDisplay from '../ItemDisplay';
 import clsx from 'clsx';
 import { useLocale } from '../../utils/hooks';
-import { DashboardItem } from '../DashboardItemsApproval';
+import { DashboardItem } from '../AwaitingApprovalDashlet';
 
-interface DashboardItemsApprovalGridUIProps {
+interface AwaitingApprovalDashletGridUIProps {
   resource: Resource<DashboardItem[]>;
   itemsLookup: LookupTable<DetailedItem>;
   expandedLookup: LookupTable<boolean>;
@@ -52,7 +52,7 @@ interface DashboardItemsApprovalGridUIProps {
   onItemMenuClick(event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, item: DetailedItem): void;
 }
 
-export default function DashboardItemsApprovalGridUI(props: DashboardItemsApprovalGridUIProps) {
+export default function AwaitingApprovalDashletGridUI(props: AwaitingApprovalDashletGridUIProps) {
   const {
     resource,
     onExpandedRow,
@@ -75,29 +75,29 @@ export default function DashboardItemsApprovalGridUI(props: DashboardItemsApprov
       <Table className={classes.tableRoot} size="small">
         <TableHead>
           <GlobalAppGridRow className="hoverDisabled">
-            <GlobalAppGridCell className="checkbox bordered">
+            <GlobalAppGridCell className="checkbox">
               <Checkbox
                 indeterminate={isIndeterminate}
                 checked={isAllChecked || isIndeterminate}
                 onChange={onToggleCheckedAll}
               />
             </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered width40 pl0">
+            <GlobalAppGridCell className="width40 pl0">
               <FormattedMessage id="dashboardItemsApproval.itemName" defaultMessage="Item Name" />
             </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered width15 ellipsis">
+            <GlobalAppGridCell className="width15 ellipsis">
               <FormattedMessage id="dashboardItemsApproval.publishingTarget" defaultMessage="Publishing Target" />
             </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered width15 ellipsis">
+            <GlobalAppGridCell className="width15 ellipsis">
               <FormattedMessage id="dashboardItemsApproval.publishingDate" defaultMessage="Publishing Date" />
             </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered width15 ellipsis">
+            <GlobalAppGridCell className="width15 ellipsis">
               <FormattedMessage id="dashboardItemsApproval.lastEditedBy" defaultMessage="Last Edited By" />
             </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered width15 ellipsis">
+            <GlobalAppGridCell className="width15 ellipsis">
               <FormattedMessage id="dashboardItemsApproval.lastEdited" defaultMessage="Last Edited" />
             </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered checkbox" />
+            <GlobalAppGridCell className="checkbox" />
           </GlobalAppGridRow>
         </TableHead>
         <TableBody>
@@ -123,7 +123,12 @@ export default function DashboardItemsApprovalGridUI(props: DashboardItemsApprov
                         {dashboardItem.children.map(
                           (path, i) =>
                             itemsLookup[path] && (
-                              <GlobalAppGridRow key={i}>
+                              <GlobalAppGridRow
+                                key={i}
+                                onClick={() => {
+                                  onItemChecked(path);
+                                }}
+                              >
                                 <GlobalAppGridCell className="checkbox">
                                   <Checkbox
                                     checked={Boolean(selectedLookup[itemsLookup[path].path])}

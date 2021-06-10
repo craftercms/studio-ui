@@ -28,7 +28,7 @@ import GlobalAppGridCell from '../GlobalAppGridCell';
 import Skeleton from '@material-ui/lab/Skeleton';
 import LookupTable from '../../models/LookupTable';
 import { rand } from '../PathNavigator/utils';
-import { DashboardItem } from '../DashboardItemsApproval';
+import { DashboardItem } from '../AwaitingApprovalDashlet';
 
 interface DashboardItemsApprovalGridUIProps {
   numOfItems?: number;
@@ -36,7 +36,7 @@ interface DashboardItemsApprovalGridUIProps {
   expandedLookup?: LookupTable<boolean>;
 }
 
-export default function DashboardItemsApprovalSkeletonTable(props: DashboardItemsApprovalGridUIProps) {
+export default function AwaitingApprovalDashletSkeletonTable(props: DashboardItemsApprovalGridUIProps) {
   const classes = useStyles();
   const { numOfItems = 4 } = props;
 
@@ -54,35 +54,35 @@ export default function DashboardItemsApprovalSkeletonTable(props: DashboardItem
       <Table className={classes.tableRoot} size="small">
         <TableHead>
           <GlobalAppGridRow className="hoverDisabled">
-            <GlobalAppGridCell className="checkbox bordered">
+            <GlobalAppGridCell className="checkbox">
               <Skeleton variant="circle" width={30} height={30} className={classes.skeletonCheckbox} />
             </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered width40 padded0">
+            <GlobalAppGridCell className=" width40 padded0">
               <FormattedMessage id="dashboardItemsApproval.itemName" defaultMessage="Item Name" />
             </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered width15 ellipsis">
+            <GlobalAppGridCell className=" width15 ellipsis">
               <FormattedMessage id="dashboardItemsApproval.publishingTarget" defaultMessage="Publishing Target" />
             </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered width15 ellipsis">
+            <GlobalAppGridCell className=" width15 ellipsis">
               <FormattedMessage id="dashboardItemsApproval.publishingDate" defaultMessage="Publishing Date" />
             </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered width15 ellipsis">
+            <GlobalAppGridCell className=" width15 ellipsis">
               <FormattedMessage id="dashboardItemsApproval.lastEditedBy" defaultMessage="Last Edited By" />
             </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered width15 ellipsis">
+            <GlobalAppGridCell className=" width15 ellipsis">
               <FormattedMessage id="dashboardItemsApproval.lastEdited" defaultMessage="Last Edited" />
             </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered checkbox"></GlobalAppGridCell>
+            <GlobalAppGridCell className=" checkbox" />
           </GlobalAppGridRow>
         </TableHead>
         <TableBody>
           {items.map((dashboardItem, i) => (
             <Fragment key={i}>
               <GlobalAppGridRow>
-                <GlobalAppGridCell colSpan={7} className="expandableCell">
-                  <Box display="flex">
+                <GlobalAppGridCell colSpan={7} className="padded0">
+                  <Box display="flex" alignItems="center">
                     <Skeleton variant="circle" width={30} height={30} className={classes.skeletonCheckbox} />
-                    <Skeleton variant="text" width="100%" />
+                    <Skeleton variant="text" height="20px" width={`${rand(20, 50)}%`} />
                   </Box>
                 </GlobalAppGridCell>
               </GlobalAppGridRow>

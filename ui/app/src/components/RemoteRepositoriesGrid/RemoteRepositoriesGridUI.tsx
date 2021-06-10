@@ -103,27 +103,27 @@ export function RepositoriesGridTableHead() {
   return (
     <TableHead>
       <GlobalAppGridRow className="hoverDisabled">
-        <GlobalAppGridCell className="bordered">
+        <GlobalAppGridCell>
           <Typography variant="subtitle2">
             <FormattedMessage id="words.name" defaultMessage="Name" />
           </Typography>
         </GlobalAppGridCell>
-        <GlobalAppGridCell className="bordered">
+        <GlobalAppGridCell>
           <Typography variant="subtitle2">
             <FormattedMessage id="words.url" defaultMessage="URL" />
           </Typography>
         </GlobalAppGridCell>
-        <GlobalAppGridCell className="bordered">
+        <GlobalAppGridCell>
           <Typography variant="subtitle2">
             <FormattedMessage id="words.fetch" defaultMessage="Fetch" />
           </Typography>
         </GlobalAppGridCell>
-        <GlobalAppGridCell className="bordered">
+        <GlobalAppGridCell>
           <Typography variant="subtitle2">
             <FormattedMessage id="repositories.pushUrl" defaultMessage="Push URL" />
           </Typography>
         </GlobalAppGridCell>
-        <GlobalAppGridCell className="bordered" />
+        <GlobalAppGridCell />
       </GlobalAppGridRow>
     </TableHead>
   );

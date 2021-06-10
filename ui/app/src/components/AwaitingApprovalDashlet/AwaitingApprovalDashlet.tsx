@@ -21,7 +21,7 @@ import { FormattedMessage } from 'react-intl';
 import { fetchLegacyGetGoLiveItems } from '../../services/dashboard';
 import { useActiveSiteId, useLogicResource, useSpreadState } from '../../utils/hooks';
 import { DetailedItem } from '../../models/Item';
-import DashboardItemsApprovalGridUI from '../DashboardItemsApprovalGrid';
+import AwaitingApprovalDashletGridUI from '../DashboardItemsApprovalGrid';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import LookupTable from '../../models/LookupTable';
 import { getNumOfMenuOptionsForItem, getSystemTypeFromPath, parseLegacyItemToDetailedItem } from '../../utils/content';
@@ -30,9 +30,9 @@ import { showItemMegaMenu } from '../../state/actions/dialogs';
 import { useDispatch } from 'react-redux';
 import Dashlet from '../Dashlet';
 import ApiResponse from '../../models/ApiResponse';
-import DashboardItemsApprovalSkeletonTable from '../DashboardItemsApprovalGrid/DashboardItemsApprovalSkeletonTable';
+import AwaitingApprovalDashletSkeletonTable from '../DashboardItemsApprovalGrid/AwaitingApprovalDashletSkeletonTable';
 
-export interface DashboardItemsApprovalProps {
+export interface AwaitingApprovalDashletProps {
   selectedLookup: LookupTable<boolean>;
   onItemChecked(paths: string[], forceChecked?: boolean): void;
 }
@@ -43,9 +43,7 @@ export interface DashboardItem {
   children: string[];
 }
 
-// AwaitingApprovalDashlet
-
-export default function DashboardItemsApproval(props: DashboardItemsApprovalProps) {
+export default function AwaitingApprovalDashlet(props: AwaitingApprovalDashletProps) {
   const site = useActiveSiteId();
   const classes = useStyles();
   const [state, setState] = useState<{
@@ -207,10 +205,10 @@ export default function DashboardItemsApproval(props: DashboardItemsApprovalProp
       <SuspenseWithEmptyState
         resource={resource}
         suspenseProps={{
-          fallback: <DashboardItemsApprovalSkeletonTable items={state.parentItems} expandedLookup={expandedLookup} />
+          fallback: <AwaitingApprovalDashletSkeletonTable items={state.parentItems} expandedLookup={expandedLookup} />
         }}
       >
-        <DashboardItemsApprovalGridUI
+        <AwaitingApprovalDashletGridUI
           resource={resource}
           expandedLookup={expandedLookup}
           publishingTargetLookup={state.publishingTargetLookup}
