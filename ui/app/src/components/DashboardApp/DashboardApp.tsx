@@ -14,16 +14,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo, useRef } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import AwaitingApprovalDashlet from '../AwaitingApprovalDashlet';
 import LookupTable from '../../models/LookupTable';
-import { useActiveSiteId, useSpreadState } from '../../utils/hooks';
+import { useActiveSiteId, useEnv, useSelection, useSpreadState } from '../../utils/hooks';
 import { fetchItemsByPath } from '../../services/content';
 import ItemActionsSnackbar from '../ItemActionsSnackbar';
 import { ListItem, ListItemSecondaryAction, ListItemText } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import { generateMultipleItemOptions, generateSingleItemOptions } from '../../utils/itemActions';
+import { generateMultipleItemOptions, generateSingleItemOptions, itemActionDispatcher } from '../../utils/itemActions';
 import { useIntl } from 'react-intl';
 import translations from './translations';
 import { createLookupTable } from '../../utils/object';
@@ -50,13 +50,15 @@ const actionsToBeShown: AllItemActions[] = [
 
 export default function DashboardApp(props: DashboardAppProps) {
   const site = useActiveSiteId();
-  const [selectedLookup, setSelectedLookup] = useSpreadState<LookupTable<boolean>>({});
+  const [selectedLookup, setSelectedLookup] = useState<LookupTable<boolean>>({});
   const [itemsByPath, setItemsByPath] = useSpreadState({});
   const selectedLength = useMemo(() => Object.values(selectedLookup).filter((value) => value).length, [selectedLookup]);
   const loadedRef = useRef([]);
   const { formatMessage } = useIntl();
   const classes = useStyles();
   const dispatch = useDispatch();
+  const { authoringBase } = useEnv();
+  const clipboard = useSelection((state) => state.content.clipboard);
 
   const selectionOptions = useMemo(() => {
     const selected = Object.keys(selectedLookup).filter((path) => selectedLookup[path]);
@@ -70,14 +72,14 @@ export default function DashboardApp(props: DashboardAppProps) {
           return generateSingleItemOptions(item, formatMessage, { includeOnly: actionsToBeShown }).flat();
         }
       } else {
-        let itemsDetails = [];
+        let items = [];
         selected.forEach((itemPath) => {
           const item = itemsByPath[itemPath];
           if (item) {
-            itemsDetails.push(item);
+            items.push(item);
           }
         });
-        return generateMultipleItemOptions(itemsDetails, formatMessage).filter((option) =>
+        return generateMultipleItemOptions(items, formatMessage).filter((option) =>
           actionsToBeShown.includes(option.id as AllItemActions)
         );
       }
@@ -102,12 +104,45 @@ export default function DashboardApp(props: DashboardAppProps) {
       lookup[path] = forceChecked ?? !selectedLookup[path];
     });
     fetchItems(paths);
-    setSelectedLookup(lookup);
+    setSelectedLookup({ ...selectedLookup, ...lookup });
   };
 
-  const onActionClicked = () => {};
+  const onActionClicked = (option: AllItemActions, event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const selected = Object.keys(selectedLookup).filter((path) => selectedLookup[path]);
+    if (selected.length > 1) {
+      const detailedItems = [];
+      selected.forEach((path) => {
+        itemsByPath[path] && detailedItems.push(itemsByPath[path]);
+      });
+      itemActionDispatcher({
+        site,
+        item: detailedItems,
+        option,
+        authoringBase,
+        dispatch,
+        formatMessage,
+        clipboard,
+        event
+      });
+    } else {
+      const path = selected[0];
+      const item = itemsByPath[path];
+      itemActionDispatcher({
+        site,
+        item,
+        option,
+        authoringBase,
+        dispatch,
+        formatMessage,
+        clipboard,
+        event
+      });
+    }
+  };
 
-  const handleClearSelected = () => {};
+  const handleClearSelected = () => {
+    setSelectedLookup({});
+  };
 
   const onItemMenuClick = (event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, item: DetailedItem) => {
     const path = item.path;
