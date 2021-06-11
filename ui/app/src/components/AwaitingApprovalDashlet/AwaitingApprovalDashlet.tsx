@@ -24,9 +24,7 @@ import { DetailedItem } from '../../models/Item';
 import AwaitingApprovalDashletGridUI from '../AwaitingApprovalDashletGrid';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import LookupTable from '../../models/LookupTable';
-import { getNumOfMenuOptionsForItem, getSystemTypeFromPath, parseLegacyItemToDetailedItem } from '../../utils/content';
-import { completeDetailedItem } from '../../state/actions/content';
-import { showItemMegaMenu } from '../../state/actions/dialogs';
+import { parseLegacyItemToDetailedItem } from '../../utils/content';
 import { useDispatch } from 'react-redux';
 import Dashlet from '../Dashlet';
 import ApiResponse from '../../models/ApiResponse';
@@ -35,6 +33,7 @@ import AwaitingApprovalDashletSkeletonTable from '../AwaitingApprovalDashletGrid
 export interface AwaitingApprovalDashletProps {
   selectedLookup: LookupTable<boolean>;
   onItemChecked(paths: string[], forceChecked?: boolean): void;
+  onItemMenuClick(event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, item: DetailedItem): void;
 }
 
 export interface DashboardItem {
@@ -57,7 +56,7 @@ export default function AwaitingApprovalDashlet(props: AwaitingApprovalDashletPr
     parentItems: null,
     total: null
   });
-  const { selectedLookup, onItemChecked } = props;
+  const { selectedLookup, onItemChecked, onItemMenuClick } = props;
   const [expanded, setExpanded] = useState(true);
   const [expandedLookup, setExpandedLookup] = useSpreadState<LookupTable<boolean>>({});
   const [error, setError] = useState<ApiResponse>();
@@ -146,22 +145,6 @@ export default function AwaitingApprovalDashlet(props: AwaitingApprovalDashletPr
 
   const onExpandedRow = (path: string, value: boolean) => {
     setExpandedLookup({ [path]: value });
-  };
-
-  const onItemMenuClick = (event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, item: DetailedItem) => {
-    const path = item.path;
-    dispatch(completeDetailedItem({ path }));
-    dispatch(
-      showItemMegaMenu({
-        path,
-        anchorReference: 'anchorPosition',
-        anchorPosition: { top: event.clientY, left: event.clientX },
-        numOfLoaderItems: getNumOfMenuOptionsForItem({
-          path: item.path,
-          systemType: getSystemTypeFromPath(item.path)
-        } as DetailedItem)
-      })
-    );
   };
 
   const onToggleCheckedAll = () => {

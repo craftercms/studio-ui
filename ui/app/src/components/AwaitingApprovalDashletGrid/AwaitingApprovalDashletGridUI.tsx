@@ -37,6 +37,7 @@ import ItemDisplay from '../ItemDisplay';
 import clsx from 'clsx';
 import { useLocale } from '../../utils/hooks';
 import { DashboardItem } from '../AwaitingApprovalDashlet';
+import ExpandLessIcon from '@material-ui/icons/ExpandLessRounded';
 
 interface AwaitingApprovalDashletGridUIProps {
   resource: Resource<DashboardItem[]>;
@@ -107,7 +108,7 @@ export default function AwaitingApprovalDashletGridUI(props: AwaitingApprovalDas
                 <GlobalAppGridCell colSpan={7}>
                   <Box display="flex">
                     <IconButton size="small">
-                      <ExpandMoreIcon />
+                      {expandedLookup[dashboardItem.path] ? <ExpandLessIcon /> : <ExpandMoreIcon />}
                     </IconButton>
                     <Typography>
                       {dashboardItem.label} ({dashboardItem.children.length})
