@@ -228,7 +228,9 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
     } else {
       setItemStates(
         siteId,
-        Object.values(selectedItems).map((item) => item.path),
+        Object.values(selectedItems)
+          .filter((value) => value)
+          .map((item) => item.path),
         update
       ).subscribe(() => {
         fetchStates();
@@ -436,7 +438,7 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
             defaultMessage='{count, plural, one {Set State for "{name}"} other {Set State for Items ({count})}}'
             values={{
               count: selectedItem ? 1 : isSelectedItemsOnAllPages ? items?.total : selectedItemsLength,
-              name: selectedItem?.label
+              name: selectedItem?.label ?? Object.values(selectedItems)[0]?.label
             }}
           />
         }

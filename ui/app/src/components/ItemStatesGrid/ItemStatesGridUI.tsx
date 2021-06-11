@@ -77,13 +77,13 @@ export default function ItemStatesGridUI(props: WorkflowStatesGridUIProps) {
   return (
     <>
       <TableContainer className={classes.tableContainer}>
-        <Table>
+        <Table size="small">
           <TableHead>
             <GlobalAppGridRow className="hoverDisabled">
               <GlobalAppGridCell align="center">
                 <Checkbox checked={false} onClick={(e) => onToggleSelectedItems()} />
               </GlobalAppGridCell>
-              <GlobalAppGridCell className="width60">
+              <GlobalAppGridCell className="width60 pl0">
                 <Typography variant="subtitle2">
                   <FormattedMessage id="words.item" defaultMessage="Item" />
                 </Typography>
@@ -128,7 +128,7 @@ export default function ItemStatesGridUI(props: WorkflowStatesGridUIProps) {
                     }}
                   />
                 </GlobalAppGridCell>
-                <GlobalAppGridCell className="ellipsis maxWidth300">
+                <GlobalAppGridCell className="ellipsis maxWidth300 pl0">
                   <ItemDisplay item={item} />
                   <Typography
                     title={item.path}
