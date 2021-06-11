@@ -171,9 +171,11 @@ export default function RecentActivityDashlet(props: RecentActivityDashletProps)
               <MenuItem value={10}>10</MenuItem>
               <MenuItem value={20}>20</MenuItem>
               <MenuItem value={50}>50</MenuItem>
-              <MenuItem value={totalItems}>
-                <FormattedMessage id="words.all" defaultMessage="All" />
-              </MenuItem>
+              {totalItems > 0 && (
+                <MenuItem value={totalItems}>
+                  <FormattedMessage id="words.all" defaultMessage="All" /> ({totalItems})
+                </MenuItem>
+              )}
             </Select>
           </FormControl>
           <SecondaryButton onClick={onToggleHideLiveItems} className={classes.rightAction}>
