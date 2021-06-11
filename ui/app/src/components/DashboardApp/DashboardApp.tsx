@@ -27,8 +27,12 @@ import { generateMultipleItemOptions, generateSingleItemOptions } from '../../ut
 import { useIntl } from 'react-intl';
 import translations from './translations';
 import { createLookupTable } from '../../utils/object';
-import { AllItemActions } from '../../models/Item';
+import { AllItemActions, DetailedItem } from '../../models/Item';
 import useStyles from './styles';
+import { completeDetailedItem } from '../../state/actions/content';
+import { showItemMegaMenu } from '../../state/actions/dialogs';
+import { getNumOfMenuOptionsForItem, getSystemTypeFromPath } from '../../utils/content';
+import { useDispatch } from 'react-redux';
 
 interface DashboardAppProps {}
 
@@ -52,6 +56,7 @@ export default function DashboardApp(props: DashboardAppProps) {
   const loadedRef = useRef([]);
   const { formatMessage } = useIntl();
   const classes = useStyles();
+  const dispatch = useDispatch();
 
   const selectionOptions = useMemo(() => {
     const selected = Object.keys(selectedLookup).filter((path) => selectedLookup[path]);
@@ -104,9 +109,29 @@ export default function DashboardApp(props: DashboardAppProps) {
 
   const handleClearSelected = () => {};
 
+  const onItemMenuClick = (event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, item: DetailedItem) => {
+    const path = item.path;
+    dispatch(completeDetailedItem({ path }));
+    dispatch(
+      showItemMegaMenu({
+        path,
+        anchorReference: 'anchorPosition',
+        anchorPosition: { top: event.clientY, left: event.clientX },
+        numOfLoaderItems: getNumOfMenuOptionsForItem({
+          path: item.path,
+          systemType: getSystemTypeFromPath(item.path)
+        } as DetailedItem)
+      })
+    );
+  };
+
   return (
     <section className={classes.root}>
-      <AwaitingApprovalDashlet selectedLookup={selectedLookup} onItemChecked={onItemChecked} />
+      <AwaitingApprovalDashlet
+        selectedLookup={selectedLookup}
+        onItemChecked={onItemChecked}
+        onItemMenuClick={onItemMenuClick}
+      />
       <ItemActionsSnackbar
         open={selectedLength > 0}
         options={selectionOptions}
