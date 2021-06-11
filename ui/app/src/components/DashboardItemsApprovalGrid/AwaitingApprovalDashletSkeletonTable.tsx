@@ -58,7 +58,7 @@ export default function AwaitingApprovalDashletSkeletonTable(props: DashboardIte
               <Skeleton variant="circle" width={30} height={30} className={classes.skeletonCheckbox} />
             </GlobalAppGridCell>
             <GlobalAppGridCell className=" width40 padded0">
-              <FormattedMessage id="dashboardItemsApproval.itemName" defaultMessage="Item Name" />
+              <FormattedMessage id="dashboardItemsApproval.item" defaultMessage="Item" />
             </GlobalAppGridCell>
             <GlobalAppGridCell className=" width15 ellipsis">
               <FormattedMessage id="dashboardItemsApproval.publishingTarget" defaultMessage="Publishing Target" />
