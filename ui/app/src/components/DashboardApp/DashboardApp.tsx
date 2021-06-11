@@ -15,7 +15,6 @@
  */
 
 import React, { useMemo, useRef } from 'react';
-import Box from '@material-ui/core/Box';
 import AwaitingApprovalDashlet from '../AwaitingApprovalDashlet';
 import LookupTable from '../../models/LookupTable';
 import { useActiveSiteId, useSpreadState } from '../../utils/hooks';
@@ -29,6 +28,7 @@ import { useIntl } from 'react-intl';
 import translations from './translations';
 import { createLookupTable } from '../../utils/object';
 import { AllItemActions } from '../../models/Item';
+import useStyles from './styles';
 
 interface DashboardAppProps {}
 
@@ -51,6 +51,7 @@ export default function DashboardApp(props: DashboardAppProps) {
   const selectedLength = useMemo(() => Object.values(selectedLookup).filter((value) => value).length, [selectedLookup]);
   const loadedRef = useRef([]);
   const { formatMessage } = useIntl();
+  const classes = useStyles();
 
   const selectionOptions = useMemo(() => {
     const selected = Object.keys(selectedLookup).filter((path) => selectedLookup[path]);
@@ -104,7 +105,7 @@ export default function DashboardApp(props: DashboardAppProps) {
   const handleClearSelected = () => {};
 
   return (
-    <Box padding="20px">
+    <section className={classes.root}>
       <AwaitingApprovalDashlet selectedLookup={selectedLookup} onItemChecked={onItemChecked} />
       <ItemActionsSnackbar
         open={selectedLength > 0}
@@ -125,6 +126,6 @@ export default function DashboardApp(props: DashboardAppProps) {
           </ListItem>
         }
       />
-    </Box>
+    </section>
   );
 }

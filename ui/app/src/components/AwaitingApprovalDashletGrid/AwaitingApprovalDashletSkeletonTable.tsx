@@ -87,7 +87,7 @@ export default function AwaitingApprovalDashletSkeletonTable(props: DashboardIte
                 </GlobalAppGridCell>
               </GlobalAppGridRow>
               <GlobalAppGridRow className="hoverDisabled">
-                <GlobalAppGridCell colSpan={7} className="padded0">
+                <GlobalAppGridCell colSpan={7} className="padded0 borderless">
                   <Collapse in={expandedLookup[dashboardItem.path]}>
                     <Table size="small" className={classes.tableRoot}>
                       <TableBody>

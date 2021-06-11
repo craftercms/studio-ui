@@ -21,7 +21,7 @@ import { FormattedMessage } from 'react-intl';
 import { fetchLegacyGetGoLiveItems } from '../../services/dashboard';
 import { useActiveSiteId, useLogicResource, useSpreadState } from '../../utils/hooks';
 import { DetailedItem } from '../../models/Item';
-import AwaitingApprovalDashletGridUI from '../DashboardItemsApprovalGrid';
+import AwaitingApprovalDashletGridUI from '../AwaitingApprovalDashletGrid';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import LookupTable from '../../models/LookupTable';
 import { getNumOfMenuOptionsForItem, getSystemTypeFromPath, parseLegacyItemToDetailedItem } from '../../utils/content';
@@ -30,7 +30,7 @@ import { showItemMegaMenu } from '../../state/actions/dialogs';
 import { useDispatch } from 'react-redux';
 import Dashlet from '../Dashlet';
 import ApiResponse from '../../models/ApiResponse';
-import AwaitingApprovalDashletSkeletonTable from '../DashboardItemsApprovalGrid/AwaitingApprovalDashletSkeletonTable';
+import AwaitingApprovalDashletSkeletonTable from '../AwaitingApprovalDashletGrid/AwaitingApprovalDashletSkeletonTable';
 
 export interface AwaitingApprovalDashletProps {
   selectedLookup: LookupTable<boolean>;

@@ -19,7 +19,10 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 export const useStyles = makeStyles((theme) =>
   createStyles({
     tableRoot: {
-      tableLayout: 'fixed'
+      tableLayout: 'fixed',
+      '& tbody > tr:last-child > td table > tbody > tr:last-child > td': {
+        borderBottom: 0
+      }
     },
     ellipsis: {
       overflow: 'hidden',
