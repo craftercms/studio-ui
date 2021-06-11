@@ -18,6 +18,9 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles(() =>
   createStyles({
+    refresh: {
+      marginLeft: 'auto'
+    },
     rightSection: {
       marginLeft: 'auto'
     },

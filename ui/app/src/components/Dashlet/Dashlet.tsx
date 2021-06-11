@@ -21,24 +21,54 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMoreRounded';
 import useStyles from './styles';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import Typography from '@material-ui/core/Typography';
+import IconButton from '@material-ui/core/IconButton';
+import { FormattedMessage } from 'react-intl/dist/react-intl';
+import Tooltip from '@material-ui/core/Tooltip';
+import RefreshRoundedIcon from '@material-ui/icons/RefreshRounded';
+import clsx from 'clsx';
 
 export type DashletProps = PropsWithChildren<
   Omit<AccordionProps, 'title'> & {
     title: React.ReactNode;
     headerRightSection?: React.ReactNode;
     icon?: ElementType;
+    onRefresh?(): void;
+    refreshDisabled?: boolean;
     onToggleExpanded(): void;
   }
 >;
 
 export default function Dashlet(props: DashletProps) {
-  const { icon: Icon = ExpandMoreIcon, title, headerRightSection, onToggleExpanded, children, ...rest } = props;
+  const {
+    icon: Icon = ExpandMoreIcon,
+    title,
+    headerRightSection,
+    onToggleExpanded,
+    refreshDisabled = false,
+    children,
+    onRefresh,
+    ...rest
+  } = props;
   const classes = useStyles();
   return (
     <Accordion {...rest}>
       <AccordionSummary expandIcon={<Icon />} classes={{ content: classes.summary }} onClick={onToggleExpanded}>
         <Typography>{title}</Typography>
         {headerRightSection && <section className={classes.rightSection}>{headerRightSection}</section>}
+        {onRefresh && (
+          <IconButton
+            disabled={refreshDisabled}
+            onClick={(e) => {
+              e.stopPropagation();
+              onRefresh();
+            }}
+            className={clsx(!headerRightSection && classes.refresh)}
+          >
+            <Tooltip title={<FormattedMessage id="words.refresh" defaultMessage="Refresh" />}>
+              <RefreshRoundedIcon />
+            </Tooltip>
+          </IconButton>
+        )}
       </AccordionSummary>
       <AccordionDetails className={classes.details}>{children}</AccordionDetails>
     </Accordion>

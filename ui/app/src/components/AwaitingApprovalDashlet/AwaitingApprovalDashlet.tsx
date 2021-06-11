@@ -14,9 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import useStyles from './styles';
-import SecondaryButton from '../SecondaryButton';
 import { FormattedMessage } from 'react-intl';
 import { fetchLegacyGetGoLiveItems } from '../../services/dashboard';
 import { useActiveSiteId, useLogicResource, useSpreadState } from '../../utils/hooks';
@@ -25,10 +24,10 @@ import AwaitingApprovalDashletGridUI from '../AwaitingApprovalDashletGrid';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import LookupTable from '../../models/LookupTable';
 import { parseLegacyItemToDetailedItem } from '../../utils/content';
-import { useDispatch } from 'react-redux';
 import Dashlet from '../Dashlet';
 import ApiResponse from '../../models/ApiResponse';
 import AwaitingApprovalDashletSkeletonTable from '../AwaitingApprovalDashletGrid/AwaitingApprovalDashletSkeletonTable';
+import Button from '@material-ui/core/Button';
 
 export interface AwaitingApprovalDashletProps {
   selectedLookup: LookupTable<boolean>;
@@ -62,7 +61,6 @@ export default function AwaitingApprovalDashlet(props: AwaitingApprovalDashletPr
   const [error, setError] = useState<ApiResponse>();
   const [showInProgressItems, setShowInProgressItems] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
-  const dispatch = useDispatch();
 
   const showExpanded = useMemo(() => Object.values(expandedLookup).some((value) => !value), [expandedLookup]);
   const isAllChecked = useMemo(() => !Object.keys(state.itemsLookup).some((path) => !selectedLookup[path]), [
@@ -74,7 +72,7 @@ export default function AwaitingApprovalDashlet(props: AwaitingApprovalDashletPr
     [isAllChecked, selectedLookup, state.itemsLookup]
   );
 
-  useEffect(() => {
+  const refresh = useCallback(() => {
     setIsFetching(true);
     fetchLegacyGetGoLiveItems(site, 'eventDate', null, showInProgressItems, null).subscribe(
       (response) => {
@@ -110,6 +108,10 @@ export default function AwaitingApprovalDashlet(props: AwaitingApprovalDashletPr
       }
     );
   }, [setExpandedLookup, site, showInProgressItems]);
+
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
 
   const resource = useLogicResource<
     DashboardItem[],
@@ -155,6 +157,10 @@ export default function AwaitingApprovalDashlet(props: AwaitingApprovalDashletPr
     onItemChecked([path]);
   };
 
+  const onRefresh = () => {
+    refresh();
+  };
+
   return (
     <Dashlet
       title={
@@ -166,22 +172,24 @@ export default function AwaitingApprovalDashlet(props: AwaitingApprovalDashletPr
       }
       expanded={expanded}
       onToggleExpanded={() => setExpanded(!expanded)}
+      refreshDisabled={isFetching}
+      onRefresh={onRefresh}
       headerRightSection={
         <>
-          <SecondaryButton disabled={isFetching} onClick={onToggleCollapse} className={classes.collapseAll}>
+          <Button disabled={isFetching} onClick={onToggleCollapse} className={classes.collapseAll}>
             {showExpanded ? (
               <FormattedMessage id="dashboardItemsApproval.expandedAll" defaultMessage="Expand All" />
             ) : (
               <FormattedMessage id="dashboardItemsApproval.collapseAll" defaultMessage="Collapse All" />
             )}
-          </SecondaryButton>
-          <SecondaryButton disabled={isFetching} onClick={onShowInProgress}>
+          </Button>
+          <Button disabled={isFetching} onClick={onShowInProgress}>
             {showInProgressItems ? (
-              <FormattedMessage id="dashboardItemsApproval.hideInProgress" defaultMessage='Hide "In-Progress" items' />
+              <FormattedMessage id="dashboardItemsApproval.hideUnpublished" defaultMessage="Hide Unpublished" />
             ) : (
-              <FormattedMessage id="dashboardItemsApproval.showInProgress" defaultMessage='Show "In-Progress" items' />
+              <FormattedMessage id="dashboardItemsApproval.showUnpublished" defaultMessage="Show Unpublished" />
             )}
-          </SecondaryButton>
+          </Button>
         </>
       }
     >
