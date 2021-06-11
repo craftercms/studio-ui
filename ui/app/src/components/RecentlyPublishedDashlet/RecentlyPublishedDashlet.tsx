@@ -210,10 +210,18 @@ export default function RecentlyPublishedDashlet(props: RecentlyPublishedWidgetP
               select: classes.filterSelectInput
             }}
           >
-            <MenuItem value={'page'}>Pages</MenuItem>
-            <MenuItem value={'component'}>Components</MenuItem>
-            <MenuItem value={'document'}>Documents</MenuItem>
-            <MenuItem value={'all'}>All</MenuItem>
+            <MenuItem value={'page'}>
+              <FormattedMessage id="words.pages" defaultMessage="Pages" />
+            </MenuItem>
+            <MenuItem value={'component'}>
+              <FormattedMessage id="words.components" defaultMessage="Components" />
+            </MenuItem>
+            <MenuItem value={'document'}>
+              <FormattedMessage id="words.documents" defaultMessage="Documents" />
+            </MenuItem>
+            <MenuItem value={'all'}>
+              <FormattedMessage id="words.all" defaultMessage="All" />
+            </MenuItem>
           </Select>
         </>
       }
