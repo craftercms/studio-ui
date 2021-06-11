@@ -187,7 +187,13 @@ export default function AwaitingApprovalDashletGridUI(props: AwaitingApprovalDas
                                   )}
                                 </GlobalAppGridCell>
                                 <GlobalAppGridCell className="checkbox">
-                                  <IconButton size="small" onClick={(e) => onItemMenuClick(e, itemsLookup[path])}>
+                                  <IconButton
+                                    size="small"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      onItemMenuClick(e, itemsLookup[path]);
+                                    }}
+                                  >
                                     <MoreVertRounded />
                                   </IconButton>
                                 </GlobalAppGridCell>
