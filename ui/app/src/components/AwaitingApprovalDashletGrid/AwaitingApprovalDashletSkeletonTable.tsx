@@ -57,22 +57,22 @@ export default function AwaitingApprovalDashletSkeletonTable(props: DashboardIte
             <GlobalAppGridCell className="checkbox">
               <Skeleton variant="circle" width={30} height={30} className={classes.skeletonCheckbox} />
             </GlobalAppGridCell>
-            <GlobalAppGridCell className=" width40 padded0">
+            <GlobalAppGridCell className="width40 padded0">
               <FormattedMessage id="dashboardItemsApproval.item" defaultMessage="Item" />
             </GlobalAppGridCell>
-            <GlobalAppGridCell className=" width15 ellipsis">
+            <GlobalAppGridCell className="width15 ellipsis">
               <FormattedMessage id="dashboardItemsApproval.publishingTarget" defaultMessage="Publishing Target" />
             </GlobalAppGridCell>
-            <GlobalAppGridCell className=" width15 ellipsis">
+            <GlobalAppGridCell className="width15 ellipsis">
               <FormattedMessage id="dashboardItemsApproval.publishingDate" defaultMessage="Publishing Date" />
             </GlobalAppGridCell>
-            <GlobalAppGridCell className=" width15 ellipsis">
+            <GlobalAppGridCell className="width15 ellipsis">
               <FormattedMessage id="dashboardItemsApproval.lastEditedBy" defaultMessage="Last Edited By" />
             </GlobalAppGridCell>
-            <GlobalAppGridCell className=" width15 ellipsis">
+            <GlobalAppGridCell className="width15 ellipsis">
               <FormattedMessage id="dashboardItemsApproval.lastEdited" defaultMessage="Last Edited" />
             </GlobalAppGridCell>
-            <GlobalAppGridCell className=" checkbox" />
+            <GlobalAppGridCell className="checkbox" />
           </GlobalAppGridRow>
         </TableHead>
         <TableBody>
