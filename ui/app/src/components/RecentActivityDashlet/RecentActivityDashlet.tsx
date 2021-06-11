@@ -21,15 +21,12 @@ import { useActiveSiteId, useLocale, useLogicResource } from '../../utils/hooks'
 import { DetailedItem } from '../../models/Item';
 import { fetchLegacyUserActivities } from '../../services/dashboard';
 import useStyles from './styles';
-import { getNumOfMenuOptionsForItem, getSystemTypeFromPath, parseLegacyItemToDetailedItem } from '../../utils/content';
+import { parseLegacyItemToDetailedItem } from '../../utils/content';
 import Dashlet from '../Dashlet';
 import { FormattedMessage } from 'react-intl';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import RecentActivityDashletUI from './RecentActivityDashletUI';
-import { MediaItem } from '../../models/Search';
-import { useDispatch, useSelector } from 'react-redux';
-import { completeDetailedItem } from '../../state/actions/content';
-import { showItemMegaMenu } from '../../state/actions/dialogs';
+import { useSelector } from 'react-redux';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
@@ -41,10 +38,11 @@ import GlobalState from '../../models/GlobalState';
 export interface RecentActivityDashletProps {
   selectedLookup: LookupTable<boolean>;
   onItemChecked(paths: string[], forceChecked?: boolean): void;
+  onItemMenuClick(event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, item: DetailedItem): void;
 }
 
 export default function RecentActivityDashlet(props: RecentActivityDashletProps) {
-  const { selectedLookup, onItemChecked } = props;
+  const { selectedLookup, onItemChecked, onItemMenuClick } = props;
   const [expandedDashlet, setExpandedDashlet] = useState(true);
   const [fetchingActivity, setFecthingActivity] = useState(false);
   const [errorActivity, setErrorActivity] = useState<ApiResponse>();
@@ -52,14 +50,13 @@ export default function RecentActivityDashlet(props: RecentActivityDashletProps)
   const [totalItems, setTotalItems] = useState(0);
   const [numItems, setNumItems] = useState(10);
   const [filterBy, setFilterBy] = useState('page'); // TODO: type
-  const [sortType, setSortType] = useState<'asc' | 'desc'>('asc');
+  const [sortType, setSortType] = useState<'asc' | 'desc'>('desc');
   const [sortBy, setSortBy] = useState('dateModified');
   const [excludeLiveItems, setExcludeLiveItems] = useState(false);
   const siteId = useActiveSiteId();
   const currentUser = useSelector<GlobalState, string>((state) => state.user.username);
   const localeBranch = useLocale();
   const classes = useStyles();
-  const dispatch = useDispatch();
 
   const isAllChecked = useMemo(() => !items.some((item) => !selectedLookup[item.path]), [items, selectedLookup]);
   const isIndeterminate = useMemo(() => items.some((item) => selectedLookup[item.path] && !isAllChecked), [
@@ -67,23 +64,6 @@ export default function RecentActivityDashlet(props: RecentActivityDashletProps)
     selectedLookup,
     isAllChecked
   ]);
-
-  const onOptionsButtonClick = (e: any, item: MediaItem) => {
-    e.stopPropagation();
-    const path = item.path;
-    dispatch(completeDetailedItem({ path }));
-    dispatch(
-      showItemMegaMenu({
-        path,
-        anchorReference: 'anchorPosition',
-        anchorPosition: { top: e.clientY, left: e.clientX },
-        numOfLoaderItems: getNumOfMenuOptionsForItem({
-          path: item.path,
-          systemType: getSystemTypeFromPath(item.path)
-        } as DetailedItem)
-      })
-    );
-  };
 
   const toggleSelectAllItems = () => {
     const checkedPaths = [];
@@ -218,7 +198,7 @@ export default function RecentActivityDashlet(props: RecentActivityDashletProps)
       >
         <RecentActivityDashletUI
           resource={resource}
-          onOptionsButtonClick={onOptionsButtonClick}
+          onOptionsButtonClick={onItemMenuClick}
           selectedLookup={selectedLookup}
           isAllChecked={isAllChecked}
           isIndeterminate={isIndeterminate}

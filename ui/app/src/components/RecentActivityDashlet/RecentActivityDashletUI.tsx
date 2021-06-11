@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { DetailedItem } from '../../models/Item';
 import { Resource } from '../../models/Resource';
 import Table from '@material-ui/core/Table';
@@ -66,34 +66,33 @@ export default function RecentActivityDashletUI(props: RecentActivityDashletUiPr
     onClickSelectAll
   } = props;
   const items = resource.read();
-  const [sortedItems, setSortedItems] = useState(items);
   const classes = useStyles();
 
-  useEffect(() => {
-    const comparator = (fieldA, fieldB) => {
-      if (sortType === 'asc') {
-        return fieldA > fieldB ? 1 : -1;
-      } else {
-        return fieldA < fieldB ? 1 : -1;
-      }
-    };
-    const sorted = items.sort((a, b) => {
-      let fieldA, fieldB;
-      switch (sortBy) {
-        case 'dateModified':
-          fieldA = a.sandbox.dateModified;
-          fieldB = b.sandbox.dateModified;
-          break;
-        case 'lastPublishedDate':
-          fieldA = a.live.lastPublishedDate;
-          fieldB = b.live.lastPublishedDate;
-          break;
-      }
-
-      return comparator(fieldA, fieldB);
-    });
-    setSortedItems(sorted);
-  }, [sortBy, sortType, items]);
+  const comparator = (fieldA, fieldB) => {
+    if (sortType === 'asc') {
+      return fieldA > fieldB ? 1 : -1;
+    } else {
+      return fieldA < fieldB ? 1 : -1;
+    }
+  };
+  const sortItems = (a: DetailedItem, b: DetailedItem) => {
+    let fieldA, fieldB;
+    switch (sortBy) {
+      case 'label':
+        fieldA = a.label;
+        fieldB = b.label;
+        break;
+      case 'dateModified':
+        fieldA = a.sandbox.dateModified;
+        fieldB = b.sandbox.dateModified;
+        break;
+      case 'lastPublishedDate':
+        fieldA = a.live.lastPublishedDate;
+        fieldB = b.live.lastPublishedDate;
+        break;
+    }
+    return comparator(fieldA, fieldB);
+  };
 
   return (
     <TableContainer>
@@ -104,9 +103,18 @@ export default function RecentActivityDashletUI(props: RecentActivityDashletUiPr
               <Checkbox indeterminate={isIndeterminate} checked={isAllChecked} onChange={() => onClickSelectAll()} />
             </GlobalAppGridCell>
             <GlobalAppGridCell className="bordered width40">
-              <Typography variant="subtitle2">
-                <FormattedMessage id="words.item" defaultMessage="Item" />
-              </Typography>
+              <TableSortLabel
+                active={sortBy === 'label'}
+                direction={sortType}
+                onClick={() => {
+                  setSortBy('label');
+                  toggleSortType();
+                }}
+              >
+                <Typography variant="subtitle2">
+                  <FormattedMessage id="words.item" defaultMessage="Item" />
+                </Typography>
+              </TableSortLabel>
             </GlobalAppGridCell>
             <GlobalAppGridCell className="bordered width20">
               <TableSortLabel
@@ -145,7 +153,7 @@ export default function RecentActivityDashletUI(props: RecentActivityDashletUiPr
           </GlobalAppGridRow>
         </TableHead>
         <TableBody>
-          {sortedItems.map((item) => (
+          {items.sort(sortItems).map((item) => (
             <GlobalAppGridRow key={item.id} onClick={() => onItemChecked([item.path])}>
               <GlobalAppGridCell className="checkbox width5">
                 <Checkbox checked={Boolean(selectedLookup[item.path])} />
