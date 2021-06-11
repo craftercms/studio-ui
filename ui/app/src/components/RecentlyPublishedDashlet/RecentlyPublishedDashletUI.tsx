@@ -47,7 +47,7 @@ export interface RecentlyPublishedWidgetUIProps {
   selectedItems: LookupTable<boolean>;
   isAllChecked: boolean;
   isIndeterminate: boolean;
-  onOptionsButtonClick?: any;
+  onItemMenuClick(event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, item: DetailedItem): void;
   setExpandedItems(itemExpanded): void;
   onItemChecked(paths: string[], forceChecked?: boolean): void;
   onClickSelectAll(): void;
@@ -59,7 +59,7 @@ export default function RecentlyPublishedDashletUI(props: RecentlyPublishedWidge
     expandedItems,
     setExpandedItems,
     itemsLookup,
-    onOptionsButtonClick,
+    onItemMenuClick,
     localeBranch,
     selectedItems,
     onItemChecked,
@@ -176,7 +176,7 @@ export default function RecentlyPublishedDashletUI(props: RecentlyPublishedWidge
                                 : itemsLookup[path].staging.publisher}
                             </GlobalAppGridCell>
                             <GlobalAppGridCell className="width5">
-                              <IconButton onClick={(e) => onOptionsButtonClick(e, itemsLookup[path])}>
+                              <IconButton onClick={(e) => onItemMenuClick(e, itemsLookup[path])}>
                                 <MoreVertRounded />
                               </IconButton>
                             </GlobalAppGridCell>

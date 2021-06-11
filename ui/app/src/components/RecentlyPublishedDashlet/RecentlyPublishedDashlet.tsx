@@ -26,20 +26,18 @@ import SecondaryButton from '../SecondaryButton';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import { DetailedItem } from '../../models/Item';
-import { getNumOfMenuOptionsForItem, getSystemTypeFromPath, parseLegacyItemToDetailedItem } from '../../utils/content';
+import { parseLegacyItemToDetailedItem } from '../../utils/content';
 import LookupTable from '../../models/LookupTable';
-import { MediaItem } from '../../models/Search';
-import { completeDetailedItem } from '../../state/actions/content';
-import { showItemMegaMenu } from '../../state/actions/dialogs';
-import { useDispatch } from 'react-redux';
 import Dashlet from '../Dashlet';
 import useStyles from './styles';
 import RecentlyPublishedDashletUISkeletonTable from './RecentlyPublishedDashletUISkeletonTable';
-import Typography from '@material-ui/core/Typography';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
 
 export interface RecentlyPublishedWidgetProps {
   selectedLookup: LookupTable<boolean>;
   onItemChecked(paths: string[], forceChecked?: boolean): void;
+  onItemMenuClick(event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, item: DetailedItem): void;
 }
 
 export interface DashboardItem {
@@ -48,7 +46,7 @@ export interface DashboardItem {
 }
 
 export default function RecentlyPublishedDashlet(props: RecentlyPublishedWidgetProps) {
-  const { selectedLookup, onItemChecked } = props;
+  const { selectedLookup, onItemChecked, onItemMenuClick } = props;
   const [expandedWidget, setExpandedWidget] = useState(true);
   const [fetchingHistory, setFetchingHistory] = useState(false);
   const [errorHistory, setErrorHistory] = useState<ApiResponse>();
@@ -60,8 +58,10 @@ export default function RecentlyPublishedDashlet(props: RecentlyPublishedWidgetP
   const siteId = useActiveSiteId();
   const localeBranch = useLocale();
   const classes = useStyles();
-  const dispatch = useDispatch();
 
+  const allCollapsed = useMemo(() => Object.keys(expandedItems).every((key) => !Boolean(expandedItems[key])), [
+    expandedItems
+  ]);
   const isAllChecked = useMemo(() => !Object.keys(itemsLookup).some((path) => !selectedLookup[path]), [
     itemsLookup,
     selectedLookup
@@ -82,23 +82,6 @@ export default function RecentlyPublishedDashlet(props: RecentlyPublishedWidgetP
     [setExpandedItems]
   );
 
-  const onOptionsButtonClick = (e: any, item: MediaItem) => {
-    e.stopPropagation();
-    const path = item.path;
-    dispatch(completeDetailedItem({ path }));
-    dispatch(
-      showItemMegaMenu({
-        path,
-        anchorReference: 'anchorPosition',
-        anchorPosition: { top: e.clientY, left: e.clientX },
-        numOfLoaderItems: getNumOfMenuOptionsForItem({
-          path: item.path,
-          systemType: getSystemTypeFromPath(item.path)
-        } as DetailedItem)
-      })
-    );
-  };
-
   const onFilterChange = (e) => {
     e.stopPropagation();
     setFilterBy(e.target.value);
@@ -111,7 +94,7 @@ export default function RecentlyPublishedDashlet(props: RecentlyPublishedWidgetP
 
   const onCollapseAll = (e) => {
     e.stopPropagation();
-    toggleCollapseAllItems(parentItems, false);
+    toggleCollapseAllItems(parentItems, allCollapsed);
   };
 
   const toggleSelectAllItems = () => {
@@ -166,13 +149,57 @@ export default function RecentlyPublishedDashlet(props: RecentlyPublishedWidgetP
 
   return (
     <Dashlet
-      title={<FormattedMessage id="recentlyPublished.recentlyPublished" defaultMessage="RecentlyPublished" />}
+      title={
+        <FormattedMessage
+          id="recentlyPublished.recentlyPublished"
+          defaultMessage="RecentlyPublished ({total})"
+          values={{
+            total: Object.keys(itemsLookup).length
+          }}
+        />
+      }
       onToggleExpanded={() => setExpandedWidget(!expandedWidget)}
       expanded={expandedWidget}
       headerRightSection={
         <>
-          <SecondaryButton onClick={onCollapseAll} className={classes.collapseAllButton}>
-            <FormattedMessage id="recentlyPublished.collapseAll" defaultMessage="Collapse All" />
+          <FormControl variant="outlined">
+            <InputLabel id="itemsNumberLabel">
+              <FormattedMessage id="words.show" defaultMessage="Show" />
+            </InputLabel>
+            <Select
+              labelId="itemsNumberLabel"
+              id="itemsNumber"
+              value={numItems}
+              onChange={onNumItemsChange}
+              label={<FormattedMessage id="words.show" defaultMessage="Show" />}
+              className={classes.rightAction}
+              classes={{
+                root: classes.filterSelectRoot,
+                select: classes.filterSelectInput
+              }}
+            >
+              <MenuItem value={10}>10</MenuItem>
+              <MenuItem value={20}>20</MenuItem>
+              <MenuItem value={50}>50</MenuItem>
+              {Object.keys(itemsLookup).length && (
+                <MenuItem value={Object.keys(itemsLookup).length}>
+                  <FormattedMessage
+                    id="words.all"
+                    defaultMessage="All ({total})"
+                    values={{
+                      total: Object.keys(itemsLookup).length
+                    }}
+                  />
+                </MenuItem>
+              )}
+            </Select>
+          </FormControl>
+          <SecondaryButton onClick={onCollapseAll} className={classes.rightAction}>
+            {!allCollapsed ? (
+              <FormattedMessage id="recentlyPublished.collapseAll" defaultMessage="Collapse All" />
+            ) : (
+              <FormattedMessage id="recentlyPublished.expandAll" defaultMessage="Expand All" />
+            )}
           </SecondaryButton>
           <Select
             value={filterBy}
@@ -203,7 +230,7 @@ export default function RecentlyPublishedDashlet(props: RecentlyPublishedWidgetP
           localeBranch={localeBranch}
           expandedItems={expandedItems}
           setExpandedItems={setExpandedItems}
-          onOptionsButtonClick={onOptionsButtonClick}
+          onItemMenuClick={onItemMenuClick}
           selectedItems={selectedLookup}
           onItemChecked={onItemChecked}
           onClickSelectAll={toggleSelectAllItems}
@@ -211,25 +238,6 @@ export default function RecentlyPublishedDashlet(props: RecentlyPublishedWidgetP
           isIndeterminate={isIndeterminate}
         />
       </SuspenseWithEmptyState>
-      <div className={classes.showSelectorContainer}>
-        <Typography variant="subtitle2" className={classes.showLabel}>
-          <FormattedMessage id="words.show" defaultMessage="Show" />
-        </Typography>
-        <Select
-          value={numItems}
-          onChange={onNumItemsChange}
-          className={classes.filterSelectBtn}
-          classes={{
-            root: classes.filterSelectRoot,
-            select: classes.filterSelectInput
-          }}
-        >
-          <MenuItem value={10}>10</MenuItem>
-          <MenuItem value={20}>20</MenuItem>
-          <MenuItem value={50}>50</MenuItem>
-          <MenuItem value={100}>100</MenuItem>
-        </Select>
-      </div>
     </Dashlet>
   );
 }

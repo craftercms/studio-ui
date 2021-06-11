@@ -18,7 +18,7 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles((theme) =>
   createStyles({
-    collapseAllButton: {
+    rightAction: {
       marginRight: theme.spacing(1)
     },
     filterSelectBtn: {
@@ -51,12 +51,6 @@ export const useStyles = makeStyles((theme) =>
     },
     skeletonCheckbox: {
       margin: '6px 10px'
-    },
-    showSelectorContainer: {
-      display: 'flex',
-      justifyContent: 'flex-end',
-      alignItems: 'center',
-      padding: theme.spacing(1)
     },
     showLabel: {
       marginRight: theme.spacing(1)
