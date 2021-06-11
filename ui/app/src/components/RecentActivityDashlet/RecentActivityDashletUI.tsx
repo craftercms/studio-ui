@@ -14,13 +14,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { DetailedItem } from '../../models/Item';
 import { Resource } from '../../models/Resource';
 import Table from '@material-ui/core/Table';
 import TableHead from '@material-ui/core/TableHead';
 import GlobalAppGridRow from '../GlobalAppGridRow';
 import GlobalAppGridCell from '../GlobalAppGridCell';
+import TableSortLabel from '@material-ui/core/TableSortLabel';
 import TableBody from '@material-ui/core/TableBody';
 import TableContainer from '@material-ui/core/TableContainer';
 import useStyles from './styles';
@@ -32,12 +33,18 @@ import IconButton from '@material-ui/core/IconButton';
 import MoreVertRounded from '@material-ui/icons/MoreVertRounded';
 import clsx from 'clsx';
 import LookupTable from '../../models/LookupTable';
+import GlobalState from '../../models/GlobalState';
 
 export interface RecentActivityDashletUiProps {
   resource: Resource<DetailedItem[]>;
   selectedLookup: LookupTable<boolean>;
   isAllChecked: boolean;
   isIndeterminate: boolean;
+  localeBranch: GlobalState['uiConfig']['locale'];
+  sortType: 'asc' | 'desc';
+  sortBy: string;
+  toggleSortType(): void;
+  setSortBy(by): void;
   onItemChecked(paths: string[], forceChecked?: boolean): void;
   onOptionsButtonClick?: any;
   onClickSelectAll(): void;
@@ -51,10 +58,42 @@ export default function RecentActivityDashletUI(props: RecentActivityDashletUiPr
     onItemChecked,
     isAllChecked,
     isIndeterminate,
+    localeBranch,
+    sortType,
+    sortBy,
+    setSortBy,
+    toggleSortType,
     onClickSelectAll
   } = props;
   const items = resource.read();
+  const [sortedItems, setSortedItems] = useState(items);
   const classes = useStyles();
+
+  useEffect(() => {
+    const comparator = (fieldA, fieldB) => {
+      if (sortType === 'asc') {
+        return fieldA > fieldB ? 1 : -1;
+      } else {
+        return fieldA < fieldB ? 1 : -1;
+      }
+    };
+    const sorted = items.sort((a, b) => {
+      let fieldA, fieldB;
+      switch (sortBy) {
+        case 'dateModified':
+          fieldA = a.sandbox.dateModified;
+          fieldB = b.sandbox.dateModified;
+          break;
+        case 'lastPublishedDate':
+          fieldA = a.live.lastPublishedDate;
+          fieldB = b.live.lastPublishedDate;
+          break;
+      }
+
+      return comparator(fieldA, fieldB);
+    });
+    setSortedItems(sorted);
+  }, [sortBy, sortType, items]);
 
   return (
     <TableContainer>
@@ -63,7 +102,6 @@ export default function RecentActivityDashletUI(props: RecentActivityDashletUiPr
           <GlobalAppGridRow className="hoverDisabled">
             <GlobalAppGridCell className="checkbox bordered width5">
               <Checkbox indeterminate={isIndeterminate} checked={isAllChecked} onChange={() => onClickSelectAll()} />
-              {/* <Checkbox checked={isAllChecked} /> */}
             </GlobalAppGridCell>
             <GlobalAppGridCell className="bordered width40">
               <Typography variant="subtitle2">
@@ -71,9 +109,18 @@ export default function RecentActivityDashletUI(props: RecentActivityDashletUiPr
               </Typography>
             </GlobalAppGridCell>
             <GlobalAppGridCell className="bordered width20">
-              <Typography variant="subtitle2">
-                <FormattedMessage id="recentActivity.publishDate" defaultMessage="Publish Date" />
-              </Typography>
+              <TableSortLabel
+                active={sortBy === 'lastPublishedDate'}
+                direction={sortType}
+                onClick={() => {
+                  setSortBy('lastPublishedDate');
+                  toggleSortType();
+                }}
+              >
+                <Typography variant="subtitle2">
+                  <FormattedMessage id="recentActivity.publishDate" defaultMessage="Publish Date" />
+                </Typography>
+              </TableSortLabel>
             </GlobalAppGridCell>
             <GlobalAppGridCell className="bordered width20">
               <Typography variant="subtitle2">
@@ -81,17 +128,26 @@ export default function RecentActivityDashletUI(props: RecentActivityDashletUiPr
               </Typography>
             </GlobalAppGridCell>
             <GlobalAppGridCell className="bordered width10">
-              <Typography variant="subtitle2">
-                <FormattedMessage id="recentlyPublished.myLastEdit" defaultMessage="My Last Edit" />
-              </Typography>
+              <TableSortLabel
+                active={sortBy === 'dateModified'}
+                direction={sortType}
+                onClick={() => {
+                  setSortBy('dateModified');
+                  toggleSortType();
+                }}
+              >
+                <Typography variant="subtitle2">
+                  <FormattedMessage id="recentlyPublished.myLastEdit" defaultMessage="My Last Edit" />
+                </Typography>
+              </TableSortLabel>
             </GlobalAppGridCell>
             <GlobalAppGridCell className="bordered width5" />
           </GlobalAppGridRow>
         </TableHead>
         <TableBody>
-          {items.map((item) => (
+          {sortedItems.map((item) => (
             <GlobalAppGridRow key={item.id} onClick={() => onItemChecked([item.path])}>
-              <GlobalAppGridCell className="checkbox bordered width5">
+              <GlobalAppGridCell className="checkbox width5">
                 <Checkbox checked={Boolean(selectedLookup[item.path])} />
               </GlobalAppGridCell>
               <GlobalAppGridCell className="ellipsis width40 padded0">
@@ -105,9 +161,18 @@ export default function RecentActivityDashletUI(props: RecentActivityDashletUiPr
                   {item.path}
                 </Typography>
               </GlobalAppGridCell>
-              <GlobalAppGridCell className="width20">published date</GlobalAppGridCell>
-              <GlobalAppGridCell className="width20">last edited by</GlobalAppGridCell>
-              <GlobalAppGridCell className="width10">my last edit</GlobalAppGridCell>
+              <GlobalAppGridCell className="width20">
+                {item.live &&
+                  new Intl.DateTimeFormat(localeBranch.localeCode, localeBranch.dateTimeFormatOptions).format(
+                    new Date(item.live.lastPublishedDate)
+                  )}
+              </GlobalAppGridCell>
+              <GlobalAppGridCell className="width20">{item.sandbox.modifier}</GlobalAppGridCell>
+              <GlobalAppGridCell className="width10">
+                {new Intl.DateTimeFormat(localeBranch.localeCode, localeBranch.dateTimeFormatOptions).format(
+                  new Date(item.sandbox.dateModified)
+                )}
+              </GlobalAppGridCell>
               <GlobalAppGridCell className="width5">
                 <IconButton onClick={(e) => onOptionsButtonClick(e, item)}>
                   <MoreVertRounded />

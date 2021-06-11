@@ -27,11 +27,16 @@ import { FormattedMessage } from 'react-intl';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import RecentActivityDashletUI from './RecentActivityDashletUI';
 import { MediaItem } from '../../models/Search';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { completeDetailedItem } from '../../state/actions/content';
 import { showItemMegaMenu } from '../../state/actions/dialogs';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
+import SecondaryButton from '../SecondaryButton';
+import RecentActivityDashletUiSkeleton from './RecentActivityDashletUISkeleton';
+import GlobalState from '../../models/GlobalState';
 
 export interface RecentActivityDashletProps {
   selectedLookup: LookupTable<boolean>;
@@ -44,9 +49,14 @@ export default function RecentActivityDashlet(props: RecentActivityDashletProps)
   const [fetchingActivity, setFecthingActivity] = useState(false);
   const [errorActivity, setErrorActivity] = useState<ApiResponse>();
   const [items, setItems] = useState<DetailedItem[]>([]);
+  const [totalItems, setTotalItems] = useState(0);
   const [numItems, setNumItems] = useState(10);
   const [filterBy, setFilterBy] = useState('page'); // TODO: type
+  const [sortType, setSortType] = useState<'asc' | 'desc'>('asc');
+  const [sortBy, setSortBy] = useState('dateModified');
+  const [excludeLiveItems, setExcludeLiveItems] = useState(false);
   const siteId = useActiveSiteId();
+  const currentUser = useSelector<GlobalState, string>((state) => state.user.username);
   const localeBranch = useLocale();
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -54,7 +64,8 @@ export default function RecentActivityDashlet(props: RecentActivityDashletProps)
   const isAllChecked = useMemo(() => !items.some((item) => !selectedLookup[item.path]), [items, selectedLookup]);
   const isIndeterminate = useMemo(() => items.some((item) => selectedLookup[item.path] && !isAllChecked), [
     items,
-    selectedLookup
+    selectedLookup,
+    isAllChecked
   ]);
 
   const onOptionsButtonClick = (e: any, item: MediaItem) => {
@@ -85,11 +96,25 @@ export default function RecentActivityDashlet(props: RecentActivityDashletProps)
     setFilterBy(e.target.value);
   };
 
+  const onNumItemsChange = (e) => {
+    e.stopPropagation();
+    setNumItems(e.target.value);
+  };
+
+  const onToggleHideLiveItems = (e) => {
+    e.stopPropagation();
+    setExcludeLiveItems(!excludeLiveItems);
+  };
+
+  const toggleSortType = () => {
+    setSortType(sortType === 'asc' ? 'desc' : 'asc');
+  };
+
   useEffect(() => {
     setFecthingActivity(true);
-    // TODO: user, sort. excludeLive
-    fetchLegacyUserActivities(siteId, 'admin', 'eventDate', true, numItems, filterBy, false).subscribe(
+    fetchLegacyUserActivities(siteId, currentUser, 'eventDate', true, numItems, filterBy, excludeLiveItems).subscribe(
       (activities) => {
+        setTotalItems(activities.total);
         const itemsList = [];
         activities.documents.forEach((item) => itemsList.push(parseLegacyItemToDetailedItem(item)));
         setItems(itemsList);
@@ -100,7 +125,7 @@ export default function RecentActivityDashlet(props: RecentActivityDashletProps)
         setFecthingActivity(false);
       }
     );
-  }, [siteId, setItems, numItems, filterBy]);
+  }, [siteId, setItems, numItems, filterBy, excludeLiveItems, currentUser]);
 
   const resource = useLogicResource<DetailedItem[], { items: DetailedItem[]; error: ApiResponse; fetching: boolean }>(
     useMemo(() => ({ items, error: errorActivity, fetching: fetchingActivity }), [
@@ -119,11 +144,45 @@ export default function RecentActivityDashlet(props: RecentActivityDashletProps)
 
   return (
     <Dashlet
-      title={<FormattedMessage id="recentActivity.myRecentActivity" defaultMessage="My Recent Activity" />}
+      title={
+        <>
+          <FormattedMessage id="recentActivity.myRecentActivity" defaultMessage="My Recent Activity" /> ({items.length})
+        </>
+      }
       onToggleExpanded={() => setExpandedDashlet(!expandedDashlet)}
       expanded={expandedDashlet}
       headerRightSection={
         <>
+          <FormControl variant="outlined">
+            <InputLabel id="itemsNumberLabel">
+              <FormattedMessage id="words.show" defaultMessage="Show" />
+            </InputLabel>
+            <Select
+              labelId="itemsNumberLabel"
+              id="itemsNumber"
+              value={numItems}
+              onChange={onNumItemsChange}
+              label={<FormattedMessage id="words.show" defaultMessage="Show" />}
+              className={classes.rightAction}
+              classes={{
+                root: classes.showSelectRoot
+              }}
+            >
+              <MenuItem value={10}>10</MenuItem>
+              <MenuItem value={20}>20</MenuItem>
+              <MenuItem value={50}>50</MenuItem>
+              <MenuItem value={totalItems}>
+                <FormattedMessage id="words.all" defaultMessage="All" />
+              </MenuItem>
+            </Select>
+          </FormControl>
+          <SecondaryButton onClick={onToggleHideLiveItems} className={classes.rightAction}>
+            {excludeLiveItems ? (
+              <FormattedMessage id="recentActivity.showLiveItems" defaultMessage="Show Live Items" />
+            ) : (
+              <FormattedMessage id="recentActivity.hideLiveItems" defaultMessage="Hide Live Items" />
+            )}
+          </SecondaryButton>
           <Select
             value={filterBy}
             onChange={onFilterChange}
@@ -152,7 +211,7 @@ export default function RecentActivityDashlet(props: RecentActivityDashletProps)
       <SuspenseWithEmptyState
         resource={resource}
         suspenseProps={{
-          fallback: <>loading</>
+          fallback: <RecentActivityDashletUiSkeleton numOfItems={items.length} />
         }}
       >
         <RecentActivityDashletUI
@@ -161,6 +220,11 @@ export default function RecentActivityDashlet(props: RecentActivityDashletProps)
           selectedLookup={selectedLookup}
           isAllChecked={isAllChecked}
           isIndeterminate={isIndeterminate}
+          localeBranch={localeBranch}
+          sortType={sortType}
+          toggleSortType={toggleSortType}
+          sortBy={sortBy}
+          setSortBy={setSortBy}
           onItemChecked={onItemChecked}
           onClickSelectAll={toggleSelectAllItems}
         />

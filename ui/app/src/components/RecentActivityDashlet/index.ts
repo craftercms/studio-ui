@@ -19,3 +19,5 @@ export { default } from './RecentActivityDashlet';
 export * from './RecentActivityDashlet';
 
 export * from './RecentActivityDashletUI';
+
+export * from './RecentActivityDashletUISkeleton';

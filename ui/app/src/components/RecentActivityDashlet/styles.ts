@@ -35,9 +35,22 @@ export const useStyles = makeStyles((theme) =>
     filterSelectRoot: {
       padding: '8.5px 14px'
     },
+    rightAction: {
+      marginRight: theme.spacing(1)
+    },
+    showSelectRoot: {
+      paddingTop: '8.5px',
+      paddingBottom: '8.5px'
+    },
     filterSelectInput: {
       fontSize: theme.typography.button.fontSize,
       fontWeight: theme.typography.button.fontWeight
+    },
+    showLabel: {
+      marginRight: theme.spacing(1)
+    },
+    skeletonCheckbox: {
+      margin: '6px 10px'
     }
   })
 );
