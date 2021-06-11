@@ -114,7 +114,9 @@ export default function RecentlyPublishedDashletUI(props: RecentlyPublishedWidge
                     <IconButton size="small">
                       {expandedItems[item.label] ? <ExpandLessIcon /> : <ExpandMoreIcon />}
                     </IconButton>
-                    <Typography>{item.label}</Typography>
+                    <Typography>
+                      {item.label} ({item.children.length})
+                    </Typography>
                   </Box>
                 </GlobalAppGridCell>
               </GlobalAppGridRow>
