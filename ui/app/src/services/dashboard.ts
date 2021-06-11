@@ -68,19 +68,15 @@ export function fetchLegacyUserActivities(
 
 export function fetchLegacyScheduledItems(
   site: string,
-  sortBy: string,
-  sortAsc: boolean,
-  filterBy: string
+  sort: string,
+  ascending: boolean,
+  filterType: string
 ): Observable<LegacyDashboardItem> {
   const qs = toQueryString({
     site,
-    ...(sortBy
-      ? {
-          sort: sortBy,
-          ascending: sortAsc
-        }
-      : {}),
-    ...(filterBy && { filterType: filterBy })
+    sort,
+    ascending,
+    filterType
   });
   return get(`/studio/api/1/services/api/1/deployment/get-scheduled-items.json${qs}`).pipe(pluck('response'));
 }
