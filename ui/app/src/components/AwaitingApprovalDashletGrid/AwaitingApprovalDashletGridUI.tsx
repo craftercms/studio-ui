@@ -106,7 +106,7 @@ export default function AwaitingApprovalDashletGridUI(props: AwaitingApprovalDas
             <Fragment key={i}>
               <GlobalAppGridRow onClick={() => onExpandedRow(dashboardItem.path, !expandedLookup[dashboardItem.path])}>
                 <GlobalAppGridCell colSpan={7}>
-                  <Box display="flex">
+                  <Box display="flex" alignItems="center">
                     <IconButton size="small">
                       {expandedLookup[dashboardItem.path] ? <ExpandLessIcon /> : <ExpandMoreIcon />}
                     </IconButton>

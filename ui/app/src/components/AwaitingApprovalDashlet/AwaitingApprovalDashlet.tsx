@@ -157,10 +157,6 @@ export default function AwaitingApprovalDashlet(props: AwaitingApprovalDashletPr
     onItemChecked([path]);
   };
 
-  const onRefresh = () => {
-    refresh();
-  };
-
   return (
     <Dashlet
       title={
@@ -173,7 +169,7 @@ export default function AwaitingApprovalDashlet(props: AwaitingApprovalDashletPr
       expanded={expanded}
       onToggleExpanded={() => setExpanded(!expanded)}
       refreshDisabled={isFetching}
-      onRefresh={onRefresh}
+      onRefresh={refresh}
       headerRightSection={
         <>
           <Button disabled={isFetching} onClick={onToggleCollapse} className={classes.collapseAll}>

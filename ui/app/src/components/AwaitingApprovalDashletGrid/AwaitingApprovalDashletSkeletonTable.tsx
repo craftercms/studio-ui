@@ -98,7 +98,6 @@ export default function AwaitingApprovalDashletSkeletonTable(props: DashboardIte
                             </GlobalAppGridCell>
                             <GlobalAppGridCell className="ellipsis width40 padded0">
                               <Skeleton variant="text" width={`${rand(70, 90)}%`} />
-                              <Skeleton variant="text" width={`${rand(70, 90)}%`} />
                             </GlobalAppGridCell>
                             <GlobalAppGridCell className="width15">
                               <Skeleton variant="text" width="50px" />
