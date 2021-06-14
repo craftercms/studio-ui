@@ -39,7 +39,7 @@ const GlobalAppGridCell = withStyles((theme: Theme) =>
       '&.minWidth100': {
         minWidth: '100px'
       },
-      '&.borderless': {
+      '&.bb0': {
         borderBottom: 0
       },
       '&.ellipsis': {

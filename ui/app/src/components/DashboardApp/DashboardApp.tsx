@@ -52,7 +52,7 @@ export default function DashboardApp(props: DashboardAppProps) {
   const site = useActiveSiteId();
   const [selectedLookup, setSelectedLookup] = useState<LookupTable<boolean>>({});
   const [itemsByPath, setItemsByPath] = useSpreadState({});
-  const selectedLength = useMemo(() => Object.values(selectedLookup).filter((value) => value).length, [selectedLookup]);
+  const selectedLength = useMemo(() => Object.values(selectedLookup).filter(Boolean).length, [selectedLookup]);
   const loadedRef = useRef([]);
   const { formatMessage } = useIntl();
   const classes = useStyles();
@@ -68,9 +68,7 @@ export default function DashboardApp(props: DashboardAppProps) {
       if (selected.length === 1) {
         const path = selected[0];
         const item = itemsByPath[path];
-        if (item) {
-          return generateSingleItemOptions(item, formatMessage, { includeOnly: actionsToBeShown }).flat();
-        }
+        return generateSingleItemOptions(item, formatMessage, { includeOnly: actionsToBeShown }).flat();
       } else {
         let items = [];
         selected.forEach((itemPath) => {

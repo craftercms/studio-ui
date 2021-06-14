@@ -30,13 +30,13 @@ import LookupTable from '../../models/LookupTable';
 import { rand } from '../PathNavigator/utils';
 import { DashboardItem } from '../AwaitingApprovalDashlet';
 
-interface DashboardItemsApprovalGridUIProps {
+interface awaitingApprovalDashletGridUIProps {
   numOfItems?: number;
   items?: DashboardItem[];
   expandedLookup?: LookupTable<boolean>;
 }
 
-export default function AwaitingApprovalDashletSkeletonTable(props: DashboardItemsApprovalGridUIProps) {
+export default function AwaitingApprovalDashletSkeletonTable(props: awaitingApprovalDashletGridUIProps) {
   const classes = useStyles();
   const { numOfItems = 4 } = props;
 
@@ -58,19 +58,19 @@ export default function AwaitingApprovalDashletSkeletonTable(props: DashboardIte
               <Skeleton variant="circle" width={30} height={30} className={classes.skeletonCheckbox} />
             </GlobalAppGridCell>
             <GlobalAppGridCell className="width40 padded0">
-              <FormattedMessage id="dashboardItemsApproval.item" defaultMessage="Item" />
+              <FormattedMessage id="awaitingApprovalDashlet.item" defaultMessage="Item" />
             </GlobalAppGridCell>
             <GlobalAppGridCell className="width15 ellipsis">
-              <FormattedMessage id="dashboardItemsApproval.publishingTarget" defaultMessage="Publishing Target" />
+              <FormattedMessage id="awaitingApprovalDashlet.publishingTarget" defaultMessage="Publishing Target" />
             </GlobalAppGridCell>
             <GlobalAppGridCell className="width15 ellipsis">
-              <FormattedMessage id="dashboardItemsApproval.publishingDate" defaultMessage="Publishing Date" />
+              <FormattedMessage id="awaitingApprovalDashlet.publishingDate" defaultMessage="Publishing Date" />
             </GlobalAppGridCell>
             <GlobalAppGridCell className="width15 ellipsis">
-              <FormattedMessage id="dashboardItemsApproval.lastEditedBy" defaultMessage="Last Edited By" />
+              <FormattedMessage id="awaitingApprovalDashlet.lastEditedBy" defaultMessage="Last Edited By" />
             </GlobalAppGridCell>
             <GlobalAppGridCell className="width15 ellipsis">
-              <FormattedMessage id="dashboardItemsApproval.lastEdited" defaultMessage="Last Edited" />
+              <FormattedMessage id="awaitingApprovalDashlet.lastEdited" defaultMessage="Last Edited" />
             </GlobalAppGridCell>
             <GlobalAppGridCell className="checkbox" />
           </GlobalAppGridRow>
@@ -87,7 +87,7 @@ export default function AwaitingApprovalDashletSkeletonTable(props: DashboardIte
                 </GlobalAppGridCell>
               </GlobalAppGridRow>
               <GlobalAppGridRow className="hoverDisabled">
-                <GlobalAppGridCell colSpan={7} className="padded0 borderless">
+                <GlobalAppGridCell colSpan={7} className="padded0 bb0">
                   <Collapse in={expandedLookup[dashboardItem.path]}>
                     <Table size="small" className={classes.tableRoot}>
                       <TableBody>

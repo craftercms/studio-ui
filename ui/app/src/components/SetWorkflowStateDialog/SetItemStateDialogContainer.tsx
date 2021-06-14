@@ -177,7 +177,7 @@ export function SetItemStateDialogContainer(props: SetItemStateDialogProps) {
         <SecondaryButton onClick={() => onClose()}>
           <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
         </SecondaryButton>
-        <PrimaryButton disabled={!Object.values(update).some((value) => value)} onClick={() => onConfirm(update)}>
+        <PrimaryButton disabled={!Object.values(update).some(Boolean)} onClick={() => onConfirm(update)}>
           <FormattedMessage id="words.confirm" defaultMessage="Confirm" />
         </PrimaryButton>
       </DialogFooter>
