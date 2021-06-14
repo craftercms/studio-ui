@@ -126,7 +126,6 @@ export default function AwaitingApprovalDashlet(props: AwaitingApprovalDashletPr
         case itemsScheduled.type:
         case itemsDeleted.type:
         case itemsRejected.type: {
-          console.log(type);
           if (payload.targets.some((path) => state.itemsLookup[path])) {
             refresh();
           }

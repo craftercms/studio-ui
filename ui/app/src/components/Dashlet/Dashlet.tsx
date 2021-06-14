@@ -22,7 +22,7 @@ import useStyles from './styles';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
-import { FormattedMessage } from 'react-intl/dist/react-intl';
+import { FormattedMessage } from 'react-intl';
 import Tooltip from '@material-ui/core/Tooltip';
 import RefreshRoundedIcon from '@material-ui/icons/RefreshRounded';
 import clsx from 'clsx';

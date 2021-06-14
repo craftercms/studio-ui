@@ -15,9 +15,15 @@
  */
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import AwaitingApprovalDashlet from '../AwaitingApprovalDashlet';
 import LookupTable from '../../models/LookupTable';
-import { useActiveSiteId, useEnv, useSelection, useSpreadState } from '../../utils/hooks';
+import {
+  useActiveSiteId,
+  useActiveUser,
+  useEnv,
+  useSelection,
+  useSiteUIConfig,
+  useSpreadState
+} from '../../utils/hooks';
 import { fetchItemsByPath } from '../../services/content';
 import ItemActionsSnackbar from '../ItemActionsSnackbar';
 import { ListItem, ListItemSecondaryAction, ListItemText } from '@material-ui/core';
@@ -37,6 +43,7 @@ import { itemsApproved, itemsDeleted, itemsRejected, itemsScheduled } from '../.
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { filter } from 'rxjs/operators';
 import { createPresenceTable } from '../../utils/array';
+import { renderWidgets } from '../Widget';
 
 interface DashboardAppProps {}
 
@@ -54,6 +61,8 @@ const actionsToBeShown: AllItemActions[] = [
 
 export default function DashboardApp(props: DashboardAppProps) {
   const site = useActiveSiteId();
+  const user = useActiveUser();
+  const userRoles = user.rolesBySite[site];
   const [selectedLookup, setSelectedLookup] = useState<LookupTable<boolean>>({});
   const [itemsByPath, setItemsByPath] = useSpreadState({});
   const selectedLength = useMemo(() => Object.values(selectedLookup).filter(Boolean).length, [selectedLookup]);
@@ -63,6 +72,7 @@ export default function DashboardApp(props: DashboardAppProps) {
   const dispatch = useDispatch();
   const { authoringBase } = useEnv();
   const clipboard = useSelection((state) => state.content.clipboard);
+  const { dashboard } = useSiteUIConfig();
 
   const selectionOptions = useMemo(() => {
     const selected = Object.keys(selectedLookup).filter((path) => selectedLookup[path]);
@@ -187,11 +197,7 @@ export default function DashboardApp(props: DashboardAppProps) {
 
   return (
     <section className={classes.root}>
-      <AwaitingApprovalDashlet
-        selectedLookup={selectedLookup}
-        onItemChecked={onItemChecked}
-        onItemMenuClick={onItemMenuClick}
-      />
+      {dashboard && renderWidgets(dashboard.widgets, userRoles, { selectedLookup, onItemChecked, onItemMenuClick })}
       <ItemActionsSnackbar
         open={selectedLength > 0}
         options={selectionOptions}

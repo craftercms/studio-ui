@@ -224,6 +224,9 @@ export interface GlobalState {
         roles?: string[];
       }>;
     };
+    dashboard: {
+      widgets: WidgetDescriptor[];
+    };
     globalNavigation: {
       error: AjaxError;
       items: Array<{ icon: SystemIconDescriptor; id: string; label: string }>;
