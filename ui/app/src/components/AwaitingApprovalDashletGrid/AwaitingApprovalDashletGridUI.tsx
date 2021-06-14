@@ -39,6 +39,7 @@ import { useLocale } from '../../utils/hooks';
 import { DashboardItem } from '../AwaitingApprovalDashlet';
 import ExpandLessIcon from '@material-ui/icons/ExpandLessRounded';
 import { asSimpleDateTime } from '../../utils/datetime';
+import Tooltip from '@material-ui/core/Tooltip';
 
 interface AwaitingApprovalDashletGridUIProps {
   resource: Resource<DashboardItem[]>;
@@ -195,15 +196,17 @@ export default function AwaitingApprovalDashletGridUI(props: AwaitingApprovalDas
                                   )}
                                 </GlobalAppGridCell>
                                 <GlobalAppGridCell className="checkbox">
-                                  <IconButton
-                                    size="small"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      onItemMenuClick(e, itemsLookup[path]);
-                                    }}
-                                  >
-                                    <MoreVertRounded />
-                                  </IconButton>
+                                  <Tooltip title={<FormattedMessage id="words.options" defaultMessage="Options" />}>
+                                    <IconButton
+                                      size="small"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        onItemMenuClick(e, itemsLookup[path]);
+                                      }}
+                                    >
+                                      <MoreVertRounded />
+                                    </IconButton>
+                                  </Tooltip>
                                 </GlobalAppGridCell>
                               </GlobalAppGridRow>
                             )
