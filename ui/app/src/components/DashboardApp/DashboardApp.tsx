@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import AwaitingApprovalDashlet from '../AwaitingApprovalDashlet';
 import LookupTable from '../../models/LookupTable';
 import { useActiveSiteId, useEnv, useSelection, useSpreadState } from '../../utils/hooks';
@@ -33,6 +33,10 @@ import { completeDetailedItem } from '../../state/actions/content';
 import { showItemMegaMenu } from '../../state/actions/dialogs';
 import { getNumOfMenuOptionsForItem, getSystemTypeFromPath } from '../../utils/content';
 import { useDispatch } from 'react-redux';
+import { itemsApproved, itemsDeleted, itemsRejected, itemsScheduled } from '../../state/actions/system';
+import { getHostToHostBus } from '../../modules/Preview/previewContext';
+import { filter } from 'rxjs/operators';
+import { createPresenceTable } from '../../utils/array';
 
 interface DashboardAppProps {}
 
@@ -157,6 +161,29 @@ export default function DashboardApp(props: DashboardAppProps) {
       })
     );
   };
+
+  // region Item Updates Propagation
+  useEffect(() => {
+    const events = [itemsDeleted.type, itemsRejected.type, itemsApproved.type, itemsScheduled.type];
+    const hostToHost$ = getHostToHostBus();
+    const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
+      switch (type) {
+        case itemsApproved.type:
+        case itemsScheduled.type:
+        case itemsDeleted.type:
+        case itemsRejected.type: {
+          if (payload.targets.some((path) => selectedLookup[path])) {
+            setSelectedLookup({ ...selectedLookup, ...createPresenceTable(payload.targets, false) });
+          }
+          break;
+        }
+      }
+    });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [selectedLookup]);
+  // endregion
 
   return (
     <section className={classes.root}>
