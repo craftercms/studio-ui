@@ -17,6 +17,7 @@
 import moment from 'moment-timezone';
 import { defineMessages } from 'react-intl';
 import { getCurrentIntl } from './i18n';
+import GlobalState from '../models/GlobalState';
 
 const translations = defineMessages({
   ordinals: {
@@ -49,4 +50,12 @@ export function asDayMonthDateTime(date: string): string {
   return `${parts[0].value} ${parts[2].value} ${getCurrentIntl().formatMessage(translations.ordinals, {
     day: parts[4].value
   })} ${parts[6].value} @ ${getCurrentIntl().formatTime(date)}`;
+}
+
+export function asSimpleDateTime(
+  date: string,
+  localeCode: string,
+  dateTimeFormatOptions: GlobalState['uiConfig']['locale']['dateTimeFormatOptions']
+): string {
+  return new Intl.DateTimeFormat(localeCode, dateTimeFormatOptions).format(new Date(date));
 }

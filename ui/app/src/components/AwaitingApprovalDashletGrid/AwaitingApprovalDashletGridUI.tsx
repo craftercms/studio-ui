@@ -38,6 +38,7 @@ import clsx from 'clsx';
 import { useLocale } from '../../utils/hooks';
 import { DashboardItem } from '../AwaitingApprovalDashlet';
 import ExpandLessIcon from '@material-ui/icons/ExpandLessRounded';
+import { asSimpleDateTime } from '../../utils/datetime';
 
 interface AwaitingApprovalDashletGridUIProps {
   resource: Resource<DashboardItem[]>;
@@ -161,13 +162,16 @@ export default function AwaitingApprovalDashletGridUI(props: AwaitingApprovalDas
                                 </GlobalAppGridCell>
                                 <GlobalAppGridCell
                                   className="width15"
-                                  title={new Intl.DateTimeFormat(
+                                  title={asSimpleDateTime(
+                                    itemsLookup[path].live.lastPublishedDate,
                                     locale.localeCode,
                                     locale.dateTimeFormatOptions
-                                  ).format(new Date(itemsLookup[path].live.lastPublishedDate))}
+                                  )}
                                 >
-                                  {new Intl.DateTimeFormat(locale.localeCode, locale.dateTimeFormatOptions).format(
-                                    new Date(itemsLookup[path].live.lastPublishedDate)
+                                  {asSimpleDateTime(
+                                    itemsLookup[path].live.lastPublishedDate,
+                                    locale.localeCode,
+                                    locale.dateTimeFormatOptions
                                   )}
                                 </GlobalAppGridCell>
                                 <GlobalAppGridCell
@@ -178,13 +182,16 @@ export default function AwaitingApprovalDashletGridUI(props: AwaitingApprovalDas
                                 </GlobalAppGridCell>
                                 <GlobalAppGridCell
                                   className="width15 ellipsis"
-                                  title={new Intl.DateTimeFormat(
+                                  title={asSimpleDateTime(
+                                    itemsLookup[path].sandbox.dateModified,
                                     locale.localeCode,
                                     locale.dateTimeFormatOptions
-                                  ).format(new Date(itemsLookup[path].sandbox.dateModified))}
+                                  )}
                                 >
-                                  {new Intl.DateTimeFormat(locale.localeCode, locale.dateTimeFormatOptions).format(
-                                    new Date(itemsLookup[path].sandbox.dateModified)
+                                  {asSimpleDateTime(
+                                    itemsLookup[path].sandbox.dateModified,
+                                    locale.localeCode,
+                                    locale.dateTimeFormatOptions
                                   )}
                                 </GlobalAppGridCell>
                                 <GlobalAppGridCell className="checkbox">
