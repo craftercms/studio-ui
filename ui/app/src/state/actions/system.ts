@@ -47,6 +47,12 @@ export const itemDuplicated = /*#__PURE__*/ createAction<{ target: string; resul
 
 export const itemUnlocked = /*#__PURE__*/ createAction<{ target: string }>('ITEM_UNLOCKED');
 
+export const itemsRejected = /*#__PURE__*/ createAction<{ targets: string[] }>('ITEMS_REJECTED');
+
+export const itemsScheduled = /*#__PURE__*/ createAction<{ targets: string[] }>('ITEMS_SCHEDULED');
+
+export const itemsApproved = /*#__PURE__*/ createAction<{ targets: string[] }>('ITEMS_APPROVED');
+
 // endregion
 
 // region Notifications

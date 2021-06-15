@@ -46,6 +46,8 @@ import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import Typography from '@material-ui/core/Typography';
 import ListSubheader from '@material-ui/core/ListSubheader';
+import { emitSystemEvent, itemsRejected } from '../../state/actions/system';
+import { useDispatch } from 'react-redux';
 
 // region Typings
 
@@ -332,6 +334,7 @@ function RejectDialogWrapper(props: RejectDialogProps) {
   const [rejectionComment, setRejectionComment] = useState('');
   const siteId = useActiveSiteId();
   const currentLocale = getCurrentLocale();
+  const dispatch = useDispatch();
   const [apiState, setApiState] = useSpreadState<ApiState>({
     error: null,
     submitting: false
@@ -378,6 +381,7 @@ function RejectDialogWrapper(props: RejectDialogProps) {
     reject(siteId, checkedItems, rejectionReason, rejectionComment).subscribe(
       () => {
         setApiState({ error: null, submitting: false });
+        dispatch(emitSystemEvent(itemsRejected({ targets: checkedItems })));
         onRejectSuccess?.();
         onDismiss?.();
       },
