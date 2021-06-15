@@ -189,7 +189,7 @@ export default function RecentActivityDashlet(props: RecentActivityDashletProps)
             )}
           </TextField>
           <TextField
-            label={<FormattedMessage id="dashboardItemsScheduled.filterBy" defaultMessage="Filter by" />}
+            label={<FormattedMessage id="recentActivity.filterBy" defaultMessage="Filter by" />}
             select
             size="small"
             value={filterBy}
