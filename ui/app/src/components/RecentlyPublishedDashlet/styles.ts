@@ -21,16 +21,6 @@ export const useStyles = makeStyles((theme) =>
     rightAction: {
       marginRight: theme.spacing(1)
     },
-    filterSelectBtn: {
-      verticalAlign: 'middle'
-    },
-    filterSelectRoot: {
-      padding: '8.5px 14px'
-    },
-    filterSelectInput: {
-      fontSize: theme.typography.button.fontSize,
-      fontWeight: theme.typography.button.fontWeight
-    },
     paginationRoot: {
       marginLeft: 'auto',
       marginRight: '20px'
