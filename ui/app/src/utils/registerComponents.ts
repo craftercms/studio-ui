@@ -93,6 +93,7 @@ import VideocamOutlinedIcon from '@material-ui/icons/VideocamOutlined';
 import RemoteRepositoriesManagement from '../components/RemoteRepositoriesManagement';
 import ItemStatesManagement from '../components/ItemStatesManagement';
 import AwaitingApprovalDashlet from '../components/AwaitingApprovalDashlet';
+import ApprovedScheduledDashlet from '../components/ApprovedScheduledDashlet';
 
 export const registerComponents = () => {
   Object.entries({
@@ -173,7 +174,8 @@ export const registerComponents = () => {
     'craftercms.components.SiteToolsApp': SiteToolsApp,
     'craftercms.components.RemoteRepositoriesManagement': RemoteRepositoriesManagement,
     'craftercms.components.ItemStatesManagement': ItemStatesManagement,
-    'craftercms.components.AwaitingApprovalDashlet': AwaitingApprovalDashlet
+    'craftercms.components.AwaitingApprovalDashlet': AwaitingApprovalDashlet,
+    'craftercms.components.ApprovedScheduledDashlet': ApprovedScheduledDashlet
   }).forEach(([id, component]) => {
     components.set(id, component);
   });
