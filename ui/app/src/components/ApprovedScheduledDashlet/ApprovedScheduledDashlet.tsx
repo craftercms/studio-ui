@@ -32,6 +32,9 @@ import ApprovedScheduledDashletSkeletonTable
 import MenuItem from '@material-ui/core/MenuItem';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
+import { itemsApproved, itemsDeleted, itemsRejected, itemsScheduled } from '../../state/actions/system';
+import { getHostToHostBus } from '../../modules/Preview/previewContext';
+import { filter } from 'rxjs/operators';
 
 export interface ApprovedScheduledDashletProps {
   selectedLookup: LookupTable<boolean>;
@@ -128,6 +131,29 @@ export default function ApprovedScheduledDashlet(props: ApprovedScheduledDashlet
       errorSelector: (source) => source.error
     }
   );
+
+  // region Item Updates Propagation
+  useEffect(() => {
+    const events = [itemsDeleted.type, itemsRejected.type, itemsApproved.type, itemsScheduled.type];
+    const hostToHost$ = getHostToHostBus();
+    const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
+      switch (type) {
+        case itemsApproved.type:
+        case itemsScheduled.type:
+        case itemsDeleted.type:
+        case itemsRejected.type: {
+          if (payload.targets.some((path) => state.itemsLookup[path])) {
+            refresh();
+          }
+          break;
+        }
+      }
+    });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [refresh, state.itemsLookup]);
+  // endregion
 
   const onToggleCollapse = (e) => {
     e.stopPropagation();
