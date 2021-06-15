@@ -38,7 +38,7 @@ import clsx from 'clsx';
 import { useLocale } from '../../utils/hooks';
 import { DashboardItem } from '../AwaitingApprovalDashlet';
 import ExpandLessIcon from '@material-ui/icons/ExpandLessRounded';
-import { asSimpleDateTime } from '../../utils/datetime';
+import { asLocalizedDateTime } from '../../utils/datetime';
 import Tooltip from '@material-ui/core/Tooltip';
 
 interface AwaitingApprovalDashletGridUIProps {
@@ -163,13 +163,13 @@ export default function AwaitingApprovalDashletGridUI(props: AwaitingApprovalDas
                                 </GlobalAppGridCell>
                                 <GlobalAppGridCell
                                   className="width15"
-                                  title={asSimpleDateTime(
+                                  title={asLocalizedDateTime(
                                     itemsLookup[path].live.lastPublishedDate,
                                     locale.localeCode,
                                     locale.dateTimeFormatOptions
                                   )}
                                 >
-                                  {asSimpleDateTime(
+                                  {asLocalizedDateTime(
                                     itemsLookup[path].live.lastPublishedDate,
                                     locale.localeCode,
                                     locale.dateTimeFormatOptions
@@ -183,13 +183,13 @@ export default function AwaitingApprovalDashletGridUI(props: AwaitingApprovalDas
                                 </GlobalAppGridCell>
                                 <GlobalAppGridCell
                                   className="width15 ellipsis"
-                                  title={asSimpleDateTime(
+                                  title={asLocalizedDateTime(
                                     itemsLookup[path].sandbox.dateModified,
                                     locale.localeCode,
                                     locale.dateTimeFormatOptions
                                   )}
                                 >
-                                  {asSimpleDateTime(
+                                  {asLocalizedDateTime(
                                     itemsLookup[path].sandbox.dateModified,
                                     locale.localeCode,
                                     locale.dateTimeFormatOptions

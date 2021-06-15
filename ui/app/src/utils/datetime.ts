@@ -52,7 +52,7 @@ export function asDayMonthDateTime(date: string): string {
   })} ${parts[6].value} @ ${getCurrentIntl().formatTime(date)}`;
 }
 
-export function asSimpleDateTime(
+export function asLocalizedDateTime(
   date: string,
   localeCode: string,
   dateTimeFormatOptions: GlobalState['uiConfig']['locale']['dateTimeFormatOptions']
