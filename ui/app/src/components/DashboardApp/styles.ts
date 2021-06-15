@@ -21,7 +21,10 @@ export const useStyles = makeStyles((theme) =>
     root: {
       padding: '20px',
       '& > div.MuiAccordion-root': {
-        marginTop: '20px'
+        marginTop: '20px',
+        '&:first-child': {
+          marginTop: 0
+        }
       }
     }
   })
