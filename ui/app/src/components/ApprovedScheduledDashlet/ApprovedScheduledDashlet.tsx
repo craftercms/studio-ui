@@ -26,12 +26,12 @@ import { DashboardItem } from '../AwaitingApprovalDashlet';
 import { DetailedItem } from '../../models/Item';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import ApprovedScheduledDashletGridUI from '../ApprovedScheduledDashletGrid';
-import SecondaryButton from '../SecondaryButton';
 import useStyles from './styles';
 import ApprovedScheduledDashletSkeletonTable
   from '../ApprovedScheduledDashletGrid/ApprovedScheduledDashletSkeletonTable';
 import MenuItem from '@material-ui/core/MenuItem';
 import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
 
 export interface ApprovedScheduledDashletProps {
   selectedLookup: LookupTable<boolean>;
@@ -169,13 +169,13 @@ export default function ApprovedScheduledDashlet(props: ApprovedScheduledDashlet
       onRefresh={refresh}
       headerRightSection={
         <>
-          <SecondaryButton disabled={isFetching} onClick={onToggleCollapse} className={classes.collapseAll}>
+          <Button disabled={isFetching} onClick={onToggleCollapse} className={classes.collapseAll}>
             {showExpanded ? (
               <FormattedMessage id="dashboardItemsScheduled.expandedAll" defaultMessage="Expand All" />
             ) : (
               <FormattedMessage id="dashboardItemsScheduled.collapseAll" defaultMessage="Collapse All" />
             )}
-          </SecondaryButton>
+          </Button>
           <TextField
             label={<FormattedMessage id="dashboardItemsScheduled.filterBy" defaultMessage="Filter by" />}
             select
@@ -184,16 +184,16 @@ export default function ApprovedScheduledDashlet(props: ApprovedScheduledDashlet
             disabled={isFetching}
             onChange={onFilterChange}
           >
-            <MenuItem value={'page'}>
+            <MenuItem value="page">
               <FormattedMessage id="words.pages" defaultMessage="Pages" />
             </MenuItem>
-            <MenuItem value={'component'}>
+            <MenuItem value="components">
               <FormattedMessage id="words.components" defaultMessage="Components" />
             </MenuItem>
-            <MenuItem value={'document'}>
+            <MenuItem value="document">
               <FormattedMessage id="words.documents" defaultMessage="Documents" />
             </MenuItem>
-            <MenuItem value={'all'}>
+            <MenuItem value="all">
               <FormattedMessage id="words.all" defaultMessage="All" />
             </MenuItem>
           </TextField>
