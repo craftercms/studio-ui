@@ -29,7 +29,9 @@ export interface WidgetDescriptor {
   configuration?: any;
 }
 
-interface WidgetProps extends WidgetDescriptor {}
+interface WidgetProps extends WidgetDescriptor {
+  extraProps?: any;
+}
 
 const messages = defineMessages({
   componentNotFoundTitle: {
@@ -61,9 +63,9 @@ const Widget = memo(function(props: WidgetProps) {
   if (record) {
     if (isComponent(record)) {
       const Component = record;
-      return <Component {...configuration} />;
+      return <Component {...configuration} {...props.extraProps} />;
     } else {
-      return <NonReactWidget widget={record} configuration={configuration} />;
+      return <NonReactWidget widget={record} configuration={{ ...configuration, ...props.extraProps }} />;
     }
   } else if (!plugin) {
     return (
@@ -115,13 +117,13 @@ const Widget = memo(function(props: WidgetProps) {
 
 export { Widget };
 
-export function renderWidgets(widgets: WidgetDescriptor[], userRoles: string[]): JSX.Element[] {
+export function renderWidgets(widgets: WidgetDescriptor[], userRoles: string[], extraProps?: any): JSX.Element[] {
   return widgets
     ? widgets
         .filter(
           (widget) => (widget.roles ?? []).length === 0 || (userRoles ?? []).some((role) => widget.roles.includes(role))
         )
-        .map((widget) => <Widget key={widget.uiKey} {...widget} />)
+        .map((widget) => <Widget key={widget.uiKey} {...widget} extraProps={extraProps} />)
     : [];
 }
 

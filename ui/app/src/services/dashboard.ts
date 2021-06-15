@@ -22,10 +22,10 @@ import { Observable } from 'rxjs';
 
 export function fetchLegacyGetGoLiveItems(
   site: string,
-  sortBy: string,
-  sortAsc: boolean,
-  includeInProgress: boolean,
-  filterByNumber: number
+  sortBy?: string,
+  sortAsc?: boolean,
+  includeInProgress?: boolean,
+  filterByNumber?: number
 ): Observable<LegacyDashboardItem> {
   const qs = toQueryString({
     site,
