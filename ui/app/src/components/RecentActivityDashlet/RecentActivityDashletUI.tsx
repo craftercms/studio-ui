@@ -34,13 +34,15 @@ import MoreVertRounded from '@material-ui/icons/MoreVertRounded';
 import clsx from 'clsx';
 import LookupTable from '../../models/LookupTable';
 import GlobalState from '../../models/GlobalState';
+import { asLocalizedDateTime } from '../../utils/datetime';
+import Tooltip from '@material-ui/core/Tooltip';
 
 export interface RecentActivityDashletUiProps {
   resource: Resource<DetailedItem[]>;
   selectedLookup: LookupTable<boolean>;
   isAllChecked: boolean;
   isIndeterminate: boolean;
-  localeBranch: GlobalState['uiConfig']['locale'];
+  locale: GlobalState['uiConfig']['locale'];
   sortType: 'asc' | 'desc';
   sortBy: string;
   toggleSortType(): void;
@@ -58,7 +60,7 @@ export default function RecentActivityDashletUI(props: RecentActivityDashletUiPr
     onItemChecked,
     isAllChecked,
     isIndeterminate,
-    localeBranch,
+    locale,
     sortType,
     sortBy,
     setSortBy,
@@ -171,20 +173,18 @@ export default function RecentActivityDashletUI(props: RecentActivityDashletUiPr
               </GlobalAppGridCell>
               <GlobalAppGridCell className="width20">
                 {item.live &&
-                  new Intl.DateTimeFormat(localeBranch.localeCode, localeBranch.dateTimeFormatOptions).format(
-                    new Date(item.live.lastPublishedDate)
-                  )}
+                  asLocalizedDateTime(item.live.lastPublishedDate, locale.localeCode, locale.dateTimeFormatOptions)}
               </GlobalAppGridCell>
               <GlobalAppGridCell className="width20">{item.sandbox.modifier}</GlobalAppGridCell>
               <GlobalAppGridCell className="width10">
-                {new Intl.DateTimeFormat(localeBranch.localeCode, localeBranch.dateTimeFormatOptions).format(
-                  new Date(item.sandbox.dateModified)
-                )}
+                {asLocalizedDateTime(item.sandbox.dateModified, locale.localeCode, locale.dateTimeFormatOptions)}
               </GlobalAppGridCell>
               <GlobalAppGridCell className="width5">
-                <IconButton onClick={(e) => onOptionsButtonClick(e, item)}>
-                  <MoreVertRounded />
-                </IconButton>
+                <Tooltip title={<FormattedMessage id="words.options" defaultMessage="Options" />}>
+                  <IconButton onClick={(e) => onOptionsButtonClick(e, item)}>
+                    <MoreVertRounded />
+                  </IconButton>
+                </Tooltip>
               </GlobalAppGridCell>
             </GlobalAppGridRow>
           ))}
