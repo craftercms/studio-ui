@@ -59,7 +59,7 @@ const actionsToBeShown: AllItemActions[] = [
   'history'
 ];
 
-export default function DashboardApp(props: DashboardAppProps) {
+export default function Dashboard(props: DashboardAppProps) {
   const site = useActiveSiteId();
   const user = useActiveUser();
   const userRoles = user.rolesBySite[site];
