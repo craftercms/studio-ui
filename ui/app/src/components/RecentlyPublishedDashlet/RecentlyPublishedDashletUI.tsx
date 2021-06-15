@@ -173,7 +173,12 @@ export default function RecentlyPublishedDashletUI(props: RecentlyPublishedWidge
                                 : itemsLookup[path].staging.publisher}
                             </GlobalAppGridCell>
                             <GlobalAppGridCell className="width5">
-                              <IconButton onClick={(e) => onItemMenuClick(e, itemsLookup[path])}>
+                              <IconButton
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  onItemMenuClick(e, itemsLookup[path]);
+                                }}
+                              >
                                 <MoreVertRounded />
                               </IconButton>
                             </GlobalAppGridCell>
