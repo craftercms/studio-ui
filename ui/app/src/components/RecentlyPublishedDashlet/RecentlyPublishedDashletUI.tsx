@@ -132,7 +132,7 @@ export default function RecentlyPublishedDashletUI(props: RecentlyPublishedWidge
                               <Checkbox checked={Boolean(selectedItems[itemsLookup[path].path])} />
                             </GlobalAppGridCell>
                             <GlobalAppGridCell className="ellipsis width40 padded0">
-                              <ItemDisplay item={itemsLookup[path]} />
+                              <ItemDisplay item={itemsLookup[path]} showNavigableAsLinks={false} />
                               <Typography
                                 title={itemsLookup[path].path}
                                 variant="caption"
