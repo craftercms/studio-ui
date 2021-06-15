@@ -70,8 +70,11 @@ export default function ItemPublishingTargetIcon(props: ItemPublishingTargetIcon
           classes.publishingIcon,
           propClasses?.root,
           className,
-          item.stateMap.live && classes.publishingTargetLive,
-          item.stateMap.staged && classes.publishingTargetStaged
+          item.stateMap.live
+            ? classes.publishingTargetLive
+            : item.stateMap.staged
+            ? classes.publishingTargetStaged
+            : false
         )}
       />
     </Tooltip>
