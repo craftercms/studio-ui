@@ -43,6 +43,7 @@ const initialState: GlobalState['uiConfig'] = {
     }
   },
   launcher: null,
+  dashboard: null,
   globalNavigation: {
     error: null,
     items: null,

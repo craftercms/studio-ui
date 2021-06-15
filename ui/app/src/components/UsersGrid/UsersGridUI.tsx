@@ -48,20 +48,20 @@ export default function UsersGridUI(props: UsersGridUIProps) {
         <Table className={classes.tableRoot}>
           <TableHead>
             <GlobalAppGridRow className="hoverDisabled">
-              <GlobalAppGridCell align="center" className="bordered avatar padded10">
+              <GlobalAppGridCell align="center" className="avatar">
                 <span />
               </GlobalAppGridCell>
-              <GlobalAppGridCell align="left" className="bordered paddedLeft width20">
+              <GlobalAppGridCell align="left" className="pl20 width20">
                 <Typography variant="subtitle2">
                   <FormattedMessage id="words.name" defaultMessage="Name" />
                 </Typography>
               </GlobalAppGridCell>
-              <GlobalAppGridCell align="left" className="bordered width20">
+              <GlobalAppGridCell align="left" className="width20">
                 <Typography variant="subtitle2">
                   <FormattedMessage id="words.username" defaultMessage="Username" />
                 </Typography>
               </GlobalAppGridCell>
-              <GlobalAppGridCell align="left" className="bordered width60">
+              <GlobalAppGridCell align="left" className="width60">
                 <Typography variant="subtitle2">
                   <FormattedMessage id="words.email" defaultMessage="E-mail" />
                 </Typography>
@@ -71,13 +71,13 @@ export default function UsersGridUI(props: UsersGridUIProps) {
           <TableBody>
             {users?.map((user, i) => (
               <GlobalAppGridRow key={user.id} onClick={() => onRowClicked(user)}>
-                <GlobalAppGridCell align="center" className="avatar padded10">
+                <GlobalAppGridCell align="center" className="avatar">
                   <Avatar className={classes.avatar}>
                     {user.firstName.charAt(0)}
                     {user.lastName?.charAt(0) ?? ''}
                   </Avatar>
                 </GlobalAppGridCell>
-                <GlobalAppGridCell align="left" className="paddedLeft width20">
+                <GlobalAppGridCell align="left" className="pl20 width20">
                   {user.firstName} {user.lastName}
                 </GlobalAppGridCell>
                 <GlobalAppGridCell align="left" className="width20">
