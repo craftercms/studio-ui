@@ -22,8 +22,7 @@ import { useActiveSiteId, useLocale, useLogicResource, useSpreadState } from '..
 import { fetchLegacyDeploymentHistory } from '../../services/dashboard';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import { FormattedMessage } from 'react-intl';
-import SecondaryButton from '../SecondaryButton';
-import Select from '@material-ui/core/Select';
+import Button from '@material-ui/core/Button';
 import MenuItem from '@material-ui/core/MenuItem';
 import { DetailedItem } from '../../models/Item';
 import { parseLegacyItemToDetailedItem } from '../../utils/content';
@@ -31,8 +30,7 @@ import LookupTable from '../../models/LookupTable';
 import Dashlet from '../Dashlet';
 import useStyles from './styles';
 import RecentlyPublishedDashletUISkeletonTable from './RecentlyPublishedDashletUISkeletonTable';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
+import TextField from '@material-ui/core/TextField';
 
 export interface RecentlyPublishedWidgetProps {
   selectedLookup: LookupTable<boolean>;
@@ -103,7 +101,7 @@ export default function RecentlyPublishedDashlet(props: RecentlyPublishedWidgetP
     onItemChecked(checkedPaths, !isAllChecked);
   };
 
-  useEffect(() => {
+  const fetchHistory = useCallback(() => {
     setFetchingHistory(true);
     fetchLegacyDeploymentHistory(siteId, 'eventDate', false, 30, numItems, filterBy).subscribe(
       (history) => {
@@ -131,6 +129,10 @@ export default function RecentlyPublishedDashlet(props: RecentlyPublishedWidgetP
       }
     );
   }, [siteId, filterBy, numItems, toggleCollapseAllItems, setItemsLookup]);
+
+  useEffect(() => {
+    fetchHistory();
+  }, [fetchHistory]);
 
   const resource = useLogicResource<DashboardItem[], { items: DashboardItem[]; error: ApiResponse; fetching: boolean }>(
     useMemo(() => ({ items: parentItems, error: errorHistory, fetching: fetchingHistory }), [
@@ -160,69 +162,63 @@ export default function RecentlyPublishedDashlet(props: RecentlyPublishedWidgetP
       }
       onToggleExpanded={() => setExpandedWidget(!expandedWidget)}
       expanded={expandedWidget}
+      refreshDisabled={fetchingHistory}
+      onRefresh={fetchHistory}
       headerRightSection={
         <>
-          <FormControl variant="outlined">
-            <InputLabel id="itemsNumberLabel">
-              <FormattedMessage id="words.show" defaultMessage="Show" />
-            </InputLabel>
-            <Select
-              labelId="itemsNumberLabel"
-              id="itemsNumber"
-              value={numItems}
-              onChange={onNumItemsChange}
-              label={<FormattedMessage id="words.show" defaultMessage="Show" />}
-              className={classes.rightAction}
-              classes={{
-                root: classes.filterSelectRoot,
-                select: classes.filterSelectInput
-              }}
-            >
-              <MenuItem value={10}>10</MenuItem>
-              <MenuItem value={20}>20</MenuItem>
-              <MenuItem value={50}>50</MenuItem>
-              {Object.keys(itemsLookup).length && (
-                <MenuItem value={Object.keys(itemsLookup).length}>
-                  <FormattedMessage
-                    id="words.all"
-                    defaultMessage="All ({total})"
-                    values={{
-                      total: Object.keys(itemsLookup).length
-                    }}
-                  />
-                </MenuItem>
-              )}
-            </Select>
-          </FormControl>
-          <SecondaryButton onClick={onCollapseAll} className={classes.rightAction}>
+          <Button onClick={onCollapseAll} className={classes.rightAction} disabled={fetchingHistory}>
             {!allCollapsed ? (
               <FormattedMessage id="recentlyPublished.collapseAll" defaultMessage="Collapse All" />
             ) : (
               <FormattedMessage id="recentlyPublished.expandAll" defaultMessage="Expand All" />
             )}
-          </SecondaryButton>
-          <Select
-            value={filterBy}
-            onChange={onFilterChange}
-            className={classes.filterSelectBtn}
-            classes={{
-              root: classes.filterSelectRoot,
-              select: classes.filterSelectInput
-            }}
+          </Button>
+
+          <TextField
+            label={<FormattedMessage id="words.show" defaultMessage="Show" />}
+            select
+            size="small"
+            value={numItems}
+            disabled={fetchingHistory}
+            onChange={onNumItemsChange}
+            className={classes.rightAction}
           >
-            <MenuItem value={'page'}>
+            <MenuItem value={10}>10</MenuItem>
+            <MenuItem value={20}>20</MenuItem>
+            <MenuItem value={50}>50</MenuItem>
+            {Object.keys(itemsLookup).length && (
+              <MenuItem value={Object.keys(itemsLookup).length}>
+                <FormattedMessage
+                  id="words.all"
+                  defaultMessage="All ({total})"
+                  values={{
+                    total: Object.keys(itemsLookup).length
+                  }}
+                />
+              </MenuItem>
+            )}
+          </TextField>
+          <TextField
+            label={<FormattedMessage id="recentlyPublished.filterBy" defaultMessage="Filter by" />}
+            select
+            size="small"
+            value={filterBy}
+            disabled={fetchingHistory}
+            onChange={onFilterChange}
+          >
+            <MenuItem value="page">
               <FormattedMessage id="words.pages" defaultMessage="Pages" />
             </MenuItem>
-            <MenuItem value={'component'}>
+            <MenuItem value="components">
               <FormattedMessage id="words.components" defaultMessage="Components" />
             </MenuItem>
-            <MenuItem value={'document'}>
+            <MenuItem value="document">
               <FormattedMessage id="words.documents" defaultMessage="Documents" />
             </MenuItem>
-            <MenuItem value={'all'}>
+            <MenuItem value="all">
               <FormattedMessage id="words.all" defaultMessage="All" />
             </MenuItem>
-          </Select>
+          </TextField>
         </>
       }
     >

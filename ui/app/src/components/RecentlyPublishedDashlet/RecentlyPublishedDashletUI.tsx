@@ -38,6 +38,7 @@ import MoreVertRounded from '@material-ui/icons/MoreVertRounded';
 import Box from '@material-ui/core/Box';
 import clsx from 'clsx';
 import useStyles from './styles';
+import { asLocalizedDateTime } from '../../utils/datetime';
 
 export interface RecentlyPublishedWidgetUIProps {
   resource: Resource<DashboardItem[]>;
@@ -150,26 +151,20 @@ export default function RecentlyPublishedDashletUI(props: RecentlyPublishedWidge
                             </GlobalAppGridCell>
                             <GlobalAppGridCell
                               className="width20 ellipsis"
-                              title={new Intl.DateTimeFormat(
+                              title={asLocalizedDateTime(
+                                itemsLookup[path].stateMap.live
+                                  ? itemsLookup[path].live.lastPublishedDate
+                                  : itemsLookup[path].staging.lastPublishedDate,
                                 localeBranch.localeCode,
                                 localeBranch.dateTimeFormatOptions
-                              ).format(
-                                new Date(
-                                  itemsLookup[path].stateMap.live
-                                    ? itemsLookup[path].live.lastPublishedDate
-                                    : itemsLookup[path].staging.lastPublishedDate
-                                )
                               )}
                             >
-                              {new Intl.DateTimeFormat(
+                              {asLocalizedDateTime(
+                                itemsLookup[path].stateMap.live
+                                  ? itemsLookup[path].live.lastPublishedDate
+                                  : itemsLookup[path].staging.lastPublishedDate,
                                 localeBranch.localeCode,
                                 localeBranch.dateTimeFormatOptions
-                              ).format(
-                                new Date(
-                                  itemsLookup[path].stateMap.live
-                                    ? itemsLookup[path].live.lastPublishedDate
-                                    : itemsLookup[path].staging.lastPublishedDate
-                                )
                               )}
                             </GlobalAppGridCell>
                             <GlobalAppGridCell className="width10">
