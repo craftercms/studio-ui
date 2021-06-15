@@ -36,33 +36,33 @@ export const ItemStatesGridSkeletonTable = React.memo((props: WorkflowStatesGrid
 
   return (
     <TableContainer>
-      <Table>
+      <Table size="small">
         <TableHead>
           <GlobalAppGridRow className="hoverDisabled">
-            <GlobalAppGridCell align="center" className="bordered padded10">
+            <GlobalAppGridCell align="center">
               <Skeleton variant="circle" width={42} height={42} />
             </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered width60">
+            <GlobalAppGridCell className="width60 pl0">
               <Typography variant="subtitle2">
                 <FormattedMessage id="words.item" defaultMessage="Item" />
               </Typography>
             </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered width20 padded10">
+            <GlobalAppGridCell className="width20">
               <Typography variant="subtitle2">
                 <FormattedMessage id="words.processing" defaultMessage="Processing" />
               </Typography>
             </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered width40 padded10">
+            <GlobalAppGridCell className="width40">
               <Typography variant="subtitle2">
                 <FormattedMessage id="workflowStates.locked" defaultMessage="Locked" />
               </Typography>
             </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered width20 padded10">
+            <GlobalAppGridCell className="width20">
               <Typography variant="subtitle2">
                 <FormattedMessage id="workflowStates.live" defaultMessage="Live" />
               </Typography>
             </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered width20 padded10">
+            <GlobalAppGridCell className="width20">
               <Typography variant="subtitle2">
                 <FormattedMessage id="workflowStates.staged" defaultMessage="Staged" />
               </Typography>
@@ -72,22 +72,22 @@ export const ItemStatesGridSkeletonTable = React.memo((props: WorkflowStatesGrid
         <TableBody>
           {items.map((item, index) => (
             <GlobalAppGridRow key={index}>
-              <GlobalAppGridCell align="center" className="padded10">
+              <GlobalAppGridCell align="center">
                 <Skeleton variant="circle" width={42} height={42} />
               </GlobalAppGridCell>
-              <GlobalAppGridCell className="maxWidth300">
+              <GlobalAppGridCell className="maxWidth300 pl0">
                 <Skeleton variant="text" width={`${rand(80, 100)}%`} />
               </GlobalAppGridCell>
-              <GlobalAppGridCell className="padded10">
+              <GlobalAppGridCell>
                 <Skeleton variant="text" width="30px" />
               </GlobalAppGridCell>
-              <GlobalAppGridCell className="padded10">
+              <GlobalAppGridCell>
                 <Skeleton variant="text" width={`${rand(40, 60)}%`} />
               </GlobalAppGridCell>
-              <GlobalAppGridCell className="padded10">
+              <GlobalAppGridCell>
                 <Skeleton variant="text" width="30px" />
               </GlobalAppGridCell>
-              <GlobalAppGridCell className="padded10">
+              <GlobalAppGridCell>
                 <Skeleton variant="text" width="30px" />
               </GlobalAppGridCell>
             </GlobalAppGridRow>

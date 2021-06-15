@@ -192,7 +192,8 @@ export function fetchSiteUiConfig(site: string): Observable<Pick<GlobalState['ui
               ]
             }
           },
-          launcher: null
+          launcher: null,
+          dashboard: null
         };
         // Make sure any plugin reference has a valid site id to import the plugin from
         xml.querySelectorAll('plugin').forEach((tag) => {
@@ -240,6 +241,14 @@ export function fetchSiteUiConfig(site: string): Observable<Pick<GlobalState['ui
             renameTable,
             lookupTables
           });
+        }
+        const dashboard = xml.querySelector('[id="craftercms.components.Dashboard"] > configuration');
+        if (dashboard) {
+          dashboard.querySelectorAll('widget').forEach((e, index) => e.setAttribute('uiKey', String(index)));
+          config.dashboard = applyDeserializedXMLTransforms(deserialize(dashboard), {
+            arrays,
+            renameTable
+          }).configuration;
         }
         return config;
       } else {

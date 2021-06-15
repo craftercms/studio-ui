@@ -70,10 +70,8 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
   const classes = useStyles();
   const { formatMessage } = useIntl();
 
-  const hasSelectedItems = useMemo(() => Object.values(selectedItems).some((value) => value), [selectedItems]);
-  const selectedItemsLength = useMemo(() => Object.values(selectedItems).filter((value) => value).length, [
-    selectedItems
-  ]);
+  const hasSelectedItems = useMemo(() => Object.values(selectedItems).some(Boolean), [selectedItems]);
+  const selectedItemsLength = useMemo(() => Object.values(selectedItems).filter(Boolean).length, [selectedItems]);
   const isThisPageIndeterminate = useMemo(() => items?.some((item) => !selectedItems[item.path]), [
     items,
     selectedItems
@@ -228,7 +226,9 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
     } else {
       setItemStates(
         siteId,
-        Object.values(selectedItems).map((item) => item.path),
+        Object.values(selectedItems)
+          .filter(Boolean)
+          .map((item) => item.path),
         update
       ).subscribe(() => {
         fetchStates();
@@ -252,7 +252,7 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
             className={!embedded && classes.filterButton}
             endIcon={<FilterListRoundedIcon />}
             variant="outlined"
-            color={pathRegex || Object.values(filtersLookup).some((value) => value) ? 'primary' : 'default'}
+            color={pathRegex || Object.values(filtersLookup).some(Boolean) ? 'primary' : 'default'}
             onClick={() => setOpenFiltersDrawer(!openFiltersDrawer)}
           >
             <FormattedMessage id="words.filters" defaultMessage="Filters" />
@@ -350,7 +350,7 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
         >
           <form noValidate autoComplete="off">
             <Button
-              disabled={pathRegex === '' && !Object.values(filtersLookup).some((value) => value)}
+              disabled={pathRegex === '' && !Object.values(filtersLookup).some(Boolean)}
               endIcon={<CloseIcon />}
               variant="outlined"
               onClick={onClearFilters}
@@ -381,15 +381,13 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
                   classes={{ label: classes.iconLabel }}
                   control={
                     <Checkbox
-                      checked={Object.values(filtersLookup).some((value) => value)}
+                      checked={Object.values(filtersLookup).some(Boolean)}
                       indeterminate={
-                        Object.values(filtersLookup).every((value) => value)
-                          ? null
-                          : Object.values(filtersLookup).some((value) => value)
+                        Object.values(filtersLookup).every(Boolean) ? null : Object.values(filtersLookup).some(Boolean)
                       }
                       name="all"
                       onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                        onFilterChecked(event.target.name, !Object.values(filtersLookup).every((value) => value));
+                        onFilterChecked(event.target.name, !Object.values(filtersLookup).every(Boolean));
                       }}
                     />
                   }
@@ -436,7 +434,7 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
             defaultMessage='{count, plural, one {Set State for "{name}"} other {Set State for Items ({count})}}'
             values={{
               count: selectedItem ? 1 : isSelectedItemsOnAllPages ? items?.total : selectedItemsLength,
-              name: selectedItem?.label
+              name: selectedItem?.label ?? Object.values(selectedItems)[0]?.label
             }}
           />
         }
