@@ -48,12 +48,12 @@ export default function GroupsGridUI(props: GroupsGridUIProps) {
         <Table className={classes.tableRoot}>
           <TableHead>
             <GlobalAppGridRow className="hoverDisabled">
-              <GlobalAppGridCell align="left" className="bordered width25 padded10">
+              <GlobalAppGridCell align="left" className="width25">
                 <Typography variant="subtitle2">
                   <FormattedMessage id="words.name" defaultMessage="Name" />
                 </Typography>
               </GlobalAppGridCell>
-              <GlobalAppGridCell align="left" className="bordered padded10">
+              <GlobalAppGridCell align="left">
                 <Typography variant="subtitle2">
                   <FormattedMessage id="words.description" defaultMessage="Description" />
                 </Typography>
@@ -63,12 +63,10 @@ export default function GroupsGridUI(props: GroupsGridUIProps) {
           <TableBody>
             {groups.map((group, i) => (
               <GlobalAppGridRow key={group.id} onClick={() => onRowClicked(group)}>
-                <GlobalAppGridCell align="left" className="width25 padded10">
+                <GlobalAppGridCell align="left" className="width25">
                   {group.name}
                 </GlobalAppGridCell>
-                <GlobalAppGridCell align="left" className="padded10">
-                  {group.desc}
-                </GlobalAppGridCell>
+                <GlobalAppGridCell align="left">{group.desc}</GlobalAppGridCell>
               </GlobalAppGridRow>
             ))}
           </TableBody>

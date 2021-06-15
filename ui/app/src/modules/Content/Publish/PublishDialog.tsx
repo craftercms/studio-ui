@@ -20,7 +20,7 @@ import { fetchPublishingTargets, goLive, submitToGoLive } from '../../../service
 import { fetchDependencies } from '../../../services/dependencies';
 import { BaseItem, DetailedItem } from '../../../models/Item';
 import moment from 'moment';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import GlobalState from '../../../models/GlobalState';
 import {
   useActiveSiteId,
@@ -45,6 +45,7 @@ import Dialog from '@material-ui/core/Dialog';
 import LookupTable from '../../../models/LookupTable';
 import SecondaryButton from '../../../components/SecondaryButton';
 import PrimaryButton from '../../../components/PrimaryButton';
+import { emitSystemEvent, itemsApproved, itemsScheduled } from '../../../state/actions/system';
 
 // region Typings
 
@@ -385,11 +386,13 @@ function PublishDialogWrapper(props: PublishDialogProps) {
   const siteId = useActiveSiteId();
   const permissionsBySite = usePermissionsBySite();
   const myPermissions = permissionsBySite[siteId];
+  const dispatch = useDispatch();
 
   useUnmount(props.onClosed);
 
   const user = useSelector<GlobalState, GlobalState['user']>((state) => state.user);
   const submit = myPermissions.includes('publish') ? goLive : submitToGoLive;
+  const propagateAction = myPermissions.includes('publish') ? itemsApproved : itemsScheduled;
 
   const { formatMessage } = useIntl();
 
@@ -502,6 +505,7 @@ function PublishDialogWrapper(props: PublishDialogProps) {
     submit(siteId, user.username, data).subscribe(
       (response) => {
         setApiState({ error: null, submitting: false });
+        dispatch(emitSystemEvent(propagateAction({ targets: items })));
         onSuccess?.({
           ...response,
           schedule: schedule,

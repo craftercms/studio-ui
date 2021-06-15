@@ -42,32 +42,32 @@ export default function LogConsoleGridUI(props: LogConsoleGridUIProps) {
       <Table>
         <TableHead>
           <GlobalAppGridRow className="hoverDisabled">
-            <GlobalAppGridCell align="left" className="bordered padded10 width10">
+            <GlobalAppGridCell align="left" className="width10">
               <Typography variant="subtitle2">
                 <FormattedMessage id="words.level" defaultMessage="Level" />
               </Typography>
             </GlobalAppGridCell>
-            <GlobalAppGridCell align="left" className="bordered padded10 width25">
+            <GlobalAppGridCell align="left" className="width25">
               <Typography variant="subtitle2">
                 <FormattedMessage id="words.timestamp" defaultMessage="Timestamp" />
               </Typography>
             </GlobalAppGridCell>
-            <GlobalAppGridCell align="left" className="bordered padded10 width25">
+            <GlobalAppGridCell align="left" className="width25">
               <Typography variant="subtitle2">
                 <FormattedMessage id="words.thread" defaultMessage="Thread" />
               </Typography>
             </GlobalAppGridCell>
-            <GlobalAppGridCell align="left" className="bordered padded10 width20">
+            <GlobalAppGridCell align="left" className="width20">
               <Typography variant="subtitle2">
                 <FormattedMessage id="words.site" defaultMessage="Site" />
               </Typography>
             </GlobalAppGridCell>
-            <GlobalAppGridCell align="left" className="bordered width60 padded10">
+            <GlobalAppGridCell align="left" className="width60">
               <Typography variant="subtitle2">
                 <FormattedMessage id="words.message" defaultMessage="Message" />
               </Typography>
             </GlobalAppGridCell>
-            <GlobalAppGridCell align="left" className="bordered padded10 width10">
+            <GlobalAppGridCell align="left" className="width10">
               <FormattedMessage id="words.details" defaultMessage="Details" />
             </GlobalAppGridCell>
           </GlobalAppGridRow>
@@ -75,24 +75,24 @@ export default function LogConsoleGridUI(props: LogConsoleGridUIProps) {
         <TableBody>
           {logEvents.map((logEvent, i) => (
             <GlobalAppGridRow key={i} className="hoverDisabled">
-              <GlobalAppGridCell align="left" className="padded10 ellipsis">
+              <GlobalAppGridCell align="left" className="ellipsis">
                 {logEvent.level}
               </GlobalAppGridCell>
-              <GlobalAppGridCell align="left" className="padded10 ellipsis">
+              <GlobalAppGridCell align="left" className="ellipsis">
                 {new Intl.DateTimeFormat(localeBranch.localeCode, localeBranch.dateTimeFormatOptions).format(
                   new Date(logEvent.timestamp)
                 )}
               </GlobalAppGridCell>
-              <GlobalAppGridCell align="left" className="padded10 ellipsis">
+              <GlobalAppGridCell align="left" className="ellipsis">
                 {logEvent.thread}
               </GlobalAppGridCell>
-              <GlobalAppGridCell align="left" className="padded10 ellipsis">
+              <GlobalAppGridCell align="left" className="ellipsis">
                 {logEvent.site}
               </GlobalAppGridCell>
-              <GlobalAppGridCell title={logEvent.message} align="left" className="padded10 ellipsis maxWidth300">
+              <GlobalAppGridCell title={logEvent.message} align="left" className="ellipsis maxWidth300">
                 {logEvent.message}
               </GlobalAppGridCell>
-              <GlobalAppGridCell align="left" className="padded10">
+              <GlobalAppGridCell align="left" className="action">
                 <IconButton onClick={() => onLogEventDetails(logEvent)}>
                   <VisibilityRoundedIcon />
                 </IconButton>

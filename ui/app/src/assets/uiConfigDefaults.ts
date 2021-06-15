@@ -66,7 +66,7 @@ const messages = defineMessages({
 
 let count = 0;
 
-const uiConfigDefaults: Pick<GlobalState['uiConfig'], 'preview' | 'launcher'> = {
+const uiConfigDefaults: Pick<GlobalState['uiConfig'], 'preview' | 'launcher' | 'dashboard'> = {
   preview: {
     toolsPanel: {
       widgets: [
@@ -93,7 +93,8 @@ const uiConfigDefaults: Pick<GlobalState['uiConfig'], 'preview' | 'launcher'> = 
       ]
     }
   },
-  launcher: null
+  launcher: null,
+  dashboard: null
 };
 
 export default uiConfigDefaults;

@@ -88,6 +88,11 @@ export const defaultThemeOptions: ThemeOptions = (function() {
         root: {
           display: 'block'
         }
+      },
+      MuiTableCell: {
+        sizeSmall: {
+          padding: '6px 10px'
+        }
       }
     },
     props: {

@@ -16,19 +16,24 @@
 
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 
-export const useStyles = makeStyles(() =>
+export const useStyles = makeStyles((theme) =>
   createStyles({
-    refresh: {
-      marginLeft: 'auto'
+    tableRoot: {
+      tableLayout: 'fixed',
+      '& tbody > tr:last-child > td table > tbody > tr:last-child > td': {
+        borderBottom: 0
+      }
     },
-    rightSection: {
-      marginLeft: 'auto'
+    ellipsis: {
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap'
     },
-    summary: {
-      alignItems: 'center'
+    itemPath: {
+      color: theme.palette.text.secondary
     },
-    details: {
-      padding: 0
+    skeletonCheckbox: {
+      margin: '6px 10px'
     }
   })
 );

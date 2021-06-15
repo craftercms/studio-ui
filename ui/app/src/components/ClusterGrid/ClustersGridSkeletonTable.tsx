@@ -40,53 +40,53 @@ export const ClustersGridSkeletonTable = React.memo((props: ClustersGridSkeleton
       <Table>
         <TableHead>
           <GlobalAppGridRow className="hoverDisabled">
-            <GlobalAppGridCell align="left" className="bordered width10 minWidth100 padded10">
+            <GlobalAppGridCell align="left" className="width10 minWidth100">
               <Typography variant="subtitle2">
                 <FormattedMessage id="clusterGrid.localAddress" defaultMessage="Local Address" />
               </Typography>
             </GlobalAppGridCell>
-            <GlobalAppGridCell align="center" className="bordered padded10">
+            <GlobalAppGridCell align="center">
               <Typography variant="subtitle2">
                 <FormattedMessage id="words.state" defaultMessage="State" />
               </Typography>
             </GlobalAppGridCell>
-            <GlobalAppGridCell align="left" className="bordered width50 padded10">
+            <GlobalAppGridCell align="left" className="width50">
               <Typography variant="subtitle2">
                 <FormattedMessage id="words.url" defaultMessage="Url" />
               </Typography>
             </GlobalAppGridCell>
-            <GlobalAppGridCell align="left" className="bordered width20 padded10">
+            <GlobalAppGridCell align="left" className="width20">
               <Typography variant="subtitle2">
                 <FormattedMessage id="clusterGrid.remoteName" defaultMessage="Remote Name" />
               </Typography>
             </GlobalAppGridCell>
-            <GlobalAppGridCell align="left" className="bordered width10 minWidth100 padded10">
+            <GlobalAppGridCell align="left" className="width10 minWidth100">
               <Typography variant="subtitle2">
                 <FormattedMessage id="clusterGrid.authType" defaultMessage="Auth Type" />
               </Typography>
             </GlobalAppGridCell>
-            <GlobalAppGridCell align="left" className="bordered width10 padded10"></GlobalAppGridCell>
+            <GlobalAppGridCell align="left" className="width10"></GlobalAppGridCell>
           </GlobalAppGridRow>
         </TableHead>
         <TableBody>
           {items.map((item, i) => (
             <GlobalAppGridRow key={i} className="hoverDisabled">
-              <GlobalAppGridCell align="left" className="width10 padded10">
+              <GlobalAppGridCell align="left" className="width10">
                 <Skeleton variant="text" width={`${rand(60, 80)}%`} />
               </GlobalAppGridCell>
-              <GlobalAppGridCell align="center" className="padded10">
+              <GlobalAppGridCell align="center">
                 <Skeleton className={classes.marginCenter} variant="circle" width={20} height={20} />
               </GlobalAppGridCell>
-              <GlobalAppGridCell align="left" className="width50 padded10">
+              <GlobalAppGridCell align="left" className="width50">
                 <Skeleton variant="text" width={`${rand(70, 90)}%`} />
               </GlobalAppGridCell>
-              <GlobalAppGridCell align="left" className="width20 padded10">
+              <GlobalAppGridCell align="left" className="width20">
                 <Skeleton variant="text" width={`${rand(50, 70)}%`} />
               </GlobalAppGridCell>
-              <GlobalAppGridCell align="left" className="width10 padded10">
+              <GlobalAppGridCell align="left" className="width10">
                 <Skeleton variant="text" width={`${rand(60, 70)}%`} />
               </GlobalAppGridCell>
-              <GlobalAppGridCell align="left" className="width10 padded10">
+              <GlobalAppGridCell align="left" className="width10">
                 <Skeleton variant="circle" width={40} height={40} />
               </GlobalAppGridCell>
             </GlobalAppGridRow>
