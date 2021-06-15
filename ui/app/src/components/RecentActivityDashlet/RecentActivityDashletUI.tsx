@@ -161,7 +161,7 @@ export default function RecentActivityDashletUI(props: RecentActivityDashletUiPr
                 <Checkbox checked={Boolean(selectedLookup[item.path])} />
               </GlobalAppGridCell>
               <GlobalAppGridCell className="ellipsis width40 padded0">
-                <ItemDisplay item={item} />
+                <ItemDisplay item={item} showNavigableAsLinks={false} />
                 <Typography
                   title={item.path}
                   variant="caption"
@@ -181,7 +181,12 @@ export default function RecentActivityDashletUI(props: RecentActivityDashletUiPr
               </GlobalAppGridCell>
               <GlobalAppGridCell className="width5">
                 <Tooltip title={<FormattedMessage id="words.options" defaultMessage="Options" />}>
-                  <IconButton onClick={(e) => onOptionsButtonClick(e, item)}>
+                  <IconButton
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onOptionsButtonClick(e, item);
+                    }}
+                  >
                     <MoreVertRounded />
                   </IconButton>
                 </Tooltip>
