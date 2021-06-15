@@ -40,7 +40,7 @@ export default function AwaitingApprovalDashletSkeletonTable(props: awaitingAppr
   const classes = useStyles();
   const { numOfItems = 4 } = props;
 
-  const items = props.items
+  const items = props.items?.length
     ? props.items
     : new Array(numOfItems).fill(null).map((x, i) => ({
         label: i.toString(),
