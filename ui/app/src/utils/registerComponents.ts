@@ -94,6 +94,7 @@ import RemoteRepositoriesManagement from '../components/RemoteRepositoriesManage
 import ItemStatesManagement from '../components/ItemStatesManagement';
 import AwaitingApprovalDashlet from '../components/AwaitingApprovalDashlet';
 import RecentActivityDashlet from '../components/RecentActivityDashlet';
+import Dashboard from '../components/Dashboard';
 
 export const registerComponents = () => {
   Object.entries({
@@ -162,6 +163,7 @@ export const registerComponents = () => {
     'craftercms.components.PreviewDropTargetsPanel': PreviewDropTargetsPanel,
     'craftercms.components.LegacySiteToolsFrame': LegacySiteToolsFrame,
     'craftercms.components.LegacyDashboardFrame': LegacyDashboardFrame,
+    'craftercms.components.Dashboard': Dashboard,
     'craftercms.components.PreviewSettingsPanel': PreviewSettingsPanel,
     'craftercms.components.PluginManagement': PluginManagement,
     'craftercms.component.EmptyState': EmptyState,
