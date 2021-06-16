@@ -22,21 +22,14 @@ import { useDispatch } from 'react-redux';
 import {
   useActiveSiteId,
   useActiveUser,
-  useEnv,
   useItemsByPath,
   usePreviewGuest,
   usePreviewState,
-  useSiteList,
   useSiteUIConfig
 } from '../../utils/hooks';
 import { defineMessages, useIntl } from 'react-intl';
-import { changeSite } from '../../state/reducers/sites';
 import Tooltip from '@material-ui/core/Tooltip';
-import { setSiteCookie } from '../../utils/auth';
 import LogoAndMenuBundleButton from '../../components/LogoAndMenuBundleButton';
-import { getSystemLink } from '../../components/LauncherSection';
-import SiteSwitcherSelect, { useSiteSwitcherMinimalistStyles } from '../../components/SiteSwitcherSelect';
-import { isBlank } from '../../utils/string';
 import { renderWidgets } from '../../components/Widget';
 
 const translations = defineMessages({
@@ -58,40 +51,17 @@ export default function ToolBar() {
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
   const site = useActiveSiteId();
-  const sites = useSiteList();
   const user = useActiveUser();
   const userRoles = user.rolesBySite[site];
-  const { computedUrl, showToolsPanel } = usePreviewState();
+  const { showToolsPanel } = usePreviewState();
   const guest = usePreviewGuest();
   const modelId = guest?.modelId;
   const models = guest?.models;
   const items = useItemsByPath();
   const item = items?.[models?.[modelId]?.craftercms.path];
-  const { previewChoice } = usePreviewState();
-  const { authoringBase } = useEnv();
-  const classes = useSiteSwitcherMinimalistStyles();
   const {
     preview: { toolbar }
   } = useSiteUIConfig();
-
-  const onSiteChange = ({ target: { value } }) => {
-    if (!isBlank(value) && site !== value) {
-      if (previewChoice[value] === '2') {
-        dispatch(changeSite(value));
-      } else {
-        setSiteCookie(value);
-        setTimeout(
-          () =>
-            (window.location.href = getSystemLink({
-              site: value,
-              systemLinkId: 'preview',
-              previewChoice,
-              authoringBase
-            }))
-        );
-      }
-    }
-  };
 
   return (
     <ViewToolbar>
@@ -102,20 +72,6 @@ export default function ToolBar() {
             onClick={() => dispatch(showToolsPanel ? closeTools() : openTools())}
           />
         </Tooltip>
-        <SiteSwitcherSelect
-          value={site}
-          sites={sites}
-          displayEmpty
-          variant="standard"
-          className={classes.menuRoot}
-          style={{ marginRight: 5 }}
-          onChange={onSiteChange}
-          classes={{
-            select: classes.input,
-            selectMenu: classes.menu,
-            menuItem: classes.menuItem
-          }}
-        />
         {toolbar.leftSection?.widgets && renderWidgets(toolbar.leftSection.widgets, userRoles, { site, item })}
       </section>
       <section>

@@ -18,23 +18,66 @@ import * as React from 'react';
 import MenuItem from '@material-ui/core/MenuItem';
 import { FormattedMessage } from 'react-intl';
 import Select, { SelectProps } from '@material-ui/core/Select';
+import useStyles from './styles';
+import { useEnv, usePreviewState, useSiteList } from '../../utils/hooks';
+import { isBlank } from '../../utils/string';
+import { changeSite } from '../../state/reducers/sites';
+import { setSiteCookie } from '../../utils/auth';
+import { getSystemLink } from '../LauncherSection';
+import { useDispatch } from 'react-redux';
 
 export interface SiteSwitcherSelectProps extends SelectProps {
-  sites: { id: string; name: string }[];
-  classes?: SelectProps['classes'] & Partial<Record<'menuItem', string>>;
+  site: string;
 }
 
 function SiteSwitcherSelect(props: SiteSwitcherSelectProps) {
-  const { sites, classes: { menuItem, ...classes } = {} } = props;
+  const { site, ...rest } = props;
+  const sites = useSiteList();
+  const classes = useStyles();
+  const { previewChoice } = usePreviewState();
+  const { authoringBase } = useEnv();
+  const dispatch = useDispatch();
+
+  const onSiteChange = ({ target: { value } }) => {
+    if (!isBlank(value) && site !== value) {
+      if (previewChoice[value] === '2') {
+        dispatch(changeSite(value));
+      } else {
+        setSiteCookie(value);
+        setTimeout(
+          () =>
+            (window.location.href = getSystemLink({
+              site: value,
+              systemLinkId: 'preview',
+              previewChoice,
+              authoringBase
+            }))
+        );
+      }
+    }
+  };
+
   return (
-    <Select {...props} classes={classes}>
+    <Select
+      value={site}
+      displayEmpty
+      variant="standard"
+      className={classes.menuRoot}
+      style={{ marginRight: 5 }}
+      classes={{
+        select: classes.input,
+        selectMenu: classes.menu
+      }}
+      onChange={onSiteChange}
+      {...rest}
+    >
       {sites.length === 0 && (
         <MenuItem value="">
           <FormattedMessage id="siteSwitcherSelected.siteSelectorNoSiteSelected" defaultMessage="Choose site" />
         </MenuItem>
       )}
       {sites.map(({ id, name }) => (
-        <MenuItem key={id} value={id} className={menuItem}>
+        <MenuItem key={id} value={id} className={classes.menuItem}>
           {name}
         </MenuItem>
       ))}

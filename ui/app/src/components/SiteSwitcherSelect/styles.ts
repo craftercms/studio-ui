@@ -16,7 +16,7 @@
 
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 
-export const useSiteSwitcherMinimalistStyles = makeStyles(() =>
+export const useStyles = makeStyles(() =>
   createStyles({
     menu: {
       maxWidth: 110,
@@ -48,3 +48,5 @@ export const useSiteSwitcherMinimalistStyles = makeStyles(() =>
     }
   })
 );
+
+export default useStyles;
