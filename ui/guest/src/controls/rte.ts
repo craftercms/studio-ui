@@ -33,7 +33,6 @@ export function initTinyMCE(
   const { field } = iceRegistry.getReferentialEntries(record.iceIds[0]);
   const type = field?.type;
   const plugins = ['paste'];
-  type === 'html' && plugins.push('quickbars');
   const elementDisplay = $(record.element).css('display');
   if (elementDisplay === 'inline') {
     $(record.element).css('display', 'inline-block');
@@ -45,7 +44,7 @@ export function initTinyMCE(
     // body_class: 'craftercms-rich-text-editor',
     plugins,
     paste_as_text: true,
-    toolbar: false,
+    toolbar: true,
     menubar: false,
     inline: true,
     base_url: '/studio/static-assets/modules/editors/tinymce/v5/tinymce',
