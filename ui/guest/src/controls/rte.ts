@@ -90,7 +90,7 @@ export function initTinyMCE(
             e.stopImmediatePropagation();
             editor.setContent(originalContent);
             cancel();
-          } else if (e.key === 'Enter') {
+          } else if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
             editor.fire('focusout');
           } else if (
             validations?.maxLength &&
@@ -142,6 +142,11 @@ export function initTinyMCE(
           dispatch$.next({ type: 'exit_component_inline_edit' });
           dispatch$.complete();
           dispatch$.unsubscribe();
+        }
+      });
+      editor.on('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+          e.preventDefault();
         }
       });
     }
