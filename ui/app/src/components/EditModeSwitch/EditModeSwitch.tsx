@@ -89,7 +89,7 @@ interface EditModeSwitchProps extends Partial<SwitchProps> {
 }
 
 export default function EditModeSwitch(props: EditModeSwitchProps) {
-  const { item, ...rest } = props;
+  const { item, disabled, ...rest } = props;
   const isLocked = item?.stateMap.locked;
   const write = item?.availableActionsMap.edit;
   const { formatMessage } = useIntl();
@@ -111,7 +111,7 @@ export default function EditModeSwitch(props: EditModeSwitchProps) {
       }
     >
       <span>
-        <EditSwitch color="default" disabled={!write} checked={editMode} onChange={onChange} {...rest} />
+        <EditSwitch color="default" checked={editMode} onChange={onChange} {...rest} disabled={disabled || !write} />
       </span>
     </Tooltip>
   );

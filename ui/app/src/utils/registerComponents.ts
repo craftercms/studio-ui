@@ -96,7 +96,7 @@ import AwaitingApprovalDashlet from '../components/AwaitingApprovalDashlet';
 import PublishingStatusButton from '../components/PublishingStatusButton';
 import QuickCreate from '../modules/Preview/QuickCreate';
 import EditModeSwitch from '../components/EditModeSwitch';
-import AddressBar from '../components/PreviewAddressBar';
+import PreviewAddressBar from '../components/PreviewAddressBar';
 import SiteSwitcherSelect from '../components/SiteSwitcherSelect';
 
 export const registerComponents = () => {
@@ -182,7 +182,7 @@ export const registerComponents = () => {
     'craftercms.components.PublishingStatusButton': PublishingStatusButton,
     'craftercms.components.QuickCreate': QuickCreate,
     'craftercms.components.EditModeSwitch': EditModeSwitch,
-    'craftercms.components.AddressBar': AddressBar,
+    'craftercms.components.PreviewAddressBar': PreviewAddressBar,
     'craftercms.components.SiteSwitcherSelect': SiteSwitcherSelect
   }).forEach(([id, component]) => {
     components.set(id, component);

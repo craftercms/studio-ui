@@ -107,7 +107,7 @@ const useAddressBarStyles = makeStyles((theme: Theme) =>
   })
 );
 
-export function AddressBar(props: AddressBarProps) {
+export function PreviewAddressBar(props: AddressBarProps) {
   const classes = useAddressBarStyles();
   const { site = '', item } = props;
   const noSiteSet = isBlank(site);
@@ -208,4 +208,4 @@ export function AddressBar(props: AddressBarProps) {
   );
 }
 
-export default AddressBar;
+export default PreviewAddressBar;

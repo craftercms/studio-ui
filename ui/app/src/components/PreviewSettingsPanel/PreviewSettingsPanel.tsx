@@ -78,7 +78,6 @@ export default function PreviewSettingsPanel() {
   const models = guest?.models;
   const items = useItemsByPath();
   const item = items?.[models?.[modelId]?.craftercms.path];
-  const write = item?.availableActionsMap.edit;
   const dispatch = useDispatch();
 
   return (
@@ -86,7 +85,7 @@ export default function PreviewSettingsPanel() {
       <FormControl>
         <FormControlLabel
           classes={{ root: classes.labelRoot }}
-          control={<EditModeSwitch item={item} edge="end" disabled={!write} />}
+          control={<EditModeSwitch item={item} />}
           label={formatMessage(translations.editMode)}
           labelPlacement="start"
         />
