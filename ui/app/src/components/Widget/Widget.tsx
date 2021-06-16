@@ -20,6 +20,7 @@ import { components, importPlugin, PluginFileBuilder } from '../../services/plug
 import EmptyState from '../SystemStatus/EmptyState';
 import { defineMessages, useIntl } from 'react-intl';
 import ErrorState from '../ErrorState';
+import * as ReactIs from 'react-is';
 
 export interface WidgetDescriptor {
   id: string;
@@ -53,7 +54,7 @@ const messages = defineMessages({
 });
 
 function isComponent(record): record is React.ComponentType<any> {
-  return typeof record !== 'object';
+  return ReactIs.isValidElementType(record);
 }
 
 const Widget = memo(function(props: WidgetProps) {

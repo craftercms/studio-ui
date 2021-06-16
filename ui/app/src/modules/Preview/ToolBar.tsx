@@ -17,45 +17,32 @@
 import React from 'react';
 import ViewToolbar from '../../components/ViewToolbar';
 import LauncherOpenerButton from '../../components/LauncherOpenerButton';
-import {
-  changeCurrentUrl,
-  closeTools,
-  openTools,
-  RELOAD_REQUEST,
-  setPreviewEditMode
-} from '../../state/actions/preview';
+import { closeTools, openTools } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 import {
   useActiveSiteId,
+  useActiveUser,
   useEnv,
   useItemsByPath,
   usePreviewGuest,
   usePreviewState,
-  useSelection,
-  useSiteList
+  useSiteList,
+  useSiteUIConfig
 } from '../../utils/hooks';
-import { getHostToGuestBus } from './previewContext';
 import { defineMessages, useIntl } from 'react-intl';
-import QuickCreate from './QuickCreate';
 import { changeSite } from '../../state/reducers/sites';
 import Tooltip from '@material-ui/core/Tooltip';
 import { setSiteCookie } from '../../utils/auth';
 import LogoAndMenuBundleButton from '../../components/LogoAndMenuBundleButton';
 import { getSystemLink } from '../../components/LauncherSection';
-import { PublishingStatusButton } from '../../components/PublishingStatusButton';
-import EditModeSwitch from '../../components/EditModeSwitch';
-import { AddressBar } from '../../components/PreviewAddressBar/PreviewAddressBar';
 import SiteSwitcherSelect, { useSiteSwitcherMinimalistStyles } from '../../components/SiteSwitcherSelect';
 import { isBlank } from '../../utils/string';
+import { renderWidgets } from '../../components/Widget';
 
 const translations = defineMessages({
   openToolsPanel: {
     id: 'openToolsPanel.label',
     defaultMessage: 'Open tools panel'
-  },
-  toggleEditMode: {
-    id: 'previewToolbar.toggleEditMode',
-    defaultMessage: 'Toggle edit mode'
   },
   toggleSidebarTooltip: {
     id: 'common.toggleSidebarTooltip',
@@ -64,10 +51,6 @@ const translations = defineMessages({
   itemMenu: {
     id: 'previewToolbar.itemMenu',
     defaultMessage: 'Item menu'
-  },
-  itemLocked: {
-    id: 'previewToolbar.editModeSwitchLockedMessage',
-    defaultMessage: 'Item is locked by {lockOwner}'
   }
 });
 
@@ -75,8 +58,9 @@ export default function ToolBar() {
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
   const site = useActiveSiteId();
-  const editMode = useSelection((state) => state.preview.editMode);
   const sites = useSiteList();
+  const user = useActiveUser();
+  const userRoles = user.rolesBySite[site];
   const { computedUrl, showToolsPanel } = usePreviewState();
   const guest = usePreviewGuest();
   const modelId = guest?.modelId;
@@ -85,10 +69,10 @@ export default function ToolBar() {
   const item = items?.[models?.[modelId]?.craftercms.path];
   const { previewChoice } = usePreviewState();
   const { authoringBase } = useEnv();
-  const write = item?.availableActionsMap.edit;
-  const createContent = item?.availableActionsMap.createContent;
-  const isLocked = item?.stateMap.locked;
   const classes = useSiteSwitcherMinimalistStyles();
+  const {
+    preview: { toolbar }
+  } = useSiteUIConfig();
 
   const onSiteChange = ({ target: { value } }) => {
     if (!isBlank(value) && site !== value) {
@@ -132,39 +116,13 @@ export default function ToolBar() {
             menuItem: classes.menuItem
           }}
         />
-        <QuickCreate disabled={!createContent} />
+        {toolbar.leftSection?.widgets && renderWidgets(toolbar.leftSection.widgets, userRoles, { site, item })}
       </section>
       <section>
-        <AddressBar
-          site={site ?? ''}
-          url={computedUrl}
-          item={item}
-          onUrlChange={(url) => dispatch(changeCurrentUrl(url))}
-          onRefresh={() => getHostToGuestBus().next({ type: RELOAD_REQUEST })}
-        />
+        {toolbar.middleSection?.widgets && renderWidgets(toolbar.middleSection.widgets, userRoles, { site, item })}
       </section>
       <section>
-        <Tooltip
-          title={
-            isLocked
-              ? formatMessage(translations.itemLocked, { lockOwner: item.lockOwner })
-              : !write
-              ? ''
-              : formatMessage(translations.toggleEditMode)
-          }
-        >
-          <span>
-            <EditModeSwitch
-              disabled={!write}
-              color="default"
-              checked={editMode}
-              onChange={(e) => {
-                dispatch(setPreviewEditMode({ editMode: e.target.checked }));
-              }}
-            />
-          </span>
-        </Tooltip>
-        <PublishingStatusButton variant="icon" />
+        {toolbar.rightSection?.widgets && renderWidgets(toolbar.rightSection.widgets, userRoles, { site, item })}
         <LauncherOpenerButton sitesRailPosition="left" icon="apps" />
       </section>
     </ViewToolbar>

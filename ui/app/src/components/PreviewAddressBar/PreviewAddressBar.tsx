@@ -36,13 +36,14 @@ import { completeDetailedItem } from '../../state/actions/content';
 import { showItemMegaMenu } from '../../state/actions/dialogs';
 import { getNumOfMenuOptionsForItem } from '../../utils/content';
 import Tooltip from '@material-ui/core/Tooltip';
+import { changeCurrentUrl, RELOAD_REQUEST } from '../../state/actions/preview';
+import { getHostToGuestBus } from '../../modules/Preview/previewContext';
+import { usePreviewState } from '../../utils/hooks';
 
 export interface AddressBarProps {
   site: string;
   url: string;
   item?: DetailedItem;
-  onUrlChange: (value: string) => any;
-  onRefresh: (e) => any;
 }
 
 const useAddressBarStyles = makeStyles((theme: Theme) =>
@@ -108,16 +109,17 @@ const useAddressBarStyles = makeStyles((theme: Theme) =>
 
 export function AddressBar(props: AddressBarProps) {
   const classes = useAddressBarStyles();
-  const { site, url = '', item, onUrlChange, onRefresh } = props;
+  const { site = '', item } = props;
   const noSiteSet = isBlank(site);
-  const [internalUrl, setInternalUrl] = useState(url);
+  const { computedUrl = '' } = usePreviewState();
+  const [internalUrl, setInternalUrl] = useState(computedUrl);
   const [openSelector, setOpenSelector] = useState(false);
   const [focus, setFocus] = useState(false);
   const disabled = noSiteSet || !item;
 
   useEffect(() => {
-    url && setInternalUrl(url);
-  }, [url]);
+    computedUrl && setInternalUrl(computedUrl);
+  }, [computedUrl]);
 
   const dispatch = useDispatch();
   const onOptions = (e) => {
@@ -140,6 +142,15 @@ export function AddressBar(props: AddressBarProps) {
       ])
     );
   };
+
+  const onUrlChange = (url: string) => {
+    dispatch(changeCurrentUrl(url));
+  };
+
+  const onRefresh = () => {
+    getHostToGuestBus().next({ type: RELOAD_REQUEST });
+  };
+
   return (
     <>
       <Tooltip title={<FormattedMessage id="previewAddressBar.reloadButtonLabel" defaultMessage="Reload this page" />}>
@@ -196,5 +207,13 @@ export function AddressBar(props: AddressBarProps) {
     </>
   );
 }
+
+// <AddressBar
+//   site={site ?? ''}
+//   url={computedUrl}
+//   item={item}
+//   onUrlChange={(url) => dispatch(changeCurrentUrl(url))}
+//   onRefresh={() => getHostToGuestBus().next({ type: RELOAD_REQUEST })}
+// />
 
 export default AddressBar;

@@ -18,8 +18,8 @@ import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { makeStyles } from '@material-ui/core/styles';
 import { FormControl, FormControlLabel, FormHelperText, FormLabel, Radio, RadioGroup } from '@material-ui/core';
-import { usePreviewState } from '../../utils/hooks';
-import { setHighlightMode, setPreviewEditMode } from '../../state/actions/preview';
+import { useItemsByPath, usePreviewGuest, usePreviewState } from '../../utils/hooks';
+import { setHighlightMode } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 import EditModeSwitch from '../EditModeSwitch';
 
@@ -72,7 +72,13 @@ const useStyles = makeStyles(() => ({
 export default function PreviewSettingsPanel() {
   const classes = useStyles({});
   const { formatMessage } = useIntl();
-  const { editMode, highlightMode } = usePreviewState();
+  const { highlightMode } = usePreviewState();
+  const guest = usePreviewGuest();
+  const modelId = guest?.modelId;
+  const models = guest?.models;
+  const items = useItemsByPath();
+  const item = items?.[models?.[modelId]?.craftercms.path];
+  const write = item?.availableActionsMap.edit;
   const dispatch = useDispatch();
 
   return (
@@ -80,16 +86,7 @@ export default function PreviewSettingsPanel() {
       <FormControl>
         <FormControlLabel
           classes={{ root: classes.labelRoot }}
-          control={
-            <EditModeSwitch
-              color="default"
-              checked={editMode}
-              onChange={(e) => {
-                dispatch(setPreviewEditMode({ editMode: e.target.checked }));
-              }}
-              edge="end"
-            />
-          }
+          control={<EditModeSwitch item={item} edge="end" disabled={!write} />}
           label={formatMessage(translations.editMode)}
           labelPlacement="start"
         />
