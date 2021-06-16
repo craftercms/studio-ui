@@ -208,12 +208,4 @@ export function AddressBar(props: AddressBarProps) {
   );
 }
 
-// <AddressBar
-//   site={site ?? ''}
-//   url={computedUrl}
-//   item={item}
-//   onUrlChange={(url) => dispatch(changeCurrentUrl(url))}
-//   onRefresh={() => getHostToGuestBus().next({ type: RELOAD_REQUEST })}
-// />
-
 export default AddressBar;
