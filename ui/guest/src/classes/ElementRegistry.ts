@@ -91,7 +91,13 @@ export function setLabel(record: ElementRecord): void {
           labels.push(`${field.name}`);
         }
       } else {
-        labels.push(field.name);
+        if (field.type === 'text') {
+          labels.push(`${field.name} (Plain Text)`);
+        } else if (field.type === 'html') {
+          labels.push(`${field.name} (Rich Text)`);
+        } else {
+          labels.push(field.name);
+        }
       }
     } else {
       labels.push(`${model.craftercms.label} (${contentType.name})`);

@@ -16,8 +16,17 @@
 
 import withStyles from '@material-ui/core/styles/withStyles';
 import Switch from '@material-ui/core/Switch';
+import Tooltip from '@material-ui/core/Tooltip';
+import React from 'react';
+import { DetailedItem, SandboxItem } from '../../models/Item';
+import { useIntl } from 'react-intl';
+import translations from './translations';
+import { useDispatch } from 'react-redux';
+import { setPreviewEditMode } from '../../state/actions/preview';
+import { useSelection } from '../../utils/hooks';
+import { SwitchProps } from '@material-ui/core/Switch/Switch';
 
-const EditModeSwitch = withStyles((theme) => {
+const EditSwitch = withStyles((theme) => {
   const green = theme.palette.success.main;
   return {
     root: {
@@ -75,4 +84,35 @@ const EditModeSwitch = withStyles((theme) => {
   };
 })(Switch);
 
-export default EditModeSwitch;
+interface EditModeSwitchProps extends Partial<SwitchProps> {
+  item?: SandboxItem | DetailedItem;
+}
+
+export default function EditModeSwitch(props: EditModeSwitchProps) {
+  const { item, disabled, ...rest } = props;
+  const isLocked = item?.stateMap.locked;
+  const write = item?.availableActionsMap.edit;
+  const { formatMessage } = useIntl();
+  const dispatch = useDispatch();
+  const editMode = useSelection((state) => state.preview.editMode);
+
+  const onChange = (e) => {
+    dispatch(setPreviewEditMode({ editMode: e.target.checked }));
+  };
+
+  return (
+    <Tooltip
+      title={
+        isLocked
+          ? formatMessage(translations.itemLocked, { lockOwner: item.lockOwner })
+          : !write
+          ? ''
+          : formatMessage(translations.toggleEditMode)
+      }
+    >
+      <span>
+        <EditSwitch color="default" checked={editMode} onChange={onChange} {...rest} disabled={disabled || !write} />
+      </span>
+    </Tooltip>
+  );
+}

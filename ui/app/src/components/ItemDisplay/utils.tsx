@@ -38,6 +38,7 @@ export function getItemStateText(stateMap: ItemStateMap) {
     systemProcessing: () => <FormattedMessage id="itemState.systemProcessing" defaultMessage="System Processing" />,
     submitted: () => <FormattedMessage id="itemState.submitted" defaultMessage="Submitted" />,
     scheduled: () => <FormattedMessage id="itemState.scheduled" defaultMessage="Scheduled" />,
+    publishing: () => <FormattedMessage id="itemState.publishing" defaultMessage="Publishing" />,
     staged: null,
     live: null,
     translationUpToDate: null,
@@ -63,6 +64,8 @@ export function getItemStateId(stateMap): ItemStates {
       return 'modified';
     case stateMap.new:
       return 'new';
+    case stateMap.publishing:
+      return 'publishing';
     case stateMap.staged:
       return 'staged';
     case stateMap.live:
