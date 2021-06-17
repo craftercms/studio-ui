@@ -98,6 +98,7 @@ import QuickCreate from '../modules/Preview/QuickCreate';
 import EditModeSwitch from '../components/EditModeSwitch';
 import PreviewAddressBar from '../components/PreviewAddressBar';
 import SiteSwitcherSelect from '../components/SiteSwitcherSelect';
+import IconGuideDashlet from '../components/IconGuideDashlet';
 
 export const registerComponents = () => {
   Object.entries({
@@ -179,6 +180,7 @@ export const registerComponents = () => {
     'craftercms.components.RemoteRepositoriesManagement': RemoteRepositoriesManagement,
     'craftercms.components.ItemStatesManagement': ItemStatesManagement,
     'craftercms.components.AwaitingApprovalDashlet': AwaitingApprovalDashlet,
+    'craftercms.compnents.IconGuideDashlet': IconGuideDashlet,
     'craftercms.components.PublishingStatusButton': PublishingStatusButton,
     'craftercms.components.QuickCreate': QuickCreate,
     'craftercms.components.EditModeSwitch': EditModeSwitch,
