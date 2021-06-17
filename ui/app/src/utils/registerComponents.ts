@@ -94,7 +94,11 @@ import RemoteRepositoriesManagement from '../components/RemoteRepositoriesManage
 import ItemStatesManagement from '../components/ItemStatesManagement';
 import AwaitingApprovalDashlet from '../components/AwaitingApprovalDashlet';
 import RecentActivityDashlet from '../components/RecentActivityDashlet';
-import Dashboard from '../components/Dashboard';
+import PublishingStatusButton from '../components/PublishingStatusButton';
+import QuickCreate from '../modules/Preview/QuickCreate';
+import EditModeSwitch from '../components/EditModeSwitch';
+import PreviewAddressBar from '../components/PreviewAddressBar';
+import SiteSwitcherSelect from '../components/SiteSwitcherSelect';
 
 export const registerComponents = () => {
   Object.entries({
@@ -163,7 +167,6 @@ export const registerComponents = () => {
     'craftercms.components.PreviewDropTargetsPanel': PreviewDropTargetsPanel,
     'craftercms.components.LegacySiteToolsFrame': LegacySiteToolsFrame,
     'craftercms.components.LegacyDashboardFrame': LegacyDashboardFrame,
-    'craftercms.components.Dashboard': Dashboard,
     'craftercms.components.PreviewSettingsPanel': PreviewSettingsPanel,
     'craftercms.components.PluginManagement': PluginManagement,
     'craftercms.component.EmptyState': EmptyState,
@@ -178,6 +181,11 @@ export const registerComponents = () => {
     'craftercms.components.ItemStatesManagement': ItemStatesManagement,
     'craftercms.components.AwaitingApprovalDashlet': AwaitingApprovalDashlet,
     'craftercms.components.RecentActivityDashlet': RecentActivityDashlet
+    'craftercms.components.PublishingStatusButton': PublishingStatusButton,
+    'craftercms.components.QuickCreate': QuickCreate,
+    'craftercms.components.EditModeSwitch': EditModeSwitch,
+    'craftercms.components.PreviewAddressBar': PreviewAddressBar,
+    'craftercms.components.SiteSwitcherSelect': SiteSwitcherSelect
   }).forEach(([id, component]) => {
     components.set(id, component);
   });

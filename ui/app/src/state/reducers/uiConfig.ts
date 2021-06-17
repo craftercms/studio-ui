@@ -35,6 +35,11 @@ const initialState: GlobalState['uiConfig'] = {
   isFetching: null,
   currentSite: null,
   preview: {
+    toolbar: {
+      leftSection: null,
+      middleSection: null,
+      rightSection: null
+    },
     toolsPanel: {
       widgets: null
     },
