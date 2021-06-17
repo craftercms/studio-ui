@@ -22,6 +22,7 @@ import SystemProcessingStateIcon from '@material-ui/icons/HourglassEmptyRounded'
 import SubmittedStateIcon from '../Icons/PlanePaperOutline';
 import ScheduledStateIcon from '@material-ui/icons/AccessTimeRounded';
 import UnknownStateIcon from '@material-ui/icons/HelpOutlineRounded';
+import CloudUploadOutlinedIcon from '@material-ui/icons/CloudUploadOutlined';
 import Tooltip from '@material-ui/core/Tooltip/Tooltip';
 import clsx from 'clsx';
 import * as React from 'react';
@@ -41,7 +42,7 @@ export type ItemStateIconClassKey =
   | 'stateSystemProcessingIcon'
   | 'stateSubmittedIcon'
   | 'stateScheduledIcon'
-  | 'publishingIcon';
+  | 'statePublishingIcon';
 
 export type ItemStateIconStyles = Partial<Record<ItemStateIconClassKey, CSSProperties>>;
 
@@ -85,8 +86,9 @@ const useStyles = makeStyles(() =>
       color: palette.green.main,
       ...styles.stateScheduledIcon
     }),
-    publishingIcon: (styles) => ({
-      ...styles.publishingIcon
+    statePublishingIcon: (styles) => ({
+      color: palette.indigo.main,
+      ...styles.statePublishingIcon
     })
   })
 );
@@ -104,6 +106,7 @@ export default function ItemStateIcon(props: ItemStateIconProps) {
       systemProcessing: { Icon: SystemProcessingStateIcon, stateSpecificClass: classes.stateSystemProcessingIcon },
       submitted: { Icon: SubmittedStateIcon, stateSpecificClass: classes.stateSubmittedIcon },
       scheduled: { Icon: ScheduledStateIcon, stateSpecificClass: classes.stateScheduledIcon },
+      publishing: { Icon: CloudUploadOutlinedIcon, stateSpecificClass: classes.statePublishingIcon },
       staged: null,
       live: null,
       translationUpToDate: null,
@@ -119,11 +122,12 @@ export default function ItemStateIcon(props: ItemStateIconProps) {
     classes.stateScheduledIcon,
     classes.stateSubmittedIcon,
     classes.stateSystemProcessingIcon,
+    classes.statePublishingIcon,
     item.stateMap
   ]);
   return (
     <Tooltip title={getItemStateText(item.stateMap)}>
-      <Icon className={clsx(classes.root, propClasses?.root, className, classes.publishingIcon, stateSpecificClass)} />
+      <Icon className={clsx(classes.root, propClasses?.root, className, stateSpecificClass)} />
     </Tooltip>
   );
 }

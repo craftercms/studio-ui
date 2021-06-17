@@ -56,6 +56,7 @@ import {
   STATE_LOCKED_MASK,
   STATE_MODIFIED_MASK,
   STATE_NEW_MASK,
+  STATE_PUBLISHING_MASK,
   STATE_SCHEDULED_MASK,
   STATE_SUBMITTED_MASK,
   STATE_SYSTEM_PROCESSING_MASK,
@@ -649,6 +650,7 @@ export const isLockedState = (value: number) => Boolean(value & STATE_LOCKED_MAS
 export const isSystemProcessingState = (value: number) => Boolean(value & STATE_SYSTEM_PROCESSING_MASK);
 export const isSubmittedState = (value: number) => Boolean(value & STATE_SUBMITTED_MASK);
 export const isScheduledState = (value: number) => Boolean(value & STATE_SCHEDULED_MASK);
+export const isPublishingState = (value: number) => Boolean(value & STATE_PUBLISHING_MASK);
 export const isStaged = (value: number) => Boolean(value & PUBLISHING_STAGED_MASK);
 export const isLive = (value: number) => Boolean(value & PUBLISHING_LIVE_MASK);
 export const isTranslationUpToDateState = (value: number) => Boolean(value & STATE_TRANSLATION_UP_TO_DATE_MASK);
@@ -664,6 +666,7 @@ export const createItemStateMap: (status: number) => ItemStateMap = (status: num
   systemProcessing: isSystemProcessingState(status),
   submitted: isSubmittedState(status),
   scheduled: isScheduledState(status),
+  publishing: isPublishingState(status),
   staged: isStaged(status),
   live: isLive(status),
   translationUpToDate: isTranslationUpToDateState(status),
