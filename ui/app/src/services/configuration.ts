@@ -167,6 +167,11 @@ export function fetchSiteUiConfig(site: string): Observable<Pick<GlobalState['ui
       if (xml) {
         const config = {
           preview: {
+            toolbar: {
+              leftSection: null,
+              middleSection: null,
+              rightSection: null
+            },
             toolsPanel: {
               widgets: [
                 {
@@ -204,6 +209,33 @@ export function fetchSiteUiConfig(site: string): Observable<Pick<GlobalState['ui
         });
         const arrays = ['widgets', 'roles', 'excludes', 'devices', 'values', 'siteCardMenuLinks'];
         const renameTable = { permittedRoles: 'roles' };
+        const toolbar = xml.querySelector('[id="craftercms.components.PreviewToolbar"] > configuration');
+        if (toolbar) {
+          const leftSection = toolbar.querySelector('leftSection > widgets');
+          if (leftSection) {
+            leftSection.querySelectorAll('widget').forEach((e, index) => e.setAttribute('uiKey', String(index)));
+            config.preview.toolbar.leftSection = applyDeserializedXMLTransforms(deserialize(leftSection), {
+              arrays,
+              renameTable
+            });
+          }
+          const middleSection = toolbar.querySelector('middleSection > widgets');
+          if (middleSection) {
+            middleSection.querySelectorAll('widget').forEach((e, index) => e.setAttribute('uiKey', String(index)));
+            config.preview.toolbar.middleSection = applyDeserializedXMLTransforms(deserialize(middleSection), {
+              arrays,
+              renameTable
+            });
+          }
+          const rightSection = toolbar.querySelector('rightSection > widgets');
+          if (rightSection) {
+            rightSection.querySelectorAll('widget').forEach((e, index) => e.setAttribute('uiKey', String(index)));
+            config.preview.toolbar.rightSection = applyDeserializedXMLTransforms(deserialize(rightSection), {
+              arrays,
+              renameTable
+            });
+          }
+        }
         const toolsPanelPages = xml.querySelector('[id="craftercms.components.ToolsPanel"] > configuration > widgets');
         if (toolsPanelPages) {
           // When rendering widgets dynamically and changing pages on the tools panel, if there are duplicate react key

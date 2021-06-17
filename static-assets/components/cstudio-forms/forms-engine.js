@@ -1766,7 +1766,7 @@ var CStudioForms =
               if (acnDraftContent) {
                 unlockBeforeCancel(path);
               } else {
-                if (path && path.indexOf('.xml') != -1) {
+                if (!form.readOnly && path && path.indexOf('.xml') != -1) {
                   var entityId = buildEntityIdFn(null);
                   CrafterCMSNext.services.content
                     .unlock(CStudioAuthoringContext.site, entityId)

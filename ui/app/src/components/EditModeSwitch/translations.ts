@@ -14,6 +14,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './SiteSwitcherSelect';
+import { defineMessages } from 'react-intl';
 
-export * from './SiteSwitcherSelect';
+export const translations = defineMessages({
+  toggleEditMode: {
+    id: 'previewToolbar.toggleEditMode',
+    defaultMessage: 'Toggle edit mode'
+  },
+  itemLocked: {
+    id: 'previewToolbar.editModeSwitchLockedMessage',
+    defaultMessage: 'Item is locked by {lockOwner}'
+  }
+});
+
+export default translations;

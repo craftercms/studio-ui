@@ -38,6 +38,7 @@ import Suspencified from '../../components/SystemStatus/Suspencified';
 import { getSimplifiedVersion } from '../../utils/string';
 import palette from '../../styles/palette';
 import Tooltip from '@material-ui/core/Tooltip';
+import { SandboxItem } from '../../models/Item';
 
 const translations = defineMessages({
   quickCreateBtnLabel: {
@@ -227,8 +228,9 @@ const QuickCreateMenuButton = React.forwardRef<HTMLButtonElement, QuickCreateMen
   );
 });
 
-const QuickCreate = React.forwardRef<HTMLButtonElement, { disabled?: boolean }>(function(props, ref) {
-  const { disabled = false } = props;
+const QuickCreate = React.forwardRef<HTMLButtonElement, { item?: SandboxItem }>(function(props, ref) {
+  const { item } = props;
+  const disabled = !item?.availableActionsMap.createContent;
   const [anchorEl, setAnchorEl] = useState(null);
   const [currentPreview, setCurrentPreview] = useState(null);
   const { guest } = usePreviewState();
