@@ -38,6 +38,7 @@ import ItemDisplay from '../ItemDisplay';
 import clsx from 'clsx';
 import { useLocale } from '../../utils/hooks';
 import { DashboardItem } from '../AwaitingApprovalDashlet';
+import { asLocalizedDateTime } from '../../utils/datetime';
 
 interface ApprovedScheduledDashletGridUIProps {
   resource: Resource<DashboardItem[]>;
@@ -164,13 +165,16 @@ export default function ApprovedScheduledDashletGridUI(props: ApprovedScheduledD
                                 </GlobalAppGridCell>
                                 <GlobalAppGridCell
                                   className="width15 ellipsis"
-                                  title={new Intl.DateTimeFormat(
+                                  title={asLocalizedDateTime(
+                                    itemsLookup[path].sandbox.dateModified,
                                     locale.localeCode,
                                     locale.dateTimeFormatOptions
-                                  ).format(new Date(itemsLookup[path].sandbox.dateModified))}
+                                  )}
                                 >
-                                  {new Intl.DateTimeFormat(locale.localeCode, locale.dateTimeFormatOptions).format(
-                                    new Date(itemsLookup[path].sandbox.dateModified)
+                                  {asLocalizedDateTime(
+                                    itemsLookup[path].sandbox.dateModified,
+                                    locale.localeCode,
+                                    locale.dateTimeFormatOptions
                                   )}
                                 </GlobalAppGridCell>
                                 <GlobalAppGridCell className="checkbox">
