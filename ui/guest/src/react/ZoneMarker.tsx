@@ -33,7 +33,6 @@ export function ZoneMarker(props: ZoneMarkerProps) {
   useEffect(() => {
     setZoneStyle(getZoneMarkerStyle(rect));
   }, [rect]);
-
   return (
     <craftercms-zone-marker style={zoneStyle} class={classes?.marker}>
       <craftercms-zone-marker-label class={classes?.label}>
