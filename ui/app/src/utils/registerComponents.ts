@@ -180,7 +180,7 @@ export const registerComponents = () => {
     'craftercms.components.RemoteRepositoriesManagement': RemoteRepositoriesManagement,
     'craftercms.components.ItemStatesManagement': ItemStatesManagement,
     'craftercms.components.AwaitingApprovalDashlet': AwaitingApprovalDashlet,
-    'craftercms.components.RecentActivityDashlet': RecentActivityDashlet
+    'craftercms.components.RecentActivityDashlet': RecentActivityDashlet,
     'craftercms.components.PublishingStatusButton': PublishingStatusButton,
     'craftercms.components.QuickCreate': QuickCreate,
     'craftercms.components.EditModeSwitch': EditModeSwitch,
