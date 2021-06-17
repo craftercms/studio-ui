@@ -44,6 +44,7 @@ export function initTinyMCE(
     // body_class: 'craftercms-rich-text-editor',
     plugins,
     paste_as_text: true,
+    paste_data_images: true,
     toolbar: true,
     menubar: false,
     inline: true,
