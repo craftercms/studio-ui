@@ -141,8 +141,7 @@ CStudioAuthoringWidgets.RecentlyMadeLiveDashboard = function (widgetId, pageId) 
       var selectedItems = filterByEl.selectedIndex;
       filterByEl.options[0] = new Option(CMgs.format(langBundle, 'dashletFilterPages'), 'page', true, false);
       filterByEl.options[1] = new Option(CMgs.format(langBundle, 'dashletFilterComponents'), 'component', true, false);
-      filterByEl.options[2] = new Option(CMgs.format(langBundle, 'dashletFilterDocuments'), 'document', true, false);
-      filterByEl.options[3] = new Option(CMgs.format(langBundle, 'dashletFilterAll'), 'all', true, false);
+      filterByEl.options[2] = new Option(CMgs.format(langBundle, 'dashletFilterAll'), 'all', true, false);
       filterByEl.options[selectedItems].selected = true;
       var newState = filterByEl.value;
 
