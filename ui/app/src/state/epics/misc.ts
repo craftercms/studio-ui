@@ -69,7 +69,8 @@ const epics = [
                   authoringBase: state.env.authoringBase,
                   site: state.sites.active,
                   path,
-                  type: 'template'
+                  type: 'template',
+                  contentType: payload.contentTypeId
                 })
               });
             } else {
@@ -77,7 +78,8 @@ const epics = [
                 authoringBase: state.env.authoringBase,
                 site: state.sites.active,
                 path,
-                type: 'template'
+                type: 'template',
+                contentType: payload.contentTypeId
               });
             }
           })
@@ -100,14 +102,16 @@ const epics = [
                     authoringBase: state.env.authoringBase,
                     site: state.sites.active,
                     path,
-                    type: editTemplate.type === type ? 'template' : 'controller'
+                    type: editTemplate.type === type ? 'template' : 'controller',
+                    contentType: payload.contentType
                   })
                 })
               : showCodeEditorDialog({
                   authoringBase: state.env.authoringBase,
                   site: state.sites.active,
                   path,
-                  type: editTemplate.type === type ? 'template' : 'controller'
+                  type: editTemplate.type === type ? 'template' : 'controller',
+                  contentType: payload.contentType
                 })
           )
         );

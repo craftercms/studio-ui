@@ -719,10 +719,13 @@ export const itemActionDispatcher = ({
         break;
       }
       case 'editController': {
+        // TODO: the names does not match
+        // TODO: what should happen it the file don't exist?
         dispatch(
           editController({
-            path: '/scripts/pages',
-            fileName: `${popPiece(item.contentTypeId, '/')}.groovy`
+            path: `/scripts/${item.systemType === 'page' ? 'pages' : 'components'}`,
+            fileName: `${popPiece(item.contentTypeId, '/')}.groovy`,
+            contentType: item.contentTypeId
           })
         );
         break;

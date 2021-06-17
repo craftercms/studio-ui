@@ -81,6 +81,7 @@
   const path = CStudioAuthoring.Utils.getQueryVariable(location.search, 'path');
   const site = CStudioAuthoring.Utils.getQueryVariable(location.search, 'site');
   const type = CStudioAuthoring.Utils.getQueryVariable(location.search, 'type');
+  const contentType = CStudioAuthoring.Utils.getQueryVariable(location.search, 'contentType');
   const readOnly = CStudioAuthoring.Utils.getQueryVariable(location.search, 'readonly') === 'true';
   const iceId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'iceId');
   const contentTypeId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'contentTypeId');
@@ -269,7 +270,7 @@
           },
           id: type,
           callingWindow: window
-        }, null, mode);
+        }, contentType, mode);
         break;
       }
     }

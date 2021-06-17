@@ -185,6 +185,7 @@ function GlobalDialogManager() {
         path={state.codeEditor.path}
         site={state.codeEditor.site}
         type={state.codeEditor.type}
+        contentType={state.codeEditor.contentType}
         authoringBase={state.codeEditor.authoringBase}
         readonly={state.codeEditor.readonly}
         inProgress={state.codeEditor.inProgress}

@@ -185,12 +185,14 @@ export function getCodeEditorSrc({
   path,
   site,
   type,
+  contentType,
   authoringBase,
   readonly
 }: {
   path: string;
   site: string;
   type: string;
+  contentType?: string;
   authoringBase: string;
   readonly: boolean;
 }): string {
@@ -198,6 +200,7 @@ export function getCodeEditorSrc({
     site,
     path,
     type,
+    contentType,
     readonly
   });
   return `${authoringBase}/legacy/form${qs}`;

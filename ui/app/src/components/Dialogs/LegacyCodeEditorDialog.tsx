@@ -90,6 +90,7 @@ interface LegacyCodeEditorDialogBaseProps {
   site: string;
   path: string;
   type: string;
+  contentType?: string;
   authoringBase: string;
   readonly?: boolean;
   inProgress?: boolean;
@@ -114,14 +115,27 @@ export interface LegacyCodeEditorDialogStateProps extends LegacyCodeEditorDialog
 }
 
 function EmbeddedLegacyCodeEditor(props: LegacyCodeEditorDialogProps) {
-  const { site, path, type, readonly, authoringBase, inProgress, onSuccess, onDismiss, onClosed, onMinimized } = props;
+  const {
+    site,
+    path,
+    type,
+    contentType,
+    readonly,
+    authoringBase,
+    inProgress,
+    onSuccess,
+    onDismiss,
+    onClosed,
+    onMinimized
+  } = props;
 
-  const src = useMemo(() => getCodeEditorSrc({ site, path, type, readonly, authoringBase }), [
+  const src = useMemo(() => getCodeEditorSrc({ site, path, type, readonly, authoringBase, contentType }), [
     authoringBase,
     path,
     readonly,
     site,
-    type
+    type,
+    contentType
   ]);
 
   const { formatMessage } = useIntl();
