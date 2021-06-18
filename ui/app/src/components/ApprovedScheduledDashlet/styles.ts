@@ -14,27 +14,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { LegacyItem } from './Item';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 
-interface LegacyDeploymentHistoryDocument {
-  children: LegacyItem[];
-  endpoint: string;
-  internalName: string;
-  numOfChildren: number;
-}
+export const useStyles = makeStyles((theme) =>
+  createStyles({
+    collapseAll: {
+      marginRight: '10px'
+    }
+  })
+);
 
-export interface LegacyDashboardItem {
-  total: number;
-  sortedBy: boolean;
-  ascending: 'true' | 'false';
-  documents: LegacyItem[];
-}
-
-export interface LegacyDeploymentHistoryResponse {
-  total: number;
-  offset: number;
-  limit: number;
-  documents: LegacyDeploymentHistoryDocument[];
-}
-
-export type LegacyDeploymentHistoryType = 'page' | 'component' | 'document' | 'all';
+export default useStyles;
