@@ -33,7 +33,6 @@ export function initTinyMCE(
   const { field } = iceRegistry.getReferentialEntries(record.iceIds[0]);
   const type = field?.type;
   const plugins = ['paste'];
-  type === 'html' && plugins.push('quickbars');
   const elementDisplay = $(record.element).css('display');
   if (elementDisplay === 'inline') {
     $(record.element).css('display', 'inline-block');
@@ -45,7 +44,8 @@ export function initTinyMCE(
     // body_class: 'craftercms-rich-text-editor',
     plugins,
     paste_as_text: true,
-    toolbar: false,
+    paste_data_images: type === 'html',
+    toolbar: type === 'html',
     menubar: false,
     inline: true,
     base_url: '/studio/static-assets/modules/editors/tinymce/v5/tinymce',
@@ -90,7 +90,7 @@ export function initTinyMCE(
             e.stopImmediatePropagation();
             editor.setContent(originalContent);
             cancel();
-          } else if (e.key === 'Enter') {
+          } else if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
             editor.fire('focusout');
           } else if (
             validations?.maxLength &&
@@ -142,6 +142,11 @@ export function initTinyMCE(
           dispatch$.next({ type: 'exit_component_inline_edit' });
           dispatch$.complete();
           dispatch$.unsubscribe();
+        }
+      });
+      editor.on('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+          e.preventDefault();
         }
       });
     }
