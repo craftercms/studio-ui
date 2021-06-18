@@ -199,6 +199,10 @@ export function deregister(id: string | number): ElementRecord {
   return record;
 }
 
+/**
+ * Returns the ICE id of the first movable ICE record on the
+ * specified element record or false if none is movable.
+ * */
 export function getDraggable(id: number): number | boolean {
   const record = get(id);
   return forEach(
