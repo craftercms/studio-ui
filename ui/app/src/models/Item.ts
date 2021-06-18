@@ -24,6 +24,7 @@ export type ItemStates =
   | 'systemProcessing'
   | 'submitted'
   | 'scheduled'
+  | 'publishing'
   | 'staged'
   | 'live'
   | 'translationUpToDate'

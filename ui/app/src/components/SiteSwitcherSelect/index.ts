@@ -17,5 +17,3 @@
 export { default } from './SiteSwitcherSelect';
 
 export * from './SiteSwitcherSelect';
-
-export { useSiteSwitcherMinimalistStyles } from './styles';

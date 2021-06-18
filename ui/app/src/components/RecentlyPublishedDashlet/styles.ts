@@ -16,35 +16,34 @@
 
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 
-export const useStyles = makeStyles(() =>
+export const useStyles = makeStyles((theme) =>
   createStyles({
-    menu: {
-      maxWidth: 110,
-      padding: '10px 10px'
+    rightAction: {
+      marginRight: theme.spacing(1)
     },
-    menuRoot: {
-      '&.MuiInput-underline::before': {
-        display: 'none'
-      },
-      '&.MuiInput-underline::after': {
-        display: 'none'
-      },
-      background: 'transparent'
+    paginationRoot: {
+      marginLeft: 'auto',
+      marginRight: '20px'
     },
-    menuItem: {
-      maxWidth: 390,
-      whiteSpace: 'nowrap',
+    tableRoot: {
+      tableLayout: 'fixed'
+    },
+    expandableCellBox: {
+      alignItems: 'center'
+    },
+    itemPath: {
+      color: theme.palette.text.secondary
+    },
+    ellipsis: {
       overflow: 'hidden',
       textOverflow: 'ellipsis',
-      display: 'block'
+      whiteSpace: 'nowrap'
     },
-    input: {
-      border: 'none',
-      background: 'transparent',
-      '&:focus:invalid, &:focus': {
-        border: 'none',
-        boxShadow: 'none'
-      }
+    skeletonCheckbox: {
+      margin: '6px 10px'
+    },
+    showLabel: {
+      marginRight: theme.spacing(1)
     }
   })
 );

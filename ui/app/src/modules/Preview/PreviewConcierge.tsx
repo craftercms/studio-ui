@@ -30,6 +30,7 @@ import {
   DESKTOP_ASSET_UPLOAD_PROGRESS,
   DESKTOP_ASSET_UPLOAD_STARTED,
   EDIT_MODE_CHANGED,
+  EDIT_MODE_TOGGLE_HOTKEY,
   FETCH_GUEST_MODEL,
   fetchGuestModelComplete,
   fetchPrimaryGuestModelComplete,
@@ -103,6 +104,8 @@ import EditFormPanel from './Tools/EditFormPanel';
 import {
   createChildModelLookup,
   getComputedEditMode,
+  hasEditAction,
+  isItemLockedForMe,
   normalizeModel,
   normalizeModelsLookup,
   parseContentXML
@@ -115,6 +118,7 @@ import { fetchGlobalProperties, setProperties } from '../../services/users';
 import Snackbar from '@material-ui/core/Snackbar';
 import CloseRounded from '@material-ui/icons/CloseRounded';
 import IconButton from '@material-ui/core/IconButton';
+import { useHotkeys } from 'react-hotkeys-hook';
 
 const guestMessages = defineMessages({
   maxCount: {
@@ -327,6 +331,20 @@ export function PreviewConcierge(props: any) {
       dispatch(fetchSandboxItem({ path: currentItemPath }));
     }
   }, [dispatch, currentItemPath, site]);
+
+  const conditionallyToggleEditMode = useCallback(() => {
+    if (
+      !isItemLockedForMe(items[currentItemPath], user.username) &&
+      hasEditAction(items[currentItemPath].availableActions)
+    ) {
+      dispatch(
+        setPreviewEditMode({
+          editMode: !editMode
+        })
+      );
+    }
+  }, [currentItemPath, dispatch, editMode, items, user.username]);
+
   // endregion
 
   // Guest detection, document domain restoring, editMode/highlightMode preference retrieval, clipboard retrieval
@@ -800,6 +818,10 @@ export function PreviewConcierge(props: any) {
           });
           break;
         }
+        case EDIT_MODE_TOGGLE_HOTKEY: {
+          conditionallyToggleEditMode();
+          break;
+        }
       }
     });
     return () => {
@@ -822,7 +844,8 @@ export function PreviewConcierge(props: any) {
     xsrfArgument,
     highlightMode,
     previewChoice,
-    handlePreviewCompatibilityDialogGo
+    handlePreviewCompatibilityDialogGo,
+    conditionallyToggleEditMode
   ]);
 
   useEffect(() => {
@@ -837,6 +860,15 @@ export function PreviewConcierge(props: any) {
       }
     }
   }, [site, guest, dispatch]);
+
+  // Hotkeys
+  useHotkeys(
+    'ctrl+e, command+e',
+    () => {
+      conditionallyToggleEditMode();
+    },
+    [conditionallyToggleEditMode]
+  );
 
   return (
     <>
