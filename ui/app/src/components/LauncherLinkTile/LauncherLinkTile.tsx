@@ -50,7 +50,7 @@ const LauncherLinkTile = (props: LauncherLinkTileProps) => {
                 id: systemLinkId,
                 title,
                 widget: {
-                  id: 'craftercms.components.LegacyDashboardFrame'
+                  id: 'craftercms.components.Dashboard'
                 }
               })
             ])

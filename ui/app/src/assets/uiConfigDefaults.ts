@@ -68,6 +68,11 @@ let count = 0;
 
 const uiConfigDefaults: Pick<GlobalState['uiConfig'], 'preview' | 'launcher' | 'dashboard'> = {
   preview: {
+    toolbar: {
+      leftSection: null,
+      middleSection: null,
+      rightSection: null
+    },
     toolsPanel: {
       widgets: [
         {

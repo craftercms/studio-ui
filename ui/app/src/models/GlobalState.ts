@@ -203,6 +203,17 @@ export interface GlobalState {
     isFetching: boolean;
     currentSite: string;
     preview: {
+      toolbar: {
+        leftSection: {
+          widgets: WidgetDescriptor[];
+        };
+        middleSection: {
+          widgets: WidgetDescriptor[];
+        };
+        rightSection: {
+          widgets: WidgetDescriptor[];
+        };
+      };
       toolsPanel: {
         widgets: WidgetDescriptor[];
       };

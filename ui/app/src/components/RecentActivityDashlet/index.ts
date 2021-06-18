@@ -14,6 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './SiteSwitcherSelect';
+export { default } from './RecentActivityDashlet';
 
-export * from './SiteSwitcherSelect';
+export * from './RecentActivityDashlet';
+
+export * from './RecentActivityDashletUI';
+
+export * from './RecentActivityDashletUISkeleton';

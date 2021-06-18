@@ -29,18 +29,19 @@ export function getStoredGlobalMenuSiteViewPreference(user: string): 'grid' | 'l
 
 export function getStateMapFromLegacyItem(item: LegacyItem): ItemStateMap {
   return {
-    live: item.endpoint === 'live',
     locked: Boolean(item.lockOwner),
     modified: item.isInProgress,
     new: item.isNew,
-    staged: item.endpoint === 'live' || item.endpoint === 'staged',
     systemProcessing: false,
     translationInProgress: false,
     translationPending: false,
     translationUpToDate: false,
     deleted: Boolean(item.isDeleted),
     submitted: Boolean(item.isSubmitted),
-    scheduled: Boolean(item.isScheduled)
+    scheduled: Boolean(item.isScheduled),
+    publishing: false,
+    staged: item.endpoint === 'live' || item.endpoint === 'staged',
+    live: item.endpoint === 'live'
   };
 }
 
