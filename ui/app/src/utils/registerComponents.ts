@@ -93,6 +93,7 @@ import VideocamOutlinedIcon from '@material-ui/icons/VideocamOutlined';
 import RemoteRepositoriesManagement from '../components/RemoteRepositoriesManagement';
 import ItemStatesManagement from '../components/ItemStatesManagement';
 import AwaitingApprovalDashlet from '../components/AwaitingApprovalDashlet';
+import RecentlyPublishedDashlet from '../components/RecentlyPublishedDashlet';
 import RecentActivityDashlet from '../components/RecentActivityDashlet';
 import PublishingStatusButton from '../components/PublishingStatusButton';
 import QuickCreate from '../modules/Preview/QuickCreate';
@@ -180,6 +181,7 @@ export const registerComponents = () => {
     'craftercms.components.RemoteRepositoriesManagement': RemoteRepositoriesManagement,
     'craftercms.components.ItemStatesManagement': ItemStatesManagement,
     'craftercms.components.AwaitingApprovalDashlet': AwaitingApprovalDashlet,
+    'craftercms.components.RecentlyPublishedDashlet': RecentlyPublishedDashlet,
     'craftercms.components.RecentActivityDashlet': RecentActivityDashlet,
     'craftercms.components.PublishingStatusButton': PublishingStatusButton,
     'craftercms.components.QuickCreate': QuickCreate,
