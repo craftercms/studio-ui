@@ -15,8 +15,8 @@
  */
 
 import { ofType } from 'redux-observable';
-import { filter, map, switchMap, withLatestFrom } from 'rxjs/operators';
-import { NEVER, Observable } from 'rxjs';
+import { catchError, filter, map, switchMap, withLatestFrom } from 'rxjs/operators';
+import { NEVER, Observable, of } from 'rxjs';
 import GlobalState from '../../models/GlobalState';
 import {
   batchActions,
@@ -113,7 +113,18 @@ const epics = [
                   type: editTemplate.type === type ? 'template' : 'controller',
                   contentType: payload.contentType
                 })
-          )
+          ),
+          catchError(() => {
+            return of(
+              showCodeEditorDialog({
+                authoringBase: state.env.authoringBase,
+                site: state.sites.active,
+                path,
+                type: editTemplate.type === type ? 'template' : 'controller',
+                contentType: payload.contentType
+              })
+            );
+          })
         );
       })
     )

@@ -719,8 +719,6 @@ export const itemActionDispatcher = ({
         break;
       }
       case 'editController': {
-        // TODO: the names does not match
-        // TODO: what should happen it the file don't exist?
         dispatch(
           editController({
             path: `/scripts/${item.systemType === 'page' ? 'pages' : 'components'}`,
