@@ -53,17 +53,17 @@ const messages = defineMessages({
   renderingTemplate: { id: 'iconGuide.renderingTemplate', defaultMessage: 'Rendering Template' },
   script: { id: 'iconGuide.script', defaultMessage: 'Script' },
   taxonomy: { id: 'iconGuide.taxonomy', defaultMessage: 'Taxonomy' },
-  image: { id: 'iconGuide.asset', defaultMessage: 'Image' },
-  javascript: { id: 'iconGuide.asset', defaultMessage: 'JavaScript' },
-  json: { id: 'iconGuide.asset', defaultMessage: 'Json' },
-  groovy: { id: 'iconGuide.asset', defaultMessage: 'Groovy' },
-  freemarker: { id: 'iconGuide.asset', defaultMessage: 'Freemarker' },
-  html: { id: 'iconGuide.asset', defaultMessage: 'HTML' },
-  css: { id: 'iconGuide.asset', defaultMessage: 'CSS' },
-  plainText: { id: 'iconGuide.asset', defaultMessage: 'Plain Text' },
-  xml: { id: 'iconGuide.asset', defaultMessage: 'XML' },
-  font: { id: 'iconGuide.asset', defaultMessage: 'Font' },
-  icon: { id: 'iconGuide.asset', defaultMessage: 'Icon' }
+  image: { id: 'iconGuide.image', defaultMessage: 'Image' },
+  javascript: { id: 'iconGuide.javascript', defaultMessage: 'JavaScript' },
+  json: { id: 'iconGuide.json', defaultMessage: 'Json' },
+  groovy: { id: 'iconGuide.groovy', defaultMessage: 'Groovy' },
+  freemarker: { id: 'iconGuide.freemarker', defaultMessage: 'Freemarker' },
+  html: { id: 'iconGuide.html', defaultMessage: 'HTML' },
+  css: { id: 'iconGuide.css', defaultMessage: 'CSS' },
+  plainText: { id: 'iconGuide.plainText', defaultMessage: 'Plain Text' },
+  xml: { id: 'iconGuide.xml', defaultMessage: 'XML' },
+  font: { id: 'iconGuide.font', defaultMessage: 'Font' },
+  icon: { id: 'iconGuide.icon', defaultMessage: 'Icon' }
 });
 
 const states = {
@@ -117,7 +117,7 @@ export default function IconGuideDashlet() {
         </Typography>
         <Grid container spacing={2}>
           {Object.keys(states).map((key) => (
-            <Grid item xs={3} className={classes.stateContainer}>
+            <Grid item xs={6} sm={4} md={3} lg={2} className={classes.stateContainer}>
               <ItemStateIcon item={states[key]} className={classes.icon} />
               <Typography variant="body2" component="span">
                 {getItemStateText(states[key].stateMap)}
@@ -131,7 +131,7 @@ export default function IconGuideDashlet() {
         </Typography>
         <Grid container spacing={2}>
           {Object.keys(types).map((key) => (
-            <Grid item xs={3} className={classes.stateContainer}>
+            <Grid item xs={6} sm={4} md={3} lg={2} className={classes.stateContainer}>
               <ItemTypeIcon item={types[key]} className={classes.icon} />
               <Typography variant="body2" component="span">
                 {formatMessage(messages[key])}
