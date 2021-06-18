@@ -43,32 +43,6 @@ import PageExplorer from '../components/Icons/PageExplorerRounded';
 import SiteExplorer from '../components/Icons/SiteExplorerRounded';
 import Component from '../components/Icons/Component';
 import GraphQL from '../components/Icons/GraphQL';
-import ToolsPanelEmbeddedAppViewButton from '../components/ToolsPanelEmbeddedAppViewButton';
-import ToolsPanelPageButton from '../components/ToolsPanelPageButton';
-import PathNavigator from '../components/PathNavigator';
-import PathNavigatorTree from '../components/PathNavigatorTree';
-import ToolsPanelPageComponent from '../components/ToolsPanelPage/ToolsPanelPage';
-import PreviewSearchPanel from '../components/PreviewSearchPanel';
-import PreviewComponentsPanel from '../components/PreviewComponentsPanel';
-import PreviewAssetsPanel from '../components/PreviewAssetsPanel';
-import PreviewAudiencesPanel from '../components/PreviewAudiencesPanel';
-import PreviewPageExplorerPanel from '../components/PreviewPageExplorerPanel';
-import PreviewSimulatorPanel from '../components/PreviewSimulatorPanel';
-import PreviewBrowseComponentsPanel from '../components/PreviewBrowseComponentsPanel';
-import PreviewInPageInstancesPanel from '../components/PreviewInPageInstancesPanel';
-import PreviewDropTargetsPanel from '../components/PreviewDropTargetsPanel';
-import LegacySiteToolsFrame from '../components/LegacySiteToolsFrame';
-import LegacyDashboardFrame from '../components/LegacyDashboardFrame';
-import PreviewSettingsPanel from '../components/PreviewSettingsPanel';
-import PluginManagement from '../components/PluginManagement';
-import EmptyState from '../components/SystemStatus/EmptyState';
-import SiteEncryptTool from '../components/SiteEncryptTool';
-import SiteConfigurationManagement from '../components/SiteConfigurationManagement';
-import SiteAuditManagement from '../components/SiteAuditManagement';
-import LogConsole from '../components/LogConsole';
-import PublishingDashboard from '../components/PublishingDashboard';
-import SiteGraphiQL from '../components/SiteGraphiQL';
-import SiteToolsApp from '../components/SiteToolsApp';
 import { components } from '../services/plugin';
 import LauncherLinkTile from '../components/LauncherLinkTile';
 import LauncherPublishingStatusTile from '../components/LauncherPublishingStatusTile';
@@ -90,17 +64,7 @@ import LockRounded from '@material-ui/icons/LockRounded';
 import VpnKeyRounded from '@material-ui/icons/VpnKeyRounded';
 import PublicRounded from '@material-ui/icons/PublicRounded';
 import VideocamOutlinedIcon from '@material-ui/icons/VideocamOutlined';
-import RemoteRepositoriesManagement from '../components/RemoteRepositoriesManagement';
-import ItemStatesManagement from '../components/ItemStatesManagement';
-import AwaitingApprovalDashlet from '../components/AwaitingApprovalDashlet';
-import RecentlyPublishedDashlet from '../components/RecentlyPublishedDashlet';
-import ApprovedScheduledDashlet from '../components/ApprovedScheduledDashlet';
-import RecentActivityDashlet from '../components/RecentActivityDashlet';
-import PublishingStatusButton from '../components/PublishingStatusButton';
-import QuickCreate from '../modules/Preview/QuickCreate';
-import EditModeSwitch from '../components/EditModeSwitch';
-import PreviewAddressBar from '../components/PreviewAddressBar';
-import SiteSwitcherSelect from '../components/SiteSwitcherSelect';
+import { lazy } from 'react';
 
 export const registerComponents = () => {
   Object.entries({
@@ -153,43 +117,54 @@ export const registerComponents = () => {
     '@material-ui/icons/VpnKeyRounded': VpnKeyRounded,
     '@material-ui/icons/PublicRounded': PublicRounded,
     '@material-ui/icons/VideocamOutlined': VideocamOutlinedIcon,
-    'craftercms.components.ToolsPanelEmbeddedAppViewButton': ToolsPanelEmbeddedAppViewButton,
-    'craftercms.components.ToolsPanelPageButton': ToolsPanelPageButton,
-    'craftercms.components.PathNavigator': PathNavigator,
-    'craftercms.components.PathNavigatorTree': PathNavigatorTree,
-    'craftercms.components.ToolsPanelPage': ToolsPanelPageComponent,
-    'craftercms.components.PreviewSearchPanel': PreviewSearchPanel,
-    'craftercms.components.PreviewComponentsPanel': PreviewComponentsPanel,
-    'craftercms.components.PreviewAssetsPanel': PreviewAssetsPanel,
-    'craftercms.components.PreviewAudiencesPanel': PreviewAudiencesPanel,
-    'craftercms.components.PreviewPageExplorerPanel': PreviewPageExplorerPanel,
-    'craftercms.components.PreviewSimulatorPanel': PreviewSimulatorPanel,
-    'craftercms.components.PreviewBrowseComponentsPanel': PreviewBrowseComponentsPanel,
-    'craftercms.components.PreviewInPageInstancesPanel': PreviewInPageInstancesPanel,
-    'craftercms.components.PreviewDropTargetsPanel': PreviewDropTargetsPanel,
-    'craftercms.components.LegacySiteToolsFrame': LegacySiteToolsFrame,
-    'craftercms.components.LegacyDashboardFrame': LegacyDashboardFrame,
-    'craftercms.components.PreviewSettingsPanel': PreviewSettingsPanel,
-    'craftercms.components.PluginManagement': PluginManagement,
-    'craftercms.component.EmptyState': EmptyState,
-    'craftercms.components.SiteEncryptTool': SiteEncryptTool,
-    'craftercms.components.SiteConfigurationManagement': SiteConfigurationManagement,
-    'craftercms.components.SiteAuditManagement': SiteAuditManagement,
-    'craftercms.components.LogConsole': LogConsole,
-    'craftercms.components.PublishingDashboard': PublishingDashboard,
-    'craftercms.components.SiteGraphiQL': SiteGraphiQL,
-    'craftercms.components.SiteToolsApp': SiteToolsApp,
-    'craftercms.components.RemoteRepositoriesManagement': RemoteRepositoriesManagement,
-    'craftercms.components.ItemStatesManagement': ItemStatesManagement,
-    'craftercms.components.AwaitingApprovalDashlet': AwaitingApprovalDashlet,
-    'craftercms.components.RecentlyPublishedDashlet': RecentlyPublishedDashlet,
-    'craftercms.components.ApprovedScheduledDashlet': ApprovedScheduledDashlet,
-    'craftercms.components.RecentActivityDashlet': RecentActivityDashlet,
-    'craftercms.components.PublishingStatusButton': PublishingStatusButton,
-    'craftercms.components.QuickCreate': QuickCreate,
-    'craftercms.components.EditModeSwitch': EditModeSwitch,
-    'craftercms.components.PreviewAddressBar': PreviewAddressBar,
-    'craftercms.components.SiteSwitcherSelect': SiteSwitcherSelect
+    'craftercms.components.ToolsPanelEmbeddedAppViewButton': lazy(() =>
+      import('../components/ToolsPanelEmbeddedAppViewButton')
+    ),
+    'craftercms.components.ToolsPanelPageButton': lazy(() => import('../components/ToolsPanelPageButton')),
+    'craftercms.components.PathNavigator': lazy(() => import('../components/PathNavigator')),
+    'craftercms.components.PathNavigatorTree': lazy(() => import('../components/PathNavigatorTree')),
+    'craftercms.components.ToolsPanelPage': lazy(() => import('../components/ToolsPanelPage/ToolsPanelPage')),
+    'craftercms.components.PreviewSearchPanel': lazy(() => import('../components/PreviewSearchPanel')),
+    'craftercms.components.PreviewComponentsPanel': lazy(() => import('../components/PreviewComponentsPanel')),
+    'craftercms.components.PreviewAssetsPanel': lazy(() => import('../components/PreviewAssetsPanel')),
+    'craftercms.components.PreviewAudiencesPanel': lazy(() => import('../components/PreviewAudiencesPanel')),
+    'craftercms.components.PreviewPageExplorerPanel': lazy(() => import('../components/PreviewPageExplorerPanel')),
+    'craftercms.components.PreviewSimulatorPanel': lazy(() => import('../components/PreviewSimulatorPanel')),
+    'craftercms.components.PreviewBrowseComponentsPanel': lazy(() =>
+      import('../components/PreviewBrowseComponentsPanel')
+    ),
+    'craftercms.components.PreviewInPageInstancesPanel': lazy(() =>
+      import('../components/PreviewInPageInstancesPanel')
+    ),
+    'craftercms.components.PreviewDropTargetsPanel': lazy(() => import('../components/PreviewDropTargetsPanel')),
+    'craftercms.components.LegacySiteToolsFrame': lazy(() => import('../components/LegacySiteToolsFrame')),
+    'craftercms.components.LegacyDashboardFrame': lazy(() => import('../components/LegacyDashboardFrame')),
+    'craftercms.components.PreviewSettingsPanel': lazy(() => import('../components/PreviewSettingsPanel')),
+    'craftercms.components.PluginManagement': lazy(() => import('../components/PluginManagement')),
+    'craftercms.component.EmptyState': lazy(() => import('../components/SystemStatus/EmptyState')),
+    'craftercms.components.SiteEncryptTool': lazy(() => import('../components/SiteEncryptTool')),
+    'craftercms.components.SiteConfigurationManagement': lazy(() =>
+      import('../components/SiteConfigurationManagement')
+    ),
+    'craftercms.components.SiteAuditManagement': lazy(() => import('../components/SiteAuditManagement')),
+    'craftercms.components.LogConsole': lazy(() => import('../components/LogConsole')),
+    'craftercms.components.PublishingDashboard': lazy(() => import('../components/PublishingDashboard')),
+    'craftercms.components.SiteGraphiQL': lazy(() => import('../components/SiteGraphiQL')),
+    'craftercms.components.SiteToolsApp': lazy(() => import('../components/SiteToolsApp')),
+    'craftercms.components.RemoteRepositoriesManagement': lazy(() =>
+      import('../components/RemoteRepositoriesManagement')
+    ),
+    'craftercms.components.ItemStatesManagement': lazy(() => import('../components/ItemStatesManagement')),
+    'craftercms.components.AwaitingApprovalDashlet': lazy(() => import('../components/AwaitingApprovalDashlet')),
+    'craftercms.components.RecentlyPublishedDashlet': lazy(() => import('../components/RecentlyPublishedDashlet')),
+    'craftercms.components.ApprovedScheduledDashlet': lazy(() => import('../components/ApprovedScheduledDashlet')),
+    'craftercms.components.RecentActivityDashlet': lazy(() => import('../components/RecentActivityDashlet')),
+    'craftercms.components.PublishingStatusButton': lazy(() => import('../components/PublishingStatusButton')),
+    'craftercms.components.QuickCreate': lazy(() => import('../modules/Preview/QuickCreate')),
+    'craftercms.components.EditModeSwitch': lazy(() => import('../components/EditModeSwitch')),
+    'craftercms.components.PreviewAddressBar': lazy(() => import('../components/PreviewAddressBar')),
+    'craftercms.components.SiteSwitcherSelect': lazy(() => import('../components/SiteSwitcherSelect')),
+    'craftercms.components.Dashboard': lazy(() => import('../components/Dashboard'))
   }).forEach(([id, component]) => {
     components.set(id, component);
   });
