@@ -28,90 +28,93 @@ import GlobalAppGridCell from '../GlobalAppGridCell';
 import Skeleton from '@material-ui/lab/Skeleton';
 import LookupTable from '../../models/LookupTable';
 import { rand } from '../PathNavigator/utils';
-import { DashboardItem } from '../AwaitingApprovalDashlet';
+import Typography from '@material-ui/core/Typography';
+import { DashboardItem } from './RecentlyPublishedDashlet';
 
-interface awaitingApprovalDashletGridUIProps {
+export interface RecentlyPublishedWidgetUiSkeletonTableProps {
   numOfItems?: number;
   items?: DashboardItem[];
   expandedLookup?: LookupTable<boolean>;
 }
 
-export default function AwaitingApprovalDashletSkeletonTable(props: awaitingApprovalDashletGridUIProps) {
+export default function RecentlyPublishedDashletUISkeletonTable(props: RecentlyPublishedWidgetUiSkeletonTableProps) {
   const classes = useStyles();
-  const { numOfItems = 4 } = props;
+  const { numOfItems = 2 } = props;
 
-  const items = props.items?.length
+  const items = props.items
     ? props.items
     : new Array(numOfItems).fill(null).map((x, i) => ({
         label: i.toString(),
-        path: i.toString(),
         children: []
       }));
   const expandedLookup = props.expandedLookup ?? {};
 
   return (
     <TableContainer>
-      <Table className={classes.tableRoot} size="small">
+      <Table size="small" className={classes.tableRoot}>
         <TableHead>
           <GlobalAppGridRow className="hoverDisabled">
-            <GlobalAppGridCell className="checkbox">
+            <GlobalAppGridCell className="checkbox bordered width5">
               <Skeleton variant="circle" width={30} height={30} className={classes.skeletonCheckbox} />
             </GlobalAppGridCell>
-            <GlobalAppGridCell className="width40 padded0">
-              <FormattedMessage id="awaitingApprovalDashlet.item" defaultMessage="Item" />
+            <GlobalAppGridCell className="bordered width40">
+              <Typography variant="subtitle2">
+                <FormattedMessage id="words.item" defaultMessage="Item" />
+              </Typography>
             </GlobalAppGridCell>
-            <GlobalAppGridCell className="width15 ellipsis">
-              <FormattedMessage id="awaitingApprovalDashlet.publishingTarget" defaultMessage="Publishing Target" />
+            <GlobalAppGridCell className="bordered width20">
+              <Typography variant="subtitle2">
+                <FormattedMessage id="recentlyPublished.publishedTo" defaultMessage="Published To" />
+              </Typography>
             </GlobalAppGridCell>
-            <GlobalAppGridCell className="width15 ellipsis">
-              <FormattedMessage id="awaitingApprovalDashlet.publishingDate" defaultMessage="Publishing Date" />
+            <GlobalAppGridCell className="bordered width20">
+              <Typography variant="subtitle2">
+                <FormattedMessage id="recentlyPublished.publishDate" defaultMessage="Publish Date" />
+              </Typography>
             </GlobalAppGridCell>
-            <GlobalAppGridCell className="width15 ellipsis">
-              <FormattedMessage id="awaitingApprovalDashlet.lastEditedBy" defaultMessage="Last Edited By" />
+            <GlobalAppGridCell className="bordered width10">
+              <Typography variant="subtitle2">
+                <FormattedMessage id="recentlyPublished.publishedBy" defaultMessage="Published By" />
+              </Typography>
             </GlobalAppGridCell>
-            <GlobalAppGridCell className="width15 ellipsis">
-              <FormattedMessage id="awaitingApprovalDashlet.lastEdited" defaultMessage="Last Edited" />
-            </GlobalAppGridCell>
-            <GlobalAppGridCell className="checkbox" />
+            <GlobalAppGridCell className="bordered width5" />
           </GlobalAppGridRow>
         </TableHead>
         <TableBody>
-          {items.map((dashboardItem, i) => (
+          {items.map((item, i) => (
             <Fragment key={i}>
               <GlobalAppGridRow>
-                <GlobalAppGridCell colSpan={7} className="padded0">
-                  <Box display="flex" alignItems="center">
+                <GlobalAppGridCell colSpan={6} className="expandableCell">
+                  <Box display="flex" className={classes.expandableCellBox}>
                     <Skeleton variant="circle" width={30} height={30} className={classes.skeletonCheckbox} />
-                    <Skeleton variant="text" height="20px" width={`${rand(20, 50)}%`} />
+                    <Skeleton variant="text" width="100%" />
                   </Box>
                 </GlobalAppGridCell>
               </GlobalAppGridRow>
               <GlobalAppGridRow className="hoverDisabled">
-                <GlobalAppGridCell colSpan={7} className="padded0 bb0">
-                  <Collapse in={expandedLookup[dashboardItem.path]}>
+                <GlobalAppGridCell colSpan={6} className="padded0">
+                  <Collapse in={expandedLookup[item.label]}>
                     <Table size="small" className={classes.tableRoot}>
                       <TableBody>
-                        {dashboardItem.children.map((item, i) => (
+                        {item.children.map((item, i) => (
                           <GlobalAppGridRow key={i}>
                             <GlobalAppGridCell className="checkbox">
                               <Skeleton variant="circle" width={30} height={30} className={classes.skeletonCheckbox} />
                             </GlobalAppGridCell>
                             <GlobalAppGridCell className="ellipsis width40 padded0">
                               <Skeleton variant="text" width={`${rand(70, 90)}%`} />
+                              <Skeleton variant="text" width={`${rand(70, 90)}%`} />
                             </GlobalAppGridCell>
-                            <GlobalAppGridCell className="width15">
+                            <GlobalAppGridCell className="width20">
                               <Skeleton variant="text" width="50px" />
                             </GlobalAppGridCell>
-                            <GlobalAppGridCell className="width15">
+                            <GlobalAppGridCell className="width20">
                               <Skeleton variant="text" width={`${rand(50, 60)}%`} />
                             </GlobalAppGridCell>
-                            <GlobalAppGridCell className="width15 ellipsis">
+                            <GlobalAppGridCell className="width10">
                               <Skeleton variant="text" width={`${rand(50, 60)}%`} />
                             </GlobalAppGridCell>
-                            <GlobalAppGridCell className="width15 ellipsis">
-                              <Skeleton variant="text" width={`${rand(50, 60)}%`} />
-                            </GlobalAppGridCell>
-                            <GlobalAppGridCell className="checkbox">
+                            <GlobalAppGridCell className="width5">
                               <Skeleton variant="circle" width={30} height={30} className={classes.skeletonCheckbox} />
                             </GlobalAppGridCell>
                           </GlobalAppGridRow>

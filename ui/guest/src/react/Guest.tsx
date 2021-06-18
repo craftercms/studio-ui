@@ -47,6 +47,7 @@ import {
   DESKTOP_ASSET_UPLOAD_COMPLETE,
   DESKTOP_ASSET_UPLOAD_PROGRESS,
   EDIT_MODE_CHANGED,
+  EDIT_MODE_TOGGLE_HOTKEY,
   EditingStatus,
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
@@ -69,6 +70,7 @@ import SnackBar, { Snack } from './SnackBar';
 import { createLocationArgument } from '../utils/util';
 import FieldInstanceSwitcher from './FieldInstanceSwitcher';
 import LookupTable from '@craftercms/studio-ui/models/LookupTable';
+import { useHotkeys } from 'react-hotkeys-hook';
 // TinyMCE makes the build quite large. Temporarily, importing this externally via
 // the site's ftl. Need to evaluate whether to include the core as part of guest build or not
 // import tinymce from 'tinymce';
@@ -141,6 +143,11 @@ function Guest(props: GuestProps) {
     }),
     [dispatch, hasHost, draggable, editMode, highlightMode]
   );
+
+  // Hotkeys propagation to preview
+  useHotkeys('ctrl+e, command+e', () => {
+    post(EDIT_MODE_TOGGLE_HOTKEY);
+  });
 
   // Key press/hold keeper events
   useEffect(() => {
