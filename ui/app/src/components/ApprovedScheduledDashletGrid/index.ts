@@ -14,25 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+export { default } from './ApprovedScheduledDashletGridUI';
 
-export const useStyles = makeStyles(() =>
-  createStyles({
-    refresh: {
-      marginLeft: 'auto',
-      display: 'flex'
-    },
-    rightSection: {
-      marginLeft: 'auto',
-      display: 'flex'
-    },
-    summary: {
-      alignItems: 'center'
-    },
-    details: {
-      padding: 0
-    }
-  })
-);
+export * from './ApprovedScheduledDashletGridUI';
 
-export default useStyles;
+export * from './ApprovedScheduledDashletSkeletonTable';

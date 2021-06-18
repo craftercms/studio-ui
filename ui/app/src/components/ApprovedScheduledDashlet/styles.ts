@@ -16,21 +16,10 @@
 
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 
-export const useStyles = makeStyles(() =>
+export const useStyles = makeStyles((theme) =>
   createStyles({
-    refresh: {
-      marginLeft: 'auto',
-      display: 'flex'
-    },
-    rightSection: {
-      marginLeft: 'auto',
-      display: 'flex'
-    },
-    summary: {
-      alignItems: 'center'
-    },
-    details: {
-      padding: 0
+    collapseAll: {
+      marginRight: '10px'
     }
   })
 );
