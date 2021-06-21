@@ -215,9 +215,6 @@ export default function ApprovedScheduledDashlet(props: ApprovedScheduledDashlet
             <MenuItem value="components">
               <FormattedMessage id="words.components" defaultMessage="Components" />
             </MenuItem>
-            <MenuItem value="document">
-              <FormattedMessage id="words.documents" defaultMessage="Documents" />
-            </MenuItem>
             <MenuItem value="all">
               <FormattedMessage id="words.all" defaultMessage="All" />
             </MenuItem>

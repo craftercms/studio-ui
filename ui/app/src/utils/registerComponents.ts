@@ -118,6 +118,7 @@ export const registerComponents = () => {
     'craftercms.components.RecentlyPublishedDashlet': lazy(() => import('../components/RecentlyPublishedDashlet')),
     'craftercms.components.ApprovedScheduledDashlet': lazy(() => import('../components/ApprovedScheduledDashlet')),
     'craftercms.components.RecentActivityDashlet': lazy(() => import('../components/RecentActivityDashlet')),
+    'craftercms.compnents.IconGuideDashlet': lazy(() => import('../components/IconGuideDashlet')),
     'craftercms.components.PublishingStatusButton': lazy(() => import('../components/PublishingStatusButton')),
     'craftercms.components.QuickCreate': lazy(() => import('../modules/Preview/QuickCreate')),
     'craftercms.components.EditModeSwitch': lazy(() => import('../components/EditModeSwitch')),

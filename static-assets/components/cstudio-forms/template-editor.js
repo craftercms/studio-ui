@@ -411,11 +411,13 @@ CStudioAuthoring.Module.requireModule(
                             $.each(section.fields.field, function() {
                               if (this.id) {
                                 var value = this.title ? this.title : this.id,
-                                  containsDash = this.id.indexOf('-') > -1,
+                                  containsDash =
+                                    templatePath.indexOf('.groovy') !== -1 ? false : this.id.indexOf('-') > -1,
                                   id = containsDash ? '["' + this.id + '"]' : this.id;
 
                                 if (parent) {
-                                  var parentVarContainsDash = sections.id.indexOf('-') > -1,
+                                  var parentVarContainsDash =
+                                      templatePath.indexOf('.groovy') !== -1 ? false : sections.id.indexOf('-') > -1,
                                     parentId = parentVarContainsDash ? '["' + sections.id + '"]' : sections.id;
                                   value = parent + ' - ' + value;
                                   id = containsDash ? parentId + '.item[0]' + id : parentId + '.item[0].' + id;
@@ -428,7 +430,7 @@ CStudioAuthoring.Module.requireModule(
                                       label: value + ' - Key'
                                     },
                                     {
-                                      value: +id + '.item[0].value',
+                                      value: id + '.item[0].value',
                                       label: value + ' - Value'
                                     }
                                   );
@@ -564,14 +566,13 @@ CStudioAuthoring.Module.requireModule(
                         option.selected = true;
                         selectList.appendChild(option);
 
-                        //add variablesNames
                         if (contentType && contentType !== '') {
                           var path = '/content-types' + contentType + '/form-definition.xml';
                           CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, path, {
                             success: (response) => {
                               const variables = _getVarsFromSections(response.sections.section);
                               Object.keys(variableOpts).map(function(key) {
-                                if (key === 'content-variable') {
+                                if (key === 'content-variable' || key === 'access-content-model') {
                                   let optgroup = document.createElement('optgroup');
                                   optgroup.label = variableOpts[key].label;
                                   variables.forEach((variable) => {
@@ -605,11 +606,20 @@ CStudioAuthoring.Module.requireModule(
                           const itemKey = this.value;
                           let snippet;
                           if (this.options[this.selectedIndex].getAttribute('content-variable')) {
-                            snippet = variableOpts['content-variable'].value;
-                            if (itemKey.includes('-')) {
-                              snippet = snippet.replace('.VARIABLENAME', itemKey);
+                            if (templatePath.indexOf('.groovy') !== -1) {
+                              snippet = variableOpts['access-content-model'].value;
+                              if (itemKey.includes('-')) {
+                                snippet = `${snippet}."${itemKey}"`;
+                              } else {
+                                snippet = `${snippet}.${itemKey}`;
+                              }
                             } else {
-                              snippet = snippet.replace('VARIABLENAME', itemKey);
+                              snippet = variableOpts['content-variable'].value;
+                              if (itemKey.includes('-')) {
+                                snippet = snippet.replace('.VARIABLENAME', itemKey);
+                              } else {
+                                snippet = snippet.replace('VARIABLENAME', itemKey);
+                              }
                             }
                           } else {
                             snippet = variableOpts[itemKey].value;

@@ -21,16 +21,13 @@ import Typography from '@material-ui/core/Typography';
 import { useDispatch } from 'react-redux';
 import { useActiveSiteId, usePreviewState, useSelection } from '../../../utils/hooks';
 import { defineMessages, useIntl } from 'react-intl';
-import Button from '@material-ui/core/Button';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { findParentModelId, nnou } from '../../../utils/object';
 import { popPiece } from '../../../utils/string';
 import * as ModelHelper from '../../../utils/model';
 import { showCodeEditorDialog, showEditDialog } from '../../../state/actions/dialogs';
-import DialogHeader from '../../../components/Dialogs/DialogHeader';
 import { getField } from '../../../utils/contentType';
-import DialogBody from '../../../components/Dialogs/DialogBody';
-import Dialog from '@material-ui/core/Dialog';
+import { Menu, MenuItem } from '@material-ui/core';
+import { GuestData } from '../../../models/GlobalState';
 
 interface EditFormPanelProps {
   open: boolean;
@@ -38,8 +35,11 @@ interface EditFormPanelProps {
 }
 
 interface EditFormPanelBodyProps {
-  classes: any;
   onDismiss: () => void;
+  selected: GuestData['selected'];
+  models: GuestData['models'];
+  childrenMap: GuestData['childrenMap'];
+  modelIdByPath: GuestData['modelIdByPath'];
 }
 
 const getEditDialogProps = ({ authoringBase, childrenMap, model, models, path, selectedId, site }) => {
@@ -80,60 +80,53 @@ const translations = defineMessages({
   editController: {
     id: 'previewEditFormTool.editController',
     defaultMessage: 'Edit Controller'
+  },
+  cancel: {
+    id: 'words.cancel',
+    defaultMessage: 'Cancel'
   }
 });
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    root: {
-      display: 'flex',
-      flexDirection: 'column',
-      margin: theme.spacing(1),
-      position: 'absolute',
-      top: 100,
-      left: '50%',
-      zIndex: theme.zIndex.drawer,
-      width: 250,
-      marginLeft: -125
-    },
-    header: {
-      borderTopLeftRadius: theme.shape.borderRadius,
-      borderTopRightRadius: theme.shape.borderRadius
-    },
-    formWrapper: {
-      textAlign: 'center',
-      padding: '20px 0',
-      display: 'flex',
-      flexDirection: 'column',
-      '& button': {
-        margin: '10px 20px'
-      }
-    },
-    closeButton: {
-      position: 'absolute',
-      top: '10px',
-      right: '10px'
-    }
-  })
-);
-
 export default function EditFormPanel(props: EditFormPanelProps) {
-  const classes = useStyles();
+  const { showToolsPanel, guest } = usePreviewState();
+  const { selected, models, childrenMap, modelIdByPath } = guest ?? {};
+  const getAnchorPosition = () => {
+    let iframe = document.getElementById('crafterCMSPreviewIframe');
+    let bounding = iframe.getBoundingClientRect();
+    let selection = selected[0];
+    return {
+      top: bounding.top + selection.coordinates.y,
+      left: (showToolsPanel ? bounding.left : 0) + selection.coordinates.x
+    };
+  };
   return (
-    <Dialog open={props.open} maxWidth="xs" fullWidth onClose={props.onDismiss}>
-      {props.open && <EditFormPanelBody classes={classes} onDismiss={props.onDismiss} />}
-    </Dialog>
+    <Menu
+      open={props.open && Boolean(selected)}
+      onClose={props.onDismiss}
+      anchorReference="anchorPosition"
+      anchorPosition={props.open ? getAnchorPosition() : null}
+    >
+      <div>
+        {selected ? (
+          <EditFormPanelBody
+            models={models}
+            selected={selected}
+            childrenMap={childrenMap}
+            modelIdByPath={modelIdByPath}
+            onDismiss={props.onDismiss}
+          />
+        ) : (
+          ''
+        )}
+      </div>
+    </Menu>
   );
 }
 
 function EditFormPanelBody(props: EditFormPanelBodyProps) {
-  const { classes, onDismiss } = props;
+  const { onDismiss, selected, models, modelIdByPath, childrenMap } = props;
   const dispatch = useDispatch();
-  const {
-    guest: { selected, models, childrenMap, modelIdByPath }
-  } = usePreviewState();
   const contentTypesBranch = useSelection((state) => state.contentTypes);
-  const contentTypes = contentTypesBranch.byId ? Object.values(contentTypesBranch.byId) : null;
   const site = useActiveSiteId();
   const { formatMessage } = useIntl();
   const authoringBase = useSelection<string>((state) => state.env.authoringBase);
@@ -166,14 +159,14 @@ function EditFormPanelBody(props: EditFormPanelBodyProps) {
       }
       if (component) {
         selectedId = component.craftercms.id;
-        title = `${component.craftercms.label} (${contentTypesBranch.byId[component.craftercms.contentTypeId].name})`;
+        title = `${component.craftercms.label} (${contentType.name})`;
       } else {
         selectedId = item.modelId;
-        title = field.name;
+        title = `${field.name} (${contentType.name})`;
       }
     } else {
       selectedId = item.modelId;
-      title = field.name;
+      title = `${field.name} (${contentType.name})`;
     }
   } else {
     selectedId = item.modelId;
@@ -181,7 +174,7 @@ function EditFormPanelBody(props: EditFormPanelBodyProps) {
   }
 
   const path = ModelHelper.prop(models[selectedId], 'path');
-  const selectedContentType = ModelHelper.prop(models[selectedId], 'contentTypeId');
+  const selectedContentTypeId = contentType.id;
 
   function openDialog(type: string) {
     onDismiss();
@@ -196,8 +189,8 @@ function EditFormPanelBody(props: EditFormPanelBodyProps) {
           site,
           path:
             type === 'template'
-              ? contentTypes.find((contentType) => contentType.id === selectedContentType).displayTemplate
-              : `/scripts/pages/${popPiece(selectedContentType, '/')}.groovy`,
+              ? contentType.displayTemplate
+              : `/scripts/pages/${popPiece(selectedContentTypeId, '/')}.groovy`,
           type: type === 'template' ? 'template' : 'controller'
         })
       );
@@ -217,21 +210,16 @@ function EditFormPanelBody(props: EditFormPanelBodyProps) {
 
   return (
     <>
-      <DialogHeader title={title} onDismiss={onDismiss} className={classes.header} />
-      <DialogBody className={classes.formWrapper}>
-        <Button variant="outlined" color="primary" onClick={() => openDialog('form')}>
-          {formatMessage(translations.openComponentForm)}
-        </Button>
-        <Button variant="outlined" color="primary" onClick={() => openDialog('template')}>
-          {formatMessage(translations.editTemplate)}
-        </Button>
-        {/* TODO: should use type instead of content type id string inspection */}
-        {selectedContentType.includes('/page') && (
-          <Button variant="outlined" color="primary" onClick={() => openDialog('controller')}>
-            {formatMessage(translations.editController)}
-          </Button>
-        )}
-      </DialogBody>
+      <Typography variant="caption" style={{ padding: '0 16px 5px' }} component="p">
+        {title}
+      </Typography>
+      <MenuItem onClick={() => openDialog('form')}>{formatMessage(translations.openComponentForm)}</MenuItem>
+      <MenuItem onClick={() => openDialog('template')}>{formatMessage(translations.editTemplate)}</MenuItem>
+      {/* TODO: should use type instead of content type id string inspection */}
+      {selectedContentTypeId.includes('/page') && (
+        <MenuItem onClick={() => openDialog('controller')}>{formatMessage(translations.editController)}</MenuItem>
+      )}
+      <MenuItem onClick={onDismiss}>{formatMessage(translations.cancel)}</MenuItem>
     </>
   );
 }
