@@ -65,7 +65,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
   const contentTypes = useContentTypes();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [snippets, setSnippets] = useState<LookupTable<{ label: string; value: string }>>(
-    mode === 'ftl' ? freemarkerSnippets : groovySnippets
+    mode === 'ftl' || mode === 'groovy' ? (mode === 'ftl' ? freemarkerSnippets : groovySnippets) : {}
   );
   const [contentModelSnippets, setContentModelSnippets] = useState<{ label: string; value: string }[]>(null);
 
@@ -88,6 +88,24 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
                 isCamelCase(fields[key].id) ? `["${dasherize(underscore(fields[key].id))}"]` : fields[key].id
               )
             }));
+            setContentModelSnippets(snippets);
+          }
+        } else if (mode === 'groovy') {
+          if (groovySnippets['access-content-model']) {
+            let { 'access-content-model': contentVariable, ...rest } = groovySnippets;
+            setSnippets(rest);
+            const snippets = Object.keys(fields).map((key) => ({
+              label: fields[key].name,
+              value: `${contentVariable.value}.${
+                isCamelCase(fields[key].id) ? `"${dasherize(underscore(fields[key].id))}"` : fields[key].id
+              }`
+            }));
+
+            // if (itemKey.includes('-')) {
+            //   snippet = `${snippet}."${itemKey}"`;
+            // } else {
+            //   snippet = `${snippet}.${itemKey}`;
+            // }
             setContentModelSnippets(snippets);
           }
         }

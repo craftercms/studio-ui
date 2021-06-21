@@ -723,7 +723,7 @@ export const itemActionDispatcher = ({
           editController({
             path: `/scripts/${item.systemType === 'page' ? 'pages' : 'components'}`,
             fileName: `${popPiece(item.contentTypeId, '/')}.groovy`,
-            mode: getEditorMode(item),
+            mode: 'groovy',
             contentType: item.contentTypeId
           })
         );
