@@ -306,13 +306,19 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
       withLatestFrom(state$),
       filter(([, state]) => state.status === EditingStatus.LISTENING),
       switchMap(([action, state]) => {
-        const { record } = action.payload;
+        const { record, event } = action.payload;
         const { field } = iceRegistry.getReferentialEntries(record.iceIds[0]);
         const draggable = ElementRegistry.getDraggable(record.id);
         const validations = field?.validations;
         const type = field?.type;
         const iceZoneSelected = () => {
-          post(ICE_ZONE_SELECTED, pluckProps(record, 'modelId', 'index', 'fieldId'));
+          post(ICE_ZONE_SELECTED, {
+            modelId: record.modelId,
+            index: record.index,
+            fieldId: record.fieldId,
+            // @ts-ignore - clientX & clientY not being found in typings.
+            coordinates: { x: event.clientX, y: event.clientY }
+          });
           return merge(
             escape$.pipe(
               takeUntil(clearAndListen$),
