@@ -103,7 +103,7 @@ import {
   hasUnlockAction,
   hasUploadAction
 } from './content';
-import { isNavigable } from '../components/PathNavigator/utils';
+import { getEditorMode, isNavigable } from '../components/PathNavigator/utils';
 import React from 'react';
 import { previewItem } from '../state/actions/preview';
 import { createPresenceTable } from './array';
@@ -745,16 +745,15 @@ export const itemActionDispatcher = ({
         break;
       }
       case 'editCode': {
-        dispatch(showCodeEditorDialog({ site, authoringBase, path: item.path, type: 'asset' }));
+        dispatch(showCodeEditorDialog({ site, path: item.path, mode: getEditorMode(item) }));
         break;
       }
       case 'viewCode': {
         dispatch(
           showCodeEditorDialog({
             site,
-            authoringBase,
             path: item.path,
-            type: 'asset',
+            mode: getEditorMode(item),
             readonly: true
           })
         );

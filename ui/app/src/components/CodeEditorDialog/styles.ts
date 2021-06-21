@@ -16,6 +16,19 @@
 
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 
-export const useStyles = makeStyles(() => createStyles({}));
+export const useStyles = makeStyles(() =>
+  createStyles({
+    dialogBody: {
+      height: '60vh',
+      padding: 0
+    },
+    loadingState: {
+      flexGrow: 1
+    },
+    addSnippet: {
+      marginRight: 'auto'
+    }
+  })
+);
 
 export default useStyles;

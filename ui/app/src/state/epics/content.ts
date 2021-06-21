@@ -191,8 +191,12 @@ const content: CrafterCMSEpic[] = [
         return unlock(state.sites.active, payload.path).pipe(
           map(() =>
             payload.notify === false
-              ? emitSystemEvent(itemUnlocked({ target: payload.path }))
+              ? batchActions([
+                  reloadDetailedItem({ path: payload.path }),
+                  emitSystemEvent(itemUnlocked({ target: payload.path }))
+                ])
               : batchActions([
+                  reloadDetailedItem({ path: payload.path }),
                   emitSystemEvent(itemUnlocked({ target: payload.path })),
                   showUnlockItemSuccessNotification()
                 ])

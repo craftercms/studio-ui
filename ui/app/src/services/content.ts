@@ -131,6 +131,38 @@ export function fetchContentInstance(
   return fetchContentDOM(site, path).pipe(map((doc) => parseContentXML(doc, path, contentTypesLookup, {})));
 }
 
+export function writeContent(
+  site: string,
+  path: string,
+  user: string,
+  fileName: string,
+  content: string,
+  unlock: boolean = true
+) {
+  return post(
+    writeContentUrl({
+      site,
+      path,
+      user,
+      unlock: unlock ? 'true' : 'false',
+      fileName
+    }),
+    content
+  ).pipe(
+    map((ajaxResponse) => {
+      if (ajaxResponse.response.result.error) {
+        // eslint-disable-next-line no-throw-literal
+        throw {
+          ...ajaxResponse,
+          response: {
+            message: ajaxResponse.response.result.error.message
+          }
+        };
+      } else return true;
+    })
+  );
+}
+
 export function fetchContentInstanceDescriptor(
   site: string,
   path: string,

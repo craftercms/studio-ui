@@ -36,7 +36,7 @@ import ContentType from '../models/ContentType';
 import { MinimizedDialog } from '../models/MinimizedDialog';
 import { popDialog, pushDialog } from '../state/reducers/dialogs/minimizedDialogs';
 import { fetchSystemVersion } from '../state/actions/env';
-import { fetchQuickCreateList } from '../state/actions/content';
+import { completeDetailedItem, fetchQuickCreateList } from '../state/actions/content';
 import { fetchContentTypes } from '../state/actions/preview';
 import LookupTable from '../models/LookupTable';
 import { Site } from '../models/Site';
@@ -46,6 +46,7 @@ import { MessageDescriptor, useIntl } from 'react-intl';
 import { FormatXMLElementFn, PrimitiveType } from 'intl-messageformat';
 import { fetchGlobalMenu, fetchSiteTools } from '../state/actions/system';
 import TranslationOrText from '../models/TranslationOrText';
+import { DetailedItem } from '../models/Item';
 
 export function useShallowEqualSelector<T = any>(selector: (state: GlobalState) => T): T {
   return useSelector<GlobalState, T>(selector, shallowEqual);
@@ -172,6 +173,17 @@ export function useGlobalNavigation(): GlobalState['uiConfig']['globalNavigation
 
 export function useItemsByPath(): GlobalState['content']['itemsByPath'] {
   return useSelection((state) => state.content.itemsByPath);
+}
+
+export function useDetailedItem(path: string): DetailedItem {
+  const dispatch = useDispatch();
+  const item = useSelection((state) => state.content.itemsByPath[path]);
+  useEffect(() => {
+    if (nou(item) && path) {
+      dispatch(completeDetailedItem({ path }));
+    }
+  }, [dispatch, item, path]);
+  return item;
 }
 
 export function createResource<T>(factoryFn: () => Promise<T>): Resource<T> {

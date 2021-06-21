@@ -27,7 +27,6 @@ import { NewContentDialogStateProps } from '../../modules/Content/Authoring/NewC
 import { DependenciesDialogStateProps } from '../../modules/Content/Dependencies/DependenciesDialog';
 import { WorkflowCancellationDialogStateProps } from '../../components/Dialogs/WorkflowCancellationDialog';
 import { RejectDialogStateProps } from '../../components/Dialogs/RejectDialog';
-import { LegacyCodeEditorDialogStateProps } from '../../components/Dialogs/LegacyCodeEditorDialog';
 import { LegacyFormDialogStateProps } from '../../components/Dialogs/LegacyFormDialog';
 import { EditSiteDialogStateProps } from '../../modules/System/Sites/Edit/EditSiteDialog';
 import { CreateFolderStateProps } from '../../components/Dialogs/CreateFolderDialog';
@@ -43,6 +42,7 @@ import { LauncherStateProps } from '../../components/Launcher/Launcher';
 import { PublishingStatusDialogStateProps } from '../../components/PublishingStatusDialog';
 import { UnlockPublisherDialogStateProps } from '../../components/UnlockPublisherDialog';
 import { WidgetDialogStateProps } from '../../components/WidgetDialog';
+import { CodeEditorDialogStateProps } from '../../components/CodeEditorDialog';
 
 // region History
 export const showHistoryDialog = /*#__PURE__*/ createAction<Partial<HistoryDialogStateProps>>('SHOW_HISTORY_DIALOG');
@@ -148,7 +148,7 @@ export const updateEditConfig = /*#__PURE__*/ createAction<any>('UPDATE_EDIT_CON
 // endregion
 
 // region Legacy Code Editor
-export const showCodeEditorDialog = /*#__PURE__*/ createAction<Partial<LegacyCodeEditorDialogStateProps>>(
+export const showCodeEditorDialog = /*#__PURE__*/ createAction<Partial<CodeEditorDialogStateProps>>(
   'SHOW_CODE_EDITOR_DIALOG'
 );
 export const closeCodeEditorDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_CODE_EDITOR_DIALOG');

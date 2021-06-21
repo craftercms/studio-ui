@@ -170,6 +170,7 @@ const useStyles = makeStyles((theme) =>
     base: (styles) => ({
       width: '100%',
       height: '100%',
+      margin: 0,
       ...styles.base
     })
   })
@@ -181,6 +182,7 @@ export default React.forwardRef(function AceEditor(props: AceEditorProps, ref) {
   const refs = useRef({
     ace: null,
     elem: null,
+    pre: null,
     onChange: null
   });
   const [initialized, setInitialized] = useState(false);
@@ -194,7 +196,11 @@ export default React.forwardRef(function AceEditor(props: AceEditorProps, ref) {
     let aceEditor;
     const init = () => {
       if (!unmounted) {
-        aceEditor = window.ace.edit(refs.current.elem, options);
+        const pre = document.createElement('pre');
+        pre.className = classes.base;
+        refs.current.pre = pre;
+        refs.current.elem.appendChild(pre);
+        aceEditor = window.ace.edit(pre, options);
         aceEditor.setValue(value, -1);
         autoFocus && aceEditor.focus();
         refs.current.ace = aceEditor;
@@ -241,12 +247,21 @@ export default React.forwardRef(function AceEditor(props: AceEditorProps, ref) {
       refs.current.ace.setValue(value, -1);
     }
   }, [initialized, value]);
+  useEffect(() => {
+    if (refs.current.pre) {
+      refs.current.pre.className = `${[...refs.current.pre.classList]
+        .filter((value) => !/craftercms-|makeStyles-/.test(value))
+        .join(' ')} ${classes.base}`;
+    }
+  }, [classes.base]);
   return (
-    <pre
+    <div
       ref={(e) => {
         refs.current.elem = e;
       }}
-      className={props.className ?? classes.base}
+      style={{
+        display: 'contents'
+      }}
     />
   );
 });
