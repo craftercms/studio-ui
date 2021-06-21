@@ -104,8 +104,7 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard = function(widgetId, pageId) {
 
       filterByEl.options[0] = new Option('Pages', 'page', true, false);
       filterByEl.options[1] = new Option('Components', 'component', true, false);
-      filterByEl.options[2] = new Option('Documents', 'document', true, false);
-      filterByEl.options[3] = new Option('All', 'all', true, false);
+      filterByEl.options[2] = new Option('All', 'all', true, false);
       filterByEl.options[selectedItems].selected = true;
       var newState = filterByEl.value;
 
