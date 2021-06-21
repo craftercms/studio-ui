@@ -147,7 +147,6 @@ export default function stylesheet(config: GuestStyleSheetConfig): Styles<'@glob
   const styles: Record<GuestRules, JssStyle> = {
     // Attributes
     '[draggable="true"]': {
-      // cursor: 'url("/studio/static-assets/images/cursor.svg"), move !important',
       ...overrides['[draggable="true"]']
     },
     // Elements
