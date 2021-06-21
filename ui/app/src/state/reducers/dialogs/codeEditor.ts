@@ -29,6 +29,7 @@ const initialState: LegacyCodeEditorDialogStateProps = {
   site: null,
   path: null,
   type: null,
+  contentType: null,
   authoringBase: null,
   inProgress: true
 };
