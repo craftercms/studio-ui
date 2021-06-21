@@ -723,6 +723,7 @@ export const itemActionDispatcher = ({
           editController({
             path: `/scripts/${item.systemType === 'page' ? 'pages' : 'components'}`,
             fileName: `${popPiece(item.contentTypeId, '/')}.groovy`,
+            mode: getEditorMode(item),
             contentType: item.contentTypeId
           })
         );
@@ -745,13 +746,12 @@ export const itemActionDispatcher = ({
         break;
       }
       case 'editCode': {
-        dispatch(showCodeEditorDialog({ site, path: item.path, mode: getEditorMode(item) }));
+        dispatch(showCodeEditorDialog({ path: item.path, mode: getEditorMode(item) }));
         break;
       }
       case 'viewCode': {
         dispatch(
           showCodeEditorDialog({
-            site,
             path: item.path,
             mode: getEditorMode(item),
             readonly: true

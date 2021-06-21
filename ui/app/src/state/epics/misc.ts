@@ -99,10 +99,8 @@ const epics = [
             items?.length > 0
               ? showWorkflowCancellationDialog({
                   onContinue: showCodeEditorDialog({
-                    authoringBase: state.env.authoringBase,
-                    site: state.sites.active,
                     path,
-                    type: editTemplate.type === type ? 'template' : 'controller',
+                    mode: payload.mode,
                     contentType: payload.contentType
                   })
                 })
@@ -110,7 +108,7 @@ const epics = [
                   authoringBase: state.env.authoringBase,
                   site: state.sites.active,
                   path,
-                  type: editTemplate.type === type ? 'template' : 'controller',
+                  mode: payload.mode,
                   contentType: payload.contentType
                 })
           ),

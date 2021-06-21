@@ -45,7 +45,7 @@ export type CreateFileProps = PropsWithChildren<
   CreateFileBaseProps & {
     onClose(): void;
     onClosed?(): void;
-    onCreated?(response: { path: string; fileName: string; type: string; openOnSuccess: boolean }): void;
+    onCreated?(response: { path: string; fileName: string; mode: string; openOnSuccess: boolean }): void;
   }
 >;
 
@@ -124,7 +124,7 @@ function CreateFileDialogUI(props: CreateFileUIProps) {
   const onCreateFile = (site: string, path: string, fileName: string) => {
     createFile(site, path, fileName).subscribe(
       () => {
-        onCreated?.({ path, fileName, type, openOnSuccess });
+        onCreated?.({ path, fileName, mode: getExtension(type), openOnSuccess });
         dispatch(emitSystemEvent(itemCreated({ target: `${path}/${fileName}` })));
       },
       (response) => {

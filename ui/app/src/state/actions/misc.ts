@@ -40,6 +40,7 @@ export const editContentTypeTemplate = /*#__PURE__*/ createAction<{ contentTypeI
 interface EditFilePayload {
   path: string;
   fileName: string;
+  mode: string;
   contentType?: string;
   // The `openOnSuccess` really belongs to CreateFileDialog onCreated (success)
   // payload; it's added here to integrate with it
