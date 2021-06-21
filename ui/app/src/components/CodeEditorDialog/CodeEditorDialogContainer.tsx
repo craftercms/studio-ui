@@ -100,12 +100,6 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
                 isCamelCase(fields[key].id) ? `"${dasherize(underscore(fields[key].id))}"` : fields[key].id
               }`
             }));
-
-            // if (itemKey.includes('-')) {
-            //   snippet = `${snippet}."${itemKey}"`;
-            // } else {
-            //   snippet = `${snippet}.${itemKey}`;
-            // }
             setContentModelSnippets(snippets);
           }
         }
