@@ -66,19 +66,15 @@ const epics = [
             if (items?.length > 0) {
               return showWorkflowCancellationDialog({
                 onContinue: showCodeEditorDialog({
-                  authoringBase: state.env.authoringBase,
-                  site: state.sites.active,
                   path,
-                  type: 'template',
+                  mode: 'ftl',
                   contentType: payload.contentTypeId
                 })
               });
             } else {
               return showCodeEditorDialog({
-                authoringBase: state.env.authoringBase,
-                site: state.sites.active,
                 path,
-                type: 'template',
+                mode: 'ftl',
                 contentType: payload.contentTypeId
               });
             }
