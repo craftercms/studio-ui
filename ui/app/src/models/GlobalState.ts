@@ -75,6 +75,7 @@ export interface EditSelection {
   modelId: string;
   fieldId: string[];
   index: string | number;
+  coordinates: { x: number; y: number };
 }
 
 export interface GuestData {

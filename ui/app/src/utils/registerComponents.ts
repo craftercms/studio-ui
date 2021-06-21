@@ -102,6 +102,7 @@ import QuickCreate from '../modules/Preview/QuickCreate';
 import EditModeSwitch from '../components/EditModeSwitch';
 import PreviewAddressBar from '../components/PreviewAddressBar';
 import SiteSwitcherSelect from '../components/SiteSwitcherSelect';
+import Dashboard from '../components/Dashboard';
 
 export const registerComponents = () => {
   Object.entries({
@@ -191,7 +192,8 @@ export const registerComponents = () => {
     'craftercms.components.QuickCreate': QuickCreate,
     'craftercms.components.EditModeSwitch': EditModeSwitch,
     'craftercms.components.PreviewAddressBar': PreviewAddressBar,
-    'craftercms.components.SiteSwitcherSelect': SiteSwitcherSelect
+    'craftercms.components.SiteSwitcherSelect': SiteSwitcherSelect,
+    'craftercms.components.Dashboard': Dashboard
   }).forEach(([id, component]) => {
     components.set(id, component);
   });
