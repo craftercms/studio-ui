@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo } from 'react';
+import React, { Suspense, useMemo } from 'react';
 import { defineMessages, FormattedMessage, IntlShape, useIntl } from 'react-intl';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Popover from '@material-ui/core/Popover';
@@ -48,7 +48,7 @@ import List from '@material-ui/core/List';
 import CrafterCMSLogo from '../Icons/CrafterCMSLogo';
 import { renderWidgets, WidgetDescriptor } from '../Widget';
 import { logout } from '../../state/actions/auth';
-import { Tooltip } from '@material-ui/core';
+import { ListItem, Tooltip } from '@material-ui/core';
 import { closeLauncher } from '../../state/actions/dialogs';
 import { EnhancedUser } from '../../models/User';
 import LookupTable from '../../models/LookupTable';
@@ -57,6 +57,7 @@ import clsx from 'clsx';
 import { getSystemLink } from '../LauncherSection';
 import LauncherGlobalNav from '../LauncherGlobalNav';
 import GlobalState from '../../models/GlobalState';
+import Skeleton from '@material-ui/lab/Skeleton';
 
 export interface LauncherProps {
   open: boolean;
@@ -107,6 +108,18 @@ const useLauncherStyles = makeStyles((theme) =>
       maxWidth: 1065,
       borderRadius: '10px',
       overflowY: 'hidden'
+    },
+    launcherSkeletonWrapper: {
+      display: 'flex',
+      '@media(min-width: 1097px)': {
+        width: 1065
+      }
+    },
+    appsSkeletonTile: {
+      margin: 5,
+      width: 120,
+      height: 100,
+      display: 'inline-flex'
     },
     sitesRail: {
       backgroundColor: theme.palette.type === 'dark' ? palette.gray.dark1 : palette.gray.light1
@@ -186,6 +199,38 @@ interface AppsRailProps {
   userRoles: string[];
 }
 
+const UserDisplaySection = ({ classes, formatMessage, user, onLogout }) => (
+  <div className={classes.railBottom}>
+    <Card className={classes.userCardRoot}>
+      <CardHeader
+        classes={{
+          action: classes.userCardActions
+        }}
+        className={classes.userCardHeader}
+        avatar={
+          <Avatar
+            aria-hidden="true"
+            className={classes.userCardAvatar}
+            children={getInitials(`${user.firstName} ${user.lastName}`)}
+          />
+        }
+        action={
+          <Tooltip title={formatMessage(messages.logout)}>
+            <IconButton aria-label={formatMessage(messages.signOut)} onClick={onLogout}>
+              <ExitToAppRoundedIcon />
+            </IconButton>
+          </Tooltip>
+        }
+        title={`${user.firstName} ${user.lastName}`}
+        subheader={user.username || user.email}
+        subheaderTypographyProps={{
+          className: classes.username
+        }}
+      />
+    </Card>
+  </div>
+);
+
 const AppsRail = ({
   classes,
   widgets,
@@ -203,35 +248,19 @@ const AppsRail = ({
       {/* Using != 'before' (instead of == 'after') to avoid config hiding away the global nav */}
       {globalNavigationPosition !== 'before' && <LauncherGlobalNav />}
     </div>
-    <div className={classes.railBottom}>
-      <Card className={classes.userCardRoot}>
-        <CardHeader
-          classes={{
-            action: classes.userCardActions
-          }}
-          className={classes.userCardHeader}
-          avatar={
-            <Avatar
-              aria-hidden="true"
-              className={classes.userCardAvatar}
-              children={getInitials(`${user.firstName} ${user.lastName}`)}
-            />
-          }
-          action={
-            <Tooltip title={formatMessage(messages.logout)}>
-              <IconButton aria-label={formatMessage(messages.signOut)} onClick={onLogout}>
-                <ExitToAppRoundedIcon />
-              </IconButton>
-            </Tooltip>
-          }
-          title={`${user.firstName} ${user.lastName}`}
-          subheader={user.username || user.email}
-          subheaderTypographyProps={{
-            className: classes.username
-          }}
-        />
-      </Card>
+    <UserDisplaySection classes={classes} formatMessage={formatMessage} onLogout={onLogout} user={user} />
+  </Grid>
+);
+
+const AppsRailSkeleton = ({ classes, closeButtonPosition, formatMessage, onLogout, user }) => (
+  <Grid item xs={12} md={8} className={classes.appsRail}>
+    <div className={clsx(classes.railTop, closeButtonPosition === 'left' && classes.railTopExtraPadded)}>
+      <Skeleton variant="text" width="150px" style={{ marginBottom: 20 }} />
+      {new Array(9).fill(null).map((_, i) => (
+        <Skeleton key={i} variant="rect" className={classes.appsSkeletonTile} />
+      ))}
     </div>
+    <UserDisplaySection classes={classes} formatMessage={formatMessage} onLogout={onLogout} user={user} />
   </Grid>
 );
 
@@ -284,6 +313,29 @@ const SitesRail = ({ classes, formatMessage, sites, site, onSiteCardClick, optio
       </div>
     </Grid>
   </Hidden>
+);
+
+const SiteRailSkeleton = ({ classes, formatMessage, version }) => (
+  <Grid item md={4} className={classes.sitesRail}>
+    <div className={classes.railTop}>
+      <Typography variant="subtitle1" component="h2" className={classes.mySitesTitle}>
+        {formatMessage(messages.mySites)}
+      </Typography>
+      <List>
+        {new Array(3).fill(null).map((_, i) => (
+          <ListItem key={i}>
+            <Skeleton variant="rect" width="100%" height="72px" />
+          </ListItem>
+        ))}
+      </List>
+    </div>
+    <div className={classes.railBottom}>
+      <CrafterCMSLogo width={115} />
+      <Typography className={classes.versionText} color="textSecondary" variant="caption">
+        {version}
+      </Typography>
+    </div>
+  </Grid>
 );
 
 // endregion
@@ -386,6 +438,20 @@ export default function Launcher(props: LauncherStateProps) {
     />
   );
 
+  const sitesRailSkeleton = () => (
+    <SiteRailSkeleton classes={classes} formatMessage={formatMessage} version={version} />
+  );
+
+  const appsRailSkeleton = () => (
+    <AppsRailSkeleton
+      classes={classes}
+      formatMessage={formatMessage}
+      closeButtonPosition={closeButtonPosition}
+      onLogout={onLogout}
+      user={user}
+    />
+  );
+
   return (
     <Popover
       open={open && Boolean(anchor)}
@@ -411,22 +477,42 @@ export default function Launcher(props: LauncherStateProps) {
           <CloseIcon />
         </IconButton>
       </Tooltip>
-      {/* endregiong */}
-      <Grid container spacing={0} className={classes.gridContainer}>
-        {sitesRailPosition === 'left' ? (
-          <>
-            {sitesRail()}
-            {appsRail()}
-          </>
-        ) : sitesRailPosition === 'right' ? (
-          <>
-            {appsRail()}
-            {sitesRail()}
-          </>
-        ) : (
-          appsRail()
-        )}
-      </Grid>
+      {/* endregion */}
+      <Suspense
+        fallback={
+          <div className={classes.launcherSkeletonWrapper}>
+            {sitesRailPosition === 'left' ? (
+              <>
+                {sitesRailSkeleton()}
+                {appsRailSkeleton()}
+              </>
+            ) : sitesRailPosition === 'right' ? (
+              <>
+                {appsRailSkeleton()}
+                {sitesRailSkeleton()}
+              </>
+            ) : (
+              appsRailSkeleton()
+            )}
+          </div>
+        }
+      >
+        <Grid container spacing={0} className={classes.gridContainer}>
+          {sitesRailPosition === 'left' ? (
+            <>
+              {sitesRail()}
+              {appsRail()}
+            </>
+          ) : sitesRailPosition === 'right' ? (
+            <>
+              {appsRail()}
+              {sitesRail()}
+            </>
+          ) : (
+            appsRail()
+          )}
+        </Grid>
+      </Suspense>
     </Popover>
   );
 }
