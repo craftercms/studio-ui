@@ -57,7 +57,7 @@ export interface CodeEditorDialogContainerProps extends CodeEditorDialogProps {
 export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps) {
   const { item, user, site, onMinimized, onClose, onClosed, mode, readonly = false, contentType } = props;
   const [loading, setLoading] = useState(false);
-  const [content, setContent] = useState('');
+  const [content, setContent] = useState(null);
   const classes = useStyles();
   const editorRef = useRef<any>();
   const dispatch = useDispatch();
@@ -114,14 +114,14 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
   } = useTheme();
 
   useEffect(() => {
-    if (item) {
+    if (item && content === null) {
       setLoading(true);
       fetchContentXML(site, item.path, { ...(!item.lockOwner && { lock: true }) }).subscribe((xml) => {
         setContent(xml);
         setLoading(false);
       });
     }
-  }, [site, item, setContent]);
+  }, [site, item, setContent, content]);
 
   useUnmount(onClosed);
 
@@ -207,7 +207,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
             theme={`ace/theme/${type === 'light' ? 'chrome' : 'tomorrow_night'}`}
             ref={editorRef}
             mode={`ace/mode/${mode}`}
-            value={content}
+            value={content ?? ''}
             onChange={onEditorChanges}
             readOnly={disableEdit || readonly}
           />
