@@ -20,7 +20,7 @@ import DialogBody from '../Dialogs/DialogBody';
 import { fetchContentXML, writeContent } from '../../services/content';
 import { ConditionalLoadingState } from '../SystemStatus/LoadingState';
 import AceEditor from '../AceEditor';
-import { useContentTypes, useUnmount } from '../../utils/hooks';
+import { useActiveSiteId, useActiveUser, useContentTypes, useDetailedItem, useUnmount } from '../../utils/hooks';
 import useStyles from './styles';
 import { CodeEditorDialogProps } from './CodeEditorDialog';
 import { useDispatch } from 'react-redux';
@@ -35,8 +35,6 @@ import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { showSystemNotification } from '../../state/actions/system';
 import translations from './translations';
 import SplitButton from '../Controls/SplitButton';
-import { DetailedItem } from '../../models/Item';
-import User from '../../models/User';
 import { freemarkerSnippets, groovySnippets } from './utils';
 import MenuItem from '@material-ui/core/MenuItem';
 import Button from '@material-ui/core/Button';
@@ -47,15 +45,16 @@ import LookupTable from '../../models/LookupTable';
 import { dasherize, isCamelCase, underscore } from '../../utils/string';
 
 export interface CodeEditorDialogContainerProps extends CodeEditorDialogProps {
-  item: DetailedItem;
-  site: string;
-  user: User;
+  path: string;
   title: string;
   onMinimized(): void;
 }
 
 export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps) {
-  const { item, user, site, onMinimized, onClose, onClosed, mode, readonly = false, contentType } = props;
+  const { path, onMinimized, onClose, onClosed, mode, readonly, contentType } = props;
+  const item = useDetailedItem(path);
+  const site = useActiveSiteId();
+  const user = useActiveUser();
   const [loading, setLoading] = useState(false);
   const [content, setContent] = useState(null);
   const classes = useStyles();
@@ -124,6 +123,20 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
   }, [site, item, setContent, content]);
 
   useUnmount(onClosed);
+
+  useEffect(() => {
+    if (!readonly && editorRef.current && !disableEdit && content !== null) {
+      editorRef.current.commands.addCommand({
+        name: 'myCommand',
+        bindKey: { win: 'Ctrl-S', mac: 'Command-S' },
+        exec: function(editor) {
+          onSave();
+        },
+        readOnly: false
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [readonly, editorRef.current, content, disableEdit]);
 
   const onEditorChanges = () => {
     dispatch(
@@ -210,6 +223,9 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
             value={content ?? ''}
             onChange={onEditorChanges}
             readOnly={disableEdit || readonly}
+            enableBasicAutocompletion={true}
+            enableSnippets={true}
+            enableLiveAutocompletion={true}
           />
         </ConditionalLoadingState>
       </DialogBody>
@@ -238,7 +254,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
           </ListSubheader>
         )}
         {contentModelSnippets?.map((snippet, i) => (
-          <MenuItem key={i} onClick={() => onSnippetSelected(snippet)}>
+          <MenuItem key={i} onClick={() => onSnippetSelected(snippet)} dense>
             {snippet.label}
           </MenuItem>
         ))}
@@ -246,7 +262,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
           <FormattedMessage id="words.snippets" defaultMessage="Snippets" />
         </ListSubheader>
         {Object.values(snippets).map((snippet, i) => (
-          <MenuItem key={i} onClick={() => onSnippetSelected(snippet)}>
+          <MenuItem key={i} onClick={() => onSnippetSelected(snippet)} dense>
             {snippet.label}
           </MenuItem>
         ))}

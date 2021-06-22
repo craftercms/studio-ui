@@ -30,7 +30,7 @@ const initialState: CodeEditorDialogStateProps = {
   mode: null,
   contentType: null,
   pendingChanges: null,
-  readonly: null
+  readonly: false
 };
 
 export default createReducer<GlobalState['dialogs']['codeEditor']>(initialState, {

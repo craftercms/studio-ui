@@ -19,6 +19,7 @@ import { filter, map, mergeMap, switchMap, withLatestFrom } from 'rxjs/operators
 import {
   clearClipboard,
   completeDetailedItem,
+  ConditionallyUnlockItem,
   duplicateAsset,
   duplicateItem,
   duplicateWithPolicyValidation,
@@ -46,7 +47,7 @@ import {
   paste,
   unlock
 } from '../../services/content';
-import { merge, of } from 'rxjs';
+import { merge, NEVER, of } from 'rxjs';
 import { closeConfirmDialog, showCodeEditorDialog, showConfirmDialog, showEditDialog } from '../actions/dialogs';
 import { isEditableAsset } from '../../utils/content';
 import {
@@ -198,6 +199,32 @@ const content: CrafterCMSEpic[] = [
                 ])
           )
         );
+      })
+    ),
+  // endregion
+  // region ConditionallyUnlockItem
+  (action$, state$) =>
+    action$.pipe(
+      ofType(ConditionallyUnlockItem.type),
+      withLatestFrom(state$),
+      switchMap(([{ payload }, state]) => {
+        const lockOwner = state.content.itemsByPath[payload.path].lockOwner;
+        const username = state.user.username;
+
+        if (!lockOwner || lockOwner === username) {
+          return unlock(state.sites.active, payload.path).pipe(
+            map(() =>
+              payload.notify === false
+                ? emitSystemEvent(itemUnlocked({ target: payload.path }))
+                : batchActions([
+                    emitSystemEvent(itemUnlocked({ target: payload.path })),
+                    showUnlockItemSuccessNotification()
+                  ])
+            )
+          );
+        } else {
+          return NEVER;
+        }
       })
     ),
   // endregion

@@ -254,10 +254,13 @@ export default React.forwardRef(function AceEditor(props: AceEditorProps, ref) {
         .join(' ')} ${classes.base}`;
     }
   }, [classes.base]);
+
   return (
     <div
       ref={(e) => {
-        refs.current.elem = e;
+        if (e) {
+          refs.current.elem = e;
+        }
       }}
       style={{
         display: 'contents'
