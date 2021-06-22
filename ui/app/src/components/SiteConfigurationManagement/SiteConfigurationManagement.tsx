@@ -65,6 +65,7 @@ import { encrypt } from '../../services/security';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import ResizeBar from '../ResizeBar';
 import { useHistory } from 'react-router';
+import { fetchSiteUiConfig } from '../../state/actions/configuration';
 
 interface SiteConfigurationManagementProps {
   embedded?: boolean;
@@ -100,7 +101,7 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
   });
 
   useEffect(() => {
-    history.block((props) => {
+    history?.block((props) => {
       if (!disabledSaveButton && !disableBlocking.current && history.location.pathname !== props.pathname) {
         setConfirmDialogProps({
           open: true,
@@ -384,7 +385,11 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
                 message: formatMessage(translations.configSaved)
               })
             );
+            if (`${selectedConfigFile.module}/${selectedConfigFile.path}` === 'studio/ui.xml') {
+              dispatch(fetchSiteUiConfig({ site }));
+            }
             setDisabledSaveButton(true);
+            setSelectedConfigFileXml(content);
           },
           ({ response: { response } }) => {
             dispatch(showErrorDialog({ error: response }));

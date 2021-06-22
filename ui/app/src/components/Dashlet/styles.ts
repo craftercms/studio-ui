@@ -19,10 +19,12 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 export const useStyles = makeStyles(() =>
   createStyles({
     refresh: {
-      marginLeft: 'auto'
+      marginLeft: 'auto',
+      display: 'flex'
     },
     rightSection: {
-      marginLeft: 'auto'
+      marginLeft: 'auto',
+      display: 'flex'
     },
     summary: {
       alignItems: 'center'

@@ -18,15 +18,22 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles((theme) =>
   createStyles({
-    root: {
-      padding: '20px',
-      background: theme.palette.background.default,
-      '& > div.MuiAccordion-root': {
-        marginTop: '20px',
-        '&:first-child': {
-          marginTop: 0
-        }
+    tableRoot: {
+      tableLayout: 'fixed',
+      '& tbody > tr:last-child > td table > tbody > tr:last-child > td': {
+        borderBottom: 0
       }
+    },
+    ellipsis: {
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap'
+    },
+    itemPath: {
+      color: theme.palette.text.secondary
+    },
+    skeletonCheckbox: {
+      margin: '6px 10px'
     }
   })
 );

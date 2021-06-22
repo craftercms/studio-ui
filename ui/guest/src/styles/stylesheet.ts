@@ -147,7 +147,6 @@ export default function stylesheet(config: GuestStyleSheetConfig): Styles<'@glob
   const styles: Record<GuestRules, JssStyle> = {
     // Attributes
     '[draggable="true"]': {
-      cursor: 'move !important',
       ...overrides['[draggable="true"]']
     },
     // Elements
@@ -357,7 +356,15 @@ export default function stylesheet(config: GuestStyleSheetConfig): Styles<'@glob
       whiteSpace: 'nowrap',
       ...overrides['.craftercms-zone-marker-label__multi-mode']
     },
-    '.craftercms-ice-on': overrides['.craftercms-ice-on'],
+    '.craftercms-ice-on': {
+      '& [data-craftercms-model-id], & [data-craftercms-model-id] a': {
+        cursor: 'url("/studio/static-assets/images/cursor-edit@1.5x.png"), pointer !important'
+      },
+      '& [draggable="true"]': {
+        cursor: 'url("/studio/static-assets/images/cursor-drag@1.5x.png"), move !important'
+      },
+      ...overrides['.craftercms-ice-on']
+    },
     '.mce-content-body': {
       outlineOffset: 5,
       outline: `2px solid ${config.inlineTextEditorOutlineColor}`,

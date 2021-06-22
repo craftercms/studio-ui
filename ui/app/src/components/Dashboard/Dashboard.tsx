@@ -30,7 +30,7 @@ import { ListItem, ListItemSecondaryAction, ListItemText } from '@material-ui/co
 import IconButton from '@material-ui/core/IconButton';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import { generateMultipleItemOptions, generateSingleItemOptions, itemActionDispatcher } from '../../utils/itemActions';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import translations from './translations';
 import { createLookupTable } from '../../utils/object';
 import { AllItemActions, DetailedItem } from '../../models/Item';
@@ -44,6 +44,7 @@ import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { filter } from 'rxjs/operators';
 import { createPresenceTable } from '../../utils/array';
 import { renderWidgets } from '../Widget';
+import EmptyState from '../SystemStatus/EmptyState';
 
 interface DashboardAppProps {}
 
@@ -198,6 +199,19 @@ export default function Dashboard(props: DashboardAppProps) {
   return (
     <section className={classes.root}>
       {dashboard && renderWidgets(dashboard.widgets, userRoles, { selectedLookup, onItemChecked, onItemMenuClick })}
+      {!Boolean(dashboard?.widgets?.length) && (
+        <>
+          <EmptyState
+            title={<FormattedMessage id="dashboard.emptyStateMessageTitle" defaultMessage="No widgets to display" />}
+            subtitle={
+              <FormattedMessage
+                id="dashboard.emptyStateMessageSubtitle"
+                defaultMessage="Add widgets at your site's User Interface Configuration"
+              />
+            }
+          />
+        </>
+      )}
       <ItemActionsSnackbar
         open={selectedLength > 0}
         options={selectionOptions}

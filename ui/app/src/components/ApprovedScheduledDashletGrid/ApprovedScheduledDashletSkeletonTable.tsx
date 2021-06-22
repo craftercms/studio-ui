@@ -30,13 +30,13 @@ import LookupTable from '../../models/LookupTable';
 import { rand } from '../PathNavigator/utils';
 import { DashboardItem } from '../AwaitingApprovalDashlet';
 
-interface awaitingApprovalDashletGridUIProps {
+interface ApprovedScheduledDashletSkeletonTableProps {
   numOfItems?: number;
   items?: DashboardItem[];
   expandedLookup?: LookupTable<boolean>;
 }
 
-export default function AwaitingApprovalDashletSkeletonTable(props: awaitingApprovalDashletGridUIProps) {
+export default function ApprovedScheduledDashletSkeletonTable(props: ApprovedScheduledDashletSkeletonTableProps) {
   const classes = useStyles();
   const { numOfItems = 4 } = props;
 
@@ -58,19 +58,16 @@ export default function AwaitingApprovalDashletSkeletonTable(props: awaitingAppr
               <Skeleton variant="circle" width={30} height={30} className={classes.skeletonCheckbox} />
             </GlobalAppGridCell>
             <GlobalAppGridCell className="width40 padded0">
-              <FormattedMessage id="awaitingApprovalDashlet.item" defaultMessage="Item" />
+              <FormattedMessage id="dashboardItemsApproval.item" defaultMessage="Item" />
             </GlobalAppGridCell>
             <GlobalAppGridCell className="width15 ellipsis">
-              <FormattedMessage id="awaitingApprovalDashlet.publishingTarget" defaultMessage="Publishing Target" />
+              <FormattedMessage id="dashboardItemsApproval.publishingTarget" defaultMessage="Publishing Target" />
+            </GlobalAppGridCell>
+            <GlobalAppGridCell className="width25 ellipsis">
+              <FormattedMessage id="dashboardItemsApproval.lastEditedBy" defaultMessage="Package Id" />
             </GlobalAppGridCell>
             <GlobalAppGridCell className="width15 ellipsis">
-              <FormattedMessage id="awaitingApprovalDashlet.publishingDate" defaultMessage="Publishing Date" />
-            </GlobalAppGridCell>
-            <GlobalAppGridCell className="width15 ellipsis">
-              <FormattedMessage id="awaitingApprovalDashlet.lastEditedBy" defaultMessage="Last Edited By" />
-            </GlobalAppGridCell>
-            <GlobalAppGridCell className="width15 ellipsis">
-              <FormattedMessage id="awaitingApprovalDashlet.lastEdited" defaultMessage="Last Edited" />
+              <FormattedMessage id="dashboardItemsApproval.lastEdited" defaultMessage="Last Edited" />
             </GlobalAppGridCell>
             <GlobalAppGridCell className="checkbox" />
           </GlobalAppGridRow>
@@ -87,7 +84,7 @@ export default function AwaitingApprovalDashletSkeletonTable(props: awaitingAppr
                 </GlobalAppGridCell>
               </GlobalAppGridRow>
               <GlobalAppGridRow className="hoverDisabled">
-                <GlobalAppGridCell colSpan={7} className="padded0 bb0">
+                <GlobalAppGridCell colSpan={7} className="padded0 borderless">
                   <Collapse in={expandedLookup[dashboardItem.path]}>
                     <Table size="small" className={classes.tableRoot}>
                       <TableBody>
@@ -98,6 +95,7 @@ export default function AwaitingApprovalDashletSkeletonTable(props: awaitingAppr
                             </GlobalAppGridCell>
                             <GlobalAppGridCell className="ellipsis width40 padded0">
                               <Skeleton variant="text" width={`${rand(70, 90)}%`} />
+                              <Skeleton variant="text" width={`${rand(70, 90)}%`} />
                             </GlobalAppGridCell>
                             <GlobalAppGridCell className="width15">
                               <Skeleton variant="text" width="50px" />
@@ -105,11 +103,8 @@ export default function AwaitingApprovalDashletSkeletonTable(props: awaitingAppr
                             <GlobalAppGridCell className="width15">
                               <Skeleton variant="text" width={`${rand(50, 60)}%`} />
                             </GlobalAppGridCell>
-                            <GlobalAppGridCell className="width15 ellipsis">
-                              <Skeleton variant="text" width={`${rand(50, 60)}%`} />
-                            </GlobalAppGridCell>
-                            <GlobalAppGridCell className="width15 ellipsis">
-                              <Skeleton variant="text" width={`${rand(50, 60)}%`} />
+                            <GlobalAppGridCell className="width25 ellipsis">
+                              <Skeleton variant="text" width={`${rand(60, 90)}%`} />
                             </GlobalAppGridCell>
                             <GlobalAppGridCell className="checkbox">
                               <Skeleton variant="circle" width={30} height={30} className={classes.skeletonCheckbox} />
