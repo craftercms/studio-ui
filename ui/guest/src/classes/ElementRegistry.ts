@@ -91,7 +91,7 @@ export function setLabel(record: ElementRecord): void {
           labels.push(`${field.name}`);
         }
       } else {
-        if (field.type === 'text') {
+        if (field.type === 'text' || field.type === 'textarea') {
           labels.push(`${field.name} (Plain Text)`);
         } else if (field.type === 'html') {
           labels.push(`${field.name} (Rich Text)`);
