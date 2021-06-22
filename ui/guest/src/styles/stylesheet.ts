@@ -358,7 +358,7 @@ export default function stylesheet(config: GuestStyleSheetConfig): Styles<'@glob
     },
     '.craftercms-ice-on': {
       '& [data-craftercms-model-id], & [data-craftercms-model-id] a': {
-        cursor: 'url("/studio/static-assets/images/cursor-edit@1.5x.png"), context-menu !important'
+        cursor: 'url("/studio/static-assets/images/cursor-edit@1.5x.png"), pointer !important'
       },
       '& [draggable="true"]': {
         cursor: 'url("/studio/static-assets/images/cursor-drag@1.5x.png"), move !important'
