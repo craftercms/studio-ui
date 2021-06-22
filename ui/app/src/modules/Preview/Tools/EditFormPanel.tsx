@@ -185,13 +185,12 @@ function EditFormPanelBody(props: EditFormPanelBodyProps) {
     } else {
       dispatch(
         showCodeEditorDialog({
-          authoringBase,
-          site,
           path:
             type === 'template'
               ? contentType.displayTemplate
               : `/scripts/pages/${popPiece(selectedContentTypeId, '/')}.groovy`,
-          type: type === 'template' ? 'template' : 'controller'
+          contentType: selectedContentTypeId,
+          mode: type === 'template' ? 'ftl' : 'groovy'
         })
       );
     }
