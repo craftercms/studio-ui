@@ -43,7 +43,7 @@ import QuickCreateItem from '../models/content/QuickCreateItem';
 import ApiResponse from '../models/ApiResponse';
 import { fetchContentTypes } from './contentTypes';
 import { Clipboard } from '../models/GlobalState';
-import { getPasteItemFromPath } from '../utils/path';
+import { getFileNameFromPath, getParentPath, getPasteItemFromPath } from '../utils/path';
 import { StandardAction } from '../models/StandardAction';
 import { GetChildrenResponse } from '../models/GetChildrenResponse';
 import { GetItemWithChildrenResponse } from '../models/GetItemWithChildrenResponse';
@@ -131,21 +131,14 @@ export function fetchContentInstance(
   return fetchContentDOM(site, path).pipe(map((doc) => parseContentXML(doc, path, contentTypesLookup, {})));
 }
 
-export function writeContent(
-  site: string,
-  path: string,
-  user: string,
-  fileName: string,
-  content: string,
-  unlock: boolean = true
-) {
+export function writeContent(site: string, path: string, content: string, options?: { unlock: boolean }) {
+  options = Object.assign({ unlock: true }, options);
   return post(
     writeContentUrl({
       site,
-      path,
-      user,
-      unlock: unlock ? 'true' : 'false',
-      fileName
+      path: getParentPath(path),
+      unlock: options.unlock ? 'true' : 'false',
+      fileName: getFileNameFromPath(path)
     }),
     content
   ).pipe(

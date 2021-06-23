@@ -30,7 +30,6 @@ import { Skeleton } from '@material-ui/lab';
 import DialogFooter from '../Dialogs/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { getParentPath } from '../../utils/path';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { showSystemNotification } from '../../state/actions/system';
 import translations from './translations';
@@ -147,14 +146,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
   };
 
   const save = (unlock: boolean = true) => {
-    writeContent(
-      site,
-      getParentPath(item.path),
-      user.username,
-      item.label,
-      editorRef.current.getValue(),
-      unlock
-    ).subscribe(
+    writeContent(site, item.path, editorRef.current.getValue(), { unlock }).subscribe(
       (response) => {
         dispatch(
           showSystemNotification({
