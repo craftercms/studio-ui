@@ -67,7 +67,7 @@ export function isJSON(str: string): boolean {
   throw new Error('[isJSON] Not implemented.');
 }
 
-export function isCamelCase(str: string) {
+export function hasUppercaseChars(str: string) {
   return /[A-Z]/.test(str);
 }
 

@@ -81,6 +81,6 @@ export const pasteItemWithPolicyValidation = /*#__PURE__*/ createAction<{ path: 
 
 export const unlockItem = /*#__PURE__*/ createAction<{ path: string; notify?: boolean }>('UNLOCK_ITEM');
 
-export const ConditionallyUnlockItem = /*#__PURE__*/ createAction<{ path: string; notify?: boolean }>(
+export const conditionallyUnlockItem = /*#__PURE__*/ createAction<{ path: string; notify?: boolean }>(
   'CONDITIONALLY_UNLOCK_ITEM'
 );

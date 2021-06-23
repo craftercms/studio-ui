@@ -42,7 +42,7 @@ import Menu from '@material-ui/core/Menu';
 import ExpandMoreRoundedIcon from '@material-ui/icons/ExpandMoreRounded';
 import { ListSubheader } from '@material-ui/core';
 import LookupTable from '../../models/LookupTable';
-import { dasherize, isCamelCase, underscore } from '../../utils/string';
+import { dasherize, hasUppercaseChars, underscore } from '../../utils/string';
 
 export interface CodeEditorDialogContainerProps extends CodeEditorDialogProps {
   path: string;
@@ -84,7 +84,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
               label: fields[key].name,
               value: contentVariable.value.replace(
                 'VARIABLENAME',
-                isCamelCase(fields[key].id) ? `["${dasherize(underscore(fields[key].id))}"]` : fields[key].id
+                hasUppercaseChars(fields[key].id) ? `["${dasherize(underscore(fields[key].id))}"]` : fields[key].id
               )
             }));
             setContentModelSnippets(snippets);
@@ -96,7 +96,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
             const snippets = Object.keys(fields).map((key) => ({
               label: fields[key].name,
               value: `${contentVariable.value}.${
-                isCamelCase(fields[key].id) ? `"${dasherize(underscore(fields[key].id))}"` : fields[key].id
+                hasUppercaseChars(fields[key].id) ? `"${dasherize(underscore(fields[key].id))}"` : fields[key].id
               }`
             }));
             setContentModelSnippets(snippets);

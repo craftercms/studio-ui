@@ -22,13 +22,13 @@ import { useMinimizeDialog } from '../../utils/hooks';
 import { minimizeDialog } from '../../state/reducers/dialogs/minimizedDialogs';
 import { closeCodeEditorDialog, closeConfirmDialog, showConfirmDialog } from '../../state/actions/dialogs';
 import { batchActions } from '../../state/actions/misc';
-import { ConditionallyUnlockItem } from '../../state/actions/content';
+import { conditionallyUnlockItem } from '../../state/actions/content';
 import translations from './translations';
 import Dialog, { DialogProps } from '@material-ui/core/Dialog';
 import { CodeEditorDialogContainer } from './CodeEditorDialogContainer';
 
 interface CodeEditorDialogBaseProps {
-  open?: boolean;
+  open: boolean;
   path: string;
   mode: string;
   pendingChanges: boolean;
@@ -78,7 +78,7 @@ export default function CodeEditorDialog(props: CodeEditorDialogProps) {
         showConfirmDialog({
           title: formatMessage(translations.pendingChanges),
           onOk: batchActions([
-            ConditionallyUnlockItem({ path: props.path, notify: false }),
+            conditionallyUnlockItem({ path: props.path, notify: false }),
             closeConfirmDialog(),
             closeCodeEditorDialog()
           ]),
@@ -86,13 +86,13 @@ export default function CodeEditorDialog(props: CodeEditorDialogProps) {
         })
       );
     } else {
-      dispatch(ConditionallyUnlockItem({ path: props.path, notify: false }));
+      dispatch(conditionallyUnlockItem({ path: props.path, notify: false }));
       props.onClose();
     }
   };
 
   return (
-    <Dialog open={open && !minimized} keepMounted={minimized} onClose={onClose} {...rest} fullWidth maxWidth="xl">
+    <Dialog open={open && !minimized} keepMounted={minimized} onClose={onClose} fullWidth maxWidth="xl" {...rest}>
       <CodeEditorDialogContainer {...props} onClose={onClose} title={title} onMinimized={onMinimized} />
     </Dialog>
   );
