@@ -26,7 +26,6 @@ import LookupTable from '../models/LookupTable';
 import GlobalState from '../models/GlobalState';
 import { defineMessages } from 'react-intl';
 import { SiteConfigurationFile } from '../models/SiteConfigurationFile';
-import { unEscapeXml } from '../utils/string';
 
 export type CrafterCMSModules = 'studio' | 'engine';
 
@@ -64,9 +63,12 @@ export function fetchConfigurationJSON(
     map((conf) => {
       return deserialize(conf, {
         parseNodeValue: false,
-        tagValueProcessor: (value) => {
-          return unEscapeXml(value);
-        }
+        tagValueProcessor: (value) =>
+          value
+            .replaceAll(/&lt;/g, '<')
+            .replaceAll(/&gt;/g, '>')
+            .replaceAll(/&quot;/g, '"')
+            .replaceAll(/&amp;/g, '&')
       });
     })
   );

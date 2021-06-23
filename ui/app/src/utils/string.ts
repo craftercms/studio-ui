@@ -157,11 +157,3 @@ export function getSimplifiedVersion(version: string, options: { minor?: boolean
   !minor && pieces.pop();
   return pieces.join('.');
 }
-
-export function unEscapeXml(value: string): string {
-  return value
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&amp;/g, '&');
-}
