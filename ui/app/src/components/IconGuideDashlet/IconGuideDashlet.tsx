@@ -21,8 +21,9 @@ import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import ItemStateIcon from '../ItemStateIcon';
-import { getItemStateText } from '../ItemDisplay/utils';
+import { getItemPublishingTargetText, getItemStateText } from '../ItemDisplay/utils';
 import ItemTypeIcon from '../ItemTypeIcon';
+import ItemPublishingTargetIcon from '../ItemPublishingTargetIcon';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -63,7 +64,9 @@ const messages = defineMessages({
   plainText: { id: 'iconGuide.plainText', defaultMessage: 'Plain Text' },
   xml: { id: 'iconGuide.xml', defaultMessage: 'XML' },
   font: { id: 'iconGuide.font', defaultMessage: 'Font' },
-  icon: { id: 'iconGuide.icon', defaultMessage: 'Icon' }
+  icon: { id: 'iconGuide.icon', defaultMessage: 'Icon' },
+  staged: { id: 'iconGuide.staged', defaultMessage: 'Staged' },
+  live: { id: 'iconGuide.live', defaultMessage: 'Live' }
 });
 
 const states = {
@@ -74,7 +77,10 @@ const states = {
   systemProcessing: { stateMap: { systemProcessing: true } },
   submitted: { stateMap: { submitted: true } },
   scheduled: { stateMap: { scheduled: true } },
-  publishing: { stateMap: { publishing: true } },
+  publishing: { stateMap: { publishing: true } }
+};
+
+const status = {
   staged: { stateMap: { staged: true } },
   live: { stateMap: { live: true } }
 };
@@ -113,11 +119,25 @@ export default function IconGuideDashlet() {
     >
       <div className={classes.iconGuideContainer}>
         <Typography variant="subtitle2" className={classes.guideSectionTitle}>
+          <FormattedMessage id="iconGuide.publishingStatusTarget" defaultMessage="Publishing Status/Target" />
+        </Typography>
+        <Grid container spacing={2}>
+          {Object.keys(status).map((key) => (
+            <Grid key={key} item xs={6} sm={4} md={3} lg={2} className={classes.stateContainer}>
+              <ItemPublishingTargetIcon item={status[key]} className={classes.icon} />
+              <Typography variant="body2" component="span">
+                {getItemPublishingTargetText(status[key].stateMap)}
+              </Typography>
+            </Grid>
+          ))}
+        </Grid>
+
+        <Typography variant="subtitle2" className={classes.guideSectionTitle}>
           <FormattedMessage id="iconGuide.workflowStates" defaultMessage="Workflow States" />
         </Typography>
         <Grid container spacing={2}>
           {Object.keys(states).map((key) => (
-            <Grid item xs={6} sm={4} md={3} lg={2} className={classes.stateContainer}>
+            <Grid key={key} item xs={6} sm={4} md={3} lg={2} className={classes.stateContainer}>
               <ItemStateIcon item={states[key]} className={classes.icon} />
               <Typography variant="body2" component="span">
                 {getItemStateText(states[key].stateMap)}
@@ -131,7 +151,7 @@ export default function IconGuideDashlet() {
         </Typography>
         <Grid container spacing={2}>
           {Object.keys(types).map((key) => (
-            <Grid item xs={6} sm={4} md={3} lg={2} className={classes.stateContainer}>
+            <Grid key={key} item xs={6} sm={4} md={3} lg={2} className={classes.stateContainer}>
               <ItemTypeIcon item={types[key]} className={classes.icon} />
               <Typography variant="body2" component="span">
                 {formatMessage(messages[key])}
