@@ -260,8 +260,7 @@
                               xmlConfig = CStudioAdminConsole.Tool.ContentTypes.FormDefMain.serializeConfigToXml(
                                 currentConfig,
                                 formDef
-                              ),
-                              configFilesPath = CStudioAuthoring.Constants.CONFIG_FILES_PATH;
+                              );
 
                             var doc = $.parseXML('<xml/>');
                             var json = { key1: 1, key2: 2 };
@@ -277,7 +276,7 @@
                             }
 
                             var defPath = '/content-types' + formDef.contentType + '/form-definition.xml';
-                            var confPath = configFilesPath + '/content-types' + formDef.contentType + '/config.xml';
+                            var confPath = '/content-types' + formDef.contentType + '/config.xml';
 
                             CrafterCMSNext.rxjs
                               .forkJoin({
