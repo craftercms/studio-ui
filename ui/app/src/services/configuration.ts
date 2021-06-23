@@ -65,10 +65,10 @@ export function fetchConfigurationJSON(
         parseNodeValue: false,
         tagValueProcessor: (value) =>
           value
-            .replaceAll(/&lt;/g, '<')
-            .replaceAll(/&gt;/g, '>')
-            .replaceAll(/&quot;/g, '"')
-            .replaceAll(/&amp;/g, '&')
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .replace(/&quot;/g, '"')
+            .replace(/&amp;/g, '&')
       });
     })
   );
