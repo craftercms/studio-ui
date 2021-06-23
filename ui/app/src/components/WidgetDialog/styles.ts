@@ -40,11 +40,9 @@ const useStyles = makeStyles((theme) =>
       } else {
         return {
           [key1]: {
-            ...baseStyle,
             height: `calc(90vh - ${toolbarMixin[key1].minHeight}px - 1px)`
           },
           [key2]: {
-            ...baseStyle,
             height: `calc(90vh - ${toolbarMixin[key2].minHeight}px - 1px)`
           },
           ...baseStyle,
