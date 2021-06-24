@@ -147,6 +147,7 @@ export function writeContent(site: string, path: string, content: string, option
         // eslint-disable-next-line no-throw-literal
         throw {
           ...ajaxResponse,
+          status: 500,
           response: {
             message: ajaxResponse.response.result.error.message
           }

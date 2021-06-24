@@ -207,7 +207,6 @@ const content: CrafterCMSEpic[] = [
     action$.pipe(
       ofType(conditionallyUnlockItem.type),
       withLatestFrom(state$),
-
       filter(
         ([{ payload }, state]) =>
           !state.content.itemsByPath[payload.path].lockOwner ||

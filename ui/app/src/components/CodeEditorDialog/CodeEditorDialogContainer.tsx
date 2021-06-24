@@ -242,7 +242,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
       <Menu anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={closeSnippets}>
         {contentModelSnippets && (
           <ListSubheader disableSticky={true}>
-            <FormattedMessage id="codeEditor" defaultMessage="Content model" />
+            <FormattedMessage id="codeEditor.contentModel" defaultMessage="Content model" />
           </ListSubheader>
         )}
         {contentModelSnippets?.map((snippet, i) => (
