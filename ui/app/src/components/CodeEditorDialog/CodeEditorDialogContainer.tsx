@@ -25,7 +25,6 @@ import useStyles from './styles';
 import { CodeEditorDialogProps } from './CodeEditorDialog';
 import { useDispatch } from 'react-redux';
 import { updateCodeEditorDialog } from '../../state/actions/dialogs';
-import useTheme from '@material-ui/core/styles/useTheme';
 import { Skeleton } from '@material-ui/lab';
 import DialogFooter from '../Dialogs/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
@@ -108,10 +107,6 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
   }, [contentTypes, contentType, mode, item]);
 
   const disableEdit = !getComputedEditMode({ item, username: user.username, editMode: true });
-
-  const {
-    palette: { type }
-  } = useTheme();
 
   useEffect(() => {
     if (item && content === null) {
@@ -214,7 +209,6 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
       <DialogBody className={classes.dialogBody}>
         <ConditionalLoadingState isLoading={loading} classes={{ root: classes.loadingState }}>
           <AceEditor
-            theme={`ace/theme/${type === 'light' ? 'chrome' : 'tomorrow_night'}`}
             ref={editorRef}
             mode={`ace/mode/${mode}`}
             value={content ?? ''}

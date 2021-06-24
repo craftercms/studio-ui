@@ -19,6 +19,7 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useMount } from '../utils/hooks';
 import { pluckProps } from '../utils/object';
 import { CSSProperties } from '@material-ui/styles';
+import useTheme from '@material-ui/core/styles/useTheme';
 
 // @see https://github.com/ajaxorg/ace/wiki/Configuring-Ace
 export interface AceOptions {
@@ -186,7 +187,16 @@ export default React.forwardRef(function AceEditor(props: AceEditorProps, ref) {
     onChange: null
   });
   const [initialized, setInitialized] = useState(false);
-  const options = pluckProps(props as AceOptions, true, ...aceOptions);
+
+  const {
+    palette: { type }
+  } = useTheme();
+
+  const options = pluckProps(
+    { ...props, theme: props.theme ?? `ace/theme/${type === 'light' ? 'chrome' : 'tomorrow_night'}` } as AceOptions,
+    true,
+    ...aceOptions
+  );
 
   refs.current.onChange = onChange;
 
