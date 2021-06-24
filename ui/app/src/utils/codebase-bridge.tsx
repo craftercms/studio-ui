@@ -26,7 +26,7 @@ import configuration from '../services/configuration';
 import sites from '../services/sites';
 import marketplace from '../services/marketplace';
 import publishing from '../services/publishing';
-import content from '../services/content';
+import * as content from '../services/content';
 import { forkJoin, fromEvent, Subject } from 'rxjs';
 import { filter, map, take, debounceTime, pluck, switchMap, tap } from 'rxjs/operators';
 import { IntlShape } from 'react-intl/src/types';
@@ -34,7 +34,9 @@ import messages, { translateElements } from './i18n-legacy';
 import babel from '../utils/babelHelpers-legacy';
 import security from '../services/security';
 import authService from '../services/auth';
-import { makeStyles, jssPreset } from '@material-ui/core/styles';
+import * as mui from '@material-ui/core';
+import { themeOptions } from '../styles/theme';
+import { ThemeOptions } from '@material-ui/core/styles';
 
 /**
  *
@@ -70,6 +72,9 @@ interface CodebaseBridge {
   };
   services: object;
   mui: object;
+  system: {
+    defaultThemeOptions: ThemeOptions;
+  };
 }
 
 export function updateIntl(nextIntl: IntlShape) {
@@ -115,10 +120,11 @@ export function createCodebaseBridge() {
       UnlockPublisherDialog: lazy(() => import('../components/UnlockPublisherDialog/UnlockPublisherDialog'))
     },
 
-    mui: {
-      makeStyles,
-      jssPreset
+    system: {
+      defaultThemeOptions: themeOptions
     },
+
+    mui,
 
     assets: {
       logoIcon: require('../assets/crafter-icon.svg')

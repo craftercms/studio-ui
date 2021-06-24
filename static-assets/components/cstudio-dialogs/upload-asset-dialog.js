@@ -188,8 +188,8 @@ CStudioAuthoring.Dialogs.UploadDialog = CStudioAuthoring.Dialogs.UploadDialog ||
               CStudioAuthoring.Dialogs.UploadDialog.closeDialog();
             },
             onError: function (file, error, response) {
-              const res = response.body.response,
-                errorMsg = `${res.message}. ${res.remedialAction}`;
+              const res = response?.body.response,
+                errorMsg = res ? `${res.message}. ${res.remedialAction}` : error.message;
 
               me.uploadingFile = false;
               $('#uploadCancelButton').attr('disabled', false);

@@ -729,13 +729,24 @@ var CStudioForms =
     };
 
     function parseDOM(content) {
-      try {
-        let parseResult = new window.DOMParser().parseFromString(content, 'text/xml');
-        return parseResult.documentElement;
-      } catch (ex) {
-        console.error(`Error attempting to parse content XML.`);
-        return null;
+      let parseResult = new window.DOMParser().parseFromString(content, 'text/xml');
+
+      if (isParseError(parseResult)) {
+        throw new Error('Error attempting to parse content XML.');
       }
+      return parseResult.documentElement;
+    }
+
+    function isParseError(parsedDocument) {
+      var parser = new DOMParser(),
+        errorneousParse = parser.parseFromString('<', 'application/xml'),
+        parsererrorNS = errorneousParse.getElementsByTagName('parsererror')[0].namespaceURI;
+
+      if (parsererrorNS === 'http://www.w3.org/1999/xhtml') {
+        return parsedDocument.getElementsByTagName('parsererror').length > 0;
+      }
+
+      return parsedDocument.getElementsByTagNameNS(parsererrorNS, 'parsererror').length > 0;
     }
 
     function sendAndAwait(key, observer) {
@@ -1319,7 +1330,21 @@ var CStudioForms =
               return;
             }
 
-            var xml = CStudioForms.Util.serializeModelToXml(form, saveDraft);
+            try {
+              var xml = CStudioForms.Util.serializeModelToXml(form, saveDraft);
+            } catch (e) {
+              CStudioAuthoring.Operations.showSimpleDialog(
+                'error-dialog',
+                CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                CMgs.format(formsLangBundle, 'notification'),
+                e,
+                null,
+                YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                'studioDialog'
+              );
+              setButtonsEnabled(true);
+              return;
+            }
 
             var serviceUrl =
               '/api/1/services/api/1/content/write-content.json' +
@@ -1367,6 +1392,8 @@ var CStudioForms =
                 CStudioAuthoring.Service.createServiceUri(serviceUrl),
                 {
                   success: function () {
+                    YAHOO.util.Event.removeListener(window, 'beforeunload', unloadFn, me);
+
                     var getContentItemCb = {
                       success: function (contentTO) {
                         var previewUrl = CStudioAuthoringContext.previewAppBaseUri + contentTO.item.browserUri;
@@ -1534,7 +1561,7 @@ var CStudioForms =
               path = CStudioAuthoring.Utils.getQueryVariable(location.search, 'path');
               if (path && path.indexOf('.xml') != -1) {
                 var entityId = buildEntityIdFn(null);
-                CStudioAuthoring.Service.unlockContentItemSync(CStudioAuthoringContext.site, entityId);
+                CrafterCMSNext.services.content.unlock(CStudioAuthoringContext.site, entityId).subscribe();
               }
             }
           };
@@ -1662,22 +1689,29 @@ var CStudioForms =
               if (acnDraftContent) {
                 unlockBeforeCancel(path);
               } else {
-                if (path && path.indexOf('.xml') != -1) {
+                if (!form.readOnly && path && path.indexOf('.xml') != -1) {
                   var entityId = buildEntityIdFn(null);
-                  CStudioAuthoring.Service.unlockContentItemSync(CStudioAuthoringContext.site, entityId);
-                }
-                if ((iceId && iceId != '') || (iceComponent && iceComponent != '')) {
-                  var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
-                  CStudioAuthoring.InContextEdit.unstackDialog(editorId);
-                  var componentsOn = !!sessionStorage.getItem('components-on');
-                  if (componentsOn) {
-                    CStudioAuthoring.Operations.refreshPreviewParent();
-                  }
+                  CrafterCMSNext.services.content
+                    .unlock(CStudioAuthoringContext.site, entityId)
+                    .subscribe((response) => {
+                      YAHOO.util.Event.removeListener(window, 'beforeunload', unloadFn, me);
+
+                      if ((iceId && iceId != '') || (iceComponent && iceComponent != '')) {
+                        var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
+                        CStudioAuthoring.InContextEdit.unstackDialog(editorId);
+                        var componentsOn = !!sessionStorage.getItem('components-on');
+                        if (componentsOn) {
+                          CStudioAuthoring.Operations.refreshPreviewParent();
+                        }
+                      } else {
+                        window.close();
+                        if (componentsOn) {
+                          CStudioAuthoring.Operations.refreshPreviewParent();
+                        }
+                      }
+                    });
                 } else {
-                  window.close();
-                  if (componentsOn) {
-                    CStudioAuthoring.Operations.refreshPreviewParent();
-                  }
+                  CStudioAuthoring.InContextEdit.unstackDialog(editorId);
                 }
               }
             }
@@ -1748,7 +1782,7 @@ var CStudioForms =
             cancelButtonEl.value = CMgs.format(formsLangBundle, 'cancel');
             formButtonContainerEl.appendChild(cancelButtonEl);
 
-            YAHOO.util.Event.addListener(window, 'unload', unloadFn, me);
+            YAHOO.util.Event.addListener(window, 'beforeunload', unloadFn, me);
             YAHOO.util.Event.addListener(cancelButtonEl, 'click', cancelFn, me);
           } else {
             var closeButtonEl = document.createElement('input');
@@ -1758,7 +1792,7 @@ var CStudioForms =
             formButtonContainerEl.appendChild(closeButtonEl);
             YDom.setStyle(formButtonContainerEl, 'text-align', 'center');
 
-            YAHOO.util.Event.addListener(window, 'unload', unloadFn, me);
+            YAHOO.util.Event.addListener(window, 'beforeunload', unloadFn, me);
             YAHOO.util.Event.addListener(closeButtonEl, 'click', cancelFn, me);
 
             var focusEl = window;
@@ -2921,6 +2955,8 @@ var CStudioForms =
 
         xml += '</' + form.definition.objectType + '>';
 
+        xml = xml.replaceAll('', '');
+
         if (!cfe.engine.config.isInclude) {
           const doc = parseDOM(xml);
           xml = resolvePendingComponents(doc);
@@ -3099,7 +3135,7 @@ var CStudioForms =
                 repeatAttr = `${isRemote ? 'remote="true"' : ''} ${isArray ? 'item-list="true"' : ''} ${
                   isTokenized ? 'tokenized="true"' : ''
                 }`;
-              output += '\t<' + fieldName + repeatAttr + '>';
+              output += `\t<${fieldName} ${repeatAttr} >`;
               if (isArray) {
                 output = this.recursiveRetrieveItemValues(repeatValue, output, key, fieldInstructions);
               } else {
