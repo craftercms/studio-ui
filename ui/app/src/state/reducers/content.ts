@@ -23,6 +23,7 @@ import {
   fetchQuickCreateListComplete,
   fetchQuickCreateListFailed,
   fetchSandboxItemComplete,
+  localItemLock,
   restoreClipboard,
   setClipboard
 } from '../actions/content';
@@ -47,6 +48,7 @@ import {
 } from '../actions/pathNavigatorTree';
 import { GetChildrenResponse } from '../../models/GetChildrenResponse';
 import LookupTable from '../../models/LookupTable';
+import { STATE_LOCKED_MASK } from '../../utils/constants';
 
 type ContentState = GlobalState['content'];
 
@@ -178,6 +180,23 @@ const reducer = createReducer<ContentState>(initialState, {
     });
 
     return { ...state, itemsByPath: { ...state.itemsByPath, ...nextByPath } };
+  },
+  [localItemLock.type]: (state, { payload }) => {
+    if (state.itemsByPath[payload.path].lockOwner && state.itemsByPath[payload.path].stateMap.locked) {
+      return state;
+    }
+    return {
+      ...state,
+      itemsByPath: {
+        ...state.itemsByPath,
+        [payload.path]: {
+          ...state.itemsByPath[payload.path],
+          lockOwner: payload.username,
+          state: state.itemsByPath[payload.path].state + STATE_LOCKED_MASK,
+          stateMap: { ...state.itemsByPath[payload.path].stateMap, locked: true }
+        }
+      }
+    };
   },
   [changeSite.type]: () => initialState
 });

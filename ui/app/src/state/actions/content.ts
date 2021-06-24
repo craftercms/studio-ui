@@ -61,6 +61,10 @@ export const restoreClipboard = /*#__PURE__*/ createAction<{
 
 export const clearClipboard = /*#__PURE__*/ createAction('CLEAR_CLIPBOARD');
 
+// endregion
+
+// region itemsActions
+
 export const duplicateItem = /*#__PURE__*/ createAction<{ path: string; onSuccess: StandardAction }>('DUPLICATE_ITEM');
 
 export const duplicateAsset = /*#__PURE__*/ createAction<{ path: string; onSuccess: StandardAction }>(
@@ -77,11 +81,14 @@ export const pasteItemWithPolicyValidation = /*#__PURE__*/ createAction<{ path: 
   'PASTE_ITEM_WITH_POLICY_VALIDATION'
 );
 
-// endregion
-
 export const unlockItem = /*#__PURE__*/ createAction<{ path: string; notify?: boolean }>('UNLOCK_ITEM');
+
+// This action's semantic is to lock the item locally because in the store the item remains unlocked
+export const localItemLock = /*#__PURE__*/ createAction<{ path: string; username: string }>('LOCAL_LOCK_ITEM');
 
 // This action's semantic is to unlock the item only if the lock owner is the current user.
 export const conditionallyUnlockItem = /*#__PURE__*/ createAction<{ path: string; notify?: boolean }>(
   'CONDITIONALLY_UNLOCK_ITEM'
 );
+
+// endregion

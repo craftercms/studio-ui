@@ -42,6 +42,7 @@ import { ListSubheader } from '@material-ui/core';
 import LookupTable from '../../models/LookupTable';
 import { dasherize, hasUppercaseChars, underscore } from '../../utils/string';
 import { hasEditAction, isItemLockedForMe } from '../../utils/content';
+import { localItemLock } from '../../state/actions/content';
 
 export interface CodeEditorDialogContainerProps extends CodeEditorDialogProps {
   path: string;
@@ -114,9 +115,10 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
       fetchContentXML(site, item.path, { ...(!item.lockOwner && { lock: true }) }).subscribe((xml) => {
         setContent(xml);
         setLoading(false);
+        dispatch(localItemLock({ path: item.path, username: user.username }));
       });
     }
-  }, [site, item, setContent, content]);
+  }, [site, item, setContent, content, dispatch, user.username]);
 
   useUnmount(onClosed);
 
