@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import DialogHeader from '../Dialogs/DialogHeader';
 import DialogBody from '../Dialogs/DialogBody';
 import { fetchContentXML, writeContent } from '../../services/content';
@@ -42,6 +42,7 @@ import ExpandMoreRoundedIcon from '@material-ui/icons/ExpandMoreRounded';
 import { ListSubheader } from '@material-ui/core';
 import LookupTable from '../../models/LookupTable';
 import { dasherize, hasUppercaseChars, underscore } from '../../utils/string';
+import { getComputedEditMode } from '../../utils/content';
 
 export interface CodeEditorDialogContainerProps extends CodeEditorDialogProps {
   path: string;
@@ -95,6 +96,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
             const snippets = Object.keys(fields).map((key) => ({
               label: fields[key].name,
               value: `${contentVariable.value}.${
+                // On groovy if  the ID has uppercase chars should be dasherize, example: fileName -> file-name
                 hasUppercaseChars(fields[key].id) ? `"${dasherize(underscore(fields[key].id))}"` : fields[key].id
               }`
             }));
@@ -105,7 +107,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
     }
   }, [contentTypes, contentType, mode, item]);
 
-  const disableEdit = !item || (item.stateMap.locked && item.lockOwner !== user.username);
+  const disableEdit = !getComputedEditMode({ item, username: user.username, editMode: true });
 
   const {
     palette: { type }
@@ -123,20 +125,6 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 
   useUnmount(onClosed);
 
-  useEffect(() => {
-    if (!readonly && editorRef.current && !disableEdit && content !== null) {
-      editorRef.current.commands.addCommand({
-        name: 'myCommand',
-        bindKey: { win: 'Ctrl-S', mac: 'Command-S' },
-        exec: function(editor) {
-          onSave();
-        },
-        readOnly: false
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [readonly, editorRef.current, content, disableEdit]);
-
   const onEditorChanges = () => {
     dispatch(
       updateCodeEditorDialog({
@@ -145,29 +133,32 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
     );
   };
 
-  const save = (unlock: boolean = true) => {
-    writeContent(site, item.path, editorRef.current.getValue(), { unlock }).subscribe(
-      (response) => {
-        dispatch(
-          showSystemNotification({
-            message: formatMessage(translations.saved)
-          })
-        );
-      },
-      ({ response }) => {
-        dispatch(showErrorDialog({ error: response }));
-      }
-    );
-  };
+  const save = useCallback(
+    (unlock: boolean = true) => {
+      writeContent(site, item.path, editorRef.current.getValue(), { unlock }).subscribe(
+        (response) => {
+          dispatch(
+            showSystemNotification({
+              message: formatMessage(translations.saved)
+            })
+          );
+        },
+        ({ response }) => {
+          dispatch(showErrorDialog({ error: response }));
+        }
+      );
+    },
+    [dispatch, formatMessage, item?.path, site]
+  );
 
   const onCancel = () => {
     onClose();
   };
 
-  const onSave = () => {
+  const onSave = useCallback(() => {
     save();
     setContent(editorRef.current.getValue());
-  };
+  }, [save]);
 
   const onSaveAndMinimize = () => {
     save(false);
@@ -194,6 +185,20 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
     closeSnippets();
   };
 
+  useEffect(() => {
+    if (!readonly && editorRef.current && !disableEdit && content !== null) {
+      editorRef.current.commands.addCommand({
+        name: 'myCommand',
+        bindKey: { win: 'Ctrl-S', mac: 'Command-S' },
+        exec: function(editor) {
+          onSave();
+        },
+        readOnly: false
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [readonly, editorRef.current, content, disableEdit, onSave]);
+
   return (
     <>
       <DialogHeader
@@ -215,16 +220,16 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
             value={content ?? ''}
             onChange={onEditorChanges}
             readOnly={disableEdit || readonly}
-            enableBasicAutocompletion={true}
-            enableSnippets={true}
-            enableLiveAutocompletion={true}
+            enableBasicAutocompletion
+            enableSnippets
+            enableLiveAutocompletion
           />
         </ConditionalLoadingState>
       </DialogBody>
       {!readonly && (
         <DialogFooter>
           <Button onClick={onAddSnippet} endIcon={<ExpandMoreRoundedIcon />} className={classes.addSnippet}>
-            <FormattedMessage id="codeEditor.addCode" defaultMessage="Insert Code" />
+            <FormattedMessage id="codeEditor.insertCode" defaultMessage="Insert Code" />
           </Button>
           <SecondaryButton onClick={onCancel}>
             <FormattedMessage id="words.cancel" defaultMessage="Cancel" />

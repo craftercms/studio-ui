@@ -78,7 +78,7 @@ export default function CodeEditorDialog(props: CodeEditorDialogProps) {
         showConfirmDialog({
           title: formatMessage(translations.pendingChanges),
           onOk: batchActions([
-            conditionallyUnlockItem({ path: props.path, notify: false }),
+            conditionallyUnlockItem({ path: props.path }),
             closeConfirmDialog(),
             closeCodeEditorDialog()
           ]),
@@ -86,7 +86,7 @@ export default function CodeEditorDialog(props: CodeEditorDialogProps) {
         })
       );
     } else {
-      dispatch(conditionallyUnlockItem({ path: props.path, notify: false }));
+      dispatch(conditionallyUnlockItem({ path: props.path }));
       props.onClose();
     }
   };
