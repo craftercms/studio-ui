@@ -296,9 +296,12 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
 
   edit: function (key, control) {
     var _self = this;
+    const readonly = control.readonly;
+    const action = readonly ? CStudioAuthoring.Operations.viewContent : CStudioAuthoring.Operations.editContent;
+
     CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, key, {
       success: function (contentTO) {
-        CStudioAuthoring.Operations.editContent(
+        action(
           contentTO.item.contentType,
           CStudioAuthoringContext.siteId,
           contentTO.item.uri,

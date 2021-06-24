@@ -140,13 +140,7 @@ CStudioAuthoringWidgets.ApprovedScheduledItemsDashboard = function (widgetId, pa
         true,
         false
       );
-      filterByEl.options[2] = new Option(
-        CMgs.format(langBundle, 'dashletApprovedSchedFilterDocuments'),
-        'document',
-        true,
-        false
-      );
-      filterByEl.options[3] = new Option(CMgs.format(langBundle, 'dashletApprovedSchedFilterAll'), 'all', true, false);
+      filterByEl.options[2] = new Option(CMgs.format(langBundle, 'dashletApprovedSchedFilterAll'), 'all', true, false);
       filterByEl.options[selectedItems].selected = true;
       var newState = filterByEl.value;
 
