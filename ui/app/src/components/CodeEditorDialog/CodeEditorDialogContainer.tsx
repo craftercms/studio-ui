@@ -41,7 +41,7 @@ import ExpandMoreRoundedIcon from '@material-ui/icons/ExpandMoreRounded';
 import { ListSubheader } from '@material-ui/core';
 import LookupTable from '../../models/LookupTable';
 import { dasherize, hasUppercaseChars, underscore } from '../../utils/string';
-import { getComputedEditMode } from '../../utils/content';
+import { hasEditAction, isItemLockedForMe } from '../../utils/content';
 
 export interface CodeEditorDialogContainerProps extends CodeEditorDialogProps {
   path: string;
@@ -106,7 +106,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
     }
   }, [contentTypes, contentType, mode, item]);
 
-  const disableEdit = !getComputedEditMode({ item, username: user.username, editMode: true });
+  const disableEdit = isItemLockedForMe(item, user.username) || !hasEditAction(item.availableActions);
 
   useEffect(() => {
     if (item && content === null) {
@@ -181,18 +181,15 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
   };
 
   useEffect(() => {
-    if (!readonly && editorRef.current && !disableEdit && content !== null) {
-      editorRef.current.commands.addCommand({
+    if (!readonly && !disableEdit && content !== null) {
+      editorRef.current?.commands.addCommand({
         name: 'myCommand',
         bindKey: { win: 'Ctrl-S', mac: 'Command-S' },
-        exec: function(editor) {
-          onSave();
-        },
+        exec: onSave,
         readOnly: false
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [readonly, editorRef.current, content, disableEdit, onSave]);
+  }, [readonly, content, disableEdit, onSave]);
 
   return (
     <>

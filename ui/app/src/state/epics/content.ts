@@ -207,11 +207,7 @@ const content: CrafterCMSEpic[] = [
     action$.pipe(
       ofType(conditionallyUnlockItem.type),
       withLatestFrom(state$),
-      filter(
-        ([{ payload }, state]) =>
-          !state.content.itemsByPath[payload.path].lockOwner ||
-          state.content.itemsByPath[payload.path].lockOwner === state.user.username
-      ),
+      filter(([{ payload }, state]) => state.content.itemsByPath[payload.path].lockOwner === state.user.username),
       switchMap(([{ payload }, state]) => {
         return unlock(state.sites.active, payload.path).pipe(
           map(() =>

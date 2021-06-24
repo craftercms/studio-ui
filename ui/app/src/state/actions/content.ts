@@ -81,7 +81,7 @@ export const pasteItemWithPolicyValidation = /*#__PURE__*/ createAction<{ path: 
 
 export const unlockItem = /*#__PURE__*/ createAction<{ path: string; notify?: boolean }>('UNLOCK_ITEM');
 
-// To unlock a item the item.lockOwner should be empty or should be equals to the current user, this action check if can be unlocked
+// This action's semantic is to unlock the item only if the lock owner is the current user.
 export const conditionallyUnlockItem = /*#__PURE__*/ createAction<{ path: string; notify?: boolean }>(
   'CONDITIONALLY_UNLOCK_ITEM'
 );
