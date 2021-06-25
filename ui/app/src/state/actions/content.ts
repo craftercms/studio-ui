@@ -83,7 +83,7 @@ export const pasteItemWithPolicyValidation = /*#__PURE__*/ createAction<{ path: 
 
 export const unlockItem = /*#__PURE__*/ createAction<{ path: string; notify?: boolean }>('UNLOCK_ITEM');
 
-// This action's semantic is to lock the item locally because in the store the item remains unlocked
+// This action is intended to lock the item "locally" (the store) without a backend call since the lock has been already performed elsehow on the back.
 export const localItemLock = /*#__PURE__*/ createAction<{ path: string; username: string }>('LOCAL_LOCK_ITEM');
 
 // This action's semantic is to unlock the item only if the lock owner is the current user.
