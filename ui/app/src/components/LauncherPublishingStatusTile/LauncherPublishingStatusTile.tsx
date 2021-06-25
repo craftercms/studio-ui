@@ -15,13 +15,13 @@
  */
 
 import React from 'react';
-import { useSelection } from '../../utils/hooks';
 import PublishingStatusTile, { publishingStatusTileMessages } from '../PublishingStatusTile';
 import { closeLauncher, showPublishingStatusDialog } from '../../state/actions/dialogs';
 import { useDispatch } from 'react-redux';
 import { batchActions } from '../../state/actions/misc';
 import { Tooltip } from '@material-ui/core';
 import { useIntl } from 'react-intl';
+import { useSelection } from '../../utils/hooks/useSelection';
 
 function LauncherPublishingStatusTile() {
   const dispatch = useDispatch();

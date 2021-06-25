@@ -18,7 +18,6 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import React, { useEffect, useState } from 'react';
 import moment from 'moment-timezone';
-import { useSelection, useUnmount } from '../../utils/hooks';
 import GlobalState from '../../models/GlobalState';
 import DialogHeader from '../Dialogs/DialogHeader';
 import DialogBody from '../Dialogs/DialogBody';
@@ -32,6 +31,8 @@ import DateTimePicker from '../Controls/DateTimePicker';
 import DialogFooter from '../Dialogs/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
+import { useSelection } from '../../utils/hooks/useSelection';
+import { useUnmount } from '../../utils/hooks/useUnmount';
 
 export interface CreateTokenUIProps {
   disabled: boolean;

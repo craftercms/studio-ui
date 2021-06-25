@@ -24,7 +24,7 @@ import { FormattedMessage } from 'react-intl';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import palette from '../../../styles/palette';
 import clsx from 'clsx';
-import { useSelection } from '../../../utils/hooks';
+import { useSelection } from '../../../utils/hooks/useSelection';
 
 const useStyles = makeStyles((theme) =>
   createStyles({

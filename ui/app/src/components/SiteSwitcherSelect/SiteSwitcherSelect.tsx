@@ -19,12 +19,14 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { FormattedMessage } from 'react-intl';
 import Select, { SelectProps } from '@material-ui/core/Select';
 import useStyles from './styles';
-import { useEnv, usePreviewState, useSiteList } from '../../utils/hooks';
 import { isBlank } from '../../utils/string';
 import { changeSite } from '../../state/reducers/sites';
 import { setSiteCookie } from '../../utils/auth';
 import { getSystemLink } from '../LauncherSection';
 import { useDispatch } from 'react-redux';
+import { usePreviewState } from '../../utils/hooks/usePreviewState';
+import { useEnv } from '../../utils/hooks/useEnv';
+import { useSiteList } from '../../utils/hooks/useSiteList';
 
 export interface SiteSwitcherSelectProps extends SelectProps {
   site: string;

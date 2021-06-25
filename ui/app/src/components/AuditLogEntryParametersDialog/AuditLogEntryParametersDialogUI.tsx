@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useUnmount } from '../../utils/hooks';
 import DialogHeader from '../Dialogs/DialogHeader';
 import { FormattedMessage } from 'react-intl';
 import DialogBody from '../Dialogs/DialogBody';
@@ -25,6 +24,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableBody from '@material-ui/core/TableBody';
 import React from 'react';
 import { AuditLogEntryParametersDialogProps } from './AuditLogEntryParametersDialog';
+import { useUnmount } from '../../utils/hooks/useUnmount';
 
 export default function AuditLogEntryParametersDialogUI(props: AuditLogEntryParametersDialogProps) {
   const { parameters = [], onClose, onClosed } = props;

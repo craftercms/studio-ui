@@ -22,7 +22,6 @@ import { PagedArray } from '../../models/PagedArray';
 import { ApiResponse } from '../../models/ApiResponse';
 import { AuditLogEntry, AuditLogEntryParameter } from '../../models/Audit';
 import { AuditOptions, fetchAuditLog, fetchAuditLogEntry } from '../../services/audit';
-import { useLogicResource, useMount, useSiteList, useSpreadState } from '../../utils/hooks';
 import AuditGridUI from '../AuditGrid';
 import User from '../../models/User';
 import { fetchAll } from '../../services/users';
@@ -34,6 +33,10 @@ import { nnou } from '../../utils/object';
 import Button from '@material-ui/core/Button';
 import AuditGridSkeleton from '../AuditGrid/AuditGridSkeleton';
 import { GridPageChangeParams } from '@material-ui/data-grid';
+import { useLogicResource } from '../../utils/hooks/useLogicResource';
+import { useMount } from '../../utils/hooks/useMount';
+import { useSpreadState } from '../../utils/hooks/useSpreadState';
+import { useSiteList } from '../../utils/hooks/useSiteList';
 
 interface AuditManagementProps {
   site?: string;

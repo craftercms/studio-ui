@@ -16,9 +16,9 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { useMount } from '../utils/hooks';
 import { pluckProps } from '../utils/object';
 import { CSSProperties } from '@material-ui/styles';
+import { useMount } from '../utils/hooks/useMount';
 
 // @see https://github.com/ajaxorg/ace/wiki/Configuring-Ace
 export interface AceOptions {

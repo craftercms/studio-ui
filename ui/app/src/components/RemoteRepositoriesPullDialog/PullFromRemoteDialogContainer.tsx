@@ -26,11 +26,11 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { MergeStrategy } from '../../models/Repository';
 import { pull } from '../../services/repositories';
-import { useActiveSiteId } from '../../utils/hooks';
 import ApiResponse from '../../models/ApiResponse';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import { isBlank } from '../../utils/string';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 
 export interface PullFromRemoteDialogContainerProps {
   open: boolean;

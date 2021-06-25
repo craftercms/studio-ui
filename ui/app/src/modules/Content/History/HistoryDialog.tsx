@@ -17,7 +17,6 @@
 import React, { PropsWithChildren, useCallback, useState } from 'react';
 import { defineMessages, FormattedMessage, MessageDescriptor, useIntl } from 'react-intl';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { useLogicResource, useSpreadState, useUnmount } from '../../../utils/hooks';
 import ContextMenu, { ContextMenuOption } from '../../../components/ContextMenu';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import { LookupTable } from '../../../models/LookupTable';
@@ -52,6 +51,9 @@ import Dialog from '@material-ui/core/Dialog';
 import { batchActions } from '../../../state/actions/misc';
 import { asDayMonthDateTime } from '../../../utils/datetime';
 import { hasRevertAction } from '../../../utils/content';
+import { useLogicResource } from '../../../utils/hooks/useLogicResource';
+import { useUnmount } from '../../../utils/hooks/useUnmount';
+import { useSpreadState } from '../../../utils/hooks/useSpreadState';
 
 const translations = defineMessages({
   previousPage: {

@@ -21,13 +21,13 @@ import React, { PropsWithChildren, ReactNode } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import StandardAction from '../../models/StandardAction';
 import Dialog, { DialogProps } from '@material-ui/core/Dialog';
-import { useUnmount } from '../../utils/hooks';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import questionGraphicUrl from '../../assets/question.svg';
 import { CSSProperties } from '@material-ui/styles';
 import PrimaryButton from '../PrimaryButton';
 import SecondaryButton from '../SecondaryButton';
+import { useUnmount } from '../../utils/hooks/useUnmount';
 
 const messages = defineMessages({
   accept: {

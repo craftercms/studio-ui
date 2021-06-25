@@ -22,7 +22,6 @@ import AddIcon from '@material-ui/icons/Add';
 import { Repository, RepositoryStatus } from '../../models/Repository';
 import ApiResponse from '../../models/ApiResponse';
 import { fetchRepositories as fetchRepositoriesService, fetchStatus } from '../../services/repositories';
-import { useActiveSiteId, useLogicResource } from '../../utils/hooks';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import RemoteRepositoriesGridSkeletonTable from '../RemoteRepositoriesGrid/RemoteRepositoriesGridSkeletonTable';
 import RemoteRepositoriesGrid from '../RemoteRepositoriesGrid';
@@ -35,6 +34,8 @@ import Alert from '@material-ui/lab/Alert';
 import Typography from '@material-ui/core/Typography';
 import useStyles from './styles';
 import translations from './translations';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { useLogicResource } from '../../utils/hooks/useLogicResource';
 
 interface RemoteRepositoriesManagementProps {
   embedded?: boolean;

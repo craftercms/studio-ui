@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useSelection } from '../../utils/hooks';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
@@ -35,6 +34,7 @@ import { ClassNameMap } from '@material-ui/styles/withStyles';
 import { me } from '../../services/users';
 import ApiResponseErrorState from '../ApiResponseErrorState';
 import ErrorState from '../ErrorState/ErrorState';
+import { useSelection } from '../../utils/hooks/useSelection';
 
 const translations = defineMessages({
   sessionExpired: {

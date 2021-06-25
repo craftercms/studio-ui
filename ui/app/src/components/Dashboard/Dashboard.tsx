@@ -16,14 +16,6 @@
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import LookupTable from '../../models/LookupTable';
-import {
-  useActiveSiteId,
-  useActiveUser,
-  useEnv,
-  useSelection,
-  useSiteUIConfig,
-  useSpreadState
-} from '../../utils/hooks';
 import { fetchItemsByPath } from '../../services/content';
 import ItemActionsSnackbar from '../ItemActionsSnackbar';
 import { ListItem, ListItemSecondaryAction, ListItemText } from '@material-ui/core';
@@ -45,6 +37,12 @@ import { filter } from 'rxjs/operators';
 import { createPresenceTable } from '../../utils/array';
 import { renderWidgets } from '../Widget';
 import EmptyState from '../SystemStatus/EmptyState';
+import { useSelection } from '../../utils/hooks/useSelection';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { useEnv } from '../../utils/hooks/useEnv';
+import { useActiveUser } from '../../utils/hooks/useActiveUser';
+import { useSpreadState } from '../../utils/hooks/useSpreadState';
+import { useSiteUIConfig } from '../../utils/hooks/useSiteUIConfig';
 
 interface DashboardAppProps {}
 

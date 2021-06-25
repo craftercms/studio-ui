@@ -21,9 +21,9 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import React, { useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import Dialog from '@material-ui/core/Dialog';
-import { useUnmount } from '../../utils/hooks';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
+import { useUnmount } from '../../utils/hooks/useUnmount';
 
 const translations = defineMessages({
   go: {

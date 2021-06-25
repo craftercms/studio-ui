@@ -24,8 +24,8 @@ import PushToRemoteDialog from '../RemoteRepositoriesPushDialog';
 import { deleteRemote as deleteRemoteService } from '../../services/repositories';
 import { showSystemNotification } from '../../state/actions/system';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
-import { useActiveSiteId } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 
 export interface RemoteRepositoriesGridProps {
   resource: Resource<Array<Repository>>;

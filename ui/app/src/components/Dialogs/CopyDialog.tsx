@@ -25,13 +25,13 @@ import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { LookupTable } from '../../models/LookupTable';
 import StandardAction from '../../models/StandardAction';
-import { useUnmount } from '../../utils/hooks';
 import Dialog from '@material-ui/core/Dialog';
 import DialogHeader from './DialogHeader';
 import DialogBody from './DialogBody';
 import DialogFooter from './DialogFooter';
 import PrimaryButton from '../PrimaryButton';
 import SecondaryButton from '../SecondaryButton';
+import { useUnmount } from '../../utils/hooks/useUnmount';
 
 const messages = defineMessages({
   copy: {

@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useContentTypes, useLogicResource, usePreviewGuest, useSelection } from '../../utils/hooks';
 import React, { useEffect, useMemo, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -35,6 +34,10 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 import EmptyState from '../SystemStatus/EmptyState';
 import { Resource } from '../../models/Resource';
+import { useSelection } from '../../utils/hooks/useSelection';
+import { usePreviewGuest } from '../../utils/hooks/usePreviewGuest';
+import { useContentTypes } from '../../utils/hooks/useContentTypes';
+import { useLogicResource } from '../../utils/hooks/useLogicResource';
 
 const translations = defineMessages({
   previewInPageInstancesPanel: {

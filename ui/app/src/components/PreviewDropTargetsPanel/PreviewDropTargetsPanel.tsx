@@ -17,7 +17,6 @@
 import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
-import { useLogicResource, useMount, useSelection } from '../../utils/hooks';
 import { createStyles, makeStyles } from '@material-ui/core';
 import { ContentTypeDropTarget } from '../../models/ContentTypeDropTarget';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
@@ -40,6 +39,9 @@ import {
 import { Resource } from '../../models/Resource';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import { LookupTable } from '../../models/LookupTable';
+import { useSelection } from '../../utils/hooks/useSelection';
+import { useLogicResource } from '../../utils/hooks/useLogicResource';
+import { useMount } from '../../utils/hooks/useMount';
 
 const translations = defineMessages({
   dropTargetsPanel: {

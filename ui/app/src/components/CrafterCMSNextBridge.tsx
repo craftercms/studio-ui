@@ -22,7 +22,6 @@ import { setRequestForgeryToken } from '../utils/auth';
 import { CrafterCMSStore, getStore } from '../state/store';
 import GlobalDialogManager from './SystemStatus/GlobalDialogManager';
 import { SnackbarProvider } from 'notistack';
-import { createResource } from '../utils/hooks';
 import { Resource } from '../models/Resource';
 import Suspencified from './SystemStatus/Suspencified';
 import I18nProvider from './I18nProvider';
@@ -31,6 +30,7 @@ import CrafterThemeProvider from './CrafterThemeProvider';
 import SnackbarCloseButton from './SnackbarCloseButton';
 import LegacyConcierge from './LegacyConcierge';
 import { GenerateId } from 'jss';
+import { createResource } from '../utils/hooks/createResource';
 
 const useStyles = makeStyles(() =>
   createStyles({

@@ -28,7 +28,6 @@ import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
 import { Button, ListSubheader, TableBody } from '@material-ui/core';
 import { AsDayMonthDateTime } from '../../modules/Content/History/VersionList';
-import { useActiveSiteId, useMount, useSelection } from '../../utils/hooks';
 import EmptyState from '../SystemStatus/EmptyState';
 import InstallPluginDialog from '../MarketplaceDialog';
 import { MarketplacePlugin } from '../../models/MarketplacePlugin';
@@ -47,6 +46,9 @@ import LookupTable from '../../models/LookupTable';
 import { createLookupTable } from '../../utils/object';
 import GlobalState from '../../models/GlobalState';
 import GlobalAppToolbar from '../GlobalAppToolbar';
+import { useSelection } from '../../utils/hooks/useSelection';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { useMount } from '../../utils/hooks/useMount';
 
 const messages = defineMessages({
   pluginInstalled: {

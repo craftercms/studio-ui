@@ -23,8 +23,8 @@ import { useIntl } from 'react-intl';
 import translations from './translations';
 import { useDispatch } from 'react-redux';
 import { setPreviewEditMode } from '../../state/actions/preview';
-import { useSelection } from '../../utils/hooks';
 import { SwitchProps } from '@material-ui/core/Switch/Switch';
+import { useSelection } from '../../utils/hooks/useSelection';
 
 const EditSwitch = withStyles((theme) => {
   const green = theme.palette.success.main;

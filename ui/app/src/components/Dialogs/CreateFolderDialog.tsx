@@ -22,7 +22,6 @@ import DialogBody from './DialogBody';
 import DialogFooter from './DialogFooter';
 import TextField from '@material-ui/core/TextField';
 import { createFolder, renameFolder } from '../../services/content';
-import { useActiveSiteId, useUnmount } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import StandardAction from '../../models/StandardAction';
@@ -32,6 +31,8 @@ import PrimaryButton from '../PrimaryButton';
 import { validateActionPolicy } from '../../services/sites';
 import { getParentPath } from '../../utils/path';
 import ConfirmDialog from './ConfirmDialog';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { useUnmount } from '../../utils/hooks/useUnmount';
 
 export const translations = defineMessages({
   placeholder: {

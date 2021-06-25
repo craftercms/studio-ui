@@ -31,8 +31,8 @@ import palette from '../../styles/palette';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
-import { useSpreadState } from '../../utils/hooks';
 import Divider from '@material-ui/core/Divider/Divider';
+import { useSpreadState } from '../../utils/hooks/useSpreadState';
 
 interface SiteSearchFiltersProps {
   className: any;

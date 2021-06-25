@@ -21,12 +21,12 @@ import { PagedArray } from '../../models/PagedArray';
 import { ApiResponse } from '../../models/ApiResponse';
 import Group from '../../models/Group';
 import { fetchAll } from '../../services/groups';
-import { useLogicResource } from '../../utils/hooks';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import GroupsGridUI, { GroupsGridSkeletonTable } from '../GroupsGrid';
 import EditGroupDialog from '../EditGroupDialog';
 import Button from '@material-ui/core/Button';
 import GlobalAppToolbar from '../GlobalAppToolbar';
+import { useLogicResource } from '../../utils/hooks/useLogicResource';
 
 export default function GroupsManagement() {
   const [offset, setOffset] = useState(0);

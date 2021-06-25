@@ -17,13 +17,13 @@
 import Typography from '@material-ui/core/Typography';
 import { renderWidgets, WidgetDescriptor } from '../Widget';
 import React, { PropsWithChildren, ReactElement } from 'react';
-import { usePossibleTranslation } from '../../utils/hooks';
 import TranslationOrText from '../../models/TranslationOrText';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { EnhancedUser } from '../../models/User';
 import { FormatXMLElementFn, PrimitiveType } from 'intl-messageformat';
 import { CSSProperties } from '@material-ui/styles';
 import clsx from 'clsx';
+import { usePossibleTranslation } from '../../utils/hooks/usePossibleTranslation';
 
 export type LauncherSectionUIClassKey = 'title' | 'nav';
 

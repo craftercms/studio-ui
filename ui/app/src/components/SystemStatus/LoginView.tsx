@@ -40,13 +40,14 @@ import PasswordTextField from '../Controls/PasswordTextField';
 import { passwordRequirementMessages } from '../../utils/i18n-legacy';
 import clsx from 'clsx';
 import { filter } from 'rxjs/operators';
-import { useDebouncedInput, useMount } from '../../utils/hooks';
 import palette from '../../styles/palette';
 import { buildStoredLanguageKey, dispatchLanguageChange, getCurrentLocale, setStoredLanguage } from '../../utils/i18n';
 import CrafterCMSLogo from '../Icons/CrafterCMSLogo';
 import LanguageRounded from '@material-ui/icons/LanguageRounded';
 import Menu from '@material-ui/core/Menu';
 import PasswordRequirementsDisplay from '../PasswordRequirementsDisplay';
+import { useMount } from '../../utils/hooks/useMount';
+import { useDebouncedInput } from '../../utils/hooks/useDebouncedInput';
 
 export interface SystemLang {
   id: string;

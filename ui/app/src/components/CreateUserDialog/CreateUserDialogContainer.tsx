@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useSpreadState } from '../../utils/hooks';
 import React, { useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
@@ -37,6 +36,7 @@ import UserGroupMembershipEditor from '../UserGroupMembershipEditor';
 import { mapTo, switchMap } from 'rxjs/operators';
 import { forkJoin, of } from 'rxjs';
 import { addUserToGroup } from '../../services/groups';
+import { useSpreadState } from '../../utils/hooks/useSpreadState';
 
 export interface CreateUserDialogUIProps {
   onClose(): void;

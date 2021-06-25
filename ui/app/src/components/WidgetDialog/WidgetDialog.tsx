@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useMinimizeDialog } from '../../utils/hooks';
 import { minimizeDialog } from '../../state/reducers/dialogs/minimizedDialogs';
 import { WidgetDescriptor } from '../Widget';
 import React, { PropsWithChildren } from 'react';
@@ -23,6 +22,7 @@ import { useDispatch } from 'react-redux';
 import useStyles from './styles';
 import { Dialog } from '@material-ui/core';
 import { WidgetDialogUI } from '.';
+import { useMinimizeDialog } from '../../utils/hooks/useMinimizeDialog';
 
 interface WidgetDialogBaseProps {
   open: boolean;

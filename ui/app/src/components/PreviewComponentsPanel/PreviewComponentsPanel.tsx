@@ -29,7 +29,6 @@ import {
   setContentTypeFilter,
   setPreviewEditMode
 } from '../../state/actions/preview';
-import { useSelection, useSelectorResource } from '../../utils/hooks';
 import { nnou, reversePluckProps } from '../../utils/object';
 import { DraggablePanelListItem } from '../../modules/Preview/Tools/DraggablePanelListItem';
 import { useDispatch } from 'react-redux';
@@ -37,6 +36,8 @@ import { PropsWithResource, SuspenseWithEmptyState } from '../SystemStatus/Suspe
 import { EntityState } from '../../models/EntityState';
 import { batchActions } from '../../state/actions/misc';
 import { createToolsPanelPage, createWidgetDescriptor } from '../../utils/state';
+import { useSelection } from '../../utils/hooks/useSelection';
+import { useSelectorResource } from '../../utils/hooks/useSelectorResource';
 
 const translations = defineMessages({
   previewComponentsPanelTitle: {
