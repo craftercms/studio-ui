@@ -88,7 +88,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
             const snippets = Object.keys(fields).map((key) => ({
               label: fields[key].name,
               value: contentVariable.value.replace(
-                'VARIABLENAME',
+                'VARIABLE_NAME',
                 hasUppercaseChars(fields[key].id) ? `["${dasherize(underscore(fields[key].id))}"]` : fields[key].id
               )
             }));
@@ -100,10 +100,10 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
             setSnippets(rest);
             const snippets = Object.keys(fields).map((key) => ({
               label: fields[key].name,
-              value: `${contentVariable.value}.${
-                // On groovy if  the ID has uppercase chars should be dasherize, example: fileName -> file-name
+              value: contentVariable.value.replace(
+                'VARIABLE_NAME',
                 hasUppercaseChars(fields[key].id) ? `"${dasherize(underscore(fields[key].id))}"` : fields[key].id
-              }`
+              )
             }));
             setContentModelSnippets(snippets);
           }

@@ -20,7 +20,7 @@ export const freemarkerSnippets: LookupTable<{ label: string; value: string }> =
   'content-variable': {
     label: 'Content variable',
     // eslint-disable-next-line no-template-curly-in-string
-    value: '${contentModel.VARIABLENAME}'
+    value: '${contentModel.VARIABLE_NAME}'
   },
   'request-parameter': {
     label: 'Request parameter',
@@ -102,7 +102,7 @@ export const freemarkerSnippets: LookupTable<{ label: string; value: string }> =
 };
 
 export const groovySnippets: LookupTable<{ label: string; value: string }> = {
-  'access-content-model': { label: 'Access Content Model', value: 'contentModel' },
+  'access-content-model': { label: 'Access Content Model', value: 'contentModel.VARIABLE_NAME' },
   'access-template-model': { label: 'Access Template Model', value: 'templateModel' },
   'current-site-id': { label: 'Current Site ID', value: 'siteContext.siteName' },
   'request-parameters': { label: 'Request Parameters', value: 'params' },
