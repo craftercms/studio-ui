@@ -21,12 +21,12 @@ import ApiResponse from '../../models/ApiResponse';
 import { fetchLoggers as fetchLoggersService, setLogger } from '../../services/logs';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import { useLogicResource } from '../../utils/hooks';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import LoggingLevelsGridUI, { LoggingLevelsGridSkeletonTable } from '../LoggingLevelsGrid';
 import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { showSystemNotification } from '../../state/actions/system';
+import { useLogicResource } from '../../utils/hooks/useLogicResource';
 
 const messages = defineMessages({
   levelChangedSuccess: {

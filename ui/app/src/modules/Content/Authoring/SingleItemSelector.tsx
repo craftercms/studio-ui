@@ -30,7 +30,6 @@ import PaginationOptions from '../../../models/PaginationOptions';
 import { LookupTable } from '../../../models/LookupTable';
 import ApiResponse from '../../../models/ApiResponse';
 import { createAction } from '@reduxjs/toolkit';
-import { useActiveSiteId, useLogicResource } from '../../../utils/hooks';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import Breadcrumbs from '../../../components/PathNavigator/PathNavigatorBreadcrumbs';
 import PathNavigatorList from '../../../components/PathNavigator/PathNavigatorList';
@@ -44,6 +43,8 @@ import { lookupItemByPath, parseSandBoxItemToDetailedItem } from '../../../utils
 import { GetChildrenResponse } from '../../../models/GetChildrenResponse';
 import Pagination from '../../../components/Pagination';
 import NavItem from '../../../components/PathNavigator/PathNavigatorItem';
+import { useActiveSiteId } from '../../../utils/hooks/useActiveSiteId';
+import { useLogicResource } from '../../../utils/hooks/useLogicResource';
 
 const useStyles = makeStyles((theme) => ({
   popoverRoot: {

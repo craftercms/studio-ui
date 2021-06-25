@@ -16,7 +16,6 @@
 
 import { useDispatch } from 'react-redux';
 import { useIntl } from 'react-intl';
-import { useSitesBranch, useSpreadState } from '../../utils/hooks';
 import User from '../../models/User';
 import React, { useEffect, useMemo, useState } from 'react';
 import LookupTable from '../../models/LookupTable';
@@ -25,6 +24,8 @@ import { showSystemNotification } from '../../state/actions/system';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { EditUserDialogUI } from './EditUserDialogUI';
 import { defineMessages } from 'react-intl';
+import { useSpreadState } from '../../utils/hooks/useSpreadState';
+import { useSitesBranch } from '../../utils/hooks/useSitesBranch';
 
 export interface EditUserDialogContainerProps {
   open: boolean;

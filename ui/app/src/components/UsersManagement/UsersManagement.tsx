@@ -24,10 +24,10 @@ import { fetchAll } from '../../services/users';
 import { PagedArray } from '../../models/PagedArray';
 import User from '../../models/User';
 import { ApiResponse } from '../../models/ApiResponse';
-import { useLogicResource } from '../../utils/hooks';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import Button from '@material-ui/core/Button';
+import { useLogicResource } from '../../utils/hooks/useLogicResource';
 
 interface UsersManagementProps {
   passwordRequirementsRegex?: string;

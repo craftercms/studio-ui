@@ -20,7 +20,6 @@ import { useDispatch } from 'react-redux';
 import LoadingState from '../../components/SystemStatus/LoadingState';
 import clsx from 'clsx';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { useMinimizeDialog, useUnmount } from '../../utils/hooks';
 import { defineMessages, useIntl } from 'react-intl';
 import {
   LEGACY_CODE_EDITOR_CLOSE,
@@ -44,6 +43,8 @@ import DialogHeader from './DialogHeader';
 import { getCodeEditorSrc } from '../../utils/path';
 import { batchActions } from '../../state/actions/misc';
 import { unlockItem } from '../../state/actions/content';
+import { useUnmount } from '../../utils/hooks/useUnmount';
+import { useMinimizeDialog } from '../../utils/hooks/useMinimizeDialog';
 
 const translations = defineMessages({
   title: {

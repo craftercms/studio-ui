@@ -23,7 +23,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Divider from '@material-ui/core/Divider';
 import Typography from '@material-ui/core/Typography';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { usePreviewState, useQuickCreateListResource, useSelection, useSystemVersionResource } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import { newContentCreationComplete, showEditDialog, showNewContentDialog } from '../../state/actions/dialogs';
 
@@ -39,6 +38,10 @@ import { getSimplifiedVersion } from '../../utils/string';
 import palette from '../../styles/palette';
 import Tooltip from '@material-ui/core/Tooltip';
 import { SandboxItem } from '../../models/Item';
+import { useSelection } from '../../utils/hooks/useSelection';
+import { usePreviewState } from '../../utils/hooks/usePreviewState';
+import { useQuickCreateListResource } from '../../utils/hooks/useQuickCreateListResource';
+import { useSystemVersionResource } from '../../utils/hooks/useSystemVersionResource';
 
 const translations = defineMessages({
   quickCreateBtnLabel: {

@@ -16,7 +16,8 @@
 
 import React from 'react';
 import Graphi from '../GraphiQL';
-import { useActiveSiteId, useEnv } from '../../utils/hooks';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { useEnv } from '../../utils/hooks/useEnv';
 
 interface SiteGraphiQLProps {
   embedded?: boolean;

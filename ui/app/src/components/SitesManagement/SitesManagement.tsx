@@ -24,15 +24,6 @@ import GridViewIcon from '@material-ui/icons/GridOnRounded';
 import Tooltip from '@material-ui/core/Tooltip';
 import IconButton from '@material-ui/core/IconButton';
 import { useDispatch } from 'react-redux';
-import {
-  useActiveUser,
-  useEnv,
-  useLogicResource,
-  useMount,
-  usePreviewState,
-  useSitesBranch,
-  useSpreadState
-} from '../../utils/hooks';
 import LookupTable from '../../models/LookupTable';
 import { PublishingStatus } from '../../models/Publishing';
 import { merge } from 'rxjs';
@@ -56,6 +47,13 @@ import Button from '@material-ui/core/Button';
 import { getStoredGlobalMenuSiteViewPreference, setStoredGlobalMenuSiteViewPreference } from '../../utils/state';
 import { hasGlobalPermissions } from '../../services/users';
 import { foo } from '../../utils/object';
+import { usePreviewState } from '../../utils/hooks/usePreviewState';
+import { useEnv } from '../../utils/hooks/useEnv';
+import { useActiveUser } from '../../utils/hooks/useActiveUser';
+import { useLogicResource } from '../../utils/hooks/useLogicResource';
+import { useMount } from '../../utils/hooks/useMount';
+import { useSpreadState } from '../../utils/hooks/useSpreadState';
+import { useSitesBranch } from '../../utils/hooks/useSitesBranch';
 
 const translations = defineMessages({
   siteDeleted: {

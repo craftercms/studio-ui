@@ -21,7 +21,6 @@ import DialogBody from '../../../../components/Dialogs/DialogBody';
 import DialogFooter from '../../../../components/Dialogs/DialogFooter';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import StandardAction from '../../../../models/StandardAction';
-import { useLogicResource, useUnmount } from '../../../../utils/hooks';
 import TextField from '@material-ui/core/TextField';
 import { Site } from '../../../../models/Site';
 import Suspencified from '../../../../components/SystemStatus/Suspencified';
@@ -35,6 +34,8 @@ import Grid from '@material-ui/core/Grid';
 import SecondaryButton from '../../../../components/SecondaryButton';
 import PrimaryButton from '../../../../components/PrimaryButton';
 import { isBlank } from '../../../../utils/string';
+import { useLogicResource } from '../../../../utils/hooks/useLogicResource';
+import { useUnmount } from '../../../../utils/hooks/useUnmount';
 
 type Source = { site: Site; error: Error };
 type Return = Omit<Source, 'error'>;

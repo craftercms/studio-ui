@@ -44,7 +44,6 @@ import gitLogo from '../../../../assets/git-logo.svg';
 import { fadeIn } from 'react-animations';
 import { Subscription } from 'rxjs';
 import SearchBar from '../../../../components/Controls/SearchBar';
-import { useEnv, useSpreadState } from '../../../../utils/hooks';
 import DialogHeader from '../../../../components/Dialogs/DialogHeader';
 import DialogBody from '../../../../components/Dialogs/DialogBody';
 import DialogFooter from '../../../../components/Dialogs/DialogFooter';
@@ -55,6 +54,8 @@ import ApiResponseErrorState from '../../../../components/ApiResponseErrorState'
 import PrimaryButton from '../../../../components/PrimaryButton';
 import Button from '@material-ui/core/Button';
 import { nnou } from '../../../../utils/object';
+import { useEnv } from '../../../../utils/hooks/useEnv';
+import { useSpreadState } from '../../../../utils/hooks/useSpreadState';
 
 const messages = defineMessages({
   privateBlueprints: {

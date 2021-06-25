@@ -20,13 +20,13 @@ import DialogHeader from '../Dialogs/DialogHeader';
 import { defineMessages, FormattedMessage } from 'react-intl';
 import DialogBody from '../Dialogs/DialogBody';
 import DialogFooter from '../Dialogs/DialogFooter';
-import { useUnmount } from '../../utils/hooks';
 import { Token } from '../../models/Token';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import InputBase from '@material-ui/core/InputBase';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
+import { useUnmount } from '../../utils/hooks/useUnmount';
 
 interface CopyTokenProps {
   open: boolean;

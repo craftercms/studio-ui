@@ -15,7 +15,6 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-import { useActiveSiteId, useMount, useSelection } from '../../utils/hooks';
 import { fetchActiveEnvironment } from '../../services/environment';
 import { fetchConfigurationXML, fetchSiteConfigurationFiles, writeConfiguration } from '../../services/configuration';
 import { SiteConfigurationFileWithId } from '../../models/SiteConfigurationFile';
@@ -66,6 +65,9 @@ import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import ResizeBar from '../ResizeBar';
 import { useHistory } from 'react-router';
 import { fetchSiteUiConfig } from '../../state/actions/configuration';
+import { useSelection } from '../../utils/hooks/useSelection';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { useMount } from '../../utils/hooks/useMount';
 
 interface SiteConfigurationManagementProps {
   embedded?: boolean;

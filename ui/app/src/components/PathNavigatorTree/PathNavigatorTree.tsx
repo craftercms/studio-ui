@@ -16,7 +16,6 @@
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import PathNavigatorTreeUI, { TreeNode } from './PathNavigatorTreeUI';
-import { useActiveSiteId, useActiveUser, useEnv, useItemsByPath, useSelection, useSubject } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import {
   pathNavigatorTreeCollapsePath,
@@ -60,6 +59,12 @@ import { DetailedItem } from '../../models/Item';
 import { fetchContentXML } from '../../services/content';
 import { SystemIconDescriptor } from '../SystemIcon';
 import { completeDetailedItem } from '../../state/actions/content';
+import { useSelection } from '../../utils/hooks/useSelection';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { useEnv } from '../../utils/hooks/useEnv';
+import { useActiveUser } from '../../utils/hooks/useActiveUser';
+import { useItemsByPath } from '../../utils/hooks/useItemsByPath';
+import { useSubject } from '../../utils/hooks/useSubject';
 
 interface PathNavigatorTreeProps {
   id: string;

@@ -17,10 +17,10 @@
 import * as React from 'react';
 import Paper from '@material-ui/core/Paper';
 import { PublishingStatusDialogBody } from '../PublishingStatusDialog';
-import { useSelection } from '../../utils/hooks';
 import { clearLock, start, stop } from '../../services/publishing';
 import { fetchPublishingStatus } from '../../state/actions/publishingStatus';
 import { useDispatch } from 'react-redux';
+import { useSelection } from '../../utils/hooks/useSelection';
 
 type PublishingStatusWidgetProps = {
   siteId: string;

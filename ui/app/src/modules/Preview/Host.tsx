@@ -22,7 +22,9 @@ import { getGuestToHostBus, getHostToGuestBus } from './previewContext';
 import { filter, map, pluck } from 'rxjs/operators';
 import { defineMessages, useIntl } from 'react-intl';
 import { StandardAction } from '../../models/StandardAction';
-import { useActiveSiteId, usePreviewState, useSelection } from '../../utils/hooks';
+import { useSelection } from '../../utils/hooks/useSelection';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { usePreviewState } from '../../utils/hooks/usePreviewState';
 
 const message$ = fromEvent<MessageEvent>(window, 'message');
 

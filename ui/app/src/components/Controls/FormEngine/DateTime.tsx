@@ -19,9 +19,9 @@ import DateTimePicker from '../DateTimePicker';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import { DateTimeControl } from '../../../models/FormsEngine';
-import { useSelection } from '../../../utils/hooks';
 import GlobalState from '../../../models/GlobalState';
 import useStyles from './styles';
+import { useSelection } from '../../../utils/hooks/useSelection';
 
 export default function DateTime(props: DateTimeControl) {
   const { field, value, timezone, onChange, disabled } = props;

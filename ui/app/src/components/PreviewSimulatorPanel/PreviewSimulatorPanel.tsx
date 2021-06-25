@@ -29,8 +29,8 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import TextField from '@material-ui/core/TextField';
 import { setHostSize } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
-import { useSelection } from '../../utils/hooks';
 import { WidthAndHeight } from '../../models/WidthAndHeight';
+import { useSelection } from '../../utils/hooks/useSelection';
 
 const SIMULATOR_PANEL_RESPONSIVE_MODE = 'previewSimulatorPanel.previewWindowSize';
 const SIMULATOR_PANEL_CUSTOM_MODE = 'previewSimulatorPanel.custom';

@@ -21,10 +21,10 @@ import DialogFooter from '../Dialogs/DialogFooter';
 import { FormattedMessage } from 'react-intl';
 import TextField from '@material-ui/core/TextField';
 import { commitResolution } from '../../services/repositories';
-import { useActiveSiteId } from '../../utils/hooks';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import { isBlank } from '../../utils/string';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 
 export interface CommitResolutionDialogContainerProps {
   open: boolean;

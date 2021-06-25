@@ -16,7 +16,8 @@
 
 import React, { useState } from 'react';
 import { QuickCreateMenu } from '../modules/Preview/QuickCreate';
-import { useQuickCreateListResource, useSystemVersionResource } from '../utils/hooks';
+import { useQuickCreateListResource } from '../utils/hooks/useQuickCreateListResource';
+import { useSystemVersionResource } from '../utils/hooks/useSystemVersionResource';
 
 interface QuickCreateMenuProps {
   anchorEl: HTMLElement;

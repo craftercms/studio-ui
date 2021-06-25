@@ -19,18 +19,16 @@ import ViewToolbar from '../../components/ViewToolbar';
 import LauncherOpenerButton from '../../components/LauncherOpenerButton';
 import { closeTools, openTools } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
-import {
-  useActiveSiteId,
-  useActiveUser,
-  useItemsByPath,
-  usePreviewGuest,
-  usePreviewState,
-  useSiteUIConfig
-} from '../../utils/hooks';
 import { defineMessages, useIntl } from 'react-intl';
 import Tooltip from '@material-ui/core/Tooltip';
 import LogoAndMenuBundleButton from '../../components/LogoAndMenuBundleButton';
 import { renderWidgets } from '../../components/Widget';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { usePreviewGuest } from '../../utils/hooks/usePreviewGuest';
+import { usePreviewState } from '../../utils/hooks/usePreviewState';
+import { useActiveUser } from '../../utils/hooks/useActiveUser';
+import { useItemsByPath } from '../../utils/hooks/useItemsByPath';
+import { useSiteUIConfig } from '../../utils/hooks/useSiteUIConfig';
 
 const translations = defineMessages({
   openToolsPanel: {

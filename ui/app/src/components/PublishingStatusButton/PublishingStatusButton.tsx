@@ -16,10 +16,10 @@
 
 import React, { forwardRef } from 'react';
 import { IconButtonProps } from '@material-ui/core/IconButton';
-import { useSelection } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import PublishingStatusButtonUI, { PublishingStatusButtonUIProps } from './PublishingStatusButtonUI';
 import { showPublishingStatusDialog } from '../../state/actions/dialogs';
+import { useSelection } from '../../utils/hooks/useSelection';
 
 export interface PublishingStatusButtonProps extends IconButtonProps {
   variant?: PublishingStatusButtonUIProps['variant'];

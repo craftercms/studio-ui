@@ -34,12 +34,12 @@ import Typography from '@material-ui/core/Typography';
 import { bulkGoLive, fetchPublishingTargets, publishByCommits } from '../../services/publishing';
 import { showSystemNotification } from '../../state/actions/system';
 import { useDispatch } from 'react-redux';
-import { useSpreadState } from '../../utils/hooks';
 import { closeConfirmDialog, showConfirmDialog } from '../../state/actions/dialogs';
 import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import Link from '@material-ui/core/Link';
+import { useSpreadState } from '../../utils/hooks/useSpreadState';
 
 const useStyles = makeStyles((theme) =>
   createStyles({

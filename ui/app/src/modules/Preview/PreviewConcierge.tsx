@@ -78,15 +78,6 @@ import Button from '@material-ui/core/Button';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { getGuestToHostBus, getHostToGuestBus, getHostToHostBus } from './previewContext';
 import { useDispatch } from 'react-redux';
-import {
-  useActiveSiteId,
-  useActiveUser,
-  useContentTypes,
-  useItemsByPath,
-  useMount,
-  usePreviewState,
-  useSelection
-} from '../../utils/hooks';
 import { findParentModelId, nnou, pluckProps } from '../../utils/object';
 import RubbishBin from './Tools/RubbishBin';
 import { useSnackbar } from 'notistack';
@@ -119,6 +110,13 @@ import Snackbar from '@material-ui/core/Snackbar';
 import CloseRounded from '@material-ui/icons/CloseRounded';
 import IconButton from '@material-ui/core/IconButton';
 import { useHotkeys } from 'react-hotkeys-hook';
+import { useSelection } from '../../utils/hooks/useSelection';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { usePreviewState } from '../../utils/hooks/usePreviewState';
+import { useContentTypes } from '../../utils/hooks/useContentTypes';
+import { useActiveUser } from '../../utils/hooks/useActiveUser';
+import { useItemsByPath } from '../../utils/hooks/useItemsByPath';
+import { useMount } from '../../utils/hooks/useMount';
 
 const guestMessages = defineMessages({
   maxCount: {

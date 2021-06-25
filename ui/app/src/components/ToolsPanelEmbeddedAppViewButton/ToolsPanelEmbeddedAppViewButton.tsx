@@ -16,10 +16,11 @@
 
 import React, { useState } from 'react';
 import ToolsPanelListItemButton from '../ToolsPanelListItemButton';
-import { useMinimizeDialog, usePossibleTranslation } from '../../utils/hooks';
 import { maximizeDialog } from '../../state/reducers/dialogs/minimizedDialogs';
 import { useDispatch } from 'react-redux';
 import WidgetDialog from '../WidgetDialog';
+import { useMinimizeDialog } from '../../utils/hooks/useMinimizeDialog';
+import { usePossibleTranslation } from '../../utils/hooks/usePossibleTranslation';
 
 export default function ToolsPanelEmbeddedAppViewButton(props) {
   const [open, setOpen] = useState(false);

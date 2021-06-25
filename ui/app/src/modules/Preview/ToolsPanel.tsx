@@ -18,19 +18,17 @@ import React from 'react';
 import { defineMessages, FormattedMessage } from 'react-intl';
 import { updateToolsPanelWidth } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
-import {
-  useActiveSiteId,
-  useActiveUser,
-  useLogicResource,
-  usePreviewState,
-  useSelection,
-  useSiteUIConfig
-} from '../../utils/hooks';
 import ResizeableDrawer from './ResizeableDrawer';
 import { renderWidgets, WidgetDescriptor } from '../../components/Widget';
 import { Resource } from '../../models/Resource';
 import { SuspenseWithEmptyState } from '../../components/SystemStatus/Suspencified';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { useSelection } from '../../utils/hooks/useSelection';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { usePreviewState } from '../../utils/hooks/usePreviewState';
+import { useActiveUser } from '../../utils/hooks/useActiveUser';
+import { useLogicResource } from '../../utils/hooks/useLogicResource';
+import { useSiteUIConfig } from '../../utils/hooks/useSiteUIConfig';
 
 defineMessages({
   previewSiteExplorerPanelTitle: {

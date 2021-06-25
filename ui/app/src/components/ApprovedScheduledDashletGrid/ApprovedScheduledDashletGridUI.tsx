@@ -36,9 +36,9 @@ import Checkbox from '@material-ui/core/Checkbox';
 import MoreVertRounded from '@material-ui/icons/MoreVertRounded';
 import ItemDisplay from '../ItemDisplay';
 import clsx from 'clsx';
-import { useLocale } from '../../utils/hooks';
 import { DashboardItem } from '../AwaitingApprovalDashlet';
 import { asLocalizedDateTime } from '../../utils/datetime';
+import { useLocale } from '../../utils/hooks/useLocale';
 
 interface ApprovedScheduledDashletGridUIProps {
   resource: Resource<DashboardItem[]>;

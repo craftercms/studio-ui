@@ -17,7 +17,6 @@
 import useStyles from './styles';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
-import { useDebouncedInput } from '../../utils/hooks';
 import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
 import Avatar from '@material-ui/core/Avatar';
 import ClearRoundedIcon from '@material-ui/icons/ClearRounded';
@@ -32,6 +31,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import IconButton from '@material-ui/core/IconButton';
 import { AuditGridFilterPopoverProps } from './AuditGridFilterPopover';
 import moment from 'moment-timezone';
+import { useDebouncedInput } from '../../utils/hooks/useDebouncedInput';
 
 const translations = defineMessages({
   siteId: {

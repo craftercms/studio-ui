@@ -17,7 +17,6 @@
 import LauncherTile, { LauncherTileProps } from '../LauncherTile';
 import { getSimplifiedVersion } from '../../utils/string';
 import React, { useEffect, useState } from 'react';
-import { useEnv, useGlobalNavigation, useSystemVersion } from '../../utils/hooks';
 import TranslationOrText from '../../models/TranslationOrText';
 import { useIntl } from 'react-intl';
 import { getLauncherSectionLink, LauncherSectionUI, LauncherSectionUIStyles, urlMapping } from '../LauncherSection';
@@ -27,6 +26,9 @@ import { useDispatch } from 'react-redux';
 import ApiResponseErrorState from '../ApiResponseErrorState';
 import { globalMenuMessages } from '../../utils/i18n-legacy';
 import Skeleton from '@material-ui/lab/Skeleton';
+import { useEnv } from '../../utils/hooks/useEnv';
+import { useSystemVersion } from '../../utils/hooks/useSystemVersion';
+import { useGlobalNavigation } from '../../utils/hooks/useGlobalNavigation';
 
 export interface LauncherGlobalNavProps {
   title?: TranslationOrText;

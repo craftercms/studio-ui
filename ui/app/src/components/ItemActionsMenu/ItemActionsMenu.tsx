@@ -16,7 +16,6 @@
 
 import React, { PropsWithChildren } from 'react';
 import ContextMenu, { ContextMenuProps } from '../ContextMenu';
-import { useActiveSiteId, useEnv, useItemsByPath, useSelection } from '../../utils/hooks';
 import { PopoverOrigin, PopoverPosition, PopoverReference } from '@material-ui/core';
 import { useDispatch } from 'react-redux';
 import { useIntl } from 'react-intl';
@@ -25,6 +24,10 @@ import { generateSingleItemOptions, itemActionDispatcher } from '../../utils/ite
 import { PopoverProps } from '@material-ui/core/Popover';
 import { getRootPath, isValidCutPastePath } from '../../utils/path';
 import { AllItemActions } from '../../models/Item';
+import { useSelection } from '../../utils/hooks/useSelection';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { useEnv } from '../../utils/hooks/useEnv';
+import { useItemsByPath } from '../../utils/hooks/useItemsByPath';
 
 export interface ItemMenuBaseProps {
   path: string;

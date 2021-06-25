@@ -16,7 +16,6 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
-import { useActiveSiteId, useDebouncedInput, useLogicResource, useSelection } from '../../utils/hooks';
 import { MediaItem } from '../../models/Search';
 import { createStyles, fade } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -42,6 +41,10 @@ import { uploadDataUrl } from '../../services/content';
 import Suspencified from '../SystemStatus/Suspencified';
 import palette from '../../styles/palette';
 import { Resource } from '../../models/Resource';
+import { useSelection } from '../../utils/hooks/useSelection';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { useLogicResource } from '../../utils/hooks/useLogicResource';
+import { useDebouncedInput } from '../../utils/hooks/useDebouncedInput';
 
 const translations = defineMessages({
   previewAssetsPanelTitle: {

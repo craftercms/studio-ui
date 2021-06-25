@@ -20,7 +20,6 @@ import { MarketplacePlugin } from '../../models/MarketplacePlugin';
 import DialogHeader from '../Dialogs/DialogHeader';
 import { FormattedMessage } from 'react-intl';
 import DialogBody from '../Dialogs/DialogBody';
-import { useActiveSiteId, useLogicResource, useMount, useSubject } from '../../utils/hooks';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import { Resource } from '../../models/Resource';
 import { fetchMarketplacePlugins, installMarketplacePlugin } from '../../services/marketplace';
@@ -36,6 +35,10 @@ import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import LookupTable from '../../models/LookupTable';
 import { PluginRecord } from '../../models/Plugin';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { useLogicResource } from '../../utils/hooks/useLogicResource';
+import { useMount } from '../../utils/hooks/useMount';
+import { useSubject } from '../../utils/hooks/useSubject';
 
 const useStyles = makeStyles((theme) =>
   createStyles({

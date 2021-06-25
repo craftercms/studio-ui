@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useSelection, useUnmount } from '../../utils/hooks';
 import { useStyles } from './styles';
 import DialogHeader from '../Dialogs/DialogHeader';
 import { FormattedMessage } from 'react-intl';
@@ -23,6 +22,8 @@ import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import React from 'react';
 import { LogConsoleDetailsDialogProps } from './LogConsoleDetailsDialog';
+import { useSelection } from '../../utils/hooks/useSelection';
+import { useUnmount } from '../../utils/hooks/useUnmount';
 
 export default function LogConsoleDetailsDialogUI(props: LogConsoleDetailsDialogProps) {
   const { logEvent, onClose, onClosed } = props;

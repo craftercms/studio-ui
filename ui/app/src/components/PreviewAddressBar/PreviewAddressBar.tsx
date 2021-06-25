@@ -38,7 +38,7 @@ import { getNumOfMenuOptionsForItem } from '../../utils/content';
 import Tooltip from '@material-ui/core/Tooltip';
 import { changeCurrentUrl, RELOAD_REQUEST } from '../../state/actions/preview';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
-import { usePreviewState } from '../../utils/hooks';
+import { usePreviewState } from '../../utils/hooks/usePreviewState';
 
 export interface AddressBarProps {
   site: string;

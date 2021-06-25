@@ -21,8 +21,8 @@ import Dialog from '@material-ui/core/Dialog';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import StandardAction from '../../models/StandardAction';
 import { ApiResponse } from '../../models/ApiResponse';
-import { useUnmount } from '../../utils/hooks';
 import ApiResponseErrorState from '../ApiResponseErrorState';
+import { useUnmount } from '../../utils/hooks/useUnmount';
 
 interface ErrorDialogBaseProps {
   open: boolean;

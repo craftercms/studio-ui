@@ -18,15 +18,6 @@ import React, { ElementType, useCallback, useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { DetailedItem } from '../../models/Item';
 import ContextMenu, { ContextMenuOption } from '../ContextMenu';
-import {
-  useActiveSiteId,
-  useEnv,
-  useItemsByPath,
-  usePreviewState,
-  useSelection,
-  useSiteLocales,
-  useSubject
-} from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import { getParentPath, withIndex, withoutIndex } from '../../utils/path';
 import { translations } from './translations';
@@ -71,6 +62,13 @@ import { SystemIconDescriptor } from '../SystemIcon';
 import { getOffsetLeft, getOffsetTop } from '@material-ui/core/Popover/Popover';
 import { getNumOfMenuOptionsForItem } from '../../utils/content';
 import { batchActions } from '../../state/actions/misc';
+import { useSelection } from '../../utils/hooks/useSelection';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { usePreviewState } from '../../utils/hooks/usePreviewState';
+import { useEnv } from '../../utils/hooks/useEnv';
+import { useItemsByPath } from '../../utils/hooks/useItemsByPath';
+import { useSubject } from '../../utils/hooks/useSubject';
+import { useSiteLocales } from '../../utils/hooks/useSiteLocales';
 
 interface Menu {
   path?: string;
