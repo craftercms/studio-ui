@@ -126,6 +126,7 @@ export interface GlobalState {
     };
     itemsByPath: LookupTable<DetailedItem>;
     clipboard: Clipboard;
+    itemsBeingFetchedByPath: LookupTable<boolean>;
   };
   contentTypes: EntityState<ContentType>;
   env: {

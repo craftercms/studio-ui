@@ -178,11 +178,12 @@ export function useItemsByPath(): GlobalState['content']['itemsByPath'] {
 export function useDetailedItem(path: string): DetailedItem {
   const dispatch = useDispatch();
   const item = useSelection((state) => state.content.itemsByPath[path]);
+  const beingFetching = useSelection((state) => state.content.itemsBeingFetchedByPath[path]);
   useEffect(() => {
-    if (nou(item) && path) {
+    if (nou(item) && path && beingFetching === undefined) {
       dispatch(completeDetailedItem({ path }));
     }
-  }, [dispatch, item, path]);
+  }, [beingFetching, dispatch, item, path]);
   return item;
 }
 
