@@ -15,11 +15,15 @@
  */
 
 import * as React from 'react';
+import { Suspense } from 'react';
 import { useDispatch } from 'react-redux';
-import { useActiveSiteId, useActiveUser, useSelection, useSiteUIConfig } from '../../utils/hooks';
 import { updatePageBuilderPanelWidth } from '../../state/actions/preview';
-import { ConditionalLoadingState } from '../SystemStatus/LoadingState';
+import LoadingState, { ConditionalLoadingState } from '../SystemStatus/LoadingState';
 import PageBuilderPanelUI from './PageBuilderPanelUI';
+import { useSelection } from '../../utils/hooks/useSelection';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { useActiveUser } from '../../utils/hooks/useActiveUser';
+import { useSiteUIConfig } from '../../utils/hooks/useSiteUIConfig';
 
 export function PageBuilderPanel() {
   const dispatch = useDispatch();
@@ -29,19 +33,21 @@ export function PageBuilderPanel() {
   const { pageBuilderPanelWidth: width, editMode, pageBuilderPanelStack } = useSelection((state) => state.preview);
   const onWidthChange = (width) => dispatch(updatePageBuilderPanelWidth({ width }));
   return (
-    <ConditionalLoadingState isLoading={!Boolean(uiConfig.preview.pageBuilderPanel.widgets)}>
-      <PageBuilderPanelUI
-        open={editMode}
-        width={width}
-        onWidthChange={onWidthChange}
-        widgets={
-          pageBuilderPanelStack.length
-            ? pageBuilderPanelStack.slice(pageBuilderPanelStack.length - 1)
-            : uiConfig.preview.pageBuilderPanel.widgets
-        }
-        userRolesInSite={rolesBySite[site]}
-      />
-    </ConditionalLoadingState>
+    <Suspense fallback={<LoadingState />}>
+      <ConditionalLoadingState isLoading={!Boolean(uiConfig.preview.pageBuilderPanel.widgets)}>
+        <PageBuilderPanelUI
+          open={editMode}
+          width={width}
+          onWidthChange={onWidthChange}
+          widgets={
+            pageBuilderPanelStack.length
+              ? pageBuilderPanelStack.slice(pageBuilderPanelStack.length - 1)
+              : uiConfig.preview.pageBuilderPanel.widgets
+          }
+          userRolesInSite={rolesBySite[site]}
+        />
+      </ConditionalLoadingState>
+    </Suspense>
   );
 }
 
