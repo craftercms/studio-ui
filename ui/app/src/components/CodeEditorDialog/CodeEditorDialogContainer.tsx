@@ -20,7 +20,14 @@ import DialogBody from '../Dialogs/DialogBody';
 import { fetchContentXML, writeContent } from '../../services/content';
 import { ConditionalLoadingState } from '../SystemStatus/LoadingState';
 import AceEditor from '../AceEditor';
-import { useActiveSiteId, useActiveUser, useContentTypes, useDetailedItem, useUnmount } from '../../utils/hooks';
+import {
+  useActiveSiteId,
+  useActiveUser,
+  useContentTypes,
+  useDatasets,
+  useDetailedItem,
+  useUnmount
+} from '../../utils/hooks';
 import useStyles from './styles';
 import { CodeEditorDialogProps } from './CodeEditorDialog';
 import { useDispatch } from 'react-redux';
@@ -33,7 +40,6 @@ import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { showSystemNotification } from '../../state/actions/system';
 import translations from './translations';
 import SplitButton from '../Controls/SplitButton';
-import { freemarkerSnippets, groovySnippets } from './utils';
 import MenuItem from '@material-ui/core/MenuItem';
 import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
@@ -63,10 +69,9 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
   const { formatMessage } = useIntl();
   const contentTypes = useContentTypes();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const [snippets, setSnippets] = useState<LookupTable<{ label: string; value: string }>>(
-    mode === 'ftl' || mode === 'groovy' ? (mode === 'ftl' ? freemarkerSnippets : groovySnippets) : {}
-  );
+  const [snippets, setSnippets] = useState<LookupTable<{ label: string; value: string }>>({});
   const [contentModelSnippets, setContentModelSnippets] = useState<{ label: string; value: string }[]>(null);
+  const { freemarkerCodeSnippets, groovyCodeSnippets } = useDatasets();
 
   // add content model variables
   useEffect(() => {
@@ -77,8 +82,8 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
       if (_contentType) {
         const fields = contentTypes[_contentType].fields;
         if (mode === 'ftl') {
-          if (freemarkerSnippets['content-variable']) {
-            let { 'content-variable': contentVariable, ...rest } = freemarkerSnippets;
+          if (freemarkerCodeSnippets['content-variable']) {
+            let { 'content-variable': contentVariable, ...rest } = freemarkerCodeSnippets;
             setSnippets(rest);
             const snippets = Object.keys(fields).map((key) => ({
               label: fields[key].name,
@@ -90,8 +95,8 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
             setContentModelSnippets(snippets);
           }
         } else if (mode === 'groovy') {
-          if (groovySnippets['access-content-model']) {
-            let { 'access-content-model': contentVariable, ...rest } = groovySnippets;
+          if (groovyCodeSnippets['access-content-model']) {
+            let { 'access-content-model': contentVariable, ...rest } = groovyCodeSnippets;
             setSnippets(rest);
             const snippets = Object.keys(fields).map((key) => ({
               label: fields[key].name,
@@ -105,7 +110,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
         }
       }
     }
-  }, [contentTypes, contentType, mode, item]);
+  }, [contentTypes, contentType, mode, item, freemarkerCodeSnippets, groovyCodeSnippets]);
 
   const disableEdit = isItemLockedForMe(item, user.username) || !hasEditAction(item.availableActions);
 

@@ -192,11 +192,8 @@ export default React.forwardRef(function AceEditor(props: AceEditorProps, ref) {
     palette: { type }
   } = useTheme();
 
-  const options = pluckProps(
-    { ...props, theme: props.theme ?? `ace/theme/${type === 'light' ? 'chrome' : 'tomorrow_night'}` } as AceOptions,
-    true,
-    ...aceOptions
-  );
+  const options = pluckProps(props as AceOptions, true, ...aceOptions);
+  options.theme = options.theme ?? `ace/theme/${type === 'light' ? 'chrome' : 'tomorrow_night'}`;
 
   refs.current.onChange = onChange;
 

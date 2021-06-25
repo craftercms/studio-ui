@@ -198,7 +198,8 @@ export function fetchSiteUiConfig(site: string): Observable<Pick<GlobalState['ui
             }
           },
           launcher: null,
-          dashboard: null
+          dashboard: null,
+          datasets: {}
         };
         // Make sure any plugin reference has a valid site id to import the plugin from
         xml.querySelectorAll('plugin').forEach((tag) => {
@@ -282,6 +283,17 @@ export function fetchSiteUiConfig(site: string): Observable<Pick<GlobalState['ui
             renameTable
           }).configuration;
         }
+        // reading datasets
+        xml.querySelectorAll('dataset').forEach((tag) => {
+          config.datasets[tag.id.replace('craftercms.', '')] = applyDeserializedXMLTransforms(
+            deserialize(tag.innerHTML),
+            {
+              arrays,
+              renameTable
+            }
+          );
+        });
+
         return config;
       } else {
         return null;

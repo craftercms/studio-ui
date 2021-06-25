@@ -80,7 +80,8 @@ const initialState: GlobalState['uiConfig'] = {
     error: null,
     tools: null,
     isFetching: false
-  }
+  },
+  datasets: null
 };
 
 const reducer = createReducer<GlobalState['uiConfig']>(initialState, {

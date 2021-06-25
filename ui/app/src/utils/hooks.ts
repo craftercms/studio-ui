@@ -374,6 +374,10 @@ export function useLocale(): GlobalState['uiConfig']['locale'] {
   return useSelection((state) => state.uiConfig.locale);
 }
 
+export function useDatasets(): GlobalState['uiConfig']['datasets'] {
+  return useSelection((state) => state.uiConfig.datasets);
+}
+
 export function useRoles(): GlobalState['user']['rolesBySite'] {
   return useSelection((state) => state.user.rolesBySite);
 }
