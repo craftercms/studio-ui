@@ -18,6 +18,7 @@ import {
   ContentType,
   ContentTypeField,
   ContentTypeFieldValidations,
+  DataSource,
   LegacyContentType,
   LegacyDataSource,
   LegacyFormDefinition,
@@ -45,6 +46,7 @@ const typeMap = {
 
 const systemValidationsNames = [
   'itemManager',
+  'imageManager',
   'minSize',
   'maxSize',
   'maxlength',
@@ -88,7 +90,7 @@ function bestGuessParse(value: any) {
 
 function getFieldValidations(
   fieldProperty: LegacyFormDefinitionProperty | LegacyFormDefinitionProperty[],
-  dropTargetsLookup?: LookupTable<LegacyDataSource>
+  dataSources?: LookupTable<DataSource>
 ): Partial<ContentTypeFieldValidations> {
   const map = asArray<LegacyFormDefinitionProperty>(fieldProperty).reduce<LookupTable<LegacyFormDefinitionProperty>>(
     (table, prop) => {
@@ -124,11 +126,11 @@ function getFieldValidations(
 
   Object.keys(map).forEach((key) => {
     if (systemValidationsNames.includes(key)) {
-      if (key === 'itemManager' && dropTargetsLookup) {
+      if (key === 'itemManager' && dataSources) {
         map.itemManager?.value &&
           map.itemManager.value.split(',').forEach((value) => {
-            if (dropTargetsLookup[value]) {
-              asArray(dropTargetsLookup[value].properties?.property).forEach((prop) => {
+            if (dataSources[value]) {
+              asArray(dataSources[value].properties?.property).forEach((prop) => {
                 if (systemValidationsKeysMap[prop.name]) {
                   validations[systemValidationsKeysMap[prop.name]] = {
                     id: systemValidationsKeysMap[prop.name],
@@ -139,6 +141,12 @@ function getFieldValidations(
               });
             }
           });
+      } else if (key === 'imageManager' && dataSources) {
+        validations['allowedImageDataSources'] = {
+          id: 'allowedImageDataSources',
+          value: map.imageManager.value.split(','),
+          level: 'required'
+        };
       } else if (systemValidationsNames.includes(key) && !isBlank(map[key]?.value)) {
         validations[systemValidationsKeysMap[key]] = {
           id: systemValidationsKeysMap[key],
@@ -163,13 +171,18 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
 
   const fields = {};
   const sections = [];
-  // const dataSources = {};
-  const dropTargetsLookup: LookupTable<LegacyDataSource> = {};
+  const dataSources: LookupTable<DataSource> = {};
 
   // get receptacles dataSources
   if (definition.datasources?.datasource) {
     asArray(definition.datasources.datasource).forEach((datasource: LegacyDataSource) => {
-      if (datasource.type === 'dropTargets') dropTargetsLookup[datasource.id] = datasource;
+      if (['dropTargets', 'img-desktop-upload', 'img-repository-upload'].includes(datasource.type)) {
+        const { title, ...rest } = datasource;
+        dataSources[datasource.id] = {
+          name: datasource.title,
+          ...rest
+        };
+      }
     });
   }
 
@@ -237,7 +250,7 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
                 if (field.fields[_fieldId].type === 'node-selector') {
                   field.fields[_fieldId].validations = getFieldValidations(
                     _legacyField.properties.property,
-                    dropTargetsLookup
+                    dataSources
                   );
                 }
               });
@@ -245,14 +258,20 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
             case 'node-selector':
               field.validations = {
                 ...field.validations,
-                ...getFieldValidations(legacyField.properties.property, dropTargetsLookup)
+                ...getFieldValidations(legacyField.properties.property, dataSources)
               };
               break;
-            case 'input':
-            case 'image-picker':
+            case 'input': {
               field.validations = {
                 ...field.validations,
                 ...getFieldValidations(legacyField.properties.property)
+              };
+              break;
+            }
+            case 'image-picker':
+              field.validations = {
+                ...field.validations,
+                ...getFieldValidations(legacyField.properties.property, dataSources)
               };
               break;
           }
@@ -276,7 +295,7 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
     // Find display template
     displayTemplate: topLevelProps.find((prop) => prop.name === 'display-template')?.value,
     mergeStrategy: topLevelProps.find((prop) => prop.name === 'merge-strategy')?.value,
-    // dataSources: Object.values(dataSources),
+    dataSources: dataSources,
     sections,
     fields
   };
