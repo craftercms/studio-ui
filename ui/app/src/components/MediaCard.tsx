@@ -19,8 +19,7 @@ import CardHeader from '@material-ui/core/CardHeader';
 import CardMedia from '@material-ui/core/CardMedia';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import IconButton from '@material-ui/core/IconButton';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { Theme } from '@material-ui/core/styles';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { MediaItem } from '../models/Search';
 import FormGroup from '@material-ui/core/FormGroup';
@@ -247,7 +246,7 @@ function MediaCard(props: MediaCardProps) {
           }
           avatar={Avatar ? <Avatar /> : null}
           classes={{ root: classes.cardHeaderRoot, avatar: classes.avatar }}
-          onClick={() => onPreview(item)}
+          onClick={() => onPreview && onPreview(item)}
           titleTypographyProps={{
             variant: 'subtitle2',
             component: 'h2',

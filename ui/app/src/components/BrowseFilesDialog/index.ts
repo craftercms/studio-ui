@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -14,13 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { post } from '../utils/ajax';
-import { Observable } from 'rxjs';
-import { pluck } from 'rxjs/operators';
-import { ElasticParams, SearchResult } from '../models/Search';
+export { default } from './BrowseFilesDialog';
 
-export function search(site: string, parameters: Partial<ElasticParams>): Observable<SearchResult> {
-  return post(`/studio/api/2/search/search.json?siteId=${site}`, parameters, {
-    'Content-Type': 'application/json'
-  }).pipe(pluck('response', 'result'));
-}
+export * from './BrowseFilesDialogUI';
