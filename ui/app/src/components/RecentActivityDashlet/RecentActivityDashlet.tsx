@@ -17,7 +17,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import LookupTable from '../../models/LookupTable';
 import ApiResponse from '../../models/ApiResponse';
-import { useActiveSiteId, useLocale, useLogicResource } from '../../utils/hooks';
 import { DetailedItem } from '../../models/Item';
 import { fetchLegacyUserActivities } from '../../services/dashboard';
 import useStyles from './styles';
@@ -35,6 +34,9 @@ import { itemsApproved, itemsDeleted, itemsRejected, itemsScheduled } from '../.
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { filter } from 'rxjs/operators';
 import TextField from '@material-ui/core/TextField';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { useLogicResource } from '../../utils/hooks/useLogicResource';
+import { useLocale } from '../../utils/hooks/useLocale';
 
 export interface RecentActivityDashletProps {
   selectedLookup: LookupTable<boolean>;

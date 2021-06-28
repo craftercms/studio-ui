@@ -24,15 +24,6 @@ import LauncherSiteCard, { LauncherSiteCardOption } from '../LauncherSiteCard/La
 import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
 import Hidden from '@material-ui/core/Hidden';
-import {
-  useActiveSiteId,
-  useActiveUser,
-  useEnv,
-  usePreviewState,
-  useSiteList,
-  useSiteUIConfig,
-  useSystemVersion
-} from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import { getInitials } from '../../utils/string';
 import { changeSite } from '../../state/reducers/sites';
@@ -58,6 +49,13 @@ import { getSystemLink } from '../LauncherSection';
 import LauncherGlobalNav from '../LauncherGlobalNav';
 import GlobalState from '../../models/GlobalState';
 import Skeleton from '@material-ui/lab/Skeleton';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { usePreviewState } from '../../utils/hooks/usePreviewState';
+import { useEnv } from '../../utils/hooks/useEnv';
+import { useSystemVersion } from '../../utils/hooks/useSystemVersion';
+import { useActiveUser } from '../../utils/hooks/useActiveUser';
+import { useSiteList } from '../../utils/hooks/useSiteList';
+import { useSiteUIConfig } from '../../utils/hooks/useSiteUIConfig';
 
 export interface LauncherProps {
   open: boolean;

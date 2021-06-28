@@ -21,11 +21,11 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { TextField } from '@material-ui/core';
 import { useEffect, useState } from 'react';
 import { clearLock } from '../../services/publishing';
-import { useActiveSiteId } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../state/actions/system';
 import StandardAction from '../../models/StandardAction';
 import { fetchPublishingStatus } from '../../state/actions/publishingStatus';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 
 export interface UnlockPublisherDialogProps {
   open: boolean;

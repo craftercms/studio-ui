@@ -35,11 +35,11 @@ import Checkbox from '@material-ui/core/Checkbox';
 import MoreVertRounded from '@material-ui/icons/MoreVertRounded';
 import ItemDisplay from '../ItemDisplay';
 import clsx from 'clsx';
-import { useLocale } from '../../utils/hooks';
 import { DashboardItem } from '../AwaitingApprovalDashlet';
 import ExpandLessIcon from '@material-ui/icons/ExpandLessRounded';
 import { asLocalizedDateTime } from '../../utils/datetime';
 import Tooltip from '@material-ui/core/Tooltip';
+import { useLocale } from '../../utils/hooks/useLocale';
 
 interface AwaitingApprovalDashletGridUIProps {
   resource: Resource<DashboardItem[]>;

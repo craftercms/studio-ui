@@ -17,7 +17,6 @@
 import InputBase from '@material-ui/core/InputBase';
 import React, { useEffect, useState } from 'react';
 import { debounceTime, switchMap, tap } from 'rxjs/operators';
-import { useActiveSiteId, useContentTypeList, useSubject } from '../../utils/hooks';
 import { search } from '../../services/search';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import useAutocomplete from '@material-ui/lab/useAutocomplete';
@@ -33,6 +32,9 @@ import { FormattedMessage } from 'react-intl';
 import parse from 'autosuggest-highlight/parse';
 import match from 'autosuggest-highlight/match';
 import palette from '../../styles/palette';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { useContentTypeList } from '../../utils/hooks/useContentTypeList';
+import { useSubject } from '../../utils/hooks/useSubject';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

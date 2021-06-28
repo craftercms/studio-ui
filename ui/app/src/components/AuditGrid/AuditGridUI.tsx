@@ -38,12 +38,12 @@ import IconButton from '@material-ui/core/IconButton';
 import VisibilityRoundedIcon from '@material-ui/icons/VisibilityRounded';
 // @ts-ignore
 import { getOffsetLeft, getOffsetTop } from '@material-ui/core/Popover/Popover';
-import { useLocale } from '../../utils/hooks';
 import moment from 'moment-timezone';
 import LookupTable from '../../models/LookupTable';
 import { Button, Typography } from '@material-ui/core';
 import EmptyState from '../SystemStatus/EmptyState';
 import AuditGridFilterPopover from '../AuditGridFilterPopover';
+import { useLocale } from '../../utils/hooks/useLocale';
 
 export interface AuditGridUIProps {
   page: number;

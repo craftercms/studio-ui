@@ -17,7 +17,6 @@
 import React, { PropsWithChildren, useEffect, useState } from 'react';
 import StandardAction from '../../models/StandardAction';
 import Dialog from '@material-ui/core/Dialog';
-import { useActiveSiteId, useLogicResource, useSpreadState, useUnmount } from '../../utils/hooks';
 import { createStyles, makeStyles, withStyles } from '@material-ui/core/styles';
 import { SandboxItem } from '../../models/Item';
 import DialogHeader from './DialogHeader';
@@ -48,6 +47,10 @@ import Typography from '@material-ui/core/Typography';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import { emitSystemEvent, itemsRejected } from '../../state/actions/system';
 import { useDispatch } from 'react-redux';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { useLogicResource } from '../../utils/hooks/useLogicResource';
+import { useUnmount } from '../../utils/hooks/useUnmount';
+import { useSpreadState } from '../../utils/hooks/useSpreadState';
 
 // region Typings
 

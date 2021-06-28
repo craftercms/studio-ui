@@ -22,7 +22,6 @@ import { LegacyContentType, LegacyFormConfig } from '../../../models/ContentType
 import { Resource } from '../../../models/Resource';
 import StandardAction from '../../../models/StandardAction';
 import { DetailedItem } from '../../../models/Item';
-import { useActiveSiteId, useLogicResource, useSelection, useSubject } from '../../../utils/hooks';
 import DialogHeader from '../../../components/Dialogs/DialogHeader';
 import NewContentCard, { ContentSkeletonCard } from './NewContentCard';
 import SearchBar from '../../../components/Controls/SearchBar';
@@ -38,6 +37,10 @@ import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspenc
 import { debounceTime } from 'rxjs/operators';
 import { closeNewContentDialog, newContentCreationComplete } from '../../../state/actions/dialogs';
 import { batchActions } from '../../../state/actions/misc';
+import { useSelection } from '../../../utils/hooks/useSelection';
+import { useActiveSiteId } from '../../../utils/hooks/useActiveSiteId';
+import { useLogicResource } from '../../../utils/hooks/useLogicResource';
+import { useSubject } from '../../../utils/hooks/useSubject';
 
 const translations = defineMessages({
   title: {

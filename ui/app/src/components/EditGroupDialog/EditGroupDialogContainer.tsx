@@ -32,8 +32,9 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../state/actions/system';
-import { useSpreadState, useUnmount } from '../../utils/hooks';
 import Typography from '@material-ui/core/Typography';
+import { useUnmount } from '../../utils/hooks/useUnmount';
+import { useSpreadState } from '../../utils/hooks/useSpreadState';
 
 export interface EditGroupDialogContainerProps {
   open: boolean;

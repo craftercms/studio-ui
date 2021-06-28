@@ -33,9 +33,9 @@ import DateTimePicker from '../../../components/Controls/DateTimePicker';
 import moment from 'moment';
 import palette from '../../../styles/palette';
 import TextFieldWithMax from '../../../components/Controls/TextFieldWithMax';
-import { useSelection } from '../../../utils/hooks';
 import GlobalState from '../../../models/GlobalState';
 import FormLabel from '@material-ui/core/FormLabel';
+import { useSelection } from '../../../utils/hooks/useSelection';
 
 const messages = defineMessages({
   emailLabel: {

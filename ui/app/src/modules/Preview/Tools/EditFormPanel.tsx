@@ -19,7 +19,6 @@ import ToolPanel from './ToolPanel';
 import CloseRounded from '@material-ui/icons/CloseRounded';
 import Typography from '@material-ui/core/Typography';
 import { useDispatch } from 'react-redux';
-import { useActiveSiteId, usePreviewState, useSelection } from '../../../utils/hooks';
 import { defineMessages, useIntl } from 'react-intl';
 import { findParentModelId, nnou } from '../../../utils/object';
 import { popPiece } from '../../../utils/string';
@@ -28,6 +27,9 @@ import { showCodeEditorDialog, showEditDialog } from '../../../state/actions/dia
 import { getField } from '../../../utils/contentType';
 import { Menu, MenuItem } from '@material-ui/core';
 import { GuestData } from '../../../models/GlobalState';
+import { useSelection } from '../../../utils/hooks/useSelection';
+import { useActiveSiteId } from '../../../utils/hooks/useActiveSiteId';
+import { usePreviewState } from '../../../utils/hooks/usePreviewState';
 
 interface EditFormPanelProps {
   open: boolean;

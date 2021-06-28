@@ -20,12 +20,12 @@ import { RepositoryStatus } from '../../models/Repository';
 import RemoteRepositoriesStatusUI from './RemoteRepositoriesStatusUI';
 import CommitResolutionDialog from '../CommitResolutionDialog/CommitResolutionDialog';
 import { cancelFailedPull, resolveConflict as resolveConflictService } from '../../services/repositories';
-import { useActiveSiteId } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../state/actions/system';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { defineMessages, useIntl } from 'react-intl';
 import RemoteRepositoriesDiffDialog from '../RemoteRepositoriesDiffDialog';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 
 export interface StudioRepositoryStatusProps {
   resource: Resource<RepositoryStatus>;

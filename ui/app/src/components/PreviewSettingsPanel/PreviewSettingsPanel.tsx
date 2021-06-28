@@ -18,10 +18,12 @@ import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { makeStyles } from '@material-ui/core/styles';
 import { FormControl, FormControlLabel, FormHelperText, FormLabel, Radio, RadioGroup } from '@material-ui/core';
-import { useItemsByPath, usePreviewGuest, usePreviewState } from '../../utils/hooks';
 import { setHighlightMode } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 import EditModeSwitch from '../EditModeSwitch';
+import { usePreviewGuest } from '../../utils/hooks/usePreviewGuest';
+import { usePreviewState } from '../../utils/hooks/usePreviewState';
+import { useItemsByPath } from '../../utils/hooks/useItemsByPath';
 
 const translations = defineMessages({
   editMode: {

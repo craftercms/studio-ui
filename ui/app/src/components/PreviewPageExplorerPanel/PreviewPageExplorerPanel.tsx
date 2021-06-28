@@ -25,14 +25,6 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRightRounded';
 import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
 import TreeItem from '@material-ui/lab/TreeItem';
 import MuiBreadcrumbs from '@material-ui/core/Breadcrumbs';
-import {
-  useActiveSiteId,
-  useLogicResource,
-  usePreviewGuest,
-  useSelection,
-  useSpreadState,
-  useUnmount
-} from '../../utils/hooks';
 import { ContentType, ContentTypeField } from '../../models/ContentType';
 import Page from '../Icons/Page';
 import ContentTypeFieldIcon from '../Icons/ContentTypeField';
@@ -65,6 +57,12 @@ import Divider from '@material-ui/core/Divider';
 // @ts-ignore
 import { getOffsetLeft, getOffsetTop } from '@material-ui/core/Popover/Popover';
 import { showItemMegaMenu } from '../../state/actions/dialogs';
+import { useSelection } from '../../utils/hooks/useSelection';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { usePreviewGuest } from '../../utils/hooks/usePreviewGuest';
+import { useLogicResource } from '../../utils/hooks/useLogicResource';
+import { useUnmount } from '../../utils/hooks/useUnmount';
+import { useSpreadState } from '../../utils/hooks/useSpreadState';
 
 const rootPrefix = '{root}_';
 

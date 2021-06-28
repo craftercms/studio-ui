@@ -19,7 +19,6 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogHeader from '../Dialogs/DialogHeader';
 import DialogBody from '../Dialogs/DialogBody';
 import DialogFooter from '../Dialogs/DialogFooter';
-import { useActiveSiteId, useLogicResource } from '../../utils/hooks';
 import { FormattedMessage } from 'react-intl';
 import { diffConflictedFile as diffConflictedFileService } from '../../services/repositories';
 import ApiResponse from '../../models/ApiResponse';
@@ -33,6 +32,8 @@ import { messages } from '../RemoteRepositoriesStatus';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { useLogicResource } from '../../utils/hooks/useLogicResource';
 
 export interface RemoteRepositoriesDiffDialogProps {
   open: boolean;

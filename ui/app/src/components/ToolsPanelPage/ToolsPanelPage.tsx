@@ -19,7 +19,9 @@ import ToolPanel from '../../modules/Preview/Tools/ToolPanel';
 import { renderWidgets, WidgetDescriptor } from '../Widget';
 import { useDispatch } from 'react-redux';
 import { popPageBuilderPanelPage, popToolsPanelPage } from '../../state/actions/preview';
-import { useActiveSiteId, useActiveUser, usePossibleTranslation } from '../../utils/hooks';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { useActiveUser } from '../../utils/hooks/useActiveUser';
+import { usePossibleTranslation } from '../../utils/hooks/usePossibleTranslation';
 
 export interface ToolsPanelPageDescriptor {
   title: string;

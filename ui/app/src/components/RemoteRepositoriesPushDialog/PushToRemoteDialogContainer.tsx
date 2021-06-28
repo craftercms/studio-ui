@@ -25,11 +25,11 @@ import FormControl from '@material-ui/core/FormControl';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select/Select';
 import { push } from '../../services/repositories';
-import { useActiveSiteId } from '../../utils/hooks';
 import ApiResponse from '../../models/ApiResponse';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import { isBlank } from '../../utils/string';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 
 export interface PushToRemoteDialogContainerProps {
   open: boolean;

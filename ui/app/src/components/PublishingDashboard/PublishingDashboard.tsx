@@ -15,7 +15,6 @@
  */
 
 import * as React from 'react';
-import { useActiveSiteId } from '../../utils/hooks';
 import PublishingStatusWidget from '../PublishingStatusWidget';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
@@ -23,6 +22,7 @@ import PublishingQueueWidget from '../PublishingQueueWidget';
 import PublishOnDemandWidget from '../PublishOnDemandWidget';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import { FormattedMessage } from 'react-intl';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 
 const useStyles = makeStyles(() =>
   createStyles({

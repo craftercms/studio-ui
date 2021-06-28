@@ -19,7 +19,6 @@ import LookupTable from '../../models/LookupTable';
 import Dashlet from '../Dashlet';
 import { FormattedMessage } from 'react-intl';
 import { fetchLegacyScheduledItems } from '../../services/dashboard';
-import { useActiveSiteId, useLogicResource, useSpreadState } from '../../utils/hooks';
 import { parseLegacyItemToDetailedItem } from '../../utils/content';
 import ApiResponse from '../../models/ApiResponse';
 import { DashboardItem } from '../AwaitingApprovalDashlet';
@@ -34,6 +33,9 @@ import Button from '@material-ui/core/Button';
 import { itemsApproved, itemsDeleted, itemsRejected, itemsScheduled } from '../../state/actions/system';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { filter } from 'rxjs/operators';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { useLogicResource } from '../../utils/hooks/useLogicResource';
+import { useSpreadState } from '../../utils/hooks/useSpreadState';
 
 export interface ApprovedScheduledDashletProps {
   selectedLookup: LookupTable<boolean>;

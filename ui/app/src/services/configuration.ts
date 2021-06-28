@@ -60,11 +60,17 @@ export function fetchConfigurationJSON(
   environment?: string
 ): Observable<any> {
   return fetchConfigurationXML(site, configPath, module, environment).pipe(
-    map((conf) =>
-      deserialize(conf, {
-        parseNodeValue: false
-      })
-    )
+    map((conf) => {
+      return deserialize(conf, {
+        parseNodeValue: false,
+        tagValueProcessor: (value) =>
+          value
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .replace(/&quot;/g, '"')
+            .replace(/&amp;/g, '&')
+      });
+    })
   );
 }
 

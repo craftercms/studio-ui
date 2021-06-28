@@ -22,7 +22,7 @@ import IconButton from '@material-ui/core/IconButton';
 import ChevronRounded from '@material-ui/icons/ChevronRightRounded';
 import React from 'react';
 import SystemIcon, { SystemIconDescriptor } from '../SystemIcon';
-import { usePossibleTranslation } from '../../utils/hooks';
+import { usePossibleTranslation } from '../../utils/hooks/usePossibleTranslation';
 
 export interface ToolsPanelListItemButtonProps {
   title: string;

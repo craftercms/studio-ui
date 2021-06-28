@@ -14,13 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useActiveSiteId, useEnv, usePreviewState } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import { useEffect, useRef } from 'react';
 import { parse, stringify } from 'query-string';
 import { LookupTable } from '../../models/LookupTable';
 import { changeCurrentUrl } from '../../state/actions/preview';
 import { changeSite } from '../../state/reducers/sites';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { usePreviewState } from '../../utils/hooks/usePreviewState';
+import { useEnv } from '../../utils/hooks/useEnv';
 
 export default function usePreviewUrlControl(history) {
   const {

@@ -20,7 +20,6 @@ import { useDispatch } from 'react-redux';
 import LoadingState from '../../components/SystemStatus/LoadingState';
 import clsx from 'clsx';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { useMinimizeDialog, useUnmount } from '../../utils/hooks';
 import { defineMessages, useIntl } from 'react-intl';
 import {
   EMBEDDED_LEGACY_FORM_CLOSE,
@@ -44,6 +43,8 @@ import { emitSystemEvent, itemCreated, itemUpdated } from '../../state/actions/s
 import { getEditFormSrc } from '../../utils/path';
 import DialogHeader from './DialogHeader';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
+import { useUnmount } from '../../utils/hooks/useUnmount';
+import { useMinimizeDialog } from '../../utils/hooks/useMinimizeDialog';
 
 const translations = defineMessages({
   title: {

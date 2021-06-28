@@ -31,6 +31,7 @@ const useStyles = makeStyles((theme) =>
           toolbarMixin
         );
         return {
+          overflow: 'auto',
           height: `calc(90vh - 57px)`
         };
       } else {
@@ -41,6 +42,7 @@ const useStyles = makeStyles((theme) =>
           [key2]: {
             height: `calc(90vh - ${toolbarMixin[key2].minHeight}px - 1px)`
           },
+          overflow: 'auto',
           height: `calc(90vh - ${toolbarMixin.minHeight}px - 1px)`
         };
       }

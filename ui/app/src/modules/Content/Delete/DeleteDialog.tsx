@@ -16,7 +16,6 @@
 
 import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { SandboxItem } from '../../../models/Item';
-import { useActiveSiteId, useLogicResource, useSpreadState, useUnmount } from '../../../utils/hooks';
 import { DeleteDependencies, DependencySelectionDelete } from '../Dependencies/DependencySelection';
 import StandardAction from '../../../models/StandardAction';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
@@ -37,6 +36,10 @@ import { deleteItems } from '../../../services/content';
 import { emitSystemEvent, itemsDeleted } from '../../../state/actions/system';
 import SecondaryButton from '../../../components/SecondaryButton';
 import PrimaryButton from '../../../components/PrimaryButton';
+import { useActiveSiteId } from '../../../utils/hooks/useActiveSiteId';
+import { useLogicResource } from '../../../utils/hooks/useLogicResource';
+import { useUnmount } from '../../../utils/hooks/useUnmount';
+import { useSpreadState } from '../../../utils/hooks/useSpreadState';
 
 interface DeleteDialogContentUIProps {
   resource: Resource<DeleteDependencies>;

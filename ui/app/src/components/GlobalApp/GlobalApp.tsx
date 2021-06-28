@@ -32,7 +32,6 @@ import EncryptTool from '../EncryptTool';
 import TokenManagement from '../TokenManagement';
 import AboutCrafterCMSView from '../AboutCrafterCMSView';
 import AccountManagement from '../AccountManagement';
-import { useGlobalNavigation } from '../../utils/hooks';
 import { urlMapping } from '../LauncherSection';
 import EmptyState from '../SystemStatus/EmptyState';
 import { FormattedMessage } from 'react-intl';
@@ -41,6 +40,7 @@ import Typography from '@material-ui/core/Typography';
 import CrafterCMSLogo from '../Icons/CrafterCMSLogo';
 import LoadingState from '../SystemStatus/LoadingState';
 import LauncherOpenerButton from '../LauncherOpenerButton';
+import { useGlobalNavigation } from '../../utils/hooks/useGlobalNavigation';
 
 interface GlobalAppProps {
   passwordRequirementsRegex: string;

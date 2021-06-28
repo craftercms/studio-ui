@@ -16,9 +16,11 @@
 
 import { WidgetDescriptor } from '../Widget';
 import React from 'react';
-import { useActiveSiteId, useActiveUser, useSiteLookup } from '../../utils/hooks';
 import TranslationOrText from '../../models/TranslationOrText';
 import LauncherSectionUI from './LauncherSectionUI';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { useActiveUser } from '../../utils/hooks/useActiveUser';
+import { useSiteLookup } from '../../utils/hooks/useSiteLookup';
 
 export interface LauncherSectionProps {
   title: TranslationOrText;

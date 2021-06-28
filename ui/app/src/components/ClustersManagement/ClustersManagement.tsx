@@ -21,7 +21,6 @@ import Tooltip from '@material-ui/core/Tooltip';
 import IconButton from '@material-ui/core/IconButton';
 import RefreshRoundedIcon from '@material-ui/icons/RefreshRounded';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
-import { useLogicResource, useMount } from '../../utils/hooks';
 import { ApiResponse } from '../../models/ApiResponse';
 import { deleteMember, fetchMembers } from '../../services/clusters';
 import { ClusterMember } from '../../models/Clusters';
@@ -30,6 +29,8 @@ import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../state/actions/system';
 import { ClustersGridSkeletonTable } from '../ClusterGrid/ClustersGridSkeletonTable';
+import { useLogicResource } from '../../utils/hooks/useLogicResource';
+import { useMount } from '../../utils/hooks/useMount';
 
 const translations = defineMessages({
   clusterDeleted: {

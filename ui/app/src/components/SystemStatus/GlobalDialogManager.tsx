@@ -18,7 +18,6 @@ import React, { lazy, Suspense, useEffect, useLayoutEffect, useMemo } from 'reac
 import ReactDOM from 'react-dom';
 import StandardAction from '../../models/StandardAction';
 import { Dispatch } from 'redux';
-import { useSelection } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { MinimizedBar } from './MinimizedBar';
@@ -32,6 +31,7 @@ import { showSystemNotification } from '../../state/actions/system';
 import Launcher from '../Launcher/Launcher';
 import UnlockPublisherDialog from '../UnlockPublisherDialog';
 import WidgetDialog from '../WidgetDialog';
+import { useSelection } from '../../utils/hooks/useSelection';
 import CodeEditorDialog from '../CodeEditorDialog';
 
 const ViewVersionDialog = lazy(() => import('../../modules/Content/History/ViewVersionDialog'));

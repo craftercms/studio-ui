@@ -22,7 +22,6 @@ import DialogBody from './DialogBody';
 import DialogFooter from './DialogFooter';
 import TextField from '@material-ui/core/TextField';
 import { createFile } from '../../services/content';
-import { useActiveSiteId, useUnmount } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import StandardAction from '../../models/StandardAction';
@@ -33,6 +32,8 @@ import { validateActionPolicy } from '../../services/sites';
 import ConfirmDialog from './ConfirmDialog';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { useUnmount } from '../../utils/hooks/useUnmount';
 
 interface CreateFileBaseProps {
   open: boolean;

@@ -29,7 +29,7 @@ import { LegacyVersion } from '../../../models/Version';
 import clsx from 'clsx';
 import palette from '../../../styles/palette';
 import GlobalState from '../../../models/GlobalState';
-import { useSelection } from '../../../utils/hooks';
+import { useSelection } from '../../../utils/hooks/useSelection';
 
 const versionListStyles = makeStyles((theme) =>
   createStyles({

@@ -26,11 +26,11 @@ import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import ErrorIcon from '@material-ui/icons/Error';
 import { green, red } from '@material-ui/core/colors';
 import { setRequestForgeryToken } from '../utils/auth';
-import { useSpreadState } from '../utils/hooks';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import GlobalAppToolbar from './GlobalAppToolbar';
 import Box from '@material-ui/core/Box';
+import { useSpreadState } from '../utils/hooks/useSpreadState';
 
 interface EncryptToolProps {
   site?: string;

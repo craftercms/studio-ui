@@ -15,7 +15,6 @@
  */
 
 import React, { PropsWithChildren } from 'react';
-import { useActiveSiteId, useEnv, useItemsByPath, useSelection } from '../../utils/hooks';
 import { PopoverOrigin, PopoverPosition, PopoverReference } from '@material-ui/core';
 import { useDispatch } from 'react-redux';
 import { useIntl } from 'react-intl';
@@ -26,6 +25,10 @@ import { getRootPath, isValidCutPastePath } from '../../utils/path';
 import GlobalState from '../../models/GlobalState';
 import ItemMegaMenuUI from './ItemMegaMenuUI';
 import { AllItemActions } from '../../models/Item';
+import { useSelection } from '../../utils/hooks/useSelection';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { useEnv } from '../../utils/hooks/useEnv';
+import { useItemsByPath } from '../../utils/hooks/useItemsByPath';
 
 export interface ItemMegaMenuBaseProps {
   path: string;

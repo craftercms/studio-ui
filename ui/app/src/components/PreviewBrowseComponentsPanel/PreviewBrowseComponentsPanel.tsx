@@ -16,7 +16,6 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
-import { useActiveSiteId, useDebouncedInput, useSelection, useSelectorResource } from '../../utils/hooks';
 import { PagedEntityState } from '../../models/GlobalState';
 import { nnou, pluckProps } from '../../utils/object';
 import { ErrorBoundary } from '../SystemStatus/ErrorBoundary';
@@ -41,6 +40,10 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import ContentType from '../../models/ContentType';
 import { Resource } from '../../models/Resource';
+import { useSelection } from '../../utils/hooks/useSelection';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { useSelectorResource } from '../../utils/hooks/useSelectorResource';
+import { useDebouncedInput } from '../../utils/hooks/useDebouncedInput';
 
 const translations = defineMessages({
   browse: {

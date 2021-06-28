@@ -29,7 +29,8 @@ import Typography from '@material-ui/core/Typography';
 import { createCheckedItems, onClickSetChecked, selectAllDeps, updateCheckedList } from '../Publish/PublishDialog';
 import Button from '@material-ui/core/Button';
 import clsx from 'clsx';
-import { useActiveSiteId, useSelection } from '../../../utils/hooks';
+import { useSelection } from '../../../utils/hooks/useSelection';
+import { useActiveSiteId } from '../../../utils/hooks/useActiveSiteId';
 
 interface DependencySelectionProps<T extends BaseItem = BaseItem> {
   items: T[];

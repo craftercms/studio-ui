@@ -19,7 +19,6 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import TablePagination from '@material-ui/core/TablePagination';
 import { DetailedItem } from '../../models/Item';
 import clsx from 'clsx';
-import { useLogicResource } from '../../utils/hooks';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import { useStyles } from './styles';
 import { translations } from './translations';
@@ -37,6 +36,7 @@ import GlobalState from '../../models/GlobalState';
 import { PathNavigatorStateProps } from './PathNavigator';
 import { SystemIconDescriptor } from '../SystemIcon';
 import { lookupItemByPath } from '../../utils/content';
+import { useLogicResource } from '../../utils/hooks/useLogicResource';
 
 export type PathNavigatorUIClassKey =
   | 'root'

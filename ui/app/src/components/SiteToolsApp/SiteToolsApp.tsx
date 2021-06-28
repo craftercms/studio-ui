@@ -30,7 +30,6 @@ import LogConsole from '../LogConsole';
 import PublishingDashboard from '../PublishingDashboard';
 import Graphi from '../GraphiQL/GraphiQL';
 import PluginManagement from '../PluginManagement';
-import { useSelection, useSiteTools } from '../../utils/hooks';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { rand } from '../PathNavigator/utils';
 import translations from './translations';
@@ -41,6 +40,8 @@ import LauncherOpenerButton from '../LauncherOpenerButton';
 import CrafterCMSLogo from '../Icons/CrafterCMSLogo';
 import RemoteRepositoriesManagement from '../RemoteRepositoriesManagement';
 import ItemStatesManagement from '../ItemStatesManagement';
+import { useSelection } from '../../utils/hooks/useSelection';
+import { useSiteTools } from '../../utils/hooks/useSiteTools';
 
 interface SiteToolsAppProps {
   footerHtml: string;
