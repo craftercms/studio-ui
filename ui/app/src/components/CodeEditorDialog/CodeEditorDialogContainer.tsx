@@ -38,7 +38,6 @@ import Menu from '@material-ui/core/Menu';
 import ExpandMoreRoundedIcon from '@material-ui/icons/ExpandMoreRounded';
 import { ListSubheader } from '@material-ui/core';
 import LookupTable from '../../models/LookupTable';
-import { dasherize, hasUppercaseChars, underscore } from '../../utils/string';
 import { hasEditAction, isItemLockedForMe } from '../../utils/content';
 import { localItemLock } from '../../state/actions/content';
 import { useContentTypes } from '../../utils/hooks/useContentTypes';
@@ -53,6 +52,12 @@ export interface CodeEditorDialogContainerProps extends CodeEditorDialogProps {
   title: string;
   onMinimized(): void;
 }
+
+export const contentTypePropsMap = {
+  fileName: 'file-name',
+  internalName: 'internal-name',
+  localeCode: 'locale-code'
+};
 
 export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps) {
   const { path, onMinimized, onClose, onClosed, mode, readonly, contentType } = props;
@@ -80,27 +85,27 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
       if (_contentType) {
         const fields = contentTypes[_contentType].fields;
         if (mode === 'ftl') {
-          if (freemarkerCodeSnippets['content-variable']) {
-            let { 'content-variable': contentVariable, ...rest } = freemarkerCodeSnippets;
+          if (freemarkerCodeSnippets['contentVariable']) {
+            let { contentVariable, ...rest } = freemarkerCodeSnippets;
             setSnippets(rest);
             const snippets = Object.keys(fields).map((key) => ({
               label: fields[key].name,
               value: contentVariable.value.replace(
                 'VARIABLE_NAME',
-                hasUppercaseChars(fields[key].id) ? `["${dasherize(underscore(fields[key].id))}"]` : fields[key].id
+                contentTypePropsMap[fields[key].id] ? `["${contentTypePropsMap[fields[key].id]}"]` : fields[key].id
               )
             }));
             setContentModelSnippets(snippets);
           }
         } else if (mode === 'groovy') {
-          if (groovyCodeSnippets['access-content-model']) {
-            let { 'access-content-model': contentVariable, ...rest } = groovyCodeSnippets;
+          if (groovyCodeSnippets['accessContentModel']) {
+            let { accessContentModel, ...rest } = groovyCodeSnippets;
             setSnippets(rest);
             const snippets = Object.keys(fields).map((key) => ({
               label: fields[key].name,
-              value: contentVariable.value.replace(
+              value: accessContentModel.value.replace(
                 'VARIABLE_NAME',
-                hasUppercaseChars(fields[key].id) ? `"${dasherize(underscore(fields[key].id))}"` : fields[key].id
+                contentTypePropsMap[fields[key].id] ? `"${contentTypePropsMap[fields[key].id]}"` : fields[key].id
               )
             }));
             setContentModelSnippets(snippets);
