@@ -269,7 +269,8 @@ const EmbeddedLegacyEditor = React.forwardRef(function EmbeddedLegacyEditor(prop
             typeof ref === 'function' ? ref(e) : (ref.current = e);
           }
         }}
-        src={src}
+        src={`${src}&selectedFields=${encodeURIComponent(JSON.stringify(['features_o']))}`}
+        // src={src}
         title="Embedded Legacy Form"
         className={clsx(classes.iframe, !inProgress && 'complete')}
       />

@@ -84,6 +84,7 @@
   const contentType = CStudioAuthoring.Utils.getQueryVariable(location.search, 'contentType');
   const readOnly = CStudioAuthoring.Utils.getQueryVariable(location.search, 'readonly') === 'true';
   const iceId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'iceId');
+  const selectedFields = CStudioAuthoring.Utils.getQueryVariable(location.search, 'selectedFields');
   const contentTypeId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'contentTypeId');
   const isNewContent = CStudioAuthoring.Utils.getQueryVariable(location.search, 'isNewContent') === 'true';
   const LEGACY_FORM_DIALOG_CANCEL_REQUEST = 'LEGACY_FORM_DIALOG_CANCEL_REQUEST'
@@ -109,7 +110,7 @@
                     success: (contentTO) => {
                       CStudioAuthoring.Operations.performSimpleIceEdit(
                               contentTO.item,
-                              iceId,
+                              selectedFields ? JSON.parse(decodeURIComponent(selectedFields)) : iceId,
                               true,
                               {
                                 success: (response, editorId, name, value, draft, action) => {
