@@ -19,7 +19,7 @@ import ToolPanel from './ToolPanel';
 import CloseRounded from '@material-ui/icons/CloseRounded';
 import Typography from '@material-ui/core/Typography';
 import { useDispatch } from 'react-redux';
-import { defineMessages, useIntl } from 'react-intl';
+import { defineMessages, IntlFormatters, useIntl } from 'react-intl';
 import { findParentModelId, nnou } from '../../../utils/object';
 import { popPiece } from '../../../utils/string';
 import * as ModelHelper from '../../../utils/model';
@@ -30,6 +30,7 @@ import { GuestData } from '../../../models/GlobalState';
 import { useSelection } from '../../../utils/hooks/useSelection';
 import { useActiveSiteId } from '../../../utils/hooks/useActiveSiteId';
 import { usePreviewState } from '../../../utils/hooks/usePreviewState';
+import ContentType, { ContentTypeField } from '../../../models/ContentType';
 
 interface EditFormPanelProps {
   open: boolean;
@@ -42,6 +43,11 @@ interface EditFormPanelBodyProps {
   models: GuestData['models'];
   childrenMap: GuestData['childrenMap'];
   modelIdByPath: GuestData['modelIdByPath'];
+}
+
+interface FieldOption {
+  id: string;
+  label: string;
 }
 
 const getEditDialogProps = ({ authoringBase, childrenMap, model, models, path, selectedId, site }) => {
@@ -82,6 +88,10 @@ const translations = defineMessages({
   editController: {
     id: 'previewEditFormTool.editController',
     defaultMessage: 'Edit Controller'
+  },
+  delete: {
+    id: 'words.delete',
+    defaultMessage: 'Delete'
   },
   cancel: {
     id: 'words.cancel',
@@ -146,6 +156,9 @@ function EditFormPanelBody(props: EditFormPanelBodyProps) {
   }
 
   const field = fieldId ? getField(contentType, fieldId) : null;
+
+  const options = getContentTypeOptions(field, contentType, formatMessage);
+
   let title;
   let selectedId;
 
@@ -199,6 +212,35 @@ function EditFormPanelBody(props: EditFormPanelBodyProps) {
     }
   }
 
+  function onMenuItemClicked(option: FieldOption) {
+    switch (option.id) {
+      case 'form': {
+        openDialog('form');
+        break;
+      }
+      case 'template': {
+        openDialog('template');
+        break;
+      }
+      case 'controller': {
+        openDialog('controller');
+        break;
+      }
+      case 'existingImages': {
+        onDismiss();
+        break;
+      }
+      case 'uploadImages': {
+        onDismiss();
+        break;
+      }
+      case 'delete': {
+        onDismiss();
+        break;
+      }
+    }
+  }
+
   if (selected.length > 1) {
     // TODO: Implement Multi-mode...
     return (
@@ -215,13 +257,53 @@ function EditFormPanelBody(props: EditFormPanelBodyProps) {
       <Typography variant="caption" style={{ padding: '0 16px 5px' }} component="p">
         {title}
       </Typography>
-      <MenuItem onClick={() => openDialog('form')}>{formatMessage(translations.openComponentForm)}</MenuItem>
-      <MenuItem onClick={() => openDialog('template')}>{formatMessage(translations.editTemplate)}</MenuItem>
-      {/* TODO: should use type instead of content type id string inspection */}
-      {selectedContentTypeId.includes('/page') && (
-        <MenuItem onClick={() => openDialog('controller')}>{formatMessage(translations.editController)}</MenuItem>
-      )}
+      {options.map((option) => (
+        <MenuItem key={option.id} onClick={() => onMenuItemClicked(option)}>
+          {option.label}
+        </MenuItem>
+      ))}
       <MenuItem onClick={onDismiss}>{formatMessage(translations.cancel)}</MenuItem>
     </>
   );
+}
+
+export function getContentTypeOptions(
+  field: ContentTypeField,
+  contentType: ContentType,
+  formatMessage: IntlFormatters['formatMessage']
+): FieldOption[] {
+  if (field && field.type === 'image') {
+    let options = [];
+    if (Array.isArray(field.validations.allowedImageDataSources.value)) {
+      field.validations.allowedImageDataSources.value.forEach((id) => {
+        options.push({
+          id: id,
+          label: contentType.dataSources[id].name
+        });
+      });
+    }
+    options.push({
+      id: 'delete',
+      label: formatMessage(translations.delete)
+    });
+    return options;
+  } else {
+    let options = [
+      {
+        id: 'form',
+        label: formatMessage(translations.openComponentForm)
+      },
+      {
+        id: 'template',
+        label: formatMessage(translations.editTemplate)
+      }
+    ];
+    if (contentType.type === 'page') {
+      options.push({
+        id: 'controller',
+        label: formatMessage(translations.editController)
+      });
+    }
+    return options;
+  }
 }

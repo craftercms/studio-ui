@@ -32,6 +32,7 @@ export interface ContentTypeFieldValidation {
 export type ValidationKeys =
   | 'allowedContentTypeTags'
   | 'allowedContentTypes'
+  | 'allowedImageDataSources'
   | 'minCount'
   | 'maxCount'
   | 'maxLength'
