@@ -18,7 +18,6 @@ import React from 'react';
 import StandardAction from '../../models/StandardAction';
 import { useDispatch } from 'react-redux';
 import { useIntl } from 'react-intl';
-import { useMinimizeDialog } from '../../utils/hooks';
 import { minimizeDialog } from '../../state/reducers/dialogs/minimizedDialogs';
 import { closeCodeEditorDialog, closeConfirmDialog, showConfirmDialog } from '../../state/actions/dialogs';
 import { batchActions } from '../../state/actions/misc';
@@ -26,6 +25,7 @@ import { conditionallyUnlockItem } from '../../state/actions/content';
 import translations from './translations';
 import Dialog, { DialogProps } from '@material-ui/core/Dialog';
 import { CodeEditorDialogContainer } from './CodeEditorDialogContainer';
+import { useMinimizeDialog } from '../../utils/hooks/useMinimizeDialog';
 
 interface CodeEditorDialogBaseProps {
   open: boolean;

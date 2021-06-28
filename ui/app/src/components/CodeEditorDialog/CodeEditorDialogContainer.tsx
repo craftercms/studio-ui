@@ -20,14 +20,6 @@ import DialogBody from '../Dialogs/DialogBody';
 import { fetchContentXML, writeContent } from '../../services/content';
 import { ConditionalLoadingState } from '../SystemStatus/LoadingState';
 import AceEditor from '../AceEditor';
-import {
-  useActiveSiteId,
-  useActiveUser,
-  useContentTypes,
-  useDatasets,
-  useDetailedItem,
-  useUnmount
-} from '../../utils/hooks';
 import useStyles from './styles';
 import { CodeEditorDialogProps } from './CodeEditorDialog';
 import { useDispatch } from 'react-redux';
@@ -49,6 +41,12 @@ import LookupTable from '../../models/LookupTable';
 import { dasherize, hasUppercaseChars, underscore } from '../../utils/string';
 import { hasEditAction, isItemLockedForMe } from '../../utils/content';
 import { localItemLock } from '../../state/actions/content';
+import { useContentTypes } from '../../utils/hooks/useContentTypes';
+import { useActiveUser } from '../../utils/hooks/useActiveUser';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { useDetailedItem } from '../../utils/hooks/useDetailedItem';
+import { useDatasets } from '../../utils/hooks/useDatasets';
+import { useUnmount } from '../../utils/hooks/useUnmount';
 
 export interface CodeEditorDialogContainerProps extends CodeEditorDialogProps {
   path: string;
