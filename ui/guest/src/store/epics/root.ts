@@ -52,8 +52,8 @@ import {
 } from '../../constants';
 import { MouseEventActionObservable } from '../models/Actions';
 import { GuestState, GuestStateObservable } from '../models/GuestStore';
-import { isNullOrUndefined, notNullOrUndefined, pluckProps, reversePluckProps } from '../../utils/object';
-import { ElementRecord, ICEProps } from '../../models/InContextEditing';
+import { isNullOrUndefined, notNullOrUndefined } from '../../utils/object';
+import { ICEProps } from '../../models/InContextEditing';
 import * as ElementRegistry from '../../classes/ElementRegistry';
 import { get } from '../../classes/ElementRegistry';
 import { scrollToElement, scrollToIceProps } from '../../utils/dom';
@@ -224,7 +224,9 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
                   dataUrl: event.target.result,
                   name: file.name,
                   type: file.type,
-                  record: reversePluckProps(record, 'element')
+                  recordId: record.id,
+                  modelId: record.modelId,
+                  fieldId: record.fieldId[0]
                 });
                 aImg.src = event.target.result;
                 // Timeout gives the browser a chance to render the image so later rect
@@ -373,11 +375,13 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
   // endregion
 
   // region Desktop Asset Upload (Complete)
-  (action$: ActionsObservable<GuestStandardAction<{ path: string; record: ElementRecord }>>) => {
+  (action$: ActionsObservable<GuestStandardAction<{ path: string; id: number }>>) => {
     return action$.pipe(
       ofType(DESKTOP_ASSET_UPLOAD_COMPLETE),
       tap((action) => {
-        const { record, path } = action.payload;
+        const { recordId, path } = action.payload;
+        const record = get(recordId);
+
         contentController.updateField(record.modelId, record.fieldId[0], record.index, path);
       }),
       ignoreElements()

@@ -180,7 +180,9 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
         const { title, properties, ...rest } = datasource;
         dataSources[datasource.id] = {
           name: datasource.title,
-          properties: createLookupTable(Object.values(properties), 'name'),
+          properties: Array.isArray(properties.property)
+            ? createLookupTable(Object.values(properties.property), 'name')
+            : { [properties.property.name]: { ...properties.property } },
           ...rest
         };
       }

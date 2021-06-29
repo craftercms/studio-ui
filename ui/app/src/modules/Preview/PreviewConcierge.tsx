@@ -69,7 +69,8 @@ import {
   moveItem,
   sortItem,
   updateField,
-  uploadDataUrl
+  uploadDataUrl,
+  uploadToS3
 } from '../../services/content';
 import { filter, map, pluck, switchMap, take, takeUntil } from 'rxjs/operators';
 import ContentType from '../../models/ContentType';
@@ -78,7 +79,7 @@ import Button from '@material-ui/core/Button';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { getGuestToHostBus, getHostToGuestBus, getHostToHostBus } from './previewContext';
 import { useDispatch } from 'react-redux';
-import { findParentModelId, nnou, pluckProps } from '../../utils/object';
+import { findParentModelId, nnou } from '../../utils/object';
 import RubbishBin from './Tools/RubbishBin';
 import { useSnackbar } from 'notistack';
 import { PreviewCompatibilityDialogContainer } from '../../components/Dialogs/PreviewCompatibilityDialog';
@@ -767,14 +768,13 @@ export function PreviewConcierge(props: any) {
           break;
         }
         case DESKTOP_ASSET_DROP: {
-          let model = models[payload.record.modelId];
+          const { recordId, modelId, fieldId, name, type, dataUrl } = payload;
+          let model = models[modelId];
           let contentType = contentTypes[model.craftercms.contentTypeId];
-          let fieldId = payload.record.fieldId[0];
           let field = getField(contentType, fieldId);
           let dataSourceId = null;
           let dataSource = null;
 
-          // TODO: Id's should be on an array of imageDataSources with Upload Support
           dataSourceId = field.validations.allowedImageDataSources.value.find((id) =>
             ['img-S3-repo', 'img-desktop-upload'].includes(contentType.dataSources[id].type)
           );
@@ -791,7 +791,26 @@ export function PreviewConcierge(props: any) {
           switch (dataSource.type) {
             case 'img-S3-repo': {
               enqueueSnackbar(formatMessage(guestMessages.assetS3UploadStarted));
-              console.log(dataSource);
+              let path = expandPathMacros(dataSource.properties.path.value);
+              let profileId = dataSource.properties.profileId.value;
+              const subscription = uploadToS3(site, { name, type, dataUrl }, path, profileId, xsrfArgument)
+                .pipe(
+                  filter(({ type }) => type === 'progress'),
+                  pluck('payload')
+                )
+                .subscribe(
+                  ({ progress }) => {
+                    console.log(progress);
+                  },
+                  (error) => {
+                    console.log(error);
+                  },
+                  () => {
+                    console.log('complete');
+                  }
+                );
+
+              // unsubscribe if another upload start
               break;
             }
             case 'img-desktop-upload': {
@@ -799,7 +818,7 @@ export function PreviewConcierge(props: any) {
               let path = dataSource.properties.repoPath.value;
               const uppySubscription = uploadDataUrl(
                 site,
-                pluckProps(payload, 'name', 'type', 'dataUrl'),
+                { name, type, dataUrl },
                 expandPathMacros(path),
                 xsrfArgument
               )
@@ -815,7 +834,7 @@ export function PreviewConcierge(props: any) {
                     hostToGuest$.next({
                       type: DESKTOP_ASSET_UPLOAD_PROGRESS,
                       payload: {
-                        record: payload.record,
+                        recordId,
                         percentage
                       }
                     });
@@ -828,15 +847,15 @@ export function PreviewConcierge(props: any) {
                     hostToGuest$.next({
                       type: DESKTOP_ASSET_UPLOAD_COMPLETE,
                       payload: {
-                        record: payload.record,
-                        path: `/static-assets/images/${payload.record.modelId}/${payload.name}`
+                        recordId,
+                        path: `/static-assets/images/${payload.modelId}/${payload.name}`
                       }
                     });
                   }
                 );
               const sub = hostToHost$.subscribe((action) => {
                 const { type, payload: uploadFile } = action;
-                if (type === DESKTOP_ASSET_UPLOAD_STARTED && uploadFile.record.id === payload.record.id) {
+                if (type === DESKTOP_ASSET_UPLOAD_STARTED && uploadFile.recordId === recordId) {
                   sub.unsubscribe();
                   uppySubscription.unsubscribe();
                 }
