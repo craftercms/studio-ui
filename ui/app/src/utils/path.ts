@@ -205,3 +205,26 @@ export function getCodeEditorSrc({
   });
   return `${authoringBase}/legacy/form${qs}`;
 }
+
+export function expandPathMacros(path: string) {
+  // TODO: Omitted values 'objectId', 'objectGroupId', 'parentPath'
+
+  const currentDate = new Date();
+  if (path.includes('{year}') || path.includes('{yyyy}')) {
+    let year = String(currentDate.getFullYear());
+    path = path.replace('{year}', year);
+    path = path.replace('{yyyy}', year);
+  }
+
+  if (path.includes('{month}') || path.includes('{mm}')) {
+    let month = ('0' + (currentDate.getMonth() + 1)).slice(-2);
+    path = path.replace('{month}', month);
+    path = path.replace('{mm}', month);
+  }
+
+  if (path.includes('{dd}')) {
+    path = path.replace('{dd}', ('0' + currentDate.getDate()).slice(-2));
+  }
+
+  return path;
+}

@@ -144,7 +144,7 @@ function getFieldValidations(
       } else if (key === 'imageManager' && dataSources) {
         validations['allowedImageDataSources'] = {
           id: 'allowedImageDataSources',
-          value: map.imageManager.value.split(','),
+          value: map.imageManager.value ? map.imageManager.value.split(',') : [],
           level: 'required'
         };
       } else if (systemValidationsNames.includes(key) && !isBlank(map[key]?.value)) {
@@ -176,10 +176,11 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
   // get receptacles dataSources
   if (definition.datasources?.datasource) {
     asArray(definition.datasources.datasource).forEach((datasource: LegacyDataSource) => {
-      if (['dropTargets', 'img-desktop-upload', 'img-repository-upload'].includes(datasource.type)) {
-        const { title, ...rest } = datasource;
+      if (['dropTargets', 'img-desktop-upload', 'img-repository-upload', 'img-S3-repo'].includes(datasource.type)) {
+        const { title, properties, ...rest } = datasource;
         dataSources[datasource.id] = {
           name: datasource.title,
+          properties: createLookupTable(Object.values(properties), 'name'),
           ...rest
         };
       }

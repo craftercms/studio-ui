@@ -82,7 +82,7 @@ import { findParentModelId, nnou, pluckProps } from '../../utils/object';
 import RubbishBin from './Tools/RubbishBin';
 import { useSnackbar } from 'notistack';
 import { PreviewCompatibilityDialogContainer } from '../../components/Dialogs/PreviewCompatibilityDialog';
-import { getQueryVariable } from '../../utils/path';
+import { expandPathMacros, getQueryVariable } from '../../utils/path';
 import {
   getStoredClipboard,
   getStoredEditModeChoice,
@@ -117,6 +117,7 @@ import { useContentTypes } from '../../utils/hooks/useContentTypes';
 import { useActiveUser } from '../../utils/hooks/useActiveUser';
 import { useItemsByPath } from '../../utils/hooks/useItemsByPath';
 import { useMount } from '../../utils/hooks/useMount';
+import { getField } from '../../utils/contentType';
 
 const guestMessages = defineMessages({
   maxCount: {
@@ -191,6 +192,10 @@ const guestMessages = defineMessages({
     id: 'operations.updateOperationFailed',
     defaultMessage: 'Update operation failed.'
   },
+  assetS3UploadStarted: {
+    id: 'operations.assetS3UploadStarted',
+    defaultMessage: 'Asset upload to s3 started.'
+  },
   assetUploadStarted: {
     id: 'operations.assetUploadStarted',
     defaultMessage: 'Asset upload started.'
@@ -198,6 +203,10 @@ const guestMessages = defineMessages({
   assetUploadFailed: {
     id: 'operations.assetUploadFailed',
     defaultMessage: 'Asset Upload failed.'
+  },
+  assetDataSourcesNoConfigured: {
+    id: 'operations.assetDataSourcesNoConfigured',
+    defaultMessage: 'Assets should have at least one data source that enables uploading'
   }
 });
 
@@ -758,52 +767,83 @@ export function PreviewConcierge(props: any) {
           break;
         }
         case DESKTOP_ASSET_DROP: {
-          enqueueSnackbar(formatMessage(guestMessages.assetUploadStarted));
+          let model = models[payload.record.modelId];
+          let contentType = contentTypes[model.craftercms.contentTypeId];
+          let fieldId = payload.record.fieldId[0];
+          let field = getField(contentType, fieldId);
+          let dataSourceId = null;
+          let dataSource = null;
+
+          // TODO: Id's should be on an array of imageDataSources with Upload Support
+          dataSourceId = field.validations.allowedImageDataSources.value.find((id) =>
+            ['img-S3-repo', 'img-desktop-upload'].includes(contentType.dataSources[id].type)
+          );
+
+          if (!dataSourceId || field.validations.allowedImageDataSources.value.length === 0) {
+            enqueueSnackbar(formatMessage(guestMessages.assetDataSourcesNoConfigured));
+            return;
+          }
+
+          dataSource = contentType.dataSources[dataSourceId];
+
           hostToHost$.next({ type: DESKTOP_ASSET_UPLOAD_STARTED, payload });
-          const uppySubscription = uploadDataUrl(
-            site,
-            pluckProps(payload, 'name', 'type', 'dataUrl'),
-            `/static-assets/images/${payload.record.modelId}`,
-            xsrfArgument
-          )
-            .pipe(
-              filter(({ type }) => type === 'progress'),
-              pluck('payload')
-            )
-            .subscribe(
-              ({ progress }) => {
-                const percentage = Math.floor(
-                  parseInt(((progress.bytesUploaded / progress.bytesTotal) * 100).toFixed(2))
-                );
-                hostToGuest$.next({
-                  type: DESKTOP_ASSET_UPLOAD_PROGRESS,
-                  payload: {
-                    record: payload.record,
-                    percentage
-                  }
-                });
-              },
-              (error) => {
-                console.log(error);
-                enqueueSnackbar(formatMessage(guestMessages.assetUploadFailed));
-              },
-              () => {
-                hostToGuest$.next({
-                  type: DESKTOP_ASSET_UPLOAD_COMPLETE,
-                  payload: {
-                    record: payload.record,
-                    path: `/static-assets/images/${payload.record.modelId}/${payload.name}`
-                  }
-                });
-              }
-            );
-          const sub = hostToHost$.subscribe((action) => {
-            const { type, payload: uploadFile } = action;
-            if (type === DESKTOP_ASSET_UPLOAD_STARTED && uploadFile.record.id === payload.record.id) {
-              sub.unsubscribe();
-              uppySubscription.unsubscribe();
+
+          switch (dataSource.type) {
+            case 'img-S3-repo': {
+              enqueueSnackbar(formatMessage(guestMessages.assetS3UploadStarted));
+              console.log(dataSource);
+              break;
             }
-          });
+            case 'img-desktop-upload': {
+              enqueueSnackbar(formatMessage(guestMessages.assetUploadStarted));
+              let path = dataSource.properties.repoPath.value;
+              const uppySubscription = uploadDataUrl(
+                site,
+                pluckProps(payload, 'name', 'type', 'dataUrl'),
+                expandPathMacros(path),
+                xsrfArgument
+              )
+                .pipe(
+                  filter(({ type }) => type === 'progress'),
+                  pluck('payload')
+                )
+                .subscribe(
+                  ({ progress }) => {
+                    const percentage = Math.floor(
+                      parseInt(((progress.bytesUploaded / progress.bytesTotal) * 100).toFixed(2))
+                    );
+                    hostToGuest$.next({
+                      type: DESKTOP_ASSET_UPLOAD_PROGRESS,
+                      payload: {
+                        record: payload.record,
+                        percentage
+                      }
+                    });
+                  },
+                  (error) => {
+                    console.log(error);
+                    enqueueSnackbar(formatMessage(guestMessages.assetUploadFailed));
+                  },
+                  () => {
+                    hostToGuest$.next({
+                      type: DESKTOP_ASSET_UPLOAD_COMPLETE,
+                      payload: {
+                        record: payload.record,
+                        path: `/static-assets/images/${payload.record.modelId}/${payload.name}`
+                      }
+                    });
+                  }
+                );
+              const sub = hostToHost$.subscribe((action) => {
+                const { type, payload: uploadFile } = action;
+                if (type === DESKTOP_ASSET_UPLOAD_STARTED && uploadFile.record.id === payload.record.id) {
+                  sub.unsubscribe();
+                  uppySubscription.unsubscribe();
+                }
+              });
+              break;
+            }
+          }
           break;
         }
         case CONTENT_TYPE_DROP_TARGETS_RESPONSE: {
