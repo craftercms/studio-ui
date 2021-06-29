@@ -44,12 +44,14 @@ interface EditFormPanelBodyProps {
   modelIdByPath: GuestData['modelIdByPath'];
 }
 
-const getEditDialogProps = ({ authoringBase, childrenMap, model, models, path, selectedId, site }) => {
+const getEditDialogProps = (props) => {
+  const { authoringBase, childrenMap, model, models, path, selectedId, site, selectedFields } = props;
   if (path) {
     return {
       authoringBase,
       site,
-      path
+      path,
+      ...(selectedFields ? { selectedFields } : {})
     };
   } else {
     let parentPath;
@@ -65,7 +67,8 @@ const getEditDialogProps = ({ authoringBase, childrenMap, model, models, path, s
       site,
       path: parentPath,
       isHidden: true,
-      modelId: selectedId
+      modelId: selectedId,
+      ...(selectedFields ? { selectedFields } : {})
     };
   }
 };
@@ -181,8 +184,11 @@ function EditFormPanelBody(props: EditFormPanelBodyProps) {
   function openDialog(type: string) {
     onDismiss();
     if (type === 'form') {
+      const selectedFields = field ? [field.id] : null;
       dispatch(
-        showEditDialog(getEditDialogProps({ authoringBase, childrenMap, model, models, path, selectedId, site }))
+        showEditDialog(
+          getEditDialogProps({ authoringBase, childrenMap, model, models, path, selectedFields, selectedId, site })
+        )
       );
     } else {
       dispatch(
