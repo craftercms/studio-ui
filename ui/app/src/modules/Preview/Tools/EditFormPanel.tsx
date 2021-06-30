@@ -30,6 +30,7 @@ import { GuestData } from '../../../models/GlobalState';
 import { useSelection } from '../../../utils/hooks/useSelection';
 import { useActiveSiteId } from '../../../utils/hooks/useActiveSiteId';
 import { usePreviewState } from '../../../utils/hooks/usePreviewState';
+import ContentInstance from '../../../models/ContentInstance';
 
 interface EditFormPanelProps {
   open: boolean;
@@ -44,7 +45,16 @@ interface EditFormPanelBodyProps {
   modelIdByPath: GuestData['modelIdByPath'];
 }
 
-const getEditDialogProps = (props) => {
+const getEditDialogProps = (props: {
+  authoringBase: string;
+  childrenMap: GuestData['childrenMap'];
+  model: ContentInstance;
+  models: GuestData['models'];
+  path: string;
+  selectedId: string;
+  site: string;
+  selectedFields: string[];
+}) => {
   const { authoringBase, childrenMap, model, models, path, selectedId, site, selectedFields } = props;
   if (path) {
     return {
