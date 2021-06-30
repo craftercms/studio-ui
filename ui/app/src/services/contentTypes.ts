@@ -176,7 +176,16 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
   // get receptacles dataSources
   if (definition.datasources?.datasource) {
     asArray(definition.datasources.datasource).forEach((datasource: LegacyDataSource) => {
-      if (['dropTargets', 'img-desktop-upload', 'img-repository-upload', 'img-S3-repo'].includes(datasource.type)) {
+      if (
+        [
+          'dropTargets',
+          'img-desktop-upload',
+          'img-repository-upload',
+          'img-S3-repo',
+          'img-WebDAV-upload',
+          'img-CMIS-upload'
+        ].includes(datasource.type)
+      ) {
         const { title, properties, ...rest } = datasource;
         dataSources[datasource.id] = {
           name: datasource.title,

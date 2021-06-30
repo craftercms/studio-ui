@@ -70,7 +70,9 @@ import {
   sortItem,
   updateField,
   uploadDataUrl,
-  uploadToS3
+  uploadToCMIS,
+  uploadToS3,
+  uploadToWebDAV
 } from '../../services/content';
 import { filter, map, pluck, switchMap, take, takeUntil } from 'rxjs/operators';
 import ContentType from '../../models/ContentType';
@@ -193,9 +195,9 @@ const guestMessages = defineMessages({
     id: 'operations.updateOperationFailed',
     defaultMessage: 'Update operation failed.'
   },
-  assetS3UploadStarted: {
-    id: 'operations.assetS3UploadStarted',
-    defaultMessage: 'Asset upload to s3 started.'
+  assetUploaderMissingConfiguration: {
+    id: 'operations.assetUploadMissingConfiguration',
+    defaultMessage: 'Uploader "{id}" have properties with missing or incorrect values.'
   },
   assetUploadStarted: {
     id: 'operations.assetUploadStarted',
@@ -776,8 +778,16 @@ export function PreviewConcierge(props: any) {
           let dataSource = null;
           let subscription = null;
 
+          const servicesMap = {
+            'img-WebDAV-upload': uploadToWebDAV,
+            'img-CMIS-upload': uploadToCMIS,
+            'img-S3-upload': uploadToS3
+          };
+
           dataSourceId = field.validations.allowedImageDataSources.value.find((id) =>
-            ['img-S3-repo', 'img-desktop-upload'].includes(contentType.dataSources[id].type)
+            ['img-S3-repo', 'img-desktop-upload', 'img-WebDAV-upload', 'img-CMIS-upload'].includes(
+              contentType.dataSources[id].type
+            )
           );
 
           if (!dataSourceId || field.validations.allowedImageDataSources.value.length === 0) {
@@ -787,14 +797,31 @@ export function PreviewConcierge(props: any) {
 
           dataSource = contentType.dataSources[dataSourceId];
 
-          hostToHost$.next({ type: DESKTOP_ASSET_UPLOAD_STARTED, payload });
-
           switch (dataSource.type) {
+            case 'img-WebDAV-upload':
+            case 'img-CMIS-upload':
             case 'img-S3-repo': {
-              enqueueSnackbar(formatMessage(guestMessages.assetS3UploadStarted));
-              let path = expandPathMacros(dataSource.properties.path.value);
-              let profileId = dataSource.properties.profileId.value;
-              subscription = uploadToS3(site, { name, type, dataUrl }, path, profileId, xsrfArgument).subscribe(
+              let path = dataSource.properties[dataSource.type === 'img-S3-repo' ? 'path' : 'repoPath'].value;
+              let profileId =
+                dataSource.properties[dataSource.type === 'img-CMIS-upload' ? 'repositoryId' : 'profileId'].value;
+              if (!path || !profileId) {
+                enqueueSnackbar(
+                  formatMessage(guestMessages.assetUploaderMissingConfiguration, {
+                    id: dataSource.id
+                  })
+                );
+                return;
+              }
+              hostToHost$.next({ type: DESKTOP_ASSET_UPLOAD_STARTED, payload });
+              enqueueSnackbar(formatMessage(guestMessages.assetUploadStarted));
+              path = expandPathMacros(path);
+              subscription = servicesMap[dataSource.type](
+                site,
+                { name, type, dataUrl },
+                path,
+                profileId,
+                xsrfArgument
+              ).subscribe(
                 ({ type, payload: response }) => {
                   if (type === 'complete') {
                     hostToGuest$.next({
@@ -825,8 +852,17 @@ export function PreviewConcierge(props: any) {
               break;
             }
             case 'img-desktop-upload': {
+              if (!dataSource.properties.repoPath.value) {
+                enqueueSnackbar(
+                  formatMessage(guestMessages.assetUploaderMissingConfiguration, {
+                    id: dataSource.id
+                  })
+                );
+                return;
+              }
+              hostToHost$.next({ type: DESKTOP_ASSET_UPLOAD_STARTED, payload });
               enqueueSnackbar(formatMessage(guestMessages.assetUploadStarted));
-              let path = expandPathMacros(dataSource.properties.repoPath.value ?? 'static-assets/images');
+              let path = expandPathMacros(dataSource.properties.repoPath.value);
               subscription = uploadDataUrl(site, { name, type, dataUrl }, expandPathMacros(path), xsrfArgument)
                 .pipe(
                   filter(({ type }) => type === 'progress'),
