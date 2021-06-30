@@ -607,7 +607,7 @@ export function createFileUpload(
     uppy.on('upload-success', (file, response) => {
       subscriber.next({
         type: 'complete',
-        payload: response
+        payload: response.body
       });
       subscriber.complete();
     });

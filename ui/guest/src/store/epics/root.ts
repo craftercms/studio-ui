@@ -375,7 +375,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
   // endregion
 
   // region Desktop Asset Upload (Complete)
-  (action$: ActionsObservable<GuestStandardAction<{ path: string; id: number }>>) => {
+  (action$: ActionsObservable<GuestStandardAction<{ path: string; recordId: number }>>) => {
     return action$.pipe(
       ofType(DESKTOP_ASSET_UPLOAD_COMPLETE),
       tap((action) => {

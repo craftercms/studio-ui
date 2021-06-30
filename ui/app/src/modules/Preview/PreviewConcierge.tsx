@@ -774,6 +774,7 @@ export function PreviewConcierge(props: any) {
           let field = getField(contentType, fieldId);
           let dataSourceId = null;
           let dataSource = null;
+          let subscription = null;
 
           dataSourceId = field.validations.allowedImageDataSources.value.find((id) =>
             ['img-S3-repo', 'img-desktop-upload'].includes(contentType.dataSources[id].type)
@@ -793,35 +794,40 @@ export function PreviewConcierge(props: any) {
               enqueueSnackbar(formatMessage(guestMessages.assetS3UploadStarted));
               let path = expandPathMacros(dataSource.properties.path.value);
               let profileId = dataSource.properties.profileId.value;
-              const subscription = uploadToS3(site, { name, type, dataUrl }, path, profileId, xsrfArgument)
-                .pipe(
-                  filter(({ type }) => type === 'progress'),
-                  pluck('payload')
-                )
-                .subscribe(
-                  ({ progress }) => {
-                    console.log(progress);
-                  },
-                  (error) => {
-                    console.log(error);
-                  },
-                  () => {
-                    console.log('complete');
+              subscription = uploadToS3(site, { name, type, dataUrl }, path, profileId, xsrfArgument).subscribe(
+                ({ type, payload: response }) => {
+                  if (type === 'complete') {
+                    hostToGuest$.next({
+                      type: DESKTOP_ASSET_UPLOAD_COMPLETE,
+                      payload: {
+                        recordId,
+                        path: response.item.url
+                      }
+                    });
+                  } else if (type === 'progress') {
+                    const percentage = Math.floor(
+                      parseInt(((response.progress.bytesUploaded / response.progress.bytesTotal) * 100).toFixed(2))
+                    );
+                    hostToGuest$.next({
+                      type: DESKTOP_ASSET_UPLOAD_PROGRESS,
+                      payload: {
+                        recordId,
+                        percentage
+                      }
+                    });
                   }
-                );
-
-              // unsubscribe if another upload start
+                },
+                (error) => {
+                  console.error(error);
+                  enqueueSnackbar(formatMessage(guestMessages.assetUploadFailed));
+                }
+              );
               break;
             }
             case 'img-desktop-upload': {
               enqueueSnackbar(formatMessage(guestMessages.assetUploadStarted));
-              let path = dataSource.properties.repoPath.value;
-              const uppySubscription = uploadDataUrl(
-                site,
-                { name, type, dataUrl },
-                expandPathMacros(path),
-                xsrfArgument
-              )
+              let path = expandPathMacros(dataSource.properties.repoPath.value ?? 'static-assets/images');
+              subscription = uploadDataUrl(site, { name, type, dataUrl }, expandPathMacros(path), xsrfArgument)
                 .pipe(
                   filter(({ type }) => type === 'progress'),
                   pluck('payload')
@@ -840,7 +846,7 @@ export function PreviewConcierge(props: any) {
                     });
                   },
                   (error) => {
-                    console.log(error);
+                    console.error(error);
                     enqueueSnackbar(formatMessage(guestMessages.assetUploadFailed));
                   },
                   () => {
@@ -848,21 +854,23 @@ export function PreviewConcierge(props: any) {
                       type: DESKTOP_ASSET_UPLOAD_COMPLETE,
                       payload: {
                         recordId,
-                        path: `/static-assets/images/${payload.modelId}/${payload.name}`
+                        path: expandPathMacros(path) + payload.name
                       }
                     });
                   }
                 );
-              const sub = hostToHost$.subscribe((action) => {
-                const { type, payload: uploadFile } = action;
-                if (type === DESKTOP_ASSET_UPLOAD_STARTED && uploadFile.recordId === recordId) {
-                  sub.unsubscribe();
-                  uppySubscription.unsubscribe();
-                }
-              });
               break;
             }
           }
+
+          const sub = hostToHost$.subscribe((action) => {
+            const { type, payload: uploadFile } = action;
+            if (type === DESKTOP_ASSET_UPLOAD_STARTED && uploadFile.recordId === recordId) {
+              sub.unsubscribe();
+              subscription.unsubscribe();
+            }
+          });
+
           break;
         }
         case CONTENT_TYPE_DROP_TARGETS_RESPONSE: {
