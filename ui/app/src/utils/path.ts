@@ -17,6 +17,7 @@
 import { parse, ParsedQuery } from 'query-string';
 import { PasteItem } from '../models/Item';
 import { toQueryString } from './object';
+import LookupTable from '../models/LookupTable';
 
 // Originally from ComponentPanel.getPreviewPagePath
 export function getPathFromPreviewURL(previewURL: string): string {
@@ -206,24 +207,19 @@ export function getCodeEditorSrc({
   return `${authoringBase}/legacy/form${qs}`;
 }
 
-export function expandPathMacros(path: string) {
+export function expandPathMacros(path: string, values?: LookupTable<any>) {
   // TODO: Omitted values 'objectId', 'objectGroupId', 'parentPath'
 
   const currentDate = new Date();
-  if (path.includes('{year}') || path.includes('{yyyy}')) {
-    let year = String(currentDate.getFullYear());
-    path = path.replace('{year}', year);
-    path = path.replace('{yyyy}', year);
-  }
+  path = path
+    .replace(/{(year|yyyy)}/g, String(currentDate.getFullYear()))
+    .replace(/{(month|mm)}/g, ('0' + (currentDate.getMonth() + 1)).slice(-2))
+    .replace(/{(dd)}/g, ('0' + currentDate.getDate()).slice(-2));
 
-  if (path.includes('{month}') || path.includes('{mm}')) {
-    let month = ('0' + (currentDate.getMonth() + 1)).slice(-2);
-    path = path.replace('{month}', month);
-    path = path.replace('{mm}', month);
-  }
-
-  if (path.includes('{dd}')) {
-    path = path.replace('{dd}', ('0' + currentDate.getDate()).slice(-2));
+  if (values) {
+    path = path.replace(/\{.*?\}/g, function(match) {
+      return values[match.substr(1, match.length - 2)];
+    });
   }
 
   return path;

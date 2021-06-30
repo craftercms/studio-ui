@@ -15,7 +15,6 @@
  */
 
 import React, { ReactNode, useEffect, useState } from 'react';
-import { BrowseFilesDialogProps } from './BrowseFilesDialog';
 import DialogHeader from '../Dialogs/DialogHeader';
 import DialogBody from '../Dialogs/DialogBody';
 import DialogFooter from '../Dialogs/DialogFooter';
@@ -27,9 +26,13 @@ import { ElasticParams, SearchItem } from '../../models/Search';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import MediaCard from '../MediaCard';
 import { useEnv } from '../../utils/hooks/useEnv';
+import { useUnmount } from '../../utils/hooks/useUnmount';
 
-interface BrowseFilesDialogUIProps extends BrowseFilesDialogProps {
+interface BrowseFilesDialogUIProps {
   title: ReactNode;
+  path: string;
+  onClose(): void;
+  onClosed?(): void;
 }
 
 const initialParameters: ElasticParams = {
@@ -47,6 +50,8 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
   const [items, setItems] = useState<SearchItem[]>();
   const site = useActiveSiteId();
   const { guestBase } = useEnv();
+
+  useUnmount(onClosed);
 
   useEffect(() => {
     search(site, { ...initialParameters, path }).subscribe((response) => {

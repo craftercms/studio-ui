@@ -15,11 +15,11 @@
  */
 
 import React from 'react';
-import Dialog from '@material-ui/core/Dialog';
+import Dialog, { DialogProps } from '@material-ui/core/Dialog';
 import { BrowseFilesDialogUI } from './BrowseFilesDialogUI';
 import { FormattedMessage } from 'react-intl';
 
-export interface BrowseFilesDialogProps {
+export interface BrowseFilesDialogProps extends DialogProps {
   open: boolean;
   path: string;
   type: string;
@@ -28,10 +28,10 @@ export interface BrowseFilesDialogProps {
 }
 
 export default function BrowseFilesDialog(props: BrowseFilesDialogProps) {
-  const { open, type, onClose } = props;
+  const { open, path, type, onClose, onClosed, ...rest } = props;
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
+    <Dialog open={open} onClose={onClose} {...rest} fullWidth maxWidth="md">
       <BrowseFilesDialogUI
         title={
           type === 'image' ? (
@@ -40,7 +40,9 @@ export default function BrowseFilesDialog(props: BrowseFilesDialogProps) {
             <FormattedMessage id="browseFilesDialog.fileBrowse" defaultMessage="Browse existing file" />
           )
         }
-        {...props}
+        path={path}
+        onClose={onClose}
+        onClosed={onClosed}
       />
     </Dialog>
   );

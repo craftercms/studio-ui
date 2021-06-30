@@ -246,7 +246,7 @@ function MediaCard(props: MediaCardProps) {
           }
           avatar={Avatar ? <Avatar /> : null}
           classes={{ root: classes.cardHeaderRoot, avatar: classes.avatar }}
-          onClick={() => onPreview && onPreview(item)}
+          onClick={() => onPreview?.(item)}
           titleTypographyProps={{
             variant: 'subtitle2',
             component: 'h2',
