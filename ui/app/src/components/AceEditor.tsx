@@ -91,13 +91,13 @@ export interface AceOptions {
   useElasticTabstops: boolean;
 }
 
-export type AceEditorClassKey = 'base';
+export type AceEditorClassKey = 'root' | 'editorRoot';
 
 export type AceEditorStyles = Partial<Record<AceEditorClassKey, CSSProperties>>;
 
 export interface AceEditorProps extends Partial<AceOptions> {
   value?: any;
-  className?: string;
+  classes?: Partial<Record<AceEditorClassKey, string>>;
   autoFocus?: boolean;
   styles?: AceEditorStyles;
   onChange?(e: any): void;
@@ -168,11 +168,15 @@ const aceOptions: Array<keyof AceOptions> = [
 
 const useStyles = makeStyles((theme) =>
   createStyles<AceEditorClassKey, AceEditorStyles>({
-    base: (styles) => ({
+    root: (styles) => ({
+      display: 'contents',
+      ...styles.root
+    }),
+    editorRoot: (styles) => ({
       width: '100%',
       height: '100%',
       margin: 0,
-      ...styles.base
+      ...styles.editorRoot
     })
   })
 );
@@ -204,7 +208,7 @@ export default React.forwardRef(function AceEditor(props: AceEditorProps, ref) {
     const init = () => {
       if (!unmounted) {
         const pre = document.createElement('pre');
-        pre.className = classes.base;
+        pre.className = classes.editorRoot;
         refs.current.pre = pre;
         refs.current.elem.appendChild(pre);
         aceEditor = window.ace.edit(pre, options);
@@ -258,9 +262,9 @@ export default React.forwardRef(function AceEditor(props: AceEditorProps, ref) {
     if (refs.current.pre) {
       refs.current.pre.className = `${[...refs.current.pre.classList]
         .filter((value) => !/craftercms-|makeStyles-/.test(value))
-        .join(' ')} ${classes.base}`;
+        .join(' ')} ${classes.editorRoot}`;
     }
-  }, [classes.base]);
+  }, [classes.editorRoot]);
 
   return (
     <div
@@ -269,9 +273,7 @@ export default React.forwardRef(function AceEditor(props: AceEditorProps, ref) {
           refs.current.elem = e;
         }
       }}
-      style={{
-        display: 'contents'
-      }}
+      className={classes.root}
     />
   );
 });

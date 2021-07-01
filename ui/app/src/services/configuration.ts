@@ -291,13 +291,10 @@ export function fetchSiteUiConfig(site: string): Observable<Pick<GlobalState['ui
         }
         // reading datasets
         xml.querySelectorAll('dataset').forEach((tag) => {
-          config.datasets[tag.id.replace('craftercms.', '')] = applyDeserializedXMLTransforms(
-            deserialize(tag.innerHTML),
-            {
-              arrays,
-              renameTable
-            }
-          );
+          config.datasets[tag.id] = applyDeserializedXMLTransforms(deserialize(tag.innerHTML), {
+            arrays,
+            renameTable
+          });
         });
 
         return config;

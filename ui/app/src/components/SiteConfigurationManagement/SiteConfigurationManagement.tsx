@@ -602,7 +602,7 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
               <AceEditor
                 ref={editorRef}
                 styles={{
-                  base: {
+                  editorRoot: {
                     width: leftEditorWidth ? `${leftEditorWidth}px` : 'auto',
                     flexGrow: leftEditorWidth ? 0 : 1,
                     height: '100%',
@@ -624,7 +624,7 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
                   <ResizeBar onWidthChange={onEditorResize} element={editorRef.current.container} />
                   <ConditionalLoadingState isLoading={loadingSampleXml} classes={{ root: classes.loadingStateRight }}>
                     <AceEditor
-                      className={clsx(classes.editorCleanStyles, classes.sampleEditor)}
+                      classes={{ editorRoot: clsx(classes.editorCleanStyles, classes.sampleEditor) }}
                       mode="ace/mode/xml"
                       theme="ace/theme/textmate"
                       autoFocus={false}
