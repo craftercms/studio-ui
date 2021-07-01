@@ -54,12 +54,22 @@ YAHOO.extend(CStudioForms.Controls.Label, CStudioForms.CStudioFormField, {
     YAHOO.util.Dom.addClass(controlWidgetContainerEl, 'cstudio-form-control-input-container');
     containerEl.appendChild(controlWidgetContainerEl);
 
+    var text = '';
+    var renderAsHTML = false;
     for (var i = 0; i < config.properties.length; i++) {
       var prop = config.properties[i];
 
       if (prop.name === 'text') {
-        controlWidgetContainerEl.textContent = prop.value;
+        text = prop.value;
+      } else if (prop.name === 'renderAsHTML') {
+        renderAsHTML = prop.value;
       }
+    }
+
+    if (renderAsHTML) {
+      controlWidgetContainerEl.innerHTML = text;
+    } else {
+      controlWidgetContainerEl.textContent = text;
     }
   },
 
@@ -76,7 +86,18 @@ YAHOO.extend(CStudioForms.Controls.Label, CStudioForms.CStudioFormField, {
   },
 
   getSupportedProperties: function() {
-    return [{ label: CMgs.format(langBundle, 'text'), name: 'text', type: 'string' }];
+    return [
+      { 
+        label: CMgs.format(langBundle, 'text'), 
+        name: 'text', 
+        type: 'string' 
+      },
+      {
+        label: CMgs.format(langBundle, 'renderAsHTML'),
+        name: 'renderAsHTML',
+        type: 'boolean'
+      }
+    ];
   },
 
   getSupportedConstraints: function() {
