@@ -214,7 +214,7 @@ export function expandPathMacros(path: string, values?: LookupTable<any>) {
   path = path
     .replace(/{(year|yyyy)}/g, String(currentDate.getFullYear()))
     .replace(/{(month|mm)}/g, ('0' + (currentDate.getMonth() + 1)).slice(-2))
-    .replace(/{(dd)}/g, ('0' + currentDate.getDate()).slice(-2));
+    .replace(/{dd}/g, ('0' + currentDate.getDate()).slice(-2));
 
   if (values) {
     path = path.replace(/\{.*?\}/g, function(match) {

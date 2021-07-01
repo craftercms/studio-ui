@@ -28,10 +28,10 @@ export interface BrowseFilesDialogProps extends DialogProps {
 }
 
 export default function BrowseFilesDialog(props: BrowseFilesDialogProps) {
-  const { open, path, type, onClose, onClosed, ...rest } = props;
+  const { path, type, onClosed, ...rest } = props;
 
   return (
-    <Dialog open={open} onClose={onClose} {...rest} fullWidth maxWidth="md">
+    <Dialog fullWidth maxWidth="md" {...rest}>
       <BrowseFilesDialogUI
         title={
           type === 'image' ? (
@@ -41,7 +41,7 @@ export default function BrowseFilesDialog(props: BrowseFilesDialogProps) {
           )
         }
         path={path}
-        onClose={onClose}
+        onClose={props.onClose}
         onClosed={onClosed}
       />
     </Dialog>
