@@ -800,6 +800,7 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'en', {
   thumbnailHeight: 'Thumbnail Height',
   displaySize: 'Display Size',
   text: 'Text',
+  renderAsHTML: 'Render as HTML',
   minSize: 'Min Size',
   maxSize: 'Max Size',
   itemManager: 'Item Manager',
