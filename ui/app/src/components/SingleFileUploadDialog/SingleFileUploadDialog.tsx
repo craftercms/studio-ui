@@ -16,13 +16,14 @@
 
 import React, { PropsWithChildren } from 'react';
 import Dialog from '@material-ui/core/Dialog';
-import { SingleFileUploadDialogUI } from './SingleFileUploadDialogUI';
-import { FormattedMessage } from 'react-intl';
+import { SingleFileUploadDialogContainer } from './SingleFileUploadDialogContainer';
 import StandardAction from '../../models/StandardAction';
 
 interface SingleFileUploadDialogBaseProps {
   open: boolean;
+  path: string;
   type: string;
+  dataSourceId: string;
 }
 
 export type SingleFileUploadDialogProps = PropsWithChildren<
@@ -40,18 +41,15 @@ export interface SingleFileUploadDialogStateProps extends SingleFileUploadDialog
 }
 
 export default function SingleFileUploadDialog(props: SingleFileUploadDialogProps) {
-  const { type, onClosed, ...rest } = props;
+  const { type, path, onClosed, dataSourceId, onSuccess, ...rest } = props;
 
   return (
     <Dialog fullWidth maxWidth="md" {...rest}>
-      <SingleFileUploadDialogUI
-        title={
-          type === 'image' ? (
-            <FormattedMessage id="uploadFileDialog.uploadBrowse" defaultMessage="Upload an image" />
-          ) : (
-            <FormattedMessage id="uploadFileDialog.uploadBrowse" defaultMessage="Upload an file" />
-          )
-        }
+      <SingleFileUploadDialogContainer
+        type={type}
+        path={path}
+        dataSourceId={dataSourceId}
+        onSuccess={onSuccess}
         onClose={props.onClose}
         onClosed={onClosed}
       />

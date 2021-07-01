@@ -489,7 +489,9 @@ function GlobalDialogManager() {
       {/* region Single File Upload Dialog */}
       <SingleFileUploadDialog
         open={state.singleFileUpload.open}
+        path={state.singleFileUpload.path}
         type={state.singleFileUpload.type}
+        dataSourceId={state.singleFileUpload.dataSourceId}
         onSuccess={createCallback(state.singleFileUpload.onSuccess, dispatch)}
         onClose={createCallback(state.singleFileUpload.onClose, dispatch)}
         onClosed={createCallback(state.singleFileUpload.onClosed, dispatch)}

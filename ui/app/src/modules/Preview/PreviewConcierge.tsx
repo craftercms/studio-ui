@@ -791,7 +791,7 @@ export function PreviewConcierge(props: any) {
           );
 
           if (!dataSourceId || field.validations.allowedImageDataSources.value.length === 0) {
-            enqueueSnackbar(formatMessage(guestMessages.assetDataSourcesNoConfigured));
+            enqueueSnackbar(formatMessage(guestMessages.assetDataSourcesNoConfigured), { variant: 'error' });
             return;
           }
 
@@ -808,7 +808,8 @@ export function PreviewConcierge(props: any) {
                 enqueueSnackbar(
                   formatMessage(guestMessages.assetUploaderMissingConfiguration, {
                     id: dataSource.id
-                  })
+                  }),
+                  { variant: 'error' }
                 );
                 return;
               }
@@ -846,7 +847,7 @@ export function PreviewConcierge(props: any) {
                 },
                 (error) => {
                   console.error(error);
-                  enqueueSnackbar(formatMessage(guestMessages.assetUploadFailed));
+                  enqueueSnackbar(formatMessage(guestMessages.assetUploadFailed), { variant: 'error' });
                 }
               );
               break;
@@ -856,7 +857,8 @@ export function PreviewConcierge(props: any) {
                 enqueueSnackbar(
                   formatMessage(guestMessages.assetUploaderMissingConfiguration, {
                     id: dataSource.id
-                  })
+                  }),
+                  { variant: 'error' }
                 );
                 return;
               }
@@ -883,7 +885,7 @@ export function PreviewConcierge(props: any) {
                   },
                   (error) => {
                     console.error(error);
-                    enqueueSnackbar(formatMessage(guestMessages.assetUploadFailed));
+                    enqueueSnackbar(formatMessage(guestMessages.assetUploadFailed), { variant: 'error' });
                   },
                   () => {
                     hostToGuest$.next({

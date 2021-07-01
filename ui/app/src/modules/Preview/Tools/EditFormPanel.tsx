@@ -23,7 +23,12 @@ import { defineMessages, IntlFormatters, useIntl } from 'react-intl';
 import { findParentModelId, nnou } from '../../../utils/object';
 import { popPiece } from '../../../utils/string';
 import * as ModelHelper from '../../../utils/model';
-import { showCodeEditorDialog, showEditDialog } from '../../../state/actions/dialogs';
+import {
+  showCodeEditorDialog,
+  showConfirmDialog,
+  showEditDialog,
+  showSingleFileUploadDialog
+} from '../../../state/actions/dialogs';
 import { getField } from '../../../utils/contentType';
 import { Menu, MenuItem } from '@material-ui/core';
 import { GuestData } from '../../../models/GlobalState';
@@ -32,6 +37,8 @@ import { useActiveSiteId } from '../../../utils/hooks/useActiveSiteId';
 import { usePreviewState } from '../../../utils/hooks/usePreviewState';
 import ContentInstance from '../../../models/ContentInstance';
 import ContentType, { ContentTypeField } from '../../../models/ContentType';
+import LookupTable from '../../../models/LookupTable';
+import { expandPathMacros } from '../../../utils/path';
 
 interface EditFormPanelProps {
   open: boolean;
@@ -49,6 +56,7 @@ interface EditFormPanelBodyProps {
 interface FieldOption {
   id: string;
   label: string;
+  options?: LookupTable<any>;
 }
 
 const getEditDialogProps = (props: {
@@ -105,6 +113,10 @@ const translations = defineMessages({
   delete: {
     id: 'words.delete',
     defaultMessage: 'Delete'
+  },
+  assetUploaderMissingConfiguration: {
+    id: 'operations.assetUploadMissingConfiguration',
+    defaultMessage: 'Data source "{id}" have properties with missing or incorrect values.'
   }
 });
 
@@ -242,7 +254,24 @@ function EditFormPanelBody(props: EditFormPanelBodyProps) {
         onDismiss();
         break;
       }
-      case 'uploadImages': {
+      case 'img-desktop-upload': {
+        const datasource = contentType.dataSources[option.options.dataSourceId];
+        const path = datasource.properties.repoPath.value;
+        if (!path) {
+          dispatch(
+            showConfirmDialog({
+              body: formatMessage(translations.assetUploaderMissingConfiguration, { id: datasource.id })
+            })
+          );
+          return;
+        }
+        dispatch(
+          showSingleFileUploadDialog({
+            path: expandPathMacros(path),
+            dataSourceId: datasource.type,
+            type: 'studio'
+          })
+        );
         onDismiss();
         break;
       }
@@ -288,8 +317,9 @@ export function getContentTypeOptions(
     if (Array.isArray(field.validations.allowedImageDataSources.value)) {
       field.validations.allowedImageDataSources.value.forEach((id) => {
         options.push({
-          id: id,
-          label: contentType.dataSources[id].name
+          id: contentType.dataSources[id].type,
+          label: contentType.dataSources[id].name,
+          options: { dataSourceId: id }
         });
       });
     }

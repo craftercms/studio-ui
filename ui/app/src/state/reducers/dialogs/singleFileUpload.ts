@@ -25,7 +25,9 @@ import { SingleFileUploadDialogStateProps } from '../../../components/SingleFile
 
 const initialState: SingleFileUploadDialogStateProps = {
   open: false,
-  type: ''
+  path: null,
+  type: null,
+  dataSourceId: null
 };
 
 export default createReducer<GlobalState['dialogs']['singleFileUpload']>(initialState, {
