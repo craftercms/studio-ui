@@ -30,6 +30,7 @@ import { GuestData } from '../../../models/GlobalState';
 import { useSelection } from '../../../utils/hooks/useSelection';
 import { useActiveSiteId } from '../../../utils/hooks/useActiveSiteId';
 import { usePreviewState } from '../../../utils/hooks/usePreviewState';
+import ContentInstance from '../../../models/ContentInstance';
 
 interface EditFormPanelProps {
   open: boolean;
@@ -44,12 +45,23 @@ interface EditFormPanelBodyProps {
   modelIdByPath: GuestData['modelIdByPath'];
 }
 
-const getEditDialogProps = ({ authoringBase, childrenMap, model, models, path, selectedId, site }) => {
+const getEditDialogProps = (props: {
+  authoringBase: string;
+  childrenMap: GuestData['childrenMap'];
+  model: ContentInstance;
+  models: GuestData['models'];
+  path: string;
+  selectedId: string;
+  site: string;
+  selectedFields: string[];
+}) => {
+  const { authoringBase, childrenMap, model, models, path, selectedId, site, selectedFields } = props;
   if (path) {
     return {
       authoringBase,
       site,
-      path
+      path,
+      ...(selectedFields ? { selectedFields } : {})
     };
   } else {
     let parentPath;
@@ -65,7 +77,8 @@ const getEditDialogProps = ({ authoringBase, childrenMap, model, models, path, s
       site,
       path: parentPath,
       isHidden: true,
-      modelId: selectedId
+      modelId: selectedId,
+      ...(selectedFields ? { selectedFields } : {})
     };
   }
 };
@@ -181,8 +194,11 @@ function EditFormPanelBody(props: EditFormPanelBodyProps) {
   function openDialog(type: string) {
     onDismiss();
     if (type === 'form') {
+      const selectedFields = field ? [field.id] : null;
       dispatch(
-        showEditDialog(getEditDialogProps({ authoringBase, childrenMap, model, models, path, selectedId, site }))
+        showEditDialog(
+          getEditDialogProps({ authoringBase, childrenMap, model, models, path, selectedFields, selectedId, site })
+        )
       );
     } else {
       dispatch(

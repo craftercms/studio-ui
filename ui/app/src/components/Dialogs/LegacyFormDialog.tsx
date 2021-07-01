@@ -89,6 +89,7 @@ const styles = makeStyles(() =>
 interface LegacyFormDialogBaseProps {
   open?: boolean;
   path: string;
+  selectedFields?: string[];
   authoringBase: string;
   site?: string;
   isHidden?: boolean;
@@ -121,6 +122,7 @@ export interface LegacyFormDialogStateProps extends LegacyFormDialogBaseProps {
 const EmbeddedLegacyEditor = React.forwardRef(function EmbeddedLegacyEditor(props: LegacyFormDialogProps, ref) {
   const {
     path,
+    selectedFields,
     authoringBase,
     readonly,
     site,
@@ -147,9 +149,21 @@ const EmbeddedLegacyEditor = React.forwardRef(function EmbeddedLegacyEditor(prop
         modelId,
         changeTemplate,
         contentTypeId,
-        isNewContent
+        isNewContent,
+        ...(selectedFields ? { selectedFields: JSON.stringify(selectedFields) } : {})
       }),
-    [authoringBase, changeTemplate, contentTypeId, isHidden, isNewContent, modelId, path, readonly, site]
+    [
+      authoringBase,
+      changeTemplate,
+      contentTypeId,
+      isHidden,
+      isNewContent,
+      modelId,
+      path,
+      selectedFields,
+      readonly,
+      site
+    ]
   );
 
   const { formatMessage } = useIntl();
