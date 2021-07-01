@@ -14,23 +14,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
-import Dialog, { DialogProps } from '@material-ui/core/Dialog';
+import React, { PropsWithChildren } from 'react';
+import Dialog from '@material-ui/core/Dialog';
 import { SingleFileUploadDialogUI } from './SingleFileUploadDialogUI';
 import { FormattedMessage } from 'react-intl';
+import StandardAction from '../../models/StandardAction';
 
-export interface SingleFileUploadDialogProps extends DialogProps {
+interface SingleFileUploadDialogBaseProps {
   open: boolean;
   type: string;
-  onClose(): void;
-  onClosed?(): void;
+}
+
+export type SingleFileUploadDialogProps = PropsWithChildren<
+  SingleFileUploadDialogBaseProps & {
+    onClose(): void;
+    onSuccess?(): void;
+    onClosed?(): void;
+  }
+>;
+
+export interface SingleFileUploadDialogStateProps extends SingleFileUploadDialogBaseProps {
+  onClose?: StandardAction;
+  onSuccess?: StandardAction;
+  onClosed?: StandardAction;
 }
 
 export default function SingleFileUploadDialog(props: SingleFileUploadDialogProps) {
-  const { open, type, onClose, onClosed, ...rest } = props;
+  const { type, onClosed, ...rest } = props;
 
   return (
-    <Dialog open={open} onClose={onClose} {...rest} fullWidth maxWidth="md">
+    <Dialog fullWidth maxWidth="md" {...rest}>
       <SingleFileUploadDialogUI
         title={
           type === 'image' ? (
@@ -39,7 +52,7 @@ export default function SingleFileUploadDialog(props: SingleFileUploadDialogProp
             <FormattedMessage id="uploadFileDialog.uploadBrowse" defaultMessage="Upload an file" />
           )
         }
-        onClose={onClose}
+        onClose={props.onClose}
         onClosed={onClosed}
       />
     </Dialog>

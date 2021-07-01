@@ -32,6 +32,7 @@ import Launcher from '../Launcher/Launcher';
 import UnlockPublisherDialog from '../UnlockPublisherDialog';
 import WidgetDialog from '../WidgetDialog';
 import { useSelection } from '../../utils/hooks/useSelection';
+import SingleFileUploadDialog from '../SingleFileUploadDialog';
 
 const ViewVersionDialog = lazy(() => import('../../modules/Content/History/ViewVersionDialog'));
 const CompareVersionsDialog = lazy(() => import('../../modules/Content/History/CompareVersionsDialog'));
@@ -481,6 +482,16 @@ function GlobalDialogManager() {
         widget={state.widget.widget}
         onClose={createCallback(state.widget.onClose, dispatch)}
         onClosed={createCallback(state.widget.onClosed, dispatch)}
+      />
+      {/* endregion */}
+
+      {/* region Single File Upload Dialog */}
+      <SingleFileUploadDialog
+        open={state.singleFileUpload.open}
+        type={state.singleFileUpload.type}
+        onSuccess={createCallback(state.singleFileUpload.onSuccess, dispatch)}
+        onClose={createCallback(state.singleFileUpload.onClose, dispatch)}
+        onClosed={createCallback(state.singleFileUpload.onClosed, dispatch)}
       />
       {/* endregion */}
     </Suspense>

@@ -197,7 +197,7 @@ const guestMessages = defineMessages({
   },
   assetUploaderMissingConfiguration: {
     id: 'operations.assetUploadMissingConfiguration',
-    defaultMessage: 'Uploader "{id}" have properties with missing or incorrect values.'
+    defaultMessage: 'Data source "{id}" have properties with missing or incorrect values.'
   },
   assetUploadStarted: {
     id: 'operations.assetUploadStarted',

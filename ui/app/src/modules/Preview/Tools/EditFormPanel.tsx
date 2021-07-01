@@ -92,10 +92,6 @@ const translations = defineMessages({
   delete: {
     id: 'words.delete',
     defaultMessage: 'Delete'
-  },
-  cancel: {
-    id: 'words.cancel',
-    defaultMessage: 'Cancel'
   }
 });
 
@@ -262,7 +258,6 @@ function EditFormPanelBody(props: EditFormPanelBodyProps) {
           {option.label}
         </MenuItem>
       ))}
-      <MenuItem onClick={onDismiss}>{formatMessage(translations.cancel)}</MenuItem>
     </>
   );
 }
