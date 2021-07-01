@@ -169,7 +169,11 @@
         isFlattenedInclude;
 
       if (field) {
-        windowUrl += '&iceId=' + field;
+        if (typeof field === 'string') {
+          windowUrl += '&iceId=' + field;
+        } else {
+          windowUrl += '&selectedFields=' + encodeURIComponent(JSON.stringify(field));
+        }
       } else {
         windowUrl += '&iceComponent=true';
       }

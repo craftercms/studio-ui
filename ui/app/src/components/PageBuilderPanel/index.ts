@@ -17,5 +17,3 @@
 export { default } from './PageBuilderPanel';
 
 export * from './PageBuilderPanel';
-
-export * from './PageBuilderPanelUI';

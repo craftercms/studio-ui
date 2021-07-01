@@ -19,11 +19,12 @@ import { Suspense } from 'react';
 import { useDispatch } from 'react-redux';
 import { updatePageBuilderPanelWidth } from '../../state/actions/preview';
 import LoadingState, { ConditionalLoadingState } from '../SystemStatus/LoadingState';
-import PageBuilderPanelUI from './PageBuilderPanelUI';
 import { useSelection } from '../../utils/hooks/useSelection';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useActiveUser } from '../../utils/hooks/useActiveUser';
 import { useSiteUIConfig } from '../../utils/hooks/useSiteUIConfig';
+import { renderWidgets } from '../Widget';
+import ResizeableDrawer from '../../modules/Preview/ResizeableDrawer';
 
 export function PageBuilderPanel() {
   const dispatch = useDispatch();
@@ -33,21 +34,18 @@ export function PageBuilderPanel() {
   const { pageBuilderPanelWidth: width, editMode, pageBuilderPanelStack } = useSelection((state) => state.preview);
   const onWidthChange = (width) => dispatch(updatePageBuilderPanelWidth({ width }));
   return (
-    <Suspense fallback={<LoadingState />}>
-      <ConditionalLoadingState isLoading={!Boolean(uiConfig.preview.pageBuilderPanel.widgets)}>
-        <PageBuilderPanelUI
-          open={editMode}
-          width={width}
-          onWidthChange={onWidthChange}
-          widgets={
+    <ResizeableDrawer open={editMode} belowToolbar anchor="right" width={width} onWidthChange={onWidthChange}>
+      <Suspense fallback={<LoadingState />}>
+        <ConditionalLoadingState isLoading={!Boolean(uiConfig.preview.pageBuilderPanel.widgets)}>
+          {renderWidgets(
             pageBuilderPanelStack.length
               ? pageBuilderPanelStack.slice(pageBuilderPanelStack.length - 1)
-              : uiConfig.preview.pageBuilderPanel.widgets
-          }
-          userRolesInSite={rolesBySite[site]}
-        />
-      </ConditionalLoadingState>
-    </Suspense>
+              : uiConfig.preview.pageBuilderPanel.widgets,
+            rolesBySite[site]
+          )}
+        </ConditionalLoadingState>
+      </Suspense>
+    </ResizeableDrawer>
   );
 }
 

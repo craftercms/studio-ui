@@ -163,6 +163,7 @@ function GlobalDialogManager() {
       <LegacyFormDialog
         open={state.edit.open}
         path={state.edit.path}
+        selectedFields={state.edit.selectedFields}
         site={state.edit.site}
         authoringBase={state.edit.authoringBase}
         readonly={state.edit.readonly}

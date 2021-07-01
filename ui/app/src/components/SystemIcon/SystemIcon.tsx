@@ -14,12 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import CoreIcon, { IconProps } from '@material-ui/core/Icon';
 import ErrorRounded from '@material-ui/icons/ErrorRounded';
 import { components } from '../../services/plugin';
 import { SvgIconProps, Tooltip } from '@material-ui/core';
 import clsx from 'clsx';
+import { Skeleton } from '@material-ui/lab';
 
 export type SystemIconDescriptor = { id?: string; class?: string; style?: object; content?: string };
 
@@ -39,7 +40,9 @@ export default function SystemIcon(props: SystemIconProps) {
     const iconClassName = clsx(icon.class, className, props.svgIconProps?.className);
 
     return IconComponent ? (
-      <IconComponent {...props.svgIconProps} style={iconStyle} className={iconClassName} />
+      <Suspense fallback={<Skeleton variant="rect" width="20px" />}>
+        <IconComponent {...props.svgIconProps} style={iconStyle} className={iconClassName} />
+      </Suspense>
     ) : (
       <Tooltip title={`Icon ${icon.id} not found. Check config.`}>
         <ErrorRounded />
