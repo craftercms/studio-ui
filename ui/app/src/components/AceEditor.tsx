@@ -20,6 +20,7 @@ import { pluckProps } from '../utils/object';
 import { CSSProperties } from '@material-ui/styles';
 import { useMount } from '../utils/hooks/useMount';
 import useTheme from '@material-ui/core/styles/useTheme';
+import clsx from 'clsx';
 
 // @see https://github.com/ajaxorg/ace/wiki/Configuring-Ace
 export interface AceOptions {
@@ -273,7 +274,7 @@ export default React.forwardRef(function AceEditor(props: AceEditorProps, ref) {
           refs.current.elem = e;
         }
       }}
-      className={classes.root}
+      className={clsx(classes.root, props.classes?.root)}
     />
   );
 });
