@@ -16,14 +16,16 @@
 
 import React, { PropsWithChildren } from 'react';
 import Dialog from '@material-ui/core/Dialog';
-import { SingleFileUploadDialogContainer } from './SingleFileUploadDialogContainer';
+import { SingleFileUploadDialogContainer, uploadType } from './SingleFileUploadDialogContainer';
 import StandardAction from '../../models/StandardAction';
 
 interface SingleFileUploadDialogBaseProps {
   open: boolean;
   path: string;
-  type: string;
-  dataSourceId: string;
+  uploadType: uploadType;
+  profileId?: string;
+  validTypesRegex?: string | RegExp | [string, string];
+  validTypesLabel?: string;
 }
 
 export type SingleFileUploadDialogProps = PropsWithChildren<
@@ -41,14 +43,16 @@ export interface SingleFileUploadDialogStateProps extends SingleFileUploadDialog
 }
 
 export default function SingleFileUploadDialog(props: SingleFileUploadDialogProps) {
-  const { type, path, onClosed, dataSourceId, onSuccess, ...rest } = props;
+  const { uploadType, validTypesRegex, profileId, validTypesLabel, path, onClosed, onSuccess, ...rest } = props;
 
   return (
     <Dialog fullWidth maxWidth="md" {...rest}>
       <SingleFileUploadDialogContainer
-        type={type}
+        profileId={profileId}
+        uploadType={uploadType}
+        validTypesRegex={validTypesRegex}
+        validTypesLabel={validTypesLabel}
         path={path}
-        dataSourceId={dataSourceId}
         onSuccess={onSuccess}
         onClose={props.onClose}
         onClosed={onClosed}

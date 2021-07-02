@@ -73,6 +73,7 @@ export interface PagedEntityState<T = any> extends EntityState<T> {
 }
 
 export interface EditSelection {
+  elementRecordId: string;
   modelId: string;
   fieldId: string[];
   index: string | number;

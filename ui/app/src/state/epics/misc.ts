@@ -15,7 +15,7 @@
  */
 
 import { ofType } from 'redux-observable';
-import { catchError, filter, map, switchMap, withLatestFrom } from 'rxjs/operators';
+import { catchError, filter, ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { NEVER, Observable, of } from 'rxjs';
 import GlobalState from '../../models/GlobalState';
 import {
@@ -23,13 +23,16 @@ import {
   changeContentType as changeContentTypeAction,
   editContentTypeTemplate,
   editController,
-  editTemplate
+  editTemplate,
+  notifyFieldImageChanged
 } from '../actions/misc';
 import { changeContentType, fetchWorkflowAffectedItems } from '../../services/content';
 import { showCodeEditorDialog, showEditDialog, showWorkflowCancellationDialog } from '../actions/dialogs';
 import { reloadDetailedItem } from '../actions/content';
 import { showEditItemSuccessNotification } from '../actions/system';
 import { CrafterCMSEpic } from '../store';
+import { getHostToGuestBus } from '../../modules/Preview/previewContext';
+import { DESKTOP_ASSET_UPLOAD_COMPLETE } from '../actions/preview';
 
 const epics = [
   (action$, state$: Observable<GlobalState>) =>
@@ -127,6 +130,20 @@ const epics = [
           })
         );
       })
+    ),
+  (action$, state$) =>
+    action$.pipe(
+      ofType(notifyFieldImageChanged.type),
+      tap(({ payload: { recordId, url } }) => {
+        getHostToGuestBus().next({
+          type: DESKTOP_ASSET_UPLOAD_COMPLETE,
+          payload: {
+            recordId,
+            path: url
+          }
+        });
+      }),
+      ignoreElements()
     )
 ] as CrafterCMSEpic[];
 

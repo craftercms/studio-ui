@@ -74,7 +74,7 @@ import {
   uploadToS3,
   uploadToWebDAV
 } from '../../services/content';
-import { filter, map, pluck, switchMap, take, takeUntil } from 'rxjs/operators';
+import { filter, map, switchMap, take, takeUntil } from 'rxjs/operators';
 import ContentType from '../../models/ContentType';
 import { forkJoin, Observable, of, ReplaySubject } from 'rxjs';
 import Button from '@material-ui/core/Button';
@@ -779,13 +779,14 @@ export function PreviewConcierge(props: any) {
           let subscription = null;
 
           const servicesMap = {
+            'img-desktop-upload': uploadDataUrl,
             'img-WebDAV-upload': uploadToWebDAV,
             'img-CMIS-upload': uploadToCMIS,
             'img-S3-upload': uploadToS3
           };
 
           dataSourceId = field.validations.allowedImageDataSources.value.find((id) =>
-            ['img-S3-repo', 'img-desktop-upload', 'img-WebDAV-upload', 'img-CMIS-upload'].includes(
+            ['img-S3-upload', 'img-desktop-upload', 'img-WebDAV-upload', 'img-CMIS-upload'].includes(
               contentType.dataSources[id].type
             )
           );
@@ -796,110 +797,59 @@ export function PreviewConcierge(props: any) {
           }
 
           dataSource = contentType.dataSources[dataSourceId];
+          let path = dataSource.properties.repoPath.value;
+          let profileId =
+            dataSource.type !== 'img-desktop-upload'
+              ? dataSource.properties[dataSource.type === 'img-CMIS-upload' ? 'repositoryId' : 'profileId'].value
+              : null;
 
-          switch (dataSource.type) {
-            case 'img-WebDAV-upload':
-            case 'img-CMIS-upload':
-            case 'img-S3-repo': {
-              let path = dataSource.properties[dataSource.type === 'img-S3-repo' ? 'path' : 'repoPath'].value;
-              let profileId =
-                dataSource.properties[dataSource.type === 'img-CMIS-upload' ? 'repositoryId' : 'profileId'].value;
-              if (!path || !profileId) {
-                enqueueSnackbar(
-                  formatMessage(guestMessages.assetUploaderMissingConfiguration, {
-                    id: dataSource.id
-                  }),
-                  { variant: 'error' }
-                );
-                return;
-              }
-              hostToHost$.next({ type: DESKTOP_ASSET_UPLOAD_STARTED, payload });
-              enqueueSnackbar(formatMessage(guestMessages.assetUploadStarted));
-              path = expandPathMacros(path);
-              subscription = servicesMap[dataSource.type](
-                site,
-                { name, type, dataUrl },
-                path,
-                profileId,
-                xsrfArgument
-              ).subscribe(
-                ({ type, payload: response }) => {
-                  if (type === 'complete') {
-                    hostToGuest$.next({
-                      type: DESKTOP_ASSET_UPLOAD_COMPLETE,
-                      payload: {
-                        recordId,
-                        path: response.item.url
-                      }
-                    });
-                  } else if (type === 'progress') {
-                    const percentage = Math.floor(
-                      parseInt(((response.progress.bytesUploaded / response.progress.bytesTotal) * 100).toFixed(2))
-                    );
-                    hostToGuest$.next({
-                      type: DESKTOP_ASSET_UPLOAD_PROGRESS,
-                      payload: {
-                        recordId,
-                        percentage
-                      }
-                    });
-                  }
-                },
-                (error) => {
-                  console.error(error);
-                  enqueueSnackbar(formatMessage(guestMessages.assetUploadFailed), { variant: 'error' });
-                }
-              );
-              break;
-            }
-            case 'img-desktop-upload': {
-              if (!dataSource.properties.repoPath.value) {
-                enqueueSnackbar(
-                  formatMessage(guestMessages.assetUploaderMissingConfiguration, {
-                    id: dataSource.id
-                  }),
-                  { variant: 'error' }
-                );
-                return;
-              }
-              hostToHost$.next({ type: DESKTOP_ASSET_UPLOAD_STARTED, payload });
-              enqueueSnackbar(formatMessage(guestMessages.assetUploadStarted));
-              let path = expandPathMacros(dataSource.properties.repoPath.value);
-              subscription = uploadDataUrl(site, { name, type, dataUrl }, expandPathMacros(path), xsrfArgument)
-                .pipe(
-                  filter(({ type }) => type === 'progress'),
-                  pluck('payload')
-                )
-                .subscribe(
-                  ({ progress }) => {
-                    const percentage = Math.floor(
-                      parseInt(((progress.bytesUploaded / progress.bytesTotal) * 100).toFixed(2))
-                    );
-                    hostToGuest$.next({
-                      type: DESKTOP_ASSET_UPLOAD_PROGRESS,
-                      payload: {
-                        recordId,
-                        percentage
-                      }
-                    });
-                  },
-                  (error) => {
-                    console.error(error);
-                    enqueueSnackbar(formatMessage(guestMessages.assetUploadFailed), { variant: 'error' });
-                  },
-                  () => {
-                    hostToGuest$.next({
-                      type: DESKTOP_ASSET_UPLOAD_COMPLETE,
-                      payload: {
-                        recordId,
-                        path: expandPathMacros(path) + payload.name
-                      }
-                    });
-                  }
-                );
-              break;
-            }
+          if (!path || (dataSource.type !== 'img-desktop-upload' && !profileId)) {
+            enqueueSnackbar(
+              formatMessage(guestMessages.assetUploaderMissingConfiguration, {
+                id: dataSource.id
+              }),
+              { variant: 'error' }
+            );
+            return;
           }
+
+          hostToHost$.next({ type: DESKTOP_ASSET_UPLOAD_STARTED, payload });
+          enqueueSnackbar(formatMessage(guestMessages.assetUploadStarted));
+
+          subscription = servicesMap[dataSource.type](
+            site,
+            { name, type, dataUrl },
+            expandPathMacros(path),
+            dataSource.type === 'img-desktop-upload' ? xsrfArgument : profileId,
+            xsrfArgument
+          ).subscribe(
+            ({ type, payload: response }) => {
+              if (type === 'complete') {
+                hostToGuest$.next({
+                  type: DESKTOP_ASSET_UPLOAD_COMPLETE,
+                  payload: {
+                    recordId,
+                    path: response.url
+                  }
+                });
+              } else if (type === 'progress') {
+                const percentage = Math.floor(
+                  parseInt(((response.progress.bytesUploaded / response.progress.bytesTotal) * 100).toFixed(2))
+                );
+                hostToGuest$.next({
+                  type: DESKTOP_ASSET_UPLOAD_PROGRESS,
+                  payload: {
+                    recordId,
+                    percentage
+                  }
+                });
+              }
+            },
+            (error) => {
+              console.error(error);
+              enqueueSnackbar(formatMessage(guestMessages.assetUploadFailed), { variant: 'error' });
+            }
+          );
 
           const sub = hostToHost$.subscribe((action) => {
             const { type, payload: uploadFile } = action;

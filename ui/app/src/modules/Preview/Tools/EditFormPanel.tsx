@@ -24,6 +24,7 @@ import { findParentModelId, nnou } from '../../../utils/object';
 import { popPiece } from '../../../utils/string';
 import * as ModelHelper from '../../../utils/model';
 import {
+  closeSingleFileUploadDialog,
   showCodeEditorDialog,
   showConfirmDialog,
   showEditDialog,
@@ -39,6 +40,7 @@ import ContentInstance from '../../../models/ContentInstance';
 import ContentType, { ContentTypeField } from '../../../models/ContentType';
 import LookupTable from '../../../models/LookupTable';
 import { expandPathMacros } from '../../../utils/path';
+import { batchActions, notifyFieldImageChanged } from '../../../state/actions/misc';
 
 interface EditFormPanelProps {
   open: boolean;
@@ -250,7 +252,29 @@ function EditFormPanelBody(props: EditFormPanelBodyProps) {
         openDialog('controller');
         break;
       }
-      case 'existingImages': {
+      case 'img-S3-upload': {
+        const datasource = contentType.dataSources[option.options.dataSourceId];
+        const path = datasource.properties.repoPath.value;
+        const profileId = datasource.properties.profileId.value;
+        if (!path || !profileId) {
+          dispatch(
+            showConfirmDialog({
+              body: formatMessage(translations.assetUploaderMissingConfiguration, { id: datasource.id })
+            })
+          );
+          return;
+        }
+        dispatch(
+          showSingleFileUploadDialog({
+            path: expandPathMacros(path),
+            uploadType: 's3',
+            profileId,
+            onSuccess: batchActions([
+              closeSingleFileUploadDialog(),
+              notifyFieldImageChanged({ recordId: item.elementRecordId })
+            ])
+          })
+        );
         onDismiss();
         break;
       }
@@ -268,8 +292,7 @@ function EditFormPanelBody(props: EditFormPanelBodyProps) {
         dispatch(
           showSingleFileUploadDialog({
             path: expandPathMacros(path),
-            dataSourceId: datasource.type,
-            type: 'studio'
+            uploadType: 'studio'
           })
         );
         onDismiss();

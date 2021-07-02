@@ -26,10 +26,9 @@ import Link from '@material-ui/core/Link';
 import { useStyles } from './styles';
 import clsx from 'clsx';
 import Typography from '@material-ui/core/Typography';
-import { popPiece } from '../../utils/string';
 import { useSelection } from '../../utils/hooks/useSelection';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import { uploadDataUrl } from '../../services/content';
+import { uploadDataUrl, uploadToCMIS, uploadToS3, uploadToWebDAV } from '../../services/content';
 import { expandPathMacros } from '../../utils/path';
 import Card from '@material-ui/core/Card';
 import CardMedia from '@material-ui/core/CardMedia';
@@ -42,15 +41,20 @@ import CloseRoundedIcon from '@material-ui/icons/CloseRounded';
 import { validateActionPolicy } from '../../services/sites';
 import { nou } from '../../utils/object';
 import WarningRoundedIcon from '@material-ui/icons/WarningRounded';
+import ForwardRoundedIcon from '@material-ui/icons/ForwardRounded';
 
 const prettierBytes = require('@transloadit/prettier-bytes');
 
+export type uploadType = 's3' | 'cmis' | 'webdav' | 'studio';
+
 export interface SingleFileUploadDialogUIProps {
-  type: string;
   path: string;
-  dataSourceId: string;
+  profileId?: string;
+  uploadType: uploadType;
+  validTypesRegex?: string | RegExp | [string, string];
+  validTypesLabel?: string;
   onClose(): void;
-  onSuccess?({ url: string }): void;
+  onSuccess?(response: { name: string; url: string }): void;
   onClosed?(): void;
 }
 
@@ -60,18 +64,23 @@ interface SingleFile {
   size: string;
   type: string;
   allowed?: boolean;
+  reason?: 'policy' | 'type' | 'rename' | 'response';
   suggestedName?: string;
 }
 
+const servicesMap = {
+  studio: uploadDataUrl,
+  webDav: uploadToWebDAV,
+  cmis: uploadToCMIS,
+  s3: uploadToS3
+};
+
 export function SingleFileUploadDialogContainer(props: SingleFileUploadDialogUIProps) {
-  const { type, path, dataSourceId, onClose, onClosed, onSuccess } = props;
+  const { path, profileId, uploadType, validTypesRegex, validTypesLabel, onClose, onClosed, onSuccess } = props;
   const { xsrfArgument } = useSelection((state) => state.env);
   const site = useActiveSiteId();
   const classes = useStyles();
   const [over, setOver] = useState(false);
-  const validTypes =
-    type === 'image' ? ['jpg', 'jpeg', 'gif', 'png', 'tiff', 'tif', 'bmp', 'svg', 'jp2', 'jxr', 'webp'] : [];
-
   const [file, setFile] = useState<SingleFile>(null);
   const [progress, setProgress] = useState(null);
 
@@ -80,8 +89,7 @@ export function SingleFileUploadDialogContainer(props: SingleFileUploadDialogUIP
   const uploadInputRef = useRef(null);
 
   const processFile = (systemFile: File) => {
-    if (!systemFile || !validTypes.includes(popPiece(systemFile.type, '/').toLowerCase())) {
-      console.log('wrong file');
+    if (!systemFile) {
       return;
     }
     const reader = new FileReader();
@@ -89,14 +97,33 @@ export function SingleFileUploadDialogContainer(props: SingleFileUploadDialogUIP
 
     reader.onloadend = function() {
       let dataUrl = reader.result;
-      let _file = {
+      let _file: SingleFile = {
         name,
         type,
         size: prettierBytes(size),
         dataUrl
       };
+
+      if (validTypesRegex) {
+        if (typeof validTypesRegex === 'string' && type !== validTypesRegex) {
+          _file.allowed = false;
+          _file.reason = 'type';
+        } else if (
+          Array.isArray(validTypesRegex) &&
+          type.match(new RegExp(validTypesRegex[0], validTypesRegex[1])) === null
+        ) {
+          _file.allowed = false;
+          _file.reason = 'type';
+        } else if (type.match(validTypesRegex as RegExp) === null) {
+          _file.allowed = false;
+          _file.reason = 'type';
+        }
+      }
+
       setFile(_file);
-      validateFile(_file);
+      if (_file.allowed !== false) {
+        validateFile(_file);
+      }
     };
     reader.readAsDataURL(systemFile);
   };
@@ -105,41 +132,48 @@ export function SingleFileUploadDialogContainer(props: SingleFileUploadDialogUIP
     validateActionPolicy(site, {
       type: 'CREATE',
       target: path + file.name
-    }).subscribe(({ allowed, modifiedValue, target }) => {
-      if (allowed) {
-        if (modifiedValue) {
-          setFile({ ...file, allowed: false, suggestedName: modifiedValue.replace(`${path}`, '') });
+    }).subscribe(
+      ({ allowed, modifiedValue, target }) => {
+        if (allowed) {
+          if (modifiedValue) {
+            setFile({ ...file, allowed: false, reason: 'rename', suggestedName: modifiedValue.replace(`${path}`, '') });
+          } else {
+            setFile({ ...file, allowed: true });
+            uploadFile(file);
+          }
         } else {
-          setFile({ ...file, allowed: true });
-          uploadFile(file);
+          setFile({ ...file, allowed: false, reason: 'policy' });
         }
-      } else {
-        setFile({ ...file, allowed: false });
+      },
+      () => {
+        setFile({ ...file, allowed: false, reason: 'response' });
       }
-    });
+    );
   };
 
   const uploadFile = ({ name, type, dataUrl }: SingleFile) => {
-    switch (dataSourceId) {
-      case 'img-desktop-upload': {
-        uploadDataUrl(site, { name: name, type, dataUrl }, expandPathMacros(path), xsrfArgument).subscribe(
-          ({ type, payload: response }) => {
-            if (type === 'complete') {
-              onSuccess?.({ url: response.message.uri });
-            } else if (type === 'progress') {
-              const percentage = Math.floor(
-                parseInt(((response.progress.bytesUploaded / response.progress.bytesTotal) * 100).toFixed(2))
-              );
-              setProgress(percentage);
-            }
-          },
-          (error) => {
-            console.log(error);
-          }
-        );
-        break;
+    // profileId
+    servicesMap[uploadType](
+      site,
+      { name: name, type, dataUrl },
+      expandPathMacros(path),
+      uploadType === 'studio' ? xsrfArgument : profileId,
+      xsrfArgument
+    ).subscribe(
+      ({ type, payload: response }) => {
+        if (type === 'complete') {
+          onSuccess?.(response);
+        } else if (type === 'progress') {
+          const percentage = Math.floor(
+            parseInt(((response.progress.bytesUploaded / response.progress.bytesTotal) * 100).toFixed(2))
+          );
+          setProgress(percentage);
+        }
+      },
+      () => {
+        setFile({ ...file, allowed: false, reason: 'response' });
       }
-    }
+    );
   };
 
   const onFileSelected = (e) => {
@@ -165,11 +199,10 @@ export function SingleFileUploadDialogContainer(props: SingleFileUploadDialogUIP
     <>
       <DialogHeader
         title={
-          type === 'image' ? (
-            <FormattedMessage id="uploadFileDialog.uploadBrowse" defaultMessage="Upload an image" />
-          ) : (
-            <FormattedMessage id="uploadFileDialog.uploadBrowse" defaultMessage="Upload an file" />
-          )
+          <>
+            <FormattedMessage id="uploadFileDialog.uploadImage" defaultMessage="Upload an file" />
+            {validTypesLabel && ` (${validTypesLabel})`}
+          </>
         }
         onDismiss={onClose}
       />
@@ -183,31 +216,56 @@ export function SingleFileUploadDialogContainer(props: SingleFileUploadDialogUIP
                   {file.allowed === false && (
                     <Typography className={classes.validationMessage}>
                       <WarningRoundedIcon />
-                      {file.suggestedName ? (
+                      {file.reason === 'policy' && (
+                        <FormattedMessage
+                          id="policy.canBeUploaded"
+                          defaultMessage='File name "{name}" doesn’t comply with site policies and can’t be uploaded.'
+                          values={{ name: file.name }}
+                        />
+                      )}
+                      {file.reason === 'rename' && (
                         <FormattedMessage
                           id="policy.requiresChanges"
                           defaultMessage='File name "{name}" requires changes to comply with site policies.'
                           values={{ name: file.name }}
                         />
-                      ) : (
+                      )}
+                      {file.reason === 'type' && (
                         <FormattedMessage
-                          id="policy.requiresChanges"
-                          defaultMessage='File name "{name}" doesn’t comply with site policies and can’t be uploaded.'
+                          id="policy.incorrectType"
+                          defaultMessage='File type "{type}" is not allowed.'
+                          values={{ type: file.type }}
+                        />
+                      )}
+                      {file.reason === 'response' && (
+                        <FormattedMessage
+                          id="policy.incorrectType"
+                          defaultMessage='File name "{name}" upload failed.'
                           values={{ name: file.name }}
                         />
                       )}
                     </Typography>
                   )}
-                  <Typography
-                    variant="body2"
-                    className={clsx(
-                      classes.fileName,
-                      file.allowed === true && 'success',
-                      file.allowed === false && 'error'
+                  <div className={classes.fileNameWrapper}>
+                    <Typography
+                      variant="body2"
+                      className={clsx(
+                        classes.fileName,
+                        file.allowed === true && 'success',
+                        file.allowed === false && ['rename', 'policy'].includes(file.reason) && 'error'
+                      )}
+                    >
+                      {file.name}
+                    </Typography>
+                    {file.allowed === false && file.reason === 'rename' && (
+                      <>
+                        <ForwardRoundedIcon color="action" />
+                        <Typography variant="body2" className={clsx(classes.fileName, 'success')}>
+                          {file.suggestedName}
+                        </Typography>
+                      </>
                     )}
-                  >
-                    {file.name}
-                  </Typography>
+                  </div>
                   <Typography variant="body2" color="textSecondary">
                     {file.type} @ {file.size}
                   </Typography>
@@ -219,7 +277,7 @@ export function SingleFileUploadDialogContainer(props: SingleFileUploadDialogUIP
                       <IconButton onClick={removeFile}>
                         <CloseRoundedIcon />
                       </IconButton>
-                      {file.suggestedName && (
+                      {file.reason === 'rename' && (
                         <IconButton edge="end" onClick={onAcceptChanges}>
                           <CheckRoundedIcon />
                         </IconButton>
@@ -259,7 +317,7 @@ export function SingleFileUploadDialogContainer(props: SingleFileUploadDialogUIP
             />
             <Box display="flex" className={clsx(over && classes.disableContentOver)}>
               <Typography variant="h5">
-                <FormattedMessage id="singleFileUploadDialog.dropzoneTitle" defaultMessage="Drop file here or" />
+                <FormattedMessage id="singleFileUploadDialog.dropzoneFileOr" defaultMessage="Drop file or" />
               </Typography>
               <Link
                 className={classes.browseButton}
@@ -267,9 +325,14 @@ export function SingleFileUploadDialogContainer(props: SingleFileUploadDialogUIP
                 variant="h5"
                 onClick={() => uploadInputRef.current && uploadInputRef.current.click()}
               >
-                <FormattedMessage id="singleFileUploadDialog.dropzoneBrowse" defaultMessage="Browse file" />
+                <FormattedMessage id="words.browse" defaultMessage="Browse" />
               </Link>
             </Box>
+            {validTypesLabel && (
+              <Typography variant="body1" color="textSecondary">
+                ({validTypesLabel})
+              </Typography>
+            )}
           </Box>
         )}
       </DialogBody>

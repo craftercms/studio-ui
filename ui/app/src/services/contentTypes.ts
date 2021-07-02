@@ -181,7 +181,7 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
           'dropTargets',
           'img-desktop-upload',
           'img-repository-upload',
-          'img-S3-repo',
+          'img-S3-upload',
           'img-WebDAV-upload',
           'img-CMIS-upload'
         ].includes(datasource.type)

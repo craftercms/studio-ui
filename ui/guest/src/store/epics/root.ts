@@ -315,6 +315,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
         const type = field?.type;
         const iceZoneSelected = () => {
           post(ICE_ZONE_SELECTED, {
+            elementRecordId: record.id,
             modelId: record.modelId,
             index: record.index,
             fieldId: record.fieldId,

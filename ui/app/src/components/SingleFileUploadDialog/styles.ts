@@ -25,7 +25,8 @@ export const useStyles = makeStyles((theme) =>
       borderRadius: '5px',
       display: 'flex',
       alignItems: 'center',
-      justifyContent: 'center'
+      justifyContent: 'center',
+      flexDirection: 'column'
     },
     over: {
       borderColor: theme.palette.primary.main,
@@ -33,6 +34,13 @@ export const useStyles = makeStyles((theme) =>
     },
     disableContentOver: {
       pointerEvents: 'none'
+    },
+    fileNameWrapper: {
+      display: 'flex',
+      alignItems: 'center',
+      '& svg': {
+        margin: '0 5px'
+      }
     },
     fileName: {
       '&.success': {

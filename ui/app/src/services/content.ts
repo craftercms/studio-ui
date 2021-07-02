@@ -606,7 +606,11 @@ export function createFileUpload(
     uppy.on('upload-success', (file, response) => {
       subscriber.next({
         type: 'complete',
-        payload: response.body
+        // Upload Api's have different return types, we are mapping it to a common one response
+        payload: {
+          name: response.body.item?.name ?? response.body.message.name,
+          url: response.body.item?.url ?? response.body.message.uri
+        }
       });
       subscriber.complete();
     });

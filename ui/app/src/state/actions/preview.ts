@@ -19,7 +19,7 @@ import ContentType, { ContentTypeField } from '../../models/ContentType';
 import ContentInstance from '../../models/ContentInstance';
 import { WidthAndHeight } from '../../models/WidthAndHeight';
 import { createAction } from '@reduxjs/toolkit';
-import { GuestData } from '../../models/GlobalState';
+import { EditSelection, GuestData } from '../../models/GlobalState';
 import { ComponentsContentTypeParams, ContentInstancePage, ElasticParams, SearchResult } from '../../models/Search';
 import { ContentTypeDropTarget } from '../../models/ContentTypeDropTarget';
 import { WidgetDescriptor } from '../../components/Widget';
@@ -116,7 +116,7 @@ export const LEGACY_CODE_EDITOR_RENDERED = 'LEGACY_CODE_EDITOR_RENDERED';
 
 // region Action Creators
 
-export function selectForEdit(data: { modelId: string; fields: string[] }): StandardAction {
+export function selectForEdit(data: EditSelection): StandardAction {
   return {
     type: SELECT_FOR_EDIT,
     payload: data
