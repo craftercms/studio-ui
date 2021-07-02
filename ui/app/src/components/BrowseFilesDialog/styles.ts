@@ -14,6 +14,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './BrowseFilesDialog';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 
-export * from './BrowseFilesDialogContainer';
+export const useStyles = makeStyles((theme) =>
+  createStyles({
+    dialogBody: {},
+    searchRoot: {
+      marginBottom: '6px'
+    },
+    mediaCardRoot: {
+      width: '200px',
+      height: '155px',
+      margin: '10px',
+      '&.selected': {
+        boxShadow: `0px 2px 1px -1px ${theme.palette.primary.main}, 0px 1px 1px 0px ${theme.palette.primary.main}, 0px 1px 3px 0px ${theme.palette.primary.main}`
+      }
+    }
+  })
+);

@@ -14,6 +14,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './BrowseFilesDialog';
+import { useSitesGridStyles } from '../SitesGrid/styles';
+import Grid from '@material-ui/core/Grid';
+import React from 'react';
 
-export * from './BrowseFilesDialogContainer';
+interface BrowseFilesDialogSkeletonGridProps {
+  numOfItems?: number;
+}
+
+export default function BrowseFilesDialogSkeletonGrid(props: BrowseFilesDialogSkeletonGridProps) {
+  const classes = useSitesGridStyles();
+  const { numOfItems = 5 } = props;
+  const items = new Array(numOfItems).fill(null);
+  return (
+    <section className={classes.root}>
+      <Grid container spacing={3}>
+        {items.map((num, i) => (
+          <Grid item key={i}></Grid>
+        ))}
+      </Grid>
+    </section>
+  );
+}

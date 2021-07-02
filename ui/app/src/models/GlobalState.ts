@@ -63,6 +63,7 @@ import { PathNavigatorTreeStateProps } from '../components/PathNavigatorTree';
 import { UnlockPublisherDialogStateProps } from '../components/UnlockPublisherDialog';
 import { WidgetDialogStateProps } from '../components/WidgetDialog';
 import { SingleFileUploadDialogStateProps } from '../components/SingleFileUploadDialog/SingleFileUploadDialog';
+import { BrowseFilesDialogPropsStateProps } from '../components/BrowseFilesDialog/BrowseFilesDialog';
 import DateTimeFormatOptions = Intl.DateTimeFormatOptions;
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
@@ -201,6 +202,7 @@ export interface GlobalState {
     unlockPublisher: UnlockPublisherDialogStateProps;
     widget: WidgetDialogStateProps;
     singleFileUpload: SingleFileUploadDialogStateProps;
+    browseFiles: BrowseFilesDialogPropsStateProps;
   };
   uiConfig: {
     error: ApiResponse;

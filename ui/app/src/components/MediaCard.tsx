@@ -120,13 +120,7 @@ interface MediaCardProps {
   previewAppBaseUri: string;
   headerButtonIcon?: React.ElementType<any>;
   avatar?: React.ElementType<any>;
-  classes?: {
-    root?: any;
-    checkbox?: any;
-    header?: any;
-    media?: any;
-    mediaIcon?: any;
-  };
+  classes?: Partial<Record<'root' | 'checkbox' | 'header' | 'media' | 'mediaIcon', string>>;
   onHeaderButtonClick?(...props: any): any;
   onPreview?(item: MediaItem): any;
   onSelect?(path: string, selected: boolean): any;
@@ -135,7 +129,7 @@ interface MediaCardProps {
 }
 
 function MediaCard(props: MediaCardProps) {
-  const classes = useStyles({});
+  const classes = useStyles();
   const {
     onPreview,
     onSelect,

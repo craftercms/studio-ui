@@ -14,36 +14,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
-import Dialog, { DialogProps } from '@material-ui/core/Dialog';
-import { BrowseFilesDialogUI } from './BrowseFilesDialogUI';
-import { FormattedMessage } from 'react-intl';
+import React, { PropsWithChildren } from 'react';
+import Dialog from '@material-ui/core/Dialog';
+import { BrowseFilesDialogContainer } from './BrowseFilesDialogContainer';
+import StandardAction from '../../models/StandardAction';
 
-export interface BrowseFilesDialogProps extends DialogProps {
+interface BrowseFilesDialogBaseProps {
   open: boolean;
   path: string;
-  type: string;
-  onClose(): void;
-  onClosed?(): void;
+}
+
+export type BrowseFilesDialogProps = PropsWithChildren<
+  BrowseFilesDialogBaseProps & {
+    onClose(): void;
+    onClosed?(): void;
+  }
+>;
+
+export interface BrowseFilesDialogPropsStateProps extends BrowseFilesDialogBaseProps {
+  onClose?: StandardAction;
+  onSuccess?: StandardAction;
+  onClosed?: StandardAction;
 }
 
 export default function BrowseFilesDialog(props: BrowseFilesDialogProps) {
-  const { path, type, onClosed, ...rest } = props;
+  const { path, onClosed, ...rest } = props;
 
   return (
     <Dialog fullWidth maxWidth="md" {...rest}>
-      <BrowseFilesDialogUI
-        title={
-          type === 'image' ? (
-            <FormattedMessage id="browseFilesDialog.imageBrowse" defaultMessage="Browse existing image" />
-          ) : (
-            <FormattedMessage id="browseFilesDialog.fileBrowse" defaultMessage="Browse existing file" />
-          )
-        }
-        path={path}
-        onClose={props.onClose}
-        onClosed={onClosed}
-      />
+      <BrowseFilesDialogContainer path={path} onClose={props.onClose} onClosed={onClosed} />
     </Dialog>
   );
 }

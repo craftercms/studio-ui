@@ -44,6 +44,7 @@ import publishingStatus from './publishingStatus';
 import unlockPublisher from './unlockPublisher';
 import widget from './widget';
 import singleFileUpload from './singleFileUpload';
+import browseFiles from './browseFiles';
 
 export default combineReducers({
   confirm,
@@ -74,5 +75,6 @@ export default combineReducers({
   publishingStatus,
   unlockPublisher,
   widget,
-  singleFileUpload
+  singleFileUpload,
+  browseFiles
 });
