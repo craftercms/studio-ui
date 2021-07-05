@@ -14,25 +14,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useSitesGridStyles } from '../SitesGrid/styles';
-import Grid from '@material-ui/core/Grid';
 import React from 'react';
+import Card from '@material-ui/core/Card';
+import CardHeader from '@material-ui/core/CardHeader';
+import { useCardStyles } from './styles';
+import Skeleton from '@material-ui/lab/Skeleton';
 
-interface BrowseFilesDialogSkeletonGridProps {
-  numOfItems?: number;
-}
-
-export default function BrowseFilesDialogSkeletonGrid(props: BrowseFilesDialogSkeletonGridProps) {
-  const classes = useSitesGridStyles();
-  const { numOfItems = 5 } = props;
-  const items = new Array(numOfItems).fill(null);
+export default function MediaSkeletonCard() {
+  const classes = useCardStyles();
   return (
-    <section className={classes.root}>
-      <Grid container spacing={3}>
-        {items.map((num, i) => (
-          <Grid item key={i}></Grid>
-        ))}
-      </Grid>
-    </section>
+    <Card className={classes.root}>
+      <CardHeader
+        className={classes.cardHeader}
+        avatar={<Skeleton variant="circle" width={24} height={24} />}
+        title={<Skeleton animation="wave" height={20} width="100%" />}
+      />
+      <Skeleton animation="wave" variant="rect" className={classes.media} />
+    </Card>
   );
 }

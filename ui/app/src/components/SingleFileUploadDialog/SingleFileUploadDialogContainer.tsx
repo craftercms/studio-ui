@@ -151,11 +151,11 @@ export function SingleFileUploadDialogContainer(props: SingleFileUploadDialogUIP
     );
   };
 
-  const uploadFile = ({ name, type, dataUrl }: SingleFile) => {
-    // profileId
+  const uploadFile = (file: SingleFile) => {
+    const { name, type, dataUrl } = file;
     servicesMap[uploadType](
       site,
-      { name: name, type, dataUrl },
+      { name, type, dataUrl },
       expandPathMacros(path),
       uploadType === 'studio' ? xsrfArgument : profileId,
       xsrfArgument
@@ -286,7 +286,7 @@ export function SingleFileUploadDialogContainer(props: SingleFileUploadDialogUIP
                   )}
                 </div>
               </CardContent>
-              <ProgressBar progress={progress} />
+              {file.allowed && <ProgressBar progress={progress} />}
             </Card>
           </Box>
         ) : (

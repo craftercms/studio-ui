@@ -22,11 +22,16 @@ import StandardAction from '../../models/StandardAction';
 interface BrowseFilesDialogBaseProps {
   open: boolean;
   path: string;
+  multiSelect?: boolean;
+  contentTypes?: string[];
+  mimeTypes?: string[];
+  rowsPerPageOptions?: number[];
 }
 
 export type BrowseFilesDialogProps = PropsWithChildren<
   BrowseFilesDialogBaseProps & {
     onClose(): void;
+    onSuccess?(): void;
     onClosed?(): void;
   }
 >;
@@ -38,11 +43,20 @@ export interface BrowseFilesDialogPropsStateProps extends BrowseFilesDialogBaseP
 }
 
 export default function BrowseFilesDialog(props: BrowseFilesDialogProps) {
-  const { path, onClosed, ...rest } = props;
+  const { path, onClosed, onSuccess, contentTypes, multiSelect, mimeTypes, rowsPerPageOptions, ...rest } = props;
 
   return (
     <Dialog fullWidth maxWidth="md" {...rest}>
-      <BrowseFilesDialogContainer path={path} onClose={props.onClose} onClosed={onClosed} />
+      <BrowseFilesDialogContainer
+        path={path}
+        contentTypes={contentTypes}
+        mimeTypes={mimeTypes}
+        multiSelect={multiSelect}
+        rowsPerPageOptions={rowsPerPageOptions}
+        onClose={props.onClose}
+        onClosed={onClosed}
+        onSuccess={onSuccess}
+      />
     </Dialog>
   );
 }

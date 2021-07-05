@@ -505,6 +505,11 @@ function GlobalDialogManager() {
       <BrowseFilesDialog
         open={state.browseFiles.open}
         path={state.browseFiles.path}
+        contentTypes={state.browseFiles.contentTypes}
+        mimeTypes={state.browseFiles.mimeTypes}
+        multiSelect={state.browseFiles.multiSelect}
+        rowsPerPageOptions={state.browseFiles.rowsPerPageOptions}
+        onSuccess={createCallback(state.browseFiles.onSuccess, dispatch)}
         onClose={createCallback(state.browseFiles.onClose, dispatch)}
         onClosed={createCallback(state.browseFiles.onClosed, dispatch)}
       />

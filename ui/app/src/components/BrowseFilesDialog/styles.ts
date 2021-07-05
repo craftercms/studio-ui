@@ -18,17 +18,54 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles((theme) =>
   createStyles({
-    dialogBody: {},
+    dialogBody: {
+      minHeight: '60vh'
+    },
     searchRoot: {
-      marginBottom: '6px'
+      marginBottom: '16px'
+    },
+    emptyState: {
+      flexGrow: 1
+    },
+    paginationRoot: {
+      marginRight: 'auto'
+    },
+    cardsContainer: {
+      display: 'grid',
+      gridTemplateColumns: 'repeat(auto-fit, minmax(200px, max-content))',
+      gridGap: '16px',
+      justifyContent: 'space-evenly',
+      padding: 'initial'
+    },
+    cardHeader: {
+      padding: '0 9px'
     },
     mediaCardRoot: {
       width: '200px',
       height: '155px',
-      margin: '10px',
+      cursor: 'pointer',
       '&.selected': {
-        boxShadow: `0px 2px 1px -1px ${theme.palette.primary.main}, 0px 1px 1px 0px ${theme.palette.primary.main}, 0px 1px 3px 0px ${theme.palette.primary.main}`
+        boxShadow: `0px 0px 4px 4px ${theme.palette.primary.main}`
       }
     }
   })
 );
+
+export const useCardStyles = makeStyles(() =>
+  createStyles({
+    root: {
+      width: '200px',
+      height: '155px',
+      margin: '10px'
+    },
+    media: {
+      height: 0,
+      paddingTop: '56.25%' // 16:9
+    },
+    cardHeader: {
+      padding: '9px 12px'
+    }
+  })
+);
+
+export default useStyles;

@@ -24,7 +24,9 @@ import { findParentModelId, nnou } from '../../../utils/object';
 import { popPiece } from '../../../utils/string';
 import * as ModelHelper from '../../../utils/model';
 import {
+  closeBrowseFilesDialog,
   closeSingleFileUploadDialog,
+  showBrowseFilesDialog,
   showCodeEditorDialog,
   showConfirmDialog,
   showEditDialog,
@@ -252,6 +254,82 @@ function EditFormPanelBody(props: EditFormPanelBodyProps) {
         openDialog('controller');
         break;
       }
+      case 'img-repository-upload': {
+        const datasource = contentType.dataSources[option.options.dataSourceId];
+        const path = datasource.properties.repoPath.value;
+        if (!path) {
+          dispatch(
+            showConfirmDialog({
+              body: formatMessage(translations.assetUploaderMissingConfiguration, { id: datasource.id })
+            })
+          );
+          return;
+        }
+        dispatch(
+          showBrowseFilesDialog({
+            path: path.endsWith('/') ? `${path}.+` : `${path}/.+`,
+            mimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/tiff', 'image/bmp'],
+            onSuccess: batchActions([
+              closeBrowseFilesDialog(),
+              notifyFieldImageChanged({ recordId: item.elementRecordId })
+            ])
+          })
+        );
+        onDismiss();
+        break;
+      }
+      case 'img-CMIS-upload': {
+        const datasource = contentType.dataSources[option.options.dataSourceId];
+        const path = datasource.properties.repoPath.value;
+        const profileId = datasource.properties.repositoryId.value;
+        if (!path || !profileId) {
+          dispatch(
+            showConfirmDialog({
+              body: formatMessage(translations.assetUploaderMissingConfiguration, { id: datasource.id })
+            })
+          );
+          return;
+        }
+        dispatch(
+          showSingleFileUploadDialog({
+            path: expandPathMacros(path),
+            uploadType: 'cmis',
+            profileId,
+            onSuccess: batchActions([
+              closeSingleFileUploadDialog(),
+              notifyFieldImageChanged({ recordId: item.elementRecordId })
+            ])
+          })
+        );
+        onDismiss();
+        break;
+      }
+      case 'img-WebDAV-upload': {
+        const datasource = contentType.dataSources[option.options.dataSourceId];
+        const path = datasource.properties.repoPath.value;
+        const profileId = datasource.properties.profileId.value;
+        if (!path || !profileId) {
+          dispatch(
+            showConfirmDialog({
+              body: formatMessage(translations.assetUploaderMissingConfiguration, { id: datasource.id })
+            })
+          );
+          return;
+        }
+        dispatch(
+          showSingleFileUploadDialog({
+            path: expandPathMacros(path),
+            uploadType: 'webDav',
+            profileId,
+            onSuccess: batchActions([
+              closeSingleFileUploadDialog(),
+              notifyFieldImageChanged({ recordId: item.elementRecordId })
+            ])
+          })
+        );
+        onDismiss();
+        break;
+      }
       case 'img-S3-upload': {
         const datasource = contentType.dataSources[option.options.dataSourceId];
         const path = datasource.properties.repoPath.value;
@@ -292,7 +370,11 @@ function EditFormPanelBody(props: EditFormPanelBodyProps) {
         dispatch(
           showSingleFileUploadDialog({
             path: expandPathMacros(path),
-            uploadType: 'studio'
+            uploadType: 'studio',
+            onSuccess: batchActions([
+              closeSingleFileUploadDialog(),
+              notifyFieldImageChanged({ recordId: item.elementRecordId })
+            ])
           })
         );
         onDismiss();
@@ -339,11 +421,13 @@ export function getContentTypeOptions(
     let options = [];
     if (Array.isArray(field.validations.allowedImageDataSources.value)) {
       field.validations.allowedImageDataSources.value.forEach((id) => {
-        options.push({
-          id: contentType.dataSources[id].type,
-          label: contentType.dataSources[id].name,
-          options: { dataSourceId: id }
-        });
+        if (contentType.dataSources[id]) {
+          options.push({
+            id: contentType.dataSources[id].type,
+            label: contentType.dataSources[id].name,
+            options: { dataSourceId: id }
+          });
+        }
       });
     }
     options.push({

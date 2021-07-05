@@ -30,6 +30,7 @@ import { defineMessages, useIntl } from 'react-intl';
 import palette from '../styles/palette';
 import moment from 'moment-timezone';
 import SystemIcon from './SystemIcon';
+import ZoomInRoundedIcon from '@material-ui/icons/ZoomInRounded';
 
 const translations = defineMessages({
   options: {
@@ -53,7 +54,8 @@ const useStyles = makeStyles((theme: Theme) =>
         display: '-webkit-box',
         '-webkit-line-clamp': 1,
         '-webkit-box-orient': 'vertical'
-      }
+      },
+      position: 'relative'
     },
     cardHeaderRoot: {
       padding: '9px 0',
@@ -75,6 +77,13 @@ const useStyles = makeStyles((theme: Theme) =>
     media: {
       height: 0,
       paddingTop: '56.25%' // 16:9
+    },
+    previewButton: {
+      position: 'absolute',
+      bottom: 0,
+      right: 0,
+      color: theme.palette.primary.contrastText,
+      background: theme.palette.action.focus
     },
     listActionArea: {
       paddingTop: 0,
@@ -115,6 +124,8 @@ const useStyles = makeStyles((theme: Theme) =>
 interface MediaCardProps {
   item: MediaItem;
   hasSubheader?: boolean;
+  onPreviewButton?(item: MediaItem): void;
+  onCardClicked?(item: MediaItem): void;
   isList?: boolean;
   selected?: Array<string>;
   previewAppBaseUri: string;
@@ -138,6 +149,8 @@ function MediaCard(props: MediaCardProps) {
     previewAppBaseUri,
     hasSubheader = true,
     isList = false,
+    onPreviewButton,
+    onCardClicked,
     headerButtonIcon: HeaderButtonIcon = MoreVertRounded,
     onHeaderButtonClick,
     avatar: Avatar,
@@ -207,6 +220,7 @@ function MediaCard(props: MediaCardProps) {
       draggable={!!onDragStart || !!onDragEnd}
       onDragStart={() => onDragStart(item)}
       onDragEnd={() => onDragEnd(item)}
+      onClick={() => onCardClicked?.(item)}
     >
       {isList && onSelect && (
         <FormGroup className={clsx(classes.checkbox, props.classes?.checkbox)}>
@@ -264,7 +278,20 @@ function MediaCard(props: MediaCardProps) {
         )}
       </header>
       {type === 'Image' ? (
-        onPreview ? (
+        onPreviewButton || !onPreview ? (
+          <>
+            <CardMedia
+              className={clsx(classes.media, props.classes?.media)}
+              image={`${previewAppBaseUri}${path}`}
+              title={name}
+            />
+            {onPreviewButton && (
+              <IconButton onClick={() => onPreviewButton(item)} className={classes.previewButton}>
+                <ZoomInRoundedIcon />
+              </IconButton>
+            )}
+          </>
+        ) : (
           <CardActionArea onClick={() => onPreview(item)} className={clsx(isList && classes.listActionArea)}>
             <CardMedia
               className={clsx(classes.media, props.classes?.media)}
@@ -272,12 +299,6 @@ function MediaCard(props: MediaCardProps) {
               title={name}
             />
           </CardActionArea>
-        ) : (
-          <CardMedia
-            className={clsx(classes.media, props.classes?.media)}
-            image={`${previewAppBaseUri}${path}`}
-            title={name}
-          />
         )
       ) : (
         renderIcon(type)
