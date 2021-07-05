@@ -194,7 +194,7 @@ function EditFormPanelBody(props: EditFormPanelBodyProps) {
   function openDialog(type: string) {
     onDismiss();
     if (type === 'form') {
-      const selectedFields = selected[0] && selected[0].fieldId.length > 0 ? selected[0].fieldId : null;
+      const selectedFields = selected[0]?.fieldId.length ? selected[0].fieldId : null;
       dispatch(
         showEditDialog(
           getEditDialogProps({ authoringBase, childrenMap, model, models, path, selectedFields, selectedId, site })
