@@ -37,6 +37,7 @@ import EmptyState from '../SystemStatus/EmptyState';
 import Pagination from '../Pagination';
 import { showPreviewDialog } from '../../state/actions/dialogs';
 import { useDispatch } from 'react-redux';
+import LookupTable from '../../models/LookupTable';
 
 interface BrowseFilesDialogUIProps {
   path: string;
@@ -86,7 +87,8 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogUIProps) {
     }
   });
   const [total, setTotal] = useState<number>();
-  const [selectedList, setSelectedList] = useState([]);
+  const [selectedLookup, setSelectedLookup] = useSpreadState<LookupTable<MediaItem>>({});
+  const selectedArray = Object.keys(selectedLookup).filter((key) => selectedLookup[key]);
 
   useUnmount(onClosed);
 
@@ -103,6 +105,7 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogUIProps) {
 
   const onCardSelected = (item: MediaItem) => {
     if (multiSelect) {
+      setSelectedLookup({ [item.path]: selectedLookup[item.path] ? null : item });
     } else {
       setSelectedCard(item);
     }
@@ -123,7 +126,11 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogUIProps) {
   }
 
   const onSelectButtonClick = () => {
-    onSuccess?.({ name: selectedCard.name, url: selectedCard.path });
+    onSuccess?.(
+      multiSelect
+        ? selectedArray.map((path) => ({ name: selectedLookup[path].name, url: selectedLookup[path].path }))
+        : { name: selectedCard.name, url: selectedCard.path }
+    );
   };
 
   const onChangePage = (page: number) => {
@@ -135,8 +142,7 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogUIProps) {
   };
 
   const onCheckboxChecked = (path: string, selected: boolean) => {
-    console.log(path);
-    console.log(selected);
+    setSelectedLookup({ [path]: selected ? items.find((item) => item.path === path) : null });
   };
 
   const onPreviewImage = (item: MediaItem) => {
@@ -174,7 +180,7 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogUIProps) {
                     }}
                     key={item.path}
                     item={item}
-                    selected={multiSelect ? [] : null}
+                    selected={multiSelect ? selectedArray : null}
                     onSelect={multiSelect ? onCheckboxChecked : null}
                     onPreviewButton={item.type === 'Image' ? onPreviewImage : null}
                     previewAppBaseUri={guestBase}
@@ -207,7 +213,7 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogUIProps) {
         <SecondaryButton onClick={onClose}>
           <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
         </SecondaryButton>
-        <PrimaryButton disabled={!selectedCard} onClick={onSelectButtonClick}>
+        <PrimaryButton disabled={!Boolean(selectedArray.length) && !selectedCard} onClick={onSelectButtonClick}>
           <FormattedMessage id="words.select" defaultMessage="Select" />
         </PrimaryButton>
       </DialogFooter>

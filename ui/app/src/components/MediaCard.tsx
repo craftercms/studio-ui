@@ -286,7 +286,14 @@ function MediaCard(props: MediaCardProps) {
               title={name}
             />
             {onPreviewButton && (
-              <IconButton onClick={() => onPreviewButton(item)} className={classes.previewButton}>
+              <IconButton
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onPreviewButton(item);
+                }}
+                className={classes.previewButton}
+              >
                 <ZoomInRoundedIcon />
               </IconButton>
             )}
