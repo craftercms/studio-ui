@@ -74,7 +74,7 @@ const useStyles = makeStyles((theme: Theme) =>
 const messages = defineMessages({
   placeholder: {
     id: 'searchBar.placeholder',
-    defaultMessage: 'Search...'
+    defaultMessage: 'Filter...'
   }
 });
 
