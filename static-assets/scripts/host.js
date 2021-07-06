@@ -581,10 +581,12 @@
 
     path = path.replace('//', '/');
 
+    CStudioAuthoring.ContextualNav.WcmActiveContent?.disableNav(true);
     CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, path, {
       success: function (content) {
         CStudioAuthoring.SelectedContent.setContent(content.item);
         selectContentSet(content.item, false);
+        CStudioAuthoring.ContextualNav.WcmActiveContent?.disableNav(false);
       }
     });
   }
@@ -632,11 +634,13 @@
   }
 
   function selectStudioContent(site, url) {
+    CStudioAuthoring.ContextualNav.WcmActiveContent?.disableNav(true);
     CStudioAuthoring.Service.lookupContentItem(site, url, {
       success: function (content) {
         if (content.item.isPage) {
           CStudioAuthoring.SelectedContent.setContent(content.item);
           selectContentSet(content.item, true);
+          CStudioAuthoring.ContextualNav.WcmActiveContent?.disableNav(false);
         }
       }
     });
