@@ -207,6 +207,13 @@ export function fetchSiteUiConfig(site: string): Observable<Pick<GlobalState['ui
           dashboard: null,
           datasets: {}
         };
+        // Reading references
+        xml.querySelectorAll('dataset').forEach((tag) => {
+          config.datasets[tag.id] = applyDeserializedXMLTransforms(deserialize(tag.innerHTML), {
+            arrays,
+            renameTable
+          });
+        });
         // Make sure any plugin reference has a valid site id to import the plugin from
         xml.querySelectorAll('plugin').forEach((tag) => {
           const siteAttr = tag.getAttribute('site');
@@ -289,14 +296,6 @@ export function fetchSiteUiConfig(site: string): Observable<Pick<GlobalState['ui
             renameTable
           }).configuration;
         }
-        // reading datasets
-        xml.querySelectorAll('dataset').forEach((tag) => {
-          config.datasets[tag.id] = applyDeserializedXMLTransforms(deserialize(tag.innerHTML), {
-            arrays,
-            renameTable
-          });
-        });
-
         return config;
       } else {
         return null;
