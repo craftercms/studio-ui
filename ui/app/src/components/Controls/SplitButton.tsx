@@ -32,10 +32,11 @@ interface SplitButtonProps {
   }[];
   defaultSelected?: number;
   disablePortal?: boolean;
+  disabled?: boolean;
 }
 
 export default function SplitButton(props: SplitButtonProps) {
-  const { options, defaultSelected = 0, disablePortal = true } = props;
+  const { options, defaultSelected = 0, disablePortal = true, disabled } = props;
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef<HTMLDivElement>(null);
   const [selectedIndex, setSelectedIndex] = React.useState(defaultSelected);
@@ -64,7 +65,7 @@ export default function SplitButton(props: SplitButtonProps) {
 
   return (
     <>
-      <ButtonGroup variant="contained" color="primary" ref={anchorRef} aria-label="split button">
+      <ButtonGroup disabled={disabled} variant="contained" color="primary" ref={anchorRef} aria-label="split button">
         <Button onClick={handleClick}>{options[selectedIndex].label}</Button>
         <Button
           color="primary"

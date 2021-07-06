@@ -139,9 +139,7 @@ export function getComputedEditMode({
   username: string;
   editMode: boolean;
 }): boolean {
-  return isItemLockedForMe(item, username) === true || hasEditAction(item.availableActions) === false
-    ? false
-    : editMode;
+  return isItemLockedForMe(item, username) || !hasEditAction(item.availableActions) ? false : editMode;
 }
 
 export function getSystemTypeFromPath(path: string): SystemType {

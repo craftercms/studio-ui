@@ -19,6 +19,7 @@ import { filter, map, mergeMap, switchMap, withLatestFrom } from 'rxjs/operators
 import {
   clearClipboard,
   completeDetailedItem,
+  conditionallyUnlockItem,
   duplicateAsset,
   duplicateItem,
   duplicateWithPolicyValidation,
@@ -196,6 +197,26 @@ const content: CrafterCMSEpic[] = [
                   emitSystemEvent(itemUnlocked({ target: payload.path })),
                   showUnlockItemSuccessNotification()
                 ])
+          )
+        );
+      })
+    ),
+  // endregion
+  // region conditionallyUnlockItem
+  (action$, state$) =>
+    action$.pipe(
+      ofType(conditionallyUnlockItem.type),
+      withLatestFrom(state$),
+      filter(([{ payload }, state]) => state.content.itemsByPath[payload.path].lockOwner === state.user.username),
+      switchMap(([{ payload }, state]) => {
+        return unlock(state.sites.active, payload.path).pipe(
+          map(() =>
+            payload.notify
+              ? batchActions([
+                  emitSystemEvent(itemUnlocked({ target: payload.path })),
+                  showUnlockItemSuccessNotification()
+                ])
+              : emitSystemEvent(itemUnlocked({ target: payload.path }))
           )
         );
       })

@@ -43,7 +43,7 @@ import QuickCreateItem from '../models/content/QuickCreateItem';
 import ApiResponse from '../models/ApiResponse';
 import { fetchContentTypes } from './contentTypes';
 import { Clipboard } from '../models/GlobalState';
-import { getPasteItemFromPath } from '../utils/path';
+import { getFileNameFromPath, getParentPath, getPasteItemFromPath } from '../utils/path';
 import { StandardAction } from '../models/StandardAction';
 import { GetChildrenResponse } from '../models/GetChildrenResponse';
 import { GetItemWithChildrenResponse } from '../models/GetItemWithChildrenResponse';
@@ -129,6 +129,32 @@ export function fetchContentInstance(
   contentTypesLookup: LookupTable<ContentType>
 ): Observable<ContentInstance> {
   return fetchContentDOM(site, path).pipe(map((doc) => parseContentXML(doc, path, contentTypesLookup, {})));
+}
+
+export function writeContent(site: string, path: string, content: string, options?: { unlock: boolean }) {
+  options = Object.assign({ unlock: true }, options);
+  return post(
+    writeContentUrl({
+      site,
+      path: getParentPath(path),
+      unlock: options.unlock ? 'true' : 'false',
+      fileName: getFileNameFromPath(path)
+    }),
+    content
+  ).pipe(
+    map((ajaxResponse) => {
+      if (ajaxResponse.response.result.error) {
+        // eslint-disable-next-line no-throw-literal
+        throw {
+          ...ajaxResponse,
+          status: 500,
+          response: {
+            message: ajaxResponse.response.result.error.message
+          }
+        };
+      } else return true;
+    })
+  );
 }
 
 export function fetchContentInstanceDescriptor(

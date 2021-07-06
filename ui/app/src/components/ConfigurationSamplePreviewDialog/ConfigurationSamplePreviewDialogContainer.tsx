@@ -35,7 +35,7 @@ export default function ConfigurationSamplePreviewDialogContainer(props: Configu
       />
       <DialogBody style={{ height: '60vh', padding: 0 }}>
         <AceEditor
-          className={classes.editor}
+          classes={{ editorRoot: classes.editor }}
           value={content}
           mode="ace/mode/yaml"
           theme="ace/theme/textmate"
