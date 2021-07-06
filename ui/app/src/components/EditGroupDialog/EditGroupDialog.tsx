@@ -33,6 +33,7 @@ export default function EditGroupDialog(props: EditGroupDialogProps) {
     if (pendingChanges) {
       setShowConfirmDialog(true);
     } else {
+      setPendingChanges(false);
       onClose();
     }
   };
@@ -52,6 +53,7 @@ export default function EditGroupDialog(props: EditGroupDialogProps) {
         }
         onOk={() => {
           setShowConfirmDialog(false);
+          setPendingChanges(false);
           onClose();
         }}
         onCancel={() => setShowConfirmDialog(false)}

@@ -154,6 +154,7 @@ export default function EditGroupDialogContainer(props: EditGroupDialogContainer
   };
 
   const onChangeValue = (property: { key: string; value: string }) => {
+    console.log('asd');
     setIsDirty(true);
     setGroup({ [property.key]: property.value });
     setPendingChanges(Boolean(group[property.key === 'name' ? 'desc' : 'name'] || property.value));
