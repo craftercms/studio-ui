@@ -54,7 +54,7 @@ export default function CodeEditorDialog(props: CodeEditorDialogProps) {
   const id = 'code-editor';
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
-  const { open, mode, pendingChanges, path, readonly, contentType, onClosed, onSuccess, ...rest } = props;
+  const { open, mode, pendingChanges, path, readonly, contentType, onClosed, onClose, onSuccess, ...rest } = props;
 
   const title = formatMessage(translations.title);
 
@@ -68,7 +68,7 @@ export default function CodeEditorDialog(props: CodeEditorDialogProps) {
     dispatch(minimizeDialog({ id }));
   };
 
-  const onClose = () => {
+  const onDialogClose = () => {
     if (readonly) {
       props.onClose();
       return;
@@ -92,8 +92,8 @@ export default function CodeEditorDialog(props: CodeEditorDialogProps) {
   };
 
   return (
-    <Dialog open={open && !minimized} keepMounted={minimized} onClose={onClose} fullWidth maxWidth="xl" {...rest}>
-      <CodeEditorDialogContainer {...props} onClose={onClose} title={title} onMinimized={onMinimized} />
+    <Dialog open={open && !minimized} keepMounted={minimized} onClose={onDialogClose} fullWidth maxWidth="xl" {...rest}>
+      <CodeEditorDialogContainer {...props} onClose={onDialogClose} title={title} onMinimized={onMinimized} />
     </Dialog>
   );
 }
