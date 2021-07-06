@@ -44,7 +44,7 @@ import { useContentTypes } from '../../utils/hooks/useContentTypes';
 import { useActiveUser } from '../../utils/hooks/useActiveUser';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useDetailedItem } from '../../utils/hooks/useDetailedItem';
-import { useDatasets } from '../../utils/hooks/useDatasets';
+import { useReferences } from '../../utils/hooks/useReferences';
 import { useUnmount } from '../../utils/hooks/useUnmount';
 
 export interface CodeEditorDialogContainerProps extends CodeEditorDialogProps {
@@ -74,7 +74,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [snippets, setSnippets] = useState<LookupTable<{ label: string; value: string }>>({});
   const [contentModelSnippets, setContentModelSnippets] = useState<{ label: string; value: string }[]>(null);
-  const { freemarkerCodeSnippets, groovyCodeSnippets } = useDatasets();
+  const { freemarkerCodeSnippets, groovyCodeSnippets } = useReferences();
 
   // add content model variables
   useEffect(() => {
