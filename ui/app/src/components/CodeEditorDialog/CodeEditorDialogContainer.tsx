@@ -85,7 +85,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
       if (_contentType) {
         const fields = contentTypes[_contentType].fields;
         if (mode === 'ftl') {
-          if (freemarkerCodeSnippets['contentVariable']) {
+          if (freemarkerCodeSnippets && freemarkerCodeSnippets['contentVariable']) {
             let { contentVariable, ...rest } = freemarkerCodeSnippets;
             setSnippets(rest);
             const snippets = Object.keys(fields).map((key) => ({
@@ -98,7 +98,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
             setContentModelSnippets(snippets);
           }
         } else if (mode === 'groovy') {
-          if (groovyCodeSnippets['accessContentModel']) {
+          if (groovyCodeSnippets && groovyCodeSnippets['accessContentModel']) {
             let { accessContentModel, ...rest } = groovyCodeSnippets;
             setSnippets(rest);
             const snippets = Object.keys(fields).map((key) => ({
