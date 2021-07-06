@@ -17,22 +17,45 @@
 import React, { useState } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import EditGroupDialogContainer, { EditGroupDialogContainerProps } from './EditGroupDialogContainer';
+import { FormattedMessage } from 'react-intl';
+import ConfirmDialog from '../Dialogs/ConfirmDialog';
 
-export interface EditGroupDialogProps extends Omit<EditGroupDialogContainerProps, 'setDisableBackdropClick'> {}
+export interface EditGroupDialogProps extends Omit<EditGroupDialogContainerProps, 'setPendingChanges'> {
+  open: boolean;
+}
 
 export default function EditGroupDialog(props: EditGroupDialogProps) {
-  const { open, onClose } = props;
-  const [disableBackdropClick, setDisableBackdropClick] = useState(false);
+  const { open, onClose, ...rest } = props;
+  const [pendingChanges, setPendingChanges] = useState(false);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+
+  const onDialogClose = () => {
+    if (pendingChanges) {
+      setShowConfirmDialog(true);
+    } else {
+      onClose();
+    }
+  };
+
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      fullWidth
-      maxWidth="md"
-      disableBackdropClick={disableBackdropClick}
-      disableEscapeKeyDown={disableBackdropClick}
-    >
-      <EditGroupDialogContainer setDisableBackdropClick={setDisableBackdropClick} {...props} />
-    </Dialog>
+    <>
+      <Dialog open={open} onClose={onDialogClose} fullWidth maxWidth="md">
+        <EditGroupDialogContainer onClose={onDialogClose} setPendingChanges={setPendingChanges} {...rest} />
+      </Dialog>
+      <ConfirmDialog
+        open={showConfirmDialog}
+        title={
+          <FormattedMessage
+            id="editGroupDialog.pendingChangesConfirmation"
+            defaultMessage="Close without saving changes?"
+          />
+        }
+        onOk={() => {
+          setShowConfirmDialog(false);
+          onClose();
+        }}
+        onCancel={() => setShowConfirmDialog(false)}
+      />
+    </>
   );
 }

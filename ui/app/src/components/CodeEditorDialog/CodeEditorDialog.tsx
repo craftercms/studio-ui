@@ -87,7 +87,7 @@ export default function CodeEditorDialog(props: CodeEditorDialogProps) {
       );
     } else {
       dispatch(conditionallyUnlockItem({ path: props.path }));
-      props.onClose();
+      onClose();
     }
   };
 
