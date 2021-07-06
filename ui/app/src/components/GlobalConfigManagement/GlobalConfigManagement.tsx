@@ -165,7 +165,7 @@ export default function GlobalConfigManagement() {
           <AceEditor
             ref={aceEditorRef}
             onChange={onChange}
-            className={classes.root}
+            classes={{ editorRoot: classes.root }}
             value={content}
             mode="ace/mode/yaml"
             theme="ace/theme/textmate"

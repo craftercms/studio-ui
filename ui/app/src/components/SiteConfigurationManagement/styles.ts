@@ -24,9 +24,11 @@ export const useStyles = makeStyles((theme) =>
       position: 'relative',
       flexDirection: 'column'
     },
-    editorCleanStyles: {
+    editorRoot: {
       border: '0',
-      borderRadius: '0'
+      borderRadius: '0',
+      background: theme.palette.background.default,
+      margin: 0
     },
     appBar: {
       paddingRight: '14.4px'
@@ -40,10 +42,8 @@ export const useStyles = makeStyles((theme) =>
     buttonGroup: {
       marginRight: '15px'
     },
-    sampleEditor: {
-      background: theme.palette.background.default,
-      height: '100%',
-      margin: 0,
+    rootEditor: {
+      display: 'flex',
       flex: '1 1 auto'
     },
     loadingStateRight: {

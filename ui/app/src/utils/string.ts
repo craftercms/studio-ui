@@ -67,6 +67,10 @@ export function isJSON(str: string): boolean {
   throw new Error('[isJSON] Not implemented.');
 }
 
+export function hasUppercaseChars(str: string) {
+  return /[A-Z]/.test(str);
+}
+
 export function getInitials(str: string) {
   const pieces = (str ?? '').split(' ');
   return `${pieces[0].substr(0, 1)}${pieces[1] ? pieces[1].substr(0, 1) : ''}`.toUpperCase();

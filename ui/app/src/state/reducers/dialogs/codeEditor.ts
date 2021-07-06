@@ -22,16 +22,15 @@ import {
   showCodeEditorDialog,
   updateCodeEditorDialog
 } from '../../actions/dialogs';
-import { LegacyCodeEditorDialogStateProps } from '../../../components/Dialogs/LegacyCodeEditorDialog';
+import { CodeEditorDialogStateProps } from '../../../components/CodeEditorDialog';
 
-const initialState: LegacyCodeEditorDialogStateProps = {
+const initialState: CodeEditorDialogStateProps = {
   open: false,
-  site: null,
   path: null,
-  type: null,
+  mode: null,
   contentType: null,
-  authoringBase: null,
-  inProgress: true
+  pendingChanges: null,
+  readonly: false
 };
 
 export default createReducer<GlobalState['dialogs']['codeEditor']>(initialState, {

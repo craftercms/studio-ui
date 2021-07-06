@@ -49,6 +49,10 @@ export function getPreviewURLFromPath(path: string): string {
   return withoutIndex(path).replace('/site/website', '') || '/';
 }
 
+export function getFileNameFromPath(path: string): string {
+  return path.substring(path.lastIndexOf('/') + 1);
+}
+
 export function getQueryVariable(query: string, variable: string): string | string[] {
   let qs = parse(query);
   return qs[variable] ?? null;

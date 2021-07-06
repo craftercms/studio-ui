@@ -69,19 +69,15 @@ const epics = [
             if (items?.length > 0) {
               return showWorkflowCancellationDialog({
                 onContinue: showCodeEditorDialog({
-                  authoringBase: state.env.authoringBase,
-                  site: state.sites.active,
                   path,
-                  type: 'template',
+                  mode: 'ftl',
                   contentType: payload.contentTypeId
                 })
               });
             } else {
               return showCodeEditorDialog({
-                authoringBase: state.env.authoringBase,
-                site: state.sites.active,
                 path,
-                type: 'template',
+                mode: 'ftl',
                 contentType: payload.contentTypeId
               });
             }
@@ -102,10 +98,8 @@ const epics = [
             items?.length > 0
               ? showWorkflowCancellationDialog({
                   onContinue: showCodeEditorDialog({
-                    authoringBase: state.env.authoringBase,
-                    site: state.sites.active,
                     path,
-                    type: editTemplate.type === type ? 'template' : 'controller',
+                    mode: payload.mode,
                     contentType: payload.contentType
                   })
                 })
@@ -113,7 +107,7 @@ const epics = [
                   authoringBase: state.env.authoringBase,
                   site: state.sites.active,
                   path,
-                  type: editTemplate.type === type ? 'template' : 'controller',
+                  mode: payload.mode,
                   contentType: payload.contentType
                 })
           ),

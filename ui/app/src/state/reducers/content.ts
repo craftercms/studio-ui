@@ -18,11 +18,16 @@ import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../models/GlobalState';
 import {
   clearClipboard,
+  completeDetailedItem,
+  fetchDetailedItem,
   fetchDetailedItemComplete,
   fetchQuickCreateList,
   fetchQuickCreateListComplete,
   fetchQuickCreateListFailed,
+  fetchSandboxItem,
   fetchSandboxItemComplete,
+  localItemLock,
+  reloadDetailedItem,
   restoreClipboard,
   setClipboard
 } from '../actions/content';
@@ -35,7 +40,7 @@ import {
   pathNavigatorFetchPathComplete
 } from '../actions/pathNavigator';
 import { parseSandBoxItemToDetailedItem } from '../../utils/content';
-import { createLookupTable } from '../../utils/object';
+import { createLookupTable, reversePluckProps } from '../../utils/object';
 import { DetailedItem, SandboxItem } from '../../models/Item';
 import { changeSite } from './sites';
 import {
@@ -47,6 +52,7 @@ import {
 } from '../actions/pathNavigatorTree';
 import { GetChildrenResponse } from '../../models/GetChildrenResponse';
 import LookupTable from '../../models/LookupTable';
+import { STATE_LOCKED_MASK } from '../../utils/constants';
 
 type ContentState = GlobalState['content'];
 
@@ -57,7 +63,8 @@ const initialState: ContentState = {
     items: null
   },
   itemsByPath: {},
-  clipboard: null
+  clipboard: null,
+  itemsBeingFetchedByPath: {}
 };
 
 const updateItemByPath = (state: ContentState, { payload: { parent, children } }) => {
@@ -74,6 +81,16 @@ const updateItemByPath = (state: ContentState, { payload: { parent, children } }
   return {
     ...state,
     itemsByPath: nextByPath
+  };
+};
+
+const updateItemsBeingFetchedByPath = (state: ContentState, { payload: { path } }) => {
+  return {
+    ...state,
+    itemsBeingFetchedByPath: {
+      ...state.itemsBeingFetchedByPath,
+      [path]: true
+    }
   };
 };
 
@@ -101,13 +118,29 @@ const reducer = createReducer<ContentState>(initialState, {
       error: error.payload.response
     }
   }),
+  [fetchDetailedItem.type]: updateItemsBeingFetchedByPath,
+  [reloadDetailedItem.type]: updateItemsBeingFetchedByPath,
+  [completeDetailedItem.type]: updateItemsBeingFetchedByPath,
+  [fetchSandboxItem.type]: updateItemsBeingFetchedByPath,
   [fetchDetailedItemComplete.type]: (state, { payload }) => ({
     ...state,
-    itemsByPath: { ...state.itemsByPath, [payload.path]: payload }
+    itemsByPath: {
+      ...state.itemsByPath,
+      [payload.path]: payload
+    },
+    itemsBeingFetchedByPath: {
+      ...reversePluckProps(state.itemsBeingFetchedByPath, payload.path)
+    }
   }),
   [fetchSandboxItemComplete.type]: (state, { payload: { item } }) => ({
     ...state,
-    itemsByPath: { ...state.itemsByPath, [item.path]: parseSandBoxItemToDetailedItem(item) }
+    itemsByPath: {
+      ...state.itemsByPath,
+      [item.path]: parseSandBoxItemToDetailedItem(item)
+    },
+    itemsBeingFetchedByPath: {
+      ...reversePluckProps(state.itemsBeingFetchedByPath, item.path)
+    }
   }),
   [restoreClipboard.type]: (state, { payload }) => ({
     ...state,
@@ -178,6 +211,23 @@ const reducer = createReducer<ContentState>(initialState, {
     });
 
     return { ...state, itemsByPath: { ...state.itemsByPath, ...nextByPath } };
+  },
+  [localItemLock.type]: (state, { payload }) => {
+    if (state.itemsByPath[payload.path].lockOwner && state.itemsByPath[payload.path].stateMap.locked) {
+      return state;
+    }
+    return {
+      ...state,
+      itemsByPath: {
+        ...state.itemsByPath,
+        [payload.path]: {
+          ...state.itemsByPath[payload.path],
+          lockOwner: payload.username,
+          state: state.itemsByPath[payload.path].state + STATE_LOCKED_MASK,
+          stateMap: { ...state.itemsByPath[payload.path].stateMap, locked: true }
+        }
+      }
+    };
   },
   [changeSite.type]: () => initialState
 });

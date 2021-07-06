@@ -219,7 +219,7 @@ function EditFormPanelBody(props: EditFormPanelBodyProps) {
   function openDialog(type: string) {
     onDismiss();
     if (type === 'form') {
-      const selectedFields = field ? [field.id] : null;
+      const selectedFields = selected[0]?.fieldId.length ? selected[0].fieldId : null;
       dispatch(
         showEditDialog(
           getEditDialogProps({ authoringBase, childrenMap, model, models, path, selectedFields, selectedId, site })
@@ -228,13 +228,12 @@ function EditFormPanelBody(props: EditFormPanelBodyProps) {
     } else {
       dispatch(
         showCodeEditorDialog({
-          authoringBase,
-          site,
           path:
             type === 'template'
               ? contentType.displayTemplate
               : `/scripts/pages/${popPiece(selectedContentTypeId, '/')}.groovy`,
-          type: type === 'template' ? 'template' : 'controller'
+          contentType: selectedContentTypeId,
+          mode: type === 'template' ? 'ftl' : 'groovy'
         })
       );
     }
