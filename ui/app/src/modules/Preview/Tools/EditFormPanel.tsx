@@ -380,7 +380,8 @@ function EditFormPanelBody(props: EditFormPanelBodyProps) {
         onDismiss();
         break;
       }
-      case 'delete': {
+      case 'delete-image': {
+        dispatch(notifyFieldImageChanged({ recordId: item.elementRecordId, url: '' }));
         onDismiss();
         break;
       }
@@ -431,7 +432,7 @@ export function getContentTypeOptions(
       });
     }
     options.push({
-      id: 'delete',
+      id: 'delete-image',
       label: formatMessage(translations.delete)
     });
     return options;
