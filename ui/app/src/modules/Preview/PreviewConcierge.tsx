@@ -326,7 +326,7 @@ export function PreviewConcierge(props: any) {
   }, [items[currentItemPath], editMode, user.username]);
   useEffect(() => {
     if (currentItemPath && site) {
-      dispatch(fetchSandboxItem({ path: currentItemPath }));
+      dispatch(fetchSandboxItem({ path: currentItemPath, force: true }));
     }
   }, [dispatch, currentItemPath, site]);
 
