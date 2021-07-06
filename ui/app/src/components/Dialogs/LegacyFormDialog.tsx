@@ -292,8 +292,10 @@ const EmbeddedLegacyEditor = React.forwardRef(function EmbeddedLegacyEditor(prop
   );
 });
 
+export const legacyEditorId = 'legacy-editor';
+
 export default function LegacyFormDialog(props: LegacyFormDialogProps) {
-  const id = 'legacy-editor';
+  const id = legacyEditorId;
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const classes = styles();

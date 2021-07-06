@@ -50,8 +50,10 @@ export interface CodeEditorDialogStateProps extends CodeEditorDialogBaseProps {
   onDismiss?: StandardAction;
 }
 
+export const codeEditorId = 'code-editor';
+
 export default function CodeEditorDialog(props: CodeEditorDialogProps) {
-  const id = 'code-editor';
+  const id = codeEditorId;
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const { open, mode, pendingChanges, path, readonly, contentType, onClosed, onClose, onSuccess, ...rest } = props;
