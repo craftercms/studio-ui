@@ -1683,7 +1683,7 @@ var nodeOpen = false,
             null, // field
             false, // isEdit
             callback,
-            undefined, // aux
+            auxParams, // aux
             isFlattenedInclude
           );
         }
@@ -3286,7 +3286,10 @@ var nodeOpen = false,
           path = path.replace('{month}', ('0' + (currentDate.getMonth() + 1)).slice(-2));
         }
 
-        const fullParentPath = CStudioAuthoring.Utils.getQueryParameterByName('path');
+        const fullParentPath =
+          CStudioAuthoring.Utils.getQueryParameterByName('path') !== ''
+            ? CStudioAuthoring.Utils.getQueryParameterByName('path')
+            : CStudioAuthoring.Utils.getQueryParameterByName('parentPath');
         const parentPathPieces = fullParentPath.substr(1).split('/');
         path = path.replace(/{parentPath(\[\s*?(\d+)\s*?])?}/g, function (fullMatch, indexExp, index) {
           if (indexExp === void 0) {
