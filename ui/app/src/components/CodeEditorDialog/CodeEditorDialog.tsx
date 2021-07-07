@@ -94,7 +94,7 @@ export default function CodeEditorDialog(props: CodeEditorDialogProps) {
   };
 
   return (
-    <Dialog open={open && !minimized} keepMounted={minimized} onClose={onDialogClose} fullWidth maxWidth="xl" {...rest}>
+    <Dialog fullWidth maxWidth="xl" {...rest} open={open && !minimized} keepMounted={minimized} onClose={onDialogClose}>
       <CodeEditorDialogContainer {...props} onClose={onDialogClose} title={title} onMinimized={onMinimized} />
     </Dialog>
   );

@@ -52,7 +52,7 @@ import { useSubject } from '../../utils/hooks/useSubject';
 const translations = defineMessages({
   previewSearchPanelTitle: {
     id: 'previewSearchPanel.title',
-    defaultMessage: 'Search...'
+    defaultMessage: 'Search'
   },
   previousPage: {
     id: 'pagination.previousPage',
