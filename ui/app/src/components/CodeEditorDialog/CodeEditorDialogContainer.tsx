@@ -74,7 +74,10 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [snippets, setSnippets] = useState<LookupTable<{ label: string; value: string }>>({});
   const [contentModelSnippets, setContentModelSnippets] = useState<{ label: string; value: string }[]>(null);
-  const { freemarkerCodeSnippets, groovyCodeSnippets } = useReferences();
+  const {
+    'craftercms.freemarkerCodeSnippets': freemarkerCodeSnippets,
+    'craftercms.groovyCodeSnippets': groovyCodeSnippets
+  } = useReferences();
 
   // add content model variables
   useEffect(() => {
@@ -85,7 +88,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
       if (_contentType) {
         const fields = contentTypes[_contentType].fields;
         if (mode === 'ftl') {
-          if (freemarkerCodeSnippets && freemarkerCodeSnippets['contentVariable']) {
+          if (freemarkerCodeSnippets?.['contentVariable']) {
             let { contentVariable, ...rest } = freemarkerCodeSnippets;
             setSnippets(rest);
             const snippets = Object.keys(fields).map((key) => ({
@@ -98,7 +101,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
             setContentModelSnippets(snippets);
           }
         } else if (mode === 'groovy') {
-          if (groovyCodeSnippets && groovyCodeSnippets['accessContentModel']) {
+          if (groovyCodeSnippets?.['accessContentModel']) {
             let { accessContentModel, ...rest } = groovyCodeSnippets;
             setSnippets(rest);
             const snippets = Object.keys(fields).map((key) => ({

@@ -210,7 +210,9 @@ export function fetchSiteUiConfig(site: string): Observable<Pick<GlobalState['ui
         const arrays = ['widgets', 'roles', 'excludes', 'devices', 'values', 'siteCardMenuLinks'];
         const renameTable = { permittedRoles: 'roles' };
         // Reading references
-        xml.querySelectorAll('references > reference').forEach((tag) => {
+        const references = {};
+        xml.querySelectorAll(':scope > references > reference').forEach((tag) => {
+          references[tag.id] = tag.innerHTML;
           config.references[tag.id] = applyDeserializedXMLTransforms(deserialize(tag.innerHTML), {
             arrays,
             renameTable
@@ -218,7 +220,7 @@ export function fetchSiteUiConfig(site: string): Observable<Pick<GlobalState['ui
         });
         // Replacing references
         xml.querySelectorAll('configuration > reference').forEach((tag) => {
-          tag.outerHTML = xml.querySelector(`references > reference[id='${tag.id}']`).innerHTML;
+          tag.outerHTML = references[tag.id];
         });
         // Make sure any plugin reference has a valid site id to import the plugin from
         xml.querySelectorAll('plugin').forEach((tag) => {
