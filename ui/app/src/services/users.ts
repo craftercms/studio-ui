@@ -49,8 +49,9 @@ export function trash(username: string): Observable<true> {
   return del(`/studio/api/2/users?username=${encodeURIComponent(username)}`).pipe(mapTo(true));
 }
 
-export function fetchAll(options?: PaginationOptions): Observable<PagedArray<User>> {
+export function fetchAll(keyword?: string, options?: PaginationOptions): Observable<PagedArray<User>> {
   const mergedOptions = {
+    keyword,
     limit: 100,
     offset: 0,
     ...options
