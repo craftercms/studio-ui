@@ -153,6 +153,8 @@ export interface GlobalState {
     toolsPanelWidth: number;
     pageBuilderPanelWidth: number;
     pageBuilderPanelStack: WidgetDescriptor[];
+    backStack: string[];
+    forwardStack: string[];
     hostSize: WidthAndHeight;
     guest: GuestData;
     assets: PagedEntityState<MediaItem>;
