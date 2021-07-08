@@ -16,27 +16,27 @@
 
 import React from 'react';
 import { IconButton, IconButtonProps } from '@material-ui/core';
-import ArrowForwardIosRoundedIcon from '@material-ui/icons/ArrowForwardIosRounded';
+import ArrowBackIosRoundedIcon from '@material-ui/icons/ArrowBackIosRounded';
 import { useDispatch } from 'react-redux';
-import { useForwardStack } from '../../utils/hooks/useForwardStack';
+import { useBackStack } from '../../utils/hooks/useBackStack';
 import { FormattedMessage } from 'react-intl';
 import Tooltip from '@material-ui/core/Tooltip';
-import { goToNextPage } from '../../state/actions/preview';
+import { goToLastPage } from '../../state/actions/preview';
 
-export interface ForwardButtonStackProps extends IconButtonProps {}
+export interface PreviewBackButtonProps extends IconButtonProps {}
 
-export default function ForwardButtonStack(props: ForwardButtonStackProps) {
-  const stack = useForwardStack();
+export default function PreviewBackButton(props: PreviewBackButtonProps) {
+  const stack = useBackStack();
   const dispatch = useDispatch();
   const onClick = () => {
-    dispatch(goToNextPage());
+    dispatch(goToLastPage());
   };
 
   return (
-    <Tooltip title={<FormattedMessage id="forwardButtonStack.forward" defaultMessage="Forward" />}>
+    <Tooltip title={<FormattedMessage id="backButtonStack.back" defaultMessage="Back" />}>
       <span>
-        <IconButton disabled={stack.length === 0} onClick={onClick} {...props}>
-          <ArrowForwardIosRoundedIcon />
+        <IconButton disabled={stack.length <= 1} onClick={onClick} {...props}>
+          <ArrowBackIosRoundedIcon />
         </IconButton>
       </span>
     </Tooltip>
