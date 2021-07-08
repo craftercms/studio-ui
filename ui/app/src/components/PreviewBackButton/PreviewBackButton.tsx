@@ -33,7 +33,7 @@ export default function PreviewBackButton(props: PreviewBackButtonProps) {
   };
 
   return (
-    <Tooltip title={<FormattedMessage id="backButtonStack.back" defaultMessage="Back" />}>
+    <Tooltip title={<FormattedMessage id="words.back" defaultMessage="Back" />}>
       <span>
         <IconButton disabled={stack.length <= 1} onClick={onClick} {...props}>
           <ArrowBackIosRoundedIcon />

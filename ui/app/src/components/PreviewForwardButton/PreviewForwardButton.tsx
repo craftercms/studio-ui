@@ -33,7 +33,7 @@ export default function PreviewForwardButton(props: PreviewForwardButtonProps) {
   };
 
   return (
-    <Tooltip title={<FormattedMessage id="forwardButtonStack.forward" defaultMessage="Forward" />}>
+    <Tooltip title={<FormattedMessage id="words.forward" defaultMessage="Forward" />}>
       <span>
         <IconButton disabled={stack.length === 0} onClick={onClick} {...props}>
           <ArrowForwardIosRoundedIcon />
