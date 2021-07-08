@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect } from 'react';
-import { createStyles, makeStyles, withStyles } from '@material-ui/core/styles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -27,7 +27,6 @@ import Collapse from '@material-ui/core/Collapse';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-import InputBase from '@material-ui/core/InputBase';
 import Link from '@material-ui/core/Link';
 import DateTimePicker from '../../../components/Controls/DateTimePicker';
 import moment from 'moment';
@@ -90,6 +89,9 @@ const useStyles = makeStyles((theme) =>
       justifyContent: 'space-between',
       alignItems: 'center'
     },
+    requestCheckbox: {
+      marginBottom: '10px'
+    },
     formSection: {
       width: '100%',
       marginBottom: '20px'
@@ -150,19 +152,12 @@ const useStyles = makeStyles((theme) =>
   })
 );
 
-const SelectInput = withStyles(() =>
-  createStyles({
-    input: {
-      borderRadius: 4
-    }
-  })
-)(InputBase);
-
 let schedulingTimeout;
 
 interface PublishFormProps {
   inputs: any;
   showEmailCheckbox: boolean;
+  showRequestApproval: boolean;
   publishingChannels: any[];
   publishingChannelsStatus: string;
   onPublishingChannelsFailRetry: Function;
@@ -180,6 +175,7 @@ function PublishForm(props: PublishFormProps) {
     inputs,
     setInputs,
     showEmailCheckbox,
+    showRequestApproval,
     publishingChannels,
     publishingChannelsStatus,
     onPublishingChannelsFailRetry,
@@ -238,6 +234,14 @@ function PublishForm(props: PublishFormProps) {
 
   return (
     <form className={classes.root}>
+      {showRequestApproval && (
+        <FormControlLabel
+          className={classes.requestCheckbox}
+          control={<Checkbox checked={inputs.requestApproval} onChange={handleInputChange('requestApproval')} />}
+          label={<FormattedMessage id="publishForm.requestApproval" defaultMessage="Request approval" />}
+        />
+      )}
+
       {showEmailCheckbox && (
         <div className={classes.formSection}>
           <FormControlLabel
@@ -302,58 +306,51 @@ function PublishForm(props: PublishFormProps) {
         </Collapse>
       </FormControl>
 
-      <div className={classes.formSection}>
-        <FormControl fullWidth>
-          <InputLabel>{formatMessage(messages.environment)}</InputLabel>
-          {!publishingChannels && (
-            <>
-              <div className={classes.environmentLoaderContainer}>
-                <Typography
-                  variant="body1"
-                  component="span"
-                  className={`${classes.environmentLoader} ${classes.formInputs}`}
-                  color={publishingChannelsStatus === 'Error' ? 'error' : 'initial'}
-                >
-                  {formatMessage(messages[`environment${publishingChannelsStatus}`])}
-                  {publishingChannelsStatus === 'Error' && (
-                    <Link href="#" onClick={() => onPublishingChannelsFailRetry()}>
-                      ({formatMessage(messages.environmentRetry)})
-                    </Link>
-                  )}
-                </Typography>
-              </div>
-            </>
-          )}
-
-          {publishingChannels &&
-            (publishingChannels.length ? (
-              <Select
-                fullWidth
-                style={{ borderRadius: '4px' }}
-                value={inputs.environment}
-                classes={{
-                  select: `${classes.selectInput} ${classes.formInputs}`,
-                  icon: classes.selectIcon
-                }}
-                onChange={handleSelectChange('environment')}
-                input={<SelectInput />}
-                disabled={disabled}
+      <FormControl fullWidth variant="outlined" className={classes.formSection}>
+        <InputLabel>{formatMessage(messages.environment)}</InputLabel>
+        {!publishingChannels && (
+          <>
+            <div className={classes.environmentLoaderContainer}>
+              <Typography
+                variant="body1"
+                component="span"
+                className={`${classes.environmentLoader} ${classes.formInputs}`}
+                color={publishingChannelsStatus === 'Error' ? 'error' : 'initial'}
               >
-                {publishingChannels.map((publishingChannel: any) => (
-                  <MenuItem key={publishingChannel.name} value={publishingChannel.name}>
-                    {publishingChannel.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            ) : (
-              <div className={classes.environmentLoaderContainer}>
-                <Typography variant="body1" className={classes.environmentEmpty}>
-                  No publishing channels are available.
-                </Typography>
-              </div>
-            ))}
-        </FormControl>
-      </div>
+                {formatMessage(messages[`environment${publishingChannelsStatus}`])}
+                {publishingChannelsStatus === 'Error' && (
+                  <Link href="#" onClick={() => onPublishingChannelsFailRetry()}>
+                    ({formatMessage(messages.environmentRetry)})
+                  </Link>
+                )}
+              </Typography>
+            </div>
+          </>
+        )}
+
+        {publishingChannels &&
+          (publishingChannels.length ? (
+            <Select
+              fullWidth
+              value={inputs.environment}
+              onChange={handleSelectChange('environment')}
+              disabled={disabled}
+              label={formatMessage(messages.environment)}
+            >
+              {publishingChannels.map((publishingChannel: any) => (
+                <MenuItem key={publishingChannel.name} value={publishingChannel.name}>
+                  {publishingChannel.name}
+                </MenuItem>
+              ))}
+            </Select>
+          ) : (
+            <div className={classes.environmentLoaderContainer}>
+              <Typography variant="body1" className={classes.environmentEmpty}>
+                No publishing channels are available.
+              </Typography>
+            </div>
+          ))}
+      </FormControl>
 
       <TextFieldWithMax
         id="publishDialogFormSubmissionComment"
