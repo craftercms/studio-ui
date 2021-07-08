@@ -265,7 +265,7 @@ export interface GlobalState {
       tools: Array<{ icon: SystemIconDescriptor; id: string }>;
       isFetching: boolean;
     };
-    datasets: LookupTable<LookupTable<any>>;
+    references: LookupTable<LookupTable<any>>;
   };
   pathNavigator: {
     [id: string]: PathNavigatorStateProps;

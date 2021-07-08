@@ -44,7 +44,7 @@ import { useContentTypes } from '../../utils/hooks/useContentTypes';
 import { useActiveUser } from '../../utils/hooks/useActiveUser';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useDetailedItem } from '../../utils/hooks/useDetailedItem';
-import { useDatasets } from '../../utils/hooks/useDatasets';
+import { useReferences } from '../../utils/hooks/useReferences';
 import { useUnmount } from '../../utils/hooks/useUnmount';
 
 export interface CodeEditorDialogContainerProps extends CodeEditorDialogProps {
@@ -74,7 +74,10 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [snippets, setSnippets] = useState<LookupTable<{ label: string; value: string }>>({});
   const [contentModelSnippets, setContentModelSnippets] = useState<{ label: string; value: string }[]>(null);
-  const { freemarkerCodeSnippets, groovyCodeSnippets } = useDatasets();
+  const {
+    'craftercms.freemarkerCodeSnippets': freemarkerCodeSnippets,
+    'craftercms.groovyCodeSnippets': groovyCodeSnippets
+  } = useReferences();
 
   // add content model variables
   useEffect(() => {
@@ -85,7 +88,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
       if (_contentType) {
         const fields = contentTypes[_contentType].fields;
         if (mode === 'ftl') {
-          if (freemarkerCodeSnippets['contentVariable']) {
+          if (freemarkerCodeSnippets?.['contentVariable']) {
             let { contentVariable, ...rest } = freemarkerCodeSnippets;
             setSnippets(rest);
             const snippets = Object.keys(fields).map((key) => ({
@@ -98,7 +101,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
             setContentModelSnippets(snippets);
           }
         } else if (mode === 'groovy') {
-          if (groovyCodeSnippets['accessContentModel']) {
+          if (groovyCodeSnippets?.['accessContentModel']) {
             let { accessContentModel, ...rest } = groovyCodeSnippets;
             setSnippets(rest);
             const snippets = Object.keys(fields).map((key) => ({

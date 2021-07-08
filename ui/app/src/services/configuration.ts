@@ -205,8 +205,23 @@ export function fetchSiteUiConfig(site: string): Observable<Pick<GlobalState['ui
           },
           launcher: null,
           dashboard: null,
-          datasets: {}
+          references: {}
         };
+        const arrays = ['widgets', 'roles', 'excludes', 'devices', 'values', 'siteCardMenuLinks'];
+        const renameTable = { permittedRoles: 'roles' };
+        // Reading references
+        const references = {};
+        xml.querySelectorAll(':scope > references > reference').forEach((tag) => {
+          references[tag.id] = tag.innerHTML;
+          config.references[tag.id] = applyDeserializedXMLTransforms(deserialize(tag.innerHTML), {
+            arrays,
+            renameTable
+          });
+        });
+        // Replacing references
+        xml.querySelectorAll('configuration > reference').forEach((tag) => {
+          tag.outerHTML = references[tag.id];
+        });
         // Make sure any plugin reference has a valid site id to import the plugin from
         xml.querySelectorAll('plugin').forEach((tag) => {
           const siteAttr = tag.getAttribute('site');
@@ -214,8 +229,6 @@ export function fetchSiteUiConfig(site: string): Observable<Pick<GlobalState['ui
             tag.setAttribute('site', site);
           }
         });
-        const arrays = ['widgets', 'roles', 'excludes', 'devices', 'values', 'siteCardMenuLinks'];
-        const renameTable = { permittedRoles: 'roles' };
         const toolbar = xml.querySelector('[id="craftercms.components.PreviewToolbar"] > configuration');
         if (toolbar) {
           const leftSection = toolbar.querySelector('leftSection > widgets');
@@ -289,14 +302,6 @@ export function fetchSiteUiConfig(site: string): Observable<Pick<GlobalState['ui
             renameTable
           }).configuration;
         }
-        // reading datasets
-        xml.querySelectorAll('dataset').forEach((tag) => {
-          config.datasets[tag.id] = applyDeserializedXMLTransforms(deserialize(tag.innerHTML), {
-            arrays,
-            renameTable
-          });
-        });
-
         return config;
       } else {
         return null;
