@@ -418,7 +418,7 @@ function HistoryDialogBody(props: HistoryDialogProps) {
       <DialogBody className={classes.dialogBody}>
         <SingleItemSelector
           classes={{ root: classes.singleItemSelector }}
-          label="Item"
+          label={<FormattedMessage id="words.item" defaultMessage="Item" />}
           open={openSelector}
           disabled={isConfig}
           onClose={() => setOpenSelector(false)}
