@@ -55,7 +55,7 @@ export default function UsersManagement(props: UsersManagementProps) {
   const fetchUsers = useCallback(
     (keyword = '') => {
       setFetching(true);
-      fetchAll(keyword, { limit, offset }).subscribe(
+      fetchAll({ limit, offset, keyword }).subscribe(
         (users) => {
           setUsers(users);
           setFetching(false);
