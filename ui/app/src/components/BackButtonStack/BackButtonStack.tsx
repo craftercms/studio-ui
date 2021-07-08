@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { IconButton } from '@material-ui/core';
+import { IconButton, IconButtonProps } from '@material-ui/core';
 import ArrowBackIosRoundedIcon from '@material-ui/icons/ArrowBackIosRounded';
 import { useDispatch } from 'react-redux';
 import { useBackStack } from '../../utils/hooks/useBackStack';
@@ -23,7 +23,9 @@ import { FormattedMessage } from 'react-intl';
 import Tooltip from '@material-ui/core/Tooltip';
 import { goToLastPage } from '../../state/actions/preview';
 
-export default function BackButtonStack() {
+export interface BackButtonStackProps extends IconButtonProps {}
+
+export default function BackButtonStack(props: BackButtonStackProps) {
   const stack = useBackStack();
   const dispatch = useDispatch();
   const onClick = () => {
@@ -31,10 +33,12 @@ export default function BackButtonStack() {
   };
 
   return (
-    <IconButton disabled={stack.length <= 1} onClick={onClick}>
-      <Tooltip title={<FormattedMessage id="backButtonStack.back" defaultMessage="Back" />}>
-        <ArrowBackIosRoundedIcon />
-      </Tooltip>
-    </IconButton>
+    <Tooltip title={<FormattedMessage id="backButtonStack.back" defaultMessage="Back" />}>
+      <span>
+        <IconButton disabled={stack.length <= 1} onClick={onClick} {...props}>
+          <ArrowBackIosRoundedIcon />
+        </IconButton>
+      </span>
+    </Tooltip>
   );
 }

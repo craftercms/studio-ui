@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { IconButton } from '@material-ui/core';
+import { IconButton, IconButtonProps } from '@material-ui/core';
 import ArrowForwardIosRoundedIcon from '@material-ui/icons/ArrowForwardIosRounded';
 import { useDispatch } from 'react-redux';
 import { useForwardStack } from '../../utils/hooks/useForwardStack';
@@ -23,7 +23,9 @@ import { FormattedMessage } from 'react-intl';
 import Tooltip from '@material-ui/core/Tooltip';
 import { goToNextPage } from '../../state/actions/preview';
 
-export default function ForwardButtonStack() {
+export interface ForwardButtonStackProps extends IconButtonProps {}
+
+export default function ForwardButtonStack(props: ForwardButtonStackProps) {
   const stack = useForwardStack();
   const dispatch = useDispatch();
   const onClick = () => {
@@ -31,10 +33,12 @@ export default function ForwardButtonStack() {
   };
 
   return (
-    <IconButton disabled={stack.length === 0} onClick={onClick}>
-      <Tooltip title={<FormattedMessage id="forwardButtonStack.forward" defaultMessage="Forward" />}>
-        <ArrowForwardIosRoundedIcon />
-      </Tooltip>
-    </IconButton>
+    <Tooltip title={<FormattedMessage id="forwardButtonStack.forward" defaultMessage="Forward" />}>
+      <span>
+        <IconButton disabled={stack.length === 0} onClick={onClick} {...props}>
+          <ArrowForwardIosRoundedIcon />
+        </IconButton>
+      </span>
+    </Tooltip>
   );
 }
