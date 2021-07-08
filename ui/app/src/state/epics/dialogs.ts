@@ -48,8 +48,10 @@ import { asArray } from '../../utils/array';
 import { changeCurrentUrl } from '../actions/preview';
 import { CrafterCMSEpic } from '../store';
 import { updateDialog } from '../reducers/dialogs/minimizedDialogs';
-import { codeEditorMessages, formEngineMessages } from '../../utils/i18n-legacy';
+import { formEngineMessages } from '../../utils/i18n-legacy';
 import infoGraphic from '../../assets/information.svg';
+import { codeEditorId } from '../../components/CodeEditorDialog';
+import { legacyEditorId } from '../../components/Dialogs/LegacyFormDialog';
 
 function getDialogNameFromType(type: string): string {
   let name = getDialogActionNameFromType(type);
@@ -135,11 +137,11 @@ const dialogEpics: CrafterCMSEpic[] = [
     ),
   (action$, state$, { getIntl }) =>
     action$.pipe(
-      ofType(showEditDialog.type),
+      ofType(showEditDialog.type, showCodeEditorDialog.type),
       withLatestFrom(state$),
-      switchMap(([{ payload }, state]) => {
-        if (payload.src === state.dialogs.edit.src) {
-          const id = 'legacy-editor';
+      switchMap(([{ type, payload }, state]) => {
+        if (payload.path === (type === showEditDialog.type ? state.dialogs.edit.path : state.dialogs.codeEditor.path)) {
+          const id = type === showEditDialog.type ? legacyEditorId : codeEditorId;
           if (state.dialogs.minimizedDialogs[id]?.minimized === true) {
             return of(
               updateDialog({
@@ -154,33 +156,6 @@ const dialogEpics: CrafterCMSEpic[] = [
           return of(
             showConfirmDialog({
               body: getIntl().formatMessage(formEngineMessages.inProgressConfirmation),
-              imageUrl: infoGraphic
-            })
-          );
-        }
-      })
-    ),
-  (action$, state$, { getIntl }) =>
-    action$.pipe(
-      ofType(showCodeEditorDialog.type),
-      withLatestFrom(state$),
-      switchMap(([{ payload }, state]) => {
-        if (payload.src === state.dialogs.codeEditor.src) {
-          const id = 'legacy-code-editor';
-          if (state.dialogs.minimizedDialogs[id]?.minimized === true) {
-            return of(
-              updateDialog({
-                id,
-                minimized: false
-              })
-            );
-          } else {
-            return NEVER;
-          }
-        } else {
-          return of(
-            showConfirmDialog({
-              body: getIntl().formatMessage(codeEditorMessages.inProgressConfirmation),
               imageUrl: infoGraphic
             })
           );

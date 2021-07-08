@@ -50,11 +50,13 @@ export interface CodeEditorDialogStateProps extends CodeEditorDialogBaseProps {
   onDismiss?: StandardAction;
 }
 
+export const codeEditorId = 'code-editor';
+
 export default function CodeEditorDialog(props: CodeEditorDialogProps) {
-  const id = 'code-editor';
+  const id = codeEditorId;
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
-  const { open, mode, pendingChanges, path, readonly, contentType, onClosed, onSuccess, ...rest } = props;
+  const { open, mode, pendingChanges, path, readonly, contentType, onClosed, onClose, onSuccess, ...rest } = props;
 
   const title = formatMessage(translations.title);
 
@@ -68,7 +70,7 @@ export default function CodeEditorDialog(props: CodeEditorDialogProps) {
     dispatch(minimizeDialog({ id }));
   };
 
-  const onClose = () => {
+  const onDialogClose = () => {
     if (readonly) {
       props.onClose();
       return;
@@ -87,13 +89,13 @@ export default function CodeEditorDialog(props: CodeEditorDialogProps) {
       );
     } else {
       dispatch(conditionallyUnlockItem({ path: props.path }));
-      props.onClose();
+      onClose();
     }
   };
 
   return (
-    <Dialog open={open && !minimized} keepMounted={minimized} onClose={onClose} fullWidth maxWidth="xl" {...rest}>
-      <CodeEditorDialogContainer {...props} onClose={onClose} title={title} onMinimized={onMinimized} />
+    <Dialog fullWidth maxWidth="xl" {...rest} open={open && !minimized} keepMounted={minimized} onClose={onDialogClose}>
+      <CodeEditorDialogContainer {...props} onClose={onDialogClose} title={title} onMinimized={onMinimized} />
     </Dialog>
   );
 }
