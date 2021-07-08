@@ -18,7 +18,7 @@ import React from 'react';
 import { IconButton, IconButtonProps } from '@material-ui/core';
 import ArrowBackIosRoundedIcon from '@material-ui/icons/ArrowBackIosRounded';
 import { useDispatch } from 'react-redux';
-import { useBackStack } from '../../utils/hooks/useBackStack';
+import { useHistoryBackStack } from '../../utils/hooks/useHistoryBackStack';
 import { FormattedMessage } from 'react-intl';
 import Tooltip from '@material-ui/core/Tooltip';
 import { goToLastPage } from '../../state/actions/preview';
@@ -26,7 +26,7 @@ import { goToLastPage } from '../../state/actions/preview';
 export interface PreviewBackButtonProps extends IconButtonProps {}
 
 export default function PreviewBackButton(props: PreviewBackButtonProps) {
-  const stack = useBackStack();
+  const stack = useHistoryBackStack();
   const dispatch = useDispatch();
   const onClick = () => {
     dispatch(goToLastPage());

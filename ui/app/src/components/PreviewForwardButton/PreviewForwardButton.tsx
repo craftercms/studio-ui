@@ -18,7 +18,7 @@ import React from 'react';
 import { IconButton, IconButtonProps } from '@material-ui/core';
 import ArrowForwardIosRoundedIcon from '@material-ui/icons/ArrowForwardIosRounded';
 import { useDispatch } from 'react-redux';
-import { useForwardStack } from '../../utils/hooks/useForwardStack';
+import { useHistoryForwardStack } from '../../utils/hooks/useHistoryForwardStack';
 import { FormattedMessage } from 'react-intl';
 import Tooltip from '@material-ui/core/Tooltip';
 import { goToNextPage } from '../../state/actions/preview';
@@ -26,7 +26,7 @@ import { goToNextPage } from '../../state/actions/preview';
 export interface PreviewForwardButtonProps extends IconButtonProps {}
 
 export default function PreviewForwardButton(props: PreviewForwardButtonProps) {
-  const stack = useForwardStack();
+  const stack = useHistoryForwardStack();
   const dispatch = useDispatch();
   const onClick = () => {
     dispatch(goToNextPage());
