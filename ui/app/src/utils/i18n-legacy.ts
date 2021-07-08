@@ -603,6 +603,10 @@ const publishingMessages = defineMessages({
     id: 'publishing.publishByNote',
     defaultMessage:
       'Publish by commit ID(s) must be used for changes made via direct git actions against the repository or pulled from a remote repository. For changes made via Studio on the UI, use "Bulk Publish".'
+  },
+  disabled: {
+    id: 'publishing.disabled',
+    defaultMessage: 'The publisher is disabled.'
   }
 });
 
