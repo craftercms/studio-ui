@@ -333,31 +333,31 @@ const reducer = createReducer<GlobalState['preview']>(
         ? state
         : {
             ...state,
-            backStack: [...state.backStack, payload],
-            forwardStack: [],
+            historyBackStack: [...state.historyBackStack, payload],
+            historyForwardStack: [],
             computedUrl: cleanseUrl(payload),
             currentUrl: `${guestBase}${cleanseUrl(payload)}`
           };
     },
     [goToLastPage.type]: (state) => {
-      const stack = [...state.backStack];
+      const stack = [...state.historyBackStack];
       stack.pop();
       const path = stack[stack.length - 1];
       return {
         ...state,
-        backStack: stack,
-        forwardStack: [...state.forwardStack, state.computedUrl],
+        historyBackStack: stack,
+        historyForwardStack: [...state.historyForwardStack, state.computedUrl],
         computedUrl: cleanseUrl(path),
         currentUrl: `${guestBase}${cleanseUrl(path)}`
       };
     },
     [goToNextPage.type]: (state) => {
-      const stack = [...state.forwardStack];
+      const stack = [...state.historyForwardStack];
       const path = stack.pop();
       return {
         ...state,
-        forwardStack: stack,
-        backStack: [...state.backStack, path],
+        historyForwardStack: stack,
+        historyBackStack: [...state.historyBackStack, path],
         computedUrl: cleanseUrl(path),
         currentUrl: `${guestBase}${cleanseUrl(path)}`
       };
@@ -369,8 +369,8 @@ const reducer = createReducer<GlobalState['preview']>(
         components: componentsInitialState,
         assets: assetsPanelInitialState,
         toolsPanelPageStack: [],
-        backStack: [],
-        forwardStack: []
+        historyBackStack: [],
+        historyForwardStack: []
       };
 
       // TODO: If there's a guest it would have checked out?
