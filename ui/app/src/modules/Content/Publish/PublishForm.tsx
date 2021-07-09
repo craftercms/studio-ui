@@ -99,11 +99,6 @@ const useStyles = makeStyles((theme) =>
     formInputs: {
       fontSize: '14px'
     },
-    checkboxInput: {
-      padding: '2px',
-      marginLeft: '5px',
-      marginRight: '7px'
-    },
     selectInput: {
       padding: '10px 12px'
     },
@@ -243,21 +238,19 @@ function PublishForm(props: PublishFormProps) {
       )}
 
       {showEmailCheckbox && (
-        <div className={classes.formSection}>
-          <FormControlLabel
-            label={formatMessage(messages.emailLabel)}
-            control={
-              <Checkbox
-                className={classes.checkboxInput}
-                checked={inputs.emailOnApprove}
-                onChange={handleInputChange('emailOnApprove')}
-                value="emailOnApprove"
-                color="primary"
-                disabled={disabled}
-              />
-            }
-          />
-        </div>
+        <FormControlLabel
+          className={classes.requestCheckbox}
+          label={formatMessage(messages.emailLabel)}
+          control={
+            <Checkbox
+              checked={inputs.emailOnApprove}
+              onChange={handleInputChange('emailOnApprove')}
+              value="emailOnApprove"
+              color="primary"
+              disabled={disabled}
+            />
+          }
+        />
       )}
 
       <FormControl className={classes.formSection}>

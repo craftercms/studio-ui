@@ -119,20 +119,22 @@ const systemEpics: CrafterCMSEpic[] = [
       withLatestFrom(state$),
       tap(([{ payload }, state]) => {
         const hostToHost$ = getHostToHostBus();
-        const isAdmin = state.user.rolesBySite[state.sites.active].includes('admin');
+        const { type } = payload;
         hostToHost$.next(
           showSystemNotification({
             message:
               payload.schedule === 'now'
                 ? getIntl().formatMessage(
-                    isAdmin ? itemSuccessMessages.itemPublishedNow : itemSuccessMessages.itemRequestedToPublishNow,
+                    type === 'publish'
+                      ? itemSuccessMessages.itemPublishedNow
+                      : itemSuccessMessages.itemRequestedToPublishNow,
                     {
                       count: payload.items.length,
                       environment: payload.environment
                     }
                   )
                 : getIntl().formatMessage(
-                    isAdmin
+                    type === 'publish'
                       ? itemSuccessMessages.itemSchedulePublished
                       : itemSuccessMessages.itemRequestedToSchedulePublish,
                     {

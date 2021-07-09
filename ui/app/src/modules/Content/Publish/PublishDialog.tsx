@@ -113,12 +113,25 @@ interface PublishDialogBaseProps {
   scheduling?: 'now' | 'custom';
 }
 
+interface Response {
+  commitId: string;
+  invalidateCache: boolean;
+  item: any;
+  message: string;
+  status: boolean;
+  success: boolean;
+  schedule: 'now' | 'custom';
+  environment: string;
+  type: 'submit' | 'publish';
+  items: DetailedItem[];
+}
+
 export type PublishDialogProps = PropsWithChildren<
   PublishDialogBaseProps & {
     onClose?(response?: any): any;
     onClosed?(response?: any): any;
     onDismiss?(response?: any): any;
-    onSuccess?(response?: any): any;
+    onSuccess?(response?: Response): any;
   }
 >;
 
@@ -530,6 +543,7 @@ function PublishDialogWrapper(props: PublishDialogProps) {
           ...response,
           schedule: schedule,
           environment: environment,
+          type: !myPermissions.includes('publish') || dialog.requestApproval ? 'submit' : 'publish',
           items: items.map((path) => props.items.find((item) => item.path === path))
         });
       },
@@ -596,8 +610,8 @@ function PublishDialogWrapper(props: PublishDialogProps) {
       title={formatMessage(translations.title)}
       subtitle={
         !myPermissions.includes('publish') || dialog.requestApproval
-          ? formatMessage(translations.requestPublishSubtitle) + formatMessage(translations.subtitleHelperText)
-          : formatMessage(translations.publishSubtitle) + formatMessage(translations.subtitleHelperText)
+          ? formatMessage(translations.requestPublishSubtitle) + ' ' + formatMessage(translations.subtitleHelperText)
+          : formatMessage(translations.publishSubtitle) + ' ' + formatMessage(translations.subtitleHelperText)
       }
       checkedItems={checkedItems}
       setCheckedItems={setChecked}
