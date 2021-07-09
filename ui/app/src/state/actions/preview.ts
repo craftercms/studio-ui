@@ -197,12 +197,7 @@ export const guestModelUpdated = /*#__PURE__*/ createAction<{ model: ContentInst
 
 export const guestPathUpdated = /*#__PURE__*/ createAction<{ path: string }>('GUEST_PATH_UPDATED');
 
-export function changeCurrentUrl(nextValue: string): StandardAction {
-  return {
-    type: CHANGE_CURRENT_URL,
-    payload: nextValue
-  };
-}
+export const changeCurrentUrl = /*#__PURE__*/ createAction<string>(CHANGE_CURRENT_URL);
 
 export function setItemBeingDragged(iceId: number): StandardAction {
   return {
@@ -313,6 +308,13 @@ export const popPageBuilderPanelPage = /*#__PURE__*/ createAction('POP_PAGE_BUIL
 
 // endregion
 
-// settings Mode
+// region settings Mode
 
 export const setHighlightMode = /*#__PURE__*/ createAction<{ highlightMode: string }>('HIGHLIGHT_MODE_CHANGED');
+
+// endregion
+
+// region navigation stack
+export const goToLastPage = /*#__PURE__*/ createAction<string>('GO_TO_LAST_PAGE');
+export const goToNextPage = /*#__PURE__*/ createAction('GO_TO_NEXT_PAGE');
+// endregion

@@ -17,7 +17,7 @@
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState, { PagedEntityState } from '../../models/GlobalState';
 import {
-  CHANGE_CURRENT_URL,
+  changeCurrentUrl,
   CLEAR_DROP_TARGETS,
   CLEAR_SELECT_FOR_EDIT,
   CLOSE_TOOLS,
@@ -35,6 +35,8 @@ import {
   fetchAudiencesPanelModelFailed,
   fetchGuestModelComplete,
   fetchPrimaryGuestModelComplete,
+  goToLastPage,
+  goToNextPage,
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
   guestModelUpdated,
@@ -159,6 +161,8 @@ const reducer = createReducer<GlobalState['preview']>(
     toolsPanelWidth: 240,
     pageBuilderPanelWidth: 240,
     pageBuilderPanelStack: [],
+    historyBackStack: [],
+    historyForwardStack: [],
     guest: null,
     assets: assetsPanelInitialState,
     audiencesPanel: audiencesPanelInitialState,
@@ -324,21 +328,49 @@ const reducer = createReducer<GlobalState['preview']>(
         }
       };
     },
-    [CHANGE_CURRENT_URL]: (state, { payload }) =>
-      state.currentUrl === payload
+    [changeCurrentUrl.type]: (state, { payload }) => {
+      return state.currentUrl === payload
         ? state
         : {
             ...state,
+            historyBackStack: [...state.historyBackStack, payload],
+            historyForwardStack: [],
             computedUrl: cleanseUrl(payload),
             currentUrl: `${guestBase}${cleanseUrl(payload)}`
-          },
+          };
+    },
+    [goToLastPage.type]: (state) => {
+      const stack = [...state.historyBackStack];
+      stack.pop();
+      const path = stack[stack.length - 1];
+      return {
+        ...state,
+        historyBackStack: stack,
+        historyForwardStack: [...state.historyForwardStack, state.computedUrl],
+        computedUrl: cleanseUrl(path),
+        currentUrl: `${guestBase}${cleanseUrl(path)}`
+      };
+    },
+    [goToNextPage.type]: (state) => {
+      const stack = [...state.historyForwardStack];
+      const path = stack.pop();
+      return {
+        ...state,
+        historyForwardStack: stack,
+        historyBackStack: [...state.historyBackStack, path],
+        computedUrl: cleanseUrl(path),
+        currentUrl: `${guestBase}${cleanseUrl(path)}`
+      };
+    },
     [changeSite.type]: (state, { payload }) => {
       let nextState = {
         ...state,
         audiencesPanel: audiencesPanelInitialState,
         components: componentsInitialState,
         assets: assetsPanelInitialState,
-        toolsPanelPageStack: []
+        toolsPanelPageStack: [],
+        historyBackStack: [],
+        historyForwardStack: []
       };
 
       // TODO: If there's a guest it would have checked out?
