@@ -76,7 +76,20 @@ export default function SiteToolsApp(props: SiteToolsAppProps) {
               </MenuItem>
             ))
           ) : (
-            <EmptyState title="No siteTools configured" />
+            <EmptyState
+              title={
+                <FormattedMessage
+                  id="siteTools.toolListingNotConfigured"
+                  defaultMessage="The site tools list has not been set"
+                />
+              }
+              subtitle={
+                <FormattedMessage
+                  id="siteTools.toolListingNotConfiguredSubtitle"
+                  defaultMessage="Please set the craftercms.siteTools reference on the ui.xml"
+                />
+              }
+            />
           )}
         </MenuList>
         <footer className={classes.footer}>

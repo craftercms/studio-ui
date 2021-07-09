@@ -125,7 +125,8 @@ export const registerComponents = () => {
     'craftercms.components.EditModeSwitch': lazy(() => import('../components/EditModeSwitch')),
     'craftercms.components.PreviewAddressBar': lazy(() => import('../components/PreviewAddressBar')),
     'craftercms.components.SiteSwitcherSelect': lazy(() => import('../components/SiteSwitcherSelect')),
-    'craftercms.components.Dashboard': lazy(() => import('../components/Dashboard'))
+    'craftercms.components.Dashboard': lazy(() => import('../components/Dashboard')),
+    'craftercms.components.SiteToolsPanel': lazy(() => import('../components/SiteToolsPanel'))
   }).forEach(([id, component]) => {
     components.set(id, component);
   });
