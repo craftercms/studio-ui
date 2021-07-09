@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { get } from '../utils/ajax';
-import { pluck } from 'rxjs/operators';
+import { errorSelectorApi1, get } from '../utils/ajax';
+import { catchError, pluck } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { Version } from '../models/monitoring/Version';
 import { Status } from '../models/monitoring/Status';
@@ -40,7 +40,8 @@ export function fetchLog(since: number): Observable<LogEvent[]> {
 
 export function fetchPreviewLog(site: string, since: number): Observable<LogEvent[]> {
   return get(`/studio/engine/api/1/monitoring/log.json?since=${since}&site=${site}&crafterSite=${site}`).pipe(
-    pluck('response')
+    pluck('response'),
+    catchError(errorSelectorApi1)
   );
 }
 

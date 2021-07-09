@@ -65,7 +65,8 @@ export default function LogConsole(props: LogConsoleManagementProps) {
             setLogEvents(newLogEvents);
           }
         },
-        ({ response: { response } }) => {
+        (response) => {
+          response = response.response ? response.response.response : response;
           setError(response);
           dispatch(showErrorDialog({ error: response }));
         }

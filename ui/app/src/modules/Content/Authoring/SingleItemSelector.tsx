@@ -14,14 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useReducer, useRef } from 'react';
+import React, { ReactNode, useCallback, useReducer, useRef } from 'react';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { Variant } from '@material-ui/core/styles/createTypography';
 import { DetailedItem } from '../../../models/Item';
-import InsertDriveFileRoundedIcon from '@material-ui/icons/InsertDriveFileRounded';
 import ExpandMoreRoundedIcon from '@material-ui/icons/ExpandMoreRounded';
 import Popover from '@material-ui/core/Popover';
 import Paper from '@material-ui/core/Paper';
@@ -37,7 +36,6 @@ import { fetchChildrenByPath, fetchItemsByPath, fetchItemWithChildrenByPath } fr
 import { getIndividualPaths, getParentPath, withIndex, withoutIndex } from '../../../utils/path';
 import { createLookupTable, nou } from '../../../utils/object';
 import { forkJoin } from 'rxjs';
-import palette from '../../../styles/palette';
 import { isFolder } from '../../../components/PathNavigator/utils';
 import { lookupItemByPath, parseSandBoxItemToDetailedItem } from '../../../utils/content';
 import { GetChildrenResponse } from '../../../models/GetChildrenResponse';
@@ -45,6 +43,7 @@ import Pagination from '../../../components/Pagination';
 import NavItem from '../../../components/PathNavigator/PathNavigatorItem';
 import { useActiveSiteId } from '../../../utils/hooks/useActiveSiteId';
 import { useLogicResource } from '../../../utils/hooks/useLogicResource';
+import ItemDisplay from '../../../components/ItemDisplay';
 
 const useStyles = makeStyles((theme) => ({
   popoverRoot: {
@@ -62,11 +61,6 @@ const useStyles = makeStyles((theme) => ({
     marginRight: 'auto',
     maxWidth: '100%',
     minWidth: '200px',
-    '& $itemName': {
-      whiteSpace: 'nowrap',
-      overflow: 'hidden',
-      textOverflow: 'ellipsis'
-    },
     '&.disable': {
       'min-width': 'auto',
       backgroundColor: 'inherit'
@@ -83,30 +77,24 @@ const useStyles = makeStyles((theme) => ({
   },
   changeBtn: {},
   itemName: {},
-  itemIcon: {
-    fill: palette.teal.main,
-    marginRight: 10
-  },
   selectIcon: {}
 }));
 
 interface SingleItemSelectorProps {
-  itemIcon?: React.ElementType;
   selectIcon?: React.ElementType;
   classes?: {
     root?: string;
     title?: string;
     selectIcon?: string;
-    itemIcon?: string;
     popoverRoot?: string;
   };
   selectedItem?: DetailedItem;
   rootPath: string;
-  label?: string;
+  label?: ReactNode;
   titleVariant?: Variant;
-  labelVariant?: Variant;
   open: boolean;
   hideUI?: boolean;
+  canSelectFolders?: boolean;
   disabled?: boolean;
   onClose?(): void;
   onItemClicked(item: DetailedItem): void;
@@ -262,11 +250,9 @@ const fetchChildrenByPathFailed = /*#__PURE__*/ createAction<any>('FETCH_CHILDRE
 
 export default function SingleItemSelector(props: SingleItemSelectorProps) {
   const {
-    itemIcon: ItemIcon = InsertDriveFileRoundedIcon,
     selectIcon: SelectIcon = ExpandMoreRoundedIcon,
     classes: propClasses,
     titleVariant = 'body1',
-    labelVariant = 'body1',
     hideUI = false,
     disabled = false,
     onItemClicked,
@@ -275,7 +261,8 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
     label,
     open,
     selectedItem,
-    rootPath
+    rootPath,
+    canSelectFolders = false
   } = props;
   const classes = useStyles();
   const anchorEl = useRef();
@@ -365,7 +352,7 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
   const handleItemClicked = (item: DetailedItem) => {
     const folder = isFolder(item);
 
-    if (folder) {
+    if (folder && canSelectFolders === false) {
       onPathSelected(item);
     } else {
       exec(changeCurrentPath(item));
@@ -390,15 +377,14 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
     <Wrapper {...wrapperProps}>
       {!hideUI && (
         <>
-          <Typography variant={titleVariant} className={clsx(classes.title, propClasses?.title)}>
-            {label}
-          </Typography>
+          {label && (
+            <Typography variant={titleVariant} className={clsx(classes.title, propClasses?.title)}>
+              {label}
+            </Typography>
+          )}
           {selectedItem && (
             <div className={classes.selectedItem}>
-              <ItemIcon className={clsx(classes.itemIcon, propClasses?.itemIcon)} />
-              <Typography className={classes.itemName} variant={labelVariant}>
-                {selectedItem.label}
-              </Typography>
+              <ItemDisplay item={selectedItem} showNavigableAsLinks={false} />
             </div>
           )}
         </>

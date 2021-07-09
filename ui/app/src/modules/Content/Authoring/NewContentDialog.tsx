@@ -237,12 +237,13 @@ function NewContentDialogBody(props: NewContentDialogProps) {
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Box>
             <SingleItemSelector
-              label="Item"
+              label={<FormattedMessage id="words.item" defaultMessage="Item" />}
               open={openSelector}
               onClose={() => setOpenSelector(false)}
               onDropdownClick={() => setOpenSelector(!openSelector)}
               rootPath={rootPath}
               selectedItem={selectedItem}
+              canSelectFolders={true}
               onItemClicked={(item) => {
                 setOpenSelector(false);
                 setSelectedItem(item);

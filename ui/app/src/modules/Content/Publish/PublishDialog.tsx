@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { PropsWithChildren, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { fetchPublishingTargets, goLive, submitToGoLive } from '../../../services/publishing';
 import { fetchDependencies } from '../../../services/dependencies';
@@ -71,6 +71,7 @@ interface PublishDialogContentUIProps {
   setDialog: any;
   setSubmitDisabled: Function;
   showEmailCheckbox?: boolean;
+  showRequestApproval?: boolean;
   publishingChannelsStatus: string;
   onPublishingChannelsFailRetry: Function;
   apiState: any;
@@ -85,7 +86,7 @@ interface PublishDialogUIProps {
   submitDisabled: boolean;
   setSubmitDisabled: Function;
   showDepsDisabled: boolean;
-  dialog: any;
+  dialog: InternalDialogState;
   setDialog: any;
   title: string;
   subtitle?: string;
@@ -100,14 +101,29 @@ interface PublishDialogUIProps {
   selectAllSoft: Function;
   onClickShowAllDeps?: any;
   showEmailCheckbox?: boolean;
+  showRequestApproval: boolean;
   apiState: any;
   classes?: any;
+  submitLabel: ReactNode;
 }
 
 interface PublishDialogBaseProps {
   open: boolean;
   items?: DetailedItem[];
-  scheduling?: string;
+  scheduling?: 'now' | 'custom';
+}
+
+interface Response {
+  commitId: string;
+  invalidateCache: boolean;
+  item: any;
+  message: string;
+  status: boolean;
+  success: boolean;
+  schedule: 'now' | 'custom';
+  environment: string;
+  type: 'submit' | 'publish';
+  items: DetailedItem[];
 }
 
 export type PublishDialogProps = PropsWithChildren<
@@ -115,7 +131,7 @@ export type PublishDialogProps = PropsWithChildren<
     onClose?(response?: any): any;
     onClosed?(response?: any): any;
     onDismiss?(response?: any): any;
-    onSuccess?(response?: any): any;
+    onSuccess?(response?: Response): any;
   }
 >;
 
@@ -126,25 +142,36 @@ export interface PublishDialogStateProps extends PublishDialogBaseProps {
   onSuccess?: StandardAction;
 }
 
+export interface InternalDialogState {
+  emailOnApprove: boolean;
+  requestApproval: boolean;
+  environment: string;
+  submissionComment: string;
+  scheduling: 'now' | 'custom';
+  scheduledDateTime: any;
+  publishingChannel: string;
+  selectedItems: string[];
+}
+
 // endregion
 
-const goLiveMessages = defineMessages({
+const translations = defineMessages({
   title: {
-    id: 'approveDialog.title',
-    defaultMessage: 'Approve for Publish'
+    id: 'publishDialog.title',
+    defaultMessage: 'Publish'
   },
-  subtitle: {
-    id: 'approveDialog.subtitle',
+  publishSubtitle: {
+    id: 'publishDialog.publishSubtitle',
+    defaultMessage: 'Selected files will go live upon submission.'
+  },
+  requestPublishSubtitle: {
+    id: 'publishDialog.requestPublishSubtitle',
+    defaultMessage: 'Selected files will be submitted for review upon submission.'
+  },
+  subtitleHelperText: {
+    id: 'publishDialog.subtitleHelperText',
     defaultMessage:
-      'Selected files will go live upon submission. Hard dependencies are automatically submitted with the ' +
-      'main items. You may choose whether to submit or not soft dependencies'
-  }
-});
-
-const submitMessages = defineMessages({
-  title: {
-    id: 'requestPublishDialog.title',
-    defaultMessage: 'Request Publish'
+      'Hard dependencies are automatically submitted with the main items. You may choose whether to submit or not soft dependencies'
   }
 });
 
@@ -181,8 +208,9 @@ export const paths = (checked: any) =>
     .filter(([, value]) => value === true)
     .map(([key]) => key);
 
-const dialogInitialState = {
+const dialogInitialState: InternalDialogState = {
   emailOnApprove: false,
+  requestApproval: false,
   environment: '',
   submissionComment: '',
   scheduling: 'now',
@@ -220,6 +248,7 @@ function PublishDialogContentUI(props: PublishDialogContentUIProps) {
     setDialog,
     setSubmitDisabled,
     showEmailCheckbox,
+    showRequestApproval,
     publishingChannelsStatus,
     onPublishingChannelsFailRetry,
     apiState
@@ -251,6 +280,7 @@ function PublishDialogContentUI(props: PublishDialogContentUIProps) {
             setInputs={setDialog}
             setSubmitDisabled={setSubmitDisabled}
             showEmailCheckbox={showEmailCheckbox}
+            showRequestApproval={showRequestApproval}
             publishingChannels={publishingChannels}
             publishingChannelsStatus={publishingChannelsStatus}
             onPublishingChannelsFailRetry={onPublishingChannelsFailRetry}
@@ -287,8 +317,10 @@ function PublishDialogUI(props: PublishDialogUIProps) {
     selectAllSoft,
     onClickShowAllDeps,
     showEmailCheckbox,
+    showRequestApproval,
     apiState,
-    classes
+    classes,
+    submitLabel
   } = props;
 
   return (
@@ -321,6 +353,7 @@ function PublishDialogUI(props: PublishDialogUIProps) {
             setDialog={setDialog}
             setSubmitDisabled={setSubmitDisabled}
             showEmailCheckbox={showEmailCheckbox}
+            showRequestApproval={showRequestApproval}
             publishingChannelsStatus={publishingChannelsStatus}
             onPublishingChannelsFailRetry={onPublishingChannelsFailRetry}
             apiState={apiState}
@@ -344,7 +377,7 @@ function PublishDialogUI(props: PublishDialogUIProps) {
           disabled={submitDisabled || apiState.submitting}
           loading={apiState.submitting}
         >
-          <FormattedMessage id="requestPublishDialog.submit" defaultMessage="Submit" />
+          {submitLabel}
         </PrimaryButton>
       </DialogFooter>
     </>
@@ -367,7 +400,7 @@ export default function PublishDialog(props: PublishDialogProps) {
 
 function PublishDialogWrapper(props: PublishDialogProps) {
   const { items, scheduling = 'now', onDismiss, onSuccess } = props;
-  const [dialog, setDialog] = useSpreadState({ ...dialogInitialState, scheduling });
+  const [dialog, setDialog] = useSpreadState<InternalDialogState>({ ...dialogInitialState, scheduling });
   const [publishingChannels, setPublishingChannels] = useState<{ name: string }[]>(null);
   const [publishingChannelsStatus, setPublishingChannelsStatus] = useState('Loading');
   const [checkedItems, setCheckedItems] = useState<any>({}); // selected deps
@@ -389,8 +422,8 @@ function PublishDialogWrapper(props: PublishDialogProps) {
   useUnmount(props.onClosed);
 
   const user = useSelector<GlobalState, GlobalState['user']>((state) => state.user);
-  const submit = myPermissions.includes('publish') ? goLive : submitToGoLive;
-  const propagateAction = myPermissions.includes('publish') ? itemsApproved : itemsScheduled;
+  const submit = !myPermissions.includes('publish') || dialog.requestApproval ? submitToGoLive : goLive;
+  const propagateAction = !myPermissions.includes('publish') || dialog.requestApproval ? itemsScheduled : itemsApproved;
 
   const { formatMessage } = useIntl();
 
@@ -490,7 +523,9 @@ function PublishDialogWrapper(props: PublishDialogProps) {
       scheduledDateTime: scheduledDate
     } = dialog;
     const data = {
-      ...(myPermissions.includes('publish') ? { publishChannel: environment } : { environment: environment }),
+      ...(!myPermissions.includes('publish') || dialog.requestApproval
+        ? { environment: environment }
+        : { publishChannel: environment }),
       items,
       schedule,
       sendEmail,
@@ -508,7 +543,8 @@ function PublishDialogWrapper(props: PublishDialogProps) {
           ...response,
           schedule: schedule,
           environment: environment,
-          items: items.map((path) => items.find((item) => item.id === path))
+          type: !myPermissions.includes('publish') || dialog.requestApproval ? 'submit' : 'publish',
+          items: items.map((path) => props.items.find((item) => item.path === path))
         });
       },
       (error) => {
@@ -571,8 +607,12 @@ function PublishDialogWrapper(props: PublishDialogProps) {
       showDepsDisabled={showDepsDisabled}
       dialog={dialog}
       setDialog={setDialog}
-      title={formatMessage(myPermissions.includes('publish') ? goLiveMessages.title : submitMessages.title)}
-      subtitle={myPermissions.includes('publish') ? formatMessage(goLiveMessages.subtitle) : null}
+      title={formatMessage(translations.title)}
+      subtitle={
+        !myPermissions.includes('publish') || dialog.requestApproval
+          ? formatMessage(translations.requestPublishSubtitle) + ' ' + formatMessage(translations.subtitleHelperText)
+          : formatMessage(translations.publishSubtitle) + ' ' + formatMessage(translations.subtitleHelperText)
+      }
       checkedItems={checkedItems}
       setCheckedItems={setChecked}
       checkedSoftDep={checkedSoftDep}
@@ -585,7 +625,17 @@ function PublishDialogWrapper(props: PublishDialogProps) {
       onClickShowAllDeps={showAllDependencies}
       apiState={apiState}
       classes={useStyles()}
-      showEmailCheckbox={!myPermissions.includes('publish')}
+      showEmailCheckbox={!myPermissions.includes('publish') || dialog.requestApproval}
+      showRequestApproval={myPermissions.includes('publish')}
+      submitLabel={
+        dialog.scheduling === 'custom' ? (
+          <FormattedMessage id="requestPublishDialog.schedule" defaultMessage="Schedule" />
+        ) : !myPermissions.includes('publish') || dialog.requestApproval ? (
+          <FormattedMessage id="requestPublishDialog.submit" defaultMessage="Submit" />
+        ) : (
+          <FormattedMessage id="requestPublishDialog.publish" defaultMessage="Publish" />
+        )
+      }
     />
   );
 }
