@@ -102,6 +102,7 @@ export const registerComponents = () => {
     'craftercms.components.PluginManagement': lazy(() => import('../components/PluginManagement')),
     'craftercms.component.EmptyState': lazy(() => import('../components/SystemStatus/EmptyState')),
     'craftercms.components.SiteEncryptTool': lazy(() => import('../components/SiteEncryptTool')),
+    'craftercms.components.ContentTypeManagement': lazy(() => import('../components/ContentTypesManagement')),
     'craftercms.components.SiteConfigurationManagement': lazy(() =>
       import('../components/SiteConfigurationManagement')
     ),
