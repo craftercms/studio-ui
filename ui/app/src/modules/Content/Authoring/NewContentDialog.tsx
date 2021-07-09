@@ -243,7 +243,7 @@ function NewContentDialogBody(props: NewContentDialogProps) {
               onDropdownClick={() => setOpenSelector(!openSelector)}
               rootPath={rootPath}
               selectedItem={selectedItem}
-              canSelectFolders={true}
+              canSelectFolders
               onItemClicked={(item) => {
                 setOpenSelector(false);
                 setSelectedItem(item);
