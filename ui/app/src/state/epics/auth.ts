@@ -22,6 +22,7 @@ import {
   logout,
   refreshAuthToken,
   refreshAuthTokenComplete,
+  sharedWorkerError,
   sharedWorkerTimeout,
   sharedWorkerToken,
   sharedWorkerUnauthenticated
@@ -31,7 +32,7 @@ import * as auth from '../../services/auth';
 import { catchAjaxError } from '../../utils/ajax';
 import { getRequestForgeryToken, setJwt, setRequestForgeryToken } from '../../utils/auth';
 import { CrafterCMSEpic } from '../store';
-import { messageSharedWorker } from '../actions/system';
+import { messageSharedWorker, showSystemNotification } from '../actions/system';
 import { sessionTimeout } from '../actions/user';
 
 const epics: CrafterCMSEpic[] = [
@@ -99,6 +100,17 @@ const epics: CrafterCMSEpic[] = [
       switchMap(() => auth.fetchAuthenticationType().pipe(catchError(() => []))),
       tap(() => setRequestForgeryToken()),
       ignoreElements()
+    ),
+  // endregion
+  // region sharedWorkerError
+  (action$) =>
+    action$.pipe(
+      ofType(sharedWorkerError.type),
+      map(({ payload }) =>
+        showSystemNotification({
+          message: `An error occurred communicating with the token refresh service. Error code ${payload.status}: ${payload.message}`
+        })
+      )
     ),
   // endregion
   // region refreshAuthTokenComplete
