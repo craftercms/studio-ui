@@ -163,6 +163,7 @@ const reducer = createReducer<GlobalState['preview']>(
     pageBuilderPanelStack: [],
     historyBackStack: [],
     historyForwardStack: [],
+    historyNavigationType: null,
     guest: null,
     assets: assetsPanelInitialState,
     audiencesPanel: audiencesPanelInitialState,
@@ -243,6 +244,9 @@ const reducer = createReducer<GlobalState['preview']>(
       const href = location.href;
       const origin = location.origin;
       const url = href.replace(location.origin, '');
+      const historyBackLastPath = state.historyBackStack[state.historyBackStack.length - 1];
+      const historyForwardLastPath = state.historyForwardStack[state.historyForwardStack.length - 1];
+
       return {
         ...state,
         guest: {
@@ -256,7 +260,17 @@ const reducer = createReducer<GlobalState['preview']>(
           selected: null,
           itemBeingDragged: null
         },
-        computedUrl: payload.__CRAFTERCMS_GUEST_LANDING__ ? '' : url
+        computedUrl: payload.__CRAFTERCMS_GUEST_LANDING__ ? '' : url,
+        historyBackStack:
+          // Preview landing page...
+          state.computedUrl === '' || historyBackLastPath === url
+            ? state.historyBackStack
+            : [...state.historyBackStack, url],
+        historyForwardStack:
+          historyForwardLastPath && historyForwardLastPath !== url && state.historyNavigationType === null
+            ? []
+            : state.historyForwardStack,
+        historyNavigationType: null
         // Setting URL causes dual reload when guest navigation occurs
         // currentUrl: (payload.url && payload.origin ? payload.url.replace(payload.origin, '') : null) ?? state.currentUrl,
         // TODO: Retrieval of guestBase from initialState is not right.
@@ -333,8 +347,6 @@ const reducer = createReducer<GlobalState['preview']>(
         ? state
         : {
             ...state,
-            historyBackStack: [...state.historyBackStack, payload],
-            historyForwardStack: [],
             computedUrl: cleanseUrl(payload),
             currentUrl: `${guestBase}${cleanseUrl(payload)}`
           };
@@ -347,6 +359,7 @@ const reducer = createReducer<GlobalState['preview']>(
         ...state,
         historyBackStack: stack,
         historyForwardStack: [...state.historyForwardStack, state.computedUrl],
+        historyNavigationType: 'back',
         computedUrl: cleanseUrl(path),
         currentUrl: `${guestBase}${cleanseUrl(path)}`
       };
@@ -358,6 +371,7 @@ const reducer = createReducer<GlobalState['preview']>(
         ...state,
         historyForwardStack: stack,
         historyBackStack: [...state.historyBackStack, path],
+        historyNavigationType: 'forward',
         computedUrl: cleanseUrl(path),
         currentUrl: `${guestBase}${cleanseUrl(path)}`
       };

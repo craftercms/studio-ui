@@ -155,6 +155,8 @@ export interface GlobalState {
     pageBuilderPanelStack: WidgetDescriptor[];
     historyBackStack: string[];
     historyForwardStack: string[];
+    // Specifies when the back/forwards buttons pressed to determinate how to modify history stacks
+    historyNavigationType: 'back' | 'forward';
     hostSize: WidthAndHeight;
     guest: GuestData;
     assets: PagedEntityState<MediaItem>;
