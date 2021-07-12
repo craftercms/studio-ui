@@ -61,6 +61,9 @@ YAHOO.extend(CStudioForms.Datasources.EmbeddedContent, CStudioForms.CStudioFormD
         (contentType) => contentType.type === 'component' && contentType.name !== '/component/level-descriptor'
       );
     } else {
+      let parentPath = _self.form.path;
+      const fileName = _self.form.model['file-name'];
+      parentPath = parentPath.substring(0, parentPath.length - fileName.length);
       CStudioAuthoring.Operations.openContentWebForm(
         _self.contentType,
         null,
@@ -75,7 +78,10 @@ YAHOO.extend(CStudioForms.Datasources.EmbeddedContent, CStudioForms.CStudioFormD
           },
           failure: function () {}
         },
-        [{ name: 'childForm', value: 'true' }],
+        [
+          { name: 'childForm', value: 'true' },
+          { name: 'parentPath', value: parentPath }
+        ],
         null,
         true
       );
