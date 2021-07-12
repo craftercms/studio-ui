@@ -28,9 +28,9 @@ import { useGlobalAppState } from '../GlobalApp';
 import LauncherOpenerButton from '../LauncherOpenerButton';
 import CrafterCMSLogo from '../Icons/CrafterCMSLogo';
 import { useSelection } from '../../utils/hooks/useSelection';
-import { useReferences } from '../../utils/hooks/useReferences';
 import { getPossibleTranslation } from '../../utils/i18n';
 import Widget from '../Widget';
+import { useReference } from '../../utils/hooks/useReference';
 
 interface SiteToolsAppProps {
   footerHtml: string;
@@ -45,7 +45,7 @@ export default function SiteToolsApp(props: SiteToolsAppProps) {
   const [activeToolId, setActiveToolId] = useState(history.location.pathname);
   const baseUrl = useSelection<string>((state) => state.env.authoringBase);
   const [{ openSidebar }] = useGlobalAppState();
-  const { 'craftercms.siteTools': siteTools } = useReferences();
+  const siteTools = useReference('craftercms.siteTools');
 
   history.listen((location) => {
     setActiveToolId(location.pathname);

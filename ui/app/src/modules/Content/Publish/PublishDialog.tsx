@@ -417,13 +417,14 @@ function PublishDialogWrapper(props: PublishDialogProps) {
   const siteId = useActiveSiteId();
   const permissionsBySite = usePermissionsBySite();
   const myPermissions = permissionsBySite[siteId];
+  const hasPublishPermission = myPermissions.includes('publish');
   const dispatch = useDispatch();
 
   useUnmount(props.onClosed);
 
   const user = useSelector<GlobalState, GlobalState['user']>((state) => state.user);
-  const submit = !myPermissions.includes('publish') || dialog.requestApproval ? submitToGoLive : goLive;
-  const propagateAction = !myPermissions.includes('publish') || dialog.requestApproval ? itemsScheduled : itemsApproved;
+  const submit = !hasPublishPermission || dialog.requestApproval ? submitToGoLive : goLive;
+  const propagateAction = !hasPublishPermission || dialog.requestApproval ? itemsScheduled : itemsApproved;
 
   const { formatMessage } = useIntl();
 
@@ -523,7 +524,7 @@ function PublishDialogWrapper(props: PublishDialogProps) {
       scheduledDateTime: scheduledDate
     } = dialog;
     const data = {
-      ...(!myPermissions.includes('publish') || dialog.requestApproval
+      ...(!hasPublishPermission || dialog.requestApproval
         ? { environment: environment }
         : { publishChannel: environment }),
       items,
@@ -543,7 +544,7 @@ function PublishDialogWrapper(props: PublishDialogProps) {
           ...response,
           schedule: schedule,
           environment: environment,
-          type: !myPermissions.includes('publish') || dialog.requestApproval ? 'submit' : 'publish',
+          type: !hasPublishPermission || dialog.requestApproval ? 'submit' : 'publish',
           items: items.map((path) => props.items.find((item) => item.path === path))
         });
       },
@@ -609,7 +610,7 @@ function PublishDialogWrapper(props: PublishDialogProps) {
       setDialog={setDialog}
       title={formatMessage(translations.title)}
       subtitle={
-        !myPermissions.includes('publish') || dialog.requestApproval
+        !hasPublishPermission || dialog.requestApproval
           ? formatMessage(translations.requestPublishSubtitle) + ' ' + formatMessage(translations.subtitleHelperText)
           : formatMessage(translations.publishSubtitle) + ' ' + formatMessage(translations.subtitleHelperText)
       }
@@ -625,12 +626,12 @@ function PublishDialogWrapper(props: PublishDialogProps) {
       onClickShowAllDeps={showAllDependencies}
       apiState={apiState}
       classes={useStyles()}
-      showEmailCheckbox={!myPermissions.includes('publish') || dialog.requestApproval}
-      showRequestApproval={myPermissions.includes('publish')}
+      showEmailCheckbox={!hasPublishPermission || dialog.requestApproval}
+      showRequestApproval={hasPublishPermission}
       submitLabel={
         dialog.scheduling === 'custom' ? (
           <FormattedMessage id="requestPublishDialog.schedule" defaultMessage="Schedule" />
-        ) : !myPermissions.includes('publish') || dialog.requestApproval ? (
+        ) : !hasPublishPermission || dialog.requestApproval ? (
           <FormattedMessage id="requestPublishDialog.submit" defaultMessage="Submit" />
         ) : (
           <FormattedMessage id="requestPublishDialog.publish" defaultMessage="Publish" />
