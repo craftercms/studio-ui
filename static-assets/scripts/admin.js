@@ -1043,6 +1043,8 @@
           .getPublishStatus(publish.site)
           .success(function (data) {
             data = data.publishingStatus;
+            publish.enabled = data.enabled;
+            publish.disabledMessage = formatMessage(publishingMessages.disabled);
             publish.stopDisabled = false;
             publish.startDisabled = false;
 
@@ -1055,11 +1057,9 @@
                 break;
               case 'error':
                 currentIconColor = 'red';
-                publish.stopDisabled = true;
                 break;
               default:
                 currentIconColor = 'blue';
-                publish.startDisabled = true;
             }
             var stringDate = message.match(/[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z/);
             var date = null;
