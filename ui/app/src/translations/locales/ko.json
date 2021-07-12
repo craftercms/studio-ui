@@ -266,6 +266,7 @@
   "publishDialog.submissionMandatory": "제출 필수",
   "publishDialog.submissionOptional": "제출 옵션",
   "publishing.bulkPublishNote": "일괄 게시는 UI를 통해 Studio에서 변경 한 사항을 게시하는 데 사용해야합니다. 직접 git 작업을 통해 변경 한 경우 \"커밋 ID로 게시\"기능을 사용합니다.",
+  "publishing.disabled": "게시자가 비활성화되었습니다.",
   "publishing.publishByNote": "커밋 ID 별 게시는 저장소에 대한 직접 git 작업을 통해 변경하거나 원격 저장소에서 가져온 변경에 사용해야합니다. UI에서 Studio를 통해 변경 한 경우 '일괄 게시'를 사용하세요.",
   "publishingDashboard.BLOCKED": "막힌",
   "publishingDashboard.CANCELLED": "취소 된",

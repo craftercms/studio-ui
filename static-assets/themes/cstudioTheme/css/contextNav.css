@@ -134,6 +134,11 @@
   z-index: 997 !important;
 }
 
+#status-dialog .publisher-disabled {
+  padding: 10px;
+  border-radius: 3px;
+}
+
 body .mask {
   background-color: rgb(68, 68, 68) !important;
   opacity: 0.5 !important;

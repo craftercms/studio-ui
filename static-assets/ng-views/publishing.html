@@ -25,6 +25,11 @@
             <div class="m10 mt25">
                 <h3 class='mt5 mb15'>{{ 'admin.publishing.STATUS' | translate }}</h3>
 
+                <p ng-if="!publish.enabled" class="bg-warning publisher-disabled">
+                  <i class="fa fa-exclamation-triangle text-warning pr10" aria-hidden="true"></i>
+                  <span>{{publish.disabledMessage}}</span>
+                </p>
+
                 <div class='panel' id='publisherDashboard'>
                     <div class='panel-heading'>
                         <span class="capitalize" id='statusText'>{{publish.statusText}} &nbsp;</span>
@@ -37,8 +42,8 @@
                     </div>
                 </div>
                 <div class='publish-buttons'>
-                    <input id='startPublish' class='btn btn-primary mr10' type='button' value='Start' ng-click="publish.startPublish()" ng-disabled="publish.startDisabled" />
-                    <input id='stopPublish' class='btn btn-default' type='button' value='Stop' ng-click="publish.stopPublish()" ng-disabled="publish.stopDisabled" />
+                    <input id='startPublish' class='btn btn-primary mr10' type='button' value='Start' ng-click="publish.startPublish()" ng-disabled="publish.enabled" />
+                    <input id='stopPublish' class='btn btn-default' type='button' value='Stop' ng-click="publish.stopPublish()" ng-disabled="!publish.enabled" />
                 </div>
 
             </div>

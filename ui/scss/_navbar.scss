@@ -229,4 +229,13 @@
       margin-right: 10px;
     }
   }
+
+  &.disabled {
+    li {
+      > a {
+        pointer-events: none;
+        opacity: 0.6;
+      }
+    }
+  }
 }
