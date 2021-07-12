@@ -266,6 +266,7 @@
   "publishDialog.submissionMandatory": "Vorlage obligatorisch",
   "publishDialog.submissionOptional": "Einreichung Optional",
   "publishing.bulkPublishNote": "Massenveröffentlichung sollte verwendet werden, um in Studio vorgenommene Änderungen über die Benutzeroberfläche zu veröffentlichen. Verwenden Sie für Änderungen, die über direkte Git-Aktionen vorgenommen werden, die Funktion \"Nach Commit-ID (s) veröffentlichen\".",
+  "publishing.disabled": "",
   "publishing.publishByNote": "Publish by Commit-ID (s) müssen für Änderungen verwendet werden, die über direkte Git-Aktionen für das Repository vorgenommen oder aus einem Remote-Repository abgerufen werden. Verwenden Sie für Änderungen, die über Studio auf der Benutzeroberfläche vorgenommen wurden, \"Massenveröffentlichung\".",
   "publishingDashboard.BLOCKED": "Verstopft",
   "publishingDashboard.CANCELLED": "Abgebrochen",
