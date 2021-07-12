@@ -14,22 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import GlobalState from '../../models/GlobalState';
 import { useSelection } from './useSelection';
-import { useActiveSiteId } from './useActiveSiteId';
-import { useDispatch } from 'react-redux';
-import { useEffect } from 'react';
-import { fetchSiteTools } from '../../state/actions/system';
+import LookupTable from '../../models/LookupTable';
 
-export function useSiteTools(): GlobalState['uiConfig']['siteTools'] {
-  const siteTools = useSelection((state) => state.uiConfig.siteTools);
-
-  const site = useActiveSiteId();
-  const dispatch = useDispatch();
-  useEffect(() => {
-    if (!siteTools.tools && !siteTools.isFetching && !siteTools.error) {
-      dispatch(fetchSiteTools());
-    }
-  }, [dispatch, siteTools.error, siteTools.isFetching, siteTools.tools, site]);
-  return siteTools;
+export function useReference(id: string): LookupTable<any> {
+  return useSelection((state) => state.uiConfig.references?.[id]);
 }

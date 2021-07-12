@@ -262,7 +262,7 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
       <DialogBody className={classes.dialogBody}>
         <div className={classes.selectionContent}>
           <SingleItemSelector
-            label="Item"
+            label={<FormattedMessage id="words.item" defaultMessage="Item" />}
             open={openSelector}
             onClose={() => setOpenSelector(false)}
             onDropdownClick={() => setOpenSelector(!openSelector)}

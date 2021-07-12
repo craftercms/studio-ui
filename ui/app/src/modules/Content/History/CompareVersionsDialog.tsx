@@ -212,7 +212,7 @@ function CompareVersionsDialog(props: CompareVersionsDialogProps) {
         {!compareMode && (
           <SingleItemSelector
             classes={{ root: classes.singleItemSelector }}
-            label="Item"
+            label={<FormattedMessage id="words.item" defaultMessage="Item" />}
             disabled={disableItemSwitching}
             open={openSelector}
             onClose={() => setOpenSelector(false)}

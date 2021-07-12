@@ -102,6 +102,7 @@ export const registerComponents = () => {
     'craftercms.components.PluginManagement': lazy(() => import('../components/PluginManagement')),
     'craftercms.component.EmptyState': lazy(() => import('../components/SystemStatus/EmptyState')),
     'craftercms.components.SiteEncryptTool': lazy(() => import('../components/SiteEncryptTool')),
+    'craftercms.components.ContentTypeManagement': lazy(() => import('../components/ContentTypesManagement')),
     'craftercms.components.SiteConfigurationManagement': lazy(() =>
       import('../components/SiteConfigurationManagement')
     ),
@@ -124,7 +125,8 @@ export const registerComponents = () => {
     'craftercms.components.EditModeSwitch': lazy(() => import('../components/EditModeSwitch')),
     'craftercms.components.PreviewAddressBar': lazy(() => import('../components/PreviewAddressBar')),
     'craftercms.components.SiteSwitcherSelect': lazy(() => import('../components/SiteSwitcherSelect')),
-    'craftercms.components.Dashboard': lazy(() => import('../components/Dashboard'))
+    'craftercms.components.Dashboard': lazy(() => import('../components/Dashboard')),
+    'craftercms.components.SiteToolsPanel': lazy(() => import('../components/SiteToolsPanel'))
   }).forEach(([id, component]) => {
     components.set(id, component);
   });
