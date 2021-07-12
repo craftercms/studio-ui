@@ -18,5 +18,5 @@ import { useSelection } from './useSelection';
 import LookupTable from '../../models/LookupTable';
 
 export function useReference(id: string): LookupTable<any> {
-  return useSelection((state) => state.uiConfig.references)?.[id];
+  return useSelection((state) => state.uiConfig.references?.[id]);
 }
