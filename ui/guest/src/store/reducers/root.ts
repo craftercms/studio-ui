@@ -21,7 +21,6 @@ import * as iceRegistry from '../../classes/ICERegistry';
 import { createReducer } from '@reduxjs/toolkit';
 import GuestReducer from '../models/GuestReducer';
 import { GuestStandardAction } from '../models/GuestStandardAction';
-import { ElementRecord } from '../../models/InContextEditing';
 import { GuestActionTypes } from '../models/Actions';
 import { GuestState } from '../models/GuestStore';
 import { notNullOrUndefined, reversePluckProps } from '../../utils/object';
@@ -464,24 +463,24 @@ const computed_dragover: GuestReducer = (state, action) => {
 
 // region desktop_asset_upload_complete
 // TODO: Carry or retrieve record for these events
-const desktop_asset_upload_complete: GuestReducer = (state, action: GuestStandardAction<{ record: ElementRecord }>) => {
-  const { record } = action.payload;
+const desktop_asset_upload_complete: GuestReducer = (state, action: GuestStandardAction<{ recordId: number }>) => {
+  const { recordId } = action.payload;
   return {
     ...state,
-    uploading: reversePluckProps(state.uploading, record.id)
+    uploading: reversePluckProps(state.uploading, recordId)
   };
 };
 // endregion
 
 // region desktop_asset_upload_progress
 const desktop_asset_upload_progress: GuestReducer = (state, action) => {
-  const { percentage, record } = action.payload;
+  const { percentage, recordId } = action.payload;
   return {
     ...state,
     uploading: {
       ...state.uploading,
-      [record.id]: {
-        ...state.uploading[record.id],
+      [recordId]: {
+        ...state.uploading[recordId],
         progress: percentage
       }
     }

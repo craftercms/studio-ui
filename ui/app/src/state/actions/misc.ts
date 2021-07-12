@@ -51,4 +51,7 @@ export const editTemplate = /*#__PURE__*/ createAction<EditFilePayload>('EDIT_TE
 
 export const editController = /*#__PURE__*/ createAction<EditFilePayload>('EDIT_CONTROLLER');
 
+export const notifyFieldImageChanged = /*#__PURE__*/ createAction<{ recordId: string; url?: string }>(
+  'NOTIFY_FIELD_IMAGE_CHANGED'
+);
 // endregion

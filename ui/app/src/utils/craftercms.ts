@@ -24,6 +24,14 @@ import { IntlShape } from 'react-intl';
 import { CrafterCMSStore, getStoreSync } from '../state/store';
 import { getCurrentIntl } from './i18n';
 import { ComponentRecord, components, PluginDescriptor, plugins, registerPlugin } from '../services/plugin';
+import * as ajax from './ajax';
+import * as path from './path';
+import * as string from './string';
+import * as object from './object';
+import * as auth from './auth';
+import * as babel from './babelHelpers-legacy';
+import * as state from './state';
+import * as content from './content';
 
 declare global {
   interface Window {
@@ -49,7 +57,16 @@ export interface CrafterCMSGlobal {
   };
   plugins: Map<string, PluginDescriptor>;
   components: Map<string, ComponentRecord>;
-  // utils: {};
+  utils: {
+    ajax: typeof ajax;
+    path: typeof path;
+    string: typeof string;
+    object: typeof object;
+    auth: typeof auth;
+    babel: typeof babel;
+    state: typeof state;
+    content: typeof content;
+  };
   // services: {};
   getIntl(): IntlShape;
   getStore(): CrafterCMSStore;
@@ -73,6 +90,17 @@ export const libs: CrafterCMSGlobal['libs'] = {
   'react-redux': ReactRedux,
   'react-intl': ReactIntl,
   '@material-ui/core': MaterialUI
+};
+
+export const utils: CrafterCMSGlobal['utils'] = {
+  ajax,
+  path,
+  string,
+  object,
+  auth,
+  babel,
+  state,
+  content
 };
 
 // UMD builds wouldn't give the chance to track the file builder the plugin loads from
@@ -114,6 +142,7 @@ define.amd = true;
 export { getCurrentIntl as getIntl, plugins, components, getStoreSync as getStore };
 
 const craftercms: CrafterCMSGlobal = {
+  utils,
   libs,
   plugins,
   components,

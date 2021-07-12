@@ -32,6 +32,7 @@ export interface ContentTypeFieldValidation {
 export type ValidationKeys =
   | 'allowedContentTypeTags'
   | 'allowedContentTypes'
+  | 'allowedImageDataSources'
   | 'minCount'
   | 'maxCount'
   | 'maxLength'
@@ -91,7 +92,7 @@ export interface ContentType {
   displayTemplate: string;
   sections: ContentTypeSection[];
   fields: LookupTable<ContentTypeField>;
-  dataSources: DataSource[];
+  dataSources: LookupTable<DataSource>;
   mergeStrategy: string;
 }
 

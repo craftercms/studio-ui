@@ -618,7 +618,6 @@ function insertCollectionItem(
 export function createFileUpload(
   uploadUrl: string,
   file: any,
-  path: string,
   metaData: object,
   xsrfArgumentName: string
 ): Observable<StandardAction> {
@@ -633,7 +632,11 @@ export function createFileUpload(
     uppy.on('upload-success', (file, response) => {
       subscriber.next({
         type: 'complete',
-        payload: response
+        // Upload Api's have different return types, we are mapping it to a common one response
+        payload: {
+          name: response.body.item?.name ?? response.body.message.name,
+          url: response.body.item?.url ?? response.body.message.uri
+        }
       });
       subscriber.complete();
     });
@@ -674,7 +677,6 @@ export function uploadDataUrl(
   return createFileUpload(
     '/studio/api/1/services/api/1/content/write-content.json',
     file,
-    path,
     {
       site,
       name: file.name,
@@ -695,7 +697,6 @@ export function uploadToS3(
   return createFileUpload(
     '/studio/api/2/aws/s3/upload.json',
     file,
-    path,
     {
       name: file.name,
       type: file.type,
@@ -717,7 +718,6 @@ export function uploadToWebDAV(
   return createFileUpload(
     '/studio/api/2/webdav/upload',
     file,
-    path,
     {
       name: file.name,
       type: file.type,
@@ -739,7 +739,6 @@ export function uploadToCMIS(
   return createFileUpload(
     '/studio/api/2/cmis/upload',
     file,
-    path,
     {
       name: file.name,
       type: file.type,

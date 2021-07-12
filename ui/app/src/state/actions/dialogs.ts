@@ -42,6 +42,8 @@ import { LauncherStateProps } from '../../components/Launcher/Launcher';
 import { PublishingStatusDialogStateProps } from '../../components/PublishingStatusDialog';
 import { UnlockPublisherDialogStateProps } from '../../components/UnlockPublisherDialog';
 import { WidgetDialogStateProps } from '../../components/WidgetDialog';
+import { SingleFileUploadDialogStateProps } from '../../components/SingleFileUploadDialog/SingleFileUploadDialog';
+import { BrowseFilesDialogPropsStateProps } from '../../components/BrowseFilesDialog/BrowseFilesDialog';
 import { CodeEditorDialogStateProps } from '../../components/CodeEditorDialog';
 
 // region History
@@ -244,4 +246,20 @@ export const closeUnlockPublisherDialog = /*#__PURE__*/ createAction('CLOSE_UNLO
 export const showWidgetDialog = /*#__PURE__*/ createAction<Partial<WidgetDialogStateProps>>('SHOW_WIDGET_DIALOG');
 export const closeWidgetDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_WIDGET_DIALOG');
 export const widgetDialogClosed = /*#__PURE__*/ createAction('WIDGET_DIALOG_CLOSED');
+// endregion
+
+// region SingleFileUploadDialog
+export const showSingleFileUploadDialog = /*#__PURE__*/ createAction<Partial<SingleFileUploadDialogStateProps>>(
+  'SHOW_SINGLE_UPLOAD_DIALOG'
+);
+export const closeSingleFileUploadDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_SINGLE_UPLOAD_DIALOG');
+export const SingleFileUploadDialogClosed = /*#__PURE__*/ createAction('SINGLE_UPLOAD_DIALOG_CLOSED');
+// endregion
+
+// region BrowseFilesDialog
+export const showBrowseFilesDialog = /*#__PURE__*/ createAction<Partial<BrowseFilesDialogPropsStateProps>>(
+  'SHOW_BROWSE_FILES_DIALOG'
+);
+export const closeBrowseFilesDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_BROWSE_FILES_UPLOAD_DIALOG');
+export const BrowseFilesDialogClosed = /*#__PURE__*/ createAction('BROWSE_FILES_DIALOG_CLOSED');
 // endregion

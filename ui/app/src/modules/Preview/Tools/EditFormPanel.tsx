@@ -19,11 +19,19 @@ import ToolPanel from './ToolPanel';
 import CloseRounded from '@material-ui/icons/CloseRounded';
 import Typography from '@material-ui/core/Typography';
 import { useDispatch } from 'react-redux';
-import { defineMessages, useIntl } from 'react-intl';
+import { defineMessages, IntlFormatters, useIntl } from 'react-intl';
 import { findParentModelId, nnou } from '../../../utils/object';
 import { popPiece } from '../../../utils/string';
 import * as ModelHelper from '../../../utils/model';
-import { showCodeEditorDialog, showEditDialog } from '../../../state/actions/dialogs';
+import {
+  closeBrowseFilesDialog,
+  closeSingleFileUploadDialog,
+  showBrowseFilesDialog,
+  showCodeEditorDialog,
+  showConfirmDialog,
+  showEditDialog,
+  showSingleFileUploadDialog
+} from '../../../state/actions/dialogs';
 import { getField } from '../../../utils/contentType';
 import { Menu, MenuItem } from '@material-ui/core';
 import { GuestData } from '../../../models/GlobalState';
@@ -31,6 +39,10 @@ import { useSelection } from '../../../utils/hooks/useSelection';
 import { useActiveSiteId } from '../../../utils/hooks/useActiveSiteId';
 import { usePreviewState } from '../../../utils/hooks/usePreviewState';
 import ContentInstance from '../../../models/ContentInstance';
+import ContentType, { ContentTypeField } from '../../../models/ContentType';
+import LookupTable from '../../../models/LookupTable';
+import { expandPathMacros } from '../../../utils/path';
+import { batchActions, notifyFieldImageChanged } from '../../../state/actions/misc';
 
 interface EditFormPanelProps {
   open: boolean;
@@ -43,6 +55,12 @@ interface EditFormPanelBodyProps {
   models: GuestData['models'];
   childrenMap: GuestData['childrenMap'];
   modelIdByPath: GuestData['modelIdByPath'];
+}
+
+interface FieldOption {
+  id: string;
+  label: string;
+  options?: LookupTable<any>;
 }
 
 const getEditDialogProps = (props: {
@@ -96,9 +114,13 @@ const translations = defineMessages({
     id: 'previewEditFormTool.editController',
     defaultMessage: 'Edit Controller'
   },
-  cancel: {
-    id: 'words.cancel',
-    defaultMessage: 'Cancel'
+  delete: {
+    id: 'words.delete',
+    defaultMessage: 'Delete'
+  },
+  assetUploaderMissingConfiguration: {
+    id: 'operations.assetUploadMissingConfiguration',
+    defaultMessage: 'Data source "{id}" have properties with missing or incorrect values.'
   }
 });
 
@@ -159,6 +181,9 @@ function EditFormPanelBody(props: EditFormPanelBodyProps) {
   }
 
   const field = fieldId ? getField(contentType, fieldId) : null;
+
+  const options = getContentTypeOptions(field, contentType, formatMessage);
+
   let title;
   let selectedId;
 
@@ -214,6 +239,154 @@ function EditFormPanelBody(props: EditFormPanelBodyProps) {
     }
   }
 
+  function onMenuItemClicked(option: FieldOption) {
+    switch (option.id) {
+      case 'form': {
+        openDialog('form');
+        break;
+      }
+      case 'template': {
+        openDialog('template');
+        break;
+      }
+      case 'controller': {
+        openDialog('controller');
+        break;
+      }
+      case 'img-repository-upload': {
+        const datasource = contentType.dataSources[option.options.dataSourceId];
+        const path = datasource.properties.repoPath.value;
+        if (!path) {
+          dispatch(
+            showConfirmDialog({
+              body: formatMessage(translations.assetUploaderMissingConfiguration, { id: datasource.id })
+            })
+          );
+          return;
+        }
+        dispatch(
+          showBrowseFilesDialog({
+            path: path.endsWith('/') ? `${path}.+` : `${path}/.+`,
+            mimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/tiff', 'image/bmp'],
+            onSuccess: batchActions([
+              closeBrowseFilesDialog(),
+              notifyFieldImageChanged({ recordId: item.elementRecordId })
+            ])
+          })
+        );
+        onDismiss();
+        break;
+      }
+      case 'img-CMIS-upload': {
+        const datasource = contentType.dataSources[option.options.dataSourceId];
+        const path = datasource.properties.repoPath.value;
+        const profileId = datasource.properties.repositoryId.value;
+        if (!path || !profileId) {
+          dispatch(
+            showConfirmDialog({
+              body: formatMessage(translations.assetUploaderMissingConfiguration, { id: datasource.id })
+            })
+          );
+          return;
+        }
+        dispatch(
+          showSingleFileUploadDialog({
+            path: expandPathMacros(path),
+            uploadType: 'cmis',
+            profileId,
+            onSuccess: batchActions([
+              closeSingleFileUploadDialog(),
+              notifyFieldImageChanged({ recordId: item.elementRecordId })
+            ])
+          })
+        );
+        onDismiss();
+        break;
+      }
+      case 'img-WebDAV-upload': {
+        const datasource = contentType.dataSources[option.options.dataSourceId];
+        const path = datasource.properties.repoPath.value;
+        const profileId = datasource.properties.profileId.value;
+        if (!path || !profileId) {
+          dispatch(
+            showConfirmDialog({
+              body: formatMessage(translations.assetUploaderMissingConfiguration, { id: datasource.id })
+            })
+          );
+          return;
+        }
+        dispatch(
+          showSingleFileUploadDialog({
+            path: expandPathMacros(path),
+            uploadType: 'webDav',
+            profileId,
+            onSuccess: batchActions([
+              closeSingleFileUploadDialog(),
+              notifyFieldImageChanged({ recordId: item.elementRecordId })
+            ])
+          })
+        );
+        onDismiss();
+        break;
+      }
+      case 'img-S3-upload': {
+        const datasource = contentType.dataSources[option.options.dataSourceId];
+        const path = datasource.properties.repoPath.value;
+        const profileId = datasource.properties.profileId.value;
+        if (!path || !profileId) {
+          dispatch(
+            showConfirmDialog({
+              body: formatMessage(translations.assetUploaderMissingConfiguration, { id: datasource.id })
+            })
+          );
+          return;
+        }
+        dispatch(
+          showSingleFileUploadDialog({
+            path: expandPathMacros(path),
+            uploadType: 's3',
+            profileId,
+            onSuccess: batchActions([
+              closeSingleFileUploadDialog(),
+              notifyFieldImageChanged({ recordId: item.elementRecordId })
+            ])
+          })
+        );
+        onDismiss();
+        break;
+      }
+      case 'img-desktop-upload': {
+        const datasource = contentType.dataSources[option.options.dataSourceId];
+        const path = datasource.properties.repoPath.value;
+        if (!path) {
+          dispatch(
+            showConfirmDialog({
+              body: formatMessage(translations.assetUploaderMissingConfiguration, { id: datasource.id })
+            })
+          );
+          return;
+        }
+        dispatch(
+          showSingleFileUploadDialog({
+            path: expandPathMacros(path),
+            uploadType: 'studio',
+            onSuccess: batchActions([
+              closeSingleFileUploadDialog(),
+              notifyFieldImageChanged({ recordId: item.elementRecordId })
+            ])
+          })
+        );
+        onDismiss();
+        break;
+      }
+      case 'delete-image': {
+        dispatch(notifyFieldImageChanged({ recordId: item.elementRecordId, url: '' }));
+        onDismiss();
+        break;
+      }
+    }
+  }
+
   if (selected.length > 1) {
     // TODO: Implement Multi-mode...
     return (
@@ -230,13 +403,55 @@ function EditFormPanelBody(props: EditFormPanelBodyProps) {
       <Typography variant="caption" style={{ padding: '0 16px 5px' }} component="p">
         {title}
       </Typography>
-      <MenuItem onClick={() => openDialog('form')}>{formatMessage(translations.openComponentForm)}</MenuItem>
-      <MenuItem onClick={() => openDialog('template')}>{formatMessage(translations.editTemplate)}</MenuItem>
-      {/* TODO: should use type instead of content type id string inspection */}
-      {selectedContentTypeId.includes('/page') && (
-        <MenuItem onClick={() => openDialog('controller')}>{formatMessage(translations.editController)}</MenuItem>
-      )}
-      <MenuItem onClick={onDismiss}>{formatMessage(translations.cancel)}</MenuItem>
+      {options.map((option) => (
+        <MenuItem key={option.id} onClick={() => onMenuItemClicked(option)}>
+          {option.label}
+        </MenuItem>
+      ))}
     </>
   );
+}
+
+export function getContentTypeOptions(
+  field: ContentTypeField,
+  contentType: ContentType,
+  formatMessage: IntlFormatters['formatMessage']
+): FieldOption[] {
+  if (field && field.type === 'image') {
+    let options = [];
+    if (Array.isArray(field.validations.allowedImageDataSources.value)) {
+      field.validations.allowedImageDataSources.value.forEach((id) => {
+        if (contentType.dataSources[id]) {
+          options.push({
+            id: contentType.dataSources[id].type,
+            label: contentType.dataSources[id].name,
+            options: { dataSourceId: id }
+          });
+        }
+      });
+    }
+    options.push({
+      id: 'delete-image',
+      label: formatMessage(translations.delete)
+    });
+    return options;
+  } else {
+    let options = [
+      {
+        id: 'form',
+        label: formatMessage(translations.openComponentForm)
+      },
+      {
+        id: 'template',
+        label: formatMessage(translations.editTemplate)
+      }
+    ];
+    if (contentType.type === 'page') {
+      options.push({
+        id: 'controller',
+        label: formatMessage(translations.editController)
+      });
+    }
+    return options;
+  }
 }

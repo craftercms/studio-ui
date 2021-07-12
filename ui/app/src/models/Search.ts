@@ -22,6 +22,7 @@ export interface ElasticParams extends PaginationOptions {
   query?: string;
   keywords: string;
   sortBy?: string;
+  path?: string;
   sortOrder?: string;
   orOperator?: boolean;
   filters: any;
@@ -84,8 +85,8 @@ export interface SearchFacet {
 
 export interface SearchResult {
   total: number;
-  items: Array<SearchItem>;
-  facets: Array<SearchFacet>;
+  items: SearchItem[];
+  facets: SearchFacet[];
 }
 
 export interface ComponentsContentTypeParams extends PaginationOptions {

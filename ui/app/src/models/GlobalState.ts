@@ -62,6 +62,8 @@ import { PathNavigatorTreeStateProps } from '../components/PathNavigatorTree';
 import { UnlockPublisherDialogStateProps } from '../components/UnlockPublisherDialog';
 import { WidgetDialogStateProps } from '../components/WidgetDialog';
 import { CodeEditorDialogStateProps } from '../components/CodeEditorDialog';
+import { SingleFileUploadDialogStateProps } from '../components/SingleFileUploadDialog/SingleFileUploadDialog';
+import { BrowseFilesDialogPropsStateProps } from '../components/BrowseFilesDialog/BrowseFilesDialog';
 import DateTimeFormatOptions = Intl.DateTimeFormatOptions;
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
@@ -72,6 +74,7 @@ export interface PagedEntityState<T = any> extends EntityState<T> {
 }
 
 export interface EditSelection {
+  elementRecordId: string;
   modelId: string;
   fieldId: string[];
   index: string | number;
@@ -201,6 +204,8 @@ export interface GlobalState {
     publishingStatus: PublishingStatusDialogStateProps;
     unlockPublisher: UnlockPublisherDialogStateProps;
     widget: WidgetDialogStateProps;
+    singleFileUpload: SingleFileUploadDialogStateProps;
+    browseFiles: BrowseFilesDialogPropsStateProps;
   };
   uiConfig: {
     error: ApiResponse;

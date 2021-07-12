@@ -11,7 +11,7 @@ const progressBarStyles = makeStyles((theme: Theme) =>
       bottom: 0,
       left: 0,
       width: '100%',
-      height: '3px',
+      height: '2px',
       transition: 'height .2s'
     },
     progressBarInner: {
