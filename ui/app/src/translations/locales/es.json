@@ -266,7 +266,7 @@
   "publishDialog.submissionMandatory": "Presentación obligatoria",
   "publishDialog.submissionOptional": "Presentación opcional",
   "publishing.bulkPublishNote": "La publicación masiva debe usarse para publicar los cambios realizados en Studio a través de la interfaz de usuario. Para los cambios realizados a través de acciones directas de git, use la función \"Publicar por id(s) de commit\".",
-  "publishing.disabled": "El proceso de publicación esta desabilitado.",
+  "publishing.disabled": "El proceso de publicación esta deshabilitado.",
   "publishing.publishByNote": "La publicación por ID de confirmación debe usarse para los cambios realizados a través de acciones directas de git contra el repositorio o extraídos de un repositorio remoto. Para los cambios realizados a través de Studio en la interfaz de usuario, utilice \"Publicación masiva\".",
   "publishingDashboard.BLOCKED": "Obstruido",
   "publishingDashboard.CANCELLED": "Cancelado",
