@@ -57,8 +57,6 @@ YAHOO.extend(CStudioForms.Datasources.EmbeddedContent, CStudioForms.CStudioFormD
       );
     } else {
       let parentPath = _self.form.path;
-      const fileName = _self.form.model['file-name'];
-      parentPath = parentPath.substring(0, parentPath.length - fileName.length);
       CStudioAuthoring.Operations.openContentWebForm(
         _self.contentType,
         null,
