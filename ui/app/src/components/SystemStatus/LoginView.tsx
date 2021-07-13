@@ -478,6 +478,7 @@ function LanguageDropDown(props: LanguageDropDownProps) {
       <Menu
         anchorEl={buttonRef.current}
         anchorOrigin={{ horizontal: 'center', vertical: 'center' }}
+        getContentAnchorEl={null}
         open={openMenu}
         onClose={() => setOpenMenu(false)}
       >
