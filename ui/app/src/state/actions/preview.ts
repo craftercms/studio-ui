@@ -165,12 +165,7 @@ export function fetchContentModelComplete(contentModels: ContentInstance[]): Sta
   };
 }
 
-export function checkInGuest(data: GuestData): StandardAction {
-  return {
-    type: GUEST_CHECK_IN,
-    payload: data
-  };
-}
+export const checkInGuest = /*#__PURE__*/ createAction<GuestData>(GUEST_CHECK_IN);
 
 export function checkOutGuest(): StandardAction {
   return {

@@ -307,9 +307,9 @@ export function GuestProxy() {
               take(1)
             )
             .subscribe(function({ payload }) {
-              const { modelId, fieldId, targetIndex, currentUrl } = payload;
+              const { modelId, fieldId, targetIndex, currentFullUrl } = payload;
               let ifrm = document.createElement('iframe');
-              ifrm.setAttribute('src', `${currentUrl}`);
+              ifrm.setAttribute('src', `${currentFullUrl}`);
               ifrm.style.width = '0';
               ifrm.style.height = '0';
               document.body.appendChild(ifrm);

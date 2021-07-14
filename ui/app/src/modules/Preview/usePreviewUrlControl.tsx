@@ -21,8 +21,8 @@ import { LookupTable } from '../../models/LookupTable';
 import { changeCurrentUrl } from '../../state/actions/preview';
 import { changeSite } from '../../state/reducers/sites';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import { usePreviewState } from '../../utils/hooks/usePreviewState';
 import { useEnv } from '../../utils/hooks/useEnv';
+import { usePreviewNavigation } from '../../utils/hooks/usePreviewNavigation';
 
 export default function usePreviewUrlControl(history) {
   const {
@@ -30,14 +30,14 @@ export default function usePreviewUrlControl(history) {
     push
   } = history;
 
-  const { computedUrl } = usePreviewState();
+  const { currentUrlPath } = usePreviewNavigation();
   const { previewLandingBase } = useEnv();
   const site = useActiveSiteId();
   const dispatch = useDispatch();
   const priorState = useRef({
     qs: undefined,
     site,
-    computedUrl,
+    currentUrlPath,
     qsSite: undefined,
     qsPage: undefined,
     search: search,
@@ -84,7 +84,7 @@ export default function usePreviewUrlControl(history) {
             // If there's no page, send to the homepage of the QS site
             dispatch(changeSite(qs.site, '/'));
           }
-        } else if (qs.page && qs.page !== computedUrl) {
+        } else if (qs.page && qs.page !== currentUrlPath) {
           // Change the current page to match the QS site
           dispatch(changeCurrentUrl(qs.page));
         }
@@ -97,14 +97,14 @@ export default function usePreviewUrlControl(history) {
       // Check if either the QS or the state has changed
       const qsSiteChanged = qs.site !== prev.qsSite && qs.site !== site;
       const siteChanged = site !== prev.site;
-      const qsUrlChanged = qs.page !== prev.qsPage && qs.page !== computedUrl;
-      const urlChanged = computedUrl !== prev.computedUrl;
+      const qsUrlChanged = qs.page !== prev.qsPage && qs.page !== currentUrlPath;
+      const urlChanged = currentUrlPath !== prev.currentUrlPath;
       const somethingDidChanged = qsSiteChanged || siteChanged || qsUrlChanged || urlChanged;
 
       // If nothing changed, skip...
       if (somethingDidChanged) {
-        if ((siteChanged || urlChanged) && (computedUrl !== qs.page || site !== qs.site)) {
-          const page = computedUrl;
+        if ((siteChanged || urlChanged) && (currentUrlPath !== qs.page || site !== qs.site)) {
+          const page = currentUrlPath;
           if (page !== previewLandingBase) {
             push({ search: stringify({ site, page }, { encode: false }) });
           }
@@ -116,7 +116,7 @@ export default function usePreviewUrlControl(history) {
           dispatch(changeSite(qs.site, '/'));
         }
 
-        prev.computedUrl = computedUrl;
+        prev.currentUrlPath = currentUrlPath;
         prev.site = site;
       }
 
@@ -125,5 +125,5 @@ export default function usePreviewUrlControl(history) {
       prev.qsPage = qs.page;
       prev.qsSite = qs.site;
     }
-  }, [computedUrl, dispatch, previewLandingBase, push, search, site]);
+  }, [currentUrlPath, dispatch, previewLandingBase, push, search, site]);
 }
