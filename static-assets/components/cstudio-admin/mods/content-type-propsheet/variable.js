@@ -37,7 +37,12 @@ YAHOO.extend(
         var updateFieldFn = function(event, el) {
           if (fName === 'id' && this.value) {
             var input = YDom.getElementsByClassName('property-input-id')[0];
-            input.value = this.value.replace(/[-]/g, '_');
+
+            if (CStudioAdminConsole.ignorePostfixFields.filter((field) => field.startsWith(input.value)).length === 0) {
+              input.value = this.value.replace(/[-]/g, '_');
+            } else {
+              input.value = this.value;
+            }
           }
           updateFn(event, el);
           var addPostfixes = '';
