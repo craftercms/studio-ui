@@ -209,7 +209,7 @@ export default React.forwardRef(function AceEditor(props: AceEditorProps, ref) {
     const init = () => {
       if (!unmounted) {
         const pre = document.createElement('pre');
-        pre.className = classes.editorRoot;
+        pre.className = `${classes.editorRoot} ${props.classes?.editorRoot}`;
         refs.current.pre = pre;
         refs.current.elem.appendChild(pre);
         aceEditor = window.ace.edit(pre, options);
@@ -263,9 +263,9 @@ export default React.forwardRef(function AceEditor(props: AceEditorProps, ref) {
     if (refs.current.pre) {
       refs.current.pre.className = `${[...refs.current.pre.classList]
         .filter((value) => !/craftercms-|makeStyles-/.test(value))
-        .join(' ')} ${classes.editorRoot}`;
+        .join(' ')} ${classes?.editorRoot} ${props.classes?.editorRoot}`;
     }
-  }, [classes.editorRoot]);
+  }, [classes.editorRoot, props.classes]);
 
   return (
     <div
