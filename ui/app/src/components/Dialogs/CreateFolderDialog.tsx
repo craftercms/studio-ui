@@ -130,10 +130,10 @@ function CreateFolderUI(props: CreateFolderUIProps) {
   }, [props.path, selectedItem]);
 
   useEffect(() => {
-    if (item) {
+    if (item && rename === false) {
       setSelectedItem(item);
     }
-  }, [item]);
+  }, [item, rename]);
 
   useUnmount(onClosed);
 
