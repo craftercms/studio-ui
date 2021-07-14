@@ -20,7 +20,7 @@ import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { Variant } from '@material-ui/core/styles/createTypography';
-import { DetailedItem } from '../../../models/Item';
+import { DetailedItem, SandboxItem } from '../../../models/Item';
 import ExpandMoreRoundedIcon from '@material-ui/icons/ExpandMoreRounded';
 import Popover from '@material-ui/core/Popover';
 import Paper from '@material-ui/core/Paper';
@@ -99,6 +99,7 @@ interface SingleItemSelectorProps {
   onClose?(): void;
   onItemClicked(item: DetailedItem): void;
   onDropdownClick?(): void;
+  filterChildren?(item: SandboxItem): boolean;
 }
 
 interface SingleItemSelectorState extends PaginationOptions {
@@ -262,7 +263,8 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
     open,
     selectedItem,
     rootPath,
-    canSelectFolders = false
+    canSelectFolders = false,
+    filterChildren = () => true
   } = props;
   const classes = useStyles();
   const anchorEl = useRef();
@@ -304,19 +306,35 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
                 limit: state.limit
               })
             ]).subscribe(
-              ([items, children]) => exec(fetchParentsItemsComplete({ items, children })),
+              ([items, children]) => {
+                const { levelDescriptor, total, offset, limit } = children;
+                return exec(
+                  fetchParentsItemsComplete({
+                    items,
+                    children: Object.assign(children.filter(filterChildren), { levelDescriptor, total, offset, limit })
+                  })
+                );
+              },
               (response) => exec(fetchChildrenByPathFailed(response))
             );
           } else {
             fetchItemWithChildrenByPath(site, payload, { limit: state.limit }).subscribe(
-              ({ item, children }) => exec(fetchChildrenByPathComplete({ parent: item, children })),
+              ({ item, children }) => {
+                const { levelDescriptor, total, offset, limit } = children;
+                return exec(
+                  fetchChildrenByPathComplete({
+                    parent: item,
+                    children: Object.assign(children.filter(filterChildren), { levelDescriptor, total, offset, limit })
+                  })
+                );
+              },
               (response) => exec(fetchChildrenByPathFailed(response))
             );
           }
           break;
       }
     },
-    [state, site]
+    [state, site, filterChildren]
   );
 
   const itemsResource = useLogicResource<DetailedItem[], SingleItemSelectorState>(state, {

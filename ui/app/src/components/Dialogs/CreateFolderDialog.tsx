@@ -35,8 +35,7 @@ import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useUnmount } from '../../utils/hooks/useUnmount';
 import { useDetailedItem } from '../../utils/hooks/useDetailedItem';
 import SingleItemSelector from '../../modules/Content/Authoring/SingleItemSelector';
-import { Box } from '@material-ui/core';
-import { DetailedItem } from '../../models/Item';
+import { DetailedItem, SandboxItem } from '../../models/Item';
 
 export const translations = defineMessages({
   placeholder: {
@@ -205,6 +204,10 @@ function CreateFolderUI(props: CreateFolderUIProps) {
     setState({ inProgress: false, submitted: true });
   };
 
+  const itemSelectorFilterChildren = (item: SandboxItem): boolean => {
+    return item.availableActionsMap.createFolder;
+  };
+
   return (
     <>
       <DialogHeader
@@ -220,7 +223,7 @@ function CreateFolderUI(props: CreateFolderUIProps) {
       <DialogBody>
         {selectedItem && (
           <SingleItemSelector
-            label={<FormattedMessage id="words.item" defaultMessage="Item" />}
+            label={<FormattedMessage id="words.location" defaultMessage="Location" />}
             open={openSelector}
             onClose={() => setOpenSelector(false)}
             onDropdownClick={() => setOpenSelector(!openSelector)}
@@ -231,6 +234,7 @@ function CreateFolderUI(props: CreateFolderUIProps) {
               setOpenSelector(false);
               setSelectedItem(item);
             }}
+            filterChildren={itemSelectorFilterChildren}
           />
         )}
         <form
