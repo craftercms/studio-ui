@@ -125,7 +125,7 @@ function CreateFolderUI(props: CreateFolderUIProps) {
   const [openSelector, setOpenSelector] = useState(false);
   const [selectedItem, setSelectedItem] = useState<DetailedItem>(null);
   const path = useMemo(() => {
-    return selectedItem ? withoutIndex(selectedItem.path) : props.path;
+    return selectedItem ? withoutIndex(selectedItem.path) : withoutIndex(props.path);
   }, [props.path, selectedItem]);
 
   useEffect(() => {
@@ -204,9 +204,7 @@ function CreateFolderUI(props: CreateFolderUIProps) {
     setState({ inProgress: false, submitted: true });
   };
 
-  const itemSelectorFilterChildren = (item: SandboxItem): boolean => {
-    return item.availableActionsMap.createFolder;
-  };
+  const itemSelectorFilterChildren = useMemo(() => (item: SandboxItem) => item.availableActionsMap.createFolder, []);
 
   return (
     <>
