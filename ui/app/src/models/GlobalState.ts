@@ -146,17 +146,11 @@ export interface GlobalState {
     editMode: boolean;
     highlightMode: string;
     previewChoice: LookupTable<'1' | '2'>;
-    currentUrl: string;
-    computedUrl: string;
     showToolsPanel: boolean;
     toolsPanelPageStack: WidgetDescriptor[];
     toolsPanelWidth: number;
     pageBuilderPanelWidth: number;
     pageBuilderPanelStack: WidgetDescriptor[];
-    historyBackStack: string[];
-    historyForwardStack: string[];
-    // Flags when the back/forwards buttons were pressed (null otherwise) to determinate how to modify history stacks.
-    historyNavigationType: 'back' | 'forward';
     hostSize: WidthAndHeight;
     guest: GuestData;
     assets: PagedEntityState<MediaItem>;
@@ -172,6 +166,14 @@ export interface GlobalState {
       selectedContentType: string;
       byId: LookupTable<ContentTypeDropTarget>;
     };
+  };
+  previewNavigation: {
+    currentFullUrl: string;
+    currentUrlPath: string;
+    historyBackStack: string[];
+    historyForwardStack: string[];
+    // Flags when the back/forwards buttons were pressed (null otherwise) to determinate how to modify history stacks.
+    historyNavigationType: 'back' | 'forward';
   };
   versions: VersionsStateProps;
   dialogs: {

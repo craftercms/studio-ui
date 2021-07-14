@@ -41,6 +41,7 @@ import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 import { usePreviewState } from '../../utils/hooks/usePreviewState';
 import PreviewBackButton from '../PreviewBackButton';
 import PreviewForwardButton from '../PreviewForwardButton';
+import { usePreviewNavigation } from '../../utils/hooks/usePreviewNavigation';
 
 export interface AddressBarProps {
   site: string;
@@ -113,15 +114,15 @@ export function PreviewAddressBar(props: AddressBarProps) {
   const classes = useAddressBarStyles();
   const { site = '', item } = props;
   const noSiteSet = isBlank(site);
-  const { computedUrl = '' } = usePreviewState();
-  const [internalUrl, setInternalUrl] = useState(computedUrl);
+  const { currentUrlPath = '' } = usePreviewNavigation();
+  const [internalUrl, setInternalUrl] = useState(currentUrlPath);
   const [openSelector, setOpenSelector] = useState(false);
   const [focus, setFocus] = useState(false);
   const disabled = noSiteSet || !item;
 
   useEffect(() => {
-    computedUrl && setInternalUrl(computedUrl);
-  }, [computedUrl]);
+    currentUrlPath && setInternalUrl(currentUrlPath);
+  }, [currentUrlPath]);
 
   const dispatch = useDispatch();
   const onOptions = (e) => {

@@ -151,19 +151,12 @@ const reducer = createReducer<GlobalState['preview']>(
     editMode: true,
     highlightMode: 'ALL',
     previewChoice: {},
-    // What's shown to the user across the board (url, address bar, etc)
-    computedUrl: '',
-    // The src of the iframe
-    currentUrl: previewLanding,
     hostSize: { width: null, height: null },
     toolsPanelPageStack: [],
     showToolsPanel: process.env.REACT_APP_SHOW_TOOLS_PANEL ? process.env.REACT_APP_SHOW_TOOLS_PANEL === 'true' : true,
     toolsPanelWidth: 240,
     pageBuilderPanelWidth: 240,
     pageBuilderPanelStack: [],
-    historyBackStack: [],
-    historyForwardStack: [],
-    historyNavigationType: null,
     guest: null,
     assets: assetsPanelInitialState,
     audiencesPanel: audiencesPanelInitialState,
@@ -244,9 +237,6 @@ const reducer = createReducer<GlobalState['preview']>(
       const href = location.href;
       const origin = location.origin;
       const url = href.replace(location.origin, '');
-      const historyBackLastPath = state.historyBackStack[state.historyBackStack.length - 1];
-      const historyForwardLastPath = state.historyForwardStack[state.historyForwardStack.length - 1];
-
       return {
         ...state,
         guest: {
@@ -259,24 +249,7 @@ const reducer = createReducer<GlobalState['preview']>(
           modelIdByPath: null,
           selected: null,
           itemBeingDragged: null
-        },
-        computedUrl: payload.__CRAFTERCMS_GUEST_LANDING__ ? '' : url,
-        historyBackStack:
-          // Preview landing page...
-          state.computedUrl === '' || historyBackLastPath === url
-            ? state.historyBackStack
-            : [...state.historyBackStack, url],
-        historyForwardStack:
-          historyForwardLastPath && historyForwardLastPath !== url && state.historyNavigationType === null
-            ? []
-            : state.historyForwardStack,
-        historyNavigationType: null
-        // Setting URL causes dual reload when guest navigation occurs
-        // currentUrl: (payload.url && payload.origin ? payload.url.replace(payload.origin, '') : null) ?? state.currentUrl,
-        // TODO: Retrieval of guestBase from initialState is not right.
-        // currentUrl: payload.__CRAFTERCMS_GUEST_LANDING__
-        //   ? previewLanding
-        //   : `${origin}${url}`
+        }
       };
     },
     [GUEST_CHECK_OUT]: (state) => {
@@ -342,65 +315,13 @@ const reducer = createReducer<GlobalState['preview']>(
         }
       };
     },
-    [changeCurrentUrl.type]: (state, { payload }) => {
-      return state.currentUrl === payload
-        ? state
-        : {
-            ...state,
-            computedUrl: cleanseUrl(payload),
-            currentUrl: `${guestBase}${cleanseUrl(payload)}`
-          };
-    },
-    [goToLastPage.type]: (state) => {
-      const stack = [...state.historyBackStack];
-      stack.pop();
-      const path = stack[stack.length - 1];
-      return {
-        ...state,
-        historyBackStack: stack,
-        historyForwardStack: [...state.historyForwardStack, state.computedUrl],
-        historyNavigationType: 'back',
-        computedUrl: cleanseUrl(path),
-        currentUrl: `${guestBase}${cleanseUrl(path)}`
-      };
-    },
-    [goToNextPage.type]: (state) => {
-      const stack = [...state.historyForwardStack];
-      const path = stack.pop();
-      return {
-        ...state,
-        historyForwardStack: stack,
-        historyBackStack: [...state.historyBackStack, path],
-        historyNavigationType: 'forward',
-        computedUrl: cleanseUrl(path),
-        currentUrl: `${guestBase}${cleanseUrl(path)}`
-      };
-    },
     [changeSite.type]: (state, { payload }) => {
-      let nextState = {
+      return {
         ...state,
         audiencesPanel: audiencesPanelInitialState,
         components: componentsInitialState,
-        assets: assetsPanelInitialState,
-        toolsPanelPageStack: [],
-        historyBackStack: [],
-        historyForwardStack: []
+        assets: assetsPanelInitialState
       };
-
-      // TODO: If there's a guest it would have checked out?
-      // if (state.guest) {
-      //   nextState = { ...nextState, guest: null };
-      // }
-
-      if (payload.nextUrl !== nextState.currentUrl) {
-        nextState = {
-          ...nextState,
-          computedUrl: payload.nextUrl,
-          currentUrl: `${guestBase}${payload.nextUrl}`
-        };
-      }
-
-      return nextState;
     },
     [fetchAudiencesPanelModel.type]: (state) => ({
       ...state,
