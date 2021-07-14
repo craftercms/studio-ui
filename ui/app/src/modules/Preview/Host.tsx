@@ -148,7 +148,11 @@ export function HostUI(props: HostPropsUI) {
   }, [origin, onMessage, postMessage$]);
 
   useEffect(() => {
-    if (iframeRef.current.contentDocument.location.href !== url) {
+    try {
+      if (iframeRef.current.contentDocument.location.href !== url) {
+        iframeRef.current.src = url;
+      }
+    } catch {
       iframeRef.current.src = url;
     }
   }, [url]);
