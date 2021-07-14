@@ -26,6 +26,7 @@ let current: ObtainAuthTokenResponse = {
   expiresAt: null,
   token: null
 };
+let refreshInterval;
 
 const log =
   process.env.PRODUCTION === 'development'
@@ -82,10 +83,10 @@ function retrieve() {
         status = 'active';
         current = response;
         broadcast(sharedWorkerToken(current));
-        const ms = Math.floor((current.expiresAt - Date.now()) * refreshAtFactor);
+        refreshInterval = Math.floor((current.expiresAt - Date.now()) * refreshAtFactor);
         if (clients.length) {
           // If there are clients connected, keep the token refresh going
-          timeout = self.setTimeout(retrieve, ms);
+          timeout = self.setTimeout(retrieve, refreshInterval);
         } else {
           // Do SharedWorkers stop as soon as all their tabs are terminated?
           clearTimeout(timeout);
@@ -106,6 +107,10 @@ function retrieve() {
       } else {
         status = 'error';
         broadcast(sharedWorkerError({ status: e.status, message: e.message }));
+        // If there are clients connected try again.
+        if (clients.length) {
+          timeout = self.setTimeout(retrieve, Math.floor(refreshInterval * 0.9));
+        }
       }
     }
   );

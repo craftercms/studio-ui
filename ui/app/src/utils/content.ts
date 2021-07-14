@@ -255,7 +255,12 @@ export function parseLegacyItemToDetailedItem(item: LegacyItem | LegacyItem[]): 
       commitId: null,
       sizeInBytes: null
     },
-    staging: null,
+    staging: {
+      lastScheduledDate: item.scheduledDate,
+      lastPublishedDate: item.publishedDate,
+      publisher: item.user,
+      commitId: null
+    },
     live: {
       lastScheduledDate: item.scheduledDate,
       lastPublishedDate: item.publishedDate,
