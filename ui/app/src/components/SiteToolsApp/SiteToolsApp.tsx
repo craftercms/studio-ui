@@ -104,7 +104,7 @@ export default function SiteToolsApp(props: SiteToolsAppProps) {
       </ResizeableDrawer>
       <Box className={classes.wrapper} height="100%" width="100%" paddingLeft={openSidebar ? `${width}px` : 0}>
         <Switch>
-          {siteTools.tools.map((tool) => (
+          {siteTools?.tools.map((tool) => (
             <Route
               key={tool.url}
               path={`/${tool.url}`}
