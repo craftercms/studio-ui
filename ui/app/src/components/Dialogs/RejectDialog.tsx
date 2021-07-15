@@ -113,12 +113,6 @@ const useStyles = makeStyles((theme) =>
     submissionTextField: {
       marginTop: '10px'
     },
-    textField: {
-      padding: 0,
-      '& textarea[aria-hidden="true"]': {
-        width: '50% !important'
-      }
-    },
     ellipsis: {
       overflow: 'hidden',
       textOverflow: 'ellipsis',
@@ -141,14 +135,6 @@ const useStyles = makeStyles((theme) =>
     }
   })
 );
-
-const SelectInput = withStyles(() =>
-  createStyles({
-    input: {
-      borderRadius: 4
-    }
-  })
-)(InputBase);
 
 function RejectDialogContentUI(props: RejectDialogContentUIProps) {
   const { resource, checkedItems, onUpdateChecked, classes } = props;
@@ -257,14 +243,14 @@ function RejectDialogUI(props: RejectDialogUIProps) {
 
           <Grid item xs={12} sm={5} md={5} lg={5} xl={5}>
             <form>
-              <FormControl fullWidth>
-                <InputLabel className={classes.sectionLabel}>
-                  <FormattedMessage id="rejectDialog.rejectionReason" defaultMessage="Rejection Reason" />:
+              <FormControl fullWidth variant="outlined">
+                <InputLabel>
+                  <FormattedMessage id="rejectDialog.rejectionReason" defaultMessage="Rejection Reason" />
                 </InputLabel>
                 <Select
                   fullWidth
+                  label={<FormattedMessage id="rejectDialog.rejectionReason" defaultMessage="Rejection Reason" />}
                   autoFocus
-                  input={<SelectInput />}
                   value={rejectionReason}
                   onChange={(e) => setRejectionReason(e.target.value as string)}
                 >
@@ -292,11 +278,8 @@ function RejectDialogUI(props: RejectDialogUIProps) {
                 fullWidth
                 multiline
                 rows={8}
-                defaultValue={rejectionComment}
+                value={rejectionComment}
                 onChange={(e) => setRejectionComment(e.target.value as string)}
-                InputProps={{
-                  className: classes.textField
-                }}
               />
             </form>
           </Grid>
@@ -335,6 +318,7 @@ function RejectDialogWrapper(props: RejectDialogProps) {
   const [checkedItems, setCheckedItems] = useState([]);
   const [rejectionReason, setRejectionReason] = useState('');
   const [rejectionComment, setRejectionComment] = useState('');
+  const [rejectionCommentDirty, setRejectionCommentDirty] = useState(false);
   const siteId = useActiveSiteId();
   const currentLocale = getCurrentLocale();
   const dispatch = useDispatch();
@@ -354,16 +338,6 @@ function RejectDialogWrapper(props: RejectDialogProps) {
 
     setCheckedItems(newChecked);
   }, [items]);
-
-  useEffect(() => {
-    if (rejectionReason === '') {
-      setRejectionComment('');
-    } else {
-      fetchCannedMessage(siteId, currentLocale, rejectionReason).subscribe((message) => {
-        setRejectionComment(message);
-      });
-    }
-  }, [rejectionReason, setRejectionComment, currentLocale, siteId]);
 
   const updateChecked = (value) => {
     const itemExist = checkedItems.includes(value);
@@ -394,6 +368,24 @@ function RejectDialogWrapper(props: RejectDialogProps) {
     );
   };
 
+  const onRejectionCommentChanges = (value: string) => {
+    if (value === '') {
+      setRejectionCommentDirty(false);
+    } else {
+      setRejectionCommentDirty(true);
+    }
+    setRejectionComment(value);
+  };
+
+  const onRejectionReasonChanges = (value: string) => {
+    if (value && rejectionCommentDirty === false) {
+      fetchCannedMessage(siteId, currentLocale, value).subscribe((message) => {
+        setRejectionComment(message);
+      });
+    }
+    setRejectionReason(value);
+  };
+
   const resource = useLogicResource<Return, Source>(items, {
     shouldResolve: (source) => Boolean(source),
     shouldReject: (source) => false,
@@ -407,9 +399,9 @@ function RejectDialogWrapper(props: RejectDialogProps) {
       resource={resource}
       checkedItems={checkedItems}
       rejectionReason={rejectionReason}
-      setRejectionReason={setRejectionReason}
+      setRejectionReason={onRejectionReasonChanges}
       rejectionComment={rejectionComment}
-      setRejectionComment={setRejectionComment}
+      setRejectionComment={onRejectionCommentChanges}
       onUpdateChecked={updateChecked}
       onClose={onClose}
       onDismiss={onDismiss}
