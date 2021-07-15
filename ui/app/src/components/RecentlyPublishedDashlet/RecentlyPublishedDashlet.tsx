@@ -118,8 +118,9 @@ export default function RecentlyPublishedDashlet(props: RecentlyPublishedWidgetP
             parentItems.push({
               label: document.internalName,
               children: document.children.map((item) => {
-                childrenLookup[item.uri] = parseLegacyItemToDetailedItem(item);
-                return item.uri;
+                const key = `${item.uri}:${item.eventDate}`;
+                childrenLookup[key] = parseLegacyItemToDetailedItem(item);
+                return key;
               })
             });
           }
