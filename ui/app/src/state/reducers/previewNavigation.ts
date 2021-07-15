@@ -16,19 +16,8 @@
 
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../models/GlobalState';
-import { envInitialState } from './env';
-import {
-  changeCurrentUrl,
-  checkInGuest,
-  goToLastPage,
-  goToNextPage,
-  GUEST_CHECK_IN,
-  GUEST_CHECK_OUT
-} from '../actions/preview';
+import { changeCurrentUrl, checkInGuest, goToLastPage, goToNextPage } from '../actions/preview';
 import { changeSite } from './sites';
-
-const guestBase = envInitialState.guestBase;
-const previewLanding = envInitialState.previewLandingBase;
 
 function cleanseUrl(url: string) {
   const clean = url || '/';
@@ -42,8 +31,6 @@ const reducer = createReducer<GlobalState['previewNavigation']>(
   {
     // What's shown to the user across the board (url, address bar, etc)
     currentUrlPath: '',
-    // The src of the iframe
-    currentFullUrl: previewLanding,
     historyBackStack: [],
     historyForwardStack: [],
     historyNavigationType: null
@@ -59,7 +46,6 @@ const reducer = createReducer<GlobalState['previewNavigation']>(
       return {
         ...state,
         currentUrlPath: payload.__CRAFTERCMS_GUEST_LANDING__ ? '' : url,
-        currentFullUrl: `${guestBase}${cleanseUrl(url)}`,
         historyBackStack:
           // Preview landing page...
           state.currentUrlPath === '' || historyBackLastPath === url
@@ -73,12 +59,11 @@ const reducer = createReducer<GlobalState['previewNavigation']>(
       };
     },
     [changeCurrentUrl.type]: (state, { payload }) => {
-      return state.currentFullUrl === payload
+      return state.currentUrlPath === cleanseUrl(payload)
         ? state
         : {
             ...state,
-            currentUrlPath: cleanseUrl(payload),
-            currentFullUrl: `${guestBase}${cleanseUrl(payload)}`
+            currentUrlPath: cleanseUrl(payload)
           };
     },
     [goToLastPage.type]: (state) => {
@@ -90,8 +75,7 @@ const reducer = createReducer<GlobalState['previewNavigation']>(
         historyBackStack: stack,
         historyForwardStack: [...state.historyForwardStack, state.currentUrlPath],
         historyNavigationType: 'back',
-        currentUrlPath: cleanseUrl(path),
-        currentFullUrl: `${guestBase}${cleanseUrl(path)}`
+        currentUrlPath: cleanseUrl(path)
       };
     },
     [goToNextPage.type]: (state) => {
@@ -102,8 +86,7 @@ const reducer = createReducer<GlobalState['previewNavigation']>(
         historyForwardStack: stack,
         historyBackStack: [...state.historyBackStack, path],
         historyNavigationType: 'forward',
-        currentUrlPath: cleanseUrl(path),
-        currentFullUrl: `${guestBase}${cleanseUrl(path)}`
+        currentUrlPath: cleanseUrl(path)
       };
     },
     [changeSite.type]: (state, { payload }) => {
@@ -117,8 +100,7 @@ const reducer = createReducer<GlobalState['previewNavigation']>(
       if (payload.nextUrl !== nextState.currentUrlPath) {
         nextState = {
           ...nextState,
-          currentUrlPath: payload.nextUrl,
-          currentFullUrl: `${guestBase}${payload.nextUrl}`
+          currentUrlPath: payload.nextUrl
         };
       }
 

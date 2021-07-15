@@ -168,7 +168,6 @@ export interface GlobalState {
     };
   };
   previewNavigation: {
-    currentFullUrl: string;
     currentUrlPath: string;
     historyBackStack: string[];
     historyForwardStack: string[];

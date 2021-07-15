@@ -288,7 +288,7 @@ export function PreviewConcierge(props: any) {
   const user = useActiveUser();
   const items = useItemsByPath();
   const { guest, editMode, highlightMode, previewChoice } = usePreviewState();
-  const { currentFullUrl, currentUrlPath } = usePreviewNavigation();
+  const { currentUrlPath } = usePreviewNavigation();
   const contentTypes = useContentTypes();
   const { authoringBase, guestBase, xsrfArgument } = useSelection((state) => state.env);
   const priorState = useRef({ site });
@@ -590,7 +590,7 @@ export function PreviewConcierge(props: any) {
 
               hostToGuest$.next({
                 type: INSERT_OPERATION_COMPLETE,
-                payload: { ...payload, currentFullUrl }
+                payload: { ...payload, currentFullUrl: guestBase + currentUrlPath }
               });
               enqueueSnackbar(formatMessage(guestMessages.insertOperationComplete));
             },
@@ -631,7 +631,7 @@ export function PreviewConcierge(props: any) {
 
               hostToGuest$.next({
                 type: INSERT_OPERATION_COMPLETE,
-                payload: { ...payload, currentFullUrl }
+                payload: { ...payload, currentFullUrl: guestBase + currentUrlPath }
               });
               enqueueSnackbar(formatMessage(guestMessages.insertOperationComplete));
             },
@@ -831,7 +831,6 @@ export function PreviewConcierge(props: any) {
     authoringBase,
     contentTypes$,
     contentTypes,
-    currentFullUrl,
     currentUrlPath,
     dispatch,
     enqueueSnackbar,

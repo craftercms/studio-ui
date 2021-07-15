@@ -26,6 +26,7 @@ import { useSelection } from '../../utils/hooks/useSelection';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { usePreviewState } from '../../utils/hooks/usePreviewState';
 import { usePreviewNavigation } from '../../utils/hooks/usePreviewNavigation';
+import { useEnv } from '../../utils/hooks/useEnv';
 
 const message$ = fromEvent<MessageEvent>(window, 'message');
 
@@ -175,9 +176,9 @@ export function HostUI(props: HostPropsUI) {
 export default function Host() {
   const classes = useStyles({});
   const site = useActiveSiteId();
-  const guestBase = useSelection<string>((state) => state.env.guestBase);
+  const { guestBase, previewLandingBase } = useEnv();
   const { hostSize, showToolsPanel, toolsPanelWidth, pageBuilderPanelWidth, editMode } = usePreviewState();
-  const { currentFullUrl } = usePreviewNavigation();
+  const { currentUrlPath } = usePreviewNavigation();
 
   const postMessage$ = useMemo(() => getHostToGuestBus().asObservable(), []);
   const onMessage = useMemo(() => {
@@ -194,7 +195,7 @@ export default function Host() {
       className={clsx(classes.hostContainer, { [classes.shift]: showToolsPanel })}
     >
       <HostUI
-        url={currentFullUrl}
+        url={currentUrlPath === '' ? previewLandingBase : guestBase + currentUrlPath}
         site={site}
         width={hostSize.width}
         origin={guestBase}
