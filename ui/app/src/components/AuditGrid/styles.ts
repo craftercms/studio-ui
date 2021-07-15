@@ -31,7 +31,7 @@ export const useStyles = makeStyles((theme) =>
     },
     ellipsis: {
       textOverflow: 'ellipsis',
-      overflow: 'auto'
+      overflow: 'hidden'
     },
     gridRoot: {
       border: '0 !important',
