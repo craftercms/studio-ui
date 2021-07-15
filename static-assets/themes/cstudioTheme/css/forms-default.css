@@ -1601,6 +1601,8 @@ body.yui-skin-cstudioTheme.masked {
 
 .form-engine-body {
   background: #fafafa;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
 .panel-default > .panel-heading {
