@@ -89,7 +89,7 @@ const useStyles = makeStyles((theme) =>
       justifyContent: 'space-between',
       alignItems: 'center'
     },
-    requestCheckbox: {
+    checkboxes: {
       marginBottom: '10px'
     },
     formSection: {
@@ -229,30 +229,37 @@ function PublishForm(props: PublishFormProps) {
 
   return (
     <form className={classes.root}>
-      {showRequestApproval && (
-        <FormControlLabel
-          className={classes.requestCheckbox}
-          control={<Checkbox checked={inputs.requestApproval} onChange={handleInputChange('requestApproval')} />}
-          label={<FormattedMessage id="publishForm.requestApproval" defaultMessage="Request approval" />}
-        />
-      )}
+      <section className={classes.checkboxes}>
+        {showRequestApproval && (
+          <FormControlLabel
+            control={
+              <Checkbox
+                size="small"
+                checked={inputs.requestApproval}
+                onChange={handleInputChange('requestApproval')}
+                disabled={disabled}
+              />
+            }
+            label={<FormattedMessage id="publishForm.requestApproval" defaultMessage="Request approval" />}
+          />
+        )}
 
-      {showEmailCheckbox && (
-        <FormControlLabel
-          className={classes.requestCheckbox}
-          label={formatMessage(messages.emailLabel)}
-          control={
-            <Checkbox
-              checked={inputs.emailOnApprove}
-              onChange={handleInputChange('emailOnApprove')}
-              value="emailOnApprove"
-              color="primary"
-              disabled={disabled}
-            />
-          }
-        />
-      )}
-
+        {showEmailCheckbox && (
+          <FormControlLabel
+            label={formatMessage(messages.emailLabel)}
+            control={
+              <Checkbox
+                size="small"
+                checked={inputs.emailOnApprove}
+                onChange={handleInputChange('emailOnApprove')}
+                value="emailOnApprove"
+                color="primary"
+                disabled={disabled}
+              />
+            }
+          />
+        )}
+      </section>
       <FormControl className={classes.formSection}>
         <FormLabel component="legend" htmlFor="environmentSelect">
           {formatMessage(messages.scheduling)}
