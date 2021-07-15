@@ -50,7 +50,8 @@ import {
   itemsDeleted,
   itemsPasted,
   itemUnlocked,
-  itemUpdated
+  itemUpdated,
+  pluginInstalled
 } from '../../state/actions/system';
 import PathNavigatorUI from './PathNavigatorUI';
 import { ContextMenuOptionDescriptor, toContextMenuOptionsLookup } from '../../utils/itemActions';
@@ -198,7 +199,8 @@ export default function PathNavigator(props: PathNavigatorProps) {
       folderRenamed.type,
       itemsDeleted.type,
       itemDuplicated.type,
-      itemCreated.type
+      itemCreated.type,
+      pluginInstalled.type
     ];
     const hostToHost$ = getHostToHostBus();
     const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
@@ -271,6 +273,10 @@ export default function PathNavigator(props: PathNavigatorProps) {
               dispatch(pathNavigatorRefresh({ id }));
             }
           });
+          break;
+        }
+        case pluginInstalled.type: {
+          dispatch(pathNavigatorRefresh({ id }));
           break;
         }
       }

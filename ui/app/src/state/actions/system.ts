@@ -96,6 +96,8 @@ export const showSystemNotification = /*#__PURE__*/ createAction<{
 
 export const emitSystemEvent = /*#__PURE__*/ createAction<StandardAction>('SYSTEM_EVENT');
 
+export const pluginInstalled = /*#__PURE__*/ createAction<StandardAction>('PLUGIN_INSTALLED');
+
 export const storeInitialized = /*#__PURE__*/ createAction<{
   auth: ObtainAuthTokenResponse;
   user: User;
