@@ -48,6 +48,8 @@ let currentTranslations = bundledTranslations;
 let intl = createIntlInstance(getCurrentLocale());
 
 function createIntlInstance(locale: string): IntlShape {
+  // TODO: Currently old studio UI uses the wrong code for korean
+  locale = locale.replace('kr', 'ko');
   return createIntl(
     {
       locale: locale,
