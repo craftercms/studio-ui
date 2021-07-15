@@ -191,7 +191,7 @@
     var parsed = JSON.parse(JSON.stringify(obj), function (key, value) {
       if (key === 'children') {
         $.each(value, function (index, elem) {
-          if (elem.numOfChildren === 0) {
+          if (!elem.folder && elem.numOfChildren === 0) {
             value[index].li_attr = {
               'data-display': 'hidden-node'
             };
