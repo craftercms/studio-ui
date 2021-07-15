@@ -59,6 +59,7 @@ const reducer = createReducer<GlobalState['previewNavigation']>(
       return {
         ...state,
         currentUrlPath: payload.__CRAFTERCMS_GUEST_LANDING__ ? '' : url,
+        currentFullUrl: `${guestBase}${cleanseUrl(url)}`,
         historyBackStack:
           // Preview landing page...
           state.currentUrlPath === '' || historyBackLastPath === url
