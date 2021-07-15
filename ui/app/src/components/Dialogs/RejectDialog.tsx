@@ -369,19 +369,13 @@ function RejectDialogWrapper(props: RejectDialogProps) {
   };
 
   const onRejectionCommentChanges = (value: string) => {
-    if (value === '') {
-      setRejectionCommentDirty(false);
-    } else {
-      setRejectionCommentDirty(true);
-    }
+    setRejectionCommentDirty(value !== '');
     setRejectionComment(value);
   };
 
   const onRejectionReasonChanges = (value: string) => {
     if (value && rejectionCommentDirty === false) {
-      fetchCannedMessage(siteId, currentLocale, value).subscribe((message) => {
-        setRejectionComment(message);
-      });
+      fetchCannedMessage(siteId, currentLocale, value).subscribe(setRejectionComment);
     }
     setRejectionReason(value);
   };
