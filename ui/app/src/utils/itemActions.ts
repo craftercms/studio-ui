@@ -534,7 +534,7 @@ export const itemActionDispatcher = ({
       case 'createFolder': {
         dispatch(
           showCreateFolderDialog({
-            path: withoutIndex(item.path),
+            path: item.path,
             allowBraces: item.path.startsWith('/scripts/rest'),
             onCreated: batchActions([closeCreateFolderDialog(), showCreateFolderSuccessNotification()])
           })
@@ -545,7 +545,7 @@ export const itemActionDispatcher = ({
         // TODO: handle rename of different item types
         dispatch(
           showCreateFolderDialog({
-            path: withoutIndex(item.path),
+            path: item.path,
             allowBraces: item.path.startsWith('/scripts/rest'),
             rename: true,
             value: item.label

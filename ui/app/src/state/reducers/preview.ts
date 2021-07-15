@@ -256,7 +256,8 @@ const reducer = createReducer<GlobalState['preview']>(
           selected: null,
           itemBeingDragged: null
         },
-        computedUrl: payload.__CRAFTERCMS_GUEST_LANDING__ ? '' : url
+        computedUrl: payload.__CRAFTERCMS_GUEST_LANDING__ ? '' : url,
+        currentUrl: `${guestBase}${cleanseUrl(url)}`
         // Setting URL causes dual reload when guest navigation occurs
         // currentUrl: (payload.url && payload.origin ? payload.url.replace(payload.origin, '') : null) ?? state.currentUrl,
         // TODO: Retrieval of guestBase from initialState is not right.

@@ -147,6 +147,16 @@ export function HostUI(props: HostPropsUI) {
     };
   }, [origin, onMessage, postMessage$]);
 
+  useEffect(() => {
+    try {
+      if (iframeRef.current.contentDocument.location.href !== url) {
+        iframeRef.current.src = url;
+      }
+    } catch {
+      iframeRef.current.src = url;
+    }
+  }, [url]);
+
   return (
     <>
       <iframe
@@ -155,7 +165,6 @@ export function HostUI(props: HostPropsUI) {
         id="crafterCMSPreviewIframe"
         title={formatMessage(translations.iframeTitle)}
         ref={iframeRef}
-        src={url || 'about:blank'}
         className={cls}
       />
     </>
