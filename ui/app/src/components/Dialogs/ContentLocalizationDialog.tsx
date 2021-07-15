@@ -283,7 +283,7 @@ function ContentLocalizationDialogUI(props: ContentLocalizationDialogProps) {
       />
       <DialogBody>
         <SingleItemSelector
-          label="Item"
+          label={<FormattedMessage id="words.item" defaultMessage="Item" />}
           classes={{ root: classes.singleItemSelector }}
           open={openSelector}
           onClose={() => setOpenSelector(false)}

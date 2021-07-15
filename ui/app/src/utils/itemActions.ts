@@ -369,17 +369,13 @@ export function generateSingleItemOptions(
   // endregion
 
   // region Section C
-  if (hasPublishAction(item.availableActions) && actionsToInclude.publish) {
+  if (
+    (hasPublishAction(item.availableActions) && actionsToInclude.publish) ||
+    (hasPublishRequestAction(item.availableActions) && actionsToInclude.requestPublish) ||
+    (hasApprovePublishAction(item.availableActions) && actionsToInclude.approvePublish) ||
+    (hasSchedulePublishAction(item.availableActions) && actionsToInclude.schedulePublish)
+  ) {
     sectionC.push(menuOptions.publish);
-  }
-  if (hasPublishRequestAction(item.availableActions) && actionsToInclude.requestPublish) {
-    sectionC.push(menuOptions.requestPublish);
-  }
-  if (hasApprovePublishAction(item.availableActions) && actionsToInclude.approvePublish) {
-    sectionC.push(menuOptions.approvePublish);
-  }
-  if (hasSchedulePublishAction(item.availableActions) && actionsToInclude.schedulePublish) {
-    sectionC.push(menuOptions.schedulePublish);
   }
   if (hasPublishRejectAction(item.availableActions) && actionsToInclude.rejectPublish) {
     sectionC.push(menuOptions.rejectPublish);
@@ -538,7 +534,7 @@ export const itemActionDispatcher = ({
       case 'createFolder': {
         dispatch(
           showCreateFolderDialog({
-            path: withoutIndex(item.path),
+            path: item.path,
             allowBraces: item.path.startsWith('/scripts/rest'),
             onCreated: batchActions([closeCreateFolderDialog(), showCreateFolderSuccessNotification()])
           })
@@ -549,7 +545,7 @@ export const itemActionDispatcher = ({
         // TODO: handle rename of different item types
         dispatch(
           showCreateFolderDialog({
-            path: withoutIndex(item.path),
+            path: item.path,
             allowBraces: item.path.startsWith('/scripts/rest'),
             rename: true,
             value: item.label

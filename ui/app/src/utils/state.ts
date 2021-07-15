@@ -40,7 +40,7 @@ export function getStateMapFromLegacyItem(item: LegacyItem): ItemStateMap {
     submitted: Boolean(item.isSubmitted),
     scheduled: Boolean(item.isScheduled),
     publishing: false,
-    staged: item.endpoint === 'live' || item.endpoint === 'staged',
+    staged: item.endpoint === 'live' || item.endpoint === 'staging',
     live: item.endpoint === 'live'
   };
 }
