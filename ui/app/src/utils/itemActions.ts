@@ -441,17 +441,8 @@ export function generateMultipleItemOptions(
     reject = reject && hasPublishRejectAction(item.availableActions);
   });
 
-  if (publish) {
+  if (publish || schedulePublish || requestPublish || approvePublish) {
     options.push(menuOptions.publish);
-  }
-  if (schedulePublish) {
-    options.push(menuOptions.schedulePublish);
-  }
-  if (requestPublish) {
-    options.push(menuOptions.requestPublish);
-  }
-  if (approvePublish) {
-    options.push(menuOptions.approvePublish);
   }
   if (deleteItem) {
     options.push(menuOptions.delete);
