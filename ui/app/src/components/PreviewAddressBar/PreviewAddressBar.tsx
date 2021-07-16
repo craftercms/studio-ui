@@ -38,7 +38,6 @@ import { getNumOfMenuOptionsForItem } from '../../utils/content';
 import Tooltip from '@material-ui/core/Tooltip';
 import { changeCurrentUrl, RELOAD_REQUEST } from '../../state/actions/preview';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
-import { usePreviewState } from '../../utils/hooks/usePreviewState';
 import PreviewBackButton from '../PreviewBackButton';
 import PreviewForwardButton from '../PreviewForwardButton';
 import { usePreviewNavigation } from '../../utils/hooks/usePreviewNavigation';

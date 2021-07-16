@@ -17,7 +17,6 @@
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState, { PagedEntityState } from '../../models/GlobalState';
 import {
-  changeCurrentUrl,
   CLEAR_DROP_TARGETS,
   CLEAR_SELECT_FOR_EDIT,
   CLOSE_TOOLS,
@@ -35,8 +34,6 @@ import {
   fetchAudiencesPanelModelFailed,
   fetchGuestModelComplete,
   fetchPrimaryGuestModelComplete,
-  goToLastPage,
-  goToNextPage,
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
   guestModelUpdated,
