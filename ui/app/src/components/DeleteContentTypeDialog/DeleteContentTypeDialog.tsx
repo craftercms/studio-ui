@@ -19,12 +19,14 @@ import { useMemo, useState } from 'react';
 import { Dialog } from '@material-ui/core';
 import { defineMessages, useIntl } from 'react-intl';
 import { deleteContentType, fetchContentTypeUsage } from '../../services/contentTypes';
-import { createResource, useActiveSiteId, useUnmount } from '../../utils/hooks';
 import ContentType from '../../models/ContentType';
 import Suspencified from '../SystemStatus/Suspencified';
 import DeleteContentTypeDialogBody from './DeleteContentTypeDialogBody';
 import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../state/actions/system';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { createResource } from '../../utils/hooks/createResource';
+import { useUnmount } from '../../utils/hooks/useUnmount';
 
 export interface DeleteContentTypeDialogProps {
   open: boolean;

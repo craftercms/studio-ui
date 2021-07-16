@@ -18,7 +18,6 @@ import GlobalAppToolbar from '../GlobalAppToolbar';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import React, { useEffect, useRef, useState } from 'react';
 import { Box } from '@material-ui/core';
-import { useMount } from '../../utils/hooks';
 import { fetchConfigurationXML, writeConfiguration } from '../../services/configuration';
 import AceEditor from '../AceEditor';
 import useStyles from './styles';
@@ -32,6 +31,7 @@ import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../state/actions/system';
 import { useHistory } from 'react-router';
 import ConfirmDialog from '../Dialogs/ConfirmDialog';
+import { useMount } from '../../utils/hooks/useMount';
 
 export const translations = defineMessages({
   configSaved: {
@@ -89,7 +89,8 @@ export default function GlobalConfigManagement() {
     if (type === 'replace') {
       setContent(sample);
     } else {
-      setContent(content + sample);
+      const currentContent = aceEditorRef.current.getValue();
+      setContent(currentContent + sample);
     }
     setViewSample(false);
     aceEditorRef.current.focus();
@@ -165,7 +166,7 @@ export default function GlobalConfigManagement() {
           <AceEditor
             ref={aceEditorRef}
             onChange={onChange}
-            className={classes.root}
+            classes={{ editorRoot: classes.root }}
             value={content}
             mode="ace/mode/yaml"
             theme="ace/theme/textmate"

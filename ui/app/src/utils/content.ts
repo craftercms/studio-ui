@@ -139,9 +139,7 @@ export function getComputedEditMode({
   username: string;
   editMode: boolean;
 }): boolean {
-  return isItemLockedForMe(item, username) === true || hasEditAction(item.availableActions) === false
-    ? false
-    : editMode;
+  return isItemLockedForMe(item, username) || !hasEditAction(item.availableActions) ? false : editMode;
 }
 
 export function getSystemTypeFromPath(path: string): SystemType {
@@ -257,7 +255,12 @@ export function parseLegacyItemToDetailedItem(item: LegacyItem | LegacyItem[]): 
       commitId: null,
       sizeInBytes: null
     },
-    staging: null,
+    staging: {
+      lastScheduledDate: item.scheduledDate,
+      lastPublishedDate: item.publishedDate,
+      publisher: item.user,
+      commitId: null
+    },
     live: {
       lastScheduledDate: item.scheduledDate,
       lastPublishedDate: item.publishedDate,

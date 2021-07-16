@@ -103,7 +103,7 @@ import {
   hasUnlockAction,
   hasUploadAction
 } from './content';
-import { isNavigable } from '../components/PathNavigator/utils';
+import { getEditorMode, isNavigable } from '../components/PathNavigator/utils';
 import React from 'react';
 import { previewItem } from '../state/actions/preview';
 import { createPresenceTable } from './array';
@@ -369,17 +369,13 @@ export function generateSingleItemOptions(
   // endregion
 
   // region Section C
-  if (hasPublishAction(item.availableActions) && actionsToInclude.publish) {
+  if (
+    (hasPublishAction(item.availableActions) && actionsToInclude.publish) ||
+    (hasPublishRequestAction(item.availableActions) && actionsToInclude.requestPublish) ||
+    (hasApprovePublishAction(item.availableActions) && actionsToInclude.approvePublish) ||
+    (hasSchedulePublishAction(item.availableActions) && actionsToInclude.schedulePublish)
+  ) {
     sectionC.push(menuOptions.publish);
-  }
-  if (hasPublishRequestAction(item.availableActions) && actionsToInclude.requestPublish) {
-    sectionC.push(menuOptions.requestPublish);
-  }
-  if (hasApprovePublishAction(item.availableActions) && actionsToInclude.approvePublish) {
-    sectionC.push(menuOptions.approvePublish);
-  }
-  if (hasSchedulePublishAction(item.availableActions) && actionsToInclude.schedulePublish) {
-    sectionC.push(menuOptions.schedulePublish);
   }
   if (hasPublishRejectAction(item.availableActions) && actionsToInclude.rejectPublish) {
     sectionC.push(menuOptions.rejectPublish);
@@ -445,17 +441,8 @@ export function generateMultipleItemOptions(
     reject = reject && hasPublishRejectAction(item.availableActions);
   });
 
-  if (publish) {
+  if (publish || schedulePublish || requestPublish || approvePublish) {
     options.push(menuOptions.publish);
-  }
-  if (schedulePublish) {
-    options.push(menuOptions.schedulePublish);
-  }
-  if (requestPublish) {
-    options.push(menuOptions.requestPublish);
-  }
-  if (approvePublish) {
-    options.push(menuOptions.approvePublish);
   }
   if (deleteItem) {
     options.push(menuOptions.delete);
@@ -538,7 +525,7 @@ export const itemActionDispatcher = ({
       case 'createFolder': {
         dispatch(
           showCreateFolderDialog({
-            path: withoutIndex(item.path),
+            path: item.path,
             allowBraces: item.path.startsWith('/scripts/rest'),
             onCreated: batchActions([closeCreateFolderDialog(), showCreateFolderSuccessNotification()])
           })
@@ -549,7 +536,7 @@ export const itemActionDispatcher = ({
         // TODO: handle rename of different item types
         dispatch(
           showCreateFolderDialog({
-            path: withoutIndex(item.path),
+            path: item.path,
             allowBraces: item.path.startsWith('/scripts/rest'),
             rename: true,
             value: item.label
@@ -723,6 +710,7 @@ export const itemActionDispatcher = ({
           editController({
             path: `/scripts/${item.systemType === 'page' ? 'pages' : 'components'}`,
             fileName: `${popPiece(item.contentTypeId, '/')}.groovy`,
+            mode: 'groovy',
             contentType: item.contentTypeId
           })
         );
@@ -745,16 +733,14 @@ export const itemActionDispatcher = ({
         break;
       }
       case 'editCode': {
-        dispatch(showCodeEditorDialog({ site, authoringBase, path: item.path, type: 'asset' }));
+        dispatch(showCodeEditorDialog({ path: item.path, mode: getEditorMode(item) }));
         break;
       }
       case 'viewCode': {
         dispatch(
           showCodeEditorDialog({
-            site,
-            authoringBase,
             path: item.path,
-            type: 'asset',
+            mode: getEditorMode(item),
             readonly: true
           })
         );

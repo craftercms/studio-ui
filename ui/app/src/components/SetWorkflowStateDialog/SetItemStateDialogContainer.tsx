@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useSpreadState, useUnmount } from '../../utils/hooks';
 import DialogHeader from '../Dialogs/DialogHeader';
 import { FormattedMessage } from 'react-intl';
 import DialogBody from '../Dialogs/DialogBody';
@@ -30,6 +29,8 @@ import PrimaryButton from '../PrimaryButton';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import { CSSProperties } from '@material-ui/styles';
+import { useUnmount } from '../../utils/hooks/useUnmount';
+import { useSpreadState } from '../../utils/hooks/useSpreadState';
 
 export function SetItemStateDialogContainer(props: SetItemStateDialogProps) {
   const { onClose, onClosed, title } = props;

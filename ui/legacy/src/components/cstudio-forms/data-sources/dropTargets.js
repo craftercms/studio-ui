@@ -322,6 +322,8 @@
     _openContentTypeForm(contentType, type, control) {
       const self = this;
       const path = `${self.baseRepoPath}/${contentType.replace(/\//g, '_').substr(1)}`;
+
+      let parentPath = self.form.path;
       CStudioAuthoring.Operations.openContentWebForm(
         contentType,
         null,
@@ -337,7 +339,10 @@
           },
           failure: function() {}
         },
-        [{ name: 'childForm', value: 'true' }],
+        [
+          { name: 'childForm', value: 'true' },
+          { name: 'parentPath', value: parentPath }
+        ],
         null,
         type === 'embedded' ? true : null
       );

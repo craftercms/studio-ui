@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren, useState } from 'react';
+import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import DialogHeader from './DialogHeader';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
@@ -22,7 +22,6 @@ import DialogBody from './DialogBody';
 import DialogFooter from './DialogFooter';
 import TextField from '@material-ui/core/TextField';
 import { createFolder, renameFolder } from '../../services/content';
-import { useActiveSiteId, useUnmount } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import StandardAction from '../../models/StandardAction';
@@ -30,8 +29,13 @@ import { emitSystemEvent, folderCreated, folderRenamed } from '../../state/actio
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import { validateActionPolicy } from '../../services/sites';
-import { getParentPath } from '../../utils/path';
+import { getParentPath, getRootPath, withoutIndex } from '../../utils/path';
 import ConfirmDialog from './ConfirmDialog';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { useUnmount } from '../../utils/hooks/useUnmount';
+import { useDetailedItem } from '../../utils/hooks/useDetailedItem';
+import SingleItemSelector from '../../modules/Content/Authoring/SingleItemSelector';
+import { DetailedItem, SandboxItem } from '../../models/Item';
 
 export const translations = defineMessages({
   placeholder: {
@@ -103,7 +107,6 @@ function CreateFolderUI(props: CreateFolderUIProps) {
   const {
     onClosed,
     onClose,
-    path,
     submitted,
     inProgress,
     setState,
@@ -118,6 +121,18 @@ function CreateFolderUI(props: CreateFolderUIProps) {
   const dispatch = useDispatch();
   const site = useActiveSiteId();
   const { formatMessage } = useIntl();
+  const item = useDetailedItem(props.path);
+  const [openSelector, setOpenSelector] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<DetailedItem>(null);
+  const path = useMemo(() => {
+    return selectedItem ? withoutIndex(selectedItem.path) : withoutIndex(props.path);
+  }, [props.path, selectedItem]);
+
+  useEffect(() => {
+    if (item && rename === false) {
+      setSelectedItem(item);
+    }
+  }, [item, rename]);
 
   useUnmount(onClosed);
 
@@ -189,6 +204,8 @@ function CreateFolderUI(props: CreateFolderUIProps) {
     setState({ inProgress: false, submitted: true });
   };
 
+  const itemSelectorFilterChildren = useMemo(() => (item: SandboxItem) => item.availableActionsMap.createFolder, []);
+
   return (
     <>
       <DialogHeader
@@ -202,6 +219,22 @@ function CreateFolderUI(props: CreateFolderUIProps) {
         onDismiss={inProgress === null ? onClose : null}
       />
       <DialogBody>
+        {selectedItem && (
+          <SingleItemSelector
+            label={<FormattedMessage id="words.location" defaultMessage="Location" />}
+            open={openSelector}
+            onClose={() => setOpenSelector(false)}
+            onDropdownClick={() => setOpenSelector(!openSelector)}
+            rootPath={getRootPath(path)}
+            selectedItem={selectedItem}
+            canSelectFolders
+            onItemClicked={(item) => {
+              setOpenSelector(false);
+              setSelectedItem(item);
+            }}
+            filterChildren={itemSelectorFilterChildren}
+          />
+        )}
         <form
           onSubmit={(e) => {
             e.preventDefault();

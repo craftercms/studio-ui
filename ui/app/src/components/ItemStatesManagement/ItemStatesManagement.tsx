@@ -16,7 +16,6 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import ApiResponse from '../../models/ApiResponse';
-import { useActiveSiteId, useDebouncedInput, useLogicResource, useSpreadState } from '../../utils/hooks';
 import { fetchItemStates, setItemStates, setItemStatesByQuery, StatesToUpdate } from '../../services/workflow';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -46,6 +45,10 @@ import ItemStateIcon from '../ItemStateIcon';
 import ActionsBar from '../ActionsBar';
 import translations from './translations';
 import ResizeableDrawer from '../../modules/Preview/ResizeableDrawer';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { useLogicResource } from '../../utils/hooks/useLogicResource';
+import { useDebouncedInput } from '../../utils/hooks/useDebouncedInput';
+import { useSpreadState } from '../../utils/hooks/useSpreadState';
 
 interface ItemStatesManagementProps {
   embedded?: boolean;

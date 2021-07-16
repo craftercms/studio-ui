@@ -18,7 +18,6 @@ import React, { PropsWithChildren, useCallback, useEffect, useRef, useState } fr
 import { defineMessages, useIntl } from 'react-intl';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Dialog from '@material-ui/core/Dialog';
-import { useMinimizeDialog, useSelection, useUnmount } from '../../utils/hooks';
 import DialogBody from './DialogBody';
 import { minimizeDialog } from '../../state/reducers/dialogs/minimizedDialogs';
 import { useDispatch } from 'react-redux';
@@ -36,6 +35,9 @@ import { Button, IconButton } from '@material-ui/core';
 import CloseIconRounded from '@material-ui/icons/CloseRounded';
 import { closeConfirmDialog, closeUploadDialog, showConfirmDialog } from '../../state/actions/dialogs';
 import { batchActions } from '../../state/actions/misc';
+import { useSelection } from '../../utils/hooks/useSelection';
+import { useUnmount } from '../../utils/hooks/useUnmount';
+import { useMinimizeDialog } from '../../utils/hooks/useMinimizeDialog';
 
 const translations = defineMessages({
   title: {

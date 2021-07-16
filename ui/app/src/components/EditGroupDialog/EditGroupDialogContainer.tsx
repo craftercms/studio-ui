@@ -32,17 +32,17 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../state/actions/system';
-import { useSpreadState, useUnmount } from '../../utils/hooks';
 import Typography from '@material-ui/core/Typography';
+import { useUnmount } from '../../utils/hooks/useUnmount';
+import { useSpreadState } from '../../utils/hooks/useSpreadState';
 
 export interface EditGroupDialogContainerProps {
-  open: boolean;
   group?: Group;
   onClose(): void;
   onClosed?(): void;
   onGroupSaved(group: Group): void;
   onGroupDeleted(group: Group): void;
-  setDisableBackdropClick?(disabled: boolean): void;
+  setPendingChanges?(disabled: boolean): void;
 }
 
 const translations = defineMessages({
@@ -69,7 +69,7 @@ const translations = defineMessages({
 });
 
 export default function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
-  const { onClose, onGroupSaved, onGroupDeleted, onClosed, setDisableBackdropClick = () => void 0 } = props;
+  const { onClose, onGroupSaved, onGroupDeleted, onClosed, setPendingChanges = () => void 0 } = props;
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
 
@@ -154,9 +154,10 @@ export default function EditGroupDialogContainer(props: EditGroupDialogContainer
   };
 
   const onChangeValue = (property: { key: string; value: string }) => {
+    console.log('asd');
     setIsDirty(true);
     setGroup({ [property.key]: property.value });
-    setDisableBackdropClick(Boolean(group[property.key === 'name' ? 'desc' : 'name'] || property.value));
+    setPendingChanges(Boolean(group[property.key === 'name' ? 'desc' : 'name'] || property.value));
   };
 
   const onSave = () => {

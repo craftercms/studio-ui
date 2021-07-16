@@ -17,7 +17,6 @@
 import React, { PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
 import { DetailedItem, SandboxItem } from '../../../models/Item';
 import { fetchDependant, fetchSimpleDependencies } from '../../../services/dependencies';
-import { useActiveSiteId, useLogicResource, useSelection, useSpreadState, useUnmount } from '../../../utils/hooks';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { isAsset, isCode, isEditableAsset, isImage, parseLegacyItemToSandBoxItem } from '../../../utils/content';
 import StandardAction from '../../../models/StandardAction';
@@ -50,6 +49,11 @@ import { showCodeEditorDialog, showEditDialog, showHistoryDialog } from '../../.
 import { batchActions } from '../../../state/actions/misc';
 import { fetchItemVersions } from '../../../state/reducers/versions';
 import { getRootPath } from '../../../utils/path';
+import { useSelection } from '../../../utils/hooks/useSelection';
+import { useActiveSiteId } from '../../../utils/hooks/useActiveSiteId';
+import { useLogicResource } from '../../../utils/hooks/useLogicResource';
+import { useUnmount } from '../../../utils/hooks/useUnmount';
+import { useSpreadState } from '../../../utils/hooks/useSpreadState';
 
 const assetsTypes = {
   'all-deps': {
@@ -258,7 +262,7 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
       <DialogBody className={classes.dialogBody}>
         <div className={classes.selectionContent}>
           <SingleItemSelector
-            label="Item"
+            label={<FormattedMessage id="words.item" defaultMessage="Item" />}
             open={openSelector}
             onClose={() => setOpenSelector(false)}
             onDropdownClick={() => setOpenSelector(!openSelector)}

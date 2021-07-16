@@ -18,7 +18,6 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import RecentlyPublishedWidgetUI from './RecentlyPublishedDashletUI';
 import ApiResponse from '../../models/ApiResponse';
 import { LegacyDeploymentHistoryType } from '../../models/Dashboard';
-import { useActiveSiteId, useLocale, useLogicResource, useSpreadState } from '../../utils/hooks';
 import { fetchLegacyDeploymentHistory } from '../../services/dashboard';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import { FormattedMessage } from 'react-intl';
@@ -34,6 +33,10 @@ import TextField from '@material-ui/core/TextField';
 import { itemsApproved, itemsDeleted, itemsRejected, itemsScheduled } from '../../state/actions/system';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { filter } from 'rxjs/operators';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { useLogicResource } from '../../utils/hooks/useLogicResource';
+import { useSpreadState } from '../../utils/hooks/useSpreadState';
+import { useLocale } from '../../utils/hooks/useLocale';
 
 export interface RecentlyPublishedWidgetProps {
   selectedLookup: LookupTable<boolean>;
@@ -115,8 +118,9 @@ export default function RecentlyPublishedDashlet(props: RecentlyPublishedWidgetP
             parentItems.push({
               label: document.internalName,
               children: document.children.map((item) => {
-                childrenLookup[item.uri] = parseLegacyItemToDetailedItem(item);
-                return item.uri;
+                const key = `${item.uri}:${item.eventDate}`;
+                childrenLookup[key] = parseLegacyItemToDetailedItem(item);
+                return key;
               })
             });
           }

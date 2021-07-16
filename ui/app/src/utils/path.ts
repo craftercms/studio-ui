@@ -48,6 +48,10 @@ export function getPreviewURLFromPath(path: string): string {
   return withoutIndex(path).replace('/site/website', '') || '/';
 }
 
+export function getFileNameFromPath(path: string): string {
+  return path.substring(path.lastIndexOf('/') + 1);
+}
+
 export function getQueryVariable(query: string, variable: string): string | string[] {
   let qs = parse(query);
   return qs[variable] ?? null;
@@ -148,6 +152,7 @@ export function isValidCutPastePath(targetPath, sourcePath): boolean {
 
 export function getEditFormSrc({
   path,
+  selectedFields,
   site,
   authoringBase,
   readonly,
@@ -158,6 +163,7 @@ export function getEditFormSrc({
   isNewContent
 }: {
   path: string;
+  selectedFields?: string;
   site: string;
   authoringBase: string;
   readonly?: boolean;
@@ -170,6 +176,7 @@ export function getEditFormSrc({
   const qs = toQueryString({
     site,
     path,
+    selectedFields,
     type: 'form',
     readonly,
     isHidden,

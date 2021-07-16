@@ -18,7 +18,6 @@ import React, { lazy, Suspense, useEffect, useLayoutEffect, useMemo } from 'reac
 import ReactDOM from 'react-dom';
 import StandardAction from '../../models/StandardAction';
 import { Dispatch } from 'redux';
-import { useSelection } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { MinimizedBar } from './MinimizedBar';
@@ -32,6 +31,8 @@ import { showSystemNotification } from '../../state/actions/system';
 import Launcher from '../Launcher/Launcher';
 import UnlockPublisherDialog from '../UnlockPublisherDialog';
 import WidgetDialog from '../WidgetDialog';
+import { useSelection } from '../../utils/hooks/useSelection';
+import CodeEditorDialog from '../CodeEditorDialog';
 
 const ViewVersionDialog = lazy(() => import('../../modules/Content/History/ViewVersionDialog'));
 const CompareVersionsDialog = lazy(() => import('../../modules/Content/History/CompareVersionsDialog'));
@@ -47,7 +48,6 @@ const DependenciesDialog = lazy(() => import('../../modules/Content/Dependencies
 const DeleteDialog = lazy(() => import('../../modules/Content/Delete/DeleteDialog'));
 const WorkflowCancellationDialog = lazy(() => import('../Dialogs/WorkflowCancellationDialog'));
 const LegacyFormDialog = lazy(() => import('../Dialogs/LegacyFormDialog'));
-const LegacyCodeEditorDialog = lazy(() => import('../Dialogs/LegacyCodeEditorDialog'));
 const CreateFolderDialog = lazy(() => import('../Dialogs/CreateFolderDialog'));
 const CopyItemsDialog = lazy(() => import('../Dialogs/CopyDialog'));
 const CreateFileDialog = lazy(() => import('../Dialogs/CreateFileDialog'));
@@ -162,6 +162,7 @@ function GlobalDialogManager() {
       <LegacyFormDialog
         open={state.edit.open}
         path={state.edit.path}
+        selectedFields={state.edit.selectedFields}
         site={state.edit.site}
         authoringBase={state.edit.authoringBase}
         readonly={state.edit.readonly}
@@ -179,20 +180,16 @@ function GlobalDialogManager() {
       />
       {/* endregion */}
 
-      {/* region LegacyCodeEditorDialog */}
-      <LegacyCodeEditorDialog
+      {/* region Code Editor */}
+      <CodeEditorDialog
         open={state.codeEditor.open}
         path={state.codeEditor.path}
-        site={state.codeEditor.site}
-        type={state.codeEditor.type}
-        contentType={state.codeEditor.contentType}
-        authoringBase={state.codeEditor.authoringBase}
+        mode={state.codeEditor.mode}
         readonly={state.codeEditor.readonly}
-        inProgress={state.codeEditor.inProgress}
+        contentType={state.codeEditor.contentType}
         pendingChanges={state.codeEditor.pendingChanges}
         onClose={createCallback(state.codeEditor.onClose, dispatch)}
         onClosed={createCallback(state.codeEditor.onClosed, dispatch)}
-        onDismiss={createCallback(state.codeEditor.onDismiss, dispatch)}
         onSuccess={createCallback(state.codeEditor.onSuccess, dispatch)}
       />
       {/* endregion */}

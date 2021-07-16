@@ -24,10 +24,14 @@ import { fetchAll } from '../../services/users';
 import { PagedArray } from '../../models/PagedArray';
 import User from '../../models/User';
 import { ApiResponse } from '../../models/ApiResponse';
-import { useLogicResource } from '../../utils/hooks';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import Button from '@material-ui/core/Button';
+import { useLogicResource } from '../../utils/hooks/useLogicResource';
+import SearchBar from '../Controls/SearchBar';
+import { useDebouncedInput } from '../../utils/hooks/useDebouncedInput';
+import useStyles from './styles';
+import clsx from 'clsx';
 
 interface UsersManagementProps {
   passwordRequirementsRegex?: string;
@@ -44,20 +48,26 @@ export default function UsersManagement(props: UsersManagementProps) {
   const [error, setError] = useState<ApiResponse>();
   const [openCreateUserDialog, setOpenCreateUserDialog] = useState(false);
   const [viewUser, setViewUser] = useState(null);
+  const [showSearchBox, setShowSearchBox] = useState(false);
+  const [keyword, setKeyword] = useState('');
+  const classes = useStyles();
 
-  const fetchUsers = useCallback(() => {
-    setFetching(true);
-    fetchAll({ limit, offset }).subscribe(
-      (users) => {
-        setUsers(users);
-        setFetching(false);
-      },
-      ({ response }) => {
-        setError(response);
-        setFetching(false);
-      }
-    );
-  }, [limit, offset]);
+  const fetchUsers = useCallback(
+    (keyword = '') => {
+      setFetching(true);
+      fetchAll({ limit, offset, keyword }).subscribe(
+        (users) => {
+          setUsers(users);
+          setFetching(false);
+        },
+        ({ response }) => {
+          setError(response);
+          setFetching(false);
+        }
+      );
+    },
+    [limit, offset]
+  );
 
   useEffect(() => {
     fetchUsers();
@@ -102,6 +112,24 @@ export default function UsersManagement(props: UsersManagementProps) {
     setLimit(e.target.value);
   };
 
+  const onShowSearchBox = () => {
+    setShowSearchBox(!showSearchBox);
+  };
+
+  const onSearch = useCallback(
+    (keyword) => {
+      fetchUsers(keyword);
+    },
+    [fetchUsers]
+  );
+
+  const onSearch$ = useDebouncedInput(onSearch, 400);
+
+  function handleSearchKeyword(keyword: string) {
+    setKeyword(keyword);
+    onSearch$.next(keyword);
+  }
+
   return (
     <section>
       <GlobalAppToolbar
@@ -115,6 +143,15 @@ export default function UsersManagement(props: UsersManagementProps) {
           >
             <FormattedMessage id="usersGrid.createUser" defaultMessage="Create User" />
           </Button>
+        }
+        rightContent={
+          <SearchBar
+            classes={{ root: clsx(classes.searchBarRoot, !showSearchBox && 'hidden') }}
+            keyword={keyword}
+            onChange={handleSearchKeyword}
+            onDecoratorButtonClick={onShowSearchBox}
+            showActionButton={Boolean(keyword)}
+          />
         }
       />
       <SuspenseWithEmptyState

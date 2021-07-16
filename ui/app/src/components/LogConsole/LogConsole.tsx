@@ -27,11 +27,12 @@ import moment from 'moment-timezone';
 import LogConsoleGridUI from '../LogConsoleGrid';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
-import { useActiveSiteId, useMount } from '../../utils/hooks';
 import { ConditionalLoadingState } from '../SystemStatus/LoadingState';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import LogConsoleDetailsDialog from '../LogConsoleDetailsDialog';
 import EmptyState from '../SystemStatus/EmptyState';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { useMount } from '../../utils/hooks/useMount';
 
 interface LogConsoleManagementProps {
   logType?: 'studio' | 'preview';
@@ -64,7 +65,8 @@ export default function LogConsole(props: LogConsoleManagementProps) {
             setLogEvents(newLogEvents);
           }
         },
-        ({ response: { response } }) => {
+        (response) => {
+          response = response.response ? response.response.response : response;
           setError(response);
           dispatch(showErrorDialog({ error: response }));
         }

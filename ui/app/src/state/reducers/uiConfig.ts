@@ -23,10 +23,7 @@ import {
   fetchGlobalMenuFailed,
   fetchSiteLocale,
   fetchSiteLocaleComplete,
-  fetchSiteLocaleFailed,
-  fetchSiteTools,
-  fetchSiteToolsComplete,
-  fetchSiteToolsFailed
+  fetchSiteLocaleFailed
 } from '../actions/system';
 import { fetchSiteLocales, fetchSiteLocalesComplete, fetchSiteLocalesFailed } from '../actions/translation';
 
@@ -76,11 +73,7 @@ const initialState: GlobalState['uiConfig'] = {
   publishing: {
     submissionCommentMaxLength: 250
   },
-  siteTools: {
-    error: null,
-    tools: null,
-    isFetching: false
-  }
+  references: null
 };
 
 const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
@@ -169,29 +162,6 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
     ...state,
     locale: {
       ...state.locale,
-      isFetching: false,
-      error: payload
-    }
-  }),
-  [fetchSiteTools.type]: (state) => ({
-    ...state,
-    siteTools: {
-      ...state.siteTools,
-      isFetching: true
-    }
-  }),
-  [fetchSiteToolsComplete.type]: (state, { payload }) => ({
-    ...state,
-    siteTools: {
-      ...state.siteTools,
-      isFetching: false,
-      tools: payload
-    }
-  }),
-  [fetchSiteToolsFailed.type]: (state, { payload }) => ({
-    ...state,
-    siteTools: {
-      ...state.siteTools,
       isFetching: false,
       error: payload
     }

@@ -60,10 +60,10 @@ export function getItemStateId(stateMap): ItemStates {
       return 'scheduled';
     case stateMap.submitted:
       return 'submitted';
-    case stateMap.modified:
-      return 'modified';
     case stateMap.new:
       return 'new';
+    case stateMap.modified:
+      return 'modified';
     case stateMap.publishing:
       return 'publishing';
     case stateMap.staged:

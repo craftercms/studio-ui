@@ -380,6 +380,7 @@ CStudioAuthoring.Module.requireModule(
             browser_spellcheck: this.enableSpellCheck,
             contextmenu: !this.enableSpellCheck,
             valid_children: validChildren,
+            image_uploadtab: this.editorImageDatasources.length > 0,
 
             menu: {
               tools: { title: 'Tools', items: 'tinymcespellchecker code acecode wordcount' }
@@ -740,8 +741,13 @@ CStudioAuthoring.Module.requireModule(
                 api.close();
               },
               onCancel: function() {
-                $imageToAdd.remove();
-                failure(null, { remove: true });
+                if ($imageToAdd.length > 0) {
+                  $imageToAdd.remove();
+                  failure(null, { remove: true });
+                } else {
+                  // Remove spinner added by upload tab under insert image dialog
+                  $('.tox-dialog__busy-spinner').remove();
+                }
               },
               buttons: [
                 {

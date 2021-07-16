@@ -40,7 +40,6 @@ import { WorkflowCancellationDialogStateProps } from '../components/Dialogs/Work
 import { RejectDialogStateProps } from '../components/Dialogs/RejectDialog';
 import { PathNavigatorStateProps } from '../components/PathNavigator';
 import { LegacyFormDialogStateProps } from '../components/Dialogs/LegacyFormDialog';
-import { LegacyCodeEditorDialogStateProps } from '../components/Dialogs/LegacyCodeEditorDialog';
 import { DetailedItem } from './Item';
 import { CreateFolderStateProps } from '../components/Dialogs/CreateFolderDialog';
 import { CopyDialogStateProps } from '../components/Dialogs/CopyDialog';
@@ -62,6 +61,7 @@ import { AjaxError } from 'rxjs/ajax';
 import { PathNavigatorTreeStateProps } from '../components/PathNavigatorTree';
 import { UnlockPublisherDialogStateProps } from '../components/UnlockPublisherDialog';
 import { WidgetDialogStateProps } from '../components/WidgetDialog';
+import { CodeEditorDialogStateProps } from '../components/CodeEditorDialog';
 import DateTimeFormatOptions = Intl.DateTimeFormatOptions;
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
@@ -126,6 +126,7 @@ export interface GlobalState {
     };
     itemsByPath: LookupTable<DetailedItem>;
     clipboard: Clipboard;
+    itemsBeingFetchedByPath: LookupTable<boolean>;
   };
   contentTypes: EntityState<ContentType>;
   env: {
@@ -152,6 +153,8 @@ export interface GlobalState {
     toolsPanelWidth: number;
     pageBuilderPanelWidth: number;
     pageBuilderPanelStack: WidgetDescriptor[];
+    historyBackStack: string[];
+    historyForwardStack: string[];
     hostSize: WidthAndHeight;
     guest: GuestData;
     assets: PagedEntityState<MediaItem>;
@@ -181,7 +184,7 @@ export interface GlobalState {
     dependencies: DependenciesDialogStateProps;
     delete: DeleteDialogStateProps;
     edit: LegacyFormDialogStateProps;
-    codeEditor: LegacyCodeEditorDialogStateProps;
+    codeEditor: CodeEditorDialogStateProps;
     workflowCancellation: WorkflowCancellationDialogStateProps;
     reject: RejectDialogStateProps;
     createFolder: CreateFolderStateProps;
@@ -259,11 +262,7 @@ export interface GlobalState {
     publishing: {
       submissionCommentMaxLength: number;
     };
-    siteTools: {
-      error: AjaxError;
-      tools: Array<{ icon: SystemIconDescriptor; id: string }>;
-      isFetching: boolean;
-    };
+    references: LookupTable<LookupTable<any>>;
   };
   pathNavigator: {
     [id: string]: PathNavigatorStateProps;

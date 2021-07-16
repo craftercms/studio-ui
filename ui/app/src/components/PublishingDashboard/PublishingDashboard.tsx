@@ -15,7 +15,6 @@
  */
 
 import * as React from 'react';
-import { useActiveSiteId } from '../../utils/hooks';
 import PublishingStatusWidget from '../PublishingStatusWidget';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
@@ -23,12 +22,18 @@ import PublishingQueueWidget from '../PublishingQueueWidget';
 import PublishOnDemandWidget from '../PublishOnDemandWidget';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import { FormattedMessage } from 'react-intl';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import clsx from 'clsx';
 
 const useStyles = makeStyles(() =>
   createStyles({
     root: {},
     grid: {
       padding: '20px'
+    },
+    gridNoEmbedded: {
+      height: 'calc(100vh - 65px)', // full viewport height - toolbar height
+      overflowY: 'auto'
     },
     warningText: {
       display: 'block'
@@ -52,7 +57,7 @@ export default function PublishingDashboard(props: PublishingDashboardProps) {
           title={<FormattedMessage id="publishingDashboard.title" defaultMessage="Publishing Dashboard" />}
         />
       )}
-      <Grid container spacing={3} className={classes.grid}>
+      <Grid container className={clsx(classes.grid, !embedded ? classes.gridNoEmbedded : null)}>
         <Grid item xs={12}>
           <PublishingStatusWidget siteId={site} />
         </Grid>

@@ -15,7 +15,6 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-import { useActiveSiteId, useMount, useSelection } from '../../utils/hooks';
 import { fetchActiveEnvironment } from '../../services/environment';
 import { fetchConfigurationXML, fetchSiteConfigurationFiles, writeConfiguration } from '../../services/configuration';
 import { SiteConfigurationFileWithId } from '../../models/SiteConfigurationFile';
@@ -66,6 +65,9 @@ import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import ResizeBar from '../ResizeBar';
 import { useHistory } from 'react-router';
 import { fetchSiteUiConfig } from '../../state/actions/configuration';
+import { useSelection } from '../../utils/hooks/useSelection';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { useMount } from '../../utils/hooks/useMount';
 
 interface SiteConfigurationManagementProps {
   embedded?: boolean;
@@ -600,10 +602,12 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
               <AceEditor
                 ref={editorRef}
                 styles={{
-                  base: {
+                  root: {
+                    display: 'flex',
                     width: leftEditorWidth ? `${leftEditorWidth}px` : 'auto',
-                    flexGrow: leftEditorWidth ? 0 : 1,
-                    height: '100%',
+                    flexGrow: leftEditorWidth ? 0 : 1
+                  },
+                  editorRoot: {
                     margin: 0,
                     opacity: encrypting ? 0.5 : 1,
                     border: '0',
@@ -622,7 +626,7 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
                   <ResizeBar onWidthChange={onEditorResize} element={editorRef.current.container} />
                   <ConditionalLoadingState isLoading={loadingSampleXml} classes={{ root: classes.loadingStateRight }}>
                     <AceEditor
-                      className={clsx(classes.editorCleanStyles, classes.sampleEditor)}
+                      classes={{ root: classes.rootEditor, editorRoot: classes.editorRoot }}
                       mode="ace/mode/xml"
                       theme="ace/theme/textmate"
                       autoFocus={false}

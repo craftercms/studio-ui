@@ -16,9 +16,11 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { useMount } from '../utils/hooks';
 import { pluckProps } from '../utils/object';
 import { CSSProperties } from '@material-ui/styles';
+import { useMount } from '../utils/hooks/useMount';
+import useTheme from '@material-ui/core/styles/useTheme';
+import clsx from 'clsx';
 
 // @see https://github.com/ajaxorg/ace/wiki/Configuring-Ace
 export interface AceOptions {
@@ -90,13 +92,13 @@ export interface AceOptions {
   useElasticTabstops: boolean;
 }
 
-export type AceEditorClassKey = 'base';
+export type AceEditorClassKey = 'root' | 'editorRoot';
 
 export type AceEditorStyles = Partial<Record<AceEditorClassKey, CSSProperties>>;
 
 export interface AceEditorProps extends Partial<AceOptions> {
   value?: any;
-  className?: string;
+  classes?: Partial<Record<AceEditorClassKey, string>>;
   autoFocus?: boolean;
   styles?: AceEditorStyles;
   onChange?(e: any): void;
@@ -167,10 +169,15 @@ const aceOptions: Array<keyof AceOptions> = [
 
 const useStyles = makeStyles((theme) =>
   createStyles<AceEditorClassKey, AceEditorStyles>({
-    base: (styles) => ({
+    root: (styles) => ({
+      display: 'contents',
+      ...styles.root
+    }),
+    editorRoot: (styles) => ({
       width: '100%',
       height: '100%',
-      ...styles.base
+      margin: 0,
+      ...styles.editorRoot
     })
   })
 );
@@ -178,13 +185,21 @@ const useStyles = makeStyles((theme) =>
 export default React.forwardRef(function AceEditor(props: AceEditorProps, ref) {
   const { value = '', autoFocus = false, onChange } = props;
   const classes = useStyles(props.styles);
+  const editorRootClasses = props.classes?.editorRoot;
   const refs = useRef({
     ace: null,
     elem: null,
+    pre: null,
     onChange: null
   });
   const [initialized, setInitialized] = useState(false);
+
+  const {
+    palette: { type }
+  } = useTheme();
+
   const options = pluckProps(props as AceOptions, true, ...aceOptions);
+  options.theme = options.theme ?? `ace/theme/${type === 'light' ? 'chrome' : 'tomorrow_night'}`;
 
   refs.current.onChange = onChange;
 
@@ -194,7 +209,11 @@ export default React.forwardRef(function AceEditor(props: AceEditorProps, ref) {
     let aceEditor;
     const init = () => {
       if (!unmounted) {
-        aceEditor = window.ace.edit(refs.current.elem, options);
+        const pre = document.createElement('pre');
+        pre.className = clsx(classes.editorRoot, editorRootClasses);
+        refs.current.pre = pre;
+        refs.current.elem.appendChild(pre);
+        aceEditor = window.ace.edit(pre, options);
         aceEditor.setValue(value, -1);
         autoFocus && aceEditor.focus();
         refs.current.ace = aceEditor;
@@ -241,12 +260,22 @@ export default React.forwardRef(function AceEditor(props: AceEditorProps, ref) {
       refs.current.ace.setValue(value, -1);
     }
   }, [initialized, value]);
+  useEffect(() => {
+    if (refs.current.pre) {
+      refs.current.pre.className = `${[...refs.current.pre.classList]
+        .filter((value) => !/craftercms-|makeStyles-/.test(value))
+        .join(' ')} ${clsx(classes?.editorRoot, editorRootClasses)}`;
+    }
+  }, [classes.editorRoot, editorRootClasses]);
+
   return (
-    <pre
+    <div
       ref={(e) => {
-        refs.current.elem = e;
+        if (e) {
+          refs.current.elem = e;
+        }
       }}
-      className={props.className ?? classes.base}
+      className={clsx(classes.root, props.classes?.root)}
     />
   );
 });

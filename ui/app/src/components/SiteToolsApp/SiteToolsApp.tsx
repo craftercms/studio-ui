@@ -16,31 +16,30 @@
 
 import useStyles from './styles';
 import ResizeableDrawer from '../../modules/Preview/ResizeableDrawer';
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import MenuList from '@material-ui/core/MenuList';
 import MenuItem from '@material-ui/core/MenuItem';
-import { Box, Typography } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Typography from '@material-ui/core/Typography';
 import { FormattedMessage, useIntl } from 'react-intl';
 import SystemIcon from '../SystemIcon';
 import { Route, Switch, useHistory } from 'react-router';
-import SiteConfigurationManagement from '../SiteConfigurationManagement';
-import SiteEncryptTool from '../SiteEncryptTool';
-import SiteAuditManagement from '../SiteAuditManagement';
-import LogConsole from '../LogConsole';
-import PublishingDashboard from '../PublishingDashboard';
-import Graphi from '../GraphiQL/GraphiQL';
-import PluginManagement from '../PluginManagement';
-import { useSelection, useSiteTools } from '../../utils/hooks';
-import Skeleton from '@material-ui/lab/Skeleton';
-import { rand } from '../PathNavigator/utils';
-import translations from './translations';
 import EmptyState from '../SystemStatus/EmptyState';
 import { useGlobalAppState } from '../GlobalApp';
-import ContentTypeManagement from '../ContentTypesManagement';
 import LauncherOpenerButton from '../LauncherOpenerButton';
 import CrafterCMSLogo from '../Icons/CrafterCMSLogo';
-import RemoteRepositoriesManagement from '../RemoteRepositoriesManagement';
-import ItemStatesManagement from '../ItemStatesManagement';
+import { useSelection } from '../../utils/hooks/useSelection';
+import { getPossibleTranslation } from '../../utils/i18n';
+import Widget from '../Widget';
+import { useReference } from '../../utils/hooks/useReference';
+import IconButton from '@material-ui/core/IconButton';
+import KeyboardArrowLeftRoundedIcon from '@material-ui/icons/KeyboardArrowLeftRounded';
+import SiteSwitcherSelect from '../SiteSwitcherSelect';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { getSystemLink } from '../LauncherSection';
+import { usePreviewState } from '../../utils/hooks/usePreviewState';
+import { useEnv } from '../../utils/hooks/useEnv';
+import Tooltip from '@material-ui/core/Tooltip';
 
 interface SiteToolsAppProps {
   footerHtml: string;
@@ -52,21 +51,29 @@ export default function SiteToolsApp(props: SiteToolsAppProps) {
   const [width, setWidth] = useState(240);
   const history = useHistory();
   const { formatMessage } = useIntl();
-  const siteTools = useSiteTools();
   const [activeToolId, setActiveToolId] = useState(history.location.pathname);
   const baseUrl = useSelection<string>((state) => state.env.authoringBase);
   const [{ openSidebar }] = useGlobalAppState();
+  const siteTools = useReference('craftercms.siteTools');
+  const site = useActiveSiteId();
+  const { previewChoice } = usePreviewState();
+  const { authoringBase } = useEnv();
 
   history.listen((location) => {
     setActiveToolId(location.pathname);
   });
 
-  const skeletonTools = useMemo(() => {
-    return new Array(15).fill(null).map(() => `${rand(70, 100)}%`);
-  }, []);
-
-  const onClick = (id: string) => {
+  const onNavItemClick = (id: string) => {
     history.push(id);
+  };
+
+  const onBackClick = () => {
+    window.location.href = getSystemLink({
+      site,
+      previewChoice,
+      authoringBase,
+      systemLinkId: 'preview'
+    });
   };
 
   return (
@@ -77,24 +84,49 @@ export default function SiteToolsApp(props: SiteToolsAppProps) {
         width={width}
         onWidthChange={setWidth}
       >
-        <MenuList disablePadding className={classes.nav}>
-          {siteTools.tools
-            ? siteTools.tools.map((link) => (
-                <MenuItem onClick={() => onClick(link.id)} key={link.id} selected={`/${link.id}` === activeToolId}>
+        <section>
+          <Box display="flex" justifyContent="space-between" marginBottom="10px">
+            <Tooltip title={<FormattedMessage id="words.preview" defaultMessage="Preview" />}>
+              <IconButton onClick={onBackClick}>
+                <KeyboardArrowLeftRoundedIcon />
+              </IconButton>
+            </Tooltip>
+            <SiteSwitcherSelect site={site} fullWidth />
+          </Box>
+          <MenuList disablePadding className={classes.nav}>
+            {siteTools ? (
+              siteTools.tools.map((tool) => (
+                <MenuItem
+                  onClick={() => onNavItemClick(tool.url)}
+                  key={tool.url}
+                  selected={`/${tool.url}` === activeToolId}
+                >
                   <SystemIcon
                     className={classes.icon}
-                    icon={link.icon}
+                    icon={tool.icon}
                     svgIconProps={{ fontSize: 'small', color: 'action' }}
                   />
-                  <Typography>{formatMessage(translations[link.id])}</Typography>
+                  <Typography>{getPossibleTranslation(tool.title, formatMessage)}</Typography>
                 </MenuItem>
               ))
-            : skeletonTools.map((width, i) => (
-                <MenuItem button={false} key={i}>
-                  <Skeleton height={15} width={width} />
-                </MenuItem>
-              ))}
-        </MenuList>
+            ) : (
+              <EmptyState
+                title={
+                  <FormattedMessage
+                    id="siteTools.toolListingNotConfigured"
+                    defaultMessage="The site tools list has not been set"
+                  />
+                }
+                subtitle={
+                  <FormattedMessage
+                    id="siteTools.toolListingNotConfiguredSubtitle"
+                    defaultMessage="Please set the craftercms.siteTools reference on the ui.xml"
+                  />
+                }
+              />
+            )}
+          </MenuList>
+        </section>
         <footer className={classes.footer}>
           <CrafterCMSLogo width={100} className={classes.logo} />
           <Typography
@@ -107,16 +139,15 @@ export default function SiteToolsApp(props: SiteToolsAppProps) {
       </ResizeableDrawer>
       <Box className={classes.wrapper} height="100%" width="100%" paddingLeft={openSidebar ? `${width}px` : 0}>
         <Switch>
-          <Route path="/content-types" component={ContentTypeManagement} />
-          <Route path="/encrypt-tool" component={SiteEncryptTool} />
-          <Route path="/configuration" component={SiteConfigurationManagement} />
-          <Route path="/audit" component={SiteAuditManagement} />
-          <Route path="/item-states" component={ItemStatesManagement} />
-          <Route path="/log" render={() => <LogConsole logType="preview" />} />
-          <Route path="/publishing" component={PublishingDashboard} />
-          <Route path="/remote-repositories" component={RemoteRepositoriesManagement} />
-          <Route path="/graphiql" component={Graphi} />
-          <Route path="/plugins" component={PluginManagement} />
+          {siteTools?.tools.map((tool) => (
+            <Route
+              key={tool.url}
+              path={`/${tool.url}`}
+              render={() => {
+                return <Widget {...tool.widget} extraProps={{ embedded: false }} />;
+              }}
+            />
+          ))}
           <Route
             exact
             path="/"

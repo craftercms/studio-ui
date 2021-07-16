@@ -49,9 +49,13 @@ export function getJwtHeaders(token: string): object {
 export function getCookieDomain(): string {
   let hostname = window.location.hostname;
   let domain = '';
-  if (hostname.includes('.')) {
+  const ipRegex = /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/gm;
+  const isHostnameIp = Boolean(hostname.match(ipRegex));
+  if (hostname.includes('.') && !isHostnameIp) {
     domain = hostname.replace(/^(.*?)\./, '');
     domain = `.${domain.includes('.') ? domain : hostname}`;
+  } else {
+    domain = hostname;
   }
   return domain;
 }

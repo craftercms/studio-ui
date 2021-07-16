@@ -21,7 +21,6 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { LegacyContentType, LegacyFormConfig } from '../../../models/ContentType';
 import StandardAction from '../../../models/StandardAction';
 import { DetailedItem } from '../../../models/Item';
-import { useActiveSiteId, useLogicResource, useSubject } from '../../../utils/hooks';
 import DialogHeader from '../../../components/Dialogs/DialogHeader';
 import DialogFooter from '../../../components/Dialogs/DialogFooter';
 import { Box, Checkbox, FormControlLabel } from '@material-ui/core';
@@ -34,6 +33,9 @@ import { useDispatch } from 'react-redux';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import { debounceTime } from 'rxjs/operators';
 import { ContentTypesGrid, ContentTypesLoader } from './NewContentDialog';
+import { useActiveSiteId } from '../../../utils/hooks/useActiveSiteId';
+import { useLogicResource } from '../../../utils/hooks/useLogicResource';
+import { useSubject } from '../../../utils/hooks/useSubject';
 
 const translations = defineMessages({
   title: {
@@ -178,7 +180,7 @@ function ChangeContentTypeDialogBody(props: ChangeContentTypeDialogProps) {
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Box>
             <SingleItemSelector
-              label="Item"
+              label={<FormattedMessage id="words.item" defaultMessage="Item" />}
               open={openSelector}
               onClose={() => setOpenSelector(false)}
               onDropdownClick={() => setOpenSelector(!openSelector)}

@@ -25,16 +25,13 @@ const useStyles = makeStyles((theme) =>
       const toolbarMixin: any = theme.mixins.toolbar;
       const key1 = '@media (min-width:0px) and (orientation: landscape)';
       const key2 = '@media (min-width:600px)';
-      const baseStyle = {
-        overflow: 'auto'
-      };
       if (!toolbarMixin[key1] || !toolbarMixin[key2] || !toolbarMixin.minHeight) {
         console.error(
           '[ToolsPanelEmbeddedAppViewButton] MUI may have changed their toolbar mixin. Please adjust my styles.',
           toolbarMixin
         );
         return {
-          ...baseStyle,
+          overflow: 'auto',
           height: `calc(90vh - 57px)`
         };
       } else {
@@ -45,7 +42,7 @@ const useStyles = makeStyles((theme) =>
           [key2]: {
             height: `calc(90vh - ${toolbarMixin[key2].minHeight}px - 1px)`
           },
-          ...baseStyle,
+          overflow: 'auto',
           height: `calc(90vh - ${toolbarMixin.minHeight}px - 1px)`
         };
       }

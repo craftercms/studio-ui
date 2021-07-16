@@ -93,8 +93,7 @@ function getFieldValidations(
   const map = asArray<LegacyFormDefinitionProperty>(fieldProperty).reduce<LookupTable<LegacyFormDefinitionProperty>>(
     (table, prop) => {
       if (prop.name === 'width' || prop.name === 'height') {
-        const propValue = prop.value.replaceAll('&quot;', '"');
-        const parsedValidation = JSON.parse(propValue);
+        const parsedValidation = JSON.parse(prop.value);
         if (parsedValidation.exact) {
           table[prop.name] = {
             name: prop.name,

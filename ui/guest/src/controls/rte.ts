@@ -145,6 +145,9 @@ export function initTinyMCE(
         }
       });
       editor.on('keydown', (e) => {
+        if ((type === 'text' || type === 'textarea') && (e.key === 'Enter' || (e.shiftKey && e.key === 'Enter'))) {
+          e.preventDefault();
+        }
         if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
           e.preventDefault();
         }

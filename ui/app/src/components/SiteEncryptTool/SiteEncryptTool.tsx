@@ -15,8 +15,8 @@
  */
 
 import React from 'react';
-import { useActiveSiteId } from '../../utils/hooks';
 import EncryptTool from '../EncryptTool';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 
 interface SiteEncryptToolProps {
   embedded?: boolean;

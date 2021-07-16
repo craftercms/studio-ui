@@ -19,7 +19,6 @@ import ToolPanel from './ToolPanel';
 import CloseRounded from '@material-ui/icons/CloseRounded';
 import Typography from '@material-ui/core/Typography';
 import { useDispatch } from 'react-redux';
-import { useActiveSiteId, usePreviewState, useSelection } from '../../../utils/hooks';
 import { defineMessages, useIntl } from 'react-intl';
 import { findParentModelId, nnou } from '../../../utils/object';
 import { popPiece } from '../../../utils/string';
@@ -28,6 +27,10 @@ import { showCodeEditorDialog, showEditDialog } from '../../../state/actions/dia
 import { getField } from '../../../utils/contentType';
 import { Menu, MenuItem } from '@material-ui/core';
 import { GuestData } from '../../../models/GlobalState';
+import { useSelection } from '../../../utils/hooks/useSelection';
+import { useActiveSiteId } from '../../../utils/hooks/useActiveSiteId';
+import { usePreviewState } from '../../../utils/hooks/usePreviewState';
+import ContentInstance from '../../../models/ContentInstance';
 
 interface EditFormPanelProps {
   open: boolean;
@@ -42,12 +45,23 @@ interface EditFormPanelBodyProps {
   modelIdByPath: GuestData['modelIdByPath'];
 }
 
-const getEditDialogProps = ({ authoringBase, childrenMap, model, models, path, selectedId, site }) => {
+const getEditDialogProps = (props: {
+  authoringBase: string;
+  childrenMap: GuestData['childrenMap'];
+  model: ContentInstance;
+  models: GuestData['models'];
+  path: string;
+  selectedId: string;
+  site: string;
+  selectedFields: string[];
+}) => {
+  const { authoringBase, childrenMap, model, models, path, selectedId, site, selectedFields } = props;
   if (path) {
     return {
       authoringBase,
       site,
-      path
+      path,
+      ...(selectedFields ? { selectedFields } : {})
     };
   } else {
     let parentPath;
@@ -63,7 +77,8 @@ const getEditDialogProps = ({ authoringBase, childrenMap, model, models, path, s
       site,
       path: parentPath,
       isHidden: true,
-      modelId: selectedId
+      modelId: selectedId,
+      ...(selectedFields ? { selectedFields } : {})
     };
   }
 };
@@ -179,19 +194,21 @@ function EditFormPanelBody(props: EditFormPanelBodyProps) {
   function openDialog(type: string) {
     onDismiss();
     if (type === 'form') {
+      const selectedFields = selected[0]?.fieldId.length ? selected[0].fieldId : null;
       dispatch(
-        showEditDialog(getEditDialogProps({ authoringBase, childrenMap, model, models, path, selectedId, site }))
+        showEditDialog(
+          getEditDialogProps({ authoringBase, childrenMap, model, models, path, selectedFields, selectedId, site })
+        )
       );
     } else {
       dispatch(
         showCodeEditorDialog({
-          authoringBase,
-          site,
           path:
             type === 'template'
               ? contentType.displayTemplate
               : `/scripts/pages/${popPiece(selectedContentTypeId, '/')}.groovy`,
-          type: type === 'template' ? 'template' : 'controller'
+          contentType: selectedContentTypeId,
+          mode: type === 'template' ? 'ftl' : 'groovy'
         })
       );
     }

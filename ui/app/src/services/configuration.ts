@@ -60,11 +60,17 @@ export function fetchConfigurationJSON(
   environment?: string
 ): Observable<any> {
   return fetchConfigurationXML(site, configPath, module, environment).pipe(
-    map((conf) =>
-      deserialize(conf, {
-        parseNodeValue: false
-      })
-    )
+    map((conf) => {
+      return deserialize(conf, {
+        parseNodeValue: false,
+        tagValueProcessor: (value) =>
+          value
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .replace(/&quot;/g, '"')
+            .replace(/&amp;/g, '&')
+      });
+    })
   );
 }
 
@@ -198,8 +204,24 @@ export function fetchSiteUiConfig(site: string): Observable<Pick<GlobalState['ui
             }
           },
           launcher: null,
-          dashboard: null
+          dashboard: null,
+          references: {}
         };
+        const arrays = ['widgets', 'roles', 'excludes', 'devices', 'values', 'siteCardMenuLinks', 'tools'];
+        const renameTable = { permittedRoles: 'roles' };
+        // Reading references
+        const references = {};
+        xml.querySelectorAll(':scope > references > reference').forEach((tag) => {
+          references[tag.id] = tag.innerHTML;
+          config.references[tag.id] = applyDeserializedXMLTransforms(deserialize(tag.innerHTML), {
+            arrays,
+            renameTable
+          });
+        });
+        // Replacing references
+        xml.querySelectorAll('configuration > reference').forEach((tag) => {
+          tag.outerHTML = references[tag.id];
+        });
         // Make sure any plugin reference has a valid site id to import the plugin from
         xml.querySelectorAll('plugin').forEach((tag) => {
           const siteAttr = tag.getAttribute('site');
@@ -207,8 +229,6 @@ export function fetchSiteUiConfig(site: string): Observable<Pick<GlobalState['ui
             tag.setAttribute('site', site);
           }
         });
-        const arrays = ['widgets', 'roles', 'excludes', 'devices', 'values', 'siteCardMenuLinks'];
-        const renameTable = { permittedRoles: 'roles' };
         const toolbar = xml.querySelector('[id="craftercms.components.PreviewToolbar"] > configuration');
         if (toolbar) {
           const leftSection = toolbar.querySelector('leftSection > widgets');
@@ -368,50 +388,6 @@ export function fetchSiteConfigurationFiles(site: string, environment?: string):
         }
       }
       return files;
-    })
-  );
-}
-
-const legacySiteToolsIdMapping = {
-  'content-types': 'content-types',
-  'encrypt-tool': 'encrypt-tool',
-  'admin-configurations': 'configuration',
-  audit: 'audit',
-  'workflow-states': 'item-states',
-  'log-view': 'log',
-  'status-view': 'publishing',
-  repository: 'remote-repositories',
-  graphiql: 'graphiql',
-  'plugin-management': 'plugins'
-};
-
-const legacySiteToolsIconMapping = {
-  'content-types': '@material-ui/icons/WidgetsOutlined',
-  'encrypt-tool': '@material-ui/icons/LockOutlined',
-  'admin-configurations': '@material-ui/icons/SettingsApplicationsOutlined',
-  audit: '@material-ui/icons/SubjectRounded',
-  'workflow-states': '@material-ui/icons/SettingsOutlined',
-  'log-view': '@material-ui/icons/FormatAlignCenterRounded',
-  'status-view': '@material-ui/icons/CloudUploadOutlined',
-  repository: '@material-ui/icons/StorageRounded',
-  graphiql: 'craftercms.icons.GraphQL',
-  'plugin-management': '@material-ui/icons/ExtensionOutlined'
-};
-
-export function fetchSiteTools(site: string): Observable<GlobalState['uiConfig']['siteTools']['tools']> {
-  return fetchConfigurationDOM(site, '/administration/site-config-tools.xml', 'studio').pipe(
-    map((xml) => {
-      let tools = null;
-      if (xml) {
-        const toolsXML = xml.querySelector('tools');
-        if (toolsXML) {
-          tools = deserialize(toolsXML).tools.tool.map((tool) => ({
-            id: legacySiteToolsIdMapping[tool.name],
-            icon: { id: legacySiteToolsIconMapping[tool.name] }
-          }));
-        }
-      }
-      return tools;
     })
   );
 }

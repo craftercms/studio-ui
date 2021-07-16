@@ -18,16 +18,6 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { makeStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
-import {
-  useActiveSiteId,
-  useContentTypeList,
-  useDebouncedInput,
-  useLogicResource,
-  useMount,
-  useSelection,
-  useSpreadState,
-  useSubject
-} from '../../utils/hooks';
 import SearchBar from '../Controls/SearchBar';
 import { ComponentsContentTypeParams, ElasticParams, SearchItem } from '../../models/Search';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
@@ -50,6 +40,14 @@ import { fetchContentInstance } from '../../services/content';
 import { forkJoin, Observable, of } from 'rxjs';
 import { map, switchMap, takeUntil } from 'rxjs/operators';
 import { useDispatch } from 'react-redux';
+import { useSelection } from '../../utils/hooks/useSelection';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { useContentTypeList } from '../../utils/hooks/useContentTypeList';
+import { useLogicResource } from '../../utils/hooks/useLogicResource';
+import { useMount } from '../../utils/hooks/useMount';
+import { useDebouncedInput } from '../../utils/hooks/useDebouncedInput';
+import { useSpreadState } from '../../utils/hooks/useSpreadState';
+import { useSubject } from '../../utils/hooks/useSubject';
 
 const translations = defineMessages({
   previewSearchPanelTitle: {

@@ -143,6 +143,7 @@
       var windowUrl = '';
       var formId = contentType.form;
       var readOnly = false;
+      let parentPath = null;
 
       for (var j = 0; j < auxParams.length; j++) {
         if (auxParams[j].name == 'changeTemplate') {
@@ -151,6 +152,10 @@
 
         if (auxParams[j].name == 'readonly') {
           readOnly = true;
+        }
+
+        if (auxParams[j].name == 'parentPath') {
+          parentPath = auxParams[j].value;
         }
       }
 
@@ -168,8 +173,16 @@
         '&isInclude=' +
         isFlattenedInclude;
 
+      if (parentPath) {
+        windowUrl += `&parentPath=${parentPath}`;
+      }
+
       if (field) {
-        windowUrl += '&iceId=' + field;
+        if (typeof field === 'string') {
+          windowUrl += '&iceId=' + field;
+        } else {
+          windowUrl += '&selectedFields=' + encodeURIComponent(JSON.stringify(field));
+        }
       } else {
         windowUrl += '&iceComponent=true';
       }

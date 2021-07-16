@@ -16,7 +16,6 @@
 
 import React, { useEffect } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
-import { useActiveSiteId, useSelection } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import {
   fetchAudiencesPanelModel,
@@ -30,6 +29,8 @@ import { AudiencesPanelUI } from './AudiencesPanelUI';
 import LookupTable from '../../models/LookupTable';
 import { ContentTypeField } from '../../models/ContentType';
 import EmptyState from '../SystemStatus/EmptyState';
+import { useSelection } from '../../utils/hooks/useSelection';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 
 const translations = defineMessages({
   audiencesPanel: {

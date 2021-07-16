@@ -15,9 +15,10 @@
  */
 
 import React, { useEffect } from 'react';
-import { useActiveSiteId, useSpreadState } from '../../utils/hooks';
 import { addRemote } from '../../services/repositories';
 import NewRemoteRepositoryDialogUI from './NewRemoteRepositoryDialogUI';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { useSpreadState } from '../../utils/hooks/useSpreadState';
 
 export interface NewRemoteRepositoryDialogContainerProps {
   open: boolean;

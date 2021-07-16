@@ -35,7 +35,6 @@ import { History, Location } from 'history';
 import { fetchContentXML } from '../../services/content';
 import { showEditDialog, showItemMegaMenu, showPreviewDialog, updatePreviewDialog } from '../../state/actions/dialogs';
 import { useDispatch } from 'react-redux';
-import { useActiveSiteId, useEnv, useItemsByPath, useSelection } from '../../utils/hooks';
 import { completeDetailedItem } from '../../state/actions/content';
 import { getPreviewURLFromPath } from '../../utils/path';
 import ApiResponseErrorState from '../../components/ApiResponseErrorState';
@@ -54,6 +53,10 @@ import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import { generateMultipleItemOptions, generateSingleItemOptions, itemActionDispatcher } from '../../utils/itemActions';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { getNumOfMenuOptionsForItem, getSystemTypeFromPath } from '../../utils/content';
+import { useSelection } from '../../utils/hooks/useSelection';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { useEnv } from '../../utils/hooks/useEnv';
+import { useItemsByPath } from '../../utils/hooks/useItemsByPath';
 
 interface SearchProps {
   history: History;

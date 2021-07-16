@@ -28,12 +28,13 @@ import { markForTranslation } from '../../services/translation';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';
 import palette from '../../styles/palette';
-import { useActiveSiteId, useUnmount } from '../../utils/hooks';
 import DialogBody from './DialogBody';
 import DialogHeader from './DialogHeader';
 import SingleItemSelector from '../../modules/Content/Authoring/SingleItemSelector';
 import { DetailedItem } from '../../models/Item';
 import ActionsBar from '../ActionsBar';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { useUnmount } from '../../utils/hooks/useUnmount';
 
 const translations = defineMessages({
   mark: {
@@ -282,7 +283,7 @@ function ContentLocalizationDialogUI(props: ContentLocalizationDialogProps) {
       />
       <DialogBody>
         <SingleItemSelector
-          label="Item"
+          label={<FormattedMessage id="words.item" defaultMessage="Item" />}
           classes={{ root: classes.singleItemSelector }}
           open={openSelector}
           onClose={() => setOpenSelector(false)}

@@ -17,7 +17,6 @@
 import React, { PropsWithChildren } from 'react';
 import StandardAction from '../../models/StandardAction';
 import Dialog from '@material-ui/core/Dialog';
-import { useLogicResource, useUnmount } from '../../utils/hooks';
 import DialogHeader from './DialogHeader';
 import DialogBody from './DialogBody';
 import DialogFooter from './DialogFooter';
@@ -32,6 +31,8 @@ import ListItemText from '@material-ui/core/ListItemText';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
+import { useLogicResource } from '../../utils/hooks/useLogicResource';
+import { useUnmount } from '../../utils/hooks/useUnmount';
 
 // region Typings
 

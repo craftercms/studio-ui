@@ -20,7 +20,6 @@ import { useDispatch } from 'react-redux';
 import LoadingState from '../../components/SystemStatus/LoadingState';
 import clsx from 'clsx';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { useMinimizeDialog, useUnmount } from '../../utils/hooks';
 import { defineMessages, useIntl } from 'react-intl';
 import {
   EMBEDDED_LEGACY_FORM_CLOSE,
@@ -44,6 +43,8 @@ import { emitSystemEvent, itemCreated, itemUpdated } from '../../state/actions/s
 import { getEditFormSrc } from '../../utils/path';
 import DialogHeader from './DialogHeader';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
+import { useUnmount } from '../../utils/hooks/useUnmount';
+import { useMinimizeDialog } from '../../utils/hooks/useMinimizeDialog';
 
 const translations = defineMessages({
   title: {
@@ -88,6 +89,7 @@ const styles = makeStyles(() =>
 interface LegacyFormDialogBaseProps {
   open?: boolean;
   path: string;
+  selectedFields?: string[];
   authoringBase: string;
   site?: string;
   isHidden?: boolean;
@@ -120,6 +122,7 @@ export interface LegacyFormDialogStateProps extends LegacyFormDialogBaseProps {
 const EmbeddedLegacyEditor = React.forwardRef(function EmbeddedLegacyEditor(props: LegacyFormDialogProps, ref) {
   const {
     path,
+    selectedFields,
     authoringBase,
     readonly,
     site,
@@ -146,9 +149,21 @@ const EmbeddedLegacyEditor = React.forwardRef(function EmbeddedLegacyEditor(prop
         modelId,
         changeTemplate,
         contentTypeId,
-        isNewContent
+        isNewContent,
+        ...(selectedFields ? { selectedFields: JSON.stringify(selectedFields) } : {})
       }),
-    [authoringBase, changeTemplate, contentTypeId, isHidden, isNewContent, modelId, path, readonly, site]
+    [
+      authoringBase,
+      changeTemplate,
+      contentTypeId,
+      isHidden,
+      isNewContent,
+      modelId,
+      path,
+      selectedFields,
+      readonly,
+      site
+    ]
   );
 
   const { formatMessage } = useIntl();
@@ -277,8 +292,10 @@ const EmbeddedLegacyEditor = React.forwardRef(function EmbeddedLegacyEditor(prop
   );
 });
 
+export const legacyEditorId = 'legacy-editor';
+
 export default function LegacyFormDialog(props: LegacyFormDialogProps) {
-  const id = 'legacy-editor';
+  const id = legacyEditorId;
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const classes = styles();

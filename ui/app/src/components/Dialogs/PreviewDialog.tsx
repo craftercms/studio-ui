@@ -22,9 +22,9 @@ import AsyncVideoPlayer from '../AsyncVideoPlayer';
 import IFrame from '../IFrame';
 import AceEditor from '../AceEditor';
 import { makeStyles } from '@material-ui/core/styles';
-import { useUnmount } from '../../utils/hooks';
 import LoadingState, { ConditionalLoadingState } from '../SystemStatus/LoadingState';
 import { nou } from '../../utils/object';
+import { useUnmount } from '../../utils/hooks/useUnmount';
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -102,7 +102,12 @@ function PreviewDialogUI(props: PreviewDialogProps) {
       case 'editor': {
         return (
           <ConditionalLoadingState isLoading={nou(props.content)}>
-            <AceEditor value={props.content} className={classes.editor} mode={`ace/mode/${props.mode}`} readOnly />
+            <AceEditor
+              value={props.content}
+              classes={{ editorRoot: classes.editor }}
+              mode={`ace/mode/${props.mode}`}
+              readOnly
+            />
           </ConditionalLoadingState>
         );
       }

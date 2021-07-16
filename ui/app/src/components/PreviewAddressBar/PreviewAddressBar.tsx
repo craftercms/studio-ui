@@ -38,7 +38,9 @@ import { getNumOfMenuOptionsForItem } from '../../utils/content';
 import Tooltip from '@material-ui/core/Tooltip';
 import { changeCurrentUrl, RELOAD_REQUEST } from '../../state/actions/preview';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
-import { usePreviewState } from '../../utils/hooks';
+import { usePreviewState } from '../../utils/hooks/usePreviewState';
+import PreviewBackButton from '../PreviewBackButton';
+import PreviewForwardButton from '../PreviewForwardButton';
 
 export interface AddressBarProps {
   site: string;
@@ -153,11 +155,13 @@ export function PreviewAddressBar(props: AddressBarProps) {
 
   return (
     <>
+      <PreviewBackButton />
       <Tooltip title={<FormattedMessage id="previewAddressBar.reloadButtonLabel" defaultMessage="Reload this page" />}>
         <IconButton onClick={onRefresh}>
           <RefreshRounded />
         </IconButton>
       </Tooltip>
+      <PreviewForwardButton />
       <Paper
         variant={focus ? 'elevation' : 'outlined'}
         elevation={focus ? 2 : 0}

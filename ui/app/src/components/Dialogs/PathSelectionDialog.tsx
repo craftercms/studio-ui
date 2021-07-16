@@ -20,7 +20,6 @@ import DialogFooter from './DialogFooter';
 import React, { PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import Dialog from '@material-ui/core/Dialog';
-import { useActiveSiteId, useLogicResource, usePossibleTranslation, useUnmount } from '../../utils/hooks';
 import FolderBrowserTreeView, { legacyItemsToTreeNodes, TreeNode } from '../Navigation/FolderBrowserTreeView';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import CreateFolderDialog from './CreateFolderDialog';
@@ -35,6 +34,10 @@ import PrimaryButton from '../PrimaryButton';
 import SecondaryButton from '../SecondaryButton';
 import { ApiResponse } from '../../models/ApiResponse';
 import TranslationOrText from '../../models/TranslationOrText';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { useLogicResource } from '../../utils/hooks/useLogicResource';
+import { useUnmount } from '../../utils/hooks/useUnmount';
+import { usePossibleTranslation } from '../../utils/hooks/usePossibleTranslation';
 
 export interface PathSelectionDialogBaseProps {
   open: boolean;

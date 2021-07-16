@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useActiveSiteId, useEnv, usePossibleTranslation, usePreviewState } from '../../utils/hooks';
 import LauncherTile from '../LauncherTile';
 import React from 'react';
 import { SystemIconDescriptor } from '../SystemIcon';
@@ -23,6 +22,10 @@ import { getSystemLink, SystemLinkId } from '../LauncherSection/utils';
 import { useDispatch } from 'react-redux';
 import { closeLauncher, showWidgetDialog } from '../../state/actions/dialogs';
 import { batchActions } from '../../state/actions/misc';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { usePreviewState } from '../../utils/hooks/usePreviewState';
+import { useEnv } from '../../utils/hooks/useEnv';
+import { usePossibleTranslation } from '../../utils/hooks/usePossibleTranslation';
 
 export interface LauncherLinkTileProps {
   title: TranslationOrText;

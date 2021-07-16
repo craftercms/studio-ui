@@ -14,8 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import React, { createContext, Dispatch, SetStateAction, useContext, useEffect, useMemo } from 'react';
-import { useActiveUser, useSpreadState } from '../../utils/hooks';
 import { getStoredGlobalAppOpenSidebar, setStoredGlobalAppOpenSidebar } from '../../utils/state';
+import { useActiveUser } from '../../utils/hooks/useActiveUser';
+import { useSpreadState } from '../../utils/hooks/useSpreadState';
 
 type Context = { openSidebar: boolean };
 type ContextType = [Context, Dispatch<SetStateAction<Partial<Context>>>];

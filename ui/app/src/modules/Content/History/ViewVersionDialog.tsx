@@ -18,7 +18,6 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { makeStyles } from '@material-ui/core/styles';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
-import { useLogicResource, useSelection, useUnmount } from '../../../utils/hooks';
 import StandardAction from '../../../models/StandardAction';
 import ContentType from '../../../models/ContentType';
 import { LookupTable } from '../../../models/LookupTable';
@@ -28,6 +27,9 @@ import DialogHeader, { DialogHeaderAction, DialogHeaderStateAction } from '../..
 import DialogBody from '../../../components/Dialogs/DialogBody';
 import { Resource } from '../../../models/Resource';
 import Dialog from '@material-ui/core/Dialog';
+import { useSelection } from '../../../utils/hooks/useSelection';
+import { useLogicResource } from '../../../utils/hooks/useLogicResource';
+import { useUnmount } from '../../../utils/hooks/useUnmount';
 
 interface VersionViewProps {
   resource: Resource<VersionResource>;

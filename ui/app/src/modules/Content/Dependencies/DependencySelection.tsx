@@ -16,7 +16,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { BaseItem, SandboxItem } from '../../../models/Item';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
+import { createStyles, makeStyles, withStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { FormattedMessage } from 'react-intl';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -25,11 +25,13 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import { createCheckedItems, onClickSetChecked, selectAllDeps, updateCheckedList } from '../Publish/PublishDialog';
 import Button from '@material-ui/core/Button';
 import clsx from 'clsx';
-import { useActiveSiteId, useSelection } from '../../../utils/hooks';
+import { useSelection } from '../../../utils/hooks/useSelection';
+import { useActiveSiteId } from '../../../utils/hooks/useActiveSiteId';
 
 interface DependencySelectionProps<T extends BaseItem = BaseItem> {
   items: T[];
@@ -78,72 +80,68 @@ const CenterCircularProgress = withStyles({
   }
 })(CircularProgress);
 
-const useStyles = makeStyles((theme) => ({
-  dependencySelection: {
-    padding: '11px 12px',
-    background: theme.palette.background.paper,
-    border: `1px solid ${theme.palette.divider}`,
-    height: 'calc(100% - 24px)',
-    minHeight: '374px',
-    overflowY: 'hidden'
-  },
-  dependencySelectionDelete: {
-    overflowY: 'auto'
-  },
-  dependencySelectionDisabled: {
-    opacity: 0.7
-  },
-  selectionListTitle: {
-    margin: '6px auto 6px',
-    display: 'inline-block',
-    fontSize: '16px',
-    fontWeight: 400
-  },
-  selectAllBtn: {
-    marginLeft: '17px',
-    fontWeight: 'bold',
-    verticalAlign: 'baseline'
-  },
-  showAllBtn: {
-    marginLeft: 0,
-    verticalAlign: 'baseline'
-  },
-  bottomSection: {
-    marginLeft: '10px'
-  },
-  circularProgressText: {
-    position: 'relative',
-    bottom: '9px'
-  },
-  selectionList: {
-    paddingTop: 0
-  },
-  listItem: {
-    padding: '0 5px'
-  },
-  listItemIcon: {
-    minWidth: '36px'
-  },
-  listItemTitle: {
-    '& h4': {
-      fontSize: '1rem',
-      margin: 0,
-      padding: 0,
-      fontWeight: 400
+const useStyles = makeStyles((theme) =>
+  createStyles({
+    dependencySelection: {
+      padding: '11px 12px',
+      background: theme.palette.background.paper,
+      border: `1px solid ${theme.palette.divider}`,
+      height: 'calc(100% - 24px)',
+      minHeight: '374px',
+      overflowY: 'hidden'
+    },
+    dependencySelectionDelete: {
+      overflowY: 'auto'
+    },
+    dependencySelectionDisabled: {
+      opacity: 0.7
+    },
+    selectAllBtn: {
+      marginLeft: 'auto',
+      fontWeight: 'bold',
+      verticalAlign: 'baseline'
+    },
+    showAllBtn: {
+      marginLeft: 0,
+      verticalAlign: 'baseline'
+    },
+    bottomSection: {
+      marginLeft: '10px'
+    },
+    circularProgressText: {
+      position: 'relative',
+      bottom: '9px'
+    },
+    selectionList: {
+      paddingTop: 0
+    },
+    listItem: {
+      padding: '0 5px'
+    },
+    listItemIcon: {
+      minWidth: '36px'
+    },
+    listItemTitle: {
+      '& h4': {
+        fontSize: '1rem',
+        margin: 0,
+        padding: 0,
+        fontWeight: 400
+      }
+    },
+    listItemPath: {
+      padding: 0
+    },
+    secondaryAction: {
+      padding: '0 80px 0 5px'
+    },
+    overflowText: {
+      overflow: 'hidden',
+      whiteSpace: 'nowrap',
+      textOverflow: 'ellipsis'
     }
-  },
-  listItemPath: {
-    padding: 0
-  },
-  secondaryAction: {
-    padding: '0 80px 0 5px'
-  },
-  overflowText: {
-    overflow: 'hidden',
-    whiteSpace: 'nowrap',
-    textOverflow: 'ellipsis'
-  }
-}));
+  })
+);
 
 export function DependencySelection(props: DependencySelectionProps) {
   const {
@@ -328,26 +326,28 @@ function SelectionList(props: SelectionListProps) {
   const classes = useStyles({});
 
   return (
-    <div>
-      <Typography variant="h2" component="h2" className={classes.selectionListTitle}>
-        {title}
-      </Typography>
-      {subtitle ? (
-        <Typography component="span">
-          {` • `}
-          {subtitle}
+    <>
+      <Box display="flex" alignItems="center" whiteSpace="break-spaces">
+        <Typography variant="subtitle1" component="h2">
+          {title}
         </Typography>
-      ) : null}
-      {onSelectAllClicked ? (
-        <Button
-          color="primary"
-          onClick={() => onSelectAllClicked(setChecked, items)}
-          size="small"
-          className={classes.selectAllBtn}
-        >
-          <FormattedMessage id="common.selectAll" defaultMessage="Select All" />
-        </Button>
-      ) : null}
+        {subtitle ? (
+          <Typography component="span">
+            {` • `}
+            {subtitle}
+          </Typography>
+        ) : null}
+        {onSelectAllClicked ? (
+          <Button
+            color="primary"
+            onClick={() => onSelectAllClicked(setChecked, items)}
+            size="small"
+            className={classes.selectAllBtn}
+          >
+            <FormattedMessage id="common.selectAll" defaultMessage="Select All" />
+          </Button>
+        ) : null}
+      </Box>
       {items && (
         <List className={classes.selectionList}>
           {items.map((item) => {
@@ -453,7 +453,7 @@ function SelectionList(props: SelectionListProps) {
           })}
         </List>
       ) : null}
-    </div>
+    </>
   );
 }
 

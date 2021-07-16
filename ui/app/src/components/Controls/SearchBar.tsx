@@ -74,7 +74,7 @@ const useStyles = makeStyles((theme: Theme) =>
 const messages = defineMessages({
   placeholder: {
     id: 'searchBar.placeholder',
-    defaultMessage: 'Search...'
+    defaultMessage: 'Filter...'
   }
 });
 
@@ -99,6 +99,7 @@ interface SearchBarProps {
   onChange(value: string, event: React.SyntheticEvent): void;
   onKeyPress?(key: string): void;
   onActionButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
+  onDecoratorButtonClick?(): void;
 }
 
 export default function SearchBar(props: SearchBarProps) {
@@ -115,6 +116,7 @@ export default function SearchBar(props: SearchBarProps) {
     showDecoratorIcon = true,
     decoratorIcon: DecoratorIcon = SearchIcon,
     onActionButtonClick,
+    onDecoratorButtonClick,
     onBlur,
     onClick
   } = props;
@@ -129,7 +131,13 @@ export default function SearchBar(props: SearchBarProps) {
       elevation={focus ? 4 : 0}
       className={clsx(classes.search, focus && 'focus', showActionButton && 'noPadded', props.classes?.root)}
     >
-      {showDecoratorIcon && <DecoratorIcon className={classes.searchIcon} />}
+      {showDecoratorIcon && onDecoratorButtonClick ? (
+        <IconButton onClick={onDecoratorButtonClick}>
+          <DecoratorIcon className={classes.searchIcon} />
+        </IconButton>
+      ) : (
+        <DecoratorIcon className={classes.searchIcon} />
+      )}
       <InputBase
         onChange={(e) => onChange(e.target.value, e)}
         onKeyPress={(e) => onKeyPress && onKeyPress(e.key)}

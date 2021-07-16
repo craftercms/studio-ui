@@ -17,7 +17,6 @@
 import StandardAction from '../../../models/StandardAction';
 import React, { useMemo, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import { useLogicResource, useUnmount } from '../../../utils/hooks';
 import { AsDayMonthDateTime, VersionList } from './VersionList';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import ApiResponse from '../../../models/ApiResponse';
@@ -42,6 +41,8 @@ import SingleItemSelector from '../Authoring/SingleItemSelector';
 import Dialog from '@material-ui/core/Dialog';
 import { CompareVersions, CompareVersionsResource } from './CompareVersions';
 import clsx from 'clsx';
+import { useLogicResource } from '../../../utils/hooks/useLogicResource';
+import { useUnmount } from '../../../utils/hooks/useUnmount';
 
 const translations = defineMessages({
   backToSelectRevision: {
@@ -211,7 +212,7 @@ function CompareVersionsDialog(props: CompareVersionsDialogProps) {
         {!compareMode && (
           <SingleItemSelector
             classes={{ root: classes.singleItemSelector }}
-            label="Item"
+            label={<FormattedMessage id="words.item" defaultMessage="Item" />}
             disabled={disableItemSwitching}
             open={openSelector}
             onClose={() => setOpenSelector(false)}

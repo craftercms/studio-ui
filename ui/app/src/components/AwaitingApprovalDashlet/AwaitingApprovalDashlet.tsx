@@ -18,7 +18,6 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import useStyles from './styles';
 import { FormattedMessage } from 'react-intl';
 import { fetchLegacyGetGoLiveItems } from '../../services/dashboard';
-import { useActiveSiteId, useLogicResource, useSpreadState } from '../../utils/hooks';
 import { DetailedItem } from '../../models/Item';
 import AwaitingApprovalDashletGridUI from '../AwaitingApprovalDashletGrid';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
@@ -31,6 +30,9 @@ import Button from '@material-ui/core/Button';
 import { itemsApproved, itemsDeleted, itemsRejected, itemsScheduled } from '../../state/actions/system';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { filter } from 'rxjs/operators';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { useLogicResource } from '../../utils/hooks/useLogicResource';
+import { useSpreadState } from '../../utils/hooks/useSpreadState';
 
 export interface AwaitingApprovalDashletProps {
   selectedLookup: LookupTable<boolean>;

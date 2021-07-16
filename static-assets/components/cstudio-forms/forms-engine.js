@@ -1206,6 +1206,7 @@ var CStudioForms =
         this._loadDatasources(form, function(loaded, notLoaded) {
           var iceId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'iceId');
           var iceComponent = CStudioAuthoring.Utils.getQueryVariable(location.search, 'iceComponent');
+          const selectedFields = CStudioAuthoring.Utils.getQueryVariable(location.search, 'selectedFields');
 
           if (iceId && iceId != '') {
             var html = me._renderIceLayout(form);
@@ -1215,6 +1216,11 @@ var CStudioForms =
               YDom.removeClass(readOnlyBannerEl, 'hidden');
             }
             me._renderInContextEdit(form, iceId);
+          } else if (selectedFields) {
+            var html = me._renderIceLayout(form);
+            form.containerEl.innerHTML = html;
+            const fields = JSON.parse(decodeURIComponent(selectedFields));
+            me._renderFields(form, fields);
           } else {
             var html = me._renderFormLayout(form);
             form.containerEl.innerHTML = html;
@@ -2555,6 +2561,29 @@ var CStudioForms =
             }
           }
         }
+      },
+
+      /* Render a list of fields from the form */
+      /* fields: string[] - fields ids */
+      _renderFields: function (form, fields) {
+        const formDef = form.definition;
+        const sectionContainerEl = document.getElementById('ice-container');
+        const sectionBodyEl = YDom.getElementsByClassName('cstudio-form-section-body', null, sectionContainerEl)[0];
+        const formSection = new CStudioFormSection(form, sectionContainerEl);
+
+        formDef.sections.forEach((section) => {
+          section.fields
+            .filter((field) => fields.includes(field.id))
+            .forEach((field) => {
+              if (field.type !== 'repeat') {
+                this._renderField(formDef, field, form, formSection, sectionBodyEl, null, null, true);
+                CStudioAuthoring.InContextEdit.autoSizeIceDialog();
+              } else {
+                this._renderRepeat(formDef, field, form, formSection, sectionBodyEl);
+                CStudioAuthoring.InContextEdit.autoSizeIceDialog();
+              }
+            });
+        });
       },
 
       /**

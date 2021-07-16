@@ -15,17 +15,23 @@
  */
 
 import React, { useState } from 'react';
-import ToolsPanelListItemButton from '../ToolsPanelListItemButton';
-import { useMinimizeDialog, usePossibleTranslation } from '../../utils/hooks';
+import ToolsPanelListItemButton, { ToolsPanelListItemButtonProps } from '../ToolsPanelListItemButton';
 import { maximizeDialog } from '../../state/reducers/dialogs/minimizedDialogs';
 import { useDispatch } from 'react-redux';
 import WidgetDialog from '../WidgetDialog';
+import { useMinimizeDialog } from '../../utils/hooks/useMinimizeDialog';
+import { usePossibleTranslation } from '../../utils/hooks/usePossibleTranslation';
+import { WidgetDescriptor } from '../Widget';
 
-export default function ToolsPanelEmbeddedAppViewButton(props) {
+interface ToolsPanelEmbeddedAppViewButtonProps extends Omit<ToolsPanelListItemButtonProps, 'onClick'> {
+  widget: WidgetDescriptor;
+}
+
+export default function ToolsPanelEmbeddedAppViewButton(props: ToolsPanelEmbeddedAppViewButtonProps) {
   const [open, setOpen] = useState(false);
   const dispatch = useDispatch();
 
-  const id = props.widget.uiKey;
+  const id = props.widget.uiKey as string;
   const title = usePossibleTranslation(props.title);
 
   const minimized = useMinimizeDialog({

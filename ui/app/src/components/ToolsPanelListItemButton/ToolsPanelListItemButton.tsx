@@ -22,11 +22,12 @@ import IconButton from '@material-ui/core/IconButton';
 import ChevronRounded from '@material-ui/icons/ChevronRightRounded';
 import React from 'react';
 import SystemIcon, { SystemIconDescriptor } from '../SystemIcon';
-import { usePossibleTranslation } from '../../utils/hooks';
+import { usePossibleTranslation } from '../../utils/hooks/usePossibleTranslation';
+import TranslationOrText from '../../models/TranslationOrText';
 
 export interface ToolsPanelListItemButtonProps {
-  title: string;
-  subtitle: string;
+  title: TranslationOrText;
+  subtitle?: string;
   icon: SystemIconDescriptor;
   displaySecondaryAction?: boolean;
   secondaryActionIcon?: React.ReactNode;

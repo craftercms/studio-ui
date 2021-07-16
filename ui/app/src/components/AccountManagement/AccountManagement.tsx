@@ -22,7 +22,6 @@ import { Typography } from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';
 import useStyles from './styles';
 import Avatar from '@material-ui/core/Avatar';
-import { useActiveUser } from '../../utils/hooks';
 import Container from '@material-ui/core/Container';
 import { dispatchLanguageChange, getCurrentLocale, setStoredLanguage } from '../../utils/i18n';
 import { SystemLang } from '../SystemStatus/LoginView';
@@ -39,6 +38,7 @@ import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { showSystemNotification } from '../../state/actions/system';
 import clsx from 'clsx';
+import { useActiveUser } from '../../utils/hooks/useActiveUser';
 
 interface AccountManagementProps {
   passwordRequirementsRegex?: string;
