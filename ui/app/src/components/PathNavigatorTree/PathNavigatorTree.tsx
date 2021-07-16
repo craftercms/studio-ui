@@ -18,6 +18,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import PathNavigatorTreeUI, { TreeNode } from './PathNavigatorTreeUI';
 import { useDispatch } from 'react-redux';
 import {
+  pathNavigatorTreeBackgroundRefresh,
   pathNavigatorTreeCollapsePath,
   pathNavigatorTreeExpandPath,
   pathNavigatorTreeFetchPathChildren,
@@ -65,6 +66,8 @@ import { useEnv } from '../../utils/hooks/useEnv';
 import { useActiveUser } from '../../utils/hooks/useActiveUser';
 import { useItemsByPath } from '../../utils/hooks/useItemsByPath';
 import { useSubject } from '../../utils/hooks/useSubject';
+import { useMount } from '../../utils/hooks/useMount';
+import { pathNavigatorBackgroundRefresh } from '../../state/actions/pathNavigator';
 
 interface PathNavigatorTreeProps {
   id: string;
@@ -72,6 +75,7 @@ interface PathNavigatorTreeProps {
   rootPath: string;
   excludes?: string[];
   limit?: number;
+  backgroundRefreshTimeoutMs: number;
   icon?: SystemIconDescriptor;
   expandedIcon?: SystemIconDescriptor;
   collapsedIcon?: SystemIconDescriptor;
@@ -116,6 +120,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     rootPath,
     excludes,
     limit = 10,
+    backgroundRefreshTimeoutMs = 60000,
     icon,
     expandedIcon,
     collapsedIcon,
@@ -144,8 +149,20 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     return getStoredPathNavigatorTree(site, user.username, id) ?? {};
   }, [id, site, user.username]);
   const { authoringBase } = useEnv();
-
   const dispatch = useDispatch();
+  const intervalRef = useRef<any>();
+
+  useEffect(() => {
+    if (backgroundRefreshTimeoutMs) {
+      intervalRef.current = setInterval(() => {
+        state.expanded.forEach((path) => fetchingPathsRef.current.push(path));
+        dispatch(pathNavigatorTreeBackgroundRefresh({ id }));
+      }, backgroundRefreshTimeoutMs);
+      return () => {
+        clearInterval(intervalRef.current);
+      };
+    }
+  }, [state?.expanded, backgroundRefreshTimeoutMs, dispatch, id]);
 
   if (state && fetchingPathsRef.current === null) {
     // Restoring previously loaded state from redux
@@ -181,12 +198,19 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     }
   }, [site, user.username, id, dispatch, rootPath, excludes, limit, state, uiConfig.currentSite, storedState]);
 
+  useMount(() => {
+    if (state) {
+      state.expanded.forEach((path) => fetchingPathsRef.current.push(path));
+      dispatch(pathNavigatorTreeBackgroundRefresh({ id }));
+    }
+  });
+
   useEffect(() => {
     if (rootItem) {
       const rootNode = {
         id: rootItem.path,
         name: rootItem.label,
-        children: [{ id: 'loading' }]
+        children: nodesByPathRef.current[rootItem.path]?.children ?? [{ id: 'loading' }]
       };
       nodesByPathRef.current[rootItem.path] = rootNode;
       setRootNode(rootNode);

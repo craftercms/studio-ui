@@ -25,8 +25,8 @@ import DeleteContentTypeDialogBody from './DeleteContentTypeDialogBody';
 import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../state/actions/system';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import { createResource } from '../../utils/hooks/createResource';
 import { useUnmount } from '../../utils/hooks/useUnmount';
+import { createResource } from '../../utils/resource';
 
 export interface DeleteContentTypeDialogProps {
   open: boolean;

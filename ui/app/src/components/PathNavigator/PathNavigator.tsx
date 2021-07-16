@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ElementType, useCallback, useEffect, useState } from 'react';
+import React, { ElementType, useCallback, useEffect, useRef, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { DetailedItem } from '../../models/Item';
 import ContextMenu, { ContextMenuOption } from '../ContextMenu';
@@ -23,6 +23,7 @@ import { getParentPath, withIndex, withoutIndex } from '../../utils/path';
 import { translations } from './translations';
 import { languages } from '../../utils/i18n-legacy';
 import {
+  pathNavigatorBackgroundRefresh,
   pathNavigatorChangePage,
   pathNavigatorConditionallySetPath,
   pathNavigatorInit,
@@ -70,6 +71,7 @@ import { useEnv } from '../../utils/hooks/useEnv';
 import { useItemsByPath } from '../../utils/hooks/useItemsByPath';
 import { useSubject } from '../../utils/hooks/useSubject';
 import { useSiteLocales } from '../../utils/hooks/useSiteLocales';
+import { useMount } from '../../utils/hooks/useMount';
 
 interface Menu {
   path?: string;
@@ -89,6 +91,7 @@ export interface PathNavigatorProps {
   excludes?: string[];
   locale?: string;
   limit?: number;
+  backgroundRefreshTimeoutMs?: number;
   icon?: SystemIconDescriptor;
   expandedIcon?: SystemIconDescriptor;
   collapsedIcon?: SystemIconDescriptor;
@@ -138,6 +141,7 @@ export default function PathNavigator(props: PathNavigatorProps) {
     rootPath: path,
     id = label.replace(/\s/g, ''),
     limit = 10,
+    backgroundRefreshTimeoutMs = 60000,
     locale,
     excludes,
     onItemClicked: onItemClickedProp,
@@ -161,6 +165,19 @@ export default function PathNavigator(props: PathNavigatorProps) {
   const uiConfig = useSelection<GlobalState['uiConfig']>((state) => state.uiConfig);
   const siteLocales = useSiteLocales();
 
+  const intervalRef = useRef<any>();
+
+  useEffect(() => {
+    if (backgroundRefreshTimeoutMs) {
+      intervalRef.current = setInterval(() => {
+        dispatch(pathNavigatorBackgroundRefresh({ id }));
+      }, backgroundRefreshTimeoutMs);
+      return () => {
+        clearInterval(intervalRef.current);
+      };
+    }
+  }, [backgroundRefreshTimeoutMs, dispatch, id]);
+
   useEffect(() => {
     // Adding uiConfig as means to stop navigator from trying to
     // initialize with previous state information when switching sites
@@ -168,6 +185,12 @@ export default function PathNavigator(props: PathNavigatorProps) {
       dispatch(pathNavigatorInit({ id, path, locale, excludes, limit }));
     }
   }, [dispatch, excludes, id, limit, locale, path, site, state, uiConfig.currentSite]);
+
+  useMount(() => {
+    if (state) {
+      dispatch(pathNavigatorBackgroundRefresh({ id }));
+    }
+  });
 
   useEffect(() => {
     const subscription = onSearch$.pipe(debounceTime(400)).subscribe((keyword) => {
