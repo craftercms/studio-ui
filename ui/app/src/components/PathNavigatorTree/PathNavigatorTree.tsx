@@ -68,7 +68,6 @@ import { useActiveUser } from '../../utils/hooks/useActiveUser';
 import { useItemsByPath } from '../../utils/hooks/useItemsByPath';
 import { useSubject } from '../../utils/hooks/useSubject';
 import { useMount } from '../../utils/hooks/useMount';
-import { pathNavigatorBackgroundRefresh, pathNavigatorRefresh } from '../../state/actions/pathNavigator';
 
 interface PathNavigatorTreeProps {
   id: string;
