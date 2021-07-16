@@ -18,6 +18,8 @@ import { ItemStateMap, LegacyItem } from '../models/Item';
 import { WidgetDescriptor } from '../components/Widget';
 import { nanoid as uuid } from 'nanoid';
 import TranslationOrText from '../models/TranslationOrText';
+import LookupTable from '../models/LookupTable';
+import { DashboardPreferences } from '../models/Dashboard';
 
 export function setStoredGlobalMenuSiteViewPreference(value: 'grid' | 'list', user: string) {
   return window.localStorage.setItem(`craftercms.${user}.globalMenuSiteViewPreference`, value);
@@ -138,4 +140,14 @@ export function createWidgetDescriptor(widget: WidgetDescriptor): WidgetDescript
     // We need a unique key for each widget.
     uiKey: uuid()
   };
+}
+
+export function setStoredDashboardPreferences(value: LookupTable<DashboardPreferences>, user: string, site: string) {
+  return window.localStorage.setItem(`craftercms.${user}.dashboardPreferences.${site}`, JSON.stringify(value));
+}
+
+export function getStoredDashboardPreferences(user: string, site: string): LookupTable<DashboardPreferences> {
+  return JSON.parse(window.localStorage.getItem(`craftercms.${user}.dashboardPreferences.${site}`)) as LookupTable<
+    DashboardPreferences
+  >;
 }

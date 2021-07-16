@@ -38,3 +38,8 @@ export interface LegacyDeploymentHistoryResponse {
 }
 
 export type LegacyDeploymentHistoryType = 'page' | 'component' | 'document' | 'all';
+
+export interface DashboardPreferences {
+  filterBy: string;
+  numItems?: number;
+}

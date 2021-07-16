@@ -37,22 +37,33 @@ import TextField from '@material-ui/core/TextField';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import { useLocale } from '../../utils/hooks/useLocale';
+import { DashboardPreferences } from '../../models/Dashboard';
+import { useSpreadState } from '../../utils/hooks/useSpreadState';
 
 export interface RecentActivityDashletProps {
   selectedLookup: LookupTable<boolean>;
+  dashboardPreferences: LookupTable<DashboardPreferences>;
+  setDashboardPreferences(preferences: LookupTable<DashboardPreferences>): void;
   onItemChecked(paths: string[], forceChecked?: boolean): void;
   onItemMenuClick(event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, item: DetailedItem): void;
 }
 
+const dashletInitialPreferences = {
+  filterBy: 'page',
+  numItems: 10
+};
+
 export default function RecentActivityDashlet(props: RecentActivityDashletProps) {
-  const { selectedLookup, onItemChecked, onItemMenuClick } = props;
+  const { selectedLookup, onItemChecked, onItemMenuClick, dashboardPreferences, setDashboardPreferences } = props;
   const [expandedDashlet, setExpandedDashlet] = useState(true);
   const [fetchingActivity, setFecthingActivity] = useState(false);
   const [errorActivity, setErrorActivity] = useState<ApiResponse>();
   const [items, setItems] = useState<DetailedItem[]>([]);
   const [totalItems, setTotalItems] = useState(0);
-  const [numItems, setNumItems] = useState(10);
-  const [filterBy, setFilterBy] = useState('page'); // TODO: type
+  const dashletPreferencesKey = 'recentActivityDashlet';
+  const [preferences, setPreferences] = useSpreadState(
+    dashboardPreferences?.[dashletPreferencesKey] ?? dashletInitialPreferences
+  );
   const [sortType, setSortType] = useState<'asc' | 'desc'>('desc');
   const [sortBy, setSortBy] = useState('dateModified');
   const [excludeLiveItems, setExcludeLiveItems] = useState(false);
@@ -76,13 +87,23 @@ export default function RecentActivityDashlet(props: RecentActivityDashletProps)
 
   const onFilterChange = (e) => {
     e.stopPropagation();
-    setFilterBy(e.target.value);
+    setPreferences({
+      filterBy: e.target.value
+    });
   };
 
   const onNumItemsChange = (e) => {
     e.stopPropagation();
-    setNumItems(e.target.value);
+    setPreferences({
+      numItems: e.target.value
+    });
   };
+
+  useEffect(() => {
+    setDashboardPreferences({
+      [dashletPreferencesKey]: preferences
+    });
+  }, [preferences, setDashboardPreferences]);
 
   const onToggleHideLiveItems = (e) => {
     e.stopPropagation();
@@ -95,7 +116,15 @@ export default function RecentActivityDashlet(props: RecentActivityDashletProps)
 
   const fetchActivity = useCallback(() => {
     setFecthingActivity(true);
-    fetchLegacyUserActivities(siteId, currentUser, 'eventDate', true, numItems, filterBy, excludeLiveItems).subscribe(
+    fetchLegacyUserActivities(
+      siteId,
+      currentUser,
+      'eventDate',
+      true,
+      preferences.numItems,
+      preferences.filterBy,
+      excludeLiveItems
+    ).subscribe(
       (activities) => {
         setTotalItems(activities.total);
         const itemsList = [];
@@ -108,7 +137,7 @@ export default function RecentActivityDashlet(props: RecentActivityDashletProps)
         setFecthingActivity(false);
       }
     );
-  }, [siteId, setItems, numItems, filterBy, excludeLiveItems, currentUser]);
+  }, [siteId, setItems, preferences, excludeLiveItems, currentUser]);
 
   useEffect(() => {
     fetchActivity();
@@ -176,7 +205,7 @@ export default function RecentActivityDashlet(props: RecentActivityDashletProps)
             label={<FormattedMessage id="words.show" defaultMessage="Show" />}
             select
             size="small"
-            value={numItems}
+            value={preferences.numItems}
             disabled={fetchingActivity}
             onChange={onNumItemsChange}
             className={classes.rightAction}
@@ -194,7 +223,7 @@ export default function RecentActivityDashlet(props: RecentActivityDashletProps)
             label={<FormattedMessage id="recentActivity.filterBy" defaultMessage="Filter by" />}
             select
             size="small"
-            value={filterBy}
+            value={preferences.filterBy}
             disabled={fetchingActivity}
             onChange={onFilterChange}
           >

@@ -36,16 +36,23 @@ import { filter } from 'rxjs/operators';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import { useSpreadState } from '../../utils/hooks/useSpreadState';
+import { DashboardPreferences } from '../../models/Dashboard';
 
 export interface ApprovedScheduledDashletProps {
   selectedLookup: LookupTable<boolean>;
+  dashboardPreferences: LookupTable<DashboardPreferences>;
+  setDashboardPreferences(preferences: LookupTable<DashboardPreferences>): void;
   onItemChecked(paths: string[], forceChecked?: boolean): void;
   onItemMenuClick(event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, item: DetailedItem): void;
 }
 
+const dashletInitialPreferences = {
+  filterBy: 'all'
+};
+
 export default function ApprovedScheduledDashlet(props: ApprovedScheduledDashletProps) {
   const [expanded, setExpanded] = useState(true);
-  const { selectedLookup, onItemChecked, onItemMenuClick } = props;
+  const { selectedLookup, onItemChecked, onItemMenuClick, dashboardPreferences, setDashboardPreferences } = props;
   const [error, setError] = useState<ApiResponse>();
   const site = useActiveSiteId();
   const classes = useStyles();
@@ -62,7 +69,10 @@ export default function ApprovedScheduledDashlet(props: ApprovedScheduledDashlet
   });
   const [expandedLookup, setExpandedLookup] = useSpreadState<LookupTable<boolean>>({});
   const [isFetching, setIsFetching] = useState(false);
-  const [filterBy, setFilterBy] = useState('all');
+  const dashletPreferencesKey = 'approvedScheduledDashlet';
+  const [preferences, setPreferences] = useSpreadState(
+    dashboardPreferences?.[dashletPreferencesKey] ?? dashletInitialPreferences
+  );
 
   const showExpanded = useMemo(() => Object.values(expandedLookup).some((value) => !value), [expandedLookup]);
   const isAllChecked = useMemo(() => !Object.keys(state.itemsLookup).some((path) => !selectedLookup[path]), [
@@ -76,7 +86,7 @@ export default function ApprovedScheduledDashlet(props: ApprovedScheduledDashlet
 
   const refresh = useCallback(() => {
     setIsFetching(true);
-    fetchLegacyScheduledItems(site, 'eventDate', false, filterBy).subscribe(
+    fetchLegacyScheduledItems(site, 'eventDate', false, preferences.filterBy).subscribe(
       (response) => {
         const parentItems: DashboardItem[] = [];
         const itemsLookup = {};
@@ -109,7 +119,7 @@ export default function ApprovedScheduledDashlet(props: ApprovedScheduledDashlet
         setError(response);
       }
     );
-  }, [setExpandedLookup, site, filterBy]);
+  }, [setExpandedLookup, site, preferences]);
 
   useEffect(() => {
     refresh();
@@ -179,8 +189,16 @@ export default function ApprovedScheduledDashlet(props: ApprovedScheduledDashlet
 
   const onFilterChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     event.stopPropagation();
-    setFilterBy(event.target.value as string);
+    setPreferences({
+      filterBy: event.target.value as string
+    });
   };
+
+  useEffect(() => {
+    setDashboardPreferences({
+      [dashletPreferencesKey]: preferences
+    });
+  }, [preferences, setDashboardPreferences]);
 
   return (
     <Dashlet
@@ -207,7 +225,7 @@ export default function ApprovedScheduledDashlet(props: ApprovedScheduledDashlet
             label={<FormattedMessage id="dashboardItemsScheduled.filterBy" defaultMessage="Filter by" />}
             select
             size="small"
-            value={filterBy}
+            value={preferences.filterBy}
             disabled={isFetching}
             onChange={onFilterChange}
           >

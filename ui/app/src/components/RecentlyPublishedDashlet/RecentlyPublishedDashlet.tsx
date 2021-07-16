@@ -17,7 +17,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import RecentlyPublishedWidgetUI from './RecentlyPublishedDashletUI';
 import ApiResponse from '../../models/ApiResponse';
-import { LegacyDeploymentHistoryType } from '../../models/Dashboard';
+import { DashboardPreferences } from '../../models/Dashboard';
 import { fetchLegacyDeploymentHistory } from '../../services/dashboard';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import { FormattedMessage } from 'react-intl';
@@ -40,6 +40,8 @@ import { useLocale } from '../../utils/hooks/useLocale';
 
 export interface RecentlyPublishedWidgetProps {
   selectedLookup: LookupTable<boolean>;
+  dashboardPreferences: LookupTable<DashboardPreferences>;
+  setDashboardPreferences(preferences: LookupTable<DashboardPreferences>): void;
   onItemChecked(paths: string[], forceChecked?: boolean): void;
   onItemMenuClick(event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, item: DetailedItem): void;
 }
@@ -49,15 +51,22 @@ export interface DashboardItem {
   children: string[];
 }
 
+const dashletInitialPreferences = {
+  filterBy: 'page',
+  numItems: 20
+};
+
 export default function RecentlyPublishedDashlet(props: RecentlyPublishedWidgetProps) {
-  const { selectedLookup, onItemChecked, onItemMenuClick } = props;
+  const { selectedLookup, onItemChecked, onItemMenuClick, dashboardPreferences, setDashboardPreferences } = props;
   const [expandedWidget, setExpandedWidget] = useState(true);
   const [fetchingHistory, setFetchingHistory] = useState(false);
   const [errorHistory, setErrorHistory] = useState<ApiResponse>();
   const [parentItems, setParentItems] = useState<DashboardItem[]>();
   const [itemsLookup, setItemsLookup] = useSpreadState<LookupTable<DetailedItem>>({});
-  const [filterBy, setFilterBy] = useState<LegacyDeploymentHistoryType>('page');
-  const [numItems, setNumItems] = useState(20);
+  const dashletPreferencesKey = 'recentlyPublishedDashlet';
+  const [preferences, setPreferences] = useSpreadState(
+    dashboardPreferences?.[dashletPreferencesKey] ?? dashletInitialPreferences
+  );
   const [expandedItems, setExpandedItems] = useSpreadState<LookupTable<boolean>>({});
   const siteId = useActiveSiteId();
   const localeBranch = useLocale();
@@ -88,13 +97,23 @@ export default function RecentlyPublishedDashlet(props: RecentlyPublishedWidgetP
 
   const onFilterChange = (e) => {
     e.stopPropagation();
-    setFilterBy(e.target.value);
+    setPreferences({
+      filterBy: e.target.value
+    });
   };
 
   const onNumItemsChange = (e) => {
     e.stopPropagation();
-    setNumItems(e.target.value);
+    setPreferences({
+      numItems: e.target.value
+    });
   };
+
+  useEffect(() => {
+    setDashboardPreferences({
+      [dashletPreferencesKey]: preferences
+    });
+  }, [preferences, setDashboardPreferences]);
 
   const onCollapseAll = (e) => {
     e.stopPropagation();
@@ -109,7 +128,7 @@ export default function RecentlyPublishedDashlet(props: RecentlyPublishedWidgetP
 
   const fetchHistory = useCallback(() => {
     setFetchingHistory(true);
-    fetchLegacyDeploymentHistory(siteId, 'eventDate', false, 30, numItems, filterBy).subscribe(
+    fetchLegacyDeploymentHistory(siteId, 'eventDate', false, 30, preferences.numItems, preferences.filterBy).subscribe(
       (history) => {
         const parentItems = [];
         const childrenLookup = {};
@@ -135,7 +154,7 @@ export default function RecentlyPublishedDashlet(props: RecentlyPublishedWidgetP
         setFetchingHistory(false);
       }
     );
-  }, [siteId, filterBy, numItems, toggleCollapseAllItems, setItemsLookup]);
+  }, [siteId, preferences, toggleCollapseAllItems, setItemsLookup]);
 
   useEffect(() => {
     fetchHistory();
@@ -208,7 +227,7 @@ export default function RecentlyPublishedDashlet(props: RecentlyPublishedWidgetP
             label={<FormattedMessage id="words.show" defaultMessage="Show" />}
             select
             size="small"
-            value={numItems}
+            value={preferences.numItems}
             disabled={fetchingHistory}
             onChange={onNumItemsChange}
             className={classes.rightAction}
@@ -232,7 +251,7 @@ export default function RecentlyPublishedDashlet(props: RecentlyPublishedWidgetP
             label={<FormattedMessage id="recentlyPublished.filterBy" defaultMessage="Filter by" />}
             select
             size="small"
-            value={filterBy}
+            value={preferences.filterBy}
             disabled={fetchingHistory}
             onChange={onFilterChange}
           >
