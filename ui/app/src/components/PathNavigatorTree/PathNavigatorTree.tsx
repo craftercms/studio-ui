@@ -402,7 +402,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
         }
         case pluginInstalled.type: {
           state.expanded.forEach((path) => fetchingPathsRef.current.push(path));
-          dispatch(pathNavigatorTreeRefresh({ id }));
+          dispatch(pathNavigatorTreeBackgroundRefresh({ id }));
           break;
         }
         default: {

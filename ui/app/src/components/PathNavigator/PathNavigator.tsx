@@ -323,7 +323,7 @@ export default function PathNavigator(props: PathNavigatorProps) {
           break;
         }
         case pluginInstalled.type: {
-          dispatch(pathNavigatorRefresh({ id }));
+          dispatch(pathNavigatorBackgroundRefresh({ id }));
           break;
         }
       }
