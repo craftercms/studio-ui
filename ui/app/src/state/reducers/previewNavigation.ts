@@ -36,6 +36,10 @@ const reducer = createReducer<GlobalState['previewNavigation']>(
     historyNavigationType: null
   },
   {
+    // A page is being visited or reloaded
+    // - Push the url into the back stack (if not already pushed)
+    // - Clear the forward stack (if not already pushed)
+    // - Update the current url
     [checkInGuest.type]: (state, { payload }) => {
       const { location } = payload;
       const href = location.href;
@@ -89,23 +93,13 @@ const reducer = createReducer<GlobalState['previewNavigation']>(
         currentUrlPath: cleanseUrl(path)
       };
     },
-    [changeSite.type]: (state, { payload }) => {
-      let nextState = {
-        ...state,
-        historyBackStack: [],
-        historyForwardStack: [],
-        historyNavigationType: null
-      };
-
-      if (payload.nextUrl !== nextState.currentUrlPath) {
-        nextState = {
-          ...nextState,
-          currentUrlPath: payload.nextUrl
-        };
-      }
-
-      return nextState;
-    }
+    [changeSite.type]: (state, { payload }) => ({
+      ...state,
+      historyBackStack: [],
+      historyForwardStack: [],
+      historyNavigationType: null,
+      currentUrlPath: payload.nextUrl ?? state.currentUrlPath
+    })
   }
 );
 

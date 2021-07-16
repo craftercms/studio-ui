@@ -22,7 +22,6 @@ import { getGuestToHostBus, getHostToGuestBus } from './previewContext';
 import { filter, map, pluck } from 'rxjs/operators';
 import { defineMessages, useIntl } from 'react-intl';
 import { StandardAction } from '../../models/StandardAction';
-import { useSelection } from '../../utils/hooks/useSelection';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { usePreviewState } from '../../utils/hooks/usePreviewState';
 import { usePreviewNavigation } from '../../utils/hooks/usePreviewNavigation';
@@ -195,7 +194,7 @@ export default function Host() {
       className={clsx(classes.hostContainer, { [classes.shift]: showToolsPanel })}
     >
       <HostUI
-        url={currentUrlPath === '' ? previewLandingBase : guestBase + currentUrlPath}
+        url={currentUrlPath === '' ? previewLandingBase : `${guestBase}${currentUrlPath}`}
         site={site}
         width={hostSize.width}
         origin={guestBase}

@@ -590,7 +590,7 @@ export function PreviewConcierge(props: any) {
 
               hostToGuest$.next({
                 type: INSERT_OPERATION_COMPLETE,
-                payload: { ...payload, currentFullUrl: guestBase + currentUrlPath }
+                payload: { ...payload, currentFullUrl: `${guestBase}${currentUrlPath}` }
               });
               enqueueSnackbar(formatMessage(guestMessages.insertOperationComplete));
             },
@@ -631,7 +631,7 @@ export function PreviewConcierge(props: any) {
 
               hostToGuest$.next({
                 type: INSERT_OPERATION_COMPLETE,
-                payload: { ...payload, currentFullUrl: guestBase + currentUrlPath }
+                payload: { ...payload, currentFullUrl: `${guestBase}${currentUrlPath}` }
               });
               enqueueSnackbar(formatMessage(guestMessages.insertOperationComplete));
             },
