@@ -170,6 +170,7 @@ export default function EditGroupDialogContainer(props: EditGroupDialogContainer
               message: formatMessage(translations.groupEdited)
             })
           );
+          setPendingChanges(false);
           onGroupSaved(group);
         },
         ({ response: { response } }) => {
@@ -184,6 +185,7 @@ export default function EditGroupDialogContainer(props: EditGroupDialogContainer
               message: formatMessage(translations.groupCreated)
             })
           );
+          setPendingChanges(false);
           onGroupSaved(group);
         },
         ({ response: { response } }) => {
