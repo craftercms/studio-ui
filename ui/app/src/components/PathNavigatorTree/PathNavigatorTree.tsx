@@ -45,7 +45,8 @@ import {
   itemDuplicated,
   itemsDeleted,
   itemsPasted,
-  itemUnlocked
+  itemUnlocked,
+  pluginInstalled
 } from '../../state/actions/system';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 // @ts-ignore
@@ -67,7 +68,7 @@ import { useActiveUser } from '../../utils/hooks/useActiveUser';
 import { useItemsByPath } from '../../utils/hooks/useItemsByPath';
 import { useSubject } from '../../utils/hooks/useSubject';
 import { useMount } from '../../utils/hooks/useMount';
-import { pathNavigatorBackgroundRefresh } from '../../state/actions/pathNavigator';
+import { pathNavigatorBackgroundRefresh, pathNavigatorRefresh } from '../../state/actions/pathNavigator';
 
 interface PathNavigatorTreeProps {
   id: string;
@@ -300,7 +301,8 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
       folderRenamed.type,
       itemsDeleted.type,
       itemDuplicated.type,
-      itemCreated.type
+      itemCreated.type,
+      pluginInstalled.type
     ];
     const hostToHost$ = getHostToHostBus();
     const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
@@ -398,6 +400,11 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
           }
           break;
         }
+        case pluginInstalled.type: {
+          state.expanded.forEach((path) => fetchingPathsRef.current.push(path));
+          dispatch(pathNavigatorTreeRefresh({ id }));
+          break;
+        }
         default: {
           break;
         }
@@ -406,7 +413,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     return () => {
       subscription.unsubscribe();
     };
-  }, [id, dispatch, rootPath, totalByPath, limit, childrenByParentPath]);
+  }, [id, dispatch, rootPath, totalByPath, limit, childrenByParentPath, state?.expanded]);
   // endregion
 
   if (!rootItem || !Boolean(state) || !rootNode) {
