@@ -49,6 +49,7 @@ import {
   PUBLISH_REJECT_MASK,
   PUBLISH_REQUEST_MASK,
   PUBLISH_SCHEDULE_MASK,
+  PUBLISHING_DESTINATION_MASK,
   PUBLISHING_LIVE_MASK,
   PUBLISHING_STAGED_MASK,
   READ_MASK,
@@ -654,6 +655,10 @@ export const isSystemProcessingState = (value: number) => Boolean(value & STATE_
 export const isSubmittedState = (value: number) => Boolean(value & STATE_SUBMITTED_MASK);
 export const isScheduledState = (value: number) => Boolean(value & STATE_SCHEDULED_MASK);
 export const isPublishingState = (value: number) => Boolean(value & STATE_PUBLISHING_MASK);
+export const isHeadingToStaging = (value: number) =>
+  isSubmittedState(value) && !Boolean(value & PUBLISHING_DESTINATION_MASK);
+export const isHeadingToLive = (value: number) =>
+  isSubmittedState(value) && Boolean(value & PUBLISHING_DESTINATION_MASK);
 export const isStaged = (value: number) => Boolean(value & PUBLISHING_STAGED_MASK);
 export const isLive = (value: number) => Boolean(value & PUBLISHING_LIVE_MASK);
 export const isTranslationUpToDateState = (value: number) => Boolean(value & STATE_TRANSLATION_UP_TO_DATE_MASK);
