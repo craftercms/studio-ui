@@ -231,7 +231,31 @@ export default function PathNavigator(props: PathNavigatorProps) {
         case itemCreated.type:
         case itemUnlocked.type:
         case itemUpdated.type:
-        case folderRenamed.type:
+        case folderRenamed.type: {
+          const parentPath = getParentPath(payload.target);
+          if (parentPath === withoutIndex(state.currentPath)) {
+            dispatch(pathNavigatorRefresh({ id }));
+          } else if (withoutIndex(payload.target) === withoutIndex(state.currentPath)) {
+            dispatch(
+              batchActions([
+                pathNavigatorUpdate({
+                  id,
+                  currentPath: payload.target.replace(payload.oldName, payload.newName)
+                }),
+                pathNavigatorRefresh({ id })
+              ])
+            );
+          }
+          if (state.leaves.some((path) => withoutIndex(path) === parentPath)) {
+            dispatch(
+              pathNavigatorUpdate({
+                id,
+                leaves: state.leaves.filter((path) => withoutIndex(path) !== parentPath)
+              })
+            );
+          }
+          break;
+        }
         case itemDuplicated.type: {
           const parentPath = getParentPath(payload.target);
           if (parentPath === withoutIndex(state.currentPath)) {
