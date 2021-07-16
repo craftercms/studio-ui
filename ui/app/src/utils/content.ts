@@ -49,6 +49,7 @@ import {
   PUBLISH_REJECT_MASK,
   PUBLISH_REQUEST_MASK,
   PUBLISH_SCHEDULE_MASK,
+  PUBLISHING_DESTINATION_MASK,
   PUBLISHING_LIVE_MASK,
   PUBLISHING_STAGED_MASK,
   READ_MASK,
@@ -233,7 +234,8 @@ export function parseLegacyItemToSandBoxItem(item: LegacyItem | LegacyItem[]): S
     modifier: item.user,
     dateModified: item.lastEditDate,
     commitId: null,
-    sizeInBytes: null
+    sizeInBytes: null,
+    expiresOn: null
   };
 }
 
@@ -253,19 +255,22 @@ export function parseLegacyItemToDetailedItem(item: LegacyItem | LegacyItem[]): 
       modifier: item.user,
       dateModified: item.lastEditDate,
       commitId: null,
-      sizeInBytes: null
+      sizeInBytes: null,
+      expiresOn: null
     },
     staging: {
       lastScheduledDate: item.scheduledDate,
       lastPublishedDate: item.publishedDate,
       publisher: item.user,
-      commitId: null
+      commitId: null,
+      expiresOn: null
     },
     live: {
       lastScheduledDate: item.scheduledDate,
       lastPublishedDate: item.publishedDate,
       publisher: item.user,
-      commitId: null
+      commitId: null,
+      expiresOn: null
     }
   };
 }
@@ -284,7 +289,8 @@ export function parseSandBoxItemToDetailedItem(item: SandboxItem | SandboxItem[]
       modifier: item.modifier,
       dateModified: item.dateModified,
       commitId: item.commitId,
-      sizeInBytes: item.sizeInBytes
+      sizeInBytes: item.sizeInBytes,
+      expiresOn: item.expiresOn
     },
     staging: null,
     live: null,
@@ -654,6 +660,12 @@ export const isSystemProcessingState = (value: number) => Boolean(value & STATE_
 export const isSubmittedState = (value: number) => Boolean(value & STATE_SUBMITTED_MASK);
 export const isScheduledState = (value: number) => Boolean(value & STATE_SCHEDULED_MASK);
 export const isPublishingState = (value: number) => Boolean(value & STATE_PUBLISHING_MASK);
+export const isSubmittedToStaging = (value: number) =>
+  (isSubmittedState(value) || isScheduledState(value) || isPublishingState(value)) &&
+  !Boolean(value & PUBLISHING_DESTINATION_MASK);
+export const isSubmittedToLive = (value: number) =>
+  (isSubmittedState(value) || isScheduledState(value) || isPublishingState(value)) &&
+  Boolean(value & PUBLISHING_DESTINATION_MASK);
 export const isStaged = (value: number) => Boolean(value & PUBLISHING_STAGED_MASK);
 export const isLive = (value: number) => Boolean(value & PUBLISHING_LIVE_MASK);
 export const isTranslationUpToDateState = (value: number) => Boolean(value & STATE_TRANSLATION_UP_TO_DATE_MASK);
@@ -670,6 +682,8 @@ export const createItemStateMap: (status: number) => ItemStateMap = (status: num
   submitted: isSubmittedState(status),
   scheduled: isScheduledState(status),
   publishing: isPublishingState(status),
+  submittedToStaging: isSubmittedToStaging(status),
+  submittedToLive: isSubmittedToLive(status),
   staged: isStaged(status),
   live: isLive(status),
   translationUpToDate: isTranslationUpToDateState(status),
