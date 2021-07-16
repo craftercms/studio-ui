@@ -127,7 +127,7 @@ export default function RecentlyPublishedDashletUI(props: RecentlyPublishedWidge
                     <Table size="small" className={classes.tableRoot}>
                       <TableBody>
                         {item.children.map((path, i) => (
-                          <GlobalAppGridRow key={i} onClick={() => onItemChecked([path])}>
+                          <GlobalAppGridRow key={i} onClick={() => onItemChecked([itemsLookup[path].path])}>
                             <GlobalAppGridCell className="checkbox width5">
                               <Checkbox checked={Boolean(selectedItems[itemsLookup[path].path])} />
                             </GlobalAppGridCell>
