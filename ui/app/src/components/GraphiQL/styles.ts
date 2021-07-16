@@ -16,14 +16,11 @@
 
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 
-export const useStyles = makeStyles((theme) =>
+export const useStyles = makeStyles(() =>
   createStyles({
     container: {
       '& .title': {
         display: 'none'
-      },
-      '&.embedded .title': {
-        display: 'block'
       },
       '& .doc-explorer-title, & .history-title': {
         height: '32px'

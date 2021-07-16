@@ -21,17 +21,21 @@ import { FormattedMessage } from 'react-intl';
 import ToolsPanelEmbeddedAppViewButton from '../ToolsPanelEmbeddedAppViewButton';
 
 export default function SiteToolsPanel() {
-  const { 'craftercms.siteTools': siteTools } = useReferences();
-
+  const references = useReferences();
+  const { 'craftercms.siteTools': siteTools } = references;
   return (
     <>
-      {siteTools ? (
+      {siteTools && siteTools.tools?.length ? (
         siteTools.tools.map((tool, index) => (
           <ToolsPanelEmbeddedAppViewButton
             key={index}
             title={tool.title}
             icon={tool.icon}
-            widget={{ ...tool.widget, uiKey: String(index) }}
+            widget={{
+              ...tool.widget,
+              configuration: { ...tool.widget?.configuration, embedded: true },
+              uiKey: String(index)
+            }}
           />
         ))
       ) : (
