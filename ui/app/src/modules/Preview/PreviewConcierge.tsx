@@ -117,6 +117,7 @@ import { useContentTypes } from '../../utils/hooks/useContentTypes';
 import { useActiveUser } from '../../utils/hooks/useActiveUser';
 import { useItemsByPath } from '../../utils/hooks/useItemsByPath';
 import { useMount } from '../../utils/hooks/useMount';
+import { usePreviewNavigation } from '../../utils/hooks/usePreviewNavigation';
 
 const guestMessages = defineMessages({
   maxCount: {
@@ -286,7 +287,8 @@ export function PreviewConcierge(props: any) {
   const site = useActiveSiteId();
   const user = useActiveUser();
   const items = useItemsByPath();
-  const { guest, currentUrl, computedUrl, editMode, highlightMode, previewChoice } = usePreviewState();
+  const { guest, editMode, highlightMode, previewChoice } = usePreviewState();
+  const { currentUrlPath } = usePreviewNavigation();
   const contentTypes = useContentTypes();
   const { authoringBase, guestBase, xsrfArgument } = useSelection((state) => state.env);
   const priorState = useRef({ site });
@@ -302,8 +304,8 @@ export function PreviewConcierge(props: any) {
   // Avoids it showing over and over when navigating studio pages.
   const previewNextCheckInNotificationRef = useRef(false);
   const handlePreviewCompatibilityDialogGo = useCallback(() => {
-    window.location.href = `${authoringBase}/preview#/?page=${computedUrl}&site=${site}`;
-  }, [authoringBase, computedUrl, site]);
+    window.location.href = `${authoringBase}/preview#/?page=${currentUrlPath}&site=${site}`;
+  }, [authoringBase, currentUrlPath, site]);
   // guestDetectionSnackbarOpen, guestDetectionTimeout
   const guestDetectionTimeoutRef = useRef<number>();
   const [guestDetectionSnackbarOpen, setGuestDetectionSnackbarOpen] = useState(false);
@@ -588,7 +590,7 @@ export function PreviewConcierge(props: any) {
 
               hostToGuest$.next({
                 type: INSERT_OPERATION_COMPLETE,
-                payload: { ...payload, currentUrl }
+                payload: { ...payload, currentFullUrl: `${guestBase}${currentUrlPath}` }
               });
               enqueueSnackbar(formatMessage(guestMessages.insertOperationComplete));
             },
@@ -629,7 +631,7 @@ export function PreviewConcierge(props: any) {
 
               hostToGuest$.next({
                 type: INSERT_OPERATION_COMPLETE,
-                payload: { ...payload, currentUrl }
+                payload: { ...payload, currentFullUrl: `${guestBase}${currentUrlPath}` }
               });
               enqueueSnackbar(formatMessage(guestMessages.insertOperationComplete));
             },
@@ -829,8 +831,7 @@ export function PreviewConcierge(props: any) {
     authoringBase,
     contentTypes$,
     contentTypes,
-    currentUrl,
-    computedUrl,
+    currentUrlPath,
     dispatch,
     enqueueSnackbar,
     formatMessage,

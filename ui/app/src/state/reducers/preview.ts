@@ -17,7 +17,6 @@
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState, { PagedEntityState } from '../../models/GlobalState';
 import {
-  changeCurrentUrl,
   CLEAR_DROP_TARGETS,
   CLEAR_SELECT_FOR_EDIT,
   CLOSE_TOOLS,
@@ -35,8 +34,6 @@ import {
   fetchAudiencesPanelModelFailed,
   fetchGuestModelComplete,
   fetchPrimaryGuestModelComplete,
-  goToLastPage,
-  goToNextPage,
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
   guestModelUpdated,
@@ -151,18 +148,12 @@ const reducer = createReducer<GlobalState['preview']>(
     editMode: true,
     highlightMode: 'ALL',
     previewChoice: {},
-    // What's shown to the user across the board (url, address bar, etc)
-    computedUrl: '',
-    // The src of the iframe
-    currentUrl: previewLanding,
     hostSize: { width: null, height: null },
     toolsPanelPageStack: [],
     showToolsPanel: process.env.REACT_APP_SHOW_TOOLS_PANEL ? process.env.REACT_APP_SHOW_TOOLS_PANEL === 'true' : true,
     toolsPanelWidth: 240,
     pageBuilderPanelWidth: 240,
     pageBuilderPanelStack: [],
-    historyBackStack: [],
-    historyForwardStack: [],
     guest: null,
     assets: assetsPanelInitialState,
     audiencesPanel: audiencesPanelInitialState,
@@ -255,15 +246,7 @@ const reducer = createReducer<GlobalState['preview']>(
           modelIdByPath: null,
           selected: null,
           itemBeingDragged: null
-        },
-        computedUrl: payload.__CRAFTERCMS_GUEST_LANDING__ ? '' : url,
-        currentUrl: `${guestBase}${cleanseUrl(url)}`
-        // Setting URL causes dual reload when guest navigation occurs
-        // currentUrl: (payload.url && payload.origin ? payload.url.replace(payload.origin, '') : null) ?? state.currentUrl,
-        // TODO: Retrieval of guestBase from initialState is not right.
-        // currentUrl: payload.__CRAFTERCMS_GUEST_LANDING__
-        //   ? previewLanding
-        //   : `${origin}${url}`
+        }
       };
     },
     [GUEST_CHECK_OUT]: (state) => {
@@ -329,65 +312,13 @@ const reducer = createReducer<GlobalState['preview']>(
         }
       };
     },
-    [changeCurrentUrl.type]: (state, { payload }) => {
-      return state.currentUrl === payload
-        ? state
-        : {
-            ...state,
-            historyBackStack: [...state.historyBackStack, payload],
-            historyForwardStack: [],
-            computedUrl: cleanseUrl(payload),
-            currentUrl: `${guestBase}${cleanseUrl(payload)}`
-          };
-    },
-    [goToLastPage.type]: (state) => {
-      const stack = [...state.historyBackStack];
-      stack.pop();
-      const path = stack[stack.length - 1];
-      return {
-        ...state,
-        historyBackStack: stack,
-        historyForwardStack: [...state.historyForwardStack, state.computedUrl],
-        computedUrl: cleanseUrl(path),
-        currentUrl: `${guestBase}${cleanseUrl(path)}`
-      };
-    },
-    [goToNextPage.type]: (state) => {
-      const stack = [...state.historyForwardStack];
-      const path = stack.pop();
-      return {
-        ...state,
-        historyForwardStack: stack,
-        historyBackStack: [...state.historyBackStack, path],
-        computedUrl: cleanseUrl(path),
-        currentUrl: `${guestBase}${cleanseUrl(path)}`
-      };
-    },
     [changeSite.type]: (state, { payload }) => {
-      let nextState = {
+      return {
         ...state,
         audiencesPanel: audiencesPanelInitialState,
         components: componentsInitialState,
-        assets: assetsPanelInitialState,
-        toolsPanelPageStack: [],
-        historyBackStack: [],
-        historyForwardStack: []
+        assets: assetsPanelInitialState
       };
-
-      // TODO: If there's a guest it would have checked out?
-      // if (state.guest) {
-      //   nextState = { ...nextState, guest: null };
-      // }
-
-      if (payload.nextUrl !== nextState.currentUrl) {
-        nextState = {
-          ...nextState,
-          computedUrl: payload.nextUrl,
-          currentUrl: `${guestBase}${payload.nextUrl}`
-        };
-      }
-
-      return nextState;
     },
     [fetchAudiencesPanelModel.type]: (state) => ({
       ...state,

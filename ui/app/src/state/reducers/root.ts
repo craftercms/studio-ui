@@ -22,6 +22,7 @@ import user from './user';
 import sites from './sites';
 import env from './env';
 import preview from './preview';
+import previewNavigation from './previewNavigation';
 import contentTypes from './contentTypes';
 import dialogs from './dialogs';
 import versions from './versions';
@@ -36,6 +37,7 @@ const reducer: ReducersMapObject<GlobalState, StandardAction> = {
   sites,
   env,
   preview,
+  previewNavigation,
   contentTypes,
   dialogs,
   versions,
