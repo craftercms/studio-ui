@@ -471,9 +471,9 @@ export const itemActionDispatcher = ({
   authoringBase: string;
   dispatch;
   formatMessage;
-  clipboard;
+  clipboard?;
   onActionSuccess?: any;
-  event: React.MouseEvent<Element, MouseEvent>;
+  event?: React.MouseEvent<Element, MouseEvent>;
 }) => {
   // actions that support only one item
   if (!Array.isArray(item)) {

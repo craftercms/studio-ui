@@ -16,13 +16,13 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import useStyles from './styles';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { fetchLegacyGetGoLiveItems } from '../../services/dashboard';
-import { DetailedItem } from '../../models/Item';
+import { AllItemActions, DetailedItem } from '../../models/Item';
 import AwaitingApprovalDashletGridUI from '../AwaitingApprovalDashletGrid';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import LookupTable from '../../models/LookupTable';
-import { parseLegacyItemToDetailedItem } from '../../utils/content';
+import { getNumOfMenuOptionsForItem, getSystemTypeFromPath, parseLegacyItemToDetailedItem } from '../../utils/content';
 import Dashlet from '../Dashlet';
 import ApiResponse from '../../models/ApiResponse';
 import AwaitingApprovalDashletSkeletonTable from '../AwaitingApprovalDashletGrid/AwaitingApprovalDashletSkeletonTable';
@@ -33,12 +33,14 @@ import { filter } from 'rxjs/operators';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import { useSpreadState } from '../../utils/hooks/useSpreadState';
-
-export interface AwaitingApprovalDashletProps {
-  selectedLookup: LookupTable<boolean>;
-  onItemChecked(paths: string[], forceChecked?: boolean): void;
-  onItemMenuClick(event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, item: DetailedItem): void;
-}
+import { completeDetailedItem } from '../../state/actions/content';
+import { showItemMegaMenu } from '../../state/actions/dialogs';
+import { useDispatch } from 'react-redux';
+import ActionsBar from '../ActionsBar';
+import translations from './translations';
+import { createPresenceTable } from '../../utils/array';
+import { itemActionDispatcher } from '../../utils/itemActions';
+import { useEnv } from '../../utils/hooks/useEnv';
 
 export interface DashboardItem {
   label: string;
@@ -46,7 +48,7 @@ export interface DashboardItem {
   children: string[];
 }
 
-export default function AwaitingApprovalDashlet(props: AwaitingApprovalDashletProps) {
+export default function AwaitingApprovalDashlet() {
   const site = useActiveSiteId();
   const classes = useStyles();
   const [state, setState] = useState<{
@@ -60,18 +62,22 @@ export default function AwaitingApprovalDashlet(props: AwaitingApprovalDashletPr
     parentItems: null,
     total: null
   });
-  const { selectedLookup, onItemChecked, onItemMenuClick } = props;
+  const [selectedLookup, setSelectedLookup] = useState<LookupTable<boolean>>({});
   const [expanded, setExpanded] = useState(true);
   const [expandedLookup, setExpandedLookup] = useSpreadState<LookupTable<boolean>>({});
   const [error, setError] = useState<ApiResponse>();
   const [showInProgressItems, setShowInProgressItems] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
+  const dispatch = useDispatch();
+  const { formatMessage } = useIntl();
+  const { authoringBase } = useEnv();
 
   const showExpanded = useMemo(() => Object.values(expandedLookup).some((value) => !value), [expandedLookup]);
   const isAllChecked = useMemo(() => !Object.keys(state.itemsLookup).some((path) => !selectedLookup[path]), [
     selectedLookup,
     state.itemsLookup
   ]);
+  const selectedItemsLength = useMemo(() => Object.values(selectedLookup).filter(Boolean).length, [selectedLookup]);
   const isIndeterminate = useMemo(
     () => Object.keys(state.itemsLookup).some((path) => selectedLookup[path]) && !isAllChecked,
     [isAllChecked, selectedLookup, state.itemsLookup]
@@ -130,6 +136,7 @@ export default function AwaitingApprovalDashlet(props: AwaitingApprovalDashletPr
         case itemsRejected.type: {
           if (payload.targets.some((path) => state.itemsLookup[path])) {
             refresh();
+            setSelectedLookup({ ...selectedLookup, ...createPresenceTable(payload.targets, false) });
           }
           break;
         }
@@ -138,7 +145,7 @@ export default function AwaitingApprovalDashlet(props: AwaitingApprovalDashletPr
     return () => {
       subscription.unsubscribe();
     };
-  }, [refresh, state.itemsLookup]);
+  }, [refresh, selectedLookup, state.itemsLookup]);
   // endregion
 
   const resource = useLogicResource<
@@ -178,11 +185,44 @@ export default function AwaitingApprovalDashlet(props: AwaitingApprovalDashletPr
   };
 
   const onToggleCheckedAll = () => {
-    onItemChecked(Object.keys(state.itemsLookup), !isAllChecked);
+    if (isAllChecked) {
+      setSelectedLookup({});
+    } else {
+      setSelectedLookup({ ...selectedLookup, ...createPresenceTable(Object.keys(state.itemsLookup), true) });
+    }
   };
 
   const handleItemChecked = (path: string) => {
-    onItemChecked([path]);
+    setSelectedLookup({ ...selectedLookup, [path]: !selectedLookup[path] });
+  };
+
+  const onItemMenuClick = (event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, item: DetailedItem) => {
+    const path = item.path;
+    dispatch(completeDetailedItem({ path }));
+    dispatch(
+      showItemMegaMenu({
+        path,
+        anchorReference: 'anchorPosition',
+        anchorPosition: { top: event.clientY, left: event.clientX },
+        numOfLoaderItems: getNumOfMenuOptionsForItem({
+          path: item.path,
+          systemType: getSystemTypeFromPath(item.path)
+        } as DetailedItem)
+      })
+    );
+  };
+
+  const onActionBarOptionClicked = (option: AllItemActions) => {
+    itemActionDispatcher({
+      site,
+      item: Object.keys(selectedLookup)
+        .filter((path) => selectedLookup[path])
+        .map((path) => state.itemsLookup[path]),
+      option,
+      authoringBase,
+      dispatch,
+      formatMessage
+    });
   };
 
   return (
@@ -223,6 +263,22 @@ export default function AwaitingApprovalDashlet(props: AwaitingApprovalDashletPr
           fallback: <AwaitingApprovalDashletSkeletonTable items={state.parentItems} expandedLookup={expandedLookup} />
         }}
       >
+        {(isIndeterminate || isAllChecked) && (
+          <ActionsBar
+            classes={{
+              root: classes.actionsBarRoot,
+              checkbox: classes.actionsBarCheckbox
+            }}
+            options={[
+              { id: 'publish', label: formatMessage(translations.publish, { count: selectedItemsLength }) },
+              { id: 'rejectPublish', label: formatMessage(translations.reject, { count: selectedItemsLength }) }
+            ]}
+            isIndeterminate={isIndeterminate}
+            isChecked={isAllChecked}
+            onOptionClicked={onActionBarOptionClicked}
+            toggleSelectAll={onToggleCheckedAll}
+          />
+        )}
         <AwaitingApprovalDashletGridUI
           resource={resource}
           expandedLookup={expandedLookup}

@@ -627,7 +627,7 @@ function PublishDialogWrapper(props: PublishDialogProps) {
       apiState={apiState}
       classes={useStyles()}
       showEmailCheckbox={!hasPublishPermission || dialog.requestApproval}
-      showRequestApproval={hasPublishPermission && items.every((item) => !item.availableActionsMap.approvePublish)}
+      showRequestApproval={hasPublishPermission && items.every((item) => !item.stateMap.submitted)}
       submitLabel={
         dialog.scheduling === 'custom' ? (
           <FormattedMessage id="requestPublishDialog.schedule" defaultMessage="Schedule" />
