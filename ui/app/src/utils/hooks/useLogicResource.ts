@@ -17,7 +17,7 @@
 import { CustomResourceSelectors } from './useSelectorResource';
 import { Resource } from '../../models/Resource';
 import { useEffect, useRef, useState } from 'react';
-import { createResourceBundle } from './createResourceBundle';
+import { createResourceBundle } from '../resource';
 
 export function useLogicResource<ReturnType = unknown, SourceType = unknown, ErrorType = unknown>(
   source: SourceType,

@@ -57,6 +57,10 @@ export const pathNavigatorConditionallySetPathFailed = /*#__PURE__*/ createActio
 
 export const pathNavigatorRefresh = /*#__PURE__*/ createAction<{ id: string }>('PATH_NAVIGATOR_REFRESH');
 
+export const pathNavigatorBackgroundRefresh = /*#__PURE__*/ createAction<{ id: string }>(
+  'PATH_NAVIGATOR_BACKGROUND_REFRESH'
+);
+
 export const pathNavigatorItemChecked = /*#__PURE__*/ createAction<PayloadWithId<{ item: DetailedItem }>>(
   'PATH_NAVIGATOR_ITEM_CHECKED'
 );

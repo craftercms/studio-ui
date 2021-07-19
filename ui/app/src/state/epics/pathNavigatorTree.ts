@@ -18,6 +18,7 @@ import { ofType } from 'redux-observable';
 import { ignoreElements, map, mergeMap, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { CrafterCMSEpic } from '../store';
 import {
+  pathNavigatorTreeBackgroundRefresh,
   pathNavigatorTreeCollapsePath,
   pathNavigatorTreeExpandPath,
   pathNavigatorTreeFetchPathChildren,
@@ -49,7 +50,7 @@ export default [
   // region pathNavigatorTreeInit
   (action$, state$) =>
     action$.pipe(
-      ofType(pathNavigatorTreeInit.type, pathNavigatorTreeRefresh.type),
+      ofType(pathNavigatorTreeInit.type, pathNavigatorTreeRefresh.type, pathNavigatorTreeBackgroundRefresh.type),
       withLatestFrom(state$),
       mergeMap(([{ payload }, state]) => {
         const {
