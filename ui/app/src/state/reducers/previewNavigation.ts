@@ -62,6 +62,8 @@ const reducer = createReducer<GlobalState['previewNavigation']>(
         historyNavigationType: null
       };
     },
+    // - A request navigation
+    // - Update the current url
     [changeCurrentUrl.type]: (state, { payload }) => {
       return state.currentUrlPath === cleanseUrl(payload)
         ? state
@@ -70,6 +72,12 @@ const reducer = createReducer<GlobalState['previewNavigation']>(
             currentUrlPath: cleanseUrl(payload)
           };
     },
+    // - Previous button clicked
+    // - Pop last item on back stack (this is the current path)
+    // - Get the new last item from back stack (next_path)
+    // - Push next_path to forward stack
+    // - Update the current url with the next_path
+    // - Set navigation type to 'back'
     [goToLastPage.type]: (state) => {
       const stack = [...state.historyBackStack];
       stack.pop();
@@ -82,6 +90,11 @@ const reducer = createReducer<GlobalState['previewNavigation']>(
         currentUrlPath: cleanseUrl(path)
       };
     },
+    // - Forward button clicked
+    // - Pop last item on forward stack (this is the current path)
+    // - Push next_path to back stack
+    // - Update the current url with the next_path
+    // - Set navigation type to 'forward'
     [goToNextPage.type]: (state) => {
       const stack = [...state.historyForwardStack];
       const path = stack.pop();
@@ -93,6 +106,10 @@ const reducer = createReducer<GlobalState['previewNavigation']>(
         currentUrlPath: cleanseUrl(path)
       };
     },
+    // A change site is being requested
+    // - Clear the back and forward stacks
+    // - Clear the navigation type
+    // - Update the current url
     [changeSite.type]: (state, { payload }) => ({
       ...state,
       historyBackStack: [],
