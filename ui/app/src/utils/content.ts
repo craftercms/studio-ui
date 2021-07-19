@@ -256,14 +256,14 @@ export function parseLegacyItemToDetailedItem(item: LegacyItem | LegacyItem[]): 
       sizeInBytes: null
     },
     staging: {
-      lastScheduledDate: item.scheduledDate,
-      lastPublishedDate: item.publishedDate,
+      lastScheduledDate: item.scheduledDate ?? item.eventDate,
+      lastPublishedDate: item.publishedDate ?? item.eventDate,
       publisher: item.user,
       commitId: null
     },
     live: {
-      lastScheduledDate: item.scheduledDate,
-      lastPublishedDate: item.publishedDate,
+      lastScheduledDate: item.scheduledDate ?? item.eventDate,
+      lastPublishedDate: item.publishedDate ?? item.eventDate,
       publisher: item.user,
       commitId: null
     }
