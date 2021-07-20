@@ -49,6 +49,7 @@ interface PreviewDialogBaseProps {
   open: boolean;
   type: string;
   title: string;
+  subtitle?: string;
   mode?: string;
   url?: string;
   content?: string;
@@ -117,7 +118,7 @@ function PreviewDialogUI(props: PreviewDialogProps) {
   };
   return (
     <>
-      <DialogHeader title={props.title} onDismiss={props.onClose} />
+      <DialogHeader title={props.title} subtitle={props.subtitle} onDismiss={props.onClose} />
       <section className={classes.container}>{renderPreview()}</section>
     </>
   );

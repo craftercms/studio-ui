@@ -44,7 +44,9 @@ import {
   showCompareVersionsDialog,
   showConfirmDialog,
   showHistoryDialog,
-  showViewVersionDialog
+  showPreviewDialog,
+  showViewVersionDialog,
+  updatePreviewDialog
 } from '../../../state/actions/dialogs';
 import SingleItemSelector from '../Authoring/SingleItemSelector';
 import Dialog from '@material-ui/core/Dialog';
@@ -54,6 +56,9 @@ import { hasRevertAction } from '../../../utils/content';
 import { useLogicResource } from '../../../utils/hooks/useLogicResource';
 import { useUnmount } from '../../../utils/hooks/useUnmount';
 import { useSpreadState } from '../../../utils/hooks/useSpreadState';
+import { getEditorMode, isImage } from '../../../components/PathNavigator/utils';
+import { fetchContentByCommitId } from '../../../services/content';
+import { useActiveSiteId } from '../../../utils/hooks/useActiveSiteId'; // TODO: should this be a more global util?
 
 const translations = defineMessages({
   previousPage: {
@@ -224,6 +229,7 @@ function HistoryDialogBody(props: HistoryDialogProps) {
   const { formatMessage } = useIntl();
   const classes = historyStyles({});
   const dispatch = useDispatch();
+  const site = useActiveSiteId();
 
   useUnmount(props.onClosed);
 
@@ -288,21 +294,54 @@ function HistoryDialogBody(props: HistoryDialogProps) {
     });
 
   const handleViewItem = (version: LegacyVersion) => {
-    dispatch(
-      batchActions([
-        fetchContentTypes(),
-        fetchContentVersion({ path, versionNumber: version.versionNumber }),
-        showViewVersionDialog({
-          rightActions: [
-            {
-              icon: 'HistoryIcon',
-              onClick: showHistoryDialog({}),
-              'aria-label': formatMessage(translations.backToHistoryList)
-            }
-          ]
-        })
-      ])
-    );
+    const supportsDiff = ['page', 'component', 'taxonomy'].includes(item.systemType);
+
+    if (supportsDiff) {
+      dispatch(
+        batchActions([
+          fetchContentTypes(),
+          fetchContentVersion({ path, versionNumber: version.versionNumber }),
+          showViewVersionDialog({
+            rightActions: [
+              {
+                icon: 'HistoryIcon',
+                onClick: showHistoryDialog({}),
+                'aria-label': formatMessage(translations.backToHistoryList)
+              }
+            ]
+          })
+        ])
+      );
+    } else {
+      if (isImage(item)) {
+        dispatch(
+          showPreviewDialog({
+            type: 'image',
+            tree: item.label,
+            url: item.path
+          })
+        );
+      } else {
+        const mode = getEditorMode(item);
+        dispatch(
+          showPreviewDialog({
+            type: 'editor',
+            title: item.label,
+            url: item.path,
+            mode,
+            subtitle: `v.${version.versionNumber}`
+          })
+        );
+
+        fetchContentByCommitId(site, item.path, version.versionNumber).subscribe((content) => {
+          dispatch(
+            updatePreviewDialog({
+              content
+            })
+          );
+        });
+      }
+    }
   };
 
   const compareTo = (versionNumber: string) => {
