@@ -18,7 +18,7 @@ import Dialog from '@material-ui/core/Dialog';
 import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { MarketplacePlugin } from '../../models/MarketplacePlugin';
 import DialogHeader from '../Dialogs/DialogHeader';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import DialogBody from '../Dialogs/DialogBody';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import { Resource } from '../../models/Resource';
@@ -34,11 +34,14 @@ import PluginDetailsView from '../PluginDetailsView';
 import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import LookupTable from '../../models/LookupTable';
-import { PluginRecord } from '../../models/Plugin';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import { useMount } from '../../utils/hooks/useMount';
 import { useSubject } from '../../utils/hooks/useSubject';
+import { useSpreadState } from '../../utils/hooks/useSpreadState';
+import { popDialog, pushDialog } from '../../state/reducers/dialogs/minimizedDialogs';
+import { translations } from './translations';
+import { batchActions } from '../../state/actions/misc';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -54,7 +57,7 @@ const useStyles = makeStyles((theme) =>
 
 interface InstallPluginDialogBaseProps {
   open: boolean;
-  installedPlugins: LookupTable<PluginRecord>;
+  installedPlugins: LookupTable<boolean>;
   installPermission?: boolean;
 }
 
@@ -85,6 +88,8 @@ function InstallPluginDialogUI(props: InstallPluginDialogProps) {
   const classes = useStyles();
   const onSearch$ = useSubject<string>();
   const dispatch = useDispatch();
+  const { formatMessage } = useIntl();
+  const [installingLookup, setInstallingLookup] = useSpreadState<LookupTable<boolean>>({});
 
   useMount(() => {
     setIsFetching(true);
@@ -137,15 +142,37 @@ function InstallPluginDialogUI(props: InstallPluginDialogProps) {
   };
 
   const onPluginDetailsSelected = (plugin: MarketplacePlugin) => {
+    setInstallingLookup({ [plugin.id]: true });
+    dispatch(
+      pushDialog({
+        minimized: true,
+        id: plugin.id,
+        status: 'indeterminate',
+        title: formatMessage(translations.installing, { name: plugin.name }),
+        onMaximized: null
+      })
+    );
     installMarketplacePlugin(siteId, plugin.id, plugin.version).subscribe(
       () => {
+        setInstallingLookup({ [plugin.id]: false });
         onInstall(plugin);
+        dispatch(
+          popDialog({
+            id: plugin.id
+          })
+        );
       },
       ({ response }) => {
+        setInstallingLookup({ [plugin.id]: false });
         dispatch(
-          showErrorDialog({
-            error: response.response
-          })
+          batchActions([
+            showErrorDialog({
+              error: response.response
+            }),
+            popDialog({
+              id: plugin.id
+            })
+          ])
         );
       }
     );
@@ -183,6 +210,7 @@ function InstallPluginDialogUI(props: InstallPluginDialogProps) {
                 <FormattedMessage id="words.install" defaultMessage="Install" />
               )
             }
+            beingInstalled={installingLookup[selectedDetailsPlugin.id]}
             onCloseDetails={onPluginDetailsClose}
             onBlueprintSelected={onPluginDetailsSelected}
           />
@@ -212,6 +240,7 @@ function InstallPluginDialogUI(props: InstallPluginDialogProps) {
               resource={resource}
               installPermission={installPermission}
               installedPlugins={installedPlugins}
+              installingLookup={installingLookup}
               onPluginDetails={onPluginDetails}
               onPluginSelected={onPluginDetailsSelected}
             />
@@ -225,13 +254,21 @@ function InstallPluginDialogUI(props: InstallPluginDialogProps) {
 interface PluginListProps {
   resource: Resource<MarketplacePlugin[]>;
   installPermission: boolean;
-  installedPlugins: LookupTable<PluginRecord>;
+  installedPlugins: LookupTable<boolean>;
+  installingLookup: LookupTable<boolean>;
   onPluginDetails(plugin: MarketplacePlugin): void;
   onPluginSelected(plugin: MarketplacePlugin): void;
 }
 
 function PluginList(props: PluginListProps) {
-  const { resource, onPluginDetails, onPluginSelected, installedPlugins = {}, installPermission } = props;
+  const {
+    resource,
+    onPluginDetails,
+    onPluginSelected,
+    installedPlugins = {},
+    installPermission,
+    installingLookup = {}
+  } = props;
   const plugins = resource.read();
 
   return (
@@ -250,6 +287,7 @@ function PluginList(props: PluginListProps) {
                 <FormattedMessage id="words.install" defaultMessage="Install" />
               )
             }
+            beingInstalled={installingLookup[plugin.id]}
             onDetails={onPluginDetails}
             onPluginSelected={onPluginSelected}
           />
