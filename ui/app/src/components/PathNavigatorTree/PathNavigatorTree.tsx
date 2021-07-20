@@ -117,7 +117,6 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   const {
     label,
     id = props.label.replace(/\s/g, ''),
-    // rootPath,
     excludes,
     limit = 10,
     backgroundRefreshTimeoutMs = 60000,
