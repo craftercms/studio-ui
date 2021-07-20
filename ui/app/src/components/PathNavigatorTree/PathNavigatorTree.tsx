@@ -191,7 +191,6 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     // Adding uiConfig as means to stop navigator from trying to
     // initialize with previous state information when switching sites
     if (!state && uiConfig.currentSite === site) {
-      console.log('pathNavigatorTreeInit');
       const { expanded, collapsed, keywordByPath } = storedState;
       if (expanded) {
         expanded.forEach((path) => {
