@@ -178,6 +178,8 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
 
   useMount(() => {
     if (state) {
+      // If the state is being restoring from redux, fetchingPathsRef is being processed.
+      // Added a timeout to trigger the process again with a new fetchingPathsRef
       setTimeout(() => {
         state.expanded.forEach((path) => fetchingPathsRef.current.push(path));
         dispatch(pathNavigatorTreeBackgroundRefresh({ id }));
