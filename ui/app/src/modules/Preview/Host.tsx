@@ -22,9 +22,10 @@ import { getGuestToHostBus, getHostToGuestBus } from './previewContext';
 import { filter, map, pluck } from 'rxjs/operators';
 import { defineMessages, useIntl } from 'react-intl';
 import { StandardAction } from '../../models/StandardAction';
-import { useSelection } from '../../utils/hooks/useSelection';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { usePreviewState } from '../../utils/hooks/usePreviewState';
+import { usePreviewNavigation } from '../../utils/hooks/usePreviewNavigation';
+import { useEnv } from '../../utils/hooks/useEnv';
 
 const message$ = fromEvent<MessageEvent>(window, 'message');
 
@@ -147,6 +148,16 @@ export function HostUI(props: HostPropsUI) {
     };
   }, [origin, onMessage, postMessage$]);
 
+  useEffect(() => {
+    try {
+      if (iframeRef.current.contentDocument.location.href !== url) {
+        iframeRef.current.src = url;
+      }
+    } catch {
+      iframeRef.current.src = url;
+    }
+  }, [url]);
+
   return (
     <>
       <iframe
@@ -155,7 +166,6 @@ export function HostUI(props: HostPropsUI) {
         id="crafterCMSPreviewIframe"
         title={formatMessage(translations.iframeTitle)}
         ref={iframeRef}
-        src={url || 'about:blank'}
         className={cls}
       />
     </>
@@ -165,8 +175,9 @@ export function HostUI(props: HostPropsUI) {
 export default function Host() {
   const classes = useStyles({});
   const site = useActiveSiteId();
-  const guestBase = useSelection<string>((state) => state.env.guestBase);
-  const { hostSize, currentUrl, showToolsPanel, toolsPanelWidth, pageBuilderPanelWidth, editMode } = usePreviewState();
+  const { guestBase, previewLandingBase } = useEnv();
+  const { hostSize, showToolsPanel, toolsPanelWidth, pageBuilderPanelWidth, editMode } = usePreviewState();
+  const { currentUrlPath } = usePreviewNavigation();
 
   const postMessage$ = useMemo(() => getHostToGuestBus().asObservable(), []);
   const onMessage = useMemo(() => {
@@ -183,7 +194,7 @@ export default function Host() {
       className={clsx(classes.hostContainer, { [classes.shift]: showToolsPanel })}
     >
       <HostUI
-        url={currentUrl}
+        url={currentUrlPath === '' ? previewLandingBase : `${guestBase}${currentUrlPath}`}
         site={site}
         width={hostSize.width}
         origin={guestBase}

@@ -49,9 +49,8 @@ interface DashboardAppProps {}
 const actionsToBeShown: AllItemActions[] = [
   'edit',
   'delete',
+  'publish',
   'rejectPublish',
-  'schedulePublish',
-  'approvePublish',
   'duplicate',
   'duplicateAsset',
   'dependencies',

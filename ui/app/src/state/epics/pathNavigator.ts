@@ -21,6 +21,7 @@ import { fetchChildrenByPath, fetchItemsByPath, fetchItemWithChildrenByPath } fr
 import { getIndividualPaths, getRootPath } from '../../utils/path';
 import { forkJoin } from 'rxjs';
 import {
+  pathNavigatorBackgroundRefresh,
   pathNavigatorChangePage,
   pathNavigatorConditionallySetPath,
   pathNavigatorConditionallySetPathComplete,
@@ -65,7 +66,7 @@ export default [
   // region pathNavigatorRefresh
   (action$, state$) =>
     action$.pipe(
-      ofType(pathNavigatorRefresh.type),
+      ofType(pathNavigatorRefresh.type, pathNavigatorBackgroundRefresh.type),
       withLatestFrom(state$),
       mergeMap(([{ type, payload: { id } }, state]) =>
         fetchItemWithChildrenByPath(state.sites.active, state.pathNavigator[id].currentPath).pipe(

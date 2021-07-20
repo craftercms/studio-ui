@@ -19,7 +19,8 @@ import ResizeableDrawer from '../../modules/Preview/ResizeableDrawer';
 import React, { useState } from 'react';
 import MenuList from '@material-ui/core/MenuList';
 import MenuItem from '@material-ui/core/MenuItem';
-import { Box, Typography } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Typography from '@material-ui/core/Typography';
 import { FormattedMessage, useIntl } from 'react-intl';
 import SystemIcon from '../SystemIcon';
 import { Route, Switch, useHistory } from 'react-router';
@@ -31,6 +32,14 @@ import { useSelection } from '../../utils/hooks/useSelection';
 import { getPossibleTranslation } from '../../utils/i18n';
 import Widget from '../Widget';
 import { useReference } from '../../utils/hooks/useReference';
+import IconButton from '@material-ui/core/IconButton';
+import KeyboardArrowLeftRoundedIcon from '@material-ui/icons/KeyboardArrowLeftRounded';
+import SiteSwitcherSelect from '../SiteSwitcherSelect';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { getSystemLink } from '../LauncherSection';
+import { usePreviewState } from '../../utils/hooks/usePreviewState';
+import { useEnv } from '../../utils/hooks/useEnv';
+import Tooltip from '@material-ui/core/Tooltip';
 
 interface SiteToolsAppProps {
   footerHtml: string;
@@ -46,13 +55,25 @@ export default function SiteToolsApp(props: SiteToolsAppProps) {
   const baseUrl = useSelection<string>((state) => state.env.authoringBase);
   const [{ openSidebar }] = useGlobalAppState();
   const siteTools = useReference('craftercms.siteTools');
+  const site = useActiveSiteId();
+  const { previewChoice } = usePreviewState();
+  const { authoringBase } = useEnv();
 
   history.listen((location) => {
     setActiveToolId(location.pathname);
   });
 
-  const onClick = (id: string) => {
+  const onNavItemClick = (id: string) => {
     history.push(id);
+  };
+
+  const onBackClick = () => {
+    window.location.href = getSystemLink({
+      site,
+      previewChoice,
+      authoringBase,
+      systemLinkId: 'preview'
+    });
   };
 
   return (
@@ -63,35 +84,49 @@ export default function SiteToolsApp(props: SiteToolsAppProps) {
         width={width}
         onWidthChange={setWidth}
       >
-        <MenuList disablePadding className={classes.nav}>
-          {siteTools ? (
-            siteTools.tools.map((tool) => (
-              <MenuItem onClick={() => onClick(tool.url)} key={tool.url} selected={`/${tool.url}` === activeToolId}>
-                <SystemIcon
-                  className={classes.icon}
-                  icon={tool.icon}
-                  svgIconProps={{ fontSize: 'small', color: 'action' }}
-                />
-                <Typography>{getPossibleTranslation(tool.title, formatMessage)}</Typography>
-              </MenuItem>
-            ))
-          ) : (
-            <EmptyState
-              title={
-                <FormattedMessage
-                  id="siteTools.toolListingNotConfigured"
-                  defaultMessage="The site tools list has not been set"
-                />
-              }
-              subtitle={
-                <FormattedMessage
-                  id="siteTools.toolListingNotConfiguredSubtitle"
-                  defaultMessage="Please set the craftercms.siteTools reference on the ui.xml"
-                />
-              }
-            />
-          )}
-        </MenuList>
+        <section>
+          <Box display="flex" justifyContent="space-between" marginBottom="10px">
+            <Tooltip title={<FormattedMessage id="words.preview" defaultMessage="Preview" />}>
+              <IconButton onClick={onBackClick}>
+                <KeyboardArrowLeftRoundedIcon />
+              </IconButton>
+            </Tooltip>
+            <SiteSwitcherSelect site={site} fullWidth />
+          </Box>
+          <MenuList disablePadding className={classes.nav}>
+            {siteTools ? (
+              siteTools.tools.map((tool) => (
+                <MenuItem
+                  onClick={() => onNavItemClick(tool.url)}
+                  key={tool.url}
+                  selected={`/${tool.url}` === activeToolId}
+                >
+                  <SystemIcon
+                    className={classes.icon}
+                    icon={tool.icon}
+                    svgIconProps={{ fontSize: 'small', color: 'action' }}
+                  />
+                  <Typography>{getPossibleTranslation(tool.title, formatMessage)}</Typography>
+                </MenuItem>
+              ))
+            ) : (
+              <EmptyState
+                title={
+                  <FormattedMessage
+                    id="siteTools.toolListingNotConfigured"
+                    defaultMessage="The site tools list has not been set"
+                  />
+                }
+                subtitle={
+                  <FormattedMessage
+                    id="siteTools.toolListingNotConfiguredSubtitle"
+                    defaultMessage="Please set the craftercms.siteTools reference on the ui.xml"
+                  />
+                }
+              />
+            )}
+          </MenuList>
+        </section>
         <footer className={classes.footer}>
           <CrafterCMSLogo width={100} className={classes.logo} />
           <Typography
@@ -104,7 +139,7 @@ export default function SiteToolsApp(props: SiteToolsAppProps) {
       </ResizeableDrawer>
       <Box className={classes.wrapper} height="100%" width="100%" paddingLeft={openSidebar ? `${width}px` : 0}>
         <Switch>
-          {siteTools.tools.map((tool) => (
+          {siteTools?.tools.map((tool) => (
             <Route
               key={tool.url}
               path={`/${tool.url}`}

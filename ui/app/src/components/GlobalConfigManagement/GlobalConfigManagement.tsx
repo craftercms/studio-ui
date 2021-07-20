@@ -89,7 +89,8 @@ export default function GlobalConfigManagement() {
     if (type === 'replace') {
       setContent(sample);
     } else {
-      setContent(content + sample);
+      const currentContent = aceEditorRef.current.getValue();
+      setContent(currentContent + sample);
     }
     setViewSample(false);
     aceEditorRef.current.focus();

@@ -41,7 +41,7 @@ import { useDispatch } from 'react-redux';
 import { fetchInstalledMarketplacePlugins } from '../../services/marketplace';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { getUserPermissions } from '../../services/security';
-import { showSystemNotification } from '../../state/actions/system';
+import { emitSystemEvent, pluginInstalled, showSystemNotification } from '../../state/actions/system';
 import LookupTable from '../../models/LookupTable';
 import { createLookupTable } from '../../utils/object';
 import GlobalState from '../../models/GlobalState';
@@ -49,6 +49,7 @@ import GlobalAppToolbar from '../GlobalAppToolbar';
 import { useSelection } from '../../utils/hooks/useSelection';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useMount } from '../../utils/hooks/useMount';
+import { batchActions } from '../../state/actions/misc';
 
 const messages = defineMessages({
   pluginInstalled: {
@@ -135,9 +136,12 @@ export const PluginManagement = (props: PluginManagementProps) => {
 
   const onInstallMarketplacePlugin = (plugin: MarketplacePlugin) => {
     dispatch(
-      showSystemNotification({
-        message: formatMessage(messages.pluginInstalled)
-      })
+      batchActions([
+        showSystemNotification({
+          message: formatMessage(messages.pluginInstalled)
+        }),
+        emitSystemEvent(pluginInstalled())
+      ])
     );
     refresh();
   };

@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ElementType, useCallback, useEffect, useState } from 'react';
+import React, { ElementType, useCallback, useEffect, useRef, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { DetailedItem } from '../../models/Item';
 import ContextMenu, { ContextMenuOption } from '../ContextMenu';
@@ -23,6 +23,7 @@ import { getParentPath, withIndex, withoutIndex } from '../../utils/path';
 import { translations } from './translations';
 import { languages } from '../../utils/i18n-legacy';
 import {
+  pathNavigatorBackgroundRefresh,
   pathNavigatorChangePage,
   pathNavigatorConditionallySetPath,
   pathNavigatorInit,
@@ -50,7 +51,8 @@ import {
   itemsDeleted,
   itemsPasted,
   itemUnlocked,
-  itemUpdated
+  itemUpdated,
+  pluginInstalled
 } from '../../state/actions/system';
 import PathNavigatorUI from './PathNavigatorUI';
 import { ContextMenuOptionDescriptor, toContextMenuOptionsLookup } from '../../utils/itemActions';
@@ -69,6 +71,7 @@ import { useEnv } from '../../utils/hooks/useEnv';
 import { useItemsByPath } from '../../utils/hooks/useItemsByPath';
 import { useSubject } from '../../utils/hooks/useSubject';
 import { useSiteLocales } from '../../utils/hooks/useSiteLocales';
+import { useMount } from '../../utils/hooks/useMount';
 
 interface Menu {
   path?: string;
@@ -88,6 +91,7 @@ export interface PathNavigatorProps {
   excludes?: string[];
   locale?: string;
   limit?: number;
+  backgroundRefreshTimeoutMs?: number;
   icon?: SystemIconDescriptor;
   expandedIcon?: SystemIconDescriptor;
   collapsedIcon?: SystemIconDescriptor;
@@ -137,6 +141,7 @@ export default function PathNavigator(props: PathNavigatorProps) {
     rootPath: path,
     id = label.replace(/\s/g, ''),
     limit = 10,
+    backgroundRefreshTimeoutMs = 60000,
     locale,
     excludes,
     onItemClicked: onItemClickedProp,
@@ -160,6 +165,19 @@ export default function PathNavigator(props: PathNavigatorProps) {
   const uiConfig = useSelection<GlobalState['uiConfig']>((state) => state.uiConfig);
   const siteLocales = useSiteLocales();
 
+  const intervalRef = useRef<any>();
+
+  useEffect(() => {
+    if (backgroundRefreshTimeoutMs) {
+      intervalRef.current = setInterval(() => {
+        dispatch(pathNavigatorBackgroundRefresh({ id }));
+      }, backgroundRefreshTimeoutMs);
+      return () => {
+        clearInterval(intervalRef.current);
+      };
+    }
+  }, [backgroundRefreshTimeoutMs, dispatch, id]);
+
   useEffect(() => {
     // Adding uiConfig as means to stop navigator from trying to
     // initialize with previous state information when switching sites
@@ -167,6 +185,12 @@ export default function PathNavigator(props: PathNavigatorProps) {
       dispatch(pathNavigatorInit({ id, path, locale, excludes, limit }));
     }
   }, [dispatch, excludes, id, limit, locale, path, site, state, uiConfig.currentSite]);
+
+  useMount(() => {
+    if (state) {
+      dispatch(pathNavigatorBackgroundRefresh({ id }));
+    }
+  });
 
   useEffect(() => {
     const subscription = onSearch$.pipe(debounceTime(400)).subscribe((keyword) => {
@@ -198,7 +222,8 @@ export default function PathNavigator(props: PathNavigatorProps) {
       folderRenamed.type,
       itemsDeleted.type,
       itemDuplicated.type,
-      itemCreated.type
+      itemCreated.type,
+      pluginInstalled.type
     ];
     const hostToHost$ = getHostToHostBus();
     const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
@@ -206,7 +231,31 @@ export default function PathNavigator(props: PathNavigatorProps) {
         case itemCreated.type:
         case itemUnlocked.type:
         case itemUpdated.type:
-        case folderRenamed.type:
+        case folderRenamed.type: {
+          const parentPath = getParentPath(payload.target);
+          if (parentPath === withoutIndex(state.currentPath)) {
+            dispatch(pathNavigatorRefresh({ id }));
+          } else if (withoutIndex(payload.target) === withoutIndex(state.currentPath)) {
+            dispatch(
+              batchActions([
+                pathNavigatorUpdate({
+                  id,
+                  currentPath: payload.target.replace(payload.oldName, payload.newName)
+                }),
+                pathNavigatorRefresh({ id })
+              ])
+            );
+          }
+          if (state.leaves.some((path) => withoutIndex(path) === parentPath)) {
+            dispatch(
+              pathNavigatorUpdate({
+                id,
+                leaves: state.leaves.filter((path) => withoutIndex(path) !== parentPath)
+              })
+            );
+          }
+          break;
+        }
         case itemDuplicated.type: {
           const parentPath = getParentPath(payload.target);
           if (parentPath === withoutIndex(state.currentPath)) {
@@ -271,6 +320,10 @@ export default function PathNavigator(props: PathNavigatorProps) {
               dispatch(pathNavigatorRefresh({ id }));
             }
           });
+          break;
+        }
+        case pluginInstalled.type: {
+          dispatch(pathNavigatorBackgroundRefresh({ id }));
           break;
         }
       }

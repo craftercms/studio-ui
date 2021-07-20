@@ -97,7 +97,6 @@ export function UserGroupMembershipEditor(props: UserGroupMembershipEditorProps)
     setInProgressIds([...inProgressIds, ...ids]);
     forkJoin(groups.map((group) => service(Number(group.id), username))).subscribe(
       (results) => {
-        console.log(results);
         setInProgressIds(refs.current.inProgressIds.filter((id) => !ids.includes(id)));
         dispatch(
           showSystemNotification({
@@ -164,6 +163,7 @@ export function UserGroupMembershipEditor(props: UserGroupMembershipEditorProps)
       groups.forEach((group) => (next[group.id] = true));
     }
     setSelectedGroups(next);
+    onChange?.(Object.keys(next));
   };
 
   return (

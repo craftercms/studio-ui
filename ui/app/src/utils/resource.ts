@@ -14,7 +14,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Resource } from '../../models/Resource';
+import { Resource } from '../models/Resource';
+
+export function createFakeResource<T>(result: T): Resource<T> {
+  return {
+    complete: true,
+    error: false,
+    read() {
+      return result;
+    }
+  };
+}
 
 export function createResource<T>(factoryFn: () => Promise<T>): Resource<T> {
   let result,
@@ -48,4 +58,13 @@ export function createResource<T>(factoryFn: () => Promise<T>): Resource<T> {
     }
   };
   return resource;
+}
+
+export function createResourceBundle<T>(): [Resource<T>, (value?: unknown) => void, (reason?: any) => void] {
+  let resolve, reject;
+  let promise = new Promise<T>((resolvePromise, rejectPromise) => {
+    resolve = resolvePromise;
+    reject = rejectPromise;
+  });
+  return [createResource(() => promise), resolve, reject];
 }

@@ -16,8 +16,8 @@
 
 import { Resource } from '../../models/Resource';
 import { useEffect, useState } from 'react';
-import { createResourceBundle } from './createResourceBundle';
 import { nnou } from '../object';
+import { createResourceBundle } from '../resource';
 
 export function useResolveWhenNotNullResource<ResultType = unknown>(source: ResultType): Resource<ResultType> {
   const [[resource, resolve], setBundle] = useState(() => createResourceBundle<ResultType>());

@@ -441,17 +441,8 @@ export function generateMultipleItemOptions(
     reject = reject && hasPublishRejectAction(item.availableActions);
   });
 
-  if (publish) {
+  if (publish || schedulePublish || requestPublish || approvePublish) {
     options.push(menuOptions.publish);
-  }
-  if (schedulePublish) {
-    options.push(menuOptions.schedulePublish);
-  }
-  if (requestPublish) {
-    options.push(menuOptions.requestPublish);
-  }
-  if (approvePublish) {
-    options.push(menuOptions.approvePublish);
   }
   if (deleteItem) {
     options.push(menuOptions.delete);
@@ -534,7 +525,7 @@ export const itemActionDispatcher = ({
       case 'createFolder': {
         dispatch(
           showCreateFolderDialog({
-            path: withoutIndex(item.path),
+            path: item.path,
             allowBraces: item.path.startsWith('/scripts/rest'),
             onCreated: batchActions([closeCreateFolderDialog(), showCreateFolderSuccessNotification()])
           })
@@ -545,7 +536,7 @@ export const itemActionDispatcher = ({
         // TODO: handle rename of different item types
         dispatch(
           showCreateFolderDialog({
-            path: withoutIndex(item.path),
+            path: item.path,
             allowBraces: item.path.startsWith('/scripts/rest'),
             rename: true,
             value: item.label

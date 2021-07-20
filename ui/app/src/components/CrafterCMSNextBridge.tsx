@@ -30,7 +30,7 @@ import CrafterThemeProvider from './CrafterThemeProvider';
 import SnackbarCloseButton from './SnackbarCloseButton';
 import LegacyConcierge from './LegacyConcierge';
 import { GenerateId } from 'jss';
-import { createResource } from '../utils/hooks/createResource';
+import { createResource } from '../utils/resource';
 
 const useStyles = makeStyles(() =>
   createStyles({

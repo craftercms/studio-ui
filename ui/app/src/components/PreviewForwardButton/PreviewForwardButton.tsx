@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { IconButton, IconButtonProps } from '@material-ui/core';
-import ArrowForwardIosRoundedIcon from '@material-ui/icons/ArrowForwardIosRounded';
+import ArrowForwardRoundedIcon from '@material-ui/icons/ArrowForwardRounded';
 import { useDispatch } from 'react-redux';
 import { useHistoryForwardStack } from '../../utils/hooks/useHistoryForwardStack';
 import { FormattedMessage } from 'react-intl';
@@ -36,7 +36,7 @@ export default function PreviewForwardButton(props: PreviewForwardButtonProps) {
     <Tooltip title={<FormattedMessage id="words.forward" defaultMessage="Forward" />}>
       <span>
         <IconButton disabled={stack.length === 0} onClick={onClick} {...props}>
-          <ArrowForwardIosRoundedIcon />
+          <ArrowForwardRoundedIcon />
         </IconButton>
       </span>
     </Tooltip>

@@ -14,14 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Resource } from '../../models/Resource';
-import { createResource } from './createResource';
+import GlobalState from '../../models/GlobalState';
+import { useSelector } from 'react-redux';
 
-export function createResourceBundle<T>(): [Resource<T>, (value?: unknown) => void, (reason?: any) => void] {
-  let resolve, reject;
-  let promise = new Promise<T>((resolvePromise, rejectPromise) => {
-    resolve = resolvePromise;
-    reject = rejectPromise;
-  });
-  return [createResource(() => promise), resolve, reject];
+export function usePreviewNavigation(): GlobalState['previewNavigation'] {
+  return useSelector<GlobalState, GlobalState['previewNavigation']>((state) => state.previewNavigation);
 }

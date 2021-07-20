@@ -37,6 +37,7 @@ import { PathNavigatorStateProps } from './PathNavigator';
 import { SystemIconDescriptor } from '../SystemIcon';
 import { lookupItemByPath } from '../../utils/content';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
+import { createFakeResource } from '../../utils/resource';
 
 export type PathNavigatorUIClassKey =
   | 'root'
@@ -196,6 +197,11 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
     }
   );
 
+  const itemsResource = useMemo(
+    () => createFakeResource(state.itemsInPath ? state.itemsInPath.map((path) => itemsByPath[path]) : []),
+    [itemsByPath, state.itemsInPath]
+  );
+
   const levelDescriptor = useMemo(() => {
     if (itemsByPath && state.levelDescriptor) {
       return itemsByPath[state.levelDescriptor];
@@ -277,7 +283,7 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
             isSelectMode={false}
             leaves={state.leaves}
             locale={state.localeCode}
-            resource={resource}
+            resource={itemsResource}
             onSelectItem={onSelectItem}
             onPathSelected={onPathSelected}
             onPreview={onPreview}

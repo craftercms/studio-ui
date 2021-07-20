@@ -29,6 +29,7 @@ export function getStoredGlobalMenuSiteViewPreference(user: string): 'grid' | 'l
 }
 
 export function getStateMapFromLegacyItem(item: LegacyItem): ItemStateMap {
+  // TODO: adjust isLive, isStaged and check if submittedToStaging and submittedToLive are more appropriate dest props
   // When setting state, endpoint has priority over isLive|isStaged flag, since is the state of the item at x event. If
   // endpoint is null (meaning the item is not from an event like in dashboard apis), isLive|isStaged reflect the actual
   // item state.
@@ -49,6 +50,10 @@ export function getStateMapFromLegacyItem(item: LegacyItem): ItemStateMap {
     submitted: Boolean(item.isSubmitted),
     scheduled: Boolean(item.isScheduled),
     publishing: false,
+    // TODO: ↓↓↓↓
+    submittedToStaging: false,
+    submittedToLive: false,
+    // TODO: ↑↑↑↑
     staged: isStaged,
     live: isLive
   };

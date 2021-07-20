@@ -39,6 +39,10 @@ export function getItemStateText(stateMap: ItemStateMap) {
     submitted: () => <FormattedMessage id="itemState.submitted" defaultMessage="Submitted" />,
     scheduled: () => <FormattedMessage id="itemState.scheduled" defaultMessage="Scheduled" />,
     publishing: () => <FormattedMessage id="itemState.publishing" defaultMessage="Publishing" />,
+    submittedToStaging: () => (
+      <FormattedMessage id="itemState.submittedToStaging" defaultMessage="Submitted to staging" />
+    ),
+    submittedToLive: () => <FormattedMessage id="itemState.submittedToLive" defaultMessage="Submitted to live" />,
     staged: null,
     live: null,
     translationUpToDate: null,
@@ -58,12 +62,16 @@ export function getItemStateId(stateMap): ItemStates {
       return 'locked';
     case stateMap.scheduled:
       return 'scheduled';
+    case stateMap.submittedToLive:
+      return 'submittedToLive';
+    case stateMap.submittedToStaging:
+      return 'submittedToStaging';
     case stateMap.submitted:
       return 'submitted';
-    case stateMap.modified:
-      return 'modified';
     case stateMap.new:
       return 'new';
+    case stateMap.modified:
+      return 'modified';
     case stateMap.publishing:
       return 'publishing';
     case stateMap.staged:
@@ -79,4 +87,26 @@ export function getItemStateId(stateMap): ItemStates {
     default:
       return null;
   }
+  // region Compiler hints
+  // This var below is simply means for typescript to complain if we ever add/remove states; so the compiler
+  // complains and we can come edit the above `switch` to make sure all states are covered.
+  // eslint-disable-next-line no-unreachable,@typescript-eslint/no-unused-vars
+  const control: ItemStateMap = {
+    deleted: false,
+    live: false,
+    locked: false,
+    modified: false,
+    new: false,
+    publishing: false,
+    scheduled: false,
+    staged: false,
+    submitted: false,
+    submittedToLive: false,
+    submittedToStaging: false,
+    systemProcessing: false,
+    translationInProgress: false,
+    translationPending: false,
+    translationUpToDate: false
+  };
+  // endregion
 }

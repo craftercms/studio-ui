@@ -38,9 +38,9 @@ import { getNumOfMenuOptionsForItem } from '../../utils/content';
 import Tooltip from '@material-ui/core/Tooltip';
 import { changeCurrentUrl, RELOAD_REQUEST } from '../../state/actions/preview';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
-import { usePreviewState } from '../../utils/hooks/usePreviewState';
 import PreviewBackButton from '../PreviewBackButton';
 import PreviewForwardButton from '../PreviewForwardButton';
+import { usePreviewNavigation } from '../../utils/hooks/usePreviewNavigation';
 
 export interface AddressBarProps {
   site: string;
@@ -113,15 +113,15 @@ export function PreviewAddressBar(props: AddressBarProps) {
   const classes = useAddressBarStyles();
   const { site = '', item } = props;
   const noSiteSet = isBlank(site);
-  const { computedUrl = '' } = usePreviewState();
-  const [internalUrl, setInternalUrl] = useState(computedUrl);
+  const { currentUrlPath = '' } = usePreviewNavigation();
+  const [internalUrl, setInternalUrl] = useState(currentUrlPath);
   const [openSelector, setOpenSelector] = useState(false);
   const [focus, setFocus] = useState(false);
   const disabled = noSiteSet || !item;
 
   useEffect(() => {
-    computedUrl && setInternalUrl(computedUrl);
-  }, [computedUrl]);
+    currentUrlPath && setInternalUrl(currentUrlPath);
+  }, [currentUrlPath]);
 
   const dispatch = useDispatch();
   const onOptions = (e) => {
@@ -156,12 +156,12 @@ export function PreviewAddressBar(props: AddressBarProps) {
   return (
     <>
       <PreviewBackButton />
+      <PreviewForwardButton />
       <Tooltip title={<FormattedMessage id="previewAddressBar.reloadButtonLabel" defaultMessage="Reload this page" />}>
         <IconButton onClick={onRefresh}>
           <RefreshRounded />
         </IconButton>
       </Tooltip>
-      <PreviewForwardButton />
       <Paper
         variant={focus ? 'elevation' : 'outlined'}
         elevation={focus ? 2 : 0}

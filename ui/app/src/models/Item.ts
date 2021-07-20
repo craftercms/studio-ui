@@ -25,6 +25,8 @@ export type ItemStates =
   | 'submitted'
   | 'scheduled'
   | 'publishing'
+  | 'submittedToStaging'
+  | 'submittedToLive'
   | 'staged'
   | 'live'
   | 'translationUpToDate'
@@ -100,6 +102,7 @@ interface SandboxEnvProps {
   dateModified: string;
   commitId: string;
   sizeInBytes: number;
+  expiresOn: string;
 }
 
 interface PublishEnvProps {
@@ -107,6 +110,7 @@ interface PublishEnvProps {
   lastPublishedDate: string;
   publisher: string;
   commitId: string;
+  expiresOn: string;
 }
 
 export interface LocalizationItem extends BaseItem {}
