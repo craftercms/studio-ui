@@ -39,36 +39,35 @@ import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import { useLocale } from '../../utils/hooks/useLocale';
 import { DashboardPreferences } from '../../models/Dashboard';
 import { useSpreadState } from '../../utils/hooks/useSpreadState';
+import { getStoredDashboardPreferences, setStoredDashboardPreferences } from '../../utils/state';
 
 export interface RecentActivityDashletProps {
   selectedLookup: LookupTable<boolean>;
-  dashboardPreferences: LookupTable<DashboardPreferences>;
-  setDashboardPreferences(preferences: LookupTable<DashboardPreferences>): void;
   onItemChecked(paths: string[], forceChecked?: boolean): void;
   onItemMenuClick(event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, item: DetailedItem): void;
 }
 
-const dashletInitialPreferences = {
+const dashletInitialPreferences: DashboardPreferences = {
   filterBy: 'page',
-  numItems: 10
+  numItems: 10,
+  expanded: true,
+  excludeLiveItems: false
 };
 
 export default function RecentActivityDashlet(props: RecentActivityDashletProps) {
-  const { selectedLookup, onItemChecked, onItemMenuClick, dashboardPreferences, setDashboardPreferences } = props;
-  const [expandedDashlet, setExpandedDashlet] = useState(true);
+  const { selectedLookup, onItemChecked, onItemMenuClick } = props;
   const [fetchingActivity, setFecthingActivity] = useState(false);
   const [errorActivity, setErrorActivity] = useState<ApiResponse>();
   const [items, setItems] = useState<DetailedItem[]>([]);
   const [totalItems, setTotalItems] = useState(0);
-  const dashletPreferencesKey = 'recentActivityDashlet';
+  const siteId = useActiveSiteId();
+  const currentUser = useSelector<GlobalState, string>((state) => state.user.username);
+  const dashletPreferencesId = 'recentActivityDashlet';
   const [preferences, setPreferences] = useSpreadState(
-    dashboardPreferences?.[dashletPreferencesKey] ?? dashletInitialPreferences
+    getStoredDashboardPreferences(currentUser, siteId, dashletPreferencesId) ?? dashletInitialPreferences
   );
   const [sortType, setSortType] = useState<'asc' | 'desc'>('desc');
   const [sortBy, setSortBy] = useState('dateModified');
-  const [excludeLiveItems, setExcludeLiveItems] = useState(false);
-  const siteId = useActiveSiteId();
-  const currentUser = useSelector<GlobalState, string>((state) => state.user.username);
   const locale = useLocale();
   const classes = useStyles();
 
@@ -100,14 +99,12 @@ export default function RecentActivityDashlet(props: RecentActivityDashletProps)
   };
 
   useEffect(() => {
-    setDashboardPreferences({
-      [dashletPreferencesKey]: preferences
-    });
-  }, [preferences, setDashboardPreferences]);
+    setStoredDashboardPreferences(preferences, currentUser, siteId, dashletPreferencesId);
+  }, [preferences, currentUser, siteId]);
 
   const onToggleHideLiveItems = (e) => {
     e.stopPropagation();
-    setExcludeLiveItems(!excludeLiveItems);
+    setPreferences({ excludeLiveItems: !preferences.excludeLiveItems });
   };
 
   const toggleSortType = () => {
@@ -123,7 +120,7 @@ export default function RecentActivityDashlet(props: RecentActivityDashletProps)
       true,
       preferences.numItems,
       preferences.filterBy,
-      excludeLiveItems
+      preferences.excludeLiveItems
     ).subscribe(
       (activities) => {
         setTotalItems(activities.total);
@@ -137,7 +134,7 @@ export default function RecentActivityDashlet(props: RecentActivityDashletProps)
         setFecthingActivity(false);
       }
     );
-  }, [siteId, setItems, preferences, excludeLiveItems, currentUser]);
+  }, [siteId, setItems, preferences, currentUser]);
 
   useEffect(() => {
     fetchActivity();
@@ -188,14 +185,14 @@ export default function RecentActivityDashlet(props: RecentActivityDashletProps)
           <FormattedMessage id="recentActivity.myRecentActivity" defaultMessage="My Recent Activity" /> ({items.length})
         </>
       }
-      onToggleExpanded={() => setExpandedDashlet(!expandedDashlet)}
-      expanded={expandedDashlet}
+      onToggleExpanded={() => setPreferences({ expanded: !preferences.expanded })}
+      expanded={preferences.expanded}
       refreshDisabled={fetchingActivity}
       onRefresh={fetchActivity}
       headerRightSection={
         <>
           <Button onClick={onToggleHideLiveItems} className={classes.rightAction}>
-            {excludeLiveItems ? (
+            {preferences.excludeLiveItems ? (
               <FormattedMessage id="recentActivity.showLiveItems" defaultMessage="Show Live Items" />
             ) : (
               <FormattedMessage id="recentActivity.hideLiveItems" defaultMessage="Hide Live Items" />

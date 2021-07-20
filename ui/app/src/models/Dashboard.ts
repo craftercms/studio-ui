@@ -40,6 +40,9 @@ export interface LegacyDeploymentHistoryResponse {
 export type LegacyDeploymentHistoryType = 'page' | 'component' | 'document' | 'all';
 
 export interface DashboardPreferences {
-  filterBy: string;
+  filterBy?: string;
   numItems?: number;
+  expanded?: boolean;
+  showUnpublished?: boolean;
+  excludeLiveItems?: boolean;
 }

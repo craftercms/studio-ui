@@ -37,11 +37,12 @@ import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import { useSpreadState } from '../../utils/hooks/useSpreadState';
 import { useLocale } from '../../utils/hooks/useLocale';
+import { getStoredDashboardPreferences, setStoredDashboardPreferences } from '../../utils/state';
+import { useSelector } from 'react-redux';
+import GlobalState from '../../models/GlobalState';
 
 export interface RecentlyPublishedWidgetProps {
   selectedLookup: LookupTable<boolean>;
-  dashboardPreferences: LookupTable<DashboardPreferences>;
-  setDashboardPreferences(preferences: LookupTable<DashboardPreferences>): void;
   onItemChecked(paths: string[], forceChecked?: boolean): void;
   onItemMenuClick(event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, item: DetailedItem): void;
 }
@@ -51,24 +52,25 @@ export interface DashboardItem {
   children: string[];
 }
 
-const dashletInitialPreferences = {
+const dashletInitialPreferences: DashboardPreferences = {
   filterBy: 'page',
-  numItems: 20
+  numItems: 20,
+  expanded: true
 };
 
 export default function RecentlyPublishedDashlet(props: RecentlyPublishedWidgetProps) {
-  const { selectedLookup, onItemChecked, onItemMenuClick, dashboardPreferences, setDashboardPreferences } = props;
-  const [expandedWidget, setExpandedWidget] = useState(true);
+  const { selectedLookup, onItemChecked, onItemMenuClick } = props;
   const [fetchingHistory, setFetchingHistory] = useState(false);
   const [errorHistory, setErrorHistory] = useState<ApiResponse>();
   const [parentItems, setParentItems] = useState<DashboardItem[]>();
   const [itemsLookup, setItemsLookup] = useSpreadState<LookupTable<DetailedItem>>({});
-  const dashletPreferencesKey = 'recentlyPublishedDashlet';
+  const dashletPreferencesId = 'recentlyPublishedDashlet';
+  const currentUser = useSelector<GlobalState, string>((state) => state.user.username);
+  const siteId = useActiveSiteId();
   const [preferences, setPreferences] = useSpreadState(
-    dashboardPreferences?.[dashletPreferencesKey] ?? dashletInitialPreferences
+    getStoredDashboardPreferences(currentUser, siteId, dashletPreferencesId) ?? dashletInitialPreferences
   );
   const [expandedItems, setExpandedItems] = useSpreadState<LookupTable<boolean>>({});
-  const siteId = useActiveSiteId();
   const localeBranch = useLocale();
   const classes = useStyles();
 
@@ -110,10 +112,8 @@ export default function RecentlyPublishedDashlet(props: RecentlyPublishedWidgetP
   };
 
   useEffect(() => {
-    setDashboardPreferences({
-      [dashletPreferencesKey]: preferences
-    });
-  }, [preferences, setDashboardPreferences]);
+    setStoredDashboardPreferences(preferences, currentUser, siteId, dashletPreferencesId);
+  }, [preferences, currentUser, siteId]);
 
   const onCollapseAll = (e) => {
     e.stopPropagation();
@@ -209,8 +209,8 @@ export default function RecentlyPublishedDashlet(props: RecentlyPublishedWidgetP
           }}
         />
       }
-      onToggleExpanded={() => setExpandedWidget(!expandedWidget)}
-      expanded={expandedWidget}
+      onToggleExpanded={() => setPreferences({ expanded: !preferences.expanded })}
+      expanded={preferences.expanded}
       refreshDisabled={fetchingHistory}
       onRefresh={fetchHistory}
       headerRightSection={

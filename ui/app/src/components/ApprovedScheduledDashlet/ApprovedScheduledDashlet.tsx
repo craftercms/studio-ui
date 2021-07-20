@@ -37,24 +37,26 @@ import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import { useSpreadState } from '../../utils/hooks/useSpreadState';
 import { DashboardPreferences } from '../../models/Dashboard';
+import { getStoredDashboardPreferences, setStoredDashboardPreferences } from '../../utils/state';
+import { useSelector } from 'react-redux';
+import GlobalState from '../../models/GlobalState';
 
 export interface ApprovedScheduledDashletProps {
   selectedLookup: LookupTable<boolean>;
-  dashboardPreferences: LookupTable<DashboardPreferences>;
-  setDashboardPreferences(preferences: LookupTable<DashboardPreferences>): void;
   onItemChecked(paths: string[], forceChecked?: boolean): void;
   onItemMenuClick(event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, item: DetailedItem): void;
 }
 
-const dashletInitialPreferences = {
-  filterBy: 'all'
+const dashletInitialPreferences: DashboardPreferences = {
+  filterBy: 'all',
+  expanded: true
 };
 
 export default function ApprovedScheduledDashlet(props: ApprovedScheduledDashletProps) {
-  const [expanded, setExpanded] = useState(true);
-  const { selectedLookup, onItemChecked, onItemMenuClick, dashboardPreferences, setDashboardPreferences } = props;
+  const { selectedLookup, onItemChecked, onItemMenuClick } = props;
   const [error, setError] = useState<ApiResponse>();
   const site = useActiveSiteId();
+  const currentUser = useSelector<GlobalState, string>((state) => state.user.username);
   const classes = useStyles();
   const [state, setState] = useState<{
     itemsLookup: LookupTable<DetailedItem>;
@@ -69,9 +71,9 @@ export default function ApprovedScheduledDashlet(props: ApprovedScheduledDashlet
   });
   const [expandedLookup, setExpandedLookup] = useSpreadState<LookupTable<boolean>>({});
   const [isFetching, setIsFetching] = useState(false);
-  const dashletPreferencesKey = 'approvedScheduledDashlet';
+  const dashletPreferencesId = 'approvedScheduledDashlet';
   const [preferences, setPreferences] = useSpreadState(
-    dashboardPreferences?.[dashletPreferencesKey] ?? dashletInitialPreferences
+    getStoredDashboardPreferences(currentUser, site, dashletPreferencesId) ?? dashletInitialPreferences
   );
 
   const showExpanded = useMemo(() => Object.values(expandedLookup).some((value) => !value), [expandedLookup]);
@@ -195,10 +197,8 @@ export default function ApprovedScheduledDashlet(props: ApprovedScheduledDashlet
   };
 
   useEffect(() => {
-    setDashboardPreferences({
-      [dashletPreferencesKey]: preferences
-    });
-  }, [preferences, setDashboardPreferences]);
+    setStoredDashboardPreferences(preferences, currentUser, site, dashletPreferencesId);
+  }, [preferences, currentUser, site]);
 
   return (
     <Dashlet
@@ -209,8 +209,8 @@ export default function ApprovedScheduledDashlet(props: ApprovedScheduledDashlet
           values={{ count: state.total }}
         />
       }
-      expanded={expanded}
-      onToggleExpanded={() => setExpanded(!expanded)}
+      expanded={preferences.expanded}
+      onToggleExpanded={() => setPreferences({ expanded: !preferences.expanded })}
       onRefresh={refresh}
       headerRightSection={
         <>

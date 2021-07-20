@@ -43,7 +43,6 @@ import { useEnv } from '../../utils/hooks/useEnv';
 import { useActiveUser } from '../../utils/hooks/useActiveUser';
 import { useSpreadState } from '../../utils/hooks/useSpreadState';
 import { useSiteUIConfig } from '../../utils/hooks/useSiteUIConfig';
-import { getStoredDashboardPreferences, setStoredDashboardPreferences } from '../../utils/state';
 
 interface DashboardAppProps {}
 
@@ -73,9 +72,6 @@ export default function Dashboard(props: DashboardAppProps) {
   const { authoringBase } = useEnv();
   const clipboard = useSelection((state) => state.content.clipboard);
   const { dashboard } = useSiteUIConfig();
-  const [dashboardPreferences, setDashboardPreferences] = useSpreadState(
-    getStoredDashboardPreferences(user.username, site)
-  );
 
   const selectionOptions = useMemo(() => {
     const selected = Object.keys(selectedLookup).filter((path) => selectedLookup[path]);
@@ -198,19 +194,13 @@ export default function Dashboard(props: DashboardAppProps) {
   }, [selectedLookup]);
   // endregion
 
-  useEffect(() => {
-    setStoredDashboardPreferences(dashboardPreferences, user.username, site);
-  }, [dashboardPreferences, user, site]);
-
   return (
     <section className={classes.root}>
       {dashboard &&
         renderWidgets(dashboard.widgets, userRoles, {
           selectedLookup,
           onItemChecked,
-          onItemMenuClick,
-          dashboardPreferences,
-          setDashboardPreferences
+          onItemMenuClick
         })}
       {!Boolean(dashboard?.widgets?.length) && (
         <>
