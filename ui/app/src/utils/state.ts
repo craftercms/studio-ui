@@ -49,10 +49,8 @@ export function getStateMapFromLegacyItem(item: LegacyItem): ItemStateMap {
     submitted: Boolean(item.isSubmitted),
     scheduled: Boolean(item.isScheduled),
     publishing: false,
-    // TODO: ↓↓↓↓
-    submittedToStaging: false,
-    submittedToLive: false,
-    // TODO: ↑↑↑↑
+    submittedToStaging: item.submittedToEnvironment === 'staging',
+    submittedToLive: item.submittedToEnvironment === 'live',
     staged: isStaged,
     live: isLive
   };
