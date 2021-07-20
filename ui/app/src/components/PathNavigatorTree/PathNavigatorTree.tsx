@@ -253,9 +253,6 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
           ];
         }
 
-        console.log('getting childrens of: ', path);
-        console.log(childrenByParentPath);
-
         childrenByParentPath[path].forEach((childPath) => {
           const node = {
             id: childPath,
