@@ -158,16 +158,16 @@ export default function RecentlyPublishedDashletUI(props: RecentlyPublishedWidge
                               className="width20 ellipsis"
                               title={asLocalizedDateTime(
                                 itemsLookup[path].stateMap.live
-                                  ? itemsLookup[path].live.lastPublishedDate
-                                  : itemsLookup[path].staging.lastPublishedDate,
+                                  ? itemsLookup[path].live.datePublished
+                                  : itemsLookup[path].staging.datePublished,
                                 localeBranch.localeCode,
                                 localeBranch.dateTimeFormatOptions
                               )}
                             >
                               {asLocalizedDateTime(
                                 itemsLookup[path].stateMap.live
-                                  ? itemsLookup[path].live.lastPublishedDate
-                                  : itemsLookup[path].staging.lastPublishedDate,
+                                  ? itemsLookup[path].live.datePublished
+                                  : itemsLookup[path].staging.datePublished,
                                 localeBranch.localeCode,
                                 localeBranch.dateTimeFormatOptions
                               )}
