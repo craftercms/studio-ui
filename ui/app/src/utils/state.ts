@@ -29,15 +29,6 @@ export function getStoredGlobalMenuSiteViewPreference(user: string): 'grid' | 'l
 }
 
 export function getStateMapFromLegacyItem(item: LegacyItem): ItemStateMap {
-  // TODO: adjust isLive, isStaged and check if submittedToStaging and submittedToLive are more appropriate dest props
-  // When setting state, endpoint has priority over isLive|isStaged flag, since is the state of the item at x event. If
-  // endpoint is null (meaning the item is not from an event like in dashboard apis), isLive|isStaged reflect the actual
-  // item state.
-  const isLive = item.endpoint ? item.endpoint === 'live' : item.isLive;
-  const isStaged = item.endpoint
-    ? item.endpoint === 'live' || item.endpoint === 'staging'
-    : item.isLive || item.isStaged;
-
   return {
     locked: Boolean(item.lockOwner),
     modified: item.isInProgress,
@@ -50,12 +41,13 @@ export function getStateMapFromLegacyItem(item: LegacyItem): ItemStateMap {
     submitted: Boolean(item.isSubmitted),
     scheduled: Boolean(item.isScheduled),
     publishing: false,
-    // TODO: ↓↓↓↓
-    submittedToStaging: false,
-    submittedToLive: false,
-    // TODO: ↑↑↑↑
-    staged: isStaged,
-    live: isLive
+    // TODO: The history API (for Recently Published Dashlet) returns the environment where it was published in
+    // `item.endpoint`, in other APIs that value is `null`. For the other APIs, the property where the item was
+    // submitted is `item.environment`.
+    submittedToStaging: (item.endpoint ?? item.environment) === 'staging',
+    submittedToLive: (item.endpoint ?? item.environment) === 'live',
+    staged: item.isStaged,
+    live: item.isLive
   };
 }
 

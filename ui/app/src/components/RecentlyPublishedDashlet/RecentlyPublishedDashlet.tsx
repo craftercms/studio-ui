@@ -139,6 +139,10 @@ export default function RecentlyPublishedDashlet(props: RecentlyPublishedWidgetP
               children: document.children.map((item) => {
                 const key = `${item.uri}:${item.eventDate}`;
                 childrenLookup[key] = parseLegacyItemToDetailedItem(item);
+                // For this dashlet, the property needed is eventDate, since we display the published date at the moment
+                // of the publishing, not the current.
+                childrenLookup[key].live.datePublished = item.eventDate;
+                childrenLookup[key].staging.datePublished = item.eventDate;
                 return key;
               })
             });

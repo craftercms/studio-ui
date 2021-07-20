@@ -259,15 +259,15 @@ export function parseLegacyItemToDetailedItem(item: LegacyItem | LegacyItem[]): 
       expiresOn: null
     },
     staging: {
-      lastScheduledDate: item.scheduledDate ?? item.eventDate,
-      lastPublishedDate: item.publishedDate ?? item.eventDate,
+      dateScheduled: item.scheduledDate,
+      datePublished: item.publishedDate ?? item.eventDate,
       publisher: item.user,
       commitId: null,
       expiresOn: null
     },
     live: {
-      lastScheduledDate: item.scheduledDate ?? item.eventDate,
-      lastPublishedDate: item.publishedDate ?? item.eventDate,
+      dateScheduled: item.scheduledDate,
+      datePublished: item.publishedDate ?? item.eventDate,
       publisher: item.user,
       commitId: null,
       expiresOn: null
