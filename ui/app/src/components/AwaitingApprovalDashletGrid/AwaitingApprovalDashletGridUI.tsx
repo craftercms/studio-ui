@@ -164,13 +164,13 @@ export default function AwaitingApprovalDashletGridUI(props: AwaitingApprovalDas
                                 <GlobalAppGridCell
                                   className="width15"
                                   title={asLocalizedDateTime(
-                                    itemsLookup[path].live.lastPublishedDate,
+                                    itemsLookup[path].live.lastScheduledDate,
                                     locale.localeCode,
                                     locale.dateTimeFormatOptions
                                   )}
                                 >
                                   {asLocalizedDateTime(
-                                    itemsLookup[path].live.lastPublishedDate,
+                                    itemsLookup[path].live.lastScheduledDate,
                                     locale.localeCode,
                                     locale.dateTimeFormatOptions
                                   )}
