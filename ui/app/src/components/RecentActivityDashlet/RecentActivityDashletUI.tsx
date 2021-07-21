@@ -89,8 +89,8 @@ export default function RecentActivityDashletUI(props: RecentActivityDashletUiPr
         fieldB = b.sandbox.dateModified;
         break;
       case 'lastPublishedDate':
-        fieldA = a.live.lastPublishedDate;
-        fieldB = b.live.lastPublishedDate;
+        fieldA = a.live.datePublished;
+        fieldB = b.live.datePublished;
         break;
     }
     return comparator(fieldA, fieldB);
@@ -173,7 +173,7 @@ export default function RecentActivityDashletUI(props: RecentActivityDashletUiPr
               </GlobalAppGridCell>
               <GlobalAppGridCell className="width20">
                 {item.live &&
-                  asLocalizedDateTime(item.live.lastPublishedDate, locale.localeCode, locale.dateTimeFormatOptions)}
+                  asLocalizedDateTime(item.live.datePublished, locale.localeCode, locale.dateTimeFormatOptions)}
               </GlobalAppGridCell>
               <GlobalAppGridCell className="width20">{item.sandbox.modifier}</GlobalAppGridCell>
               <GlobalAppGridCell className="width10">

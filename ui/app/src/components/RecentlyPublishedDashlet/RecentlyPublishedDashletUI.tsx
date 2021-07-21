@@ -127,12 +127,17 @@ export default function RecentlyPublishedDashletUI(props: RecentlyPublishedWidge
                     <Table size="small" className={classes.tableRoot}>
                       <TableBody>
                         {item.children.map((path, i) => (
-                          <GlobalAppGridRow key={i} onClick={() => onItemChecked([path])}>
+                          <GlobalAppGridRow key={i} onClick={() => onItemChecked([itemsLookup[path].path])}>
                             <GlobalAppGridCell className="checkbox width5">
                               <Checkbox checked={Boolean(selectedItems[itemsLookup[path].path])} />
                             </GlobalAppGridCell>
                             <GlobalAppGridCell className="ellipsis width40 padded0">
-                              <ItemDisplay item={itemsLookup[path]} showNavigableAsLinks={false} />
+                              <ItemDisplay
+                                item={itemsLookup[path]}
+                                showNavigableAsLinks={false}
+                                showPublishingTarget={false}
+                                showWorkflowState={false}
+                              />
                               <Typography
                                 title={itemsLookup[path].path}
                                 variant="caption"
@@ -143,7 +148,7 @@ export default function RecentlyPublishedDashletUI(props: RecentlyPublishedWidge
                               </Typography>
                             </GlobalAppGridCell>
                             <GlobalAppGridCell className="width20">
-                              {itemsLookup[path].stateMap.live ? (
+                              {itemsLookup[path].stateMap.submittedToLive ? (
                                 <FormattedMessage id="words.live" defaultMessage="Live" />
                               ) : (
                                 <FormattedMessage id="words.staging" defaultMessage="Staging" />
@@ -153,16 +158,16 @@ export default function RecentlyPublishedDashletUI(props: RecentlyPublishedWidge
                               className="width20 ellipsis"
                               title={asLocalizedDateTime(
                                 itemsLookup[path].stateMap.live
-                                  ? itemsLookup[path].live.lastPublishedDate
-                                  : itemsLookup[path].staging.lastPublishedDate,
+                                  ? itemsLookup[path].live.datePublished
+                                  : itemsLookup[path].staging.datePublished,
                                 localeBranch.localeCode,
                                 localeBranch.dateTimeFormatOptions
                               )}
                             >
                               {asLocalizedDateTime(
                                 itemsLookup[path].stateMap.live
-                                  ? itemsLookup[path].live.lastPublishedDate
-                                  : itemsLookup[path].staging.lastPublishedDate,
+                                  ? itemsLookup[path].live.datePublished
+                                  : itemsLookup[path].staging.datePublished,
                                 localeBranch.localeCode,
                                 localeBranch.dateTimeFormatOptions
                               )}
