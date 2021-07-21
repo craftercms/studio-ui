@@ -72,7 +72,6 @@ export default function AwaitingApprovalDashlet() {
   });
 
   const [selectedLookup, setSelectedLookup] = useState<LookupTable<boolean>>({});
-  const [expanded, setExpanded] = useState(true);
   const [expandedLookup, setExpandedLookup] = useSpreadState<LookupTable<boolean>>({});
   const [error, setError] = useState<ApiResponse>();
   const currentUser = useSelector<GlobalState, string>((state) => state.user.username);
