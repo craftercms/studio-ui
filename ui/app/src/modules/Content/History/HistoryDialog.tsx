@@ -58,7 +58,7 @@ import { useUnmount } from '../../../utils/hooks/useUnmount';
 import { useSpreadState } from '../../../utils/hooks/useSpreadState';
 import { getEditorMode, isImage } from '../../../components/PathNavigator/utils';
 import { fetchContentByCommitId } from '../../../services/content';
-import { useActiveSiteId } from '../../../utils/hooks/useActiveSiteId'; // TODO: should this be a more global util?
+import { useActiveSiteId } from '../../../utils/hooks/useActiveSiteId';
 
 const translations = defineMessages({
   previousPage: {
