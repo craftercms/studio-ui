@@ -50,7 +50,7 @@ const messages = defineMessages({
   page: { id: 'iconGuide.page', defaultMessage: 'Page' },
   component: { id: 'iconGuide.component', defaultMessage: 'Component' },
   folder: { id: 'iconGuide.folder', defaultMessage: 'Folder' },
-  levelDescriptor: { id: 'iconGuide.levelDescriptor', defaultMessage: 'levelDescriptor' },
+  levelDescriptor: { id: 'iconGuide.levelDescriptor', defaultMessage: 'Section Defaults' },
   renderingTemplate: { id: 'iconGuide.freemarker', defaultMessage: 'Freemarker Template' },
   script: { id: 'iconGuide.groovy', defaultMessage: 'Groovy Script' },
   taxonomy: { id: 'iconGuide.taxonomy', defaultMessage: 'Taxonomy' },
