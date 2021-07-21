@@ -24,10 +24,12 @@ import { GuestStandardAction } from '../store/models/GuestStandardAction';
 import { Observable, Subject } from 'rxjs';
 import { startWith } from 'rxjs/operators';
 import $ from 'jquery';
+import LookupTable from '@craftercms/studio-ui/models/LookupTable';
 
 export function initTinyMCE(
   record: ElementRecord,
-  validations: Partial<ContentTypeFieldValidations>
+  validations: Partial<ContentTypeFieldValidations>,
+  rteConfig: LookupTable<any>
 ): Observable<GuestStandardAction> {
   const dispatch$ = new Subject<GuestStandardAction>();
   const { field } = iceRegistry.getReferentialEntries(record.iceIds[0]);

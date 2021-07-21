@@ -311,6 +311,8 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
         const draggable = ElementRegistry.getDraggable(record.id);
         const validations = field?.validations;
         const type = field?.type;
+        // @ts-ignore
+        const rteConfig = action.payload.rteConfig;
         const iceZoneSelected = () => {
           post(ICE_ZONE_SELECTED, {
             modelId: record.modelId,
@@ -340,7 +342,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
                     'Please add tinymce on to the page to enable editing.'
                 );
               } else if (not(validations?.readOnly?.value)) {
-                return initTinyMCE(record, validations);
+                return initTinyMCE(record, validations, rteConfig);
               }
               return NEVER;
             }

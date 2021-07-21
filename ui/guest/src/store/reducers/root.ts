@@ -680,7 +680,8 @@ const initialState: GuestState = {
   uploading: {},
   models: {},
   contentTypes: {},
-  hostCheckedIn: false
+  hostCheckedIn: false,
+  rteConfig: {}
 };
 
 const foo = (state) => state;
@@ -736,7 +737,8 @@ const reducerFunctions: {
     ...state,
     hostCheckedIn: true,
     highlightMode: action.payload.highlightMode,
-    editMode: action.payload.editMode
+    editMode: action.payload.editMode,
+    rteConfig: action.payload.rteConfig
   })
 };
 

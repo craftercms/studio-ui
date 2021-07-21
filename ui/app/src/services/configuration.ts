@@ -205,7 +205,8 @@ export function fetchSiteUiConfig(site: string): Observable<Pick<GlobalState['ui
           },
           launcher: null,
           dashboard: null,
-          references: {}
+          references: {},
+          richTextEditor: {}
         };
         const arrays = ['widgets', 'roles', 'excludes', 'devices', 'values', 'siteCardMenuLinks', 'tools'];
         const renameTable = { permittedRoles: 'roles' };
@@ -302,6 +303,12 @@ export function fetchSiteUiConfig(site: string): Observable<Pick<GlobalState['ui
             renameTable
           }).configuration;
         }
+
+        const rte = xml.querySelector('[id="craftercms.components.RichTextEditor"] > configuration > tinymceSetup');
+        if (rte) {
+          config.richTextEditor = JSON.parse(deserialize(rte).tinymceSetup);
+        }
+
         return config;
       } else {
         return null;

@@ -118,6 +118,7 @@ import { useActiveUser } from '../../utils/hooks/useActiveUser';
 import { useItemsByPath } from '../../utils/hooks/useItemsByPath';
 import { useMount } from '../../utils/hooks/useMount';
 import { usePreviewNavigation } from '../../utils/hooks/usePreviewNavigation';
+import { useRTEConfig } from '../../utils/hooks/useRTEConfig';
 
 const guestMessages = defineMessages({
   maxCount: {
@@ -309,6 +310,7 @@ export function PreviewConcierge(props: any) {
   // guestDetectionSnackbarOpen, guestDetectionTimeout
   const guestDetectionTimeoutRef = useRef<number>();
   const [guestDetectionSnackbarOpen, setGuestDetectionSnackbarOpen] = useState(false);
+  const rteConfig = useRTEConfig();
 
   function clearSelectedZonesHandler() {
     dispatch(clearSelectForEdit());
@@ -455,7 +457,7 @@ export function PreviewConcierge(props: any) {
             }
             getHostToGuestBus().next({
               type: HOST_CHECK_IN,
-              payload: { editMode: false, highlightMode }
+              payload: { editMode: false, highlightMode, rteConfig }
             });
             dispatch(checkInGuest(payload));
 

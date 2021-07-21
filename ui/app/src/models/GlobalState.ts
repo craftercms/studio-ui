@@ -265,6 +265,7 @@ export interface GlobalState {
     publishing: {
       submissionCommentMaxLength: number;
     };
+    richTextEditor: LookupTable<any>;
     references: LookupTable<LookupTable<any>>;
   };
   pathNavigator: {

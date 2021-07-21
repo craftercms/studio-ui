@@ -73,7 +73,8 @@ const initialState: GlobalState['uiConfig'] = {
   publishing: {
     submissionCommentMaxLength: 250
   },
-  references: null
+  references: null,
+  richTextEditor: {}
 };
 
 const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
