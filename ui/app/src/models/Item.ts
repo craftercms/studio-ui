@@ -106,8 +106,8 @@ interface SandboxEnvProps {
 }
 
 interface PublishEnvProps {
-  lastScheduledDate: string;
-  lastPublishedDate: string;
+  dateScheduled: string;
+  datePublished: string;
   publisher: string;
   commitId: string;
   expiresOn: string;

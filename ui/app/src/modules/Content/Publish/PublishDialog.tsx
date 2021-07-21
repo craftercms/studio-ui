@@ -498,10 +498,10 @@ function PublishDialogWrapper(props: PublishDialogProps) {
   }, [scheduling, setDialog]);
 
   useEffect(() => {
-    if (items.length === 1 && items[0].live?.lastScheduledDate) {
+    if (items.length === 1 && items[0].live?.dateScheduled) {
       setDialog({
         scheduling: 'custom',
-        scheduledDateTime: moment(items[0].live.lastScheduledDate).format()
+        scheduledDateTime: moment(items[0].live.dateScheduled).format()
       });
     }
   }, [items, setDialog]);

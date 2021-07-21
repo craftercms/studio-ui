@@ -33,6 +33,10 @@ import { filter } from 'rxjs/operators';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import { useSpreadState } from '../../utils/hooks/useSpreadState';
+import { DashboardPreferences } from '../../models/Dashboard';
+import { useSelector } from 'react-redux';
+import GlobalState from '../../models/GlobalState';
+import { getStoredDashboardPreferences, setStoredDashboardPreferences } from '../../utils/state';
 
 export interface AwaitingApprovalDashletProps {
   selectedLookup: LookupTable<boolean>;
@@ -45,6 +49,11 @@ export interface DashboardItem {
   path: string;
   children: string[];
 }
+
+const dashletInitialPreferences: DashboardPreferences = {
+  expanded: true,
+  showUnpublished: false
+};
 
 export default function AwaitingApprovalDashlet(props: AwaitingApprovalDashletProps) {
   const site = useActiveSiteId();
@@ -61,12 +70,14 @@ export default function AwaitingApprovalDashlet(props: AwaitingApprovalDashletPr
     total: null
   });
   const { selectedLookup, onItemChecked, onItemMenuClick } = props;
-  const [expanded, setExpanded] = useState(true);
   const [expandedLookup, setExpandedLookup] = useSpreadState<LookupTable<boolean>>({});
   const [error, setError] = useState<ApiResponse>();
-  const [showInProgressItems, setShowInProgressItems] = useState(false);
+  const currentUser = useSelector<GlobalState, string>((state) => state.user.username);
+  const dashletPreferencesId = 'awaitingApprovalDashlet';
+  const [preferences, setPreferences] = useSpreadState(
+    getStoredDashboardPreferences(currentUser, site, dashletPreferencesId) ?? dashletInitialPreferences
+  );
   const [isFetching, setIsFetching] = useState(false);
-
   const showExpanded = useMemo(() => Object.values(expandedLookup).some((value) => !value), [expandedLookup]);
   const isAllChecked = useMemo(() => !Object.keys(state.itemsLookup).some((path) => !selectedLookup[path]), [
     selectedLookup,
@@ -79,7 +90,7 @@ export default function AwaitingApprovalDashlet(props: AwaitingApprovalDashletPr
 
   const refresh = useCallback(() => {
     setIsFetching(true);
-    fetchLegacyGetGoLiveItems(site, 'eventDate', null, showInProgressItems, null).subscribe(
+    fetchLegacyGetGoLiveItems(site, 'eventDate', null, preferences.showUnpublished, null).subscribe(
       (response) => {
         const parentItems: DashboardItem[] = [];
         const itemsLookup = {};
@@ -112,7 +123,7 @@ export default function AwaitingApprovalDashlet(props: AwaitingApprovalDashletPr
         setError(response);
       }
     );
-  }, [setExpandedLookup, site, showInProgressItems]);
+  }, [setExpandedLookup, site, preferences.showUnpublished]);
 
   useEffect(() => {
     refresh();
@@ -140,6 +151,10 @@ export default function AwaitingApprovalDashlet(props: AwaitingApprovalDashletPr
     };
   }, [refresh, state.itemsLookup]);
   // endregion
+
+  useEffect(() => {
+    setStoredDashboardPreferences(preferences, currentUser, site, dashletPreferencesId);
+  }, [preferences, currentUser, site]);
 
   const resource = useLogicResource<
     DashboardItem[],
@@ -170,7 +185,7 @@ export default function AwaitingApprovalDashlet(props: AwaitingApprovalDashletPr
 
   const onShowInProgress = (e) => {
     e.stopPropagation();
-    setShowInProgressItems(!showInProgressItems);
+    setPreferences({ showUnpublished: !preferences.showUnpublished });
   };
 
   const onExpandedRow = (path: string, value: boolean) => {
@@ -194,8 +209,8 @@ export default function AwaitingApprovalDashlet(props: AwaitingApprovalDashletPr
           values={{ count: state.total }}
         />
       }
-      expanded={expanded}
-      onToggleExpanded={() => setExpanded(!expanded)}
+      expanded={preferences.expanded}
+      onToggleExpanded={() => setPreferences({ expanded: !preferences.expanded })}
       refreshDisabled={isFetching}
       onRefresh={refresh}
       headerRightSection={
@@ -208,7 +223,7 @@ export default function AwaitingApprovalDashlet(props: AwaitingApprovalDashletPr
             )}
           </Button>
           <Button disabled={isFetching} onClick={onShowInProgress}>
-            {showInProgressItems ? (
+            {preferences.showUnpublished ? (
               <FormattedMessage id="dashboardItemsApproval.hideUnpublished" defaultMessage="Hide Unpublished" />
             ) : (
               <FormattedMessage id="dashboardItemsApproval.showUnpublished" defaultMessage="Show Unpublished" />

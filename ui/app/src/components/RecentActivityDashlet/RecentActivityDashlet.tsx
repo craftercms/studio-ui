@@ -37,6 +37,9 @@ import TextField from '@material-ui/core/TextField';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import { useLocale } from '../../utils/hooks/useLocale';
+import { DashboardPreferences } from '../../models/Dashboard';
+import { useSpreadState } from '../../utils/hooks/useSpreadState';
+import { getStoredDashboardPreferences, setStoredDashboardPreferences } from '../../utils/state';
 
 export interface RecentActivityDashletProps {
   selectedLookup: LookupTable<boolean>;
@@ -44,20 +47,27 @@ export interface RecentActivityDashletProps {
   onItemMenuClick(event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, item: DetailedItem): void;
 }
 
+const dashletInitialPreferences: DashboardPreferences = {
+  filterBy: 'page',
+  numItems: 10,
+  expanded: true,
+  excludeLiveItems: false
+};
+
 export default function RecentActivityDashlet(props: RecentActivityDashletProps) {
   const { selectedLookup, onItemChecked, onItemMenuClick } = props;
-  const [expandedDashlet, setExpandedDashlet] = useState(true);
   const [fetchingActivity, setFecthingActivity] = useState(false);
   const [errorActivity, setErrorActivity] = useState<ApiResponse>();
   const [items, setItems] = useState<DetailedItem[]>([]);
   const [totalItems, setTotalItems] = useState(0);
-  const [numItems, setNumItems] = useState(10);
-  const [filterBy, setFilterBy] = useState('page'); // TODO: type
-  const [sortType, setSortType] = useState<'asc' | 'desc'>('desc');
-  const [sortBy, setSortBy] = useState('dateModified');
-  const [excludeLiveItems, setExcludeLiveItems] = useState(false);
   const siteId = useActiveSiteId();
   const currentUser = useSelector<GlobalState, string>((state) => state.user.username);
+  const dashletPreferencesId = 'recentActivityDashlet';
+  const [preferences, setPreferences] = useSpreadState(
+    getStoredDashboardPreferences(currentUser, siteId, dashletPreferencesId) ?? dashletInitialPreferences
+  );
+  const [sortType, setSortType] = useState<'asc' | 'desc'>('desc');
+  const [sortBy, setSortBy] = useState('dateModified');
   const locale = useLocale();
   const classes = useStyles();
 
@@ -76,17 +86,25 @@ export default function RecentActivityDashlet(props: RecentActivityDashletProps)
 
   const onFilterChange = (e) => {
     e.stopPropagation();
-    setFilterBy(e.target.value);
+    setPreferences({
+      filterBy: e.target.value
+    });
   };
 
   const onNumItemsChange = (e) => {
     e.stopPropagation();
-    setNumItems(e.target.value);
+    setPreferences({
+      numItems: e.target.value
+    });
   };
+
+  useEffect(() => {
+    setStoredDashboardPreferences(preferences, currentUser, siteId, dashletPreferencesId);
+  }, [preferences, currentUser, siteId]);
 
   const onToggleHideLiveItems = (e) => {
     e.stopPropagation();
-    setExcludeLiveItems(!excludeLiveItems);
+    setPreferences({ excludeLiveItems: !preferences.excludeLiveItems });
   };
 
   const toggleSortType = () => {
@@ -95,7 +113,15 @@ export default function RecentActivityDashlet(props: RecentActivityDashletProps)
 
   const fetchActivity = useCallback(() => {
     setFecthingActivity(true);
-    fetchLegacyUserActivities(siteId, currentUser, 'eventDate', true, numItems, filterBy, excludeLiveItems).subscribe(
+    fetchLegacyUserActivities(
+      siteId,
+      currentUser,
+      'eventDate',
+      true,
+      preferences.numItems,
+      preferences.filterBy,
+      preferences.excludeLiveItems
+    ).subscribe(
       (activities) => {
         setTotalItems(activities.total);
         const itemsList = [];
@@ -108,7 +134,7 @@ export default function RecentActivityDashlet(props: RecentActivityDashletProps)
         setFecthingActivity(false);
       }
     );
-  }, [siteId, setItems, numItems, filterBy, excludeLiveItems, currentUser]);
+  }, [siteId, setItems, preferences, currentUser]);
 
   useEffect(() => {
     fetchActivity();
@@ -159,14 +185,14 @@ export default function RecentActivityDashlet(props: RecentActivityDashletProps)
           <FormattedMessage id="recentActivity.myRecentActivity" defaultMessage="My Recent Activity" /> ({items.length})
         </>
       }
-      onToggleExpanded={() => setExpandedDashlet(!expandedDashlet)}
-      expanded={expandedDashlet}
+      onToggleExpanded={() => setPreferences({ expanded: !preferences.expanded })}
+      expanded={preferences.expanded}
       refreshDisabled={fetchingActivity}
       onRefresh={fetchActivity}
       headerRightSection={
         <>
           <Button onClick={onToggleHideLiveItems} className={classes.rightAction}>
-            {excludeLiveItems ? (
+            {preferences.excludeLiveItems ? (
               <FormattedMessage id="recentActivity.showLiveItems" defaultMessage="Show Live Items" />
             ) : (
               <FormattedMessage id="recentActivity.hideLiveItems" defaultMessage="Hide Live Items" />
@@ -176,7 +202,7 @@ export default function RecentActivityDashlet(props: RecentActivityDashletProps)
             label={<FormattedMessage id="words.show" defaultMessage="Show" />}
             select
             size="small"
-            value={numItems}
+            value={preferences.numItems}
             disabled={fetchingActivity}
             onChange={onNumItemsChange}
             className={classes.rightAction}
@@ -194,7 +220,7 @@ export default function RecentActivityDashlet(props: RecentActivityDashletProps)
             label={<FormattedMessage id="recentActivity.filterBy" defaultMessage="Filter by" />}
             select
             size="small"
-            value={filterBy}
+            value={preferences.filterBy}
             disabled={fetchingActivity}
             onChange={onFilterChange}
           >

@@ -36,6 +36,10 @@ import { filter } from 'rxjs/operators';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import { useSpreadState } from '../../utils/hooks/useSpreadState';
+import { DashboardPreferences } from '../../models/Dashboard';
+import { getStoredDashboardPreferences, setStoredDashboardPreferences } from '../../utils/state';
+import { useSelector } from 'react-redux';
+import GlobalState from '../../models/GlobalState';
 
 export interface ApprovedScheduledDashletProps {
   selectedLookup: LookupTable<boolean>;
@@ -43,11 +47,16 @@ export interface ApprovedScheduledDashletProps {
   onItemMenuClick(event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, item: DetailedItem): void;
 }
 
+const dashletInitialPreferences: DashboardPreferences = {
+  filterBy: 'all',
+  expanded: true
+};
+
 export default function ApprovedScheduledDashlet(props: ApprovedScheduledDashletProps) {
-  const [expanded, setExpanded] = useState(true);
   const { selectedLookup, onItemChecked, onItemMenuClick } = props;
   const [error, setError] = useState<ApiResponse>();
   const site = useActiveSiteId();
+  const currentUser = useSelector<GlobalState, string>((state) => state.user.username);
   const classes = useStyles();
   const [state, setState] = useState<{
     itemsLookup: LookupTable<DetailedItem>;
@@ -62,7 +71,10 @@ export default function ApprovedScheduledDashlet(props: ApprovedScheduledDashlet
   });
   const [expandedLookup, setExpandedLookup] = useSpreadState<LookupTable<boolean>>({});
   const [isFetching, setIsFetching] = useState(false);
-  const [filterBy, setFilterBy] = useState('all');
+  const dashletPreferencesId = 'approvedScheduledDashlet';
+  const [preferences, setPreferences] = useSpreadState(
+    getStoredDashboardPreferences(currentUser, site, dashletPreferencesId) ?? dashletInitialPreferences
+  );
 
   const showExpanded = useMemo(() => Object.values(expandedLookup).some((value) => !value), [expandedLookup]);
   const isAllChecked = useMemo(() => !Object.keys(state.itemsLookup).some((path) => !selectedLookup[path]), [
@@ -76,7 +88,7 @@ export default function ApprovedScheduledDashlet(props: ApprovedScheduledDashlet
 
   const refresh = useCallback(() => {
     setIsFetching(true);
-    fetchLegacyScheduledItems(site, 'eventDate', false, filterBy).subscribe(
+    fetchLegacyScheduledItems(site, 'eventDate', false, preferences.filterBy).subscribe(
       (response) => {
         const parentItems: DashboardItem[] = [];
         const itemsLookup = {};
@@ -109,7 +121,7 @@ export default function ApprovedScheduledDashlet(props: ApprovedScheduledDashlet
         setError(response);
       }
     );
-  }, [setExpandedLookup, site, filterBy]);
+  }, [setExpandedLookup, site, preferences]);
 
   useEffect(() => {
     refresh();
@@ -179,8 +191,14 @@ export default function ApprovedScheduledDashlet(props: ApprovedScheduledDashlet
 
   const onFilterChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     event.stopPropagation();
-    setFilterBy(event.target.value as string);
+    setPreferences({
+      filterBy: event.target.value as string
+    });
   };
+
+  useEffect(() => {
+    setStoredDashboardPreferences(preferences, currentUser, site, dashletPreferencesId);
+  }, [preferences, currentUser, site]);
 
   return (
     <Dashlet
@@ -191,8 +209,8 @@ export default function ApprovedScheduledDashlet(props: ApprovedScheduledDashlet
           values={{ count: state.total }}
         />
       }
-      expanded={expanded}
-      onToggleExpanded={() => setExpanded(!expanded)}
+      expanded={preferences.expanded}
+      onToggleExpanded={() => setPreferences({ expanded: !preferences.expanded })}
       onRefresh={refresh}
       headerRightSection={
         <>
@@ -207,7 +225,7 @@ export default function ApprovedScheduledDashlet(props: ApprovedScheduledDashlet
             label={<FormattedMessage id="dashboardItemsScheduled.filterBy" defaultMessage="Filter by" />}
             select
             size="small"
-            value={filterBy}
+            value={preferences.filterBy}
             disabled={isFetching}
             onChange={onFilterChange}
           >
