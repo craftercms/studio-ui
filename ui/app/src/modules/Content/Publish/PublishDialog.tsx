@@ -75,6 +75,8 @@ interface PublishDialogContentUIProps {
   publishingChannelsStatus: string;
   onPublishingChannelsFailRetry: Function;
   apiState: any;
+  mixedPublishingDates?: boolean;
+  mixedPublishingTargets?: boolean;
 }
 
 interface PublishDialogUIProps {
@@ -105,6 +107,8 @@ interface PublishDialogUIProps {
   apiState: any;
   classes?: any;
   submitLabel: ReactNode;
+  mixedPublishingDates?: boolean;
+  mixedPublishingTargets?: boolean;
 }
 
 interface PublishDialogBaseProps {
@@ -251,7 +255,9 @@ function PublishDialogContentUI(props: PublishDialogContentUIProps) {
     showRequestApproval,
     publishingChannelsStatus,
     onPublishingChannelsFailRetry,
-    apiState
+    apiState,
+    mixedPublishingDates,
+    mixedPublishingTargets
   } = props;
 
   const { items, publishingChannels }: { items: DetailedItem[]; publishingChannels: any } = resource.read();
@@ -285,6 +291,8 @@ function PublishDialogContentUI(props: PublishDialogContentUIProps) {
             publishingChannelsStatus={publishingChannelsStatus}
             onPublishingChannelsFailRetry={onPublishingChannelsFailRetry}
             disabled={apiState.submitting}
+            mixedPublishingDates={mixedPublishingDates}
+            mixedPublishingTargets={mixedPublishingTargets}
           />
         </Grid>
       </Grid>
@@ -320,7 +328,9 @@ function PublishDialogUI(props: PublishDialogUIProps) {
     showRequestApproval,
     apiState,
     classes,
-    submitLabel
+    submitLabel,
+    mixedPublishingDates,
+    mixedPublishingTargets
   } = props;
 
   return (
@@ -357,6 +367,8 @@ function PublishDialogUI(props: PublishDialogUIProps) {
             publishingChannelsStatus={publishingChannelsStatus}
             onPublishingChannelsFailRetry={onPublishingChannelsFailRetry}
             apiState={apiState}
+            mixedPublishingDates={mixedPublishingDates}
+            mixedPublishingTargets={mixedPublishingTargets}
           />
         </SuspenseWithEmptyState>
       </DialogBody>
@@ -425,6 +437,42 @@ function PublishDialogWrapper(props: PublishDialogProps) {
   const user = useSelector<GlobalState, GlobalState['user']>((state) => state.user);
   const submit = !hasPublishPermission || dialog.requestApproval ? submitToGoLive : goLive;
   const propagateAction = !hasPublishPermission || dialog.requestApproval ? itemsScheduled : itemsApproved;
+  const { mixedPublishingTargets, mixedPublishingDates, dateScheduled, environment } = useMemo(() => {
+    let mixedPublishingTargets = false;
+    let mixedPublishingDates = false;
+    let dateScheduled = null;
+    let environment = '';
+    items.reduce((prev, current) => {
+      if (prev.stateMap.live !== current.stateMap.live) {
+        mixedPublishingTargets = true;
+        environment = '';
+      }
+      if (prev.live.dateScheduled !== current.live.dateScheduled) {
+        mixedPublishingDates = true;
+      }
+      if (dateScheduled === null && prev.live.dateScheduled) {
+        dateScheduled = prev.live.dateScheduled;
+      }
+      if (environment === '' && mixedPublishingTargets === false) {
+        environment = prev.stateMap.submittedToLive ? 'live' : prev.stateMap.submittedToStaging ? 'staging' : '';
+      }
+      return current;
+    });
+
+    return {
+      mixedPublishingTargets,
+      mixedPublishingDates,
+      environment:
+        items.length > 1
+          ? environment
+          : items[0].stateMap.submittedToLive
+          ? 'live'
+          : items[0].stateMap.submittedToStaging
+          ? 'staging'
+          : '',
+      dateScheduled: items.length > 1 ? dateScheduled : items[0].live.dateScheduled
+    };
+  }, [items]);
 
   const { formatMessage } = useIntl();
 
@@ -498,13 +546,14 @@ function PublishDialogWrapper(props: PublishDialogProps) {
   }, [scheduling, setDialog]);
 
   useEffect(() => {
-    if (items.length === 1 && items[0].live?.dateScheduled) {
+    if (dateScheduled) {
       setDialog({
         scheduling: 'custom',
-        scheduledDateTime: moment(items[0].live.dateScheduled).format()
+        environment,
+        scheduledDateTime: moment(dateScheduled).format()
       });
     }
-  }, [items, setDialog]);
+  }, [dateScheduled, mixedPublishingTargets, environment, setDialog]);
 
   useEffect(() => {
     if (!apiState.submitting && Object.values(checkedItems).filter(Boolean).length > 0 && publishingChannels?.length) {
@@ -637,6 +686,8 @@ function PublishDialogWrapper(props: PublishDialogProps) {
           <FormattedMessage id="requestPublishDialog.publish" defaultMessage="Publish" />
         )
       }
+      mixedPublishingTargets={mixedPublishingTargets}
+      mixedPublishingDates={mixedPublishingDates}
     />
   );
 }

@@ -24,6 +24,10 @@ export const translations = defineMessages({
   reject: {
     id: 'awaitingApprovalDashlet.reject',
     defaultMessage: 'Reject ({count})'
+  },
+  clear: {
+    id: 'awaitingApprovalDashlet.clear',
+    defaultMessage: 'Clear selected'
   }
 });
 

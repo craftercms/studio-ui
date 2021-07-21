@@ -34,12 +34,11 @@ import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import { useSpreadState } from '../../utils/hooks/useSpreadState';
 import { DashboardPreferences } from '../../models/Dashboard';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import GlobalState from '../../models/GlobalState';
 import { getStoredDashboardPreferences, setStoredDashboardPreferences } from '../../utils/state';
 import { completeDetailedItem } from '../../state/actions/content';
 import { showItemMegaMenu } from '../../state/actions/dialogs';
-import { useDispatch } from 'react-redux';
 import ActionsBar from '../ActionsBar';
 import translations from './translations';
 import { createPresenceTable } from '../../utils/array';
@@ -230,17 +229,21 @@ export default function AwaitingApprovalDashlet() {
     );
   };
 
-  const onActionBarOptionClicked = (option: AllItemActions) => {
-    itemActionDispatcher({
-      site,
-      item: Object.keys(selectedLookup)
-        .filter((path) => selectedLookup[path])
-        .map((path) => state.itemsLookup[path]),
-      option,
-      authoringBase,
-      dispatch,
-      formatMessage
-    });
+  const onActionBarOptionClicked = (option: string) => {
+    if (option === 'clear') {
+      setSelectedLookup({});
+    } else {
+      itemActionDispatcher({
+        site,
+        item: Object.keys(selectedLookup)
+          .filter((path) => selectedLookup[path])
+          .map((path) => state.itemsLookup[path]),
+        option: option as AllItemActions,
+        authoringBase,
+        dispatch,
+        formatMessage
+      });
+    }
   };
 
   return (
@@ -289,7 +292,8 @@ export default function AwaitingApprovalDashlet() {
             }}
             options={[
               { id: 'publish', label: formatMessage(translations.publish, { count: selectedItemsLength }) },
-              { id: 'rejectPublish', label: formatMessage(translations.reject, { count: selectedItemsLength }) }
+              { id: 'rejectPublish', label: formatMessage(translations.reject, { count: selectedItemsLength }) },
+              { id: 'clear', label: formatMessage(translations.clear) }
             ]}
             isIndeterminate={isIndeterminate}
             isChecked={isAllChecked}

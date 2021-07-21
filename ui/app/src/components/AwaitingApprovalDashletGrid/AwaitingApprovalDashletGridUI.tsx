@@ -163,16 +163,25 @@ export default function AwaitingApprovalDashletGridUI(props: AwaitingApprovalDas
                                 </GlobalAppGridCell>
                                 <GlobalAppGridCell
                                   className="width15"
-                                  title={asLocalizedDateTime(
-                                    itemsLookup[path].live.dateScheduled,
-                                    locale.localeCode,
-                                    locale.dateTimeFormatOptions
-                                  )}
+                                  title={
+                                    itemsLookup[path].live.dateScheduled &&
+                                    asLocalizedDateTime(
+                                      itemsLookup[path].live.dateScheduled,
+                                      locale.localeCode,
+                                      locale.dateTimeFormatOptions
+                                    )
+                                  }
                                 >
-                                  {asLocalizedDateTime(
-                                    itemsLookup[path].live.dateScheduled,
-                                    locale.localeCode,
-                                    locale.dateTimeFormatOptions
+                                  {itemsLookup[path].live.dateScheduled ? (
+                                    asLocalizedDateTime(
+                                      itemsLookup[path].live.dateScheduled,
+                                      locale.localeCode,
+                                      locale.dateTimeFormatOptions
+                                    )
+                                  ) : (
+                                    <Typography variant="caption" color="textSecondary">
+                                      <FormattedMessage id="words.unpublished" defaultMessage="Unpublished" />
+                                    </Typography>
                                   )}
                                 </GlobalAppGridCell>
                                 <GlobalAppGridCell
