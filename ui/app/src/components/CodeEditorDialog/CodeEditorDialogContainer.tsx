@@ -126,7 +126,6 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
       fetchContentXML(site, item.path, { ...(!item.lockOwner && { lock: !readonly }) }).subscribe((xml) => {
         setContent(xml);
         setLoading(false);
-
         if (!readonly) {
           dispatch(localItemLock({ path: item.path, username: user.username }));
         }
