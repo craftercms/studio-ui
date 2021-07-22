@@ -26,8 +26,7 @@ import { AllItemActions, DetailedItem } from '../../models/Item';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import ApprovedScheduledDashletGridUI from '../ApprovedScheduledDashletGrid';
 import useStyles from './styles';
-import ApprovedScheduledDashletSkeletonTable
-  from '../ApprovedScheduledDashletGrid/ApprovedScheduledDashletSkeletonTable';
+import ApprovedScheduledDashletSkeletonTable from '../ApprovedScheduledDashletGrid/ApprovedScheduledDashletSkeletonTable';
 import MenuItem from '@material-ui/core/MenuItem';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
