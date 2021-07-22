@@ -22,6 +22,7 @@ export interface ConfigurationSamplePreviewDialogProps {
   open: boolean;
   content: string;
   onClose(): void;
+  onClosed?(): void;
   onUseSampleClick(type: 'replace' | 'append'): void;
 }
 

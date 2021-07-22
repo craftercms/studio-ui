@@ -93,7 +93,6 @@ export default function GlobalConfigManagement() {
       setContent(currentContent + sample);
     }
     setViewSample(false);
-    aceEditorRef.current.focus();
   };
 
   const onResetClick = () => {
@@ -198,6 +197,7 @@ export default function GlobalConfigManagement() {
         onUseSampleClick={onUseSampleClick}
         open={viewSample}
         onClose={() => setViewSample(false)}
+        onClosed={() => aceEditorRef.current.focus()}
         content={sample}
       />
       <ConfirmDialog
