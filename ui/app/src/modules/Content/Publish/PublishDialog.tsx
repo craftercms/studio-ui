@@ -18,7 +18,7 @@ import React, { PropsWithChildren, ReactNode, useCallback, useEffect, useMemo, u
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { fetchPublishingTargets, goLive, submitToGoLive } from '../../../services/publishing';
 import { fetchDependencies } from '../../../services/dependencies';
-import { BaseItem, DetailedItem } from '../../../models/Item';
+import { DetailedItem } from '../../../models/Item';
 import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux';
 import GlobalState from '../../../models/GlobalState';
