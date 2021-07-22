@@ -558,6 +558,10 @@ function PublishDialogWrapper(props: PublishDialogProps) {
         scheduling: 'now',
         environment
       });
+    } else {
+      setDialog({
+        environment
+      });
     }
   }, [dateScheduled, environment, setDialog, scheduling]);
 

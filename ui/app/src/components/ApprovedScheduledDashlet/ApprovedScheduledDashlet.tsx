@@ -97,9 +97,9 @@ export default function ApprovedScheduledDashlet() {
     fetchLegacyScheduledItems(site, 'eventDate', false, preferences.filterBy).subscribe(
       (response) => {
         const parentItems: DashboardItem[] = [];
-        const itemsLookup = {};
-        const targetLookup = {};
-        const expandedLookup = {};
+        const itemsLookup: LookupTable<DetailedItem> = {};
+        const targetLookup: LookupTable<{ target: string; packageId: string }> = {};
+        const expandedLookup: LookupTable<boolean> = {};
         response.documents.forEach((item) => {
           if (item.children.length) {
             expandedLookup[item.uri ?? item.name] = true;
@@ -109,6 +109,10 @@ export default function ApprovedScheduledDashlet() {
               children: item.children.map((item) => {
                 targetLookup[item.uri] = { target: item.environment, packageId: item.packageId };
                 itemsLookup[item.uri] = parseLegacyItemToDetailedItem(item);
+                // TODO: remove this when legacy item submittedToEnvironment is not null
+                itemsLookup[item.uri].stateMap.submittedToLive = item.environment === 'live';
+                itemsLookup[item.uri].stateMap.submittedToStaging = item.environment === 'staging';
+                // endTODO
                 return item.uri;
               })
             });
