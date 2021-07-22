@@ -18,17 +18,26 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles((theme) =>
   createStyles({
-    rightAction: {
+    tableRoot: {
+      tableLayout: 'fixed'
+    },
+    itemPath: {
+      color: theme.palette.text.secondary
+    },
+    ellipsis: {
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap'
+    },
+    showSelectRoot: {
+      paddingTop: '8.5px',
+      paddingBottom: '8.5px'
+    },
+    showLabel: {
       marginRight: theme.spacing(1)
     },
-    actionsBarRoot: {
-      left: '0',
-      right: '0',
-      zIndex: 2,
-      position: 'absolute'
-    },
-    actionsBarCheckbox: {
-      margin: '2px'
+    skeletonCheckbox: {
+      margin: '6px 10px'
     }
   })
 );

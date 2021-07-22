@@ -18,6 +18,6 @@ export { default } from './RecentActivityDashlet';
 
 export * from './RecentActivityDashlet';
 
-export * from './RecentActivityDashletUI';
+export * from '../RecentActivityDashletGrid/RecentActivityDashletGridUI';
 
-export * from './RecentActivityDashletUISkeleton';
+export * from '../RecentActivityDashletGrid/RecentActivityDashletUISkeleton';

@@ -70,7 +70,6 @@ export default function AwaitingApprovalDashlet() {
     parentItems: null,
     total: null
   });
-
   const [selectedLookup, setSelectedLookup] = useState<LookupTable<boolean>>({});
   const [expandedLookup, setExpandedLookup] = useSpreadState<LookupTable<boolean>>({});
   const [error, setError] = useState<ApiResponse>();
