@@ -103,7 +103,6 @@ function Guest(props: GuestProps) {
   const status = state.status;
   const hasHost = state.hostCheckedIn;
   const draggable = state.draggable;
-  const rteConfig = state.rteConfig;
   const refs = useRef({
     contentReady: false,
     firstRender: true,
@@ -135,7 +134,7 @@ function Guest(props: GuestProps) {
               event.preventDefault();
               event.stopPropagation();
             }
-            dispatch({ type: type, payload: { event, record, rteConfig } });
+            dispatch({ type: type, payload: { event, record } });
             return true;
           }
         }

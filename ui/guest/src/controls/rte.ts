@@ -29,7 +29,7 @@ import LookupTable from '@craftercms/studio-ui/models/LookupTable';
 export function initTinyMCE(
   record: ElementRecord,
   validations: Partial<ContentTypeFieldValidations>,
-  rteConfig: LookupTable<any>
+  rteConfig?: LookupTable<any>
 ): Observable<GuestStandardAction> {
   const dispatch$ = new Subject<GuestStandardAction>();
   const { field } = iceRegistry.getReferentialEntries(record.iceIds[0]);
@@ -39,7 +39,8 @@ export function initTinyMCE(
   if (elementDisplay === 'inline') {
     $(record.element).css('display', 'inline-block');
   }
-  window.tinymce.init({
+
+  const settings = {
     mode: 'none',
     target: record.element,
     // For some reason this is not working.
@@ -154,7 +155,10 @@ export function initTinyMCE(
           e.preventDefault();
         }
       });
-    }
-  });
+    },
+    ...rteConfig
+  };
+
+  window.tinymce.init(settings);
   return dispatch$.pipe(startWith({ type: 'edit_component_inline' }));
 }
