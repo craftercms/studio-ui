@@ -32,14 +32,15 @@ import Button from '@material-ui/core/Button';
 import clsx from 'clsx';
 import { useSelection } from '../../../utils/hooks/useSelection';
 import { useActiveSiteId } from '../../../utils/hooks/useActiveSiteId';
+import LookupTable from '../../../models/LookupTable';
 
 interface DependencySelectionProps<T extends BaseItem = BaseItem> {
   items: T[];
   siteId?: string; // for dependencySelectionDelete
   onChange?: Function; // for dependencySelectionDelete
-  checked: T[];
+  checked: LookupTable<boolean>;
   setChecked: Function;
-  checkedSoftDep: any[];
+  checkedSoftDep: LookupTable<boolean>;
   setCheckedSoftDep: Function;
   onClickSetChecked: Function;
   deps: any;

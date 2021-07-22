@@ -58,9 +58,9 @@ export interface DependenciesResultObject {
 
 interface PublishDialogContentUIProps {
   resource: Resource<any>;
-  checkedItems: DetailedItem[];
+  checkedItems: LookupTable<boolean>;
   setCheckedItems: Function;
-  checkedSoftDep: any[];
+  checkedSoftDep: LookupTable<boolean>;
   setCheckedSoftDep: Function;
   onClickSetChecked: Function;
   deps: any;
@@ -92,9 +92,9 @@ interface PublishDialogUIProps {
   setDialog: any;
   title: string;
   subtitle?: string;
-  checkedItems: DetailedItem[];
+  checkedItems: LookupTable<boolean>;
   setCheckedItems: Function;
-  checkedSoftDep: any[];
+  checkedSoftDep: LookupTable<boolean>;
   setCheckedSoftDep: Function;
   onClickSetChecked: Function;
   deps: any;
@@ -416,8 +416,8 @@ function PublishDialogWrapper(props: PublishDialogProps) {
   const [dialog, setDialog] = useSpreadState<InternalDialogState>({ ...dialogInitialState, scheduling });
   const [publishingChannels, setPublishingChannels] = useState<{ name: string }[]>(null);
   const [publishingChannelsStatus, setPublishingChannelsStatus] = useState('Loading');
-  const [checkedItems, setCheckedItems] = useState<any>({}); // selected deps
-  const [checkedSoftDep, _setCheckedSoftDep] = useState<any>({}); // selected soft deps
+  const [checkedItems, setCheckedItems] = useState<LookupTable<boolean>>({}); // selected deps
+  const [checkedSoftDep, _setCheckedSoftDep] = useState<LookupTable<boolean>>({}); // selected soft deps
   const [deps, setDeps] = useState<DependenciesResultObject>();
   const [showDepsButton, setShowDepsButton] = useState(true);
   const [submitDisabled, setSubmitDisabled] = useState(true);
@@ -439,41 +439,49 @@ function PublishDialogWrapper(props: PublishDialogProps) {
   const submit = !hasPublishPermission || dialog.requestApproval ? submitToGoLive : goLive;
   const propagateAction = !hasPublishPermission || dialog.requestApproval ? itemsScheduled : itemsApproved;
   const { mixedPublishingTargets, mixedPublishingDates, dateScheduled, environment } = useMemo(() => {
-    let mixedPublishingTargets = false;
-    let mixedPublishingDates = false;
-    let dateScheduled = null;
-    let environment = '';
-    items.reduce((prev, current) => {
+    let state = {
+      mixedPublishingTargets: false,
+      mixedPublishingDates: false,
+      dateScheduled: null,
+      environment: ''
+    };
+
+    let _items = items.filter((item) => checkedItems[item.path]);
+
+    if (_items.length === 0) {
+      return state;
+    }
+
+    _items?.reduce((prev, current) => {
       if (prev.stateMap.live !== current.stateMap.live) {
-        mixedPublishingTargets = true;
-        environment = '';
+        state.mixedPublishingTargets = true;
+        state.environment = '';
       }
       if (prev.live.dateScheduled !== current.live.dateScheduled) {
-        mixedPublishingDates = true;
+        state.mixedPublishingDates = true;
       }
-      if (dateScheduled === null) {
-        dateScheduled = prev.live.dateScheduled ? prev.live.dateScheduled : current.live.dateScheduled;
+      if (state.dateScheduled === null) {
+        state.dateScheduled = prev.live.dateScheduled ? prev.live.dateScheduled : current.live.dateScheduled;
       }
-      if (environment === '' && mixedPublishingTargets === false) {
-        environment = prev.stateMap.submittedToLive ? 'live' : prev.stateMap.submittedToStaging ? 'staging' : '';
+      if (state.environment === '' && state.mixedPublishingTargets === false) {
+        state.environment = prev.stateMap.submittedToLive ? 'live' : prev.stateMap.submittedToStaging ? 'staging' : '';
       }
       return current;
     });
 
     return {
-      mixedPublishingTargets,
-      mixedPublishingDates,
+      ...state,
       environment:
-        items.length > 1
-          ? environment
-          : items[0].stateMap.submittedToLive
+        _items.length > 1
+          ? state.environment
+          : _items[0].stateMap.submittedToLive
           ? 'live'
-          : items[0].stateMap.submittedToStaging
+          : _items[0].stateMap.submittedToStaging
           ? 'staging'
           : '',
-      dateScheduled: items.length > 1 ? dateScheduled : items[0].live.dateScheduled
+      dateScheduled: _items.length > 1 ? state.dateScheduled : _items[0].live.dateScheduled
     };
-  }, [items]);
+  }, [checkedItems, items]);
 
   const { formatMessage } = useIntl();
 

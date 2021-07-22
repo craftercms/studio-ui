@@ -35,7 +35,7 @@ import TextFieldWithMax from '../../../components/Controls/TextFieldWithMax';
 import GlobalState from '../../../models/GlobalState';
 import FormLabel from '@material-ui/core/FormLabel';
 import { useSelection } from '../../../utils/hooks/useSelection';
-import FormHelperText from '@material-ui/core/FormHelperText';
+import { Alert } from '@material-ui/lab';
 
 const messages = defineMessages({
   emailLabel: {
@@ -145,8 +145,11 @@ const useStyles = makeStyles((theme) =>
     selectIcon: {
       right: '12px'
     },
-    mixedWarningMessage: {
-      marginLeft: '14px'
+    mixedDatesWarningMessage: {
+      marginBottom: '10px'
+    },
+    mixedTargetsWarningMessage: {
+      marginTop: '10px'
     }
   })
 );
@@ -263,6 +266,14 @@ function PublishForm(props: PublishFormProps) {
           {formatMessage(messages.scheduling)}
         </FormLabel>
         <RadioGroup className={classes.radioGroup} value={inputs.scheduling} onChange={handleInputChange('scheduling')}>
+          {mixedPublishingDates && (
+            <Alert severity="warning" className={classes.mixedDatesWarningMessage}>
+              <FormattedMessage
+                id="publishForm.mixedPublishingDates"
+                defaultMessage="Items have mixed publishing date/time schedules."
+              />
+            </Alert>
+          )}
           <FormControlLabel
             value="now"
             control={<Radio color="primary" className={classes.radioInput} />}
@@ -281,14 +292,6 @@ function PublishForm(props: PublishFormProps) {
             }}
             disabled={disabled}
           />
-          {mixedPublishingDates && (
-            <FormHelperText error={true} className={classes.mixedWarningMessage}>
-              <FormattedMessage
-                id="publishForm.mixedPublishingDates"
-                defaultMessage="Items have mixed publishing date/time schedules."
-              />
-            </FormHelperText>
-          )}
         </RadioGroup>
         <Collapse
           in={inputs.scheduling === 'custom'}
@@ -357,12 +360,12 @@ function PublishForm(props: PublishFormProps) {
             </div>
           ))}
         {mixedPublishingTargets && (
-          <FormHelperText error={true}>
+          <Alert severity="warning" className={classes.mixedTargetsWarningMessage}>
             <FormattedMessage
               id="publishForm.mixedPublishingTargets"
               defaultMessage="Items have mixed publishing targets."
             />
-          </FormHelperText>
+          </Alert>
         )}
       </FormControl>
 
