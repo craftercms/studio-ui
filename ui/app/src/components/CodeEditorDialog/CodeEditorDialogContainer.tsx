@@ -123,10 +123,12 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
   useEffect(() => {
     if (item && content === null) {
       setLoading(true);
-      fetchContentXML(site, item.path, { ...(!item.lockOwner && { lock: true }) }).subscribe((xml) => {
+      fetchContentXML(site, item.path, { ...(!item.lockOwner && { lock: !readonly }) }).subscribe((xml) => {
         setContent(xml);
         setLoading(false);
-        dispatch(localItemLock({ path: item.path, username: user.username }));
+        if (!readonly) {
+          dispatch(localItemLock({ path: item.path, username: user.username }));
+        }
       });
     }
   }, [site, item, setContent, content, dispatch, user.username]);
