@@ -1071,3 +1071,9 @@ export function fetchLegacyItemsTree(
     })}`
   ).pipe(pluck('response', 'item'), catchError(errorSelectorApi1));
 }
+
+export function fetchContentByCommitId(site: string, path: string, commitId: string) {
+  return get(`/studio/api/2/content/get_content_by_commit_id?siteId=${site}&path=${path}&commitId=${commitId}`).pipe(
+    pluck('response', 'content')
+  );
+}

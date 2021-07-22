@@ -14,7 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Box } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Paper from '@material-ui/core/Paper';
 import React, { useState } from 'react';
 import LauncherGlobalNav from '../LauncherGlobalNav';
 import ResizeableDrawer from '../../modules/Preview/ResizeableDrawer';
@@ -55,7 +56,7 @@ export default function GlobalApp(props: GlobalAppProps) {
   const [{ openSidebar }] = useGlobalAppState();
 
   return (
-    <section className={classes.root}>
+    <Paper className={classes.root}>
       <ResizeableDrawer
         classes={{ drawerPaper: classes.drawerPaper, drawerBody: classes.drawerBody }}
         open={openSidebar}
@@ -153,6 +154,6 @@ export default function GlobalApp(props: GlobalAppProps) {
           />
         </Switch>
       </Box>
-    </section>
+    </Paper>
   );
 }
