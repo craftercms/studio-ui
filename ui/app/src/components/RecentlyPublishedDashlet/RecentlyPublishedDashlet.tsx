@@ -24,7 +24,7 @@ import { FormattedMessage } from 'react-intl';
 import Button from '@material-ui/core/Button';
 import MenuItem from '@material-ui/core/MenuItem';
 import { DetailedItem } from '../../models/Item';
-import { parseLegacyItemToDetailedItem } from '../../utils/content';
+import { getNumOfMenuOptionsForItem, getSystemTypeFromPath, parseLegacyItemToDetailedItem } from '../../utils/content';
 import LookupTable from '../../models/LookupTable';
 import Dashlet from '../Dashlet';
 import useStyles from './styles';
@@ -38,14 +38,10 @@ import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import { useSpreadState } from '../../utils/hooks/useSpreadState';
 import { useLocale } from '../../utils/hooks/useLocale';
 import { getStoredDashboardPreferences, setStoredDashboardPreferences } from '../../utils/state';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import GlobalState from '../../models/GlobalState';
-
-export interface RecentlyPublishedWidgetProps {
-  selectedLookup: LookupTable<boolean>;
-  onItemChecked(paths: string[], forceChecked?: boolean): void;
-  onItemMenuClick(event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, item: DetailedItem): void;
-}
+import { completeDetailedItem } from '../../state/actions/content';
+import { showItemMegaMenu } from '../../state/actions/dialogs';
 
 export interface DashboardItem {
   label: string;
@@ -58,8 +54,7 @@ const dashletInitialPreferences: DashboardPreferences = {
   expanded: true
 };
 
-export default function RecentlyPublishedDashlet(props: RecentlyPublishedWidgetProps) {
-  const { selectedLookup, onItemChecked, onItemMenuClick } = props;
+export default function RecentlyPublishedDashlet() {
   const [fetchingHistory, setFetchingHistory] = useState(false);
   const [errorHistory, setErrorHistory] = useState<ApiResponse>();
   const [parentItems, setParentItems] = useState<DashboardItem[]>();
@@ -73,18 +68,11 @@ export default function RecentlyPublishedDashlet(props: RecentlyPublishedWidgetP
   const [expandedItems, setExpandedItems] = useSpreadState<LookupTable<boolean>>({});
   const localeBranch = useLocale();
   const classes = useStyles();
+  const dispatch = useDispatch();
 
   const allCollapsed = useMemo(() => Object.keys(expandedItems).every((key) => !Boolean(expandedItems[key])), [
     expandedItems
   ]);
-  const isAllChecked = useMemo(() => !Object.keys(itemsLookup).some((path) => !selectedLookup[path]), [
-    itemsLookup,
-    selectedLookup
-  ]);
-  const isIndeterminate = useMemo(
-    () => Object.keys(itemsLookup).some((path) => selectedLookup[path]) && !isAllChecked,
-    [itemsLookup, selectedLookup, isAllChecked]
-  );
 
   const toggleCollapseAllItems = useCallback(
     (documents, expanded) => {
@@ -120,12 +108,6 @@ export default function RecentlyPublishedDashlet(props: RecentlyPublishedWidgetP
     toggleCollapseAllItems(parentItems, allCollapsed);
   };
 
-  const toggleSelectAllItems = () => {
-    const checkedPaths = [];
-    Object.keys(itemsLookup).forEach((path) => checkedPaths.push(path));
-    onItemChecked(checkedPaths, !isAllChecked);
-  };
-
   const fetchHistory = useCallback(() => {
     setFetchingHistory(true);
     fetchLegacyDeploymentHistory(siteId, 'eventDate', false, 30, preferences.numItems, preferences.filterBy).subscribe(
@@ -158,7 +140,7 @@ export default function RecentlyPublishedDashlet(props: RecentlyPublishedWidgetP
         setFetchingHistory(false);
       }
     );
-  }, [siteId, preferences, toggleCollapseAllItems, setItemsLookup]);
+  }, [siteId, preferences.numItems, preferences.filterBy, toggleCollapseAllItems, setItemsLookup]);
 
   useEffect(() => {
     fetchHistory();
@@ -201,6 +183,22 @@ export default function RecentlyPublishedDashlet(props: RecentlyPublishedWidgetP
       errorSelector: () => errorHistory
     }
   );
+
+  const onItemMenuClick = (event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, item: DetailedItem) => {
+    const path = item.path;
+    dispatch(completeDetailedItem({ path }));
+    dispatch(
+      showItemMegaMenu({
+        path,
+        anchorReference: 'anchorPosition',
+        anchorPosition: { top: event.clientY, left: event.clientX },
+        numOfLoaderItems: getNumOfMenuOptionsForItem({
+          path: item.path,
+          systemType: getSystemTypeFromPath(item.path)
+        } as DetailedItem)
+      })
+    );
+  };
 
   return (
     <Dashlet
@@ -285,11 +283,6 @@ export default function RecentlyPublishedDashlet(props: RecentlyPublishedWidgetP
           expandedItems={expandedItems}
           setExpandedItems={setExpandedItems}
           onItemMenuClick={onItemMenuClick}
-          selectedItems={selectedLookup}
-          onItemChecked={onItemChecked}
-          onClickSelectAll={toggleSelectAllItems}
-          isAllChecked={isAllChecked}
-          isIndeterminate={isIndeterminate}
         />
       </SuspenseWithEmptyState>
     </Dashlet>

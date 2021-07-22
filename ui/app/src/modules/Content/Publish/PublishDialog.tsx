@@ -44,6 +44,7 @@ import { usePermissionsBySite } from '../../../utils/hooks/usePermissionsBySite'
 import { useLogicResource } from '../../../utils/hooks/useLogicResource';
 import { useUnmount } from '../../../utils/hooks/useUnmount';
 import { useSpreadState } from '../../../utils/hooks/useSpreadState';
+import { createPresenceTable } from '../../../utils/array';
 
 // region Typings
 
@@ -179,13 +180,6 @@ const translations = defineMessages({
       'Hard dependencies are automatically submitted with the main items. You may choose whether to submit or not soft dependencies'
   }
 });
-
-export const createCheckedItems: <T extends BaseItem = BaseItem>(items: T[]) => LookupTable<boolean> = (items) => {
-  return (items || []).reduce((table: LookupTable<boolean>, item) => {
-    table[item.path] = true;
-    return table;
-  }, {});
-};
 
 export const onClickSetChecked = (e: any, item: any, setChecked: Function, checked: any) => {
   e.stopPropagation();
@@ -539,7 +533,7 @@ function PublishDialogWrapper(props: PublishDialogProps) {
 
   useEffect(() => {
     getPublishingChannels(() => {
-      setCheckedItems(createCheckedItems(items));
+      setCheckedItems(createPresenceTable(items, true, (item) => item.path));
     });
   }, [getPublishingChannels, items]);
 

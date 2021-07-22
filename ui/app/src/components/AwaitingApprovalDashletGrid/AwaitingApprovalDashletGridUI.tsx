@@ -180,7 +180,11 @@ export default function AwaitingApprovalDashletGridUI(props: AwaitingApprovalDas
                                     )
                                   ) : (
                                     <Typography variant="caption" color="textSecondary">
-                                      <FormattedMessage id="words.unpublished" defaultMessage="Unpublished" />
+                                      {publishingTargetLookup[itemsLookup[path].path] ? (
+                                        <FormattedMessage id="words.now" defaultMessage="Now" />
+                                      ) : (
+                                        <FormattedMessage id="words.unpublished" defaultMessage="Unpublished" />
+                                      )}
                                     </Typography>
                                   )}
                                 </GlobalAppGridCell>

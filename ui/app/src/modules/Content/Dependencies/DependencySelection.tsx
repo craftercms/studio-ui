@@ -27,12 +27,13 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
-import { createCheckedItems, onClickSetChecked, selectAllDeps, updateCheckedList } from '../Publish/PublishDialog';
+import { onClickSetChecked, selectAllDeps, updateCheckedList } from '../Publish/PublishDialog';
 import Button from '@material-ui/core/Button';
 import clsx from 'clsx';
 import { useSelection } from '../../../utils/hooks/useSelection';
 import { useActiveSiteId } from '../../../utils/hooks/useActiveSiteId';
 import LookupTable from '../../../models/LookupTable';
+import { createPresenceTable } from '../../../utils/array';
 
 interface DependencySelectionProps<T extends BaseItem = BaseItem> {
   items: T[];
@@ -246,7 +247,7 @@ interface DependencySelectionDeleteProps {
 export function DependencySelectionDelete(props: DependencySelectionDeleteProps) {
   const classes = useStyles({});
   const { items, resultItems, onChange, onEditDependency } = props;
-  const [checked, _setChecked] = useState<any>(createCheckedItems(items));
+  const [checked, _setChecked] = useState<any>(createPresenceTable(items, true, (item) => item.path));
   const siteId = useActiveSiteId();
   const authoringBase = useSelection<string>((state) => state.env.authoringBase);
 
