@@ -14,11 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './RecentActivityDashlet';
+import { defineMessages } from 'react-intl';
 
-export * from './RecentActivityDashlet';
+export const translations = defineMessages({
+  clear: {
+    id: 'awaitingApprovalDashlet.clear',
+    defaultMessage: 'Clear selected'
+  }
+});
 
-export * from '../RecentActivityDashletGrid/RecentActivityDashletGridUI';
-
-export * from '../RecentActivityDashletGrid/RecentActivityDashletUISkeleton';
-export { useDetailedItems } from '../../utils/hooks/useDetailedItems';
+export default translations;

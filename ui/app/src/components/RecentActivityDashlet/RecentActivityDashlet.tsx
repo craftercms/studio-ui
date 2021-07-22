@@ -43,10 +43,11 @@ import { getStoredDashboardPreferences, setStoredDashboardPreferences } from '..
 import { createPresenceTable } from '../../utils/array';
 import { completeDetailedItem } from '../../state/actions/content';
 import { showItemMegaMenu } from '../../state/actions/dialogs';
-import { itemActionDispatcher } from '../../utils/itemActions';
+import { generateMultipleItemOptions, generateSingleItemOptions, itemActionDispatcher } from '../../utils/itemActions';
 import { useEnv } from '../../utils/hooks/useEnv';
-import ActionsBar from '../ActionsBar';
-import translations from '../AwaitingApprovalDashlet/translations';
+import ActionsBar, { Action } from '../ActionsBar';
+import { useDetailedItems } from '../../utils/hooks/useDetailedItems';
+import translations from './translations';
 
 const dashletInitialPreferences: DashboardPreferences = {
   filterBy: 'page',
@@ -54,6 +55,17 @@ const dashletInitialPreferences: DashboardPreferences = {
   expanded: true,
   excludeLiveItems: false
 };
+
+const actionsToBeShown: AllItemActions[] = [
+  'edit',
+  'delete',
+  'publish',
+  'rejectPublish',
+  'duplicate',
+  'duplicateAsset',
+  'dependencies',
+  'history'
+];
 
 export default function RecentActivityDashlet() {
   const [fetchingActivity, setFetchingActivity] = useState(false);
@@ -74,6 +86,7 @@ export default function RecentActivityDashlet() {
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const { authoringBase } = useEnv();
+  const { itemsByPath, isFetching } = useDetailedItems(Object.keys(selectedLookup));
 
   const isAllChecked = useMemo(() => !items.some((item) => !selectedLookup[item.path]), [items, selectedLookup]);
   const isIndeterminate = useMemo(() => items.some((item) => selectedLookup[item.path] && !isAllChecked), [
@@ -220,6 +233,30 @@ export default function RecentActivityDashlet() {
     }
   };
 
+  const selectionOptions = useMemo(() => {
+    const selected = Object.keys(selectedLookup).filter((path) => selectedLookup[path]);
+    if (selected.length === 0) {
+      return null;
+    } else if (selected.length) {
+      if (selected.length === 1) {
+        const path = selected[0];
+        const item = itemsByPath[path];
+        return generateSingleItemOptions(item, formatMessage, { includeOnly: actionsToBeShown }).flat();
+      } else {
+        let items = [];
+        selected.forEach((itemPath) => {
+          const item = itemsByPath[itemPath];
+          if (item) {
+            items.push(item);
+          }
+        });
+        return generateMultipleItemOptions(items, formatMessage).filter((option) =>
+          actionsToBeShown.includes(option.id as AllItemActions)
+        );
+      }
+    }
+  }, [formatMessage, itemsByPath, selectedLookup]);
+
   return (
     <Dashlet
       title={
@@ -291,13 +328,11 @@ export default function RecentActivityDashlet() {
               root: classes.actionsBarRoot,
               checkbox: classes.actionsBarCheckbox
             }}
-            options={[
-              { id: 'approvePublish', label: formatMessage(translations.publish, { count: selectedItemsLength }) },
-              { id: 'rejectPublish', label: formatMessage(translations.reject, { count: selectedItemsLength }) },
-              { id: 'clear', label: formatMessage(translations.clear) }
-            ]}
+            options={selectionOptions?.concat([{ id: 'clear', label: formatMessage(translations.clear) }]) as Action[]}
             isIndeterminate={isIndeterminate}
             isChecked={isAllChecked}
+            isLoading={isFetching}
+            numOfSkeletonItems={selectedItemsLength > 1 ? 3 : 7}
             onOptionClicked={onActionBarOptionClicked}
             toggleSelectAll={onToggleCheckedAll}
           />
