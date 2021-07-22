@@ -805,10 +805,16 @@ export const itemActionDispatcher = ({
     case 'schedulePublish':
     case 'requestPublish': {
       const items = Array.isArray(item) ? item : [item];
+      const schedulingMap = {
+        approvePublish: null,
+        schedulePublish: 'custom',
+        requestPublish: 'now',
+        publish: 'now'
+      };
       dispatch(
         showPublishDialog({
           items,
-          scheduling: option === 'schedulePublish' ? 'custom' : 'now',
+          scheduling: schedulingMap[option],
           onSuccess: batchActions([
             showPublishItemSuccessNotification(),
             ...items.map((item) => reloadDetailedItem({ path: item.path })),

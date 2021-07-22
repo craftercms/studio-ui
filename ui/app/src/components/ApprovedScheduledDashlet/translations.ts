@@ -21,6 +21,10 @@ export const translations = defineMessages({
     id: 'dashboardItemsScheduled.publish',
     defaultMessage: 'Publish ({count})'
   },
+  schedule: {
+    id: 'dashboardItemsScheduled.schedule',
+    defaultMessage: 'Schedule ({count})'
+  },
   reject: {
     id: 'dashboardItemsScheduled.reject',
     defaultMessage: 'Reject ({count})'

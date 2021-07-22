@@ -47,7 +47,7 @@ import { showItemMegaMenu } from '../../state/actions/dialogs';
 import { itemActionDispatcher } from '../../utils/itemActions';
 import { useEnv } from '../../utils/hooks/useEnv';
 import ActionsBar from '../ActionsBar';
-import translations from '../AwaitingApprovalDashlet/translations';
+import translations from './translations';
 
 const dashletInitialPreferences: DashboardPreferences = {
   filterBy: 'all',
@@ -127,7 +127,7 @@ export default function ApprovedScheduledDashlet() {
         setError(response);
       }
     );
-  }, [setExpandedLookup, site, preferences]);
+  }, [setExpandedLookup, site, preferences.filterBy]);
 
   useEffect(() => {
     refresh();
@@ -254,6 +254,7 @@ export default function ApprovedScheduledDashlet() {
       }
       expanded={preferences.expanded}
       onToggleExpanded={() => setPreferences({ expanded: !preferences.expanded })}
+      refreshDisabled={isFetching}
       onRefresh={refresh}
       headerRightSection={
         <>
@@ -298,8 +299,9 @@ export default function ApprovedScheduledDashlet() {
               checkbox: classes.actionsBarCheckbox
             }}
             options={[
-              { id: 'publish', label: formatMessage(translations.publish, { count: selectedItemsLength }) },
               { id: 'rejectPublish', label: formatMessage(translations.reject, { count: selectedItemsLength }) },
+              { id: 'schedulePublish', label: formatMessage(translations.schedule, { count: selectedItemsLength }) },
+              { id: 'publish', label: formatMessage(translations.publish, { count: selectedItemsLength }) },
               { id: 'clear', label: formatMessage(translations.clear) }
             ]}
             isIndeterminate={isIndeterminate}

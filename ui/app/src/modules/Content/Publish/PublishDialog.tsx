@@ -114,6 +114,7 @@ interface PublishDialogUIProps {
 interface PublishDialogBaseProps {
   open: boolean;
   items?: DetailedItem[];
+  // if null it means the dialog should determinate which one to use
   scheduling?: 'now' | 'custom';
 }
 
@@ -386,7 +387,7 @@ function PublishDialogUI(props: PublishDialogUIProps) {
         </SecondaryButton>
         <PrimaryButton
           onClick={handleSubmit}
-          disabled={submitDisabled || apiState.submitting}
+          disabled={submitDisabled || apiState.submitting || dialog.environment === ''}
           loading={apiState.submitting}
         >
           {submitLabel}
@@ -411,7 +412,7 @@ export default function PublishDialog(props: PublishDialogProps) {
 }
 
 function PublishDialogWrapper(props: PublishDialogProps) {
-  const { items, scheduling = 'now', onDismiss, onSuccess } = props;
+  const { items, scheduling, onDismiss, onSuccess } = props;
   const [dialog, setDialog] = useSpreadState<InternalDialogState>({ ...dialogInitialState, scheduling });
   const [publishingChannels, setPublishingChannels] = useState<{ name: string }[]>(null);
   const [publishingChannelsStatus, setPublishingChannelsStatus] = useState('Loading');
@@ -450,8 +451,8 @@ function PublishDialogWrapper(props: PublishDialogProps) {
       if (prev.live.dateScheduled !== current.live.dateScheduled) {
         mixedPublishingDates = true;
       }
-      if (dateScheduled === null && prev.live.dateScheduled) {
-        dateScheduled = prev.live.dateScheduled;
+      if (dateScheduled === null) {
+        dateScheduled = prev.live.dateScheduled ? prev.live.dateScheduled : current.live.dateScheduled;
       }
       if (environment === '' && mixedPublishingTargets === false) {
         environment = prev.stateMap.submittedToLive ? 'live' : prev.stateMap.submittedToStaging ? 'staging' : '';
@@ -546,14 +547,19 @@ function PublishDialogWrapper(props: PublishDialogProps) {
   }, [scheduling, setDialog]);
 
   useEffect(() => {
-    if (dateScheduled) {
+    if (dateScheduled && scheduling !== 'now') {
       setDialog({
         scheduling: 'custom',
         environment,
         scheduledDateTime: moment(dateScheduled).format()
       });
+    } else if (dateScheduled === null && scheduling === null) {
+      setDialog({
+        scheduling: 'now',
+        environment
+      });
     }
-  }, [dateScheduled, mixedPublishingTargets, environment, setDialog]);
+  }, [dateScheduled, environment, setDialog, scheduling]);
 
   useEffect(() => {
     if (!apiState.submitting && Object.values(checkedItems).filter(Boolean).length > 0 && publishingChannels?.length) {
