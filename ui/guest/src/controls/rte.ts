@@ -40,9 +40,10 @@ export function initTinyMCE(
     $(record.element).css('display', 'inline-block');
   }
 
+  console.log('type', type);
+
   const settings = {
     mode: 'none',
-    target: record.element,
     // For some reason this is not working.
     // body_class: 'craftercms-rich-text-editor',
     plugins,
@@ -50,9 +51,11 @@ export function initTinyMCE(
     paste_data_images: type === 'html',
     toolbar: type === 'html',
     menubar: false,
-    inline: true,
+    ...rteConfig,
     base_url: '/studio/static-assets/modules/editors/tinymce/v5/tinymce',
     suffix: '.min',
+    target: record.element,
+    inline: true,
     setup(editor: Editor) {
       editor.on('init', function() {
         let changed = false;
@@ -155,8 +158,7 @@ export function initTinyMCE(
           e.preventDefault();
         }
       });
-    },
-    ...rteConfig
+    }
   };
 
   window.tinymce.init(settings);
