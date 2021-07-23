@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { BaseItem, SandboxItem } from '../../../models/Item';
+import { DetailedItem, SandboxItem } from '../../../models/Item';
 import { createStyles, makeStyles, withStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { FormattedMessage } from 'react-intl';
@@ -34,9 +34,14 @@ import { useSelection } from '../../../utils/hooks/useSelection';
 import { useActiveSiteId } from '../../../utils/hooks/useActiveSiteId';
 import LookupTable from '../../../models/LookupTable';
 import { createPresenceTable } from '../../../utils/array';
+import PublishingTargetIcon from '@material-ui/icons/FiberManualRecordRounded';
+import ScheduledStateIcon from '@material-ui/icons/AccessTimeRounded';
+import palette from '../../../styles/palette';
+import { useLocale } from '../../../utils/hooks/useLocale';
+import { asLocalizedDateTime } from '../../../utils/datetime';
 
-interface DependencySelectionProps<T extends BaseItem = BaseItem> {
-  items: T[];
+interface DependencySelectionProps {
+  items?: DetailedItem[] | SandboxItem[];
   siteId?: string; // for dependencySelectionDelete
   onChange?: Function; // for dependencySelectionDelete
   checked: LookupTable<boolean>;
@@ -52,10 +57,10 @@ interface DependencySelectionProps<T extends BaseItem = BaseItem> {
   disabled?: boolean;
 }
 
-interface SelectionListProps<T extends BaseItem = BaseItem> {
+interface SelectionListProps {
   title: any;
   subtitle?: any;
-  items?: T[];
+  items?: DetailedItem[] | SandboxItem[];
   uris?: string[];
   onItemClicked?: Function;
   onSelectAllClicked?: Function;
@@ -141,6 +146,22 @@ const useStyles = makeStyles((theme) =>
       overflow: 'hidden',
       whiteSpace: 'nowrap',
       textOverflow: 'ellipsis'
+    },
+    publishingTargetIcon: {
+      fontSize: '1rem',
+      color: palette.gray.medium2,
+      margin: '0 5px'
+    },
+    publishingTargetLive: {
+      color: palette.green.main
+    },
+    publishingTargetStaged: {
+      color: palette.blue.main
+    },
+    stateScheduledIcon: {
+      fontSize: '1rem',
+      color: palette.green.main,
+      marginRight: '5px'
     }
   })
 );
@@ -208,8 +229,7 @@ export function DependencySelection(props: DependencySelectionProps) {
             <span className={classes.circularProgressText}>
               <FormattedMessage
                 id="publishDialog.loadingDependencies"
-                defaultMessage="Loading Dependencies, please wait{ellipsis}"
-                values={{ ellipsis: '&hellip;' }}
+                defaultMessage="Loading Dependencies, please wait..."
               />
             </span>
           </div>
@@ -326,6 +346,7 @@ function SelectionList(props: SelectionListProps) {
   } = props;
 
   const classes = useStyles({});
+  const locale = useLocale();
 
   return (
     <>
@@ -352,7 +373,8 @@ function SelectionList(props: SelectionListProps) {
       </Box>
       {items && (
         <List className={classes.selectionList}>
-          {items.map((item) => {
+          {// @ts-ignore
+          items.map((item) => {
             const labelId = `checkbox-list-label-${item.path}`;
 
             return (
@@ -380,19 +402,65 @@ function SelectionList(props: SelectionListProps) {
                     />
                   </ListItemIcon>
                 )}
-                <ListItemText
-                  id={labelId}
-                  primary={<h4>{item.label}</h4>}
-                  primaryTypographyProps={{
-                    title: item.label,
-                    className: clsx(classes.listItemTitle, classes.overflowText)
-                  }}
-                  secondary={<React.Fragment>{item.path}</React.Fragment>}
-                  secondaryTypographyProps={{
-                    title: item.path,
-                    className: clsx(classes.listItemPath, classes.overflowText)
-                  }}
-                />
+                <ListItemText id={labelId}>
+                  <Typography variant="subtitle1">{item.label}</Typography>
+                  {item.live && (
+                    <Box display="flex" alignItems="center">
+                      <ScheduledStateIcon className={classes.stateScheduledIcon} />
+                      {item.live.dateScheduled ? (
+                        <Typography variant="body2" color="textSecondary">
+                          <FormattedMessage
+                            id="itemPublishingDate.scheduled"
+                            defaultMessage="Scheduled for {date}"
+                            values={{
+                              date: asLocalizedDateTime(
+                                item.live.dateScheduled,
+                                locale.localeCode,
+                                locale.dateTimeFormatOptions
+                              )
+                            }}
+                          />
+                        </Typography>
+                      ) : (
+                        <Typography variant="body2" color="textSecondary">
+                          <FormattedMessage id="itemPublishingDate.now" defaultMessage="Scheduled ASAP" />
+                        </Typography>
+                      )}
+                      {item.stateMap.submittedToLive ? (
+                        <>
+                          <PublishingTargetIcon
+                            className={clsx(classes.publishingTargetIcon, classes.publishingTargetLive)}
+                          />
+                          <Typography variant="body2" color="textSecondary">
+                            <FormattedMessage id="publishingTargetLive.live" defaultMessage="Submitted to live" />
+                          </Typography>
+                        </>
+                      ) : item.stateMap.submittedToStaging ? (
+                        <>
+                          <PublishingTargetIcon
+                            className={clsx(classes.publishingTargetIcon, classes.publishingTargetStaged)}
+                          />
+                          <Typography variant="body2" color="textSecondary">
+                            <FormattedMessage
+                              id="publishingTargetStaged.staging"
+                              defaultMessage="Submitted to staging"
+                            />
+                          </Typography>
+                        </>
+                      ) : (
+                        <>
+                          <PublishingTargetIcon className={classes.publishingTargetIcon} />
+                          <Typography variant="body2" color="textSecondary">
+                            <FormattedMessage id="words.unpublished" defaultMessage="Unpublished" />
+                          </Typography>
+                        </>
+                      )}
+                    </Box>
+                  )}
+                  <Typography variant="body2" color="textSecondary">
+                    {item.path}
+                  </Typography>
+                </ListItemText>
               </ListItem>
             );
           })}
