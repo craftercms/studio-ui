@@ -108,6 +108,7 @@ import React from 'react';
 import { previewItem } from '../state/actions/preview';
 import { createPresenceTable } from './array';
 import { fetchPublishingStatus } from '../state/actions/publishingStatus';
+import { Clipboard } from '../models/GlobalState';
 
 export type ContextMenuOptionDescriptor<ID extends string = string> = {
   id: ID;
@@ -471,7 +472,7 @@ export const itemActionDispatcher = ({
   authoringBase: string;
   dispatch;
   formatMessage;
-  clipboard?;
+  clipboard?: Clipboard;
   onActionSuccess?: any;
   event?: React.MouseEvent<Element, MouseEvent>;
 }) => {
