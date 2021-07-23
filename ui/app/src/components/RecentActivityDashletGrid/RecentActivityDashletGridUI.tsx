@@ -36,6 +36,7 @@ import LookupTable from '../../models/LookupTable';
 import GlobalState from '../../models/GlobalState';
 import { asLocalizedDateTime } from '../../utils/datetime';
 import Tooltip from '@material-ui/core/Tooltip';
+import { getDatePublished, getDateScheduled } from '../../utils/detailedItem';
 
 export interface RecentActivityDashletGridUIProps {
   resource: Resource<DetailedItem[]>;
@@ -172,8 +173,15 @@ export default function RecentActivityDashletGridUI(props: RecentActivityDashlet
                 </Typography>
               </GlobalAppGridCell>
               <GlobalAppGridCell className="width20">
-                {item.live &&
-                  asLocalizedDateTime(item.live.datePublished, locale.localeCode, locale.dateTimeFormatOptions)}
+                {getDateScheduled(item) ? (
+                  asLocalizedDateTime(getDateScheduled(item), locale.localeCode, locale.dateTimeFormatOptions)
+                ) : getDatePublished(item) ? (
+                  asLocalizedDateTime(getDateScheduled(item), locale.localeCode, locale.dateTimeFormatOptions)
+                ) : (
+                  <Typography variant="caption" color="textSecondary">
+                    <FormattedMessage id="words.unpublished" defaultMessage="Unpublished" />
+                  </Typography>
+                )}
               </GlobalAppGridCell>
               <GlobalAppGridCell className="width15">{item.sandbox.modifier}</GlobalAppGridCell>
               <GlobalAppGridCell className="width20">

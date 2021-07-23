@@ -423,7 +423,7 @@ function SelectionList(props: SelectionListProps) {
                         </Typography>
                       ) : (
                         <Typography variant="body2" color="textSecondary">
-                          <FormattedMessage id="itemPublishingDate.now" defaultMessage="Scheduled ASAP" />
+                          <FormattedMessage id="itemPublishingDate.now" defaultMessage="Scheduled for ASAP" />
                         </Typography>
                       )}
                       {item.stateMap.submittedToLive ? (

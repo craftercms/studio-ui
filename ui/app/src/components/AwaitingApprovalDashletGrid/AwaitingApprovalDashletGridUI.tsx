@@ -40,6 +40,7 @@ import ExpandLessIcon from '@material-ui/icons/ExpandLessRounded';
 import { asLocalizedDateTime } from '../../utils/datetime';
 import Tooltip from '@material-ui/core/Tooltip';
 import { useLocale } from '../../utils/hooks/useLocale';
+import { getDateScheduled } from '../../utils/detailedItem';
 
 interface AwaitingApprovalDashletGridUIProps {
   resource: Resource<DashboardItem[]>;
@@ -164,9 +165,9 @@ export default function AwaitingApprovalDashletGridUI(props: AwaitingApprovalDas
                                 <GlobalAppGridCell
                                   className="width15"
                                   title={
-                                    itemsLookup[path].live.dateScheduled &&
+                                    getDateScheduled(itemsLookup[path]) &&
                                     asLocalizedDateTime(
-                                      itemsLookup[path].live.dateScheduled,
+                                      getDateScheduled(itemsLookup[path]),
                                       locale.localeCode,
                                       locale.dateTimeFormatOptions
                                     )

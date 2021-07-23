@@ -39,6 +39,7 @@ import clsx from 'clsx';
 import useStyles from './styles';
 import { asLocalizedDateTime } from '../../utils/datetime';
 import Tooltip from '@material-ui/core/Tooltip';
+import { getDatePublished } from '../../utils/detailedItem';
 
 export interface RecentlyPublishedWidgetUIProps {
   resource: Resource<DashboardItem[]>;
@@ -126,25 +127,21 @@ export default function RecentlyPublishedDashletUI(props: RecentlyPublishedWidge
                             </GlobalAppGridCell>
                             <GlobalAppGridCell className="width20">
                               {itemsLookup[path].stateMap.submittedToLive ? (
-                                <FormattedMessage id="words.live" defaultMessage="Live" />
+                                <FormattedMessage id="environment.live" defaultMessage="live" />
                               ) : (
-                                <FormattedMessage id="words.staging" defaultMessage="Staging" />
+                                <FormattedMessage id="environment.staging" defaultMessage="staging" />
                               )}
                             </GlobalAppGridCell>
                             <GlobalAppGridCell
                               className="width20 ellipsis"
                               title={asLocalizedDateTime(
-                                itemsLookup[path].stateMap.live
-                                  ? itemsLookup[path].live.datePublished
-                                  : itemsLookup[path].staging.datePublished,
+                                getDatePublished(itemsLookup[path]),
                                 localeBranch.localeCode,
                                 localeBranch.dateTimeFormatOptions
                               )}
                             >
                               {asLocalizedDateTime(
-                                itemsLookup[path].stateMap.live
-                                  ? itemsLookup[path].live.datePublished
-                                  : itemsLookup[path].staging.datePublished,
+                                getDatePublished(itemsLookup[path]),
                                 localeBranch.localeCode,
                                 localeBranch.dateTimeFormatOptions
                               )}
