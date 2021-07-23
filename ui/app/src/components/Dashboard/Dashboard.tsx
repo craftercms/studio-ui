@@ -43,6 +43,8 @@ import { useEnv } from '../../utils/hooks/useEnv';
 import { useActiveUser } from '../../utils/hooks/useActiveUser';
 import { useSpreadState } from '../../utils/hooks/useSpreadState';
 import { useSiteUIConfig } from '../../utils/hooks/useSiteUIConfig';
+import { initDashboardConfig } from '../../state/actions/dashboard';
+import { useDashboardState } from '../../utils/hooks/useDashboardState';
 
 interface DashboardAppProps {}
 
@@ -70,7 +72,8 @@ export default function Dashboard(props: DashboardAppProps) {
   const dispatch = useDispatch();
   const { authoringBase } = useEnv();
   const clipboard = useSelection((state) => state.content.clipboard);
-  const { dashboard } = useSiteUIConfig();
+  const uiConfig = useSiteUIConfig();
+  const dashboard = useDashboardState();
 
   const selectionOptions = useMemo(() => {
     const selected = Object.keys(selectedLookup).filter((path) => selectedLookup[path]);
@@ -169,6 +172,12 @@ export default function Dashboard(props: DashboardAppProps) {
       })
     );
   };
+
+  useEffect(() => {
+    if (uiConfig.xml && !dashboard) {
+      dispatch(initDashboardConfig({ configXml: uiConfig.xml }));
+    }
+  }, [uiConfig.xml, dashboard, dispatch]);
 
   // region Item Updates Propagation
   useEffect(() => {

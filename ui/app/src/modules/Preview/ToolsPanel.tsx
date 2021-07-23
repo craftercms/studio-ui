@@ -14,9 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { defineMessages, FormattedMessage } from 'react-intl';
-import { updateToolsPanelWidth } from '../../state/actions/preview';
+import { initToolsPanelConfig, updateToolsPanelWidth } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 import ResizeableDrawer from './ResizeableDrawer';
 import { renderWidgets, WidgetDescriptor } from '../../components/Widget';
@@ -60,13 +60,19 @@ export default function ToolsPanel() {
   const dispatch = useDispatch();
   const site = useActiveSiteId();
   const classes = useStyles();
-  const { showToolsPanel } = usePreviewState();
+  const { showToolsPanel, toolsPanel } = usePreviewState();
   const toolsPanelWidth = useSelection<number>((state) => state.preview.toolsPanelWidth);
   const pages = useSelection<WidgetDescriptor[]>((state) => state.preview.toolsPanelPageStack);
   const uiConfig = useSiteUIConfig();
   const baseUrl = useSelection<string>((state) => state.env.authoringBase);
 
-  const resource = useLogicResource<WidgetDescriptor[], WidgetDescriptor[]>(uiConfig.preview.toolsPanel.widgets, {
+  useEffect(() => {
+    if (uiConfig.xml && !toolsPanel.widgets) {
+      dispatch(initToolsPanelConfig({ configXml: uiConfig.xml })); // TODO: stored: localStorage.getItem
+    }
+  }, [uiConfig.xml, toolsPanel.widgets, dispatch]);
+
+  const resource = useLogicResource<WidgetDescriptor[], WidgetDescriptor[]>(toolsPanel.widgets, {
     errorSelector: (source) => uiConfig.error,
     resultSelector: (source) => source,
     shouldReject: (source) => false,

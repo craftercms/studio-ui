@@ -166,6 +166,23 @@ export interface GlobalState {
       selectedContentType: string;
       byId: LookupTable<ContentTypeDropTarget>;
     };
+    toolsPanel: {
+      widgets: WidgetDescriptor[];
+    };
+    toolbar: {
+      leftSection: {
+        widgets: WidgetDescriptor[];
+      };
+      middleSection: {
+        widgets: WidgetDescriptor[];
+      };
+      rightSection: {
+        widgets: WidgetDescriptor[];
+      };
+    };
+    pageBuilderPanel: {
+      widgets: WidgetDescriptor[];
+    };
   };
   previewNavigation: {
     currentUrlPath: string;
@@ -266,12 +283,30 @@ export interface GlobalState {
       submissionCommentMaxLength: number;
     };
     references: LookupTable<LookupTable<any>>;
+    xml: string;
   };
   pathNavigator: {
     [id: string]: PathNavigatorStateProps;
   };
   pathNavigatorTree: {
     [id: string]: PathNavigatorTreeStateProps;
+  };
+  launcher: {
+    widgets: WidgetDescriptor[];
+    /**
+     * Whether to render the global nav before or after
+     * the additional widgets coming from configuration
+     **/
+    globalNavigationPosition?: 'before' | 'after';
+    siteCardMenuLinks: Array<{
+      title: TranslationOrText;
+      systemLinkId: SystemLinkId;
+      icon?: SystemIconDescriptor;
+      roles?: string[];
+    }>;
+  };
+  dashboard: {
+    widgets: WidgetDescriptor[];
   };
 }
 

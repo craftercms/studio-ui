@@ -38,6 +38,9 @@ import {
   GUEST_CHECK_OUT,
   guestModelUpdated,
   guestPathUpdated,
+  INIT_PAGE_BUILDER_PANEL_CONFIG,
+  INIT_TOOLBAR_CONFIG,
+  INIT_TOOLS_PANEL_CONFIG,
   OPEN_TOOLS,
   popPageBuilderPanelPage,
   popToolsPanelPage,
@@ -58,7 +61,7 @@ import {
   updatePageBuilderPanelWidth,
   updateToolsPanelWidth
 } from '../actions/preview';
-import { createEntityState, createLookupTable, nnou, nou } from '../../utils/object';
+import { applyDeserializedXMLTransforms, createEntityState, createLookupTable, nnou, nou } from '../../utils/object';
 import {
   ComponentsContentTypeParams,
   ContentInstancePage,
@@ -71,6 +74,7 @@ import { changeSite } from './sites';
 import { envInitialState } from './env';
 import { fetchGlobalPropertiesComplete } from '../actions/user';
 import { storeInitialized } from '../actions/system';
+import { deserialize, fromString } from '../../utils/xml';
 
 const audiencesPanelInitialState = {
   isFetching: null,
@@ -161,6 +165,17 @@ const reducer = createReducer<GlobalState['preview']>(
     dropTargets: {
       selectedContentType: null,
       byId: null
+    },
+    toolsPanel: {
+      widgets: null
+    },
+    toolbar: {
+      leftSection: null,
+      middleSection: null,
+      rightSection: null
+    },
+    pageBuilderPanel: {
+      widgets: null
     }
   },
   {
@@ -550,7 +565,124 @@ const reducer = createReducer<GlobalState['preview']>(
     [fetchGlobalPropertiesComplete.type]: (state, { payload }) => ({
       ...state,
       previewChoice: { ...state.previewChoice, ...JSON.parse(payload.previewChoice ?? '{}') }
-    })
+    }),
+    [INIT_TOOLS_PANEL_CONFIG]: (state, { payload }) => {
+      let toolsPanelConfig = {
+        widgets: [
+          {
+            id: 'craftercms.component.EmptyState',
+            uiKey: -1,
+            configuration: {
+              title: 'emptyUiConfigMessageTitle' /* messages.emptyUiConfigMessageTitle */,
+              subtitle: 'emptyUiConfigMessageSubtitle' /* messages.emptyUiConfigMessageSubtitle */
+            }
+          }
+        ]
+      };
+      const arrays = ['widgets', 'roles', 'excludes', 'devices', 'values', 'siteCardMenuLinks', 'tools'];
+      const lookupTables = ['fields'];
+      const renameTable = { permittedRoles: 'roles' };
+      const configDOM = fromString(payload.configXml);
+      const toolsPanelPages = configDOM.querySelector(
+        '[id="craftercms.components.ToolsPanel"] > configuration > widgets'
+      );
+      if (toolsPanelPages) {
+        // TODO: this uiKey thing will go to xmlPreprocessor
+        toolsPanelPages.querySelectorAll('widget').forEach((e, index) => e.setAttribute('uiKey', String(index)));
+        toolsPanelConfig = applyDeserializedXMLTransforms(deserialize(toolsPanelPages), {
+          arrays,
+          lookupTables,
+          renameTable
+        });
+      }
+
+      return {
+        ...state,
+        toolsPanel: toolsPanelConfig
+      };
+    },
+    [INIT_TOOLBAR_CONFIG]: (state, { payload }) => {
+      let toolbarConfig = {
+        leftSection: null,
+        middleSection: null,
+        rightSection: null
+      };
+      const arrays = ['widgets', 'roles', 'excludes', 'devices', 'values', 'siteCardMenuLinks', 'tools'];
+      const renameTable = { permittedRoles: 'roles' };
+      const configDOM = fromString(payload.configXml);
+      const toolbar = configDOM.querySelector('[id="craftercms.components.PreviewToolbar"] > configuration');
+
+      if (toolbar) {
+        const leftSection = toolbar.querySelector('leftSection > widgets');
+        if (leftSection) {
+          leftSection.querySelectorAll('widget').forEach((e, index) => e.setAttribute('uiKey', String(index)));
+          toolbarConfig.leftSection = applyDeserializedXMLTransforms(deserialize(leftSection), {
+            arrays,
+            renameTable
+          });
+        }
+        const middleSection = toolbar.querySelector('middleSection > widgets');
+        if (middleSection) {
+          middleSection.querySelectorAll('widget').forEach((e, index) => e.setAttribute('uiKey', String(index)));
+          toolbarConfig.middleSection = applyDeserializedXMLTransforms(deserialize(middleSection), {
+            arrays,
+            renameTable
+          });
+        }
+        const rightSection = toolbar.querySelector('rightSection > widgets');
+        if (rightSection) {
+          rightSection.querySelectorAll('widget').forEach((e, index) => e.setAttribute('uiKey', String(index)));
+          toolbarConfig.rightSection = applyDeserializedXMLTransforms(deserialize(rightSection), {
+            arrays,
+            renameTable
+          });
+        }
+      }
+
+      return {
+        ...state,
+        toolbar: toolbarConfig
+      };
+    },
+    [INIT_PAGE_BUILDER_PANEL_CONFIG]: (state, { payload }) => {
+      let pageBuilderPanelConfig = {
+        widgets: [
+          {
+            id: 'craftercms.component.EmptyState',
+            uiKey: -1,
+            configuration: {
+              title: 'emptyUiConfigMessageTitle' /* messages.emptyUiConfigMessageTitle */,
+              subtitle: 'emptyUiConfigMessageSubtitle' /* messages.emptyUiConfigMessageSubtitle */
+            }
+          }
+        ]
+      };
+      const arrays = ['widgets', 'roles', 'excludes', 'devices', 'values', 'siteCardMenuLinks', 'tools'];
+      const renameTable = { permittedRoles: 'roles' };
+      const configDOM = fromString(payload.configXml);
+      const pageBuilderPanel = configDOM.querySelector(
+        '[id="craftercms.components.PageBuilderPanel"] > configuration > widgets'
+      );
+      if (pageBuilderPanel) {
+        const lookupTables = ['fields'];
+        pageBuilderPanel.querySelectorAll('widget').forEach((e, index) => {
+          e.setAttribute('uiKey', String(index));
+          if (e.getAttribute('id') === 'craftercms.components.ToolsPanelPageButton') {
+            e.querySelector(':scope > configuration')?.setAttribute('target', 'pageBuilderPanel');
+          }
+        });
+        pageBuilderPanelConfig = applyDeserializedXMLTransforms(deserialize(pageBuilderPanel), {
+          arrays,
+          renameTable,
+          lookupTables
+        });
+      }
+
+      return {
+        ...state,
+        pageBuilderPanel: pageBuilderPanelConfig
+      };
+    }
   }
 );
 

@@ -111,6 +111,9 @@ export const LEGACY_CODE_EDITOR_SUCCESS = 'LEGACY_CODE_EDITOR_SUCCESS';
 export const LEGACY_CODE_EDITOR_CLOSE = 'LEGACY_CODE_EDITOR_CLOSE';
 export const LEGACY_CODE_EDITOR_PENDING_CHANGES = 'LEGACY_CODE_EDITOR_PENDING_CHANGES';
 export const LEGACY_CODE_EDITOR_RENDERED = 'LEGACY_CODE_EDITOR_RENDERED';
+export const INIT_TOOLS_PANEL_CONFIG = 'INIT_TOOLS_PANEL_CONFIG';
+export const INIT_TOOLBAR_CONFIG = 'INIT_TOOLBAR_CONFIG';
+export const INIT_PAGE_BUILDER_PANEL_CONFIG = 'INIT_PAGE_BUILDER_PANEL_CONFIG';
 
 // endregion
 
@@ -283,6 +286,14 @@ export const previewItem = /*#__PURE__*/ createAction<{ item: DetailedItem; newT
 
 export const updatePageBuilderPanelWidth = /*#__PURE__#*/ createAction<{ width: number }>(
   'UPDATE_PAGE_BUILDER_PANEL_WIDTH'
+);
+
+export const initToolsPanelConfig = /*#__PURE__*/ createAction<{ configXml: string }>('INIT_TOOLS_PANEL_CONFIG');
+
+export const initToolbarConfig = /*#__PURE__*/ createAction<{ configXml: string }>('INIT_TOOLBAR_CONFIG');
+
+export const initPageBuilderPanelConfig = /*#__PURE__*/ createAction<{ configXml: string }>(
+  'INIT_PAGE_BUILDER_PANEL_CONFIG'
 );
 
 // endregion

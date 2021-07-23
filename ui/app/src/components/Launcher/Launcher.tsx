@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { Suspense, useMemo } from 'react';
+import React, { Suspense, useEffect, useMemo } from 'react';
 import { defineMessages, FormattedMessage, IntlShape, useIntl } from 'react-intl';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Popover from '@material-ui/core/Popover';
@@ -56,6 +56,8 @@ import { useSystemVersion } from '../../utils/hooks/useSystemVersion';
 import { useActiveUser } from '../../utils/hooks/useActiveUser';
 import { useSiteList } from '../../utils/hooks/useSiteList';
 import { useSiteUIConfig } from '../../utils/hooks/useSiteUIConfig';
+import { initLauncherConfig } from '../../state/actions/launcher';
+import { useLauncherState } from '../../utils/hooks/useLauncherState';
 
 export interface LauncherProps {
   open: boolean;
@@ -349,7 +351,8 @@ export default function Launcher(props: LauncherStateProps) {
   const { authoringBase } = useEnv();
   const { previewChoice } = usePreviewState();
   const { open, anchor: anchorSelector, sitesRailPosition = 'left', closeButtonPosition = 'right' } = props;
-  const { launcher } = useSiteUIConfig();
+  const uiConfig = useSiteUIConfig();
+  const launcher = useLauncherState();
   const siteCardMenuLinks = launcher?.siteCardMenuLinks;
   const widgets = launcher?.widgets;
   const globalNavigationPosition = launcher?.globalNavigationPosition ?? 'after';
@@ -379,6 +382,12 @@ export default function Launcher(props: LauncherStateProps) {
         : null,
     [siteCardMenuLinks, userRoles, formatMessage, authoringBase, previewChoice]
   );
+
+  useEffect(() => {
+    if (uiConfig.xml && !launcher) {
+      dispatch(initLauncherConfig({ configXml: uiConfig.xml })); // TODO: stored: localStorage.getItem('crafter.toolsPanel')
+    }
+  }, [uiConfig.xml, launcher, dispatch]);
 
   const onSiteCardClick = (site: string) => {
     if (previewChoice[site] === '2' && window.location.href.includes('/next/preview')) {

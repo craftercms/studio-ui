@@ -19,7 +19,8 @@ import { useActiveSiteId } from './useActiveSiteId';
 import { useDispatch } from 'react-redux';
 import { useSelection } from './useSelection';
 import { useEffect } from 'react';
-import { fetchSiteUiConfig } from '../../state/actions/configuration';
+import { fetchSiteUiConfig, fetchSiteUiConfig2Complete } from '../../state/actions/configuration';
+import { fetchSiteUiConfig2 } from '../../services/configuration';
 
 export function useSiteUIConfig(): GlobalState['uiConfig'] {
   const site = useActiveSiteId();
@@ -28,6 +29,9 @@ export function useSiteUIConfig(): GlobalState['uiConfig'] {
   useEffect(() => {
     if (config.currentSite !== site && !config.isFetching) {
       dispatch(fetchSiteUiConfig({ site }));
+
+      // TODO: this is just for testing, needs to be an action and handled as currently is with fetchSiteUiConfig
+      fetchSiteUiConfig2(site).subscribe((config) => dispatch(fetchSiteUiConfig2Complete(config)));
     }
   }, [dispatch, site, config.isFetching, config.currentSite]);
   return config;
