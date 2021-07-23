@@ -131,7 +131,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
         }
       });
     }
-  }, [site, item, setContent, content, dispatch, user.username]);
+  }, [site, item, setContent, content, dispatch, user.username, readonly]);
 
   useUnmount(onClosed);
 
