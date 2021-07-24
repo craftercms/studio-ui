@@ -16,12 +16,7 @@
 
 import { GlobalState } from '../../models/GlobalState';
 import { createReducer } from '@reduxjs/toolkit';
-import {
-  fetchSiteUiConfig,
-  fetchSiteUiConfig2Complete,
-  fetchSiteUiConfigComplete,
-  fetchSiteUiConfigFailed
-} from '../actions/configuration';
+import { fetchSiteUiConfig, fetchSiteUiConfigComplete, fetchSiteUiConfigFailed } from '../actions/configuration';
 import { changeSite } from './sites';
 import {
   fetchGlobalMenuComplete,
@@ -93,10 +88,6 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
     ...state,
     isFetching: false,
     ...payload
-  }),
-  [fetchSiteUiConfig2Complete.type]: (state, { payload }) => ({
-    ...state,
-    xml: payload
   }),
   [fetchSiteUiConfigFailed.type]: (state, { payload }) => ({
     ...state,
