@@ -32,7 +32,6 @@ import DialogHeader from '../../../components/Dialogs/DialogHeader';
 import DialogBody from '../../../components/Dialogs/DialogBody';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import DialogFooter from '../../../components/Dialogs/DialogFooter';
-import Button from '@material-ui/core/Button';
 import { ApiResponse } from '../../../models/ApiResponse';
 import Dialog from '@material-ui/core/Dialog';
 import LookupTable from '../../../models/LookupTable';
@@ -48,7 +47,7 @@ import { createPresenceTable } from '../../../utils/array';
 
 // region Typings
 
-type ApiState = { error: ApiResponse; submitting: boolean };
+type ApiState = { error: ApiResponse; submitting: boolean; fetchingDependencies: boolean };
 type Source = { items: DetailedItem[]; publishingChannels: any[]; apiState: ApiState };
 type Return = Omit<Source, 'apiState'>;
 
@@ -65,7 +64,6 @@ interface PublishDialogContentUIProps {
   setCheckedSoftDep: Function;
   onClickSetChecked: Function;
   deps: any;
-  showDepsButton: boolean;
   selectAllDeps: Function;
   selectAllSoft: Function;
   dialog: any;
@@ -99,7 +97,6 @@ interface PublishDialogUIProps {
   setCheckedSoftDep: Function;
   onClickSetChecked: Function;
   deps: any;
-  showDepsButton: boolean;
   selectAllDeps: Function;
   selectAllSoft: Function;
   onClickShowAllDeps?: any;
@@ -181,25 +178,12 @@ const translations = defineMessages({
   }
 });
 
-export const onClickSetChecked = (e: any, item: any, setChecked: Function, checked: any) => {
-  e.stopPropagation();
-  e.preventDefault();
-  setChecked([item.path], !checked[item.path]);
-};
-
 export const updateCheckedList = (path: string[], isChecked: boolean, checked: any) => {
   const nextChecked = { ...checked };
   (Array.isArray(path) ? path : [path]).forEach((u) => {
     nextChecked[u] = isChecked;
   });
   return nextChecked;
-};
-
-export const selectAllDeps = (setChecked: Function, items: DetailedItem[]) => {
-  setChecked(
-    items.map((i) => i.path),
-    true
-  );
 };
 
 export const paths = (checked: any) =>
@@ -240,7 +224,6 @@ function PublishDialogContentUI(props: PublishDialogContentUIProps) {
     setCheckedSoftDep,
     onClickSetChecked,
     deps,
-    showDepsButton,
     selectAllDeps,
     selectAllSoft,
     dialog,
@@ -269,7 +252,6 @@ function PublishDialogContentUI(props: PublishDialogContentUIProps) {
             setCheckedSoftDep={setCheckedSoftDep}
             onClickSetChecked={onClickSetChecked}
             deps={deps}
-            showDepsButton={showDepsButton}
             onSelectAllClicked={selectAllDeps}
             onSelectAllSoftClicked={selectAllSoft}
             disabled={apiState.submitting}
@@ -315,7 +297,6 @@ function PublishDialogUI(props: PublishDialogUIProps) {
     setCheckedSoftDep,
     onClickSetChecked,
     deps,
-    showDepsButton,
     selectAllDeps,
     selectAllSoft,
     onClickShowAllDeps,
@@ -351,7 +332,6 @@ function PublishDialogUI(props: PublishDialogUIProps) {
             setCheckedSoftDep={setCheckedSoftDep}
             onClickSetChecked={onClickSetChecked}
             deps={deps}
-            showDepsButton={showDepsButton}
             selectAllDeps={selectAllDeps}
             selectAllSoft={selectAllSoft}
             dialog={dialog}
@@ -368,14 +348,15 @@ function PublishDialogUI(props: PublishDialogUIProps) {
         </SuspenseWithEmptyState>
       </DialogBody>
       <DialogFooter>
-        <Button
+        <SecondaryButton
           color="primary"
           onClick={onClickShowAllDeps}
           className={classes.leftAlignedAction}
-          disabled={showDepsDisabled || apiState.submitting}
+          disabled={showDepsDisabled || apiState.submitting || apiState.fetchingDependencies}
+          loading={apiState.fetchingDependencies}
         >
           <FormattedMessage id="publishDialog.showAllDependencies" defaultMessage="Show All Dependencies" />
-        </Button>
+        </SecondaryButton>
         <SecondaryButton onClick={onDismiss} disabled={apiState.submitting}>
           <FormattedMessage id="requestPublishDialog.cancel" defaultMessage="Cancel" />
         </SecondaryButton>
@@ -412,13 +393,13 @@ function PublishDialogWrapper(props: PublishDialogProps) {
   const [publishingChannelsStatus, setPublishingChannelsStatus] = useState('Loading');
   const [checkedItems, setCheckedItems] = useState<LookupTable<boolean>>({}); // selected deps
   const [checkedSoftDep, _setCheckedSoftDep] = useState<LookupTable<boolean>>({}); // selected soft deps
-  const [deps, setDeps] = useState<DependenciesResultObject>();
-  const [showDepsButton, setShowDepsButton] = useState(true);
+  const [deps, setDeps] = useState<DependenciesResultObject>(null);
   const [submitDisabled, setSubmitDisabled] = useState(true);
   const [showDepsDisabled, setShowDepsDisabled] = useState(false);
   const [apiState, setApiState] = useSpreadState<ApiState>({
     error: null,
-    submitting: false
+    submitting: false,
+    fetchingDependencies: false
   });
 
   const siteId = useActiveSiteId();
@@ -531,7 +512,7 @@ function PublishDialogWrapper(props: PublishDialogProps) {
   const resource = useLogicResource<Return, Source>(publishSource, {
     shouldResolve: (source) => Boolean(source.items && source.publishingChannels && myPermissions.length),
     shouldReject: (source) => Boolean(source.apiState.error),
-    shouldRenew: (source, resource) => resource.complete,
+    shouldRenew: (source, resource) => source.apiState.submitting && resource.complete,
     resultSelector: (source) => ({
       items: source.items,
       publishingChannels: source.publishingChannels
@@ -607,7 +588,7 @@ function PublishDialogWrapper(props: PublishDialogProps) {
 
     submit(siteId, user.username, data).subscribe(
       (response) => {
-        setApiState({ error: null, submitting: false });
+        setApiState({ ...apiState, error: null, submitting: false });
         dispatch(emitSystemEvent(propagateAction({ targets: items })));
         onSuccess?.({
           ...response,
@@ -618,16 +599,29 @@ function PublishDialogWrapper(props: PublishDialogProps) {
         });
       },
       (error) => {
-        setApiState({ error });
+        setApiState({ ...apiState, error });
       }
     );
   };
 
   const setChecked = (path: string[], isChecked: boolean) => {
     setCheckedItems(updateCheckedList(path, isChecked, checkedItems));
-    setShowDepsButton(true);
     setDeps(null);
     cleanCheckedSoftDep();
+  };
+
+  const onClickSetChecked = (e: any, item: DetailedItem) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setChecked([item.path], !checkedItems[item.path]);
+  };
+
+  const selectAllDeps = () => {
+    const isAllChecked = !items.some((item) => !checkedItems[item.path]);
+    setChecked(
+      items.map((i) => i.path),
+      !isAllChecked
+    );
   };
 
   const cleanCheckedSoftDep = () => {
@@ -648,9 +642,10 @@ function PublishDialogWrapper(props: PublishDialogProps) {
   }
 
   function showAllDependencies() {
-    setShowDepsButton(false);
+    setApiState({ ...apiState, fetchingDependencies: true });
     fetchDependencies(siteId, paths(checkedItems)).subscribe(
       (items) => {
+        setApiState({ ...apiState, fetchingDependencies: false });
         setDeps({
           items1: items.hardDependencies,
           items2: items.softDependencies
@@ -689,7 +684,6 @@ function PublishDialogWrapper(props: PublishDialogProps) {
       setCheckedSoftDep={setCheckedSoftDep}
       onClickSetChecked={onClickSetChecked}
       deps={deps}
-      showDepsButton={showDepsButton}
       selectAllDeps={selectAllDeps}
       selectAllSoft={selectAllSoft}
       onClickShowAllDeps={showAllDependencies}
