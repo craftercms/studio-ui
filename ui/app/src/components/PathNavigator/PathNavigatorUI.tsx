@@ -15,7 +15,7 @@
  */
 
 import React, { useMemo } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { useIntl } from 'react-intl';
 import TablePagination from '@material-ui/core/TablePagination';
 import { DetailedItem } from '../../models/Item';
 import clsx from 'clsx';
@@ -259,12 +259,10 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
             errorStateProps: { classes: { image: classes.stateGraphics } }
           }}
           withEmptyStateProps={{
-            emptyStateProps: {
-              title: (
-                <FormattedMessage id="pathNavigator.noItemsAtLocation" defaultMessage="No items at this location" />
-              ),
-              classes: { image: classes.stateGraphics }
-            }
+            /* We don't want an empty state message but SuspenseWithEmptyState
+            is still appropriate for error handling and loading state displaying.
+            So, leaving it and setting isEmpty checker to always return false */
+            isEmpty: () => false
           }}
           suspenseProps={{
             fallback: <NavLoader numOfItems={state.itemsInPath?.length > 0 ? state.itemsInPath.length : state.limit} />
@@ -280,6 +278,7 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
             />
           )}
           <ItemList
+            classes={{ root: classes.childrenList }}
             isSelectMode={false}
             leaves={state.leaves}
             locale={state.localeCode}
@@ -292,7 +291,7 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
             computeActiveItems={computeActiveItems}
           />
         </SuspenseWithEmptyState>
-        {state.total !== null && (
+        {state.total !== null && state.total > 0 && (
           <TablePagination
             classes={{
               root: clsx(classes.pagination, props.classes?.paginationRoot),

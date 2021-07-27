@@ -68,7 +68,6 @@ import {
 } from '../../models/Search';
 import ContentInstance from '../../models/ContentInstance';
 import { changeSite } from './sites';
-import { envInitialState } from './env';
 import { fetchGlobalPropertiesComplete } from '../actions/user';
 import { storeInitialized } from '../actions/system';
 
@@ -103,17 +102,6 @@ const componentsInitialState = createEntityState({
   contentTypeFilter: '',
   inPageInstances: {}
 }) as PagedEntityState<ContentInstance>;
-
-const guestBase = envInitialState.guestBase;
-const previewLanding = envInitialState.previewLandingBase;
-
-function cleanseUrl(url: string) {
-  const clean = url || '/';
-  if (!clean.startsWith('/')) {
-    return `/${clean}`;
-  }
-  return clean;
-}
 
 const fetchGuestModelsCompleteHandler = (state, { type, payload }) => {
   if (nnou(state.guest)) {
