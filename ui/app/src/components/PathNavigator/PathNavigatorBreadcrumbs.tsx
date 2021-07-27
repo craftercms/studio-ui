@@ -39,7 +39,7 @@ export interface BreadcrumbsProps {
 }
 
 const messages = defineMessages({
-  filter: { id: 'pathNavigator.pathFilterInputPlaceholder', defaultMessage: 'Filter {name}...' }
+  filter: { id: 'pathNavigator.pathFilterInputPlaceholder', defaultMessage: 'Filter children of {name}...' }
 });
 
 // PathBreadcrumbs + PathOptions + (Path)Search
