@@ -422,7 +422,10 @@ export function generateSingleItemOptions(
 
 export function generateMultipleItemOptions(
   items: DetailedItem[],
-  formatMessage: IntlFormatters['formatMessage']
+  formatMessage: IntlFormatters['formatMessage'],
+  options?: {
+    includeOnly: AllItemActions[];
+  }
 ): ContextMenuOption[] {
   let publish = true;
   let requestPublish = true;
@@ -430,8 +433,13 @@ export function generateMultipleItemOptions(
   let schedulePublish = true;
   let deleteItem = true;
   let reject = true;
-  let options = [];
+  let sections = [];
   const menuOptions = toContextMenuOptionsLookup(unparsedMenuOptions, formatMessage);
+
+  const actionsToInclude = createPresenceTable(options?.includeOnly ?? allItemActions) as Record<
+    AllItemActions,
+    boolean
+  >;
 
   items.forEach((item) => {
     publish = publish && hasPublishAction(item.availableActions);
@@ -442,17 +450,22 @@ export function generateMultipleItemOptions(
     reject = reject && hasPublishRejectAction(item.availableActions);
   });
 
-  if (publish || schedulePublish || requestPublish || approvePublish) {
-    options.push(menuOptions.publish);
+  if (
+    (publish && actionsToInclude.publish) ||
+    (schedulePublish && actionsToInclude.schedulePublish) ||
+    (requestPublish && actionsToInclude.rejectPublish) ||
+    (approvePublish && actionsToInclude.approvePublish)
+  ) {
+    sections.push(menuOptions.publish);
   }
-  if (deleteItem) {
-    options.push(menuOptions.delete);
+  if (deleteItem && actionsToInclude.delete) {
+    sections.push(menuOptions.delete);
   }
-  if (reject) {
-    options.push(menuOptions.rejectPublish);
+  if (reject && actionsToInclude.rejectPublish) {
+    sections.push(menuOptions.rejectPublish);
   }
 
-  return options;
+  return sections;
 }
 
 export const itemActionDispatcher = ({

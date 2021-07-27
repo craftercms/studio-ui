@@ -250,9 +250,7 @@ export default function RecentActivityDashlet() {
             items.push(item);
           }
         });
-        return generateMultipleItemOptions(items, formatMessage).filter((option) =>
-          actionsToBeShown.includes(option.id as AllItemActions)
-        );
+        return generateMultipleItemOptions(items, formatMessage, { includeOnly: actionsToBeShown });
       }
     }
   }, [formatMessage, itemsByPath, selectedLookup]);

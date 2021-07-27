@@ -44,6 +44,7 @@ import translations from './translations';
 import { createPresenceTable } from '../../utils/array';
 import { itemActionDispatcher } from '../../utils/itemActions';
 import { useEnv } from '../../utils/hooks/useEnv';
+import { batchActions } from '../../state/actions/misc';
 
 export interface DashboardItem {
   label: string;
@@ -213,17 +214,19 @@ export default function AwaitingApprovalDashlet() {
 
   const onItemMenuClick = (event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, item: DetailedItem) => {
     const path = item.path;
-    dispatch(completeDetailedItem({ path }));
     dispatch(
-      showItemMegaMenu({
-        path,
-        anchorReference: 'anchorPosition',
-        anchorPosition: { top: event.clientY, left: event.clientX },
-        numOfLoaderItems: getNumOfMenuOptionsForItem({
-          path: item.path,
-          systemType: getSystemTypeFromPath(item.path)
-        } as DetailedItem)
-      })
+      batchActions([
+        completeDetailedItem({ path }),
+        showItemMegaMenu({
+          path,
+          anchorReference: 'anchorPosition',
+          anchorPosition: { top: event.clientY, left: event.clientX },
+          numOfLoaderItems: getNumOfMenuOptionsForItem({
+            path: item.path,
+            systemType: getSystemTypeFromPath(item.path)
+          } as DetailedItem)
+        })
+      ])
     );
   };
 

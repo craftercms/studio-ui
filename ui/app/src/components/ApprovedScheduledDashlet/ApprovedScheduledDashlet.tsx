@@ -26,7 +26,8 @@ import { AllItemActions, DetailedItem } from '../../models/Item';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import ApprovedScheduledDashletGridUI from '../ApprovedScheduledDashletGrid';
 import useStyles from './styles';
-import ApprovedScheduledDashletSkeletonTable from '../ApprovedScheduledDashletGrid/ApprovedScheduledDashletSkeletonTable';
+import ApprovedScheduledDashletSkeletonTable
+  from '../ApprovedScheduledDashletGrid/ApprovedScheduledDashletSkeletonTable';
 import MenuItem from '@material-ui/core/MenuItem';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
@@ -47,6 +48,7 @@ import { itemActionDispatcher } from '../../utils/itemActions';
 import { useEnv } from '../../utils/hooks/useEnv';
 import ActionsBar from '../ActionsBar';
 import translations from './translations';
+import { batchActions } from '../../state/actions/misc';
 
 const dashletInitialPreferences: DashboardPreferences = {
   filterBy: 'all',
@@ -194,7 +196,7 @@ export default function ApprovedScheduledDashlet() {
     if (isAllChecked) {
       setSelectedLookup({});
     } else {
-      setSelectedLookup({ ...selectedLookup, ...createPresenceTable(Object.keys(state.itemsLookup), true) });
+      setSelectedLookup({ ...selectedLookup, ...createPresenceTable(Object.keys(state.itemsLookup)) });
     }
   };
 
@@ -204,17 +206,20 @@ export default function ApprovedScheduledDashlet() {
 
   const onItemMenuClick = (event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, item: DetailedItem) => {
     const path = item.path;
-    dispatch(completeDetailedItem({ path }));
+
     dispatch(
-      showItemMegaMenu({
-        path,
-        anchorReference: 'anchorPosition',
-        anchorPosition: { top: event.clientY, left: event.clientX },
-        numOfLoaderItems: getNumOfMenuOptionsForItem({
-          path: item.path,
-          systemType: getSystemTypeFromPath(item.path)
-        } as DetailedItem)
-      })
+      batchActions([
+        completeDetailedItem({ path }),
+        showItemMegaMenu({
+          path,
+          anchorReference: 'anchorPosition',
+          anchorPosition: { top: event.clientY, left: event.clientX },
+          numOfLoaderItems: getNumOfMenuOptionsForItem({
+            path: item.path,
+            systemType: getSystemTypeFromPath(item.path)
+          } as DetailedItem)
+        })
+      ])
     );
   };
 
