@@ -176,7 +176,6 @@ export function PreviewAddressBar(props: AddressBarProps) {
           <PagesSearchAhead
             value={internalUrl}
             placeholder={noSiteSet ? '' : '/'}
-            disabled={disabled}
             onEnter={onUrlChange}
             classes={{
               input: classes.input

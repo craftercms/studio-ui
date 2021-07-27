@@ -58,6 +58,7 @@ export const useStyles = makeStyles(
         }
       },
       accordionSummary: {
+        background: theme.palette.background.default,
         padding: '0 0 0 10px',
         minHeight: 0,
         '&.Mui-expanded': {
@@ -113,6 +114,12 @@ export const useStyles = makeStyles(
       searchCloseIcon: {
         fontSize: '12px !important'
       },
+      widgetAlert: {
+        margin: theme.spacing(1)
+      },
+      childrenList: {
+        marginBottom: theme.spacing(1)
+      },
       // region Breadcrumbs
       breadcrumbs: {
         display: 'flex',
@@ -144,6 +151,7 @@ export const useStyles = makeStyles(
       // endregion
       // region Pagination
       pagination: {
+        marginBottom: 10,
         '& p': {
           padding: 0
         },
@@ -157,6 +165,9 @@ export const useStyles = makeStyles(
       paginationToolbar: {
         minHeight: '30px !important',
         justifyContent: 'space-between',
+        margin: '0 5px',
+        background: theme.palette.background.default,
+        borderRadius: 50,
         '& .MuiTablePagination-spacer': {
           display: 'none'
         },
