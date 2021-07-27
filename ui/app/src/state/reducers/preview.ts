@@ -599,9 +599,9 @@ const reducer = createReducer<GlobalState['preview']>(
           renameTable
         });
       }
-
       return {
         ...state,
+        ...(payload.pageStack ? { toolsPanelPageStack: [...state.toolsPanelPageStack, payload.pageStack] } : {}),
         toolsPanel: toolsPanelConfig
       };
     },

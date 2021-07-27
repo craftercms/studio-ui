@@ -31,6 +31,7 @@ import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import { useSiteUIConfig } from '../../utils/hooks/useSiteUIConfig';
 import LookupTable from '../../models/LookupTable';
 import { nnou } from '../../utils/object';
+import { getStoredPreviewToolsPanelPage } from '../../utils/state';
 
 defineMessages({
   previewSiteExplorerPanelTitle: {
@@ -67,12 +68,16 @@ export default function ToolsPanel() {
   const pages = useSelection<WidgetDescriptor[]>((state) => state.preview.toolsPanelPageStack);
   const uiConfig = useSiteUIConfig();
   const baseUrl = useSelection<string>((state) => state.env.authoringBase);
+  const { username } = useActiveUser();
 
   useEffect(() => {
     if (nnou(uiConfig.xml) && !toolsPanel) {
-      dispatch(initToolsPanelConfig({ configXml: uiConfig.xml, references: uiConfig.references }));
+      const storedPage = getStoredPreviewToolsPanelPage(site, username);
+      dispatch(
+        initToolsPanelConfig({ configXml: uiConfig.xml, references: uiConfig.references, pageStack: storedPage })
+      );
     }
-  }, [uiConfig.xml, uiConfig.references, toolsPanel, dispatch]);
+  }, [uiConfig.xml, uiConfig.references, toolsPanel, dispatch, site, username]);
 
   const resource = useLogicResource<WidgetDescriptor[], LookupTable<WidgetDescriptor[]>>(toolsPanel, {
     errorSelector: (source) => uiConfig.error,
