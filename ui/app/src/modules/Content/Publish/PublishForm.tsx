@@ -35,7 +35,7 @@ import TextFieldWithMax from '../../../components/Controls/TextFieldWithMax';
 import GlobalState from '../../../models/GlobalState';
 import FormLabel from '@material-ui/core/FormLabel';
 import { useSelection } from '../../../utils/hooks/useSelection';
-import { Alert } from '@material-ui/lab';
+import Alert from '@material-ui/lab/Alert';
 
 const messages = defineMessages({
   emailLabel: {

@@ -24,7 +24,7 @@ import { batchActions } from '../../state/actions/misc';
 
 export function useDetailedItems(paths: string[]): { itemsByPath: LookupTable<DetailedItem>; isFetching: boolean } {
   const dispatch = useDispatch();
-  const lookup = useSelection((state) => state.content.itemsBeingFetchedByPath);
+  const fetchingLookup = useSelection((state) => state.content.itemsBeingFetchedByPath);
   const itemsByPath = useSelection((state) => state.content.itemsByPath);
   const items = useMemo(() => {
     let _items = {};
@@ -36,15 +36,15 @@ export function useDetailedItems(paths: string[]): { itemsByPath: LookupTable<De
     return _items;
   }, [itemsByPath, paths]);
   useEffect(() => {
-    let _actions = [];
+    let actions = [];
     paths.forEach((path) => {
-      if (!itemsByPath[path] && lookup[path] === undefined) {
-        _actions.push(completeDetailedItem({ path }));
+      if (!itemsByPath[path] && fetchingLookup[path] === undefined) {
+        actions.push(completeDetailedItem({ path }));
       }
     });
-    if (_actions.length) {
-      dispatch(batchActions(_actions));
+    if (actions.length) {
+      dispatch(batchActions(actions));
     }
-  }, [lookup, dispatch, paths, itemsByPath]);
-  return { itemsByPath: items, isFetching: paths.some((path) => lookup[path]) };
+  }, [fetchingLookup, dispatch, paths, itemsByPath]);
+  return { itemsByPath: items, isFetching: paths.some((path) => fetchingLookup[path]) };
 }

@@ -127,9 +127,9 @@ export default function RecentlyPublishedDashletUI(props: RecentlyPublishedWidge
                             </GlobalAppGridCell>
                             <GlobalAppGridCell className="width20">
                               {itemsLookup[path].stateMap.submittedToLive ? (
-                                <FormattedMessage id="environment.live" defaultMessage="live" />
+                                <FormattedMessage id="words.live" defaultMessage="Live" />
                               ) : (
-                                <FormattedMessage id="environment.staging" defaultMessage="staging" />
+                                <FormattedMessage id="words.staging" defaultMessage="Staging" />
                               )}
                             </GlobalAppGridCell>
                             <GlobalAppGridCell
