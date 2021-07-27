@@ -42,7 +42,7 @@ import { getDatePublished, getDateScheduled } from '../../../utils/detailedItem'
 import ErrorOutlineOutlinedIcon from '@material-ui/icons/ErrorOutlineOutlined';
 
 interface DependencySelectionProps {
-  items?: DetailedItem[] | SandboxItem[];
+  items?: DetailedItem[];
   siteId?: string; // for dependencySelectionDelete
   onChange?: Function; // for dependencySelectionDelete
   checked: LookupTable<boolean>;
@@ -60,7 +60,7 @@ interface SelectionListProps {
   title: ReactNode;
   subtitle?: ReactNode;
   emptyMessage?: ReactNode;
-  items?: DetailedItem[] | SandboxItem[];
+  items?: DetailedItem[];
   uris?: string[];
   onItemClicked?: Function;
   onSelectAllClicked?: Function;
@@ -215,7 +215,7 @@ export function DependencySelection(props: DependencySelectionProps) {
 }
 
 interface DependencySelectionDeleteProps {
-  items: SandboxItem[];
+  items: DetailedItem[];
   resultItems: DeleteDependencies;
   onChange: Function;
   onEditDependency?: Function;
