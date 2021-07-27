@@ -39,7 +39,7 @@ export interface BreadcrumbsProps {
 }
 
 const messages = defineMessages({
-  filter: { id: 'pathNavigator.pathFilterInputPlaceholder', defaultMessage: 'Filter children...' }
+  filter: { id: 'pathNavigator.pathFilterInputPlaceholder', defaultMessage: 'Filter {name}...' }
 });
 
 // PathBreadcrumbs + PathOptions + (Path)Search
@@ -52,16 +52,17 @@ function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
   const onChange = (keyword: string) => onSearch(keyword);
 
   const maxIndex = breadcrumb.length - 1;
+  const forceSearch = breadcrumb.length <= 1;
 
   return (
     <section className={clsx(classes.breadcrumbs, classes.widgetSection, props.classes?.root)}>
-      {showSearch && onSearch ? (
+      {(showSearch && onSearch) || forceSearch ? (
         <>
           <SearchBar
             autoFocus
             onChange={onChange}
             keyword={keyword}
-            placeholder={formatMessage(messages.filter)}
+            placeholder={formatMessage(messages.filter, { name: breadcrumb[0]?.label })}
             showActionButton={Boolean(keyword)}
             classes={{
               root: clsx(classes.searchRoot, props.classes?.searchRoot),
@@ -69,16 +70,18 @@ function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
               actionIcon: clsx(classes.searchCloseIcon, props.classes?.searchCleanButton)
             }}
           />
-          <IconButton
-            size="small"
-            onClick={() => {
-              onSearch('');
-              setShowSearch(false);
-            }}
-            className={clsx(classes.searchCloseButton, props.classes?.searchCloseButton)}
-          >
-            <CloseIconRounded />
-          </IconButton>
+          {!forceSearch && (
+            <IconButton
+              size="small"
+              onClick={() => {
+                onSearch('');
+                setShowSearch(false);
+              }}
+              className={clsx(classes.searchCloseButton, props.classes?.searchCloseButton)}
+            >
+              <CloseIconRounded />
+            </IconButton>
+          )}
         </>
       ) : (
         <>
