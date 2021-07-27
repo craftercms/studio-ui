@@ -23,7 +23,7 @@ import { applyDeserializedXMLTransforms } from '../../utils/object';
 const reducer = createReducer<GlobalState['dashboard']>(null, {
   [INIT_DASHBOARD_CONFIG]: (state, { payload }) => {
     let dashboardConfig = null;
-    const arrays = ['widgets', 'roles', 'excludes', 'devices', 'values', 'siteCardMenuLinks', 'tools'];
+    const arrays = ['widgets', 'roles'];
     const renameTable = { permittedRoles: 'roles' };
     const configDOM = fromString(payload.configXml);
     const dashboard = configDOM.querySelector('[id="craftercms.components.Dashboard"] > configuration');

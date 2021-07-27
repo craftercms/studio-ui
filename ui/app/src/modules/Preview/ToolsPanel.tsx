@@ -70,7 +70,7 @@ export default function ToolsPanel() {
 
   useEffect(() => {
     if (nnou(uiConfig.xml) && !toolsPanel) {
-      dispatch(initToolsPanelConfig({ configXml: uiConfig.xml, references: uiConfig.references })); // TODO: stored: localStorage.getItem
+      dispatch(initToolsPanelConfig({ configXml: uiConfig.xml, references: uiConfig.references }));
     }
   }, [uiConfig.xml, uiConfig.references, toolsPanel, dispatch]);
 

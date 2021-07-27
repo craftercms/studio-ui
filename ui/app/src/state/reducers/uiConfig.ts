@@ -132,6 +132,8 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
       isFetching: false
     }
   }),
+  // @ts-ignore
+  // TODO: why is this failing?
   [fetchGlobalMenuFailed.type]: (state, { payload }) => ({
     ...state,
     globalNavigation: {

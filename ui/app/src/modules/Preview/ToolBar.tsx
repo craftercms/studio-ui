@@ -61,7 +61,7 @@ export default function ToolBar() {
 
   useEffect(() => {
     if (uiConfig.xml && !toolbar.leftSection && !toolbar.middleSection && !toolbar.rightSection) {
-      dispatch(initToolbarConfig({ configXml: uiConfig.xml, references: uiConfig.references })); // TODO: stored: localStorage.getItem('crafter.toolsPanel')
+      dispatch(initToolbarConfig({ configXml: uiConfig.xml, references: uiConfig.references }));
     }
   }, [uiConfig.xml, uiConfig.references, toolbar, dispatch]);
 

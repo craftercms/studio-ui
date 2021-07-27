@@ -585,7 +585,7 @@ const reducer = createReducer<GlobalState['preview']>(
           }
         ]
       };
-      const arrays = ['widgets', 'roles', 'excludes', 'devices', 'values', 'siteCardMenuLinks', 'tools'];
+      const arrays = ['widgets', 'roles', 'excludes'];
       const lookupTables = ['fields'];
       const renameTable = { permittedRoles: 'roles' };
       const configDOM = fromString(payload.configXml);
@@ -611,7 +611,7 @@ const reducer = createReducer<GlobalState['preview']>(
         middleSection: null,
         rightSection: null
       };
-      const arrays = ['widgets', 'roles', 'excludes', 'devices', 'values', 'siteCardMenuLinks', 'tools'];
+      const arrays = ['widgets'];
       const renameTable = { permittedRoles: 'roles' };
       const configDOM = fromString(payload.configXml);
       const toolbar = configDOM.querySelector('[id="craftercms.components.PreviewToolbar"] > configuration');
@@ -658,7 +658,7 @@ const reducer = createReducer<GlobalState['preview']>(
           }
         ]
       };
-      const arrays = ['widgets', 'roles', 'excludes', 'devices', 'values', 'siteCardMenuLinks', 'tools'];
+      const arrays = ['widgets', 'devices', 'values'];
       const renameTable = { permittedRoles: 'roles' };
       const configDOM = fromString(payload.configXml);
       const pageBuilderPanel = configDOM.querySelector(

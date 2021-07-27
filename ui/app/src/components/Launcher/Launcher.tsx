@@ -385,7 +385,7 @@ export default function Launcher(props: LauncherStateProps) {
 
   useEffect(() => {
     if (uiConfig.xml && !launcher) {
-      dispatch(initLauncherConfig({ configXml: uiConfig.xml, references: uiConfig.references })); // TODO: stored: localStorage.getItem('crafter.toolsPanel')
+      dispatch(initLauncherConfig({ configXml: uiConfig.xml, references: uiConfig.references }));
     }
   }, [uiConfig.xml, uiConfig.references, launcher, dispatch]);
 

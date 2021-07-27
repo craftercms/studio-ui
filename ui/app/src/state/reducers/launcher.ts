@@ -23,7 +23,7 @@ import { applyDeserializedXMLTransforms } from '../../utils/object';
 const reducer = createReducer<GlobalState['launcher']>(null, {
   [INIT_LAUNCHER_CONFIG]: (state, { payload }) => {
     let launcherConfig = null;
-    const arrays = ['widgets', 'roles', 'excludes', 'devices', 'values', 'siteCardMenuLinks', 'tools'];
+    const arrays = ['widgets', 'roles', 'siteCardMenuLinks'];
     const renameTable = { permittedRoles: 'roles' };
     const configDOM = fromString(payload.configXml);
 
