@@ -26,6 +26,8 @@ import { useSiteUIConfig } from '../../utils/hooks/useSiteUIConfig';
 import { renderWidgets } from '../Widget';
 import ResizeableDrawer from '../../modules/Preview/ResizeableDrawer';
 import { usePreviewState } from '../../utils/hooks/usePreviewState';
+import EmptyState from '../SystemStatus/EmptyState';
+import { FormattedMessage } from 'react-intl';
 
 export function PageBuilderPanel() {
   const dispatch = useDispatch();
@@ -45,12 +47,24 @@ export function PageBuilderPanel() {
   return (
     <ResizeableDrawer open={editMode} belowToolbar anchor="right" width={width} onWidthChange={onWidthChange}>
       <Suspense fallback={<LoadingState />}>
-        <ConditionalLoadingState isLoading={!Boolean(pageBuilderPanel.widgets)}>
-          {renderWidgets(
-            pageBuilderPanelStack.length
-              ? pageBuilderPanelStack.slice(pageBuilderPanelStack.length - 1)
-              : pageBuilderPanel.widgets,
-            rolesBySite[site]
+        <ConditionalLoadingState isLoading={!Boolean(pageBuilderPanel)}>
+          {pageBuilderPanel.widgets ? (
+            renderWidgets(
+              pageBuilderPanelStack.length
+                ? pageBuilderPanelStack.slice(pageBuilderPanelStack.length - 1)
+                : pageBuilderPanel.widgets,
+              rolesBySite[site]
+            )
+          ) : (
+            <EmptyState
+              title={<FormattedMessage id="noUiConfigMessageTitle.title" defaultMessage="Configuration file missing" />}
+              subtitle={
+                <FormattedMessage
+                  id="noUiConfigMessageTitle.subtitle"
+                  defaultMessage="Add & configure `ui.xml` on your site to show content here."
+                />
+              }
+            />
           )}
         </ConditionalLoadingState>
       </Suspense>

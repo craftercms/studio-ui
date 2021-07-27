@@ -29,6 +29,8 @@ import { usePreviewState } from '../../utils/hooks/usePreviewState';
 import { useActiveUser } from '../../utils/hooks/useActiveUser';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import { useSiteUIConfig } from '../../utils/hooks/useSiteUIConfig';
+import LookupTable from '../../models/LookupTable';
+import { nnou } from '../../utils/object';
 
 defineMessages({
   previewSiteExplorerPanelTitle: {
@@ -67,14 +69,14 @@ export default function ToolsPanel() {
   const baseUrl = useSelection<string>((state) => state.env.authoringBase);
 
   useEffect(() => {
-    if (uiConfig.xml && !toolsPanel.widgets) {
+    if (nnou(uiConfig.xml) && !toolsPanel) {
       dispatch(initToolsPanelConfig({ configXml: uiConfig.xml, references: uiConfig.references })); // TODO: stored: localStorage.getItem
     }
-  }, [uiConfig.xml, uiConfig.references, toolsPanel.widgets, dispatch]);
+  }, [uiConfig.xml, uiConfig.references, toolsPanel, dispatch]);
 
-  const resource = useLogicResource<WidgetDescriptor[], WidgetDescriptor[]>(toolsPanel.widgets, {
+  const resource = useLogicResource<WidgetDescriptor[], LookupTable<WidgetDescriptor[]>>(toolsPanel, {
     errorSelector: (source) => uiConfig.error,
-    resultSelector: (source) => source,
+    resultSelector: (source) => source.widgets,
     shouldReject: (source) => false,
     shouldResolve: (source) => Boolean(source),
     shouldRenew: (source, resource) => uiConfig.isFetching || resource.complete
@@ -100,7 +102,7 @@ export default function ToolsPanel() {
           classes: { root: classes.loadingViewRoot }
         }}
         withEmptyStateProps={{
-          isEmpty: (widgets) => !site || widgets?.length === 0,
+          isEmpty: (widgets) => !site || !widgets || widgets?.length === 0,
           emptyStateProps: {
             title: site ? (
               <FormattedMessage id="previewTools.noWidgetsMessage" defaultMessage="No tools have been configured" />

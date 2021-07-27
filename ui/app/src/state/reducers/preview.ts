@@ -85,6 +85,14 @@ const messages = defineMessages({
   emptyUiConfigMessageSubtitle: {
     id: 'emptyUiConfigMessageTitle.subtitle',
     defaultMessage: 'Nothing is set to be shown here.'
+  },
+  noUiConfigMessageTitle: {
+    id: 'noUiConfigMessageTitle.title',
+    defaultMessage: 'Configuration file missing'
+  },
+  noUiConfigMessageSubtitle: {
+    id: 'noUiConfigMessageTitle.subtitle',
+    defaultMessage: 'Add & configure `ui.xml` on your site to show content here.'
   }
 });
 
@@ -178,9 +186,7 @@ const reducer = createReducer<GlobalState['preview']>(
       selectedContentType: null,
       byId: null
     },
-    toolsPanel: {
-      widgets: null
-    },
+    toolsPanel: null,
     toolbar: {
       leftSection: null,
       middleSection: null,
@@ -585,8 +591,8 @@ const reducer = createReducer<GlobalState['preview']>(
             id: 'craftercms.component.EmptyState',
             uiKey: -1,
             configuration: {
-              title: messages.emptyUiConfigMessageTitle,
-              subtitle: messages.emptyUiConfigMessageSubtitle
+              title: messages.noUiConfigMessageTitle,
+              subtitle: messages.noUiConfigMessageSubtitle
             }
           }
         ]
@@ -658,8 +664,8 @@ const reducer = createReducer<GlobalState['preview']>(
             id: 'craftercms.component.EmptyState',
             uiKey: -1,
             configuration: {
-              title: 'emptyUiConfigMessageTitle' /* messages.emptyUiConfigMessageTitle */,
-              subtitle: 'emptyUiConfigMessageSubtitle' /* messages.emptyUiConfigMessageSubtitle */
+              title: messages.noUiConfigMessageTitle,
+              subtitle: messages.noUiConfigMessageSubtitle
             }
           }
         ]

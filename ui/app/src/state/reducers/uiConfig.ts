@@ -73,36 +73,41 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
     currentSite: site
   }),
   [fetchSiteUiConfigComplete.type]: (state, { payload }) => {
-    const configDOM = fromString(payload.config);
-    const site = payload.site;
+    let config = payload.config;
     const references = {};
-    const arrays = ['widgets', 'roles', 'excludes', 'devices', 'values', 'siteCardMenuLinks', 'tools'];
-    const renameTable = { permittedRoles: 'roles' };
+    if (config) {
+      const configDOM = fromString(config);
+      const site = payload.site;
+      const arrays = ['widgets', 'roles', 'excludes', 'devices', 'values', 'siteCardMenuLinks', 'tools'];
+      const renameTable = { permittedRoles: 'roles' };
 
-    configDOM.querySelectorAll(':scope > references > reference').forEach((tag) => {
-      references[tag.id] = applyDeserializedXMLTransforms(deserialize(tag.innerHTML), {
-        arrays,
-        renameTable
+      configDOM.querySelectorAll(':scope > references > reference').forEach((tag) => {
+        references[tag.id] = applyDeserializedXMLTransforms(deserialize(tag.innerHTML), {
+          arrays,
+          renameTable
+        });
       });
-    });
 
-    configDOM.querySelectorAll('configuration > reference').forEach((tag) => {
-      tag.outerHTML = references[tag.id];
-    });
+      configDOM.querySelectorAll('configuration > reference').forEach((tag) => {
+        tag.outerHTML = references[tag.id];
+      });
 
-    configDOM.querySelectorAll('plugin').forEach((tag) => {
-      const siteAttr = tag.getAttribute('site');
-      if (siteAttr === '{site}' || siteAttr === null) {
-        tag.setAttribute('site', site);
-      }
-    });
+      configDOM.querySelectorAll('plugin').forEach((tag) => {
+        const siteAttr = tag.getAttribute('site');
+        if (siteAttr === '{site}' || siteAttr === null) {
+          tag.setAttribute('site', site);
+        }
+      });
 
-    configDOM.querySelectorAll('widget').forEach((e, index) => e.setAttribute('uiKey', String(index)));
+      configDOM.querySelectorAll('widget').forEach((e, index) => e.setAttribute('uiKey', String(index)));
+
+      config = serialize(configDOM);
+    }
 
     return {
       ...state,
       isFetching: false,
-      xml: serialize(configDOM),
+      xml: config,
       references: references
     };
   },
