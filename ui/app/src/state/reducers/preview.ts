@@ -74,7 +74,7 @@ import { changeSite } from './sites';
 import { envInitialState } from './env';
 import { fetchGlobalPropertiesComplete } from '../actions/user';
 import { storeInitialized } from '../actions/system';
-import { deserialize, fromString } from '../../utils/xml';
+import { deserialize, fromString, xmlPreprocessor } from '../../utils/xml';
 
 const audiencesPanelInitialState = {
   isFetching: null,
@@ -582,7 +582,7 @@ const reducer = createReducer<GlobalState['preview']>(
       const arrays = ['widgets', 'roles', 'excludes', 'devices', 'values', 'siteCardMenuLinks', 'tools'];
       const lookupTables = ['fields'];
       const renameTable = { permittedRoles: 'roles' };
-      const configDOM = fromString(payload.configXml);
+      const configDOM = xmlPreprocessor(fromString(payload.configXml), payload.references);
       const toolsPanelPages = configDOM.querySelector(
         '[id="craftercms.components.ToolsPanel"] > configuration > widgets'
       );
@@ -609,7 +609,7 @@ const reducer = createReducer<GlobalState['preview']>(
       };
       const arrays = ['widgets', 'roles', 'excludes', 'devices', 'values', 'siteCardMenuLinks', 'tools'];
       const renameTable = { permittedRoles: 'roles' };
-      const configDOM = fromString(payload.configXml);
+      const configDOM = xmlPreprocessor(fromString(payload.configXml), payload.references);
       const toolbar = configDOM.querySelector('[id="craftercms.components.PreviewToolbar"] > configuration');
 
       if (toolbar) {
@@ -659,7 +659,7 @@ const reducer = createReducer<GlobalState['preview']>(
       };
       const arrays = ['widgets', 'roles', 'excludes', 'devices', 'values', 'siteCardMenuLinks', 'tools'];
       const renameTable = { permittedRoles: 'roles' };
-      const configDOM = fromString(payload.configXml);
+      const configDOM = xmlPreprocessor(fromString(payload.configXml), payload.references);
       const pageBuilderPanel = configDOM.querySelector(
         '[id="craftercms.components.PageBuilderPanel"] > configuration > widgets'
       );

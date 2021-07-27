@@ -19,6 +19,7 @@ import prettierXmlPlugin from '@prettier/plugin-xml/src/plugin';
 import prettier from 'prettier/standalone';
 import { nnou } from './object';
 import parser, { X2jOptionsOptional } from 'fast-xml-parser';
+import LookupTable from '../models/LookupTable';
 
 export function fromString(xml: string): Document {
   return xml != null ? new DOMParser().parseFromString(xml, 'text/xml') : null;
@@ -151,4 +152,12 @@ export function deserialize(xml: string | Node, options?: X2jOptionsOptional): a
     ignoreAttributes: false,
     ...options
   });
+}
+
+export function xmlPreprocessor(doc: XMLDocument, references: LookupTable<any>): XMLDocument {
+  doc.querySelectorAll('configuration > reference').forEach((tag) => {
+    tag.outerHTML = references[tag.id];
+  });
+
+  return doc;
 }

@@ -19,7 +19,7 @@ import { catchError, map, pluck } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { deserialize, fromString } from '../utils/xml';
 import { ContentTypeField } from '../models/ContentType';
-import { applyDeserializedXMLTransforms, reversePluckProps, toQueryString } from '../utils/object';
+import { reversePluckProps, toQueryString } from '../utils/object';
 import ContentInstance from '../models/ContentInstance';
 import { VersionsResponse } from '../models/Version';
 import LookupTable from '../models/LookupTable';

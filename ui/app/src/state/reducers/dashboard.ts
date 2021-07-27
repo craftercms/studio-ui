@@ -17,7 +17,7 @@
 import GlobalState from '../../models/GlobalState';
 import { createReducer } from '@reduxjs/toolkit';
 import { INIT_DASHBOARD_CONFIG } from '../actions/dashboard';
-import { deserialize, fromString } from '../../utils/xml';
+import { deserialize, fromString, xmlPreprocessor } from '../../utils/xml';
 import { applyDeserializedXMLTransforms } from '../../utils/object';
 
 const reducer = createReducer<GlobalState['dashboard']>(null, {
@@ -25,7 +25,7 @@ const reducer = createReducer<GlobalState['dashboard']>(null, {
     let dashboardConfig = null;
     const arrays = ['widgets', 'roles', 'excludes', 'devices', 'values', 'siteCardMenuLinks', 'tools'];
     const renameTable = { permittedRoles: 'roles' };
-    const configDOM = fromString(payload.configXml);
+    const configDOM = xmlPreprocessor(fromString(payload.configXml), payload.references);
     const dashboard = configDOM.querySelector('[id="craftercms.components.Dashboard"] > configuration');
 
     if (dashboard) {

@@ -38,9 +38,9 @@ export function PageBuilderPanel() {
 
   useEffect(() => {
     if (uiConfig.xml && !pageBuilderPanel.widgets) {
-      dispatch(initPageBuilderPanelConfig({ configXml: uiConfig.xml }));
+      dispatch(initPageBuilderPanelConfig({ configXml: uiConfig.xml, references: uiConfig.references }));
     }
-  }, [uiConfig.xml, dispatch, pageBuilderPanel.widgets]);
+  }, [uiConfig.xml, uiConfig.references, dispatch, pageBuilderPanel.widgets]);
 
   return (
     <ResizeableDrawer open={editMode} belowToolbar anchor="right" width={width} onWidthChange={onWidthChange}>

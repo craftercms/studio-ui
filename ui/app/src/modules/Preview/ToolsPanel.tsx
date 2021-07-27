@@ -68,9 +68,9 @@ export default function ToolsPanel() {
 
   useEffect(() => {
     if (uiConfig.xml && !toolsPanel.widgets) {
-      dispatch(initToolsPanelConfig({ configXml: uiConfig.xml })); // TODO: stored: localStorage.getItem
+      dispatch(initToolsPanelConfig({ configXml: uiConfig.xml, references: uiConfig.references })); // TODO: stored: localStorage.getItem
     }
-  }, [uiConfig.xml, toolsPanel.widgets, dispatch]);
+  }, [uiConfig.xml, uiConfig.references, toolsPanel.widgets, dispatch]);
 
   const resource = useLogicResource<WidgetDescriptor[], WidgetDescriptor[]>(toolsPanel.widgets, {
     errorSelector: (source) => uiConfig.error,
