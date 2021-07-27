@@ -341,7 +341,7 @@ function PublishForm(props: PublishFormProps) {
           (publishingChannels.length ? (
             <Select
               fullWidth
-              value={inputs.environment}
+              value={!mixedPublishingTargets && !inputs.environment ? 'live' : inputs.environment}
               onChange={handleSelectChange('environment')}
               disabled={disabled}
               label={formatMessage(messages.environment)}

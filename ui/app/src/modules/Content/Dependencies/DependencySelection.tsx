@@ -39,6 +39,7 @@ import ScheduledStateIcon from '@material-ui/icons/AccessTimeRounded';
 import palette from '../../../styles/palette';
 import { useLocale } from '../../../utils/hooks/useLocale';
 import { asLocalizedDateTime } from '../../../utils/datetime';
+import { getDatePublished, getDateScheduled } from '../../../utils/detailedItem';
 
 interface DependencySelectionProps {
   items?: DetailedItem[] | SandboxItem[];
@@ -404,59 +405,64 @@ function SelectionList(props: SelectionListProps) {
                 )}
                 <ListItemText id={labelId}>
                   <Typography variant="subtitle1">{item.label}</Typography>
-                  {item.live && (
-                    <Box display="flex" alignItems="center">
-                      <ScheduledStateIcon className={classes.stateScheduledIcon} />
-                      {item.live.dateScheduled ? (
-                        <Typography variant="body2" color="textSecondary">
-                          <FormattedMessage
-                            id="itemPublishingDate.scheduled"
-                            defaultMessage="Scheduled for {date}"
-                            values={{
-                              date: asLocalizedDateTime(
-                                item.live.dateScheduled,
-                                locale.localeCode,
-                                locale.dateTimeFormatOptions
-                              )
-                            }}
-                          />
-                        </Typography>
+                  <Box display="flex" alignItems="center">
+                    <ScheduledStateIcon className={classes.stateScheduledIcon} />
+                    <Typography variant="body2" color="textSecondary">
+                      {getDateScheduled(item) ? (
+                        <FormattedMessage
+                          id="itemPublishingDate.scheduled"
+                          defaultMessage="Scheduled for {date}"
+                          values={{
+                            date: asLocalizedDateTime(
+                              getDateScheduled(item),
+                              locale.localeCode,
+                              locale.dateTimeFormatOptions
+                            )
+                          }}
+                        />
+                      ) : getDatePublished(item) ? (
+                        <FormattedMessage
+                          id="itemPublishingDate.scheduled"
+                          defaultMessage="Scheduled for {date}"
+                          values={{
+                            date: asLocalizedDateTime(
+                              getDatePublished(item),
+                              locale.localeCode,
+                              locale.dateTimeFormatOptions
+                            )
+                          }}
+                        />
                       ) : (
+                        <FormattedMessage id="itemPublishingDate.now" defaultMessage="Scheduled for ASAP" />
+                      )}
+                    </Typography>
+                    {item.stateMap.submittedToLive ? (
+                      <>
+                        <PublishingTargetIcon
+                          className={clsx(classes.publishingTargetIcon, classes.publishingTargetLive)}
+                        />
                         <Typography variant="body2" color="textSecondary">
-                          <FormattedMessage id="itemPublishingDate.now" defaultMessage="Scheduled for ASAP" />
+                          <FormattedMessage id="publishingTargetLive.live" defaultMessage="Submitted to live" />
                         </Typography>
-                      )}
-                      {item.stateMap.submittedToLive ? (
-                        <>
-                          <PublishingTargetIcon
-                            className={clsx(classes.publishingTargetIcon, classes.publishingTargetLive)}
-                          />
-                          <Typography variant="body2" color="textSecondary">
-                            <FormattedMessage id="publishingTargetLive.live" defaultMessage="Submitted to live" />
-                          </Typography>
-                        </>
-                      ) : item.stateMap.submittedToStaging ? (
-                        <>
-                          <PublishingTargetIcon
-                            className={clsx(classes.publishingTargetIcon, classes.publishingTargetStaged)}
-                          />
-                          <Typography variant="body2" color="textSecondary">
-                            <FormattedMessage
-                              id="publishingTargetStaged.staging"
-                              defaultMessage="Submitted to staging"
-                            />
-                          </Typography>
-                        </>
-                      ) : (
-                        <>
-                          <PublishingTargetIcon className={classes.publishingTargetIcon} />
-                          <Typography variant="body2" color="textSecondary">
-                            <FormattedMessage id="words.unpublished" defaultMessage="Unpublished" />
-                          </Typography>
-                        </>
-                      )}
-                    </Box>
-                  )}
+                      </>
+                    ) : item.stateMap.submittedToStaging ? (
+                      <>
+                        <PublishingTargetIcon
+                          className={clsx(classes.publishingTargetIcon, classes.publishingTargetStaged)}
+                        />
+                        <Typography variant="body2" color="textSecondary">
+                          <FormattedMessage id="publishingTargetStaged.staging" defaultMessage="Submitted to staging" />
+                        </Typography>
+                      </>
+                    ) : (
+                      <>
+                        <PublishingTargetIcon className={classes.publishingTargetIcon} />
+                        <Typography variant="body2" color="textSecondary">
+                          <FormattedMessage id="words.unpublished" defaultMessage="Unpublished" />
+                        </Typography>
+                      </>
+                    )}
+                  </Box>
                   <Typography variant="body2" color="textSecondary">
                     {item.path}
                   </Typography>

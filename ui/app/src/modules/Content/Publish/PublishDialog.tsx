@@ -447,18 +447,26 @@ function PublishDialogWrapper(props: PublishDialogProps) {
     }
 
     _items?.reduce((prev, current) => {
-      if (prev.stateMap.live !== current.stateMap.live) {
+      let prev_environment = prev.stateMap.submittedToLive ? 'live' : prev.stateMap.submittedToStaging ? 'staging' : '';
+      let current_environment = current.stateMap.submittedToLive
+        ? 'live'
+        : current.stateMap.submittedToStaging
+        ? 'staging'
+        : '';
+      if (prev_environment !== current_environment || prev.stateMap.live !== current.stateMap.live) {
         state.mixedPublishingTargets = true;
         state.environment = '';
       }
-      if (prev.live.dateScheduled !== current.live.dateScheduled) {
+      if (prev[prev_environment]?.dateScheduled !== current[current_environment]?.dateScheduled) {
         state.mixedPublishingDates = true;
       }
       if (state.dateScheduled === null) {
-        state.dateScheduled = prev.live.dateScheduled ? prev.live.dateScheduled : current.live.dateScheduled;
+        state.dateScheduled = prev[prev_environment]?.dateScheduled
+          ? prev[prev_environment].dateScheduled
+          : current[prev_environment]?.dateScheduled ?? null;
       }
       if (state.environment === '' && state.mixedPublishingTargets === false) {
-        state.environment = prev.stateMap.submittedToLive ? 'live' : prev.stateMap.submittedToStaging ? 'staging' : '';
+        state.environment = prev_environment;
       }
       return current;
     });

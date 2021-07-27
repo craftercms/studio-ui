@@ -176,7 +176,7 @@ export default function RecentActivityDashletGridUI(props: RecentActivityDashlet
                 {getDateScheduled(item) ? (
                   asLocalizedDateTime(getDateScheduled(item), locale.localeCode, locale.dateTimeFormatOptions)
                 ) : getDatePublished(item) ? (
-                  asLocalizedDateTime(getDateScheduled(item), locale.localeCode, locale.dateTimeFormatOptions)
+                  asLocalizedDateTime(getDatePublished(item), locale.localeCode, locale.dateTimeFormatOptions)
                 ) : (
                   <Typography variant="caption" color="textSecondary">
                     <FormattedMessage id="words.unpublished" defaultMessage="Unpublished" />
