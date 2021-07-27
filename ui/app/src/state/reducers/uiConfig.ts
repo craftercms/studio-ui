@@ -26,26 +26,14 @@ import {
   fetchSiteLocaleFailed
 } from '../actions/system';
 import { fetchSiteLocales, fetchSiteLocalesComplete, fetchSiteLocalesFailed } from '../actions/translation';
+import { deserialize, fromString, serialize } from '../../utils/xml';
+import { applyDeserializedXMLTransforms } from '../../utils/object';
 
 const initialState: GlobalState['uiConfig'] = {
   error: null,
   isFetching: null,
   currentSite: null,
-  preview: {
-    toolbar: {
-      leftSection: null,
-      middleSection: null,
-      rightSection: null
-    },
-    toolsPanel: {
-      widgets: null
-    },
-    pageBuilderPanel: {
-      widgets: null
-    }
-  },
   launcher: null,
-  dashboard: null,
   globalNavigation: {
     error: null,
     items: null,
@@ -84,11 +72,40 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
     isFetching: true,
     currentSite: site
   }),
-  [fetchSiteUiConfigComplete.type]: (state, { payload }) => ({
-    ...state,
-    isFetching: false,
-    ...payload
-  }),
+  [fetchSiteUiConfigComplete.type]: (state, { payload }) => {
+    const configDOM = fromString(payload.config);
+    const site = payload.site;
+    const references = {};
+    const arrays = ['widgets', 'roles', 'excludes', 'devices', 'values', 'siteCardMenuLinks', 'tools'];
+    const renameTable = { permittedRoles: 'roles' };
+
+    configDOM.querySelectorAll(':scope > references > reference').forEach((tag) => {
+      references[tag.id] = applyDeserializedXMLTransforms(deserialize(tag.innerHTML), {
+        arrays,
+        renameTable
+      });
+    });
+
+    configDOM.querySelectorAll('configuration > reference').forEach((tag) => {
+      tag.outerHTML = references[tag.id];
+    });
+
+    configDOM.querySelectorAll('plugin').forEach((tag) => {
+      const siteAttr = tag.getAttribute('site');
+      if (siteAttr === '{site}' || siteAttr === null) {
+        tag.setAttribute('site', site);
+      }
+    });
+
+    configDOM.querySelectorAll('widget').forEach((e, index) => e.setAttribute('uiKey', String(index)));
+
+    return {
+      ...state,
+      isFetching: false,
+      xml: serialize(configDOM),
+      references: references
+    };
+  },
   [fetchSiteUiConfigFailed.type]: (state, { payload }) => ({
     ...state,
     error: payload,

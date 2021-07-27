@@ -20,9 +20,6 @@ import { catchAjaxError } from '../../utils/ajax';
 import { fetchSiteUiConfig, fetchSiteUiConfigComplete, fetchSiteUiConfigFailed } from '../actions/configuration';
 import { fetchSiteUiConfig as fetchSiteUiConfigService } from '../../services/configuration';
 import { CrafterCMSEpic } from '../store';
-import uiConfigDefaults from '../../assets/uiConfigDefaults';
-import { deserialize, fromString } from '../../utils/xml';
-import { applyDeserializedXMLTransforms } from '../../utils/object';
 
 export default [
   (action$) =>
@@ -32,26 +29,7 @@ export default [
       // config that would be retrieved would be the first site.
       exhaustMap(({ payload }) =>
         fetchSiteUiConfigService(payload.site).pipe(
-          map((config) => {
-            const configDOM = fromString(config);
-            const storeConfig = {
-              xml: config,
-              references: {}
-            };
-            const references = {};
-            const arrays = ['widgets', 'roles', 'excludes', 'devices', 'values', 'siteCardMenuLinks', 'tools'];
-            const renameTable = { permittedRoles: 'roles' };
-
-            configDOM.querySelectorAll(':scope > references > reference').forEach((tag) => {
-              references[tag.id] = tag.innerHTML;
-              storeConfig.references[tag.id] = applyDeserializedXMLTransforms(deserialize(tag.innerHTML), {
-                arrays,
-                renameTable
-              });
-            });
-
-            return fetchSiteUiConfigComplete(config === null ? uiConfigDefaults : storeConfig);
-          }),
+          map((config) => fetchSiteUiConfigComplete({ config, site: payload.site })),
           catchAjaxError(fetchSiteUiConfigFailed)
         )
       )

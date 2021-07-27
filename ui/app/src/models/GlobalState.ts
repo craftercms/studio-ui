@@ -226,25 +226,6 @@ export interface GlobalState {
     error: ApiResponse;
     isFetching: boolean;
     currentSite: string;
-    preview: {
-      toolbar: {
-        leftSection: {
-          widgets: WidgetDescriptor[];
-        };
-        middleSection: {
-          widgets: WidgetDescriptor[];
-        };
-        rightSection: {
-          widgets: WidgetDescriptor[];
-        };
-      };
-      toolsPanel: {
-        widgets: WidgetDescriptor[];
-      };
-      pageBuilderPanel: {
-        widgets: WidgetDescriptor[];
-      };
-    };
     launcher: {
       widgets: WidgetDescriptor[];
       /**
@@ -258,9 +239,6 @@ export interface GlobalState {
         icon?: SystemIconDescriptor;
         roles?: string[];
       }>;
-    };
-    dashboard: {
-      widgets: WidgetDescriptor[];
     };
     globalNavigation: {
       error: AjaxError;

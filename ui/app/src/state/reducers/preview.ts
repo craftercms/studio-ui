@@ -74,7 +74,19 @@ import { changeSite } from './sites';
 import { envInitialState } from './env';
 import { fetchGlobalPropertiesComplete } from '../actions/user';
 import { storeInitialized } from '../actions/system';
-import { deserialize, fromString, xmlPreprocessor } from '../../utils/xml';
+import { deserialize, fromString } from '../../utils/xml';
+import { defineMessages } from 'react-intl';
+
+const messages = defineMessages({
+  emptyUiConfigMessageTitle: {
+    id: 'emptyUiConfigMessageTitle.title',
+    defaultMessage: 'Configuration is empty'
+  },
+  emptyUiConfigMessageSubtitle: {
+    id: 'emptyUiConfigMessageTitle.subtitle',
+    defaultMessage: 'Nothing is set to be shown here.'
+  }
+});
 
 const audiencesPanelInitialState = {
   isFetching: null,
@@ -573,8 +585,8 @@ const reducer = createReducer<GlobalState['preview']>(
             id: 'craftercms.component.EmptyState',
             uiKey: -1,
             configuration: {
-              title: 'emptyUiConfigMessageTitle' /* messages.emptyUiConfigMessageTitle */,
-              subtitle: 'emptyUiConfigMessageSubtitle' /* messages.emptyUiConfigMessageSubtitle */
+              title: messages.emptyUiConfigMessageTitle,
+              subtitle: messages.emptyUiConfigMessageSubtitle
             }
           }
         ]
@@ -582,13 +594,11 @@ const reducer = createReducer<GlobalState['preview']>(
       const arrays = ['widgets', 'roles', 'excludes', 'devices', 'values', 'siteCardMenuLinks', 'tools'];
       const lookupTables = ['fields'];
       const renameTable = { permittedRoles: 'roles' };
-      const configDOM = xmlPreprocessor(fromString(payload.configXml), payload.references);
+      const configDOM = fromString(payload.configXml);
       const toolsPanelPages = configDOM.querySelector(
         '[id="craftercms.components.ToolsPanel"] > configuration > widgets'
       );
       if (toolsPanelPages) {
-        // TODO: this uiKey thing will go to xmlPreprocessor
-        toolsPanelPages.querySelectorAll('widget').forEach((e, index) => e.setAttribute('uiKey', String(index)));
         toolsPanelConfig = applyDeserializedXMLTransforms(deserialize(toolsPanelPages), {
           arrays,
           lookupTables,
@@ -609,13 +619,12 @@ const reducer = createReducer<GlobalState['preview']>(
       };
       const arrays = ['widgets', 'roles', 'excludes', 'devices', 'values', 'siteCardMenuLinks', 'tools'];
       const renameTable = { permittedRoles: 'roles' };
-      const configDOM = xmlPreprocessor(fromString(payload.configXml), payload.references);
+      const configDOM = fromString(payload.configXml);
       const toolbar = configDOM.querySelector('[id="craftercms.components.PreviewToolbar"] > configuration');
 
       if (toolbar) {
         const leftSection = toolbar.querySelector('leftSection > widgets');
         if (leftSection) {
-          leftSection.querySelectorAll('widget').forEach((e, index) => e.setAttribute('uiKey', String(index)));
           toolbarConfig.leftSection = applyDeserializedXMLTransforms(deserialize(leftSection), {
             arrays,
             renameTable
@@ -623,7 +632,6 @@ const reducer = createReducer<GlobalState['preview']>(
         }
         const middleSection = toolbar.querySelector('middleSection > widgets');
         if (middleSection) {
-          middleSection.querySelectorAll('widget').forEach((e, index) => e.setAttribute('uiKey', String(index)));
           toolbarConfig.middleSection = applyDeserializedXMLTransforms(deserialize(middleSection), {
             arrays,
             renameTable
@@ -631,7 +639,6 @@ const reducer = createReducer<GlobalState['preview']>(
         }
         const rightSection = toolbar.querySelector('rightSection > widgets');
         if (rightSection) {
-          rightSection.querySelectorAll('widget').forEach((e, index) => e.setAttribute('uiKey', String(index)));
           toolbarConfig.rightSection = applyDeserializedXMLTransforms(deserialize(rightSection), {
             arrays,
             renameTable
@@ -659,14 +666,13 @@ const reducer = createReducer<GlobalState['preview']>(
       };
       const arrays = ['widgets', 'roles', 'excludes', 'devices', 'values', 'siteCardMenuLinks', 'tools'];
       const renameTable = { permittedRoles: 'roles' };
-      const configDOM = xmlPreprocessor(fromString(payload.configXml), payload.references);
+      const configDOM = fromString(payload.configXml);
       const pageBuilderPanel = configDOM.querySelector(
         '[id="craftercms.components.PageBuilderPanel"] > configuration > widgets'
       );
       if (pageBuilderPanel) {
         const lookupTables = ['fields'];
         pageBuilderPanel.querySelectorAll('widget').forEach((e, index) => {
-          e.setAttribute('uiKey', String(index));
           if (e.getAttribute('id') === 'craftercms.components.ToolsPanelPageButton') {
             e.querySelector(':scope > configuration')?.setAttribute('target', 'pageBuilderPanel');
           }

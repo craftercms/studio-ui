@@ -24,7 +24,6 @@ import ContentInstance from '../models/ContentInstance';
 import { VersionsResponse } from '../models/Version';
 import LookupTable from '../models/LookupTable';
 import GlobalState from '../models/GlobalState';
-import { defineMessages } from 'react-intl';
 import { SiteConfigurationFile } from '../models/SiteConfigurationFile';
 
 export type CrafterCMSModules = 'studio' | 'engine';
@@ -156,41 +155,7 @@ export function setActiveTargetingModel(data): Observable<ActiveTargetingModel> 
 
 // endregion
 
-const messages = defineMessages({
-  emptyUiConfigMessageTitle: {
-    id: 'emptyUiConfigMessageTitle.title',
-    defaultMessage: 'Configuration is empty'
-  },
-  emptyUiConfigMessageSubtitle: {
-    id: 'emptyUiConfigMessageTitle.subtitle',
-    defaultMessage: 'Nothing is set to be shown here.'
-  }
-});
-
 export function fetchSiteUiConfig(site: string): Observable<string> {
-  // const arrays = ['widgets', 'roles', 'excludes', 'devices', 'values', 'siteCardMenuLinks', 'tools'];
-  // const renameTable = { permittedRoles: 'roles' };
-  // Reading references
-  // const references = {};
-  // xml.querySelectorAll(':scope > references > reference').forEach((tag) => {
-  //   references[tag.id] = tag.innerHTML;
-  //   config.references[tag.id] = applyDeserializedXMLTransforms(deserialize(tag.innerHTML), {
-  //     arrays,
-  //     renameTable
-  //   });
-  // });
-  // // Replacing references
-  // // TODO: referencesExpansion will go in xmlPreprocessor
-  // xml.querySelectorAll('configuration > reference').forEach((tag) => {
-  //   tag.outerHTML = references[tag.id];
-  // });
-  // xml.querySelectorAll('plugin').forEach((tag) => {
-  //   const siteAttr = tag.getAttribute('site');
-  //   if (siteAttr === '{site}' || siteAttr === null) {
-  //     tag.setAttribute('site', site);
-  //   }
-  // });
-
   return fetchConfigurationXML(site, '/ui.xml', 'studio');
 }
 
