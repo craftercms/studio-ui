@@ -39,7 +39,7 @@ import palette from '../../../styles/palette';
 import { useLocale } from '../../../utils/hooks/useLocale';
 import { asLocalizedDateTime } from '../../../utils/datetime';
 import { getDatePublished, getDateScheduled } from '../../../utils/detailedItem';
-import Alert from '@material-ui/lab/Alert';
+import ErrorOutlineOutlinedIcon from '@material-ui/icons/ErrorOutlineOutlined';
 
 interface DependencySelectionProps {
   items?: DetailedItem[] | SandboxItem[];
@@ -140,7 +140,12 @@ const useStyles = makeStyles((theme) =>
       marginRight: '5px'
     },
     emptyDependencies: {
-      margin: '0 8px'
+      display: 'flex',
+      alignItems: 'center',
+      padding: '8px',
+      '& svg': {
+        marginRight: '8px'
+      }
     }
   })
 );
@@ -498,9 +503,10 @@ function SelectionList(props: SelectionListProps) {
               );
             })
           ) : (
-            <Alert severity="info" className={classes.emptyDependencies}>
-              {emptyMessage}
-            </Alert>
+            <Box className={classes.emptyDependencies}>
+              <ErrorOutlineOutlinedIcon color="action" fontSize="small" />
+              <Typography variant="caption">{emptyMessage}</Typography>
+            </Box>
           )}
         </List>
       )}
