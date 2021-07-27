@@ -890,7 +890,7 @@
   "pastePolicy.error": "The selected {action} target goes against site policies for the destination directory.",
   "pathNavigator.noChildren": "Item has no children",
   "pathNavigator.noItemsAtLocation": "No items at this location",
-  "pathNavigator.pathFilterInputPlaceholder": "Filter {name}...",
+  "pathNavigator.pathFilterInputPlaceholder": "Filter children of {name}...",
   "pathNavigator.viewChildren": "View children",
   "pathNavigatorTreeItemFilter.placeholder": "Filter children...",
   "pathSelectionDialog.createFolderButtonLabel": "Create Folder",
