@@ -195,7 +195,7 @@ interface AppsRailProps {
   user: EnhancedUser;
   onLogout(): void;
   closeButtonPosition: LauncherStateProps['closeButtonPosition'];
-  globalNavigationPosition: GlobalState['uiConfig']['launcher']['globalNavigationPosition'];
+  globalNavigationPosition: GlobalState['launcher']['globalNavigationPosition'];
   userRoles: string[];
 }
 

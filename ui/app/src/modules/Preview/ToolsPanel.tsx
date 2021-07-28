@@ -107,7 +107,7 @@ export default function ToolsPanel() {
           classes: { root: classes.loadingViewRoot }
         }}
         withEmptyStateProps={{
-          isEmpty: (widgets) => !site || !widgets || widgets?.length === 0,
+          isEmpty: (widgets) => !site || widgets?.length === 0,
           emptyStateProps: {
             title: site ? (
               <FormattedMessage id="previewTools.noWidgetsMessage" defaultMessage="No tools have been configured" />

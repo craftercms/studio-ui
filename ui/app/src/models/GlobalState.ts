@@ -226,25 +226,6 @@ export interface GlobalState {
     error: ApiResponse;
     isFetching: boolean;
     currentSite: string;
-    launcher: {
-      widgets: WidgetDescriptor[];
-      /**
-       * Whether to render the global nav before or after
-       * the additional widgets coming from configuration
-       **/
-      globalNavigationPosition?: 'before' | 'after';
-      siteCardMenuLinks: Array<{
-        title: TranslationOrText;
-        systemLinkId: SystemLinkId;
-        icon?: SystemIconDescriptor;
-        roles?: string[];
-      }>;
-    };
-    globalNavigation: {
-      error: AjaxError;
-      items: Array<{ icon: SystemIconDescriptor; id: string; label: string }>;
-      isFetching: boolean;
-    };
     siteLocales: {
       error: ApiResponse;
       isFetching: boolean;
@@ -257,10 +238,7 @@ export interface GlobalState {
       localeCode: string;
       dateTimeFormatOptions?: DateTimeFormatOptions;
     };
-    publishing: {
-      submissionCommentMaxLength: number;
-    };
-    references: LookupTable<LookupTable<any>>;
+    references: LookupTable;
     xml: string;
   };
   pathNavigator: {
@@ -285,6 +263,14 @@ export interface GlobalState {
   };
   dashboard: {
     widgets: WidgetDescriptor[];
+  };
+  publishing: {
+    submissionCommentMaxLength: number;
+  };
+  globalNavigation: {
+    error: AjaxError;
+    items: Array<{ icon: SystemIconDescriptor; id: string; label: string }>;
+    isFetching: boolean;
   };
 }
 

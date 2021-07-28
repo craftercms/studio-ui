@@ -18,13 +18,7 @@ import { GlobalState } from '../../models/GlobalState';
 import { createReducer } from '@reduxjs/toolkit';
 import { fetchSiteUiConfig, fetchSiteUiConfigComplete, fetchSiteUiConfigFailed } from '../actions/configuration';
 import { changeSite } from './sites';
-import {
-  fetchGlobalMenuComplete,
-  fetchGlobalMenuFailed,
-  fetchSiteLocale,
-  fetchSiteLocaleComplete,
-  fetchSiteLocaleFailed
-} from '../actions/system';
+import { fetchSiteLocale, fetchSiteLocaleComplete, fetchSiteLocaleFailed } from '../actions/system';
 import { fetchSiteLocales, fetchSiteLocalesComplete, fetchSiteLocalesFailed } from '../actions/translation';
 import { deserialize, fromString, serialize } from '../../utils/xml';
 import { applyDeserializedXMLTransforms } from '../../utils/object';
@@ -33,12 +27,6 @@ const initialState: GlobalState['uiConfig'] = {
   error: null,
   isFetching: null,
   currentSite: null,
-  launcher: null,
-  globalNavigation: {
-    error: null,
-    items: null,
-    isFetching: false
-  },
   siteLocales: {
     error: null,
     isFetching: false,
@@ -58,15 +46,12 @@ const initialState: GlobalState['uiConfig'] = {
       minute: 'numeric'
     }
   },
-  publishing: {
-    submissionCommentMaxLength: 250
-  },
   references: null,
   xml: null
 };
 
 const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
-  [changeSite.type]: (state) => ({ ...initialState, globalNavigation: state.globalNavigation }),
+  [changeSite.type]: (state) => ({ ...initialState }),
   [fetchSiteUiConfig.type]: (state, { payload: { site } }) => ({
     ...state,
     isFetching: true,
@@ -116,31 +101,6 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
     error: payload,
     isFetching: false,
     currentSite: null
-  }),
-  [fetchGlobalMenuComplete.type]: (state, { payload }) => ({
-    ...state,
-    globalNavigation: {
-      ...state.globalNavigation,
-      isFetching: true
-    }
-  }),
-  [fetchGlobalMenuComplete.type]: (state, { payload }) => ({
-    ...state,
-    globalNavigation: {
-      error: null,
-      items: payload,
-      isFetching: false
-    }
-  }),
-  // @ts-ignore
-  // TODO: why is this failing?
-  [fetchGlobalMenuFailed.type]: (state, { payload }) => ({
-    ...state,
-    globalNavigation: {
-      error: payload,
-      items: state.globalNavigation.items,
-      isFetching: false
-    }
   }),
   [fetchSiteLocales.type]: (state) => ({
     ...state,

@@ -172,7 +172,7 @@ const legacyToNextMenuIconMap = {
   'fa-key': '@material-ui/icons/VpnKeyRounded'
 };
 
-export function fetchGlobalMenuItems(): Observable<GlobalState['uiConfig']['globalNavigation']['items']> {
+export function fetchGlobalMenuItems(): Observable<GlobalState['globalNavigation']['items']> {
   return get('/studio/api/2/ui/views/global_menu.json').pipe(
     pluck('response', 'menuItems'),
     map((items) => [
