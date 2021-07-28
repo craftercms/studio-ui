@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { errorSelectorApi1, get, getGlobalHeaders, getText, post, postJSON } from '../utils/ajax';
+import { errorSelectorApi1, get, getBinary, getGlobalHeaders, getText, post, postJSON } from '../utils/ajax';
 import { catchError, map, mapTo, pluck, switchMap, tap } from 'rxjs/operators';
 import { forkJoin, Observable, of, zip } from 'rxjs';
 import { createElements, fromString, getInnerHtml, serialize, wrapElementInAuxDocument } from '../utils/xml';
@@ -1072,8 +1072,25 @@ export function fetchLegacyItemsTree(
   ).pipe(pluck('response', 'item'), catchError(errorSelectorApi1));
 }
 
-export function fetchContentByCommitId(site: string, path: string, commitId: string) {
-  return get(`/studio/api/2/content/get_content_by_commit_id?siteId=${site}&path=${path}&commitId=${commitId}`).pipe(
-    pluck('response', 'content')
+export function fetchContentByCommitId(site: string, path: string, commitId: string): Observable<string | Blob> {
+  return getBinary(
+    `/studio/api/2/content/get_content_by_commit_id?siteId=${site}&path=${path}&commitId=${commitId}`,
+    void 0,
+    'blob'
+  ).pipe(
+    switchMap((ajax) => {
+      const blob: Blob = ajax.response;
+      const type = ajax.xhr.getResponseHeader('content-type');
+      if (
+        /^text\//.test(type) ||
+        /^application\/(x-httpd-php|rtf|xhtml\+xml|xml|json|ld\+json|javascript|x-groovy|x-sh)$/.test(type)
+      ) {
+        return blob.text() as Promise<string>;
+      } else if (/^image\//.test(type)) {
+        return of(URL.createObjectURL(blob));
+      } else {
+        return of(blob);
+      }
+    })
   );
 }

@@ -313,34 +313,18 @@ function HistoryDialogBody(props: HistoryDialogProps) {
         ])
       );
     } else {
-      if (isImage(item)) {
+      fetchContentByCommitId(site, item.path, version.versionNumber).subscribe((content) => {
+        const image = isImage(item);
         dispatch(
           showPreviewDialog({
-            type: 'image',
-            tree: item.label,
-            url: item.path
-          })
-        );
-      } else {
-        const mode = getEditorMode(item);
-        dispatch(
-          showPreviewDialog({
-            type: 'editor',
+            type: image ? 'image' : 'editor',
             title: item.label,
-            url: item.path,
-            mode,
+            [image ? 'url' : 'content']: content,
+            mode: image ? void 0 : getEditorMode(item),
             subtitle: `v.${version.versionNumber}`
           })
         );
-
-        fetchContentByCommitId(site, item.path, version.versionNumber).subscribe((content) => {
-          dispatch(
-            updatePreviewDialog({
-              content
-            })
-          );
-        });
-      }
+      });
     }
   };
 
