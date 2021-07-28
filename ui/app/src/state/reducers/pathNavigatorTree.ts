@@ -24,12 +24,15 @@ import {
   pathNavigatorTreeFetchPathChildrenComplete,
   pathNavigatorTreeFetchPathPageComplete,
   pathNavigatorTreeFetchPathsChildrenComplete,
+  pathNavigatorTreeFetchRootItemComplete,
   pathNavigatorTreeInit,
+  pathNavigatorTreeRefresh,
   pathNavigatorTreeRestoreComplete,
   pathNavigatorTreeSetKeyword,
   pathNavigatorTreeToggleExpanded
 } from '../actions/pathNavigatorTree';
 import { changeSite } from './sites';
+import { createPresenceTable } from '../../utils/array';
 
 const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
   {},
@@ -47,7 +50,17 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
           expanded,
           childrenByParentPath: {},
           keywordByPath,
-          totalByPath: {}
+          totalByPath: {},
+          fetchingByPath: { ...createPresenceTable(expanded), [path]: true }
+        }
+      };
+    },
+    [pathNavigatorTreeFetchRootItemComplete.type]: (state, { payload: { id, item } }) => {
+      return {
+        ...state,
+        [id]: {
+          ...state[id],
+          fetchingByPath: { ...state[id].fetchingByPath, [item.path]: false }
         }
       };
     },
@@ -95,7 +108,8 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
         ...state,
         [id]: {
           ...state[id],
-          ...(!state[id].expanded.includes(path) && { expanded: [...state[id].expanded, path] })
+          ...(!state[id].expanded.includes(path) && { expanded: [...state[id].expanded, path] }),
+          fetchingByPath: { ...state[id].fetchingByPath, [path]: true }
         }
       };
     },
@@ -123,7 +137,8 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
           totalByPath: {
             ...state[id].totalByPath,
             [parentPath]: children.total
-          }
+          },
+          fetchingByPath: { ...state[id].fetchingByPath, [parentPath]: false }
         }
       };
     },
@@ -165,6 +180,15 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
         }
       };
     },
+    [pathNavigatorTreeRefresh.type]: (state, { payload: { id, rootPath } }) => {
+      return {
+        ...state,
+        [id]: {
+          ...state[id],
+          fetchingByPath: { ...state[id].fetchingByPath, [state[id].rootPath]: true }
+        }
+      };
+    },
     [pathNavigatorTreeRestoreComplete.type]: (state, { payload: { id, data } }) => {
       const children = {};
       const total = {};
@@ -198,7 +222,8 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
           totalByPath: {
             ...state[id].totalByPath,
             ...total
-          }
+          },
+          fetchingByPath: { ...state[id].fetchingByPath, ...createPresenceTable(expanded, false) }
         }
       };
     },

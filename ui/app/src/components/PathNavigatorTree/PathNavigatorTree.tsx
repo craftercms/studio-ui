@@ -23,10 +23,8 @@ import {
   pathNavigatorTreeExpandPath,
   pathNavigatorTreeFetchPathChildren,
   pathNavigatorTreeFetchPathPage,
-  pathNavigatorTreeFetchPathsChildren,
   pathNavigatorTreeInit,
   pathNavigatorTreeRefresh,
-  pathNavigatorTreeSetKeyword,
   pathNavigatorTreeToggleExpanded
 } from '../../state/actions/pathNavigatorTree';
 import { StateStylingProps } from '../../models/UiConfig';
@@ -37,18 +35,6 @@ import { getNumOfMenuOptionsForItem, lookupItemByPath } from '../../utils/conten
 import { ContextMenuOptionDescriptor, toContextMenuOptionsLookup } from '../../utils/itemActions';
 import { defineMessages, useIntl } from 'react-intl';
 import { previewItem } from '../../state/actions/preview';
-import { debounceTime, filter } from 'rxjs/operators';
-import {
-  folderCreated,
-  folderRenamed,
-  itemCreated,
-  itemDuplicated,
-  itemsDeleted,
-  itemsPasted,
-  itemUnlocked,
-  pluginInstalled
-} from '../../state/actions/system';
-import { getHostToHostBus } from '../../modules/Preview/previewContext';
 // @ts-ignore
 import { getOffsetLeft, getOffsetTop } from '@material-ui/core/Popover/Popover';
 import { showEditDialog, showItemMegaMenu, showPreviewDialog, updatePreviewDialog } from '../../state/actions/dialogs';
@@ -56,7 +42,7 @@ import { getStoredPathNavigatorTree } from '../../utils/state';
 import GlobalState from '../../models/GlobalState';
 import { nnou } from '../../utils/object';
 import PathNavigatorSkeletonTree from './PathNavigatorTreeSkeleton';
-import { getParentPath, withIndex, withoutIndex } from '../../utils/path';
+import { withIndex, withoutIndex } from '../../utils/path';
 import { DetailedItem } from '../../models/Item';
 import { fetchContentXML } from '../../services/content';
 import { SystemIconDescriptor } from '../SystemIcon';
@@ -67,7 +53,6 @@ import { useEnv } from '../../utils/hooks/useEnv';
 import { useActiveUser } from '../../utils/hooks/useActiveUser';
 import { useItemsByPath } from '../../utils/hooks/useItemsByPath';
 import { useSubject } from '../../utils/hooks/useSubject';
-import { useMount } from '../../utils/hooks/useMount';
 
 interface PathNavigatorTreeProps {
   id: string;
@@ -75,7 +60,7 @@ interface PathNavigatorTreeProps {
   rootPath: string;
   excludes?: string[];
   limit?: number;
-  backgroundRefreshTimeoutMs: number;
+  backgroundRefreshTimeoutMs?: number;
   icon?: SystemIconDescriptor;
   expandedIcon?: SystemIconDescriptor;
   collapsedIcon?: SystemIconDescriptor;
@@ -89,6 +74,7 @@ export interface PathNavigatorTreeStateProps {
   expanded: string[];
   childrenByParentPath: LookupTable<string[]>;
   keywordByPath: LookupTable<string>;
+  fetchingByPath: LookupTable<boolean>;
   totalByPath: LookupTable<number>;
 }
 
@@ -129,9 +115,10 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   const site = useActiveSiteId();
   const user = useActiveUser();
   const itemsByPath = useItemsByPath();
-  const childrenByParentPath = state?.childrenByParentPath;
   const keywordByPath = state?.keywordByPath;
   const totalByPath = state?.totalByPath;
+  const childrenByParentPath = useMemo(() => state?.childrenByParentPath ?? {}, [state?.childrenByParentPath]);
+  const fetchingByPath = useMemo(() => state?.fetchingByPath ?? {}, [state?.fetchingByPath]);
   const rootItem = lookupItemByPath(props.rootPath, itemsByPath);
   const rootPath = rootItem?.path ?? props.rootPath;
 
@@ -142,8 +129,6 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   });
   const { formatMessage } = useIntl();
   const nodesByPathRef = useRef<LookupTable<TreeNode>>({});
-  const keywordByPathRef = useRef({});
-  const fetchingPathsRef = useRef(null);
   const onSearch$ = useSubject<{ keyword: string; path: string }>();
   const uiConfig = useSelection<GlobalState['uiConfig']>((state) => state.uiConfig);
   const storedState = useMemo(() => {
@@ -151,51 +136,25 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   }, [id, site, user.username]);
   const { authoringBase } = useEnv();
   const dispatch = useDispatch();
-  const intervalRef = useRef<any>();
+
+  const hasActiveSession = useSelection((state) => state.auth.active);
 
   useEffect(() => {
-    if (backgroundRefreshTimeoutMs) {
-      intervalRef.current = setInterval(() => {
-        state.expanded.forEach((path) => fetchingPathsRef.current.push(path));
-        dispatch(pathNavigatorTreeBackgroundRefresh({ id }));
+    if (backgroundRefreshTimeoutMs && hasActiveSession) {
+      let interval = setInterval(() => {
+        // dispatch(pathNavigatorTreeBackgroundRefresh({ id }));
       }, backgroundRefreshTimeoutMs);
       return () => {
-        clearInterval(intervalRef.current);
+        clearInterval(interval);
       };
     }
-  }, [state?.expanded, backgroundRefreshTimeoutMs, dispatch, id]);
-
-  if (state && fetchingPathsRef.current === null) {
-    // Restoring previously loaded state from redux
-    fetchingPathsRef.current = [];
-    Object.keys(state.childrenByParentPath).forEach((path) => {
-      fetchingPathsRef.current.push(path, ...state.childrenByParentPath[path]);
-    });
-  } else if (fetchingPathsRef.current === null) {
-    fetchingPathsRef.current = [];
-  }
-
-  useMount(() => {
-    if (state) {
-      // If the state is being restored from redux, fetchingPathsRef is being processed.
-      // Added a timeout to trigger the process again with a new fetchingPathsRef
-      setTimeout(() => {
-        state.expanded.forEach((path) => fetchingPathsRef.current.push(path));
-        dispatch(pathNavigatorTreeBackgroundRefresh({ id }));
-      });
-    }
-  });
+  }, [backgroundRefreshTimeoutMs, dispatch, id, hasActiveSession]);
 
   useEffect(() => {
     // Adding uiConfig as means to stop navigator from trying to
     // initialize with previous state information when switching sites
     if (!state && uiConfig.currentSite === site) {
       const { expanded, collapsed, keywordByPath } = storedState;
-      if (expanded) {
-        expanded.forEach((path) => {
-          fetchingPathsRef.current.push(path);
-        });
-      }
       dispatch(
         pathNavigatorTreeInit({
           id,
@@ -223,202 +182,41 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   }, [rootItem]);
 
   useEffect(() => {
-    const nextFetching = [];
-    fetchingPathsRef.current.forEach((path) => {
-      if (childrenByParentPath?.[path]) {
-        if (!itemsByPath[path]) {
-          // if itemsByPath[path] doesn't exist it means is the result from a 404 getChildren and should be ignore
-          return null;
-        }
-
-        if (!nodesByPathRef.current[path]) {
-          // if nodesByPathRef[path] doesn't exist, it means the node comes from restoring the localStorage and the parent node is collapsed
+    Object.keys(fetchingByPath).forEach((path) => {
+      if (itemsByPath[path]) {
+        if (fetchingByPath[path]) {
+          // If the items is being fetched, adding loading to the children
           nodesByPathRef.current[path] = {
             id: path,
             name: itemsByPath[path].label,
-            children: []
+            children: [{ id: 'loading' }]
           };
         } else {
-          nodesByPathRef.current[path].children = [];
-        }
-
-        // If the children are empty and there are filtered search, we will add a empty node
-        if (Boolean(keywordByPathRef.current[path]) && childrenByParentPath[path].length === 0) {
-          nodesByPathRef.current[path].children = [
-            {
-              id: 'empty'
-            }
-          ];
-        }
-
-        childrenByParentPath[path].forEach((childPath) => {
-          const node = {
-            id: childPath,
-            name: itemsByPath[childPath].label,
-            children: nodesByPathRef.current[childPath]?.children ?? [{ id: 'loading' }]
-          };
-          nodesByPathRef.current[path].children.push(node);
-          nodesByPathRef.current[childPath] = node;
-        });
-
-        // If the node children total is less than the total items for the children we will add a more node
-        if (nodesByPathRef.current[path].children.length < totalByPath[path]) {
-          nodesByPathRef.current[path].children.push({ id: 'more', parentPath: path });
-        }
-        setRootNode({ ...nodesByPathRef.current[rootPath] });
-      } else {
-        nextFetching.push(path);
-      }
-    });
-    fetchingPathsRef.current = nextFetching;
-  }, [rootPath, childrenByParentPath, itemsByPath, totalByPath]);
-
-  useEffect(() => {
-    keywordByPathRef.current = keywordByPath;
-  }, [keywordByPath]);
-
-  useEffect(() => {
-    const subscription = onSearch$.pipe(debounceTime(400)).subscribe(({ keyword, path }) => {
-      if (!fetchingPathsRef.current.includes(path)) {
-        fetchingPathsRef.current.push(path);
-      }
-      dispatch(
-        pathNavigatorTreeSetKeyword({
-          id,
-          path,
-          keyword
-        })
-      );
-    });
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [dispatch, id, onSearch$, rootPath]);
-
-  // region Item Updates Propagation
-  useEffect(() => {
-    const events = [
-      itemsPasted.type,
-      itemUnlocked.type,
-      // itemUpdated is not needed because when the item is updated itemsByPath is also updated and the tree will re-render and updates the items
-      folderCreated.type,
-      folderRenamed.type,
-      itemsDeleted.type,
-      itemDuplicated.type,
-      itemCreated.type,
-      pluginInstalled.type
-    ];
-    const hostToHost$ = getHostToHostBus();
-    const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
-      switch (type) {
-        case itemsPasted.type:
-        case folderCreated.type: {
-          if (payload.clipboard?.type === 'CUT') {
-            const parentPath = getParentPath(payload.clipboard.sourcePath);
-            const sourceNode = lookupItemByPath(parentPath, nodesByPathRef.current);
-            const targetNode = lookupItemByPath(payload.target, nodesByPathRef.current);
-
-            const paths = {};
-            if (sourceNode) {
-              fetchingPathsRef.current.push(sourceNode.id);
-              paths[sourceNode.id] = {
-                limit: childrenByParentPath[sourceNode.id]?.length ?? limit
+          // Checking and setting children for the path
+          if (childrenByParentPath[path]) {
+            nodesByPathRef.current[path].children = [];
+            childrenByParentPath[path]?.forEach((childPath) => {
+              const node = {
+                id: childPath,
+                name: itemsByPath[childPath].label,
+                children: [{ id: 'loading' }]
               };
-            }
-            if (targetNode) {
-              fetchingPathsRef.current.push(targetNode.id);
-              paths[targetNode.id] = {
-                limit: childrenByParentPath[targetNode.id] ? childrenByParentPath[targetNode.id].length + 1 : limit
-              };
-            }
-            if (sourceNode || targetNode) {
-              dispatch(
-                pathNavigatorTreeFetchPathsChildren({
-                  id,
-                  paths
-                })
-              );
-            }
-          } else {
-            const node = lookupItemByPath(payload.target, nodesByPathRef.current);
-            const path = node?.id;
-            if (path) {
-              fetchingPathsRef.current.push(path);
-              dispatch(
-                pathNavigatorTreeFetchPathChildren({
-                  id,
-                  path,
-                  options: {
-                    limit: childrenByParentPath[path] ? childrenByParentPath[path].length + 1 : limit
-                  }
-                })
-              );
+              nodesByPathRef.current[path].children.push(node);
+              nodesByPathRef.current[childPath] = node;
+            });
+
+            // Checking node children total is less than the total items for the children we will add a more node
+            if (nodesByPathRef.current[path].children.length < totalByPath[path]) {
+              nodesByPathRef.current[path].children.push({ id: 'more', parentPath: path });
             }
           }
-
-          break;
-        }
-        case folderRenamed.type:
-        case itemDuplicated.type:
-        case itemUnlocked.type:
-        case itemCreated.type: {
-          const parentPath = getParentPath(payload.target);
-          const node = lookupItemByPath(parentPath, nodesByPathRef.current);
-          const path = node?.id;
-          if (path) {
-            fetchingPathsRef.current.push(path);
-            dispatch(
-              pathNavigatorTreeFetchPathChildren({
-                id,
-                path,
-                options: {
-                  limit: childrenByParentPath[path]
-                    ? childrenByParentPath[path].length + (type === itemCreated.type ? 1 : 0)
-                    : limit
-                }
-              })
-            );
-          }
-          break;
-        }
-        case itemsDeleted.type: {
-          const paths = {};
-          payload.targets.forEach((target) => {
-            const parentPath = getParentPath(target);
-            const node = lookupItemByPath(parentPath, nodesByPathRef.current);
-            const path = node?.id;
-            if (path) {
-              fetchingPathsRef.current.push(path);
-              paths[path] = {
-                limit: childrenByParentPath[path]?.length ?? limit
-              };
-            }
-          });
-          if (Object.keys(paths).length) {
-            dispatch(
-              pathNavigatorTreeFetchPathsChildren({
-                id,
-                paths
-              })
-            );
-          }
-          break;
-        }
-        case pluginInstalled.type: {
-          state.expanded.forEach((path) => fetchingPathsRef.current.push(path));
-          dispatch(pathNavigatorTreeBackgroundRefresh({ id }));
-          break;
-        }
-        default: {
-          break;
         }
       }
     });
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [id, rootPath, dispatch, totalByPath, limit, childrenByParentPath, state?.expanded]);
-  // endregion
+    if (nodesByPathRef.current[rootPath]) {
+      setRootNode({ ...nodesByPathRef.current[rootPath] });
+    }
+  }, [childrenByParentPath, fetchingByPath, itemsByPath, rootPath, totalByPath]);
 
   if (!rootItem || !Boolean(state) || !rootNode) {
     return (
@@ -453,6 +251,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   };
 
   const onToggleNodeClick = (path: string) => {
+    // If the path is already expanded should be collapsed
     if (state.expanded.includes(path)) {
       dispatch(
         pathNavigatorTreeCollapsePath({
@@ -461,6 +260,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
         })
       );
     } else {
+      // If the item have children should be expanded
       if (childrenByParentPath[path]) {
         dispatch(
           pathNavigatorTreeExpandPath({
@@ -469,7 +269,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
           })
         );
       } else {
-        fetchingPathsRef.current.push(path);
+        // Otherwise the item doesn't have children and should be fetched
         dispatch(
           pathNavigatorTreeFetchPathChildren({
             id,
@@ -507,12 +307,10 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   const onWidgetOptionsClick = (option: string) => {
     onCloseWidgetOptions();
     if (option === 'refresh') {
-      state.expanded.forEach((path) => fetchingPathsRef.current.push(path));
-      console.log(state);
-      console.log(fetchingPathsRef.current.join(', '));
       dispatch(
         pathNavigatorTreeRefresh({
-          id
+          id,
+          rootPath
         })
       );
     }
@@ -534,7 +332,6 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   };
 
   const onMoreClick = (path: string) => {
-    fetchingPathsRef.current.push(path);
     dispatch(
       pathNavigatorTreeFetchPathPage({
         id,
