@@ -185,7 +185,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   }, [site, user.username, id, dispatch, rootPath, excludes, limit, state, uiConfig.currentSite, storedState]);
 
   useEffect(() => {
-    if (rootItem) {
+    if (rootItem && nodesByPathRef.current[rootItem.path] === undefined) {
       const rootNode = {
         id: rootItem.path,
         children: [{ id: 'loading' }]
