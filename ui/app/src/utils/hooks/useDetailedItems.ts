@@ -43,7 +43,7 @@ export function useDetailedItems(paths: string[]): { itemsByPath: LookupTable<De
       }
     });
     if (actions.length) {
-      dispatch(batchActions(actions));
+      dispatch(actions.length > 1 ? batchActions(actions) : actions[0]);
     }
   }, [fetchingLookup, dispatch, paths, itemsByPath]);
   return { itemsByPath: items, isFetching: paths.some((path) => fetchingLookup[path]) };

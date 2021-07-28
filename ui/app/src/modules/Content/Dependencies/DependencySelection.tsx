@@ -350,8 +350,7 @@ function SelectionList(props: SelectionListProps) {
       </ListItem>
       {items && (
         <List className={classes.selectionList}>
-          {// @ts-ignore
-          items.map((item) => {
+          {items.map((item) => {
             const labelId = `checkbox-list-label-${item.path}`;
 
             return (
