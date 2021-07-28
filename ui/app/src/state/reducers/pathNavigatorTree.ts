@@ -26,7 +26,6 @@ import {
   pathNavigatorTreeFetchPathsChildren,
   pathNavigatorTreeFetchPathsChildrenComplete,
   pathNavigatorTreeInit,
-  pathNavigatorTreeInitComplete,
   pathNavigatorTreeRefresh,
   pathNavigatorTreeRestoreComplete,
   pathNavigatorTreeSetKeyword,
@@ -53,15 +52,6 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
           keywordByPath,
           totalByPath: {},
           fetchingByPath: { ...createPresenceTable(expanded) }
-        }
-      };
-    },
-    [pathNavigatorTreeInitComplete.type]: (state, { payload: { id } }) => {
-      return {
-        ...state,
-        [id]: {
-          ...state[id],
-          fetchingByPath: { ...state[id].fetchingByPath, [state[id].rootPath]: false }
         }
       };
     },

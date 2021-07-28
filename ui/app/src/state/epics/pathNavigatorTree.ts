@@ -31,7 +31,6 @@ import {
   pathNavigatorTreeFetchPathsChildrenComplete,
   pathNavigatorTreeFetchPathsChildrenFailed,
   pathNavigatorTreeInit,
-  pathNavigatorTreeInitComplete,
   pathNavigatorTreeRefresh,
   pathNavigatorTreeRestoreComplete,
   pathNavigatorTreeRestoreFailed,
@@ -41,7 +40,7 @@ import {
 import { fetchChildrenByPath, fetchChildrenByPaths, fetchItemsByPath } from '../../services/content';
 import { catchAjaxError } from '../../utils/ajax';
 import { setStoredPathNavigatorTree } from '../../utils/state';
-import { forkJoin, NEVER, of } from 'rxjs';
+import { forkJoin, NEVER } from 'rxjs';
 import { createPresenceTable } from '../../utils/array';
 import { getIndividualPaths, withoutIndex } from '../../utils/path';
 
