@@ -48,6 +48,7 @@ import { useEnv } from '../../utils/hooks/useEnv';
 import ActionsBar, { Action } from '../ActionsBar';
 import { useDetailedItems } from '../../utils/hooks/useDetailedItems';
 import translations from './translations';
+import { batchActions } from '../../state/actions/misc';
 
 const dashletInitialPreferences: DashboardPreferences = {
   filterBy: 'page',
@@ -204,17 +205,19 @@ export default function RecentActivityDashlet() {
 
   const onItemMenuClick = (event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, item: DetailedItem) => {
     const path = item.path;
-    dispatch(completeDetailedItem({ path }));
     dispatch(
-      showItemMegaMenu({
-        path,
-        anchorReference: 'anchorPosition',
-        anchorPosition: { top: event.clientY, left: event.clientX },
-        numOfLoaderItems: getNumOfMenuOptionsForItem({
-          path: item.path,
-          systemType: getSystemTypeFromPath(item.path)
-        } as DetailedItem)
-      })
+      batchActions([
+        completeDetailedItem({ path }),
+        showItemMegaMenu({
+          path,
+          anchorReference: 'anchorPosition',
+          anchorPosition: { top: event.clientY, left: event.clientX },
+          numOfLoaderItems: getNumOfMenuOptionsForItem({
+            path: item.path,
+            systemType: getSystemTypeFromPath(item.path)
+          } as DetailedItem)
+        })
+      ])
     );
   };
 
