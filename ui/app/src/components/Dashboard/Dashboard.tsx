@@ -195,7 +195,12 @@ export default function Dashboard(props: DashboardAppProps) {
 
   return (
     <section className={classes.root}>
-      {dashboard && renderWidgets(dashboard.widgets, userRoles, { selectedLookup, onItemChecked, onItemMenuClick })}
+      {dashboard &&
+        renderWidgets(dashboard.widgets, userRoles, {
+          selectedLookup,
+          onItemChecked,
+          onItemMenuClick
+        })}
       {!Boolean(dashboard?.widgets?.length) && (
         <>
           <EmptyState
