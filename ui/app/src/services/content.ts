@@ -1081,7 +1081,10 @@ export function fetchContentByCommitId(site: string, path: string, commitId: str
     switchMap((ajax) => {
       const blob: Blob = ajax.response;
       const type = ajax.xhr.getResponseHeader('content-type');
-      if (/^(text|application)\//.test(type)) {
+      if (
+        /^text\//.test(type) ||
+        /^application\/(x-httpd-php|rtf|xhtml\+xml|xml|json|ld\+json|javascript|x-groovy|x-sh)$/.test(type)
+      ) {
         return blob.text() as Promise<string>;
       } else if (/^image\//.test(type)) {
         return of(URL.createObjectURL(blob));
