@@ -40,8 +40,6 @@ export function initTinyMCE(
     $(record.element).css('display', 'inline-block');
   }
 
-  console.log('type', type);
-
   const settings = {
     mode: 'none',
     // For some reason this is not working.
@@ -51,11 +49,13 @@ export function initTinyMCE(
     paste_data_images: type === 'html',
     toolbar: type === 'html',
     menubar: false,
-    ...rteConfig,
     base_url: '/studio/static-assets/modules/editors/tinymce/v5/tinymce',
     suffix: '.min',
+    ...rteConfig,
+    // Target can't be changed
     target: record.element,
-    inline: true,
+    // Inline view doesn't behave well on pageBuilder, this setting shouldn't be changed.
+    inline: false,
     setup(editor: Editor) {
       editor.on('init', function() {
         let changed = false;
@@ -158,7 +158,17 @@ export function initTinyMCE(
           e.preventDefault();
         }
       });
-    }
+    },
+    // Autosave options are left as undefined since it is not supported in control.
+    autosave_ask_before_unload: undefined,
+    autosave_interval: undefined,
+    autosave_prefix: undefined,
+    autosave_restore_when_empty: undefined,
+    autosave_retention: undefined,
+    // No file picker is set by default, and functions are not supported in state.
+    file_picker_callback: undefined,
+    // Height is set to the size of content
+    height: undefined
   };
 
   window.tinymce.init(settings);
