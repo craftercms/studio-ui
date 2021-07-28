@@ -144,8 +144,8 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const itemsByPath = useItemsByPath();
-  const keywordByPath = state?.keywordByPath;
-  const totalByPath = state?.totalByPath;
+  const keywordByPath = useMemo(() => state?.keywordByPath ?? {}, [state?.keywordByPath]);
+  const totalByPath = useMemo(() => state?.totalByPath ?? {}, [state?.totalByPath]);
   const childrenByParentPath = useMemo(() => state?.childrenByParentPath ?? {}, [state?.childrenByParentPath]);
   const fetchingByPath = useMemo(() => state?.fetchingByPath ?? {}, [state?.fetchingByPath]);
   const rootItem = useDetailedItem(props.rootPath);
