@@ -33,9 +33,11 @@ export const pathNavigatorTreeInit = /*#__PURE__*/ createAction<
   }>
 >('PATH_NAVIGATOR_TREE_INIT');
 
-export const pathNavigatorTreeRefresh = /*#__PURE__*/ createAction<{ id: string; rootPath: string }>(
-  'PATH_NAVIGATOR_TREE_REFRESH'
+export const pathNavigatorTreeInitComplete = /*#__PURE__*/ createAction<{ id: string }>(
+  'PATH_NAVIGATOR_TREE_INIT_COMPLETE'
 );
+
+export const pathNavigatorTreeRefresh = /*#__PURE__*/ createAction<{ id: string }>('PATH_NAVIGATOR_TREE_REFRESH');
 
 export const pathNavigatorTreeBackgroundRefresh = /*#__PURE__*/ createAction<{ id: string }>(
   'PATH_NAVIGATOR_TREE_BACKGROUND_REFRESH'
@@ -70,15 +72,6 @@ export const pathNavigatorTreeSetKeyword = /*#__PURE__*/ createAction<PayloadWit
 export const pathNavigatorTreeToggleExpanded = /*#__PURE__*/ createAction<PayloadWithId<{ collapsed: boolean }>>(
   'PATH_NAVIGATOR_TREE_TOGGLE_EXPANDED'
 );
-
-export const pathNavigatorTreeFetchRootItemComplete = /*#__PURE__*/ createAction<PayloadWithId<{ item: DetailedItem }>>(
-  'PATH_NAVIGATOR_TREE_FETCH_ROOT_ITEM_COMPLETE'
-);
-
-export const pathNavigatorTreeFetchRootItemFailed = /*#__PURE__*/ createAction<{
-  id: string;
-  error: Omit<AjaxError, 'request' | 'xhr'>;
-}>('PATH_NAVIGATOR_TREE_FETCH_ROOT_ITEM_FAILED');
 
 export const pathNavigatorTreeFetchPathPage = /*#__PURE__*/ createAction<
   PayloadWithId<{ path: string; options?: Partial<GetChildrenOptions> }>

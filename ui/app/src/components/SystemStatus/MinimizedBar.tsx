@@ -47,7 +47,7 @@ interface MinimizedBarProps {
 
 export function MinimizedBar(props: MinimizedBarProps) {
   const { title, onMaximized, subtitle, status } = props;
-  const classes = useStyles({});
+  const classes = useStyles();
   return (
     <Paper className={classes.root} elevation={4}>
       <Box>

@@ -23,8 +23,10 @@ import {
   pathNavigatorTreeExpandPath,
   pathNavigatorTreeFetchPathChildren,
   pathNavigatorTreeFetchPathPage,
+  pathNavigatorTreeFetchPathsChildren,
   pathNavigatorTreeInit,
   pathNavigatorTreeRefresh,
+  pathNavigatorTreeSetKeyword,
   pathNavigatorTreeToggleExpanded
 } from '../../state/actions/pathNavigatorTree';
 import { StateStylingProps } from '../../models/UiConfig';
@@ -42,7 +44,7 @@ import { getStoredPathNavigatorTree } from '../../utils/state';
 import GlobalState from '../../models/GlobalState';
 import { nnou } from '../../utils/object';
 import PathNavigatorSkeletonTree from './PathNavigatorTreeSkeleton';
-import { withIndex, withoutIndex } from '../../utils/path';
+import { getParentPath, withIndex, withoutIndex } from '../../utils/path';
 import { DetailedItem } from '../../models/Item';
 import { fetchContentXML } from '../../services/content';
 import { SystemIconDescriptor } from '../SystemIcon';
@@ -53,6 +55,20 @@ import { useEnv } from '../../utils/hooks/useEnv';
 import { useActiveUser } from '../../utils/hooks/useActiveUser';
 import { useItemsByPath } from '../../utils/hooks/useItemsByPath';
 import { useSubject } from '../../utils/hooks/useSubject';
+import { useDetailedItem } from '../../utils/hooks/useDetailedItem';
+import { debounceTime, filter } from 'rxjs/operators';
+import {
+  folderCreated,
+  folderRenamed,
+  itemCreated,
+  itemDuplicated,
+  itemsDeleted,
+  itemsPasted,
+  itemUnlocked,
+  itemUpdated,
+  pluginInstalled
+} from '../../state/actions/system';
+import { getHostToHostBus } from '../../modules/Preview/previewContext';
 
 interface PathNavigatorTreeProps {
   id: string;
@@ -114,28 +130,27 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   const state = useSelection((state) => state.pathNavigatorTree)[id];
   const site = useActiveSiteId();
   const user = useActiveUser();
-  const itemsByPath = useItemsByPath();
-  const keywordByPath = state?.keywordByPath;
-  const totalByPath = state?.totalByPath;
-  const childrenByParentPath = useMemo(() => state?.childrenByParentPath ?? {}, [state?.childrenByParentPath]);
-  const fetchingByPath = useMemo(() => state?.fetchingByPath ?? {}, [state?.fetchingByPath]);
-  const rootItem = lookupItemByPath(props.rootPath, itemsByPath);
-  const rootPath = rootItem?.path ?? props.rootPath;
-
-  const [rootNode, setRootNode] = useState(null);
-  const [widgetMenu, setWidgetMenu] = useState<Menu>({
-    anchorEl: null,
-    sections: []
-  });
-  const { formatMessage } = useIntl();
   const nodesByPathRef = useRef<LookupTable<TreeNode>>({});
   const onSearch$ = useSubject<{ keyword: string; path: string }>();
   const uiConfig = useSelection<GlobalState['uiConfig']>((state) => state.uiConfig);
   const storedState = useMemo(() => {
     return getStoredPathNavigatorTree(site, user.username, id) ?? {};
   }, [id, site, user.username]);
+  const [widgetMenu, setWidgetMenu] = useState<Menu>({
+    anchorEl: null,
+    sections: []
+  });
   const { authoringBase } = useEnv();
   const dispatch = useDispatch();
+  const { formatMessage } = useIntl();
+  const itemsByPath = useItemsByPath();
+  const keywordByPath = state?.keywordByPath;
+  const totalByPath = state?.totalByPath;
+  const childrenByParentPath = useMemo(() => state?.childrenByParentPath ?? {}, [state?.childrenByParentPath]);
+  const fetchingByPath = useMemo(() => state?.fetchingByPath ?? {}, [state?.fetchingByPath]);
+  const rootItem = useDetailedItem(props.rootPath);
+  const rootPath = rootItem?.path;
+  const [rootNode, setRootNode] = useState(null);
 
   const hasActiveSession = useSelection((state) => state.auth.active);
 
@@ -153,7 +168,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   useEffect(() => {
     // Adding uiConfig as means to stop navigator from trying to
     // initialize with previous state information when switching sites
-    if (!state && uiConfig.currentSite === site) {
+    if (!state && uiConfig.currentSite === site && rootPath) {
       const { expanded, collapsed, keywordByPath } = storedState;
       dispatch(
         pathNavigatorTreeInit({
@@ -173,8 +188,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     if (rootItem) {
       const rootNode = {
         id: rootItem.path,
-        name: rootItem.label,
-        children: nodesByPathRef.current[rootItem.path]?.children ?? [{ id: 'loading' }]
+        children: [{ id: 'loading' }]
       };
       nodesByPathRef.current[rootItem.path] = rootNode;
       setRootNode(rootNode);
@@ -182,13 +196,13 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   }, [rootItem]);
 
   useEffect(() => {
-    Object.keys(fetchingByPath).forEach((path) => {
-      if (itemsByPath[path]) {
+    // This effect will update the expanded nodes on the tree
+    if (rootPath) {
+      Object.keys(fetchingByPath).forEach((path) => {
         if (fetchingByPath[path]) {
           // If the items is being fetched, adding loading to the children
           nodesByPathRef.current[path] = {
             id: path,
-            name: itemsByPath[path].label,
             children: [{ id: 'loading' }]
           };
         } else {
@@ -198,8 +212,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
             childrenByParentPath[path]?.forEach((childPath) => {
               const node = {
                 id: childPath,
-                name: itemsByPath[childPath].label,
-                children: [{ id: 'loading' }]
+                children: nodesByPathRef.current[childPath]?.children ?? [{ id: 'loading' }]
               };
               nodesByPathRef.current[path].children.push(node);
               nodesByPathRef.current[childPath] = node;
@@ -211,18 +224,153 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
             }
           }
         }
+      });
+      if (nodesByPathRef.current[rootPath]) {
+        setRootNode({ ...nodesByPathRef.current[rootPath] });
+      }
+    }
+  }, [childrenByParentPath, fetchingByPath, rootPath, totalByPath]);
+
+  useEffect(() => {
+    const subscription = onSearch$.pipe(debounceTime(400)).subscribe(({ keyword, path }) => {
+      dispatch(
+        pathNavigatorTreeSetKeyword({
+          id,
+          path,
+          keyword
+        })
+      );
+    });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [dispatch, id, onSearch$, rootPath]);
+
+  // region Item Updates Propagation
+  useEffect(() => {
+    const events = [
+      itemsPasted.type,
+      itemUnlocked.type,
+      itemUpdated.type,
+      folderCreated.type,
+      folderRenamed.type,
+      itemsDeleted.type,
+      itemDuplicated.type,
+      itemCreated.type,
+      pluginInstalled.type
+    ];
+    const hostToHost$ = getHostToHostBus();
+    const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
+      switch (type) {
+        case itemsPasted.type:
+        case folderCreated.type: {
+          if (payload.clipboard?.type === 'CUT') {
+            const parentPath = getParentPath(payload.clipboard.sourcePath);
+            const sourceNode = lookupItemByPath(parentPath, nodesByPathRef.current);
+            const targetNode = lookupItemByPath(payload.target, nodesByPathRef.current);
+
+            const paths = {};
+            if (sourceNode) {
+              paths[sourceNode.id] = {
+                limit: childrenByParentPath[sourceNode.id]?.length ?? limit
+              };
+            }
+            if (targetNode) {
+              paths[targetNode.id] = {
+                limit: childrenByParentPath[targetNode.id] ? childrenByParentPath[targetNode.id].length + 1 : limit
+              };
+            }
+            if (sourceNode || targetNode) {
+              dispatch(
+                pathNavigatorTreeFetchPathsChildren({
+                  id,
+                  paths
+                })
+              );
+            }
+          } else {
+            const node = lookupItemByPath(payload.target, nodesByPathRef.current);
+            const path = node?.id;
+            if (path) {
+              dispatch(
+                pathNavigatorTreeFetchPathChildren({
+                  id,
+                  path,
+                  options: {
+                    limit: childrenByParentPath[path] ? childrenByParentPath[path].length + 1 : limit
+                  }
+                })
+              );
+            }
+          }
+          break;
+        }
+        case folderRenamed.type:
+        case itemDuplicated.type:
+        case itemUnlocked.type:
+        case itemUpdated.type:
+        case itemCreated.type: {
+          const parentPath = getParentPath(payload.target);
+          const node = lookupItemByPath(parentPath, nodesByPathRef.current);
+          const path = node?.id;
+          if (path) {
+            dispatch(
+              pathNavigatorTreeFetchPathChildren({
+                id,
+                path,
+                options: {
+                  limit: childrenByParentPath[path]
+                    ? childrenByParentPath[path].length + (type === itemCreated.type ? 1 : 0)
+                    : limit
+                }
+              })
+            );
+          }
+          break;
+        }
+        case itemsDeleted.type: {
+          const paths = {};
+          payload.targets.forEach((target) => {
+            const parentPath = getParentPath(target);
+            const node = lookupItemByPath(parentPath, nodesByPathRef.current);
+            const path = node?.id;
+            if (path) {
+              paths[path] = {
+                limit: childrenByParentPath[path]?.length ?? limit
+              };
+            }
+          });
+          if (Object.keys(paths).length) {
+            dispatch(
+              pathNavigatorTreeFetchPathsChildren({
+                id,
+                paths
+              })
+            );
+          }
+          break;
+        }
+        case pluginInstalled.type: {
+          dispatch(pathNavigatorTreeBackgroundRefresh({ id }));
+          break;
+        }
+        default: {
+          break;
+        }
       }
     });
-    if (nodesByPathRef.current[rootPath]) {
-      setRootNode({ ...nodesByPathRef.current[rootPath] });
-    }
-  }, [childrenByParentPath, fetchingByPath, itemsByPath, rootPath, totalByPath]);
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [id, rootPath, dispatch, totalByPath, limit, childrenByParentPath, state?.expanded]);
+  // endregion
 
   if (!rootItem || !Boolean(state) || !rootNode) {
     return (
       <PathNavigatorSkeletonTree
         numOfItems={
-          storedState.expanded?.includes(withIndex(rootPath)) || storedState.expanded?.includes(withoutIndex(rootPath))
+          storedState.expanded?.includes(withIndex(props.rootPath)) ||
+          storedState.expanded?.includes(withoutIndex(props.rootPath))
             ? 5
             : 1
         }
@@ -309,16 +457,15 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     if (option === 'refresh') {
       dispatch(
         pathNavigatorTreeRefresh({
-          id,
-          rootPath
+          id
         })
       );
     }
   };
 
   const onFilterChange = (keyword: string, path: string) => {
-    nodesByPathRef.current[path].children = [{ id: 'loading' }];
-    setRootNode({ ...nodesByPathRef.current[rootPath] });
+    // nodesByPathRef.current[path].children = [{ id: 'loading' }];
+    // setRootNode({ ...nodesByPathRef.current[rootPath] });
     if (!state.expanded.includes(path)) {
       dispatch(
         pathNavigatorTreeExpandPath({

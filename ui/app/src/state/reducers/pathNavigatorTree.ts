@@ -23,9 +23,10 @@ import {
   pathNavigatorTreeFetchPathChildren,
   pathNavigatorTreeFetchPathChildrenComplete,
   pathNavigatorTreeFetchPathPageComplete,
+  pathNavigatorTreeFetchPathsChildren,
   pathNavigatorTreeFetchPathsChildrenComplete,
-  pathNavigatorTreeFetchRootItemComplete,
   pathNavigatorTreeInit,
+  pathNavigatorTreeInitComplete,
   pathNavigatorTreeRefresh,
   pathNavigatorTreeRestoreComplete,
   pathNavigatorTreeSetKeyword,
@@ -51,16 +52,16 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
           childrenByParentPath: {},
           keywordByPath,
           totalByPath: {},
-          fetchingByPath: { ...createPresenceTable(expanded), [path]: true }
+          fetchingByPath: { ...createPresenceTable(expanded) }
         }
       };
     },
-    [pathNavigatorTreeFetchRootItemComplete.type]: (state, { payload: { id, item } }) => {
+    [pathNavigatorTreeInitComplete.type]: (state, { payload: { id } }) => {
       return {
         ...state,
         [id]: {
           ...state[id],
-          fetchingByPath: { ...state[id].fetchingByPath, [item.path]: false }
+          fetchingByPath: { ...state[id].fetchingByPath, [state[id].rootPath]: false }
         }
       };
     },
@@ -99,8 +100,15 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
           keywordByPath: {
             ...state[id].keywordByPath,
             [path]: keyword
-          }
+          },
+          fetchingByPath: { ...state[id].fetchingByPath, [path]: true }
         }
+      };
+    },
+    [pathNavigatorTreeFetchPathsChildren.type]: (state, { payload: { id, paths } }) => {
+      return {
+        ...state,
+        fetchingByPath: { ...state[id].fetchingByPath, ...createPresenceTable(paths) }
       };
     },
     [pathNavigatorTreeFetchPathChildren.type]: (state, { payload: { id, path } }) => {
@@ -189,7 +197,7 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
         }
       };
     },
-    [pathNavigatorTreeRestoreComplete.type]: (state, { payload: { id, data } }) => {
+    [pathNavigatorTreeRestoreComplete.type]: (state, { payload: { id, data, items } }) => {
       const children = {};
       const total = {};
       const keywordByPath = state[id].keywordByPath;
@@ -223,7 +231,13 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
             ...state[id].totalByPath,
             ...total
           },
-          fetchingByPath: { ...state[id].fetchingByPath, ...createPresenceTable(expanded, false) }
+          fetchingByPath: {
+            ...state[id].fetchingByPath,
+            ...createPresenceTable(
+              items.map((item) => item.path),
+              false
+            )
+          }
         }
       };
     },

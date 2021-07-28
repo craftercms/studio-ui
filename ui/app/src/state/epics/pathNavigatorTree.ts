@@ -30,19 +30,18 @@ import {
   pathNavigatorTreeFetchPathsChildren,
   pathNavigatorTreeFetchPathsChildrenComplete,
   pathNavigatorTreeFetchPathsChildrenFailed,
-  pathNavigatorTreeFetchRootItemComplete,
-  pathNavigatorTreeFetchRootItemFailed,
   pathNavigatorTreeInit,
+  pathNavigatorTreeInitComplete,
   pathNavigatorTreeRefresh,
   pathNavigatorTreeRestoreComplete,
   pathNavigatorTreeRestoreFailed,
   pathNavigatorTreeSetKeyword,
   pathNavigatorTreeToggleExpanded
 } from '../actions/pathNavigatorTree';
-import { fetchChildrenByPath, fetchChildrenByPaths, fetchItemByPath, fetchItemsByPath } from '../../services/content';
+import { fetchChildrenByPath, fetchChildrenByPaths, fetchItemsByPath } from '../../services/content';
 import { catchAjaxError } from '../../utils/ajax';
 import { setStoredPathNavigatorTree } from '../../utils/state';
-import { forkJoin } from 'rxjs';
+import { forkJoin, NEVER, of } from 'rxjs';
 import { createPresenceTable } from '../../utils/array';
 import { getIndividualPaths, withoutIndex } from '../../utils/path';
 
@@ -87,10 +86,7 @@ export default [
             catchAjaxError((error) => pathNavigatorTreeRestoreFailed({ error, id }))
           );
         }
-        return fetchItemByPath(state.sites.active, path, { castAsDetailedItem: true }).pipe(
-          map((item) => pathNavigatorTreeFetchRootItemComplete({ id, item })),
-          catchAjaxError((error) => pathNavigatorTreeFetchRootItemFailed({ error, id }))
-        );
+        return NEVER;
       })
     ),
   // endregion
