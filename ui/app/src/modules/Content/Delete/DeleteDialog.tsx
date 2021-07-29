@@ -285,7 +285,7 @@ function DeleteDialogWrapper(props: DeleteDialogProps) {
 
         onSuccess?.({
           ...response,
-          items: selectedItems.map((path) => items.find((item) => item.id === path))
+          items: selectedItems.map((path) => items.find((item) => item.path === path))
         });
       },
       (error) => {

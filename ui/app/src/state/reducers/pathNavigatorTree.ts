@@ -98,7 +98,7 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
     [pathNavigatorTreeFetchPathsChildren.type]: (state, { payload: { id, paths } }) => {
       return {
         ...state,
-        fetchingByPath: { ...state[id].fetchingByPath, ...createPresenceTable(paths) }
+        fetchingByPath: { ...state[id].fetchingByPath, ...createPresenceTable(Object.keys(paths)) }
       };
     },
     [pathNavigatorTreeFetchPathChildren.type]: (state, { payload: { id, path } }) => {

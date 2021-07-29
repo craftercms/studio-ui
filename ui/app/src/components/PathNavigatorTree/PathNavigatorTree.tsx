@@ -157,7 +157,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   useEffect(() => {
     if (backgroundRefreshTimeoutMs && hasActiveSession) {
       let interval = setInterval(() => {
-        // dispatch(pathNavigatorTreeBackgroundRefresh({ id }));
+        dispatch(pathNavigatorTreeBackgroundRefresh({ id }));
       }, backgroundRefreshTimeoutMs);
       return () => {
         clearInterval(interval);
@@ -200,22 +200,38 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     if (rootPath) {
       Object.keys(fetchingByPath).forEach((path) => {
         if (fetchingByPath[path]) {
-          // If the items is being fetched, adding loading to the children
-          nodesByPathRef.current[path] = {
-            id: path,
-            children: [{ id: 'loading' }]
-          };
+          // if the node doest exist, we will create it, otherwise will add loading to the children
+          if (!nodesByPathRef.current[path]) {
+            nodesByPathRef.current[path] = {
+              id: path,
+              children: [{ id: 'loading' }]
+            };
+          } else {
+            nodesByPathRef.current[path].children = [{ id: 'loading' }];
+          }
         } else {
           // Checking and setting children for the path
           if (childrenByParentPath[path]) {
+            // If the children are empty and there are filtered search, we will add a empty node
+            if (Boolean(keywordByPath[path]) && totalByPath[path] === 0) {
+              nodesByPathRef.current[path].children = [
+                {
+                  id: 'empty'
+                }
+              ];
+              return;
+            }
+
             nodesByPathRef.current[path].children = [];
             childrenByParentPath[path]?.forEach((childPath) => {
-              const node = {
-                id: childPath,
-                children: nodesByPathRef.current[childPath]?.children ?? [{ id: 'loading' }]
-              };
-              nodesByPathRef.current[path].children.push(node);
-              nodesByPathRef.current[childPath] = node;
+              // if the node doest exist, we will create it, otherwise will add loading to the children
+              if (!nodesByPathRef.current[childPath]) {
+                nodesByPathRef.current[childPath] = {
+                  id: childPath,
+                  children: [{ id: 'loading' }]
+                };
+              }
+              nodesByPathRef.current[path].children.push(nodesByPathRef.current[childPath]);
             });
 
             // Checking node children total is less than the total items for the children we will add a more node
@@ -229,7 +245,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
         setRootNode({ ...nodesByPathRef.current[rootPath] });
       }
     }
-  }, [childrenByParentPath, fetchingByPath, rootPath, totalByPath]);
+  }, [childrenByParentPath, fetchingByPath, keywordByPath, rootPath, totalByPath]);
 
   useEffect(() => {
     const subscription = onSearch$.pipe(debounceTime(400)).subscribe(({ keyword, path }) => {
