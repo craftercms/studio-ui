@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { DetailedItem } from '../../models/Item';
 import { Resource } from '../../models/Resource';
 import Table from '@material-ui/core/Table';
@@ -71,31 +71,42 @@ export default function RecentActivityDashletGridUI(props: RecentActivityDashlet
   const items = resource.read();
   const classes = useStyles();
 
-  const comparator = (fieldA, fieldB) => {
-    if (sortType === 'asc') {
-      return fieldA > fieldB ? 1 : -1;
-    } else {
-      return fieldA < fieldB ? 1 : -1;
-    }
-  };
-  const sortItems = (a: DetailedItem, b: DetailedItem) => {
-    let fieldA, fieldB;
-    switch (sortBy) {
-      case 'label':
-        fieldA = a.label;
-        fieldB = b.label;
-        break;
-      case 'dateModified':
-        fieldA = a.sandbox.dateModified;
-        fieldB = b.sandbox.dateModified;
-        break;
-      case 'lastPublishedDate':
-        fieldA = a.live.datePublished;
-        fieldB = b.live.datePublished;
-        break;
-    }
-    return comparator(fieldA, fieldB);
-  };
+  const comparator = useCallback(
+    (fieldA, fieldB) => {
+      if (sortType === 'asc') {
+        return fieldA > fieldB ? 1 : -1;
+      } else {
+        return fieldA < fieldB ? 1 : -1;
+      }
+    },
+    [sortType]
+  );
+
+  const sortItems = useCallback(
+    (a: DetailedItem, b: DetailedItem) => {
+      let fieldA, fieldB;
+      switch (sortBy) {
+        case 'label':
+          fieldA = a.label;
+          fieldB = b.label;
+          break;
+        case 'dateModified':
+          fieldA = a.sandbox.dateModified;
+          fieldB = b.sandbox.dateModified;
+          break;
+        case 'lastPublishedDate':
+          fieldA = a.live.datePublished;
+          fieldB = b.live.datePublished;
+          break;
+      }
+      return comparator(fieldA, fieldB);
+    },
+    [comparator, sortBy]
+  );
+
+  const sortedItems = useMemo(() => {
+    return [...items].sort(sortItems);
+  }, [items, sortItems]);
 
   return (
     <TableContainer>
@@ -156,10 +167,18 @@ export default function RecentActivityDashletGridUI(props: RecentActivityDashlet
           </GlobalAppGridRow>
         </TableHead>
         <TableBody>
-          {items.sort(sortItems).map((item) => (
+          {sortedItems.map((item) => (
             <GlobalAppGridRow key={item.id} onClick={() => onItemChecked(item.path)}>
               <GlobalAppGridCell className="checkbox">
-                <Checkbox checked={Boolean(selectedLookup[item.path])} />
+                <Checkbox
+                  checked={Boolean(selectedLookup[item.path])}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
+                  onChange={() => {
+                    onItemChecked(item.path);
+                  }}
+                />
               </GlobalAppGridCell>
               <GlobalAppGridCell className="ellipsis width40 pl0">
                 <ItemDisplay item={item} showNavigableAsLinks={false} />
