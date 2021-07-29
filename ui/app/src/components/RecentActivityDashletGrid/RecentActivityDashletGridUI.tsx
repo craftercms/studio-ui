@@ -168,10 +168,20 @@ export default function RecentActivityDashletGridUI(props: RecentActivityDashlet
         </TableHead>
         <TableBody>
           {sortedItems.map((item) => (
-            <GlobalAppGridRow key={item.id} onClick={() => onItemChecked(item.path)}>
+            <GlobalAppGridRow
+              key={item.id}
+              onClick={
+                item.stateMap.deleted
+                  ? null
+                  : () => {
+                      onItemChecked(item.path);
+                    }
+              }
+            >
               <GlobalAppGridCell className="checkbox">
                 <Checkbox
-                  checked={Boolean(selectedLookup[item.path])}
+                  disabled={item.stateMap.deleted}
+                  checked={item.stateMap.deleted ? false : Boolean(selectedLookup[item.path])}
                   onClick={(e) => {
                     e.stopPropagation();
                   }}
@@ -207,16 +217,22 @@ export default function RecentActivityDashletGridUI(props: RecentActivityDashlet
                 {asLocalizedDateTime(item.sandbox.dateModified, locale.localeCode, locale.dateTimeFormatOptions)}
               </GlobalAppGridCell>
               <GlobalAppGridCell className="checkbox">
-                <Tooltip title={<FormattedMessage id="words.options" defaultMessage="Options" />}>
-                  <IconButton
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onOptionsButtonClick(e, item);
-                    }}
-                  >
+                {item.stateMap.deleted ? (
+                  <IconButton disabled={true}>
                     <MoreVertRounded />
                   </IconButton>
-                </Tooltip>
+                ) : (
+                  <Tooltip title={<FormattedMessage id="words.options" defaultMessage="Options" />}>
+                    <IconButton
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onOptionsButtonClick(e, item);
+                      }}
+                    >
+                      <MoreVertRounded />
+                    </IconButton>
+                  </Tooltip>
+                )}
               </GlobalAppGridCell>
             </GlobalAppGridRow>
           ))}

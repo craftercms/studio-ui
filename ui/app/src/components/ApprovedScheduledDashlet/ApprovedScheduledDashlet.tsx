@@ -26,7 +26,8 @@ import { AllItemActions, DetailedItem } from '../../models/Item';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import ApprovedScheduledDashletGridUI from '../ApprovedScheduledDashletGrid';
 import useStyles from './styles';
-import ApprovedScheduledDashletSkeletonTable from '../ApprovedScheduledDashletGrid/ApprovedScheduledDashletSkeletonTable';
+import ApprovedScheduledDashletSkeletonTable
+  from '../ApprovedScheduledDashletGrid/ApprovedScheduledDashletSkeletonTable';
 import MenuItem from '@material-ui/core/MenuItem';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
@@ -306,10 +307,10 @@ export default function ApprovedScheduledDashlet() {
               checkbox: classes.actionsBarCheckbox
             }}
             options={[
-              { id: 'rejectPublish', label: formatMessage(translations.reject, { count: selectedItemsLength }) },
-              { id: 'schedulePublish', label: formatMessage(translations.schedule, { count: selectedItemsLength }) },
-              { id: 'publish', label: formatMessage(translations.publish, { count: selectedItemsLength }) },
-              { id: 'clear', label: formatMessage(translations.clear) }
+              { id: 'rejectPublish', label: formatMessage(translations.reject) },
+              { id: 'schedulePublish', label: formatMessage(translations.schedule) },
+              { id: 'publish', label: formatMessage(translations.publish) },
+              { id: 'clear', label: formatMessage(translations.clear, { count: selectedItemsLength }) }
             ]}
             isIndeterminate={isIndeterminate}
             isChecked={isAllChecked}

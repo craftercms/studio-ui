@@ -89,7 +89,10 @@ export default function RecentActivityDashlet() {
   const { authoringBase } = useEnv();
   const { itemsByPath, isFetching } = useDetailedItems(Object.keys(selectedLookup));
 
-  const isAllChecked = useMemo(() => !items.some((item) => !selectedLookup[item.path]), [items, selectedLookup]);
+  const isAllChecked = useMemo(() => !items.some((item) => !item.stateMap.deleted && !selectedLookup[item.path]), [
+    items,
+    selectedLookup
+  ]);
   const isIndeterminate = useMemo(() => items.some((item) => selectedLookup[item.path] && !isAllChecked), [
     items,
     selectedLookup,
@@ -195,7 +198,14 @@ export default function RecentActivityDashlet() {
     if (isAllChecked) {
       setSelectedLookup({});
     } else {
-      setSelectedLookup({ ...selectedLookup, ...createPresenceTable(items, true, (item) => item.path) });
+      setSelectedLookup({
+        ...selectedLookup,
+        ...createPresenceTable(
+          items.filter((item) => !item.stateMap.deleted),
+          true,
+          (item) => item.path
+        )
+      });
     }
   };
 
@@ -329,7 +339,11 @@ export default function RecentActivityDashlet() {
               root: classes.actionsBarRoot,
               checkbox: classes.actionsBarCheckbox
             }}
-            options={selectionOptions?.concat([{ id: 'clear', label: formatMessage(translations.clear) }]) as Action[]}
+            options={
+              selectionOptions?.concat([
+                { id: 'clear', label: formatMessage(translations.clear, { count: selectedItemsLength }) }
+              ]) as Action[]
+            }
             isIndeterminate={isIndeterminate}
             isChecked={isAllChecked}
             isLoading={isFetching}

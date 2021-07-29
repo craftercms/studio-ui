@@ -19,15 +19,15 @@ import { defineMessages } from 'react-intl';
 export const translations = defineMessages({
   publish: {
     id: 'awaitingApprovalDashlet.publish',
-    defaultMessage: 'Publish ({count})'
+    defaultMessage: 'Publish'
   },
   reject: {
     id: 'awaitingApprovalDashlet.reject',
-    defaultMessage: 'Reject ({count})'
+    defaultMessage: 'Reject'
   },
   clear: {
     id: 'awaitingApprovalDashlet.clear',
-    defaultMessage: 'Clear selected'
+    defaultMessage: 'Clear {count} selected'
   }
 });
 

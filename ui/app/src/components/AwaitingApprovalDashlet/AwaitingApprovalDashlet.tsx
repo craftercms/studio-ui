@@ -292,9 +292,9 @@ export default function AwaitingApprovalDashlet() {
               checkbox: classes.actionsBarCheckbox
             }}
             options={[
-              { id: 'approvePublish', label: formatMessage(translations.publish, { count: selectedItemsLength }) },
-              { id: 'rejectPublish', label: formatMessage(translations.reject, { count: selectedItemsLength }) },
-              { id: 'clear', label: formatMessage(translations.clear) }
+              { id: 'approvePublish', label: formatMessage(translations.publish) },
+              { id: 'rejectPublish', label: formatMessage(translations.reject) },
+              { id: 'clear', label: formatMessage(translations.clear, { count: selectedItemsLength }) }
             ]}
             isIndeterminate={isIndeterminate}
             isChecked={isAllChecked}

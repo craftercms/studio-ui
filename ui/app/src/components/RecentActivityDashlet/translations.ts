@@ -19,7 +19,7 @@ import { defineMessages } from 'react-intl';
 export const translations = defineMessages({
   clear: {
     id: 'awaitingApprovalDashlet.clear',
-    defaultMessage: 'Clear selected'
+    defaultMessage: 'Clear {count} selected'
   }
 });
 
