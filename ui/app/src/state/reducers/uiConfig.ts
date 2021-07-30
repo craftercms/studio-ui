@@ -63,8 +63,7 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
     if (config) {
       const configDOM = fromString(config);
       const site = payload.site;
-      const arrays = ['widgets', 'roles', 'excludes', 'devices', 'values', 'siteCardMenuLinks', 'tools'];
-      const renameTable = { permittedRoles: 'roles' };
+      const arrays = ['tools'];
 
       configDOM.querySelectorAll('plugin').forEach((tag) => {
         const siteAttr = tag.getAttribute('site');
@@ -75,8 +74,7 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
 
       configDOM.querySelectorAll(':scope > references > reference').forEach((tag) => {
         references[tag.id] = applyDeserializedXMLTransforms(deserialize(tag.innerHTML), {
-          arrays,
-          renameTable
+          arrays
         });
       });
 
