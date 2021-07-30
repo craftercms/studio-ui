@@ -55,7 +55,8 @@ import { getNumOfMenuOptionsForItem, getSystemTypeFromPath } from '../../utils/c
 import { useSelection } from '../../utils/hooks/useSelection';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useEnv } from '../../utils/hooks/useEnv';
-import { useItemsByPath } from '../../utils/hooks/useItemsByPath';
+import { batchActions } from '../../state/actions/misc';
+import { useDetailedItems } from '../../utils/hooks/useDetailedItems';
 
 interface SearchProps {
   history: History;
@@ -371,29 +372,32 @@ export default function Search(props: SearchProps) {
   const theme = useTheme();
   const desktopScreen = useMediaQuery(theme.breakpoints.up('md'));
   const [selectedPath, setSelectedPath] = useState(queryParams['path'] as string);
-  const items = useItemsByPath();
+  const { itemsByPath, isFetching } = useDetailedItems(selected);
+
   const selectionOptions = useMemo(() => {
     if (selected.length === 0) {
       return null;
     } else if (selected.length) {
       if (selected.length === 1) {
         const path = selected[0];
-        const item = items[path];
+        const item = itemsByPath[path];
         if (item) {
           return generateSingleItemOptions(item, formatMessage, { includeOnly: actionsToBeShown }).flat();
         }
       } else {
-        let itemsDetails = [];
+        let items = [];
         selected.forEach((itemPath) => {
-          const item = items[itemPath];
+          const item = itemsByPath[itemPath];
           if (item) {
-            itemsDetails.push({ item });
+            items.push(item);
           }
         });
-        return generateMultipleItemOptions(itemsDetails, formatMessage, { includeOnly: actionsToBeShown });
+        if (items.length && !isFetching) {
+          return generateMultipleItemOptions(items, formatMessage, { includeOnly: actionsToBeShown });
+        }
       }
     }
-  }, [formatMessage, items, selected]);
+  }, [formatMessage, isFetching, itemsByPath, selected]);
 
   refs.current.createQueryString = createQueryString;
 
@@ -595,7 +599,7 @@ export default function Search(props: SearchProps) {
 
   function handleSelect(path: string, isSelected: boolean) {
     if (isSelected) {
-      dispatch(completeDetailedItem({ path }));
+      // dispatch(completeDetailedItem({ path }));
       setSelected([...selected, path]);
     } else {
       let selectedItems = [...selected];
@@ -636,17 +640,19 @@ export default function Search(props: SearchProps) {
 
   const onHeaderButtonClick = (event: any, item: MediaItem) => {
     const path = item.path;
-    dispatch(completeDetailedItem({ path }));
     dispatch(
-      showItemMegaMenu({
-        path,
-        anchorReference: 'anchorPosition',
-        anchorPosition: { top: event.clientY, left: event.clientX },
-        numOfLoaderItems: getNumOfMenuOptionsForItem({
-          path: item.path,
-          systemType: getSystemTypeFromPath(item.path)
-        } as DetailedItem)
-      })
+      batchActions([
+        completeDetailedItem({ path }),
+        showItemMegaMenu({
+          path,
+          anchorReference: 'anchorPosition',
+          anchorPosition: { top: event.clientY, left: event.clientX },
+          numOfLoaderItems: getNumOfMenuOptionsForItem({
+            path: item.path,
+            systemType: getSystemTypeFromPath(item.path)
+          } as DetailedItem)
+        })
+      ])
     );
   };
 
@@ -718,7 +724,7 @@ export default function Search(props: SearchProps) {
     if (selected.length > 1) {
       const detailedItems = [];
       selected.forEach((path) => {
-        items?.[path] && detailedItems.push(items[path]);
+        itemsByPath?.[path] && detailedItems.push(itemsByPath[path]);
       });
       itemActionDispatcher({
         site,
@@ -732,7 +738,7 @@ export default function Search(props: SearchProps) {
       });
     } else {
       const path = selected[0];
-      const item = items?.[path];
+      const item = itemsByPath?.[path];
       itemActionDispatcher({
         site,
         item,
@@ -926,7 +932,7 @@ export default function Search(props: SearchProps) {
             variant="contained"
             color="primary"
             disabled={selected.length === 0}
-            onClick={() => onAcceptSelection?.(selected.map((path) => items?.[path]))}
+            onClick={() => onAcceptSelection?.(selected.map((path) => itemsByPath?.[path]))}
           >
             {formatMessage(messages.acceptSelection)}
           </Button>
