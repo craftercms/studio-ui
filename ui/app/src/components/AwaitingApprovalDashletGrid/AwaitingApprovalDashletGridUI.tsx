@@ -173,9 +173,9 @@ export default function AwaitingApprovalDashletGridUI(props: AwaitingApprovalDas
                                     )
                                   }
                                 >
-                                  {itemsLookup[path].live.dateScheduled ? (
+                                  {getDateScheduled(itemsLookup[path]) ? (
                                     asLocalizedDateTime(
-                                      itemsLookup[path].live.dateScheduled,
+                                      getDateScheduled(itemsLookup[path]),
                                       locale.localeCode,
                                       locale.dateTimeFormatOptions
                                     )
