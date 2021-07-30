@@ -282,13 +282,7 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
             options={[
               {
                 id: 'editStates',
-                label: formatMessage(translations.editStates, {
-                  count: isSelectedItemsOnAllPages ? items.total : selectedItemsLength
-                })
-              },
-              {
-                id: 'clearSelected',
-                label: formatMessage(translations.clearSelected)
+                label: formatMessage(translations.editStates)
               },
               ...(isSelectedItemsOnAllPages
                 ? []
@@ -297,7 +291,13 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
                       id: 'selectAll',
                       label: formatMessage(translations.selectAll, { count: items.total })
                     }
-                  ])
+                  ]),
+              {
+                id: 'clearSelected',
+                label: formatMessage(translations.clearSelected, {
+                  count: isSelectedItemsOnAllPages ? items.total : selectedItemsLength
+                })
+              }
             ]}
             isIndeterminate={hasThisPageItemsChecked ? isThisPageIndeterminate : false}
             isChecked={isSelectedItemsOnAllPages || hasThisPageItemsChecked}

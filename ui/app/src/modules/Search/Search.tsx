@@ -39,7 +39,7 @@ import { completeDetailedItem } from '../../state/actions/content';
 import { getPreviewURLFromPath } from '../../utils/path';
 import ApiResponseErrorState from '../../components/ApiResponseErrorState';
 import SiteSearchToolBar from '../../components/SiteSearchToolbar';
-import { Drawer, ListItem, ListItemSecondaryAction, ListItemText } from '@material-ui/core';
+import { Drawer } from '@material-ui/core';
 import SiteSearchFilters from '../../components/SiteSearchFilters';
 import ItemActionsSnackbar from '../../components/ItemActionsSnackbar';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
@@ -48,8 +48,6 @@ import palette from '../../styles/palette';
 import Button from '@material-ui/core/Button';
 import { itemCreated, itemDuplicated, itemsDeleted, itemsPasted, itemUpdated } from '../../state/actions/system';
 import { getHostToHostBus } from '../Preview/previewContext';
-import IconButton from '@material-ui/core/IconButton';
-import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import { generateMultipleItemOptions, generateSingleItemOptions, itemActionDispatcher } from '../../utils/itemActions';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { getNumOfMenuOptionsForItem, getSystemTypeFromPath } from '../../utils/content';
@@ -317,9 +315,9 @@ const messages = defineMessages({
     id: 'search.acceptSelection',
     defaultMessage: 'Accept Selection'
   },
-  selectionCount: {
-    id: 'search.selectionCount',
-    defaultMessage: '{count} selected'
+  clearSelected: {
+    id: 'search.clearSelected',
+    defaultMessage: 'Clear {count} selected'
   },
   nextPage: {
     id: 'pagination.nextPage',
@@ -335,13 +333,12 @@ const messages = defineMessages({
   }
 });
 
-const actionsToBeShown = [
+const actionsToBeShown: AllItemActions[] = [
   'edit',
-  'publish',
   'delete',
-  'reject',
-  'schedule',
-  'duplicate,',
+  'publish',
+  'rejectPublish',
+  'duplicate',
   'duplicateAsset',
   'dependencies',
   'history'
@@ -382,8 +379,7 @@ export default function Search(props: SearchProps) {
         const path = selected[0];
         const item = items[path];
         if (item) {
-          const options = generateSingleItemOptions(item, formatMessage);
-          return options[0].filter((option) => actionsToBeShown.includes(option.id));
+          return generateSingleItemOptions(item, formatMessage, { includeOnly: actionsToBeShown }).flat();
         }
       } else {
         let itemsDetails = [];
@@ -910,20 +906,11 @@ export default function Search(props: SearchProps) {
           options={selectionOptions}
           onActionClicked={onActionClicked}
           append={
-            <ListItem>
-              <ListItemText
-                style={{ textAlign: 'center', minWidth: '65px' }}
-                primaryTypographyProps={{ variant: 'caption' }}
-                primary={formatMessage(messages.selectionCount, {
-                  count: selected.length
-                })}
-              />
-              <ListItemSecondaryAction>
-                <IconButton edge="end" size="small" onClick={handleClearSelected}>
-                  <HighlightOffIcon color="primary" />
-                </IconButton>
-              </ListItemSecondaryAction>
-            </ListItem>
+            <Button color="primary" variant="text" onClick={handleClearSelected}>
+              {formatMessage(messages.clearSelected, {
+                count: selected.length
+              })}
+            </Button>
           }
         />
       )}
