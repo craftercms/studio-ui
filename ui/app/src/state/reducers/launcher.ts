@@ -16,12 +16,12 @@
 
 import GlobalState from '../../models/GlobalState';
 import { createReducer } from '@reduxjs/toolkit';
-import { INIT_LAUNCHER_CONFIG } from '../actions/launcher';
+import { initLauncherConfig } from '../actions/launcher';
 import { deserialize, fromString } from '../../utils/xml';
 import { applyDeserializedXMLTransforms } from '../../utils/object';
 
 const reducer = createReducer<GlobalState['launcher']>(null, {
-  [INIT_LAUNCHER_CONFIG]: (state, { payload }) => {
+  [initLauncherConfig.type]: (state, { payload }) => {
     let launcherConfig = null;
     const arrays = ['widgets', 'roles', 'siteCardMenuLinks'];
     const renameTable = { permittedRoles: 'roles' };

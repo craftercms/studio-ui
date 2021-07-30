@@ -16,12 +16,12 @@
 
 import GlobalState from '../../models/GlobalState';
 import { createReducer } from '@reduxjs/toolkit';
-import { INIT_DASHBOARD_CONFIG } from '../actions/dashboard';
+import { initDashboardConfig } from '../actions/dashboard';
 import { deserialize, fromString } from '../../utils/xml';
 import { applyDeserializedXMLTransforms } from '../../utils/object';
 
 const reducer = createReducer<GlobalState['dashboard']>(null, {
-  [INIT_DASHBOARD_CONFIG]: (state, { payload }) => {
+  [initDashboardConfig.type]: (state, { payload }) => {
     let dashboardConfig = null;
     const arrays = ['widgets', 'roles'];
     const renameTable = { permittedRoles: 'roles' };

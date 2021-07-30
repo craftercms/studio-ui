@@ -38,9 +38,9 @@ import {
   GUEST_CHECK_OUT,
   guestModelUpdated,
   guestPathUpdated,
-  INIT_PAGE_BUILDER_PANEL_CONFIG,
-  INIT_TOOLBAR_CONFIG,
-  INIT_TOOLS_PANEL_CONFIG,
+  initPageBuilderPanelConfig,
+  initToolbarConfig,
+  initToolsPanelConfig,
   OPEN_TOOLS,
   popPageBuilderPanelPage,
   popToolsPanelPage,
@@ -180,9 +180,7 @@ const reducer = createReducer<GlobalState['preview']>(
       middleSection: null,
       rightSection: null
     },
-    pageBuilderPanel: {
-      widgets: null
-    }
+    pageBuilderPanel: null
   },
   {
     [storeInitialized.type]: (state, { payload }) =>
@@ -572,7 +570,7 @@ const reducer = createReducer<GlobalState['preview']>(
       ...state,
       previewChoice: { ...state.previewChoice, ...JSON.parse(payload.previewChoice ?? '{}') }
     }),
-    [INIT_TOOLS_PANEL_CONFIG]: (state, { payload }) => {
+    [initToolsPanelConfig.type]: (state, { payload }) => {
       let toolsPanelConfig = {
         widgets: [
           {
@@ -605,7 +603,7 @@ const reducer = createReducer<GlobalState['preview']>(
         toolsPanel: toolsPanelConfig
       };
     },
-    [INIT_TOOLBAR_CONFIG]: (state, { payload }) => {
+    [initToolbarConfig.type]: (state, { payload }) => {
       let toolbarConfig = {
         leftSection: null,
         middleSection: null,
@@ -645,7 +643,7 @@ const reducer = createReducer<GlobalState['preview']>(
         toolbar: toolbarConfig
       };
     },
-    [INIT_PAGE_BUILDER_PANEL_CONFIG]: (state, { payload }) => {
+    [initPageBuilderPanelConfig.type]: (state, { payload }) => {
       let pageBuilderPanelConfig = {
         widgets: [
           {

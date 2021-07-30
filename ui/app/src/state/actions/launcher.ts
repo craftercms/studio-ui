@@ -16,12 +16,6 @@
 
 import { createAction } from '@reduxjs/toolkit';
 
-// region Actions
-
-export const INIT_LAUNCHER_CONFIG = 'INIT_LAUNCHER_CONFIG';
-
-// endregion
-
 // region Action Creators
 
 export const initLauncherConfig = /*#__PURE__*/ createAction<{ configXml: string }>('INIT_LAUNCHER_CONFIG');

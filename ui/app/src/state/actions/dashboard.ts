@@ -16,12 +16,6 @@
 
 import { createAction } from '@reduxjs/toolkit';
 
-// region Actions
-
-export const INIT_DASHBOARD_CONFIG = 'INIT_DASHBOARD_CONFIG';
-
-// endregion
-
 // region Action Creators
 
 export const initDashboardConfig = /*#__PURE__*/ createAction<{ configXml: string }>('INIT_DASHBOARD_CONFIG');
