@@ -50,7 +50,7 @@ export default [
     action$.pipe(
       ofType(pathNavigatorTreeInit.type, pathNavigatorTreeRefresh.type, pathNavigatorTreeBackgroundRefresh.type),
       withLatestFrom(state$),
-      filter(([{ payload }]) => payload.expanded?.length),
+      filter(([{ payload }, state]) => Boolean(state.pathNavigatorTree[payload.id].expanded?.length)),
       switchMap(([{ payload }, state]) => {
         const {
           id,

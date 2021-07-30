@@ -178,7 +178,7 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
         }
       };
     },
-    [pathNavigatorTreeRefresh.type]: (state, { payload: { id, rootPath } }) => {
+    [pathNavigatorTreeRefresh.type]: (state, { payload: { id } }) => {
       return {
         ...state,
         [id]: {
