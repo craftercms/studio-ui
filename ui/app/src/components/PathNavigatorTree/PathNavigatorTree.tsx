@@ -480,8 +480,6 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   };
 
   const onFilterChange = (keyword: string, path: string) => {
-    // nodesByPathRef.current[path].children = [{ id: 'loading' }];
-    // setRootNode({ ...nodesByPathRef.current[rootPath] });
     if (!state.expanded.includes(path)) {
       dispatch(
         pathNavigatorTreeExpandPath({

@@ -317,7 +317,7 @@ export default function LegacyFormDialog(props: LegacyFormDialogProps) {
 
   const onClose = () => {
     if (inProgress) {
-      props.onClose();
+      props?.onClose();
     }
     iframeRef.current.contentWindow.postMessage({ type: 'LEGACY_FORM_DIALOG_CANCEL_REQUEST' }, '*');
   };

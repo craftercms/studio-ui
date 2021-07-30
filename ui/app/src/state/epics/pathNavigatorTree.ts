@@ -15,7 +15,7 @@
  */
 
 import { ofType } from 'redux-observable';
-import { ignoreElements, map, mergeMap, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import { filter, ignoreElements, map, mergeMap, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { CrafterCMSEpic } from '../store';
 import {
   pathNavigatorTreeBackgroundRefresh,
@@ -40,7 +40,7 @@ import {
 import { fetchChildrenByPath, fetchChildrenByPaths, fetchItemsByPath } from '../../services/content';
 import { catchAjaxError } from '../../utils/ajax';
 import { setStoredPathNavigatorTree } from '../../utils/state';
-import { forkJoin, NEVER } from 'rxjs';
+import { forkJoin } from 'rxjs';
 import { createPresenceTable } from '../../utils/array';
 import { getIndividualPaths, withoutIndex } from '../../utils/path';
 
@@ -50,7 +50,8 @@ export default [
     action$.pipe(
       ofType(pathNavigatorTreeInit.type, pathNavigatorTreeRefresh.type, pathNavigatorTreeBackgroundRefresh.type),
       withLatestFrom(state$),
-      mergeMap(([{ payload }, state]) => {
+      filter(([{ payload }]) => payload.expanded?.length),
+      switchMap(([{ payload }, state]) => {
         const {
           id,
           path = state.pathNavigatorTree[id].rootPath,
@@ -59,33 +60,30 @@ export default [
           keywordByPath = state.pathNavigatorTree[id].keywordByPath,
           limit = state.pathNavigatorTree[id].limit
         } = payload;
-        if (expanded?.length) {
-          let paths = [];
-          expanded.forEach((expandedPath) => {
-            getIndividualPaths(expandedPath, withoutIndex(path)).forEach((parentPath) => {
-              if (!paths.includes(parentPath)) {
-                paths.push(parentPath);
-              }
-            });
+        let paths = [];
+        expanded.forEach((expandedPath) => {
+          getIndividualPaths(expandedPath, withoutIndex(path)).forEach((parentPath) => {
+            if (!paths.includes(parentPath)) {
+              paths.push(parentPath);
+            }
           });
-          return forkJoin([
-            fetchItemsByPath(state.sites.active, paths, { castAsDetailedItem: true }),
-            fetchChildrenByPaths(
-              state.sites.active,
-              createPresenceTable(expanded, (value) => {
-                if (keywordByPath[value]) {
-                  return { keyword: keywordByPath[value] };
-                }
-                return {};
-              }),
-              { limit }
-            )
-          ]).pipe(
-            map(([items, data]) => pathNavigatorTreeRestoreComplete({ id, expanded, collapsed, items, data })),
-            catchAjaxError((error) => pathNavigatorTreeRestoreFailed({ error, id }))
-          );
-        }
-        return NEVER;
+        });
+        return forkJoin([
+          fetchItemsByPath(state.sites.active, paths, { castAsDetailedItem: true }),
+          fetchChildrenByPaths(
+            state.sites.active,
+            createPresenceTable(expanded, (value) => {
+              if (keywordByPath[value]) {
+                return { keyword: keywordByPath[value] };
+              }
+              return {};
+            }),
+            { limit }
+          )
+        ]).pipe(
+          map(([items, data]) => pathNavigatorTreeRestoreComplete({ id, expanded, collapsed, items, data })),
+          catchAjaxError((error) => pathNavigatorTreeRestoreFailed({ error, id }))
+        );
       })
     ),
   // endregion
