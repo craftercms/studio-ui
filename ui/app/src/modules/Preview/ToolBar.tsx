@@ -63,7 +63,7 @@ export default function ToolBar() {
     if (uiConfig.xml && !toolbar.leftSection && !toolbar.middleSection && !toolbar.rightSection) {
       dispatch(initToolbarConfig({ configXml: uiConfig.xml }));
     }
-  }, [uiConfig.xml, uiConfig.references, toolbar, dispatch]);
+  }, [uiConfig.xml, toolbar, dispatch]);
 
   return (
     <ViewToolbar>

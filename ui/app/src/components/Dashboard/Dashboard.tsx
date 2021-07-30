@@ -177,7 +177,7 @@ export default function Dashboard(props: DashboardAppProps) {
     if (uiConfig.xml && !dashboard) {
       dispatch(initDashboardConfig({ configXml: uiConfig.xml }));
     }
-  }, [uiConfig.xml, uiConfig.references, dashboard, dispatch]);
+  }, [uiConfig.xml, dashboard, dispatch]);
 
   // region Item Updates Propagation
   useEffect(() => {

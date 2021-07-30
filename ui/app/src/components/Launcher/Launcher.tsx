@@ -387,7 +387,7 @@ export default function Launcher(props: LauncherStateProps) {
     if (uiConfig.xml && !launcher) {
       dispatch(initLauncherConfig({ configXml: uiConfig.xml }));
     }
-  }, [uiConfig.xml, uiConfig.references, launcher, dispatch]);
+  }, [uiConfig.xml, launcher, dispatch]);
 
   const onSiteCardClick = (site: string) => {
     if (previewChoice[site] === '2' && window.location.href.includes('/next/preview')) {

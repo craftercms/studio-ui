@@ -75,7 +75,7 @@ export default function ToolsPanel() {
       const storedPage = getStoredPreviewToolsPanelPage(site, username);
       dispatch(initToolsPanelConfig({ configXml: uiConfig.xml, pageStack: storedPage }));
     }
-  }, [uiConfig.xml, uiConfig.references, toolsPanel, dispatch, site, username]);
+  }, [uiConfig.xml, toolsPanel, dispatch, site, username]);
 
   const resource = useLogicResource<WidgetDescriptor[], LookupTable<WidgetDescriptor[]>>(toolsPanel, {
     errorSelector: (source) => uiConfig.error,

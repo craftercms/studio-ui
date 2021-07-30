@@ -42,7 +42,7 @@ export function PageBuilderPanel() {
     if (uiConfig.xml && !pageBuilderPanel.widgets) {
       dispatch(initPageBuilderPanelConfig({ configXml: uiConfig.xml }));
     }
-  }, [uiConfig.xml, uiConfig.references, dispatch, pageBuilderPanel.widgets]);
+  }, [uiConfig.xml, dispatch, pageBuilderPanel]);
 
   return (
     <ResizeableDrawer open={editMode} belowToolbar anchor="right" width={width} onWidthChange={onWidthChange}>
