@@ -66,6 +66,13 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
       const arrays = ['widgets', 'roles', 'excludes', 'devices', 'values', 'siteCardMenuLinks', 'tools'];
       const renameTable = { permittedRoles: 'roles' };
 
+      configDOM.querySelectorAll('plugin').forEach((tag) => {
+        const siteAttr = tag.getAttribute('site');
+        if (siteAttr === '{site}' || siteAttr === null) {
+          tag.setAttribute('site', site);
+        }
+      });
+
       configDOM.querySelectorAll(':scope > references > reference').forEach((tag) => {
         references[tag.id] = applyDeserializedXMLTransforms(deserialize(tag.innerHTML), {
           arrays,
@@ -75,13 +82,6 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
 
       configDOM.querySelectorAll('configuration > reference').forEach((tag) => {
         tag.outerHTML = references[tag.id];
-      });
-
-      configDOM.querySelectorAll('plugin').forEach((tag) => {
-        const siteAttr = tag.getAttribute('site');
-        if (siteAttr === '{site}' || siteAttr === null) {
-          tag.setAttribute('site', site);
-        }
       });
 
       configDOM.querySelectorAll('widget').forEach((e, index) => e.setAttribute('uiKey', String(index)));
