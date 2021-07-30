@@ -23,13 +23,16 @@ import {
   pathNavigatorTreeFetchPathChildren,
   pathNavigatorTreeFetchPathChildrenComplete,
   pathNavigatorTreeFetchPathPageComplete,
+  pathNavigatorTreeFetchPathsChildren,
   pathNavigatorTreeFetchPathsChildrenComplete,
   pathNavigatorTreeInit,
+  pathNavigatorTreeRefresh,
   pathNavigatorTreeRestoreComplete,
   pathNavigatorTreeSetKeyword,
   pathNavigatorTreeToggleExpanded
 } from '../actions/pathNavigatorTree';
 import { changeSite } from './sites';
+import { createPresenceTable } from '../../utils/array';
 
 const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
   {},
@@ -47,7 +50,8 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
           expanded,
           childrenByParentPath: {},
           keywordByPath,
-          totalByPath: {}
+          totalByPath: {},
+          fetchingByPath: { ...createPresenceTable(expanded) }
         }
       };
     },
@@ -86,8 +90,15 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
           keywordByPath: {
             ...state[id].keywordByPath,
             [path]: keyword
-          }
+          },
+          fetchingByPath: { ...state[id].fetchingByPath, [path]: true }
         }
+      };
+    },
+    [pathNavigatorTreeFetchPathsChildren.type]: (state, { payload: { id, paths } }) => {
+      return {
+        ...state,
+        fetchingByPath: { ...state[id].fetchingByPath, ...createPresenceTable(Object.keys(paths)) }
       };
     },
     [pathNavigatorTreeFetchPathChildren.type]: (state, { payload: { id, path } }) => {
@@ -95,7 +106,8 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
         ...state,
         [id]: {
           ...state[id],
-          ...(!state[id].expanded.includes(path) && { expanded: [...state[id].expanded, path] })
+          ...(!state[id].expanded.includes(path) && { expanded: [...state[id].expanded, path] }),
+          fetchingByPath: { ...state[id].fetchingByPath, [path]: true }
         }
       };
     },
@@ -123,7 +135,8 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
           totalByPath: {
             ...state[id].totalByPath,
             [parentPath]: children.total
-          }
+          },
+          fetchingByPath: { ...state[id].fetchingByPath, [parentPath]: false }
         }
       };
     },
@@ -165,7 +178,16 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
         }
       };
     },
-    [pathNavigatorTreeRestoreComplete.type]: (state, { payload: { id, data } }) => {
+    [pathNavigatorTreeRefresh.type]: (state, { payload: { id } }) => {
+      return {
+        ...state,
+        [id]: {
+          ...state[id],
+          fetchingByPath: { ...state[id].fetchingByPath, [state[id].rootPath]: true }
+        }
+      };
+    },
+    [pathNavigatorTreeRestoreComplete.type]: (state, { payload: { id, data, items } }) => {
       const children = {};
       const total = {};
       const keywordByPath = state[id].keywordByPath;
@@ -198,6 +220,13 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
           totalByPath: {
             ...state[id].totalByPath,
             ...total
+          },
+          fetchingByPath: {
+            ...state[id].fetchingByPath,
+            ...createPresenceTable(
+              items.map((item) => item.path),
+              false
+            )
           }
         }
       };

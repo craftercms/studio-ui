@@ -23,10 +23,14 @@ import { FormattedMessage } from 'react-intl';
 import DialogFooter from '../Dialogs/DialogFooter';
 import ConfirmDropdown from '../Controls/ConfirmDropdown';
 import useStyles from './styles';
+import { useUnmount } from '../../utils/hooks/useUnmount';
 
 export default function ConfigurationSamplePreviewDialogContainer(props: ConfigurationSamplePreviewDialogProps) {
-  const { content, onClose, onUseSampleClick } = props;
+  const { content, onClose, onClosed, onUseSampleClick } = props;
   const classes = useStyles();
+
+  useUnmount(onClosed);
+
   return (
     <>
       <DialogHeader

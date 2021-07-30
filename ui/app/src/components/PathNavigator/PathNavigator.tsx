@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ElementType, useCallback, useEffect, useRef, useState } from 'react';
+import React, { ElementType, useCallback, useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { DetailedItem } from '../../models/Item';
 import ContextMenu, { ContextMenuOption } from '../ContextMenu';
@@ -164,19 +164,18 @@ export default function PathNavigator(props: PathNavigatorProps) {
   const onSearch$ = useSubject<string>();
   const uiConfig = useSelection<GlobalState['uiConfig']>((state) => state.uiConfig);
   const siteLocales = useSiteLocales();
-
-  const intervalRef = useRef<any>();
+  const hasActiveSession = useSelection((state) => state.auth.active);
 
   useEffect(() => {
-    if (backgroundRefreshTimeoutMs) {
-      intervalRef.current = setInterval(() => {
+    if (backgroundRefreshTimeoutMs && hasActiveSession) {
+      let interval = setInterval(() => {
         dispatch(pathNavigatorBackgroundRefresh({ id }));
       }, backgroundRefreshTimeoutMs);
       return () => {
-        clearInterval(intervalRef.current);
+        clearInterval(interval);
       };
     }
-  }, [backgroundRefreshTimeoutMs, dispatch, id]);
+  }, [backgroundRefreshTimeoutMs, dispatch, id, hasActiveSession]);
 
   useEffect(() => {
     // Adding uiConfig as means to stop navigator from trying to

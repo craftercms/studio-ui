@@ -22,8 +22,8 @@ export const translations = defineMessages({
     defaultMessage: 'Edit States ({count})'
   },
   clearSelected: {
-    id: 'itemStates.clearSeleted',
-    defaultMessage: 'Clear Seleted'
+    id: 'itemStates.clearSelected',
+    defaultMessage: 'Clear Selected'
   },
   selectAll: {
     id: 'itemStates.selectedAll',

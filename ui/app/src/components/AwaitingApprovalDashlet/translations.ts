@@ -14,23 +14,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Dialog from '@material-ui/core/Dialog';
-import React from 'react';
-import ConfigurationSamplePreviewDialogContainer from './ConfigurationSamplePreviewDialogContainer';
+import { defineMessages } from 'react-intl';
 
-export interface ConfigurationSamplePreviewDialogProps {
-  open: boolean;
-  content: string;
-  onClose(): void;
-  onClosed?(): void;
-  onUseSampleClick(type: 'replace' | 'append'): void;
-}
+export const translations = defineMessages({
+  publish: {
+    id: 'words.publish',
+    defaultMessage: 'Publish'
+  },
+  reject: {
+    id: 'words.reject',
+    defaultMessage: 'Reject'
+  },
+  clear: {
+    id: 'common.clearSelectedWithCount',
+    defaultMessage: 'Clear {count} selected'
+  }
+});
 
-export default function ConfigurationSamplePreviewDialog(props: ConfigurationSamplePreviewDialogProps) {
-  const { open, onClose } = props;
-  return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
-      <ConfigurationSamplePreviewDialogContainer {...props} />
-    </Dialog>
-  );
-}
+export default translations;

@@ -47,7 +47,6 @@ import {
   pathNavigatorTreeFetchPathChildrenComplete,
   pathNavigatorTreeFetchPathPageComplete,
   pathNavigatorTreeFetchPathsChildrenComplete,
-  pathNavigatorTreeFetchRootItemComplete,
   pathNavigatorTreeRestoreComplete
 } from '../actions/pathNavigatorTree';
 import { GetChildrenResponse } from '../../models/GetChildrenResponse';
@@ -166,15 +165,6 @@ const reducer = createReducer<ContentState>(initialState, {
           [children.levelDescriptor.path]: parseSandBoxItemToDetailedItem(children.levelDescriptor)
         }),
         ...createLookupTable(items, 'path')
-      }
-    };
-  },
-  [pathNavigatorTreeFetchRootItemComplete.type]: (state, { payload: { item } }) => {
-    return {
-      ...state,
-      itemsByPath: {
-        ...state.itemsByPath,
-        [item.path]: item
       }
     };
   },

@@ -44,6 +44,7 @@ import {
   showCompareVersionsDialog,
   showConfirmDialog,
   showHistoryDialog,
+  showPreviewDialog,
   showViewVersionDialog
 } from '../../../state/actions/dialogs';
 import SingleItemSelector from '../Authoring/SingleItemSelector';
@@ -54,6 +55,9 @@ import { hasRevertAction } from '../../../utils/content';
 import { useLogicResource } from '../../../utils/hooks/useLogicResource';
 import { useUnmount } from '../../../utils/hooks/useUnmount';
 import { useSpreadState } from '../../../utils/hooks/useSpreadState';
+import { getEditorMode, isImage } from '../../../components/PathNavigator/utils';
+import { fetchContentByCommitId } from '../../../services/content';
+import { useActiveSiteId } from '../../../utils/hooks/useActiveSiteId';
 
 const translations = defineMessages({
   previousPage: {
@@ -224,6 +228,7 @@ function HistoryDialogBody(props: HistoryDialogProps) {
   const { formatMessage } = useIntl();
   const classes = historyStyles({});
   const dispatch = useDispatch();
+  const site = useActiveSiteId();
 
   useUnmount(props.onClosed);
 
@@ -288,21 +293,38 @@ function HistoryDialogBody(props: HistoryDialogProps) {
     });
 
   const handleViewItem = (version: LegacyVersion) => {
-    dispatch(
-      batchActions([
-        fetchContentTypes(),
-        fetchContentVersion({ path, versionNumber: version.versionNumber }),
-        showViewVersionDialog({
-          rightActions: [
-            {
-              icon: 'HistoryIcon',
-              onClick: showHistoryDialog({}),
-              'aria-label': formatMessage(translations.backToHistoryList)
-            }
-          ]
-        })
-      ])
-    );
+    const supportsDiff = ['page', 'component', 'taxonomy'].includes(item.systemType);
+
+    if (supportsDiff) {
+      dispatch(
+        batchActions([
+          fetchContentTypes(),
+          fetchContentVersion({ path, versionNumber: version.versionNumber }),
+          showViewVersionDialog({
+            rightActions: [
+              {
+                icon: 'HistoryIcon',
+                onClick: showHistoryDialog({}),
+                'aria-label': formatMessage(translations.backToHistoryList)
+              }
+            ]
+          })
+        ])
+      );
+    } else {
+      fetchContentByCommitId(site, item.path, version.versionNumber).subscribe((content) => {
+        const image = isImage(item);
+        dispatch(
+          showPreviewDialog({
+            type: image ? 'image' : 'editor',
+            title: item.label,
+            [image ? 'url' : 'content']: content,
+            mode: image ? void 0 : getEditorMode(item),
+            subtitle: `v.${version.versionNumber}`
+          })
+        );
+      });
+    }
   };
 
   const compareTo = (versionNumber: string) => {

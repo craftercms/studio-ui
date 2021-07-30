@@ -14,23 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Dialog from '@material-ui/core/Dialog';
-import React from 'react';
-import ConfigurationSamplePreviewDialogContainer from './ConfigurationSamplePreviewDialogContainer';
+export { default } from './RecentActivityDashletGridUI';
 
-export interface ConfigurationSamplePreviewDialogProps {
-  open: boolean;
-  content: string;
-  onClose(): void;
-  onClosed?(): void;
-  onUseSampleClick(type: 'replace' | 'append'): void;
-}
-
-export default function ConfigurationSamplePreviewDialog(props: ConfigurationSamplePreviewDialogProps) {
-  const { open, onClose } = props;
-  return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
-      <ConfigurationSamplePreviewDialogContainer {...props} />
-    </Dialog>
-  );
-}
+export * from './RecentActivityDashletGridUI';

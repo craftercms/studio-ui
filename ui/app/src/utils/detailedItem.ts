@@ -14,23 +14,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Dialog from '@material-ui/core/Dialog';
-import React from 'react';
-import ConfigurationSamplePreviewDialogContainer from './ConfigurationSamplePreviewDialogContainer';
+import { DetailedItem } from '../models/Item';
 
-export interface ConfigurationSamplePreviewDialogProps {
-  open: boolean;
-  content: string;
-  onClose(): void;
-  onClosed?(): void;
-  onUseSampleClick(type: 'replace' | 'append'): void;
+export function getDateScheduled(item: DetailedItem): string {
+  if (item.stateMap.submittedToStaging) {
+    return item.staging.dateScheduled;
+  } else if (item.stateMap.submittedToLive) {
+    return item.live.dateScheduled;
+  } else {
+    return null;
+  }
 }
 
-export default function ConfigurationSamplePreviewDialog(props: ConfigurationSamplePreviewDialogProps) {
-  const { open, onClose } = props;
-  return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
-      <ConfigurationSamplePreviewDialogContainer {...props} />
-    </Dialog>
-  );
+export function getDatePublished(item: DetailedItem): string {
+  if (item.stateMap.staged) {
+    return item.staging.datePublished;
+  } else if (item.stateMap.live) {
+    return item.live.datePublished;
+  } else {
+    return null;
+  }
 }

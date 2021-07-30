@@ -40,6 +40,7 @@ import ExpandLessIcon from '@material-ui/icons/ExpandLessRounded';
 import { asLocalizedDateTime } from '../../utils/datetime';
 import Tooltip from '@material-ui/core/Tooltip';
 import { useLocale } from '../../utils/hooks/useLocale';
+import { getDateScheduled } from '../../utils/detailedItem';
 
 interface AwaitingApprovalDashletGridUIProps {
   resource: Resource<DashboardItem[]>;
@@ -163,16 +164,29 @@ export default function AwaitingApprovalDashletGridUI(props: AwaitingApprovalDas
                                 </GlobalAppGridCell>
                                 <GlobalAppGridCell
                                   className="width15"
-                                  title={asLocalizedDateTime(
-                                    itemsLookup[path].live.datePublished,
-                                    locale.localeCode,
-                                    locale.dateTimeFormatOptions
-                                  )}
+                                  title={
+                                    getDateScheduled(itemsLookup[path]) &&
+                                    asLocalizedDateTime(
+                                      getDateScheduled(itemsLookup[path]),
+                                      locale.localeCode,
+                                      locale.dateTimeFormatOptions
+                                    )
+                                  }
                                 >
-                                  {asLocalizedDateTime(
-                                    itemsLookup[path].live.datePublished,
-                                    locale.localeCode,
-                                    locale.dateTimeFormatOptions
+                                  {getDateScheduled(itemsLookup[path]) ? (
+                                    asLocalizedDateTime(
+                                      getDateScheduled(itemsLookup[path]),
+                                      locale.localeCode,
+                                      locale.dateTimeFormatOptions
+                                    )
+                                  ) : (
+                                    <Typography variant="caption" color="textSecondary">
+                                      {publishingTargetLookup[itemsLookup[path].path] ? (
+                                        <FormattedMessage id="words.now" defaultMessage="Now" />
+                                      ) : (
+                                        <FormattedMessage id="words.unpublished" defaultMessage="Unpublished" />
+                                      )}
+                                    </Typography>
                                   )}
                                 </GlobalAppGridCell>
                                 <GlobalAppGridCell

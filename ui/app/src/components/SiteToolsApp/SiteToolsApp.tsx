@@ -40,6 +40,7 @@ import { getSystemLink } from '../LauncherSection';
 import { usePreviewState } from '../../utils/hooks/usePreviewState';
 import { useEnv } from '../../utils/hooks/useEnv';
 import Tooltip from '@material-ui/core/Tooltip';
+import Paper from '@material-ui/core/Paper';
 
 interface SiteToolsAppProps {
   footerHtml: string;
@@ -77,7 +78,7 @@ export default function SiteToolsApp(props: SiteToolsAppProps) {
   };
 
   return (
-    <section className={classes.root}>
+    <Paper className={classes.root}>
       <ResizeableDrawer
         classes={{ drawerPaper: classes.drawerPaper, drawerBody: classes.drawerBody }}
         open={openSidebar}
@@ -199,6 +200,6 @@ export default function SiteToolsApp(props: SiteToolsAppProps) {
           />
         </Switch>
       </Box>
-    </section>
+    </Paper>
   );
 }

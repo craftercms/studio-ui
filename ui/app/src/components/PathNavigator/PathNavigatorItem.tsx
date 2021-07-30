@@ -81,6 +81,12 @@ function PathNavigatorItem(props: NavItemProps) {
   const onMouseOver = isSelectMode ? null : () => setOver(true);
   const onMouseLeave = isSelectMode ? null : () => setOver(false);
   const onClick = (e) => onItemClicked?.(item, e);
+  const onContextMenu = (e) => {
+    if (onOpenItemMenu) {
+      e.preventDefault();
+      onOpenItemMenu(e.currentTarget.querySelector('[data-item-menu]'), item);
+    }
+  };
   const navigable = isNavigable(item);
   const previewable = isPreviewable(item);
   const folder = isFolder(item);
@@ -98,6 +104,7 @@ function PathNavigatorItem(props: NavItemProps) {
       onMouseOver={onMouseOver}
       onMouseLeave={onMouseLeave}
       onClick={onClick}
+      onContextMenu={onContextMenu}
     >
       {isSelectMode && (
         <Checkbox
@@ -135,6 +142,7 @@ function PathNavigatorItem(props: NavItemProps) {
               <IconButton
                 aria-label={formatMessage(translations.itemMenu)}
                 className={classes.itemIconButton}
+                data-item-menu
                 onClick={(event) => {
                   event.stopPropagation();
                   onOpenItemMenu(event.currentTarget, item);

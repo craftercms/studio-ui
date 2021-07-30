@@ -14,23 +14,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Dialog from '@material-ui/core/Dialog';
-import React from 'react';
-import ConfigurationSamplePreviewDialogContainer from './ConfigurationSamplePreviewDialogContainer';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 
-export interface ConfigurationSamplePreviewDialogProps {
-  open: boolean;
-  content: string;
-  onClose(): void;
-  onClosed?(): void;
-  onUseSampleClick(type: 'replace' | 'append'): void;
-}
+export const useStyles = makeStyles((theme) =>
+  createStyles({
+    tableRoot: {
+      tableLayout: 'fixed'
+    },
+    itemPath: {
+      color: theme.palette.text.secondary
+    },
+    ellipsis: {
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap'
+    },
+    showSelectRoot: {
+      paddingTop: '8.5px',
+      paddingBottom: '8.5px'
+    },
+    showLabel: {
+      marginRight: theme.spacing(1)
+    },
+    skeletonCheckbox: {
+      margin: '6px 10px'
+    }
+  })
+);
 
-export default function ConfigurationSamplePreviewDialog(props: ConfigurationSamplePreviewDialogProps) {
-  const { open, onClose } = props;
-  return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
-      <ConfigurationSamplePreviewDialogContainer {...props} />
-    </Dialog>
-  );
-}
+export default useStyles;

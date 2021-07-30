@@ -1027,7 +1027,7 @@ var CStudioForms =
                 readonly = true;
               }
 
-              if (!readonly && !isInclude) {
+              if (!readonly && !isInclude && isEdit) {
                 // Lock file
                 CStudioAuthoring.Service.getContent(path, true, { success: () => void null });
               }
@@ -1566,7 +1566,7 @@ var CStudioForms =
                         'studioDialog'
                       );
                     } catch (e) {
-                      var error = eval('(' + err.responseText + ')'),
+                      const error = err.response,
                         errorMessage = error.message ? error.message : CMgs.format(formsLangBundle, 'errSaveFailed');
 
                       CStudioAuthoring.Operations.showSimpleDialog(
@@ -2565,7 +2565,7 @@ var CStudioForms =
 
       /* Render a list of fields from the form */
       /* fields: string[] - fields ids */
-      _renderFields: function (form, fields) {
+      _renderFields: function(form, fields) {
         const formDef = form.definition;
         const sectionContainerEl = document.getElementById('ice-container');
         const sectionBodyEl = YDom.getElementsByClassName('cstudio-form-section-body', null, sectionContainerEl)[0];

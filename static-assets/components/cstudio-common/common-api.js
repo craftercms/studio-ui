@@ -2096,7 +2096,7 @@ var nodeOpen = false,
           .appendTo(parentEl);
         $modal.find('.studio-ice-container').css('z-index', 1035);
 
-        parent.iframeOpener = window;
+        getTopLegacyWindow().iframeOpener = window;
         window.open(url, name);
 
         animator.slideInDown();

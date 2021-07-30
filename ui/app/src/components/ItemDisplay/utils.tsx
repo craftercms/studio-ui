@@ -60,14 +60,14 @@ export function getItemStateId(stateMap): ItemStates {
       return 'systemProcessing';
     case stateMap.locked:
       return 'locked';
-    case stateMap.scheduled:
-      return 'scheduled';
+    case stateMap.submitted:
+      return 'submitted';
     case stateMap.submittedToLive:
       return 'submittedToLive';
     case stateMap.submittedToStaging:
       return 'submittedToStaging';
-    case stateMap.submitted:
-      return 'submitted';
+    case stateMap.scheduled:
+      return 'scheduled';
     case stateMap.new:
       return 'new';
     case stateMap.modified:

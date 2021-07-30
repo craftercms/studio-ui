@@ -1,6 +1,7 @@
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Theme } from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';
+import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import MaximizeIcon from '@material-ui/icons/OpenInBrowserRounded';
@@ -46,11 +47,13 @@ interface MinimizedBarProps {
 
 export function MinimizedBar(props: MinimizedBarProps) {
   const { title, onMaximized, subtitle, status } = props;
-  const classes = useStyles({});
+  const classes = useStyles();
   return (
     <Paper className={classes.root} elevation={4}>
-      <Typography variant="h6" children={title} />
-      {subtitle && <Typography variant="subtitle1" className={classes.subtitle} children={subtitle} />}
+      <Box>
+        <Typography variant="body1" children={title} />
+        {subtitle && <Typography variant="body2" className={classes.subtitle} children={subtitle} />}
+      </Box>
       {onMaximized ? <IconButton aria-label="Maximize" onClick={onMaximized} children={<MaximizeIcon />} /> : null}
       {status && (
         <LinearProgress
