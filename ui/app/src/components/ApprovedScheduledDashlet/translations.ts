@@ -18,19 +18,19 @@ import { defineMessages } from 'react-intl';
 
 export const translations = defineMessages({
   publish: {
-    id: 'dashboardItemsScheduled.publish',
+    id: 'words.publish',
     defaultMessage: 'Publish'
   },
   schedule: {
-    id: 'dashboardItemsScheduled.schedule',
+    id: 'words.schedule',
     defaultMessage: 'Schedule'
   },
   reject: {
-    id: 'dashboardItemsScheduled.reject',
+    id: 'words.reject',
     defaultMessage: 'Reject'
   },
   clear: {
-    id: 'dashboardItemsScheduled.clear',
+    id: 'common.clearSelectedWithCount',
     defaultMessage: 'Clear {count} selected'
   }
 });
