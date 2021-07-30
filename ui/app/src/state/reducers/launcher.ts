@@ -23,15 +23,13 @@ import { applyDeserializedXMLTransforms } from '../../utils/object';
 const reducer = createReducer<GlobalState['launcher']>(null, {
   [initLauncherConfig.type]: (state, { payload }) => {
     let launcherConfig = null;
-    const arrays = ['widgets', 'roles', 'siteCardMenuLinks'];
-    const renameTable = { permittedRoles: 'roles' };
+    const arrays = ['widgets', 'permittedRoles', 'siteCardMenuLinks'];
     const configDOM = fromString(payload.configXml);
 
     const launcher = configDOM.querySelector('[id="craftercms.components.Launcher"] > configuration');
     if (launcher) {
       launcherConfig = applyDeserializedXMLTransforms(deserialize(launcher), {
-        arrays,
-        renameTable
+        arrays
       }).configuration;
     }
 

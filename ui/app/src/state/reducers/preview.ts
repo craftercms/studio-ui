@@ -583,9 +583,8 @@ const reducer = createReducer<GlobalState['preview']>(
           }
         ]
       };
-      const arrays = ['widgets', 'roles', 'excludes'];
+      const arrays = ['widgets', 'permittedRoles', 'excludes'];
       const lookupTables = ['fields'];
-      const renameTable = { permittedRoles: 'roles' };
       const configDOM = fromString(payload.configXml);
       const toolsPanelPages = configDOM.querySelector(
         '[id="craftercms.components.ToolsPanel"] > configuration > widgets'
@@ -593,8 +592,7 @@ const reducer = createReducer<GlobalState['preview']>(
       if (toolsPanelPages) {
         toolsPanelConfig = applyDeserializedXMLTransforms(deserialize(toolsPanelPages), {
           arrays,
-          lookupTables,
-          renameTable
+          lookupTables
         });
       }
       return {
@@ -610,7 +608,6 @@ const reducer = createReducer<GlobalState['preview']>(
         rightSection: null
       };
       const arrays = ['widgets'];
-      const renameTable = { permittedRoles: 'roles' };
       const configDOM = fromString(payload.configXml);
       const toolbar = configDOM.querySelector('[id="craftercms.components.PreviewToolbar"] > configuration');
 
@@ -618,22 +615,19 @@ const reducer = createReducer<GlobalState['preview']>(
         const leftSection = toolbar.querySelector('leftSection > widgets');
         if (leftSection) {
           toolbarConfig.leftSection = applyDeserializedXMLTransforms(deserialize(leftSection), {
-            arrays,
-            renameTable
+            arrays
           });
         }
         const middleSection = toolbar.querySelector('middleSection > widgets');
         if (middleSection) {
           toolbarConfig.middleSection = applyDeserializedXMLTransforms(deserialize(middleSection), {
-            arrays,
-            renameTable
+            arrays
           });
         }
         const rightSection = toolbar.querySelector('rightSection > widgets');
         if (rightSection) {
           toolbarConfig.rightSection = applyDeserializedXMLTransforms(deserialize(rightSection), {
-            arrays,
-            renameTable
+            arrays
           });
         }
       }
@@ -657,7 +651,6 @@ const reducer = createReducer<GlobalState['preview']>(
         ]
       };
       const arrays = ['widgets', 'devices', 'values'];
-      const renameTable = { permittedRoles: 'roles' };
       const configDOM = fromString(payload.configXml);
       const pageBuilderPanel = configDOM.querySelector(
         '[id="craftercms.components.PageBuilderPanel"] > configuration > widgets'
@@ -671,7 +664,6 @@ const reducer = createReducer<GlobalState['preview']>(
         });
         pageBuilderPanelConfig = applyDeserializedXMLTransforms(deserialize(pageBuilderPanel), {
           arrays,
-          renameTable,
           lookupTables
         });
       }

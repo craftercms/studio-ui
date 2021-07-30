@@ -258,7 +258,7 @@ export interface GlobalState {
       title: TranslationOrText;
       systemLinkId: SystemLinkId;
       icon?: SystemIconDescriptor;
-      roles?: string[];
+      permittedRoles?: string[];
     }>;
   };
   dashboard: {

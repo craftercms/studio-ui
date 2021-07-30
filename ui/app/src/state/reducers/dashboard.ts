@@ -46,15 +46,13 @@ const reducer = createReducer<GlobalState['dashboard']>(null, {
         }
       ]
     };
-    const arrays = ['widgets', 'roles'];
-    const renameTable = { permittedRoles: 'roles' };
+    const arrays = ['widgets', 'permittedRoles'];
     const configDOM = fromString(payload.configXml);
     const dashboard = configDOM.querySelector('[id="craftercms.components.Dashboard"] > configuration');
 
     if (dashboard) {
       dashboardConfig = applyDeserializedXMLTransforms(deserialize(dashboard), {
-        arrays,
-        renameTable
+        arrays
       }).configuration;
     }
 

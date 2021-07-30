@@ -364,7 +364,8 @@ export default function Launcher(props: LauncherStateProps) {
         ? siteCardMenuLinks
             .filter(
               (widget) =>
-                (widget.roles ?? []).length === 0 || (userRoles ?? []).some((role) => widget.roles.includes(role))
+                (widget.permittedRoles ?? []).length === 0 ||
+                (userRoles ?? []).some((role) => widget.permittedRoles.includes(role))
             )
             .map((descriptor) => ({
               name: typeof descriptor.title === 'string' ? descriptor.title : formatMessage(descriptor.title),
