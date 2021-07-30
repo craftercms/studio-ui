@@ -19,10 +19,33 @@ import { createReducer } from '@reduxjs/toolkit';
 import { initDashboardConfig } from '../actions/dashboard';
 import { deserialize, fromString } from '../../utils/xml';
 import { applyDeserializedXMLTransforms } from '../../utils/object';
+import { defineMessages } from 'react-intl';
+
+const messages = defineMessages({
+  noUiConfigMessageTitle: {
+    id: 'noUiConfigMessageTitle.title',
+    defaultMessage: 'Configuration file missing'
+  },
+  noUiConfigMessageSubtitle: {
+    id: 'noUiConfigMessageTitle.subtitle',
+    defaultMessage: 'Add & configure `ui.xml` on your site to show content here.'
+  }
+});
 
 const reducer = createReducer<GlobalState['dashboard']>(null, {
   [initDashboardConfig.type]: (state, { payload }) => {
-    let dashboardConfig = null;
+    let dashboardConfig = {
+      widgets: [
+        {
+          id: 'craftercms.component.EmptyState',
+          uiKey: -1,
+          configuration: {
+            title: messages.noUiConfigMessageTitle,
+            subtitle: messages.noUiConfigMessageSubtitle
+          }
+        }
+      ]
+    };
     const arrays = ['widgets', 'roles'];
     const renameTable = { permittedRoles: 'roles' };
     const configDOM = fromString(payload.configXml);
