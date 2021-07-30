@@ -21,7 +21,6 @@ import GlobalAppGridRow from '../GlobalAppGridRow';
 import GlobalAppGridCell from '../GlobalAppGridCell';
 import TableBody from '@material-ui/core/TableBody';
 import TableContainer from '@material-ui/core/TableContainer';
-import Checkbox from '@material-ui/core/Checkbox';
 import { FormattedMessage } from 'react-intl';
 import Typography from '@material-ui/core/Typography';
 import { Resource } from '../../models/Resource';
@@ -39,35 +38,20 @@ import Box from '@material-ui/core/Box';
 import clsx from 'clsx';
 import useStyles from './styles';
 import { asLocalizedDateTime } from '../../utils/datetime';
+import Tooltip from '@material-ui/core/Tooltip';
+import { getDatePublished } from '../../utils/detailedItem';
 
 export interface RecentlyPublishedWidgetUIProps {
   resource: Resource<DashboardItem[]>;
   itemsLookup: LookupTable<DetailedItem>;
   localeBranch: GlobalState['uiConfig']['locale'];
   expandedItems: LookupTable<boolean>;
-  selectedItems: LookupTable<boolean>;
-  isAllChecked: boolean;
-  isIndeterminate: boolean;
   onItemMenuClick(event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, item: DetailedItem): void;
   setExpandedItems(itemExpanded): void;
-  onItemChecked(paths: string[], forceChecked?: boolean): void;
-  onClickSelectAll(): void;
 }
 
 export default function RecentlyPublishedDashletUI(props: RecentlyPublishedWidgetUIProps) {
-  const {
-    resource,
-    expandedItems,
-    setExpandedItems,
-    itemsLookup,
-    onItemMenuClick,
-    localeBranch,
-    selectedItems,
-    onItemChecked,
-    onClickSelectAll,
-    isAllChecked,
-    isIndeterminate
-  } = props;
+  const { resource, expandedItems, setExpandedItems, itemsLookup, onItemMenuClick, localeBranch } = props;
   const parentItems = resource.read();
   const classes = useStyles();
 
@@ -80,38 +64,35 @@ export default function RecentlyPublishedDashletUI(props: RecentlyPublishedWidge
       <Table size="small" className={classes.tableRoot}>
         <TableHead>
           <GlobalAppGridRow className="hoverDisabled">
-            <GlobalAppGridCell className="checkbox bordered width5">
-              <Checkbox indeterminate={isIndeterminate} checked={isAllChecked} onChange={() => onClickSelectAll()} />
-            </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered width40">
+            <GlobalAppGridCell className="width40 pl20">
               <Typography variant="subtitle2">
                 <FormattedMessage id="words.item" defaultMessage="Item" />
               </Typography>
             </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered width20">
+            <GlobalAppGridCell className="width20 ellipsis">
               <Typography variant="subtitle2">
                 <FormattedMessage id="recentlyPublished.publishedTo" defaultMessage="Published To" />
               </Typography>
             </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered width20">
+            <GlobalAppGridCell className="width20 ellipsis">
               <Typography variant="subtitle2">
                 <FormattedMessage id="recentlyPublished.publishDate" defaultMessage="Publish Date" />
               </Typography>
             </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered width10">
+            <GlobalAppGridCell className="width20 ellipsis">
               <Typography variant="subtitle2">
                 <FormattedMessage id="recentlyPublished.publishedBy" defaultMessage="Published By" />
               </Typography>
             </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered width5" />
+            <GlobalAppGridCell className="checkbox" />
           </GlobalAppGridRow>
         </TableHead>
         <TableBody>
           {parentItems.map((item, i) => (
             <Fragment key={i}>
               <GlobalAppGridRow key={item.label} onClick={() => toggleExpand(item.label)}>
-                <GlobalAppGridCell colSpan={6} className="expandableCell">
-                  <Box display="flex" className={classes.expandableCellBox}>
+                <GlobalAppGridCell colSpan={5} className="expandableCell">
+                  <Box display="flex" alignItems="center">
                     <IconButton size="small">
                       {expandedItems[item.label] ? <ExpandLessIcon /> : <ExpandMoreIcon />}
                     </IconButton>
@@ -122,16 +103,13 @@ export default function RecentlyPublishedDashletUI(props: RecentlyPublishedWidge
                 </GlobalAppGridCell>
               </GlobalAppGridRow>
               <GlobalAppGridRow className="hoverDisabled">
-                <GlobalAppGridCell colSpan={6} className="padded0">
+                <GlobalAppGridCell colSpan={5} className="padded0 bb0">
                   <Collapse in={expandedItems[item.label]}>
                     <Table size="small" className={classes.tableRoot}>
                       <TableBody>
                         {item.children.map((path, i) => (
-                          <GlobalAppGridRow key={i} onClick={() => onItemChecked([itemsLookup[path].path])}>
-                            <GlobalAppGridCell className="checkbox width5">
-                              <Checkbox checked={Boolean(selectedItems[itemsLookup[path].path])} />
-                            </GlobalAppGridCell>
-                            <GlobalAppGridCell className="ellipsis width40 padded0">
+                          <GlobalAppGridRow key={i}>
+                            <GlobalAppGridCell className="ellipsis width40 pl20">
                               <ItemDisplay
                                 item={itemsLookup[path]}
                                 showNavigableAsLinks={false}
@@ -157,35 +135,34 @@ export default function RecentlyPublishedDashletUI(props: RecentlyPublishedWidge
                             <GlobalAppGridCell
                               className="width20 ellipsis"
                               title={asLocalizedDateTime(
-                                itemsLookup[path].stateMap.live
-                                  ? itemsLookup[path].live.datePublished
-                                  : itemsLookup[path].staging.datePublished,
+                                getDatePublished(itemsLookup[path]),
                                 localeBranch.localeCode,
                                 localeBranch.dateTimeFormatOptions
                               )}
                             >
                               {asLocalizedDateTime(
-                                itemsLookup[path].stateMap.live
-                                  ? itemsLookup[path].live.datePublished
-                                  : itemsLookup[path].staging.datePublished,
+                                getDatePublished(itemsLookup[path]),
                                 localeBranch.localeCode,
                                 localeBranch.dateTimeFormatOptions
                               )}
                             </GlobalAppGridCell>
-                            <GlobalAppGridCell className="width10">
+                            <GlobalAppGridCell className="width20">
                               {itemsLookup[path].stateMap.live
                                 ? itemsLookup[path].live.publisher
                                 : itemsLookup[path].staging.publisher}
                             </GlobalAppGridCell>
-                            <GlobalAppGridCell className="width5">
-                              <IconButton
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  onItemMenuClick(e, itemsLookup[path]);
-                                }}
-                              >
-                                <MoreVertRounded />
-                              </IconButton>
+                            <GlobalAppGridCell className="checkbox">
+                              <Tooltip title={<FormattedMessage id="words.options" defaultMessage="Options" />}>
+                                <IconButton
+                                  size="small"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    onItemMenuClick(e, itemsLookup[path]);
+                                  }}
+                                >
+                                  <MoreVertRounded />
+                                </IconButton>
+                              </Tooltip>
                             </GlobalAppGridCell>
                           </GlobalAppGridRow>
                         ))}

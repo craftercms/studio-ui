@@ -41,11 +41,8 @@ export function getStateMapFromLegacyItem(item: LegacyItem): ItemStateMap {
     submitted: Boolean(item.isSubmitted),
     scheduled: Boolean(item.isScheduled),
     publishing: false,
-    // TODO: The history API (for Recently Published Dashlet) returns the environment where it was published in
-    // `item.endpoint`, in other APIs that value is `null`. For the other APIs, the property where the item was
-    // submitted is `item.environment`.
-    submittedToStaging: (item.endpoint ?? item.environment) === 'staging',
-    submittedToLive: (item.endpoint ?? item.environment) === 'live',
+    submittedToStaging: item.submittedToEnvironment === 'staging',
+    submittedToLive: item.submittedToEnvironment === 'live',
     staged: item.isStaged,
     live: item.isLive
   };

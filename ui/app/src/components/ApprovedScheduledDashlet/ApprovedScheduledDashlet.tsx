@@ -17,12 +17,12 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import LookupTable from '../../models/LookupTable';
 import Dashlet from '../Dashlet';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { fetchLegacyScheduledItems } from '../../services/dashboard';
-import { parseLegacyItemToDetailedItem } from '../../utils/content';
+import { getNumOfMenuOptionsForItem, getSystemTypeFromPath, parseLegacyItemToDetailedItem } from '../../utils/content';
 import ApiResponse from '../../models/ApiResponse';
 import { DashboardItem } from '../AwaitingApprovalDashlet';
-import { DetailedItem } from '../../models/Item';
+import { AllItemActions, DetailedItem } from '../../models/Item';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import ApprovedScheduledDashletGridUI from '../ApprovedScheduledDashletGrid';
 import useStyles from './styles';
@@ -38,22 +38,24 @@ import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import { useSpreadState } from '../../utils/hooks/useSpreadState';
 import { DashboardPreferences } from '../../models/Dashboard';
 import { getStoredDashboardPreferences, setStoredDashboardPreferences } from '../../utils/state';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import GlobalState from '../../models/GlobalState';
-
-export interface ApprovedScheduledDashletProps {
-  selectedLookup: LookupTable<boolean>;
-  onItemChecked(paths: string[], forceChecked?: boolean): void;
-  onItemMenuClick(event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, item: DetailedItem): void;
-}
+import { createPresenceTable } from '../../utils/array';
+import { completeDetailedItem } from '../../state/actions/content';
+import { showItemMegaMenu } from '../../state/actions/dialogs';
+import { itemActionDispatcher } from '../../utils/itemActions';
+import { useEnv } from '../../utils/hooks/useEnv';
+import ActionsBar from '../ActionsBar';
+import translations from './translations';
+import { batchActions } from '../../state/actions/misc';
 
 const dashletInitialPreferences: DashboardPreferences = {
   filterBy: 'all',
   expanded: true
 };
 
-export default function ApprovedScheduledDashlet(props: ApprovedScheduledDashletProps) {
-  const { selectedLookup, onItemChecked, onItemMenuClick } = props;
+export default function ApprovedScheduledDashlet() {
+  const [selectedLookup, setSelectedLookup] = useState<LookupTable<boolean>>({});
   const [error, setError] = useState<ApiResponse>();
   const site = useActiveSiteId();
   const currentUser = useSelector<GlobalState, string>((state) => state.user.username);
@@ -75,12 +77,16 @@ export default function ApprovedScheduledDashlet(props: ApprovedScheduledDashlet
   const [preferences, setPreferences] = useSpreadState(
     getStoredDashboardPreferences(currentUser, site, dashletPreferencesId) ?? dashletInitialPreferences
   );
+  const dispatch = useDispatch();
+  const { formatMessage } = useIntl();
+  const { authoringBase } = useEnv();
 
   const showExpanded = useMemo(() => Object.values(expandedLookup).some((value) => !value), [expandedLookup]);
   const isAllChecked = useMemo(() => !Object.keys(state.itemsLookup).some((path) => !selectedLookup[path]), [
     selectedLookup,
     state.itemsLookup
   ]);
+  const selectedItemsLength = useMemo(() => Object.values(selectedLookup).filter(Boolean).length, [selectedLookup]);
   const isIndeterminate = useMemo(
     () => Object.keys(state.itemsLookup).some((path) => selectedLookup[path]) && !isAllChecked,
     [isAllChecked, selectedLookup, state.itemsLookup]
@@ -91,9 +97,9 @@ export default function ApprovedScheduledDashlet(props: ApprovedScheduledDashlet
     fetchLegacyScheduledItems(site, 'eventDate', false, preferences.filterBy).subscribe(
       (response) => {
         const parentItems: DashboardItem[] = [];
-        const itemsLookup = {};
-        const targetLookup = {};
-        const expandedLookup = {};
+        const itemsLookup: LookupTable<DetailedItem> = {};
+        const targetLookup: LookupTable<{ target: string; packageId: string }> = {};
+        const expandedLookup: LookupTable<boolean> = {};
         response.documents.forEach((item) => {
           if (item.children.length) {
             expandedLookup[item.uri ?? item.name] = true;
@@ -103,6 +109,10 @@ export default function ApprovedScheduledDashlet(props: ApprovedScheduledDashlet
               children: item.children.map((item) => {
                 targetLookup[item.uri] = { target: item.environment, packageId: item.packageId };
                 itemsLookup[item.uri] = parseLegacyItemToDetailedItem(item);
+                // TODO: remove this when legacy item submittedToEnvironment is not null
+                itemsLookup[item.uri].stateMap.submittedToLive = item.environment === 'live';
+                itemsLookup[item.uri].stateMap.submittedToStaging = item.environment === 'staging';
+                // endTODO
                 return item.uri;
               })
             });
@@ -121,7 +131,7 @@ export default function ApprovedScheduledDashlet(props: ApprovedScheduledDashlet
         setError(response);
       }
     );
-  }, [setExpandedLookup, site, preferences]);
+  }, [setExpandedLookup, site, preferences.filterBy]);
 
   useEffect(() => {
     refresh();
@@ -182,11 +192,51 @@ export default function ApprovedScheduledDashlet(props: ApprovedScheduledDashlet
   };
 
   const onToggleCheckedAll = () => {
-    onItemChecked(Object.keys(state.itemsLookup), !isAllChecked);
+    if (isAllChecked) {
+      setSelectedLookup({});
+    } else {
+      setSelectedLookup({ ...selectedLookup, ...createPresenceTable(Object.keys(state.itemsLookup)) });
+    }
   };
 
   const handleItemChecked = (path: string) => {
-    onItemChecked([path]);
+    setSelectedLookup({ ...selectedLookup, [path]: !selectedLookup[path] });
+  };
+
+  const onItemMenuClick = (event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, item: DetailedItem) => {
+    const path = item.path;
+
+    dispatch(
+      batchActions([
+        completeDetailedItem({ path }),
+        showItemMegaMenu({
+          path,
+          anchorReference: 'anchorPosition',
+          anchorPosition: { top: event.clientY, left: event.clientX },
+          numOfLoaderItems: getNumOfMenuOptionsForItem({
+            path: item.path,
+            systemType: getSystemTypeFromPath(item.path)
+          } as DetailedItem)
+        })
+      ])
+    );
+  };
+
+  const onActionBarOptionClicked = (option: string) => {
+    if (option === 'clear') {
+      setSelectedLookup({});
+    } else {
+      itemActionDispatcher({
+        site,
+        item: Object.keys(selectedLookup)
+          .filter((path) => selectedLookup[path])
+          .map((path) => state.itemsLookup[path]),
+        option: option as AllItemActions,
+        authoringBase,
+        dispatch,
+        formatMessage
+      });
+    }
   };
 
   const onFilterChange = (event: React.ChangeEvent<{ value: unknown }>) => {
@@ -211,6 +261,7 @@ export default function ApprovedScheduledDashlet(props: ApprovedScheduledDashlet
       }
       expanded={preferences.expanded}
       onToggleExpanded={() => setPreferences({ expanded: !preferences.expanded })}
+      refreshDisabled={isFetching}
       onRefresh={refresh}
       headerRightSection={
         <>
@@ -248,6 +299,24 @@ export default function ApprovedScheduledDashlet(props: ApprovedScheduledDashlet
           fallback: <ApprovedScheduledDashletSkeletonTable items={state.parentItems} expandedLookup={expandedLookup} />
         }}
       >
+        {(isIndeterminate || isAllChecked) && (
+          <ActionsBar
+            classes={{
+              root: classes.actionsBarRoot,
+              checkbox: classes.actionsBarCheckbox
+            }}
+            options={[
+              { id: 'rejectPublish', label: formatMessage(translations.reject) },
+              { id: 'schedulePublish', label: formatMessage(translations.schedule) },
+              { id: 'publish', label: formatMessage(translations.publish) },
+              { id: 'clear', label: formatMessage(translations.clear, { count: selectedItemsLength }) }
+            ]}
+            isIndeterminate={isIndeterminate}
+            isChecked={isAllChecked}
+            onOptionClicked={onActionBarOptionClicked}
+            toggleSelectAll={onToggleCheckedAll}
+          />
+        )}
         <ApprovedScheduledDashletGridUI
           resource={resource}
           expandedLookup={expandedLookup}

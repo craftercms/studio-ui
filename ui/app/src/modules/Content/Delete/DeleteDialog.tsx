@@ -15,7 +15,7 @@
  */
 
 import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
-import { SandboxItem } from '../../../models/Item';
+import { DetailedItem, SandboxItem } from '../../../models/Item';
 import { DeleteDependencies, DependencySelectionDelete } from '../Dependencies/DependencySelection';
 import StandardAction from '../../../models/StandardAction';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
@@ -43,7 +43,7 @@ import { useSpreadState } from '../../../utils/hooks/useSpreadState';
 
 interface DeleteDialogContentUIProps {
   resource: Resource<DeleteDependencies>;
-  items: SandboxItem[];
+  items: DetailedItem[];
   submissionComment: string;
   setSubmissionComment: Function;
   onSelectionChange?: Function;
@@ -52,7 +52,7 @@ interface DeleteDialogContentUIProps {
 
 interface DeleteDialogUIProps {
   resource: Resource<DeleteDependencies>;
-  items: SandboxItem[];
+  items: DetailedItem[];
   selectedItems: SandboxItem[];
   submissionComment: string;
   setSubmissionComment: Function;
@@ -66,7 +66,7 @@ interface DeleteDialogUIProps {
 
 interface DeleteDialogBaseProps {
   open: boolean;
-  items?: SandboxItem[];
+  items?: DetailedItem[];
   isFetching: boolean;
 }
 
@@ -285,7 +285,7 @@ function DeleteDialogWrapper(props: DeleteDialogProps) {
 
         onSuccess?.({
           ...response,
-          items: selectedItems.map((path) => items.find((item) => item.id === path))
+          items: selectedItems.map((path) => items.find((item) => item.path === path))
         });
       },
       (error) => {

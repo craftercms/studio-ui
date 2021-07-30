@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ajax, AjaxError, AjaxResponse } from 'rxjs/ajax';
+import { ajax, AjaxError, AjaxResponse, AjaxRequest } from 'rxjs/ajax';
 import { catchError } from 'rxjs/operators';
 import { reversePluckProps } from './object';
 import { Observable, ObservableInput, of } from 'rxjs';
@@ -63,10 +63,10 @@ export function getText(url: string, headers?: object): Observable<AjaxResponse>
   });
 }
 
-export function getBinary(url: string, headers?: object): Observable<AjaxResponse> {
+export function getBinary(url: string, headers?: object, responseType = 'arraybuffer'): Observable<AjaxResponse> {
   return ajax({
     url,
-    responseType: 'arraybuffer',
+    responseType,
     headers: mergeHeaders(headers)
   });
 }
@@ -94,6 +94,16 @@ export function put(url: string, body: any, headers: object = {}): Observable<Aj
 export function del(url: string, headers: object = {}): Observable<AjaxResponse> {
   return ajax.delete(url, mergeHeaders(headers));
 }
+
+function ajaxWithCrafterHeaders(url: string): Observable<AjaxResponse>;
+function ajaxWithCrafterHeaders(request: AjaxRequest): Observable<AjaxResponse>;
+function ajaxWithCrafterHeaders(urlOrRequest: string | AjaxRequest): Observable<AjaxResponse> {
+  return ajax(
+    typeof urlOrRequest === 'string' ? urlOrRequest : { ...urlOrRequest, headers: mergeHeaders(urlOrRequest.headers) }
+  );
+}
+
+export { ajaxWithCrafterHeaders as ajax };
 
 export const catchAjaxError = (
   fetchFailedCreator: any,

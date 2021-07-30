@@ -24,7 +24,6 @@ import { autoPlay } from 'react-swipeable-views-utils';
 import MobileStepper from '../MobileStepper';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { MarketplacePlugin } from '../../models/MarketplacePlugin';
-import Button from '@material-ui/core/Button';
 import Fab from '@material-ui/core/Fab';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import Grid from '@material-ui/core/Grid';
@@ -34,6 +33,7 @@ import { backgroundColor } from '../../styles/theme';
 import clsx from 'clsx';
 // @ts-ignore
 import { fadeIn } from 'react-animations';
+import PrimaryButton from '../PrimaryButton';
 
 const useStyles = makeStyles((theme: Theme) => ({
   '@keyframes fadeIn': fadeIn,
@@ -181,6 +181,7 @@ interface PluginDetailsViewProps {
   useLabel?: string | JSX.Element;
   usePermission?: boolean;
   inUse?: boolean;
+  beingInstalled?: boolean;
 
   onCloseDetails(event: any): any;
 
@@ -201,6 +202,7 @@ export default function PluginDetailsView(props: PluginDetailsViewProps) {
     isMarketplacePlugin = true,
     inUse = false,
     usePermission = true,
+    beingInstalled = false,
     useLabel
   } = props;
   const [index, setIndex] = useState(selectedImageSlideIndex);
@@ -271,15 +273,16 @@ export default function PluginDetailsView(props: PluginDetailsViewProps) {
           {name}
         </Typography>
         {((isMarketplacePlugin && compatible) || !isMarketplacePlugin) && ( // if it's from marketplace and compatible, or not from marketplace (private bps)
-          <Button
+          <PrimaryButton
             variant="contained"
             color="primary"
             className={classes.useBtn}
-            disabled={!usePermission || inUse}
+            disabled={!usePermission || inUse || beingInstalled}
+            loading={beingInstalled}
             onClick={() => onBlueprintSelected(plugin, 1)}
           >
             {useLabel ? useLabel : formatMessage(messages.use)}
-          </Button>
+          </PrimaryButton>
         )}
       </div>
       <AutoPlaySwipeableViews

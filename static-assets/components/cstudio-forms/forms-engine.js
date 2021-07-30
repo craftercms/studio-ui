@@ -1566,7 +1566,7 @@ var CStudioForms =
                         'studioDialog'
                       );
                     } catch (e) {
-                      var error = eval('(' + err.responseText + ')'),
+                      const error = err.response,
                         errorMessage = error.message ? error.message : CMgs.format(formsLangBundle, 'errSaveFailed');
 
                       CStudioAuthoring.Operations.showSimpleDialog(

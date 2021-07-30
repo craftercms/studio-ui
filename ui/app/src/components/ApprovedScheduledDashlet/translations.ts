@@ -14,23 +14,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { defineMessages } from 'react-intl';
 
-export const useStyles = makeStyles((theme) =>
-  createStyles({
-    collapseAll: {
-      marginRight: '10px'
-    },
-    actionsBarRoot: {
-      left: '0',
-      right: '0',
-      zIndex: 2,
-      position: 'absolute'
-    },
-    actionsBarCheckbox: {
-      margin: '2px'
-    }
-  })
-);
+export const translations = defineMessages({
+  publish: {
+    id: 'words.publish',
+    defaultMessage: 'Publish'
+  },
+  schedule: {
+    id: 'words.schedule',
+    defaultMessage: 'Schedule'
+  },
+  reject: {
+    id: 'words.reject',
+    defaultMessage: 'Reject'
+  },
+  clear: {
+    id: 'common.clearSelectedWithCount',
+    defaultMessage: 'Clear {count} selected'
+  }
+});
 
-export default useStyles;
+export default translations;

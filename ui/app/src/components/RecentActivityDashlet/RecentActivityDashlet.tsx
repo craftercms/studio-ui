@@ -17,18 +17,18 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import LookupTable from '../../models/LookupTable';
 import ApiResponse from '../../models/ApiResponse';
-import { DetailedItem } from '../../models/Item';
+import { AllItemActions, DetailedItem } from '../../models/Item';
 import { fetchLegacyUserActivities } from '../../services/dashboard';
 import useStyles from './styles';
-import { parseLegacyItemToDetailedItem } from '../../utils/content';
+import { getNumOfMenuOptionsForItem, getSystemTypeFromPath, parseLegacyItemToDetailedItem } from '../../utils/content';
 import Dashlet from '../Dashlet';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
-import RecentActivityDashletUI from './RecentActivityDashletUI';
-import { useSelector } from 'react-redux';
+import RecentActivityDashletGridUI from '../RecentActivityDashletGrid/RecentActivityDashletGridUI';
+import { useDispatch, useSelector } from 'react-redux';
 import MenuItem from '@material-ui/core/MenuItem';
 import Button from '@material-ui/core/Button';
-import RecentActivityDashletUiSkeleton from './RecentActivityDashletUISkeleton';
+import RecentActivityDashletUiSkeleton from '../RecentActivityDashletGrid/RecentActivityDashletUISkeleton';
 import GlobalState from '../../models/GlobalState';
 import { itemsApproved, itemsDeleted, itemsRejected, itemsScheduled } from '../../state/actions/system';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
@@ -40,12 +40,15 @@ import { useLocale } from '../../utils/hooks/useLocale';
 import { DashboardPreferences } from '../../models/Dashboard';
 import { useSpreadState } from '../../utils/hooks/useSpreadState';
 import { getStoredDashboardPreferences, setStoredDashboardPreferences } from '../../utils/state';
-
-export interface RecentActivityDashletProps {
-  selectedLookup: LookupTable<boolean>;
-  onItemChecked(paths: string[], forceChecked?: boolean): void;
-  onItemMenuClick(event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, item: DetailedItem): void;
-}
+import { createPresenceTable } from '../../utils/array';
+import { completeDetailedItem } from '../../state/actions/content';
+import { showItemMegaMenu } from '../../state/actions/dialogs';
+import { generateMultipleItemOptions, generateSingleItemOptions, itemActionDispatcher } from '../../utils/itemActions';
+import { useEnv } from '../../utils/hooks/useEnv';
+import ActionsBar, { Action } from '../ActionsBar';
+import { useDetailedItems } from '../../utils/hooks/useDetailedItems';
+import translations from './translations';
+import { batchActions } from '../../state/actions/misc';
 
 const dashletInitialPreferences: DashboardPreferences = {
   filterBy: 'page',
@@ -54,9 +57,19 @@ const dashletInitialPreferences: DashboardPreferences = {
   excludeLiveItems: false
 };
 
-export default function RecentActivityDashlet(props: RecentActivityDashletProps) {
-  const { selectedLookup, onItemChecked, onItemMenuClick } = props;
-  const [fetchingActivity, setFecthingActivity] = useState(false);
+const actionsToBeShown: AllItemActions[] = [
+  'edit',
+  'delete',
+  'publish',
+  'rejectPublish',
+  'duplicate',
+  'duplicateAsset',
+  'dependencies',
+  'history'
+];
+
+export default function RecentActivityDashlet() {
+  const [fetchingActivity, setFetchingActivity] = useState(false);
   const [errorActivity, setErrorActivity] = useState<ApiResponse>();
   const [items, setItems] = useState<DetailedItem[]>([]);
   const [totalItems, setTotalItems] = useState(0);
@@ -66,23 +79,26 @@ export default function RecentActivityDashlet(props: RecentActivityDashletProps)
   const [preferences, setPreferences] = useSpreadState(
     getStoredDashboardPreferences(currentUser, siteId, dashletPreferencesId) ?? dashletInitialPreferences
   );
+  const [selectedLookup, setSelectedLookup] = useState<LookupTable<boolean>>({});
   const [sortType, setSortType] = useState<'asc' | 'desc'>('desc');
   const [sortBy, setSortBy] = useState('dateModified');
   const locale = useLocale();
   const classes = useStyles();
+  const dispatch = useDispatch();
+  const { formatMessage } = useIntl();
+  const { authoringBase } = useEnv();
+  const { itemsByPath, isFetching } = useDetailedItems(Object.keys(selectedLookup));
 
-  const isAllChecked = useMemo(() => !items.some((item) => !selectedLookup[item.path]), [items, selectedLookup]);
+  const isAllChecked = useMemo(() => !items.some((item) => !item.stateMap.deleted && !selectedLookup[item.path]), [
+    items,
+    selectedLookup
+  ]);
   const isIndeterminate = useMemo(() => items.some((item) => selectedLookup[item.path] && !isAllChecked), [
     items,
     selectedLookup,
     isAllChecked
   ]);
-
-  const toggleSelectAllItems = () => {
-    const checkedPaths = [];
-    items.forEach((item) => checkedPaths.push(item.path));
-    onItemChecked(checkedPaths, !isAllChecked);
-  };
+  const selectedItemsLength = useMemo(() => Object.values(selectedLookup).filter(Boolean).length, [selectedLookup]);
 
   const onFilterChange = (e) => {
     e.stopPropagation();
@@ -112,7 +128,7 @@ export default function RecentActivityDashlet(props: RecentActivityDashletProps)
   };
 
   const fetchActivity = useCallback(() => {
-    setFecthingActivity(true);
+    setFetchingActivity(true);
     fetchLegacyUserActivities(
       siteId,
       currentUser,
@@ -127,14 +143,14 @@ export default function RecentActivityDashlet(props: RecentActivityDashletProps)
         const itemsList = [];
         activities.documents.forEach((item) => itemsList.push(parseLegacyItemToDetailedItem(item)));
         setItems(itemsList);
-        setFecthingActivity(false);
+        setFetchingActivity(false);
       },
       (e) => {
         setErrorActivity(e);
-        setFecthingActivity(false);
+        setFetchingActivity(false);
       }
     );
-  }, [siteId, setItems, preferences, currentUser]);
+  }, [siteId, currentUser, preferences.numItems, preferences.filterBy, preferences.excludeLiveItems]);
 
   useEffect(() => {
     fetchActivity();
@@ -177,6 +193,80 @@ export default function RecentActivityDashlet(props: RecentActivityDashletProps)
       errorSelector: () => errorActivity
     }
   );
+
+  const onToggleCheckedAll = () => {
+    if (isAllChecked) {
+      setSelectedLookup({});
+    } else {
+      setSelectedLookup({
+        ...selectedLookup,
+        ...createPresenceTable(
+          items.filter((item) => !item.stateMap.deleted),
+          true,
+          (item) => item.path
+        )
+      });
+    }
+  };
+
+  const handleItemChecked = (path: string) => {
+    setSelectedLookup({ ...selectedLookup, [path]: !selectedLookup[path] });
+  };
+
+  const onItemMenuClick = (event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, item: DetailedItem) => {
+    const path = item.path;
+    dispatch(
+      batchActions([
+        completeDetailedItem({ path }),
+        showItemMegaMenu({
+          path,
+          anchorReference: 'anchorPosition',
+          anchorPosition: { top: event.clientY, left: event.clientX },
+          numOfLoaderItems: getNumOfMenuOptionsForItem({
+            path: item.path,
+            systemType: getSystemTypeFromPath(item.path)
+          } as DetailedItem)
+        })
+      ])
+    );
+  };
+
+  const onActionBarOptionClicked = (option: string) => {
+    if (option === 'clear') {
+      setSelectedLookup({});
+    } else {
+      itemActionDispatcher({
+        site: siteId,
+        item: items.filter((item) => selectedLookup[item.path]),
+        option: option as AllItemActions,
+        authoringBase,
+        dispatch,
+        formatMessage
+      });
+    }
+  };
+
+  const selectionOptions = useMemo(() => {
+    const selected = Object.keys(selectedLookup).filter((path) => selectedLookup[path]);
+    if (selected.length === 0) {
+      return null;
+    } else if (selected.length) {
+      if (selected.length === 1) {
+        const path = selected[0];
+        const item = itemsByPath[path];
+        return generateSingleItemOptions(item, formatMessage, { includeOnly: actionsToBeShown }).flat();
+      } else {
+        let items = [];
+        selected.forEach((itemPath) => {
+          const item = itemsByPath[itemPath];
+          if (item) {
+            items.push(item);
+          }
+        });
+        return generateMultipleItemOptions(items, formatMessage, { includeOnly: actionsToBeShown });
+      }
+    }
+  }, [formatMessage, itemsByPath, selectedLookup]);
 
   return (
     <Dashlet
@@ -243,7 +333,26 @@ export default function RecentActivityDashlet(props: RecentActivityDashletProps)
           fallback: <RecentActivityDashletUiSkeleton numOfItems={items.length} />
         }}
       >
-        <RecentActivityDashletUI
+        {(isIndeterminate || isAllChecked) && (
+          <ActionsBar
+            classes={{
+              root: classes.actionsBarRoot,
+              checkbox: classes.actionsBarCheckbox
+            }}
+            options={
+              selectionOptions?.concat([
+                { id: 'clear', label: formatMessage(translations.clear, { count: selectedItemsLength }) }
+              ]) as Action[]
+            }
+            isIndeterminate={isIndeterminate}
+            isChecked={isAllChecked}
+            isLoading={isFetching}
+            numOfSkeletonItems={selectedItemsLength > 1 ? 3 : 7}
+            onOptionClicked={onActionBarOptionClicked}
+            toggleSelectAll={onToggleCheckedAll}
+          />
+        )}
+        <RecentActivityDashletGridUI
           resource={resource}
           onOptionsButtonClick={onItemMenuClick}
           selectedLookup={selectedLookup}
@@ -254,8 +363,8 @@ export default function RecentActivityDashlet(props: RecentActivityDashletProps)
           toggleSortType={toggleSortType}
           sortBy={sortBy}
           setSortBy={setSortBy}
-          onItemChecked={onItemChecked}
-          onClickSelectAll={toggleSelectAllItems}
+          onItemChecked={handleItemChecked}
+          onClickSelectAll={onToggleCheckedAll}
         />
       </SuspenseWithEmptyState>
     </Dashlet>

@@ -33,6 +33,7 @@ import Button from '@material-ui/core/Button';
 import Tooltip from '@material-ui/core/Tooltip';
 import clsx from 'clsx';
 import cardTitleStyles from '../../styles/card';
+import SecondaryButton from '../SecondaryButton';
 
 interface PluginCardProps {
   plugin: MarketplacePlugin;
@@ -40,6 +41,7 @@ interface PluginCardProps {
   isMarketplacePlugin?: boolean;
   inUse?: boolean;
   usePermission?: boolean;
+  beingInstalled?: boolean;
   useLabel?: string | JSX.Element;
   disableCardActionClick?: boolean;
 
@@ -200,6 +202,7 @@ function PluginCard(props: PluginCardProps) {
     onDetails,
     inUse = false,
     usePermission = true,
+    beingInstalled = false,
     disableCardActionClick = false,
     useLabel
   } = props;
@@ -375,15 +378,15 @@ function PluginCard(props: PluginCardProps) {
       {id !== 'GIT' && (
         <CardActions className={'cardActions'}>
           {((isMarketplacePlugin && plugin.compatible) || !isMarketplacePlugin) && ( // if it's from marketplace and compatible, or not from marketplace (private bps)
-            <Button
-              variant="outlined"
+            <SecondaryButton
               color="primary"
-              disabled={!usePermission || inUse}
+              disabled={!usePermission || inUse || beingInstalled}
+              loading={beingInstalled}
               onClick={() => onPluginSelected(plugin, 1)}
               className={classes.use}
             >
               {useLabel ? useLabel : formatMessage(messages.use)}
-            </Button>
+            </SecondaryButton>
           )}
           <Button className={classes.more} onClick={() => onDetails(plugin)}>
             {formatMessage(messages.more)}

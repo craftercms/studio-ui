@@ -20,10 +20,12 @@ import { useSelection } from './useSelection';
 import { DetailedItem } from '../../models/Item';
 import { nou } from '../object';
 import { completeDetailedItem } from '../../state/actions/content';
+import { lookupItemByPath } from '../content';
 
 export function useDetailedItem(path: string): DetailedItem {
   const dispatch = useDispatch();
-  const item = useSelection((state) => state.content.itemsByPath[path]);
+  const itemsByPath = useSelection((state) => state.content.itemsByPath);
+  const item = lookupItemByPath(path, itemsByPath);
   const beingFetching = useSelection((state) => state.content.itemsBeingFetchedByPath[path]);
   useEffect(() => {
     if (nou(item) && path && beingFetching === undefined) {

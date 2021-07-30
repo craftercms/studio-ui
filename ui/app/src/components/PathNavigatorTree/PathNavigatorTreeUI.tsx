@@ -31,7 +31,6 @@ import { SystemIconDescriptor } from '../SystemIcon';
 
 export interface TreeNode {
   id: string;
-  name?: string;
   children?: TreeNode[];
   parentPath?: string;
 }

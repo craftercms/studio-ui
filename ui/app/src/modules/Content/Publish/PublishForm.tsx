@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -35,6 +35,7 @@ import TextFieldWithMax from '../../../components/Controls/TextFieldWithMax';
 import GlobalState from '../../../models/GlobalState';
 import FormLabel from '@material-ui/core/FormLabel';
 import { useSelection } from '../../../utils/hooks/useSelection';
+import Alert from '@material-ui/lab/Alert';
 
 const messages = defineMessages({
   emailLabel: {
@@ -143,6 +144,12 @@ const useStyles = makeStyles((theme) =>
     },
     selectIcon: {
       right: '12px'
+    },
+    mixedDatesWarningMessage: {
+      marginBottom: '10px'
+    },
+    mixedTargetsWarningMessage: {
+      marginTop: '10px'
     }
   })
 );
@@ -157,6 +164,8 @@ interface PublishFormProps {
   publishingChannelsStatus: string;
   onPublishingChannelsFailRetry: Function;
   disabled: boolean;
+  mixedPublishingDates?: boolean;
+  mixedPublishingTargets?: boolean;
   setSubmitDisabled: Function;
   classes?: any;
 
@@ -175,19 +184,11 @@ function PublishForm(props: PublishFormProps) {
     publishingChannelsStatus,
     onPublishingChannelsFailRetry,
     setSubmitDisabled,
-    disabled = true
+    disabled = true,
+    mixedPublishingDates,
+    mixedPublishingTargets
   } = props;
   const locale = useSelection<GlobalState['uiConfig']['locale']>((state) => state.uiConfig.locale);
-
-  useEffect(
-    () => {
-      if (publishingChannels && publishingChannels.length > 0) {
-        setInputs({ ...inputs, environment: publishingChannels[0].name });
-      }
-    },
-    // eslint-disable-next-line
-    [publishingChannels]
-  );
 
   const handleInputChange = (name: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
     e.persist();
@@ -265,6 +266,14 @@ function PublishForm(props: PublishFormProps) {
           {formatMessage(messages.scheduling)}
         </FormLabel>
         <RadioGroup className={classes.radioGroup} value={inputs.scheduling} onChange={handleInputChange('scheduling')}>
+          {mixedPublishingDates && (
+            <Alert severity="warning" className={classes.mixedDatesWarningMessage}>
+              <FormattedMessage
+                id="publishForm.mixedPublishingDates"
+                defaultMessage="Items have mixed publishing date/time schedules."
+              />
+            </Alert>
+          )}
           <FormControlLabel
             value="now"
             control={<Radio color="primary" className={classes.radioInput} />}
@@ -332,7 +341,7 @@ function PublishForm(props: PublishFormProps) {
           (publishingChannels.length ? (
             <Select
               fullWidth
-              value={inputs.environment}
+              value={!mixedPublishingTargets && !inputs.environment ? 'live' : inputs.environment}
               onChange={handleSelectChange('environment')}
               disabled={disabled}
               label={formatMessage(messages.environment)}
@@ -350,6 +359,14 @@ function PublishForm(props: PublishFormProps) {
               </Typography>
             </div>
           ))}
+        {mixedPublishingTargets && (
+          <Alert severity="warning" className={classes.mixedTargetsWarningMessage}>
+            <FormattedMessage
+              id="publishForm.mixedPublishingTargets"
+              defaultMessage="Items have mixed publishing targets."
+            />
+          </Alert>
+        )}
       </FormControl>
 
       <TextFieldWithMax

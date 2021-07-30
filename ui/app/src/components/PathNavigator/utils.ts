@@ -41,7 +41,7 @@ export function isFolder(item: DetailedItem | SandboxItem): boolean {
   return item?.systemType === 'folder';
 }
 
-export function getEditorMode(item: DetailedItem | SandboxItem): 'ftl' | 'groovy' | 'javascript' | 'css' | 'txt' {
+export function getEditorMode(item: DetailedItem | SandboxItem): 'ftl' | 'groovy' | 'javascript' | 'css' | 'text' {
   if (item.systemType === 'renderingTemplate') {
     return 'ftl';
   } else if (item.systemType === 'script') {
@@ -51,7 +51,7 @@ export function getEditorMode(item: DetailedItem | SandboxItem): 'ftl' | 'groovy
   } else if (item.mimeType === 'text/css') {
     return 'css';
   } else {
-    return 'txt';
+    return 'text';
   }
 }
 
