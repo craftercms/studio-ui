@@ -290,17 +290,13 @@ export const updatePageBuilderPanelWidth = /*#__PURE__#*/ createAction<{ width: 
 
 export const initToolsPanelConfig = /*#__PURE__*/ createAction<{
   configXml: string;
-  references: LookupTable<any>;
   pageStack?: LookupTable<any>;
 }>('INIT_TOOLS_PANEL_CONFIG');
 
-export const initToolbarConfig = /*#__PURE__*/ createAction<{ configXml: string; references: LookupTable<any> }>(
-  'INIT_TOOLBAR_CONFIG'
-);
+export const initToolbarConfig = /*#__PURE__*/ createAction<{ configXml: string }>('INIT_TOOLBAR_CONFIG');
 
 export const initPageBuilderPanelConfig = /*#__PURE__*/ createAction<{
   configXml: string;
-  references: LookupTable<any>;
 }>('INIT_PAGE_BUILDER_PANEL_CONFIG');
 
 // endregion

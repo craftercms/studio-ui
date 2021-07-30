@@ -15,7 +15,6 @@
  */
 
 import { createAction } from '@reduxjs/toolkit';
-import LookupTable from '../../models/LookupTable';
 
 // region Actions
 
@@ -25,8 +24,6 @@ export const INIT_LAUNCHER_CONFIG = 'INIT_LAUNCHER_CONFIG';
 
 // region Action Creators
 
-export const initLauncherConfig = /*#__PURE__*/ createAction<{ configXml: string; references: LookupTable<any> }>(
-  'INIT_LAUNCHER_CONFIG'
-);
+export const initLauncherConfig = /*#__PURE__*/ createAction<{ configXml: string }>('INIT_LAUNCHER_CONFIG');
 
 // endregion

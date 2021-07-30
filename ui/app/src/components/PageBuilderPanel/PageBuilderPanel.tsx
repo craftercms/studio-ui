@@ -40,7 +40,7 @@ export function PageBuilderPanel() {
 
   useEffect(() => {
     if (uiConfig.xml && !pageBuilderPanel.widgets) {
-      dispatch(initPageBuilderPanelConfig({ configXml: uiConfig.xml, references: uiConfig.references }));
+      dispatch(initPageBuilderPanelConfig({ configXml: uiConfig.xml }));
     }
   }, [uiConfig.xml, uiConfig.references, dispatch, pageBuilderPanel.widgets]);
 

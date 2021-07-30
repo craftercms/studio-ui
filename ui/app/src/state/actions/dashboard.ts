@@ -15,7 +15,6 @@
  */
 
 import { createAction } from '@reduxjs/toolkit';
-import LookupTable from '../../models/LookupTable';
 
 // region Actions
 
@@ -25,8 +24,6 @@ export const INIT_DASHBOARD_CONFIG = 'INIT_DASHBOARD_CONFIG';
 
 // region Action Creators
 
-export const initDashboardConfig = /*#__PURE__*/ createAction<{ configXml: string; references: LookupTable<any> }>(
-  'INIT_DASHBOARD_CONFIG'
-);
+export const initDashboardConfig = /*#__PURE__*/ createAction<{ configXml: string }>('INIT_DASHBOARD_CONFIG');
 
 // endregion

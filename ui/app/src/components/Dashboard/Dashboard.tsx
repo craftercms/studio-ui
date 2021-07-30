@@ -175,7 +175,7 @@ export default function Dashboard(props: DashboardAppProps) {
 
   useEffect(() => {
     if (uiConfig.xml && !dashboard) {
-      dispatch(initDashboardConfig({ configXml: uiConfig.xml, references: uiConfig.references }));
+      dispatch(initDashboardConfig({ configXml: uiConfig.xml }));
     }
   }, [uiConfig.xml, uiConfig.references, dashboard, dispatch]);
 

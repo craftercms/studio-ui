@@ -385,7 +385,7 @@ export default function Launcher(props: LauncherStateProps) {
 
   useEffect(() => {
     if (uiConfig.xml && !launcher) {
-      dispatch(initLauncherConfig({ configXml: uiConfig.xml, references: uiConfig.references }));
+      dispatch(initLauncherConfig({ configXml: uiConfig.xml }));
     }
   }, [uiConfig.xml, uiConfig.references, launcher, dispatch]);
 
