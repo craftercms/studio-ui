@@ -299,7 +299,7 @@ export default function LegacyFormDialog(props: LegacyFormDialogProps) {
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const classes = styles();
-  const { open } = props;
+  const { open, inProgress } = props;
 
   const iframeRef = useRef<HTMLIFrameElement>();
 
@@ -316,6 +316,9 @@ export default function LegacyFormDialog(props: LegacyFormDialogProps) {
   };
 
   const onClose = () => {
+    if (inProgress) {
+      props?.onClose();
+    }
     iframeRef.current.contentWindow.postMessage({ type: 'LEGACY_FORM_DIALOG_CANCEL_REQUEST' }, '*');
   };
 

@@ -45,8 +45,7 @@ import {
   showConfirmDialog,
   showHistoryDialog,
   showPreviewDialog,
-  showViewVersionDialog,
-  updatePreviewDialog
+  showViewVersionDialog
 } from '../../../state/actions/dialogs';
 import SingleItemSelector from '../Authoring/SingleItemSelector';
 import Dialog from '@material-ui/core/Dialog';
