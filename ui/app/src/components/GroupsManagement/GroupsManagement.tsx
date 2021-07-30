@@ -27,6 +27,7 @@ import EditGroupDialog from '../EditGroupDialog';
 import Button from '@material-ui/core/Button';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
+import Paper from '@material-ui/core/Paper';
 
 export default function GroupsManagement() {
   const [offset, setOffset] = useState(0);
@@ -101,7 +102,7 @@ export default function GroupsManagement() {
   };
 
   return (
-    <section>
+    <Paper elevation={0}>
       <GlobalAppToolbar
         title={<FormattedMessage id="words.groups" defaultMessage="Groups" />}
         leftContent={
@@ -136,6 +137,6 @@ export default function GroupsManagement() {
         onGroupSaved={onGroupSaved}
         onGroupDeleted={onGroupDeleted}
       />
-    </section>
+    </Paper>
   );
 }

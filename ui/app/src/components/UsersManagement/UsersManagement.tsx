@@ -32,6 +32,7 @@ import SearchBar from '../Controls/SearchBar';
 import { useDebouncedInput } from '../../utils/hooks/useDebouncedInput';
 import useStyles from './styles';
 import clsx from 'clsx';
+import Paper from '@material-ui/core/Paper';
 
 interface UsersManagementProps {
   passwordRequirementsRegex?: string;
@@ -131,7 +132,7 @@ export default function UsersManagement(props: UsersManagementProps) {
   }
 
   return (
-    <section>
+    <Paper elevation={0}>
       <GlobalAppToolbar
         title={<FormattedMessage id="words.users" defaultMessage="Users" />}
         leftContent={
@@ -186,6 +187,6 @@ export default function UsersManagement(props: UsersManagementProps) {
         user={viewUser}
         passwordRequirementsRegex={passwordRequirementsRegex}
       />
-    </section>
+    </Paper>
   );
 }

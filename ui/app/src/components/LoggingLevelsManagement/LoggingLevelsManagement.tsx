@@ -27,6 +27,7 @@ import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { showSystemNotification } from '../../state/actions/system';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
+import Paper from '@material-ui/core/Paper';
 
 const messages = defineMessages({
   levelChangedSuccess: {
@@ -89,7 +90,7 @@ export default function LoggingLevelsManagement() {
   );
 
   return (
-    <section>
+    <Paper elevation={0}>
       <GlobalAppToolbar
         title={<FormattedMessage id="globalMenu.loggingLevelsEntryLabel" defaultMessage="Logging Levels" />}
       />
@@ -101,6 +102,6 @@ export default function LoggingLevelsManagement() {
       >
         <LoggingLevelsGridUI resource={resource} onChangeLevel={changeLevel} />
       </SuspenseWithEmptyState>
-    </section>
+    </Paper>
   );
 }

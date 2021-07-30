@@ -31,6 +31,7 @@ import Button from '@material-ui/core/Button';
 import GlobalAppToolbar from './GlobalAppToolbar';
 import Box from '@material-ui/core/Box';
 import { useSpreadState } from '../utils/hooks/useSpreadState';
+import Paper from '@material-ui/core/Paper';
 
 interface EncryptToolProps {
   site?: string;
@@ -183,7 +184,7 @@ const EncryptTool = (props: EncryptToolProps) => {
   };
 
   return (
-    <section>
+    <Paper elevation={0}>
       {!embedded && (
         <GlobalAppToolbar title={<FormattedMessage id="encryptTool.pageTitle" defaultMessage="Encryption Tool" />} />
       )}
@@ -250,7 +251,7 @@ const EncryptTool = (props: EncryptToolProps) => {
           </Snackbar>
         </form>
       </Box>
-    </section>
+    </Paper>
   );
 };
 
