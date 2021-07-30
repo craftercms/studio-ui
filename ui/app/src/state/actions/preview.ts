@@ -296,6 +296,10 @@ export const initPageBuilderPanelConfig = /*#__PURE__*/ createAction<{
   configXml: string;
 }>('INIT_PAGE_BUILDER_PANEL_CONFIG');
 
+export const initRichTextEditorConfig = /*#__PURE__*/ createAction<{ configXml: string }>(
+  'INIT_RICH_TEXT_EDITOR_CONFIG'
+);
+
 // endregion
 
 // region toolsPanelPageStack

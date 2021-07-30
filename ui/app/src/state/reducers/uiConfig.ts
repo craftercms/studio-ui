@@ -47,8 +47,7 @@ const initialState: GlobalState['uiConfig'] = {
     }
   },
   references: null,
-  xml: null,
-  richTextEditor: {}
+  xml: null
 };
 
 const reducer = createReducer<GlobalState['uiConfig']>(initialState, {

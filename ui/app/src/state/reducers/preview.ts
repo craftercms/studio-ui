@@ -39,6 +39,7 @@ import {
   guestModelUpdated,
   guestPathUpdated,
   initPageBuilderPanelConfig,
+  initRichTextEditorConfig,
   initToolbarConfig,
   initToolsPanelConfig,
   OPEN_TOOLS,
@@ -75,6 +76,7 @@ import { fetchGlobalPropertiesComplete } from '../actions/user';
 import { storeInitialized } from '../actions/system';
 import { deserialize, fromString } from '../../utils/xml';
 import { defineMessages } from 'react-intl';
+import LookupTable from '../../models/LookupTable';
 
 const messages = defineMessages({
   emptyUiConfigMessageTitle: {
@@ -180,7 +182,8 @@ const reducer = createReducer<GlobalState['preview']>(
       middleSection: null,
       rightSection: null
     },
-    pageBuilderPanel: null
+    pageBuilderPanel: null,
+    richTextEditor: null
   },
   {
     [storeInitialized.type]: (state, { payload }) =>
@@ -671,6 +674,45 @@ const reducer = createReducer<GlobalState['preview']>(
       return {
         ...state,
         pageBuilderPanel: pageBuilderPanelConfig
+      };
+    },
+    [initRichTextEditorConfig.type]: (state, { payload }) => {
+      let rteConfig = {};
+      const arrays = ['setups'];
+      const renameTable = { '#text': 'data' };
+      const configDOM = fromString(payload.configXml);
+      const rte = configDOM.querySelector('[id="craftercms.components.RichTextEditor"] > configuration');
+      if (rte) {
+        try {
+          const conf = applyDeserializedXMLTransforms(deserialize(rte), {
+            arrays,
+            renameTable
+          }).configuration;
+          let setups: LookupTable = {};
+
+          conf.setups.forEach((setup) => {
+            setups[setup.id] = JSON.parse(setup.data);
+            setup.data = JSON.parse(setup.data);
+          });
+
+          conf.setups.forEach((setup) => {
+            setup.extends?.split(',').forEach((extend) => {
+              setups[setup.id] = {
+                ...setups[extend],
+                ...setup.data
+              };
+            });
+          });
+
+          rteConfig = setups;
+        } catch (e) {
+          console.error(e);
+        }
+      }
+
+      return {
+        ...state,
+        richTextEditor: rteConfig
       };
     }
   }

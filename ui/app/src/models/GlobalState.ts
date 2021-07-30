@@ -183,6 +183,7 @@ export interface GlobalState {
     pageBuilderPanel: {
       widgets: WidgetDescriptor[];
     };
+    richTextEditor: LookupTable;
   };
   previewNavigation: {
     currentUrlPath: string;

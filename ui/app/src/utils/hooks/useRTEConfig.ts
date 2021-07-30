@@ -17,7 +17,7 @@
 import GlobalState from '../../models/GlobalState';
 import { useSelection } from './useSelection';
 
-export function useRTEConfig(): GlobalState['uiConfig']['richTextEditor'] {
-  const config = useSelection((state) => state.uiConfig.richTextEditor);
+export function useRTEConfig(): GlobalState['preview']['richTextEditor'] {
+  const config = useSelection((state) => state.preview.richTextEditor);
   return config;
 }

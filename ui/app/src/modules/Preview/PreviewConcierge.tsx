@@ -40,6 +40,7 @@ import {
   guestModelUpdated,
   HOST_CHECK_IN,
   ICE_ZONE_SELECTED,
+  initRichTextEditorConfig,
   INSERT_COMPONENT_OPERATION,
   INSERT_INSTANCE_OPERATION,
   INSERT_ITEM_OPERATION,
@@ -117,6 +118,7 @@ import { useItemsByPath } from '../../utils/hooks/useItemsByPath';
 import { useMount } from '../../utils/hooks/useMount';
 import { usePreviewNavigation } from '../../utils/hooks/usePreviewNavigation';
 import { useRTEConfig } from '../../utils/hooks/useRTEConfig';
+import { useSiteUIConfig } from '../../utils/hooks/useSiteUIConfig';
 
 const guestMessages = defineMessages({
   maxCount: {
@@ -308,6 +310,7 @@ export function PreviewConcierge(props: any) {
   // guestDetectionSnackbarOpen, guestDetectionTimeout
   const guestDetectionTimeoutRef = useRef<number>();
   const [guestDetectionSnackbarOpen, setGuestDetectionSnackbarOpen] = useState(false);
+  const uiConfig = useSiteUIConfig();
   const rteConfig = useRTEConfig();
 
   function clearSelectedZonesHandler() {
@@ -451,7 +454,7 @@ export function PreviewConcierge(props: any) {
             }
             getHostToGuestBus().next({
               type: HOST_CHECK_IN,
-              payload: { editMode: false, highlightMode, rteConfig }
+              payload: { editMode: false, highlightMode, rteConfig: rteConfig.pageBuilder ?? {} }
             });
             dispatch(checkInGuest(payload));
 
@@ -840,7 +843,8 @@ export function PreviewConcierge(props: any) {
     highlightMode,
     previewChoice,
     handlePreviewCompatibilityDialogGo,
-    conditionallyToggleEditMode
+    conditionallyToggleEditMode,
+    rteConfig
   ]);
 
   useEffect(() => {
@@ -855,6 +859,12 @@ export function PreviewConcierge(props: any) {
       }
     }
   }, [site, guest, dispatch]);
+
+  useEffect(() => {
+    if (nnou(uiConfig.xml) && !rteConfig) {
+      dispatch(initRichTextEditorConfig({ configXml: uiConfig.xml }));
+    }
+  }, [uiConfig.xml, rteConfig, dispatch]);
 
   // Hotkeys
   useHotkeys(
