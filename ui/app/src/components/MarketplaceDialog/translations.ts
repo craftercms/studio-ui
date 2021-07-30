@@ -17,18 +17,8 @@
 import { defineMessages } from 'react-intl';
 
 export const translations = defineMessages({
-  editStates: {
-    id: 'words.edit',
-    defaultMessage: 'Edit'
-  },
-  selectAll: {
-    id: 'itemStates.selectedAll',
-    defaultMessage: 'Select {count} items across pages'
-  },
-  clearSelected: {
-    id: 'itemStates.clearSeleted',
-    defaultMessage: 'Clear {count} Seleted'
+  installing: {
+    id: 'installPluginDialog.installing',
+    descriptor: 'Installing "{name}"'
   }
 });
-
-export default translations;

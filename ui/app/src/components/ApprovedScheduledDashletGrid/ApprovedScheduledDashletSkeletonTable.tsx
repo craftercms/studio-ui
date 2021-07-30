@@ -93,7 +93,7 @@ export default function ApprovedScheduledDashletSkeletonTable(props: ApprovedSch
                             <GlobalAppGridCell className="checkbox">
                               <Skeleton variant="circle" width={30} height={30} className={classes.skeletonCheckbox} />
                             </GlobalAppGridCell>
-                            <GlobalAppGridCell className="ellipsis width40 padded0">
+                            <GlobalAppGridCell className="width40 padded0">
                               <Skeleton variant="text" width={`${rand(70, 90)}%`} />
                               <Skeleton variant="text" width={`${rand(70, 90)}%`} />
                             </GlobalAppGridCell>
@@ -103,7 +103,7 @@ export default function ApprovedScheduledDashletSkeletonTable(props: ApprovedSch
                             <GlobalAppGridCell className="width15">
                               <Skeleton variant="text" width={`${rand(50, 60)}%`} />
                             </GlobalAppGridCell>
-                            <GlobalAppGridCell className="width25 ellipsis">
+                            <GlobalAppGridCell className="width25">
                               <Skeleton variant="text" width={`${rand(60, 90)}%`} />
                             </GlobalAppGridCell>
                             <GlobalAppGridCell className="checkbox">

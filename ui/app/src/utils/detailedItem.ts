@@ -14,21 +14,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { defineMessages } from 'react-intl';
+import { DetailedItem } from '../models/Item';
 
-export const translations = defineMessages({
-  editStates: {
-    id: 'words.edit',
-    defaultMessage: 'Edit'
-  },
-  selectAll: {
-    id: 'itemStates.selectedAll',
-    defaultMessage: 'Select {count} items across pages'
-  },
-  clearSelected: {
-    id: 'itemStates.clearSeleted',
-    defaultMessage: 'Clear {count} Seleted'
+export function getDateScheduled(item: DetailedItem): string {
+  if (item.stateMap.submittedToStaging) {
+    return item.staging.dateScheduled;
+  } else if (item.stateMap.submittedToLive) {
+    return item.live.dateScheduled;
+  } else {
+    return null;
   }
-});
+}
 
-export default translations;
+export function getDatePublished(item: DetailedItem): string {
+  if (item.stateMap.staged) {
+    return item.staging.datePublished;
+  } else if (item.stateMap.live) {
+    return item.live.datePublished;
+  } else {
+    return null;
+  }
+}

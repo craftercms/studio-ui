@@ -17,17 +17,21 @@
 import { defineMessages } from 'react-intl';
 
 export const translations = defineMessages({
-  editStates: {
-    id: 'words.edit',
-    defaultMessage: 'Edit'
+  publish: {
+    id: 'words.publish',
+    defaultMessage: 'Publish'
   },
-  selectAll: {
-    id: 'itemStates.selectedAll',
-    defaultMessage: 'Select {count} items across pages'
+  schedule: {
+    id: 'words.schedule',
+    defaultMessage: 'Schedule'
   },
-  clearSelected: {
-    id: 'itemStates.clearSeleted',
-    defaultMessage: 'Clear {count} Seleted'
+  reject: {
+    id: 'words.reject',
+    defaultMessage: 'Reject'
+  },
+  clear: {
+    id: 'common.clearSelectedWithCount',
+    defaultMessage: 'Clear {count} selected'
   }
 });
 

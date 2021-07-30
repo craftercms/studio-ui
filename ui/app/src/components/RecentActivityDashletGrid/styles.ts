@@ -14,21 +14,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { defineMessages } from 'react-intl';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 
-export const translations = defineMessages({
-  editStates: {
-    id: 'words.edit',
-    defaultMessage: 'Edit'
-  },
-  selectAll: {
-    id: 'itemStates.selectedAll',
-    defaultMessage: 'Select {count} items across pages'
-  },
-  clearSelected: {
-    id: 'itemStates.clearSeleted',
-    defaultMessage: 'Clear {count} Seleted'
-  }
-});
+export const useStyles = makeStyles((theme) =>
+  createStyles({
+    tableRoot: {
+      tableLayout: 'fixed'
+    },
+    itemPath: {
+      color: theme.palette.text.secondary
+    },
+    ellipsis: {
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap'
+    },
+    showSelectRoot: {
+      paddingTop: '8.5px',
+      paddingBottom: '8.5px'
+    },
+    showLabel: {
+      marginRight: theme.spacing(1)
+    },
+    skeletonCheckbox: {
+      margin: '6px 10px'
+    }
+  })
+);
 
-export default translations;
+export default useStyles;

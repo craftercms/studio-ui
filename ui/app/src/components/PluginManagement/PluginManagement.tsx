@@ -43,13 +43,14 @@ import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { getUserPermissions } from '../../services/security';
 import { emitSystemEvent, pluginInstalled, showSystemNotification } from '../../state/actions/system';
 import LookupTable from '../../models/LookupTable';
-import { createLookupTable } from '../../utils/object';
 import GlobalState from '../../models/GlobalState';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import { useSelection } from '../../utils/hooks/useSelection';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useMount } from '../../utils/hooks/useMount';
 import { batchActions } from '../../state/actions/misc';
+import Link from '@material-ui/core/Link';
+import { createPresenceTable } from '../../utils/array';
 
 const messages = defineMessages({
   pluginInstalled: {
@@ -95,7 +96,7 @@ export const PluginManagement = (props: PluginManagementProps) => {
   const installPluginsPermission = permissions?.includes('install_plugins');
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
   const [pluginFiles, setPluginFiles] = React.useState<PluginRecord>(null);
-  const [installedPluginsLookup, setInstalledPluginsLookup] = useState<LookupTable<PluginRecord>>();
+  const [installedPluginsLookup, setInstalledPluginsLookup] = useState<LookupTable<boolean>>();
   const locale = useSelection<GlobalState['uiConfig']['locale']>((state) => state.uiConfig.locale);
 
   useMount(() => {
@@ -109,7 +110,12 @@ export const PluginManagement = (props: PluginManagementProps) => {
       fetchInstalledMarketplacePlugins(siteId).subscribe(
         (plugins) => {
           setPlugins(plugins);
-          setInstalledPluginsLookup(createLookupTable(plugins, 'id'));
+          setInstalledPluginsLookup(
+            createPresenceTable(
+              plugins.map((plugin) => plugin.id),
+              true
+            )
+          );
         },
         (error) => {
           dispatch(
@@ -143,6 +149,7 @@ export const PluginManagement = (props: PluginManagementProps) => {
         emitSystemEvent(pluginInstalled())
       ])
     );
+    setInstalledPluginsLookup({ ...installedPluginsLookup, [plugin.id]: true });
     refresh();
   };
 
@@ -244,7 +251,11 @@ export const PluginManagement = (props: PluginManagementProps) => {
                     <StyledTableCell align="left">
                       {plugin.version.major}.{plugin.version.minor}.{plugin.version.patch}
                     </StyledTableCell>
-                    <StyledTableCell align="left">{plugin.pluginUrl}</StyledTableCell>
+                    <StyledTableCell align="left">
+                      <Link href={plugin.pluginUrl} target="_blank">
+                        {plugin.pluginUrl}
+                      </Link>
+                    </StyledTableCell>
                     <StyledTableCell align="left">
                       {plugin.files.length}
                       <IconButton onClick={(e) => showPluginFiles(e, plugin)} size="small">
