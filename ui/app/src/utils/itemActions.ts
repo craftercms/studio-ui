@@ -108,6 +108,7 @@ import React from 'react';
 import { previewItem } from '../state/actions/preview';
 import { createPresenceTable } from './array';
 import { fetchPublishingStatus } from '../state/actions/publishingStatus';
+import { Clipboard } from '../models/GlobalState';
 
 export type ContextMenuOptionDescriptor<ID extends string = string> = {
   id: ID;
@@ -421,7 +422,10 @@ export function generateSingleItemOptions(
 
 export function generateMultipleItemOptions(
   items: DetailedItem[],
-  formatMessage: IntlFormatters['formatMessage']
+  formatMessage: IntlFormatters['formatMessage'],
+  options?: {
+    includeOnly: AllItemActions[];
+  }
 ): ContextMenuOption[] {
   let publish = true;
   let requestPublish = true;
@@ -429,8 +433,13 @@ export function generateMultipleItemOptions(
   let schedulePublish = true;
   let deleteItem = true;
   let reject = true;
-  let options = [];
+  let sections = [];
   const menuOptions = toContextMenuOptionsLookup(unparsedMenuOptions, formatMessage);
+
+  const actionsToInclude = createPresenceTable(options?.includeOnly ?? allItemActions) as Record<
+    AllItemActions,
+    boolean
+  >;
 
   items.forEach((item) => {
     publish = publish && hasPublishAction(item.availableActions);
@@ -441,17 +450,22 @@ export function generateMultipleItemOptions(
     reject = reject && hasPublishRejectAction(item.availableActions);
   });
 
-  if (publish || schedulePublish || requestPublish || approvePublish) {
-    options.push(menuOptions.publish);
+  if (
+    (publish && actionsToInclude.publish) ||
+    (schedulePublish && actionsToInclude.schedulePublish) ||
+    (requestPublish && actionsToInclude.rejectPublish) ||
+    (approvePublish && actionsToInclude.approvePublish)
+  ) {
+    sections.push(menuOptions.publish);
   }
-  if (deleteItem) {
-    options.push(menuOptions.delete);
+  if (deleteItem && actionsToInclude.delete) {
+    sections.push(menuOptions.delete);
   }
-  if (reject) {
-    options.push(menuOptions.rejectPublish);
+  if (reject && actionsToInclude.rejectPublish) {
+    sections.push(menuOptions.rejectPublish);
   }
 
-  return options;
+  return sections;
 }
 
 export const itemActionDispatcher = ({
@@ -471,9 +485,9 @@ export const itemActionDispatcher = ({
   authoringBase: string;
   dispatch;
   formatMessage;
-  clipboard;
+  clipboard?: Clipboard;
   onActionSuccess?: any;
-  event: React.MouseEvent<Element, MouseEvent>;
+  event?: React.MouseEvent<Element, MouseEvent>;
 }) => {
   // actions that support only one item
   if (!Array.isArray(item)) {
@@ -805,10 +819,16 @@ export const itemActionDispatcher = ({
     case 'schedulePublish':
     case 'requestPublish': {
       const items = Array.isArray(item) ? item : [item];
+      const schedulingMap = {
+        approvePublish: null,
+        schedulePublish: 'custom',
+        requestPublish: 'now',
+        publish: 'now'
+      };
       dispatch(
         showPublishDialog({
           items,
-          scheduling: option === 'schedulePublish' ? 'custom' : 'now',
+          scheduling: schedulingMap[option],
           onSuccess: batchActions([
             showPublishItemSuccessNotification(),
             ...items.map((item) => reloadDetailedItem({ path: item.path })),

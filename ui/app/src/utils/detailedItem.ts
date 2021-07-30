@@ -14,23 +14,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { DetailedItem } from '../models/Item';
 
-export const useStyles = makeStyles((theme) =>
-  createStyles({
-    collapseAll: {
-      marginRight: '10px'
-    },
-    actionsBarRoot: {
-      left: '0',
-      right: '0',
-      zIndex: 2,
-      position: 'absolute'
-    },
-    actionsBarCheckbox: {
-      margin: '2px'
-    }
-  })
-);
+export function getDateScheduled(item: DetailedItem): string {
+  if (item.stateMap.submittedToStaging) {
+    return item.staging.dateScheduled;
+  } else if (item.stateMap.submittedToLive) {
+    return item.live.dateScheduled;
+  } else {
+    return null;
+  }
+}
 
-export default useStyles;
+export function getDatePublished(item: DetailedItem): string {
+  if (item.stateMap.staged) {
+    return item.staging.datePublished;
+  } else if (item.stateMap.live) {
+    return item.live.datePublished;
+  } else {
+    return null;
+  }
+}

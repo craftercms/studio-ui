@@ -16,7 +16,6 @@
 
 import React from 'react';
 import TableContainer from '@material-ui/core/TableContainer';
-import useStyles from './styles';
 import Table from '@material-ui/core/Table';
 import TableHead from '@material-ui/core/TableHead';
 import { FormattedMessage } from 'react-intl';
@@ -26,6 +25,7 @@ import GlobalAppGridCell from '../GlobalAppGridCell';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { rand } from '../PathNavigator/utils';
 import Typography from '@material-ui/core/Typography';
+import useStyles from './styles';
 
 export interface RecentActivityDashletUiSkeletonProps {
   numOfItems?: number;
@@ -41,30 +41,30 @@ export default function RecentActivityDashletUiSkeleton(props: RecentActivityDas
       <Table size="small" className={classes.tableRoot}>
         <TableHead>
           <GlobalAppGridRow className="hoverDisabled">
-            <GlobalAppGridCell className="checkbox bordered width5">
+            <GlobalAppGridCell className="checkbox">
               <Skeleton variant="circle" width={30} height={30} className={classes.skeletonCheckbox} />
             </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered width40">
+            <GlobalAppGridCell className="width40 pl0">
               <Typography variant="subtitle2">
                 <FormattedMessage id="words.item" defaultMessage="Item" />
               </Typography>
             </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered width20">
+            <GlobalAppGridCell className="width20 ellipsis">
               <Typography variant="subtitle2">
                 <FormattedMessage id="recentActivity.publishDate" defaultMessage="Publish Date" />
               </Typography>
             </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered width20">
+            <GlobalAppGridCell className="width15 ellipsis">
               <Typography variant="subtitle2">
                 <FormattedMessage id="recentActivity.lastEditedBy" defaultMessage="Last Edited By" />
               </Typography>
             </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered width10">
+            <GlobalAppGridCell className="width20 ellipsis">
               <Typography variant="subtitle2">
                 <FormattedMessage id="recentlyPublished.myLastEdit" defaultMessage="My Last Edit" />
               </Typography>
             </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered width5" />
+            <GlobalAppGridCell className="checkbox" />
           </GlobalAppGridRow>
         </TableHead>
         <TableBody>
@@ -73,20 +73,20 @@ export default function RecentActivityDashletUiSkeleton(props: RecentActivityDas
               <GlobalAppGridCell className="checkbox">
                 <Skeleton variant="circle" width={30} height={30} className={classes.skeletonCheckbox} />
               </GlobalAppGridCell>
-              <GlobalAppGridCell className="ellipsis width40 padded0">
+              <GlobalAppGridCell className="width40 pl0">
                 <Skeleton variant="text" width={`${rand(70, 90)}%`} />
                 <Skeleton variant="text" width={`${rand(70, 90)}%`} />
               </GlobalAppGridCell>
               <GlobalAppGridCell className="width20">
                 <Skeleton variant="text" width="50px" />
               </GlobalAppGridCell>
+              <GlobalAppGridCell className="width15">
+                <Skeleton variant="text" width={`${rand(50, 60)}%`} />
+              </GlobalAppGridCell>
               <GlobalAppGridCell className="width20">
-                <Skeleton variant="text" width={`${rand(50, 60)}%`} />
+                <Skeleton variant="text" width={`${rand(60, 90)}%`} />
               </GlobalAppGridCell>
-              <GlobalAppGridCell className="width10">
-                <Skeleton variant="text" width={`${rand(50, 60)}%`} />
-              </GlobalAppGridCell>
-              <GlobalAppGridCell className="width5">
+              <GlobalAppGridCell className="checkbox">
                 <Skeleton variant="circle" width={30} height={30} className={classes.skeletonCheckbox} />
               </GlobalAppGridCell>
             </GlobalAppGridRow>
