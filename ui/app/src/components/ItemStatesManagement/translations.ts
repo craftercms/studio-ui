@@ -26,8 +26,8 @@ export const translations = defineMessages({
     defaultMessage: 'Select {count} items across pages'
   },
   clearSelected: {
-    id: 'itemStates.clearSeleted',
-    defaultMessage: 'Clear {count} Seleted'
+    id: 'common.clearSelectedWithCount',
+    defaultMessage: 'Clear {count} selected'
   }
 });
 

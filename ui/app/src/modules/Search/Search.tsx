@@ -39,7 +39,8 @@ import { completeDetailedItem } from '../../state/actions/content';
 import { getPreviewURLFromPath } from '../../utils/path';
 import ApiResponseErrorState from '../../components/ApiResponseErrorState';
 import SiteSearchToolBar from '../../components/SiteSearchToolbar';
-import { Drawer } from '@material-ui/core';
+import Drawer from '@material-ui/core/Drawer';
+import ListItemText from '@material-ui/core/ListItemText';
 import SiteSearchFilters from '../../components/SiteSearchFilters';
 import ItemActionsSnackbar from '../../components/ItemActionsSnackbar';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
@@ -389,7 +390,7 @@ export default function Search(props: SearchProps) {
             itemsDetails.push({ item });
           }
         });
-        return generateMultipleItemOptions(itemsDetails, formatMessage);
+        return generateMultipleItemOptions(itemsDetails, formatMessage, { includeOnly: actionsToBeShown });
       }
     }
   }, [formatMessage, items, selected]);
@@ -906,10 +907,12 @@ export default function Search(props: SearchProps) {
           options={selectionOptions}
           onActionClicked={onActionClicked}
           append={
-            <Button color="primary" variant="text" onClick={handleClearSelected}>
-              {formatMessage(messages.clearSelected, {
-                count: selected.length
-              })}
+            <Button size="small" color="primary" variant="text" onClick={handleClearSelected}>
+              <ListItemText
+                primary={formatMessage(messages.clearSelected, {
+                  count: selected.length
+                })}
+              />
             </Button>
           }
         />
