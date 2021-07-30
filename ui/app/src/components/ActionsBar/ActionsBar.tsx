@@ -22,6 +22,8 @@ import { getPossibleTranslation } from '../../utils/i18n';
 import clsx from 'clsx';
 import Button from '@material-ui/core/Button';
 import TranslationOrText from '../../models/TranslationOrText';
+import Skeleton from '@material-ui/lab/Skeleton';
+import { rand } from '../PathNavigator/utils';
 
 const styles = makeStyles((theme) =>
   createStyles({
@@ -46,6 +48,8 @@ export interface Action {
 
 interface ActionsBarProps {
   options: Action[];
+  numOfSkeletonItems?: number;
+  isLoading?: boolean;
   isIndeterminate: boolean;
   isChecked: boolean;
   classes?: Partial<Record<'root' | 'header' | 'checkbox', string>>;
@@ -56,7 +60,15 @@ interface ActionsBarProps {
 export default function ActionsBar(props: ActionsBarProps) {
   const classes = styles({});
   const { formatMessage } = useIntl();
-  const { options, onOptionClicked, isIndeterminate, toggleSelectAll, isChecked } = props;
+  const {
+    options,
+    onOptionClicked,
+    isIndeterminate,
+    toggleSelectAll,
+    isChecked,
+    isLoading = false,
+    numOfSkeletonItems = 5
+  } = props;
 
   return (
     <section className={clsx(classes.root, props.classes?.root)}>
@@ -68,11 +80,17 @@ export default function ActionsBar(props: ActionsBarProps) {
           className={clsx(classes.checkbox, props.classes?.checkbox)}
           onChange={toggleSelectAll}
         />
-        {options.map((option: Action) => (
-          <Button color="primary" variant="text" key={option.id} onClick={() => onOptionClicked(option.id)}>
-            {getPossibleTranslation(option.label, formatMessage)}
-          </Button>
-        ))}
+        {isLoading
+          ? new Array(numOfSkeletonItems).fill(null).map((_, index) => (
+              <Button color="primary" key={index}>
+                <Skeleton animation="pulse" height="12px" width={`${rand(40, 60)}px`} />
+              </Button>
+            ))
+          : options.map((option: Action) => (
+              <Button color="primary" variant="text" key={option.id} onClick={() => onOptionClicked(option.id)}>
+                {getPossibleTranslation(option.label, formatMessage)}
+              </Button>
+            ))}
       </header>
     </section>
   );

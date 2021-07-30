@@ -18,7 +18,7 @@ import React, { PropsWithChildren, ReactNode, useCallback, useEffect, useMemo, u
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { fetchPublishingTargets, goLive, submitToGoLive } from '../../../services/publishing';
 import { fetchDependencies } from '../../../services/dependencies';
-import { BaseItem, DetailedItem } from '../../../models/Item';
+import { DetailedItem } from '../../../models/Item';
 import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux';
 import GlobalState from '../../../models/GlobalState';
@@ -32,7 +32,6 @@ import DialogHeader from '../../../components/Dialogs/DialogHeader';
 import DialogBody from '../../../components/Dialogs/DialogBody';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import DialogFooter from '../../../components/Dialogs/DialogFooter';
-import Button from '@material-ui/core/Button';
 import { ApiResponse } from '../../../models/ApiResponse';
 import Dialog from '@material-ui/core/Dialog';
 import LookupTable from '../../../models/LookupTable';
@@ -44,10 +43,11 @@ import { usePermissionsBySite } from '../../../utils/hooks/usePermissionsBySite'
 import { useLogicResource } from '../../../utils/hooks/useLogicResource';
 import { useUnmount } from '../../../utils/hooks/useUnmount';
 import { useSpreadState } from '../../../utils/hooks/useSpreadState';
+import { createPresenceTable } from '../../../utils/array';
 
 // region Typings
 
-type ApiState = { error: ApiResponse; submitting: boolean };
+type ApiState = { error: ApiResponse; submitting: boolean; fetchingDependencies: boolean };
 type Source = { items: DetailedItem[]; publishingChannels: any[]; apiState: ApiState };
 type Return = Omit<Source, 'apiState'>;
 
@@ -58,13 +58,12 @@ export interface DependenciesResultObject {
 
 interface PublishDialogContentUIProps {
   resource: Resource<any>;
-  checkedItems: DetailedItem[];
+  checkedItems: LookupTable<boolean>;
   setCheckedItems: Function;
-  checkedSoftDep: any[];
+  checkedSoftDep: LookupTable<boolean>;
   setCheckedSoftDep: Function;
   onClickSetChecked: Function;
   deps: any;
-  showDepsButton: boolean;
   selectAllDeps: Function;
   selectAllSoft: Function;
   dialog: any;
@@ -75,6 +74,8 @@ interface PublishDialogContentUIProps {
   publishingChannelsStatus: string;
   onPublishingChannelsFailRetry: Function;
   apiState: any;
+  mixedPublishingDates?: boolean;
+  mixedPublishingTargets?: boolean;
 }
 
 interface PublishDialogUIProps {
@@ -90,13 +91,12 @@ interface PublishDialogUIProps {
   setDialog: any;
   title: string;
   subtitle?: string;
-  checkedItems: DetailedItem[];
+  checkedItems: LookupTable<boolean>;
   setCheckedItems: Function;
-  checkedSoftDep: any[];
+  checkedSoftDep: LookupTable<boolean>;
   setCheckedSoftDep: Function;
   onClickSetChecked: Function;
   deps: any;
-  showDepsButton: boolean;
   selectAllDeps: Function;
   selectAllSoft: Function;
   onClickShowAllDeps?: any;
@@ -105,11 +105,14 @@ interface PublishDialogUIProps {
   apiState: any;
   classes?: any;
   submitLabel: ReactNode;
+  mixedPublishingDates?: boolean;
+  mixedPublishingTargets?: boolean;
 }
 
 interface PublishDialogBaseProps {
   open: boolean;
   items?: DetailedItem[];
+  // if null it means the dialog should determinate which one to use
   scheduling?: 'now' | 'custom';
 }
 
@@ -175,32 +178,12 @@ const translations = defineMessages({
   }
 });
 
-export const createCheckedItems: <T extends BaseItem = BaseItem>(items: T[]) => LookupTable<boolean> = (items) => {
-  return (items || []).reduce((table: LookupTable<boolean>, item) => {
-    table[item.path] = true;
-    return table;
-  }, {});
-};
-
-export const onClickSetChecked = (e: any, item: any, setChecked: Function, checked: any) => {
-  e.stopPropagation();
-  e.preventDefault();
-  setChecked([item.path], !checked[item.path]);
-};
-
 export const updateCheckedList = (path: string[], isChecked: boolean, checked: any) => {
   const nextChecked = { ...checked };
   (Array.isArray(path) ? path : [path]).forEach((u) => {
     nextChecked[u] = isChecked;
   });
   return nextChecked;
-};
-
-export const selectAllDeps = (setChecked: Function, items: DetailedItem[]) => {
-  setChecked(
-    items.map((i) => i.path),
-    true
-  );
 };
 
 export const paths = (checked: any) =>
@@ -241,7 +224,6 @@ function PublishDialogContentUI(props: PublishDialogContentUIProps) {
     setCheckedSoftDep,
     onClickSetChecked,
     deps,
-    showDepsButton,
     selectAllDeps,
     selectAllSoft,
     dialog,
@@ -251,7 +233,9 @@ function PublishDialogContentUI(props: PublishDialogContentUIProps) {
     showRequestApproval,
     publishingChannelsStatus,
     onPublishingChannelsFailRetry,
-    apiState
+    apiState,
+    mixedPublishingDates,
+    mixedPublishingTargets
   } = props;
 
   const { items, publishingChannels }: { items: DetailedItem[]; publishingChannels: any } = resource.read();
@@ -268,7 +252,6 @@ function PublishDialogContentUI(props: PublishDialogContentUIProps) {
             setCheckedSoftDep={setCheckedSoftDep}
             onClickSetChecked={onClickSetChecked}
             deps={deps}
-            showDepsButton={showDepsButton}
             onSelectAllClicked={selectAllDeps}
             onSelectAllSoftClicked={selectAllSoft}
             disabled={apiState.submitting}
@@ -285,6 +268,8 @@ function PublishDialogContentUI(props: PublishDialogContentUIProps) {
             publishingChannelsStatus={publishingChannelsStatus}
             onPublishingChannelsFailRetry={onPublishingChannelsFailRetry}
             disabled={apiState.submitting}
+            mixedPublishingDates={mixedPublishingDates}
+            mixedPublishingTargets={mixedPublishingTargets}
           />
         </Grid>
       </Grid>
@@ -312,7 +297,6 @@ function PublishDialogUI(props: PublishDialogUIProps) {
     setCheckedSoftDep,
     onClickSetChecked,
     deps,
-    showDepsButton,
     selectAllDeps,
     selectAllSoft,
     onClickShowAllDeps,
@@ -320,7 +304,9 @@ function PublishDialogUI(props: PublishDialogUIProps) {
     showRequestApproval,
     apiState,
     classes,
-    submitLabel
+    submitLabel,
+    mixedPublishingDates,
+    mixedPublishingTargets
   } = props;
 
   return (
@@ -346,7 +332,6 @@ function PublishDialogUI(props: PublishDialogUIProps) {
             setCheckedSoftDep={setCheckedSoftDep}
             onClickSetChecked={onClickSetChecked}
             deps={deps}
-            showDepsButton={showDepsButton}
             selectAllDeps={selectAllDeps}
             selectAllSoft={selectAllSoft}
             dialog={dialog}
@@ -357,24 +342,27 @@ function PublishDialogUI(props: PublishDialogUIProps) {
             publishingChannelsStatus={publishingChannelsStatus}
             onPublishingChannelsFailRetry={onPublishingChannelsFailRetry}
             apiState={apiState}
+            mixedPublishingDates={mixedPublishingDates}
+            mixedPublishingTargets={mixedPublishingTargets}
           />
         </SuspenseWithEmptyState>
       </DialogBody>
       <DialogFooter>
-        <Button
+        <SecondaryButton
           color="primary"
           onClick={onClickShowAllDeps}
           className={classes.leftAlignedAction}
-          disabled={showDepsDisabled || apiState.submitting}
+          disabled={showDepsDisabled || apiState.submitting || apiState.fetchingDependencies}
+          loading={apiState.fetchingDependencies}
         >
           <FormattedMessage id="publishDialog.showAllDependencies" defaultMessage="Show All Dependencies" />
-        </Button>
+        </SecondaryButton>
         <SecondaryButton onClick={onDismiss} disabled={apiState.submitting}>
           <FormattedMessage id="requestPublishDialog.cancel" defaultMessage="Cancel" />
         </SecondaryButton>
         <PrimaryButton
           onClick={handleSubmit}
-          disabled={submitDisabled || apiState.submitting}
+          disabled={submitDisabled || apiState.submitting || dialog.environment === ''}
           loading={apiState.submitting}
         >
           {submitLabel}
@@ -399,19 +387,19 @@ export default function PublishDialog(props: PublishDialogProps) {
 }
 
 function PublishDialogWrapper(props: PublishDialogProps) {
-  const { items, scheduling = 'now', onDismiss, onSuccess } = props;
+  const { items, scheduling, onDismiss, onSuccess } = props;
   const [dialog, setDialog] = useSpreadState<InternalDialogState>({ ...dialogInitialState, scheduling });
   const [publishingChannels, setPublishingChannels] = useState<{ name: string }[]>(null);
   const [publishingChannelsStatus, setPublishingChannelsStatus] = useState('Loading');
-  const [checkedItems, setCheckedItems] = useState<any>({}); // selected deps
-  const [checkedSoftDep, _setCheckedSoftDep] = useState<any>({}); // selected soft deps
-  const [deps, setDeps] = useState<DependenciesResultObject>();
-  const [showDepsButton, setShowDepsButton] = useState(true);
+  const [checkedItems, setCheckedItems] = useState<LookupTable<boolean>>({}); // selected deps
+  const [checkedSoftDep, _setCheckedSoftDep] = useState<LookupTable<boolean>>({}); // selected soft deps
+  const [deps, setDeps] = useState<DependenciesResultObject>(null);
   const [submitDisabled, setSubmitDisabled] = useState(true);
   const [showDepsDisabled, setShowDepsDisabled] = useState(false);
   const [apiState, setApiState] = useSpreadState<ApiState>({
     error: null,
-    submitting: false
+    submitting: false,
+    fetchingDependencies: false
   });
 
   const siteId = useActiveSiteId();
@@ -425,6 +413,58 @@ function PublishDialogWrapper(props: PublishDialogProps) {
   const user = useSelector<GlobalState, GlobalState['user']>((state) => state.user);
   const submit = !hasPublishPermission || dialog.requestApproval ? submitToGoLive : goLive;
   const propagateAction = !hasPublishPermission || dialog.requestApproval ? itemsScheduled : itemsApproved;
+  const { mixedPublishingTargets, mixedPublishingDates, dateScheduled, environment } = useMemo(() => {
+    let state = {
+      mixedPublishingTargets: false,
+      mixedPublishingDates: false,
+      dateScheduled: null,
+      environment: ''
+    };
+
+    let _items = items.filter((item) => checkedItems[item.path]);
+
+    if (_items.length === 0) {
+      return state;
+    }
+
+    _items?.reduce((prev, current) => {
+      let prev_environment = prev.stateMap.submittedToLive ? 'live' : prev.stateMap.submittedToStaging ? 'staging' : '';
+      let current_environment = current.stateMap.submittedToLive
+        ? 'live'
+        : current.stateMap.submittedToStaging
+        ? 'staging'
+        : '';
+      if (prev_environment !== current_environment || prev.stateMap.live !== current.stateMap.live) {
+        state.mixedPublishingTargets = true;
+        state.environment = '';
+      }
+      if (prev[prev_environment]?.dateScheduled !== current[current_environment]?.dateScheduled) {
+        state.mixedPublishingDates = true;
+      }
+      if (state.dateScheduled === null) {
+        state.dateScheduled = prev[prev_environment]?.dateScheduled
+          ? prev[prev_environment].dateScheduled
+          : current[prev_environment]?.dateScheduled ?? null;
+      }
+      if (state.environment === '' && state.mixedPublishingTargets === false) {
+        state.environment = prev_environment;
+      }
+      return current;
+    });
+
+    return {
+      ...state,
+      environment:
+        _items.length > 1
+          ? state.environment
+          : _items[0].stateMap.submittedToLive
+          ? 'live'
+          : _items[0].stateMap.submittedToStaging
+          ? 'staging'
+          : '',
+      dateScheduled: _items.length > 1 ? state.dateScheduled : _items[0].live.dateScheduled
+    };
+  }, [checkedItems, items]);
 
   const { formatMessage } = useIntl();
 
@@ -472,7 +512,7 @@ function PublishDialogWrapper(props: PublishDialogProps) {
   const resource = useLogicResource<Return, Source>(publishSource, {
     shouldResolve: (source) => Boolean(source.items && source.publishingChannels && myPermissions.length),
     shouldReject: (source) => Boolean(source.apiState.error),
-    shouldRenew: (source, resource) => resource.complete,
+    shouldRenew: (source, resource) => source.apiState.submitting && resource.complete,
     resultSelector: (source) => ({
       items: source.items,
       publishingChannels: source.publishingChannels
@@ -482,7 +522,7 @@ function PublishDialogWrapper(props: PublishDialogProps) {
 
   useEffect(() => {
     getPublishingChannels(() => {
-      setCheckedItems(createCheckedItems(items));
+      setCheckedItems(createPresenceTable(items, true, (item) => item.path));
     });
   }, [getPublishingChannels, items]);
 
@@ -498,13 +538,23 @@ function PublishDialogWrapper(props: PublishDialogProps) {
   }, [scheduling, setDialog]);
 
   useEffect(() => {
-    if (items.length === 1 && items[0].live?.dateScheduled) {
+    if (dateScheduled && scheduling !== 'now') {
       setDialog({
         scheduling: 'custom',
-        scheduledDateTime: moment(items[0].live.dateScheduled).format()
+        environment,
+        scheduledDateTime: moment(dateScheduled).format()
+      });
+    } else if (dateScheduled === null && scheduling === null) {
+      setDialog({
+        scheduling: 'now',
+        environment
+      });
+    } else {
+      setDialog({
+        environment
       });
     }
-  }, [items, setDialog]);
+  }, [dateScheduled, environment, setDialog, scheduling]);
 
   useEffect(() => {
     if (!apiState.submitting && Object.values(checkedItems).filter(Boolean).length > 0 && publishingChannels?.length) {
@@ -538,7 +588,7 @@ function PublishDialogWrapper(props: PublishDialogProps) {
 
     submit(siteId, user.username, data).subscribe(
       (response) => {
-        setApiState({ error: null, submitting: false });
+        setApiState({ ...apiState, error: null, submitting: false });
         dispatch(emitSystemEvent(propagateAction({ targets: items })));
         onSuccess?.({
           ...response,
@@ -549,16 +599,29 @@ function PublishDialogWrapper(props: PublishDialogProps) {
         });
       },
       (error) => {
-        setApiState({ error });
+        setApiState({ ...apiState, error });
       }
     );
   };
 
   const setChecked = (path: string[], isChecked: boolean) => {
     setCheckedItems(updateCheckedList(path, isChecked, checkedItems));
-    setShowDepsButton(true);
     setDeps(null);
     cleanCheckedSoftDep();
+  };
+
+  const onClickSetChecked = (e: any, item: DetailedItem) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setChecked([item.path], !checkedItems[item.path]);
+  };
+
+  const selectAllDeps = () => {
+    const isAllChecked = !items.some((item) => !checkedItems[item.path]);
+    setChecked(
+      items.map((i) => i.path),
+      !isAllChecked
+    );
   };
 
   const cleanCheckedSoftDep = () => {
@@ -579,9 +642,10 @@ function PublishDialogWrapper(props: PublishDialogProps) {
   }
 
   function showAllDependencies() {
-    setShowDepsButton(false);
+    setApiState({ ...apiState, fetchingDependencies: true });
     fetchDependencies(siteId, paths(checkedItems)).subscribe(
       (items) => {
+        setApiState({ ...apiState, fetchingDependencies: false });
         setDeps({
           items1: items.hardDependencies,
           items2: items.softDependencies
@@ -620,14 +684,13 @@ function PublishDialogWrapper(props: PublishDialogProps) {
       setCheckedSoftDep={setCheckedSoftDep}
       onClickSetChecked={onClickSetChecked}
       deps={deps}
-      showDepsButton={showDepsButton}
       selectAllDeps={selectAllDeps}
       selectAllSoft={selectAllSoft}
       onClickShowAllDeps={showAllDependencies}
       apiState={apiState}
       classes={useStyles()}
       showEmailCheckbox={!hasPublishPermission || dialog.requestApproval}
-      showRequestApproval={hasPublishPermission && items.every((item) => !item.availableActionsMap.approvePublish)}
+      showRequestApproval={hasPublishPermission && items.every((item) => !item.stateMap.submitted)}
       submitLabel={
         dialog.scheduling === 'custom' ? (
           <FormattedMessage id="requestPublishDialog.schedule" defaultMessage="Schedule" />
@@ -637,6 +700,8 @@ function PublishDialogWrapper(props: PublishDialogProps) {
           <FormattedMessage id="requestPublishDialog.publish" defaultMessage="Publish" />
         )
       }
+      mixedPublishingTargets={mixedPublishingTargets}
+      mixedPublishingDates={mixedPublishingDates}
     />
   );
 }

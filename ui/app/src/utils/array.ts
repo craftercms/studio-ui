@@ -46,15 +46,21 @@ export function createPresenceTable<T extends any>(
   list: string[],
   valueGenerator: (listItem: string) => T
 ): LookupTable<T>;
-export function createPresenceTable<T extends any = boolean>(
-  list: string[],
-  valueOrGenerator: string | number | boolean | ((listItem: string) => T) = true
+export function createPresenceTable<T extends any = boolean, K extends any = ''>(
+  list: K[],
+  valueOrGenerator: string | number | boolean | ((listItem: string) => T),
+  itemKeyGenerator: (value: K) => string
+): LookupTable<T>;
+export function createPresenceTable<T extends any = boolean, K extends any = ''>(
+  list: K[],
+  valueOrGenerator: string | number | boolean | ((listItem: string) => T) = true,
+  itemKeyGenerator: (value: K) => string = (value) => value as string
 ): LookupTable<T> {
   const table = {};
   const callback =
     typeof valueOrGenerator === 'function'
-      ? (value) => (table[value] = valueOrGenerator(value))
-      : (value) => (table[value] = valueOrGenerator);
+      ? (value) => (table[itemKeyGenerator(value)] = valueOrGenerator(value))
+      : (value) => (table[itemKeyGenerator(value)] = valueOrGenerator);
   list.forEach(callback);
   return table;
 }

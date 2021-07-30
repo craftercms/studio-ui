@@ -26,10 +26,10 @@ export const useStyles = makeStyles((theme) =>
       marginRight: '20px'
     },
     tableRoot: {
-      tableLayout: 'fixed'
-    },
-    expandableCellBox: {
-      alignItems: 'center'
+      tableLayout: 'fixed',
+      '& tbody > tr:last-child > td table > tbody > tr:last-child > td': {
+        borderBottom: 0
+      }
     },
     itemPath: {
       color: theme.palette.text.secondary
