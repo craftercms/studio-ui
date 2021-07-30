@@ -306,7 +306,11 @@ export function fetchSiteUiConfig(site: string): Observable<Pick<GlobalState['ui
 
         const rte = xml.querySelector('[id="craftercms.components.RichTextEditor"] > configuration > tinymceSetup');
         if (rte) {
-          config.richTextEditor = JSON.parse(deserialize(rte).tinymceSetup);
+          try {
+            config.richTextEditor = JSON.parse(deserialize(rte).tinymceSetup);
+          } catch (e) {
+            console.error(e);
+          }
         }
 
         return config;

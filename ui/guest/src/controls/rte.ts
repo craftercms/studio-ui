@@ -25,6 +25,7 @@ import { Observable, Subject } from 'rxjs';
 import { startWith } from 'rxjs/operators';
 import $ from 'jquery';
 import LookupTable from '@craftercms/studio-ui/models/LookupTable';
+import { reversePluckProps } from '../utils/object';
 
 export function initTinyMCE(
   record: ElementRecord,
@@ -40,8 +41,9 @@ export function initTinyMCE(
     $(record.element).css('display', 'inline-block');
   }
 
-  const settings = {
+  window.tinymce.init({
     mode: 'none',
+    target: record.element,
     // For some reason this is not working.
     // body_class: 'craftercms-rich-text-editor',
     plugins,
@@ -49,13 +51,9 @@ export function initTinyMCE(
     paste_data_images: type === 'html',
     toolbar: type === 'html',
     menubar: false,
+    inline: true,
     base_url: '/studio/static-assets/modules/editors/tinymce/v5/tinymce',
     suffix: '.min',
-    ...rteConfig,
-    // Target can't be changed
-    target: record.element,
-    // Inline view doesn't behave well on pageBuilder, this setting shouldn't be changed.
-    inline: false,
     setup(editor: Editor) {
       editor.on('init', function() {
         let changed = false;
@@ -151,26 +149,26 @@ export function initTinyMCE(
         }
       });
       editor.on('keydown', (e) => {
-        if ((type === 'text' || type === 'textarea') && (e.key === 'Enter' || (e.shiftKey && e.key === 'Enter'))) {
-          e.preventDefault();
-        }
         if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
           e.preventDefault();
         }
       });
     },
-    // Autosave options are left as undefined since it is not supported in control.
-    autosave_ask_before_unload: undefined,
-    autosave_interval: undefined,
-    autosave_prefix: undefined,
-    autosave_restore_when_empty: undefined,
-    autosave_retention: undefined,
-    // No file picker is set by default, and functions are not supported in state.
-    file_picker_callback: undefined,
-    // Height is set to the size of content
-    height: undefined
-  };
+    ...reversePluckProps(
+      rteConfig,
+      'target', // Target can't be changed
+      'inline', // Not using inline view doesn't behave well on pageBuilder, this setting shouldn't be changed.
+      'setup',
+      'base_url',
+      'autosave_ask_before_unload', // Autosave options are removed since it is not supported in control.
+      'autosave_interval',
+      'autosave_prefix',
+      'autosave_restore_when_empty',
+      'autosave_retention',
+      'file_picker_callback', // No file picker is set by default, and functions are not supported in config file.
+      'height' // Height is set to the size of content
+    )
+  });
 
-  window.tinymce.init(settings);
   return dispatch$.pipe(startWith({ type: 'edit_component_inline' }));
 }
