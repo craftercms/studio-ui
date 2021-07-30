@@ -47,7 +47,6 @@ import {
   INSTANCE_DRAG_BEGUN,
   INSTANCE_DRAG_ENDED,
   MOVE_ITEM_OPERATION,
-  pushToolsPanelPage,
   selectForEdit,
   setContentTypeDropTargets,
   setHighlightMode,
@@ -87,7 +86,6 @@ import {
   getStoredClipboard,
   getStoredEditModeChoice,
   getStoredHighlightModeChoice,
-  getStoredPreviewToolsPanelPage,
   removeStoredClipboard
 } from '../../utils/state';
 import { fetchSandboxItem, restoreClipboard } from '../../state/actions/content';
@@ -389,10 +387,6 @@ export function PreviewConcierge(props: any) {
           })
         );
       }
-    }
-    const storedPage = getStoredPreviewToolsPanelPage(site, user.username);
-    if (storedPage) {
-      dispatch(pushToolsPanelPage(storedPage));
     }
   }, [dispatch, site, user.username]);
 

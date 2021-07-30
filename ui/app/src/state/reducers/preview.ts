@@ -38,6 +38,9 @@ import {
   GUEST_CHECK_OUT,
   guestModelUpdated,
   guestPathUpdated,
+  initPageBuilderPanelConfig,
+  initToolbarConfig,
+  initToolsPanelConfig,
   OPEN_TOOLS,
   popPageBuilderPanelPage,
   popToolsPanelPage,
@@ -58,7 +61,7 @@ import {
   updatePageBuilderPanelWidth,
   updateToolsPanelWidth
 } from '../actions/preview';
-import { createEntityState, createLookupTable, nnou, nou } from '../../utils/object';
+import { applyDeserializedXMLTransforms, createEntityState, createLookupTable, nnou, nou } from '../../utils/object';
 import {
   ComponentsContentTypeParams,
   ContentInstancePage,
@@ -70,6 +73,27 @@ import ContentInstance from '../../models/ContentInstance';
 import { changeSite } from './sites';
 import { fetchGlobalPropertiesComplete } from '../actions/user';
 import { storeInitialized } from '../actions/system';
+import { deserialize, fromString } from '../../utils/xml';
+import { defineMessages } from 'react-intl';
+
+const messages = defineMessages({
+  emptyUiConfigMessageTitle: {
+    id: 'emptyUiConfigMessageTitle.title',
+    defaultMessage: 'Configuration is empty'
+  },
+  emptyUiConfigMessageSubtitle: {
+    id: 'emptyUiConfigMessageTitle.subtitle',
+    defaultMessage: 'Nothing is set to be shown here.'
+  },
+  noUiConfigMessageTitle: {
+    id: 'noUiConfigMessageTitle.title',
+    defaultMessage: 'Configuration file missing'
+  },
+  noUiConfigMessageSubtitle: {
+    id: 'noUiConfigMessageTitle.subtitle',
+    defaultMessage: 'Add & configure `ui.xml` on your site to show content here.'
+  }
+});
 
 const audiencesPanelInitialState = {
   isFetching: null,
@@ -149,7 +173,14 @@ const reducer = createReducer<GlobalState['preview']>(
     dropTargets: {
       selectedContentType: null,
       byId: null
-    }
+    },
+    toolsPanel: null,
+    toolbar: {
+      leftSection: null,
+      middleSection: null,
+      rightSection: null
+    },
+    pageBuilderPanel: null
   },
   {
     [storeInitialized.type]: (state, { payload }) =>
@@ -538,7 +569,110 @@ const reducer = createReducer<GlobalState['preview']>(
     [fetchGlobalPropertiesComplete.type]: (state, { payload }) => ({
       ...state,
       previewChoice: { ...state.previewChoice, ...JSON.parse(payload.previewChoice ?? '{}') }
-    })
+    }),
+    [initToolsPanelConfig.type]: (state, { payload }) => {
+      let toolsPanelConfig = {
+        widgets: [
+          {
+            id: 'craftercms.component.EmptyState',
+            uiKey: -1,
+            configuration: {
+              title: messages.noUiConfigMessageTitle,
+              subtitle: messages.noUiConfigMessageSubtitle
+            }
+          }
+        ]
+      };
+      const arrays = ['widgets', 'permittedRoles', 'excludes'];
+      const lookupTables = ['fields'];
+      const configDOM = fromString(payload.configXml);
+      const toolsPanelPages = configDOM.querySelector(
+        '[id="craftercms.components.ToolsPanel"] > configuration > widgets'
+      );
+      if (toolsPanelPages) {
+        toolsPanelConfig = applyDeserializedXMLTransforms(deserialize(toolsPanelPages), {
+          arrays,
+          lookupTables
+        });
+      }
+      return {
+        ...state,
+        ...(payload.pageStack ? { toolsPanelPageStack: [...state.toolsPanelPageStack, payload.pageStack] } : {}),
+        toolsPanel: toolsPanelConfig
+      };
+    },
+    [initToolbarConfig.type]: (state, { payload }) => {
+      let toolbarConfig = {
+        leftSection: null,
+        middleSection: null,
+        rightSection: null
+      };
+      const arrays = ['widgets'];
+      const configDOM = fromString(payload.configXml);
+      const toolbar = configDOM.querySelector('[id="craftercms.components.PreviewToolbar"] > configuration');
+
+      if (toolbar) {
+        const leftSection = toolbar.querySelector('leftSection > widgets');
+        if (leftSection) {
+          toolbarConfig.leftSection = applyDeserializedXMLTransforms(deserialize(leftSection), {
+            arrays
+          });
+        }
+        const middleSection = toolbar.querySelector('middleSection > widgets');
+        if (middleSection) {
+          toolbarConfig.middleSection = applyDeserializedXMLTransforms(deserialize(middleSection), {
+            arrays
+          });
+        }
+        const rightSection = toolbar.querySelector('rightSection > widgets');
+        if (rightSection) {
+          toolbarConfig.rightSection = applyDeserializedXMLTransforms(deserialize(rightSection), {
+            arrays
+          });
+        }
+      }
+
+      return {
+        ...state,
+        toolbar: toolbarConfig
+      };
+    },
+    [initPageBuilderPanelConfig.type]: (state, { payload }) => {
+      let pageBuilderPanelConfig = {
+        widgets: [
+          {
+            id: 'craftercms.component.EmptyState',
+            uiKey: -1,
+            configuration: {
+              title: messages.noUiConfigMessageTitle,
+              subtitle: messages.noUiConfigMessageSubtitle
+            }
+          }
+        ]
+      };
+      const arrays = ['widgets', 'devices', 'values'];
+      const configDOM = fromString(payload.configXml);
+      const pageBuilderPanel = configDOM.querySelector(
+        '[id="craftercms.components.PageBuilderPanel"] > configuration > widgets'
+      );
+      if (pageBuilderPanel) {
+        const lookupTables = ['fields'];
+        pageBuilderPanel.querySelectorAll('widget').forEach((e, index) => {
+          if (e.getAttribute('id') === 'craftercms.components.ToolsPanelPageButton') {
+            e.querySelector(':scope > configuration')?.setAttribute('target', 'pageBuilderPanel');
+          }
+        });
+        pageBuilderPanelConfig = applyDeserializedXMLTransforms(deserialize(pageBuilderPanel), {
+          arrays,
+          lookupTables
+        });
+      }
+
+      return {
+        ...state,
+        pageBuilderPanel: pageBuilderPanelConfig
+      };
+    }
   }
 );
 

@@ -18,39 +18,15 @@ import { GlobalState } from '../../models/GlobalState';
 import { createReducer } from '@reduxjs/toolkit';
 import { fetchSiteUiConfig, fetchSiteUiConfigComplete, fetchSiteUiConfigFailed } from '../actions/configuration';
 import { changeSite } from './sites';
-import {
-  fetchGlobalMenuComplete,
-  fetchGlobalMenuFailed,
-  fetchSiteLocale,
-  fetchSiteLocaleComplete,
-  fetchSiteLocaleFailed
-} from '../actions/system';
+import { fetchSiteLocale, fetchSiteLocaleComplete, fetchSiteLocaleFailed } from '../actions/system';
 import { fetchSiteLocales, fetchSiteLocalesComplete, fetchSiteLocalesFailed } from '../actions/translation';
+import { deserialize, fromString, serialize } from '../../utils/xml';
+import { applyDeserializedXMLTransforms } from '../../utils/object';
 
 const initialState: GlobalState['uiConfig'] = {
   error: null,
   isFetching: null,
   currentSite: null,
-  preview: {
-    toolbar: {
-      leftSection: null,
-      middleSection: null,
-      rightSection: null
-    },
-    toolsPanel: {
-      widgets: null
-    },
-    pageBuilderPanel: {
-      widgets: null
-    }
-  },
-  launcher: null,
-  dashboard: null,
-  globalNavigation: {
-    error: null,
-    items: null,
-    isFetching: false
-  },
   siteLocales: {
     error: null,
     isFetching: false,
@@ -70,53 +46,60 @@ const initialState: GlobalState['uiConfig'] = {
       minute: 'numeric'
     }
   },
-  publishing: {
-    submissionCommentMaxLength: 250
-  },
   references: null,
+  xml: null,
   richTextEditor: {}
 };
 
 const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
-  [changeSite.type]: (state) => ({ ...initialState, globalNavigation: state.globalNavigation }),
+  [changeSite.type]: (state) => ({ ...initialState }),
   [fetchSiteUiConfig.type]: (state, { payload: { site } }) => ({
     ...state,
     isFetching: true,
     currentSite: site
   }),
-  [fetchSiteUiConfigComplete.type]: (state, { payload }) => ({
-    ...state,
-    isFetching: false,
-    ...payload
-  }),
+  [fetchSiteUiConfigComplete.type]: (state, { payload }) => {
+    let config = payload.config;
+    const references = {};
+    if (config) {
+      const configDOM = fromString(config);
+      const site = payload.site;
+      const arrays = ['tools'];
+
+      configDOM.querySelectorAll('plugin').forEach((tag) => {
+        const siteAttr = tag.getAttribute('site');
+        if (siteAttr === '{site}' || siteAttr === null) {
+          tag.setAttribute('site', site);
+        }
+      });
+
+      configDOM.querySelectorAll(':scope > references > reference').forEach((tag) => {
+        references[tag.id] = applyDeserializedXMLTransforms(deserialize(tag.innerHTML), {
+          arrays
+        });
+      });
+
+      configDOM.querySelectorAll('configuration > reference').forEach((tag) => {
+        tag.outerHTML = references[tag.id];
+      });
+
+      configDOM.querySelectorAll('widget').forEach((e, index) => e.setAttribute('uiKey', String(index)));
+
+      config = serialize(configDOM);
+    }
+
+    return {
+      ...state,
+      isFetching: false,
+      xml: config,
+      references: references
+    };
+  },
   [fetchSiteUiConfigFailed.type]: (state, { payload }) => ({
     ...state,
     error: payload,
     isFetching: false,
     currentSite: null
-  }),
-  [fetchGlobalMenuComplete.type]: (state, { payload }) => ({
-    ...state,
-    globalNavigation: {
-      ...state.globalNavigation,
-      isFetching: true
-    }
-  }),
-  [fetchGlobalMenuComplete.type]: (state, { payload }) => ({
-    ...state,
-    globalNavigation: {
-      error: null,
-      items: payload,
-      isFetching: false
-    }
-  }),
-  [fetchGlobalMenuFailed.type]: (state, { payload }) => ({
-    ...state,
-    globalNavigation: {
-      error: payload,
-      items: state.globalNavigation.items,
-      isFetching: false
-    }
   }),
   [fetchSiteLocales.type]: (state) => ({
     ...state,

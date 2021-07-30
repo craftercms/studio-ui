@@ -14,10 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import ViewToolbar from '../../components/ViewToolbar';
 import LauncherOpenerButton from '../../components/LauncherOpenerButton';
-import { closeTools, openTools } from '../../state/actions/preview';
+import { closeTools, initToolbarConfig, openTools } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 import { defineMessages, useIntl } from 'react-intl';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -51,15 +51,19 @@ export default function ToolBar() {
   const site = useActiveSiteId();
   const user = useActiveUser();
   const userRoles = user.rolesBySite[site];
-  const { showToolsPanel } = usePreviewState();
+  const { showToolsPanel, toolbar } = usePreviewState();
   const guest = usePreviewGuest();
   const modelId = guest?.modelId;
   const models = guest?.models;
   const items = useItemsByPath();
   const item = items?.[models?.[modelId]?.craftercms.path];
-  const {
-    preview: { toolbar }
-  } = useSiteUIConfig();
+  const uiConfig = useSiteUIConfig();
+
+  useEffect(() => {
+    if (uiConfig.xml && !toolbar.leftSection && !toolbar.middleSection && !toolbar.rightSection) {
+      dispatch(initToolbarConfig({ configXml: uiConfig.xml }));
+    }
+  }, [uiConfig.xml, toolbar, dispatch]);
 
   return (
     <ViewToolbar>
