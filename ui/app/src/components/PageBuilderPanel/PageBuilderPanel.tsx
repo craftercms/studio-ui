@@ -28,6 +28,7 @@ import ResizeableDrawer from '../../modules/Preview/ResizeableDrawer';
 import { usePreviewState } from '../../utils/hooks/usePreviewState';
 import EmptyState from '../SystemStatus/EmptyState';
 import { FormattedMessage } from 'react-intl';
+import { nnou } from '../../utils/object';
 
 export function PageBuilderPanel() {
   const dispatch = useDispatch();
@@ -39,7 +40,7 @@ export function PageBuilderPanel() {
   const onWidthChange = (width) => dispatch(updatePageBuilderPanelWidth({ width }));
 
   useEffect(() => {
-    if (uiConfig.xml && !pageBuilderPanel.widgets) {
+    if (nnou(uiConfig.xml) && !pageBuilderPanel) {
       dispatch(initPageBuilderPanelConfig({ configXml: uiConfig.xml }));
     }
   }, [uiConfig.xml, dispatch, pageBuilderPanel]);
@@ -48,7 +49,7 @@ export function PageBuilderPanel() {
     <ResizeableDrawer open={editMode} belowToolbar anchor="right" width={width} onWidthChange={onWidthChange}>
       <Suspense fallback={<LoadingState />}>
         <ConditionalLoadingState isLoading={!Boolean(pageBuilderPanel)}>
-          {pageBuilderPanel.widgets ? (
+          {pageBuilderPanel?.widgets && pageBuilderPanel.widgets.length > 0 ? (
             renderWidgets(
               pageBuilderPanelStack.length
                 ? pageBuilderPanelStack.slice(pageBuilderPanelStack.length - 1)
@@ -57,11 +58,10 @@ export function PageBuilderPanel() {
             )
           ) : (
             <EmptyState
-              title={<FormattedMessage id="noUiConfigMessageTitle.title" defaultMessage="Configuration file missing" />}
-              subtitle={
+              title={
                 <FormattedMessage
-                  id="noUiConfigMessageTitle.subtitle"
-                  defaultMessage="Add & configure `ui.xml` on your site to show content here."
+                  id="pageBuilderPanel.noWidgetsMessage"
+                  defaultMessage="No tools have been configured"
                 />
               }
             />
