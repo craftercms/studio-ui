@@ -42,6 +42,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import GlobalState from '../../models/GlobalState';
 import { completeDetailedItem } from '../../state/actions/content';
 import { showItemMegaMenu } from '../../state/actions/dialogs';
+import { batchActions } from '../../state/actions/misc';
 
 export interface DashboardItem {
   label: string;
@@ -186,17 +187,19 @@ export default function RecentlyPublishedDashlet() {
 
   const onItemMenuClick = (event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, item: DetailedItem) => {
     const path = item.path;
-    dispatch(completeDetailedItem({ path }));
     dispatch(
-      showItemMegaMenu({
-        path,
-        anchorReference: 'anchorPosition',
-        anchorPosition: { top: event.clientY, left: event.clientX },
-        numOfLoaderItems: getNumOfMenuOptionsForItem({
-          path: item.path,
-          systemType: getSystemTypeFromPath(item.path)
-        } as DetailedItem)
-      })
+      batchActions([
+        completeDetailedItem({ path }),
+        showItemMegaMenu({
+          path,
+          anchorReference: 'anchorPosition',
+          anchorPosition: { top: event.clientY, left: event.clientX },
+          numOfLoaderItems: getNumOfMenuOptionsForItem({
+            path: item.path,
+            systemType: getSystemTypeFromPath(item.path)
+          } as DetailedItem)
+        })
+      ])
     );
   };
 
