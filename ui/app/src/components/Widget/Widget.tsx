@@ -121,13 +121,11 @@ export { Widget };
 export function renderWidgets(widgets: WidgetDescriptor[], userRoles: string[], extraProps?: any): JSX.Element[] {
   return widgets
     ? widgets
-        .filter((widget) => {
-          console.log('widget.permittedRoles', widget.permittedRoles);
-          return (
+        .filter(
+          (widget) =>
             (widget.permittedRoles ?? []).length === 0 ||
             (userRoles ?? []).some((role) => widget.permittedRoles.includes(role))
-          );
-        })
+        )
         .map((widget) => <Widget key={widget.uiKey} {...widget} extraProps={extraProps} />)
     : [];
 }
