@@ -106,7 +106,7 @@ export default function AccountManagement(props: AccountManagementProps) {
   };
 
   return (
-    <section>
+    <Paper elevation={0}>
       <GlobalAppToolbar title={<FormattedMessage id="words.account" defaultMessage="Account" />} />
       <Container maxWidth="md">
         <Paper className={clsx(classes.paper, 'mt20')}>
@@ -220,6 +220,6 @@ export default function AccountManagement(props: AccountManagementProps) {
           </Box>
         </Paper>
       </Container>
-    </section>
+    </Paper>
   );
 }

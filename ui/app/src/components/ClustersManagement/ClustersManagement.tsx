@@ -31,6 +31,7 @@ import { showSystemNotification } from '../../state/actions/system';
 import { ClustersGridSkeletonTable } from '../ClusterGrid/ClustersGridSkeletonTable';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import { useMount } from '../../utils/hooks/useMount';
+import Paper from '@material-ui/core/Paper';
 
 const translations = defineMessages({
   clusterDeleted: {
@@ -95,7 +96,7 @@ export default function ClustersManagement() {
   };
 
   return (
-    <section>
+    <Paper elevation={0}>
       <GlobalAppToolbar
         title={<FormattedMessage id="words.cluster" defaultMessage="Cluster" />}
         rightContent={
@@ -119,6 +120,6 @@ export default function ClustersManagement() {
       >
         <ClusterGridUI resource={resource} onDeleteCluster={onDeleteCluster} />
       </SuspenseWithEmptyState>
-    </section>
+    </Paper>
   );
 }
