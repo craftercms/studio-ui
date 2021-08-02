@@ -174,12 +174,11 @@ export function PreviewAddressBar(props: AddressBarProps) {
         )}
         {(focus || !item) && (
           <PagesSearchAhead
+            autoFocus={focus}
             value={internalUrl}
             placeholder={noSiteSet ? '' : '/'}
             onEnter={onUrlChange}
-            classes={{
-              input: classes.input
-            }}
+            classes={{ input: classes.input }}
             onFocus={() => setFocus(true)}
             onBlur={() => setFocus(false)}
           />

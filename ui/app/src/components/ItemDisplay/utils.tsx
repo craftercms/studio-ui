@@ -20,11 +20,11 @@ import * as React from 'react';
 
 export function getItemPublishingTargetText(stateMap: ItemStateMap) {
   return stateMap.live ? (
-    <FormattedMessage id="itemPublishingTarget.live" defaultMessage="Live" />
+    <FormattedMessage id="words.live" defaultMessage="Live" />
   ) : stateMap.staged ? (
-    <FormattedMessage id="itemPublishingTarget.staged" defaultMessage="Staged" />
+    <FormattedMessage id="words.staged" defaultMessage="Staged" />
   ) : (
-    <FormattedMessage id="itemPublishingTarget.unpublished" defaultMessage="Unpublished" />
+    <FormattedMessage id="words.unpublished" defaultMessage="Unpublished" />
   );
 }
 
