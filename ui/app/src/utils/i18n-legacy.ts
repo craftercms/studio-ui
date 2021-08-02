@@ -945,7 +945,7 @@ export const ossAttribution = defineMessages({
 
 export const dashboardWidgetsMessages = defineMessages({
   publishingTarget: {
-    id: 'dashboardWidgetsMessages.publishingTarget',
+    id: 'common.publishingTarget',
     defaultMessage: 'Publishing Target'
   }
 });

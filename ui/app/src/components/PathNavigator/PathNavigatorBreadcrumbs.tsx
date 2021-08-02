@@ -59,7 +59,7 @@ function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
       {(showSearch && onSearch) || forceSearch ? (
         <>
           <SearchBar
-            autoFocus
+            autoFocus={!forceSearch}
             onChange={onChange}
             keyword={keyword}
             placeholder={formatMessage(messages.filter, { name: breadcrumb[0]?.label })}

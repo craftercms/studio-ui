@@ -19,14 +19,11 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
-import InputLabel from '@material-ui/core/InputLabel';
 import Typography from '@material-ui/core/Typography';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import Collapse from '@material-ui/core/Collapse';
-import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
 import Link from '@material-ui/core/Link';
 import DateTimePicker from '../../../components/Controls/DateTimePicker';
 import moment from 'moment';
@@ -36,6 +33,7 @@ import GlobalState from '../../../models/GlobalState';
 import FormLabel from '@material-ui/core/FormLabel';
 import { useSelection } from '../../../utils/hooks/useSelection';
 import Alert from '@material-ui/lab/Alert';
+import { capitalize } from '../../../utils/string';
 
 const messages = defineMessages({
   emailLabel: {
@@ -55,7 +53,7 @@ const messages = defineMessages({
     defaultMessage: 'Later'
   },
   environment: {
-    id: 'publishForm.publishingTargetDropdownLabel',
+    id: 'common.publishingTarget',
     defaultMessage: 'Publishing Target'
   },
   environmentLoading: {
@@ -77,6 +75,14 @@ const messages = defineMessages({
   submissionComment: {
     id: 'publishForm.submissionComment',
     defaultMessage: 'Submission Comment'
+  },
+  live: {
+    id: 'words.live',
+    defaultMessage: 'Live'
+  },
+  staging: {
+    id: 'words.staging',
+    defaultMessage: 'Staging'
   }
 });
 
@@ -168,7 +174,6 @@ interface PublishFormProps {
   mixedPublishingTargets?: boolean;
   setSubmitDisabled: Function;
   classes?: any;
-
   setInputs(state: any): any;
 }
 
@@ -216,6 +221,8 @@ function PublishForm(props: PublishFormProps) {
   };
 
   const handleSelectChange = (name: string) => (event: React.ChangeEvent<{ value: unknown }>) => {
+    // TODO: This component shouldn't know how this gets set internally.
+    //  The spread of the state is responsibility of the container
     setInputs({ ...inputs, [name]: event.target.value as string });
   };
 
@@ -261,10 +268,8 @@ function PublishForm(props: PublishFormProps) {
           />
         )}
       </section>
-      <FormControl className={classes.formSection}>
-        <FormLabel component="legend" htmlFor="environmentSelect">
-          {formatMessage(messages.scheduling)}
-        </FormLabel>
+      <FormControl fullWidth className={classes.formSection}>
+        <FormLabel component="legend">{formatMessage(messages.scheduling)}</FormLabel>
         <RadioGroup className={classes.radioGroup} value={inputs.scheduling} onChange={handleInputChange('scheduling')}>
           {mixedPublishingDates && (
             <Alert severity="warning" className={classes.mixedDatesWarningMessage}>
@@ -278,18 +283,14 @@ function PublishForm(props: PublishFormProps) {
             value="now"
             control={<Radio color="primary" className={classes.radioInput} />}
             label={formatMessage(messages.schedulingNow)}
-            classes={{
-              label: classes.formInputs
-            }}
+            classes={{ label: classes.formInputs }}
             disabled={disabled}
           />
           <FormControlLabel
             value="custom"
             control={<Radio color="primary" className={classes.radioInput} />}
             label={formatMessage(messages.schedulingLater)}
-            classes={{
-              label: classes.formInputs
-            }}
+            classes={{ label: classes.formInputs }}
             disabled={disabled}
           />
         </RadioGroup>
@@ -304,61 +305,60 @@ function PublishForm(props: PublishFormProps) {
             date={inputs.scheduledDateTime}
             localeCode={locale.localeCode}
             hour12={locale.dateTimeFormatOptions?.hour12 ?? true}
-            timeZonePickerProps={{
-              timezone: inputs.scheduledTimeZone
-            }}
-            datePickerProps={{
-              disablePast: true
-            }}
+            timeZonePickerProps={{ timezone: inputs.scheduledTimeZone }}
+            datePickerProps={{ disablePast: true }}
             disabled={disabled}
           />
         </Collapse>
       </FormControl>
-
-      <FormControl fullWidth variant="outlined" className={classes.formSection}>
-        <InputLabel>{formatMessage(messages.environment)}</InputLabel>
-        {!publishingChannels && (
-          <>
-            <div className={classes.environmentLoaderContainer}>
-              <Typography
-                variant="body1"
-                component="span"
-                className={`${classes.environmentLoader} ${classes.formInputs}`}
-                color={publishingChannelsStatus === 'Error' ? 'error' : 'initial'}
-              >
-                {formatMessage(messages[`environment${publishingChannelsStatus}`])}
-                {publishingChannelsStatus === 'Error' && (
-                  <Link href="#" onClick={() => onPublishingChannelsFailRetry()}>
-                    ({formatMessage(messages.environmentRetry)})
-                  </Link>
-                )}
-              </Typography>
-            </div>
-          </>
-        )}
-
-        {publishingChannels &&
-          (publishingChannels.length ? (
-            <Select
-              fullWidth
-              value={!mixedPublishingTargets && !inputs.environment ? 'live' : inputs.environment}
+      <FormControl fullWidth className={classes.formSection}>
+        <FormLabel component="legend">{formatMessage(messages.environment)}</FormLabel>
+        {publishingChannels ? (
+          publishingChannels.length ? (
+            <RadioGroup
+              className={classes.radioGroup}
+              value={inputs.environment}
               onChange={handleSelectChange('environment')}
-              disabled={disabled}
-              label={formatMessage(messages.environment)}
             >
-              {publishingChannels.map((publishingChannel: any) => (
-                <MenuItem key={publishingChannel.name} value={publishingChannel.name}>
-                  {publishingChannel.name}
-                </MenuItem>
+              {publishingChannels.map((publishingChannel) => (
+                <FormControlLabel
+                  key={publishingChannel.name}
+                  disabled={disabled}
+                  value={publishingChannel.name}
+                  control={<Radio color="primary" className={classes.radioInput} />}
+                  label={
+                    messages[publishingChannel.name]
+                      ? formatMessage(messages[publishingChannel.name])
+                      : capitalize(publishingChannel.name)
+                  }
+                  classes={{ label: classes.formInputs }}
+                />
               ))}
-            </Select>
+            </RadioGroup>
           ) : (
             <div className={classes.environmentLoaderContainer}>
               <Typography variant="body1" className={classes.environmentEmpty}>
                 No publishing channels are available.
               </Typography>
             </div>
-          ))}
+          )
+        ) : (
+          <div className={classes.environmentLoaderContainer}>
+            <Typography
+              variant="body1"
+              component="span"
+              className={`${classes.environmentLoader} ${classes.formInputs}`}
+              color={publishingChannelsStatus === 'Error' ? 'error' : 'initial'}
+            >
+              {formatMessage(messages[`environment${publishingChannelsStatus}`])}
+              {publishingChannelsStatus === 'Error' && (
+                <Link href="#" onClick={() => onPublishingChannelsFailRetry()}>
+                  ({formatMessage(messages.environmentRetry)})
+                </Link>
+              )}
+            </Typography>
+          </div>
+        )}
         {mixedPublishingTargets && (
           <Alert severity="warning" className={classes.mixedTargetsWarningMessage}>
             <FormattedMessage
@@ -368,7 +368,6 @@ function PublishForm(props: PublishFormProps) {
           </Alert>
         )}
       </FormControl>
-
       <TextFieldWithMax
         id="publishDialogFormSubmissionComment"
         name="submissionComment"

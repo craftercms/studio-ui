@@ -18,9 +18,9 @@ import { DetailedItem } from '../models/Item';
 
 export function getDateScheduled(item: DetailedItem): string {
   if (item.stateMap.submittedToStaging) {
-    return item.staging.dateScheduled;
+    return item.staging?.dateScheduled;
   } else if (item.stateMap.submittedToLive) {
-    return item.live.dateScheduled;
+    return item.live?.dateScheduled;
   } else {
     return null;
   }
@@ -28,9 +28,9 @@ export function getDateScheduled(item: DetailedItem): string {
 
 export function getDatePublished(item: DetailedItem): string {
   if (item.stateMap.staged) {
-    return item.staging.datePublished;
+    return item.staging?.datePublished;
   } else if (item.stateMap.live) {
-    return item.live.datePublished;
+    return item.live?.datePublished;
   } else {
     return null;
   }

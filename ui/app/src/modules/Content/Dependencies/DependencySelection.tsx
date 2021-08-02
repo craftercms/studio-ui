@@ -164,7 +164,7 @@ export function DependencySelection(props: DependencySelectionProps) {
     disabled = false
   } = props;
 
-  const classes = useStyles({});
+  const classes = useStyles();
 
   return (
     <>
@@ -379,64 +379,69 @@ function SelectionList(props: SelectionListProps) {
                 )}
                 <ListItemText id={labelId}>
                   <Typography variant="subtitle1">{item.label}</Typography>
-                  <Box display="flex" alignItems="center">
-                    <ScheduledStateIcon className={classes.stateScheduledIcon} />
-                    <Typography variant="body2" color="textSecondary">
-                      {getDateScheduled(item) ? (
-                        <FormattedMessage
-                          id="itemPublishingDate.scheduled"
-                          defaultMessage="Scheduled for {date}"
-                          values={{
-                            date: asLocalizedDateTime(
-                              getDateScheduled(item),
-                              locale.localeCode,
-                              locale.dateTimeFormatOptions
-                            )
-                          }}
-                        />
-                      ) : getDatePublished(item) ? (
-                        <FormattedMessage
-                          id="itemPublishingDate.scheduled"
-                          defaultMessage="Scheduled for {date}"
-                          values={{
-                            date: asLocalizedDateTime(
-                              getDatePublished(item),
-                              locale.localeCode,
-                              locale.dateTimeFormatOptions
-                            )
-                          }}
-                        />
+                  {(item.stateMap.submitted || item.stateMap.scheduled) && (
+                    <Box display="flex" alignItems="center">
+                      <ScheduledStateIcon className={classes.stateScheduledIcon} />
+                      <Typography variant="body2" color="textSecondary">
+                        {getDateScheduled(item) ? (
+                          <FormattedMessage
+                            id="itemPublishingDate.scheduled"
+                            defaultMessage="Scheduled for {date}"
+                            values={{
+                              date: asLocalizedDateTime(
+                                getDateScheduled(item),
+                                locale.localeCode,
+                                locale.dateTimeFormatOptions
+                              )
+                            }}
+                          />
+                        ) : getDatePublished(item) ? (
+                          <FormattedMessage
+                            id="itemPublishingDate.scheduled"
+                            defaultMessage="Scheduled for {date}"
+                            values={{
+                              date: asLocalizedDateTime(
+                                getDatePublished(item),
+                                locale.localeCode,
+                                locale.dateTimeFormatOptions
+                              )
+                            }}
+                          />
+                        ) : (
+                          <FormattedMessage id="itemPublishingDate.now" defaultMessage="Scheduled for ASAP" />
+                        )}
+                      </Typography>
+                      {item.stateMap.submittedToLive ? (
+                        <>
+                          <PublishingTargetIcon
+                            className={clsx(classes.publishingTargetIcon, classes.publishingTargetLive)}
+                          />
+                          <Typography variant="body2" color="textSecondary">
+                            <FormattedMessage id="publishingTargetLive.live" defaultMessage="Submitted to live" />
+                          </Typography>
+                        </>
+                      ) : item.stateMap.submittedToStaging ? (
+                        <>
+                          <PublishingTargetIcon
+                            className={clsx(classes.publishingTargetIcon, classes.publishingTargetStaged)}
+                          />
+                          <Typography variant="body2" color="textSecondary">
+                            <FormattedMessage
+                              id="publishingTargetStaged.staging"
+                              defaultMessage="Submitted to staging"
+                            />
+                          </Typography>
+                        </>
                       ) : (
-                        <FormattedMessage id="itemPublishingDate.now" defaultMessage="Scheduled for ASAP" />
+                        <>
+                          <PublishingTargetIcon className={classes.publishingTargetIcon} />
+                          <Typography variant="body2" color="textSecondary">
+                            <FormattedMessage id="words.unpublished" defaultMessage="Unpublished" />
+                          </Typography>
+                        </>
                       )}
-                    </Typography>
-                    {item.stateMap.submittedToLive ? (
-                      <>
-                        <PublishingTargetIcon
-                          className={clsx(classes.publishingTargetIcon, classes.publishingTargetLive)}
-                        />
-                        <Typography variant="body2" color="textSecondary">
-                          <FormattedMessage id="publishingTargetLive.live" defaultMessage="Submitted to live" />
-                        </Typography>
-                      </>
-                    ) : item.stateMap.submittedToStaging ? (
-                      <>
-                        <PublishingTargetIcon
-                          className={clsx(classes.publishingTargetIcon, classes.publishingTargetStaged)}
-                        />
-                        <Typography variant="body2" color="textSecondary">
-                          <FormattedMessage id="publishingTargetStaged.staging" defaultMessage="Submitted to staging" />
-                        </Typography>
-                      </>
-                    ) : (
-                      <>
-                        <PublishingTargetIcon className={classes.publishingTargetIcon} />
-                        <Typography variant="body2" color="textSecondary">
-                          <FormattedMessage id="words.unpublished" defaultMessage="Unpublished" />
-                        </Typography>
-                      </>
-                    )}
-                  </Box>
+                    </Box>
+                  )}
                   <Typography variant="body2" color="textSecondary">
                     {item.path}
                   </Typography>

@@ -44,6 +44,8 @@ import { useLogicResource } from '../../../utils/hooks/useLogicResource';
 import { useUnmount } from '../../../utils/hooks/useUnmount';
 import { useSpreadState } from '../../../utils/hooks/useSpreadState';
 import { createPresenceTable } from '../../../utils/array';
+import { getDateScheduled } from '../../../utils/detailedItem';
+import { PublishingTarget } from '../../../models/Publishing';
 
 // region Typings
 
@@ -57,7 +59,7 @@ export interface DependenciesResultObject {
 }
 
 interface PublishDialogContentUIProps {
-  resource: Resource<any>;
+  resource: Resource<{ items: DetailedItem[]; publishingChannels: PublishingTarget[] }>;
   checkedItems: LookupTable<boolean>;
   setCheckedItems: Function;
   checkedSoftDep: LookupTable<boolean>;
@@ -194,7 +196,7 @@ export const paths = (checked: any) =>
 const dialogInitialState: InternalDialogState = {
   emailOnApprove: false,
   requestApproval: false,
-  environment: '',
+  environment: 'staging',
   submissionComment: '',
   scheduling: 'now',
   scheduledDateTime: moment().format(),
@@ -216,6 +218,7 @@ const useStyles = makeStyles(() =>
 );
 
 function PublishDialogContentUI(props: PublishDialogContentUIProps) {
+  // region { ... } = props
   const {
     resource,
     checkedItems,
@@ -237,8 +240,8 @@ function PublishDialogContentUI(props: PublishDialogContentUIProps) {
     mixedPublishingDates,
     mixedPublishingTargets
   } = props;
-
-  const { items, publishingChannels }: { items: DetailedItem[]; publishingChannels: any } = resource.read();
+  // endregion
+  const { items, publishingChannels } = resource.read();
 
   return (
     <>
@@ -360,11 +363,7 @@ function PublishDialogUI(props: PublishDialogUIProps) {
         <SecondaryButton onClick={onDismiss} disabled={apiState.submitting}>
           <FormattedMessage id="requestPublishDialog.cancel" defaultMessage="Cancel" />
         </SecondaryButton>
-        <PrimaryButton
-          onClick={handleSubmit}
-          disabled={submitDisabled || apiState.submitting || dialog.environment === ''}
-          loading={apiState.submitting}
-        >
+        <PrimaryButton onClick={handleSubmit} disabled={submitDisabled} loading={apiState.submitting}>
           {submitLabel}
         </PrimaryButton>
       </DialogFooter>
@@ -387,7 +386,7 @@ export default function PublishDialog(props: PublishDialogProps) {
 }
 
 function PublishDialogWrapper(props: PublishDialogProps) {
-  const { items, scheduling, onDismiss, onSuccess } = props;
+  const { items, scheduling = dialogInitialState.scheduling, onDismiss, onSuccess } = props;
   const [dialog, setDialog] = useSpreadState<InternalDialogState>({ ...dialogInitialState, scheduling });
   const [publishingChannels, setPublishingChannels] = useState<{ name: string }[]>(null);
   const [publishingChannelsStatus, setPublishingChannelsStatus] = useState('Loading');
@@ -418,51 +417,57 @@ function PublishDialogWrapper(props: PublishDialogProps) {
       mixedPublishingTargets: false,
       mixedPublishingDates: false,
       dateScheduled: null,
-      environment: ''
+      environment: dialogInitialState.environment
     };
 
-    let _items = items.filter((item) => checkedItems[item.path]);
+    let itemsChecked = items.filter((item) => checkedItems[item.path]);
 
-    if (_items.length === 0) {
+    if (itemsChecked.length === 0) {
       return state;
     }
 
-    _items?.reduce((prev, current) => {
-      let prev_environment = prev.stateMap.submittedToLive ? 'live' : prev.stateMap.submittedToStaging ? 'staging' : '';
-      let current_environment = current.stateMap.submittedToLive
-        ? 'live'
-        : current.stateMap.submittedToStaging
-        ? 'staging'
-        : '';
-      if (prev_environment !== current_environment || prev.stateMap.live !== current.stateMap.live) {
+    // Discover whether there are mixed targets and/or mixed schedules and sets the environment based off the items
+    itemsChecked?.reduce((prev, current) => {
+      let prevEnvironment = prev.stateMap.submittedToLive ? 'live' : prev.stateMap.submittedToStaging ? 'staging' : '';
+      // prettier-ignore
+      let currentEnvironment =
+        current.stateMap.submittedToLive
+          ? 'live'
+          : current.stateMap.submittedToStaging
+            ? 'staging'
+            : '';
+      if (prevEnvironment !== currentEnvironment || prev.stateMap.live !== current.stateMap.live) {
         state.mixedPublishingTargets = true;
+        // When there are mixed publishing targets, we want to force manual user selection.
         state.environment = '';
       }
-      if (prev[prev_environment]?.dateScheduled !== current[current_environment]?.dateScheduled) {
+      if (prev[prevEnvironment]?.dateScheduled !== current[currentEnvironment]?.dateScheduled) {
         state.mixedPublishingDates = true;
       }
       if (state.dateScheduled === null) {
-        state.dateScheduled = prev[prev_environment]?.dateScheduled
-          ? prev[prev_environment].dateScheduled
-          : current[prev_environment]?.dateScheduled ?? null;
+        state.dateScheduled = prev[prevEnvironment]?.dateScheduled
+          ? prev[prevEnvironment].dateScheduled
+          : current[prevEnvironment]?.dateScheduled ?? null;
       }
+      // TODO: What's this condition for/about?
       if (state.environment === '' && state.mixedPublishingTargets === false) {
-        state.environment = prev_environment;
+        state.environment = prevEnvironment;
       }
       return current;
     });
 
     return {
       ...state,
+      // prettier-ignore
       environment:
-        _items.length > 1
+        itemsChecked.length > 1
           ? state.environment
-          : _items[0].stateMap.submittedToLive
-          ? 'live'
-          : _items[0].stateMap.submittedToStaging
-          ? 'staging'
-          : '',
-      dateScheduled: _items.length > 1 ? state.dateScheduled : _items[0].live.dateScheduled
+          : itemsChecked[0].stateMap.submittedToLive
+            ? 'live'
+            : itemsChecked[0].stateMap.submittedToStaging
+              ? 'staging'
+              : state.environment,
+      dateScheduled: itemsChecked.length > 1 ? state.dateScheduled : getDateScheduled(itemsChecked[0])
     };
   }, [checkedItems, items]);
 
@@ -483,7 +488,6 @@ function PublishDialogWrapper(props: PublishDialogProps) {
   const getPublishingChannels = useCallback(
     (success?: (channels) => any, error?: (error) => any) => {
       setPublishingChannelsStatus('Loading');
-      setSubmitDisabled(true);
       fetchPublishingTargets(siteId).subscribe(
         (response) => {
           setPublishingChannels(response);
@@ -557,12 +561,18 @@ function PublishDialogWrapper(props: PublishDialogProps) {
   }, [dateScheduled, environment, setDialog, scheduling]);
 
   useEffect(() => {
-    if (!apiState.submitting && Object.values(checkedItems).filter(Boolean).length > 0 && publishingChannels?.length) {
-      setSubmitDisabled(false);
-    } else {
-      setSubmitDisabled(true);
-    }
-  }, [apiState.submitting, checkedItems, publishingChannels]);
+    // Submit button should be disabled:
+    setSubmitDisabled(
+      // While submitting
+      apiState.submitting ||
+        // When no items are selected
+        !Object.values(checkedItems).filter(Boolean).length ||
+        // When there are no available/loaded publishing targets
+        !publishingChannels?.length ||
+        // When no publishing target is selected
+        !dialog.environment
+    );
+  }, [apiState.submitting, checkedItems, publishingChannels, dialog.environment]);
 
   const handleSubmit = () => {
     const {

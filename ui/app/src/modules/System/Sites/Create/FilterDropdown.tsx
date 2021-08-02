@@ -76,7 +76,7 @@ const messages: any = defineMessages({
     defaultMessage: 'Path Expression'
   },
   environment: {
-    id: 'dashboardWidgetsMessages.publishingTarget',
+    id: 'common.publishingTarget',
     defaultMessage: 'Publishing Target'
   },
   state: {
