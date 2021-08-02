@@ -196,7 +196,7 @@ export const paths = (checked: any) =>
 const dialogInitialState: InternalDialogState = {
   emailOnApprove: false,
   requestApproval: false,
-  environment: 'staging',
+  environment: '',
   submissionComment: '',
   scheduling: 'now',
   scheduledDateTime: moment().format(),
@@ -242,7 +242,6 @@ function PublishDialogContentUI(props: PublishDialogContentUIProps) {
   } = props;
   // endregion
   const { items, publishingChannels } = resource.read();
-
   return (
     <>
       <Grid container spacing={3}>
@@ -281,6 +280,7 @@ function PublishDialogContentUI(props: PublishDialogContentUIProps) {
 }
 
 function PublishDialogUI(props: PublishDialogUIProps) {
+  // region const { ... } = props
   const {
     resource,
     publishingChannelsStatus,
@@ -311,7 +311,7 @@ function PublishDialogUI(props: PublishDialogUIProps) {
     mixedPublishingDates,
     mixedPublishingTargets
   } = props;
-
+  // endregion
   return (
     <>
       <DialogHeader title={title} subtitle={subtitle} onDismiss={onDismiss} />
@@ -388,8 +388,8 @@ export default function PublishDialog(props: PublishDialogProps) {
 function PublishDialogWrapper(props: PublishDialogProps) {
   const { items, scheduling = dialogInitialState.scheduling, onDismiss, onSuccess } = props;
   const [dialog, setDialog] = useSpreadState<InternalDialogState>({ ...dialogInitialState, scheduling });
-  const [publishingChannels, setPublishingChannels] = useState<{ name: string }[]>(null);
-  const [publishingChannelsStatus, setPublishingChannelsStatus] = useState('Loading');
+  const [publishingChannels, setPublishingTargets] = useState<{ name: string }[]>(null);
+  const [publishingChannelsStatus, setPublishingTargetsStatus] = useState('Loading');
   const [checkedItems, setCheckedItems] = useState<LookupTable<boolean>>({}); // selected deps
   const [checkedSoftDep, _setCheckedSoftDep] = useState<LookupTable<boolean>>({}); // selected soft deps
   const [deps, setDeps] = useState<DependenciesResultObject>(null);
@@ -487,20 +487,21 @@ function PublishDialogWrapper(props: PublishDialogProps) {
 
   const getPublishingChannels = useCallback(
     (success?: (channels) => any, error?: (error) => any) => {
-      setPublishingChannelsStatus('Loading');
+      setPublishingTargetsStatus('Loading');
       fetchPublishingTargets(siteId).subscribe(
-        (response) => {
-          setPublishingChannels(response);
-          setPublishingChannelsStatus('Success');
-          success?.(response);
+        (targets) => {
+          setPublishingTargets(targets);
+          setPublishingTargetsStatus('Success');
+          setDialog({ environment: targets.some((target) => target.name === 'staging') ? 'staging' : targets[0].name });
+          success?.(targets);
         },
         (e) => {
-          setPublishingChannelsStatus('Error');
+          setPublishingTargetsStatus('Error');
           error?.(e);
         }
       );
     },
-    [siteId]
+    [setDialog, siteId]
   );
 
   const publishSource = useMemo(
