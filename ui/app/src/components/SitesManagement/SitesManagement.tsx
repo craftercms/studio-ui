@@ -54,6 +54,7 @@ import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import { useMount } from '../../utils/hooks/useMount';
 import { useSpreadState } from '../../utils/hooks/useSpreadState';
 import { useSitesBranch } from '../../utils/hooks/useSitesBranch';
+import Paper from '@material-ui/core/Paper';
 
 const translations = defineMessages({
   siteDeleted: {
@@ -165,7 +166,7 @@ export default function SitesManagement() {
   };
 
   return (
-    <section>
+    <Paper elevation={0}>
       <GlobalAppToolbar
         title={<FormattedMessage id="GlobalMenu.Sites" defaultMessage="Sites" />}
         leftContent={
@@ -220,6 +221,6 @@ export default function SitesManagement() {
         {...selectedSiteStatus}
       />
       <CreateSiteDialog open={openCreateSiteDialog} onClose={() => setOpenCreateSiteDialog(false)} />
-    </section>
+    </Paper>
   );
 }

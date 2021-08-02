@@ -32,6 +32,7 @@ import { showSystemNotification } from '../../state/actions/system';
 import { useHistory } from 'react-router';
 import ConfirmDialog from '../Dialogs/ConfirmDialog';
 import { useMount } from '../../utils/hooks/useMount';
+import Paper from '@material-ui/core/Paper';
 
 export const translations = defineMessages({
   configSaved: {
@@ -156,7 +157,7 @@ export default function GlobalConfigManagement() {
   };
 
   return (
-    <section>
+    <Paper elevation={0}>
       <GlobalAppToolbar
         title={<FormattedMessage id="globalMenu.globalConfigEntryLabel" defaultMessage="Global Config" />}
       />
@@ -213,6 +214,6 @@ export default function GlobalConfigManagement() {
           setShowConfirmDialog(false);
         }}
       />
-    </section>
+    </Paper>
   );
 }

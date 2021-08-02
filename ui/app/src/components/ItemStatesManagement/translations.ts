@@ -18,16 +18,16 @@ import { defineMessages } from 'react-intl';
 
 export const translations = defineMessages({
   editStates: {
-    id: 'itemStates.editStates',
-    defaultMessage: 'Edit States ({count})'
-  },
-  clearSelected: {
-    id: 'itemStates.clearSelected',
-    defaultMessage: 'Clear Selected'
+    id: 'words.edit',
+    defaultMessage: 'Edit'
   },
   selectAll: {
     id: 'itemStates.selectedAll',
     defaultMessage: 'Select {count} items across pages'
+  },
+  clearSelected: {
+    id: 'common.clearSelectedWithCount',
+    defaultMessage: 'Clear {count} selected'
   }
 });
 
