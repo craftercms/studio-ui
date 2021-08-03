@@ -28,18 +28,17 @@ import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import { updateCheckedList } from '../Publish/PublishDialog';
 import Button from '@material-ui/core/Button';
-import clsx from 'clsx';
 import { useSelection } from '../../../utils/hooks/useSelection';
 import { useActiveSiteId } from '../../../utils/hooks/useActiveSiteId';
 import LookupTable from '../../../models/LookupTable';
 import { createPresenceTable } from '../../../utils/array';
-import PublishingTargetIcon from '@material-ui/icons/FiberManualRecordRounded';
-import ScheduledStateIcon from '@material-ui/icons/AccessTimeRounded';
-import palette from '../../../styles/palette';
 import { useLocale } from '../../../utils/hooks/useLocale';
 import { asLocalizedDateTime } from '../../../utils/datetime';
-import { getDatePublished, getDateScheduled } from '../../../utils/detailedItem';
+import { getDateScheduled } from '../../../utils/detailedItem';
 import ErrorOutlineOutlinedIcon from '@material-ui/icons/ErrorOutlineOutlined';
+import ItemStateIcon from '../../../components/ItemStateIcon';
+import ItemPublishingTargetIcon from '../../../components/ItemPublishingTargetIcon';
+import { getItemStateText } from '../../../components/ItemDisplay/utils';
 
 interface DependencySelectionProps {
   items?: DetailedItem[];
@@ -125,18 +124,10 @@ const useStyles = makeStyles((theme) =>
     },
     publishingTargetIcon: {
       fontSize: '1rem',
-      color: palette.gray.medium2,
       margin: '0 5px'
     },
-    publishingTargetLive: {
-      color: palette.green.main
-    },
-    publishingTargetStaged: {
-      color: palette.blue.main
-    },
     stateScheduledIcon: {
-      fontSize: '1rem',
-      color: palette.green.main,
+      fontSize: '1em',
       marginRight: '5px'
     },
     emptyDependencies: {
@@ -352,7 +343,6 @@ function SelectionList(props: SelectionListProps) {
         <List className={classes.selectionList}>
           {items.map((item) => {
             const labelId = `checkbox-list-label-${item.path}`;
-
             return (
               <ListItem
                 key={item.path}
@@ -381,65 +371,55 @@ function SelectionList(props: SelectionListProps) {
                   <Typography variant="subtitle1">{item.label}</Typography>
                   {(item.stateMap.submitted || item.stateMap.scheduled) && (
                     <Box display="flex" alignItems="center">
-                      <ScheduledStateIcon className={classes.stateScheduledIcon} />
+                      <ItemStateIcon displayTooltip={false} className={classes.stateScheduledIcon} item={item} />
                       <Typography variant="body2" color="textSecondary">
                         {getDateScheduled(item) ? (
-                          <FormattedMessage
-                            id="itemPublishingDate.scheduled"
-                            defaultMessage="Scheduled for {date}"
-                            values={{
-                              date: asLocalizedDateTime(
-                                getDateScheduled(item),
-                                locale.localeCode,
-                                locale.dateTimeFormatOptions
-                              )
-                            }}
-                          />
-                        ) : getDatePublished(item) ? (
-                          <FormattedMessage
-                            id="itemPublishingDate.scheduled"
-                            defaultMessage="Scheduled for {date}"
-                            values={{
-                              date: asLocalizedDateTime(
-                                getDatePublished(item),
-                                locale.localeCode,
-                                locale.dateTimeFormatOptions
-                              )
-                            }}
-                          />
+                          item.stateMap.submitted ? (
+                            <FormattedMessage
+                              id="itemPublishingDate.submitted"
+                              defaultMessage="Submitted for {date}"
+                              values={{
+                                date: asLocalizedDateTime(
+                                  getDateScheduled(item),
+                                  locale.localeCode,
+                                  locale.dateTimeFormatOptions
+                                )
+                              }}
+                            />
+                          ) : (
+                            <FormattedMessage
+                              id="itemPublishingDate.scheduled"
+                              defaultMessage="Scheduled for {date}"
+                              values={{
+                                date: asLocalizedDateTime(
+                                  getDateScheduled(item),
+                                  locale.localeCode,
+                                  locale.dateTimeFormatOptions
+                                )
+                              }}
+                            />
+                          )
+                        ) : item.stateMap.submitted ? (
+                          <FormattedMessage id="itemPublishingDate.now" defaultMessage="Submitted for ASAP" />
                         ) : (
                           <FormattedMessage id="itemPublishingDate.now" defaultMessage="Scheduled for ASAP" />
                         )}
                       </Typography>
-                      {item.stateMap.submittedToLive ? (
-                        <>
-                          <PublishingTargetIcon
-                            className={clsx(classes.publishingTargetIcon, classes.publishingTargetLive)}
-                          />
-                          <Typography variant="body2" color="textSecondary">
-                            <FormattedMessage id="publishingTargetLive.live" defaultMessage="Submitted to live" />
-                          </Typography>
-                        </>
-                      ) : item.stateMap.submittedToStaging ? (
-                        <>
-                          <PublishingTargetIcon
-                            className={clsx(classes.publishingTargetIcon, classes.publishingTargetStaged)}
-                          />
-                          <Typography variant="body2" color="textSecondary">
-                            <FormattedMessage
-                              id="publishingTargetStaged.staging"
-                              defaultMessage="Submitted to staging"
-                            />
-                          </Typography>
-                        </>
-                      ) : (
-                        <>
-                          <PublishingTargetIcon className={classes.publishingTargetIcon} />
-                          <Typography variant="body2" color="textSecondary">
-                            <FormattedMessage id="words.unpublished" defaultMessage="Unpublished" />
-                          </Typography>
-                        </>
-                      )}
+                      <ItemPublishingTargetIcon
+                        displayTooltip={false}
+                        className={classes.publishingTargetIcon}
+                        item={
+                          {
+                            stateMap: {
+                              [item.stateMap.submittedToLive ? 'live' : 'staged']:
+                                item.stateMap.submittedToLive || item.stateMap.submittedToStaging
+                            }
+                          } as DetailedItem
+                        }
+                      />
+                      <Typography variant="body2" color="textSecondary">
+                        {getItemStateText(item.stateMap)}
+                      </Typography>
                     </Box>
                   )}
                   <Typography variant="body2" color="textSecondary">

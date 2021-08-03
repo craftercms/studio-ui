@@ -29,6 +29,7 @@ export type ItemStates =
   | 'submittedToLive'
   | 'staged'
   | 'live'
+  | 'disabled'
   | 'translationUpToDate'
   | 'translationPending'
   | 'translationInProgress';
