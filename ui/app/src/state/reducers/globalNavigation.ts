@@ -25,7 +25,7 @@ const initialState: GlobalState['globalNavigation'] = {
   isFetching: false
 };
 
-// @ts-ignore
+// @ts-ignore - TODO: Typing system is complaining about something to be determined.
 const reducer = createReducer<GlobalState['globalNavigation']>(initialState, {
   [changeSite.type]: (state) => ({ ...initialState, ...state }),
   [fetchGlobalMenu.type]: (state) => ({ ...state, isFetching: true }),
