@@ -157,6 +157,9 @@ export function RemoteRepositoriesStatusUI(props: RemoteRepositoriesStatusUIProp
               '& > section': {
                 alignItems: 'start'
               }
+            },
+            subtitle: {
+              whiteSpace: 'normal'
             }
           }}
         />
