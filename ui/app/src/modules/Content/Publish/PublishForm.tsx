@@ -178,7 +178,7 @@ interface PublishFormProps {
 }
 
 function PublishForm(props: PublishFormProps) {
-  const classes = useStyles({});
+  const classes = useStyles();
   const { formatMessage } = useIntl();
   const {
     inputs,
@@ -227,7 +227,9 @@ function PublishForm(props: PublishFormProps) {
   };
 
   const dateTimePickerChange = (scheduledDateTime: moment.Moment) => {
-    setInputs({ ...inputs, scheduledDateTime: scheduledDateTime.format() });
+    // TODO: This component shouldn't know how this gets set internally.
+    //  The spread of the state is responsibility of the container
+    setInputs({ scheduledDateTime: scheduledDateTime.format() });
     if (scheduledDateTime.toString() === 'Invalid date') {
       setSubmitDisabled(true);
     } else {

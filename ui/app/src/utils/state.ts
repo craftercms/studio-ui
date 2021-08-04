@@ -30,21 +30,22 @@ export function getStoredGlobalMenuSiteViewPreference(user: string): 'grid' | 'l
 
 export function getStateMapFromLegacyItem(item: LegacyItem): ItemStateMap {
   return {
-    locked: Boolean(item.lockOwner),
-    modified: item.isInProgress,
     new: item.isNew,
-    systemProcessing: false,
-    translationInProgress: false,
-    translationPending: false,
-    translationUpToDate: false,
+    modified: item.isInProgress,
     deleted: Boolean(item.isDeleted),
+    locked: Boolean(item.lockOwner),
+    systemProcessing: false,
     submitted: Boolean(item.isSubmitted),
     scheduled: Boolean(item.isScheduled),
     publishing: false,
     submittedToStaging: item.submittedToEnvironment === 'staging',
     submittedToLive: item.submittedToEnvironment === 'live',
     staged: item.isStaged,
-    live: item.isLive
+    live: item.isLive,
+    disabled: item.isDisabled,
+    translationInProgress: false,
+    translationPending: false,
+    translationUpToDate: false
   };
 }
 

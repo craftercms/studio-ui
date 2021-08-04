@@ -39,12 +39,21 @@ export function getItemStateText(stateMap: ItemStateMap) {
     submitted: () => <FormattedMessage id="itemState.submitted" defaultMessage="Submitted" />,
     scheduled: () => <FormattedMessage id="itemState.scheduled" defaultMessage="Scheduled" />,
     publishing: () => <FormattedMessage id="itemState.publishing" defaultMessage="Publishing" />,
-    submittedToStaging: () => (
-      <FormattedMessage id="itemState.submittedToStaging" defaultMessage="Submitted to staging" />
-    ),
-    submittedToLive: () => <FormattedMessage id="itemState.submittedToLive" defaultMessage="Submitted to live" />,
+    submittedToStaging: () =>
+      stateMap.submitted ? (
+        <FormattedMessage id="itemState.submittedToStaging" defaultMessage="Submitted to staging" />
+      ) : (
+        <FormattedMessage id="itemState.scheduledForStaging" defaultMessage="Scheduled for staging" />
+      ),
+    submittedToLive: () =>
+      stateMap.scheduled ? (
+        <FormattedMessage id="itemState.scheduledToGoLive" defaultMessage="Scheduled for live" />
+      ) : (
+        <FormattedMessage id="itemState.submittedToLive" defaultMessage="Submitted for live" />
+      ),
     staged: null,
     live: null,
+    disabled: () => <FormattedMessage id="itemState.disabled" defaultMessage="Disabled" />,
     translationUpToDate: null,
     translationPending: null,
     translationInProgress: null
@@ -52,7 +61,7 @@ export function getItemStateText(stateMap: ItemStateMap) {
   return map[getItemStateId(stateMap)]?.() ?? <FormattedMessage id="words.unknown" defaultMessage="Unknown" />;
 }
 
-export function getItemStateId(stateMap): ItemStates {
+export function getItemStateId(stateMap: ItemStateMap): ItemStates {
   switch (true) {
     case stateMap.deleted:
       return 'deleted';
@@ -60,12 +69,12 @@ export function getItemStateId(stateMap): ItemStates {
       return 'systemProcessing';
     case stateMap.locked:
       return 'locked';
-    case stateMap.submitted:
-      return 'submitted';
     case stateMap.submittedToLive:
       return 'submittedToLive';
     case stateMap.submittedToStaging:
       return 'submittedToStaging';
+    case stateMap.submitted:
+      return 'submitted';
     case stateMap.scheduled:
       return 'scheduled';
     case stateMap.new:
@@ -78,6 +87,8 @@ export function getItemStateId(stateMap): ItemStates {
       return 'staged';
     case stateMap.live:
       return 'live';
+    case stateMap.disabled:
+      return 'disabled';
     case stateMap.translationUpToDate:
       return 'translationUpToDate';
     case stateMap.translationPending:
@@ -92,21 +103,22 @@ export function getItemStateId(stateMap): ItemStates {
   // complains and we can come edit the above `switch` to make sure all states are covered.
   // eslint-disable-next-line no-unreachable,@typescript-eslint/no-unused-vars
   const control: ItemStateMap = {
-    deleted: false,
-    live: false,
-    locked: false,
-    modified: false,
     new: false,
-    publishing: false,
-    scheduled: false,
-    staged: false,
-    submitted: false,
-    submittedToLive: false,
-    submittedToStaging: false,
+    modified: false,
+    deleted: false,
+    locked: false,
     systemProcessing: false,
-    translationInProgress: false,
+    submitted: false,
+    scheduled: false,
+    publishing: false,
+    submittedToStaging: false,
+    submittedToLive: false,
+    staged: false,
+    live: false,
+    disabled: false,
+    translationUpToDate: false,
     translationPending: false,
-    translationUpToDate: false
+    translationInProgress: false
   };
   // endregion
 }

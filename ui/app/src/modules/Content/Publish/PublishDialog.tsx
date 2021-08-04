@@ -44,7 +44,7 @@ import { useLogicResource } from '../../../utils/hooks/useLogicResource';
 import { useUnmount } from '../../../utils/hooks/useUnmount';
 import { useSpreadState } from '../../../utils/hooks/useSpreadState';
 import { createPresenceTable } from '../../../utils/array';
-import { getDateScheduled } from '../../../utils/detailedItem';
+import { getComputedPublishingTarget, getDateScheduled } from '../../../utils/detailedItem';
 import { PublishingTarget } from '../../../models/Publishing';
 
 // region Typings
@@ -192,17 +192,6 @@ export const paths = (checked: any) =>
   Object.entries({ ...checked })
     .filter(([, value]) => value === true)
     .map(([key]) => key);
-
-const dialogInitialState: InternalDialogState = {
-  emailOnApprove: false,
-  requestApproval: false,
-  environment: '',
-  submissionComment: '',
-  scheduling: 'now',
-  scheduledDateTime: moment().format(),
-  publishingChannel: null,
-  selectedItems: null
-};
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -386,9 +375,18 @@ export default function PublishDialog(props: PublishDialogProps) {
 }
 
 function PublishDialogWrapper(props: PublishDialogProps) {
-  const { items, scheduling = dialogInitialState.scheduling, onDismiss, onSuccess } = props;
-  const [dialog, setDialog] = useSpreadState<InternalDialogState>({ ...dialogInitialState, scheduling });
-  const [publishingChannels, setPublishingTargets] = useState<{ name: string }[]>(null);
+  const { items, scheduling = 'now', onDismiss, onSuccess } = props;
+  const [dialogState, setDialogState] = useSpreadState<InternalDialogState>({
+    emailOnApprove: false,
+    requestApproval: false,
+    environment: '',
+    submissionComment: '',
+    scheduling: scheduling,
+    scheduledDateTime: moment().format(),
+    publishingChannel: null,
+    selectedItems: null
+  });
+  const [publishingChannels, setPublishingTargets] = useState<PublishingTarget[]>(null);
   const [publishingChannelsStatus, setPublishingTargetsStatus] = useState('Loading');
   const [checkedItems, setCheckedItems] = useState<LookupTable<boolean>>({}); // selected deps
   const [checkedSoftDep, _setCheckedSoftDep] = useState<LookupTable<boolean>>({}); // selected soft deps
@@ -410,66 +408,78 @@ function PublishDialogWrapper(props: PublishDialogProps) {
   useUnmount(props.onClosed);
 
   const user = useSelector<GlobalState, GlobalState['user']>((state) => state.user);
-  const submit = !hasPublishPermission || dialog.requestApproval ? submitToGoLive : goLive;
-  const propagateAction = !hasPublishPermission || dialog.requestApproval ? itemsScheduled : itemsApproved;
+  const submit = !hasPublishPermission || dialogState.requestApproval ? submitToGoLive : goLive;
+  const propagateAction = !hasPublishPermission || dialogState.requestApproval ? itemsScheduled : itemsApproved;
   const { mixedPublishingTargets, mixedPublishingDates, dateScheduled, environment } = useMemo(() => {
-    let state = {
+    const state = {
       mixedPublishingTargets: false,
       mixedPublishingDates: false,
       dateScheduled: null,
-      environment: dialogInitialState.environment
+      environment: null
     };
 
     let itemsChecked = items.filter((item) => checkedItems[item.path]);
 
     if (itemsChecked.length === 0) {
+      state.environment = '';
       return state;
     }
 
-    // Discover whether there are mixed targets and/or mixed schedules and sets the environment based off the items
-    itemsChecked?.reduce((prev, current) => {
-      let prevEnvironment = prev.stateMap.submittedToLive ? 'live' : prev.stateMap.submittedToStaging ? 'staging' : '';
-      // prettier-ignore
-      let currentEnvironment =
-        current.stateMap.submittedToLive
-          ? 'live'
-          : current.stateMap.submittedToStaging
-            ? 'staging'
-            : '';
-      if (prevEnvironment !== currentEnvironment || prev.stateMap.live !== current.stateMap.live) {
-        state.mixedPublishingTargets = true;
-        // When there are mixed publishing targets, we want to force manual user selection.
-        state.environment = '';
+    // region Discover mixed targets and/or schedules and sets the environment based off the items
+    let target: string;
+    let schedule: string;
+    itemsChecked.some((item, index) => {
+      const computedTarget = getComputedPublishingTarget(itemsChecked[0]);
+      const computedSchedule = getDateScheduled(itemsChecked[0]);
+      if (index === 0) {
+        target = computedTarget;
+        schedule = computedSchedule;
+      } else {
+        if (target !== computedTarget) {
+          // If the computed target is different, we have mixed targets.
+          // Could be any combination of live vs staging vs null that triggers mixed targets.
+          state.mixedPublishingTargets = true;
+        }
+        if (schedule !== computedSchedule) {
+          // If the current item's computed scheduled date is different, we have mixed dates.
+          // Could be any combination of live vs staging vs null that triggers mixed targets.
+          state.mixedPublishingDates = true;
+        }
       }
-      if (prev[prevEnvironment]?.dateScheduled !== current[currentEnvironment]?.dateScheduled) {
-        state.mixedPublishingDates = true;
+      if (state.environment === null && computedTarget !== null) {
+        state.environment = computedTarget;
       }
-      if (state.dateScheduled === null) {
-        state.dateScheduled = prev[prevEnvironment]?.dateScheduled
-          ? prev[prevEnvironment].dateScheduled
-          : current[prevEnvironment]?.dateScheduled ?? null;
+      // First found dateScheduled cached for later
+      if (state.dateScheduled === null && computedSchedule !== null) {
+        state.dateScheduled = computedSchedule;
       }
-      // TODO: What's this condition for/about?
-      if (state.environment === '' && state.mixedPublishingTargets === false) {
-        state.environment = prevEnvironment;
-      }
-      return current;
+      // Once these things are found to be true, no need to iterate further.
+      return state.mixedPublishingTargets && state.mixedPublishingDates && state.dateScheduled !== null;
     });
+    // endregion
 
-    return {
-      ...state,
-      // prettier-ignore
-      environment:
-        itemsChecked.length > 1
+    // If there aren't any available target (or they haven't loaded), dialog should not have a selected target.
+    if (publishingChannels?.length) {
+      // If there are mixed targets, we want manual user selection of a target.
+      // Otherwise, use what was previously found as the target on the selected items.
+      if (state.mixedPublishingTargets) {
+        state.environment = '';
+      } else {
+        // If we haven't found a target by this point, we wish to default the dialog to
+        // staging (as long as that target is enabled in the system, which is checked next).
+        if (state.environment === null) {
+          state.environment = 'staging';
+        }
+        state.environment = publishingChannels.some((target) => target.name === state.environment)
           ? state.environment
-          : itemsChecked[0].stateMap.submittedToLive
-            ? 'live'
-            : itemsChecked[0].stateMap.submittedToStaging
-              ? 'staging'
-              : state.environment,
-      dateScheduled: itemsChecked.length > 1 ? state.dateScheduled : getDateScheduled(itemsChecked[0])
-    };
-  }, [checkedItems, items]);
+          : publishingChannels[0].name;
+      }
+    } else {
+      state.environment = '';
+    }
+
+    return state;
+  }, [checkedItems, items, publishingChannels]);
 
   const { formatMessage } = useIntl();
 
@@ -480,9 +490,9 @@ function PublishDialogWrapper(props: PublishDialogProps) {
       } else {
         setShowDepsDisabled(false);
       }
-      setDialog({ selectedItems: pItems });
+      setDialogState({ selectedItems: pItems });
     },
-    [setDialog]
+    [setDialogState]
   );
 
   const getPublishingChannels = useCallback(
@@ -492,7 +502,6 @@ function PublishDialogWrapper(props: PublishDialogProps) {
         (targets) => {
           setPublishingTargets(targets);
           setPublishingTargetsStatus('Success');
-          setDialog({ environment: targets.some((target) => target.name === 'staging') ? 'staging' : targets[0].name });
           success?.(targets);
         },
         (e) => {
@@ -501,7 +510,7 @@ function PublishDialogWrapper(props: PublishDialogProps) {
         }
       );
     },
-    [setDialog, siteId]
+    [siteId]
   );
 
   const publishSource = useMemo(
@@ -539,27 +548,27 @@ function PublishDialogWrapper(props: PublishDialogProps) {
   }, [checkedItems, checkedSoftDep, setSelectedItems]);
 
   useEffect(() => {
-    setDialog({ scheduling });
-  }, [scheduling, setDialog]);
+    setDialogState({ scheduling });
+  }, [scheduling, setDialogState]);
 
   useEffect(() => {
     if (dateScheduled && scheduling !== 'now') {
-      setDialog({
+      setDialogState({
         scheduling: 'custom',
         environment,
         scheduledDateTime: moment(dateScheduled).format()
       });
     } else if (dateScheduled === null && scheduling === null) {
-      setDialog({
+      setDialogState({
         scheduling: 'now',
         environment
       });
     } else {
-      setDialog({
+      setDialogState({
         environment
       });
     }
-  }, [dateScheduled, environment, setDialog, scheduling]);
+  }, [dateScheduled, environment, setDialogState, scheduling]);
 
   useEffect(() => {
     // Submit button should be disabled:
@@ -571,9 +580,9 @@ function PublishDialogWrapper(props: PublishDialogProps) {
         // When there are no available/loaded publishing targets
         !publishingChannels?.length ||
         // When no publishing target is selected
-        !dialog.environment
+        !dialogState.environment
     );
-  }, [apiState.submitting, checkedItems, publishingChannels, dialog.environment]);
+  }, [apiState.submitting, checkedItems, publishingChannels, dialogState.environment]);
 
   const handleSubmit = () => {
     const {
@@ -583,9 +592,9 @@ function PublishDialogWrapper(props: PublishDialogProps) {
       emailOnApprove: sendEmail,
       submissionComment,
       scheduledDateTime: scheduledDate
-    } = dialog;
+    } = dialogState;
     const data = {
-      ...(!hasPublishPermission || dialog.requestApproval
+      ...(!hasPublishPermission || dialogState.requestApproval
         ? { environment: environment }
         : { publishChannel: environment }),
       items,
@@ -605,7 +614,7 @@ function PublishDialogWrapper(props: PublishDialogProps) {
           ...response,
           schedule: schedule,
           environment: environment,
-          type: !hasPublishPermission || dialog.requestApproval ? 'submit' : 'publish',
+          type: !hasPublishPermission || dialogState.requestApproval ? 'submit' : 'publish',
           items: items.map((path) => props.items.find((item) => item.path === path))
         });
       },
@@ -681,11 +690,11 @@ function PublishDialogWrapper(props: PublishDialogProps) {
       submitDisabled={submitDisabled}
       setSubmitDisabled={setSubmitDisabled}
       showDepsDisabled={showDepsDisabled}
-      dialog={dialog}
-      setDialog={setDialog}
+      dialog={dialogState}
+      setDialog={setDialogState}
       title={formatMessage(translations.title)}
       subtitle={
-        !hasPublishPermission || dialog.requestApproval
+        !hasPublishPermission || dialogState.requestApproval
           ? formatMessage(translations.requestPublishSubtitle) + ' ' + formatMessage(translations.subtitleHelperText)
           : formatMessage(translations.publishSubtitle) + ' ' + formatMessage(translations.subtitleHelperText)
       }
@@ -700,15 +709,15 @@ function PublishDialogWrapper(props: PublishDialogProps) {
       onClickShowAllDeps={showAllDependencies}
       apiState={apiState}
       classes={useStyles()}
-      showEmailCheckbox={!hasPublishPermission || dialog.requestApproval}
+      showEmailCheckbox={!hasPublishPermission || dialogState.requestApproval}
       showRequestApproval={hasPublishPermission && items.every((item) => !item.stateMap.submitted)}
       submitLabel={
-        dialog.scheduling === 'custom' ? (
-          <FormattedMessage id="requestPublishDialog.schedule" defaultMessage="Schedule" />
-        ) : !hasPublishPermission || dialog.requestApproval ? (
-          <FormattedMessage id="requestPublishDialog.submit" defaultMessage="Submit" />
+        dialogState.scheduling === 'custom' ? (
+          <FormattedMessage id="words.schedule" defaultMessage="Schedule" />
+        ) : !hasPublishPermission || dialogState.requestApproval ? (
+          <FormattedMessage id="words.submit" defaultMessage="Submit" />
         ) : (
-          <FormattedMessage id="requestPublishDialog.publish" defaultMessage="Publish" />
+          <FormattedMessage id="words.publish" defaultMessage="Publish" />
         )
       }
       mixedPublishingTargets={mixedPublishingTargets}
