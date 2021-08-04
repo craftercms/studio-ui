@@ -1586,7 +1586,8 @@ var CStudioForms =
               CrafterCMSNext.services.sites
                 .validateActionPolicy(CStudioAuthoringContext.site, {
                   type: 'CREATE',
-                  target: entityId
+                  target: entityId,
+                  contentMetadata: { contentType }
                 })
                 .subscribe(({ allowed, modifiedValue, target }) => {
                   if (allowed) {
