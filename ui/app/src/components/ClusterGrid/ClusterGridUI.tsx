@@ -94,7 +94,7 @@ export default function ClusterGridUI(props: ClusterGridProps) {
                 {cluster.gitAuthType}
               </GlobalAppGridCell>
               <GlobalAppGridCell align="left" className="width10">
-                {cluster.state === 'ACTIVE' && (
+                {cluster.state === 'INACTIVE' && (
                   <ConfirmDropdown
                     cancelText={<FormattedMessage id="words.no" defaultMessage="No" />}
                     confirmText={<FormattedMessage id="words.yes" defaultMessage="Yes" />}
