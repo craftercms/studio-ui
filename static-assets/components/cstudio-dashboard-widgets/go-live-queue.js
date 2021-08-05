@@ -118,6 +118,7 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard = function (widgetId, pageId) {
   this.renderItemsHeading = function () {
     var widgetId = this._self.widgetId,
       Common = WcmDashboardWidgetCommon;
+    const isWrite = CStudioAuthoring.Service.isWrite(WcmDashboardWidgetCommon.cachedPerms.permissions);
 
     var header = [
       Common.getSimpleRow(
@@ -130,7 +131,9 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard = function (widgetId, pageId) {
       ),
       Common.getSimpleRow('internalName', widgetId, CMgs.format(langBundle, 'dashletGoLiveColPageName'), 'minimize'),
       Common.getSimpleRow('view', widgetId, CMgs.format(langBundle, 'dashletGoLiveColView'), 'minimize'),
-      Common.getSimpleRow('edit', widgetId, CMgs.format(langBundle, 'dashletGoLiveColEdit'), 'minimize'),
+      ...(isWrite
+        ? [Common.getSimpleRow('edit', widgetId, CMgs.format(langBundle, 'dashletGoLiveColEdit'), 'minimize')]
+        : []),
       Common.getSortableRow('browserUri', widgetId, CMgs.format(langBundle, 'dashletGoLiveColURL'), 'maximize'),
       '<th id="fullUri" class="width0"></th>',
       Common.getSimpleRow('server', widgetId, this.formatMessage(this.messages.publishingTarget), 'maximize'),
@@ -168,6 +171,7 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard = function (widgetId, pageId) {
    * Call back to render each line item of the table
    */
   this.renderLineItem = function (item, isFirst, count, depth) {
+    const isWrite = CStudioAuthoring.Service.isWrite(WcmDashboardWidgetCommon.cachedPerms.permissions);
     if (!item.folder) {
       var html = [],
         name = item.internalName,
@@ -238,7 +242,9 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard = function (widgetId, pageId) {
         // to resolve page display issue
         displayName = CStudioAuthoring.Utils.replaceWithASCIICharacter(displayName);
 
-        WcmDashboardWidgetCommon.insertEditLink(item, editLinkId);
+        if (isWrite) {
+          WcmDashboardWidgetCommon.insertEditLink(item, editLinkId);
+        }
         WcmDashboardWidgetCommon.insertViewLink(item, viewLinkId);
 
         var currentDashboard = CStudioAuthoring.Utils.Cookies.readCookie('dashboard-selected'),
@@ -277,7 +283,7 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard = function (widgetId, pageId) {
           '</div>',
           '</td>',
           '<td id="' + viewLinkId + '"></td>',
-          '<td id="' + editLinkId + '"></td>',
+          isWrite ? '<td id="' + editLinkId + '"></td>' : '',
           `<td class='urlCol' title="${browserUri}">`,
           displayBrowserUri,
           '</td>',

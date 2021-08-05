@@ -52,6 +52,7 @@ CStudioAuthoringWidgets.ApprovedScheduledItemsDashboard = function (widgetId, pa
    * callback to render the table headings
    */
   this.renderItemsHeading = function () {
+    const isWrite = CStudioAuthoring.Service.isWrite(WcmDashboardWidgetCommon.cachedPerms.permissions);
     var widgetId = this._self.widgetId;
     var header =
       WcmDashboardWidgetCommon.getSimpleRow(
@@ -68,12 +69,14 @@ CStudioAuthoringWidgets.ApprovedScheduledItemsDashboard = function (widgetId, pa
         CMgs.format(langBundle, 'dashletApprovedSchedColGoLiveDate'),
         'minimize'
       ) +
-      WcmDashboardWidgetCommon.getSimpleRow(
-        'edit',
-        widgetId,
-        CMgs.format(langBundle, 'dashletApprovedSchedColEdit'),
-        'minimize'
-      ) +
+      (isWrite
+        ? WcmDashboardWidgetCommon.getSimpleRow(
+            'edit',
+            widgetId,
+            CMgs.format(langBundle, 'dashletApprovedSchedColEdit'),
+            'minimize'
+          )
+        : '') +
       WcmDashboardWidgetCommon.getSimpleRow(
         'browserUri',
         widgetId,
@@ -162,6 +165,7 @@ CStudioAuthoringWidgets.ApprovedScheduledItemsDashboard = function (widgetId, pa
    * Call back to render each line item of the table
    */
   this.renderLineItem = function (item, isFirst, count) {
+    const isWrite = CStudioAuthoring.Service.isWrite(WcmDashboardWidgetCommon.cachedPerms.permissions);
     if (!item.folder) {
       var html = [],
         name = item.internalName,
@@ -173,7 +177,7 @@ CStudioAuthoringWidgets.ApprovedScheduledItemsDashboard = function (widgetId, pa
       if (isFirst) {
         const formattedDate = CStudioAuthoring.Utils.formatDateFromUTC(name, studioTimeZone, 'medium');
 
-        html.push('<td colspan="6">');
+        html.push(`<td colspan="${isWrite ? 6 : 5}">`);
 
         if (item.numOfChildren > 0) {
           var parentClass = ['wcm-table-parent-', name, '-', count].join('');
@@ -226,7 +230,10 @@ CStudioAuthoringWidgets.ApprovedScheduledItemsDashboard = function (widgetId, pa
         displayName = CStudioAuthoring.Utils.replaceWithASCIICharacter(displayName);
 
         var lastEditTime = CStudioAuthoring.Utils.formatDateFromUTC(item.lastEditDate, studioTimeZone);
-        WcmDashboardWidgetCommon.insertEditLink(item, editLinkId);
+
+        if (isWrite) {
+          WcmDashboardWidgetCommon.insertEditLink(item, editLinkId);
+        }
 
         var currentDashboard = CStudioAuthoring.Utils.Cookies.readCookie('dashboard-selected'),
           currentCheckItem = CStudioAuthoring.Utils.Cookies.readCookie('dashboard-checked')
@@ -267,7 +274,7 @@ CStudioAuthoringWidgets.ApprovedScheduledItemsDashboard = function (widgetId, pa
           '</a>',
           '</div>',
           '</td>',
-          '<td id="' + editLinkId + '"></td>',
+          isWrite ? '<td id="' + editLinkId + '"></td>' : '',
           "<td class='urlCol' title='",
           browserUri,
           "'>",

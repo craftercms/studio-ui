@@ -144,6 +144,8 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard = function (widgetId, pageId) 
     var widgetId = this._self.widgetId,
       Common = WcmDashboardWidgetCommon;
 
+    const isWrite = CStudioAuthoring.Service.isWrite(WcmDashboardWidgetCommon.cachedPerms.permissions);
+
     var header = [
       Common.getSimpleRow(
         'checkAll',
@@ -159,7 +161,9 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard = function (widgetId, pageId) 
         CMgs.format(langBundle, 'dashletMyRecentActivityColPageName'),
         'minimize'
       ),
-      Common.getSimpleRow('edit', widgetId, CMgs.format(langBundle, 'dashletMyRecentActivityColEdit'), 'minimize'),
+      ...(isWrite
+        ? [Common.getSimpleRow('edit', widgetId, CMgs.format(langBundle, 'dashletMyRecentActivityColEdit'), 'minimize')]
+        : []),
       Common.getSortableRow(
         'browserUri',
         widgetId,
@@ -194,6 +198,7 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard = function (widgetId, pageId) 
    * Call back to render each line item of the table
    */
   this.renderLineItem = function (item) {
+    const isWrite = CStudioAuthoring.Service.isWrite(WcmDashboardWidgetCommon.cachedPerms.permissions);
     var itemName = item.internalName;
     if (!itemName || itemName == '') {
       itemName = item.title;
@@ -230,7 +235,9 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard = function (widgetId, pageId) 
     // to resolve page display issue
     itemNameForDisplay = CStudioAuthoring.Utils.replaceWithASCIICharacter(itemNameForDisplay);
 
-    WcmDashboardWidgetCommon.insertEditLink(item, editLinkId);
+    if (isWrite) {
+      WcmDashboardWidgetCommon.insertEditLink(item, editLinkId);
+    }
 
     var currentDashboard = CStudioAuthoring.Utils.Cookies.readCookie('dashboard-selected'),
       currentCheckItem = CStudioAuthoring.Utils.Cookies.readCookie('dashboard-checked')
@@ -274,7 +281,7 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard = function (widgetId, pageId) 
       '</a>',
       '</div>',
       '</td>',
-      `<td id="${editLinkId}"></td>`,
+      isWrite ? `<td id="${editLinkId}"></td>` : '',
       `<td class="urlCol" title="${browserUri}">`,
       /**/ displayBrowserUri,
       '</td>',

@@ -63,6 +63,7 @@ CStudioAuthoringWidgets.RecentlyMadeLiveDashboard = function (widgetId, pageId) 
    */
   this.renderItemsHeading = function () {
     var widgetId = this._self.widgetId;
+    const isWrite = CStudioAuthoring.Service.isWrite(WcmDashboardWidgetCommon.cachedPerms.permissions);
 
     var header =
       WcmDashboardWidgetCommon.getSimpleRow(
@@ -79,12 +80,14 @@ CStudioAuthoringWidgets.RecentlyMadeLiveDashboard = function (widgetId, pageId) 
         CMgs.format(langBundle, 'dashletRecentDeployColPageName'),
         'minimize'
       ) +
-      WcmDashboardWidgetCommon.getSimpleRow(
-        'edit',
-        widgetId,
-        CMgs.format(langBundle, 'dashletRecentDeployColEdit'),
-        'minimize'
-      ) +
+      (isWrite
+        ? WcmDashboardWidgetCommon.getSimpleRow(
+            'edit',
+            widgetId,
+            CMgs.format(langBundle, 'dashletRecentDeployColEdit'),
+            'minimize'
+          )
+        : '') +
       WcmDashboardWidgetCommon.getSimpleRow(
         'browserUri',
         widgetId,
@@ -163,6 +166,8 @@ CStudioAuthoringWidgets.RecentlyMadeLiveDashboard = function (widgetId, pageId) 
    * Call back to render each line item of the table
    */
   this.renderLineItem = function (item, isFirst, count) {
+    const isWrite = CStudioAuthoring.Service.isWrite(WcmDashboardWidgetCommon.cachedPerms.permissions);
+
     if (!item.folder) {
       var html = [],
         name = item.internalName ? item.internalName : item.name,
@@ -178,7 +183,7 @@ CStudioAuthoringWidgets.RecentlyMadeLiveDashboard = function (widgetId, pageId) 
         const dateUTC = `${match[1]}T00:00:00${match[2]}`;
         const formattedDate = CStudioAuthoring.Utils.formatDateFromUTC(dateUTC, studioTimeZone, 'date');
 
-        html.push('<td colspan="6">');
+        html.push(`<td colspan="${isWrite ? 6 : 5}">`);
 
         if (item.numOfChildren > 0) {
           var parentClass = ['wcm-table-parent-', name, '-', count].join('');
@@ -236,7 +241,9 @@ CStudioAuthoringWidgets.RecentlyMadeLiveDashboard = function (widgetId, pageId) 
         // to resolve page display issue
         displayName = CStudioAuthoring.Utils.replaceWithASCIICharacter(displayName);
 
-        WcmDashboardWidgetCommon.insertEditLink(item, editLinkId);
+        if (isWrite) {
+          WcmDashboardWidgetCommon.insertEditLink(item, editLinkId);
+        }
 
         var currentDashboard = CStudioAuthoring.Utils.Cookies.readCookie('dashboard-selected'),
           currentCheckItem = CStudioAuthoring.Utils.Cookies.readCookie('dashboard-checked')
@@ -271,7 +278,7 @@ CStudioAuthoringWidgets.RecentlyMadeLiveDashboard = function (widgetId, pageId) 
           '</a>',
           '</div>',
           '</td>',
-          '<td id="' + editLinkId + '"></td>',
+          isWrite ? '<td id="' + editLinkId + '"></td>' : '',
           "<td class='urlCol' title='",
           browserUri,
           "'>",

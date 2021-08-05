@@ -73,10 +73,10 @@ WcmDashboardWidgetCommon.insertEditLink = function (item, editLinkId) {
         }
       }
 
-      var isUserAllowed = CStudioAuthoring.Service.isUserAllowed(results.permissions);
+      var isWrite = CStudioAuthoring.Service.isWrite(results.permissions);
 
-      if (isUserAllowed) {
-        // If the user's role is allowed to edit the content then add an edit link
+      if (isWrite) {
+        // If the user's role is allowed to edit (write) the content then add an edit link
         addEditLink();
       }
     },
@@ -595,7 +595,7 @@ WcmDashboardWidgetCommon.init = function (instance) {
     if (WcmDashboardWidgetCommon.cachedPerms) {
       getPermsCb.success(WcmDashboardWidgetCommon.cachedPerms);
     } else {
-      CStudioAuthoring.Service.getUserPermissions(CStudioAuthoringContext.site, '~DASHBOARD~', getPermsCb);
+      CStudioAuthoring.Service.getUserPermissions(CStudioAuthoringContext.site, '/', getPermsCb);
     }
 
     $(window).resize(function () {
