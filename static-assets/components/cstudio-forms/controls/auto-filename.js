@@ -67,10 +67,10 @@ YAHOO.extend(CStudioForms.Controls.AutoFilename, CStudioForms.CStudioFormField, 
       this.form.updateModel('folder-name', this.form.model['objectId']);
     } else if (changeTemplate == 'true') {
       this.form.updateModel('file-name', this.form.model['objectId'] + '.xml');
-      obj.form.updateModel('folder-name', '');
+      this.form.updateModel('folder-name', '');
     } else {
       this.form.updateModel('file-name', filename);
-      obj.form.updateModel('folder-name', '');
+      this.form.updateModel('folder-name', '');
     }
   },
 
