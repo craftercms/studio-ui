@@ -73,9 +73,9 @@ WcmDashboardWidgetCommon.insertEditLink = function (item, editLinkId) {
         }
       }
 
-      var isUserAllowed = CStudioAuthoring.Service.isUserAllowed(results.permissions);
+      var isWrite = CStudioAuthoring.Service.isWrite(results.permissions);
 
-      if (isUserAllowed) {
+      if (isWrite) {
         // If the user's role is allowed to edit the content then add an edit link
         addEditLink();
       }
