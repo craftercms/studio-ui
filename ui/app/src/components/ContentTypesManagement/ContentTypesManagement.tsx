@@ -29,7 +29,7 @@ export default function ContentTypeManagement(props: ContentTypeManagementProps)
   const { embedded = false } = props;
   const [loading, setLoading] = useState(true);
   return (
-    <Box height="100vh" display="flex" flexDirection="column">
+    <Box height="100%" display="flex" flexDirection="column">
       {!embedded && (
         <GlobalAppToolbar
           title={<FormattedMessage id="dropTargetsMessages.contentTypes" defaultMessage="Content Types" />}
