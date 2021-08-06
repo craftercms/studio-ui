@@ -681,7 +681,7 @@ const reducer = createReducer<GlobalState['preview']>(
       const arrays = ['setups'];
       const renameTable = { '#text': 'data' };
       const configDOM = fromString(payload.configXml);
-      const rte = configDOM.querySelector('[id="craftercms.components.RichTextEditor"] > configuration');
+      const rte = configDOM.querySelector('[id="craftercms.components.TinyMCE"] > configuration');
       if (rte) {
         try {
           const conf = applyDeserializedXMLTransforms(deserialize(rte), {
@@ -691,17 +691,8 @@ const reducer = createReducer<GlobalState['preview']>(
           let setups: LookupTable = {};
 
           conf.setups.forEach((setup) => {
-            setups[setup.id] = JSON.parse(setup.data);
-            setup.data = JSON.parse(setup.data);
-          });
-
-          conf.setups.forEach((setup) => {
-            setup.extends?.split(',').forEach((extend) => {
-              setups[setup.id] = {
-                ...setups[extend],
-                ...setup.data
-              };
-            });
+            setup.tinymceOptions = JSON.parse(setup.tinymceOptions);
+            setups[setup.id] = setup;
           });
 
           rteConfig = setups;

@@ -155,7 +155,7 @@ export function initTinyMCE(
       });
     },
     ...reversePluckProps(
-      rteConfig,
+      rteConfig.tinymceOptions,
       'target', // Target can't be changed
       'inline', // Not using inline view doesn't behave well on pageBuilder, this setting shouldn't be changed.
       'setup',
