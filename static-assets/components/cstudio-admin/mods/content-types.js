@@ -3540,6 +3540,9 @@
             '</help>\r\n';
           if (field.plugin) {
             xml += '\t\t\t\t\t<plugin>\r\n';
+            if (field.plugin.pluginId) {
+              xml += '\t\t\t\t\t\t<pluginId>' + field.plugin.pluginId + '</pluginId>\r\n';
+            }
             if (field.plugin.type) {
               xml += '\t\t\t\t\t\t<type>' + field.plugin.type + '</type>\r\n';
             }
