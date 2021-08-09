@@ -1038,6 +1038,18 @@ WcmDashboardWidgetCommon.getContentItemForMatchedElement = function (matchedElem
   CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, itemUrl, getContentItemsCb, false, false);
 };
 
+WcmDashboardWidgetCommon.updateInstanceTotalItems = (widgetId, results) => {
+  var instance = WcmDashboardWidgetCommon.dashboards[widgetId];
+
+  if (widgetId === 'MyRecentActivity') {
+    instance.totalItems = results.documents.length;
+  } else {
+    let totalItems = 0;
+    results.documents.forEach((document) => (totalItems += document.numOfChildren));
+    instance.totalItems = totalItems;
+  }
+};
+
 /**
  * load and render table data
  */
@@ -1057,14 +1069,7 @@ WcmDashboardWidgetCommon.loadTableData = function (sortBy, container, widgetId, 
         YDom.addClass(divTableContainer, 'table-responsive');
       }
       instance.dashBoardData = results;
-
-      if (widgetId === 'MyRecentActivity') {
-        instance.totalItems = results.documents.length;
-      } else {
-        let totalItems = 0;
-        results.documents.forEach((document) => (totalItems += document.numOfChildren));
-        instance.totalItems = totalItems;
-      }
+      WcmDashboardWidgetCommon.updateInstanceTotalItems(widgetId, results);
 
       var sortDocuments = results.documents;
       instance.tooltipLabels = new Array();
@@ -1333,14 +1338,7 @@ WcmDashboardWidgetCommon.loadFilterTableData = function (sortBy, container, widg
         YDom.addClass(divTableContainer, 'table-responsive');
       }
       instance.dashBoardData = results;
-
-      if (widgetId === 'MyRecentActivity') {
-        instance.totalItems = results.documents.length;
-      } else {
-        let totalItems = 0;
-        results.documents.forEach((document) => (totalItems += document.numOfChildren));
-        instance.totalItems = totalItems;
-      }
+      WcmDashboardWidgetCommon.updateInstanceTotalItems(widgetId, results);
 
       var sortDocuments = results.documents;
       instance.tooltipLabels = new Array();
