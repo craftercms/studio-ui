@@ -34,6 +34,9 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard = function(widgetId, pageId) {
   this.defaultSortBy = 'eventDate';
   this.defaultSearchNumber = 10;
   this.tooltipLabels = null;
+  this.showEdit = false;
+  this.totalItems = 0;
+  this.renderedItems = 0;
   WcmDashboardWidgetCommon.init(this);
 
   /**
@@ -230,7 +233,7 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard = function(widgetId, pageId) {
     // to resolve page display issue
     itemNameForDisplay = CStudioAuthoring.Utils.replaceWithASCIICharacter(itemNameForDisplay);
 
-    WcmDashboardWidgetCommon.insertEditLink(item, editLinkId);
+    WcmDashboardWidgetCommon.insertEditLink(item, editLinkId, this.widgetId);
 
     var currentDashboard = CStudioAuthoring.Utils.Cookies.readCookie('dashboard-selected'),
       currentCheckItem = CStudioAuthoring.Utils.Cookies.readCookie('dashboard-checked')
@@ -274,7 +277,7 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard = function(widgetId, pageId) {
       '</a>',
       '</div>',
       '</td>',
-      `<td id="${editLinkId}"></td>`,
+      `<td id="${editLinkId}" class="edit-${widgetId}"></td>`,
       `<td class="urlCol" title="${browserUri}">`,
       /**/ displayBrowserUri,
       '</td>',
