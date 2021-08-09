@@ -47,10 +47,10 @@ WcmDashboardWidgetCommon.verifyEditColumn = (widgetId, hasWritePermissions) => {
     currentDashboard.showEdit = hasWritePermissions;
   }
 
-  if (currentDashboard.totalItems === currentDashboard.renderedItems && !currentDashboard.showEdit) {
-    // hide edit column
-    $(`#edit-${widgetId}`).hide();
-    $(`.edit-${widgetId}`).hide();
+  if (currentDashboard.totalItems === currentDashboard.renderedItems && currentDashboard.showEdit) {
+    // Show edit column
+    $(`#edit-${widgetId}`).removeClass('hidden');
+    $(`.edit-${widgetId}`).removeClass('hidden');
   }
 };
 

@@ -162,7 +162,12 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard = function(widgetId, pageId) {
         CMgs.format(langBundle, 'dashletMyRecentActivityColPageName'),
         'minimize'
       ),
-      Common.getSimpleRow('edit', widgetId, CMgs.format(langBundle, 'dashletMyRecentActivityColEdit'), 'minimize'),
+      Common.getSimpleRow(
+        'edit',
+        widgetId,
+        CMgs.format(langBundle, 'dashletMyRecentActivityColEdit'),
+        'minimize hidden'
+      ),
       Common.getSortableRow(
         'browserUri',
         widgetId,
@@ -277,7 +282,7 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard = function(widgetId, pageId) {
       '</a>',
       '</div>',
       '</td>',
-      `<td id="${editLinkId}" class="edit-${widgetId}"></td>`,
+      `<td id="${editLinkId}" class="edit-${widgetId} hidden"></td>`,
       `<td class="urlCol" title="${browserUri}">`,
       /**/ displayBrowserUri,
       '</td>',
