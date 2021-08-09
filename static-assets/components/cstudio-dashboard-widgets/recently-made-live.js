@@ -86,7 +86,7 @@ CStudioAuthoringWidgets.RecentlyMadeLiveDashboard = function (widgetId, pageId) 
         'edit',
         widgetId,
         CMgs.format(langBundle, 'dashletRecentDeployColEdit'),
-        'minimize'
+        'minimize hidden'
       ) +
       WcmDashboardWidgetCommon.getSimpleRow(
         'browserUri',
@@ -207,7 +207,7 @@ CStudioAuthoringWidgets.RecentlyMadeLiveDashboard = function (widgetId, pageId) 
           ')',
           '</span>',
           '</td>',
-          `<td colspan="1" class="edit-${widgetId}">&nbsp;</td>`
+          `<td colspan="1" class="edit-${widgetId} hidden">&nbsp;</td>`
         ]);
       } else {
         var browserUri = CStudioAuthoring.Operations.getPreviewUrl(item, false, true),
@@ -274,7 +274,7 @@ CStudioAuthoringWidgets.RecentlyMadeLiveDashboard = function (widgetId, pageId) 
           '</a>',
           '</div>',
           '</td>',
-          `<td id="${editLinkId}" class="edit-${widgetId}"></td>`,
+          `<td id="${editLinkId}" class="edit-${widgetId} hidden"></td>`,
           "<td class='urlCol' title='",
           browserUri,
           "'>",
