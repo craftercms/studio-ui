@@ -351,7 +351,13 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
             drawerPaper: classes.drawerPaper
           }}
         >
-          <form noValidate autoComplete="off">
+          <form
+            noValidate
+            autoComplete="off"
+            onSubmit={(e) => {
+              e.preventDefault();
+            }}
+          >
             <Button
               disabled={pathRegex === '' && !Object.values(filtersLookup).some(Boolean)}
               endIcon={<CloseIcon />}
