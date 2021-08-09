@@ -1069,6 +1069,7 @@ WcmDashboardWidgetCommon.loadTableData = function (sortBy, container, widgetId, 
         YDom.addClass(divTableContainer, 'table-responsive');
       }
       instance.dashBoardData = results;
+      instance.renderedItems = 0;
       WcmDashboardWidgetCommon.updateInstanceTotalItems(widgetId, results);
 
       var sortDocuments = results.documents;
@@ -1338,6 +1339,7 @@ WcmDashboardWidgetCommon.loadFilterTableData = function (sortBy, container, widg
         YDom.addClass(divTableContainer, 'table-responsive');
       }
       instance.dashBoardData = results;
+      instance.renderedItems = 0;
       WcmDashboardWidgetCommon.updateInstanceTotalItems(widgetId, results);
 
       var sortDocuments = results.documents;
