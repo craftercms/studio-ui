@@ -16,66 +16,60 @@
 
 import useStyles from './styles';
 import ResizeableDrawer from '../../modules/Preview/ResizeableDrawer';
-import React, { useState } from 'react';
+import React, { PropsWithChildren } from 'react';
 import MenuList from '@material-ui/core/MenuList';
 import MenuItem from '@material-ui/core/MenuItem';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import { FormattedMessage, useIntl } from 'react-intl';
-import SystemIcon from '../SystemIcon';
-import { Route, Switch, useHistory } from 'react-router';
+import SystemIcon, { SystemIconDescriptor } from '../SystemIcon';
 import EmptyState from '../SystemStatus/EmptyState';
-import { useGlobalAppState } from '../GlobalApp';
-import LauncherOpenerButton from '../LauncherOpenerButton';
 import CrafterCMSLogo from '../Icons/CrafterCMSLogo';
-import { useSelection } from '../../utils/hooks/useSelection';
 import { getPossibleTranslation } from '../../utils/i18n';
-import Widget from '../Widget';
-import { useReference } from '../../utils/hooks/useReference';
+import { WidgetDescriptor } from '../Widget';
 import IconButton from '@material-ui/core/IconButton';
 import KeyboardArrowLeftRoundedIcon from '@material-ui/icons/KeyboardArrowLeftRounded';
 import SiteSwitcherSelect from '../SiteSwitcherSelect';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import { getSystemLink } from '../LauncherSection';
-import { usePreviewState } from '../../utils/hooks/usePreviewState';
-import { useEnv } from '../../utils/hooks/useEnv';
 import Tooltip from '@material-ui/core/Tooltip';
 import Paper from '@material-ui/core/Paper';
+import TranslationOrText from '../../models/TranslationOrText';
 
-interface SiteToolsAppProps {
-  footerHtml: string;
+export interface Tool {
+  title: TranslationOrText;
+  icon: SystemIconDescriptor;
+  url: string;
+  widget: WidgetDescriptor;
 }
 
+export type SiteToolsAppProps = PropsWithChildren<{
+  site: string;
+  activeToolId: string;
+  footerHtml: string;
+  openSidebar: boolean;
+  width: number;
+  tools: Tool[];
+  hideSiteSwitcher?: boolean;
+  onBackClick?(): void;
+  onWidthChange(width: number): void;
+  onNavItemClick(url: string): void;
+}>;
+
 export default function SiteToolsApp(props: SiteToolsAppProps) {
-  const { footerHtml } = props;
+  const {
+    site,
+    activeToolId,
+    hideSiteSwitcher = false,
+    footerHtml,
+    onBackClick,
+    openSidebar,
+    width,
+    onWidthChange,
+    tools,
+    onNavItemClick,
+    children
+  } = props;
   const classes = useStyles();
-  const [width, setWidth] = useState(240);
-  const history = useHistory();
   const { formatMessage } = useIntl();
-  const [activeToolId, setActiveToolId] = useState(history.location.pathname);
-  const baseUrl = useSelection<string>((state) => state.env.authoringBase);
-  const [{ openSidebar }] = useGlobalAppState();
-  const siteTools = useReference('craftercms.siteTools');
-  const site = useActiveSiteId();
-  const { previewChoice } = usePreviewState();
-  const { authoringBase } = useEnv();
-
-  history.listen((location) => {
-    setActiveToolId(location.pathname);
-  });
-
-  const onNavItemClick = (id: string) => {
-    history.push(id);
-  };
-
-  const onBackClick = () => {
-    window.location.href = getSystemLink({
-      site,
-      previewChoice,
-      authoringBase,
-      systemLinkId: 'preview'
-    });
-  };
 
   return (
     <Paper className={classes.root} elevation={0}>
@@ -83,20 +77,22 @@ export default function SiteToolsApp(props: SiteToolsAppProps) {
         classes={{ drawerPaper: classes.drawerPaper, drawerBody: classes.drawerBody }}
         open={openSidebar}
         width={width}
-        onWidthChange={setWidth}
+        onWidthChange={onWidthChange}
       >
         <section>
           <Box display="flex" justifyContent="space-between" marginBottom="10px">
-            <Tooltip title={<FormattedMessage id="words.preview" defaultMessage="Preview" />}>
-              <IconButton onClick={onBackClick}>
-                <KeyboardArrowLeftRoundedIcon />
-              </IconButton>
-            </Tooltip>
-            <SiteSwitcherSelect site={site} fullWidth />
+            {onBackClick && (
+              <Tooltip title={<FormattedMessage id="words.preview" defaultMessage="Preview" />}>
+                <IconButton onClick={onBackClick}>
+                  <KeyboardArrowLeftRoundedIcon />
+                </IconButton>
+              </Tooltip>
+            )}
+            {!hideSiteSwitcher && <SiteSwitcherSelect site={site} fullWidth />}
           </Box>
           <MenuList disablePadding className={classes.nav}>
-            {siteTools ? (
-              siteTools.tools.map((tool) => (
+            {tools ? (
+              tools.map((tool) => (
                 <MenuItem
                   onClick={() => onNavItemClick(tool.url)}
                   key={tool.url}
@@ -139,66 +135,7 @@ export default function SiteToolsApp(props: SiteToolsAppProps) {
         </footer>
       </ResizeableDrawer>
       <Box className={classes.wrapper} height="100%" width="100%" paddingLeft={openSidebar ? `${width}px` : 0}>
-        <Switch>
-          {siteTools?.tools.map((tool) => (
-            <Route
-              key={tool.url}
-              path={`/${tool.url}`}
-              render={() => {
-                return <Widget {...tool.widget} extraProps={{ embedded: false }} />;
-              }}
-            />
-          ))}
-          <Route
-            exact
-            path="/"
-            render={() => {
-              return (
-                <Box display="flex" flexDirection="column" height="100%">
-                  <section className={classes.launcher}>
-                    <LauncherOpenerButton sitesRailPosition="left" icon="apps" />
-                  </section>
-                  <EmptyState
-                    styles={{
-                      root: {
-                        height: '100%',
-                        margin: 0
-                      }
-                    }}
-                    title={
-                      <FormattedMessage
-                        id="siteTools.selectTool"
-                        defaultMessage="Please choose a tool from the left."
-                      />
-                    }
-                    image={`${baseUrl}/static-assets/images/choose_option.svg`}
-                  />
-                </Box>
-              );
-            }}
-          />
-          <Route
-            render={() => {
-              return (
-                <Box display="flex" flexDirection="column" height="100%">
-                  <section className={classes.launcher}>
-                    <LauncherOpenerButton sitesRailPosition="left" icon="apps" />
-                  </section>
-                  <EmptyState
-                    styles={{
-                      root: {
-                        height: '100%',
-                        margin: 0
-                      }
-                    }}
-                    title="404"
-                    subtitle={<FormattedMessage id={'siteTools.toolNotFound'} defaultMessage={'Tool not found'} />}
-                  />
-                </Box>
-              );
-            }}
-          />
-        </Switch>
+        {children}
       </Box>
     </Paper>
   );
