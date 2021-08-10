@@ -48,6 +48,7 @@ import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import { useDebouncedInput } from '../../utils/hooks/useDebouncedInput';
 import { useSpreadState } from '../../utils/hooks/useSpreadState';
+import ItemActionsSnackbar from '../ItemActionsSnackbar';
 
 interface ItemStatesManagementProps {
   embedded?: boolean;
@@ -209,12 +210,6 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
     }
   };
 
-  const onToggleSelectedItemsOnPage = () => {
-    const selectedItemsOnPage = {};
-    items.forEach((item) => (selectedItemsOnPage[item.path] = item));
-    setSelectedItems({ ...selectedItems, ...selectedItemsOnPage });
-  };
-
   const onSetItemStateDialogConfirm = (update: StatesToUpdate) => {
     if (selectedItem) {
       setItemStates(siteId, [selectedItem.path], update).subscribe(() => {
@@ -273,11 +268,8 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
         position="relative"
       >
         {(hasSelectedItems || isSelectedItemsOnAllPages) && (
-          <ActionsBar
-            classes={{
-              root: classes.actionsBarRoot,
-              checkbox: classes.actionsBarCheckbox
-            }}
+          <ItemActionsSnackbar
+            open={hasSelectedItems || isSelectedItemsOnAllPages}
             options={[
               {
                 id: 'editStates',
@@ -298,10 +290,7 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
                 })
               }
             ]}
-            isIndeterminate={hasThisPageItemsChecked ? isThisPageIndeterminate : false}
-            isChecked={isSelectedItemsOnAllPages || hasThisPageItemsChecked}
-            onOptionClicked={onOptionClicked}
-            toggleSelectAll={onToggleSelectAllItems}
+            onActionClicked={onOptionClicked}
           />
         )}
         <SuspenseWithEmptyState
@@ -326,8 +315,10 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
             rowsPerPageOptions={[5, 10, 15]}
             selectedItems={selectedItems}
             allItemsSelected={isSelectedItemsOnAllPages}
+            hasThisPageItemsChecked={hasThisPageItemsChecked}
+            isThisPageIndeterminate={isThisPageIndeterminate}
             onItemSelected={onItemSelected}
-            onToggleSelectedItems={onToggleSelectedItemsOnPage}
+            onToggleSelectedItems={onToggleSelectAllItems}
             onChangePage={onChangePage}
             onChangeRowsPerPage={onChangeRowsPerPage}
             onRowSelected={onRowSelected}
