@@ -52,10 +52,11 @@ import { useSpreadState } from '../../utils/hooks/useSpreadState';
 
 interface ItemStatesManagementProps {
   embedded?: boolean;
+  showAppsButton?: boolean;
 }
 
 export default function ItemStatesManagement(props: ItemStatesManagementProps) {
-  const { embedded } = props;
+  const { embedded, showAppsButton = !embedded } = props;
   const [fetching, setFetching] = useState(false);
   const [items, setItems] = useState<PagedArray<SandboxItem>>(null);
   const [error, setError] = useState<ApiResponse>();
@@ -262,7 +263,7 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
           </Button>
         }
         showHamburgerMenuButton={!embedded}
-        showAppsButton={!embedded}
+        showAppsButton={showAppsButton}
       />
 
       <Box

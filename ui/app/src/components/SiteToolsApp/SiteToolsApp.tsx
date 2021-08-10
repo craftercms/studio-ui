@@ -33,6 +33,7 @@ import SiteSwitcherSelect from '../SiteSwitcherSelect';
 import Tooltip from '@material-ui/core/Tooltip';
 import Paper from '@material-ui/core/Paper';
 import TranslationOrText from '../../models/TranslationOrText';
+import clsx from 'clsx';
 
 export interface Tool {
   title: TranslationOrText;
@@ -44,11 +45,14 @@ export interface Tool {
 export type SiteToolsAppProps = PropsWithChildren<{
   site: string;
   activeToolId: string;
-  footerHtml: string;
+  footerHtml?: string;
   openSidebar: boolean;
   width: number;
   tools: Tool[];
-  hideSiteSwitcher?: boolean;
+  sidebarBelowToolbar?: boolean;
+  hideSidebarLogo?: boolean;
+  hideSidebarSiteSwitcher?: boolean;
+  classes?: Partial<Record<'root', string>>;
   onBackClick?(): void;
   onWidthChange(width: number): void;
   onNavItemClick(url: string): void;
@@ -58,7 +62,9 @@ export default function SiteToolsApp(props: SiteToolsAppProps) {
   const {
     site,
     activeToolId,
-    hideSiteSwitcher = false,
+    hideSidebarSiteSwitcher = false,
+    hideSidebarLogo = false,
+    sidebarBelowToolbar = false,
     footerHtml,
     onBackClick,
     openSidebar,
@@ -72,11 +78,12 @@ export default function SiteToolsApp(props: SiteToolsAppProps) {
   const { formatMessage } = useIntl();
 
   return (
-    <Paper className={classes.root} elevation={0}>
+    <Paper className={clsx(classes.root, props.classes?.root)} elevation={0}>
       <ResizeableDrawer
         classes={{ drawerPaper: classes.drawerPaper, drawerBody: classes.drawerBody }}
         open={openSidebar}
         width={width}
+        belowToolbar={sidebarBelowToolbar}
         onWidthChange={onWidthChange}
       >
         <section>
@@ -88,7 +95,7 @@ export default function SiteToolsApp(props: SiteToolsAppProps) {
                 </IconButton>
               </Tooltip>
             )}
-            {!hideSiteSwitcher && <SiteSwitcherSelect site={site} fullWidth />}
+            {!hideSidebarSiteSwitcher && <SiteSwitcherSelect site={site} fullWidth />}
           </Box>
           <MenuList disablePadding className={classes.nav}>
             {tools ? (
@@ -125,13 +132,15 @@ export default function SiteToolsApp(props: SiteToolsAppProps) {
           </MenuList>
         </section>
         <footer className={classes.footer}>
-          <CrafterCMSLogo width={100} className={classes.logo} />
-          <Typography
-            component="p"
-            variant="caption"
-            className={classes.footerDescription}
-            dangerouslySetInnerHTML={{ __html: footerHtml }}
-          />
+          {!hideSidebarLogo && <CrafterCMSLogo width={100} className={classes.logo} />}
+          {footerHtml && (
+            <Typography
+              component="p"
+              variant="caption"
+              className={classes.footerDescription}
+              dangerouslySetInnerHTML={{ __html: footerHtml }}
+            />
+          )}
         </footer>
       </ResizeableDrawer>
       <Box className={classes.wrapper} height="100%" width="100%" paddingLeft={openSidebar ? `${width}px` : 0}>

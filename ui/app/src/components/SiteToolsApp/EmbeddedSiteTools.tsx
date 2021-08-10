@@ -25,13 +25,9 @@ import EmptyState from '../SystemStatus/EmptyState';
 import { FormattedMessage } from 'react-intl';
 import Widget from '../Widget';
 import Suspencified from '../SystemStatus/Suspencified';
+import { embeddedStyles } from './styles';
 
-interface EmbeddedSiteToolsProps {
-  footerHtml: string;
-}
-
-export const EmbeddedSiteToolsContainer = (props: EmbeddedSiteToolsProps) => {
-  const { footerHtml } = props;
+export const EmbeddedSiteToolsContainer = () => {
   const [width, setWidth] = useState(240);
   const [activeToolId, setActiveToolId] = useState<string>();
   const baseUrl = useSelection<string>((state) => state.env.authoringBase);
@@ -39,6 +35,7 @@ export const EmbeddedSiteToolsContainer = (props: EmbeddedSiteToolsProps) => {
   const siteTools = useReference('craftercms.siteTools');
   const tools: Tool[] = siteTools?.tools;
   const site = useActiveSiteId();
+  const classes = embeddedStyles();
 
   const onNavItemClick = (id: string) => {
     setActiveToolId(id);
@@ -50,15 +47,22 @@ export const EmbeddedSiteToolsContainer = (props: EmbeddedSiteToolsProps) => {
       width={width}
       onWidthChange={setWidth}
       onNavItemClick={onNavItemClick}
-      hideSiteSwitcher={true}
+      sidebarBelowToolbar={true}
+      hideSidebarLogo={true}
+      hideSidebarSiteSwitcher={true}
       activeToolId={activeToolId}
-      footerHtml={footerHtml}
       openSidebar={openSidebar}
       tools={tools}
+      classes={{
+        root: classes.root
+      }}
     >
       {activeToolId ? (
         <Suspencified>
-          <Widget {...tools.find((tool) => tool.url === activeToolId).widget} extraProps={{ embedded: false }} />
+          <Widget
+            {...tools.find((tool) => tool.url === activeToolId).widget}
+            extraProps={{ embedded: false, showAppsButton: false }}
+          />
         </Suspencified>
       ) : (
         <Box display="flex" flexDirection="column" height="100%">
@@ -78,10 +82,10 @@ export const EmbeddedSiteToolsContainer = (props: EmbeddedSiteToolsProps) => {
   );
 };
 
-export default function EmbeddedSiteTools(props: EmbeddedSiteToolsProps) {
+export default function EmbeddedSiteTools() {
   return (
     <GlobalAppContextProvider>
-      <EmbeddedSiteToolsContainer {...props} />
+      <EmbeddedSiteToolsContainer />
     </GlobalAppContextProvider>
   );
 }

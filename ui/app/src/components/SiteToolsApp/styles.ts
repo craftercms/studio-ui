@@ -71,4 +71,12 @@ export const urlDrivenStyles = makeStyles((theme) =>
   })
 );
 
+export const embeddedStyles = makeStyles((theme) =>
+  createStyles({
+    root: {
+      height: '100%'
+    }
+  })
+);
+
 export default useStyles;

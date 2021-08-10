@@ -63,7 +63,7 @@ const useStyles = makeStyles((theme) =>
       ...styles.drawerPaper
     }),
     drawerPaperBelowToolbar: (styles) => ({
-      top: 64,
+      top: 65,
       height: 'auto',
       zIndex: theme.zIndex.appBar - 1,
       ...styles.drawerPaperBelowToolbar
