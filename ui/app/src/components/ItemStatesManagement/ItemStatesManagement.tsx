@@ -42,7 +42,6 @@ import { Divider } from '@material-ui/core';
 import ItemPublishingTargetIcon from '../ItemPublishingTargetIcon';
 import { getItemPublishingTargetText, getItemStateText } from '../ItemDisplay/utils';
 import ItemStateIcon from '../ItemStateIcon';
-import ActionsBar from '../ActionsBar';
 import translations from './translations';
 import ResizeableDrawer from '../../modules/Preview/ResizeableDrawer';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
@@ -138,8 +137,8 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
 
   const onFilterChecked = (id: string, value: boolean) => {
     clearSelectedItems();
-    if (id === 'all') {
-      setFiltersLookup(createPresenceTable(states, value));
+    if (id === 'any') {
+      setFiltersLookup(createPresenceTable(states, !value));
     } else {
       setFiltersLookup({ [id]: value });
     }
@@ -390,17 +389,14 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
                   classes={{ label: classes.iconLabel }}
                   control={
                     <Checkbox
-                      checked={Object.values(filtersLookup).some(Boolean)}
-                      indeterminate={
-                        Object.values(filtersLookup).every(Boolean) ? null : Object.values(filtersLookup).some(Boolean)
-                      }
-                      name="all"
+                      checked={!Object.values(filtersLookup).some(Boolean)}
+                      name="any"
                       onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                         onFilterChecked(event.target.name, !Object.values(filtersLookup).every(Boolean));
                       }}
                     />
                   }
-                  label={<FormattedMessage id="itemStates.allStates" defaultMessage="All states" />}
+                  label={<FormattedMessage id="itemStates.anyState" defaultMessage="Any state" />}
                 />
                 <Divider />
                 {states.map((id) => (
