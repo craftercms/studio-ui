@@ -42,13 +42,13 @@ import { Divider } from '@material-ui/core';
 import ItemPublishingTargetIcon from '../ItemPublishingTargetIcon';
 import { getItemPublishingTargetText, getItemStateText } from '../ItemDisplay/utils';
 import ItemStateIcon from '../ItemStateIcon';
-import ActionsBar from '../ActionsBar';
 import translations from './translations';
 import ResizeableDrawer from '../../modules/Preview/ResizeableDrawer';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import { useDebouncedInput } from '../../utils/hooks/useDebouncedInput';
 import { useSpreadState } from '../../utils/hooks/useSpreadState';
+import ItemActionsSnackbar from '../ItemActionsSnackbar';
 
 interface ItemStatesManagementProps {
   embedded?: boolean;
@@ -138,8 +138,8 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
 
   const onFilterChecked = (id: string, value: boolean) => {
     clearSelectedItems();
-    if (id === 'all') {
-      setFiltersLookup(createPresenceTable(states, value));
+    if (id === 'any') {
+      setFiltersLookup(createPresenceTable(states, !value));
     } else {
       setFiltersLookup({ [id]: value });
     }
@@ -210,12 +210,6 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
     }
   };
 
-  const onToggleSelectedItemsOnPage = () => {
-    const selectedItemsOnPage = {};
-    items.forEach((item) => (selectedItemsOnPage[item.path] = item));
-    setSelectedItems({ ...selectedItems, ...selectedItemsOnPage });
-  };
-
   const onSetItemStateDialogConfirm = (update: StatesToUpdate) => {
     if (selectedItem) {
       setItemStates(siteId, [selectedItem.path], update).subscribe(() => {
@@ -274,11 +268,8 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
         position="relative"
       >
         {(hasSelectedItems || isSelectedItemsOnAllPages) && (
-          <ActionsBar
-            classes={{
-              root: classes.actionsBarRoot,
-              checkbox: classes.actionsBarCheckbox
-            }}
+          <ItemActionsSnackbar
+            open={hasSelectedItems || isSelectedItemsOnAllPages}
             options={[
               {
                 id: 'editStates',
@@ -299,10 +290,7 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
                 })
               }
             ]}
-            isIndeterminate={hasThisPageItemsChecked ? isThisPageIndeterminate : false}
-            isChecked={isSelectedItemsOnAllPages || hasThisPageItemsChecked}
-            onOptionClicked={onOptionClicked}
-            toggleSelectAll={onToggleSelectAllItems}
+            onActionClicked={onOptionClicked}
           />
         )}
         <SuspenseWithEmptyState
@@ -327,8 +315,10 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
             rowsPerPageOptions={[5, 10, 15]}
             selectedItems={selectedItems}
             allItemsSelected={isSelectedItemsOnAllPages}
+            hasThisPageItemsChecked={hasThisPageItemsChecked}
+            isThisPageIndeterminate={isThisPageIndeterminate}
             onItemSelected={onItemSelected}
-            onToggleSelectedItems={onToggleSelectedItemsOnPage}
+            onToggleSelectedItems={onToggleSelectAllItems}
             onChangePage={onChangePage}
             onChangeRowsPerPage={onChangeRowsPerPage}
             onRowSelected={onRowSelected}
@@ -351,7 +341,13 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
             drawerPaper: classes.drawerPaper
           }}
         >
-          <form noValidate autoComplete="off">
+          <form
+            noValidate
+            autoComplete="off"
+            onSubmit={(e) => {
+              e.preventDefault();
+            }}
+          >
             <Button
               disabled={pathRegex === '' && !Object.values(filtersLookup).some(Boolean)}
               endIcon={<CloseIcon />}
@@ -384,17 +380,14 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
                   classes={{ label: classes.iconLabel }}
                   control={
                     <Checkbox
-                      checked={Object.values(filtersLookup).some(Boolean)}
-                      indeterminate={
-                        Object.values(filtersLookup).every(Boolean) ? null : Object.values(filtersLookup).some(Boolean)
-                      }
-                      name="all"
+                      checked={!Object.values(filtersLookup).some(Boolean)}
+                      name="any"
                       onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                         onFilterChecked(event.target.name, !Object.values(filtersLookup).every(Boolean));
                       }}
                     />
                   }
-                  label={<FormattedMessage id="itemStates.allStates" defaultMessage="All states" />}
+                  label={<FormattedMessage id="itemStates.anyState" defaultMessage="Any state" />}
                 />
                 <Divider />
                 {states.map((id) => (

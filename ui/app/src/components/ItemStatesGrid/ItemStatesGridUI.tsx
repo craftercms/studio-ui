@@ -38,6 +38,8 @@ export interface WorkflowStatesGridUIProps {
   rowsPerPageOptions?: number[];
   selectedItems: LookupTable<SandboxItem>;
   allItemsSelected: boolean;
+  hasThisPageItemsChecked: boolean;
+  isThisPageIndeterminate: boolean;
   onToggleSelectedItems(): void;
   onItemSelected(item: SandboxItem, value: boolean): void;
   onChangePage(page: number): void;
@@ -69,7 +71,9 @@ export default function ItemStatesGridUI(props: WorkflowStatesGridUIProps) {
     onItemSelected,
     onRowSelected,
     onToggleSelectedItems,
-    allItemsSelected
+    allItemsSelected,
+    hasThisPageItemsChecked,
+    isThisPageIndeterminate
   } = props;
   const itemStates = resource.read();
   const classes = useStyles();
@@ -81,7 +85,11 @@ export default function ItemStatesGridUI(props: WorkflowStatesGridUIProps) {
           <TableHead>
             <GlobalAppGridRow className="hoverDisabled">
               <GlobalAppGridCell align="center">
-                <Checkbox checked={false} onClick={(e) => onToggleSelectedItems()} />
+                <Checkbox
+                  checked={allItemsSelected || hasThisPageItemsChecked}
+                  indeterminate={hasThisPageItemsChecked ? isThisPageIndeterminate : false}
+                  onClick={(e) => onToggleSelectedItems()}
+                />
               </GlobalAppGridCell>
               <GlobalAppGridCell className="width60 pl0">
                 <Typography variant="subtitle2">
