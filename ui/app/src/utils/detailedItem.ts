@@ -17,21 +17,18 @@
 import { DetailedItem } from '../models/Item';
 
 export function getDateScheduled(item: DetailedItem): string {
-  if (item.stateMap.submittedToStaging) {
-    return item.staging.dateScheduled;
-  } else if (item.stateMap.submittedToLive) {
-    return item.live.dateScheduled;
-  } else {
-    return null;
-  }
+  return item.live?.dateScheduled ?? item.staging?.dateScheduled ?? null;
 }
 
 export function getDatePublished(item: DetailedItem): string {
-  if (item.stateMap.staged) {
-    return item.staging.datePublished;
-  } else if (item.stateMap.live) {
-    return item.live.datePublished;
-  } else {
-    return null;
-  }
+  return item.live?.datePublished ?? item.staging?.datePublished ?? null;
+}
+
+export function getComputedPublishingTarget(item: DetailedItem): 'live' | 'staging' | null {
+  // prettier-ignore
+  return item.stateMap.submittedToLive
+    ? 'live'
+    : item.stateMap.submittedToStaging
+      ? 'staging'
+      : null;
 }

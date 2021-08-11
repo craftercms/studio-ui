@@ -25,7 +25,7 @@ import { FormattedMessage } from 'react-intl';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import clsx from 'clsx';
 
-const useStyles = makeStyles(() =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     root: {},
     grid: {
@@ -37,16 +37,20 @@ const useStyles = makeStyles(() =>
     },
     warningText: {
       display: 'block'
+    },
+    rowSpacing: {
+      marginBottom: theme.spacing(3)
     }
   })
 );
 
 interface PublishingDashboardProps {
   embedded?: boolean;
+  showAppsButton?: boolean;
 }
 
 export default function PublishingDashboard(props: PublishingDashboardProps) {
-  const { embedded } = props;
+  const { embedded, showAppsButton } = props;
   const classes = useStyles();
   const site = useActiveSiteId();
 
@@ -55,13 +59,14 @@ export default function PublishingDashboard(props: PublishingDashboardProps) {
       {!embedded && (
         <GlobalAppToolbar
           title={<FormattedMessage id="publishingDashboard.title" defaultMessage="Publishing Dashboard" />}
+          showAppsButton={showAppsButton}
         />
       )}
-      <Grid container className={clsx(classes.grid, !embedded ? classes.gridNoEmbedded : null)}>
-        <Grid item xs={12}>
+      <Grid container className={clsx(classes.grid, !embedded && classes.gridNoEmbedded)}>
+        <Grid className={classes.rowSpacing} item xs={12}>
           <PublishingStatusWidget siteId={site} />
         </Grid>
-        <Grid item xs={12}>
+        <Grid className={classes.rowSpacing} item xs={12}>
           <PublishOnDemandWidget siteId={site} />
         </Grid>
         <Grid item xs={12}>

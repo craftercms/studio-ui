@@ -40,7 +40,21 @@ WcmDashboardWidgetCommon.encodePathToNumbers = function(path) {
   return res;
 };
 
-WcmDashboardWidgetCommon.insertEditLink = function(item, editLinkId) {
+WcmDashboardWidgetCommon.verifyEditColumn = (widgetId, hasWritePermissions) => {
+  const currentDashboard = WcmDashboardWidgetCommon.dashboards[widgetId];
+  currentDashboard.renderedItems++;
+  if (!currentDashboard.showEdit) {
+    currentDashboard.showEdit = hasWritePermissions;
+  }
+
+  if (currentDashboard.totalItems === currentDashboard.renderedItems && currentDashboard.showEdit) {
+    // Show edit column
+    $(`#edit-${widgetId}`).removeClass('hidden');
+    $(`.edit-${widgetId}`).removeClass('hidden');
+  }
+};
+
+WcmDashboardWidgetCommon.insertEditLink = function(item, editLinkId, widgetId) {
   if (CStudioAuthoring.Utils.isEditableFormAsset(item.mimeType)) {
     CStudioAuthoring.Service.getUserPermissions(CStudioAuthoringContext.site, item.uri, {
       success: function(results) {
@@ -60,17 +74,19 @@ WcmDashboardWidgetCommon.insertEditLink = function(item, editLinkId) {
           }
         }
 
-        var isUserAllowed = CStudioAuthoring.Service.isUserAllowed(results.permissions);
-
-        if (isUserAllowed) {
+        const isWrite = CStudioAuthoring.Service.isWrite(results.permissions);
+        if (isWrite) {
           // If the user's role is allowed to edit the content then add an edit link
           addEditLink();
         }
+        WcmDashboardWidgetCommon.verifyEditColumn(widgetId, isWrite);
       },
       failure: function() {
         throw new Error('Unable to retrieve user permissions');
       }
     });
+  } else {
+    WcmDashboardWidgetCommon.verifyEditColumn(widgetId, false);
   }
 };
 
@@ -1117,6 +1133,18 @@ WcmDashboardWidgetCommon.getContentItemForMatchedElement = function(matchedEleme
   CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, itemUrl, getContentItemsCb, false, false);
 };
 
+WcmDashboardWidgetCommon.updateInstanceTotalItems = (widgetId, results) => {
+  var instance = WcmDashboardWidgetCommon.dashboards[widgetId];
+
+  if (widgetId === 'MyRecentActivity') {
+    instance.totalItems = results.documents.length;
+  } else {
+    let totalItems = 0;
+    results.documents.forEach((document) => (totalItems += document.numOfChildren));
+    instance.totalItems = totalItems;
+  }
+};
+
 /**
  * load and render table data
  */
@@ -1136,6 +1164,9 @@ WcmDashboardWidgetCommon.loadTableData = function(sortBy, container, widgetId, f
         YDom.addClass(divTableContainer, 'table-responsive');
       }
       instance.dashBoardData = results;
+      instance.renderedItems = 0;
+      WcmDashboardWidgetCommon.updateInstanceTotalItems(widgetId, results);
+
       var sortDocuments = results.documents;
       instance.tooltipLabels = new Array();
       var newtable = '';
@@ -1403,6 +1434,9 @@ WcmDashboardWidgetCommon.loadFilterTableData = function(sortBy, container, widge
         YDom.addClass(divTableContainer, 'table-responsive');
       }
       instance.dashBoardData = results;
+      instance.renderedItems = 0;
+      WcmDashboardWidgetCommon.updateInstanceTotalItems(widgetId, results);
+
       var sortDocuments = results.documents;
       instance.tooltipLabels = new Array();
       var newtable = '';

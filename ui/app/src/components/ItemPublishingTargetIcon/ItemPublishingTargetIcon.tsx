@@ -36,6 +36,7 @@ export interface ItemPublishingTargetIconProps {
   classes?: Partial<Record<ItemPublishingTargetIconClassKey, string>>;
   className?: string;
   styles?: ItemPublishingTargetIconStyles;
+  displayTooltip?: boolean;
 }
 
 const useStyles = makeStyles(() =>
@@ -59,11 +60,14 @@ const useStyles = makeStyles(() =>
 );
 
 export default function ItemPublishingTargetIcon(props: ItemPublishingTargetIconProps) {
-  const { item, classes: propClasses, styles, className } = props;
+  const { item, classes: propClasses, styles, className, displayTooltip = true } = props;
   const classes = useStyles(styles);
 
   return (
-    <Tooltip title={getItemPublishingTargetText(item.stateMap)}>
+    <Tooltip
+      title={displayTooltip ? getItemPublishingTargetText(item.stateMap) : ''}
+      open={displayTooltip ? void 0 : false}
+    >
       <PublishingTargetIcon
         className={clsx(
           classes.root,

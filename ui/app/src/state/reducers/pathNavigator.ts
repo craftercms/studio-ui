@@ -179,16 +179,17 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
         }
       };
     },
-    [pathNavigatorSetKeyword.type]: (state, { payload: { id, keyword } }) => {
-      return {
-        ...state,
-        [id]: {
-          ...state[id],
-          keyword,
-          isFetching: true
-        }
-      };
-    },
+    [pathNavigatorSetKeyword.type]: (state, { payload: { id, keyword } }) =>
+      keyword === state.keyword
+        ? state
+        : {
+            ...state,
+            [id]: {
+              ...state[id],
+              keyword,
+              isFetching: true
+            }
+          },
     [pathNavigatorItemChecked.type]: (state, { payload: { id, item } }) => {
       let selectedItems = [...state[id].selectedItems];
       selectedItems.push(item.path);

@@ -222,8 +222,8 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
               return;
             }
 
-            nodesByPathRef.current[path].children = [];
-            childrenByParentPath[path]?.forEach((childPath) => {
+            lookupItemByPath(path, nodesByPathRef.current).children = [];
+            lookupItemByPath(path, childrenByParentPath)?.forEach((childPath) => {
               // if the node doest exist, we will create it, otherwise will add loading to the children
               if (!nodesByPathRef.current[childPath]) {
                 nodesByPathRef.current[childPath] = {

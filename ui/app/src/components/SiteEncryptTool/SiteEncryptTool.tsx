@@ -20,9 +20,10 @@ import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 
 interface SiteEncryptToolProps {
   embedded?: boolean;
+  showAppsButton?: boolean;
 }
 
 export default function SiteEncryptTool(props: SiteEncryptToolProps) {
   const site = useActiveSiteId();
-  return <EncryptTool site={site} embedded={props.embedded} />;
+  return <EncryptTool site={site} embedded={props.embedded} showAppsButton={props.showAppsButton} />;
 }

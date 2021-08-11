@@ -54,6 +54,7 @@ import {
   PUBLISHING_STAGED_MASK,
   READ_MASK,
   STATE_DELETED_MASK,
+  STATE_DISABLED_MASK,
   STATE_LOCKED_MASK,
   STATE_MODIFIED_MASK,
   STATE_NEW_MASK,
@@ -215,7 +216,8 @@ export function parseLegacyItemToBaseItem(item: LegacyItem): BaseItem {
     localeCode: 'en',
     translationSourceId: null,
     availableActions: null,
-    availableActionsMap: null
+    availableActionsMap: null,
+    childrenCount: 0
   };
 }
 
@@ -668,6 +670,7 @@ export const isSubmittedToLive = (value: number) =>
   Boolean(value & PUBLISHING_DESTINATION_MASK);
 export const isStaged = (value: number) => Boolean(value & PUBLISHING_STAGED_MASK);
 export const isLive = (value: number) => Boolean(value & PUBLISHING_LIVE_MASK);
+export const isDisabled = (value: number) => Boolean(value & STATE_DISABLED_MASK);
 export const isTranslationUpToDateState = (value: number) => Boolean(value & STATE_TRANSLATION_UP_TO_DATE_MASK);
 export const isTranslationPendingState = (value: number) => Boolean(value & STATE_TRANSLATION_PENDING_MASK);
 export const isTranslationInProgressState = (value: number) => Boolean(value & STATE_TRANSLATION_IN_PROGRESS_MASK);
@@ -686,6 +689,7 @@ export const createItemStateMap: (status: number) => ItemStateMap = (status: num
   submittedToLive: isSubmittedToLive(status),
   staged: isStaged(status),
   live: isLive(status),
+  disabled: isDisabled(status),
   translationUpToDate: isTranslationUpToDateState(status),
   translationPending: isTranslationPendingState(status),
   translationInProgress: isTranslationInProgressState(status)

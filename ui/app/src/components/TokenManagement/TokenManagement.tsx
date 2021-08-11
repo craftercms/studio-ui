@@ -46,6 +46,7 @@ import Switch from '@material-ui/core/Switch';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import Button from '@material-ui/core/Button';
+import Paper from '@material-ui/core/Paper';
 
 const styles = makeStyles((theme) =>
   createStyles({
@@ -313,7 +314,7 @@ export default function TokenManagement() {
   };
 
   return (
-    <section>
+    <Paper elevation={0}>
       <GlobalAppToolbar
         title={<FormattedMessage id="globalMenu.tokenManagement" defaultMessage="Token Management" />}
         leftContent={
@@ -454,6 +455,6 @@ export default function TokenManagement() {
         onClose={onCopyTokenDialogClose}
         onCopy={onTokenCopied}
       />
-    </section>
+    </Paper>
   );
 }

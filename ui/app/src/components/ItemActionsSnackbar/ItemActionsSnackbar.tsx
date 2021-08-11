@@ -52,6 +52,10 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     flexDirection: 'row',
     padding: 0
+  },
+  loadingItem: {
+    width: 'fit-content',
+    padding: '0 10px'
   }
 }));
 
@@ -101,8 +105,8 @@ function ItemActionsSnackbar(props: ItemActionsSnackbarProps) {
               )
             ) : (
               new Array(5).fill(null).map((_, index) => (
-                <ListItem key={index}>
-                  <ListItemText primary={<Skeleton animation="pulse" height="10px" width={`${rand(40, 60)}px`} />} />
+                <ListItem key={index} disableGutters className={classes.loadingItem}>
+                  <ListItemText primary={<Skeleton animation="pulse" height="10px" width={`${rand(60, 80)}px`} />} />
                 </ListItem>
               ))
             )}

@@ -26,7 +26,6 @@ import Table from '@material-ui/core/Table';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
-import { Button, ListSubheader, TableBody } from '@material-ui/core';
 import { AsDayMonthDateTime } from '../../modules/Content/History/VersionList';
 import EmptyState from '../SystemStatus/EmptyState';
 import InstallPluginDialog from '../MarketplaceDialog';
@@ -51,6 +50,10 @@ import { useMount } from '../../utils/hooks/useMount';
 import { batchActions } from '../../state/actions/misc';
 import Link from '@material-ui/core/Link';
 import { createPresenceTable } from '../../utils/array';
+import ListSubheader from '@material-ui/core/ListSubheader';
+import Button from '@material-ui/core/Button';
+import Paper from '@material-ui/core/Paper';
+import TableBody from '@material-ui/core/TableBody';
 
 const messages = defineMessages({
   pluginInstalled: {
@@ -81,10 +84,11 @@ const StyledTableCell = withStyles((theme: Theme) =>
 
 interface PluginManagementProps {
   embedded?: boolean;
+  showAppsButton?: boolean;
 }
 
 export const PluginManagement = (props: PluginManagementProps) => {
-  const { embedded = false } = props;
+  const { embedded = false, showAppsButton = !embedded } = props;
   const classes = styles();
   const dispatch = useDispatch();
   const siteId = useActiveSiteId();
@@ -167,14 +171,14 @@ export const PluginManagement = (props: PluginManagementProps) => {
   };
 
   return (
-    <section>
+    <Paper elevation={0}>
       <GlobalAppToolbar
         title={
           !embedded && (
             <FormattedMessage id="globalMenu.pluginManagementEntryLabel" defaultMessage="Plugin Management" />
           )
         }
-        showAppsButton={!embedded}
+        showAppsButton={showAppsButton}
         showHamburgerMenuButton={!embedded}
         styles={
           embedded && {
@@ -315,7 +319,7 @@ export const PluginManagement = (props: PluginManagementProps) => {
           ))}
         </List>
       </Popover>
-    </section>
+    </Paper>
   );
 };
 

@@ -30,7 +30,7 @@ export type PropsWithResource<ResourceType = unknown, Props = {}> = PropsWithChi
 type SuspenseWithEmptyStateProps<ResourceType = unknown> = PropsWithChildren<
   PropsWithResource<ResourceType> & {
     isEmpty?(value: ResourceType): boolean;
-    emptyStateProps?: EmptyStateProps;
+    emptyStateProps?: Partial<EmptyStateProps>;
   }
 >;
 
@@ -41,16 +41,13 @@ type SuspencifiedProps = PropsWithChildren<{
 }>;
 
 export function WithEmptyState<ResourceType = unknown[]>(props: SuspenseWithEmptyStateProps<ResourceType>) {
-  const {
-    children,
-    isEmpty = (value: ResourceType) => (value as any).length === 0,
-    resource,
-    emptyStateProps = {
-      title: <FormattedMessage id="withEmptyState.defaultEmptyStateMessage" defaultMessage="No results found" />
-    }
-  } = props;
+  const { children, isEmpty = (value: ResourceType) => (value as any).length === 0, resource, emptyStateProps } = props;
   const value = resource.read();
-  return <Fragment>{isEmpty(value) ? <EmptyState {...emptyStateProps} /> : children}</Fragment>;
+  const finalEmptyStateProps: EmptyStateProps = {
+    title: <FormattedMessage id="withEmptyState.defaultEmptyStateMessage" defaultMessage="No results found" />,
+    ...emptyStateProps
+  };
+  return <Fragment>{isEmpty(value) ? <EmptyState {...finalEmptyStateProps} /> : children}</Fragment>;
 }
 
 export function Suspencified(props: SuspencifiedProps) {

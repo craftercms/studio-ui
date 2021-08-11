@@ -43,6 +43,7 @@ import GlobalState from '../../models/GlobalState';
 import { completeDetailedItem } from '../../state/actions/content';
 import { showItemMegaMenu } from '../../state/actions/dialogs';
 import { batchActions } from '../../state/actions/misc';
+import { getEmptyStateStyleSet } from '../SystemStatus/EmptyState';
 
 export interface DashboardItem {
   label: string;
@@ -207,7 +208,7 @@ export default function RecentlyPublishedDashlet() {
     <Dashlet
       title={
         <FormattedMessage
-          id="recentlyPublished.recentlyPublished"
+          id="recentlyPublishedDashlet.dashletTitle"
           defaultMessage="RecentlyPublished ({total})"
           values={{
             total: Object.keys(itemsLookup).length
@@ -222,9 +223,9 @@ export default function RecentlyPublishedDashlet() {
         <>
           <Button onClick={onCollapseAll} className={classes.rightAction} disabled={fetchingHistory}>
             {!allCollapsed ? (
-              <FormattedMessage id="recentlyPublished.collapseAll" defaultMessage="Collapse All" />
+              <FormattedMessage id="recentlyPublishedDashlet.collapseAll" defaultMessage="Collapse All" />
             ) : (
-              <FormattedMessage id="recentlyPublished.expandAll" defaultMessage="Expand All" />
+              <FormattedMessage id="recentlyPublishedDashlet.expandAll" defaultMessage="Expand All" />
             )}
           </Button>
 
@@ -253,7 +254,7 @@ export default function RecentlyPublishedDashlet() {
             )}
           </TextField>
           <TextField
-            label={<FormattedMessage id="recentlyPublished.filterBy" defaultMessage="Filter by" />}
+            label={<FormattedMessage id="recentlyPublishedDashlet.filterBy" defaultMessage="Filter by" />}
             select
             size="small"
             value={preferences.filterBy}
@@ -277,6 +278,20 @@ export default function RecentlyPublishedDashlet() {
         resource={resource}
         suspenseProps={{
           fallback: <RecentlyPublishedDashletUISkeletonTable items={parentItems} expandedLookup={expandedItems} />
+        }}
+        withEmptyStateProps={{
+          emptyStateProps: {
+            title: (
+              <FormattedMessage
+                id="recentlyPublishedDashlet.emptyMessage"
+                defaultMessage="No items published recently"
+              />
+            ),
+            styles: {
+              ...getEmptyStateStyleSet('horizontal'),
+              ...getEmptyStateStyleSet('image-sm')
+            }
+          }
         }}
       >
         <RecentlyPublishedWidgetUI

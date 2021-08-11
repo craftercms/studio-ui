@@ -56,7 +56,7 @@ export default function GlobalApp(props: GlobalAppProps) {
   const [{ openSidebar }] = useGlobalAppState();
 
   return (
-    <Paper className={classes.root}>
+    <Paper className={classes.root} elevation={0}>
       <ResizeableDrawer
         classes={{ drawerPaper: classes.drawerPaper, drawerBody: classes.drawerBody }}
         open={openSidebar}

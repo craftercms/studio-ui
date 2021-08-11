@@ -47,24 +47,24 @@ const useStyles = makeStyles((theme) =>
 );
 
 const messages = defineMessages({
-  page: { id: 'iconGuide.page', defaultMessage: 'Page' },
-  component: { id: 'iconGuide.component', defaultMessage: 'Component' },
-  folder: { id: 'iconGuide.folder', defaultMessage: 'Folder' },
+  page: { id: 'words.page', defaultMessage: 'Page' },
+  component: { id: 'words.component', defaultMessage: 'Component' },
+  folder: { id: 'words.folder', defaultMessage: 'Folder' },
   levelDescriptor: { id: 'iconGuide.levelDescriptor', defaultMessage: 'Section Defaults' },
   renderingTemplate: { id: 'iconGuide.freemarker', defaultMessage: 'Freemarker Template' },
   script: { id: 'iconGuide.groovy', defaultMessage: 'Groovy Script' },
-  taxonomy: { id: 'iconGuide.taxonomy', defaultMessage: 'Taxonomy' },
-  image: { id: 'iconGuide.image', defaultMessage: 'Image' },
+  taxonomy: { id: 'words.taxonomy', defaultMessage: 'Taxonomy' },
+  image: { id: 'words.image', defaultMessage: 'Image' },
   javascript: { id: 'iconGuide.javascript', defaultMessage: 'JavaScript' },
   json: { id: 'iconGuide.json', defaultMessage: 'Json' },
   html: { id: 'iconGuide.html', defaultMessage: 'HTML' },
   css: { id: 'iconGuide.css', defaultMessage: 'CSS' },
   plainText: { id: 'iconGuide.plainText', defaultMessage: 'Plain Text' },
   xml: { id: 'iconGuide.xml', defaultMessage: 'XML' },
-  font: { id: 'iconGuide.font', defaultMessage: 'Font' },
-  icon: { id: 'iconGuide.icon', defaultMessage: 'Icon' },
-  staged: { id: 'iconGuide.staged', defaultMessage: 'Staged' },
-  live: { id: 'iconGuide.live', defaultMessage: 'Live' }
+  font: { id: 'words.font', defaultMessage: 'Font' },
+  icon: { id: 'words.icon', defaultMessage: 'Icon' },
+  staged: { id: 'words.staged', defaultMessage: 'Staged' },
+  live: { id: 'words.live', defaultMessage: 'Live' }
 });
 
 const states = {

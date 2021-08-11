@@ -20,9 +20,11 @@ import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 
 interface SiteAuditManagementProps {
   embedded?: boolean;
+  showAppsButton?: boolean;
 }
 
 export default function SiteAuditManagement(props: SiteAuditManagementProps) {
+  const { embedded, showAppsButton = !embedded } = props;
   const site = useActiveSiteId();
-  return <AuditManagement site={site} embedded={props.embedded} />;
+  return <AuditManagement site={site} embedded={embedded} showAppsButton={showAppsButton} />;
 }

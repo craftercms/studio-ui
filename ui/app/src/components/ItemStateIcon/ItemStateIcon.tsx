@@ -22,6 +22,7 @@ import SystemProcessingStateIcon from '@material-ui/icons/HourglassEmptyRounded'
 import SubmittedStateIcon from '../Icons/PlanePaperOutline';
 import ScheduledStateIcon from '@material-ui/icons/AccessTimeRounded';
 import CloudUploadOutlinedIcon from '@material-ui/icons/CloudUploadOutlined';
+import BlockRoundedIcon from '@material-ui/icons/BlockRounded';
 import Tooltip from '@material-ui/core/Tooltip/Tooltip';
 import clsx from 'clsx';
 import * as React from 'react';
@@ -43,7 +44,8 @@ export type ItemStateIconClassKey =
   | 'stateSubmittedToStagingIcon'
   | 'stateSubmittedToLiveIcon'
   | 'stateScheduledIcon'
-  | 'statePublishingIcon';
+  | 'statePublishingIcon'
+  | 'stateDisabledIcon';
 
 export type ItemStateIconStyles = Partial<Record<ItemStateIconClassKey, CSSProperties>>;
 
@@ -52,6 +54,7 @@ export interface ItemStateIconProps {
   classes?: Partial<Record<ItemStateIconClassKey, string>>;
   className?: string;
   styles?: ItemStateIconStyles;
+  displayTooltip?: boolean;
 }
 
 const useStyles = makeStyles(() =>
@@ -98,12 +101,16 @@ const useStyles = makeStyles(() =>
     statePublishingIcon: (styles) => ({
       color: palette.indigo.main,
       ...styles.statePublishingIcon
+    }),
+    stateDisabledIcon: (styles) => ({
+      color: palette.pink.main,
+      ...styles.stateDisabledIcon
     })
   })
 );
 
 export default function ItemStateIcon(props: ItemStateIconProps) {
-  const { item, classes: propClasses, styles, className } = props;
+  const { item, classes: propClasses, styles, className, displayTooltip = true } = props;
   const classes = useStyles(styles);
   const { Icon, stateSpecificClass } = useMemo(() => {
     let map: { [key in ItemStates]: any };
@@ -116,10 +123,17 @@ export default function ItemStateIcon(props: ItemStateIconProps) {
       submitted: { Icon: SubmittedStateIcon, stateSpecificClass: classes.stateSubmittedIcon },
       scheduled: { Icon: ScheduledStateIcon, stateSpecificClass: classes.stateScheduledIcon },
       publishing: { Icon: CloudUploadOutlinedIcon, stateSpecificClass: classes.statePublishingIcon },
-      submittedToStaging: { Icon: SubmittedStateIcon, stateSpecificClass: classes.stateSubmittedIcon },
-      submittedToLive: { Icon: SubmittedStateIcon, stateSpecificClass: classes.stateSubmittedIcon },
+      submittedToStaging: {
+        Icon: item.stateMap.submitted ? SubmittedStateIcon : ScheduledStateIcon,
+        stateSpecificClass: classes.stateSubmittedToStagingIcon
+      },
+      submittedToLive: {
+        Icon: item.stateMap.submitted ? SubmittedStateIcon : ScheduledStateIcon,
+        stateSpecificClass: classes.stateSubmittedToLiveIcon
+      },
       staged: null,
       live: null,
+      disabled: { Icon: BlockRoundedIcon, stateSpecificClass: classes.stateDisabledIcon },
       translationUpToDate: null,
       translationPending: null,
       translationInProgress: null
@@ -134,10 +148,13 @@ export default function ItemStateIcon(props: ItemStateIconProps) {
     classes.stateSubmittedIcon,
     classes.stateSystemProcessingIcon,
     classes.statePublishingIcon,
+    classes.stateSubmittedToStagingIcon,
+    classes.stateSubmittedToLiveIcon,
+    classes.stateDisabledIcon,
     item.stateMap
   ]);
   return Icon === null ? null : (
-    <Tooltip title={getItemStateText(item.stateMap)}>
+    <Tooltip title={displayTooltip ? getItemStateText(item.stateMap) : ''} open={displayTooltip ? void 0 : false}>
       <Icon className={clsx(classes.root, propClasses?.root, className, stateSpecificClass)} />
     </Tooltip>
   );
