@@ -16,6 +16,7 @@
 
 import { SystemType } from './SystemType';
 
+// region export type ItemStates =
 export type ItemStates =
   | 'new'
   | 'modified'
@@ -33,7 +34,9 @@ export type ItemStates =
   | 'translationUpToDate'
   | 'translationPending'
   | 'translationInProgress';
+// endregion
 
+// region export type ItemActions =
 export type ItemActions =
   | 'view'
   | 'copy'
@@ -60,9 +63,11 @@ export type ItemActions =
   | 'approvePublish'
   | 'schedulePublish'
   | 'rejectPublish';
+// endregion
 
 export type VirtualItemActions = 'preview';
 
+// region export type AssessRemovalItemActions =
 export type AssessRemovalItemActions =
   | 'editCode'
   | 'viewCode'
@@ -70,6 +75,7 @@ export type AssessRemovalItemActions =
   | 'duplicateAsset'
   | 'createTemplate'
   | 'createController';
+// endregion
 
 export type AllItemActions = ItemActions | VirtualItemActions | AssessRemovalItemActions;
 
@@ -94,6 +100,7 @@ export interface BaseItem {
   translationSourceId: string;
   availableActions: number;
   availableActionsMap: ItemActionsMap;
+  childrenCount: number;
 }
 
 interface SandboxEnvProps {

@@ -65,6 +65,29 @@ function isValidElement(target: any): boolean {
   return React.isValidElement(target) || nou(target) || ['string', 'number'].includes(typeof target);
 }
 
+export function getEmptyStateStyleSet(setName: 'horizontal' | 'image-sm'): EmptyStateStyles {
+  switch (setName) {
+    case 'horizontal': {
+      return {
+        root: {
+          flexDirection: 'row'
+        }
+      };
+    }
+    case 'image-sm': {
+      return {
+        image: {
+          marginRight: 10,
+          width: 50
+        }
+      };
+    }
+    default: {
+      return {};
+    }
+  }
+}
+
 export default function EmptyState(props: EmptyStateProps) {
   const classes = useStyles(props.styles);
   const { formatMessage } = useIntl();
