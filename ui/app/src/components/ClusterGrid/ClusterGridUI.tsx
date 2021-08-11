@@ -94,19 +94,21 @@ export default function ClusterGridUI(props: ClusterGridProps) {
                 {cluster.gitAuthType}
               </GlobalAppGridCell>
               <GlobalAppGridCell align="left" className="width10">
-                <ConfirmDropdown
-                  cancelText={<FormattedMessage id="words.no" defaultMessage="No" />}
-                  confirmText={<FormattedMessage id="words.yes" defaultMessage="Yes" />}
-                  confirmHelperText={
-                    <FormattedMessage id="clusterGrid.confirmDeleteCluster" defaultMessage="Delete this cluster?" />
-                  }
-                  iconTooltip={<FormattedMessage id="clusterGrid.deleteCluster" defaultMessage="Delete cluster" />}
-                  icon={DeleteRoundedIcon}
-                  iconColor="action"
-                  onConfirm={() => {
-                    onDeleteCluster(cluster);
-                  }}
-                />
+                {cluster.state === 'INACTIVE' && (
+                  <ConfirmDropdown
+                    cancelText={<FormattedMessage id="words.no" defaultMessage="No" />}
+                    confirmText={<FormattedMessage id="words.yes" defaultMessage="Yes" />}
+                    confirmHelperText={
+                      <FormattedMessage id="clusterGrid.confirmDeleteCluster" defaultMessage="Delete this cluster?" />
+                    }
+                    iconTooltip={<FormattedMessage id="clusterGrid.deleteCluster" defaultMessage="Delete cluster" />}
+                    icon={DeleteRoundedIcon}
+                    iconColor="action"
+                    onConfirm={() => {
+                      onDeleteCluster(cluster);
+                    }}
+                  />
+                )}
               </GlobalAppGridCell>
             </GlobalAppGridRow>
           ))}
