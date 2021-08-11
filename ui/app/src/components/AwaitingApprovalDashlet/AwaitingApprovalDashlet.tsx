@@ -30,7 +30,6 @@ import Button from '@material-ui/core/Button';
 import { itemsApproved, itemsDeleted, itemsRejected, itemsScheduled } from '../../state/actions/system';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { filter } from 'rxjs/operators';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import { useSpreadState } from '../../utils/hooks/useSpreadState';
 import { DashboardPreferences } from '../../models/Dashboard';
@@ -46,6 +45,7 @@ import { itemActionDispatcher } from '../../utils/itemActions';
 import { useEnv } from '../../utils/hooks/useEnv';
 import { batchActions } from '../../state/actions/misc';
 import { getEmptyStateStyleSet } from '../SystemStatus/EmptyState';
+import { useActiveSite } from '../../utils/hooks/useActiveSite';
 
 export interface DashboardItem {
   label: string;
@@ -59,7 +59,7 @@ const dashletInitialPreferences: DashboardPreferences = {
 };
 
 export default function AwaitingApprovalDashlet() {
-  const site = useActiveSiteId();
+  const { id: siteId, uuid } = useActiveSite();
   const classes = useStyles();
   const [state, setState] = useState<{
     itemsLookup: LookupTable<DetailedItem>;
@@ -78,7 +78,7 @@ export default function AwaitingApprovalDashlet() {
   const currentUser = useSelector<GlobalState, string>((state) => state.user.username);
   const dashletPreferencesId = 'awaitingApprovalDashlet';
   const [preferences, setPreferences] = useSpreadState(
-    getStoredDashboardPreferences(currentUser, site, dashletPreferencesId) ?? dashletInitialPreferences
+    getStoredDashboardPreferences(currentUser, uuid, dashletPreferencesId) ?? dashletInitialPreferences
   );
   const [isFetching, setIsFetching] = useState(false);
   const dispatch = useDispatch();
@@ -98,7 +98,7 @@ export default function AwaitingApprovalDashlet() {
 
   const refresh = useCallback(() => {
     setIsFetching(true);
-    fetchLegacyGetGoLiveItems(site, 'eventDate', null, preferences.showUnpublished, null).subscribe(
+    fetchLegacyGetGoLiveItems(siteId, 'eventDate', null, preferences.showUnpublished, null).subscribe(
       (response) => {
         const parentItems: DashboardItem[] = [];
         const itemsLookup = {};
@@ -131,7 +131,7 @@ export default function AwaitingApprovalDashlet() {
         setError(response);
       }
     );
-  }, [setExpandedLookup, site, preferences.showUnpublished]);
+  }, [setExpandedLookup, siteId, preferences.showUnpublished]);
 
   useEffect(() => {
     refresh();
@@ -162,8 +162,8 @@ export default function AwaitingApprovalDashlet() {
   // endregion
 
   useEffect(() => {
-    setStoredDashboardPreferences(preferences, currentUser, site, dashletPreferencesId);
-  }, [preferences, currentUser, site]);
+    setStoredDashboardPreferences(preferences, currentUser, uuid, dashletPreferencesId);
+  }, [preferences, currentUser, uuid]);
 
   const resource = useLogicResource<
     DashboardItem[],
@@ -236,7 +236,7 @@ export default function AwaitingApprovalDashlet() {
       setSelectedLookup({});
     } else {
       itemActionDispatcher({
-        site,
+        site: siteId,
         item: Object.keys(selectedLookup)
           .filter((path) => selectedLookup[path])
           .map((path) => state.itemsLookup[path]),

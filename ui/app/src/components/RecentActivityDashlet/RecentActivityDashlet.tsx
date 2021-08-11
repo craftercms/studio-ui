@@ -34,7 +34,6 @@ import { itemsApproved, itemsDeleted, itemsRejected, itemsScheduled } from '../.
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { filter } from 'rxjs/operators';
 import TextField from '@material-ui/core/TextField';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import { useLocale } from '../../utils/hooks/useLocale';
 import { DashboardPreferences } from '../../models/Dashboard';
@@ -50,6 +49,7 @@ import { useDetailedItems } from '../../utils/hooks/useDetailedItems';
 import translations from './translations';
 import { batchActions } from '../../state/actions/misc';
 import { getEmptyStateStyleSet } from '../SystemStatus/EmptyState';
+import { useActiveSite } from '../../utils/hooks/useActiveSite';
 
 const dashletInitialPreferences: DashboardPreferences = {
   filterBy: 'page',
@@ -74,11 +74,11 @@ export default function RecentActivityDashlet() {
   const [errorActivity, setErrorActivity] = useState<ApiResponse>();
   const [items, setItems] = useState<DetailedItem[]>([]);
   const [totalItems, setTotalItems] = useState(0);
-  const siteId = useActiveSiteId();
+  const { id: siteId, uuid } = useActiveSite();
   const currentUser = useSelector<GlobalState, string>((state) => state.user.username);
   const dashletPreferencesId = 'recentActivityDashlet';
   const [preferences, setPreferences] = useSpreadState(
-    getStoredDashboardPreferences(currentUser, siteId, dashletPreferencesId) ?? dashletInitialPreferences
+    getStoredDashboardPreferences(currentUser, uuid, dashletPreferencesId) ?? dashletInitialPreferences
   );
   const [selectedLookup, setSelectedLookup] = useState<LookupTable<boolean>>({});
   const [sortType, setSortType] = useState<'asc' | 'desc'>('desc');
@@ -116,8 +116,8 @@ export default function RecentActivityDashlet() {
   };
 
   useEffect(() => {
-    setStoredDashboardPreferences(preferences, currentUser, siteId, dashletPreferencesId);
-  }, [preferences, currentUser, siteId]);
+    setStoredDashboardPreferences(preferences, currentUser, uuid, dashletPreferencesId);
+  }, [preferences, currentUser, uuid]);
 
   const onToggleHideLiveItems = (e) => {
     e.stopPropagation();

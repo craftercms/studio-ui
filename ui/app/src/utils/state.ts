@@ -139,14 +139,21 @@ export function createWidgetDescriptor(widget: WidgetDescriptor): WidgetDescript
 export function setStoredDashboardPreferences(
   value: DashboardPreferences,
   user: string,
-  site: string,
+  siteIdentifier: string,
   dashletId: string
 ) {
-  return window.localStorage.setItem(`craftercms.dashboard.${dashletId}.${site}.${user}`, JSON.stringify(value));
+  return window.localStorage.setItem(
+    `craftercms.dashboard.${dashletId}.${siteIdentifier}.${user}`,
+    JSON.stringify(value)
+  );
 }
 
-export function getStoredDashboardPreferences(user: string, site: string, dashletId: string): DashboardPreferences {
+export function getStoredDashboardPreferences(
+  user: string,
+  siteIdentifier: string,
+  dashletId: string
+): DashboardPreferences {
   return JSON.parse(
-    window.localStorage.getItem(`craftercms.dashboard.${dashletId}.${site}.${user}`)
+    window.localStorage.getItem(`craftercms.dashboard.${dashletId}.${siteIdentifier}.${user}`)
   ) as DashboardPreferences;
 }
