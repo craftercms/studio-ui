@@ -16,7 +16,7 @@
 
 import useStyles from './styles';
 import ResizeableDrawer from '../../modules/Preview/ResizeableDrawer';
-import React, { PropsWithChildren } from 'react';
+import React from 'react';
 import MenuList from '@material-ui/core/MenuList';
 import MenuItem from '@material-ui/core/MenuItem';
 import Box from '@material-ui/core/Box';
@@ -44,7 +44,7 @@ export interface Tool {
   widget: WidgetDescriptor;
 }
 
-export type SiteToolsAppProps = PropsWithChildren<{
+export interface SiteToolsAppProps {
   site: string;
   activeToolId: string;
   footerHtml?: string;
@@ -55,11 +55,12 @@ export type SiteToolsAppProps = PropsWithChildren<{
   sidebarBelowToolbar?: boolean;
   hideSidebarLogo?: boolean;
   hideSidebarSiteSwitcher?: boolean;
+  showAppsButton?: boolean;
   classes?: Partial<Record<'root', string>>;
   onBackClick?(): void;
   onWidthChange(width: number): void;
   onNavItemClick(url: string): void;
-}>;
+}
 
 export default function SiteToolsApp(props: SiteToolsAppProps) {
   const {
@@ -76,7 +77,7 @@ export default function SiteToolsApp(props: SiteToolsAppProps) {
     onWidthChange,
     tools,
     onNavItemClick,
-    children
+    showAppsButton
   } = props;
   const classes = useStyles();
   const { formatMessage } = useIntl();
@@ -153,7 +154,7 @@ export default function SiteToolsApp(props: SiteToolsAppProps) {
         {activeToolId ? (
           tool ? (
             <Suspencified>
-              <Widget {...tool} extraProps={{ embedded: false, showAppsButton: false }} />
+              <Widget {...tool} extraProps={{ embedded: false, showAppsButton }} />
             </Suspencified>
           ) : (
             <Box display="flex" flexDirection="column" height="100%">

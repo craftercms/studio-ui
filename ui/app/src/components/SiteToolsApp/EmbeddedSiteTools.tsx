@@ -44,6 +44,7 @@ export const EmbeddedSiteToolsContainer = () => {
       onNavItemClick={onNavItemClick}
       sidebarBelowToolbar={true}
       hideSidebarLogo={true}
+      showAppsButton={false}
       imageUrl={`${baseUrl}/static-assets/images/choose_option.svg`}
       hideSidebarSiteSwitcher={true}
       activeToolId={activeToolId}
