@@ -26,7 +26,7 @@ import SystemIcon, { SystemIconDescriptor } from '../SystemIcon';
 import EmptyState from '../SystemStatus/EmptyState';
 import CrafterCMSLogo from '../Icons/CrafterCMSLogo';
 import { getPossibleTranslation } from '../../utils/i18n';
-import { WidgetDescriptor } from '../Widget';
+import Widget, { WidgetDescriptor } from '../Widget';
 import IconButton from '@material-ui/core/IconButton';
 import KeyboardArrowLeftRoundedIcon from '@material-ui/icons/KeyboardArrowLeftRounded';
 import SiteSwitcherSelect from '../SiteSwitcherSelect';
@@ -34,6 +34,8 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Paper from '@material-ui/core/Paper';
 import TranslationOrText from '../../models/TranslationOrText';
 import clsx from 'clsx';
+import Suspencified from '../SystemStatus/Suspencified';
+import LauncherOpenerButton from '../LauncherOpenerButton';
 
 export interface Tool {
   title: TranslationOrText;
@@ -48,6 +50,7 @@ export type SiteToolsAppProps = PropsWithChildren<{
   footerHtml?: string;
   openSidebar: boolean;
   sidebarWidth: number;
+  imageUrl: string;
   tools: Tool[];
   sidebarBelowToolbar?: boolean;
   hideSidebarLogo?: boolean;
@@ -69,6 +72,7 @@ export default function SiteToolsApp(props: SiteToolsAppProps) {
     onBackClick,
     openSidebar,
     sidebarWidth,
+    imageUrl,
     onWidthChange,
     tools,
     onNavItemClick,
@@ -76,6 +80,8 @@ export default function SiteToolsApp(props: SiteToolsAppProps) {
   } = props;
   const classes = useStyles();
   const { formatMessage } = useIntl();
+
+  const tool = tools.find((tool) => tool.url === activeToolId)?.widget;
 
   return (
     <Paper className={clsx(classes.root, props.classes?.root)} elevation={0}>
@@ -144,7 +150,44 @@ export default function SiteToolsApp(props: SiteToolsAppProps) {
         </footer>
       </ResizeableDrawer>
       <Box className={classes.wrapper} height="100%" width="100%" paddingLeft={openSidebar ? `${sidebarWidth}px` : 0}>
-        {children}
+        {activeToolId ? (
+          tool ? (
+            <Suspencified>
+              <Widget {...tool} extraProps={{ embedded: false, showAppsButton: false }} />
+            </Suspencified>
+          ) : (
+            <Box display="flex" flexDirection="column" height="100%">
+              <section className={classes.launcher}>
+                <LauncherOpenerButton sitesRailPosition="left" icon="apps" />
+              </section>
+              <EmptyState
+                styles={{
+                  root: {
+                    height: '100%',
+                    margin: 0
+                  }
+                }}
+                title="404"
+                subtitle={<FormattedMessage id={'siteTools.toolNotFound'} defaultMessage={'Tool not found'} />}
+              />
+            </Box>
+          )
+        ) : (
+          <Box display="flex" flexDirection="column" height="100%">
+            <EmptyState
+              styles={{
+                root: {
+                  height: '100%',
+                  margin: 0
+                }
+              }}
+              title={
+                <FormattedMessage id="siteTools.selectTool" defaultMessage="Please choose a tool from the left." />
+              }
+              image={imageUrl}
+            />
+          </Box>
+        )}
       </Box>
     </Paper>
   );

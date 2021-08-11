@@ -63,14 +63,6 @@ export const useStyles = makeStyles((theme) =>
   })
 );
 
-export const urlDrivenStyles = makeStyles((theme) =>
-  createStyles({
-    launcher: {
-      margin: '10px 12px 0 auto'
-    }
-  })
-);
-
 export const embeddedStyles = makeStyles((theme) =>
   createStyles({
     root: {

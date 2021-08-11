@@ -20,11 +20,6 @@ import { GlobalAppContextProvider, useGlobalAppState } from '../GlobalApp';
 import { useReference } from '../../utils/hooks/useReference';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import SiteToolsApp, { Tool } from './SiteToolsApp';
-import Box from '@material-ui/core/Box';
-import EmptyState from '../SystemStatus/EmptyState';
-import { FormattedMessage } from 'react-intl';
-import Widget from '../Widget';
-import Suspencified from '../SystemStatus/Suspencified';
 import { embeddedStyles } from './styles';
 
 export const EmbeddedSiteToolsContainer = () => {
@@ -49,6 +44,7 @@ export const EmbeddedSiteToolsContainer = () => {
       onNavItemClick={onNavItemClick}
       sidebarBelowToolbar={true}
       hideSidebarLogo={true}
+      imageUrl={`${baseUrl}/static-assets/images/choose_option.svg`}
       hideSidebarSiteSwitcher={true}
       activeToolId={activeToolId}
       openSidebar={openSidebar}
@@ -56,29 +52,7 @@ export const EmbeddedSiteToolsContainer = () => {
       classes={{
         root: classes.root
       }}
-    >
-      {activeToolId ? (
-        <Suspencified>
-          <Widget
-            {...tools.find((tool) => tool.url === activeToolId).widget}
-            extraProps={{ embedded: false, showAppsButton: false }}
-          />
-        </Suspencified>
-      ) : (
-        <Box display="flex" flexDirection="column" height="100%">
-          <EmptyState
-            styles={{
-              root: {
-                height: '100%',
-                margin: 0
-              }
-            }}
-            title={<FormattedMessage id="siteTools.selectTool" defaultMessage="Please choose a tool from the left." />}
-            image={`${baseUrl}/static-assets/images/choose_option.svg`}
-          />
-        </Box>
-      )}
-    </SiteToolsApp>
+    />
   );
 };
 
