@@ -169,7 +169,7 @@ export default function SiteToolsApp(props: SiteToolsAppProps) {
                   }
                 }}
                 title="404"
-                subtitle={<FormattedMessage id={'siteTools.toolNotFound'} defaultMessage={'Tool not found'} />}
+                subtitle={<FormattedMessage id="siteTools.toolNotFound" defaultMessage="Tool not found" />}
               />
             </Box>
           )
