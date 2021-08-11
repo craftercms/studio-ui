@@ -14,25 +14,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
-import Graphi from '../GraphiQL';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import { useEnv } from '../../utils/hooks/useEnv';
+import { createReducer } from '@reduxjs/toolkit';
+import GlobalState from '../../models/GlobalState';
 
-interface SiteGraphiQLProps {
-  embedded?: boolean;
-  showAppsButton?: boolean;
-}
+const reducer = createReducer<GlobalState['publishing']>(
+  {
+    submissionCommentMaxLength: 250
+  },
+  {}
+);
 
-export default function SiteGraphiQL(props: SiteGraphiQLProps) {
-  const site = useActiveSiteId();
-  const { guestBase } = useEnv();
-  return (
-    <Graphi
-      storageKey={site}
-      url={`${guestBase}/api/1/site/graphql`}
-      embedded={props.embedded}
-      showAppsButton={props.showAppsButton}
-    />
-  );
-}
+export default reducer;

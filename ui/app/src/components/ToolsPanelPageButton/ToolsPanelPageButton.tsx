@@ -37,7 +37,7 @@ export default function ToolsPanelPageButton(props: ToolsPanelPageButtonProps) {
       pushPage(
         createWidgetDescriptor({
           id: 'craftercms.components.ToolsPanelPage',
-          roles: [],
+          permittedRoles: [],
           configuration: props
         })
       )

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -11,11 +11,10 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses}.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import { defineMessages } from 'react-intl';
-import GlobalState from '../models/GlobalState';
 
 const messages = defineMessages({
   pageBuilder: {
@@ -53,53 +52,5 @@ const messages = defineMessages({
   site: {
     id: 'launcher.siteSectionTitle',
     defaultMessage: 'Site <muted>• {siteName}</muted>'
-  },
-  noUiConfigMessageTitle: {
-    id: 'noUiConfigMessageTitle.title',
-    defaultMessage: 'Configuration file missing'
-  },
-  noUiConfigMessageSubtitle: {
-    id: 'noUiConfigMessageTitle.subtitle',
-    defaultMessage: 'Add & configure `ui.xml` on your site to show content here.'
   }
 });
-
-let count = 0;
-
-const uiConfigDefaults: Pick<GlobalState['uiConfig'], 'preview' | 'launcher' | 'dashboard'> = {
-  preview: {
-    toolbar: {
-      leftSection: null,
-      middleSection: null,
-      rightSection: null
-    },
-    toolsPanel: {
-      widgets: [
-        {
-          id: 'craftercms.component.EmptyState',
-          uiKey: count++,
-          configuration: {
-            title: messages.noUiConfigMessageTitle,
-            subtitle: messages.noUiConfigMessageSubtitle
-          }
-        }
-      ]
-    },
-    pageBuilderPanel: {
-      widgets: [
-        {
-          id: 'craftercms.component.EmptyState',
-          uiKey: count++,
-          configuration: {
-            title: messages.noUiConfigMessageTitle,
-            subtitle: messages.noUiConfigMessageSubtitle
-          }
-        }
-      ]
-    }
-  },
-  launcher: null,
-  dashboard: null
-};
-
-export default uiConfigDefaults;

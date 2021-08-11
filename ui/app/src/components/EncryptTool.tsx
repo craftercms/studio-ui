@@ -36,6 +36,7 @@ import Paper from '@material-ui/core/Paper';
 interface EncryptToolProps {
   site?: string;
   embedded?: boolean;
+  showAppsButton?: boolean;
 }
 
 const messages = defineMessages({
@@ -134,7 +135,7 @@ function SnackbarContentWrapper(props: any) {
 }
 
 const EncryptTool = (props: EncryptToolProps) => {
-  const { site, embedded = false } = props;
+  const { site, embedded = false, showAppsButton } = props;
   const classes = useStyles({});
   const inputRef = useRef();
   const [text, setText] = useState('');
@@ -186,7 +187,10 @@ const EncryptTool = (props: EncryptToolProps) => {
   return (
     <Paper elevation={0}>
       {!embedded && (
-        <GlobalAppToolbar title={<FormattedMessage id="encryptTool.pageTitle" defaultMessage="Encryption Tool" />} />
+        <GlobalAppToolbar
+          title={<FormattedMessage id="encryptTool.pageTitle" defaultMessage="Encryption Tool" />}
+          showAppsButton={showAppsButton}
+        />
       )}
       <Box p="20px">
         <form onSubmit={encrypt}>

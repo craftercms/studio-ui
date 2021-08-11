@@ -40,10 +40,11 @@ import Paper from '@material-ui/core/Paper';
 
 interface RemoteRepositoriesManagementProps {
   embedded?: boolean;
+  showAppsButton?: boolean;
 }
 
 export default function RemoteRepositoriesManagement(props: RemoteRepositoriesManagementProps) {
-  const { embedded } = props;
+  const { embedded, showAppsButton = !embedded } = props;
   const [fetchingRepositories, setFetchingRepositories] = useState(false);
   const [errorRepositories, setErrorRepositories] = useState<ApiResponse>();
   const [repositories, setRepositories] = useState<Array<Repository>>(null);
@@ -174,7 +175,7 @@ export default function RemoteRepositoriesManagement(props: RemoteRepositoriesMa
           </Button>
         }
         showHamburgerMenuButton={!embedded}
-        showAppsButton={!embedded}
+        showAppsButton={showAppsButton}
       />
       <section className={classes.wrapper}>
         {currentStatusValue && (

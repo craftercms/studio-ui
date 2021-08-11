@@ -43,7 +43,7 @@ const LauncherLinkTile = (props: LauncherLinkTileProps) => {
   const title = usePossibleTranslation(props.title);
 
   const onClick =
-    systemLinkId === 'siteDashboard' && previewChoice[site] === '2'
+    ['siteDashboard', 'siteTools'].includes(systemLinkId) && previewChoice[site] === '2'
       ? (e) => {
           e.preventDefault();
           dispatch(
@@ -52,9 +52,17 @@ const LauncherLinkTile = (props: LauncherLinkTileProps) => {
               showWidgetDialog({
                 id: systemLinkId,
                 title,
-                widget: {
-                  id: 'craftercms.components.Dashboard'
-                }
+                ...(systemLinkId === 'siteDashboard'
+                  ? {
+                      widget: {
+                        id: 'craftercms.components.Dashboard'
+                      }
+                    }
+                  : {
+                      widget: {
+                        id: 'craftercms.components.EmbeddedSiteTools'
+                      }
+                    })
               })
             ])
           );
@@ -62,7 +70,7 @@ const LauncherLinkTile = (props: LauncherLinkTileProps) => {
       : null;
 
   const link =
-    systemLinkId === 'siteDashboard' && previewChoice[site] === '2'
+    ['siteDashboard', 'siteTools'].includes(systemLinkId) && previewChoice[site] === '2'
       ? null
       : props.link ?? getSystemLink({ systemLinkId, authoringBase, previewChoice, site });
 

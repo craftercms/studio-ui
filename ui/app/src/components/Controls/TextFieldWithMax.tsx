@@ -27,9 +27,7 @@ interface TextFieldWithMaxProps {
 function TextFieldWithMax(props: TextFieldProps & TextFieldWithMaxProps) {
   // This value will be used by default, if a custom value is needed,
   // maxLength prop needs to be supplied.
-  const configMaxLength = useSelector<GlobalState, number>(
-    (state) => state.uiConfig.publishing.submissionCommentMaxLength
-  );
+  const configMaxLength = useSelector<GlobalState, number>((state) => state.publishing.submissionCommentMaxLength);
   const maxLength = props.maxLength ? props.maxLength : configMaxLength;
 
   const value = props.value ?? props.defaultValue ?? '';

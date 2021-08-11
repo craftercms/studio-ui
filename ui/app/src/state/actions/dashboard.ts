@@ -14,25 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
-import Graphi from '../GraphiQL';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import { useEnv } from '../../utils/hooks/useEnv';
+import { createAction } from '@reduxjs/toolkit';
 
-interface SiteGraphiQLProps {
-  embedded?: boolean;
-  showAppsButton?: boolean;
-}
+// region Action Creators
 
-export default function SiteGraphiQL(props: SiteGraphiQLProps) {
-  const site = useActiveSiteId();
-  const { guestBase } = useEnv();
-  return (
-    <Graphi
-      storageKey={site}
-      url={`${guestBase}/api/1/site/graphql`}
-      embedded={props.embedded}
-      showAppsButton={props.showAppsButton}
-    />
-  );
-}
+export const initDashboardConfig = /*#__PURE__*/ createAction<{ configXml: string }>('INIT_DASHBOARD_CONFIG');
+
+// endregion

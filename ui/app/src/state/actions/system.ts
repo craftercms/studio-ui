@@ -109,7 +109,7 @@ export const messageSharedWorker = /*#__PURE__*/ createAction<StandardAction>('M
 
 export const fetchGlobalMenu = /*#__PURE__*/ createAction('FETCH_GLOBAL_MENU');
 
-export const fetchGlobalMenuComplete = /*#__PURE__*/ createAction<GlobalState['uiConfig']['globalNavigation']['items']>(
+export const fetchGlobalMenuComplete = /*#__PURE__*/ createAction<GlobalState['globalNavigation']['items']>(
   'FETCH_GLOBAL_MENU_COMPLETE'
 );
 

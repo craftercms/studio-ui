@@ -21,9 +21,9 @@ import { useEffect } from 'react';
 import { nou } from '../object';
 import { fetchGlobalMenu } from '../../state/actions/system';
 
-export function useGlobalNavigation(): GlobalState['uiConfig']['globalNavigation'] {
+export function useGlobalNavigation(): GlobalState['globalNavigation'] {
   const dispatch = useDispatch();
-  const data = useSelection((state) => state.uiConfig.globalNavigation);
+  const data = useSelection((state) => state.globalNavigation);
   useEffect(() => {
     if (nou(data.items) && nou(data.error) && !data.isFetching) {
       dispatch(fetchGlobalMenu());

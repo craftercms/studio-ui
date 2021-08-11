@@ -73,9 +73,7 @@ function CharCountStatus(props: CharCountStatusProps) {
 export function CharCountStatusContainer(props: CharCountStatusContainerProps) {
   const { commentLength } = props;
 
-  const commentMaxLength = useSelector<GlobalState, number>(
-    (state) => state.uiConfig.publishing.submissionCommentMaxLength
-  );
+  const commentMaxLength = useSelector<GlobalState, number>((state) => state.publishing.submissionCommentMaxLength);
 
   return <CharCountStatus commentLength={commentLength} commentMaxLength={commentMaxLength}></CharCountStatus>;
 }

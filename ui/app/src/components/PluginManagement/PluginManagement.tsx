@@ -84,10 +84,11 @@ const StyledTableCell = withStyles((theme: Theme) =>
 
 interface PluginManagementProps {
   embedded?: boolean;
+  showAppsButton?: boolean;
 }
 
 export const PluginManagement = (props: PluginManagementProps) => {
-  const { embedded = false } = props;
+  const { embedded = false, showAppsButton = !embedded } = props;
   const classes = styles();
   const dispatch = useDispatch();
   const siteId = useActiveSiteId();
@@ -177,7 +178,7 @@ export const PluginManagement = (props: PluginManagementProps) => {
             <FormattedMessage id="globalMenu.pluginManagementEntryLabel" defaultMessage="Plugin Management" />
           )
         }
-        showAppsButton={!embedded}
+        showAppsButton={showAppsButton}
         showHamburgerMenuButton={!embedded}
         styles={
           embedded && {

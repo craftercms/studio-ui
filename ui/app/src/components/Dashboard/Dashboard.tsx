@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { FormattedMessage } from 'react-intl';
 import useStyles from './styles';
 import { renderWidgets } from '../Widget';
@@ -22,6 +22,9 @@ import EmptyState from '../SystemStatus/EmptyState';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useActiveUser } from '../../utils/hooks/useActiveUser';
 import { useSiteUIConfig } from '../../utils/hooks/useSiteUIConfig';
+import { initDashboardConfig } from '../../state/actions/dashboard';
+import { useDashboardState } from '../../utils/hooks/useDashboardState';
+import { useDispatch } from 'react-redux';
 
 interface DashboardAppProps {}
 
@@ -30,7 +33,15 @@ export default function Dashboard(props: DashboardAppProps) {
   const user = useActiveUser();
   const userRoles = user.rolesBySite[site];
   const classes = useStyles();
-  const { dashboard } = useSiteUIConfig();
+  const uiConfig = useSiteUIConfig();
+  const dashboard = useDashboardState();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (uiConfig.xml && !dashboard) {
+      dispatch(initDashboardConfig({ configXml: uiConfig.xml }));
+    }
+  }, [uiConfig.xml, dashboard, dispatch]);
 
   return (
     <section className={classes.root}>

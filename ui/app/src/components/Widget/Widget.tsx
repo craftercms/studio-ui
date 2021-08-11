@@ -25,7 +25,7 @@ import * as ReactIs from 'react-is';
 export interface WidgetDescriptor {
   id: string;
   uiKey?: string | number;
-  roles?: string[];
+  permittedRoles?: string[];
   plugin?: PluginFileBuilder;
   configuration?: any;
 }
@@ -122,7 +122,9 @@ export function renderWidgets(widgets: WidgetDescriptor[], userRoles: string[], 
   return widgets
     ? widgets
         .filter(
-          (widget) => (widget.roles ?? []).length === 0 || (userRoles ?? []).some((role) => widget.roles.includes(role))
+          (widget) =>
+            (widget.permittedRoles ?? []).length === 0 ||
+            (userRoles ?? []).some((role) => widget.permittedRoles.includes(role))
         )
         .map((widget) => <Widget key={widget.uiKey} {...widget} extraProps={extraProps} />)
     : [];

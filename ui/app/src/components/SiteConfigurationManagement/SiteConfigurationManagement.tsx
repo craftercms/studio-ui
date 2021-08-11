@@ -71,10 +71,11 @@ import { useMount } from '../../utils/hooks/useMount';
 
 interface SiteConfigurationManagementProps {
   embedded?: boolean;
+  showAppsButton?: boolean;
 }
 
 export default function SiteConfigurationManagement(props: SiteConfigurationManagementProps) {
-  const { embedded } = props;
+  const { embedded, showAppsButton } = props;
   const site = useActiveSiteId();
   const baseUrl = useSelection<string>((state) => state.env.authoringBase);
   const classes = useStyles();
@@ -448,6 +449,7 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
       {!embedded && (
         <GlobalAppToolbar
           title={<FormattedMessage id="siteConfigurationManagement.title" defaultMessage="Configuration" />}
+          showAppsButton={showAppsButton}
         />
       )}
       <ResizeableDrawer

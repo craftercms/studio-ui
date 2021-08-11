@@ -14,25 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
-import Graphi from '../GraphiQL';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import { useEnv } from '../../utils/hooks/useEnv';
+import GlobalState from '../../models/GlobalState';
+import { useSelector } from 'react-redux';
 
-interface SiteGraphiQLProps {
-  embedded?: boolean;
-  showAppsButton?: boolean;
-}
-
-export default function SiteGraphiQL(props: SiteGraphiQLProps) {
-  const site = useActiveSiteId();
-  const { guestBase } = useEnv();
-  return (
-    <Graphi
-      storageKey={site}
-      url={`${guestBase}/api/1/site/graphql`}
-      embedded={props.embedded}
-      showAppsButton={props.showAppsButton}
-    />
-  );
+export function useLauncherState(): GlobalState['launcher'] {
+  return useSelector<GlobalState, GlobalState['launcher']>((state) => state.launcher);
 }
