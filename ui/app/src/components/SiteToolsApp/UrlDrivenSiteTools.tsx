@@ -69,7 +69,7 @@ export default function UrlDrivenSiteTools(props: UrlDrivenSiteToolsProps) {
   return (
     <SiteToolsApp
       site={site}
-      width={width}
+      sidebarWidth={width}
       onWidthChange={setWidth}
       onNavItemClick={onNavItemClick}
       onBackClick={onBackClick}

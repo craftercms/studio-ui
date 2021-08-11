@@ -47,7 +47,7 @@ export type SiteToolsAppProps = PropsWithChildren<{
   activeToolId: string;
   footerHtml?: string;
   openSidebar: boolean;
-  width: number;
+  sidebarWidth: number;
   tools: Tool[];
   sidebarBelowToolbar?: boolean;
   hideSidebarLogo?: boolean;
@@ -68,7 +68,7 @@ export default function SiteToolsApp(props: SiteToolsAppProps) {
     footerHtml,
     onBackClick,
     openSidebar,
-    width,
+    sidebarWidth,
     onWidthChange,
     tools,
     onNavItemClick,
@@ -82,7 +82,7 @@ export default function SiteToolsApp(props: SiteToolsAppProps) {
       <ResizeableDrawer
         classes={{ drawerPaper: classes.drawerPaper, drawerBody: classes.drawerBody }}
         open={openSidebar}
-        width={width}
+        width={sidebarWidth}
         belowToolbar={sidebarBelowToolbar}
         onWidthChange={onWidthChange}
       >
@@ -143,7 +143,7 @@ export default function SiteToolsApp(props: SiteToolsAppProps) {
           )}
         </footer>
       </ResizeableDrawer>
-      <Box className={classes.wrapper} height="100%" width="100%" paddingLeft={openSidebar ? `${width}px` : 0}>
+      <Box className={classes.wrapper} height="100%" width="100%" paddingLeft={openSidebar ? `${sidebarWidth}px` : 0}>
         {children}
       </Box>
     </Paper>

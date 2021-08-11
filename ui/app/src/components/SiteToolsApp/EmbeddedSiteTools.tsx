@@ -44,7 +44,7 @@ export const EmbeddedSiteToolsContainer = () => {
   return (
     <SiteToolsApp
       site={site}
-      width={width}
+      sidebarWidth={width}
       onWidthChange={setWidth}
       onNavItemClick={onNavItemClick}
       sidebarBelowToolbar={true}
