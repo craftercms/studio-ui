@@ -14,20 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import GlobalState from '../../models/GlobalState';
-import { useDispatch } from 'react-redux';
-import { useSelection } from './useSelection';
-import { useEffect } from 'react';
-import { nou } from '../object';
-import { fetchGlobalMenu } from '../../state/actions/system';
+import { createAction } from '@reduxjs/toolkit';
 
-export function useGlobalNavigation(): GlobalState['globalNavigation'] {
-  const dispatch = useDispatch();
-  const data = useSelection((state) => state.globalNavigation);
-  useEffect(() => {
-    if (nou(data.items) && nou(data.error) && !data.isFetching) {
-      dispatch(fetchGlobalMenu());
-    }
-  }, [data.error, data.isFetching, data.items, dispatch]);
-  return data;
-}
+// region Action Creators
+
+export const initLauncherConfig = /*#__PURE__*/ createAction<{ configXml: string }>('INIT_LAUNCHER_CONFIG');
+
+// endregion
