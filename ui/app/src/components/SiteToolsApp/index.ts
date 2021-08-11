@@ -17,3 +17,7 @@
 export { default } from './SiteToolsApp';
 
 export * from './SiteToolsApp';
+
+export * from './UrlDrivenSiteTools';
+
+export * from './EmbeddedSiteTools';

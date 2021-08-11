@@ -42,10 +42,11 @@ import Paper from '@material-ui/core/Paper';
 interface AuditManagementProps {
   site?: string;
   embedded?: boolean;
+  showAppsButton?: boolean;
 }
 
 export default function AuditManagement(props: AuditManagementProps) {
-  const { site, embedded } = props;
+  const { site, embedded, showAppsButton } = props;
   const [fetching, setFetching] = useState(false);
   const [auditLogs, setAuditLogs] = useState<PagedArray<AuditLogEntry>>(null);
   const [error, setError] = useState<ApiResponse>();
@@ -187,7 +188,7 @@ export default function AuditManagement(props: AuditManagementProps) {
           </Button>
         }
         showHamburgerMenuButton={!embedded}
-        showAppsButton={!embedded}
+        showAppsButton={showAppsButton}
       />
       <Suspencified
         suspenseProps={{

@@ -110,7 +110,7 @@ export const registerComponents = () => {
     'craftercms.components.LogConsole': lazy(() => import('../components/LogConsole')),
     'craftercms.components.PublishingDashboard': lazy(() => import('../components/PublishingDashboard')),
     'craftercms.components.SiteGraphiQL': lazy(() => import('../components/SiteGraphiQL')),
-    'craftercms.components.SiteToolsApp': lazy(() => import('../components/SiteToolsApp')),
+    'craftercms.components.EmbeddedSiteTools': lazy(() => import('../components/SiteToolsApp/EmbeddedSiteTools')),
     'craftercms.components.RemoteRepositoriesManagement': lazy(() =>
       import('../components/RemoteRepositoriesManagement')
     ),

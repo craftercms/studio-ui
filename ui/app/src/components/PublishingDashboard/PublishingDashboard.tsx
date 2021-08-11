@@ -46,10 +46,11 @@ const useStyles = makeStyles((theme) =>
 
 interface PublishingDashboardProps {
   embedded?: boolean;
+  showAppsButton?: boolean;
 }
 
 export default function PublishingDashboard(props: PublishingDashboardProps) {
-  const { embedded } = props;
+  const { embedded, showAppsButton } = props;
   const classes = useStyles();
   const site = useActiveSiteId();
 
@@ -58,6 +59,7 @@ export default function PublishingDashboard(props: PublishingDashboardProps) {
       {!embedded && (
         <GlobalAppToolbar
           title={<FormattedMessage id="publishingDashboard.title" defaultMessage="Publishing Dashboard" />}
+          showAppsButton={showAppsButton}
         />
       )}
       <Grid container className={clsx(classes.grid, !embedded && classes.gridNoEmbedded)}>
