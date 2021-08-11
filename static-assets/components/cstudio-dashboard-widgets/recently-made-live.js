@@ -36,6 +36,9 @@ CStudioAuthoringWidgets.RecentlyMadeLiveDashboard = function (widgetId, pageId) 
   this.defaultSortBy = 'eventDate';
   this.defaultSearchNumber = 20;
   this.tooltipLabels = null;
+  this.showEdit = false;
+  this.totalItems = 0;
+  this.renderedItems = 0;
   WcmDashboardWidgetCommon.init(this);
 
   this.formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
@@ -83,7 +86,7 @@ CStudioAuthoringWidgets.RecentlyMadeLiveDashboard = function (widgetId, pageId) 
         'edit',
         widgetId,
         CMgs.format(langBundle, 'dashletRecentDeployColEdit'),
-        'minimize'
+        'minimize hidden'
       ) +
       WcmDashboardWidgetCommon.getSimpleRow(
         'browserUri',
@@ -204,7 +207,7 @@ CStudioAuthoringWidgets.RecentlyMadeLiveDashboard = function (widgetId, pageId) 
           ')',
           '</span>',
           '</td>',
-          '<td colspan="1">&nbsp;</td>'
+          `<td colspan="1" class="edit-${widgetId} hidden">&nbsp;</td>`
         ]);
       } else {
         var browserUri = CStudioAuthoring.Operations.getPreviewUrl(item, false, true),
@@ -236,7 +239,7 @@ CStudioAuthoringWidgets.RecentlyMadeLiveDashboard = function (widgetId, pageId) 
         // to resolve page display issue
         displayName = CStudioAuthoring.Utils.replaceWithASCIICharacter(displayName);
 
-        WcmDashboardWidgetCommon.insertEditLink(item, editLinkId);
+        WcmDashboardWidgetCommon.insertEditLink(item, editLinkId, this.widgetId);
 
         var currentDashboard = CStudioAuthoring.Utils.Cookies.readCookie('dashboard-selected'),
           currentCheckItem = CStudioAuthoring.Utils.Cookies.readCookie('dashboard-checked')
@@ -271,7 +274,7 @@ CStudioAuthoringWidgets.RecentlyMadeLiveDashboard = function (widgetId, pageId) 
           '</a>',
           '</div>',
           '</td>',
-          '<td id="' + editLinkId + '"></td>',
+          `<td id="${editLinkId}" class="edit-${widgetId} hidden"></td>`,
           "<td class='urlCol' title='",
           browserUri,
           "'>",
