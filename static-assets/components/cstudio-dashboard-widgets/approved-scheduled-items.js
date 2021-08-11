@@ -33,6 +33,9 @@ CStudioAuthoringWidgets.ApprovedScheduledItemsDashboard = function(widgetId, pag
   this.hideEmptyRow = false;
   this.defaultSortBy = 'eventDate';
   this.tooltipLabels = null;
+  this.showEdit = false;
+  this.totalItems = 0;
+  this.renderedItems = 0;
   WcmDashboardWidgetCommon.init(this);
 
   this.formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
@@ -70,7 +73,7 @@ CStudioAuthoringWidgets.ApprovedScheduledItemsDashboard = function(widgetId, pag
         'edit',
         widgetId,
         CMgs.format(langBundle, 'dashletApprovedSchedColEdit'),
-        'minimize'
+        'minimize hidden'
       ) +
       WcmDashboardWidgetCommon.getSimpleRow(
         'browserUri',
@@ -169,7 +172,7 @@ CStudioAuthoringWidgets.ApprovedScheduledItemsDashboard = function(widgetId, pag
         editLinkId;
 
       if (isFirst) {
-        html.push('<td colspan="6">');
+        html.push('<td colspan="5">');
 
         if (item.numOfChildren > 0) {
           var parentClass = ['wcm-table-parent-', name, '-', count].join('');
@@ -194,7 +197,8 @@ CStudioAuthoringWidgets.ApprovedScheduledItemsDashboard = function(widgetId, pag
           item.numOfChildren,
           ')',
           '</span>',
-          '</td>'
+          '</td>',
+          `<td colspan="1" class="edit-${widgetId} hidden">&nbsp;</td>`
         ]);
       } else {
         var browserUri = CStudioAuthoring.Operations.getPreviewUrl(item, false, true),
@@ -226,7 +230,7 @@ CStudioAuthoringWidgets.ApprovedScheduledItemsDashboard = function(widgetId, pag
           lastEditTime = CStudioAuthoring.Utils.formatDateFromUTC(item.eventDate, studioTimeZone);
         }
 
-        WcmDashboardWidgetCommon.insertEditLink(item, editLinkId);
+        WcmDashboardWidgetCommon.insertEditLink(item, editLinkId, this.widgetId);
 
         var currentDashboard = CStudioAuthoring.Utils.Cookies.readCookie('dashboard-selected'),
           currentCheckItem = CStudioAuthoring.Utils.Cookies.readCookie('dashboard-checked')
@@ -267,7 +271,7 @@ CStudioAuthoringWidgets.ApprovedScheduledItemsDashboard = function(widgetId, pag
           '</a>',
           '</div>',
           '</td>',
-          '<td id="' + editLinkId + '"></td>',
+          `<td id="${editLinkId}" class="edit-${widgetId} hidden"></td>`,
           "<td class='urlCol' title='",
           browserUri,
           "'>",
