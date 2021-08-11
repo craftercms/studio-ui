@@ -180,7 +180,8 @@ export default [
       tap(([{ payload }, state]) => {
         const { id } = payload;
         const { expanded, collapsed, keywordByPath } = state.pathNavigatorTree[id];
-        setStoredPathNavigatorTree(state.sites.active, state.user.username, id, {
+        const uuid = state.sites.byId[state.sites.active].uuid;
+        setStoredPathNavigatorTree(uuid, state.user.username, id, {
           expanded,
           collapsed,
           keywordByPath

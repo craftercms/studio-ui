@@ -92,20 +92,23 @@ export function removeStoredPreviewToolsPanelPage(site: string, user: string) {
   return window.localStorage.removeItem(`craftercms.${user}.previewToolsPanelPage.${site}`);
 }
 
-export function setStoredPathNavigator(site: string, user: string, id: string, value: object) {
-  return window.localStorage.setItem(`craftercms.${user}.pathNavigator.${site}.${id}`, JSON.stringify(value));
+export function setStoredPathNavigator(siteIdentifier: string, user: string, id: string, value: object) {
+  return window.localStorage.setItem(`craftercms.${user}.pathNavigator.${siteIdentifier}.${id}`, JSON.stringify(value));
 }
 
-export function getStoredPathNavigator(site: string, user: string, id: string) {
-  return JSON.parse(window.localStorage.getItem(`craftercms.${user}.pathNavigator.${site}.${id}`));
+export function getStoredPathNavigator(siteIdentifier: string, user: string, id: string) {
+  return JSON.parse(window.localStorage.getItem(`craftercms.${user}.pathNavigator.${siteIdentifier}.${id}`));
 }
 
-export function setStoredPathNavigatorTree(site: string, user: string, id: string, value: object) {
-  return window.localStorage.setItem(`craftercms.${user}.pathNavigatorTree.${site}.${id}`, JSON.stringify(value));
+export function setStoredPathNavigatorTree(siteIdentifier: string, user: string, id: string, value: object) {
+  return window.localStorage.setItem(
+    `craftercms.${user}.pathNavigatorTree.${siteIdentifier}.${id}`,
+    JSON.stringify(value)
+  );
 }
 
-export function getStoredPathNavigatorTree(site: string, user: string, id: string) {
-  return JSON.parse(window.localStorage.getItem(`craftercms.${user}.pathNavigatorTree.${site}.${id}`));
+export function getStoredPathNavigatorTree(siteIdentifier: string, user: string, id: string) {
+  return JSON.parse(window.localStorage.getItem(`craftercms.${user}.pathNavigatorTree.${siteIdentifier}.${id}`));
 }
 
 export function setStoredGlobalAppOpenSidebar(user: string, value) {

@@ -103,7 +103,7 @@ export default function RecentlyPublishedDashlet() {
 
   useEffect(() => {
     setStoredDashboardPreferences(preferences, currentUser, uuid, dashletPreferencesId);
-  }, [preferences, currentUser, siteId]);
+  }, [preferences, currentUser, uuid]);
 
   const onCollapseAll = (e) => {
     e.stopPropagation();

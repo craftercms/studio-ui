@@ -50,7 +50,8 @@ export default [
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
         const { id } = payload;
-        const storedState = getStoredPathNavigator(state.sites.active, state.user.username, id);
+        const uuid = state.sites.byId[state.sites.active].uuid;
+        const storedState = getStoredPathNavigator(uuid, state.user.username, id);
         return [
           storedState ? pathNavigatorUpdate({ id, ...storedState }) : null,
           pathNavigatorFetchParentItems({
@@ -204,7 +205,8 @@ export default [
           state
         ]) => {
           if (children?.length > 0 || type === pathNavigatorSetCollapsed.type) {
-            setStoredPathNavigator(state.sites.active, state.user.username, id, {
+            const uuid = state.sites.byId[state.sites.active].uuid;
+            setStoredPathNavigator(uuid, state.user.username, id, {
               currentPath: state.pathNavigator[id].currentPath,
               collapsed: state.pathNavigator[id].collapsed
             });
