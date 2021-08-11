@@ -45,6 +45,7 @@ import { createPresenceTable } from '../../utils/array';
 import { itemActionDispatcher } from '../../utils/itemActions';
 import { useEnv } from '../../utils/hooks/useEnv';
 import { batchActions } from '../../state/actions/misc';
+import { getEmptyStateStyleSet } from '../SystemStatus/EmptyState';
 
 export interface DashboardItem {
   label: string;
@@ -251,7 +252,7 @@ export default function AwaitingApprovalDashlet() {
     <Dashlet
       title={
         <FormattedMessage
-          id="dashboardItemsApproval.itemsWaitingForApproval"
+          id="awaitingApprovalDashlet.dashletTitle"
           defaultMessage="Items Waiting For Approval ({count})"
           values={{ count: state.total }}
         />
@@ -264,16 +265,16 @@ export default function AwaitingApprovalDashlet() {
         <>
           <Button disabled={isFetching} onClick={onToggleCollapse} className={classes.collapseAll}>
             {showExpanded ? (
-              <FormattedMessage id="dashboardItemsApproval.expandedAll" defaultMessage="Expand All" />
+              <FormattedMessage id="awaitingApprovalDashlet.expandedAll" defaultMessage="Expand All" />
             ) : (
-              <FormattedMessage id="dashboardItemsApproval.collapseAll" defaultMessage="Collapse All" />
+              <FormattedMessage id="awaitingApprovalDashlet.collapseAll" defaultMessage="Collapse All" />
             )}
           </Button>
           <Button disabled={isFetching} onClick={onShowInProgress}>
             {preferences.showUnpublished ? (
-              <FormattedMessage id="dashboardItemsApproval.hideUnpublished" defaultMessage="Hide Unpublished" />
+              <FormattedMessage id="awaitingApprovalDashlet.hideUnpublished" defaultMessage="Hide Unpublished" />
             ) : (
-              <FormattedMessage id="dashboardItemsApproval.showUnpublished" defaultMessage="Show Unpublished" />
+              <FormattedMessage id="awaitingApprovalDashlet.showUnpublished" defaultMessage="Show Unpublished" />
             )}
           </Button>
         </>
@@ -283,6 +284,20 @@ export default function AwaitingApprovalDashlet() {
         resource={resource}
         suspenseProps={{
           fallback: <AwaitingApprovalDashletSkeletonTable items={state.parentItems} expandedLookup={expandedLookup} />
+        }}
+        withEmptyStateProps={{
+          emptyStateProps: {
+            title: (
+              <FormattedMessage
+                id="awaitingApprovalDashlet.emptyMessage"
+                defaultMessage="No items are awaiting approval"
+              />
+            ),
+            styles: {
+              ...getEmptyStateStyleSet('horizontal'),
+              ...getEmptyStateStyleSet('image-sm')
+            }
+          }
         }}
       >
         {(isIndeterminate || isAllChecked) && (

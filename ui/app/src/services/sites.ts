@@ -40,6 +40,7 @@ export function fetchAll(paginationOptions?: PaginationOptions): Observable<Page
       Object.assign(
         response.sites.map((site) => ({
           id: site.siteId,
+          uuid: site.uuid,
           name: site.name ?? site.siteId,
           description: site.desc
         })),
@@ -64,7 +65,7 @@ export function create(site: CreateSiteMeta): Observable<Site> {
   });
   return postJSON('/studio/api/1/services/api/1/site/create.json', api1Params).pipe(
     pluck('response'),
-    mapTo({ id: site.siteId, name: site.siteName, description: site.description ?? '' })
+    mapTo({ id: site.siteId, name: site.siteName, description: site.description ?? '', uuid: null })
   );
 }
 
@@ -75,7 +76,7 @@ export function trash(id: string): Observable<boolean> {
   );
 }
 
-export function update(site: Site): Observable<Site> {
+export function update(site: Omit<Site, 'uuid'>): Observable<Site> {
   return postJSON(`/studio/api/2/sites/${site.id}`, { name: site.name, description: site.description }).pipe(
     pluck('response')
   );

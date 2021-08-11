@@ -49,6 +49,7 @@ import ActionsBar, { Action } from '../ActionsBar';
 import { useDetailedItems } from '../../utils/hooks/useDetailedItems';
 import translations from './translations';
 import { batchActions } from '../../state/actions/misc';
+import { getEmptyStateStyleSet } from '../SystemStatus/EmptyState';
 
 const dashletInitialPreferences: DashboardPreferences = {
   filterBy: 'page',
@@ -272,7 +273,8 @@ export default function RecentActivityDashlet() {
     <Dashlet
       title={
         <>
-          <FormattedMessage id="recentActivity.myRecentActivity" defaultMessage="My Recent Activity" /> ({items.length})
+          <FormattedMessage id="recentActivityDashlet.dashletTitle" defaultMessage="My Recent Activity" /> (
+          {items.length})
         </>
       }
       onToggleExpanded={() => setPreferences({ expanded: !preferences.expanded })}
@@ -283,9 +285,9 @@ export default function RecentActivityDashlet() {
         <>
           <Button onClick={onToggleHideLiveItems} className={classes.rightAction}>
             {preferences.excludeLiveItems ? (
-              <FormattedMessage id="recentActivity.showLiveItems" defaultMessage="Show Live Items" />
+              <FormattedMessage id="recentActivityDashlet.showLiveItems" defaultMessage="Show Live Items" />
             ) : (
-              <FormattedMessage id="recentActivity.hideLiveItems" defaultMessage="Hide Live Items" />
+              <FormattedMessage id="recentActivityDashlet.hideLiveItems" defaultMessage="Hide Live Items" />
             )}
           </Button>
           <TextField
@@ -307,7 +309,7 @@ export default function RecentActivityDashlet() {
             )}
           </TextField>
           <TextField
-            label={<FormattedMessage id="recentActivity.filterBy" defaultMessage="Filter by" />}
+            label={<FormattedMessage id="recentActivityDashlet.filterBy" defaultMessage="Filter by" />}
             select
             size="small"
             value={preferences.filterBy}
@@ -331,6 +333,15 @@ export default function RecentActivityDashlet() {
         resource={resource}
         suspenseProps={{
           fallback: <RecentActivityDashletUiSkeleton numOfItems={items.length} />
+        }}
+        withEmptyStateProps={{
+          emptyStateProps: {
+            title: <FormattedMessage id="recentActivityDashlet.emptyMessage" defaultMessage="No recent activity" />,
+            styles: {
+              ...getEmptyStateStyleSet('horizontal'),
+              ...getEmptyStateStyleSet('image-sm')
+            }
+          }
         }}
       >
         {(isIndeterminate || isAllChecked) && (

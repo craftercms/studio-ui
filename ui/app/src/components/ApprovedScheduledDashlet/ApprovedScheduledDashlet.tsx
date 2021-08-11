@@ -48,6 +48,7 @@ import { useEnv } from '../../utils/hooks/useEnv';
 import ActionsBar from '../ActionsBar';
 import translations from './translations';
 import { batchActions } from '../../state/actions/misc';
+import { getEmptyStateStyleSet } from '../SystemStatus/EmptyState';
 
 const dashletInitialPreferences: DashboardPreferences = {
   filterBy: 'all',
@@ -254,7 +255,7 @@ export default function ApprovedScheduledDashlet() {
     <Dashlet
       title={
         <FormattedMessage
-          id="dashboardItemsScheduled.approvedScheduledItems"
+          id="approvedScheduledItemsDashlet.dashletTitle"
           defaultMessage="Approved Scheduled Items ({count})"
           values={{ count: state.total }}
         />
@@ -267,13 +268,13 @@ export default function ApprovedScheduledDashlet() {
         <>
           <Button disabled={isFetching} onClick={onToggleCollapse} className={classes.collapseAll}>
             {showExpanded ? (
-              <FormattedMessage id="dashboardItemsScheduled.expandedAll" defaultMessage="Expand All" />
+              <FormattedMessage id="approvedScheduledItemsDashlet.expandedAll" defaultMessage="Expand All" />
             ) : (
-              <FormattedMessage id="dashboardItemsScheduled.collapseAll" defaultMessage="Collapse All" />
+              <FormattedMessage id="approvedScheduledItemsDashlet.collapseAll" defaultMessage="Collapse All" />
             )}
           </Button>
           <TextField
-            label={<FormattedMessage id="dashboardItemsScheduled.filterBy" defaultMessage="Filter by" />}
+            label={<FormattedMessage id="approvedScheduledItemsDashlet.filterBy" defaultMessage="Filter by" />}
             select
             size="small"
             value={preferences.filterBy}
@@ -297,6 +298,20 @@ export default function ApprovedScheduledDashlet() {
         resource={resource}
         suspenseProps={{
           fallback: <ApprovedScheduledDashletSkeletonTable items={state.parentItems} expandedLookup={expandedLookup} />
+        }}
+        withEmptyStateProps={{
+          emptyStateProps: {
+            title: (
+              <FormattedMessage
+                id="approvedScheduledItemsDashlet.emptyMessage"
+                defaultMessage="No items are scheduled"
+              />
+            ),
+            styles: {
+              ...getEmptyStateStyleSet('horizontal'),
+              ...getEmptyStateStyleSet('image-sm')
+            }
+          }
         }}
       >
         {(isIndeterminate || isAllChecked) && (

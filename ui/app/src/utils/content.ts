@@ -216,7 +216,8 @@ export function parseLegacyItemToBaseItem(item: LegacyItem): BaseItem {
     localeCode: 'en',
     translationSourceId: null,
     availableActions: null,
-    availableActionsMap: null
+    availableActionsMap: null,
+    childrenCount: 0
   };
 }
 
