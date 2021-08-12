@@ -288,15 +288,17 @@ export default function UppyDashboard(props: UppyDashboardProps) {
   const ref = useRef();
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
+  const targetsRef = useRef<string[]>([]);
 
   const onItemsUploaded = useCallback(
     (id: string) => {
-      dispatch(emitSystemEvent(itemsUploaded({ target: path })));
+      dispatch(emitSystemEvent(itemsUploaded({ target: path, targets: targetsRef.current })));
+      targetsRef.current = [];
     },
     [dispatch, path]
   );
 
-  const onItemsUploaded$ = useDebouncedInput(onItemsUploaded, 800);
+  const onItemsUploaded$ = useDebouncedInput(onItemsUploaded, 1000);
 
   useEffect(() => {
     if (uppy.getPlugin('craftercms:Dashboard')) {
@@ -336,6 +338,7 @@ export default function UppyDashboard(props: UppyDashboardProps) {
 
     uppy.on('upload-success', (file) => {
       onItemsUploaded$.next(file.id);
+      targetsRef.current.push(file.id);
     });
 
     return () => {

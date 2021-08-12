@@ -64,6 +64,7 @@ import {
   itemDuplicated,
   itemsDeleted,
   itemsPasted,
+  itemsUploaded,
   itemUnlocked,
   itemUpdated,
   pluginInstalled
@@ -273,7 +274,8 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
       itemsDeleted.type,
       itemDuplicated.type,
       itemCreated.type,
-      pluginInstalled.type
+      pluginInstalled.type,
+      itemsUploaded.type
     ];
     const hostToHost$ = getHostToHostBus();
     const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
@@ -368,6 +370,23 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
         }
         case pluginInstalled.type: {
           dispatch(pathNavigatorTreeBackgroundRefresh({ id }));
+          break;
+        }
+        case itemsUploaded.type: {
+          const parentPath = payload.target;
+          const node = lookupItemByPath(parentPath, nodesByPathRef.current);
+          const path = node?.id;
+          if (path) {
+            dispatch(
+              pathNavigatorTreeFetchPathChildren({
+                id,
+                path,
+                options: {
+                  limit: childrenByParentPath[path] ? childrenByParentPath[path].length + payload.targets.length : limit
+                }
+              })
+            );
+          }
           break;
         }
         default: {

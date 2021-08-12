@@ -331,6 +331,7 @@ export default function PathNavigator(props: PathNavigatorProps) {
           if (withoutIndex(payload.target) === withoutIndex(state.currentPath)) {
             dispatch(pathNavigatorRefresh({ id }));
           }
+          break;
         }
       }
     });
