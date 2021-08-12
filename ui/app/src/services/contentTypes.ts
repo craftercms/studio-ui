@@ -192,9 +192,31 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
             type: typeMap[legacyField.type] || legacyField.type,
             sortable: legacyField.type === 'node-selector' || legacyField.type === 'repeat',
             validations: {},
+            properties: {},
             defaultValue: legacyField.defaultValue,
             required: false
           };
+
+          legacyField.properties &&
+            asArray<LegacyFormDefinitionProperty>(legacyField.properties.property).forEach((legacyProp) => {
+              let value;
+
+              switch (legacyProp.type) {
+                case 'boolean':
+                  value = legacyProp.value === 'true';
+                  break;
+                case 'int':
+                  value = parseInt(legacyProp.value);
+                  break;
+                default:
+                  value = legacyProp.value;
+              }
+
+              field.properties[legacyProp.name] = {
+                ...legacyProp,
+                value
+              };
+            });
 
           legacyField.constraints &&
             asArray<LegacyFormDefinitionProperty>(legacyField.constraints.constraint).forEach((legacyProp) => {

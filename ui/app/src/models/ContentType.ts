@@ -55,6 +55,7 @@ export interface ContentTypeField {
   type: string;
   sortable?: boolean;
   validations: Partial<ContentTypeFieldValidations>;
+  properties?: LookupTable;
   defaultValue: any;
   required?: boolean;
   fields?: LookupTable<ContentTypeField>;
