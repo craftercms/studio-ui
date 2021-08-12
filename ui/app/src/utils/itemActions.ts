@@ -376,11 +376,7 @@ export function generateSingleItemOptions(
     (hasApprovePublishAction(item.availableActions) && actionsToInclude.approvePublish) ||
     (hasSchedulePublishAction(item.availableActions) && actionsToInclude.schedulePublish)
   ) {
-    if (hasApprovePublishAction(item.availableActions) && actionsToInclude.approvePublish) {
-      sectionC.push(menuOptions.approvePublish);
-    } else {
-      sectionC.push(menuOptions.publish);
-    }
+    sectionC.push(menuOptions.publish);
   }
   if (hasPublishRejectAction(item.availableActions) && actionsToInclude.rejectPublish) {
     sectionC.push(menuOptions.rejectPublish);
@@ -822,7 +818,6 @@ export const itemActionDispatcher = ({
     case 'publish':
     case 'schedulePublish':
     case 'requestPublish': {
-      console.log(option);
       const items = Array.isArray(item) ? item : [item];
       const schedulingMap = {
         approvePublish: null,
