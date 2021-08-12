@@ -15,12 +15,15 @@
  */
 
 import { Dashboard } from '@craftercms/uppy';
-import React, { useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { Uppy } from '@uppy/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import palette from '../../styles/palette';
 import { validateActionPolicy } from '../../services/sites';
 import { defineMessages, useIntl } from 'react-intl';
+import { emitSystemEvent, itemsUploaded } from '../../state/actions/system';
+import { useDispatch } from 'react-redux';
+import { useDebouncedInput } from '../../utils/hooks/useDebouncedInput';
 
 interface UppyDashboardProps {
   uppy: Uppy;
@@ -284,6 +287,16 @@ export default function UppyDashboard(props: UppyDashboardProps) {
   const classes = useStyles();
   const ref = useRef();
   const { formatMessage } = useIntl();
+  const dispatch = useDispatch();
+
+  const onItemsUploaded = useCallback(
+    (id: string) => {
+      dispatch(emitSystemEvent(itemsUploaded({ target: path })));
+    },
+    [dispatch, path]
+  );
+
+  const onItemsUploaded$ = useDebouncedInput(onItemsUploaded, 800);
 
   useEffect(() => {
     if (uppy.getPlugin('craftercms:Dashboard')) {
@@ -320,6 +333,11 @@ export default function UppyDashboard(props: UppyDashboardProps) {
         }
       }
     });
+
+    uppy.on('upload-success', (file) => {
+      onItemsUploaded$.next(file.id);
+    });
+
     return () => {
       const plugin = uppy.getPlugin('craftercms:Dashboard');
       if (plugin) {
