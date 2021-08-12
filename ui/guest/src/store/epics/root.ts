@@ -308,9 +308,6 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
       switchMap(([action, state]) => {
         const { record, event } = action.payload;
         const { field } = iceRegistry.getReferentialEntries(record.iceIds[0]);
-
-        console.log('field', field);
-
         const draggable = ElementRegistry.getDraggable(record.id);
         const validations = field?.validations;
         const type = field?.type;
@@ -343,7 +340,8 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
                     'Please add tinymce on to the page to enable editing.'
                 );
               } else if (not(validations?.readOnly?.value)) {
-                return initTinyMCE(record, validations, state.rteConfig, field.properties, state.activeSite);
+                const setupId = field.properties?.rteConfiguration?.value ?? 'generic';
+                return initTinyMCE(record, validations, state.rteConfig[setupId], field.properties, state.activeSite);
               }
               return NEVER;
             }
