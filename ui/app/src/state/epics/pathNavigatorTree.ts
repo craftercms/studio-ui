@@ -51,7 +51,7 @@ export default [
       ofType(pathNavigatorTreeInit.type, pathNavigatorTreeRefresh.type, pathNavigatorTreeBackgroundRefresh.type),
       withLatestFrom(state$),
       filter(([{ payload }, state]) => Boolean(state.pathNavigatorTree[payload.id].expanded?.length)),
-      switchMap(([{ payload }, state]) => {
+      mergeMap(([{ payload }, state]) => {
         const {
           id,
           path = state.pathNavigatorTree[id].rootPath,
