@@ -454,7 +454,8 @@ export function PreviewConcierge(props: any) {
             }
             getHostToGuestBus().next({
               type: HOST_CHECK_IN,
-              payload: { editMode: false, highlightMode, rteConfig: rteConfig.pageBuilder ?? {} }
+              // TODO: configuration setup id should be retrieved from content
+              payload: { editMode: false, highlightMode, rteConfig: rteConfig.generic ?? {}, site }
             });
             dispatch(checkInGuest(payload));
 
@@ -477,7 +478,6 @@ export function PreviewConcierge(props: any) {
               contentTypes$.pipe(take(1)).subscribe((payload) => {
                 hostToGuest$.next({ type: CONTENT_TYPES_RESPONSE, payload });
               });
-
               issueDescriptorRequest({
                 site,
                 path,

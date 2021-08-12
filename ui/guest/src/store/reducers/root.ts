@@ -681,7 +681,8 @@ const initialState: GuestState = {
   models: {},
   contentTypes: {},
   hostCheckedIn: false,
-  rteConfig: {}
+  rteConfig: {},
+  activeSite: ''
 };
 
 const foo = (state) => state;
@@ -738,7 +739,8 @@ const reducerFunctions: {
     hostCheckedIn: true,
     highlightMode: action.payload.highlightMode,
     editMode: action.payload.editMode,
-    rteConfig: action.payload.rteConfig
+    rteConfig: action.payload.rteConfig,
+    activeSite: action.payload.site
   })
 };
 

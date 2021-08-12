@@ -65,6 +65,7 @@ export interface GuestState {
     registryEntryIds: number[];
   };
   rteConfig: LookupTable<any>;
+  activeSite: string;
 }
 
 export type GuestStateObservable = StateObservable<GuestState>;

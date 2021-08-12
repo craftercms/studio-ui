@@ -318,6 +318,16 @@ function Guest(props: GuestProps) {
       // script.onload = () => ...;
       document.head.appendChild(script);
     }
+    if (hasHost && !window.ace) {
+      const script = document.createElement('script');
+      script.src = '/studio/static-assets/libs/ace/ace.js';
+      document.head.appendChild(script);
+
+      const styleSheet = document.createElement('link');
+      styleSheet.rel = 'stylesheet';
+      styleSheet.href = '/studio/static-assets/styles/tinymce-ace.css';
+      document.head.appendChild(styleSheet);
+    }
   }, [hasHost]);
 
   // Check out (dismount, beforeunload)

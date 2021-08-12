@@ -19,6 +19,7 @@ import React from 'react';
 declare global {
   interface Window {
     tinymce: any;
+    ace: any;
   }
   type CrafterCMSCustomElementProps = React.DetailedHTMLProps<
     Omit<React.HTMLAttributes<HTMLDivElement>, 'className'> & { class?: string },

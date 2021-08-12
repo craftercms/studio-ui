@@ -52,7 +52,7 @@ import {
 } from '../../constants';
 import { MouseEventActionObservable } from '../models/Actions';
 import { GuestState, GuestStateObservable } from '../models/GuestStore';
-import { isNullOrUndefined, notNullOrUndefined, pluckProps, reversePluckProps } from '../../utils/object';
+import { isNullOrUndefined, notNullOrUndefined, reversePluckProps } from '../../utils/object';
 import { ElementRecord, ICEProps } from '../../models/InContextEditing';
 import * as ElementRegistry from '../../classes/ElementRegistry';
 import { get } from '../../classes/ElementRegistry';
@@ -308,6 +308,9 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
       switchMap(([action, state]) => {
         const { record, event } = action.payload;
         const { field } = iceRegistry.getReferentialEntries(record.iceIds[0]);
+
+        console.log('field', field);
+
         const draggable = ElementRegistry.getDraggable(record.id);
         const validations = field?.validations;
         const type = field?.type;
@@ -340,7 +343,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
                     'Please add tinymce on to the page to enable editing.'
                 );
               } else if (not(validations?.readOnly?.value)) {
-                return initTinyMCE(record, validations, state.rteConfig);
+                return initTinyMCE(record, validations, state.rteConfig, field.properties, state.activeSite);
               }
               return NEVER;
             }

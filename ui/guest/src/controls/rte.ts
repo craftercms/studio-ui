@@ -30,7 +30,9 @@ import { reversePluckProps } from '../utils/object';
 export function initTinyMCE(
   record: ElementRecord,
   validations: Partial<ContentTypeFieldValidations>,
-  rteConfig?: LookupTable<any>
+  rteConfig?: LookupTable<any>,
+  fieldProperties?: LookupTable<any>,
+  site?: string
 ): Observable<GuestStandardAction> {
   const dispatch$ = new Subject<GuestStandardAction>();
   const { field } = iceRegistry.getReferentialEntries(record.iceIds[0]);
@@ -39,6 +41,28 @@ export function initTinyMCE(
   const elementDisplay = $(record.element).css('display');
   if (elementDisplay === 'inline') {
     $(record.element).css('display', 'inline-block');
+  }
+
+  const controlPropsMap = {
+    enableSpellCheck: 'browser_spellcheck',
+    forceRootBlockPTag: 'forced_root_block'
+  };
+  const controlProps = {};
+  Object.keys(controlPropsMap).forEach((key) => {
+    if (fieldProperties[key]) {
+      const propKey = controlPropsMap[key];
+      controlProps[propKey] = fieldProperties[key].value;
+    }
+  });
+
+  const external = {
+    acecode: '/studio/static-assets/js/tinymce-plugins/ace/plugin.min.js'
+  };
+
+  if (rteConfig.tinymceOptions.external_plugins) {
+    Object.entries(rteConfig.tinymceOptions.external_plugins).forEach((entry) => {
+      external[entry[0]] = (entry[1] as string).replaceAll('{site}', site);
+    });
   }
 
   window.tinymce.init({
@@ -54,6 +78,7 @@ export function initTinyMCE(
     inline: true,
     base_url: '/studio/static-assets/modules/editors/tinymce/v5/tinymce',
     suffix: '.min',
+    external_plugins: external,
     setup(editor: Editor) {
       editor.on('init', function() {
         let changed = false;
@@ -153,6 +178,11 @@ export function initTinyMCE(
           e.preventDefault();
         }
       });
+      editor.on('DblClick', function(e) {
+        if (e.target.nodeName === 'IMG') {
+          window.tinymce.activeEditor.execCommand('mceImage');
+        }
+      });
     },
     ...reversePluckProps(
       rteConfig.tinymceOptions,
@@ -160,14 +190,19 @@ export function initTinyMCE(
       'inline', // Not using inline view doesn't behave well on pageBuilder, this setting shouldn't be changed.
       'setup',
       'base_url',
+      'encoding',
       'autosave_ask_before_unload', // Autosave options are removed since it is not supported in control.
       'autosave_interval',
       'autosave_prefix',
       'autosave_restore_when_empty',
       'autosave_retention',
       'file_picker_callback', // No file picker is set by default, and functions are not supported in config file.
-      'height' // Height is set to the size of content
-    )
+      'height', // Height is set to the size of content
+      'file_picker_callback', // Files/images handlers currently not supported
+      'paste_postprocess',
+      'images_upload_handler'
+    ),
+    ...controlProps
   });
 
   return dispatch$.pipe(startWith({ type: 'edit_component_inline' }));
