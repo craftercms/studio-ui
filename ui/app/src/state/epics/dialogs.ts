@@ -122,7 +122,10 @@ const dialogEpics: CrafterCMSEpic[] = [
   (action$, state$) =>
     action$.pipe(
       ofType(newContentCreationComplete.type),
-      switchMap(({ payload }) => (payload.item?.isPage ? of(changeCurrentUrl(payload.redirectUrl)) : NEVER))
+      filter(({ payload }) => {
+        return payload.item?.isPage && payload.item?.isPreviewable;
+      }),
+      switchMap(({ payload }) => of(changeCurrentUrl(payload.redirectUrl)))
     ),
   (action$, state$) =>
     action$.pipe(
