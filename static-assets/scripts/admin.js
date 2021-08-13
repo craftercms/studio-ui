@@ -155,7 +155,6 @@
 
       this.addUserToGroup = function (data) {
         var body = {
-          ids: [data.userId.toString()],
           usernames: [data.username]
         };
         return $http.post(groupsMembers(data.groupId, true), body);
@@ -2083,7 +2082,6 @@
 
       $scope.removeUserFromGroup = function (user, group) {
         var deleteUserFromGroupParams = {};
-        deleteUserFromGroupParams.userId = user.id;
         deleteUserFromGroupParams.username = user.username;
         //user.site_id = groups.site;
 
