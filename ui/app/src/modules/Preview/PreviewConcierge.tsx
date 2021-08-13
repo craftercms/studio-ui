@@ -54,6 +54,7 @@ import {
   setItemBeingDragged,
   setPreviewChoice,
   setPreviewEditMode,
+  SHOW_EDIT_DIALOG,
   SORT_ITEM_OPERATION,
   SORT_ITEM_OPERATION_COMPLETE,
   TRASHED,
@@ -119,6 +120,7 @@ import { useMount } from '../../utils/hooks/useMount';
 import { usePreviewNavigation } from '../../utils/hooks/usePreviewNavigation';
 import { useRTEConfig } from '../../utils/hooks/useRTEConfig';
 import { useSiteUIConfig } from '../../utils/hooks/useSiteUIConfig';
+import { showEditDialog } from '../../state/actions/dialogs';
 
 const guestMessages = defineMessages({
   maxCount: {
@@ -818,6 +820,17 @@ export function PreviewConcierge(props: any) {
         }
         case EDIT_MODE_TOGGLE_HOTKEY: {
           conditionallyToggleEditMode();
+          break;
+        }
+        case SHOW_EDIT_DIALOG: {
+          dispatch(
+            showEditDialog({
+              authoringBase,
+              path: guest.path,
+              selectedFields: payload.selectedFields,
+              site
+            })
+          );
           break;
         }
       }

@@ -31,17 +31,25 @@ export function initTinyMCE(
   record: ElementRecord,
   validations: Partial<ContentTypeFieldValidations>,
   rteConfig?: LookupTable<any>,
-  fieldProperties?: LookupTable<any>,
   site?: string
 ): Observable<GuestStandardAction> {
   const dispatch$ = new Subject<GuestStandardAction>();
   const { field } = iceRegistry.getReferentialEntries(record.iceIds[0]);
   const type = field?.type;
-  const plugins = ['paste'];
+  const plugins = 'paste';
   const elementDisplay = $(record.element).css('display');
   if (elementDisplay === 'inline') {
     $(record.element).css('display', 'inline-block');
   }
+
+  const openEditForm = () => {
+    post({
+      type: 'SHOW_EDIT_DIALOG',
+      payload: {
+        selectedFields: [field.id]
+      }
+    });
+  };
 
   const controlPropsMap = {
     enableSpellCheck: 'browser_spellcheck',
@@ -49,14 +57,15 @@ export function initTinyMCE(
   };
   const controlProps = {};
   Object.keys(controlPropsMap).forEach((key) => {
-    if (fieldProperties[key]) {
+    if (field.properties?.[key]) {
       const propKey = controlPropsMap[key];
-      controlProps[propKey] = fieldProperties[key].value;
+      controlProps[propKey] = field.properties[key].value;
     }
   });
 
   const external = {
-    acecode: '/studio/static-assets/js/tinymce-plugins/ace/plugin.min.js'
+    acecode: '/studio/static-assets/js/tinymce-plugins/ace/plugin.min.js',
+    editform: '/studio/static-assets/js/tinymce-plugins/editform/plugin.js'
   };
 
   if (rteConfig.tinymceOptions.external_plugins) {
@@ -70,7 +79,7 @@ export function initTinyMCE(
     target: record.element,
     // For some reason this is not working.
     // body_class: 'craftercms-rich-text-editor',
-    plugins,
+    plugins: plugins + ' editform', // edit form will always be loaded
     paste_as_text: true,
     paste_data_images: type === 'html',
     toolbar: type === 'html',
@@ -202,7 +211,8 @@ export function initTinyMCE(
       'paste_postprocess',
       'images_upload_handler'
     ),
-    ...controlProps
+    ...controlProps,
+    openEditForm
   });
 
   return dispatch$.pipe(startWith({ type: 'edit_component_inline' }));
