@@ -147,11 +147,11 @@ export default [
       mergeMap(([{ payload }, state]) => {
         const { id, path } = payload;
         const keyword = state.pathNavigatorTree[id].keywordByPath[path];
-        const offset = state.pathNavigatorTree[id].childrenByParentPath[path].length;
+        const offset = state.pathNavigatorTree[id].offsetByPath[path];
         return fetchChildrenByPath(state.sites.active, path, {
           limit: state.pathNavigatorTree[id].limit,
           keyword: keyword,
-          offset: state.pathNavigatorTree[id].childrenByParentPath[path].length
+          offset: offset
         }).pipe(
           map((children) =>
             pathNavigatorTreeFetchPathPageComplete({

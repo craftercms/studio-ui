@@ -22,6 +22,7 @@ import {
   pathNavigatorTreeExpandPath,
   pathNavigatorTreeFetchPathChildren,
   pathNavigatorTreeFetchPathChildrenComplete,
+  pathNavigatorTreeFetchPathPage,
   pathNavigatorTreeFetchPathPageComplete,
   pathNavigatorTreeFetchPathsChildren,
   pathNavigatorTreeFetchPathsChildrenComplete,
@@ -49,6 +50,7 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
           limit,
           expanded,
           childrenByParentPath: {},
+          offsetByPath: {},
           keywordByPath,
           totalByPath: {},
           fetchingByPath: { ...createPresenceTable(expanded) }
@@ -134,9 +136,21 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
           },
           totalByPath: {
             ...state[id].totalByPath,
-            [parentPath]: children.total
+            [parentPath]: children.levelDescriptor ? children.total + 1 : children.total
           },
           fetchingByPath: { ...state[id].fetchingByPath, [parentPath]: false }
+        }
+      };
+    },
+    [pathNavigatorTreeFetchPathPage.type]: (state, { payload: { id, path } }) => {
+      return {
+        ...state,
+        [id]: {
+          ...state[id],
+          offsetByPath: {
+            ...state[id].offsetByPath,
+            [path]: state[id].offsetByPath[path] ? state[id].offsetByPath[path] + state[id].limit : state[id].limit
+          }
         }
       };
     },
@@ -151,7 +165,7 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
           },
           totalByPath: {
             ...state[id].totalByPath,
-            [parentPath]: children.total
+            [parentPath]: children.levelDescriptor ? children.total + 1 : children.total
           }
         }
       };
@@ -166,7 +180,7 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
           childrenByParentPath[path].push(data[path].levelDescriptor.path);
         }
         data[path].forEach((item) => childrenByParentPath[path].push(item.path));
-        totalByPath[path] = data[path].total;
+        totalByPath[path] = data[path].levelDescriptor ? data[path].total + 1 : data[path].total;
       });
 
       return {
@@ -200,7 +214,7 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
         data[path].forEach((item) => {
           children[path].push(item.path);
         });
-        total[path] = data[path].total;
+        total[path] = data[path].levelDescriptor ? data[path].total + 1 : data[path].total;
 
         if (keywordByPath[path] || children[path].length) {
           // If the expanded node is filtered or has children it means, it's not a leaf and and we should keep it in 'expanded'

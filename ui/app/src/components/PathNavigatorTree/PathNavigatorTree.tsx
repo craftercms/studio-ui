@@ -93,6 +93,7 @@ export interface PathNavigatorTreeStateProps {
   keywordByPath: LookupTable<string>;
   fetchingByPath: LookupTable<boolean>;
   totalByPath: LookupTable<number>;
+  offsetByPath: LookupTable<number>;
 }
 
 interface Menu {
@@ -313,10 +314,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
               dispatch(
                 pathNavigatorTreeFetchPathChildren({
                   id,
-                  path,
-                  options: {
-                    limit: childrenByParentPath[path] ? childrenByParentPath[path].length + 1 : limit
-                  }
+                  path
                 })
               );
             }
@@ -335,12 +333,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
             dispatch(
               pathNavigatorTreeFetchPathChildren({
                 id,
-                path,
-                options: {
-                  limit: childrenByParentPath[path]
-                    ? childrenByParentPath[path].length + (type === itemCreated.type ? 1 : 0)
-                    : limit
-                }
+                path
               })
             );
           }

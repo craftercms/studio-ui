@@ -229,9 +229,11 @@ export default function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps)
             }}
           >
             <FormattedMessage
-              id="filter.more"
+              id="pathNavigatorTree.moreLinkLabel"
               defaultMessage="{count, plural, one {...{count} more item} other {...{count} more items}}"
-              values={{ count: totalByPath[node.parentPath] - childrenByParentPath[node.parentPath].length }}
+              values={{
+                count: totalByPath[node.parentPath] - childrenByParentPath[node.parentPath].length
+              }}
             />
           </Button>
         </section>
