@@ -114,12 +114,17 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
       };
     },
     [pathNavigatorTreeFetchPathChildrenComplete.type]: (state, { payload: { id, parentPath, children, options } }) => {
+      const totalByPath = { ...state[id].totalByPath };
+      totalByPath[parentPath] = children.levelDescriptor ? children.total + 1 : children.total;
       const nextChildren = [];
       if (children.levelDescriptor) {
         nextChildren.push(children.levelDescriptor.path);
       }
 
-      children.forEach((item) => nextChildren.push(item.path));
+      children.forEach((item) => {
+        nextChildren.push(item.path);
+        totalByPath[item.path] = item.childrenCount;
+      });
 
       return {
         ...state,
@@ -134,10 +139,7 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
             ...state[id].childrenByParentPath,
             [parentPath]: nextChildren
           },
-          totalByPath: {
-            ...state[id].totalByPath,
-            [parentPath]: children.levelDescriptor ? children.total + 1 : children.total
-          },
+          totalByPath,
           offsetByPath: {
             ...state[id].offsetByPath,
             [parentPath]: 0
@@ -159,18 +161,24 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
       };
     },
     [pathNavigatorTreeFetchPathPageComplete.type]: (state, { payload: { id, parentPath, children, options } }) => {
+      const totalByPath = { ...state[id].totalByPath };
+      const nextChildren = [...state[id].childrenByParentPath[parentPath]];
+      totalByPath[parentPath] = children.levelDescriptor ? children.total + 1 : children.total;
+
+      children.forEach((item) => {
+        nextChildren.push(item.path);
+        totalByPath[item.path] = item.childrenCount;
+      });
+
       return {
         ...state,
         [id]: {
           ...state[id],
           childrenByParentPath: {
             ...state[id].childrenByParentPath,
-            [parentPath]: [...state[id].childrenByParentPath[parentPath], ...children.map((item) => item.path)]
+            [parentPath]: nextChildren
           },
-          totalByPath: {
-            ...state[id].totalByPath,
-            [parentPath]: children.levelDescriptor ? children.total + 1 : children.total
-          }
+          totalByPath
         }
       };
     },
@@ -184,7 +192,10 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
         if (data[path].levelDescriptor) {
           childrenByParentPath[path].push(data[path].levelDescriptor.path);
         }
-        data[path].forEach((item) => childrenByParentPath[path].push(item.path));
+        data[path].forEach((item) => {
+          childrenByParentPath[path].push(item.path);
+          totalByPath[item.path] = item.childrenCount;
+        });
         totalByPath[path] = data[path].levelDescriptor ? data[path].total + 1 : data[path].total;
         offsetByPath[path] = 0;
       });
@@ -221,6 +232,7 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
         }
         data[path].forEach((item) => {
           children[path].push(item.path);
+          total[item.path] = item.childrenCount;
         });
         total[path] = data[path].levelDescriptor ? data[path].total + 1 : data[path].total;
         offsetByPath[path] = 0;

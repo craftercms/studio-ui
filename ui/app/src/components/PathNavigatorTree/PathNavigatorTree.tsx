@@ -230,7 +230,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
               if (!nodesByPathRef.current[childPath]) {
                 nodesByPathRef.current[childPath] = {
                   id: childPath,
-                  children: [{ id: 'loading' }]
+                  children: totalByPath[childPath] === 0 ? [] : [{ id: 'loading' }]
                 };
               }
               nodesByPathRef.current[path].children.push(nodesByPathRef.current[childPath]);
