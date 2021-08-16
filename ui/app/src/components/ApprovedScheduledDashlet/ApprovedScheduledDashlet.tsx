@@ -26,14 +26,15 @@ import { AllItemActions, DetailedItem } from '../../models/Item';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import ApprovedScheduledDashletGridUI from '../ApprovedScheduledDashletGrid';
 import useStyles from './styles';
-import ApprovedScheduledDashletSkeletonTable from '../ApprovedScheduledDashletGrid/ApprovedScheduledDashletSkeletonTable';
+// prettier-ignore
+import ApprovedScheduledDashletSkeletonTable
+  from '../ApprovedScheduledDashletGrid/ApprovedScheduledDashletSkeletonTable';
 import MenuItem from '@material-ui/core/MenuItem';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import { itemsApproved, itemsDeleted, itemsRejected, itemsScheduled } from '../../state/actions/system';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { filter } from 'rxjs/operators';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import { useSpreadState } from '../../utils/hooks/useSpreadState';
 import { DashboardPreferences } from '../../models/Dashboard';
@@ -49,6 +50,7 @@ import ActionsBar from '../ActionsBar';
 import translations from './translations';
 import { batchActions } from '../../state/actions/misc';
 import { getEmptyStateStyleSet } from '../SystemStatus/EmptyState';
+import { useActiveSite } from '../../utils/hooks/useActiveSite';
 
 const dashletInitialPreferences: DashboardPreferences = {
   filterBy: 'all',
@@ -58,7 +60,7 @@ const dashletInitialPreferences: DashboardPreferences = {
 export default function ApprovedScheduledDashlet() {
   const [selectedLookup, setSelectedLookup] = useState<LookupTable<boolean>>({});
   const [error, setError] = useState<ApiResponse>();
-  const site = useActiveSiteId();
+  const { id: siteId, uuid } = useActiveSite();
   const currentUser = useSelector<GlobalState, string>((state) => state.user.username);
   const classes = useStyles();
   const [state, setState] = useState<{
@@ -76,7 +78,7 @@ export default function ApprovedScheduledDashlet() {
   const [isFetching, setIsFetching] = useState(false);
   const dashletPreferencesId = 'approvedScheduledDashlet';
   const [preferences, setPreferences] = useSpreadState(
-    getStoredDashboardPreferences(currentUser, site, dashletPreferencesId) ?? dashletInitialPreferences
+    getStoredDashboardPreferences(currentUser, uuid, dashletPreferencesId) ?? dashletInitialPreferences
   );
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
@@ -95,7 +97,7 @@ export default function ApprovedScheduledDashlet() {
 
   const refresh = useCallback(() => {
     setIsFetching(true);
-    fetchLegacyScheduledItems(site, 'eventDate', false, preferences.filterBy).subscribe(
+    fetchLegacyScheduledItems(siteId, 'eventDate', false, preferences.filterBy).subscribe(
       (response) => {
         const parentItems: DashboardItem[] = [];
         const itemsLookup: LookupTable<DetailedItem> = {};
@@ -132,7 +134,7 @@ export default function ApprovedScheduledDashlet() {
         setError(response);
       }
     );
-  }, [setExpandedLookup, site, preferences.filterBy]);
+  }, [setExpandedLookup, siteId, preferences.filterBy]);
 
   useEffect(() => {
     refresh();
@@ -228,7 +230,7 @@ export default function ApprovedScheduledDashlet() {
       setSelectedLookup({});
     } else {
       itemActionDispatcher({
-        site,
+        site: siteId,
         item: Object.keys(selectedLookup)
           .filter((path) => selectedLookup[path])
           .map((path) => state.itemsLookup[path]),
@@ -248,8 +250,8 @@ export default function ApprovedScheduledDashlet() {
   };
 
   useEffect(() => {
-    setStoredDashboardPreferences(preferences, currentUser, site, dashletPreferencesId);
-  }, [preferences, currentUser, site]);
+    setStoredDashboardPreferences(preferences, currentUser, uuid, dashletPreferencesId);
+  }, [preferences, currentUser, uuid]);
 
   return (
     <Dashlet

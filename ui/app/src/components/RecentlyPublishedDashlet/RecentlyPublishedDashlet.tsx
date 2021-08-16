@@ -33,7 +33,6 @@ import TextField from '@material-ui/core/TextField';
 import { itemsApproved, itemsDeleted, itemsRejected, itemsScheduled } from '../../state/actions/system';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { filter } from 'rxjs/operators';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import { useSpreadState } from '../../utils/hooks/useSpreadState';
 import { useLocale } from '../../utils/hooks/useLocale';
@@ -44,6 +43,7 @@ import { completeDetailedItem } from '../../state/actions/content';
 import { showItemMegaMenu } from '../../state/actions/dialogs';
 import { batchActions } from '../../state/actions/misc';
 import { getEmptyStateStyleSet } from '../SystemStatus/EmptyState';
+import { useActiveSite } from '../../utils/hooks/useActiveSite';
 
 export interface DashboardItem {
   label: string;
@@ -63,9 +63,9 @@ export default function RecentlyPublishedDashlet() {
   const [itemsLookup, setItemsLookup] = useSpreadState<LookupTable<DetailedItem>>({});
   const dashletPreferencesId = 'recentlyPublishedDashlet';
   const currentUser = useSelector<GlobalState, string>((state) => state.user.username);
-  const siteId = useActiveSiteId();
+  const { id: siteId, uuid } = useActiveSite();
   const [preferences, setPreferences] = useSpreadState(
-    getStoredDashboardPreferences(currentUser, siteId, dashletPreferencesId) ?? dashletInitialPreferences
+    getStoredDashboardPreferences(currentUser, uuid, dashletPreferencesId) ?? dashletInitialPreferences
   );
   const [expandedItems, setExpandedItems] = useSpreadState<LookupTable<boolean>>({});
   const localeBranch = useLocale();
@@ -102,8 +102,8 @@ export default function RecentlyPublishedDashlet() {
   };
 
   useEffect(() => {
-    setStoredDashboardPreferences(preferences, currentUser, siteId, dashletPreferencesId);
-  }, [preferences, currentUser, siteId]);
+    setStoredDashboardPreferences(preferences, currentUser, uuid, dashletPreferencesId);
+  }, [preferences, currentUser, uuid]);
 
   const onCollapseAll = (e) => {
     e.stopPropagation();

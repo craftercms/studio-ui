@@ -46,7 +46,8 @@ export default [
       withLatestFrom(state$),
       tap(([{ type, payload }, state]) => {
         if (payload) {
-          setStoredPreviewToolsPanelPage(state.sites.active, state.user.username, payload);
+          const uuid = state.sites.byId[state.sites.active].uuid;
+          setStoredPreviewToolsPanelPage(uuid, state.user.username, payload);
         }
       }),
       ignoreElements()
@@ -56,14 +57,15 @@ export default [
       ofType(popToolsPanelPage.type),
       withLatestFrom(state$),
       tap(([, state]) => {
+        const uuid = state.sites.byId[state.sites.active].uuid;
         if (state.preview.toolsPanelPageStack.length) {
           setStoredPreviewToolsPanelPage(
-            state.sites.active,
+            uuid,
             state.user.username,
             state.preview.toolsPanelPageStack[state.preview.toolsPanelPageStack.length - 1]
           );
         } else {
-          removeStoredPreviewToolsPanelPage(state.sites.active, state.user.username);
+          removeStoredPreviewToolsPanelPage(uuid, state.user.username);
         }
       }),
       ignoreElements()
@@ -110,7 +112,8 @@ export default [
       ofType(setClipboard.type),
       withLatestFrom(state$),
       tap(([{ payload }, state]) => {
-        setStoredClipboard(state.sites.active, state.user.username, payload);
+        const uuid = state.sites.byId[state.sites.active].uuid;
+        setStoredClipboard(uuid, state.user.username, payload);
       }),
       ignoreElements()
     ),
