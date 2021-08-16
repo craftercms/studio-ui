@@ -26,6 +26,8 @@ import { startWith } from 'rxjs/operators';
 import $ from 'jquery';
 import LookupTable from '@craftercms/studio-ui/models/LookupTable';
 import { reversePluckProps } from '../utils/object';
+// TODO: this needs to be imported from studio-ui
+import { SHOW_EDIT_DIALOG } from '../constants';
 
 export function initTinyMCE(
   record: ElementRecord,
@@ -44,7 +46,7 @@ export function initTinyMCE(
 
   const openEditForm = () => {
     post({
-      type: 'SHOW_EDIT_DIALOG',
+      type: SHOW_EDIT_DIALOG,
       payload: {
         selectedFields: [field.id]
       }
