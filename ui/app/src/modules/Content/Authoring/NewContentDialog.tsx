@@ -41,6 +41,7 @@ import { useSelection } from '../../../utils/hooks/useSelection';
 import { useActiveSiteId } from '../../../utils/hooks/useActiveSiteId';
 import { useLogicResource } from '../../../utils/hooks/useLogicResource';
 import { useSubject } from '../../../utils/hooks/useSubject';
+import { withoutIndex } from '../../../utils/path';
 
 const translations = defineMessages({
   title: {
@@ -167,7 +168,7 @@ function NewContentDialogBody(props: NewContentDialogProps) {
   };
 
   const onSelectedContentType = (contentType: LegacyFormConfig) => {
-    const path = selectedItem?.path.endsWith('.xml') ? selectedItem.path.replace(/[^/]*$/, '') : selectedItem?.path;
+    const path = withoutIndex(selectedItem.path);
     onContentTypeSelected?.({
       authoringBase,
       path,
