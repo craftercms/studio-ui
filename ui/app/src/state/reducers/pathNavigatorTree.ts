@@ -138,6 +138,10 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
             ...state[id].totalByPath,
             [parentPath]: children.levelDescriptor ? children.total + 1 : children.total
           },
+          offsetByPath: {
+            ...state[id].offsetByPath,
+            [parentPath]: 0
+          },
           fetchingByPath: { ...state[id].fetchingByPath, [parentPath]: false }
         }
       };
@@ -173,6 +177,7 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
     [pathNavigatorTreeFetchPathsChildrenComplete.type]: (state, { payload: { id, data } }) => {
       const childrenByParentPath = { ...state[id].childrenByParentPath };
       const totalByPath = { ...state[id].totalByPath };
+      const offsetByPath = { ...state[id].offsetByPath };
 
       Object.keys(data).forEach((path) => {
         childrenByParentPath[path] = [];
@@ -181,6 +186,7 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
         }
         data[path].forEach((item) => childrenByParentPath[path].push(item.path));
         totalByPath[path] = data[path].levelDescriptor ? data[path].total + 1 : data[path].total;
+        offsetByPath[path] = 0;
       });
 
       return {
@@ -188,7 +194,8 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
         [id]: {
           ...state[id],
           childrenByParentPath,
-          totalByPath
+          totalByPath,
+          offsetByPath
         }
       };
     },
@@ -204,6 +211,7 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
     [pathNavigatorTreeRestoreComplete.type]: (state, { payload: { id, data, items } }) => {
       const children = {};
       const total = {};
+      const offsetByPath = {};
       const keywordByPath = state[id].keywordByPath;
       const expanded = [];
       Object.keys(data).forEach((path) => {
@@ -215,6 +223,7 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
           children[path].push(item.path);
         });
         total[path] = data[path].levelDescriptor ? data[path].total + 1 : data[path].total;
+        offsetByPath[path] = 0;
 
         if (keywordByPath[path] || children[path].length) {
           // If the expanded node is filtered or has children it means, it's not a leaf and and we should keep it in 'expanded'
@@ -230,6 +239,10 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
           childrenByParentPath: {
             ...state[id].childrenByParentPath,
             ...children
+          },
+          offsetByPath: {
+            ...state[id].offsetByPath,
+            ...offsetByPath
           },
           totalByPath: {
             ...state[id].totalByPath,
