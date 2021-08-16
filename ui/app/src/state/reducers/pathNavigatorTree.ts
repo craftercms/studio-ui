@@ -119,6 +119,7 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
       const nextChildren = [];
       if (children.levelDescriptor) {
         nextChildren.push(children.levelDescriptor.path);
+        totalByPath[children.levelDescriptor.path] = 0;
       }
 
       children.forEach((item) => {
@@ -165,6 +166,10 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
       const nextChildren = [...state[id].childrenByParentPath[parentPath]];
       totalByPath[parentPath] = children.levelDescriptor ? children.total + 1 : children.total;
 
+      if (children.levelDescriptor) {
+        totalByPath[children.levelDescriptor.path] = 0;
+      }
+
       children.forEach((item) => {
         nextChildren.push(item.path);
         totalByPath[item.path] = item.childrenCount;
@@ -191,6 +196,7 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
         childrenByParentPath[path] = [];
         if (data[path].levelDescriptor) {
           childrenByParentPath[path].push(data[path].levelDescriptor.path);
+          totalByPath[data[path].levelDescriptor.path] = 0;
         }
         data[path].forEach((item) => {
           childrenByParentPath[path].push(item.path);
@@ -229,6 +235,7 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
         children[path] = [];
         if (data[path].levelDescriptor) {
           children[path].push(data[path].levelDescriptor.path);
+          total[data[path].levelDescriptor.path] = 0;
         }
         data[path].forEach((item) => {
           children[path].push(item.path);
