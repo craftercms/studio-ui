@@ -14,13 +14,10 @@ jobs:
     steps:
       # Checkout the code as the first step.
       - checkout
-      - run:
-          name: Prep
-          command: sudo apt install build-essential
       # Use mvn clean and package as the standard maven build phase
       - run:
           name: Build
-          command: mvn -B -q -Dmaven.javadoc.skip=true clean package
+          command: NODE_OPTIONS='--max_old_space_size=4096' bash -c 'mvn -B -q -Dmaven.javadoc.skip=true clean package'
 
 workflows:
   # Below is the definition of your workflow.
