@@ -11,7 +11,7 @@ jobs:
     # A list of available CircleCI Docker Convenience Images are available here: https://circleci.com/developer/images/image/cimg/openjdk
     docker:
       - image: cimg/openjdk:11.0
-    resource_class: medium+
+    resource_class: xlarge
     steps:
       # Checkout the code as the first step.
       - checkout
