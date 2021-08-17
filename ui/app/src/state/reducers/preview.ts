@@ -570,6 +570,19 @@ const reducer = createReducer<GlobalState['preview']>(
       ...state,
       previewChoice: { ...state.previewChoice, ...JSON.parse(payload.previewChoice ?? '{}') }
     }),
+    [changeSite.type]: (state) => {
+      return {
+        ...state,
+        toolsPanelPageStack: [],
+        toolsPanel: null,
+        pageBuilderPanel: null,
+        toolbar: {
+          leftSection: null,
+          middleSection: null,
+          rightSection: null
+        }
+      };
+    },
     [initToolsPanelConfig.type]: (state, { payload }) => {
       let toolsPanelConfig = {
         widgets: [
