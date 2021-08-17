@@ -50,7 +50,6 @@ import { fetchContentXML } from '../../services/content';
 import { SystemIconDescriptor } from '../SystemIcon';
 import { completeDetailedItem } from '../../state/actions/content';
 import { useSelection } from '../../utils/hooks/useSelection';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useEnv } from '../../utils/hooks/useEnv';
 import { useActiveUser } from '../../utils/hooks/useActiveUser';
 import { useItemsByPath } from '../../utils/hooks/useItemsByPath';
@@ -69,6 +68,7 @@ import {
   pluginInstalled
 } from '../../state/actions/system';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
+import { useActiveSite } from '../../utils/hooks/useActiveSite';
 
 interface PathNavigatorTreeProps {
   id: string;
@@ -128,14 +128,14 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     container
   } = props;
   const state = useSelection((state) => state.pathNavigatorTree)[id];
-  const site = useActiveSiteId();
+  const { id: siteId, uuid } = useActiveSite();
   const user = useActiveUser();
   const nodesByPathRef = useRef<LookupTable<TreeNode>>({});
   const onSearch$ = useSubject<{ keyword: string; path: string }>();
   const uiConfig = useSelection<GlobalState['uiConfig']>((state) => state.uiConfig);
   const storedState = useMemo(() => {
-    return getStoredPathNavigatorTree(site, user.username, id) ?? {};
-  }, [id, site, user.username]);
+    return getStoredPathNavigatorTree(uuid, user.username, id) ?? {};
+  }, [id, uuid, user.username]);
   const [widgetMenu, setWidgetMenu] = useState<Menu>({
     anchorEl: null,
     sections: []
@@ -168,7 +168,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   useEffect(() => {
     // Adding uiConfig as means to stop navigator from trying to
     // initialize with previous state information when switching sites
-    if (!state && uiConfig.currentSite === site && rootPath) {
+    if (!state && uiConfig.currentSite === siteId && rootPath) {
       const { expanded, collapsed, keywordByPath } = storedState;
       dispatch(
         pathNavigatorTreeInit({
@@ -182,7 +182,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
         })
       );
     }
-  }, [site, user.username, id, dispatch, rootPath, excludes, limit, state, uiConfig.currentSite, storedState]);
+  }, [siteId, user.username, id, dispatch, rootPath, excludes, limit, state, uiConfig.currentSite, storedState]);
 
   useEffect(() => {
     if (rootItem && nodesByPathRef.current[rootItem.path] === undefined) {
@@ -503,7 +503,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
 
   const onPreview = (item: DetailedItem) => {
     if (isEditableViaFormEditor(item)) {
-      dispatch(showEditDialog({ path: item.path, authoringBase, site, readonly: true }));
+      dispatch(showEditDialog({ path: item.path, authoringBase, site: siteId, readonly: true }));
     } else if (isImage(item)) {
       dispatch(
         showPreviewDialog({
@@ -522,7 +522,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
           mode
         })
       );
-      fetchContentXML(site, item.path).subscribe((content) => {
+      fetchContentXML(siteId, item.path).subscribe((content) => {
         dispatch(
           updatePreviewDialog({
             content

@@ -47,11 +47,12 @@ import StandardAction from '../../models/StandardAction';
 import { asArray } from '../../utils/array';
 import { changeCurrentUrl } from '../actions/preview';
 import { CrafterCMSEpic } from '../store';
-import { updateDialog } from '../reducers/dialogs/minimizedDialogs';
+import { minimizedDialogUpdate } from '../reducers/dialogs/minimizedDialogs';
 import { formEngineMessages } from '../../utils/i18n-legacy';
 import infoGraphic from '../../assets/information.svg';
 import { codeEditorId } from '../../components/CodeEditorDialog';
 import { legacyEditorId } from '../../components/Dialogs/LegacyFormDialog';
+import { nou } from '../../utils/object';
 
 function getDialogNameFromType(type: string): string {
   let name = getDialogActionNameFromType(type);
@@ -122,7 +123,8 @@ const dialogEpics: CrafterCMSEpic[] = [
   (action$, state$) =>
     action$.pipe(
       ofType(newContentCreationComplete.type),
-      switchMap(({ payload }) => (payload.item?.isPage ? of(changeCurrentUrl(payload.redirectUrl)) : NEVER))
+      filter(({ payload }) => payload.item?.isPage && payload.item.isPreviewable),
+      switchMap(({ payload }) => of(changeCurrentUrl(payload.redirectUrl)))
     ),
   (action$, state$) =>
     action$.pipe(
@@ -140,20 +142,20 @@ const dialogEpics: CrafterCMSEpic[] = [
       ofType(showEditDialog.type, showCodeEditorDialog.type),
       withLatestFrom(state$),
       switchMap(([{ type, payload }, state]) => {
-        let path;
-        let nextPath;
-        if (type === showEditDialog.type) {
-          path = payload.src ?? payload.path;
-          nextPath = state.dialogs.edit.src ?? state.dialogs.edit.path;
-        } else {
-          path = payload.path;
-          nextPath = state.dialogs.codeEditor.path;
-        }
-        if (path === nextPath) {
+        // If state.path isn't null and the payload.path is different, it means another form is getting opened.
+        // To avoid losing state of the form, we disallow this and show a dialog indicating to close the current
+        // form before opening another.
+        if (
+          nou(payload.path) ||
+          payload.path === (type === showEditDialog.type ? state.dialogs.edit.path : state.dialogs.codeEditor.path)
+        ) {
+          // If showEditDialog action is called while the dialog is already open & minimized, we maximize it.
+          // Differences in the showEditDialog payload — to what's on the state — are ignored, except for the path,
+          // which is used to check if it's the same form that's getting opened.
           const id = type === showEditDialog.type ? legacyEditorId : codeEditorId;
           if (state.dialogs.minimizedDialogs[id]?.minimized === true) {
             return of(
-              updateDialog({
+              minimizedDialogUpdate({
                 id,
                 minimized: false
               })

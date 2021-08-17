@@ -46,10 +46,10 @@ export function getItemStateText(stateMap: ItemStateMap) {
         <FormattedMessage id="itemState.scheduledForStaging" defaultMessage="Scheduled for staging" />
       ),
     submittedToLive: () =>
-      stateMap.scheduled ? (
-        <FormattedMessage id="itemState.scheduledToGoLive" defaultMessage="Scheduled for live" />
-      ) : (
+      stateMap.submitted ? (
         <FormattedMessage id="itemState.submittedToLive" defaultMessage="Submitted for live" />
+      ) : (
+        <FormattedMessage id="itemState.scheduledToGoLive" defaultMessage="Scheduled for live" />
       ),
     staged: null,
     live: null,

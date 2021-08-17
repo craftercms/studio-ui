@@ -40,7 +40,7 @@ import { minimizeDialog } from '../../state/reducers/dialogs/minimizedDialogs';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 import { updateEditConfig } from '../../state/actions/dialogs';
 import { emitSystemEvent, itemCreated, itemUpdated } from '../../state/actions/system';
-import { getEditFormSrc, getQueryVariable } from '../../utils/path';
+import { getEditFormSrc } from '../../utils/path';
 import DialogHeader from './DialogHeader';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useUnmount } from '../../utils/hooks/useUnmount';
@@ -88,7 +88,6 @@ const styles = makeStyles(() =>
 
 interface LegacyFormDialogBaseProps {
   open?: boolean;
-  src?: string;
   path: string;
   selectedFields?: string[];
   authoringBase: string;
@@ -102,6 +101,7 @@ interface LegacyFormDialogBaseProps {
   inProgress?: boolean;
   onMinimized?(): void;
   pendingChanges?: boolean;
+  iceGroupId?: string;
 }
 
 export type LegacyFormDialogProps = PropsWithChildren<
@@ -122,7 +122,7 @@ export interface LegacyFormDialogStateProps extends LegacyFormDialogBaseProps {
 
 const EmbeddedLegacyEditor = React.forwardRef(function EmbeddedLegacyEditor(props: LegacyFormDialogProps, ref) {
   const {
-    path = props.src ? (getQueryVariable(props.src, 'path') as string) : undefined,
+    path,
     selectedFields,
     authoringBase,
     readonly,
@@ -136,37 +136,37 @@ const EmbeddedLegacyEditor = React.forwardRef(function EmbeddedLegacyEditor(prop
     onSaveSuccess,
     onDismiss,
     onClosed,
-    onMinimized
+    onMinimized,
+    iceGroupId
   } = props;
 
   const src = useMemo(
     () =>
-      props.src
-        ? props.src
-        : getEditFormSrc({
-            path,
-            site,
-            authoringBase,
-            readonly,
-            isHidden,
-            modelId,
-            changeTemplate,
-            contentTypeId,
-            isNewContent,
-            ...(selectedFields ? { selectedFields: JSON.stringify(selectedFields) } : {})
-          }),
+      getEditFormSrc({
+        path,
+        site,
+        authoringBase,
+        readonly,
+        isHidden,
+        modelId,
+        changeTemplate,
+        contentTypeId,
+        isNewContent,
+        iceGroupId,
+        ...(selectedFields ? { selectedFields: JSON.stringify(selectedFields) } : {})
+      }),
     [
-      props.src,
-      path,
-      site,
       authoringBase,
-      readonly,
-      isHidden,
-      modelId,
       changeTemplate,
       contentTypeId,
+      isHidden,
       isNewContent,
-      selectedFields
+      modelId,
+      path,
+      selectedFields,
+      readonly,
+      site,
+      iceGroupId
     ]
   );
 

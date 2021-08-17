@@ -32,6 +32,7 @@ import { useSiteUIConfig } from '../../utils/hooks/useSiteUIConfig';
 import LookupTable from '../../models/LookupTable';
 import { nnou } from '../../utils/object';
 import { getStoredPreviewToolsPanelPage } from '../../utils/state';
+import { useActiveSite } from '../../utils/hooks/useActiveSite';
 
 defineMessages({
   previewSiteExplorerPanelTitle: {
@@ -61,7 +62,7 @@ const useStyles = makeStyles((theme) =>
 
 export default function ToolsPanel() {
   const dispatch = useDispatch();
-  const site = useActiveSiteId();
+  const { id: siteId, uuid } = useActiveSite();
   const classes = useStyles();
   const { showToolsPanel, toolsPanel } = usePreviewState();
   const toolsPanelWidth = useSelection<number>((state) => state.preview.toolsPanelWidth);
@@ -72,10 +73,10 @@ export default function ToolsPanel() {
 
   useEffect(() => {
     if (nnou(uiConfig.xml) && !toolsPanel) {
-      const storedPage = getStoredPreviewToolsPanelPage(site, username);
+      const storedPage = getStoredPreviewToolsPanelPage(uuid, username);
       dispatch(initToolsPanelConfig({ configXml: uiConfig.xml, pageStack: storedPage }));
     }
-  }, [uiConfig.xml, toolsPanel, dispatch, site, username]);
+  }, [uiConfig.xml, toolsPanel, dispatch, uuid, username]);
 
   const resource = useLogicResource<WidgetDescriptor[], LookupTable<WidgetDescriptor[]>>(toolsPanel, {
     errorSelector: (source) => uiConfig.error,
@@ -105,14 +106,14 @@ export default function ToolsPanel() {
           classes: { root: classes.loadingViewRoot }
         }}
         withEmptyStateProps={{
-          isEmpty: (widgets) => !site || widgets?.length === 0,
+          isEmpty: (widgets) => !siteId || widgets?.length === 0,
           emptyStateProps: {
-            title: site ? (
+            title: siteId ? (
               <FormattedMessage id="previewTools.noWidgetsMessage" defaultMessage="No tools have been configured" />
             ) : (
               <FormattedMessage id="previewTools.choseSiteMessage" defaultMessage="Please choose site" />
             ),
-            ...(!site && { image: `${baseUrl}/static-assets/images/choose_option.svg` }),
+            ...(!siteId && { image: `${baseUrl}/static-assets/images/choose_option.svg` }),
             classes: { root: classes.emptyState, image: classes.emptyStateImage }
           }
         }}

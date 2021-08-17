@@ -82,7 +82,7 @@ export default function SiteToolsApp(props: SiteToolsAppProps) {
   const classes = useStyles();
   const { formatMessage } = useIntl();
 
-  const tool = tools.find((tool) => tool.url === activeToolId)?.widget;
+  const tool = tools?.find((tool) => tool.url === activeToolId)?.widget;
 
   return (
     <Paper className={clsx(classes.root, props.classes?.root)} elevation={0}>

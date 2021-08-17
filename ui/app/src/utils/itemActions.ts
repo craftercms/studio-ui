@@ -188,11 +188,11 @@ const unparsedMenuOptions: Record<AllItemActions, ContextMenuOptionDescriptor<Al
   },
   requestPublish: {
     id: 'requestPublish',
-    label: translations.publishRequest
+    label: translations.publish
   },
   approvePublish: {
     id: 'approvePublish',
-    label: translations.approve
+    label: translations.publish
   },
   rejectPublish: {
     id: 'rejectPublish',
@@ -376,7 +376,11 @@ export function generateSingleItemOptions(
     (hasApprovePublishAction(item.availableActions) && actionsToInclude.approvePublish) ||
     (hasSchedulePublishAction(item.availableActions) && actionsToInclude.schedulePublish)
   ) {
-    sectionC.push(menuOptions.publish);
+    if (hasApprovePublishAction(item.availableActions) && actionsToInclude.approvePublish) {
+      sectionC.push(menuOptions.approvePublish);
+    } else {
+      sectionC.push(menuOptions.publish);
+    }
   }
   if (hasPublishRejectAction(item.availableActions) && actionsToInclude.rejectPublish) {
     sectionC.push(menuOptions.rejectPublish);

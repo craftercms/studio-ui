@@ -258,6 +258,7 @@ export default React.forwardRef(function AceEditor(props: AceEditorProps, ref) {
   useEffect(() => {
     if (initialized) {
       refs.current.ace.setValue(value, -1);
+      refs.current.ace.session.getUndoManager().reset();
     }
   }, [initialized, value]);
   useEffect(() => {
