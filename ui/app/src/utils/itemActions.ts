@@ -188,11 +188,11 @@ const unparsedMenuOptions: Record<AllItemActions, ContextMenuOptionDescriptor<Al
   },
   requestPublish: {
     id: 'requestPublish',
-    label: translations.publishRequest
+    label: translations.publish
   },
   approvePublish: {
     id: 'approvePublish',
-    label: translations.approve
+    label: translations.publish
   },
   rejectPublish: {
     id: 'rejectPublish',
