@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import PathNavigatorTreeUI, { TreeNode } from './PathNavigatorTreeUI';
 import { useDispatch } from 'react-redux';
 import {
@@ -155,14 +155,22 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   const [rootNode, setRootNode] = useState(null);
 
   const hasActiveSession = useSelection((state) => state.auth.active);
+  const intervalRef = useRef<any>();
+
+  const resetBackgroundRefreshInterval = useCallback(() => {
+    clearInterval(intervalRef.current);
+    intervalRef.current = setInterval(() => {
+      dispatch(pathNavigatorTreeBackgroundRefresh({ id }));
+    }, backgroundRefreshTimeoutMs);
+  }, [backgroundRefreshTimeoutMs, dispatch, id]);
 
   useEffect(() => {
     if (backgroundRefreshTimeoutMs && hasActiveSession) {
-      let interval = setInterval(() => {
+      intervalRef.current = setInterval(() => {
         dispatch(pathNavigatorTreeBackgroundRefresh({ id }));
       }, backgroundRefreshTimeoutMs);
       return () => {
-        clearInterval(interval);
+        clearInterval(intervalRef.current);
       };
     }
   }, [backgroundRefreshTimeoutMs, dispatch, id, hasActiveSession]);
@@ -258,11 +266,12 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
           keyword
         })
       );
+      resetBackgroundRefreshInterval();
     });
     return () => {
       subscription.unsubscribe();
     };
-  }, [dispatch, id, onSearch$, rootPath]);
+  }, [resetBackgroundRefreshInterval, dispatch, id, onSearch$, rootPath]);
 
   // region Item Updates Propagation
   useEffect(() => {
@@ -451,6 +460,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
         );
       }
     }
+    resetBackgroundRefreshInterval();
   };
 
   const onHeaderButtonClick = (element: Element) => {
@@ -485,6 +495,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
           id
         })
       );
+      resetBackgroundRefreshInterval();
     }
   };
 
@@ -510,6 +521,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
         path
       })
     );
+    resetBackgroundRefreshInterval();
   };
 
   const onPreview = (item: DetailedItem) => {
