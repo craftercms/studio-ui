@@ -140,9 +140,16 @@ const dialogEpics: CrafterCMSEpic[] = [
       ofType(showEditDialog.type, showCodeEditorDialog.type),
       withLatestFrom(state$),
       switchMap(([{ type, payload }, state]) => {
-        console.log(payload.path);
-        console.log(state.dialogs.edit.path);
-        if (payload.path === (type === showEditDialog.type ? state.dialogs.edit.path : state.dialogs.codeEditor.path)) {
+        let path;
+        let nextPath;
+        if (type === showEditDialog.type) {
+          path = payload.src ?? payload.path;
+          nextPath = state.dialogs.edit.src ?? state.dialogs.edit.path;
+        } else {
+          path = payload.path;
+          nextPath = state.dialogs.codeEditor.path;
+        }
+        if (path === nextPath) {
           const id = type === showEditDialog.type ? legacyEditorId : codeEditorId;
           if (state.dialogs.minimizedDialogs[id]?.minimized === true) {
             return of(
