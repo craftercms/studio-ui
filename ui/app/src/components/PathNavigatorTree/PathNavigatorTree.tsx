@@ -502,6 +502,8 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   };
 
   const onMoreClick = (path: string) => {
+    nodesByPathRef.current[path].children.pop();
+    nodesByPathRef.current[path].children.push({ id: 'loading' });
     dispatch(
       pathNavigatorTreeFetchPathPage({
         id,
