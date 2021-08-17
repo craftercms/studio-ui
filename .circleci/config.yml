@@ -16,7 +16,7 @@ jobs:
       - checkout
       - run:
           name: Prep
-          command: apk add build-base
+          command: sudo apt install build-essential
       # Use mvn clean and package as the standard maven build phase
       - run:
           name: Build
