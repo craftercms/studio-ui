@@ -373,10 +373,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
             dispatch(
               pathNavigatorTreeFetchPathChildren({
                 id,
-                path,
-                options: {
-                  limit: childrenByParentPath[path] ? childrenByParentPath[path].length + payload.targets.length : limit
-                }
+                path
               })
             );
           }
