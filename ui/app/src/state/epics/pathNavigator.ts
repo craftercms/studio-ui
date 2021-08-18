@@ -70,7 +70,11 @@ export default [
       ofType(pathNavigatorRefresh.type, pathNavigatorBackgroundRefresh.type),
       withLatestFrom(state$),
       mergeMap(([{ type, payload: { id } }, state]) =>
-        fetchItemWithChildrenByPath(state.sites.active, state.pathNavigator[id].currentPath).pipe(
+        fetchItemWithChildrenByPath(state.sites.active, state.pathNavigator[id].currentPath, {
+          keyword: state.pathNavigator[id].keyword,
+          limit: state.pathNavigator[id].limit,
+          offset: state.pathNavigator[id].offset
+        }).pipe(
           map(({ item, children }) => pathNavigatorFetchPathComplete({ id, parent: item, children })),
           catchAjaxError((error: AjaxError) => {
             if (error.status === 404 && state.pathNavigator[id].rootPath !== state.pathNavigator[id].currentPath) {
