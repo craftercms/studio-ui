@@ -15,7 +15,7 @@
  */
 
 import { ofType } from 'redux-observable';
-import { filter, ignoreElements, map, mergeMap, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import { filter, ignoreElements, map, mergeMap, switchMap, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 import { CrafterCMSEpic } from '../store';
 import {
   pathNavigatorTreeBackgroundRefresh,
@@ -43,6 +43,7 @@ import { setStoredPathNavigatorTree } from '../../utils/state';
 import { forkJoin } from 'rxjs';
 import { createPresenceTable } from '../../utils/array';
 import { getIndividualPaths, withoutIndex } from '../../utils/path';
+import { changeSite } from '../reducers/sites';
 
 export default [
   // region pathNavigatorTreeInit
@@ -84,7 +85,8 @@ export default [
           map(([items, data]) => pathNavigatorTreeRestoreComplete({ id, expanded, collapsed, items, data })),
           catchAjaxError((error) => pathNavigatorTreeRestoreFailed({ error, id }))
         );
-      })
+      }),
+      takeUntil(action$.pipe(ofType(changeSite.type)))
     ),
   // endregion
   // region pathNavigatorFetchPathChildren

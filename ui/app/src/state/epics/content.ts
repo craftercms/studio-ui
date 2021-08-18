@@ -15,7 +15,7 @@
  */
 
 import { ActionsObservable, ofType } from 'redux-observable';
-import { filter, map, mergeMap, switchMap, withLatestFrom } from 'rxjs/operators';
+import { filter, map, mergeMap, switchMap, takeUntil, withLatestFrom } from 'rxjs/operators';
 import {
   clearClipboard,
   completeDetailedItem,
@@ -69,6 +69,7 @@ import { CrafterCMSEpic } from '../store';
 import { popDialog, pushDialog } from '../reducers/dialogs/minimizedDialogs';
 import { nanoid as uuid } from 'nanoid';
 import StandardAction from '../../models/StandardAction';
+import { changeSite } from '../reducers/sites';
 
 export const sitePolicyMessages = defineMessages({
   itemPastePolicyConfirm: {
@@ -158,7 +159,8 @@ const content: CrafterCMSEpic[] = [
           map((item) => fetchSandboxItemComplete({ item })),
           catchAjaxError(fetchSandboxItemFailed)
         )
-      )
+      ),
+      takeUntil(action$.pipe(ofType(changeSite.type)))
     ),
   // endregion
   // region Item Duplicate

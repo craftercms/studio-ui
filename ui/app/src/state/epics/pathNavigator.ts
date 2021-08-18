@@ -15,7 +15,7 @@
  */
 
 import { ofType } from 'redux-observable';
-import { ignoreElements, map, mergeMap, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import { ignoreElements, map, mergeMap, switchMap, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 import { catchAjaxError } from '../../utils/ajax';
 import { fetchChildrenByPath, fetchItemsByPath, fetchItemWithChildrenByPath } from '../../services/content';
 import { getIndividualPaths, getRootPath } from '../../utils/path';
@@ -41,6 +41,7 @@ import { getStoredPathNavigator, setStoredPathNavigator } from '../../utils/stat
 import { CrafterCMSEpic } from '../store';
 import { showErrorDialog } from '../reducers/dialogs/error';
 import { AjaxError } from 'rxjs/ajax';
+import { changeSite } from '../reducers/sites';
 
 export default [
   // region pathNavigatorInit
@@ -184,7 +185,8 @@ export default [
             );
           }
         }
-      )
+      ),
+      takeUntil(action$.pipe(ofType(changeSite.type)))
     ),
   // endregion
   // region pathNavigatorFetchPathComplete, pathNavigatorConditionallySetPathComplete, pathNavigatorSetCollapsed
