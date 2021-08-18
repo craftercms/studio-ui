@@ -58,7 +58,6 @@ import PathNavigatorUI from './PathNavigatorUI';
 import { ContextMenuOptionDescriptor, toContextMenuOptionsLookup } from '../../utils/itemActions';
 import PathNavigatorSkeleton from './PathNavigatorSkeleton';
 import GlobalState from '../../models/GlobalState';
-import { getSystemLink } from '../LauncherSection';
 import { SystemIconDescriptor } from '../SystemIcon';
 // @ts-ignore
 import { getOffsetLeft, getOffsetTop } from '@material-ui/core/Popover/Popover';
@@ -71,6 +70,7 @@ import { useItemsByPath } from '../../utils/hooks/useItemsByPath';
 import { useSubject } from '../../utils/hooks/useSubject';
 import { useSiteLocales } from '../../utils/hooks/useSiteLocales';
 import { useMount } from '../../utils/hooks/useMount';
+import { getSystemLink } from '../../utils/system';
 
 interface Menu {
   path?: string;

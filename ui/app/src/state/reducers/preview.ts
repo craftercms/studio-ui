@@ -70,7 +70,6 @@ import {
 } from '../../models/Search';
 import ContentInstance from '../../models/ContentInstance';
 import { changeSite } from './sites';
-import { storeInitialized } from '../actions/system';
 import { deserialize, fromString } from '../../utils/xml';
 import { defineMessages } from 'react-intl';
 
@@ -180,13 +179,6 @@ const reducer = createReducer<GlobalState['preview']>(
     pageBuilderPanel: null
   },
   {
-    [storeInitialized.type]: (state, { payload }) =>
-      payload.properties.previewChoice
-        ? {
-            ...state,
-            previewChoice: JSON.parse(payload.properties.previewChoice)
-          }
-        : state,
     [OPEN_TOOLS]: (state) => {
       return {
         ...state,

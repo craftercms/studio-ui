@@ -531,10 +531,12 @@
         me.setCookie('crafterSite', site.id);
         $timeout(
           function() {
-            const previewChoice = CrafterCMSNext.system.store.getState().preview.previewChoice;
-            $window.location.href = `${
-              previewChoice && previewChoice[site.id] === '2' ? '/studio/next/preview' : '/studio/preview'
-            }#/?page=/&site=${site.id}`;
+            $window.location.href = CrafterCMSNext.util.system.getSystemLink({
+              page: '/',
+              site: site.id,
+              authoringBase: CrafterCMSNext.system.store.getState().env.authoringBase,
+              systemLinkId: 'preview'
+            });
           },
           0,
           false

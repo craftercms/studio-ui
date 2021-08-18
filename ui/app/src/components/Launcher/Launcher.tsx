@@ -45,7 +45,6 @@ import { EnhancedUser } from '../../models/User';
 import LookupTable from '../../models/LookupTable';
 import { batchActions } from '../../state/actions/misc';
 import clsx from 'clsx';
-import { getSystemLink } from '../LauncherSection';
 import LauncherGlobalNav from '../LauncherGlobalNav';
 import GlobalState from '../../models/GlobalState';
 import Skeleton from '@material-ui/lab/Skeleton';
@@ -57,6 +56,8 @@ import { useSiteList } from '../../utils/hooks/useSiteList';
 import { useSiteUIConfig } from '../../utils/hooks/useSiteUIConfig';
 import { initLauncherConfig } from '../../state/actions/launcher';
 import { useLauncherState } from '../../utils/hooks/useLauncherState';
+import { getSystemLink } from '../../utils/system';
+import { PREVIEW_BASE_URL } from '../../utils/constants';
 
 export interface LauncherProps {
   open: boolean;
@@ -388,7 +389,7 @@ export default function Launcher(props: LauncherStateProps) {
   }, [uiConfig.xml, launcher, dispatch]);
 
   const onSiteCardClick = (site: string) => {
-    if (window.location.href.includes('/next/preview')) {
+    if (window.location.href.includes(PREVIEW_BASE_URL)) {
       // If site we're switching to is next compatible, there's no need for any sort of page postback.
       dispatch(batchActions([changeSite(site), closeLauncher()]));
     } else {

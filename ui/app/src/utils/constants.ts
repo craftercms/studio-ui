@@ -80,3 +80,5 @@ export const CONTENT_ITEM_UNLOCK /*                  */ = 0b00000000000000000000
 // endregion
 
 export const UNDEFINED = void 0;
+
+export const PREVIEW_BASE_URL = '/next/preview';

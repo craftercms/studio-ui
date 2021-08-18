@@ -31,7 +31,6 @@ import { fetchStatus } from '../../services/publishing';
 import { map } from 'rxjs/operators';
 import { Site } from '../../models/Site';
 import { setSiteCookie } from '../../utils/auth';
-import { getSystemLink } from '../LauncherSection';
 import { trash } from '../../services/sites';
 import { batchActions } from '../../state/actions/misc';
 import { showSystemNotification } from '../../state/actions/system';
@@ -54,6 +53,7 @@ import { useMount } from '../../utils/hooks/useMount';
 import { useSpreadState } from '../../utils/hooks/useSpreadState';
 import { useSitesBranch } from '../../utils/hooks/useSitesBranch';
 import Paper from '@material-ui/core/Paper';
+import { getSystemLink } from '../../utils/system';
 
 const translations = defineMessages({
   siteDeleted: {

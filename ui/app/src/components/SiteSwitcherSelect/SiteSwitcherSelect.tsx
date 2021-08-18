@@ -22,11 +22,12 @@ import useStyles from './styles';
 import { isBlank } from '../../utils/string';
 import { changeSite } from '../../state/reducers/sites';
 import { setSiteCookie } from '../../utils/auth';
-import { getSystemLink } from '../LauncherSection';
 import { useDispatch } from 'react-redux';
 import { useEnv } from '../../utils/hooks/useEnv';
 import { useSiteList } from '../../utils/hooks/useSiteList';
 import clsx from 'clsx';
+import { getSystemLink } from '../../utils/system';
+import { PREVIEW_BASE_URL } from '../../utils/constants';
 
 export interface SiteSwitcherSelectProps extends SelectProps {
   site: string;
@@ -41,7 +42,7 @@ function SiteSwitcherSelect(props: SiteSwitcherSelectProps) {
 
   const onSiteChange = ({ target: { value } }) => {
     if (!isBlank(value) && site !== value) {
-      if (window.location.href.includes('/next/preview')) {
+      if (window.location.href.includes(PREVIEW_BASE_URL)) {
         dispatch(changeSite(value));
       } else {
         setSiteCookie(value);

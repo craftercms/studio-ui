@@ -67,7 +67,6 @@ export default function LegacyContainer(props) {
     <PreviewCompatibilityDialogContainer
       {...props}
       open={open}
-      previewUrl={props.data.location.pathname}
       onCancel={(options) => {
         setOpen(false);
         props.onCancel(options);

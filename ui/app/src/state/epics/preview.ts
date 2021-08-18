@@ -34,7 +34,7 @@ import {
 import GlobalState from '../../models/GlobalState';
 import { setClipboard } from '../actions/content';
 import { CrafterCMSEpic } from '../store';
-import { getSystemLink } from '../../components/LauncherSection';
+import { getSystemLink } from '../../utils/system';
 
 export default [
   (action$, state$) =>

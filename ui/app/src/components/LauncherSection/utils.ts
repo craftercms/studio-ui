@@ -15,8 +15,7 @@
  */
 
 import { defineMessages } from 'react-intl';
-
-export type SystemLinkId = 'preview' | 'siteTools' | 'siteSearch' | 'siteDashboard';
+import { PREVIEW_BASE_URL } from '../../utils/constants';
 
 export const urlMapping = {
   'home.globalMenu.logging-levels': '#/logging',
@@ -34,7 +33,7 @@ export const urlMapping = {
   about: '#/about-us',
   settings: '#/settings',
   'legacy.preview': '/preview/',
-  preview: '/next/preview',
+  preview: PREVIEW_BASE_URL,
   siteConfig: '/site-config',
   search: '/search',
   siteDashboard: '/site-dashboard'
@@ -66,25 +65,6 @@ export const messages = defineMessages({
     defaultMessage: 'Documentation'
   }
 });
-
-export function getSystemLink({
-  systemLinkId,
-  authoringBase,
-  site,
-  page = '/'
-}: {
-  systemLinkId: SystemLinkId;
-  authoringBase: string;
-  site: string;
-  page?: string;
-}) {
-  return {
-    preview: `${authoringBase}/next/preview#/?page=${page}&site=${site}`,
-    siteTools: `${authoringBase}/site-config`,
-    siteSearch: `${authoringBase}/search`,
-    siteDashboard: `${authoringBase}/site-dashboard`
-  }[systemLinkId];
-}
 
 export function getLauncherSectionLink(id: string, authoringBase: string = `${getBase()}/studio`) {
   return `${authoringBase}${urlMapping[id]}`;

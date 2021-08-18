@@ -76,11 +76,17 @@
   communicator.subscribe(Topics.GUEST_CHECK_IN, function(data) {
     const doGo = () => {
       const state = CrafterCMSNext.system.store.getState();
-      window.location.href = `${state.env.authoringBase}/next/preview#/?page=${data.location.pathname}&site=${state.sites.active}`;
+      window.location.href = CrafterCMSNext.util.system.getSystemLink({
+        authoringBase: state.env.authoringBase,
+        systemLinkId: 'preview',
+        page: data.location.pathname,
+        site: state.sites.active
+      });
     };
     const showCompatDialog = () => {
       let unmount;
       CrafterCMSNext.render(document.createElement('div'), 'PreviewCompatDialog', {
+        isPreviewNext: true,
         onOk: doGo,
         onCancel() {
           unmount({ removeContainer: true });
@@ -92,7 +98,6 @@
         unmount = args.unmount;
       });
     };
-    let previousChoice = CrafterCMSNext.system.store.getState().preview.previewChoice[CStudioAuthoringContext.siteId];
     if (!previewNextCheckInNotification && !compatibilityForceStay) {
       // Avoid recurrently showing the notification over and over as long as the page is not refreshed
       previewNextCheckInNotification = true;
@@ -100,25 +105,7 @@
         showCompatDialog();
       }
     }
-    if (previousChoice !== '2') {
-      const usersService = CrafterCMSNext.services.users;
-      usersService
-        .fetchGlobalProperties()
-        .pipe(
-          CrafterCMSNext.rxjs.operators.switchMap((prefs) =>
-            usersService.setProperties({
-              previewChoice: JSON.stringify(
-                Object.assign(JSON.parse(prefs.previewChoice || '{}'), {
-                  [CStudioAuthoringContext.siteId]: '2'
-                })
-              )
-            })
-          )
-        )
-        .subscribe(() => {
-          doGo();
-        });
-    } else if (!compatibilityAsk && !compatibilityForceStay) {
+    if (!compatibilityAsk && !compatibilityForceStay) {
       doGo();
     }
     communicator.addTargetWindow({

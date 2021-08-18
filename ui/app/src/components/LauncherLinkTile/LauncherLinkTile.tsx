@@ -18,13 +18,13 @@ import LauncherTile from '../LauncherTile';
 import React from 'react';
 import { SystemIconDescriptor } from '../SystemIcon';
 import TranslationOrText from '../../models/TranslationOrText';
-import { getSystemLink, SystemLinkId } from '../LauncherSection';
 import { useDispatch } from 'react-redux';
 import { closeLauncher, showWidgetDialog } from '../../state/actions/dialogs';
 import { batchActions } from '../../state/actions/misc';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useEnv } from '../../utils/hooks/useEnv';
 import { usePossibleTranslation } from '../../utils/hooks/usePossibleTranslation';
+import { getSystemLink, SystemLinkId } from '../../utils/system';
 
 export interface LauncherLinkTileProps {
   title: TranslationOrText;

@@ -21,8 +21,8 @@ import { useGlobalAppState } from '../GlobalApp';
 import { useReference } from '../../utils/hooks/useReference';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useEnv } from '../../utils/hooks/useEnv';
-import { getSystemLink } from '../LauncherSection';
 import SiteToolsApp, { Tool } from './SiteToolsApp';
+import { getSystemLink } from '../../utils/system';
 
 interface UrlDrivenSiteToolsProps {
   footerHtml: string;
