@@ -133,16 +133,19 @@ crafterDefine('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay'], fun
       window.location.reload();
     });
 
-    communicator.on(Topics.ICE_TOOLS_OFF, function(message) {
-      iceToolsOn = false;
-      removeICERegions();
-    });
+    function iceToolsToggle(on) {
+      iceToolsOn = on;
+      if (on) {
+        initICERegions();
+      } else {
+        removeICERegions();
+      }
+    }
 
     // Enable pencils, calls an event that renders the pencils (visual, no model in between)
-    communicator.on(Topics.ICE_TOOLS_ON, function(message) {
-      iceToolsOn = true;
-      initICERegions();
-    });
+    communicator.on('EDIT_MODE_CHANGED', (message) => iceToolsToggle(message.editMode));
+    communicator.on(Topics.ICE_TOOLS_OFF, () => iceToolsToggle(false));
+    communicator.on(Topics.ICE_TOOLS_ON, () => iceToolsToggle(true));
 
     communicator.on(Topics.REPAINT_PENCILS, repaintPencils);
 
@@ -180,7 +183,17 @@ crafterDefine('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay'], fun
 
     // When the page has successfully loaded, notify the host window of it's readiness
     communicator.publish(Topics.GUEST_SITE_LOAD, {
-      location: window.location.href,
+      location: {
+        hash: window.location.hash,
+        host: window.location.host,
+        hostname: window.location.hostname,
+        href: window.location.href,
+        origin: window.location.origin,
+        pathname: window.location.pathname,
+        port: window.location.port,
+        protocol: window.location.protocol,
+        search: window.location.search
+      },
       url: window.location.href.replace(window.location.origin, '')
     });
 
@@ -188,13 +201,12 @@ crafterDefine('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay'], fun
 
     // ICE zone highlighting on hover
     $document
-      .on('mouseover', '.studio-ice-indicator', function(e) {
+      .on('mouseover', '.studio-ice-indicator', function() {
         var $i = $(this),
           $e = $(crafter.String('[data-studio-ice-target="%@"]').fmt($i.data('studioIceTrigger')));
-
         initOverlay($e);
       })
-      .on('mouseout', '.studio-ice-indicator', function(e) {
+      .on('mouseout', '.studio-ice-indicator', function() {
         overlay.hide();
       });
 
@@ -234,6 +246,13 @@ crafterDefine('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay'], fun
       props.scrollLeft = $window.scrollLeft();
 
       communicator.publish(Topics.ICE_ZONE_ON, props);
+    });
+
+    // Toggle PageBuilder edit mode
+    $document.on('keypress', function(e) {
+      if (e.key.toLowerCase() === 'e') {
+        communicator.publish('EDIT_MODE_TOGGLE_HOTKEY');
+      }
     });
 
     $(window).resize(function(e) {

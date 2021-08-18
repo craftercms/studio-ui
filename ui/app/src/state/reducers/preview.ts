@@ -56,7 +56,6 @@ import {
   SET_HOST_WIDTH,
   SET_ITEM_BEING_DRAGGED,
   setHighlightMode,
-  setPreviewChoice,
   UPDATE_AUDIENCES_PANEL_MODEL,
   updatePageBuilderPanelWidth,
   updateToolsPanelWidth
@@ -71,7 +70,6 @@ import {
 } from '../../models/Search';
 import ContentInstance from '../../models/ContentInstance';
 import { changeSite } from './sites';
-import { fetchGlobalPropertiesComplete } from '../actions/user';
 import { storeInitialized } from '../actions/system';
 import { deserialize, fromString } from '../../utils/xml';
 import { defineMessages } from 'react-intl';
@@ -159,7 +157,6 @@ const reducer = createReducer<GlobalState['preview']>(
   {
     editMode: true,
     highlightMode: 'ALL',
-    previewChoice: {},
     hostSize: { width: null, height: null },
     toolsPanelPageStack: [],
     showToolsPanel: process.env.REACT_APP_SHOW_TOOLS_PANEL ? process.env.REACT_APP_SHOW_TOOLS_PANEL === 'true' : true,
@@ -561,14 +558,6 @@ const reducer = createReducer<GlobalState['preview']>(
     [setHighlightMode.type]: (state, { payload }) => ({
       ...state,
       highlightMode: payload.highlightMode
-    }),
-    [setPreviewChoice.type]: (state, { payload }) => ({
-      ...state,
-      previewChoice: { ...state.previewChoice, [payload.site]: payload.previewChoice }
-    }),
-    [fetchGlobalPropertiesComplete.type]: (state, { payload }) => ({
-      ...state,
-      previewChoice: { ...state.previewChoice, ...JSON.parse(payload.previewChoice ?? '{}') }
     }),
     [initToolsPanelConfig.type]: (state, { payload }) => {
       let toolsPanelConfig = {

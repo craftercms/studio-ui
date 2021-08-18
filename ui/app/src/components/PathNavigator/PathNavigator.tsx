@@ -66,7 +66,6 @@ import { getNumOfMenuOptionsForItem } from '../../utils/content';
 import { batchActions } from '../../state/actions/misc';
 import { useSelection } from '../../utils/hooks/useSelection';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import { usePreviewState } from '../../utils/hooks/usePreviewState';
 import { useEnv } from '../../utils/hooks/useEnv';
 import { useItemsByPath } from '../../utils/hooks/useItemsByPath';
 import { useSubject } from '../../utils/hooks/useSubject';
@@ -152,7 +151,6 @@ export default function PathNavigator(props: PathNavigatorProps) {
   const itemsByPath = useItemsByPath();
   const site = useActiveSiteId();
   const { authoringBase } = useEnv();
-  const { previewChoice } = usePreviewState();
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const [widgetMenu, setWidgetMenu] = useState<Menu>({
@@ -270,22 +268,9 @@ export default function PathNavigator(props: PathNavigatorProps) {
           }
           break;
         }
-        case folderCreated.type: {
-          if (withoutIndex(payload.target) === withoutIndex(state.currentPath)) {
-            dispatch(pathNavigatorRefresh({ id }));
-          }
-          if (state.leaves.some((path) => withoutIndex(path) === withoutIndex(payload.target))) {
-            dispatch(
-              pathNavigatorUpdate({
-                id,
-                leaves: state.leaves.filter((path) => withoutIndex(path) !== withoutIndex(payload.target))
-              })
-            );
-          }
-          break;
-        }
+        case folderCreated.type:
         case itemsPasted.type: {
-          if (payload.clipboard.type === 'COPY') {
+          if (type === folderCreated.type || payload.clipboard.type === 'COPY') {
             if (withoutIndex(payload.target) === withoutIndex(state.currentPath)) {
               dispatch(pathNavigatorRefresh({ id }));
             }
@@ -297,8 +282,8 @@ export default function PathNavigator(props: PathNavigatorProps) {
                 })
               );
             }
-          } else {
-            // payload.clipboard.type === 'CUT
+          }
+          if (type === itemsPasted.type && payload.clipboard.type === 'CUT') {
             const parentPath = getParentPath(payload.target);
             if (parentPath === withoutIndex(state.currentPath)) {
               dispatch(pathNavigatorRefresh({ id }));
@@ -466,7 +451,6 @@ export default function PathNavigator(props: PathNavigatorProps) {
           const url = getSystemLink({
             site,
             systemLinkId: 'preview',
-            previewChoice,
             authoringBase,
             page: item.previewUrl
           });

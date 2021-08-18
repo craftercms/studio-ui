@@ -50,7 +50,6 @@ import LauncherGlobalNav from '../LauncherGlobalNav';
 import GlobalState from '../../models/GlobalState';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import { usePreviewState } from '../../utils/hooks/usePreviewState';
 import { useEnv } from '../../utils/hooks/useEnv';
 import { useSystemVersion } from '../../utils/hooks/useSystemVersion';
 import { useActiveUser } from '../../utils/hooks/useActiveUser';
@@ -349,7 +348,6 @@ export default function Launcher(props: LauncherStateProps) {
   const version = useSystemVersion();
   const { formatMessage } = useIntl();
   const { authoringBase } = useEnv();
-  const { previewChoice } = usePreviewState();
   const { open, anchor: anchorSelector, sitesRailPosition = 'left', closeButtonPosition = 'right' } = props;
   const uiConfig = useSiteUIConfig();
   const launcher = useLauncherState();
@@ -373,7 +371,6 @@ export default function Launcher(props: LauncherStateProps) {
                 getSystemLink({
                   systemLinkId: descriptor.systemLinkId,
                   authoringBase,
-                  previewChoice,
                   site
                 }),
               onClick(site) {
@@ -381,7 +378,7 @@ export default function Launcher(props: LauncherStateProps) {
               }
             }))
         : null,
-    [siteCardMenuLinks, userRoles, formatMessage, authoringBase, previewChoice]
+    [siteCardMenuLinks, userRoles, formatMessage, authoringBase]
   );
 
   useEffect(() => {
@@ -391,28 +388,17 @@ export default function Launcher(props: LauncherStateProps) {
   }, [uiConfig.xml, launcher, dispatch]);
 
   const onSiteCardClick = (site: string) => {
-    if (previewChoice[site] === '2' && window.location.href.includes('/next/preview')) {
+    if (window.location.href.includes('/next/preview')) {
       // If site we're switching to is next compatible, there's no need for any sort of page postback.
       dispatch(batchActions([changeSite(site), closeLauncher()]));
     } else {
       setSiteCookie(site);
       setTimeout(() => {
-        const link = getSystemLink({
+        window.location.href = getSystemLink({
           systemLinkId: 'preview',
-          previewChoice,
           authoringBase,
           site
         });
-        // If we're in legacy preview already (i.e. switching from a legacy-preview site to another legacy-preview
-        // site) only the hash will change and the page won't reload or do anything perceivable since legacy isn't
-        // fully integrated with the URL. In these cases, we need to programmatically reload.
-        const shouldReload =
-          // Currently in legacy...
-          window.location.pathname === `${authoringBase.replace(window.location.origin, '')}/preview` &&
-          // ...and not going to next
-          !link.includes('next/preview');
-        window.location.href = link;
-        shouldReload && window.location.reload();
       });
     }
   };

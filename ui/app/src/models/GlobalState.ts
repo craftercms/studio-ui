@@ -145,7 +145,6 @@ export interface GlobalState {
   preview: {
     editMode: boolean;
     highlightMode: string;
-    previewChoice: LookupTable<'1' | '2'>;
     showToolsPanel: boolean;
     toolsPanelPageStack: WidgetDescriptor[];
     toolsPanelWidth: number;
