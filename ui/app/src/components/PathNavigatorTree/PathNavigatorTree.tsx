@@ -165,15 +165,13 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   }, [backgroundRefreshTimeoutMs, dispatch, id]);
 
   useEffect(() => {
-    if (backgroundRefreshTimeoutMs && hasActiveSession) {
-      intervalRef.current = setInterval(() => {
-        dispatch(pathNavigatorTreeBackgroundRefresh({ id }));
-      }, backgroundRefreshTimeoutMs);
+    if (hasActiveSession) {
+      resetBackgroundRefreshInterval();
       return () => {
         clearInterval(intervalRef.current);
       };
     }
-  }, [backgroundRefreshTimeoutMs, dispatch, id, hasActiveSession]);
+  }, [hasActiveSession, resetBackgroundRefreshInterval]);
 
   useEffect(() => {
     // Adding uiConfig as means to stop navigator from trying to
