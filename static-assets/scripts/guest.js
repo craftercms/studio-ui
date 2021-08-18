@@ -134,7 +134,7 @@ crafterDefine('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay'], fun
     });
 
     function iceToolsToggle(on) {
-      iceToolsOn = on;
+      iceToolsOn = Boolean(on);
       if (on) {
         initICERegions();
       } else {
