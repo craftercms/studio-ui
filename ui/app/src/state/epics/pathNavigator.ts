@@ -57,8 +57,8 @@ export default [
           pathNavigatorFetchParentItems({
             id,
             path: storedState ? storedState.currentPath : payload.path,
-            ...(storedState.offset && { offset: storedState.offset }),
-            ...(storedState.keyword && { keyword: storedState.keyword }),
+            ...(storedState?.offset && { offset: storedState.offset }),
+            ...(storedState?.keyword && { keyword: storedState.keyword }),
             excludes: payload.excludes,
             limit: payload.limit
           })
