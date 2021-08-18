@@ -39,6 +39,8 @@ export const folderRenamed = /*#__PURE__*/ createAction<{ target: string; oldNam
   'FOLDER_RENAMED'
 );
 
+export const itemsUploaded = /*#__PURE__*/ createAction<{ target: string; targets: string[] }>('ITEM_UPLOADED');
+
 export const itemsPasted = /*#__PURE__*/ createAction<{ target: string; clipboard: Clipboard }>('ITEMS_PASTED');
 
 export const itemsDeleted = /*#__PURE__*/ createAction<{ targets: string[] }>('ITEMS_DELETED');
