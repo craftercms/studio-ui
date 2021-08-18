@@ -440,7 +440,6 @@ export function PreviewConcierge(props: any) {
               path: payload.itemId,
               authoringBase,
               site: siteId,
-              readonly: true,
               iceGroupId: payload.iceId || UNDEFINED,
               modelId: payload.embeddedItemId || UNDEFINED
             })
