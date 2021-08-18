@@ -156,7 +156,6 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
         ...state,
         [id]: {
           ...state[id],
-          keyword: '',
           currentPath: path,
           error: null
         }

@@ -73,6 +73,7 @@ import { useItemsByPath } from '../../utils/hooks/useItemsByPath';
 import { useSubject } from '../../utils/hooks/useSubject';
 import { useSiteLocales } from '../../utils/hooks/useSiteLocales';
 import { useMount } from '../../utils/hooks/useMount';
+import { nnou } from '../../utils/object';
 
 interface Menu {
   path?: string;
@@ -166,6 +167,12 @@ export default function PathNavigator(props: PathNavigatorProps) {
   const uiConfig = useSelection<GlobalState['uiConfig']>((state) => state.uiConfig);
   const siteLocales = useSiteLocales();
   const hasActiveSession = useSelection((state) => state.auth.active);
+
+  useEffect(() => {
+    if (nnou(state?.keyword)) {
+      setKeyword(state.keyword);
+    }
+  }, [state?.keyword]);
 
   useEffect(() => {
     if (backgroundRefreshTimeoutMs && hasActiveSession) {

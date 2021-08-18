@@ -57,6 +57,8 @@ export default [
           pathNavigatorFetchParentItems({
             id,
             path: storedState ? storedState.currentPath : payload.path,
+            ...(storedState.offset && { offset: storedState.offset }),
+            ...(storedState.keyword && { keyword: storedState.keyword }),
             excludes: payload.excludes,
             limit: payload.limit
           })
@@ -158,7 +160,7 @@ export default [
         ([
           {
             type,
-            payload: { id, path, excludes, limit }
+            payload: { id, path, excludes, limit, offset, keyword }
           },
           state
         ]) => {
@@ -182,7 +184,7 @@ export default [
               })
             );
           } else {
-            return fetchItemWithChildrenByPath(site, path, { excludes, limit }).pipe(
+            return fetchItemWithChildrenByPath(site, path, { excludes, limit, offset, keyword }).pipe(
               map(({ item, children }) => pathNavigatorFetchPathComplete({ id, parent: item, children })),
               catchAjaxError((error) => pathNavigatorFetchPathFailed({ error, id }))
             );
@@ -212,7 +214,9 @@ export default [
             const uuid = state.sites.byId[state.sites.active].uuid;
             setStoredPathNavigator(uuid, state.user.username, id, {
               currentPath: state.pathNavigator[id].currentPath,
-              collapsed: state.pathNavigator[id].collapsed
+              collapsed: state.pathNavigator[id].collapsed,
+              keyword: state.pathNavigator[id].keyword,
+              offset: state.pathNavigator[id].offset
             });
           }
         }
