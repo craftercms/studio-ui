@@ -18,6 +18,7 @@ import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
 import { closeEditDialog, editDialogClosed, showEditDialog, updateEditConfig } from '../../actions/dialogs';
 import { LegacyFormDialogStateProps } from '../../../components/Dialogs/LegacyFormDialog';
+import { nnou } from '../../../utils/object';
 
 const initialState: LegacyFormDialogStateProps = {
   open: false,
@@ -29,7 +30,10 @@ const initialState: LegacyFormDialogStateProps = {
 
 export default createReducer<GlobalState['dialogs']['edit']>(initialState, {
   [showEditDialog.type]: (state, { payload }) => {
-    return state.open
+    // Should the dialog be opened already, 1. we don't need to reopen 2. if it's opened with a different form, we
+    // don't want to override and possibly lose form edits that are unsaved. Currently, the epic validates and shows
+    // a message to the user stating to please close the other form before opening a new one.
+    return state.open || nnou(state.path)
       ? state
       : {
           ...state,

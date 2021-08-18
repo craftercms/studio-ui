@@ -50,6 +50,7 @@ import {
   itemDuplicated,
   itemsDeleted,
   itemsPasted,
+  itemsUploaded,
   itemUnlocked,
   itemUpdated,
   pluginInstalled
@@ -222,7 +223,8 @@ export default function PathNavigator(props: PathNavigatorProps) {
       itemsDeleted.type,
       itemDuplicated.type,
       itemCreated.type,
-      pluginInstalled.type
+      pluginInstalled.type,
+      itemsUploaded.type
     ];
     const hostToHost$ = getHostToHostBus();
     const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
@@ -323,6 +325,12 @@ export default function PathNavigator(props: PathNavigatorProps) {
         }
         case pluginInstalled.type: {
           dispatch(pathNavigatorBackgroundRefresh({ id }));
+          break;
+        }
+        case itemsUploaded.type: {
+          if (withoutIndex(payload.target) === withoutIndex(state.currentPath)) {
+            dispatch(pathNavigatorRefresh({ id }));
+          }
           break;
         }
       }
