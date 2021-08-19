@@ -41,6 +41,7 @@ import { getStoredPathNavigator, setStoredPathNavigator } from '../../utils/stat
 import { CrafterCMSEpic } from '../store';
 import { showErrorDialog } from '../reducers/dialogs/error';
 import { AjaxError } from 'rxjs/ajax';
+import { nnou } from '../../utils/object';
 
 export default [
   // region pathNavigatorInit
@@ -57,7 +58,7 @@ export default [
           pathNavigatorFetchParentItems({
             id,
             path: storedState ? storedState.currentPath : payload.path,
-            ...(storedState?.offset && { offset: storedState.offset }),
+            ...(nnou(storedState?.offset) && { offset: storedState.offset }),
             ...(storedState?.keyword && { keyword: storedState.keyword }),
             excludes: payload.excludes,
             limit: payload.limit

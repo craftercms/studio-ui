@@ -39,6 +39,7 @@ import {
   pathNavigatorUpdate
 } from '../actions/pathNavigator';
 import { changeSite } from './sites';
+import { SandboxItem } from '../../models/Item';
 
 const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
   {},
@@ -101,10 +102,7 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
             breadcrumb: getIndividualPaths(withoutIndex(path), withoutIndex(state[id].rootPath)),
             itemsInPath: children.map((item) => item.path),
             levelDescriptor: children.levelDescriptor?.path,
-            leaves: [
-              ...state[id].leaves,
-              ...children.filter((item) => item.childrenCount === 0).map((item) => item.path)
-            ],
+            leaves: [...state[id].leaves, ...getLeavesFromChildren(children)],
             total: children.total,
             isFetching: false,
             error: null
@@ -141,7 +139,7 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
           leaves:
             children.length === 0
               ? state[id].leaves.concat(path)
-              : [...state[id].leaves, ...children.filter((item) => item.childrenCount === 0).map((item) => item.path)],
+              : [...state[id].leaves, ...getLeavesFromChildren(children)],
           isFetching: false,
           error: null
         }
@@ -170,10 +168,7 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
           itemsInPath: children.map((item) => item.path),
           levelDescriptor: children.levelDescriptor?.path ?? null,
           breadcrumb: getIndividualPaths(withoutIndex(currentPath), withoutIndex(rootPath)),
-          leaves: [
-            ...state[id].leaves,
-            ...children.filter((item) => item.childrenCount === 0).map((item) => item.path)
-          ],
+          leaves: [...state[id].leaves, ...getLeavesFromChildren(children)],
           limit: children.limit,
           total: children.total,
           offset: children.offset
@@ -246,5 +241,9 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
     [changeSite.type]: () => ({})
   }
 );
+
+function getLeavesFromChildren(children: SandboxItem[]) {
+  return children.filter((item) => item.childrenCount === 0).map((item) => item.path);
+}
 
 export default reducer;
