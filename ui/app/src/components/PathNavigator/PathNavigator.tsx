@@ -186,7 +186,7 @@ export default function PathNavigator(props: PathNavigatorProps) {
     // initialize with previous state information when switching sites
     if (!state && uiConfig.currentSite === siteId) {
       const storedState = getStoredPathNavigator(uuid, user.username, id);
-      if (storedState.keyword) {
+      if (storedState?.keyword) {
         setKeyword(storedState.keyword);
       }
       dispatch(pathNavigatorInit({ id, path, locale, excludes, limit, ...storedState }));
