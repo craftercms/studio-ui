@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import PathNavigatorTreeUI, { TreeNode } from './PathNavigatorTreeUI';
 import { useDispatch } from 'react-redux';
 import {
@@ -63,6 +63,7 @@ import {
   itemDuplicated,
   itemsDeleted,
   itemsPasted,
+  itemsUploaded,
   itemUnlocked,
   itemUpdated,
   pluginInstalled
@@ -92,6 +93,7 @@ export interface PathNavigatorTreeStateProps {
   keywordByPath: LookupTable<string>;
   fetchingByPath: LookupTable<boolean>;
   totalByPath: LookupTable<number>;
+  offsetByPath: LookupTable<number>;
 }
 
 interface Menu {
@@ -153,17 +155,23 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   const [rootNode, setRootNode] = useState(null);
 
   const hasActiveSession = useSelection((state) => state.auth.active);
+  const intervalRef = useRef<any>();
+
+  const resetBackgroundRefreshInterval = useCallback(() => {
+    clearInterval(intervalRef.current);
+    intervalRef.current = setInterval(() => {
+      dispatch(pathNavigatorTreeBackgroundRefresh({ id }));
+    }, backgroundRefreshTimeoutMs);
+  }, [backgroundRefreshTimeoutMs, dispatch, id]);
 
   useEffect(() => {
-    if (backgroundRefreshTimeoutMs && hasActiveSession) {
-      let interval = setInterval(() => {
-        dispatch(pathNavigatorTreeBackgroundRefresh({ id }));
-      }, backgroundRefreshTimeoutMs);
+    if (hasActiveSession) {
+      resetBackgroundRefreshInterval();
       return () => {
-        clearInterval(interval);
+        clearInterval(intervalRef.current);
       };
     }
-  }, [backgroundRefreshTimeoutMs, dispatch, id, hasActiveSession]);
+  }, [hasActiveSession, resetBackgroundRefreshInterval]);
 
   useEffect(() => {
     // Adding uiConfig as means to stop navigator from trying to
@@ -228,7 +236,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
               if (!nodesByPathRef.current[childPath]) {
                 nodesByPathRef.current[childPath] = {
                   id: childPath,
-                  children: [{ id: 'loading' }]
+                  children: totalByPath[childPath] === 0 ? [] : [{ id: 'loading' }]
                 };
               }
               nodesByPathRef.current[path].children.push(nodesByPathRef.current[childPath]);
@@ -256,11 +264,12 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
           keyword
         })
       );
+      resetBackgroundRefreshInterval();
     });
     return () => {
       subscription.unsubscribe();
     };
-  }, [dispatch, id, onSearch$, rootPath]);
+  }, [resetBackgroundRefreshInterval, dispatch, id, onSearch$, rootPath]);
 
   // region Item Updates Propagation
   useEffect(() => {
@@ -273,7 +282,8 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
       itemsDeleted.type,
       itemDuplicated.type,
       itemCreated.type,
-      pluginInstalled.type
+      pluginInstalled.type,
+      itemsUploaded.type
     ];
     const hostToHost$ = getHostToHostBus();
     const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
@@ -311,10 +321,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
               dispatch(
                 pathNavigatorTreeFetchPathChildren({
                   id,
-                  path,
-                  options: {
-                    limit: childrenByParentPath[path] ? childrenByParentPath[path].length + 1 : limit
-                  }
+                  path
                 })
               );
             }
@@ -333,12 +340,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
             dispatch(
               pathNavigatorTreeFetchPathChildren({
                 id,
-                path,
-                options: {
-                  limit: childrenByParentPath[path]
-                    ? childrenByParentPath[path].length + (type === itemCreated.type ? 1 : 0)
-                    : limit
-                }
+                path
               })
             );
           }
@@ -368,6 +370,20 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
         }
         case pluginInstalled.type: {
           dispatch(pathNavigatorTreeBackgroundRefresh({ id }));
+          break;
+        }
+        case itemsUploaded.type: {
+          const parentPath = payload.target;
+          const node = lookupItemByPath(parentPath, nodesByPathRef.current);
+          const path = node?.id;
+          if (path) {
+            dispatch(
+              pathNavigatorTreeFetchPathChildren({
+                id,
+                path
+              })
+            );
+          }
           break;
         }
         default: {
@@ -442,6 +458,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
         );
       }
     }
+    resetBackgroundRefreshInterval();
   };
 
   const onHeaderButtonClick = (element: Element) => {
@@ -476,6 +493,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
           id
         })
       );
+      resetBackgroundRefreshInterval();
     }
   };
 
@@ -493,12 +511,15 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   };
 
   const onMoreClick = (path: string) => {
+    nodesByPathRef.current[path].children.pop();
+    nodesByPathRef.current[path].children.push({ id: 'loading' });
     dispatch(
       pathNavigatorTreeFetchPathPage({
         id,
         path
       })
     );
+    resetBackgroundRefreshInterval();
   };
 
   const onPreview = (item: DetailedItem) => {

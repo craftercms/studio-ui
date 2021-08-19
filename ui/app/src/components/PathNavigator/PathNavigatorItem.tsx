@@ -152,15 +152,11 @@ function PathNavigatorItem(props: NavItemProps) {
               </IconButton>
             </Tooltip>
           )}
-          {showItemNavigateToButton && !isLevelDescriptor && (
-            <Tooltip
-              title={isLeaf ? formatMessage(translations.noChildren) : formatMessage(translations.viewChildren)}
-              classes={{ tooltip: clsx(isLeaf && classes.leafTooltip) }}
-            >
+          {showItemNavigateToButton && !isLevelDescriptor && !isLeaf && (
+            <Tooltip title={formatMessage(translations.viewChildren)}>
               <IconButton
-                disableRipple={isLeaf}
-                aria-label={isLeaf ? formatMessage(translations.noChildren) : formatMessage(translations.viewChildren)}
-                className={clsx(classes.itemIconButton, isLeaf && 'Mui-disabled')}
+                aria-label={formatMessage(translations.viewChildren)}
+                className={classes.itemIconButton}
                 onClick={(event) => {
                   event.preventDefault();
                   event.stopPropagation();

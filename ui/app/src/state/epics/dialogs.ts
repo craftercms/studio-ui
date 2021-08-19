@@ -145,10 +145,18 @@ const dialogEpics: CrafterCMSEpic[] = [
         // If state.path isn't null and the payload.path is different, it means another form is getting opened.
         // To avoid losing state of the form, we disallow this and show a dialog indicating to close the current
         // form before opening another.
-        if (
-          nou(payload.path) ||
-          payload.path === (type === showEditDialog.type ? state.dialogs.edit.path : state.dialogs.codeEditor.path)
-        ) {
+        let showValidation = false;
+
+        if (type === showEditDialog.type) {
+          showValidation =
+            payload.path !== state.dialogs.edit.path ||
+            payload.iceGroupId !== state.dialogs.edit.iceGroupId ||
+            payload.modelId !== state.dialogs.edit.modelId;
+        } else {
+          showValidation = payload.path !== state.dialogs.codeEditor.path;
+        }
+
+        if (nou(payload.path) || !showValidation) {
           // If showEditDialog action is called while the dialog is already open & minimized, we maximize it.
           // Differences in the showEditDialog payload — to what's on the state — are ignored, except for the path,
           // which is used to check if it's the same form that's getting opened.

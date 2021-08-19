@@ -18,8 +18,8 @@ import { Subject } from 'rxjs';
 import { useEffect, useRef } from 'react';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
-export function useDebouncedInput(observer: (keywords: string) => any, time: number = 250): Subject<string> {
-  const subject$Ref = useRef(new Subject<string>());
+export function useDebouncedInput<T = string>(observer: (keywords: T) => any, time: number = 250): Subject<T> {
+  const subject$Ref = useRef(new Subject<T>());
   useEffect(() => {
     const subscription = subject$Ref.current.pipe(debounceTime(time), distinctUntilChanged()).subscribe(observer);
     return () => subscription.unsubscribe();

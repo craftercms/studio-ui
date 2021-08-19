@@ -129,26 +129,21 @@
     const openForm = function(path, readonly) {
       const site = CrafterCMSNext.system.store.getState().sites.active;
       const authoringBase = CrafterCMSNext.system.store.getState().env.authoringBase;
-      const legacyFormSrc = `${authoringBase}/legacy/form`;
       const eventIdSuccess = 'editDialogSuccess';
       const eventIdDismissed = 'editDialogDismissed';
       let unsubscribe, cancelUnsubscribe;
 
-      const qs = CrafterCMSNext.util.object.toQueryString({
-        site: site,
-        path: path,
-        type: 'form',
-        readonly: readonly,
-        iceId: message.embeddedItemId ? null : message.iceId,
-        isHidden: !!message.embeddedItemId,
-        modelId: message.embeddedItemId ? message.embeddedItemId : null
-      });
-      const src = `${legacyFormSrc}${qs}`;
-
       CrafterCMSNext.system.store.dispatch({
         type: 'SHOW_EDIT_DIALOG',
         payload: {
-          src: src,
+          site: site,
+          path: path,
+          type: 'form',
+          authoringBase,
+          readonly: readonly,
+          isHidden: !!message.embeddedItemId,
+          // TODO: ICE groups for embedded comments are not currently supported
+          ...(message.embeddedItemId ? { modelId: message.embeddedItemId } : { iceGroupId: message.iceId }),
           onSaveSuccess: {
             type: 'BATCH_ACTIONS',
             payload: [
