@@ -19,7 +19,7 @@ import { ignoreElements, map, mergeMap, switchMap, tap, withLatestFrom } from 'r
 import { catchAjaxError } from '../../utils/ajax';
 import { fetchChildrenByPath, fetchItemsByPath, fetchItemWithChildrenByPath } from '../../services/content';
 import { getIndividualPaths, getRootPath } from '../../utils/path';
-import { forkJoin } from 'rxjs';
+import { forkJoin, of } from 'rxjs';
 import {
   pathNavigatorBackgroundRefresh,
   pathNavigatorChangePage,
@@ -34,14 +34,12 @@ import {
   pathNavigatorRefresh,
   pathNavigatorSetCollapsed,
   pathNavigatorSetCurrentPath,
-  pathNavigatorSetKeyword,
-  pathNavigatorUpdate
+  pathNavigatorSetKeyword
 } from '../actions/pathNavigator';
-import { getStoredPathNavigator, setStoredPathNavigator } from '../../utils/state';
+import { setStoredPathNavigator } from '../../utils/state';
 import { CrafterCMSEpic } from '../store';
 import { showErrorDialog } from '../reducers/dialogs/error';
 import { AjaxError } from 'rxjs/ajax';
-import { nnou } from '../../utils/object';
 
 export default [
   // region pathNavigatorInit
@@ -49,22 +47,25 @@ export default [
     action$.pipe(
       ofType(pathNavigatorInit.type),
       withLatestFrom(state$),
-      switchMap(([{ payload }, state]) => {
-        const { id } = payload;
-        const uuid = state.sites.byId[state.sites.active].uuid;
-        const storedState = getStoredPathNavigator(uuid, state.user.username, id);
-        return [
-          storedState ? pathNavigatorUpdate({ id, ...storedState }) : null,
-          pathNavigatorFetchParentItems({
-            id,
-            path: storedState ? storedState.currentPath : payload.path,
-            ...(nnou(storedState?.offset) && { offset: storedState.offset }),
-            ...(storedState?.keyword && { keyword: storedState.keyword }),
-            excludes: payload.excludes,
-            limit: payload.limit
-          })
-        ].filter(Boolean);
-      })
+      switchMap(
+        ([
+          {
+            payload: { id, excludes }
+          },
+          state
+        ]) => {
+          return of(
+            pathNavigatorFetchParentItems({
+              id,
+              path: state.pathNavigator[id].currentPath,
+              offset: state.pathNavigator[id].offset,
+              keyword: state.pathNavigator[id].keyword,
+              excludes: excludes,
+              limit: state.pathNavigator[id].limit
+            })
+          );
+        }
+      )
     ),
   // endregion
   // region pathNavigatorRefresh
@@ -129,7 +130,13 @@ export default [
           keyword,
           limit: state.pathNavigator[id].limit
         }).pipe(
-          map((children) => pathNavigatorFetchPathComplete({ id, children })),
+          map((children) =>
+            pathNavigatorFetchPathComplete({
+              id,
+              parent: state.content.itemsByPath[state.pathNavigator[id].currentPath],
+              children
+            })
+          ),
           catchAjaxError((error) => pathNavigatorFetchPathFailed({ error, id }))
         )
       )
@@ -172,7 +179,9 @@ export default [
               fetchItemsByPath(site, parentsPath, { castAsDetailedItem: true }),
               fetchChildrenByPath(site, path, {
                 excludes,
-                limit
+                limit,
+                offset,
+                keyword
               })
             ]).pipe(
               map(([items, children]) => pathNavigatorFetchParentItemsComplete({ id, items, children })),
