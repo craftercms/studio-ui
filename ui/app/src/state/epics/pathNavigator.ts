@@ -41,6 +41,7 @@ import { getStoredPathNavigator, setStoredPathNavigator } from '../../utils/stat
 import { CrafterCMSEpic } from '../store';
 import { showErrorDialog } from '../reducers/dialogs/error';
 import { AjaxError } from 'rxjs/ajax';
+import { nnou } from '../../utils/object';
 
 export default [
   // region pathNavigatorInit
@@ -50,12 +51,15 @@ export default [
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
         const { id } = payload;
-        const storedState = getStoredPathNavigator(state.sites.active, state.user.username, id);
+        const uuid = state.sites.byId[state.sites.active].uuid;
+        const storedState = getStoredPathNavigator(uuid, state.user.username, id);
         return [
           storedState ? pathNavigatorUpdate({ id, ...storedState }) : null,
           pathNavigatorFetchParentItems({
             id,
             path: storedState ? storedState.currentPath : payload.path,
+            ...(nnou(storedState?.offset) && { offset: storedState.offset }),
+            ...(storedState?.keyword && { keyword: storedState.keyword }),
             excludes: payload.excludes,
             limit: payload.limit
           })
@@ -69,7 +73,11 @@ export default [
       ofType(pathNavigatorRefresh.type, pathNavigatorBackgroundRefresh.type),
       withLatestFrom(state$),
       mergeMap(([{ type, payload: { id } }, state]) =>
-        fetchItemWithChildrenByPath(state.sites.active, state.pathNavigator[id].currentPath).pipe(
+        fetchItemWithChildrenByPath(state.sites.active, state.pathNavigator[id].currentPath, {
+          keyword: state.pathNavigator[id].keyword,
+          limit: state.pathNavigator[id].limit,
+          offset: state.pathNavigator[id].offset
+        }).pipe(
           map(({ item, children }) => pathNavigatorFetchPathComplete({ id, parent: item, children })),
           catchAjaxError((error: AjaxError) => {
             if (error.status === 404 && state.pathNavigator[id].rootPath !== state.pathNavigator[id].currentPath) {
@@ -153,7 +161,7 @@ export default [
         ([
           {
             type,
-            payload: { id, path, excludes, limit }
+            payload: { id, path, excludes, limit, offset, keyword }
           },
           state
         ]) => {
@@ -177,7 +185,7 @@ export default [
               })
             );
           } else {
-            return fetchItemWithChildrenByPath(site, path, { excludes, limit }).pipe(
+            return fetchItemWithChildrenByPath(site, path, { excludes, limit, offset, keyword }).pipe(
               map(({ item, children }) => pathNavigatorFetchPathComplete({ id, parent: item, children })),
               catchAjaxError((error) => pathNavigatorFetchPathFailed({ error, id }))
             );
@@ -199,14 +207,17 @@ export default [
         ([
           {
             type,
-            payload: { id, children }
+            payload: { id, children, parent }
           },
           state
         ]) => {
-          if (children?.length > 0 || type === pathNavigatorSetCollapsed.type) {
-            setStoredPathNavigator(state.sites.active, state.user.username, id, {
+          if (parent?.childrenCount > 0 || type === pathNavigatorSetCollapsed.type) {
+            const uuid = state.sites.byId[state.sites.active].uuid;
+            setStoredPathNavigator(uuid, state.user.username, id, {
               currentPath: state.pathNavigator[id].currentPath,
-              collapsed: state.pathNavigator[id].collapsed
+              collapsed: state.pathNavigator[id].collapsed,
+              keyword: state.pathNavigator[id].keyword,
+              offset: state.pathNavigator[id].offset
             });
           }
         }

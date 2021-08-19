@@ -250,6 +250,7 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
             isLevelDescriptor={false}
             onOpenItemMenu={onCurrentParentMenu}
             onItemClicked={onItemClicked}
+            showItemNavigateToButton={false}
             isCurrentPath
           />
         )}

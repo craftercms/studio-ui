@@ -51,7 +51,7 @@ export default [
       ofType(pathNavigatorTreeInit.type, pathNavigatorTreeRefresh.type, pathNavigatorTreeBackgroundRefresh.type),
       withLatestFrom(state$),
       filter(([{ payload }, state]) => Boolean(state.pathNavigatorTree[payload.id].expanded?.length)),
-      switchMap(([{ payload }, state]) => {
+      mergeMap(([{ payload }, state]) => {
         const {
           id,
           path = state.pathNavigatorTree[id].rootPath,
@@ -147,11 +147,11 @@ export default [
       mergeMap(([{ payload }, state]) => {
         const { id, path } = payload;
         const keyword = state.pathNavigatorTree[id].keywordByPath[path];
-        const offset = state.pathNavigatorTree[id].childrenByParentPath[path].length;
+        const offset = state.pathNavigatorTree[id].offsetByPath[path];
         return fetchChildrenByPath(state.sites.active, path, {
           limit: state.pathNavigatorTree[id].limit,
           keyword: keyword,
-          offset: state.pathNavigatorTree[id].childrenByParentPath[path].length
+          offset: offset
         }).pipe(
           map((children) =>
             pathNavigatorTreeFetchPathPageComplete({
@@ -180,7 +180,8 @@ export default [
       tap(([{ payload }, state]) => {
         const { id } = payload;
         const { expanded, collapsed, keywordByPath } = state.pathNavigatorTree[id];
-        setStoredPathNavigatorTree(state.sites.active, state.user.username, id, {
+        const uuid = state.sites.byId[state.sites.active].uuid;
+        setStoredPathNavigatorTree(uuid, state.user.username, id, {
           expanded,
           collapsed,
           keywordByPath

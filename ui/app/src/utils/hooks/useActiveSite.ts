@@ -14,15 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Subject } from 'rxjs';
-import { useEffect, useRef } from 'react';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { useSelector } from 'react-redux';
+import GlobalState from '../../models/GlobalState';
+import { Site } from '../../models/Site';
 
-export function useDebouncedInput<T = string>(observer: (keywords: T) => any, time: number = 250): Subject<T> {
-  const subject$Ref = useRef(new Subject<T>());
-  useEffect(() => {
-    const subscription = subject$Ref.current.pipe(debounceTime(time), distinctUntilChanged()).subscribe(observer);
-    return () => subscription.unsubscribe();
-  }, [observer, time]);
-  return subject$Ref.current;
+export function useActiveSite(): Site {
+  const id = useSelector<GlobalState, string>((state) => state.sites.active);
+  return useSelector<GlobalState, Site>((state) => state.sites.byId[id]);
 }

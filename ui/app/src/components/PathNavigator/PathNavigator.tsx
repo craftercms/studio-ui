@@ -50,6 +50,7 @@ import {
   itemDuplicated,
   itemsDeleted,
   itemsPasted,
+  itemsUploaded,
   itemUnlocked,
   itemUpdated,
   pluginInstalled
@@ -72,6 +73,7 @@ import { useItemsByPath } from '../../utils/hooks/useItemsByPath';
 import { useSubject } from '../../utils/hooks/useSubject';
 import { useSiteLocales } from '../../utils/hooks/useSiteLocales';
 import { useMount } from '../../utils/hooks/useMount';
+import { nnou } from '../../utils/object';
 
 interface Menu {
   path?: string;
@@ -167,6 +169,12 @@ export default function PathNavigator(props: PathNavigatorProps) {
   const hasActiveSession = useSelection((state) => state.auth.active);
 
   useEffect(() => {
+    if (nnou(state?.keyword)) {
+      setKeyword(state.keyword);
+    }
+  }, [state?.keyword]);
+
+  useEffect(() => {
     if (backgroundRefreshTimeoutMs && hasActiveSession) {
       let interval = setInterval(() => {
         dispatch(pathNavigatorBackgroundRefresh({ id }));
@@ -222,7 +230,8 @@ export default function PathNavigator(props: PathNavigatorProps) {
       itemsDeleted.type,
       itemDuplicated.type,
       itemCreated.type,
-      pluginInstalled.type
+      pluginInstalled.type,
+      itemsUploaded.type
     ];
     const hostToHost$ = getHostToHostBus();
     const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
@@ -323,6 +332,12 @@ export default function PathNavigator(props: PathNavigatorProps) {
         }
         case pluginInstalled.type: {
           dispatch(pathNavigatorBackgroundRefresh({ id }));
+          break;
+        }
+        case itemsUploaded.type: {
+          if (withoutIndex(payload.target) === withoutIndex(state.currentPath)) {
+            dispatch(pathNavigatorRefresh({ id }));
+          }
           break;
         }
       }

@@ -70,7 +70,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "run-s build:react build:worker deploy:app",
+    "build": "run-s --max_old_space_size=4096 build:react build:worker deploy:app",
     "build:install": "yarn",
     "build:react": "react-scripts --max_old_space_size=4096 build",
     "deploy:app": "node scripts/deploy.js",

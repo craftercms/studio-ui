@@ -101,6 +101,7 @@ interface LegacyFormDialogBaseProps {
   inProgress?: boolean;
   onMinimized?(): void;
   pendingChanges?: boolean;
+  iceGroupId?: string;
 }
 
 export type LegacyFormDialogProps = PropsWithChildren<
@@ -135,7 +136,8 @@ const EmbeddedLegacyEditor = React.forwardRef(function EmbeddedLegacyEditor(prop
     onSaveSuccess,
     onDismiss,
     onClosed,
-    onMinimized
+    onMinimized,
+    iceGroupId
   } = props;
 
   const src = useMemo(
@@ -150,6 +152,7 @@ const EmbeddedLegacyEditor = React.forwardRef(function EmbeddedLegacyEditor(prop
         changeTemplate,
         contentTypeId,
         isNewContent,
+        iceGroupId,
         ...(selectedFields ? { selectedFields: JSON.stringify(selectedFields) } : {})
       }),
     [
@@ -162,7 +165,8 @@ const EmbeddedLegacyEditor = React.forwardRef(function EmbeddedLegacyEditor(prop
       path,
       selectedFields,
       readonly,
-      site
+      site,
+      iceGroupId
     ]
   );
 

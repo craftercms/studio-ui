@@ -71,10 +71,8 @@ export function CreateTokenDialogUI(props: CreateTokenUIProps) {
   const [label, setLabel] = useState('');
   const { formatMessage } = useIntl();
   const onSubmit = (e) => {
-    if (e.target.tagName === 'form') {
-      e.preventDefault();
-      e.stopPropagation();
-    }
+    e.preventDefault();
+    e.stopPropagation();
     onOk({ label, expiresAt: expires ? expiresAt : null });
   };
   const localeCode = useSelection<GlobalState['uiConfig']['locale']['localeCode']>(
@@ -146,13 +144,7 @@ export function CreateTokenDialogUI(props: CreateTokenUIProps) {
         <SecondaryButton onClick={onDismiss}>
           <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
         </SecondaryButton>
-        <PrimaryButton
-          type="submit"
-          onClick={onSubmit}
-          autoFocus
-          disabled={disabled || label === ''}
-          loading={disabled}
-        >
+        <PrimaryButton type="submit" autoFocus disabled={disabled || label === ''} loading={disabled}>
           <FormattedMessage id="words.submit" defaultMessage="Submit" />
         </PrimaryButton>
       </DialogFooter>

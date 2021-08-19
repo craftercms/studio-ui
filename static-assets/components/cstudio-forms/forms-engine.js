@@ -338,7 +338,7 @@ var CStudioForms =
           YAHOO.util.Dom.addClass(helpEl, 'hint');
           YAHOO.util.Dom.addClass(helpEl, 'cstudio-form-field-help');
           helpEl.innerHTML = '&nbsp;';
-          containerEl.appendChild(helpEl);
+          $(containerEl).prepend(helpEl);
 
           YAHOO.util.Event.on(
             helpEl,

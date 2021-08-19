@@ -39,6 +39,7 @@ import {
   pathNavigatorUpdate
 } from '../actions/pathNavigator';
 import { changeSite } from './sites';
+import { SandboxItem } from '../../models/Item';
 
 const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
   {},
@@ -91,8 +92,8 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
       ...state,
       [payload.id]: { ...state[payload.id], isFetching: true, error: null }
     }),
-    [pathNavigatorConditionallySetPathComplete.type]: (state, { payload: { id, path, children } }) => {
-      if (children.length > 0) {
+    [pathNavigatorConditionallySetPathComplete.type]: (state, { payload: { id, path, parent, children } }) => {
+      if (parent.childrenCount > 0) {
         return {
           ...state,
           [id]: {
@@ -101,6 +102,7 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
             breadcrumb: getIndividualPaths(withoutIndex(path), withoutIndex(state[id].rootPath)),
             itemsInPath: children.map((item) => item.path),
             levelDescriptor: children.levelDescriptor?.path,
+            leaves: [...state[id].leaves, ...getLeavesFromChildren(children)],
             total: children.total,
             isFetching: false,
             error: null
@@ -134,7 +136,10 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
           total: children.total,
           offset: children.offset,
           limit: children.limit,
-          leaves: children.length === 0 ? state[id].leaves.concat(path) : state[id].leaves,
+          leaves:
+            children.length === 0
+              ? state[id].leaves.concat(path)
+              : [...state[id].leaves, ...getLeavesFromChildren(children)],
           isFetching: false,
           error: null
         }
@@ -149,7 +154,6 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
         ...state,
         [id]: {
           ...state[id],
-          keyword: '',
           currentPath: path,
           error: null
         }
@@ -164,6 +168,7 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
           itemsInPath: children.map((item) => item.path),
           levelDescriptor: children.levelDescriptor?.path ?? null,
           breadcrumb: getIndividualPaths(withoutIndex(currentPath), withoutIndex(rootPath)),
+          leaves: [...state[id].leaves, ...getLeavesFromChildren(children)],
           limit: children.limit,
           total: children.total,
           offset: children.offset
@@ -236,5 +241,9 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
     [changeSite.type]: () => ({})
   }
 );
+
+function getLeavesFromChildren(children: SandboxItem[]) {
+  return children.filter((item) => item.childrenCount === 0).map((item) => item.path);
+}
 
 export default reducer;

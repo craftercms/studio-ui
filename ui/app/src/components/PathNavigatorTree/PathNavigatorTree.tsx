@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import PathNavigatorTreeUI, { TreeNode } from './PathNavigatorTreeUI';
 import { useDispatch } from 'react-redux';
 import {
@@ -50,7 +50,6 @@ import { fetchContentXML } from '../../services/content';
 import { SystemIconDescriptor } from '../SystemIcon';
 import { completeDetailedItem } from '../../state/actions/content';
 import { useSelection } from '../../utils/hooks/useSelection';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useEnv } from '../../utils/hooks/useEnv';
 import { useActiveUser } from '../../utils/hooks/useActiveUser';
 import { useItemsByPath } from '../../utils/hooks/useItemsByPath';
@@ -64,11 +63,13 @@ import {
   itemDuplicated,
   itemsDeleted,
   itemsPasted,
+  itemsUploaded,
   itemUnlocked,
   itemUpdated,
   pluginInstalled
 } from '../../state/actions/system';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
+import { useActiveSite } from '../../utils/hooks/useActiveSite';
 
 interface PathNavigatorTreeProps {
   id: string;
@@ -92,6 +93,7 @@ export interface PathNavigatorTreeStateProps {
   keywordByPath: LookupTable<string>;
   fetchingByPath: LookupTable<boolean>;
   totalByPath: LookupTable<number>;
+  offsetByPath: LookupTable<number>;
 }
 
 interface Menu {
@@ -128,14 +130,14 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     container
   } = props;
   const state = useSelection((state) => state.pathNavigatorTree)[id];
-  const site = useActiveSiteId();
+  const { id: siteId, uuid } = useActiveSite();
   const user = useActiveUser();
   const nodesByPathRef = useRef<LookupTable<TreeNode>>({});
   const onSearch$ = useSubject<{ keyword: string; path: string }>();
   const uiConfig = useSelection<GlobalState['uiConfig']>((state) => state.uiConfig);
   const storedState = useMemo(() => {
-    return getStoredPathNavigatorTree(site, user.username, id) ?? {};
-  }, [id, site, user.username]);
+    return getStoredPathNavigatorTree(uuid, user.username, id) ?? {};
+  }, [id, uuid, user.username]);
   const [widgetMenu, setWidgetMenu] = useState<Menu>({
     anchorEl: null,
     sections: []
@@ -153,22 +155,28 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   const [rootNode, setRootNode] = useState(null);
 
   const hasActiveSession = useSelection((state) => state.auth.active);
+  const intervalRef = useRef<any>();
+
+  const resetBackgroundRefreshInterval = useCallback(() => {
+    clearInterval(intervalRef.current);
+    intervalRef.current = setInterval(() => {
+      dispatch(pathNavigatorTreeBackgroundRefresh({ id }));
+    }, backgroundRefreshTimeoutMs);
+  }, [backgroundRefreshTimeoutMs, dispatch, id]);
 
   useEffect(() => {
-    if (backgroundRefreshTimeoutMs && hasActiveSession) {
-      let interval = setInterval(() => {
-        dispatch(pathNavigatorTreeBackgroundRefresh({ id }));
-      }, backgroundRefreshTimeoutMs);
+    if (hasActiveSession) {
+      resetBackgroundRefreshInterval();
       return () => {
-        clearInterval(interval);
+        clearInterval(intervalRef.current);
       };
     }
-  }, [backgroundRefreshTimeoutMs, dispatch, id, hasActiveSession]);
+  }, [hasActiveSession, resetBackgroundRefreshInterval]);
 
   useEffect(() => {
     // Adding uiConfig as means to stop navigator from trying to
     // initialize with previous state information when switching sites
-    if (!state && uiConfig.currentSite === site && rootPath) {
+    if (!state && uiConfig.currentSite === siteId && rootPath) {
       const { expanded, collapsed, keywordByPath } = storedState;
       dispatch(
         pathNavigatorTreeInit({
@@ -182,7 +190,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
         })
       );
     }
-  }, [site, user.username, id, dispatch, rootPath, excludes, limit, state, uiConfig.currentSite, storedState]);
+  }, [siteId, user.username, id, dispatch, rootPath, excludes, limit, state, uiConfig.currentSite, storedState]);
 
   useEffect(() => {
     if (rootItem && nodesByPathRef.current[rootItem.path] === undefined) {
@@ -228,7 +236,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
               if (!nodesByPathRef.current[childPath]) {
                 nodesByPathRef.current[childPath] = {
                   id: childPath,
-                  children: [{ id: 'loading' }]
+                  children: totalByPath[childPath] === 0 ? [] : [{ id: 'loading' }]
                 };
               }
               nodesByPathRef.current[path].children.push(nodesByPathRef.current[childPath]);
@@ -256,11 +264,12 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
           keyword
         })
       );
+      resetBackgroundRefreshInterval();
     });
     return () => {
       subscription.unsubscribe();
     };
-  }, [dispatch, id, onSearch$, rootPath]);
+  }, [resetBackgroundRefreshInterval, dispatch, id, onSearch$, rootPath]);
 
   // region Item Updates Propagation
   useEffect(() => {
@@ -273,7 +282,8 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
       itemsDeleted.type,
       itemDuplicated.type,
       itemCreated.type,
-      pluginInstalled.type
+      pluginInstalled.type,
+      itemsUploaded.type
     ];
     const hostToHost$ = getHostToHostBus();
     const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
@@ -311,10 +321,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
               dispatch(
                 pathNavigatorTreeFetchPathChildren({
                   id,
-                  path,
-                  options: {
-                    limit: childrenByParentPath[path] ? childrenByParentPath[path].length + 1 : limit
-                  }
+                  path
                 })
               );
             }
@@ -333,12 +340,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
             dispatch(
               pathNavigatorTreeFetchPathChildren({
                 id,
-                path,
-                options: {
-                  limit: childrenByParentPath[path]
-                    ? childrenByParentPath[path].length + (type === itemCreated.type ? 1 : 0)
-                    : limit
-                }
+                path
               })
             );
           }
@@ -368,6 +370,20 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
         }
         case pluginInstalled.type: {
           dispatch(pathNavigatorTreeBackgroundRefresh({ id }));
+          break;
+        }
+        case itemsUploaded.type: {
+          const parentPath = payload.target;
+          const node = lookupItemByPath(parentPath, nodesByPathRef.current);
+          const path = node?.id;
+          if (path) {
+            dispatch(
+              pathNavigatorTreeFetchPathChildren({
+                id,
+                path
+              })
+            );
+          }
           break;
         }
         default: {
@@ -442,6 +458,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
         );
       }
     }
+    resetBackgroundRefreshInterval();
   };
 
   const onHeaderButtonClick = (element: Element) => {
@@ -476,6 +493,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
           id
         })
       );
+      resetBackgroundRefreshInterval();
     }
   };
 
@@ -493,17 +511,20 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   };
 
   const onMoreClick = (path: string) => {
+    nodesByPathRef.current[path].children.pop();
+    nodesByPathRef.current[path].children.push({ id: 'loading' });
     dispatch(
       pathNavigatorTreeFetchPathPage({
         id,
         path
       })
     );
+    resetBackgroundRefreshInterval();
   };
 
   const onPreview = (item: DetailedItem) => {
     if (isEditableViaFormEditor(item)) {
-      dispatch(showEditDialog({ path: item.path, authoringBase, site, readonly: true }));
+      dispatch(showEditDialog({ path: item.path, authoringBase, site: siteId, readonly: true }));
     } else if (isImage(item)) {
       dispatch(
         showPreviewDialog({
@@ -522,7 +543,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
           mode
         })
       );
-      fetchContentXML(site, item.path).subscribe((content) => {
+      fetchContentXML(siteId, item.path).subscribe((content) => {
         dispatch(
           updatePreviewDialog({
             content
