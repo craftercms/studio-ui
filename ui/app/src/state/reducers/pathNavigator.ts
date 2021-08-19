@@ -92,8 +92,8 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
       ...state,
       [payload.id]: { ...state[payload.id], isFetching: true, error: null }
     }),
-    [pathNavigatorConditionallySetPathComplete.type]: (state, { payload: { id, path, children } }) => {
-      if (children.length > 0) {
+    [pathNavigatorConditionallySetPathComplete.type]: (state, { payload: { id, path, parent, children } }) => {
+      if (parent.childrenCount > 0) {
         return {
           ...state,
           [id]: {

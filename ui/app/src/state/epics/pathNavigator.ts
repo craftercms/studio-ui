@@ -207,11 +207,11 @@ export default [
         ([
           {
             type,
-            payload: { id, children }
+            payload: { id, children, parent }
           },
           state
         ]) => {
-          if (children?.length > 0 || type === pathNavigatorSetCollapsed.type) {
+          if (parent?.childrenCount > 0 || type === pathNavigatorSetCollapsed.type) {
             const uuid = state.sites.byId[state.sites.active].uuid;
             setStoredPathNavigator(uuid, state.user.username, id, {
               currentPath: state.pathNavigator[id].currentPath,
