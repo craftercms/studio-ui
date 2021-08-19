@@ -456,7 +456,7 @@ export function PreviewConcierge(props: any) {
             }
             getHostToGuestBus().next({
               type: HOST_CHECK_IN,
-              payload: { editMode: false, highlightMode, rteConfig: rteConfig ?? {}, site }
+              payload: { editMode: false, highlightMode, rteConfig: rteConfig ?? {}, site: siteId }
             });
             dispatch(checkInGuest(payload));
 
@@ -829,7 +829,7 @@ export function PreviewConcierge(props: any) {
               authoringBase,
               path: guest.path,
               selectedFields: payload.selectedFields,
-              site
+              site: siteId
             })
           );
           break;
@@ -857,7 +857,8 @@ export function PreviewConcierge(props: any) {
     previewChoice,
     handlePreviewCompatibilityDialogGo,
     conditionallyToggleEditMode,
-    rteConfig
+    rteConfig,
+    guest
   ]);
 
   useEffect(() => {

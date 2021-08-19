@@ -70,7 +70,7 @@ export function initTinyMCE(
     editform: '/studio/static-assets/js/tinymce-plugins/editform/plugin.js'
   };
 
-  if (rteConfig.tinymceOptions.external_plugins) {
+  if (rteConfig?.tinymceOptions?.external_plugins) {
     Object.entries(rteConfig.tinymceOptions.external_plugins).forEach((entry) => {
       external[entry[0]] = (entry[1] as string).replaceAll('{site}', site);
     });
@@ -195,24 +195,28 @@ export function initTinyMCE(
         }
       });
     },
-    ...reversePluckProps(
-      rteConfig.tinymceOptions,
-      'target', // Target can't be changed
-      'inline', // Not using inline view doesn't behave well on pageBuilder, this setting shouldn't be changed.
-      'setup',
-      'base_url',
-      'encoding',
-      'autosave_ask_before_unload', // Autosave options are removed since it is not supported in control.
-      'autosave_interval',
-      'autosave_prefix',
-      'autosave_restore_when_empty',
-      'autosave_retention',
-      'file_picker_callback', // No file picker is set by default, and functions are not supported in config file.
-      'height', // Height is set to the size of content
-      'file_picker_callback', // Files/images handlers currently not supported
-      'paste_postprocess',
-      'images_upload_handler'
-    ),
+    ...(rteConfig?.tinymceOptions
+      ? {
+          ...reversePluckProps(
+            rteConfig.tinymceOptions,
+            'target', // Target can't be changed
+            'inline', // Not using inline view doesn't behave well on pageBuilder, this setting shouldn't be changed.
+            'setup',
+            'base_url',
+            'encoding',
+            'autosave_ask_before_unload', // Autosave options are removed since it is not supported in control.
+            'autosave_interval',
+            'autosave_prefix',
+            'autosave_restore_when_empty',
+            'autosave_retention',
+            'file_picker_callback', // No file picker is set by default, and functions are not supported in config file.
+            'height', // Height is set to the size of content
+            'file_picker_callback', // Files/images handlers currently not supported
+            'paste_postprocess',
+            'images_upload_handler'
+          )
+        }
+      : {}),
     ...controlProps,
     openEditForm
   });
