@@ -386,7 +386,7 @@ CStudioAuthoring.Module.requireModule(
                 _thisControl._onChange(null, _thisControl);
               });
 
-              editor.on('keyup paste', function (e) {
+              editor.on('keyup paste undo redo', function (e) {
                 _thisControl.save();
                 _thisControl._onChangeVal(null, _thisControl);
               });
