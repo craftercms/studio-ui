@@ -15,11 +15,11 @@
  */
 
 import { ofType } from 'redux-observable';
-import { ignoreElements, map, mergeMap, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import { ignoreElements, map, mergeMap, tap, withLatestFrom } from 'rxjs/operators';
 import { catchAjaxError } from '../../utils/ajax';
 import { fetchChildrenByPath, fetchItemsByPath, fetchItemWithChildrenByPath } from '../../services/content';
 import { getIndividualPaths, getRootPath } from '../../utils/path';
-import { forkJoin, of } from 'rxjs';
+import { forkJoin } from 'rxjs';
 import {
   pathNavigatorBackgroundRefresh,
   pathNavigatorChangePage,
@@ -47,24 +47,15 @@ export default [
     action$.pipe(
       ofType(pathNavigatorInit.type),
       withLatestFrom(state$),
-      switchMap(
-        ([
-          {
-            payload: { id, excludes }
-          },
-          state
-        ]) => {
-          return of(
-            pathNavigatorFetchParentItems({
-              id,
-              path: state.pathNavigator[id].currentPath,
-              offset: state.pathNavigator[id].offset,
-              keyword: state.pathNavigator[id].keyword,
-              excludes: excludes,
-              limit: state.pathNavigator[id].limit
-            })
-          );
-        }
+      map(([{ payload: { id, excludes } }, state]) =>
+        pathNavigatorFetchParentItems({
+          id,
+          path: state.pathNavigator[id].currentPath,
+          offset: state.pathNavigator[id].offset,
+          keyword: state.pathNavigator[id].keyword,
+          excludes,
+          limit: state.pathNavigator[id].limit
+        })
       )
     ),
   // endregion
