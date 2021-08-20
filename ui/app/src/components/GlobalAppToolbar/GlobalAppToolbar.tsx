@@ -113,6 +113,7 @@ const GlobalAppToolbar = React.memo<GlobalAppToolbarProps>(function(props) {
     <ViewToolbar elevation={props.elevation} styles={styles} classes={props.classes}>
       {showHamburgerMenuButton && (
         <LogoAndMenuBundleButton
+          showCrafterIcon={showAppsButton}
           aria-label={formatMessage(translations.toggleSidebar)}
           onClick={() => setState({ openSidebar: !openSidebar })}
         />
