@@ -39,6 +39,8 @@ export const folderRenamed = /*#__PURE__*/ createAction<{ target: string; oldNam
   'FOLDER_RENAMED'
 );
 
+export const itemsUploaded = /*#__PURE__*/ createAction<{ target: string; targets: string[] }>('ITEM_UPLOADED');
+
 export const itemsPasted = /*#__PURE__*/ createAction<{ target: string; clipboard: Clipboard }>('ITEMS_PASTED');
 
 export const itemsDeleted = /*#__PURE__*/ createAction<{ targets: string[] }>('ITEMS_DELETED');
@@ -118,3 +120,12 @@ export const fetchGlobalMenuFailed = /*#__PURE__*/ createAction('FETCH_GLOBAL_ME
 export const fetchSiteLocale = /*#__PURE__*/ createAction('FETCH_SITE_LOCALE');
 export const fetchSiteLocaleComplete = /*#__PURE__*/ createAction('FETCH_SITE_LOCALE_COMPLETE');
 export const fetchSiteLocaleFailed = /*#__PURE__*/ createAction('FETCH_SITE_LOCALE_FAILED');
+
+export const fetchUseLegacyPreviewPreference = /*#__PURE__*/ createAction<Partial<{ site: string }>>(
+  'FETCH_USE_PREVIEW_3'
+);
+export const fetchUseLegacyPreviewPreferenceComplete = /*#__PURE__*/ createAction<{
+  site: string;
+  useLegacyPreview: boolean;
+}>('FETCH_USE_PREVIEW_3_COMPLETE');
+export const fetchUseLegacyPreviewPreferenceFailed = /*#__PURE__*/ createAction('FETCH_USE_PREVIEW_3_FAILED');

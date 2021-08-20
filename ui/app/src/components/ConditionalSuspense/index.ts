@@ -14,15 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Subject } from 'rxjs';
-import { useEffect, useRef } from 'react';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+export { default } from './ConditionalSuspense';
 
-export function useDebouncedInput<T = string>(observer: (keywords: T) => any, time: number = 250): Subject<T> {
-  const subject$Ref = useRef(new Subject<T>());
-  useEffect(() => {
-    const subscription = subject$Ref.current.pipe(debounceTime(time), distinctUntilChanged()).subscribe(observer);
-    return () => subscription.unsubscribe();
-  }, [observer, time]);
-  return subject$Ref.current;
-}
+export * from './ConditionalSuspense';

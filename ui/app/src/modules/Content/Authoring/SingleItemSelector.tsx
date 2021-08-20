@@ -444,6 +444,7 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
             isLevelDescriptor={false}
             isCurrentPath
             onItemClicked={handleItemClicked}
+            showItemNavigateToButton={false}
           />
         )}
         <SuspenseWithEmptyState resource={itemsResource}>

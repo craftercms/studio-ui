@@ -50,6 +50,7 @@ import {
   itemDuplicated,
   itemsDeleted,
   itemsPasted,
+  itemsUploaded,
   itemUnlocked,
   itemUpdated,
   pluginInstalled
@@ -58,7 +59,6 @@ import PathNavigatorUI from './PathNavigatorUI';
 import { ContextMenuOptionDescriptor, toContextMenuOptionsLookup } from '../../utils/itemActions';
 import PathNavigatorSkeleton from './PathNavigatorSkeleton';
 import GlobalState from '../../models/GlobalState';
-import { getSystemLink } from '../LauncherSection';
 import { SystemIconDescriptor } from '../SystemIcon';
 // @ts-ignore
 import { getOffsetLeft, getOffsetTop } from '@material-ui/core/Popover/Popover';
@@ -66,12 +66,14 @@ import { getNumOfMenuOptionsForItem } from '../../utils/content';
 import { batchActions } from '../../state/actions/misc';
 import { useSelection } from '../../utils/hooks/useSelection';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import { usePreviewState } from '../../utils/hooks/usePreviewState';
 import { useEnv } from '../../utils/hooks/useEnv';
 import { useItemsByPath } from '../../utils/hooks/useItemsByPath';
 import { useSubject } from '../../utils/hooks/useSubject';
 import { useSiteLocales } from '../../utils/hooks/useSiteLocales';
 import { useMount } from '../../utils/hooks/useMount';
+import { getSystemLink } from '../../utils/system';
+import { nnou } from '../../utils/object';
+import { useLegacyPreviewPreference } from '../../utils/hooks/useLegacyPreviewPreference';
 
 interface Menu {
   path?: string;
@@ -152,7 +154,6 @@ export default function PathNavigator(props: PathNavigatorProps) {
   const itemsByPath = useItemsByPath();
   const site = useActiveSiteId();
   const { authoringBase } = useEnv();
-  const { previewChoice } = usePreviewState();
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const [widgetMenu, setWidgetMenu] = useState<Menu>({
@@ -165,6 +166,13 @@ export default function PathNavigator(props: PathNavigatorProps) {
   const uiConfig = useSelection<GlobalState['uiConfig']>((state) => state.uiConfig);
   const siteLocales = useSiteLocales();
   const hasActiveSession = useSelection((state) => state.auth.active);
+  const useLegacy = useLegacyPreviewPreference();
+
+  useEffect(() => {
+    if (nnou(state?.keyword)) {
+      setKeyword(state.keyword);
+    }
+  }, [state?.keyword]);
 
   useEffect(() => {
     if (backgroundRefreshTimeoutMs && hasActiveSession) {
@@ -222,7 +230,8 @@ export default function PathNavigator(props: PathNavigatorProps) {
       itemsDeleted.type,
       itemDuplicated.type,
       itemCreated.type,
-      pluginInstalled.type
+      pluginInstalled.type,
+      itemsUploaded.type
     ];
     const hostToHost$ = getHostToHostBus();
     const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
@@ -270,22 +279,9 @@ export default function PathNavigator(props: PathNavigatorProps) {
           }
           break;
         }
-        case folderCreated.type: {
-          if (withoutIndex(payload.target) === withoutIndex(state.currentPath)) {
-            dispatch(pathNavigatorRefresh({ id }));
-          }
-          if (state.leaves.some((path) => withoutIndex(path) === withoutIndex(payload.target))) {
-            dispatch(
-              pathNavigatorUpdate({
-                id,
-                leaves: state.leaves.filter((path) => withoutIndex(path) !== withoutIndex(payload.target))
-              })
-            );
-          }
-          break;
-        }
+        case folderCreated.type:
         case itemsPasted.type: {
-          if (payload.clipboard.type === 'COPY') {
+          if (type === folderCreated.type || payload.clipboard.type === 'COPY') {
             if (withoutIndex(payload.target) === withoutIndex(state.currentPath)) {
               dispatch(pathNavigatorRefresh({ id }));
             }
@@ -297,8 +293,8 @@ export default function PathNavigator(props: PathNavigatorProps) {
                 })
               );
             }
-          } else {
-            // payload.clipboard.type === 'CUT
+          }
+          if (type === itemsPasted.type && payload.clipboard.type === 'CUT') {
             const parentPath = getParentPath(payload.target);
             if (parentPath === withoutIndex(state.currentPath)) {
               dispatch(pathNavigatorRefresh({ id }));
@@ -323,6 +319,12 @@ export default function PathNavigator(props: PathNavigatorProps) {
         }
         case pluginInstalled.type: {
           dispatch(pathNavigatorBackgroundRefresh({ id }));
+          break;
+        }
+        case itemsUploaded.type: {
+          if (withoutIndex(payload.target) === withoutIndex(state.currentPath)) {
+            dispatch(pathNavigatorRefresh({ id }));
+          }
           break;
         }
       }
@@ -465,8 +467,8 @@ export default function PathNavigator(props: PathNavigatorProps) {
         if (isNavigable(item)) {
           const url = getSystemLink({
             site,
+            useLegacy,
             systemLinkId: 'preview',
-            previewChoice,
             authoringBase,
             page: item.previewUrl
           });

@@ -76,11 +76,17 @@
   communicator.subscribe(Topics.GUEST_CHECK_IN, function(data) {
     const doGo = () => {
       const state = CrafterCMSNext.system.store.getState();
-      window.location.href = `${state.env.authoringBase}/next/preview#/?page=${data.location.pathname}&site=${state.sites.active}`;
+      window.location.href = CrafterCMSNext.util.system.getSystemLink({
+        authoringBase: state.env.authoringBase,
+        systemLinkId: 'preview',
+        page: data.location.pathname,
+        site: state.sites.active
+      });
     };
     const showCompatDialog = () => {
       let unmount;
       CrafterCMSNext.render(document.createElement('div'), 'PreviewCompatDialog', {
+        isPreviewNext: true,
         onOk: doGo,
         onCancel() {
           unmount({ removeContainer: true });
@@ -92,7 +98,6 @@
         unmount = args.unmount;
       });
     };
-    let previousChoice = CrafterCMSNext.system.store.getState().preview.previewChoice[CStudioAuthoringContext.siteId];
     if (!previewNextCheckInNotification && !compatibilityForceStay) {
       // Avoid recurrently showing the notification over and over as long as the page is not refreshed
       previewNextCheckInNotification = true;
@@ -100,25 +105,7 @@
         showCompatDialog();
       }
     }
-    if (previousChoice !== '2') {
-      const usersService = CrafterCMSNext.services.users;
-      usersService
-        .fetchGlobalProperties()
-        .pipe(
-          CrafterCMSNext.rxjs.operators.switchMap((prefs) =>
-            usersService.setProperties({
-              previewChoice: JSON.stringify(
-                Object.assign(JSON.parse(prefs.previewChoice || '{}'), {
-                  [CStudioAuthoringContext.siteId]: '2'
-                })
-              )
-            })
-          )
-        )
-        .subscribe(() => {
-          doGo();
-        });
-    } else if (!compatibilityAsk && !compatibilityForceStay) {
+    if (!compatibilityAsk && !compatibilityForceStay) {
       doGo();
     }
     communicator.addTargetWindow({
@@ -142,26 +129,21 @@
     const openForm = function(path, readonly) {
       const site = CrafterCMSNext.system.store.getState().sites.active;
       const authoringBase = CrafterCMSNext.system.store.getState().env.authoringBase;
-      const legacyFormSrc = `${authoringBase}/legacy/form`;
       const eventIdSuccess = 'editDialogSuccess';
       const eventIdDismissed = 'editDialogDismissed';
       let unsubscribe, cancelUnsubscribe;
 
-      const qs = CrafterCMSNext.util.object.toQueryString({
-        site: site,
-        path: path,
-        type: 'form',
-        readonly: readonly,
-        iceId: message.embeddedItemId ? null : message.iceId,
-        isHidden: !!message.embeddedItemId,
-        modelId: message.embeddedItemId ? message.embeddedItemId : null
-      });
-      const src = `${legacyFormSrc}${qs}`;
-
       CrafterCMSNext.system.store.dispatch({
         type: 'SHOW_EDIT_DIALOG',
         payload: {
-          src: src,
+          site: site,
+          path: path,
+          type: 'form',
+          authoringBase,
+          readonly: readonly,
+          isHidden: !!message.embeddedItemId,
+          // TODO: ICE groups for embedded comments are not currently supported
+          ...(message.embeddedItemId ? { modelId: message.embeddedItemId } : { iceGroupId: message.iceId }),
           onSaveSuccess: {
             type: 'BATCH_ACTIONS',
             payload: [

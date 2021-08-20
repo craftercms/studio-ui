@@ -834,7 +834,6 @@ WcmDashboardWidgetCommon.editItem = function(matchedElement, isChecked) {
   const type = CrafterCMSNext.util.content.getSystemTypeFromPath(path);
   const site = CrafterCMSNext.system.store.getState().sites.active;
   const authoringBase = CrafterCMSNext.system.store.getState().env.authoringBase;
-  const legacyFormSrc = `${authoringBase}/legacy/form?`;
 
   if (['page', 'component', 'taxonomy'].includes(type)) {
     CrafterCMSNext.services.content.fetchWorkflowAffectedItems(site, path).subscribe((items) => {
@@ -1009,7 +1008,6 @@ WcmDashboardWidgetCommon.viewItem = function(matchedElement, isChecked) {
   const type = CrafterCMSNext.util.content.getSystemTypeFromPath(path);
   const site = CrafterCMSNext.system.store.getState().sites.active;
   const authoringBase = CrafterCMSNext.system.store.getState().env.authoringBase;
-  const legacyFormSrc = `${authoringBase}/legacy/form?`;
 
   if (['page', 'component', 'taxonomy'].includes(type)) {
     CrafterCMSNext.system.store.dispatch({

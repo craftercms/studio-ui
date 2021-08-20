@@ -101,7 +101,6 @@ if [[ $REMOVE_ONLY != true ]]; then
   ln -s "$SRC/static-assets/styles" "$STATIC_ASSETS/"
   ln -s "$SRC/templates" "$DEFAULT_SITE"
   ln -s "$SRC/static-assets/themes" "$STATIC_ASSETS/themes"
-  ln -s "$SRC/static-assets/ng-views" "$STATIC_ASSETS/ng-views"
   ln -s "$SRC/static-assets/libs" "$STATIC_ASSETS/libs"
   ln -s "$SRC/static-assets/images" "$STATIC_ASSETS/images"
   ln -s "$SRC/site" "$DEFAULT_SITE/site"
