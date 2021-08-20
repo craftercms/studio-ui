@@ -16,7 +16,7 @@
 
 import { ContentType, ContentTypeField } from '@craftercms/studio-ui/models/ContentType';
 import { createLookupTable } from './object';
-import { LoremIpsum } from 'lorem-ipsum/src';
+import { LoremIpsum } from 'lorem-ipsum';
 import LookupTable from '@craftercms/studio-ui/models/LookupTable';
 
 export function getRelatedContentTypeIds(contentType: ContentType): string[] {
