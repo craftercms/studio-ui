@@ -14,21 +14,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { defineMessages } from 'react-intl';
+import React, { PropsWithChildren, ReactNode } from 'react';
+import LoadingState from '../SystemStatus/LoadingState';
 
-export const translations = defineMessages({
-  toggleEditMode: {
-    id: 'previewToolbar.toggleEditMode',
-    defaultMessage: 'Toggle edit mode'
-  },
-  itemLocked: {
-    id: 'previewToolbar.editModeSwitchLockedMessage',
-    defaultMessage: 'Item is locked by {lockOwner}'
-  },
-  editNotAvailable: {
-    id: 'previewToolbar.editModeSwitchDisabled',
-    defaultMessage: 'Editing is not available'
-  }
-});
+export type ConditionalSuspenseProps = PropsWithChildren<{
+  isLoading: boolean;
+  fallback?: ReactNode;
+}>;
 
-export default translations;
+export function ConditionalSuspense(props: ConditionalSuspenseProps): JSX.Element {
+  const { children, isLoading, fallback = <LoadingState /> } = props;
+  return (isLoading ? fallback : children) as JSX.Element;
+}
+
+export default ConditionalSuspense;

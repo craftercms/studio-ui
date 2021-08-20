@@ -78,3 +78,9 @@ export const PUBLISH_SCHEDULE_MASK /*                */ = 0b00000000000000000000
 export const PUBLISH_REJECT_MASK /*                  */ = 0b000000000000000000000000000000000000000100000000000000000000000;
 export const CONTENT_ITEM_UNLOCK /*                  */ = 0b000000000000000000000000000000000000001000000000000000000000000;
 // endregion
+
+export const UNDEFINED = void 0;
+
+export const PREVIEW_URL_PATH = '/next/preview';
+
+export const LEGACY_PREVIEW_URL_PATH = '/preview';

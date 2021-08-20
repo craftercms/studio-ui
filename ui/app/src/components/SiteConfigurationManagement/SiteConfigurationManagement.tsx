@@ -55,7 +55,7 @@ import Alert from '@material-ui/lab/Alert';
 import { showHistoryDialog } from '../../state/actions/dialogs';
 import { batchActions } from '../../state/actions/misc';
 import { capitalize } from '../../utils/string';
-import { itemReverted, showSystemNotification } from '../../state/actions/system';
+import { fetchUseLegacyPreviewPreference, itemReverted, showSystemNotification } from '../../state/actions/system';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { filter, map } from 'rxjs/operators';
 import { fromString, serialize } from '../../utils/xml';
@@ -388,8 +388,10 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
                 message: formatMessage(translations.configSaved)
               })
             );
-            if (`${selectedConfigFile.module}/${selectedConfigFile.path}` === 'studio/ui.xml') {
+            if (selectedConfigFile.id === 'studio/ui.xml') {
               dispatch(fetchSiteUiConfig({ site }));
+            } else if (selectedConfigFile.id === 'studio/site-config.xml') {
+              dispatch(fetchUseLegacyPreviewPreference({ site }));
             }
             setDisabledSaveButton(true);
             setSelectedConfigFileXml(content);

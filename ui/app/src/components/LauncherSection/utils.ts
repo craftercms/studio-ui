@@ -15,9 +15,7 @@
  */
 
 import { defineMessages } from 'react-intl';
-import LookupTable from '../../models/LookupTable';
-
-export type SystemLinkId = 'preview' | 'siteTools' | 'siteSearch' | 'siteDashboard';
+import { PREVIEW_URL_PATH } from '../../utils/constants';
 
 export const urlMapping = {
   'home.globalMenu.logging-levels': '#/logging',
@@ -35,7 +33,7 @@ export const urlMapping = {
   about: '#/about-us',
   settings: '#/settings',
   'legacy.preview': '/preview/',
-  preview: '/next/preview',
+  preview: PREVIEW_URL_PATH,
   siteConfig: '/site-config',
   search: '/search',
   siteDashboard: '/site-dashboard'
@@ -67,31 +65,6 @@ export const messages = defineMessages({
     defaultMessage: 'Documentation'
   }
 });
-
-export function getSystemLink({
-  systemLinkId,
-  authoringBase,
-  site,
-  previewChoice,
-  page = '/'
-}: {
-  systemLinkId: SystemLinkId;
-  authoringBase: string;
-  site: string;
-  previewChoice: LookupTable<string>;
-  page?: string;
-}) {
-  return systemLinkId === 'preview'
-    ? // Preview is a special "dynamic case"
-      previewChoice[site] === '2'
-      ? `${authoringBase}/next/preview#/?page=${page}&site=${site}`
-      : `${authoringBase}/preview#/?page=${page}&site=${site}`
-    : {
-        siteTools: `${authoringBase}/site-config`,
-        siteSearch: `${authoringBase}/search`,
-        siteDashboard: `${authoringBase}/site-dashboard`
-      }[systemLinkId];
-}
 
 export function getLauncherSectionLink(id: string, authoringBase: string = `${getBase()}/studio`) {
   return `${authoringBase}${urlMapping[id]}`;

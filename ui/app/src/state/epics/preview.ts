@@ -15,14 +15,12 @@
  */
 
 import { ofType, StateObservable } from 'redux-observable';
-import { ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import { ignoreElements, tap, withLatestFrom } from 'rxjs/operators';
 import {
   popToolsPanelPage,
   previewItem,
   pushToolsPanelPage,
   setHighlightMode,
-  setPreviewChoice,
-  setPreviewChoiceComplete,
   setPreviewEditMode
 } from '../actions/preview';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
@@ -35,9 +33,8 @@ import {
 } from '../../utils/state';
 import GlobalState from '../../models/GlobalState';
 import { setClipboard } from '../actions/content';
-import { setProperties } from '../../services/users';
 import { CrafterCMSEpic } from '../store';
-import { getSystemLink } from '../../components/LauncherSection';
+import { getSystemLink } from '../../utils/system';
 
 export default [
   (action$, state$) =>
@@ -81,19 +78,6 @@ export default [
       ignoreElements()
     ),
   // endregion
-  // region setPreviewChoice
-  (action$, state$) =>
-    action$.pipe(
-      ofType(setPreviewChoice.type),
-      withLatestFrom(state$),
-      switchMap(([{ payload }, state]) =>
-        setProperties({
-          previewChoice: JSON.stringify({ ...state.preview.previewChoice, [payload.site]: payload.choice })
-        })
-      ),
-      map(setPreviewChoiceComplete)
-    ),
-  // endregion
   // region setHighlightMode
   (action$, state$) =>
     action$.pipe(
@@ -127,9 +111,9 @@ export default [
         const url = getSystemLink({
           site: state.sites.active,
           systemLinkId: 'preview',
-          previewChoice: state.preview.previewChoice,
           authoringBase: state.env.authoringBase,
-          page: payload.item.previewUrl
+          page: payload.item.previewUrl,
+          useLegacy: Boolean(state.uiConfig.useLegacyPreviewLookup[state.sites.active])
         });
         if (payload.newTab) {
           window.open(url);

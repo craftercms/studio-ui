@@ -244,8 +244,15 @@
       if (this.isAllowedOrigin(event.origin)) {
         var data = event.data;
         if (data != null && typeof data === 'object') {
-          if ('topic' in data) doLocalPublish(data.topic, data.scope, data.message);
-          else if ('type' in data && 'payload' in data) doLocalPublish(data.type, null, data.payload);
+          if ('topic' in data) {
+            doLocalPublish(data.topic, data.scope, data.message);
+          } else if (
+            // This is the signature of PageBuilder messages
+            'type' in data &&
+            'meta' in data
+          ) {
+            doLocalPublish(data.type, null, data.payload);
+          }
         }
       }
     }

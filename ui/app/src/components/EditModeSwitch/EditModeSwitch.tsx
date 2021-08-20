@@ -25,6 +25,8 @@ import { useDispatch } from 'react-redux';
 import { setPreviewEditMode } from '../../state/actions/preview';
 import { SwitchProps } from '@material-ui/core/Switch/Switch';
 import { useSelection } from '../../utils/hooks/useSelection';
+import { isItemLockedForMe } from '../../utils/content';
+import { useActiveUser } from '../../utils/hooks/useActiveUser';
 
 const EditSwitch = withStyles((theme) => {
   const green = theme.palette.success.main;
@@ -90,11 +92,12 @@ interface EditModeSwitchProps extends Partial<SwitchProps> {
 
 export default function EditModeSwitch(props: EditModeSwitchProps) {
   const { item, disabled, ...rest } = props;
-  const isLocked = item?.stateMap.locked;
-  const write = item?.availableActionsMap.edit;
+  const user = useActiveUser();
+  const isLocked = isItemLockedForMe(item, user.username);
+  const write = Boolean(item?.availableActionsMap.edit);
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
-  const editMode = useSelection((state) => state.preview.editMode);
+  const editMode = useSelection((state) => state.preview.editMode) && !isLocked && write;
 
   const onChange = (e) => {
     dispatch(setPreviewEditMode({ editMode: e.target.checked }));
@@ -104,9 +107,11 @@ export default function EditModeSwitch(props: EditModeSwitchProps) {
     <Tooltip
       title={
         isLocked
-          ? formatMessage(translations.itemLocked, { lockOwner: item.lockOwner })
+          ? item
+            ? formatMessage(translations.itemLocked, { lockOwner: item.lockOwner })
+            : ''
           : !write
-          ? ''
+          ? formatMessage(translations.editNotAvailable)
           : formatMessage(translations.toggleEditMode)
       }
     >

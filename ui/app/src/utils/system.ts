@@ -14,21 +14,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { defineMessages } from 'react-intl';
+import { LEGACY_PREVIEW_URL_PATH, PREVIEW_URL_PATH } from './constants';
 
-export const translations = defineMessages({
-  toggleEditMode: {
-    id: 'previewToolbar.toggleEditMode',
-    defaultMessage: 'Toggle edit mode'
-  },
-  itemLocked: {
-    id: 'previewToolbar.editModeSwitchLockedMessage',
-    defaultMessage: 'Item is locked by {lockOwner}'
-  },
-  editNotAvailable: {
-    id: 'previewToolbar.editModeSwitchDisabled',
-    defaultMessage: 'Editing is not available'
-  }
-});
+export type SystemLinkId = 'preview' | 'siteTools' | 'siteSearch' | 'siteDashboard';
 
-export default translations;
+export function getSystemLink({
+  systemLinkId,
+  authoringBase,
+  useLegacy,
+  site,
+  page = '/'
+}: {
+  systemLinkId: SystemLinkId;
+  authoringBase: string;
+  useLegacy: boolean;
+  site: string;
+  page?: string;
+}) {
+  return {
+    preview: `${authoringBase}${useLegacy ? LEGACY_PREVIEW_URL_PATH : PREVIEW_URL_PATH}#/?page=${page}&site=${site}`,
+    siteTools: `${authoringBase}/site-config`,
+    siteSearch: `${authoringBase}/search`,
+    siteDashboard: `${authoringBase}/site-dashboard`
+  }[systemLinkId];
+}

@@ -73,9 +73,6 @@ export interface WorkflowCancellationDialogStateProps extends WorkflowCancellati
 
 const useStyles = makeStyles((theme) =>
   createStyles({
-    contentRoot: {
-      height: '254px'
-    },
     suspense: {
       minHeight: '442px',
       margin: 0,
@@ -107,7 +104,7 @@ function WorkflowCancellationDialogUI(props: WorkflowCancellationDialogUIProps) 
         onDismiss={onDismiss}
       />
       <DialogBody>
-        <Grid container spacing={3} className={classes.contentRoot}>
+        <Grid container spacing={3}>
           <Grid item xs={12}>
             <List className={classes.filesList}>
               {items.map((item) => (

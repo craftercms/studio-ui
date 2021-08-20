@@ -618,10 +618,21 @@ CStudioAuthoring.Module.requireModule(
                 ed.isPaste = false;
                 _thisControl.editor = ed;
 
-                ed.onKeyUp.add(function(ed, e) {
+                const onChange = (ed) => {
                   ed.save();
                   ed.contextControl._onChange(null, ed.contextControl);
-                  // ed.contextControl.updateModel(ed.contextControl.inputEl.value );   Hmm .. do we really want to update the model on every key stroke?
+                };
+
+                ed.onKeyUp.add(function(ed, e) {
+                  onChange(ed);
+                });
+
+                ed.onUndo.add(function(ed, e) {
+                  onChange(ed);
+                });
+
+                ed.onRedo.add(function(ed, e) {
+                  onChange(ed);
                 });
 
                 ed.onDblClick.add(function(ed, e) {
