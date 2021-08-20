@@ -293,7 +293,7 @@ export function parseSandBoxItemToDetailedItem(
 ): DetailedItem | DetailedItem[] {
   if (Array.isArray(item)) {
     // including level descriptors to avoid issues on pathNavigator;
-    return item.map((i) => parseSandBoxItemToDetailedItem(i, detailedItemComplement[i.path]));
+    return item.map((i) => parseSandBoxItemToDetailedItem(i, detailedItemComplement?.[i.path]));
   }
   return {
     sandbox: {
