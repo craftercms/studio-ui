@@ -65,15 +65,16 @@ import { getOffsetLeft, getOffsetTop } from '@material-ui/core/Popover/Popover';
 import { getNumOfMenuOptionsForItem } from '../../utils/content';
 import { batchActions } from '../../state/actions/misc';
 import { useSelection } from '../../utils/hooks/useSelection';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useEnv } from '../../utils/hooks/useEnv';
 import { useItemsByPath } from '../../utils/hooks/useItemsByPath';
 import { useSubject } from '../../utils/hooks/useSubject';
 import { useSiteLocales } from '../../utils/hooks/useSiteLocales';
 import { useMount } from '../../utils/hooks/useMount';
 import { getSystemLink } from '../../utils/system';
-import { nnou } from '../../utils/object';
 import { useLegacyPreviewPreference } from '../../utils/hooks/useLegacyPreviewPreference';
+import { getStoredPathNavigator } from '../../utils/state';
+import { useActiveSite } from '../../utils/hooks/useActiveSite';
+import { useActiveUser } from '../../utils/hooks/useActiveUser';
 
 interface Menu {
   path?: string;
@@ -152,7 +153,8 @@ export default function PathNavigator(props: PathNavigatorProps) {
   } = props;
   const state = useSelection((state) => state.pathNavigator)[id];
   const itemsByPath = useItemsByPath();
-  const site = useActiveSiteId();
+  const { id: siteId, uuid } = useActiveSite();
+  const user = useActiveUser();
   const { authoringBase } = useEnv();
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
@@ -169,12 +171,6 @@ export default function PathNavigator(props: PathNavigatorProps) {
   const useLegacy = useLegacyPreviewPreference();
 
   useEffect(() => {
-    if (nnou(state?.keyword)) {
-      setKeyword(state.keyword);
-    }
-  }, [state?.keyword]);
-
-  useEffect(() => {
     if (backgroundRefreshTimeoutMs && hasActiveSession) {
       let interval = setInterval(() => {
         dispatch(pathNavigatorBackgroundRefresh({ id }));
@@ -188,10 +184,14 @@ export default function PathNavigator(props: PathNavigatorProps) {
   useEffect(() => {
     // Adding uiConfig as means to stop navigator from trying to
     // initialize with previous state information when switching sites
-    if (!state && uiConfig.currentSite === site) {
-      dispatch(pathNavigatorInit({ id, path, locale, excludes, limit }));
+    if (!state && uiConfig.currentSite === siteId) {
+      const storedState = getStoredPathNavigator(uuid, user.username, id);
+      if (storedState?.keyword) {
+        setKeyword(storedState.keyword);
+      }
+      dispatch(pathNavigatorInit({ id, path, locale, excludes, limit, ...storedState }));
     }
-  }, [dispatch, excludes, id, limit, locale, path, site, state, uiConfig.currentSite]);
+  }, [dispatch, excludes, id, limit, locale, path, siteId, state, uiConfig.currentSite, user.username, uuid]);
 
   useMount(() => {
     if (state) {
@@ -352,7 +352,7 @@ export default function PathNavigator(props: PathNavigatorProps) {
 
   const onPreview = (item: DetailedItem) => {
     if (isEditableViaFormEditor(item)) {
-      dispatch(showEditDialog({ path: item.path, authoringBase, site, readonly: true }));
+      dispatch(showEditDialog({ path: item.path, authoringBase, site: siteId, readonly: true }));
     } else if (isImage(item)) {
       dispatch(
         showPreviewDialog({
@@ -371,7 +371,7 @@ export default function PathNavigator(props: PathNavigatorProps) {
           mode
         })
       );
-      fetchContentXML(site, item.path).subscribe((content) => {
+      fetchContentXML(siteId, item.path).subscribe((content) => {
         dispatch(
           updatePreviewDialog({
             content
@@ -466,7 +466,7 @@ export default function PathNavigator(props: PathNavigatorProps) {
     : createItemClickedHandler((item: DetailedItem, e) => {
         if (isNavigable(item)) {
           const url = getSystemLink({
-            site,
+            site: siteId,
             useLegacy,
             systemLinkId: 'preview',
             authoringBase,
