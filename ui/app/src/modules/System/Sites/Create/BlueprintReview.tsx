@@ -23,12 +23,11 @@ import EditIcon from '@material-ui/icons/Edit';
 import { SiteState } from '../../../../models/Site';
 import { MarketplacePlugin, MarketplacePluginParameter } from '../../../../models/MarketplacePlugin';
 import { defineMessages, useIntl } from 'react-intl';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import palette from '../../../../styles/palette';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles((theme) => ({
   review: {
     maxWidth: '600px',
     margin: 'auto'

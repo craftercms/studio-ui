@@ -42,7 +42,9 @@ export type ValidationKeys =
   | 'minWidth'
   | 'minHeight'
   | 'maxWidth'
-  | 'maxHeight';
+  | 'maxHeight'
+  | 'minValue'
+  | 'maxValue';
 
 export type ContentTypeFieldValidations = {
   [key in ValidationKeys]: ContentTypeFieldValidation;

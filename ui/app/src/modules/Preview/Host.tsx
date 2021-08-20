@@ -159,7 +159,7 @@ export function HostUI(props: HostPropsUI) {
     } catch {
       iframeRef.current.src = url;
     }
-  }, [url]);
+  }, [url, site]);
 
   return (
     <>

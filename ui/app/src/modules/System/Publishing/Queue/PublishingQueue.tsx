@@ -16,7 +16,6 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -34,7 +33,7 @@ import HighlightOffIcon from '@material-ui/icons/HighlightOffRounded';
 import Spinner from '../../../../components/SystemStatus/Spinner';
 import RefreshIcon from '@material-ui/icons/RefreshRounded';
 import Button from '@material-ui/core/Button';
-import { fade } from '@material-ui/core/styles/colorManipulator';
+import { fade } from '@material-ui/core/styles';
 import { BLOCKED, CANCELLED, COMPLETED, PROCESSING, READY_FOR_LIVE } from '../constants';
 import palette from '../../../../styles/palette';
 import ApiResponseErrorState from '../../../../components/ApiResponseErrorState';
@@ -92,7 +91,7 @@ const messages = defineMessages({
   }
 });
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles((theme) => ({
   publishingQueue: {},
   topBar: {
     display: 'flex',
@@ -452,8 +451,8 @@ function PublishingQueue(props: PublishingQueueProps) {
         nextIconButtonProps={{
           'aria-label': formatMessage(messages.next)
         }}
-        onChangePage={handleChangePage}
-        onChangeRowsPerPage={handleChangeRowsPerPage}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
       />
     </div>
   );

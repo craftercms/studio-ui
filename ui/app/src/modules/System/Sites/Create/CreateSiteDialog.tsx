@@ -31,7 +31,6 @@ import ConfirmDialog from '../../../../components/Dialogs/ConfirmDialog';
 import { MarketplacePlugin } from '../../../../models/MarketplacePlugin';
 import { CreateSiteMeta, MarketplaceSite, SiteState, Views } from '../../../../models/Site';
 import { defineMessages, useIntl } from 'react-intl';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import PluginDetailsView from '../../../../components/PluginDetailsView/PluginDetailsView';
 import EmptyState from '../../../../components/SystemStatus/EmptyState';
 import { setRequestForgeryToken, setSiteCookie } from '../../../../utils/auth';
@@ -182,7 +181,7 @@ const CustomTabs = withStyles({
   }
 })(Tabs);
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     '@keyframes fadeIn': fadeIn,
     fadeIn: {

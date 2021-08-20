@@ -419,8 +419,8 @@ export function PreviewConcierge(props: any) {
           break;
       }
       switch (type) {
+        // region Legacy preview sites messages
         case GUEST_SITE_LOAD: {
-          // Legacy sites (guest v1) send this message.
           const { url, location } = payload;
           const path = getPathFromPreviewURL(url);
           dispatch(checkInGuest({ location, site: siteId, path }));
@@ -446,6 +446,7 @@ export function PreviewConcierge(props: any) {
           );
           break;
         }
+        // endregion
         case GUEST_CHECK_IN:
         case FETCH_GUEST_MODEL: {
           if (type === GUEST_CHECK_IN) {

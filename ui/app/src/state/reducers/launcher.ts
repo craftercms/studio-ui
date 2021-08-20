@@ -19,8 +19,10 @@ import { createReducer } from '@reduxjs/toolkit';
 import { initLauncherConfig } from '../actions/launcher';
 import { deserialize, fromString } from '../../utils/xml';
 import { applyDeserializedXMLTransforms } from '../../utils/object';
+import { changeSite } from './sites';
 
 const reducer = createReducer<GlobalState['launcher']>(null, {
+  [changeSite.type]: () => null,
   [initLauncherConfig.type]: (state, { payload }) => {
     let launcherConfig = null;
     const arrays = ['widgets', 'permittedRoles', 'siteCardMenuLinks'];
