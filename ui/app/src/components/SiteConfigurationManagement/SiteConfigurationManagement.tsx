@@ -388,9 +388,9 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
                 message: formatMessage(translations.configSaved)
               })
             );
-            if (`${selectedConfigFile.module}/${selectedConfigFile.path}` === 'studio/ui.xml') {
+            if (selectedConfigFile.id === 'studio/ui.xml') {
               dispatch(fetchSiteUiConfig({ site }));
-            } else if (selectedConfigFile.module === 'studio' || selectedConfigFile.path === '/site-config.xml') {
+            } else if (selectedConfigFile.id === 'studio/site-config.xml') {
               dispatch(fetchUseLegacyPreviewPreference({ site }));
             }
             setDisabledSaveButton(true);
