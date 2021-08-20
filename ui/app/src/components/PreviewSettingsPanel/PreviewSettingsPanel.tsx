@@ -21,9 +21,8 @@ import { FormControl, FormControlLabel, FormHelperText, FormLabel, Radio, RadioG
 import { setHighlightMode } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 import EditModeSwitch from '../EditModeSwitch';
-import { usePreviewGuest } from '../../utils/hooks/usePreviewGuest';
 import { usePreviewState } from '../../utils/hooks/usePreviewState';
-import { useItemsByPath } from '../../utils/hooks/useItemsByPath';
+import { useCurrentPreviewItem } from '../../utils/hooks/useCurrentPreviewItem';
 
 const translations = defineMessages({
   editMode: {
@@ -72,14 +71,10 @@ const useStyles = makeStyles(() => ({
 }));
 
 export default function PreviewSettingsPanel() {
-  const classes = useStyles({});
+  const classes = useStyles();
   const { formatMessage } = useIntl();
   const { highlightMode } = usePreviewState();
-  const guest = usePreviewGuest();
-  const modelId = guest?.modelId;
-  const models = guest?.models;
-  const items = useItemsByPath();
-  const item = items?.[models?.[modelId]?.craftercms.path];
+  const item = useCurrentPreviewItem();
   const dispatch = useDispatch();
 
   return (

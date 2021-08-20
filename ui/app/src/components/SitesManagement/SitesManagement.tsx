@@ -31,7 +31,6 @@ import { fetchStatus } from '../../services/publishing';
 import { map } from 'rxjs/operators';
 import { Site } from '../../models/Site';
 import { setSiteCookie } from '../../utils/auth';
-import { getSystemLink } from '../LauncherSection';
 import { trash } from '../../services/sites';
 import { batchActions } from '../../state/actions/misc';
 import { showSystemNotification } from '../../state/actions/system';
@@ -47,7 +46,6 @@ import Button from '@material-ui/core/Button';
 import { getStoredGlobalMenuSiteViewPreference, setStoredGlobalMenuSiteViewPreference } from '../../utils/state';
 import { hasGlobalPermissions } from '../../services/users';
 import { foo } from '../../utils/object';
-import { usePreviewState } from '../../utils/hooks/usePreviewState';
 import { useEnv } from '../../utils/hooks/useEnv';
 import { useActiveUser } from '../../utils/hooks/useActiveUser';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
@@ -55,6 +53,8 @@ import { useMount } from '../../utils/hooks/useMount';
 import { useSpreadState } from '../../utils/hooks/useSpreadState';
 import { useSitesBranch } from '../../utils/hooks/useSitesBranch';
 import Paper from '@material-ui/core/Paper';
+import { getSystemLink } from '../../utils/system';
+import { fetchUseLegacyPreviewPreference } from '../../services/configuration';
 
 const translations = defineMessages({
   siteDeleted: {
@@ -67,7 +67,6 @@ export default function SitesManagement() {
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const { authoringBase } = useEnv();
-  const { previewChoice } = usePreviewState();
   const [openCreateSiteDialog, setOpenCreateSiteDialog] = useState(false);
   const user = useActiveUser();
   const [currentView, setCurrentView] = useState<'grid' | 'list'>(
@@ -105,19 +104,19 @@ export default function SitesManagement() {
       shouldResolve: (source) => Boolean(source.sitesById) && permissionsLookup !== foo && !isFetching,
       shouldReject: () => false,
       shouldRenew: (source, resource) => isFetching && resource.complete,
-      resultSelector: (source) => Object.values(sitesById),
+      resultSelector: () => Object.values(sitesById),
       errorSelector: () => null
     }
   );
 
   const onSiteClick = (site: Site) => {
     setSiteCookie(site.id);
-    setTimeout(() => {
+    fetchUseLegacyPreviewPreference(site.id).subscribe((useLegacy) => {
       window.location.href = getSystemLink({
         systemLinkId: 'preview',
-        previewChoice,
         authoringBase,
-        site: site.id
+        site: site.id,
+        useLegacy
       });
     });
   };

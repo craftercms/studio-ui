@@ -56,6 +56,8 @@ import Button from '@material-ui/core/Button';
 import { nnou } from '../../../../utils/object';
 import { useEnv } from '../../../../utils/hooks/useEnv';
 import { useSpreadState } from '../../../../utils/hooks/useSpreadState';
+import { getSystemLink } from '../../../../utils/system';
+import { fetchUseLegacyPreviewPreference } from '../../../../services/configuration';
 
 const messages = defineMessages({
   privateBlueprints: {
@@ -667,7 +669,16 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
       handleClose();
       // Prop differs between regular site and marketplace site due to API versions 1 vs 2 differences
       setSiteCookie(site.siteId);
-      window.location.href = `${authoringBase}/preview`;
+      // TODO: Revisit this when site creation becomes asynchronous
+      fetchUseLegacyPreviewPreference(site.siteId).subscribe((useLegacy) => {
+        window.location.href = getSystemLink({
+          systemLinkId: 'preview',
+          authoringBase,
+          useLegacy,
+          site: site.siteId,
+          page: '/'
+        });
+      });
     };
     const error = ({ response }) => {
       if (response) {
