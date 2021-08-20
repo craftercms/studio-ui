@@ -42,9 +42,9 @@ export interface WorkflowStatesGridUIProps {
   isThisPageIndeterminate: boolean;
   onToggleSelectedItems(): void;
   onItemSelected(item: SandboxItem, value: boolean): void;
-  onChangePage(page: number): void;
+  onPageChange(page: number): void;
   onRowSelected(item: SandboxItem): void;
-  onChangeRowsPerPage?: React.ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
+  onRowsPerPageChange?: React.ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
 }
 
 export const drawerWidth = 260;
@@ -64,8 +64,8 @@ export const states: ItemStates[] = [
 export default function ItemStatesGridUI(props: WorkflowStatesGridUIProps) {
   const {
     resource,
-    onChangePage,
-    onChangeRowsPerPage,
+    onPageChange,
+    onRowsPerPageChange,
     rowsPerPageOptions = [5, 10, 15],
     selectedItems,
     onItemSelected,
@@ -200,8 +200,8 @@ export default function ItemStatesGridUI(props: WorkflowStatesGridUIProps) {
         count={itemStates.total}
         rowsPerPage={itemStates.limit}
         page={itemStates && Math.ceil(itemStates.offset / itemStates.limit)}
-        onChangePage={(page: number) => onChangePage(page)}
-        onChangeRowsPerPage={onChangeRowsPerPage}
+        onPageChange={(page: number) => onPageChange(page)}
+        onRowsPerPageChange={onRowsPerPageChange}
       />
     </>
   );

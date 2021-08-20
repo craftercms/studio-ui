@@ -504,7 +504,7 @@ export function Pagination(props: PaginationProps) {
       nextIconButtonProps={{
         'aria-label': formatMessage(translations.nextPage)
       }}
-      onChangePage={(e: React.MouseEvent<HTMLButtonElement>, nextPage: number) => props.onPageChanged(nextPage)}
+      onPageChange={(e: React.MouseEvent<HTMLButtonElement>, nextPage: number) => props.onPageChanged(nextPage)}
     />
   );
 }

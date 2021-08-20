@@ -14,15 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Subject } from 'rxjs';
-import { useEffect, useRef } from 'react';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { useSelection } from './useSelection';
+import { useActiveSiteId } from './useActiveSiteId';
 
-export function useDebouncedInput<T = string>(observer: (keywords: T) => any, time: number = 250): Subject<T> {
-  const subject$Ref = useRef(new Subject<T>());
-  useEffect(() => {
-    const subscription = subject$Ref.current.pipe(debounceTime(time), distinctUntilChanged()).subscribe(observer);
-    return () => subscription.unsubscribe();
-  }, [observer, time]);
-  return subject$Ref.current;
+export function useLegacyPreviewPreference() {
+  const site = useActiveSiteId();
+  return useSelection((state) =>
+    // If preference isn't loaded yet it'll still default to false. This isn't time sensitive.
+    Boolean(state.uiConfig.useLegacyPreviewLookup[site])
+  );
 }

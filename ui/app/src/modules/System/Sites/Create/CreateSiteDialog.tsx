@@ -31,7 +31,6 @@ import ConfirmDialog from '../../../../components/Dialogs/ConfirmDialog';
 import { MarketplacePlugin } from '../../../../models/MarketplacePlugin';
 import { CreateSiteMeta, MarketplaceSite, SiteState, Views } from '../../../../models/Site';
 import { defineMessages, useIntl } from 'react-intl';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import PluginDetailsView from '../../../../components/PluginDetailsView/PluginDetailsView';
 import EmptyState from '../../../../components/SystemStatus/EmptyState';
 import { setRequestForgeryToken, setSiteCookie } from '../../../../utils/auth';
@@ -56,6 +55,8 @@ import Button from '@material-ui/core/Button';
 import { nnou } from '../../../../utils/object';
 import { useEnv } from '../../../../utils/hooks/useEnv';
 import { useSpreadState } from '../../../../utils/hooks/useSpreadState';
+import { getSystemLink } from '../../../../utils/system';
+import { fetchUseLegacyPreviewPreference } from '../../../../services/configuration';
 
 const messages = defineMessages({
   privateBlueprints: {
@@ -180,7 +181,7 @@ const CustomTabs = withStyles({
   }
 })(Tabs);
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     '@keyframes fadeIn': fadeIn,
     fadeIn: {
@@ -667,7 +668,16 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
       handleClose();
       // Prop differs between regular site and marketplace site due to API versions 1 vs 2 differences
       setSiteCookie(site.siteId);
-      window.location.href = `${authoringBase}/preview`;
+      // TODO: Revisit this when site creation becomes asynchronous
+      fetchUseLegacyPreviewPreference(site.siteId).subscribe((useLegacy) => {
+        window.location.href = getSystemLink({
+          systemLinkId: 'preview',
+          authoringBase,
+          useLegacy,
+          site: site.siteId,
+          page: '/'
+        });
+      });
     };
     const error = ({ response }) => {
       if (response) {

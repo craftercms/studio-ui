@@ -279,10 +279,21 @@ export function parseLegacyItemToDetailedItem(item: LegacyItem | LegacyItem[]): 
 
 export function parseSandBoxItemToDetailedItem(item: SandboxItem): DetailedItem;
 export function parseSandBoxItemToDetailedItem(item: SandboxItem[]): DetailedItem[];
-export function parseSandBoxItemToDetailedItem(item: SandboxItem | SandboxItem[]): DetailedItem | DetailedItem[] {
+export function parseSandBoxItemToDetailedItem(
+  item: SandboxItem,
+  detailedItemComplement: Pick<DetailedItem, 'live' | 'staging'>
+): DetailedItem;
+export function parseSandBoxItemToDetailedItem(
+  item: SandboxItem[],
+  detailedItemComplementByPath: LookupTable<Pick<DetailedItem, 'live' | 'staging'>>
+): DetailedItem[];
+export function parseSandBoxItemToDetailedItem(
+  item: SandboxItem | SandboxItem[],
+  detailedItemComplement?: Pick<DetailedItem, 'live' | 'staging'> | LookupTable<Pick<DetailedItem, 'live' | 'staging'>>
+): DetailedItem | DetailedItem[] {
   if (Array.isArray(item)) {
     // including level descriptors to avoid issues on pathNavigator;
-    return item.map((i) => parseSandBoxItemToDetailedItem(i));
+    return item.map((i) => parseSandBoxItemToDetailedItem(i, detailedItemComplement[i.path]));
   }
   return {
     sandbox: {
@@ -294,8 +305,8 @@ export function parseSandBoxItemToDetailedItem(item: SandboxItem | SandboxItem[]
       sizeInBytes: item.sizeInBytes,
       expiresOn: item.expiresOn
     },
-    staging: null,
-    live: null,
+    staging: (detailedItemComplement?.staging as DetailedItem['staging']) ?? null,
+    live: (detailedItemComplement?.live as DetailedItem['live']) ?? null,
     ...(reversePluckProps(
       item,
       'creator',

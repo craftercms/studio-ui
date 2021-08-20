@@ -31,7 +31,9 @@ export const minimizeDialog = /*#__PURE__*/ createAction<Payload>('MINIMIZE_DIAL
 
 export const maximizeDialog = /*#__PURE__*/ createAction<Payload>('MAXIMIZE_DIALOG');
 
-export const updateDialog = /*#__PURE__*/ createAction<Partial<MinimizedDialog> & Payload>('UPDATE_DIALOG');
+export const minimizedDialogUpdate = /*#__PURE__*/ createAction<Partial<MinimizedDialog> & Payload>(
+  'MINIMIZED_DIALOG_UPDATE'
+);
 
 export default createReducer<GlobalState['dialogs']['minimizedDialogs']>(
   {},
@@ -44,7 +46,7 @@ export default createReducer<GlobalState['dialogs']['minimizedDialogs']>(
       }
     }),
     [popDialog.type]: (state, { payload }) => reversePluckProps(state, payload.id),
-    [updateDialog.type]: (state, { payload }) => ({
+    [minimizedDialogUpdate.type]: (state, { payload }) => ({
       ...state,
       [payload.id]: { ...state[payload.id], ...payload }
     }),

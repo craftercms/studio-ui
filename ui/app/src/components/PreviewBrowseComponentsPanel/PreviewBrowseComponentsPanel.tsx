@@ -321,7 +321,7 @@ function BrowsePanelUI(props: BrowsePanelUIProps) {
                 'aria-label': formatMessage(translations.nextPage),
                 size: 'small'
               }}
-              onChangePage={(e: React.MouseEvent<HTMLButtonElement>, page: number) => onPageChanged(e, page * limit)}
+              onPageChange={(e: React.MouseEvent<HTMLButtonElement>, page: number) => onPageChanged(e, page * limit)}
             />
           </div>
           <List className={classes.list}>

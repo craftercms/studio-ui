@@ -105,11 +105,11 @@ export default function UsersManagement(props: UsersManagementProps) {
     setViewUser(user);
   };
 
-  const onChangePage = (page: number) => {
+  const onPageChange = (page: number) => {
     setOffset(page * limit);
   };
 
-  const onChangeRowsPerPage = (e) => {
+  const onRowsPerPageChange = (e) => {
     setLimit(e.target.value);
   };
 
@@ -169,8 +169,8 @@ export default function UsersManagement(props: UsersManagementProps) {
         <UsersGridUI
           resource={resource}
           onRowClicked={onRowClicked}
-          onChangePage={onChangePage}
-          onChangeRowsPerPage={onChangeRowsPerPage}
+          onPageChange={onPageChange}
+          onRowsPerPageChange={onRowsPerPageChange}
         />
       </SuspenseWithEmptyState>
 

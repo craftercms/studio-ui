@@ -20,6 +20,7 @@ import ReactDOM from 'react-dom';
 import CrafterCMSNextBridge from '../components/CrafterCMSNextBridge';
 import * as string from './string';
 import * as object from './object';
+import * as system from './system';
 import { nou } from './object';
 import * as ajax from './ajax';
 import * as path from './path';
@@ -237,6 +238,7 @@ export function createCodebaseBridge() {
       auth,
       babel,
       state,
+      system,
       content: contentUtil,
       redux: { useDispatch, useSelector, useStore }
     },

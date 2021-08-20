@@ -250,6 +250,7 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
             isLevelDescriptor={false}
             onOpenItemMenu={onCurrentParentMenu}
             onItemClicked={onItemClicked}
+            showItemNavigateToButton={false}
             isCurrentPath
           />
         )}
@@ -305,7 +306,7 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
             page={state && Math.ceil(state.offset / state.limit)}
             backIconButtonProps={{ 'aria-label': formatMessage(translations.previousPage) }}
             nextIconButtonProps={{ 'aria-label': formatMessage(translations.nextPage) }}
-            onChangePage={(e, page: number) => onPageChanged(page)}
+            onPageChange={(e, page: number) => onPageChanged(page)}
           />
         )}
       </AccordionDetails>

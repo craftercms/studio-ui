@@ -15,17 +15,16 @@
  */
 
 import React from 'react';
-import { useReferences } from '../../utils/hooks/useReferences';
+import { useReference } from '../../utils/hooks/useReference';
 import EmptyState from '../SystemStatus/EmptyState';
 import { FormattedMessage } from 'react-intl';
 import ToolsPanelEmbeddedAppViewButton from '../ToolsPanelEmbeddedAppViewButton';
 
 export default function SiteToolsPanel() {
-  const references = useReferences();
-  const { 'craftercms.siteTools': siteTools } = references;
+  const siteTools = useReference('craftercms.siteTools');
   return (
     <>
-      {siteTools && siteTools.tools?.length ? (
+      {siteTools?.tools?.length ? (
         siteTools.tools.map((tool, index) => (
           <ToolsPanelEmbeddedAppViewButton
             key={index}
