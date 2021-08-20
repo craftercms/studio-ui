@@ -669,6 +669,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
       handleClose();
       // Prop differs between regular site and marketplace site due to API versions 1 vs 2 differences
       setSiteCookie(site.siteId);
+      // TODO: Revisit this when site creation becomes asynchronous
       fetchUseLegacyPreviewPreference(site.siteId).subscribe((useLegacy) => {
         window.location.href = getSystemLink({
           systemLinkId: 'preview',
