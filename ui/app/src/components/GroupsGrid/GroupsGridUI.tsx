@@ -33,12 +33,12 @@ import Box from '@material-ui/core/Box';
 export interface GroupsGridUIProps {
   resource: Resource<PagedArray<Group>>;
   onRowClicked(user: Group): void;
-  onChangePage(page: number): void;
-  onChangeRowsPerPage?: React.ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
+  onPageChange(page: number): void;
+  onRowsPerPageChange?: React.ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
 }
 
 export default function GroupsGridUI(props: GroupsGridUIProps) {
-  const { resource, onRowClicked, onChangePage, onChangeRowsPerPage } = props;
+  const { resource, onRowClicked, onPageChange, onRowsPerPageChange } = props;
   const classes = styles();
   const groups = resource.read();
 
@@ -78,8 +78,8 @@ export default function GroupsGridUI(props: GroupsGridUIProps) {
         count={groups.total}
         rowsPerPage={groups.limit}
         page={groups && Math.ceil(groups.offset / groups.limit)}
-        onChangePage={(page: number) => onChangePage(page)}
-        onChangeRowsPerPage={onChangeRowsPerPage}
+        onPageChange={(page: number) => onPageChange(page)}
+        onRowsPerPageChange={onRowsPerPageChange}
       />
     </Box>
   );
