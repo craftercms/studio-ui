@@ -88,7 +88,10 @@ export default function SiteCard(props: SiteCardProps) {
               </Tooltip>
             )
           }
-          onClick={() => onSiteClick(site)}
+          onClick={(e) => {
+            e.stopPropagation();
+            onSiteClick(site);
+          }}
           titleTypographyProps={{
             variant: 'subtitle2',
             component: 'h2',

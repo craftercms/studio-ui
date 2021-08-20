@@ -15,7 +15,7 @@
  */
 
 import { defineMessages } from 'react-intl';
-import { PREVIEW_BASE_URL } from '../../utils/constants';
+import { PREVIEW_URL_PATH } from '../../utils/constants';
 
 export const urlMapping = {
   'home.globalMenu.logging-levels': '#/logging',
@@ -33,7 +33,7 @@ export const urlMapping = {
   about: '#/about-us',
   settings: '#/settings',
   'legacy.preview': '/preview/',
-  preview: PREVIEW_BASE_URL,
+  preview: PREVIEW_URL_PATH,
   siteConfig: '/site-config',
   search: '/search',
   siteDashboard: '/site-dashboard'

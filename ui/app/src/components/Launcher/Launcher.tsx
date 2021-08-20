@@ -57,7 +57,9 @@ import { useSiteUIConfig } from '../../utils/hooks/useSiteUIConfig';
 import { initLauncherConfig } from '../../state/actions/launcher';
 import { useLauncherState } from '../../utils/hooks/useLauncherState';
 import { getSystemLink } from '../../utils/system';
-import { PREVIEW_BASE_URL } from '../../utils/constants';
+import { PREVIEW_URL_PATH } from '../../utils/constants';
+import { useLegacyPreviewPreference } from '../../utils/hooks/useLegacyPreviewPreference';
+import { fetchUseLegacyPreviewPreference } from '../../services/configuration';
 
 export interface LauncherProps {
   open: boolean;
@@ -347,6 +349,7 @@ export default function Launcher(props: LauncherStateProps) {
   const user = useActiveUser();
   const dispatch = useDispatch();
   const version = useSystemVersion();
+  const useLegacy = useLegacyPreviewPreference();
   const { formatMessage } = useIntl();
   const { authoringBase } = useEnv();
   const { open, anchor: anchorSelector, sitesRailPosition = 'left', closeButtonPosition = 'right' } = props;
@@ -372,6 +375,7 @@ export default function Launcher(props: LauncherStateProps) {
                 getSystemLink({
                   systemLinkId: descriptor.systemLinkId,
                   authoringBase,
+                  useLegacy,
                   site
                 }),
               onClick(site) {
@@ -379,7 +383,7 @@ export default function Launcher(props: LauncherStateProps) {
               }
             }))
         : null,
-    [siteCardMenuLinks, userRoles, formatMessage, authoringBase]
+    [siteCardMenuLinks, userRoles, formatMessage, authoringBase, useLegacy]
   );
 
   useEffect(() => {
@@ -389,19 +393,24 @@ export default function Launcher(props: LauncherStateProps) {
   }, [uiConfig.xml, launcher, dispatch]);
 
   const onSiteCardClick = (site: string) => {
-    if (window.location.href.includes(PREVIEW_BASE_URL)) {
-      // If site we're switching to is next compatible, there's no need for any sort of page postback.
-      dispatch(batchActions([changeSite(site), closeLauncher()]));
-    } else {
-      setSiteCookie(site);
-      setTimeout(() => {
+    setSiteCookie(site);
+    fetchUseLegacyPreviewPreference(site).subscribe((useLegacy) => {
+      if (!useLegacy && window.location.href.includes(PREVIEW_URL_PATH)) {
+        // If user is in UI next and switching to a site that's viewed in 4.
+        dispatch(batchActions([changeSite(site), closeLauncher()]));
+      } else {
+        // If we're in legacy preview already (i.e. switching from a legacy-preview site to another legacy-preview
+        // site) only the hash will change and the page won't reload or do anything perceivable since legacy isn't
+        // fully integrated with the URL. In these cases, we need to programmatically reload.
         window.location.href = getSystemLink({
           systemLinkId: 'preview',
           authoringBase,
+          useLegacy,
           site
         });
-      });
-    }
+        useLegacy && window.location.reload();
+      }
+    });
   };
 
   const onMenuClose = () => dispatch(closeLauncher());

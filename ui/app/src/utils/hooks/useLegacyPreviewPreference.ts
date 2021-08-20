@@ -14,27 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { LEGACY_PREVIEW_URL_PATH, PREVIEW_URL_PATH } from './constants';
+import { useSelection } from './useSelection';
+import { useActiveSiteId } from './useActiveSiteId';
 
-export type SystemLinkId = 'preview' | 'siteTools' | 'siteSearch' | 'siteDashboard';
-
-export function getSystemLink({
-  systemLinkId,
-  authoringBase,
-  useLegacy,
-  site,
-  page = '/'
-}: {
-  systemLinkId: SystemLinkId;
-  authoringBase: string;
-  useLegacy: boolean;
-  site: string;
-  page?: string;
-}) {
-  return {
-    preview: `${authoringBase}${useLegacy ? LEGACY_PREVIEW_URL_PATH : PREVIEW_URL_PATH}#/?page=${page}&site=${site}`,
-    siteTools: `${authoringBase}/site-config`,
-    siteSearch: `${authoringBase}/search`,
-    siteDashboard: `${authoringBase}/site-dashboard`
-  }[systemLinkId];
+export function useLegacyPreviewPreference() {
+  const site = useActiveSiteId();
+  return useSelection((state) =>
+    // If preference isn't loaded yet it'll still default to false. This isn't time sensitive.
+    Boolean(state.uiConfig.useLegacyPreviewLookup[site])
+  );
 }

@@ -17,7 +17,7 @@
 import { errorSelectorApi1, get, postJSON } from '../utils/ajax';
 import { catchError, map, pluck } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import { deserialize, fromString } from '../utils/xml';
+import { deserialize, fromString, getInnerHtml } from '../utils/xml';
 import { ContentTypeField } from '../models/ContentType';
 import { reversePluckProps, toQueryString } from '../utils/object';
 import ContentInstance from '../models/ContentInstance';
@@ -238,5 +238,11 @@ export function fetchSiteConfigurationFiles(site: string, environment?: string):
       }
       return files;
     })
+  );
+}
+
+export function fetchUseLegacyPreviewPreference(site: string): Observable<boolean> {
+  return fetchConfigurationDOM(site, '/site-config.xml', 'studio').pipe(
+    map((dom) => getInnerHtml(dom.querySelector('usePreview3')) === 'true')
   );
 }

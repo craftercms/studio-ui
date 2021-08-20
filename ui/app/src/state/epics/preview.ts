@@ -112,7 +112,8 @@ export default [
           site: state.sites.active,
           systemLinkId: 'preview',
           authoringBase: state.env.authoringBase,
-          page: payload.item.previewUrl
+          page: payload.item.previewUrl,
+          useLegacy: Boolean(state.uiConfig.useLegacyPreviewLookup[state.sites.active])
         });
         if (payload.newTab) {
           window.open(url);

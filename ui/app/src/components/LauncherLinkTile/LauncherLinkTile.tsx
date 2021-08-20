@@ -25,6 +25,7 @@ import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useEnv } from '../../utils/hooks/useEnv';
 import { usePossibleTranslation } from '../../utils/hooks/usePossibleTranslation';
 import { getSystemLink, SystemLinkId } from '../../utils/system';
+import { useLegacyPreviewPreference } from '../../utils/hooks/useLegacyPreviewPreference';
 
 export interface LauncherLinkTileProps {
   title: TranslationOrText;
@@ -37,6 +38,7 @@ const LauncherLinkTile = (props: LauncherLinkTileProps) => {
   const { icon, systemLinkId } = props;
   const { authoringBase } = useEnv();
   const site = useActiveSiteId();
+  const useLegacy = useLegacyPreviewPreference();
   const dispatch = useDispatch();
   const title = usePossibleTranslation(props.title);
 
@@ -68,7 +70,7 @@ const LauncherLinkTile = (props: LauncherLinkTileProps) => {
 
   const link = ['siteDashboard', 'siteTools'].includes(systemLinkId)
     ? null
-    : props.link ?? getSystemLink({ systemLinkId, authoringBase, site });
+    : props.link ?? getSystemLink({ systemLinkId, authoringBase, site, useLegacy });
 
   return <LauncherTile icon={icon} onClick={onClick} title={usePossibleTranslation(title)} link={link} />;
 };

@@ -23,6 +23,7 @@ import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useEnv } from '../../utils/hooks/useEnv';
 import SiteToolsApp, { Tool } from './SiteToolsApp';
 import { getSystemLink } from '../../utils/system';
+import { useLegacyPreviewPreference } from '../../utils/hooks/useLegacyPreviewPreference';
 
 interface UrlDrivenSiteToolsProps {
   footerHtml: string;
@@ -38,6 +39,7 @@ export default function UrlDrivenSiteTools(props: UrlDrivenSiteToolsProps) {
   const tools: Tool[] = useReference('craftercms.siteTools')?.tools;
   const site = useActiveSiteId();
   const { authoringBase } = useEnv();
+  const useLegacy = useLegacyPreviewPreference();
 
   history.listen((location) => {
     setActiveToolId(location.pathname.replace('/', ''));
@@ -50,6 +52,7 @@ export default function UrlDrivenSiteTools(props: UrlDrivenSiteToolsProps) {
   const onBackClick = () => {
     window.location.href = getSystemLink({
       site,
+      useLegacy,
       authoringBase,
       systemLinkId: 'preview'
     });

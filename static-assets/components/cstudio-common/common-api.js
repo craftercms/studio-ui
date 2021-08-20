@@ -1585,11 +1585,13 @@ var nodeOpen = false,
               url = '/';
             }
           }
+          const state = CrafterCMSNext.system.store.getState();
           window.location = CrafterCMSNext.util.system.getSystemLink({
             systemLinkId: 'preview',
-            authoringBase: CrafterCMSNext.system.store.getState().env.authoringBase,
+            authoringBase: state.env.authoringBase,
             site: CStudioAuthoringContext.site,
-            page: url
+            page: url,
+            useLegacy: Boolean(state.uiConfig.useLegacyPreviewLookup[CStudioAuthoringContext.site])
           });
         }
       },

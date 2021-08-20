@@ -73,6 +73,7 @@ import { useSiteLocales } from '../../utils/hooks/useSiteLocales';
 import { useMount } from '../../utils/hooks/useMount';
 import { getSystemLink } from '../../utils/system';
 import { nnou } from '../../utils/object';
+import { useLegacyPreviewPreference } from '../../utils/hooks/useLegacyPreviewPreference';
 
 interface Menu {
   path?: string;
@@ -165,6 +166,7 @@ export default function PathNavigator(props: PathNavigatorProps) {
   const uiConfig = useSelection<GlobalState['uiConfig']>((state) => state.uiConfig);
   const siteLocales = useSiteLocales();
   const hasActiveSession = useSelection((state) => state.auth.active);
+  const useLegacy = useLegacyPreviewPreference();
 
   useEffect(() => {
     if (nnou(state?.keyword)) {
@@ -465,6 +467,7 @@ export default function PathNavigator(props: PathNavigatorProps) {
         if (isNavigable(item)) {
           const url = getSystemLink({
             site,
+            useLegacy,
             systemLinkId: 'preview',
             authoringBase,
             page: item.previewUrl

@@ -237,6 +237,7 @@ export interface GlobalState {
       localeCode: string;
       dateTimeFormatOptions?: DateTimeFormatOptions;
     };
+    useLegacyPreviewLookup: LookupTable<boolean>;
     references: LookupTable;
     xml: string;
   };

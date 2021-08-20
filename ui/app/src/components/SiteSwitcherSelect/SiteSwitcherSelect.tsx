@@ -27,7 +27,8 @@ import { useEnv } from '../../utils/hooks/useEnv';
 import { useSiteList } from '../../utils/hooks/useSiteList';
 import clsx from 'clsx';
 import { getSystemLink } from '../../utils/system';
-import { PREVIEW_BASE_URL } from '../../utils/constants';
+import { PREVIEW_URL_PATH } from '../../utils/constants';
+import { useLegacyPreviewPreference } from '../../utils/hooks/useLegacyPreviewPreference';
 
 export interface SiteSwitcherSelectProps extends SelectProps {
   site: string;
@@ -39,10 +40,11 @@ function SiteSwitcherSelect(props: SiteSwitcherSelectProps) {
   const classes = useStyles();
   const { authoringBase } = useEnv();
   const dispatch = useDispatch();
+  const useLegacy = useLegacyPreviewPreference();
 
   const onSiteChange = ({ target: { value } }) => {
     if (!isBlank(value) && site !== value) {
-      if (window.location.href.includes(PREVIEW_BASE_URL)) {
+      if (window.location.href.includes(PREVIEW_URL_PATH)) {
         dispatch(changeSite(value));
       } else {
         setSiteCookie(value);
@@ -51,7 +53,8 @@ function SiteSwitcherSelect(props: SiteSwitcherSelectProps) {
             (window.location.href = getSystemLink({
               site: value,
               systemLinkId: 'preview',
-              authoringBase
+              authoringBase,
+              useLegacy
             }))
         );
       }

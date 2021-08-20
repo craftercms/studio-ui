@@ -18,7 +18,12 @@ import { GlobalState } from '../../models/GlobalState';
 import { createReducer } from '@reduxjs/toolkit';
 import { fetchSiteUiConfig, fetchSiteUiConfigComplete, fetchSiteUiConfigFailed } from '../actions/configuration';
 import { changeSite } from './sites';
-import { fetchSiteLocale, fetchSiteLocaleComplete, fetchSiteLocaleFailed } from '../actions/system';
+import {
+  fetchSiteLocale,
+  fetchSiteLocaleComplete,
+  fetchSiteLocaleFailed,
+  fetchUseLegacyPreviewPreferenceComplete
+} from '../actions/system';
 import { fetchSiteLocales, fetchSiteLocalesComplete, fetchSiteLocalesFailed } from '../actions/translation';
 import { deserialize, fromString, serialize } from '../../utils/xml';
 import { applyDeserializedXMLTransforms } from '../../utils/object';
@@ -46,6 +51,7 @@ const initialState: GlobalState['uiConfig'] = {
       minute: 'numeric'
     }
   },
+  useLegacyPreviewLookup: {},
   references: null,
   xml: null
 };
@@ -147,6 +153,13 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
       ...state.locale,
       isFetching: false,
       error: payload
+    }
+  }),
+  [fetchUseLegacyPreviewPreferenceComplete.type]: (state, { payload: { site, useLegacyPreview } }) => ({
+    ...state,
+    useLegacyPreviewLookup: {
+      ...state.useLegacyPreviewLookup,
+      [site]: useLegacyPreview
     }
   })
 });
