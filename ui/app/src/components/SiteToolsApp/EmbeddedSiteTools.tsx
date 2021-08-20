@@ -48,7 +48,7 @@ export const EmbeddedSiteToolsContainer = () => {
       imageUrl={`${baseUrl}/static-assets/images/choose_option.svg`}
       hideSidebarSiteSwitcher={true}
       activeToolId={activeToolId}
-      openSidebar={openSidebar}
+      openSidebar={openSidebar || !activeToolId}
       tools={tools}
       classes={{
         root: classes.root

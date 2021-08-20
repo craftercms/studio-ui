@@ -57,7 +57,7 @@ const initialState: GlobalState['uiConfig'] = {
 };
 
 const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
-  [changeSite.type]: (state) => ({ ...initialState }),
+  [changeSite.type]: (state) => ({ ...initialState, useLegacyPreviewLookup: state.useLegacyPreviewLookup }),
   [fetchSiteUiConfig.type]: (state, { payload: { site } }) => ({
     ...state,
     isFetching: true,
@@ -130,7 +130,6 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
       error: payload
     }
   }),
-  [changeSite.type]: () => initialState,
   [fetchSiteLocale.type]: (state) => ({
     ...state,
     locale: {
