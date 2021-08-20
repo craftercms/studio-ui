@@ -119,7 +119,7 @@ export function getDefaultValue(field: ContentTypeField): string | number {
         let lorem = new LoremIpsum();
         return lorem.generateParagraphs(1);
       case 'numeric-input': {
-        return field.validations.minCount?.value ?? 1;
+        return field.validations.minValue?.value ?? 1;
       }
       case 'boolean':
         return 'false';
