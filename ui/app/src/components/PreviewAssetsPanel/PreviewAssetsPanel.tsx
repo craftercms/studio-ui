@@ -347,7 +347,7 @@ export function AssetsPanelUI(props: AssetsPanelUIProps) {
           'aria-label': formatMessage(translations.nextPage),
           size: 'small'
         }}
-        onChangePage={(e: React.MouseEvent<HTMLButtonElement>, page: number) => onPageChanged(e, page * limit)}
+        onPageChange={(e: React.MouseEvent<HTMLButtonElement>, page: number) => onPageChanged(e, page * limit)}
       />
       {items.map((item: MediaItem) => {
         return (

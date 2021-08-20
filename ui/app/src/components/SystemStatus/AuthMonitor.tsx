@@ -30,7 +30,7 @@ import { isBlank } from '../../utils/string';
 import Typography from '@material-ui/core/Typography';
 import OpenInNewRounded from '@material-ui/icons/OpenInNewRounded';
 import LogInForm from './LoginForm';
-import { ClassNameMap } from '@material-ui/styles/withStyles';
+import { ClassNameMap } from '@material-ui/styles';
 import { me } from '../../services/users';
 import ApiResponseErrorState from '../ApiResponseErrorState';
 import ErrorState from '../ErrorState/ErrorState';
