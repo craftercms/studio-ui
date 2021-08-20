@@ -60,10 +60,3 @@ export function createSite(site: Site) {
 export function checkHandleAvailability(name: string) {
   return get(`/studio/api/1/services/api/1/site/exists.json?site=${name}`);
 }
-
-export default {
-  fetchBlueprints,
-  fetchSites,
-  createSite,
-  checkHandleAvailability
-};

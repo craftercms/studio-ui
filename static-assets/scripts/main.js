@@ -1051,7 +1051,7 @@
               a: (msg) =>
                 `<a href="https://docs.craftercms.org/en/${simpleVersion}/acknowledgements/index.html" target="_blank">${msg}</a>`
             })
-            .join('');
+            .props.children.join(' ');
         });
       }
 

@@ -58,7 +58,7 @@ function SingleFileUpload(props: UppyProps) {
   const { formatMessage } = useIntl();
   const [description, setDescription] = useState(formatMessage(messages.selectFileMessage));
   const [fileName, setFileName] = useState();
-  const [fileNameErrorClass, setFileNameErrorClass] = useState();
+  const [fileNameErrorClass, setFileNameErrorClass] = useState<string>();
 
   useEffect(() => {
     const uppy = Core({

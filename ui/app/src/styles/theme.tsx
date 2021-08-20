@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import createMuiTheme, { ThemeOptions } from '@material-ui/core/styles/createMuiTheme';
+import { createMuiTheme, ThemeOptions } from '@material-ui/core/styles';
 import { darken, fade } from '@material-ui/core/styles';
 
 export const palette = {

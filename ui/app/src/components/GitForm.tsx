@@ -60,12 +60,6 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-interface Expanded {
-  basic: boolean;
-  token: boolean;
-  key: boolean;
-}
-
 interface GitFormProps {
   inputs: SiteState;
 
