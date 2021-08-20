@@ -361,6 +361,8 @@ export function insertComponent(
 
   processFields(instance, contentType.fields);
 
+  console.log(instance);
+
   // Insert in desired position
   result.splice(targetIndex as number, 0, instance.craftercms.id);
 
