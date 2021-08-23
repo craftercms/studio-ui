@@ -570,7 +570,6 @@ interface MinimizedBarProps {
   onMaximized(): void;
 }
 
-// TODO: use type, status has a property status
 function MinimizedBar(props: MinimizedBarProps) {
   const { title, onMaximized, subtitle, status } = props;
   const classes = minimizedBarStyles({});
