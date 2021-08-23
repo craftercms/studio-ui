@@ -194,9 +194,15 @@ const reducer = createReducer<ContentState>(initialState, {
   ) => {
     let nextByPath = {};
     Object.values(data).forEach((children) => {
-      Object.assign(nextByPath, createLookupTable(parseSandBoxItemToDetailedItem(children as SandboxItem[]), 'path'));
+      Object.assign(
+        nextByPath,
+        createLookupTable(parseSandBoxItemToDetailedItem(children as SandboxItem[], state.itemsByPath), 'path')
+      );
       if (children.levelDescriptor) {
-        nextByPath[children.levelDescriptor.path] = parseSandBoxItemToDetailedItem(children.levelDescriptor);
+        nextByPath[children.levelDescriptor.path] = parseSandBoxItemToDetailedItem(
+          children.levelDescriptor,
+          state.itemsByPath[children.levelDescriptor.path]
+        );
       }
     });
     items.forEach((item) => {
