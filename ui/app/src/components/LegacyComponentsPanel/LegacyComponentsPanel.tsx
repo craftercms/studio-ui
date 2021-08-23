@@ -20,13 +20,18 @@ import SystemIcon, { SystemIconDescriptor } from '../SystemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import { usePossibleTranslation } from '../../utils/hooks/usePossibleTranslation';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Switch from '@material-ui/core/Switch';
-import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 import { fetchConfigurationJSON } from '../../services/configuration';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useSelection } from '../../utils/hooks/useSelection';
 import { usePreviewState } from '../../utils/hooks/usePreviewState';
+import { getGuestToHostBus, getHostToGuestBus } from '../../modules/Preview/previewContext';
+import { getStoredLegacyComponentPanel, setStoredLegacyComponentPanel } from '../../utils/state';
+import { useActiveUser } from '../../utils/hooks/useActiveUser';
+import { useEditMode } from '../../utils/hooks/useEditMode';
+import { useIntl } from 'react-intl';
+import { translations } from './translations';
 
 export interface LegacyComponentsPanelProps {
   title: string;
@@ -49,14 +54,34 @@ interface Components {
 export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps) {
   const { title, icon } = props;
   const siteId = useActiveSiteId();
+  const user = useActiveUser();
   const [open, setOpen] = useState(false);
   const hostToGuest$ = getHostToGuestBus();
+  const guestToHost$ = getGuestToHostBus();
+  const editMode = useEditMode();
   const [config, setConfig] = useState<{ browse: Browse[]; components: Components[] }>(null);
   const { guest } = usePreviewState();
   const { models, modelId } = guest ?? {};
   const model = models?.[modelId];
   const contentTypesBranch = useSelection((state) => state.contentTypes);
   let contentType = model ? contentTypesBranch.byId[model.craftercms.contentTypeId] : null;
+  const { formatMessage } = useIntl();
+
+  const startDnD = useCallback(() => {
+    hostToGuest$.next({
+      type: 'START_DRAG_AND_DROP',
+      payload: {
+        browse: config.browse,
+        components: config.components,
+        contentModel: contentType,
+        translation: {
+          addComponent: formatMessage(translations.addComponent),
+          components: formatMessage(translations.components),
+          done: formatMessage(translations.done)
+        }
+      }
+    });
+  }, [config, contentType, formatMessage, hostToGuest$]);
 
   useEffect(() => {
     fetchConfigurationJSON(siteId, '/preview-tools/components-config.xml', 'studio').subscribe((dom) => {
@@ -84,25 +109,62 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
     });
   }, [siteId]);
 
-  const onOpenComponentsMenu = () => {
-    setOpen(!open);
-    if (!open) {
+  useEffect(() => {
+    if (!editMode && open) {
       hostToGuest$.next({
-        type: 'START_DRAG_AND_DROP',
-        payload: {
-          browse: config.browse,
-          components: config.components,
-          contentModel: contentType,
-          translation: {
-            addComponent: 'Add Component',
-            components: 'Components',
-            done: 'done'
-          }
-        }
+        type: 'DND_COMPONENTS_PANEL_OFF'
       });
+    }
+  }, [editMode, hostToGuest$, open]);
+
+  useEffect(() => {
+    const { open } = getStoredLegacyComponentPanel(user.username) as { open: boolean };
+    if (config !== null && open) {
+      startDnD();
+    }
+  }, [config, startDnD, user.username]);
+
+  useEffect(() => {
+    const guestToHostSubscription = guestToHost$.subscribe((action) => {
+      const { type, payload } = action;
+      switch (type) {
+        case 'SET_SESSION_STORAGE_ITEM': {
+          if (payload['key'] === 'components-on') {
+            let value = payload['value'] === 'true';
+            setStoredLegacyComponentPanel({ open: value }, user.username);
+            if (!value && editMode) {
+              getHostToGuestBus().next({ type: 'ICE_TOOLS_ON' });
+            }
+            setOpen(value);
+          }
+          break;
+        }
+        case 'REQUEST_SESSION_STORAGE_ITEM': {
+          if (payload.includes('pto-on') || payload.includes('ice-on')) {
+            hostToGuest$.next({
+              type: 'REQUEST_SESSION_STORAGE_ITEM_REPLY',
+              payload: Array.isArray(payload)
+                ? { 'ice-on': editMode ? 'on' : null, ptoOn: open ? 'on' : null }
+                : { key: 'pto-on', value: open ? 'on' : null }
+            });
+          }
+          break;
+        }
+        default:
+          break;
+      }
+    });
+    return () => {
+      guestToHostSubscription.unsubscribe();
+    };
+  }, [editMode, guestToHost$, hostToGuest$, open, user.username]);
+
+  const onOpenComponentsMenu = () => {
+    if (!open) {
+      startDnD();
     } else {
       hostToGuest$.next({
-        type: 'STOP_DRAG_AND_DROP'
+        type: 'DND_COMPONENTS_PANEL_OFF'
       });
     }
   };
