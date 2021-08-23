@@ -17,20 +17,19 @@
 import React, { useState } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import PushToRemoteDialogContainer, { PushToRemoteDialogContainerProps } from './PushToRemoteDialogContainer';
+import { useOnClose } from '../../utils/hooks/useOnClose';
 
 export default function PushToRemoteDialog(props: PushToRemoteDialogContainerProps) {
   const { open, onClose } = props;
   const [disableQuickDismiss, setDisableQuickDismiss] = useState(false);
+  const onCloseHandler = useOnClose();
+
+  const handleClose = (event, reason) => {
+    onCloseHandler(onClose, reason, disableQuickDismiss, disableQuickDismiss);
+  };
 
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      fullWidth
-      maxWidth="xs"
-      disableBackdropClick={disableQuickDismiss}
-      disableEscapeKeyDown={disableQuickDismiss}
-    >
+    <Dialog open={open} onClose={handleClose} fullWidth maxWidth="xs">
       <PushToRemoteDialogContainer {...props} setDisableQuickDismiss={setDisableQuickDismiss} />
     </Dialog>
   );

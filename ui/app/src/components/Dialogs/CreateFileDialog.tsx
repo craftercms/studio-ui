@@ -98,8 +98,9 @@ export default function CreateFileDialog(props: CreateFileProps) {
       fullWidth
       maxWidth="xs"
       onClose={onClose}
-      onEscapeKeyDown={onClose}
-      onExited={() => setState({ inProgress: null, submitted: null })}
+      TransitionProps={{
+        onExited: () => setState({ inProgress: null, submitted: null })
+      }}
     >
       <CreateFileDialogUI {...props} submitted={state.submitted} inProgress={state.inProgress} setState={setState} />
     </Dialog>

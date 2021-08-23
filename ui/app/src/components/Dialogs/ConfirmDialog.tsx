@@ -28,6 +28,7 @@ import { CSSProperties } from '@material-ui/styles';
 import PrimaryButton from '../PrimaryButton';
 import SecondaryButton from '../SecondaryButton';
 import { useUnmount } from '../../utils/hooks/useUnmount';
+import { useOnClose } from '../../utils/hooks/useOnClose';
 
 const messages = defineMessages({
   accept: {
@@ -119,14 +120,18 @@ export interface ConfirmDialogStateProps extends ConfirmDialogBaseProps {
 
 export default function ConfirmDialog(props: ConfirmDialogProps) {
   const classes = useStyles(props.styles);
+  const onCloseHandler = useOnClose();
+
+  const handleClose = (event, reason) => {
+    onCloseHandler(props.onClose, reason, props.disableBackdropClick, props.disableEscapeKeyDown);
+  };
+
   return (
     <Dialog
       open={props.open}
-      onClose={props.onClose}
+      onClose={handleClose}
       aria-labelledby="confirmDialogTitle"
       aria-describedby="confirmDialogBody"
-      disableEscapeKeyDown={props.disableEscapeKeyDown}
-      disableBackdropClick={props.disableBackdropClick}
       disableEnforceFocus={props.disableEnforceFocus}
       hideBackdrop={props.hideBackdrop}
       className={classes.dialog}

@@ -21,6 +21,7 @@ import { Token } from '../../models/Token';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';
 import CreateTokenDialogUI from './CreateTokenDialogUI';
+import { useOnClose } from '../../utils/hooks/useOnClose';
 
 interface CreateTokenDialogProps {
   open: boolean;
@@ -46,15 +47,14 @@ export default function CreateTokenDialog(props: CreateTokenDialogProps) {
     );
   };
   const [disableQuickDismiss, setDisableQuickDismiss] = useState(false);
+  const onCloseHandler = useOnClose();
+
+  const handleClose = (event, reason) => {
+    onCloseHandler(onClose, reason, disableQuickDismiss, disableQuickDismiss);
+  };
+
   return (
-    <Dialog
-      open={open}
-      fullWidth
-      maxWidth="xs"
-      onClose={onClose}
-      disableBackdropClick={disableQuickDismiss}
-      disableEscapeKeyDown={disableQuickDismiss}
-    >
+    <Dialog open={open} fullWidth maxWidth="xs" onClose={handleClose}>
       <CreateTokenDialogUI
         onOk={onOk}
         disabled={inProgress}

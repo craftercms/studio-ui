@@ -19,20 +19,19 @@ import NewRemoteRepositoryDialogContainer, {
   NewRemoteRepositoryDialogContainerProps
 } from './NewRemoteRepositoryDialogContainer';
 import Dialog from '@material-ui/core/Dialog/Dialog';
+import { useOnClose } from '../../utils/hooks/useOnClose';
 
 export default function NewRemoteRepositoryDialog(props: NewRemoteRepositoryDialogContainerProps) {
   const { open, onClose } = props;
   const [disableQuickDismiss, setDisableQuickDismiss] = useState(false);
+  const onCloseHandler = useOnClose();
+
+  const handleClose = (event, reason) => {
+    onCloseHandler(onClose, reason, disableQuickDismiss, disableQuickDismiss);
+  };
 
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      fullWidth
-      maxWidth="md"
-      disableBackdropClick={disableQuickDismiss}
-      disableEscapeKeyDown={disableQuickDismiss}
-    >
+    <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md">
       <NewRemoteRepositoryDialogContainer {...props} setDisableQuickDismiss={setDisableQuickDismiss} />
     </Dialog>
   );

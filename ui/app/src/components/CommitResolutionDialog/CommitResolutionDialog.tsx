@@ -19,20 +19,19 @@ import Dialog from '@material-ui/core/Dialog';
 import CommitResolutionDialogContainer, {
   CommitResolutionDialogContainerProps
 } from './CommitResolutionDialogContainer';
+import { useOnClose } from '../../utils/hooks/useOnClose';
 
 export default function CommitResolutionDialog(props: CommitResolutionDialogContainerProps) {
   const { open, onClose } = props;
   const [disableQuickDismiss, setDisableQuickDismiss] = useState(false);
+  const onCloseHandler = useOnClose();
+
+  const handleClose = (event, reason) => {
+    onCloseHandler(onClose, reason, disableQuickDismiss, disableQuickDismiss);
+  };
 
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      fullWidth
-      maxWidth="sm"
-      disableBackdropClick={disableQuickDismiss}
-      disableEscapeKeyDown={disableQuickDismiss}
-    >
+    <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
       <CommitResolutionDialogContainer {...props} setDisableQuickDismiss={setDisableQuickDismiss} />
     </Dialog>
   );
