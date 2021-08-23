@@ -86,7 +86,8 @@ const plugins = [
         'createFactory',
         'isValidElement',
         'version'
-      ]
+      ],
+      'lorem-ipsum': ['LoremIpsum']
     }
   }),
   copy({
