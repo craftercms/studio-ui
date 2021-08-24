@@ -19,19 +19,6 @@
     "rules": {
       "prettier/prettier": [
         "error"
-      ],
-      "spaced-comment": [
-        "error",
-        "always",
-        {
-          "line": {
-            "markers": [
-              "/",
-              "#"
-            ]
-          },
-          "block": false
-        }
       ]
     },
     "parserOptions": {

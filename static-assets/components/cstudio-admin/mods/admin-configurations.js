@@ -175,12 +175,12 @@
           /**/ `<h2 class="hint--title">${formatMessage(adminConfigurationMessages.encryptMarked)}</h2>` +
           /**/ `<p>${formatMessage(adminConfigurationMessages.encryptHintPt1)}</p>` +
           /**/ `<p>` +
-          /**/ formatMessage(adminConfigurationMessages.encryptHintPt2, bold).props.children.join(' ') +
+          /**/ formatMessage(adminConfigurationMessages.encryptHintPt2, bold).join('') +
           /**/ '</br>' +
           /**/ formatMessage(adminConfigurationMessages.encryptHintPt3, tags) +
           /**/ `</p>` +
           /**/ `<p>` +
-          /**/ formatMessage(adminConfigurationMessages.encryptHintPt4, bold).props.children.join(' ') +
+          /**/ formatMessage(adminConfigurationMessages.encryptHintPt4, bold).join('') +
           /**/ '</br>' +
           /**/ formatMessage(adminConfigurationMessages.encryptHintPt5, tagsAndCurls) +
           /**/ `</p>` +
