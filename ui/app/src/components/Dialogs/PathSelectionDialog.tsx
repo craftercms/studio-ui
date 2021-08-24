@@ -20,7 +20,7 @@ import DialogFooter from './DialogFooter';
 import React, { PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import Dialog from '@material-ui/core/Dialog';
-import FolderBrowserTreeView, { legacyItemsToTreeNodes, TreeNode } from '../Navigation/FolderBrowserTreeView';
+import FolderBrowserTreeViewUI, { legacyItemsToTreeNodes, TreeNode } from '../Navigation/FolderBrowserTreeViewUI';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import CreateFolderDialog from './CreateFolderDialog';
 import { get } from '../../utils/ajax';
@@ -303,7 +303,7 @@ export function PathSelectionDialogBodyUI(props: PathSelectionDialogBodyUIProps)
       />
       <DialogBody className={classes.dialogBody}>
         <Suspencified>
-          <FolderBrowserTreeView
+          <FolderBrowserTreeViewUI
             classes={{
               treeViewRoot: classes.treeViewRoot
             }}
