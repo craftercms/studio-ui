@@ -237,6 +237,13 @@ export interface GlobalState {
       localeCode: string;
       dateTimeFormatOptions?: DateTimeFormatOptions;
     };
+    publishing: {
+      deleteCommentRequired: boolean;
+      bulkPublishRequired: boolean;
+      publishByCommitRequired: boolean;
+      submissionCommentMaxLength: number;
+    };
+    cdataEscapedFieldPatterns: string[];
     useLegacyPreviewLookup: LookupTable<boolean>;
     references: LookupTable;
     xml: string;

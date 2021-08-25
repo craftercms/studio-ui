@@ -212,7 +212,7 @@ export function fetchCannedMessage(site: string, locale: string, type: string): 
 }
 
 export function fetchSiteLocale(site: string): Observable<any> {
-  return fetchConfigurationDOM(site, '/site-config.xml', 'studio').pipe(
+  return fetchSiteConfigDOM(site).pipe(
     map((xml) => {
       let settings = {};
       if (xml) {
@@ -242,7 +242,47 @@ export function fetchSiteConfigurationFiles(site: string, environment?: string):
 }
 
 export function fetchUseLegacyPreviewPreference(site: string): Observable<boolean> {
-  return fetchConfigurationDOM(site, '/site-config.xml', 'studio').pipe(
-    map((dom) => getInnerHtml(dom.querySelector('usePreview3')) === 'true')
+  return fetchSiteConfigDOM(site).pipe(map((dom) => getInnerHtml(dom.querySelector('usePreview3')) === 'true'));
+}
+
+export interface StudioSiteConfig {
+  site: string;
+  usePreview3: boolean;
+  cdataEscapedFieldPatterns: string[];
+  locale: {
+    localeCode: string;
+    dateTimeFormatOptions: Intl.DateTimeFormatOptions;
+  };
+  publishing: {
+    publishingComment: boolean;
+    deleteCommentRequired: boolean;
+    bulkPublishRequired: boolean;
+    publishByCommitRequired: boolean;
+  };
+}
+
+export function fetchSiteConfig(site: string): Observable<StudioSiteConfig> {
+  return fetchSiteConfigDOM(site).pipe(
+    map((dom) => ({
+      site,
+      usePreview3: getInnerHtml(dom.querySelector('usePreview3')) === 'true',
+      cdataEscapedFieldPatterns: Array.from(dom.querySelectorAll('cdata-escaped-field-patterns > pattern'))
+        .map(getInnerHtml as (node) => string)
+        .filter(Boolean),
+      locale: ((node) => (node ? deserialize(node).locale : {}))(dom.querySelector(':scope > locale')),
+      publishing: ((node) => {
+        const commentSettings = Object.assign({ required: false }, deserialize(node)?.publishing?.comments);
+        return {
+          publishingComment: commentSettings['publishing-required'] ?? commentSettings.required,
+          deleteCommentRequired: commentSettings['delete-required'] ?? commentSettings.required,
+          bulkPublishRequired: commentSettings['bulk-publish-required'] ?? commentSettings.required,
+          publishByCommitRequired: commentSettings['publish-by-commit-required'] ?? commentSettings.required
+        };
+      })(dom.querySelector(':scope > publishing'))
+    }))
   );
+}
+
+function fetchSiteConfigDOM(site: string): Observable<XMLDocument> {
+  return fetchConfigurationDOM(site, '/site-config.xml', 'studio');
 }
