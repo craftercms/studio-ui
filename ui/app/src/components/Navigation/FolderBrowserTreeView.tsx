@@ -31,7 +31,7 @@ interface FolderBrowserTreeViewProps {
   rootPath: string;
   initialPath?: string;
   showPathTextBox?: boolean;
-  classes?: Partial<Record<'root' | 'treeViewRoot', string>>;
+  classes?: Partial<Record<'root' | 'treeViewRoot' | 'treeItemLabel', string>>;
   onPathSelected?(path: string): void;
 }
 
@@ -47,8 +47,7 @@ export default function FolderBrowserTreeView(props: FolderBrowserTreeViewProps)
   useEffect(() => {
     if (currentPath) {
       let nodesLookup = nodesLookupRef.current;
-      if (nodesLookup[currentPath] && nodesLookup[currentPath]?.fetched) {
-      } else {
+      if (!nodesLookup[currentPath] || !nodesLookup[currentPath]?.fetched) {
         const allPaths = getIndividualPaths(currentPath, rootPath).filter(
           (path) => !nodesLookup[path] || !nodesLookup[path].fetched
         );
@@ -67,9 +66,6 @@ export default function FolderBrowserTreeView(props: FolderBrowserTreeViewProps)
               let rootNode;
               responses.forEach(({ response: { item } }, i) => {
                 let parent;
-
-                if (i === requests.length - 1) {
-                }
 
                 if (item.deleted) {
                   return;
@@ -107,13 +103,18 @@ export default function FolderBrowserTreeView(props: FolderBrowserTreeViewProps)
     }
   }, [currentPath, rootPath, site]);
 
-  const onNodeToggle = (event: React.ChangeEvent<{}>, nodeIds: string[]) => {
-    setExpanded(nodeIds);
+  const onIconClick = (event: React.ChangeEvent<{}>, node: TreeNode) => {
+    event.preventDefault();
+    setCurrentPath(node.id);
+    onPathSelected(node.id);
+    let nextExpanded = expanded.includes(node.id) ? expanded.filter((id) => id !== node.id) : [...expanded, node.id];
+    setExpanded(nextExpanded);
   };
 
-  const onNodeSelected = (event: React.ChangeEvent<{}>, nodeId: string) => {
-    setCurrentPath(nodeId);
-    onPathSelected(nodeId);
+  const onLabelClick = (event: React.ChangeEvent<{}>, node: TreeNode) => {
+    event.preventDefault();
+    setCurrentPath(node.id);
+    onPathSelected(node.id);
   };
 
   const resource = useLogicResource<TreeNode, { treeNodes: TreeNode; error?: ApiResponse }>(
@@ -130,8 +131,8 @@ export default function FolderBrowserTreeView(props: FolderBrowserTreeViewProps)
   return (
     <Suspencified suspenseProps={{ fallback: <FolderBrowserTreeViewSkeleton /> }}>
       <FolderBrowserTreeViewUI
-        onNodeToggle={onNodeToggle}
-        onNodeSelected={onNodeSelected}
+        onIconClick={onIconClick}
+        onLabelClick={onLabelClick}
         rootPath={rootPath}
         currentPath={currentPath}
         expanded={expanded}
@@ -139,6 +140,7 @@ export default function FolderBrowserTreeView(props: FolderBrowserTreeViewProps)
         resource={resource}
         showPathTextBox={showPathTextBox}
         classes={classes}
+        disableSelection={true}
       />
     </Suspencified>
   );

@@ -49,7 +49,7 @@ export interface BrowseFilesDialogUIProps {
   rowsPerPageOptions?: number[];
   numOfLoaderItems?: number;
   onClose(): void;
-  onSuccess?(response: { name: string; url: string } | { name: string; url: string }[]): void;
+  onSuccess?(items: MediaItem | MediaItem[]): void;
   onClosed?(): void;
 }
 
@@ -112,7 +112,7 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogUIProps) {
     if (multiSelect) {
       setSelectedLookup({ [item.path]: selectedLookup[item.path] ? null : item });
     } else {
-      setSelectedCard(item);
+      setSelectedCard(selectedCard?.path === item.path ? null : item);
     }
   };
 
@@ -131,11 +131,7 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogUIProps) {
   }
 
   const onSelectButtonClick = () => {
-    onSuccess?.(
-      multiSelect
-        ? selectedArray.map((path) => ({ name: selectedLookup[path].name, url: selectedLookup[path].path }))
-        : { name: selectedCard.name, url: selectedCard.path }
-    );
+    onSuccess?.(multiSelect ? selectedArray.map((path) => selectedLookup[path]) : selectedCard);
   };
 
   const onChangePage = (page: number) => {
@@ -173,7 +169,12 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogUIProps) {
       <DialogBody className={classes.dialogBody}>
         <Box display="flex">
           <section className={classes.leftWrapper}>
-            <FolderBrowserTreeView rootPath={path} showPathTextBox={false} onPathSelected={onPathSelected} />
+            <FolderBrowserTreeView
+              classes={{ treeItemLabel: classes.treeItemLabel }}
+              rootPath={path}
+              showPathTextBox={false}
+              onPathSelected={onPathSelected}
+            />
           </section>
           <section className={classes.rightWrapper}>
             <SearchBar

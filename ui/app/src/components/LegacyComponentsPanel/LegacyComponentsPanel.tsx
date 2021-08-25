@@ -32,6 +32,8 @@ import { useActiveUser } from '../../utils/hooks/useActiveUser';
 import { useEditMode } from '../../utils/hooks/useEditMode';
 import { useIntl } from 'react-intl';
 import { translations } from './translations';
+import BrowseFilesDialog from '../BrowseFilesDialog';
+import { MediaItem } from '../../models/Search';
 
 export interface LegacyComponentsPanelProps {
   title: string;
@@ -66,6 +68,7 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
   const contentTypesBranch = useSelection((state) => state.contentTypes);
   let contentType = model ? contentTypesBranch.byId[model.craftercms.contentTypeId] : null;
   const { formatMessage } = useIntl();
+  const [browsePath, setBrowsePath] = useState(null);
 
   const startDnD = useCallback(() => {
     hostToGuest$.next({
@@ -118,12 +121,13 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
   }, [editMode, hostToGuest$, open]);
 
   useEffect(() => {
-    const { open } = getStoredLegacyComponentPanel(user.username) as { open: boolean };
+    const { open } = (getStoredLegacyComponentPanel(user.username) as { open: boolean }) ?? { open: false };
     if (config !== null && open) {
       startDnD();
     }
   }, [config, startDnD, user.username]);
 
+  // region subscriptions
   useEffect(() => {
     const guestToHostSubscription = guestToHost$.subscribe((action) => {
       const { type, payload } = action;
@@ -150,6 +154,10 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
           }
           break;
         }
+        case 'OPEN_BROWSE': {
+          setBrowsePath(payload.path);
+          break;
+        }
         default:
           break;
       }
@@ -158,6 +166,7 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
       guestToHostSubscription.unsubscribe();
     };
   }, [editMode, guestToHost$, hostToGuest$, open, user.username]);
+  // endregion
 
   const onOpenComponentsMenu = () => {
     if (!open) {
@@ -169,19 +178,35 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
     }
   };
 
+  const onCloseBrowseDialog = () => {
+    setBrowsePath(null);
+  };
+
+  const onBrowseDialogItemSelected = (item: MediaItem) => {
+    setBrowsePath(null);
+  };
+
   return (
-    <ListItem ContainerComponent="div">
-      <ListItemIcon>
-        <SystemIcon icon={icon} fontIconProps={{ fontSize: 'small' }} />
-      </ListItemIcon>
-      <ListItemText
-        primary={usePossibleTranslation(title)}
-        primaryTypographyProps={{ noWrap: true }}
-        secondaryTypographyProps={{ noWrap: true }}
+    <>
+      <ListItem ContainerComponent="div">
+        <ListItemIcon>
+          <SystemIcon icon={icon} fontIconProps={{ fontSize: 'small' }} />
+        </ListItemIcon>
+        <ListItemText
+          primary={usePossibleTranslation(title)}
+          primaryTypographyProps={{ noWrap: true }}
+          secondaryTypographyProps={{ noWrap: true }}
+        />
+        <ListItemSecondaryAction style={{ right: '5px' }}>
+          <Switch color="primary" checked={open} onClick={onOpenComponentsMenu} />
+        </ListItemSecondaryAction>
+      </ListItem>
+      <BrowseFilesDialog
+        open={Boolean(browsePath)}
+        path={browsePath}
+        onClose={onCloseBrowseDialog}
+        onSuccess={onBrowseDialogItemSelected}
       />
-      <ListItemSecondaryAction style={{ right: '5px' }}>
-        <Switch color="primary" checked={open} onClick={onOpenComponentsMenu} />
-      </ListItemSecondaryAction>
-    </ListItem>
+    </>
   );
 }

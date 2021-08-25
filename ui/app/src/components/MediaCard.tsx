@@ -79,6 +79,7 @@ const useStyles = makeStyles((theme: Theme) =>
       paddingTop: '56.25%' // 16:9
     },
     previewButton: {
+      margin: '5px',
       position: 'absolute',
       bottom: 0,
       right: 0,

@@ -92,10 +92,13 @@ interface FolderBrowserTreeViewUIProps {
   invalidPath?: boolean;
   isFetching?: boolean;
   resource: Resource<TreeNode>;
-  classes?: Partial<Record<'root' | 'treeViewRoot', string>>;
+  classes?: Partial<Record<'root' | 'treeViewRoot' | 'treeItemLabel', string>>;
   showPathTextBox?: boolean;
-  onNodeSelected(event: React.ChangeEvent<{}>, nodeId: string): void;
-  onNodeToggle(event: React.ChangeEvent<{}>, nodeIds: string[]): void;
+  disableSelection?: boolean;
+  onNodeSelected?(event: React.ChangeEvent<{}>, nodeId: string): void;
+  onNodeToggle?(event: React.ChangeEvent<{}>, nodeIds: string[]): void;
+  onIconClick?(event: React.ChangeEvent<{}>, node: TreeNode): void;
+  onLabelClick?(event: React.ChangeEvent<{}>, node: TreeNode): void;
   onPathChanged?(path: string): void;
   onKeyPress?(event: React.KeyboardEvent): void;
 }
@@ -114,7 +117,10 @@ export default function FolderBrowserTreeViewUI(props: FolderBrowserTreeViewUIPr
     invalidPath,
     isFetching,
     onKeyPress,
-    showPathTextBox = true
+    showPathTextBox = true,
+    disableSelection = false,
+    onIconClick,
+    onLabelClick
   } = props;
 
   const treeNodes = resource.read();
@@ -138,10 +144,16 @@ export default function FolderBrowserTreeViewUI(props: FolderBrowserTreeViewUIPr
           defaultExpandIcon={<ChevronRightIcon />}
           expanded={expanded}
           selected={selected}
+          disableSelection={disableSelection}
           onNodeToggle={onNodeToggle}
           onNodeSelect={onNodeSelected}
         >
-          <RenderTreeNode node={treeNodes} />
+          <RenderTreeNode
+            classes={{ treeItemLabel: props.classes?.treeItemLabel }}
+            node={treeNodes}
+            onIconClick={onIconClick}
+            onLabelClick={onLabelClick}
+          />
         </TreeView>
       ) : (
         <LoadingState classes={{ root: classes.loadingState }} />
@@ -152,10 +164,14 @@ export default function FolderBrowserTreeViewUI(props: FolderBrowserTreeViewUIPr
 
 interface RenderTreeNodeProps {
   node: TreeNode;
+  classes?: Partial<Record<'treeItemLabel', string>>;
+  onIconClick?(event: React.ChangeEvent<{}>, node: TreeNode): void;
+  onLabelClick?(event: React.ChangeEvent<{}>, node: TreeNode): void;
 }
 
-function RenderTreeNode({ node }: RenderTreeNodeProps) {
-  const classes = useStyles({});
+function RenderTreeNode(props: RenderTreeNodeProps) {
+  const { node, onIconClick, onLabelClick } = props;
+  const classes = useStyles();
   return node.id === 'loading' ? (
     <div className={classes.loading}>
       <CircularProgress size={16} />
@@ -172,11 +188,21 @@ function RenderTreeNode({ node }: RenderTreeNodeProps) {
         root: classes.treeItemRoot,
         content: classes.treeItemContent,
         selected: classes.treeItemSelected,
-        label: classes.treeItemLabel
+        label: clsx(classes.treeItemLabel, props.classes?.treeItemLabel)
       }}
+      onIconClick={(e) => onIconClick(e, node)}
+      onLabelClick={(e) => onLabelClick(e, node)}
     >
       {Array.isArray(node.children)
-        ? node.children.map((childNode) => <RenderTreeNode key={childNode.id} node={childNode} />)
+        ? node.children.map((childNode) => (
+            <RenderTreeNode
+              classes={{ treeItemLabel: props.classes?.treeItemLabel }}
+              key={childNode.id}
+              node={childNode}
+              onIconClick={onIconClick}
+              onLabelClick={onLabelClick}
+            />
+          ))
         : null}
     </TreeItem>
   );

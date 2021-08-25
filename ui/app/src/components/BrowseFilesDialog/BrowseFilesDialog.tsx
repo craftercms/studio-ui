@@ -18,6 +18,7 @@ import React, { PropsWithChildren } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import { BrowseFilesDialogContainer } from './BrowseFilesDialogContainer';
 import StandardAction from '../../models/StandardAction';
+import { MediaItem } from '../../models/Search';
 
 export interface BrowseFilesDialogBaseProps {
   open: boolean;
@@ -32,7 +33,7 @@ export interface BrowseFilesDialogBaseProps {
 export type BrowseFilesDialogProps = PropsWithChildren<
   BrowseFilesDialogBaseProps & {
     onClose(): void;
-    onSuccess?(): void;
+    onSuccess?(items: MediaItem | MediaItem[]): void;
     onClosed?(): void;
   }
 >;

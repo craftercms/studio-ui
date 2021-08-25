@@ -34,7 +34,6 @@ export const useStyles = makeStyles((theme) =>
       display: 'grid',
       gridTemplateColumns: 'repeat(auto-fit, minmax(200px, max-content))',
       gridGap: '16px',
-      justifyContent: 'space-evenly',
       padding: 'initial'
     },
     cardHeader: {
@@ -54,6 +53,9 @@ export const useStyles = makeStyles((theme) =>
     },
     rightWrapper: {
       flexGrow: 1
+    },
+    treeItemLabel: {
+      width: '100%'
     }
   })
 );
