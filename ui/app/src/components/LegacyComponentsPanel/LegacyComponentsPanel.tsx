@@ -38,6 +38,7 @@ import { useDispatch } from 'react-redux';
 import { showConfirmDialog } from '../../state/actions/dialogs';
 import { dragAndDropMessages } from '../../utils/i18n-legacy';
 import { LegacyLoadFormDefinition, LegacyXmlModelToMap } from './utils';
+import LookupTable from '../../models/LookupTable';
 
 export interface LegacyComponentsPanelProps {
   title: string;
@@ -55,6 +56,17 @@ interface Components {
     label: string;
     type: string;
   };
+}
+
+interface ComponentDropProps {
+  type: string;
+  path: string;
+  isNew: boolean | 'existing';
+  tracking: string;
+  zones: LookupTable<Array<unknown>>;
+  compPath: unknown;
+  conComp: boolean;
+  datasource: string;
 }
 
 export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps) {
@@ -188,6 +200,10 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
           });
           break;
         }
+        case 'COMPONENT_DROPPED': {
+          onComponentDrop(payload);
+          break;
+        }
         default:
           break;
       }
@@ -197,6 +213,24 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
     };
   }, [dispatch, editMode, formatMessage, guestToHost$, hostToGuest$, open, siteId, user.username]);
   // endregion
+
+  const onComponentDrop = (props: ComponentDropProps) => {
+    const { type, path, isNew, tracking, zones, compPath, conComp, datasource } = props;
+    // if isNew is false it means it is a sort, if it is new it means it a dnd for new component
+    // if is 'existing' it means it is a browse component
+    if (isNew) {
+      if (isNew === true) {
+        if (!path) {
+          // embeddedComponent
+        } else {
+          // sharedComponent
+        }
+      } else {
+      }
+    } else {
+      // TODO save sort
+    }
+  };
 
   const onOpenComponentsMenu = () => {
     if (!open) {
