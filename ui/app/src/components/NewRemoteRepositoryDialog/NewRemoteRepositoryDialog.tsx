@@ -24,14 +24,14 @@ import { useOnClose } from '../../utils/hooks/useOnClose';
 export default function NewRemoteRepositoryDialog(props: NewRemoteRepositoryDialogContainerProps) {
   const { open, onClose } = props;
   const [disableQuickDismiss, setDisableQuickDismiss] = useState(false);
-  const onCloseHandler = useOnClose();
-
-  const handleClose = (event, reason) => {
-    onCloseHandler(onClose, reason, disableQuickDismiss, disableQuickDismiss);
-  };
+  const onCloseHandler = useOnClose({
+    onClose,
+    disableBackdropClick: disableQuickDismiss,
+    disableEscapeKeyDown: disableQuickDismiss
+  });
 
   return (
-    <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md">
+    <Dialog open={open} onClose={onCloseHandler} fullWidth maxWidth="md">
       <NewRemoteRepositoryDialogContainer {...props} setDisableQuickDismiss={setDisableQuickDismiss} />
     </Dialog>
   );

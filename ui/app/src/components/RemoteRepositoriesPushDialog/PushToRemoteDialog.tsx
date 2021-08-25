@@ -22,14 +22,14 @@ import { useOnClose } from '../../utils/hooks/useOnClose';
 export default function PushToRemoteDialog(props: PushToRemoteDialogContainerProps) {
   const { open, onClose } = props;
   const [disableQuickDismiss, setDisableQuickDismiss] = useState(false);
-  const onCloseHandler = useOnClose();
-
-  const handleClose = (event, reason) => {
-    onCloseHandler(onClose, reason, disableQuickDismiss, disableQuickDismiss);
-  };
+  const onCloseHandler = useOnClose({
+    onClose,
+    disableBackdropClick: disableQuickDismiss,
+    disableEscapeKeyDown: disableQuickDismiss
+  });
 
   return (
-    <Dialog open={open} onClose={handleClose} fullWidth maxWidth="xs">
+    <Dialog open={open} onClose={onCloseHandler} fullWidth maxWidth="xs">
       <PushToRemoteDialogContainer {...props} setDisableQuickDismiss={setDisableQuickDismiss} />
     </Dialog>
   );

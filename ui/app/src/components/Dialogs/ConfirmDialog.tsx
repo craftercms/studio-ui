@@ -120,16 +120,16 @@ export interface ConfirmDialogStateProps extends ConfirmDialogBaseProps {
 
 export default function ConfirmDialog(props: ConfirmDialogProps) {
   const classes = useStyles(props.styles);
-  const onCloseHandler = useOnClose();
-
-  const handleClose = (event, reason) => {
-    onCloseHandler(props.onClose, reason, props.disableBackdropClick, props.disableEscapeKeyDown);
-  };
+  const onCloseHandler = useOnClose({
+    onClose: props.onClose,
+    disableBackdropClick: props.disableBackdropClick,
+    disableEscapeKeyDown: props.disableEscapeKeyDown
+  });
 
   return (
     <Dialog
       open={props.open}
-      onClose={handleClose}
+      onClose={onCloseHandler}
       aria-labelledby="confirmDialogTitle"
       aria-describedby="confirmDialogBody"
       disableEnforceFocus={props.disableEnforceFocus}

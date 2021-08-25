@@ -25,16 +25,16 @@ export interface CreateUserDialogProps extends CreateUserDialogUIProps {
 
 export function CreateUserDialog(props: CreateUserDialogProps) {
   const { open, onClose } = props;
-  const [disableBackdropClick, setDisableBackdropClick] = useState(false);
-  const onCloseHandler = useOnClose();
-
-  const handleClose = (event, reason) => {
-    onCloseHandler(onClose, reason, disableBackdropClick, disableBackdropClick);
-  };
+  const [disableQuickDismiss, setDisableQuickDismiss] = useState(false);
+  const onCloseHandler = useOnClose({
+    onClose,
+    disableBackdropClick: disableQuickDismiss,
+    disableEscapeKeyDown: disableQuickDismiss
+  });
 
   return (
-    <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md">
-      <CreateUserDialogContainer setDisableBackdropClick={setDisableBackdropClick} {...props} />
+    <Dialog open={open} onClose={onCloseHandler} fullWidth maxWidth="md">
+      <CreateUserDialogContainer setDisableBackdropClick={setDisableQuickDismiss} {...props} />
     </Dialog>
   );
 }

@@ -47,14 +47,14 @@ export default function CreateTokenDialog(props: CreateTokenDialogProps) {
     );
   };
   const [disableQuickDismiss, setDisableQuickDismiss] = useState(false);
-  const onCloseHandler = useOnClose();
-
-  const handleClose = (event, reason) => {
-    onCloseHandler(onClose, reason, disableQuickDismiss, disableQuickDismiss);
-  };
+  const onCloseHandler = useOnClose({
+    onClose,
+    disableEscapeKeyDown: disableQuickDismiss,
+    disableBackdropClick: disableQuickDismiss
+  });
 
   return (
-    <Dialog open={open} fullWidth maxWidth="xs" onClose={handleClose}>
+    <Dialog open={open} fullWidth maxWidth="xs" onClose={onCloseHandler}>
       <CreateTokenDialogUI
         onOk={onOk}
         disabled={inProgress}

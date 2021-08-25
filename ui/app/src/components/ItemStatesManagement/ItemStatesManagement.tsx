@@ -247,7 +247,7 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
         title={!embedded && <FormattedMessage id="siteTools.itemStates" defaultMessage="Item States" />}
         rightContent={
           <Button
-            className={!embedded ? classes.filterButton : ''}
+            className={embedded ? '' : classes.filterButton}
             endIcon={<FilterListRoundedIcon />}
             variant="outlined"
             color={pathRegex || Object.values(filtersLookup).some(Boolean) ? 'primary' : 'default'}

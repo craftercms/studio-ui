@@ -14,16 +14,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export function useOnClose() {
-  return (onClose, reason, disableBackdropClick = false, disableEscapeKeyDown = false) => {
+interface UseOnCloseProps {
+  onClose?(event: {}, reason: 'backdropClick' | 'escapeKeyDown'): void;
+  disableBackdropClick: boolean;
+  disableEscapeKeyDown: boolean;
+}
+
+export function useOnClose({ onClose, disableBackdropClick = false, disableEscapeKeyDown = false }: UseOnCloseProps) {
+  return (event, reason) => {
     if (disableBackdropClick && reason === 'backdropClick') {
       return false;
-    }
-
-    if (disableEscapeKeyDown && reason === 'escapeKeyDown') {
+    } else if (disableEscapeKeyDown && reason === 'escapeKeyDown') {
       return false;
+    } else {
+      onClose?.(event, reason);
     }
-
-    onClose?.();
   };
 }

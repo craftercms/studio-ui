@@ -24,14 +24,14 @@ import { useOnClose } from '../../utils/hooks/useOnClose';
 export default function CommitResolutionDialog(props: CommitResolutionDialogContainerProps) {
   const { open, onClose } = props;
   const [disableQuickDismiss, setDisableQuickDismiss] = useState(false);
-  const onCloseHandler = useOnClose();
-
-  const handleClose = (event, reason) => {
-    onCloseHandler(onClose, reason, disableQuickDismiss, disableQuickDismiss);
-  };
+  const onCloseHandler = useOnClose({
+    onClose,
+    disableBackdropClick: disableQuickDismiss,
+    disableEscapeKeyDown: disableQuickDismiss
+  });
 
   return (
-    <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
+    <Dialog open={open} onClose={onCloseHandler} fullWidth maxWidth="sm">
       <CommitResolutionDialogContainer {...props} setDisableQuickDismiss={setDisableQuickDismiss} />
     </Dialog>
   );
