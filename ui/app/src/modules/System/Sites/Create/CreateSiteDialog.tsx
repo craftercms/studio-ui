@@ -56,7 +56,7 @@ import { nnou } from '../../../../utils/object';
 import { useEnv } from '../../../../utils/hooks/useEnv';
 import { useSpreadState } from '../../../../utils/hooks/useSpreadState';
 import { getSystemLink } from '../../../../utils/system';
-import { fetchUseLegacyPreviewPreference } from '../../../../services/configuration';
+import { fetchSiteConfig } from '../../../../services/configuration';
 
 const messages = defineMessages({
   privateBlueprints: {
@@ -669,11 +669,11 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
       // Prop differs between regular site and marketplace site due to API versions 1 vs 2 differences
       setSiteCookie(site.siteId);
       // TODO: Revisit this when site creation becomes asynchronous
-      fetchUseLegacyPreviewPreference(site.siteId).subscribe((useLegacy) => {
+      fetchSiteConfig(site.siteId).subscribe(({ usePreview3 }) => {
         window.location.href = getSystemLink({
           systemLinkId: 'preview',
           authoringBase,
-          useLegacy,
+          useLegacy: usePreview3,
           site: site.siteId,
           page: '/'
         });

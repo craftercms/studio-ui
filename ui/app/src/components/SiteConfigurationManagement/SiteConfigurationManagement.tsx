@@ -55,7 +55,7 @@ import Alert from '@material-ui/lab/Alert';
 import { showHistoryDialog } from '../../state/actions/dialogs';
 import { batchActions } from '../../state/actions/misc';
 import { capitalize } from '../../utils/string';
-import { fetchUseLegacyPreviewPreference, itemReverted, showSystemNotification } from '../../state/actions/system';
+import { itemReverted, showSystemNotification } from '../../state/actions/system';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { filter, map } from 'rxjs/operators';
 import { fromString, serialize } from '../../utils/xml';
@@ -64,7 +64,7 @@ import { encrypt } from '../../services/security';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import ResizeBar from '../ResizeBar';
 import { useHistory } from 'react-router';
-import { fetchSiteUiConfig } from '../../state/actions/configuration';
+import { fetchSiteConfig, fetchSiteUiConfig } from '../../state/actions/configuration';
 import { useSelection } from '../../utils/hooks/useSelection';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useMount } from '../../utils/hooks/useMount';
@@ -391,7 +391,7 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
             if (selectedConfigFile.id === 'studio/ui.xml') {
               dispatch(fetchSiteUiConfig({ site }));
             } else if (selectedConfigFile.id === 'studio/site-config.xml') {
-              dispatch(fetchUseLegacyPreviewPreference({ site }));
+              dispatch(fetchSiteConfig());
             }
             setDisabledSaveButton(true);
             setSelectedConfigFileXml(content);

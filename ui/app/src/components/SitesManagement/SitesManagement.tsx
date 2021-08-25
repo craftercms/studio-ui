@@ -54,7 +54,7 @@ import { useSpreadState } from '../../utils/hooks/useSpreadState';
 import { useSitesBranch } from '../../utils/hooks/useSitesBranch';
 import Paper from '@material-ui/core/Paper';
 import { getSystemLink } from '../../utils/system';
-import { fetchUseLegacyPreviewPreference } from '../../services/configuration';
+import { fetchSiteConfig } from '../../services/configuration';
 
 const translations = defineMessages({
   siteDeleted: {
@@ -111,12 +111,12 @@ export default function SitesManagement() {
 
   const onSiteClick = (site: Site) => {
     setSiteCookie(site.id);
-    fetchUseLegacyPreviewPreference(site.id).subscribe((useLegacy) => {
+    fetchSiteConfig(site.id).subscribe(({ usePreview3 }) => {
       window.location.href = getSystemLink({
         systemLinkId: 'preview',
         authoringBase,
         site: site.id,
-        useLegacy
+        useLegacy: usePreview3
       });
     });
   };

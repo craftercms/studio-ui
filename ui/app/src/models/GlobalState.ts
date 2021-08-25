@@ -232,8 +232,6 @@ export interface GlobalState {
       defaultLocaleCode: string;
     };
     locale: {
-      error: ApiResponse;
-      isFetching: boolean;
       localeCode: string;
       dateTimeFormatOptions?: DateTimeFormatOptions;
     };
@@ -241,6 +239,7 @@ export interface GlobalState {
       deleteCommentRequired: boolean;
       bulkPublishRequired: boolean;
       publishByCommitRequired: boolean;
+      publishingCommentRequired: boolean;
       submissionCommentMaxLength: number;
     };
     cdataEscapedFieldPatterns: string[];
@@ -270,9 +269,6 @@ export interface GlobalState {
   };
   dashboard: {
     widgets: WidgetDescriptor[];
-  };
-  publishing: {
-    submissionCommentMaxLength: number;
   };
   globalNavigation: {
     error: AjaxError;

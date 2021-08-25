@@ -241,10 +241,6 @@ export function fetchSiteConfigurationFiles(site: string, environment?: string):
   );
 }
 
-export function fetchUseLegacyPreviewPreference(site: string): Observable<boolean> {
-  return fetchSiteConfigDOM(site).pipe(map((dom) => getInnerHtml(dom.querySelector('usePreview3')) === 'true'));
-}
-
 export interface StudioSiteConfig {
   site: string;
   usePreview3: boolean;

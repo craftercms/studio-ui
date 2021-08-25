@@ -37,9 +37,6 @@ import {
   fetchSiteLocale,
   fetchSiteLocaleComplete,
   fetchSiteLocaleFailed,
-  fetchUseLegacyPreviewPreference,
-  fetchUseLegacyPreviewPreferenceComplete,
-  fetchUseLegacyPreviewPreferenceFailed,
   messageSharedWorker,
   showCopyItemSuccessNotification,
   showCreateFolderSuccessNotification,
@@ -70,30 +67,22 @@ import { changeSite } from '../reducers/sites';
 import { interval } from 'rxjs';
 import { sessionTimeout } from '../actions/user';
 import { sharedWorkerUnauthenticated } from '../actions/auth';
-import {
-  fetchGlobalMenuItems,
-  fetchSiteLocale as fetchSiteLocaleService,
-  fetchUseLegacyPreviewPreference as fetchUseLegacyPreviewPreferenceService
-} from '../../services/configuration';
+import { fetchGlobalMenuItems, fetchSiteLocale as fetchSiteLocaleService } from '../../services/configuration';
+import { fetchSiteConfig } from '../actions/configuration';
 
 const systemEpics: CrafterCMSEpic[] = [
   // region storeInitialized
   (action$) =>
     action$.pipe(
       ofType(storeInitialized.type),
-      switchMap(() => [
-        startPublishingStatusFetcher(),
-        fetchGlobalMenu(),
-        fetchSiteLocale(),
-        fetchUseLegacyPreviewPreference({})
-      ])
+      switchMap(() => [startPublishingStatusFetcher(), fetchGlobalMenu(), fetchSiteConfig()])
     ),
   // endregion
   // region changeSite
   (action$) =>
     action$.pipe(
       ofType(changeSite.type),
-      switchMap(() => [startPublishingStatusFetcher(), fetchSiteLocale(), fetchUseLegacyPreviewPreference({})])
+      switchMap(() => [startPublishingStatusFetcher(), fetchSiteConfig()])
     ),
   // endregion
   // region emitSystemEvent
@@ -391,25 +380,6 @@ const systemEpics: CrafterCMSEpic[] = [
     action$.pipe(
       ofType(fetchGlobalMenu.type),
       exhaustMap(() => fetchGlobalMenuItems().pipe(map(fetchGlobalMenuComplete), catchAjaxError(fetchGlobalMenuFailed)))
-    ),
-  // endregion
-  // region fetchUseLegacyPreviewPreference
-  (action$, state$) =>
-    action$.pipe(
-      ofType(fetchUseLegacyPreviewPreference.type),
-      withLatestFrom(state$),
-      filter(([action, state]) => Boolean(state.sites.active || action.payload?.site)),
-      exhaustMap(([action, state]) =>
-        fetchUseLegacyPreviewPreferenceService(action.payload?.site || state.sites.active).pipe(
-          map((useLegacyPreview) =>
-            fetchUseLegacyPreviewPreferenceComplete({
-              useLegacyPreview,
-              site: action.payload?.site || state.sites.active
-            })
-          ),
-          catchAjaxError(fetchUseLegacyPreviewPreferenceFailed)
-        )
-      )
     )
   // endregion
 ];
