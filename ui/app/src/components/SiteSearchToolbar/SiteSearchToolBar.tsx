@@ -78,7 +78,11 @@ export default function SiteSearchToolBar(props: SiteSearchToolBarProps) {
     <ViewToolbar>
       <section>
         <Tooltip title={formatMessage(translations.toggleSidebarTooltip)}>
-          <LogoAndMenuBundleButton aria-label={formatMessage(translations.showHideFilters)} onClick={onMenuIconClick} />
+          <LogoAndMenuBundleButton
+            aria-label={formatMessage(translations.showHideFilters)}
+            onClick={onMenuIconClick}
+            showCrafterIcon={!embedded}
+          />
         </Tooltip>
         <Typography variant="h5" component="h2" color="textPrimary">
           {formatMessage(translations.search)}
