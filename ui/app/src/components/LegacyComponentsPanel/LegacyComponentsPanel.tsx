@@ -24,7 +24,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import Switch from '@material-ui/core/Switch';
 import { fetchConfigurationJSON } from '../../services/configuration';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import { useSelection } from '../../utils/hooks/useSelection';
 import { usePreviewState } from '../../utils/hooks/usePreviewState';
 import { getGuestToHostBus, getHostToGuestBus } from '../../modules/Preview/previewContext';
 import { getStoredLegacyComponentPanel, setStoredLegacyComponentPanel } from '../../utils/state';
@@ -34,6 +33,11 @@ import { useIntl } from 'react-intl';
 import { translations } from './translations';
 import BrowseFilesDialog from '../BrowseFilesDialog';
 import { MediaItem } from '../../models/Search';
+import { fetchContentDOM, fetchLegacyItem } from '../../services/content';
+import { useDispatch } from 'react-redux';
+import { showConfirmDialog } from '../../state/actions/dialogs';
+import { dragAndDropMessages } from '../../utils/i18n-legacy';
+import { LegacyXmlModelToMap } from './utils';
 
 export interface LegacyComponentsPanelProps {
   title: string;
@@ -63,28 +67,31 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
   const editMode = useEditMode();
   const [config, setConfig] = useState<{ browse: Browse[]; components: Components[] }>(null);
   const { guest } = usePreviewState();
-  const { models, modelId } = guest ?? {};
-  const model = models?.[modelId];
-  const contentTypesBranch = useSelection((state) => state.contentTypes);
-  let contentType = model ? contentTypesBranch.byId[model.craftercms.contentTypeId] : null;
+  const path = guest?.path;
   const { formatMessage } = useIntl();
   const [browsePath, setBrowsePath] = useState(null);
+  const dispatch = useDispatch();
+  const [legacyContentModel, setLegacyContentModel] = useState(null);
 
   const startDnD = useCallback(() => {
-    hostToGuest$.next({
-      type: 'START_DRAG_AND_DROP',
-      payload: {
-        browse: config.browse,
-        components: config.components,
-        contentModel: contentType,
-        translation: {
-          addComponent: formatMessage(translations.addComponent),
-          components: formatMessage(translations.components),
-          done: formatMessage(translations.done)
+    fetchContentDOM(siteId, path).subscribe((content) => {
+      let contentModel = LegacyXmlModelToMap(content.documentElement);
+      setLegacyContentModel(contentModel);
+      hostToGuest$.next({
+        type: 'START_DRAG_AND_DROP',
+        payload: {
+          browse: config.browse,
+          components: config.components,
+          contentModel,
+          translation: {
+            addComponent: formatMessage(translations.addComponent),
+            components: formatMessage(translations.components),
+            done: formatMessage(translations.done)
+          }
         }
-      }
+      });
     });
-  }, [config, contentType, formatMessage, hostToGuest$]);
+  }, [siteId, path, hostToGuest$, config, formatMessage]);
 
   useEffect(() => {
     fetchConfigurationJSON(siteId, '/preview-tools/components-config.xml', 'studio').subscribe((dom) => {
@@ -122,10 +129,10 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
 
   useEffect(() => {
     const { open } = (getStoredLegacyComponentPanel(user.username) as { open: boolean }) ?? { open: false };
-    if (config !== null && open) {
+    if (config !== null && open && path) {
       startDnD();
     }
-  }, [config, startDnD, user.username]);
+  }, [path, config, startDnD, user.username]);
 
   // region subscriptions
   useEffect(() => {
@@ -158,6 +165,15 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
           setBrowsePath(payload.path);
           break;
         }
+        case 'START_DIALOG': {
+          const { messageKey, message } = payload;
+          dispatch(
+            showConfirmDialog({
+              body: messageKey ? formatMessage(dragAndDropMessages[messageKey]) : message
+            })
+          );
+          break;
+        }
         default:
           break;
       }
@@ -165,7 +181,7 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
     return () => {
       guestToHostSubscription.unsubscribe();
     };
-  }, [editMode, guestToHost$, hostToGuest$, open, user.username]);
+  }, [dispatch, editMode, formatMessage, guestToHost$, hostToGuest$, open, user.username]);
   // endregion
 
   const onOpenComponentsMenu = () => {
@@ -184,6 +200,17 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
 
   const onBrowseDialogItemSelected = (item: MediaItem) => {
     setBrowsePath(null);
+    fetchLegacyItem(siteId, item.path).subscribe((legacyItem) => {
+      hostToGuest$.next({
+        type: 'DND_CREATE_BROWSE_COMP',
+        payload: {
+          component: legacyItem,
+          initialContentModel: legacyContentModel
+        }
+      });
+    });
+    // sandboxitem and contentType
+    // DND_CREATE_BROWSE_COMP
   };
 
   return (
