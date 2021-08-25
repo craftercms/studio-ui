@@ -20,12 +20,12 @@ import FolderBrowserTreeViewUI, { legacyItemsToTreeNodes, TreeNode } from './Fol
 import LookupTable from '../../models/LookupTable';
 import { ApiResponse } from '../../models/ApiResponse';
 import { forkJoin, Observable } from 'rxjs';
-import { AjaxResponse } from 'rxjs/ajax';
-import { get } from '../../utils/ajax';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import Suspencified from '../SystemStatus/Suspencified';
 import FolderBrowserTreeViewSkeleton from './FolderBrowserTreeViewSkeleton';
+import { LegacyItem } from '../../models/Item';
+import { fetchLegacyItemsTree } from '../../services/content';
 
 interface FolderBrowserTreeViewProps {
   rootPath: string;
@@ -51,20 +51,16 @@ export default function FolderBrowserTreeView(props: FolderBrowserTreeViewProps)
         const allPaths = getIndividualPaths(currentPath, rootPath).filter(
           (path) => !nodesLookup[path] || !nodesLookup[path].fetched
         );
-        const requests: Observable<AjaxResponse>[] = [];
+        const requests: Observable<LegacyItem>[] = [];
         allPaths.forEach((nextPath) => {
-          requests.push(
-            get(
-              `/studio/api/1/services/api/1/content/get-items-tree.json?site=${site}&path=${nextPath}&depth=1&order=default`
-            )
-          );
+          requests.push(fetchLegacyItemsTree(site, nextPath, { depth: 1, order: 'default' }));
         });
 
         if (requests.length) {
           forkJoin(requests).subscribe(
             (responses) => {
               let rootNode;
-              responses.forEach(({ response: { item } }, i) => {
+              responses.forEach((item, i) => {
                 let parent;
 
                 if (item.deleted) {
