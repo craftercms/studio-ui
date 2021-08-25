@@ -15,16 +15,19 @@
  */
 
 import { nanoid as uuid } from 'nanoid';
+import { Observable } from 'rxjs';
+import { fetchConfigurationJSON } from '../../services/configuration';
+import { map } from 'rxjs/operators';
 
 export const LegacyXmlModelToMap = (dom) => {
-  var map = {};
-  var children = dom.children ? dom.children : dom.childNodes;
+  let map = {};
+  let children = dom.children ? dom.children : dom.childNodes;
 
   LegacyXmlModelToMapChildren(map, children);
 
   /* make sure object has IDs */
   if (!map['objectId']) {
-    var UUID = uuid();
+    let UUID = uuid();
     map['objectGroupId'] = UUID.substring(0, 4);
     map['objectId'] = UUID;
   }
@@ -33,12 +36,12 @@ export const LegacyXmlModelToMap = (dom) => {
 };
 
 export const LegacyXmlModelToMapChildren = (node, children) => {
-  for (var i = 0; i < children.length; i++) {
+  for (let i = 0; i < children.length; i++) {
     try {
-      var child = children[i];
+      let child = children[i];
       if (child.nodeName !== '#text') {
         // Chrome and FF support childElementCount; for IE we will get the length of the childNodes collection
-        var hasChildren =
+        let hasChildren =
           typeof child.childElementCount == 'number'
             ? !!child.childElementCount
             : !!child.childNodes.length && child.firstChild.nodeName !== '#text';
@@ -80,7 +83,7 @@ export const LegacyXmlModelToMapArray = (node, child) => {
             if (repeatField.childElementCount > 0) {
               LegacyXmlModelToMapArray(node[child.nodeName][repeatCount], repeatField);
             } else {
-              var value = '';
+              let value = '';
 
               try {
                 value = LegacyGetModelItemValue(repeatField);
@@ -119,4 +122,108 @@ export const UnEscapeXml = (value) => {
       .replace(/&amp;/g, '&');
   }
   return value;
+};
+
+export const LegacyLoadFormDefinition = (siteId: string, contentType: string): Observable<unknown> => {
+  return fetchConfigurationJSON(siteId, `/content-types/${contentType}/form-definition.xml`, 'studio').pipe(
+    map((config) => {
+      let def = config.form;
+      def.contentType = contentType;
+
+      // handle datasources
+
+      if (!def.datasources || typeof def.datasources === 'string') {
+        def.datasources = [];
+      } else {
+        def.datasources = def.datasources.datasource;
+      }
+
+      if (!def.datasources.length) {
+        def.datasources = [].concat(def.datasources);
+      }
+
+      for (let k = 0; k < def.datasources.length; k++) {
+        let datasource = def.datasources[k];
+        datasource.form = def;
+
+        if (!datasource.properties || !datasource.properties.property) {
+          datasource.properties = [];
+        } else {
+          datasource.properties = datasource.properties.property;
+          if (!datasource.properties.length) {
+            datasource.properties = [].concat(datasource.properties);
+          }
+        }
+      }
+
+      // handle form properties
+      if (!def.properties || !def.properties.property) {
+        def.properties = [];
+      } else {
+        def.properties = def.properties.property;
+        if (!def.properties.length) {
+          def.properties = [def.properties];
+        }
+      }
+
+      // handle form dections
+      if (!def.sections || !def.sections.section) {
+        def.sections = [];
+      } else {
+        def.sections = def.sections.section;
+        if (!def.sections.length) {
+          def.sections = [].concat(def.sections);
+        }
+      }
+
+      for (let i = 0; i < def.sections.length; i++) {
+        let section = def.sections[i];
+        section.form = def;
+        section.id = section.title.replace(/ /g, '');
+
+        let processFieldsFn = (container) => {
+          if (!container.fields || !container.fields.field) {
+            container.fields = [];
+          } else {
+            container.fields = container.fields.field;
+            if (!container.fields.length) {
+              container.fields = [].concat(container.fields);
+            }
+          }
+
+          for (let j = 0; j < container.fields.length; j++) {
+            let field = container.fields[j];
+            if (field) {
+              if (!field.properties || !field.properties.property) {
+                field.properties = [];
+              } else {
+                field.properties = field.properties.property;
+                if (!field.properties.length) {
+                  field.properties = [].concat(field.properties);
+                }
+              }
+
+              if (!field.constraints || !field.constraints.constraint) {
+                field.constraints = [];
+              } else {
+                field.constraints = field.constraints.constraint;
+
+                if (!field.constraints.length) {
+                  field.constraints = [].concat(field.constraints);
+                }
+              }
+
+              if (field.type === 'repeat') {
+                processFieldsFn(field);
+              }
+            }
+          }
+        };
+
+        processFieldsFn(section);
+      }
+
+      return def;
+    })
+  );
 };

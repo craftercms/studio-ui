@@ -37,7 +37,7 @@ import { fetchContentDOM, fetchLegacyItem } from '../../services/content';
 import { useDispatch } from 'react-redux';
 import { showConfirmDialog } from '../../state/actions/dialogs';
 import { dragAndDropMessages } from '../../utils/i18n-legacy';
-import { LegacyXmlModelToMap } from './utils';
+import { LegacyLoadFormDefinition, LegacyXmlModelToMap } from './utils';
 
 export interface LegacyComponentsPanelProps {
   title: string;
@@ -145,6 +145,10 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
             setStoredLegacyComponentPanel({ open: value }, user.username);
             if (!value && editMode) {
               getHostToGuestBus().next({ type: 'ICE_TOOLS_ON' });
+              // TODO: Review this
+              setTimeout(() => {
+                getHostToGuestBus().next({ type: 'REPAINT_PENCILS' });
+              }, 1000);
             }
             setOpen(value);
           }
@@ -174,6 +178,16 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
           );
           break;
         }
+        case 'REQUEST_FORM_DEFINITION': {
+          const { contentType } = payload;
+          LegacyLoadFormDefinition(siteId, contentType).subscribe((config) => {
+            hostToGuest$.next({
+              type: 'REQUEST_FORM_DEFINITION_RESPONSE',
+              payload: config
+            });
+          });
+          break;
+        }
         default:
           break;
       }
@@ -181,7 +195,7 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
     return () => {
       guestToHostSubscription.unsubscribe();
     };
-  }, [dispatch, editMode, formatMessage, guestToHost$, hostToGuest$, open, user.username]);
+  }, [dispatch, editMode, formatMessage, guestToHost$, hostToGuest$, open, siteId, user.username]);
   // endregion
 
   const onOpenComponentsMenu = () => {
@@ -209,8 +223,6 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
         }
       });
     });
-    // sandboxitem and contentType
-    // DND_CREATE_BROWSE_COMP
   };
 
   return (
