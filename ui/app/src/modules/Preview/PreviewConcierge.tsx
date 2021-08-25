@@ -115,6 +115,7 @@ import { getPathFromPreviewURL } from '../../utils/path';
 import { showEditDialog } from '../../state/actions/dialogs';
 import { UNDEFINED } from '../../utils/constants';
 import { useCurrentPreviewItem } from '../../utils/hooks/useCurrentPreviewItem';
+import { useSiteUIConfig } from '../../utils/hooks/useSiteUIConfig';
 
 const guestMessages = defineMessages({
   maxCount: {
@@ -308,6 +309,7 @@ export function PreviewConcierge(props: any) {
   const guestDetectionTimeoutRef = useRef<number>();
   const [guestDetectionSnackbarOpen, setGuestDetectionSnackbarOpen] = useState(false);
   const currentItemPath = guest?.path;
+  const { cdataEscapedFieldPatterns } = useSiteUIConfig();
 
   function clearSelectedZonesHandler() {
     dispatch(clearSelectForEdit());
@@ -733,7 +735,8 @@ export function PreviewConcierge(props: any) {
             fieldId,
             index,
             parentModelId ? models[parentModelId].craftercms.path : null,
-            value
+            value,
+            cdataEscapedFieldPatterns.some((pattern) => Boolean(fieldId.match(pattern)))
           ).subscribe(
             () => {
               enqueueSnackbar(formatMessage(guestMessages.updateOperationComplete));
@@ -840,7 +843,8 @@ export function PreviewConcierge(props: any) {
     siteId,
     xsrfArgument,
     highlightMode,
-    conditionallyToggleEditMode
+    conditionallyToggleEditMode,
+    cdataEscapedFieldPatterns
   ]);
 
   // Guest detection

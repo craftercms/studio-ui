@@ -295,8 +295,8 @@ function SelectionList(props: SelectionListProps) {
 
   const paths = items ? items.map((item) => item.path) : uris;
 
-  const isAllChecked = useMemo(() => !paths?.some((path) => !checked[path]), [paths, checked]);
-  const isIndeterminate = useMemo(() => paths?.some((path) => checked[path] && !isAllChecked), [
+  const isAllChecked = useMemo(() => (checked ? !paths?.some((path) => !checked[path]) : null), [paths, checked]);
+  const isIndeterminate = useMemo(() => (checked ? paths?.some((path) => checked?.[path] && !isAllChecked) : null), [
     paths,
     checked,
     isAllChecked

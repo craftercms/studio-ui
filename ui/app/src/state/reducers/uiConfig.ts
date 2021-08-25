@@ -53,7 +53,14 @@ const initialState: GlobalState['uiConfig'] = {
   },
   useLegacyPreviewLookup: {},
   references: null,
-  xml: null
+  xml: null,
+  publishing: {
+    deleteCommentRequired: false,
+    bulkPublishRequired: false,
+    publishByCommitRequired: false,
+    submissionCommentMaxLength: 250
+  },
+  cdataEscapedFieldPatterns: []
 };
 
 const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
