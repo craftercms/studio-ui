@@ -49,10 +49,11 @@ export const useStyles = makeStyles((theme) =>
       }
     },
     leftWrapper: {
-      width: '200px'
+      width: '200px',
+      paddingRight: '16px'
     },
     rightWrapper: {
-      width: '100%'
+      flexGrow: 1
     }
   })
 );

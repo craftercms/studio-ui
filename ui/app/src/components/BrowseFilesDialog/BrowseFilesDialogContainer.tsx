@@ -41,7 +41,7 @@ import LookupTable from '../../models/LookupTable';
 import FolderBrowserTreeView from '../Navigation';
 import Box from '@material-ui/core/Box';
 
-interface BrowseFilesDialogUIProps {
+export interface BrowseFilesDialogUIProps {
   path: string;
   contentTypes?: string[];
   mimeTypes?: string[];

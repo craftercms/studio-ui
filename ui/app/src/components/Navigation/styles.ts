@@ -18,4 +18,18 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles(() => createStyles({}));
 
+export const useSkeletonStyles = makeStyles(() =>
+  createStyles({
+    iconContainer: {
+      display: 'none'
+    },
+    label: {
+      background: 'none',
+      '&:hover': {
+        background: 'none'
+      }
+    }
+  })
+);
+
 export default useStyles;

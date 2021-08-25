@@ -19,7 +19,7 @@ import Dialog from '@material-ui/core/Dialog';
 import { BrowseFilesDialogContainer } from './BrowseFilesDialogContainer';
 import StandardAction from '../../models/StandardAction';
 
-interface BrowseFilesDialogBaseProps {
+export interface BrowseFilesDialogBaseProps {
   open: boolean;
   path: string;
   multiSelect?: boolean;

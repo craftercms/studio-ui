@@ -25,6 +25,7 @@ import { get } from '../../utils/ajax';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import Suspencified from '../SystemStatus/Suspencified';
+import FolderBrowserTreeViewSkeleton from './FolderBrowserTreeViewSkeleton';
 
 interface FolderBrowserTreeViewProps {
   rootPath: string;
@@ -127,7 +128,7 @@ export default function FolderBrowserTreeView(props: FolderBrowserTreeViewProps)
   );
 
   return (
-    <Suspencified>
+    <Suspencified suspenseProps={{ fallback: <FolderBrowserTreeViewSkeleton /> }}>
       <FolderBrowserTreeViewUI
         onNodeToggle={onNodeToggle}
         onNodeSelected={onNodeSelected}

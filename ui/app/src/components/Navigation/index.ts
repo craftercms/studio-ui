@@ -19,3 +19,5 @@ export { default } from './FolderBrowserTreeView';
 export * from './FolderBrowserTreeView';
 
 export * from './FolderBrowserTreeViewUI';
+
+export * from './FolderBrowserTreeViewSkeleton';
