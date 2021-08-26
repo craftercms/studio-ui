@@ -17,7 +17,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { MediaItem } from '../../models/Search';
-import { createStyles, fade } from '@material-ui/core';
+import { createStyles, alpha } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import SearchBar from '../Controls/SearchBar';
 import { useDispatch, useSelector } from 'react-redux';
@@ -121,7 +121,7 @@ const assetsPanelStyles = makeStyles(() =>
     },
     uploadOverlay: {
       position: 'absolute',
-      background: fade(palette.black, 0.9),
+      background: alpha(palette.black, 0.9),
       top: 0,
       bottom: 0,
       left: 0,
