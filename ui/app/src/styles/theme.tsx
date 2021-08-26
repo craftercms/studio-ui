@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createGenerateClassName, createMuiTheme, ThemeOptions } from '@material-ui/core/styles';
+import { createGenerateClassName, createTheme, ThemeOptions } from '@material-ui/core/styles';
 import palette from './palette';
 import { GenerateId } from 'jss';
 
@@ -22,7 +22,7 @@ export const backgroundColor = palette.gray.light1;
 export const RedColor = palette.red.main;
 
 export const defaultThemeOptions: ThemeOptions = (function() {
-  const defaultTheme = createMuiTheme();
+  const defaultTheme = createTheme();
   const theme: ThemeOptions = {
     typography: {
       button: {

@@ -33,7 +33,7 @@ import HighlightOffIcon from '@material-ui/icons/HighlightOffRounded';
 import Spinner from '../../../../components/SystemStatus/Spinner';
 import RefreshIcon from '@material-ui/icons/RefreshRounded';
 import Button from '@material-ui/core/Button';
-import { fade } from '@material-ui/core/styles';
+import { alpha } from '@material-ui/core/styles';
 import { BLOCKED, CANCELLED, COMPLETED, PROCESSING, READY_FOR_LIVE } from '../constants';
 import palette from '../../../../styles/palette';
 import ApiResponseErrorState from '../../../../components/ApiResponseErrorState';
@@ -146,9 +146,9 @@ const useStyles = makeStyles((theme) => ({
   cancelButton: {
     paddingRight: '10px',
     color: palette.orange.main,
-    border: `1px solid ${fade(palette.orange.main, 0.5)}`,
+    border: `1px solid ${alpha(palette.orange.main, 0.5)}`,
     '&:hover': {
-      backgroundColor: fade(palette.orange.main, 0.08)
+      backgroundColor: alpha(palette.orange.main, 0.08)
     }
   }
 }));
