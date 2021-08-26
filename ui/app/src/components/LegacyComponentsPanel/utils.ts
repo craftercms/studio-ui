@@ -19,11 +19,11 @@ import { Observable } from 'rxjs';
 import { fetchConfigurationJSON } from '../../services/configuration';
 import { map } from 'rxjs/operators';
 
-export const LegacyXmlModelToMap = (dom) => {
+export const legacyXmlModelToMap = (dom) => {
   let map = {};
   let children = dom.children ? dom.children : dom.childNodes;
 
-  LegacyXmlModelToMapChildren(map, children);
+  legacyXmlModelToMapChildren(map, children);
 
   /* make sure object has IDs */
   if (!map['objectId']) {
@@ -35,7 +35,7 @@ export const LegacyXmlModelToMap = (dom) => {
   return map;
 };
 
-export const LegacyXmlModelToMapChildren = (node, children) => {
+export const legacyXmlModelToMapChildren = (node, children) => {
   for (let i = 0; i < children.length; i++) {
     try {
       let child = children[i];
@@ -47,7 +47,7 @@ export const LegacyXmlModelToMapChildren = (node, children) => {
             : !!child.childNodes.length && child.firstChild.nodeName !== '#text';
 
         if (hasChildren) {
-          LegacyXmlModelToMapArray(node, child);
+          legacyXmlModelToMapArray(node, child);
         } else {
           node[child.nodeName] = LegacyGetModelItemValue(child);
         }
@@ -56,7 +56,7 @@ export const LegacyXmlModelToMapChildren = (node, children) => {
   }
 };
 
-export const LegacyXmlModelToMapArray = (node, child) => {
+export const legacyXmlModelToMapArray = (node, child) => {
   // array/repeat item
   node[child.nodeName] = [];
 
@@ -81,7 +81,7 @@ export const LegacyXmlModelToMapArray = (node, child) => {
 
           if (repeatField.nodeName !== '#text' && repeatField.nodeName !== 'component') {
             if (repeatField.childElementCount > 0) {
-              LegacyXmlModelToMapArray(node[child.nodeName][repeatCount], repeatField);
+              legacyXmlModelToMapArray(node[child.nodeName][repeatCount], repeatField);
             } else {
               let value = '';
 

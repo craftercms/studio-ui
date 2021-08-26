@@ -33,12 +33,15 @@ import { useIntl } from 'react-intl';
 import { translations } from './translations';
 import BrowseFilesDialog from '../BrowseFilesDialog';
 import { MediaItem } from '../../models/Search';
-import { fetchContentDOM, fetchLegacyItem } from '../../services/content';
+import { fetchContentDOM, fetchContentInstance, fetchLegacyItem, insertInstance } from '../../services/content';
 import { useDispatch } from 'react-redux';
 import { showConfirmDialog } from '../../state/actions/dialogs';
 import { dragAndDropMessages } from '../../utils/i18n-legacy';
-import { LegacyLoadFormDefinition, LegacyXmlModelToMap } from './utils';
+import { LegacyLoadFormDefinition, legacyXmlModelToMap } from './utils';
 import LookupTable from '../../models/LookupTable';
+import { getPathFromPreviewURL } from '../../utils/path';
+import { useContentTypes } from '../../utils/hooks/useContentTypes';
+import { filter, switchMap } from 'rxjs/operators';
 
 export interface LegacyComponentsPanelProps {
   title: string;
@@ -62,9 +65,9 @@ interface ComponentDropProps {
   type: string;
   path: string;
   isNew: boolean | 'existing';
-  tracking: string;
+  trackingNumber: string;
   zones: LookupTable<Array<unknown>>;
-  compPath: unknown;
+  compPath: string;
   conComp: boolean;
   datasource: string;
 }
@@ -78,32 +81,96 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
   const guestToHost$ = getGuestToHostBus();
   const editMode = useEditMode();
   const [config, setConfig] = useState<{ browse: Browse[]; components: Components[] }>(null);
+  const contentTypesLookup = useContentTypes();
   const { guest } = usePreviewState();
-  const path = guest?.path;
+  const guestPath = guest?.path;
   const { formatMessage } = useIntl();
   const [browsePath, setBrowsePath] = useState(null);
   const dispatch = useDispatch();
   const [legacyContentModel, setLegacyContentModel] = useState(null);
 
-  const startDnD = useCallback(() => {
-    fetchContentDOM(siteId, path).subscribe((content) => {
-      let contentModel = LegacyXmlModelToMap(content.documentElement);
-      setLegacyContentModel(contentModel);
-      hostToGuest$.next({
-        type: 'START_DRAG_AND_DROP',
-        payload: {
-          browse: config.browse,
-          components: config.components,
-          contentModel,
-          translation: {
-            addComponent: formatMessage(translations.addComponent),
-            components: formatMessage(translations.components),
-            done: formatMessage(translations.done)
+  const startDnD = useCallback(
+    (path?: string) => {
+      fetchContentDOM(siteId, path ? path : guestPath).subscribe((content) => {
+        let contentModel = legacyXmlModelToMap(content.documentElement);
+        setLegacyContentModel(contentModel);
+        hostToGuest$.next({
+          type: 'START_DRAG_AND_DROP',
+          payload: {
+            browse: config.browse,
+            components: config.components,
+            contentModel,
+            translation: {
+              addComponent: formatMessage(translations.addComponent),
+              components: formatMessage(translations.components),
+              done: formatMessage(translations.done)
+            }
           }
-        }
+        });
       });
-    });
-  }, [siteId, path, hostToGuest$, config, formatMessage]);
+    },
+    [siteId, guestPath, hostToGuest$, config, formatMessage]
+  );
+
+  const onComponentDrop = useCallback(
+    (props: ComponentDropProps) => {
+      const { type, path, isNew, trackingNumber, zones, compPath, conComp, datasource } = props;
+      // if isNew is false it means it is a sort, if it is new it means it a dnd for new component
+      // if is 'existing' it means it is a browse component
+
+      // let modelData = {
+      //   value: value,
+      //   key: modelPath,
+      //   include: modelPath,
+      //   datasource: datasource
+      // };
+      // hostToGuest$.next({
+      //   type: 'DND_COMPONENT_MODEL_LOAD',
+      //   payload: {
+      //     model: modelData,
+      //     trackingNumber
+      //   }
+      // });
+
+      if (isNew) {
+        if (isNew === true) {
+          if (!path) {
+            // embeddedComponent
+          } else {
+            // sharedComponent
+          }
+        } else {
+          // Browse component
+          let fieldId;
+          let index;
+
+          Object.keys(zones).forEach((key) => {
+            zones[key].forEach((zone, i) => {
+              if (zone === trackingNumber) {
+                fieldId = key;
+                index = i;
+              }
+            });
+          });
+
+          fetchContentInstance(siteId, path, contentTypesLookup)
+            .pipe(
+              switchMap((contentInstance) =>
+                insertInstance(siteId, compPath ? compPath : guestPath, fieldId, index, contentInstance)
+              )
+            )
+            .subscribe(() => {
+              hostToGuest$.next({
+                type: 'REFRESH_PREVIEW'
+              });
+            });
+        }
+      } else {
+        // TODO save sort
+      }
+    },
+    [contentTypesLookup, guestPath, hostToGuest$, siteId]
+  );
 
   useEffect(() => {
     fetchConfigurationJSON(siteId, '/preview-tools/components-config.xml', 'studio').subscribe((dom) => {
@@ -140,11 +207,19 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
   }, [editMode, hostToGuest$, open]);
 
   useEffect(() => {
-    const { open } = (getStoredLegacyComponentPanel(user.username) as { open: boolean }) ?? { open: false };
-    if (config !== null && open && path) {
-      startDnD();
-    }
-  }, [path, config, startDnD, user.username]);
+    const guestToHostSubscription = guestToHost$
+      .pipe(filter((action) => action.type === 'GUEST_SITE_LOAD'))
+      .subscribe(({ payload }) => {
+        const { open } = (getStoredLegacyComponentPanel(user.username) as { open: boolean }) ?? { open: false };
+        const path = getPathFromPreviewURL(payload.url);
+        if (config !== null && open) {
+          startDnD(path);
+        }
+      });
+    return () => {
+      guestToHostSubscription.unsubscribe();
+    };
+  }, [config, guestPath, guestToHost$, startDnD, user.username]);
 
   // region subscriptions
   useEffect(() => {
@@ -211,26 +286,8 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
     return () => {
       guestToHostSubscription.unsubscribe();
     };
-  }, [dispatch, editMode, formatMessage, guestToHost$, hostToGuest$, open, siteId, user.username]);
+  }, [dispatch, editMode, formatMessage, guestToHost$, hostToGuest$, onComponentDrop, open, siteId, user.username]);
   // endregion
-
-  const onComponentDrop = (props: ComponentDropProps) => {
-    const { type, path, isNew, tracking, zones, compPath, conComp, datasource } = props;
-    // if isNew is false it means it is a sort, if it is new it means it a dnd for new component
-    // if is 'existing' it means it is a browse component
-    if (isNew) {
-      if (isNew === true) {
-        if (!path) {
-          // embeddedComponent
-        } else {
-          // sharedComponent
-        }
-      } else {
-      }
-    } else {
-      // TODO save sort
-    }
-  };
 
   const onOpenComponentsMenu = () => {
     if (!open) {
