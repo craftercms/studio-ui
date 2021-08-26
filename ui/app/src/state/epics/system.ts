@@ -34,9 +34,6 @@ import {
   fetchGlobalMenu,
   fetchGlobalMenuComplete,
   fetchGlobalMenuFailed,
-  fetchSiteLocale,
-  fetchSiteLocaleComplete,
-  fetchSiteLocaleFailed,
   fetchUseLegacyPreviewPreference,
   fetchUseLegacyPreviewPreferenceComplete,
   fetchUseLegacyPreviewPreferenceFailed,
@@ -72,28 +69,23 @@ import { sessionTimeout } from '../actions/user';
 import { sharedWorkerUnauthenticated } from '../actions/auth';
 import {
   fetchGlobalMenuItems,
-  fetchSiteLocale as fetchSiteLocaleService,
   fetchUseLegacyPreviewPreference as fetchUseLegacyPreviewPreferenceService
 } from '../../services/configuration';
+import { fetchSiteConfig } from '../actions/configuration';
 
 const systemEpics: CrafterCMSEpic[] = [
   // region storeInitialized
   (action$) =>
     action$.pipe(
       ofType(storeInitialized.type),
-      switchMap(() => [
-        startPublishingStatusFetcher(),
-        fetchGlobalMenu(),
-        fetchSiteLocale(),
-        fetchUseLegacyPreviewPreference({})
-      ])
+      switchMap(() => [startPublishingStatusFetcher(), fetchGlobalMenu(), fetchSiteConfig()])
     ),
   // endregion
   // region changeSite
   (action$) =>
     action$.pipe(
       ofType(changeSite.type),
-      switchMap(() => [startPublishingStatusFetcher(), fetchSiteLocale(), fetchUseLegacyPreviewPreference({})])
+      switchMap(() => [startPublishingStatusFetcher(), fetchSiteConfig()])
     ),
   // endregion
   // region emitSystemEvent
@@ -368,20 +360,6 @@ const systemEpics: CrafterCMSEpic[] = [
               ofType(stopPublishingStatusFetcher.type, sessionTimeout.type, sharedWorkerUnauthenticated.type)
             )
           )
-        )
-      )
-    ),
-  // endregion
-  // region fetchSiteLocale
-  (action$, state$) =>
-    action$.pipe(
-      ofType(fetchSiteLocale.type),
-      withLatestFrom(state$),
-      filter(([, state]) => Boolean(state.sites.active)),
-      switchMap(([, state]) =>
-        fetchSiteLocaleService(state.sites.active).pipe(
-          map(fetchSiteLocaleComplete),
-          catchAjaxError(fetchSiteLocaleFailed)
         )
       )
     ),
