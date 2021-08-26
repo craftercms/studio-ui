@@ -254,7 +254,7 @@ export interface StudioSiteConfig {
     dateTimeFormatOptions: Intl.DateTimeFormatOptions;
   };
   publishing: {
-    publishingComment: boolean;
+    publishCommentRequired: boolean;
     deleteCommentRequired: boolean;
     bulkPublishRequired: boolean;
     publishByCommitRequired: boolean;
@@ -273,7 +273,7 @@ export function fetchSiteConfig(site: string): Observable<StudioSiteConfig> {
       publishing: ((node) => {
         const commentSettings = Object.assign({ required: false }, deserialize(node)?.publishing?.comments);
         return {
-          publishingComment: commentSettings['publishing-required'] ?? commentSettings.required,
+          publishCommentRequired: commentSettings['publishing-required'] ?? commentSettings.required,
           deleteCommentRequired: commentSettings['delete-required'] ?? commentSettings.required,
           bulkPublishRequired: commentSettings['bulk-publish-required'] ?? commentSettings.required,
           publishByCommitRequired: commentSettings['publish-by-commit-required'] ?? commentSettings.required
