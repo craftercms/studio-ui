@@ -39,6 +39,7 @@ import ErrorOutlineOutlinedIcon from '@material-ui/icons/ErrorOutlineOutlined';
 import ItemStateIcon from '../../../components/ItemStateIcon';
 import ItemPublishingTargetIcon from '../../../components/ItemPublishingTargetIcon';
 import { getItemStateText } from '../../../components/ItemDisplay/utils';
+import clsx from 'clsx';
 
 interface DependencySelectionProps {
   items?: DetailedItem[];
@@ -156,7 +157,7 @@ export function DependencySelection(props: DependencySelectionProps) {
 
   return (
     <>
-      <div className={`${classes.dependencySelection} ${disabled ? classes.dependencySelectionDisabled : ''}`}>
+      <div className={clsx(classes.dependencySelection, disabled && classes.dependencySelectionDisabled)}>
         <SelectionList
           title={<FormattedMessage id="publishDialog.itemsToPublish" defaultMessage="Items To Publish" />}
           items={items}
@@ -310,6 +311,7 @@ function SelectionList(props: SelectionListProps) {
             <Checkbox
               color="primary"
               edge="start"
+              disabled={disabled}
               indeterminate={isIndeterminate}
               checked={isAllChecked || isIndeterminate}
               onChange={() => onSelectAllClicked()}
@@ -343,6 +345,7 @@ function SelectionList(props: SelectionListProps) {
               <ListItem
                 key={item.path}
                 role={undefined}
+                disabled={disabled}
                 {...(onItemClicked
                   ? {
                       button: true,
