@@ -239,7 +239,7 @@ export interface GlobalState {
       deleteCommentRequired: boolean;
       bulkPublishRequired: boolean;
       publishByCommitRequired: boolean;
-      publishingCommentRequired: boolean;
+      publishCommentRequired: boolean;
       submissionCommentMaxLength: number;
     };
     cdataEscapedFieldPatterns: string[];
