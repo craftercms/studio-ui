@@ -24,6 +24,7 @@ import {
   fetchSiteUiConfigFailed
 } from '../actions/configuration';
 import { changeSite } from './sites';
+import { fetchUseLegacyPreviewPreferenceComplete } from '../actions/system';
 import { fetchSiteLocales, fetchSiteLocalesComplete, fetchSiteLocalesFailed } from '../actions/translation';
 import { deserialize, fromString, serialize } from '../../utils/xml';
 import { applyDeserializedXMLTransforms } from '../../utils/object';
@@ -134,6 +135,13 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
       ...state.siteLocales,
       isFetching: false,
       error: payload
+    }
+  }),
+  [fetchUseLegacyPreviewPreferenceComplete.type]: (state, { payload: { site, useLegacyPreview } }) => ({
+    ...state,
+    useLegacyPreviewLookup: {
+      ...state.useLegacyPreviewLookup,
+      [site]: useLegacyPreview
     }
   }),
   [fetchSiteConfig.type]: (state) => ({ ...state }),
