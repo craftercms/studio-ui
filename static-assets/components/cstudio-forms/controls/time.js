@@ -1198,11 +1198,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
           context: this,
 
           success: function(config) {
-            if (config['default-timezone']) {
-              this.context.timezone = config['default-timezone'];
-            } else {
-              this.context.timezone = this.context.defaultTimezone;
-            }
+            this.context.timezone = config.locale?.dateTimeFormatOptions?.timeZone ?? this.context.defaultTimezone;
             this.context.setStaticTimezone(value, this.context.timezone);
           },
 

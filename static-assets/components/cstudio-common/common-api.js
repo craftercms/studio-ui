@@ -6123,7 +6123,7 @@ var nodeOpen = false,
         if (!studioTimeZone) {
           CStudioAuthoring.Service.getConfiguration(CStudioAuthoringContext.site, '/site-config.xml', {
             success: function(config) {
-              studioTimeZone = config['default-timezone'];
+              studioTimeZone = config.locale.dateTimeFormatOptions.timeZone;
             }
           });
         }
