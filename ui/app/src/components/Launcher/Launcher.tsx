@@ -59,7 +59,7 @@ import { useLauncherState } from '../../utils/hooks/useLauncherState';
 import { getSystemLink } from '../../utils/system';
 import { PREVIEW_URL_PATH } from '../../utils/constants';
 import { useLegacyPreviewPreference } from '../../utils/hooks/useLegacyPreviewPreference';
-import { fetchSiteConfig } from '../../services/configuration';
+import { fetchUseLegacyPreviewPreference } from '../../services/configuration';
 
 export interface LauncherProps {
   open: boolean;
@@ -395,8 +395,8 @@ export default function Launcher(props: LauncherStateProps) {
   const onSiteCardClick = (site: string) => {
     setSiteCookie(site);
 
-    fetchSiteConfig(site).subscribe(({ usePreview3 }) => {
-      if (!usePreview3 && window.location.href.includes(PREVIEW_URL_PATH)) {
+    fetchUseLegacyPreviewPreference(site).subscribe((useLegacy) => {
+      if (!useLegacy && window.location.href.includes(PREVIEW_URL_PATH)) {
         // If user is in UI next and switching to a site that's viewed in 4.
         dispatch(batchActions([changeSite(site), closeLauncher()]));
       } else {
@@ -406,10 +406,10 @@ export default function Launcher(props: LauncherStateProps) {
         window.location.href = getSystemLink({
           systemLinkId: 'preview',
           authoringBase,
-          useLegacy: usePreview3,
+          useLegacy,
           site
         });
-        usePreview3 && window.location.reload();
+        useLegacy && window.location.reload();
       }
     });
   };
