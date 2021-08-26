@@ -83,14 +83,16 @@ export default function CreateFolderDialog(props: CreateFolderProps) {
     submitted: null,
     inProgress: null
   });
+
   return (
     <Dialog
       open={open}
       fullWidth
       maxWidth={'xs'}
       onClose={onClose}
-      onEscapeKeyDown={onClose}
-      onExited={() => setState({ inProgress: null, submitted: null })}
+      TransitionProps={{
+        onExited: () => setState({ inProgress: null, submitted: null })
+      }}
     >
       <CreateFolderUI {...props} submitted={state.submitted} inProgress={state.inProgress} setState={setState} />
     </Dialog>
