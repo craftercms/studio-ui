@@ -160,12 +160,12 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
       if (isNew) {
         if (isNew === true) {
           if (!path) {
-            // embeddedComponent
+            // embedded component
           } else {
-            // sharedComponent
+            // shared component
           }
         } else {
-          // Browse component
+          // browse component
           let fieldId;
           let index;
 
@@ -204,6 +204,7 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
             });
         }
       } else {
+        // sort or move component
         fetchContentDOM(siteId, guestPath).subscribe((content) => {
           let contentModel = legacyXmlModelToMap(content.documentElement);
           let zonesKeys = Object.keys(zones);
