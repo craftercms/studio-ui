@@ -34,6 +34,7 @@ import { translations } from './translations';
 import BrowseFilesDialog from '../BrowseFilesDialog';
 import { MediaItem } from '../../models/Search';
 import {
+  deleteItem,
   fetchContentDOM,
   fetchContentInstance,
   fetchLegacyItem,
@@ -50,6 +51,7 @@ import { useContentTypes } from '../../utils/hooks/useContentTypes';
 import { filter, switchMap } from 'rxjs/operators';
 import { showSystemNotification } from '../../state/actions/system';
 import { guestMessages } from '../../modules/Preview/PreviewConcierge';
+import { nou } from '../../utils/object';
 
 export interface LegacyComponentsPanelProps {
   title: string;
@@ -120,25 +122,40 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
     [siteId, guestPath, hostToGuest$, config, formatMessage]
   );
 
+  const onComponentDelete = useCallback(
+    (props: Partial<ComponentDropProps>) => {
+      const { isNew, zones, compPath, conComp } = props;
+      fetchContentDOM(siteId, guestPath).subscribe((content) => {
+        let contentModel = legacyXmlModelToMap(content.documentElement);
+        let fieldId = Object.keys(zones)[0];
+        let index = null;
+        let indexByKey = {};
+        zones[fieldId].forEach((item, i) => {
+          indexByKey[item.key] = i;
+        });
+        contentModel[fieldId].forEach((item, i) => {
+          if (nou(indexByKey[item.key]) && index === null) {
+            index = i;
+          }
+        });
+
+        deleteItem(siteId, compPath ? compPath : guestPath, fieldId, index).subscribe(() => {
+          dispatch(
+            showSystemNotification({
+              message: formatMessage(guestMessages.deleteOperationComplete)
+            })
+          );
+        });
+      });
+    },
+    [dispatch, formatMessage, guestPath, siteId]
+  );
+
   const onComponentDrop = useCallback(
     (props: ComponentDropProps) => {
       const { type, path, isNew, trackingNumber, zones, compPath, conComp, datasource } = props;
       // if isNew is false it means it is a sort, if it is new it means it a dnd for new component
       // if is 'existing' it means it is a browse component
-
-      // let modelData = {
-      //   value: value,
-      //   key: modelPath,
-      //   include: modelPath,
-      //   datasource: datasource
-      // };
-      // hostToGuest$.next({
-      //   type: 'DND_COMPONENT_MODEL_LOAD',
-      //   payload: {
-      //     model: modelData,
-      //     trackingNumber
-      //   }
-      // });
 
       if (isNew) {
         if (isNew === true) {
@@ -213,7 +230,6 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
             });
           }
         });
-        // TODO save sort
       }
     },
     [contentTypesLookup, dispatch, formatMessage, guestPath, hostToGuest$, siteId]
@@ -326,6 +342,10 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
           onComponentDrop(payload);
           break;
         }
+        case 'SAVE_DRAG_AND_DROP': {
+          onComponentDelete(payload);
+          break;
+        }
         default:
           break;
       }
@@ -333,7 +353,18 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
     return () => {
       guestToHostSubscription.unsubscribe();
     };
-  }, [dispatch, editMode, formatMessage, guestToHost$, hostToGuest$, onComponentDrop, open, siteId, user.username]);
+  }, [
+    dispatch,
+    editMode,
+    formatMessage,
+    guestToHost$,
+    hostToGuest$,
+    onComponentDelete,
+    onComponentDrop,
+    open,
+    siteId,
+    user.username
+  ]);
   // endregion
 
   const onOpenComponentsMenu = () => {
