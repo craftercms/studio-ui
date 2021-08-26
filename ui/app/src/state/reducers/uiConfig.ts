@@ -152,7 +152,7 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
       cdataEscapedFieldPatterns,
       locale: {
         ...state.locale,
-        localeCode: locale.localeCode ?? state.locale.localeCode,
+        localeCode: locale.localeCode ? locale.localeCode : locale.localeCode !== '' ? state.locale.localeCode : [],
         dateTimeFormatOptions: locale.dateTimeFormatOptions ?? state.locale.dateTimeFormatOptions
       },
       publishing: {
