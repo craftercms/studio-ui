@@ -117,7 +117,7 @@ import { UNDEFINED } from '../../utils/constants';
 import { useCurrentPreviewItem } from '../../utils/hooks/useCurrentPreviewItem';
 import { useSiteUIConfig } from '../../utils/hooks/useSiteUIConfig';
 
-const guestMessages = defineMessages({
+export const guestMessages = defineMessages({
   maxCount: {
     id: 'validations.maxCount',
     defaultMessage: 'The max number of items is {maxCount}'

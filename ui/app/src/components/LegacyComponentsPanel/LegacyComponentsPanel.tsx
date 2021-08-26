@@ -33,7 +33,13 @@ import { useIntl } from 'react-intl';
 import { translations } from './translations';
 import BrowseFilesDialog from '../BrowseFilesDialog';
 import { MediaItem } from '../../models/Search';
-import { fetchContentDOM, fetchContentInstance, fetchLegacyItem, insertInstance } from '../../services/content';
+import {
+  fetchContentDOM,
+  fetchContentInstance,
+  fetchLegacyItem,
+  insertInstance,
+  sortItem
+} from '../../services/content';
 import { useDispatch } from 'react-redux';
 import { showConfirmDialog } from '../../state/actions/dialogs';
 import { dragAndDropMessages } from '../../utils/i18n-legacy';
@@ -42,6 +48,8 @@ import LookupTable from '../../models/LookupTable';
 import { getPathFromPreviewURL } from '../../utils/path';
 import { useContentTypes } from '../../utils/hooks/useContentTypes';
 import { filter, switchMap } from 'rxjs/operators';
+import { showSystemNotification } from '../../state/actions/system';
+import { guestMessages } from '../../modules/Preview/PreviewConcierge';
 
 export interface LegacyComponentsPanelProps {
   title: string;
@@ -66,7 +74,7 @@ interface ComponentDropProps {
   path: string;
   isNew: boolean | 'existing';
   trackingNumber: string;
-  zones: LookupTable<Array<unknown>>;
+  zones: LookupTable<Array<any>>;
   compPath: string;
   conComp: boolean;
   datasource: string;
@@ -160,16 +168,47 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
               )
             )
             .subscribe(() => {
+              dispatch(
+                showSystemNotification({
+                  message: formatMessage(guestMessages.insertOperationComplete)
+                })
+              );
               hostToGuest$.next({
                 type: 'REFRESH_PREVIEW'
               });
             });
         }
       } else {
+        fetchContentDOM(siteId, guestPath).subscribe((content) => {
+          let contentModel = legacyXmlModelToMap(content.documentElement);
+          let zonesKeys = Object.keys(zones);
+          if (zonesKeys.length === 1) {
+            let fieldId = zonesKeys[0];
+            let currentIndex = null;
+            let targetIndex = null;
+            let indexByKey = {};
+            contentModel[fieldId].forEach((item, i) => {
+              indexByKey[item.key] = i;
+            });
+            zones[fieldId].forEach((item, i) => {
+              if (indexByKey[item.key] !== i && currentIndex === null) {
+                currentIndex = indexByKey[item.key];
+                targetIndex = i;
+              }
+            });
+            sortItem(siteId, compPath ? compPath : guestPath, fieldId, currentIndex, targetIndex).subscribe(() => {
+              dispatch(
+                showSystemNotification({
+                  message: formatMessage(guestMessages.sortOperationComplete)
+                })
+              );
+            });
+          }
+        });
         // TODO save sort
       }
     },
-    [contentTypesLookup, guestPath, hostToGuest$, siteId]
+    [contentTypesLookup, dispatch, formatMessage, guestPath, hostToGuest$, siteId]
   );
 
   useEffect(() => {
