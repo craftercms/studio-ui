@@ -311,7 +311,8 @@ export function insertInstance(
   fieldId: string,
   targetIndex: string | number,
   instance: ContentInstance,
-  parentModelId: string = null
+  parentModelId: string = null,
+  datasource?: string
 ): Observable<any> {
   return performMutation(site, modelId, parentModelId, (doc) => {
     const path = instance.craftercms.path;
@@ -321,7 +322,7 @@ export function insertInstance(
     createElements(doc, newItem, {
       '@attributes': {
         // TODO: Hardcoded value. Fix.
-        datasource: 'TODO'
+        datasource: datasource ?? 'TODO'
       },
       key: path,
       value: instance.craftercms.label,

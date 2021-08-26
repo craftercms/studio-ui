@@ -164,7 +164,15 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
           fetchContentInstance(siteId, path, contentTypesLookup)
             .pipe(
               switchMap((contentInstance) =>
-                insertInstance(siteId, compPath ? compPath : guestPath, fieldId, index, contentInstance)
+                insertInstance(
+                  siteId,
+                  compPath ? compPath : guestPath,
+                  fieldId,
+                  index,
+                  contentInstance,
+                  null,
+                  datasource
+                )
               )
             )
             .subscribe(() => {
