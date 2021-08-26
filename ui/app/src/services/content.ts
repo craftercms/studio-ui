@@ -36,7 +36,6 @@ import {
   createItemActionMap,
   createItemStateMap,
   parseContentXML,
-  parseLegacyItemToSandBoxItem,
   parseSandBoxItemToDetailedItem
 } from '../utils/content';
 import QuickCreateItem from '../models/content/QuickCreateItem';
