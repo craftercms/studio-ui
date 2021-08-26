@@ -47,14 +47,23 @@ export function fetchPublishingTargets(site: string): Observable<Array<Publishin
   );
 }
 
-export function submitToGoLive(siteId: string, user: string, data): Observable<any> {
+export interface GoLiveResponse {
+  status: number;
+  commitId: string;
+  item: LegacyItem;
+  invalidateCache: boolean;
+  success: boolean;
+  message: string;
+}
+
+export function submitToGoLive(siteId: string, user: string, data): Observable<GoLiveResponse> {
   return postJSON(
     `/studio/api/1/services/api/1/workflow/submit-to-go-live.json?site=${siteId}&user=${user}`,
     data
   ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
 
-export function goLive(siteId: string, user: string, data): Observable<any> {
+export function goLive(siteId: string, user: string, data): Observable<GoLiveResponse> {
   return postJSON(`/studio/api/1/services/api/1/workflow/go-live.json?site=${siteId}&user=${user}`, data).pipe(
     pluck('response'),
     catchError(errorSelectorApi1)

@@ -43,7 +43,7 @@ const ErrorDialog = lazy(() => import('./ErrorDialog'));
 const NewContentDialog = lazy(() => import('../../modules/Content/Authoring/NewContentDialog'));
 const ChangeContentTypeDialog = lazy(() => import('../../modules/Content/Authoring/ChangeContentTypeDialog'));
 const HistoryDialog = lazy(() => import('../../modules/Content/History/HistoryDialog'));
-const PublishDialog = lazy(() => import('../../modules/Content/Publish/PublishDialog'));
+const PublishDialog = lazy(() => import('../PublishDialog/PublishDialog'));
 const DependenciesDialog = lazy(() => import('../../modules/Content/Dependencies/DependenciesDialog'));
 const DeleteDialog = lazy(() => import('../../modules/Content/Delete/DeleteDialog'));
 const WorkflowCancellationDialog = lazy(() => import('../Dialogs/WorkflowCancellationDialog'));

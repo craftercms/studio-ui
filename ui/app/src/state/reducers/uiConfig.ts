@@ -58,6 +58,7 @@ const initialState: GlobalState['uiConfig'] = {
     deleteCommentRequired: false,
     bulkPublishRequired: false,
     publishByCommitRequired: false,
+    publishCommentRequired: false,
     submissionCommentMaxLength: 250
   },
   cdataEscapedFieldPatterns: []

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -14,362 +14,53 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
-import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import { fetchPublishingTargets, goLive, submitToGoLive } from '../../../services/publishing';
-import { fetchDependencies } from '../../../services/dependencies';
-import { DetailedItem } from '../../../models/Item';
+import { useSpreadState } from '../../utils/hooks/useSpreadState';
 import moment from 'moment';
-import { useDispatch, useSelector } from 'react-redux';
-import GlobalState from '../../../models/GlobalState';
-import StandardAction from '../../../models/StandardAction';
-import { Resource } from '../../../models/Resource';
-import Grid from '@material-ui/core/Grid';
-import DependencySelection from '../Dependencies/DependencySelection';
-import PublishForm from './PublishForm';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import DialogHeader from '../../../components/Dialogs/DialogHeader';
-import DialogBody from '../../../components/Dialogs/DialogBody';
-import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
-import DialogFooter from '../../../components/Dialogs/DialogFooter';
-import { ApiResponse } from '../../../models/ApiResponse';
-import Dialog from '@material-ui/core/Dialog';
-import LookupTable from '../../../models/LookupTable';
-import SecondaryButton from '../../../components/SecondaryButton';
-import PrimaryButton from '../../../components/PrimaryButton';
-import { emitSystemEvent, itemsApproved, itemsScheduled } from '../../../state/actions/system';
-import { useActiveSiteId } from '../../../utils/hooks/useActiveSiteId';
-import { usePermissionsBySite } from '../../../utils/hooks/usePermissionsBySite';
-import { useLogicResource } from '../../../utils/hooks/useLogicResource';
-import { useUnmount } from '../../../utils/hooks/useUnmount';
-import { useSpreadState } from '../../../utils/hooks/useSpreadState';
-import { createPresenceTable } from '../../../utils/array';
-import { getComputedPublishingTarget, getDateScheduled } from '../../../utils/detailedItem';
-import { PublishingTarget } from '../../../models/Publishing';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { PublishingTarget } from '../../models/Publishing';
+import LookupTable from '../../models/LookupTable';
+import {
+  ApiState,
+  DependenciesResultObject,
+  ExtendedGoLiveResponse,
+  InternalDialogState,
+  paths,
+  PublishDialogBaseProps,
+  PublishDialogResourceBody,
+  PublishDialogResourceInput,
+  updateCheckedList
+} from './utils';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { usePermissionsBySite } from '../../utils/hooks/usePermissionsBySite';
+import { useDispatch } from 'react-redux';
+import { useUnmount } from '../../utils/hooks/useUnmount';
+import { fetchPublishingTargets, goLive, submitToGoLive } from '../../services/publishing';
+import { emitSystemEvent, itemsApproved, itemsScheduled } from '../../state/actions/system';
+import { getComputedPublishingTarget, getDateScheduled } from '../../utils/detailedItem';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { useLogicResource } from '../../utils/hooks/useLogicResource';
+import { createPresenceTable } from '../../utils/array';
+import { DetailedItem } from '../../models/Item';
+import { fetchDependencies } from '../../services/dependencies';
+import { PublishDialogUI } from './PublishDialogUI';
+import translations from './translations';
+import useStyles from './styles';
+import { useActiveUser } from '../../utils/hooks/useActiveUser';
+import { useSelection } from '../../utils/hooks/useSelection';
+import { isBlank } from '../../utils/string';
+import { useLocale } from '../../utils/hooks/useLocale';
 
-// region Typings
-
-type ApiState = { error: ApiResponse; submitting: boolean; fetchingDependencies: boolean };
-type Source = { items: DetailedItem[]; publishingChannels: any[]; apiState: ApiState };
-type Return = Omit<Source, 'apiState'>;
-
-export interface DependenciesResultObject {
-  items1: string[];
-  items2: string[];
+export interface PublishDialogContainerProps extends PublishDialogBaseProps {
+  onClosed?(response?: any): any;
+  onDismiss?(response?: any): any;
+  onSuccess?(response?: ExtendedGoLiveResponse): any;
 }
 
-interface PublishDialogContentUIProps {
-  resource: Resource<{ items: DetailedItem[]; publishingChannels: PublishingTarget[] }>;
-  checkedItems: LookupTable<boolean>;
-  checkedSoftDep: LookupTable<boolean>;
-  setCheckedSoftDep: Function;
-  onClickSetChecked: Function;
-  deps: any;
-  selectAllDeps: Function;
-  selectAllSoft: Function;
-  dialog: any;
-  setDialog: any;
-  setSubmitDisabled: Function;
-  showEmailCheckbox?: boolean;
-  showRequestApproval?: boolean;
-  publishingChannelsStatus: string;
-  onPublishingChannelsFailRetry: Function;
-  apiState: any;
-  mixedPublishingDates?: boolean;
-  mixedPublishingTargets?: boolean;
-}
-
-interface PublishDialogUIProps {
-  resource: Resource<Return>;
-  publishingChannelsStatus: string;
-  onPublishingChannelsFailRetry: Function;
-  onDismiss?(): void;
-  handleSubmit: any;
-  submitDisabled: boolean;
-  setSubmitDisabled: Function;
-  showDepsDisabled: boolean;
-  dialog: InternalDialogState;
-  setDialog: any;
-  title: string;
-  subtitle?: string;
-  checkedItems: LookupTable<boolean>;
-  checkedSoftDep: LookupTable<boolean>;
-  setCheckedSoftDep: Function;
-  onClickSetChecked: Function;
-  deps: any;
-  selectAllDeps: Function;
-  selectAllSoft: Function;
-  onClickShowAllDeps?: any;
-  showEmailCheckbox?: boolean;
-  showRequestApproval: boolean;
-  apiState: any;
-  classes?: any;
-  submitLabel: ReactNode;
-  mixedPublishingDates?: boolean;
-  mixedPublishingTargets?: boolean;
-}
-
-interface PublishDialogBaseProps {
-  open: boolean;
-  items?: DetailedItem[];
-  // if null it means the dialog should determinate which one to use
-  scheduling?: 'now' | 'custom';
-}
-
-interface Response {
-  commitId: string;
-  invalidateCache: boolean;
-  item: any;
-  message: string;
-  status: boolean;
-  success: boolean;
-  schedule: 'now' | 'custom';
-  environment: string;
-  type: 'submit' | 'publish';
-  items: DetailedItem[];
-}
-
-export type PublishDialogProps = PropsWithChildren<
-  PublishDialogBaseProps & {
-    onClose?(response?: any): any;
-    onClosed?(response?: any): any;
-    onDismiss?(response?: any): any;
-    onSuccess?(response?: Response): any;
-  }
->;
-
-export interface PublishDialogStateProps extends PublishDialogBaseProps {
-  onClose?: StandardAction;
-  onClosed?: StandardAction;
-  onDismiss?: StandardAction;
-  onSuccess?: StandardAction;
-}
-
-export interface InternalDialogState {
-  emailOnApprove: boolean;
-  requestApproval: boolean;
-  environment: string;
-  submissionComment: string;
-  scheduling: 'now' | 'custom';
-  scheduledDateTime: any;
-  publishingChannel: string;
-  selectedItems: string[];
-}
-
-// endregion
-
-const translations = defineMessages({
-  title: {
-    id: 'publishDialog.title',
-    defaultMessage: 'Publish'
-  },
-  publishSubtitle: {
-    id: 'publishDialog.publishSubtitle',
-    defaultMessage: 'Selected files will go live upon submission.'
-  },
-  requestPublishSubtitle: {
-    id: 'publishDialog.requestPublishSubtitle',
-    defaultMessage: 'Selected files will be submitted for review upon submission.'
-  },
-  subtitleHelperText: {
-    id: 'publishDialog.subtitleHelperText',
-    defaultMessage:
-      'Hard dependencies are automatically submitted with the main items. You may choose whether to submit or not soft dependencies'
-  }
-});
-
-export const updateCheckedList = (path: string[], isChecked: boolean, checked: any) => {
-  const nextChecked = { ...checked };
-  (Array.isArray(path) ? path : [path]).forEach((u) => {
-    nextChecked[u] = isChecked;
-  });
-  return nextChecked;
-};
-
-export const paths = (checked: any) =>
-  Object.entries({ ...checked })
-    .filter(([, value]) => value === true)
-    .map(([key]) => key);
-
-const useStyles = makeStyles(() =>
-  createStyles({
-    leftAlignedAction: {
-      marginRight: 'auto'
-    },
-    btnSpinner: {
-      marginLeft: 11,
-      marginRight: 11,
-      color: '#fff'
-    }
-  })
-);
-
-function PublishDialogContentUI(props: PublishDialogContentUIProps) {
-  // region { ... } = props
-  const {
-    resource,
-    checkedItems,
-    checkedSoftDep,
-    setCheckedSoftDep,
-    onClickSetChecked,
-    deps,
-    selectAllDeps,
-    selectAllSoft,
-    dialog,
-    setDialog,
-    setSubmitDisabled,
-    showEmailCheckbox,
-    showRequestApproval,
-    publishingChannelsStatus,
-    onPublishingChannelsFailRetry,
-    apiState,
-    mixedPublishingDates,
-    mixedPublishingTargets
-  } = props;
-  // endregion
-  const { items, publishingChannels } = resource.read();
-  return (
-    <>
-      <Grid container spacing={3}>
-        <Grid item xs={12} sm={7} md={7} lg={7} xl={7}>
-          <DependencySelection
-            items={items}
-            checked={checkedItems}
-            checkedSoftDep={checkedSoftDep}
-            setCheckedSoftDep={setCheckedSoftDep}
-            onClickSetChecked={onClickSetChecked}
-            deps={deps}
-            onSelectAllClicked={selectAllDeps}
-            onSelectAllSoftClicked={selectAllSoft}
-            disabled={apiState.submitting}
-          />
-        </Grid>
-        <Grid item xs={12} sm={5} md={5} lg={5} xl={5}>
-          <PublishForm
-            inputs={dialog}
-            setInputs={setDialog}
-            setSubmitDisabled={setSubmitDisabled}
-            showEmailCheckbox={showEmailCheckbox}
-            showRequestApproval={showRequestApproval}
-            publishingChannels={publishingChannels}
-            publishingChannelsStatus={publishingChannelsStatus}
-            onPublishingChannelsFailRetry={onPublishingChannelsFailRetry}
-            disabled={apiState.submitting}
-            mixedPublishingDates={mixedPublishingDates}
-            mixedPublishingTargets={mixedPublishingTargets}
-          />
-        </Grid>
-      </Grid>
-    </>
-  );
-}
-
-function PublishDialogUI(props: PublishDialogUIProps) {
-  // region const { ... } = props
-  const {
-    resource,
-    publishingChannelsStatus,
-    onPublishingChannelsFailRetry,
-    onDismiss,
-    handleSubmit,
-    submitDisabled,
-    setSubmitDisabled,
-    showDepsDisabled,
-    dialog,
-    setDialog,
-    title,
-    subtitle,
-    checkedItems,
-    checkedSoftDep,
-    setCheckedSoftDep,
-    onClickSetChecked,
-    deps,
-    selectAllDeps,
-    selectAllSoft,
-    onClickShowAllDeps,
-    showEmailCheckbox,
-    showRequestApproval,
-    apiState,
-    classes,
-    submitLabel,
-    mixedPublishingDates,
-    mixedPublishingTargets
-  } = props;
-  // endregion
-  return (
-    <>
-      <DialogHeader title={title} subtitle={subtitle} onDismiss={onDismiss} />
-      <DialogBody>
-        <SuspenseWithEmptyState
-          resource={resource}
-          withEmptyStateProps={{
-            emptyStateProps: {
-              title: (
-                <FormattedMessage id="publishDialog.noItemsSelected" defaultMessage="No items have been selected" />
-              )
-            },
-            isEmpty: (value) => value.items.length === 0
-          }}
-        >
-          <PublishDialogContentUI
-            resource={resource}
-            checkedItems={checkedItems}
-            checkedSoftDep={checkedSoftDep}
-            setCheckedSoftDep={setCheckedSoftDep}
-            onClickSetChecked={onClickSetChecked}
-            deps={deps}
-            selectAllDeps={selectAllDeps}
-            selectAllSoft={selectAllSoft}
-            dialog={dialog}
-            setDialog={setDialog}
-            setSubmitDisabled={setSubmitDisabled}
-            showEmailCheckbox={showEmailCheckbox}
-            showRequestApproval={showRequestApproval}
-            publishingChannelsStatus={publishingChannelsStatus}
-            onPublishingChannelsFailRetry={onPublishingChannelsFailRetry}
-            apiState={apiState}
-            mixedPublishingDates={mixedPublishingDates}
-            mixedPublishingTargets={mixedPublishingTargets}
-          />
-        </SuspenseWithEmptyState>
-      </DialogBody>
-      <DialogFooter>
-        <SecondaryButton
-          color="primary"
-          onClick={onClickShowAllDeps}
-          className={classes.leftAlignedAction}
-          disabled={showDepsDisabled || apiState.submitting || apiState.fetchingDependencies}
-          loading={apiState.fetchingDependencies}
-        >
-          <FormattedMessage id="publishDialog.showAllDependencies" defaultMessage="Show All Dependencies" />
-        </SecondaryButton>
-        <SecondaryButton onClick={onDismiss} disabled={apiState.submitting}>
-          <FormattedMessage id="requestPublishDialog.cancel" defaultMessage="Cancel" />
-        </SecondaryButton>
-        <PrimaryButton onClick={handleSubmit} disabled={submitDisabled} loading={apiState.submitting}>
-          {submitLabel}
-        </PrimaryButton>
-      </DialogFooter>
-    </>
-  );
-}
-
-export default function PublishDialog(props: PublishDialogProps) {
-  return (
-    <Dialog
-      open={props.open}
-      onClose={props.onClose}
-      aria-labelledby="requestPublishDialogTitle"
-      fullWidth
-      maxWidth="md"
-    >
-      <PublishDialogWrapper {...props} />
-    </Dialog>
-  );
-}
-
-function PublishDialogWrapper(props: PublishDialogProps) {
+export function PublishDialogContainer(props: PublishDialogContainerProps) {
   const { items, scheduling = 'now', onDismiss, onSuccess } = props;
+  const {
+    dateTimeFormatOptions: { timeZone }
+  } = useLocale();
   const [dialogState, setDialogState] = useSpreadState<InternalDialogState>({
     emailOnApprove: false,
     requestApproval: false,
@@ -378,7 +69,8 @@ function PublishDialogWrapper(props: PublishDialogProps) {
     scheduling: scheduling,
     scheduledDateTime: moment().format(),
     publishingChannel: null,
-    selectedItems: null
+    selectedItems: null,
+    scheduledTimeZone: timeZone
   });
   const [publishingChannels, setPublishingTargets] = useState<PublishingTarget[]>(null);
   const [publishingChannelsStatus, setPublishingTargetsStatus] = useState('Loading');
@@ -398,10 +90,11 @@ function PublishDialogWrapper(props: PublishDialogProps) {
   const myPermissions = permissionsBySite[siteId];
   const hasPublishPermission = myPermissions.includes('publish');
   const dispatch = useDispatch();
+  const submissionCommentRequired = useSelection((state) => state.uiConfig.publishing.publishCommentRequired);
 
   useUnmount(props.onClosed);
 
-  const user = useSelector<GlobalState, GlobalState['user']>((state) => state.user);
+  const user = useActiveUser();
   const submit = !hasPublishPermission || dialogState.requestApproval ? submitToGoLive : goLive;
   const propagateAction = !hasPublishPermission || dialogState.requestApproval ? itemsScheduled : itemsApproved;
   const { mixedPublishingTargets, mixedPublishingDates, dateScheduled, environment } = useMemo(() => {
@@ -517,7 +210,7 @@ function PublishDialogWrapper(props: PublishDialogProps) {
     [items, publishingChannels, apiState, myPermissions]
   );
 
-  const resource = useLogicResource<Return, Source>(publishSource, {
+  const resource = useLogicResource<PublishDialogResourceBody, PublishDialogResourceInput>(publishSource, {
     shouldResolve: (source) => Boolean(source.items && source.publishingChannels && myPermissions.length),
     shouldReject: (source) => Boolean(source.apiState.error),
     shouldRenew: (source, resource) => source.apiState.submitting && resource.complete,
@@ -574,9 +267,18 @@ function PublishDialogWrapper(props: PublishDialogProps) {
         // When there are no available/loaded publishing targets
         !publishingChannels?.length ||
         // When no publishing target is selected
-        !dialogState.environment
+        !dialogState.environment ||
+        // If submission comment is required (per config) and blank
+        (submissionCommentRequired && isBlank(dialogState.submissionComment))
     );
-  }, [apiState.submitting, checkedItems, publishingChannels, dialogState.environment]);
+  }, [
+    apiState.submitting,
+    checkedItems,
+    publishingChannels,
+    dialogState.environment,
+    dialogState.submissionComment,
+    submissionCommentRequired
+  ]);
 
   const handleSubmit = () => {
     const {
@@ -682,8 +384,6 @@ function PublishDialogWrapper(props: PublishDialogProps) {
       onPublishingChannelsFailRetry={getPublishingChannels}
       onDismiss={onDismiss}
       handleSubmit={handleSubmit}
-      submitDisabled={submitDisabled}
-      setSubmitDisabled={setSubmitDisabled}
       showDepsDisabled={showDepsDisabled}
       dialog={dialogState}
       setDialog={setDialogState}
@@ -716,6 +416,8 @@ function PublishDialogWrapper(props: PublishDialogProps) {
       }
       mixedPublishingTargets={mixedPublishingTargets}
       mixedPublishingDates={mixedPublishingDates}
+      submissionCommentRequired={submissionCommentRequired}
+      submitDisabled={submitDisabled}
     />
   );
 }
