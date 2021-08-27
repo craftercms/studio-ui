@@ -125,7 +125,8 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
   const onComponentDelete = useCallback(
     (props: Partial<ComponentDropProps>) => {
       const { isNew, zones, compPath, conComp } = props;
-      fetchContentDOM(siteId, guestPath).subscribe((content) => {
+      // conComp is the parent path
+      fetchContentDOM(siteId, compPath ? compPath : guestPath).subscribe((content) => {
         let contentModel = legacyXmlModelToMap(content.documentElement);
         let fieldId = Object.keys(zones)[0];
         let index = null;
@@ -154,6 +155,7 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
   const onComponentDrop = useCallback(
     (props: ComponentDropProps) => {
       const { type, path, isNew, trackingNumber, zones, compPath, conComp, datasource } = props;
+      // path is the component path(shared component) and conComp is the parent path
       // if isNew is false it means it is a sort, if it is new it means it a dnd for new component
       // if is 'existing' it means it is a browse component
 
@@ -165,7 +167,7 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
             // shared component
           }
         } else {
-          // browse component
+          // region browse component
           let fieldId;
           let index;
 
@@ -202,10 +204,10 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
                 type: 'REFRESH_PREVIEW'
               });
             });
+          // endregion
         }
       } else {
-        // sort or move component
-        fetchContentDOM(siteId, guestPath).subscribe((content) => {
+        fetchContentDOM(siteId, compPath ? compPath : guestPath).subscribe((content) => {
           let contentModel = legacyXmlModelToMap(content.documentElement);
           let zonesKeys = Object.keys(zones);
           if (zonesKeys.length === 1) {
@@ -231,6 +233,7 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
             });
           }
         });
+        // endregion
       }
     },
     [contentTypesLookup, dispatch, formatMessage, guestPath, hostToGuest$, siteId]
@@ -345,6 +348,18 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
         }
         case 'SAVE_DRAG_AND_DROP': {
           onComponentDelete(payload);
+          break;
+        }
+        case 'LOAD_MODEL_REQUEST': {
+          if (payload.aNotFound) {
+            fetchContentDOM(siteId, payload.aNotFound.path).subscribe((content) => {
+              let contentModel = legacyXmlModelToMap(content.documentElement);
+              hostToGuest$.next({
+                type: 'DND_COMPONENTS_MODEL_LOAD',
+                payload: contentModel
+              });
+            });
+          }
           break;
         }
         default:
