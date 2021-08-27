@@ -14,14 +14,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createReducer } from '@reduxjs/toolkit';
-import GlobalState from '../../models/GlobalState';
+import { LEGACY_PREVIEW_URL_PATH, PREVIEW_URL_PATH } from './constants';
 
-const reducer = createReducer<GlobalState['publishing']>(
-  {
-    submissionCommentMaxLength: 250
-  },
-  {}
-);
+export type SystemLinkId = 'preview' | 'siteTools' | 'siteSearch' | 'siteDashboard';
 
-export default reducer;
+export function getSystemLink({
+  systemLinkId,
+  authoringBase,
+  useLegacy,
+  site,
+  page = '/'
+}: {
+  systemLinkId: SystemLinkId;
+  authoringBase: string;
+  useLegacy: boolean;
+  site: string;
+  page?: string;
+}) {
+  return {
+    preview: `${authoringBase}${useLegacy ? LEGACY_PREVIEW_URL_PATH : PREVIEW_URL_PATH}#/?page=${page}&site=${site}`,
+    siteTools: `${authoringBase}/site-config`,
+    siteSearch: `${authoringBase}/search`,
+    siteDashboard: `${authoringBase}/site-dashboard`
+  }[systemLinkId];
+}

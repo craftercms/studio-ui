@@ -61,7 +61,6 @@ export interface DependenciesResultObject {
 interface PublishDialogContentUIProps {
   resource: Resource<{ items: DetailedItem[]; publishingChannels: PublishingTarget[] }>;
   checkedItems: LookupTable<boolean>;
-  setCheckedItems: Function;
   checkedSoftDep: LookupTable<boolean>;
   setCheckedSoftDep: Function;
   onClickSetChecked: Function;
@@ -94,7 +93,6 @@ interface PublishDialogUIProps {
   title: string;
   subtitle?: string;
   checkedItems: LookupTable<boolean>;
-  setCheckedItems: Function;
   checkedSoftDep: LookupTable<boolean>;
   setCheckedSoftDep: Function;
   onClickSetChecked: Function;
@@ -211,7 +209,6 @@ function PublishDialogContentUI(props: PublishDialogContentUIProps) {
   const {
     resource,
     checkedItems,
-    setCheckedItems,
     checkedSoftDep,
     setCheckedSoftDep,
     onClickSetChecked,
@@ -238,7 +235,6 @@ function PublishDialogContentUI(props: PublishDialogContentUIProps) {
           <DependencySelection
             items={items}
             checked={checkedItems}
-            setChecked={setCheckedItems}
             checkedSoftDep={checkedSoftDep}
             setCheckedSoftDep={setCheckedSoftDep}
             onClickSetChecked={onClickSetChecked}
@@ -284,7 +280,6 @@ function PublishDialogUI(props: PublishDialogUIProps) {
     title,
     subtitle,
     checkedItems,
-    setCheckedItems,
     checkedSoftDep,
     setCheckedSoftDep,
     onClickSetChecked,
@@ -319,7 +314,6 @@ function PublishDialogUI(props: PublishDialogUIProps) {
           <PublishDialogContentUI
             resource={resource}
             checkedItems={checkedItems}
-            setCheckedItems={setCheckedItems}
             checkedSoftDep={checkedSoftDep}
             setCheckedSoftDep={setCheckedSoftDep}
             onClickSetChecked={onClickSetChecked}
@@ -649,7 +643,7 @@ function PublishDialogWrapper(props: PublishDialogProps) {
     _setCheckedSoftDep(nextCheckedSoftDep);
   };
 
-  const setCheckedSoftDep = (path: string[], isChecked: boolean) => {
+  const setCheckedSoftDep = (e: any, path: string[], isChecked: boolean) => {
     const nextCheckedSoftDep = { ...checkedSoftDep };
     (Array.isArray(path) ? path : [path]).forEach((u) => {
       nextCheckedSoftDep[u] = isChecked;
@@ -658,7 +652,8 @@ function PublishDialogWrapper(props: PublishDialogProps) {
   };
 
   function selectAllSoft() {
-    setCheckedSoftDep(deps.items2, true);
+    const isAllChecked = !deps.items2.some((path) => !checkedSoftDep[path]);
+    setCheckedSoftDep(null, deps.items2, !isAllChecked);
   }
 
   function showAllDependencies() {
@@ -699,7 +694,6 @@ function PublishDialogWrapper(props: PublishDialogProps) {
           : formatMessage(translations.publishSubtitle) + ' ' + formatMessage(translations.subtitleHelperText)
       }
       checkedItems={checkedItems}
-      setCheckedItems={setChecked}
       checkedSoftDep={checkedSoftDep}
       setCheckedSoftDep={setCheckedSoftDep}
       onClickSetChecked={onClickSetChecked}

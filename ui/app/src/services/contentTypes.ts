@@ -54,7 +54,9 @@ const systemValidationsNames = [
   'minWidth',
   'minHeight',
   'maxWidth',
-  'maxHeight'
+  'maxHeight',
+  'minValue',
+  'maxValue'
 ];
 
 const systemValidationsKeysMap = {
@@ -69,7 +71,9 @@ const systemValidationsKeysMap = {
   minWidth: 'minWidth',
   minHeight: 'minHeight',
   maxWidth: 'maxWidth',
-  maxHeight: 'maxHeight'
+  maxHeight: 'maxHeight',
+  minValue: 'minValue',
+  maxValue: 'maxValue'
 };
 
 function bestGuessParse(value: any) {
@@ -271,6 +275,7 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
               };
               break;
             case 'input':
+            case 'numeric-input':
             case 'image-picker':
               field.validations = {
                 ...field.validations,

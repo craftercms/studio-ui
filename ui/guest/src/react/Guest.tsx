@@ -145,7 +145,7 @@ function Guest(props: GuestProps) {
   );
 
   // Hotkeys propagation to preview
-  useHotkeys('ctrl+e, command+e', () => {
+  useHotkeys('e', () => {
     post(EDIT_MODE_TOGGLE_HOTKEY);
   });
 

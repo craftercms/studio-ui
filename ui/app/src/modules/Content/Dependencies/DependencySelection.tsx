@@ -39,13 +39,13 @@ import ErrorOutlineOutlinedIcon from '@material-ui/icons/ErrorOutlineOutlined';
 import ItemStateIcon from '../../../components/ItemStateIcon';
 import ItemPublishingTargetIcon from '../../../components/ItemPublishingTargetIcon';
 import { getItemStateText } from '../../../components/ItemDisplay/utils';
+import clsx from 'clsx';
 
 interface DependencySelectionProps {
   items?: DetailedItem[];
   siteId?: string; // for dependencySelectionDelete
   onChange?: Function; // for dependencySelectionDelete
   checked: LookupTable<boolean>;
-  setChecked: Function;
   checkedSoftDep: LookupTable<boolean>;
   setCheckedSoftDep: Function;
   onClickSetChecked: Function;
@@ -65,7 +65,6 @@ interface SelectionListProps {
   onSelectAllClicked?: Function;
   displayItemTitle: boolean;
   checked?: any;
-  setChecked?: Function;
   disabled?: boolean;
   showEdit?: boolean;
   onEditClick?: Function;
@@ -145,7 +144,6 @@ export function DependencySelection(props: DependencySelectionProps) {
   const {
     items,
     checked,
-    setChecked,
     checkedSoftDep,
     setCheckedSoftDep,
     deps,
@@ -159,7 +157,7 @@ export function DependencySelection(props: DependencySelectionProps) {
 
   return (
     <>
-      <div className={`${classes.dependencySelection} ${disabled ? classes.dependencySelectionDisabled : ''}`}>
+      <div className={clsx(classes.dependencySelection, disabled && classes.dependencySelectionDisabled)}>
         <SelectionList
           title={<FormattedMessage id="publishDialog.itemsToPublish" defaultMessage="Items To Publish" />}
           items={items}
@@ -167,7 +165,6 @@ export function DependencySelection(props: DependencySelectionProps) {
           onSelectAllClicked={onSelectAllClicked}
           displayItemTitle={true}
           checked={checked}
-          setChecked={setChecked}
           disabled={disabled}
         />
         {deps == null ? null : (
@@ -195,7 +192,6 @@ export function DependencySelection(props: DependencySelectionProps) {
               onSelectAllClicked={onSelectAllSoftClicked}
               displayItemTitle={false}
               checked={checkedSoftDep}
-              setChecked={setChecked}
               disabled={disabled}
             />
           </>
@@ -257,7 +253,6 @@ export function DependencySelectionDelete(props: DependencySelectionDeleteProps)
         onSelectAllClicked={selectAllDeps}
         displayItemTitle={true}
         checked={checked}
-        setChecked={setChecked}
       />
       <>
         <SelectionList
@@ -299,21 +294,24 @@ function SelectionList(props: SelectionListProps) {
   const classes = useStyles();
   const locale = useLocale();
 
-  const isAllChecked = useMemo(() => !items?.some((item) => !checked[item.path]), [items, checked]);
-  const isIndeterminate = useMemo(() => items?.some((item) => checked[item.path] && !isAllChecked), [
-    items,
+  const paths = items ? items.map((item) => item.path) : uris;
+
+  const isAllChecked = useMemo(() => (checked ? !paths?.some((path) => !checked[path]) : null), [paths, checked]);
+  const isIndeterminate = useMemo(() => (checked ? paths?.some((path) => checked?.[path] && !isAllChecked) : null), [
+    paths,
     checked,
     isAllChecked
   ]);
 
   return (
     <>
-      <ListItem divider dense disableGutters={!Boolean(items)}>
+      <ListItem divider dense disableGutters={!Boolean(paths)}>
         <ListItemIcon>
-          {onSelectAllClicked && items?.length && (
+          {onSelectAllClicked && Boolean(paths?.length) && (
             <Checkbox
               color="primary"
               edge="start"
+              disabled={disabled}
               indeterminate={isIndeterminate}
               checked={isAllChecked || isIndeterminate}
               onChange={() => onSelectAllClicked()}
@@ -347,6 +345,7 @@ function SelectionList(props: SelectionListProps) {
               <ListItem
                 key={item.path}
                 role={undefined}
+                disabled={disabled}
                 {...(onItemClicked
                   ? {
                       button: true,
@@ -446,7 +445,7 @@ function SelectionList(props: SelectionListProps) {
                   {...(onItemClicked
                     ? {
                         button: true,
-                        onClick: (e) => onItemClicked(e, uri)
+                        onClick: (e) => onItemClicked(e, uri, !Boolean(checked[uri]))
                       }
                     : null)}
                 >
@@ -455,7 +454,7 @@ function SelectionList(props: SelectionListProps) {
                       <Checkbox
                         color="primary"
                         edge="start"
-                        checked={!!checked[uri]}
+                        checked={Boolean(checked[uri])}
                         tabIndex={-1}
                         disableRipple
                         inputProps={{ 'aria-labelledby': uri }}

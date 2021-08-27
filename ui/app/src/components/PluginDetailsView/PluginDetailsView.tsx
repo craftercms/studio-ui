@@ -15,7 +15,6 @@
  */
 
 import React, { useState } from 'react';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import SwipeableViews from 'react-swipeable-views';
@@ -35,7 +34,7 @@ import clsx from 'clsx';
 import { fadeIn } from 'react-animations';
 import PrimaryButton from '../PrimaryButton';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles((theme) => ({
   '@keyframes fadeIn': fadeIn,
   fadeIn: {
     animationName: '$fadeIn',

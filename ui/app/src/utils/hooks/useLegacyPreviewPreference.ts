@@ -14,21 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { defineMessages } from 'react-intl';
+import { useSelection } from './useSelection';
+import { useActiveSiteId } from './useActiveSiteId';
 
-export const translations = defineMessages({
-  toggleEditMode: {
-    id: 'previewToolbar.toggleEditMode',
-    defaultMessage: 'Toggle edit mode'
-  },
-  itemLocked: {
-    id: 'previewToolbar.editModeSwitchLockedMessage',
-    defaultMessage: 'Item is locked by {lockOwner}'
-  },
-  editNotAvailable: {
-    id: 'previewToolbar.editModeSwitchDisabled',
-    defaultMessage: 'Editing is not available'
-  }
-});
-
-export default translations;
+export function useLegacyPreviewPreference() {
+  const site = useActiveSiteId();
+  return useSelection((state) =>
+    // If preference isn't loaded yet it'll still default to false. This isn't time sensitive.
+    Boolean(state.uiConfig.useLegacyPreviewLookup[site])
+  );
+}

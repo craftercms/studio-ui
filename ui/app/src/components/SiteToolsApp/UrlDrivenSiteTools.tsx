@@ -20,10 +20,10 @@ import { useSelection } from '../../utils/hooks/useSelection';
 import { useGlobalAppState } from '../GlobalApp';
 import { useReference } from '../../utils/hooks/useReference';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import { usePreviewState } from '../../utils/hooks/usePreviewState';
 import { useEnv } from '../../utils/hooks/useEnv';
-import { getSystemLink } from '../LauncherSection';
 import SiteToolsApp, { Tool } from './SiteToolsApp';
+import { getSystemLink } from '../../utils/system';
+import { useLegacyPreviewPreference } from '../../utils/hooks/useLegacyPreviewPreference';
 
 interface UrlDrivenSiteToolsProps {
   footerHtml: string;
@@ -38,8 +38,8 @@ export default function UrlDrivenSiteTools(props: UrlDrivenSiteToolsProps) {
   const [{ openSidebar }] = useGlobalAppState();
   const tools: Tool[] = useReference('craftercms.siteTools')?.tools;
   const site = useActiveSiteId();
-  const { previewChoice } = usePreviewState();
   const { authoringBase } = useEnv();
+  const useLegacy = useLegacyPreviewPreference();
 
   history.listen((location) => {
     setActiveToolId(location.pathname.replace('/', ''));
@@ -52,7 +52,7 @@ export default function UrlDrivenSiteTools(props: UrlDrivenSiteToolsProps) {
   const onBackClick = () => {
     window.location.href = getSystemLink({
       site,
-      previewChoice,
+      useLegacy,
       authoringBase,
       systemLinkId: 'preview'
     });

@@ -859,8 +859,8 @@ export default function Search(props: SearchProps) {
             nextIconButtonProps={{
               'aria-label': formatMessage(messages.nextPage)
             }}
-            onChangePage={handleChangePage}
-            onChangeRowsPerPage={handleChangeRowsPerPage}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
             classes={{
               caption: classes.paginationCaption,
               selectRoot: classes.paginationSelectRoot,

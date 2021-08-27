@@ -19,7 +19,7 @@ import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
-import { Variant } from '@material-ui/core/styles/createTypography';
+import { TypographyVariant as Variant } from '@material-ui/core/styles';
 import { DetailedItem, SandboxItem } from '../../../models/Item';
 import ExpandMoreRoundedIcon from '@material-ui/icons/ExpandMoreRounded';
 import Popover from '@material-ui/core/Popover';
@@ -459,7 +459,7 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
             count={state.total}
             rowsPerPage={state.limit}
             page={state && Math.ceil(state.offset / state.limit)}
-            onChangePage={(page: number) => onPageChanged(page)}
+            onPageChange={onPageChanged}
           />
         </SuspenseWithEmptyState>
       </Popover>

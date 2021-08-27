@@ -20,6 +20,7 @@ import { initDashboardConfig } from '../actions/dashboard';
 import { deserialize, fromString } from '../../utils/xml';
 import { applyDeserializedXMLTransforms } from '../../utils/object';
 import { defineMessages } from 'react-intl';
+import { changeSite } from './sites';
 
 const messages = defineMessages({
   noUiConfigMessageTitle: {
@@ -33,6 +34,7 @@ const messages = defineMessages({
 });
 
 const reducer = createReducer<GlobalState['dashboard']>(null, {
+  [changeSite.type]: () => null,
   [initDashboardConfig.type]: (state, { payload }) => {
     let dashboardConfig = {
       widgets: [

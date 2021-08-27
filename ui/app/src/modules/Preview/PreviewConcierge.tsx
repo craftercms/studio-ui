@@ -40,7 +40,6 @@ import {
   guestModelUpdated,
   HOST_CHECK_IN,
   ICE_ZONE_SELECTED,
-  initRichTextEditorConfig,
   INSERT_COMPONENT_OPERATION,
   INSERT_INSTANCE_OPERATION,
   INSERT_ITEM_OPERATION,
@@ -52,9 +51,7 @@ import {
   setContentTypeDropTargets,
   setHighlightMode,
   setItemBeingDragged,
-  setPreviewChoice,
   setPreviewEditMode,
-  SHOW_EDIT_DIALOG,
   SORT_ITEM_OPERATION,
   SORT_ITEM_OPERATION_COMPLETE,
   TRASHED,
@@ -82,8 +79,6 @@ import { useDispatch } from 'react-redux';
 import { findParentModelId, nnou, pluckProps } from '../../utils/object';
 import RubbishBin from './Tools/RubbishBin';
 import { useSnackbar } from 'notistack';
-import { PreviewCompatibilityDialogContainer } from '../../components/Dialogs/PreviewCompatibilityDialog';
-import { getQueryVariable } from '../../utils/path';
 import {
   getStoredClipboard,
   getStoredEditModeChoice,
@@ -105,7 +100,6 @@ import moment from 'moment-timezone';
 import ContentInstance from '../../models/ContentInstance';
 import LookupTable from '../../models/LookupTable';
 import { getModelIdFromInheritedField, isInheritedField } from '../../utils/model';
-import { fetchGlobalProperties, setProperties } from '../../services/users';
 import Snackbar from '@material-ui/core/Snackbar';
 import CloseRounded from '@material-ui/icons/CloseRounded';
 import IconButton from '@material-ui/core/IconButton';
@@ -114,13 +108,14 @@ import { useSelection } from '../../utils/hooks/useSelection';
 import { usePreviewState } from '../../utils/hooks/usePreviewState';
 import { useContentTypes } from '../../utils/hooks/useContentTypes';
 import { useActiveUser } from '../../utils/hooks/useActiveUser';
-import { useItemsByPath } from '../../utils/hooks/useItemsByPath';
 import { useMount } from '../../utils/hooks/useMount';
 import { usePreviewNavigation } from '../../utils/hooks/usePreviewNavigation';
 import { useActiveSite } from '../../utils/hooks/useActiveSite';
-import { useRTEConfig } from '../../utils/hooks/useRTEConfig';
-import { useSiteUIConfig } from '../../utils/hooks/useSiteUIConfig';
+import { getPathFromPreviewURL } from '../../utils/path';
 import { showEditDialog } from '../../state/actions/dialogs';
+import { UNDEFINED } from '../../utils/constants';
+import { useCurrentPreviewItem } from '../../utils/hooks/useCurrentPreviewItem';
+import { useSiteUIConfig } from '../../utils/hooks/useSiteUIConfig';
 
 const guestMessages = defineMessages({
   maxCount: {
@@ -289,8 +284,16 @@ export function PreviewConcierge(props: any) {
   const dispatch = useDispatch();
   const { id: siteId, uuid } = useActiveSite();
   const user = useActiveUser();
-  const items = useItemsByPath();
-  const { guest, editMode, highlightMode, previewChoice } = usePreviewState();
+  const {
+    guest,
+    editMode,
+    highlightMode,
+    pageBuilderPanelWidth,
+    toolsPanelWidth,
+    hostSize,
+    showToolsPanel
+  } = usePreviewState();
+  const item = useCurrentPreviewItem();
   const { currentUrlPath } = usePreviewNavigation();
   const contentTypes = useContentTypes();
   const { authoringBase, guestBase, xsrfArgument } = useSelection((state) => state.env);
@@ -301,36 +304,42 @@ export function PreviewConcierge(props: any) {
   const modelIdByPath = guest?.modelIdByPath;
   const childrenMap = guest?.childrenMap;
   const contentTypes$ = useMemo(() => new ReplaySubject<ContentType[]>(1), []);
-  const [previewCompatibilityDialogOpen, setPreviewCompatibilityDialogOpen] = useState(false);
   const requestedSourceMapPaths = useRef({});
-  // Controls that the preview compatibility dialog is only shown once per this tab session (once per refresh).
-  // Avoids it showing over and over when navigating studio pages.
-  const previewNextCheckInNotificationRef = useRef(false);
-  const handlePreviewCompatibilityDialogGo = useCallback(() => {
-    window.location.href = `${authoringBase}/preview#/?page=${currentUrlPath}&site=${siteId}`;
-  }, [authoringBase, currentUrlPath, siteId]);
   // guestDetectionSnackbarOpen, guestDetectionTimeout
   const guestDetectionTimeoutRef = useRef<number>();
   const [guestDetectionSnackbarOpen, setGuestDetectionSnackbarOpen] = useState(false);
-  const uiConfig = useSiteUIConfig();
-  const rteConfig = useRTEConfig();
+  const currentItemPath = guest?.path;
+  const { cdataEscapedFieldPatterns } = useSiteUIConfig();
 
   function clearSelectedZonesHandler() {
     dispatch(clearSelectForEdit());
     getHostToGuestBus().next({ type: CLEAR_SELECTED_ZONES });
   }
 
-  // region Permissions and fetch of DetailedItem
-  const currentItemPath = guest?.path;
+  // region Legacy Guest pencil repaint
   useEffect(() => {
-    if (items[currentItemPath]) {
+    if (editMode) {
+      let timeout = setTimeout(() => {
+        getHostToGuestBus().next({ type: 'REPAINT_PENCILS' });
+      }, 500);
+      return () => {
+        clearTimeout(timeout);
+      };
+    }
+  }, [pageBuilderPanelWidth, toolsPanelWidth, hostSize, editMode, showToolsPanel]);
+  // endregion
+
+  // region Permissions and fetch of DetailedItem
+
+  useEffect(() => {
+    if (item) {
       getHostToGuestBus().next({
         type: EDIT_MODE_CHANGED,
-        payload: { editMode: getComputedEditMode({ item: items[currentItemPath], username: user.username, editMode }) }
+        payload: { editMode: getComputedEditMode({ item, username: user.username, editMode }) }
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [items[currentItemPath], editMode, user.username]);
+  }, [item, editMode, user.username]);
+
   useEffect(() => {
     if (currentItemPath && siteId) {
       dispatch(fetchSandboxItem({ path: currentItemPath, force: true }));
@@ -338,17 +347,14 @@ export function PreviewConcierge(props: any) {
   }, [dispatch, currentItemPath, siteId]);
 
   const conditionallyToggleEditMode = useCallback(() => {
-    if (
-      !isItemLockedForMe(items[currentItemPath], user.username) &&
-      hasEditAction(items[currentItemPath].availableActions)
-    ) {
+    if (item && !isItemLockedForMe(item, user.username) && hasEditAction(item.availableActions)) {
       dispatch(
         setPreviewEditMode({
           editMode: !editMode
         })
       );
     }
-  }, [currentItemPath, dispatch, editMode, items, user.username]);
+  }, [item, dispatch, editMode, user.username]);
 
   // endregion
 
@@ -415,48 +421,40 @@ export function PreviewConcierge(props: any) {
           break;
       }
       switch (type) {
-        case GUEST_SITE_LOAD:
-          // Legacy sites (guest v1) send this message.
-          let previewNextCheckInNotification = previewNextCheckInNotificationRef.current;
-          let compatibilityQueryArg = getQueryVariable(window.location.search, 'compatibility');
-          let compatibilityForceStay = compatibilityQueryArg === 'stay';
-          let compatibilityAsk = compatibilityQueryArg === 'ask';
-          if (!previewNextCheckInNotification && !compatibilityForceStay) {
-            // Avoid recurrently showing the notification over and over as long as the page is not refreshed
-            previewNextCheckInNotificationRef.current = true;
-            if (compatibilityAsk) {
-              setPreviewCompatibilityDialogOpen(true);
-            }
-          }
-          if (previewChoice[siteId] !== '1') {
-            fetchGlobalProperties()
-              .pipe(
-                switchMap((properties) =>
-                  setProperties({
-                    previewChoice: JSON.stringify(
-                      Object.assign(JSON.parse(properties.previewChoice ?? '{}'), {
-                        [siteId]: '1'
-                      })
-                    )
-                  })
-                )
-              )
-              .subscribe((k) => {
-                handlePreviewCompatibilityDialogGo();
-              });
-          } else if (!compatibilityAsk && !compatibilityForceStay) {
-            handlePreviewCompatibilityDialogGo();
-          }
+        // region Legacy preview sites messages
+        case GUEST_SITE_LOAD: {
+          const { url, location } = payload;
+          const path = getPathFromPreviewURL(url);
+          dispatch(checkInGuest({ location, site: siteId, path }));
+          issueDescriptorRequest({
+            site: siteId,
+            path,
+            contentTypes,
+            requestedSourceMapPaths,
+            dispatch,
+            completeAction: fetchPrimaryGuestModelComplete
+          });
           break;
+        }
+        case 'ICE_ZONE_ON': {
+          dispatch(
+            showEditDialog({
+              path: payload.itemId,
+              authoringBase,
+              site: siteId,
+              iceGroupId: payload.iceId || UNDEFINED,
+              modelId: payload.embeddedItemId || UNDEFINED
+            })
+          );
+          break;
+        }
+        // endregion
         case GUEST_CHECK_IN:
         case FETCH_GUEST_MODEL: {
           if (type === GUEST_CHECK_IN) {
-            if (previewChoice[siteId] !== '2') {
-              dispatch(setPreviewChoice({ site: siteId, choice: '2' }));
-            }
             getHostToGuestBus().next({
               type: HOST_CHECK_IN,
-              payload: { editMode: false, highlightMode, rteConfig: rteConfig ?? {}, site: siteId }
+              payload: { editMode: false, highlightMode }
             });
             dispatch(checkInGuest(payload));
 
@@ -602,7 +600,7 @@ export function PreviewConcierge(props: any) {
           );
           break;
         }
-        case INSERT_INSTANCE_OPERATION:
+        case INSERT_INSTANCE_OPERATION: {
           const { fieldId, targetIndex, instance } = payload;
           let { modelId, parentModelId } = payload;
           const path = models[modelId ?? parentModelId].craftercms.path;
@@ -642,6 +640,7 @@ export function PreviewConcierge(props: any) {
             }
           );
           break;
+        }
         case INSERT_ITEM_OPERATION: {
           enqueueSnackbar(formatMessage(guestMessages.insertItemOperation));
           break;
@@ -736,7 +735,8 @@ export function PreviewConcierge(props: any) {
             fieldId,
             index,
             parentModelId ? models[parentModelId].craftercms.path : null,
-            value
+            value,
+            cdataEscapedFieldPatterns.some((pattern) => Boolean(fieldId.match(pattern)))
           ).subscribe(
             () => {
               enqueueSnackbar(formatMessage(guestMessages.updateOperationComplete));
@@ -823,17 +823,6 @@ export function PreviewConcierge(props: any) {
           conditionallyToggleEditMode();
           break;
         }
-        case SHOW_EDIT_DIALOG: {
-          dispatch(
-            showEditDialog({
-              authoringBase,
-              path: guest.path,
-              selectedFields: payload.selectedFields,
-              site: siteId
-            })
-          );
-          break;
-        }
       }
     });
     return () => {
@@ -854,13 +843,11 @@ export function PreviewConcierge(props: any) {
     siteId,
     xsrfArgument,
     highlightMode,
-    previewChoice,
-    handlePreviewCompatibilityDialogGo,
     conditionallyToggleEditMode,
-    rteConfig,
-    guest
+    cdataEscapedFieldPatterns
   ]);
 
+  // Guest detection
   useEffect(() => {
     if (priorState.current.site !== siteId) {
       priorState.current.site = siteId;
@@ -874,15 +861,9 @@ export function PreviewConcierge(props: any) {
     }
   }, [siteId, guest, dispatch]);
 
-  useEffect(() => {
-    if (nnou(uiConfig.xml) && !rteConfig) {
-      dispatch(initRichTextEditorConfig({ configXml: uiConfig.xml }));
-    }
-  }, [uiConfig.xml, rteConfig, dispatch]);
-
   // Hotkeys
   useHotkeys(
-    'ctrl+e, command+e',
+    'e',
     () => {
       conditionallyToggleEditMode();
     },
@@ -897,15 +878,6 @@ export function PreviewConcierge(props: any) {
         onTrash={() => getHostToGuestBus().next({ type: TRASHED, payload: guest.itemBeingDragged })}
       />
       <EditFormPanel open={nnou(guest?.selected)} onDismiss={clearSelectedZonesHandler} />
-      <PreviewCompatibilityDialogContainer
-        isPreviewNext={false}
-        open={previewCompatibilityDialogOpen}
-        onClose={() => setPreviewCompatibilityDialogOpen(false)}
-        onOk={handlePreviewCompatibilityDialogGo}
-        onCancel={() => {
-          setPreviewCompatibilityDialogOpen(false);
-        }}
-      />
       <Snackbar
         open={guestDetectionSnackbarOpen}
         onClose={() => void 0}

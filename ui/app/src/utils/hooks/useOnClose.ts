@@ -14,21 +14,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { defineMessages } from 'react-intl';
+interface UseOnCloseProps {
+  onClose?(event: any, reason: 'backdropClick' | 'escapeKeyDown'): void;
+  disableBackdropClick: boolean;
+  disableEscapeKeyDown: boolean;
+}
 
-export const translations = defineMessages({
-  toggleEditMode: {
-    id: 'previewToolbar.toggleEditMode',
-    defaultMessage: 'Toggle edit mode'
-  },
-  itemLocked: {
-    id: 'previewToolbar.editModeSwitchLockedMessage',
-    defaultMessage: 'Item is locked by {lockOwner}'
-  },
-  editNotAvailable: {
-    id: 'previewToolbar.editModeSwitchDisabled',
-    defaultMessage: 'Editing is not available'
-  }
-});
-
-export default translations;
+export function useOnClose({ onClose, disableBackdropClick = false, disableEscapeKeyDown = false }: UseOnCloseProps) {
+  return (event, reason) => {
+    if (disableBackdropClick && reason === 'backdropClick') {
+      return false;
+    } else if (disableEscapeKeyDown && reason === 'escapeKeyDown') {
+      return false;
+    } else {
+      onClose?.(event, reason);
+    }
+  };
+}

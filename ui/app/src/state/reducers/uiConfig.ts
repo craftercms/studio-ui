@@ -16,9 +16,15 @@
 
 import { GlobalState } from '../../models/GlobalState';
 import { createReducer } from '@reduxjs/toolkit';
-import { fetchSiteUiConfig, fetchSiteUiConfigComplete, fetchSiteUiConfigFailed } from '../actions/configuration';
+import {
+  fetchSiteConfig,
+  fetchSiteConfigComplete,
+  fetchSiteUiConfig,
+  fetchSiteUiConfigComplete,
+  fetchSiteUiConfigFailed
+} from '../actions/configuration';
 import { changeSite } from './sites';
-import { fetchSiteLocale, fetchSiteLocaleComplete, fetchSiteLocaleFailed } from '../actions/system';
+import { fetchUseLegacyPreviewPreferenceComplete } from '../actions/system';
 import { fetchSiteLocales, fetchSiteLocalesComplete, fetchSiteLocalesFailed } from '../actions/translation';
 import { deserialize, fromString, serialize } from '../../utils/xml';
 import { applyDeserializedXMLTransforms } from '../../utils/object';
@@ -34,8 +40,6 @@ const initialState: GlobalState['uiConfig'] = {
     defaultLocaleCode: null
   },
   locale: {
-    error: null,
-    isFetching: false,
     localeCode: 'en-US',
     dateTimeFormatOptions: {
       timeZone: 'EST5EDT',
@@ -46,12 +50,21 @@ const initialState: GlobalState['uiConfig'] = {
       minute: 'numeric'
     }
   },
+  useLegacyPreviewLookup: {},
   references: null,
-  xml: null
+  xml: null,
+  publishing: {
+    deleteCommentRequired: false,
+    bulkPublishRequired: false,
+    publishByCommitRequired: false,
+    publishCommentRequired: false,
+    submissionCommentMaxLength: 250
+  },
+  cdataEscapedFieldPatterns: []
 };
 
 const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
-  [changeSite.type]: (state) => ({ ...initialState }),
+  [changeSite.type]: (state) => ({ ...initialState, useLegacyPreviewLookup: state.useLegacyPreviewLookup }),
   [fetchSiteUiConfig.type]: (state, { payload: { site } }) => ({
     ...state,
     isFetching: true,
@@ -124,31 +137,34 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
       error: payload
     }
   }),
-  [changeSite.type]: () => initialState,
-  [fetchSiteLocale.type]: (state) => ({
+  [fetchUseLegacyPreviewPreferenceComplete.type]: (state, { payload: { site, useLegacyPreview } }) => ({
     ...state,
-    locale: {
-      ...state.locale,
-      isFetching: true
+    useLegacyPreviewLookup: {
+      ...state.useLegacyPreviewLookup,
+      [site]: useLegacyPreview
     }
   }),
-  [fetchSiteLocaleComplete.type]: (state, { payload }) => ({
-    ...state,
-    locale: {
-      ...state.locale,
-      isFetching: false,
-      localeCode: payload.localeCode ?? state.locale.localeCode,
-      dateTimeFormatOptions: payload.dateTimeFormatOptions ?? state.locale.dateTimeFormatOptions
-    }
-  }),
-  [fetchSiteLocaleFailed.type]: (state, { payload }) => ({
-    ...state,
-    locale: {
-      ...state.locale,
-      isFetching: false,
-      error: payload
-    }
-  })
+  [fetchSiteConfig.type]: (state) => ({ ...state }),
+  [fetchSiteConfigComplete.type]: (state, { payload }) => {
+    const { cdataEscapedFieldPatterns, locale, publishing, site, usePreview3 } = payload;
+    return {
+      ...state,
+      cdataEscapedFieldPatterns,
+      locale: {
+        ...state.locale,
+        localeCode: locale.localeCode ?? state.locale.localeCode,
+        dateTimeFormatOptions: locale.dateTimeFormatOptions ?? state.locale.dateTimeFormatOptions
+      },
+      publishing: {
+        ...state.publishing,
+        ...publishing
+      },
+      useLegacyPreviewLookup: {
+        ...state.useLegacyPreviewLookup,
+        [site]: usePreview3
+      }
+    };
+  }
 });
 
 export default reducer;

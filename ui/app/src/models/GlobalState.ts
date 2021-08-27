@@ -55,13 +55,13 @@ import { ItemMegaMenuStateProps } from '../components/ItemMegaMenu';
 import { LauncherStateProps } from '../components/Launcher';
 import { PublishingStatusDialogStateProps } from '../components/PublishingStatusDialog';
 import TranslationOrText from './TranslationOrText';
-import { SystemLinkId } from '../components/LauncherSection';
 import { SystemIconDescriptor } from '../components/SystemIcon';
 import { AjaxError } from 'rxjs/ajax';
 import { PathNavigatorTreeStateProps } from '../components/PathNavigatorTree';
 import { UnlockPublisherDialogStateProps } from '../components/UnlockPublisherDialog';
 import { WidgetDialogStateProps } from '../components/WidgetDialog';
 import { CodeEditorDialogStateProps } from '../components/CodeEditorDialog';
+import { SystemLinkId } from '../utils/system';
 import DateTimeFormatOptions = Intl.DateTimeFormatOptions;
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
@@ -145,7 +145,6 @@ export interface GlobalState {
   preview: {
     editMode: boolean;
     highlightMode: string;
-    previewChoice: LookupTable<'1' | '2'>;
     showToolsPanel: boolean;
     toolsPanelPageStack: WidgetDescriptor[];
     toolsPanelWidth: number;
@@ -234,11 +233,18 @@ export interface GlobalState {
       defaultLocaleCode: string;
     };
     locale: {
-      error: ApiResponse;
-      isFetching: boolean;
       localeCode: string;
       dateTimeFormatOptions?: DateTimeFormatOptions;
     };
+    publishing: {
+      deleteCommentRequired: boolean;
+      bulkPublishRequired: boolean;
+      publishByCommitRequired: boolean;
+      publishCommentRequired: boolean;
+      submissionCommentMaxLength: number;
+    };
+    cdataEscapedFieldPatterns: string[];
+    useLegacyPreviewLookup: LookupTable<boolean>;
     references: LookupTable;
     xml: string;
   };
@@ -264,9 +270,6 @@ export interface GlobalState {
   };
   dashboard: {
     widgets: WidgetDescriptor[];
-  };
-  publishing: {
-    submissionCommentMaxLength: number;
   };
   globalNavigation: {
     error: AjaxError;

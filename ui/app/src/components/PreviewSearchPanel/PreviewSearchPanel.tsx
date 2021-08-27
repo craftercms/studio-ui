@@ -296,7 +296,7 @@ export default function PreviewSearchPanel() {
               'aria-label': formatMessage(translations.nextPage),
               size: 'small'
             }}
-            onChangePage={(e: React.MouseEvent<HTMLButtonElement>, page: number) => onPageChanged(e, page)}
+            onPageChange={(e: React.MouseEvent<HTMLButtonElement>, page: number) => onPageChanged(e, page)}
           />
         </div>
       )}

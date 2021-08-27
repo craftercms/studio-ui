@@ -19,7 +19,6 @@ import ContentType, { ContentTypeField } from '../../models/ContentType';
 import ContentInstance from '../../models/ContentInstance';
 import { WidthAndHeight } from '../../models/WidthAndHeight';
 import { createAction } from '@reduxjs/toolkit';
-import { GuestData } from '../../models/GlobalState';
 import { ComponentsContentTypeParams, ContentInstancePage, ElasticParams, SearchResult } from '../../models/Search';
 import { ContentTypeDropTarget } from '../../models/ContentTypeDropTarget';
 import { WidgetDescriptor } from '../../components/Widget';
@@ -166,7 +165,12 @@ export function fetchContentModelComplete(contentModels: ContentInstance[]): Sta
   };
 }
 
-export const checkInGuest = /*#__PURE__*/ createAction<GuestData>(GUEST_CHECK_IN);
+export const checkInGuest = /*#__PURE__*/ createAction<{
+  location: Partial<Location>;
+  path: string;
+  site: string;
+  documentDomain?: string;
+}>(GUEST_CHECK_IN);
 
 export function checkOutGuest(): StandardAction {
   return {
@@ -275,10 +279,6 @@ export const setContentTypeFilter = /*#__PURE__*/ createAction<string>(SET_CONTE
 export const updateToolsPanelWidth = /*#__PURE__*/ createAction<{ width: number }>('UPDATE_TOOLS_PANEL_WIDTH');
 
 export const setPreviewEditMode = /*#__PURE__*/ createAction<{ editMode: boolean }>(EDIT_MODE_CHANGED);
-
-export const setPreviewChoice = /*#__PURE__*/ createAction<{ site: string; choice: string }>('SET_PREVIEW_CHOICE');
-
-export const setPreviewChoiceComplete = /*#__PURE__*/ createAction('SET_PREVIEW_CHOICE_COMPLETE');
 
 export const previewItem = /*#__PURE__*/ createAction<{ item: DetailedItem; newTab?: boolean }>('PREVIEW_ITEM');
 

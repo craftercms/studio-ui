@@ -19,7 +19,7 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { pluckProps } from '../utils/object';
 import { CSSProperties } from '@material-ui/styles';
 import { useMount } from '../utils/hooks/useMount';
-import useTheme from '@material-ui/core/styles/useTheme';
+import { useTheme } from '@material-ui/core/styles';
 import clsx from 'clsx';
 
 // @see https://github.com/ajaxorg/ace/wiki/Configuring-Ace

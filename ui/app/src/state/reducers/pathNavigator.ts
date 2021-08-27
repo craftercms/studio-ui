@@ -44,14 +44,17 @@ import { SandboxItem } from '../../models/Item';
 const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
   {},
   {
-    [pathNavigatorInit.type]: (state, { payload: { id, path, locale = 'en', collapsed = false, limit } }) => {
+    [pathNavigatorInit.type]: (
+      state,
+      { payload: { id, path, currentPath, locale = 'en', collapsed = false, limit, keyword, offset } }
+    ) => {
       return {
         ...state,
         [id]: {
           rootPath: path,
-          currentPath: path,
+          currentPath: currentPath ?? path,
           localeCode: locale,
-          keyword: '',
+          keyword: keyword ?? '',
           isSelectMode: false,
           hasClipboard: false,
           levelDescriptor: null,
@@ -60,7 +63,7 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
           selectedItems: [],
           leaves: [],
           limit,
-          offset: 0,
+          offset: offset ?? 0,
           total: 0,
           collapsed,
           isFetching: null,
