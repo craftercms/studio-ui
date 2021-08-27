@@ -155,7 +155,7 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
         // If locale has localeCode different than empty string -> set it as the localeCode.
         // If locale.localeCode is empty string -> set empty array to use browsers localeCode.
         // If locale.localCode doesn't exist -> use default localeCode from state.
-        localeCode: locale.localeCode ? locale.localeCode : locale.localeCode !== '' ? state.locale.localeCode : [],
+        localeCode: locale?.localeCode ? locale.localeCode : locale?.localeCode === '' ? [] : state.locale.localeCode,
         dateTimeFormatOptions: locale.dateTimeFormatOptions ?? state.locale.dateTimeFormatOptions
       },
       publishing: {
