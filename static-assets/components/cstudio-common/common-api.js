@@ -8056,7 +8056,7 @@ CStudioAuthoring.FilesDiff = {
       CStudioAuthoring.Utils.getTimeZoneConfig();
     };
 
-    CrafterCMSNext.system.getStore().subscribe((store) => {
+    CrafterCMSNext.system.getStore().subscribe(() => {
       getInitialConfiguration();
     });
   }, w);
