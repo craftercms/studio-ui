@@ -161,7 +161,8 @@ export function getEditFormSrc({
   changeTemplate,
   contentTypeId,
   isNewContent,
-  iceGroupId
+  iceGroupId,
+  newEmbedded
 }: {
   path: string;
   selectedFields?: string;
@@ -174,6 +175,7 @@ export function getEditFormSrc({
   contentTypeId?: string;
   isNewContent?: boolean;
   iceGroupId?: string;
+  newEmbedded?: string;
 }): string {
   const qs = toQueryString({
     site,
@@ -186,7 +188,8 @@ export function getEditFormSrc({
     changeTemplate,
     contentTypeId,
     isNewContent,
-    iceId: iceGroupId
+    iceId: iceGroupId,
+    newEmbedded
   });
   return `${authoringBase}/legacy/form${qs}`;
 }

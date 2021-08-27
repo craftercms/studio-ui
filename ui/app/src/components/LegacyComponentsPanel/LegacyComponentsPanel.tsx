@@ -42,7 +42,7 @@ import {
   sortItem
 } from '../../services/content';
 import { useDispatch } from 'react-redux';
-import { showConfirmDialog } from '../../state/actions/dialogs';
+import { showConfirmDialog, showEditDialog } from '../../state/actions/dialogs';
 import { dragAndDropMessages } from '../../utils/i18n-legacy';
 import { LegacyLoadFormDefinition, legacyXmlModelToMap } from './utils';
 import LookupTable from '../../models/LookupTable';
@@ -53,6 +53,8 @@ import { showSystemNotification } from '../../state/actions/system';
 import { guestMessages } from '../../modules/Preview/PreviewConcierge';
 import { nou } from '../../utils/object';
 import { forEach } from '../../utils/array';
+import { useEnv } from '../../utils/hooks/useEnv';
+import { createCustomDocumentEventListener } from '../../utils/dom';
 
 export interface LegacyComponentsPanelProps {
   title: string;
@@ -99,6 +101,7 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
   const { formatMessage } = useIntl();
   const [browsePath, setBrowsePath] = useState(null);
   const dispatch = useDispatch();
+  const { authoringBase } = useEnv();
   const [legacyContentModel, setLegacyContentModel] = useState(null);
 
   const startDnD = useCallback(
@@ -160,13 +163,94 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
       // path is the component path(shared component) and conComp is the parent path
       // if isNew is false it means it is a sort, if it is new it means it a dnd for new component
       // if is 'existing' it means it is a browse component
+      let zonesKeys = Object.keys(zones);
+      let fieldId = zonesKeys[0];
+      let zone = zones[fieldId];
 
       if (isNew) {
         if (isNew === true) {
           if (!path) {
+            let index;
+            zone.forEach((zone, i) => {
+              if (zone === trackingNumber) {
+                index = i;
+              }
+            });
+            dispatch(
+              showEditDialog({
+                site: siteId,
+                authoringBase,
+                path: compPath ? compPath : guestPath,
+                isHidden: true,
+                newEmbedded: {
+                  contentType: type,
+                  index,
+                  fieldId,
+                  datasource
+                }
+              })
+            );
             // embedded component
           } else {
-            // shared component
+            // region shared component
+            let index;
+            const editDialogSuccess = 'editDialogSuccess';
+            const editDialogCancel = 'editDialogCancel';
+            dispatch(
+              showEditDialog({
+                authoringBase,
+                path,
+                contentTypeId: type,
+                isNewContent: true,
+                onSaveSuccess: {
+                  type: 'DISPATCH_DOM_EVENT',
+                  payload: { id: editDialogSuccess }
+                },
+                onClosed: {
+                  type: 'DISPATCH_DOM_EVENT',
+                  payload: { id: editDialogCancel }
+                }
+              })
+            );
+            let unsubscribe, cancelUnsubscribe;
+
+            unsubscribe = createCustomDocumentEventListener(editDialogSuccess, (response) => {
+              zone.forEach((zone, i) => {
+                if (zone === trackingNumber) {
+                  index = i;
+                }
+              });
+              fetchContentInstance(siteId, response.item.uri, contentTypesLookup)
+                .pipe(
+                  switchMap((contentInstance) =>
+                    insertInstance(
+                      siteId,
+                      compPath ? compPath : guestPath,
+                      fieldId,
+                      index,
+                      contentInstance,
+                      null,
+                      datasource
+                    )
+                  )
+                )
+                .subscribe(() => {
+                  dispatch(
+                    showSystemNotification({
+                      message: formatMessage(guestMessages.insertOperationComplete)
+                    })
+                  );
+                  hostToGuest$.next({
+                    type: 'REFRESH_PREVIEW'
+                  });
+                });
+              cancelUnsubscribe();
+            });
+
+            cancelUnsubscribe = createCustomDocumentEventListener(editDialogCancel, () => {
+              unsubscribe();
+            });
+            // endregion
           }
         } else {
           // region browse component
@@ -211,9 +295,6 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
       } else {
         fetchContentDOM(siteId, compPath ? compPath : guestPath).subscribe((content) => {
           let contentModel = legacyXmlModelToMap(content.documentElement);
-          let zonesKeys = Object.keys(zones);
-          let fieldId = zonesKeys[0];
-          let zone = zones[fieldId];
           let contentModelZone = contentModel[fieldId];
 
           if (isInsert) {
@@ -303,7 +384,7 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
         });
       }
     },
-    [contentTypesLookup, dispatch, formatMessage, guestPath, hostToGuest$, siteId]
+    [authoringBase, contentTypesLookup, dispatch, formatMessage, guestPath, hostToGuest$, siteId]
   );
 
   useEffect(() => {

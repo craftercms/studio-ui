@@ -174,6 +174,7 @@ function GlobalDialogManager() {
         inProgress={state.edit.inProgress}
         pendingChanges={state.edit.pendingChanges}
         iceGroupId={state.edit.iceGroupId}
+        newEmbedded={state.edit.newEmbedded}
         onClose={createCallback(state.edit.onClose, dispatch)}
         onClosed={createCallback(state.edit.onClosed, dispatch)}
         onDismiss={createCallback(state.edit.onDismiss, dispatch)}
