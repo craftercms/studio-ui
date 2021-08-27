@@ -40,6 +40,7 @@ import {
   guestModelUpdated,
   HOST_CHECK_IN,
   ICE_ZONE_SELECTED,
+  initRichTextEditorConfig,
   INSERT_COMPONENT_OPERATION,
   INSERT_INSTANCE_OPERATION,
   INSERT_ITEM_OPERATION,
@@ -52,6 +53,7 @@ import {
   setHighlightMode,
   setItemBeingDragged,
   setPreviewEditMode,
+  SHOW_EDIT_DIALOG,
   SORT_ITEM_OPERATION,
   SORT_ITEM_OPERATION_COMPLETE,
   TRASHED,
@@ -116,6 +118,7 @@ import { showEditDialog } from '../../state/actions/dialogs';
 import { UNDEFINED } from '../../utils/constants';
 import { useCurrentPreviewItem } from '../../utils/hooks/useCurrentPreviewItem';
 import { useSiteUIConfig } from '../../utils/hooks/useSiteUIConfig';
+import { useRTEConfig } from '../../utils/hooks/useRTEConfig';
 
 const guestMessages = defineMessages({
   maxCount: {
@@ -309,7 +312,9 @@ export function PreviewConcierge(props: any) {
   const guestDetectionTimeoutRef = useRef<number>();
   const [guestDetectionSnackbarOpen, setGuestDetectionSnackbarOpen] = useState(false);
   const currentItemPath = guest?.path;
-  const { cdataEscapedFieldPatterns } = useSiteUIConfig();
+  const uiConfig = useSiteUIConfig();
+  const { cdataEscapedFieldPatterns } = uiConfig;
+  const rteConfig = useRTEConfig();
 
   function clearSelectedZonesHandler() {
     dispatch(clearSelectForEdit());
@@ -454,7 +459,7 @@ export function PreviewConcierge(props: any) {
           if (type === GUEST_CHECK_IN) {
             getHostToGuestBus().next({
               type: HOST_CHECK_IN,
-              payload: { editMode: false, highlightMode }
+              payload: { editMode: false, highlightMode, rteConfig: rteConfig ?? {}, site: siteId }
             });
             dispatch(checkInGuest(payload));
 
@@ -823,6 +828,17 @@ export function PreviewConcierge(props: any) {
           conditionallyToggleEditMode();
           break;
         }
+        case SHOW_EDIT_DIALOG: {
+          dispatch(
+            showEditDialog({
+              authoringBase,
+              path: guest.path,
+              selectedFields: payload.selectedFields,
+              site: siteId
+            })
+          );
+          break;
+        }
       }
     });
     return () => {
@@ -844,7 +860,9 @@ export function PreviewConcierge(props: any) {
     xsrfArgument,
     highlightMode,
     conditionallyToggleEditMode,
-    cdataEscapedFieldPatterns
+    cdataEscapedFieldPatterns,
+    rteConfig,
+    guest
   ]);
 
   // Guest detection
@@ -860,6 +878,12 @@ export function PreviewConcierge(props: any) {
       }
     }
   }, [siteId, guest, dispatch]);
+
+  useEffect(() => {
+    if (nnou(uiConfig.xml) && !rteConfig) {
+      dispatch(initRichTextEditorConfig({ configXml: uiConfig.xml }));
+    }
+  }, [uiConfig.xml, rteConfig, dispatch]);
 
   // Hotkeys
   useHotkeys(
