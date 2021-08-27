@@ -1172,7 +1172,7 @@ var CStudioForms =
         CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/site-config.xml', {
           failure: crafter.noop,
           success: function(config) {
-            timezone = config.locale.dateTimeFormatOptions.timeZone;
+            timezone = config.locale.dateTimeFormatOptions.timeZone ?? 'EST5EDT';
           }
         });
 
