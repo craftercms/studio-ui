@@ -15,7 +15,7 @@
  */
 
 import React, { PropsWithChildren, useMemo } from 'react';
-import { createMuiTheme, StylesProvider, ThemeOptions, ThemeProvider } from '@material-ui/core/styles';
+import { createTheme, StylesProvider, ThemeOptions, ThemeProvider } from '@material-ui/core/styles';
 import { defaultThemeOptions, generateClassName } from '../../styles/theme';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import palette from '../../styles/palette';
@@ -31,8 +31,8 @@ export function CrafterThemeProvider(props: CrafterThemeProviderProps) {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const theme = useMemo(() => {
     const type = prefersDarkMode ? 'dark' : 'light';
-    const auxTheme = createMuiTheme({ palette: { type } });
-    return createMuiTheme({
+    const auxTheme = createTheme({ palette: { type } });
+    return createTheme({
       ...(props.themeOptions ?? defaultThemeOptions),
       palette: {
         type,

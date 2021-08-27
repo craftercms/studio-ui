@@ -117,10 +117,6 @@ export const fetchGlobalMenuComplete = /*#__PURE__*/ createAction<GlobalState['g
 
 export const fetchGlobalMenuFailed = /*#__PURE__*/ createAction('FETCH_GLOBAL_MENU_FAILED');
 
-export const fetchSiteLocale = /*#__PURE__*/ createAction('FETCH_SITE_LOCALE');
-export const fetchSiteLocaleComplete = /*#__PURE__*/ createAction('FETCH_SITE_LOCALE_COMPLETE');
-export const fetchSiteLocaleFailed = /*#__PURE__*/ createAction('FETCH_SITE_LOCALE_FAILED');
-
 export const fetchUseLegacyPreviewPreference = /*#__PURE__*/ createAction<Partial<{ site: string }>>(
   'FETCH_USE_PREVIEW_3'
 );

@@ -29,7 +29,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import '../../../../styles/animations.scss';
 import clsx from 'clsx';
 import { READY_FOR_LIVE } from '../constants';
-import { fade } from '@material-ui/core/styles';
+import { alpha } from '@material-ui/core/styles';
 import palette from '../../../../styles/palette';
 import PrimaryButton from '../../../../components/PrimaryButton';
 
@@ -93,9 +93,9 @@ const useStyles = makeStyles((theme) => ({
   cancelButton: {
     paddingRight: '10px',
     color: palette.orange.main,
-    border: `1px solid ${fade(palette.orange.main, 0.5)}`,
+    border: `1px solid ${alpha(palette.orange.main, 0.5)}`,
     '&:hover': {
-      backgroundColor: fade(palette.orange.main, 0.08)
+      backgroundColor: alpha(palette.orange.main, 0.08)
     }
   },
   username: {

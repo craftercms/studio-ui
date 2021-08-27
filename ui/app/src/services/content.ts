@@ -36,7 +36,6 @@ import {
   createItemActionMap,
   createItemStateMap,
   parseContentXML,
-  parseLegacyItemToSandBoxItem,
   parseSandBoxItemToDetailedItem
 } from '../utils/content';
 import QuickCreateItem from '../models/content/QuickCreateItem';
@@ -1012,9 +1011,8 @@ export function unlock(site: string, path: string): Observable<boolean> {
 }
 
 export function fetchWorkflowAffectedItems(site: string, path: string): Observable<SandboxItem[]> {
-  return get(`/studio/api/1/services/api/1/workflow/get-workflow-affected-paths.json?site=${site}&path=${path}`).pipe(
+  return get(`/studio/api/2/workflow/affected_paths?siteId=${site}&path=${path}`).pipe(
     pluck('response', 'items'),
-    map((items) => items.map(parseLegacyItemToSandBoxItem)),
     catchError(errorSelectorApi1)
   );
 }

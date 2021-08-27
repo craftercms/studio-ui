@@ -448,6 +448,8 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
       setSite({ details: { blueprint: null, index: null } });
     } else if ((reason === 'escapeKeyDown' || reason === 'closeButton') && isFormOnProgress()) {
       setDialog({ inProgress: true });
+    } else if (reason === 'backdropClick') {
+      return false;
     } else {
       // call externalClose fn
       setDialog({ open: false, inProgress: false });
@@ -764,7 +766,6 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
       open={dialog.open}
       onClose={handleClose}
       aria-labelledby="create-site-dialog"
-      disableBackdropClick
       fullWidth
       maxWidth="lg"
       classes={{ paperScrollPaper: classes.paperScrollPaper }}
