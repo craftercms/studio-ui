@@ -414,7 +414,7 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
           let key = `${zone}-${componentType}`;
           if (cacheValidation[key] && cacheValidation[key].supported) {
             communicator.unsubscribe(Topics.REQUEST_FORM_DEFINITION_RESPONSE, callback);
-            componentDropped.call(me, $dropZone, $component, cacheValidation[key].ds);
+            componentDropped.call(me, $dropZone, $component, cacheValidation[key].ds, Boolean(ui.sender));
           } else if (validationInProgress === null) {
             validationInProgress = true;
             publish.call(me, Topics.REQUEST_FORM_DEFINITION, { contentType: destContentType });
@@ -449,9 +449,11 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
       update: function(e, ui) {
         var self = this;
         if (!ui.sender) {
+          // from where
           updateDop(self, me, ui);
         } else {
           setTimeout(function() {
+            // to where
             updateDop(self, me, ui);
           }, 300);
         }
@@ -568,7 +570,7 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
     });
   }
 
-  function componentDropped($dropZone, $component, datasource) {
+  function componentDropped($dropZone, $component, datasource, isInsert) {
     var compPath = $dropZone.parents('[data-studio-component-path]').attr('data-studio-component-path');
     var compTracking = $dropZone.parents('[data-studio-component-path]').attr('data-studio-tracking-number');
     var objectId = $dropZone.attr('data-studio-components-objectid');
@@ -653,7 +655,8 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
         trackingNumber: tracking,
         compPath: compPath,
         conComp: conRepeat > 1 ? true : false,
-        datasource: datasource
+        datasource: datasource,
+        isInsert
       });
     });
   }

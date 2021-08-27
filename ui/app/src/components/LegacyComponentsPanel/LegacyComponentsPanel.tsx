@@ -52,6 +52,7 @@ import { filter, switchMap } from 'rxjs/operators';
 import { showSystemNotification } from '../../state/actions/system';
 import { guestMessages } from '../../modules/Preview/PreviewConcierge';
 import { nou } from '../../utils/object';
+import { forEach } from '../../utils/array';
 
 export interface LegacyComponentsPanelProps {
   title: string;
@@ -80,6 +81,7 @@ interface ComponentDropProps {
   compPath: string;
   conComp: boolean;
   datasource: string;
+  isInsert: boolean;
 }
 
 export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps) {
@@ -154,7 +156,7 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
 
   const onComponentDrop = useCallback(
     (props: ComponentDropProps) => {
-      const { type, path, isNew, trackingNumber, zones, compPath, conComp, datasource } = props;
+      const { type, path, isNew, trackingNumber, zones, compPath, conComp, datasource, isInsert } = props;
       // path is the component path(shared component) and conComp is the parent path
       // if isNew is false it means it is a sort, if it is new it means it a dnd for new component
       // if is 'existing' it means it is a browse component
@@ -210,30 +212,95 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
         fetchContentDOM(siteId, compPath ? compPath : guestPath).subscribe((content) => {
           let contentModel = legacyXmlModelToMap(content.documentElement);
           let zonesKeys = Object.keys(zones);
-          if (zonesKeys.length === 1) {
-            let fieldId = zonesKeys[0];
-            let currentIndex = null;
-            let targetIndex = null;
+          let fieldId = zonesKeys[0];
+          let zone = zones[fieldId];
+          let contentModelZone = contentModel[fieldId];
+
+          if (isInsert) {
+            // region insert
+            let index = 0;
             let indexByKey = {};
-            contentModel[fieldId].forEach((item, i) => {
+
+            contentModelZone.forEach((item, i) => {
               indexByKey[item.key] = i;
             });
-            zones[fieldId].forEach((item, i) => {
-              if (indexByKey[item.key] !== i && currentIndex === null) {
-                currentIndex = indexByKey[item.key];
-                targetIndex = i;
+
+            forEach(zone, (item, i) => {
+              if (!indexByKey[item.key]) {
+                index = 1;
+                return 'break';
               }
             });
-            sortItem(siteId, compPath ? compPath : guestPath, fieldId, currentIndex, targetIndex).subscribe(() => {
-              dispatch(
-                showSystemNotification({
-                  message: formatMessage(guestMessages.sortOperationComplete)
-                })
-              );
-            });
+
+            fetchContentInstance(siteId, path, contentTypesLookup)
+              .pipe(
+                switchMap((contentInstance) =>
+                  insertInstance(
+                    siteId,
+                    compPath ? compPath : guestPath,
+                    fieldId,
+                    index,
+                    contentInstance,
+                    null,
+                    datasource
+                  )
+                )
+              )
+              .subscribe(() => {
+                dispatch(
+                  showSystemNotification({
+                    message: formatMessage(guestMessages.moveOperationComplete)
+                  })
+                );
+              });
+            // endregion
+          } else {
+            if (zones[fieldId].length === contentModel[fieldId].length) {
+              // region sort
+              let currentIndex = null;
+              let targetIndex = null;
+              let indexByKey = {};
+
+              contentModelZone.forEach((item, i) => {
+                indexByKey[item.key] = i;
+              });
+
+              forEach(zone, (item, i) => {
+                if (indexByKey[item.key] !== i && currentIndex === null) {
+                  currentIndex = indexByKey[item.key];
+                  targetIndex = i;
+                  return 'break';
+                }
+              });
+
+              sortItem(siteId, compPath ? compPath : guestPath, fieldId, currentIndex, targetIndex).subscribe(() => {
+                dispatch(
+                  showSystemNotification({
+                    message: formatMessage(guestMessages.sortOperationComplete)
+                  })
+                );
+              });
+              // endregion
+            } else {
+              // region delete
+              let index = null;
+              let indexByKey = {};
+
+              zone.forEach((item, i) => {
+                indexByKey[item.key] = i;
+              });
+
+              forEach(contentModelZone, (item, i) => {
+                if (indexByKey[item.key] === undefined && index === null) {
+                  index = i;
+                  return 'break';
+                }
+              });
+              deleteItem(siteId, compPath ? compPath : guestPath, fieldId, index).subscribe(() => {});
+              // endregion
+            }
           }
         });
-        // endregion
       }
     },
     [contentTypesLookup, dispatch, formatMessage, guestPath, hostToGuest$, siteId]
@@ -352,6 +419,7 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
         }
         case 'LOAD_MODEL_REQUEST': {
           if (payload.aNotFound) {
+            // TODO: this should block the ui until resolved
             fetchContentDOM(siteId, payload.aNotFound.path).subscribe((content) => {
               let contentModel = legacyXmlModelToMap(content.documentElement);
               hostToGuest$.next({
