@@ -8058,8 +8058,6 @@ CStudioAuthoring.FilesDiff = {
 
     CrafterCMSNext.system.getStore().subscribe((store) => {
       getInitialConfiguration();
-
-      console.log('store', store.getState());
     });
   }, w);
 })(window);
