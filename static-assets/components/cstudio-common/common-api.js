@@ -6118,12 +6118,12 @@ var nodeOpen = false,
         return scheduledDate;
       },
 
-      // TODO: use locale > dateTimeFormatOptions > timeZone
       getTimeZoneConfig: function() {
         if (!studioTimeZone) {
           CStudioAuthoring.Service.getConfiguration(CStudioAuthoringContext.site, '/site-config.xml', {
             success: function(config) {
-              studioTimeZone = config.locale.dateTimeFormatOptions.timeZone;
+              studioTimeZone =
+                config.locale?.dateTimeFormatOptions?.timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
             }
           });
         }
@@ -8056,8 +8056,10 @@ CStudioAuthoring.FilesDiff = {
       CStudioAuthoring.Utils.getTimeZoneConfig();
     };
 
-    CrafterCMSNext.system.getStore().subscribe(() => {
+    CrafterCMSNext.system.getStore().subscribe((store) => {
       getInitialConfiguration();
+
+      console.log('store', store.getState());
     });
   }, w);
 })(window);
