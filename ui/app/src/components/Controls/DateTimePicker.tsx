@@ -32,9 +32,6 @@ import { preFill } from '../../utils/string';
 import { UNDEFINED } from '../../utils/constants';
 import { useSpreadState } from '../../utils/hooks/useSpreadState';
 
-// @ts-ignore
-window.moment = moment;
-
 export interface DateChangeData {
   date: Date;
   dateString: string;
