@@ -161,3 +161,13 @@ export function getSimplifiedVersion(version: string, options: { minor?: boolean
   !minor && pieces.pop();
   return pieces.join('.');
 }
+
+export function preFill(str: string | number, minLength: number = 2, char: string = '0'): string {
+  str = `${str}`;
+  return str.length >= minLength ? str : `${new Array(minLength - str.length).fill(char).join('')}${str}`;
+}
+
+export function postFill(str: string | number, minLength: number = 2, char: string = '0'): string {
+  str = `${str}`;
+  return str.length >= minLength ? str : `${str}${new Array(minLength - str.length).fill(char).join('')}`;
+}

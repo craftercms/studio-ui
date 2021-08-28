@@ -26,7 +26,6 @@ import Collapse from '@material-ui/core/Collapse';
 import FormControl from '@material-ui/core/FormControl';
 import Link from '@material-ui/core/Link';
 import DateTimePicker from '../Controls/DateTimePicker';
-import moment from 'moment';
 import palette from '../../styles/palette';
 import TextFieldWithMax from '../Controls/TextFieldWithMax';
 import GlobalState from '../../models/GlobalState';
@@ -161,8 +160,6 @@ const useStyles = makeStyles((theme) =>
   })
 );
 
-let schedulingTimeout;
-
 export type PublishFormProps = Pick<
   PublishDialogUIProps,
   | 'dialog'
@@ -177,7 +174,7 @@ export type PublishFormProps = Pick<
   publishingChannels: any[];
   disabled: boolean;
   classes?: any;
-  setInputs(state: any): any;
+  onChange(event: React.ChangeEvent<HTMLInputElement>): void;
 };
 
 function PublishDialogForm(props: PublishFormProps) {
@@ -185,7 +182,6 @@ function PublishDialogForm(props: PublishFormProps) {
   const { formatMessage } = useIntl();
   const {
     dialog,
-    setInputs,
     showEmailCheckbox,
     showRequestApproval,
     publishingChannels,
@@ -194,53 +190,29 @@ function PublishDialogForm(props: PublishFormProps) {
     disabled = true,
     mixedPublishingDates,
     mixedPublishingTargets,
-    submissionCommentRequired
+    submissionCommentRequired,
+    onChange
   } = props;
 
   const setSubmitDisabled = (...args) => void 0;
+  const onDateTimeChange = setSubmitDisabled;
 
   const locale = useSelection<GlobalState['uiConfig']['locale']>((state) => state.uiConfig.locale);
 
-  const handleInputChange = (name: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    e.persist();
-
-    if (e.target.type === 'checkbox') {
-      setInputs({ ...dialog, [name]: e.target.checked });
-    } else if (e.target.type === 'textarea') {
-      setInputs({ ...dialog, [name]: e.target.value });
-    } else if (e.target.type === 'radio') {
-      const inputValue = e.target.value;
-      setInputs({ ...dialog, [name]: inputValue });
-
-      if (inputValue === 'now') {
-        schedulingTimeout = setTimeout(() => {
-          setInputs({
-            ...dialog,
-            scheduling: 'now',
-            scheduledDateTime: moment().format()
-          });
-        }, 2000);
-      } else {
-        clearTimeout(schedulingTimeout);
+  const handleDateTimePickerChange = (dateChangeData) => {
+    onChange({
+      // @ts-ignore
+      target: {
+        name: 'scheduledDateTime',
+        type: 'dateTimePicker',
+        // @ts-ignore
+        value: dateChangeData
       }
-    }
+    });
   };
 
-  const handleSelectChange = (name: string) => (event: React.ChangeEvent<{ value: unknown }>) => {
-    // TODO: This component shouldn't know how this gets set internally.
-    //  The spread of the state is responsibility of the container
-    setInputs({ ...dialog, [name]: event.target.value as string });
-  };
-
-  const dateTimePickerChange = (scheduledDateTime: moment.Moment) => {
-    // TODO: This component shouldn't know how this gets set internally.
-    //  The spread of the state is responsibility of the container
-    setInputs({ scheduledDateTime: scheduledDateTime.format() });
-    if (scheduledDateTime.toString() === 'Invalid date') {
-      setSubmitDisabled(true);
-    } else {
-      setSubmitDisabled(false);
-    }
+  const handleDatePickerError = () => {
+    onDateTimeChange(null);
   };
 
   return (
@@ -252,14 +224,14 @@ function PublishDialogForm(props: PublishFormProps) {
               <Checkbox
                 size="small"
                 checked={dialog.requestApproval}
-                onChange={handleInputChange('requestApproval')}
+                onChange={onChange}
                 disabled={disabled}
+                name="requestApproval"
               />
             }
             label={<FormattedMessage id="publishForm.requestApproval" defaultMessage="Request approval" />}
           />
         )}
-
         {showEmailCheckbox && (
           <FormControlLabel
             label={formatMessage(messages.emailLabel)}
@@ -267,10 +239,11 @@ function PublishDialogForm(props: PublishFormProps) {
               <Checkbox
                 size="small"
                 checked={dialog.emailOnApprove}
-                onChange={handleInputChange('emailOnApprove')}
+                onChange={onChange}
                 value="emailOnApprove"
                 color="primary"
                 disabled={disabled}
+                name="emailOnApprove"
               />
             }
           />
@@ -278,7 +251,7 @@ function PublishDialogForm(props: PublishFormProps) {
       </section>
       <FormControl fullWidth className={classes.formSection}>
         <FormLabel component="legend">{formatMessage(messages.scheduling)}</FormLabel>
-        <RadioGroup className={classes.radioGroup} value={dialog.scheduling} onChange={handleInputChange('scheduling')}>
+        <RadioGroup className={classes.radioGroup} value={dialog.scheduling} onChange={onChange} name="scheduling">
           {mixedPublishingDates && (
             <Alert severity="warning" className={classes.mixedDatesWarningMessage}>
               <FormattedMessage
@@ -308,13 +281,13 @@ function PublishDialogForm(props: PublishFormProps) {
           className={dialog.scheduling === 'custom' ? classes.datePicker : ''}
         >
           <DateTimePicker
-            onChange={dateTimePickerChange}
-            onError={() => setSubmitDisabled(true)}
-            date={dialog.scheduledDateTime}
+            onChange={handleDateTimePickerChange}
+            onError={handleDatePickerError}
+            value={dialog.scheduledDateTime}
             localeCode={locale.localeCode}
-            hour12={locale.dateTimeFormatOptions?.hour12 ?? true}
-            timeZonePickerProps={{ timezone: dialog.scheduledTimeZone }}
-            datePickerProps={{ disablePast: true }}
+            dateTimeFormatOptions={locale.dateTimeFormatOptions}
+            timeZone={dialog.scheduledTimeZone}
+            disablePast
             disabled={disabled}
           />
         </Collapse>
@@ -326,7 +299,8 @@ function PublishDialogForm(props: PublishFormProps) {
             <RadioGroup
               className={classes.radioGroup}
               value={dialog.environment}
-              onChange={handleSelectChange('environment')}
+              onChange={onChange}
+              name="environment"
             >
               {publishingChannels.map((publishingChannel) => (
                 <FormControlLabel
@@ -381,7 +355,7 @@ function PublishDialogForm(props: PublishFormProps) {
         name="submissionComment"
         label={<FormattedMessage id="publishForm.submissionComment" defaultMessage="Submission Comment" />}
         fullWidth
-        onChange={handleInputChange('submissionComment')}
+        onChange={onChange}
         value={dialog.submissionComment}
         multiline
         disabled={disabled}

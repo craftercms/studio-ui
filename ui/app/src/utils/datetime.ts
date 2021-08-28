@@ -26,19 +26,22 @@ const translations = defineMessages({
   }
 });
 
-export function getTimezones() {
-  const timeZones = moment.tz.names();
-  let offsetTmz = [];
+export interface TimezoneDescriptor {
+  name: string;
+  offset: string;
+}
 
-  timeZones.forEach((timeZoneLabel: string, index: any) => {
-    offsetTmz.push({
-      timezoneName: timeZoneLabel,
-      timezoneOffset: `${moment.tz(timeZones[index]).format('Z')}`
+export const getTimezones = ((zoneNames) => {
+  let timeZones: TimezoneDescriptor[] = [];
+  zoneNames.forEach((name, i) => {
+    timeZones.push({
+      name,
+      offset: `${moment.tz(zoneNames[i]).format('Z')}`
     });
   });
-
-  return offsetTmz.sort((a, b) => (parseInt(a.timezoneOffset) > parseInt(b.timezoneOffset) ? 1 : -1));
-}
+  const sorted = timeZones.sort((a, b) => (parseInt(a.offset) > parseInt(b.offset) ? 1 : -1));
+  return () => sorted;
+})(moment.tz.names());
 
 export function asDayMonthDateTime(date: string): string {
   const parts = getCurrentIntl().formatDateToParts(date, {
@@ -53,9 +56,17 @@ export function asDayMonthDateTime(date: string): string {
 }
 
 export function asLocalizedDateTime(
-  date: string,
+  date: string | Date,
   localeCode: string,
-  dateTimeFormatOptions: GlobalState['uiConfig']['locale']['dateTimeFormatOptions']
+  dateTimeFormatOptions?: GlobalState['uiConfig']['locale']['dateTimeFormatOptions']
 ): string {
   return new Intl.DateTimeFormat(localeCode, dateTimeFormatOptions).format(new Date(date));
+}
+
+export function getUserTimeZone(): string {
+  return Intl.DateTimeFormat().resolvedOptions().timeZone;
+}
+
+export function getUserLocaleCode(): string {
+  return Intl.DateTimeFormat().resolvedOptions().locale;
 }

@@ -15,7 +15,6 @@
  */
 
 import { useSpreadState } from '../../utils/hooks/useSpreadState';
-import moment from 'moment';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { PublishingTarget } from '../../models/Publishing';
 import LookupTable from '../../models/LookupTable';
@@ -49,6 +48,8 @@ import { useActiveUser } from '../../utils/hooks/useActiveUser';
 import { useSelection } from '../../utils/hooks/useSelection';
 import { isBlank } from '../../utils/string';
 import { useLocale } from '../../utils/hooks/useLocale';
+import { getUserTimeZone } from '../../utils/datetime';
+import { DateChangeData } from '../Controls/DateTimePicker';
 
 export interface PublishDialogContainerProps extends PublishDialogBaseProps {
   onClosed?(response?: any): any;
@@ -59,7 +60,7 @@ export interface PublishDialogContainerProps extends PublishDialogBaseProps {
 export function PublishDialogContainer(props: PublishDialogContainerProps) {
   const { items, scheduling = 'now', onDismiss, onSuccess } = props;
   const {
-    dateTimeFormatOptions: { timeZone }
+    dateTimeFormatOptions: { timeZone = getUserTimeZone() }
   } = useLocale();
   const [dialogState, setDialogState] = useSpreadState<InternalDialogState>({
     emailOnApprove: false,
@@ -67,7 +68,7 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
     environment: '',
     submissionComment: '',
     scheduling: scheduling,
-    scheduledDateTime: moment().format(),
+    scheduledDateTime: new Date(),
     publishingChannel: null,
     selectedItems: null,
     scheduledTimeZone: timeZone
@@ -243,7 +244,7 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
       setDialogState({
         scheduling: 'custom',
         environment,
-        scheduledDateTime: moment(dateScheduled).format()
+        scheduledDateTime: dateScheduled
       });
     } else if (dateScheduled === null && scheduling === null) {
       setDialogState({
@@ -377,6 +378,35 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
     );
   }
 
+  const onPublishingArgumentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value;
+    switch (e.target.type) {
+      case 'checkbox':
+        value = e.target.checked;
+        break;
+      case 'textarea':
+        value = e.target.value;
+        break;
+      case 'radio':
+        value = e.target.value;
+        break;
+      case 'dateTimePicker': {
+        // @ts-ignore
+        const changes: DateChangeData = e.target.value;
+        value = changes.dateString;
+        setDialogState({
+          [e.target.name]: value,
+          scheduledTimeZone: changes.timeZoneName
+        });
+        return;
+      }
+      default:
+        console.error('Publishing argument change event ignored.');
+        return;
+    }
+    setDialogState({ [e.target.name]: value });
+  };
+
   return (
     <PublishDialogUI
       resource={resource}
@@ -386,7 +416,6 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
       handleSubmit={handleSubmit}
       showDepsDisabled={showDepsDisabled}
       dialog={dialogState}
-      setDialog={setDialogState}
       title={formatMessage(translations.title)}
       subtitle={
         !hasPublishPermission || dialogState.requestApproval
@@ -418,6 +447,7 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
       mixedPublishingDates={mixedPublishingDates}
       submissionCommentRequired={submissionCommentRequired}
       submitDisabled={submitDisabled}
+      onPublishingArgumentChange={onPublishingArgumentChange}
     />
   );
 }

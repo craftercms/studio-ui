@@ -24,11 +24,9 @@ import useStyles from './styles';
 import { useSelection } from '../../../utils/hooks/useSelection';
 
 export default function DateTime(props: DateTimeControl) {
-  const { field, value, timezone, onChange, disabled } = props;
+  const { field, value, timeZone, onChange, disabled } = props;
   const classes = useStyles();
-  const localeCode = useSelection<GlobalState['uiConfig']['locale']['localeCode']>(
-    (state) => state.uiConfig.locale.localeCode
-  );
+  const locale = useSelection<GlobalState['uiConfig']['locale']>((state) => state.uiConfig.locale);
 
   return (
     <FormControl variant="outlined" className={classes.formControl} fullWidth>
@@ -37,13 +35,12 @@ export default function DateTime(props: DateTimeControl) {
       </InputLabel>
       <DateTimePicker
         id={field.id}
-        date={value}
+        value={value}
         onChange={onChange}
         disabled={disabled}
-        timeZonePickerProps={{
-          timezone: timezone
-        }}
-        localeCode={localeCode}
+        timeZone={timeZone}
+        localeCode={locale.localeCode}
+        dateTimeFormatOptions={locale.dateTimeFormatOptions}
       />
     </FormControl>
   );

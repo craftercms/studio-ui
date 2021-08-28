@@ -36,7 +36,6 @@ export interface PublishDialogUIProps {
   submitDisabled: boolean;
   showDepsDisabled: boolean;
   dialog: InternalDialogState;
-  setDialog: any;
   title: string;
   subtitle?: string;
   checkedItems: LookupTable<boolean>;
@@ -55,6 +54,7 @@ export interface PublishDialogUIProps {
   mixedPublishingDates?: boolean;
   mixedPublishingTargets?: boolean;
   submissionCommentRequired: boolean;
+  onPublishingArgumentChange(e: React.ChangeEvent<HTMLInputElement>): void;
 }
 
 export function PublishDialogUI(props: PublishDialogUIProps) {
@@ -68,7 +68,6 @@ export function PublishDialogUI(props: PublishDialogUIProps) {
     submitDisabled,
     showDepsDisabled,
     dialog,
-    setDialog,
     title,
     subtitle,
     checkedItems,
@@ -86,7 +85,8 @@ export function PublishDialogUI(props: PublishDialogUIProps) {
     submitLabel,
     mixedPublishingDates,
     mixedPublishingTargets,
-    submissionCommentRequired
+    submissionCommentRequired,
+    onPublishingArgumentChange
   } = props;
   // endregion
   return (
@@ -114,7 +114,6 @@ export function PublishDialogUI(props: PublishDialogUIProps) {
             selectAllDeps={selectAllDeps}
             selectAllSoft={selectAllSoft}
             dialog={dialog}
-            setDialog={setDialog}
             showEmailCheckbox={showEmailCheckbox}
             showRequestApproval={showRequestApproval}
             publishingChannelsStatus={publishingChannelsStatus}
@@ -123,6 +122,7 @@ export function PublishDialogUI(props: PublishDialogUIProps) {
             mixedPublishingDates={mixedPublishingDates}
             mixedPublishingTargets={mixedPublishingTargets}
             submissionCommentRequired={submissionCommentRequired}
+            onPublishingArgumentChange={onPublishingArgumentChange}
           />
         </SuspenseWithEmptyState>
       </DialogBody>

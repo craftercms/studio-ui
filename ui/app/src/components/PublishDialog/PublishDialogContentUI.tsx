@@ -31,7 +31,6 @@ export type PublishDialogContentUIProps = Pick<
   | 'selectAllDeps'
   | 'selectAllSoft'
   | 'dialog'
-  | 'setDialog'
   | 'showEmailCheckbox'
   | 'showRequestApproval'
   | 'publishingChannelsStatus'
@@ -40,6 +39,7 @@ export type PublishDialogContentUIProps = Pick<
   | 'mixedPublishingDates'
   | 'mixedPublishingTargets'
   | 'submissionCommentRequired'
+  | 'onPublishingArgumentChange'
 >;
 
 export function PublishDialogContentUI(props: PublishDialogContentUIProps) {
@@ -54,7 +54,6 @@ export function PublishDialogContentUI(props: PublishDialogContentUIProps) {
     selectAllDeps,
     selectAllSoft,
     dialog,
-    setDialog,
     showEmailCheckbox,
     showRequestApproval,
     publishingChannelsStatus,
@@ -62,7 +61,8 @@ export function PublishDialogContentUI(props: PublishDialogContentUIProps) {
     apiState,
     mixedPublishingDates,
     mixedPublishingTargets,
-    submissionCommentRequired
+    submissionCommentRequired,
+    onPublishingArgumentChange
   } = props;
   // endregion
   const { items, publishingChannels } = resource.read();
@@ -85,7 +85,6 @@ export function PublishDialogContentUI(props: PublishDialogContentUIProps) {
         <Grid item xs={12} sm={5} md={5} lg={5} xl={5}>
           <PublishDialogForm
             dialog={dialog}
-            setInputs={setDialog}
             showEmailCheckbox={showEmailCheckbox}
             showRequestApproval={showRequestApproval}
             publishingChannels={publishingChannels}
@@ -95,6 +94,7 @@ export function PublishDialogContentUI(props: PublishDialogContentUIProps) {
             mixedPublishingDates={mixedPublishingDates}
             mixedPublishingTargets={mixedPublishingTargets}
             submissionCommentRequired={submissionCommentRequired}
+            onChange={onPublishingArgumentChange}
           />
         </Grid>
       </Grid>

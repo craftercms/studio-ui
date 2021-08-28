@@ -17,7 +17,6 @@
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import React, { useEffect, useState } from 'react';
-import moment from 'moment-timezone';
 import GlobalState from '../../models/GlobalState';
 import DialogHeader from '../Dialogs/DialogHeader';
 import DialogBody from '../Dialogs/DialogBody';
@@ -33,6 +32,7 @@ import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import { useSelection } from '../../utils/hooks/useSelection';
 import { useUnmount } from '../../utils/hooks/useUnmount';
+import { getUserTimeZone } from '../../utils/datetime';
 
 export interface CreateTokenUIProps {
   disabled: boolean;
@@ -67,7 +67,7 @@ export function CreateTokenDialogUI(props: CreateTokenUIProps) {
   const classes = useStyles();
   const { onClosed, onDismiss, onOk, disabled, setDisableQuickDismiss } = props;
   const [expires, setExpires] = useState(false);
-  const [expiresAt, setExpiresAt] = useState(moment());
+  const [expiresAt, setExpiresAt] = useState(new Date());
   const [label, setLabel] = useState('');
   const { formatMessage } = useIntl();
   const onSubmit = (e) => {
@@ -75,9 +75,7 @@ export function CreateTokenDialogUI(props: CreateTokenUIProps) {
     e.stopPropagation();
     onOk({ label, expiresAt: expires ? expiresAt : null });
   };
-  const localeCode = useSelection<GlobalState['uiConfig']['locale']['localeCode']>(
-    (state) => state.uiConfig.locale.localeCode
-  );
+  const locale = useSelection<GlobalState['uiConfig']['locale']>((state) => state.uiConfig.locale);
 
   useUnmount(onClosed);
 
@@ -129,14 +127,14 @@ export function CreateTokenDialogUI(props: CreateTokenUIProps) {
         </section>
         <Collapse in={expires}>
           <DateTimePicker
-            onChange={(time) => {
-              setExpiresAt(time);
+            onChange={(changes) => {
+              setExpiresAt(changes.date);
             }}
-            date={expiresAt}
-            datePickerProps={{
-              disablePast: true
-            }}
-            localeCode={localeCode}
+            value={expiresAt}
+            timeZone={locale.dateTimeFormatOptions.timeZone ?? getUserTimeZone()}
+            disablePast
+            localeCode={locale.localeCode}
+            dateTimeFormatOptions={locale.dateTimeFormatOptions}
           />
         </Collapse>
       </DialogBody>
