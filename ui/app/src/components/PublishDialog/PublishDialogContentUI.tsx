@@ -30,7 +30,7 @@ export type PublishDialogContentUIProps = Pick<
   | 'deps'
   | 'selectAllDeps'
   | 'selectAllSoft'
-  | 'dialog'
+  | 'state'
   | 'showEmailCheckbox'
   | 'showRequestApproval'
   | 'publishingChannelsStatus'
@@ -53,7 +53,7 @@ export function PublishDialogContentUI(props: PublishDialogContentUIProps) {
     deps,
     selectAllDeps,
     selectAllSoft,
-    dialog,
+    state,
     showEmailCheckbox,
     showRequestApproval,
     publishingChannelsStatus,
@@ -84,7 +84,7 @@ export function PublishDialogContentUI(props: PublishDialogContentUIProps) {
         </Grid>
         <Grid item xs={12} sm={5} md={5} lg={5} xl={5}>
           <PublishDialogForm
-            dialog={dialog}
+            state={state}
             showEmailCheckbox={showEmailCheckbox}
             showRequestApproval={showRequestApproval}
             publishingChannels={publishingChannels}

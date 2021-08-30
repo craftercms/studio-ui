@@ -70,3 +70,18 @@ export function getUserTimeZone(): string {
 export function getUserLocaleCode(): string {
   return Intl.DateTimeFormat().resolvedOptions().locale;
 }
+
+/**
+ * Create ISO 8601 string
+ **/
+export const create8601String = (date: string, time: string, offset: string) => `${date}T${time}${offset}`;
+
+/**
+ * Returns an array as ['yyyy-mm-dd', 'hh:mm:ss', '+/-nn:nn'] out of a ISO 8601 date string
+ **/
+export const get8601Pieces = (date: string | Date) => {
+  const pieces = moment(date)
+    .format()
+    .match(/(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})(.{6})/);
+  return [pieces[1], pieces[2], pieces[3]];
+};

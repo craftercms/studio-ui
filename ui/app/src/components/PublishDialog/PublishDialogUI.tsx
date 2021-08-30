@@ -35,7 +35,7 @@ export interface PublishDialogUIProps {
   handleSubmit: any;
   submitDisabled: boolean;
   showDepsDisabled: boolean;
-  dialog: InternalDialogState;
+  state: InternalDialogState;
   title: string;
   subtitle?: string;
   checkedItems: LookupTable<boolean>;
@@ -67,7 +67,7 @@ export function PublishDialogUI(props: PublishDialogUIProps) {
     handleSubmit,
     submitDisabled,
     showDepsDisabled,
-    dialog,
+    state,
     title,
     subtitle,
     checkedItems,
@@ -113,7 +113,7 @@ export function PublishDialogUI(props: PublishDialogUIProps) {
             deps={deps}
             selectAllDeps={selectAllDeps}
             selectAllSoft={selectAllSoft}
-            dialog={dialog}
+            state={state}
             showEmailCheckbox={showEmailCheckbox}
             showRequestApproval={showRequestApproval}
             publishingChannelsStatus={publishingChannelsStatus}

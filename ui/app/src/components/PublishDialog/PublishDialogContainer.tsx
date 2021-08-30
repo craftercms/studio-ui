@@ -62,13 +62,16 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
   const {
     dateTimeFormatOptions: { timeZone = getUserTimeZone() }
   } = useLocale();
-  const [dialogState, setDialogState] = useSpreadState<InternalDialogState>({
+  const [state, setState] = useSpreadState<InternalDialogState>({
     emailOnApprove: false,
     requestApproval: false,
-    environment: '',
+    publishingTarget: '',
     submissionComment: '',
-    scheduling: scheduling,
-    scheduledDateTime: new Date(),
+    scheduling,
+    scheduledDateTime: ((date) => {
+      date.setSeconds(0);
+      return date;
+    })(new Date()),
     publishingChannel: null,
     selectedItems: null,
     scheduledTimeZone: timeZone
@@ -96,24 +99,24 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
   useUnmount(props.onClosed);
 
   const user = useActiveUser();
-  const submit = !hasPublishPermission || dialogState.requestApproval ? submitToGoLive : goLive;
-  const propagateAction = !hasPublishPermission || dialogState.requestApproval ? itemsScheduled : itemsApproved;
-  const { mixedPublishingTargets, mixedPublishingDates, dateScheduled, environment } = useMemo(() => {
+  const submit = !hasPublishPermission || state.requestApproval ? submitToGoLive : goLive;
+  const propagateAction = !hasPublishPermission || state.requestApproval ? itemsScheduled : itemsApproved;
+  const { mixedPublishingTargets, mixedPublishingDates, dateScheduled, publishingTarget } = useMemo(() => {
     const state = {
       mixedPublishingTargets: false,
       mixedPublishingDates: false,
       dateScheduled: null,
-      environment: null
+      publishingTarget: null
     };
 
     let itemsChecked = items.filter((item) => checkedItems[item.path]);
 
     if (itemsChecked.length === 0) {
-      state.environment = '';
+      state.publishingTarget = '';
       return state;
     }
 
-    // region Discover mixed targets and/or schedules and sets the environment based off the items
+    // region Discover mixed targets and/or schedules and sets the publishingTarget based off the items
     let target: string;
     let schedule: string;
     itemsChecked.some((item, index) => {
@@ -134,8 +137,8 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
           state.mixedPublishingDates = true;
         }
       }
-      if (state.environment === null && computedTarget !== null) {
-        state.environment = computedTarget;
+      if (state.publishingTarget === null && computedTarget !== null) {
+        state.publishingTarget = computedTarget;
       }
       // First found dateScheduled cached for later
       if (state.dateScheduled === null && computedSchedule !== null) {
@@ -151,19 +154,19 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
       // If there are mixed targets, we want manual user selection of a target.
       // Otherwise, use what was previously found as the target on the selected items.
       if (state.mixedPublishingTargets) {
-        state.environment = '';
+        state.publishingTarget = '';
       } else {
         // If we haven't found a target by this point, we wish to default the dialog to
         // staging (as long as that target is enabled in the system, which is checked next).
-        if (state.environment === null) {
-          state.environment = 'staging';
+        if (state.publishingTarget === null) {
+          state.publishingTarget = 'staging';
         }
-        state.environment = publishingChannels.some((target) => target.name === state.environment)
-          ? state.environment
+        state.publishingTarget = publishingChannels.some((target) => target.name === state.publishingTarget)
+          ? state.publishingTarget
           : publishingChannels[0].name;
       }
     } else {
-      state.environment = '';
+      state.publishingTarget = '';
     }
 
     return state;
@@ -178,9 +181,9 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
       } else {
         setShowDepsDisabled(false);
       }
-      setDialogState({ selectedItems: pItems });
+      setState({ selectedItems: pItems });
     },
-    [setDialogState]
+    [setState]
   );
 
   const getPublishingChannels = useCallback(
@@ -236,27 +239,25 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
   }, [checkedItems, checkedSoftDep, setSelectedItems]);
 
   useEffect(() => {
-    setDialogState({ scheduling });
-  }, [scheduling, setDialogState]);
+    setState({ scheduling });
+  }, [scheduling, setState]);
 
   useEffect(() => {
     if (dateScheduled && scheduling !== 'now') {
-      setDialogState({
+      setState({
         scheduling: 'custom',
-        environment,
+        publishingTarget,
         scheduledDateTime: dateScheduled
       });
     } else if (dateScheduled === null && scheduling === null) {
-      setDialogState({
+      setState({
         scheduling: 'now',
-        environment
+        publishingTarget
       });
     } else {
-      setDialogState({
-        environment
-      });
+      setState({ publishingTarget });
     }
-  }, [dateScheduled, environment, setDialogState, scheduling]);
+  }, [dateScheduled, publishingTarget, setState, scheduling]);
 
   useEffect(() => {
     // Submit button should be disabled:
@@ -268,32 +269,33 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
         // When there are no available/loaded publishing targets
         !publishingChannels?.length ||
         // When no publishing target is selected
-        !dialogState.environment ||
+        !state.publishingTarget ||
         // If submission comment is required (per config) and blank
-        (submissionCommentRequired && isBlank(dialogState.submissionComment))
+        (submissionCommentRequired && isBlank(state.submissionComment))
     );
   }, [
     apiState.submitting,
     checkedItems,
     publishingChannels,
-    dialogState.environment,
-    dialogState.submissionComment,
+    state.publishingTarget,
+    state.submissionComment,
     submissionCommentRequired
   ]);
 
   const handleSubmit = () => {
     const {
-      environment,
+      publishingTarget,
       selectedItems: items,
       scheduling: schedule,
       emailOnApprove: sendEmail,
       submissionComment,
       scheduledDateTime: scheduledDate
-    } = dialogState;
+    } = state;
+
     const data = {
-      ...(!hasPublishPermission || dialogState.requestApproval
-        ? { environment: environment }
-        : { publishChannel: environment }),
+      ...(!hasPublishPermission || state.requestApproval
+        ? { environment: publishingTarget }
+        : { publishChannel: publishingTarget }),
       items,
       schedule,
       sendEmail,
@@ -310,8 +312,10 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
         onSuccess?.({
           ...response,
           schedule: schedule,
-          environment: environment,
-          type: !hasPublishPermission || dialogState.requestApproval ? 'submit' : 'publish',
+          publishingTarget,
+          // @ts-ignore - TODO: Not quite sure if users of this dialog are making use of the `environment` prop name. Should use `publishingTarget` instead.
+          environment: publishingTarget,
+          type: !hasPublishPermission || state.requestApproval ? 'submit' : 'publish',
           items: items.map((path) => props.items.find((item) => item.path === path))
         });
       },
@@ -394,7 +398,7 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
         // @ts-ignore
         const changes: DateChangeData = e.target.value;
         value = changes.dateString;
-        setDialogState({
+        setState({
           [e.target.name]: value,
           scheduledTimeZone: changes.timeZoneName
         });
@@ -404,7 +408,7 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
         console.error('Publishing argument change event ignored.');
         return;
     }
-    setDialogState({ [e.target.name]: value });
+    setState({ [e.target.name]: value });
   };
 
   return (
@@ -415,10 +419,10 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
       onDismiss={onDismiss}
       handleSubmit={handleSubmit}
       showDepsDisabled={showDepsDisabled}
-      dialog={dialogState}
+      state={state}
       title={formatMessage(translations.title)}
       subtitle={
-        !hasPublishPermission || dialogState.requestApproval
+        !hasPublishPermission || state.requestApproval
           ? formatMessage(translations.requestPublishSubtitle) + ' ' + formatMessage(translations.subtitleHelperText)
           : formatMessage(translations.publishSubtitle) + ' ' + formatMessage(translations.subtitleHelperText)
       }
@@ -432,12 +436,12 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
       onClickShowAllDeps={showAllDependencies}
       apiState={apiState}
       classes={useStyles()}
-      showEmailCheckbox={!hasPublishPermission || dialogState.requestApproval}
+      showEmailCheckbox={!hasPublishPermission || state.requestApproval}
       showRequestApproval={hasPublishPermission && items.every((item) => !item.stateMap.submitted)}
       submitLabel={
-        dialogState.scheduling === 'custom' ? (
+        state.scheduling === 'custom' ? (
           <FormattedMessage id="words.schedule" defaultMessage="Schedule" />
-        ) : !hasPublishPermission || dialogState.requestApproval ? (
+        ) : !hasPublishPermission || state.requestApproval ? (
           <FormattedMessage id="words.submit" defaultMessage="Submit" />
         ) : (
           <FormattedMessage id="words.publish" defaultMessage="Publish" />

@@ -27,7 +27,7 @@ export type PublishDialogResourceBody = Omit<PublishDialogResourceInput, 'apiSta
 
 export interface ExtendedGoLiveResponse extends GoLiveResponse {
   schedule: 'now' | 'custom';
-  environment: string;
+  publishingTarget: string;
   type: 'submit' | 'publish';
   items: DetailedItem[];
 }
@@ -54,7 +54,7 @@ export interface PublishDialogStateProps extends PublishDialogBaseProps {
 export interface InternalDialogState {
   emailOnApprove: boolean;
   requestApproval: boolean;
-  environment: string;
+  publishingTarget: string;
   submissionComment: string;
   scheduling: 'now' | 'custom';
   scheduledDateTime: any;

@@ -24,11 +24,16 @@ import DateFnsUtils from '@date-io/date-fns';
 import { KeyboardDatePicker, KeyboardTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { asLocalizedDateTime, getTimezones, TimezoneDescriptor } from '../../utils/datetime';
+import {
+  asLocalizedDateTime,
+  create8601String,
+  get8601Pieces,
+  getTimezones,
+  TimezoneDescriptor
+} from '../../utils/datetime';
 import FormControl from '@material-ui/core/FormControl';
 import { nnou } from '../../utils/object';
 import palette from '../../styles/palette';
-import { preFill } from '../../utils/string';
 import { UNDEFINED } from '../../utils/constants';
 import { useSpreadState } from '../../utils/hooks/useSpreadState';
 
@@ -125,9 +130,6 @@ const useStyles = makeStyles(() =>
   })
 );
 
-const createDateString = ({ year, month, day, hours, minutes, seconds, offset }) =>
-  `${year}-${preFill(month + 1)}-${preFill(day)}T${preFill(hours)}:${preFill(minutes)}:${preFill(seconds)}${offset}`;
-
 function DateTimePicker(props: DateTimePickerProps) {
   const {
     id,
@@ -149,7 +151,7 @@ function DateTimePicker(props: DateTimePickerProps) {
   // This causes some discrepancies between the time displayed on the field and the time
   // displayed when the time picker is opened. `internalDate` is a transposed date/time
   // used to sync the timepicker with what's displayed to the user.
-  const { date, internalDate } = useMemo(() => {
+  const internalDate = useMemo(() => {
     const date = value ? new Date(value) : new Date();
     const localOffset = moment()
       .format()
@@ -158,8 +160,7 @@ function DateTimePicker(props: DateTimePickerProps) {
       .tz(timeZone)
       .format()
       .substr(0, 19);
-    const internalDate = new Date(`${dateWithoutOffset}${localOffset}`);
-    return { date, internalDate };
+    return new Date(`${dateWithoutOffset}${localOffset}`);
   }, [value, timeZone]);
   const timeZones = getTimezones();
   const classes = useStyles();
@@ -181,35 +182,19 @@ function DateTimePicker(props: DateTimePickerProps) {
         onError?.();
       }
       let changes: DateChangeData;
+      const internalDatePieces = get8601Pieces(internalDate);
+      const pickerDatePieces = get8601Pieces(newDate);
       switch (name) {
         case 'date': {
-          const dateString: string = moment(newDate)
-            .tz(timeZone)
-            .format();
-          changes = { dateString, date: newDate, timeZoneName: timeZone };
+          // Grab the picker-sent date, keep the time we had
+          const dateString = create8601String(pickerDatePieces[0], internalDatePieces[1], currentTimeZoneDesc.offset);
+          changes = { dateString, date: new Date(dateString), timeZoneName: timeZone };
           onDateChange?.(changes);
           break;
         }
         case 'time': {
-          // Time gets selected in the user's browser timezone but
-          // then gets converted to selected timezone
-          const timeOfDay = asLocalizedDateTime(newDate, localeCode, {
-            hour12: false,
-            hour: 'numeric',
-            minute: 'numeric',
-            second: 'numeric'
-          })
-            .split(':')
-            .map((n) => parseInt(n));
-          const dateString = createDateString({
-            year: date.getFullYear(),
-            month: date.getMonth(),
-            day: date.getDate(),
-            hours: timeOfDay[0],
-            minutes: timeOfDay[1],
-            seconds: timeOfDay[2],
-            offset: currentTimeZoneDesc.offset
-          });
+          // Grab the picker-sent time, keep the date we had
+          const dateString = create8601String(internalDatePieces[0], pickerDatePieces[1], currentTimeZoneDesc.offset);
           changes = { dateString, date: new Date(dateString), timeZoneName: timeZone };
           onTimeChange?.(changes);
           break;
@@ -223,24 +208,9 @@ function DateTimePicker(props: DateTimePickerProps) {
   // date to the new timezone but that you can select, date, time and timezone
   // individually without one changing the other fields.
   const handleTimezoneChange = (event, value) => {
-    const timeOfDay = asLocalizedDateTime(date, localeCode, {
-      timeZone,
-      hour12: false,
-      hour: 'numeric',
-      minute: 'numeric',
-      second: 'numeric'
-    })
-      .split(':')
-      .map((n) => parseInt(n));
-    const dateString = createDateString({
-      year: date.getFullYear(),
-      month: date.getMonth(),
-      day: date.getDate(),
-      hours: timeOfDay[0],
-      minutes: timeOfDay[1],
-      seconds: timeOfDay[2],
-      offset: value.offset
-    });
+    const pieces = get8601Pieces(internalDate);
+    // Keep date/time we had and apply new offset
+    const dateString = create8601String(pieces[0], pieces[1], value.offset);
     const changes: DateChangeData = { date: new Date(dateString), dateString, timeZoneName: value.name };
     onTimeZoneChange?.(value);
     onTimeChange?.(changes);
@@ -262,7 +232,7 @@ function DateTimePicker(props: DateTimePickerProps) {
           <KeyboardDatePicker
             open={datePickerOpen}
             margin="normal"
-            value={date}
+            value={internalDate}
             onChange={createOnDateChange('date')}
             className={classes.picker}
             InputAdornmentProps={{

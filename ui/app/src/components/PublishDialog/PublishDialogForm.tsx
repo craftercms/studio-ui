@@ -52,24 +52,24 @@ const messages = defineMessages({
     id: 'publishForm.schedulingLater',
     defaultMessage: 'Later'
   },
-  environment: {
+  publishingTarget: {
     id: 'common.publishingTarget',
     defaultMessage: 'Publishing Target'
   },
-  environmentLoading: {
-    id: 'publishForm.environmentLoading',
+  publishingTargetLoading: {
+    id: 'publishForm.publishingTargetLoading',
     defaultMessage: 'Loading...'
   },
-  environmentError: {
-    id: 'publishForm.environmentError',
+  publishingTargetError: {
+    id: 'publishForm.publishingTargetError',
     defaultMessage: 'Publishing targets load failed.'
   },
-  environmentRetry: {
-    id: 'publishForm.environmentRetry',
+  publishingTargetRetry: {
+    id: 'publishForm.publishingTargetRetry',
     defaultMessage: 'retry'
   },
-  environmentSuccess: {
-    id: 'publishForm.environmentSuccess',
+  publishingTargetSuccess: {
+    id: 'publishForm.publishingTargetSuccess',
     defaultMessage: 'Success'
   },
   submissionComment: {
@@ -109,17 +109,17 @@ const useStyles = makeStyles((theme) =>
     selectInput: {
       padding: '10px 12px'
     },
-    environmentLoaderContainer: {
+    publishingTargetLoaderContainer: {
       paddingTop: '24px',
       display: 'inline-flex'
     },
-    environmentLoader: {
+    publishingTargetLoader: {
       border: '1px solid #ced4da',
       padding: '10px 12px',
       borderRadius: '4px',
       width: '100%'
     },
-    environmentEmpty: {
+    publishingTargetEmpty: {
       padding: '10px 12px',
       borderRadius: '4px',
       width: '100%'
@@ -162,7 +162,7 @@ const useStyles = makeStyles((theme) =>
 
 export type PublishFormProps = Pick<
   PublishDialogUIProps,
-  | 'dialog'
+  | 'state'
   | 'showEmailCheckbox'
   | 'showRequestApproval'
   | 'publishingChannelsStatus'
@@ -181,7 +181,7 @@ function PublishDialogForm(props: PublishFormProps) {
   const classes = useStyles();
   const { formatMessage } = useIntl();
   const {
-    dialog,
+    state,
     showEmailCheckbox,
     showRequestApproval,
     publishingChannels,
@@ -223,7 +223,7 @@ function PublishDialogForm(props: PublishFormProps) {
             control={
               <Checkbox
                 size="small"
-                checked={dialog.requestApproval}
+                checked={state.requestApproval}
                 onChange={onChange}
                 disabled={disabled}
                 name="requestApproval"
@@ -238,7 +238,7 @@ function PublishDialogForm(props: PublishFormProps) {
             control={
               <Checkbox
                 size="small"
-                checked={dialog.emailOnApprove}
+                checked={state.emailOnApprove}
                 onChange={onChange}
                 value="emailOnApprove"
                 color="primary"
@@ -251,7 +251,7 @@ function PublishDialogForm(props: PublishFormProps) {
       </section>
       <FormControl fullWidth className={classes.formSection}>
         <FormLabel component="legend">{formatMessage(messages.scheduling)}</FormLabel>
-        <RadioGroup className={classes.radioGroup} value={dialog.scheduling} onChange={onChange} name="scheduling">
+        <RadioGroup className={classes.radioGroup} value={state.scheduling} onChange={onChange} name="scheduling">
           {mixedPublishingDates && (
             <Alert severity="warning" className={classes.mixedDatesWarningMessage}>
               <FormattedMessage
@@ -276,31 +276,31 @@ function PublishDialogForm(props: PublishFormProps) {
           />
         </RadioGroup>
         <Collapse
-          in={dialog.scheduling === 'custom'}
+          in={state.scheduling === 'custom'}
           timeout={300}
-          className={dialog.scheduling === 'custom' ? classes.datePicker : ''}
+          className={state.scheduling === 'custom' ? classes.datePicker : ''}
         >
           <DateTimePicker
             onChange={handleDateTimePickerChange}
             onError={handleDatePickerError}
-            value={dialog.scheduledDateTime}
+            value={state.scheduledDateTime}
             localeCode={locale.localeCode}
             dateTimeFormatOptions={locale.dateTimeFormatOptions}
-            timeZone={dialog.scheduledTimeZone}
+            timeZone={state.scheduledTimeZone}
             disablePast
             disabled={disabled}
           />
         </Collapse>
       </FormControl>
       <FormControl fullWidth className={classes.formSection}>
-        <FormLabel component="legend">{formatMessage(messages.environment)}</FormLabel>
+        <FormLabel component="legend">{formatMessage(messages.publishingTarget)}</FormLabel>
         {publishingChannels ? (
           publishingChannels.length ? (
             <RadioGroup
               className={classes.radioGroup}
-              value={dialog.environment}
+              value={state.publishingTarget}
               onChange={onChange}
-              name="environment"
+              name="publishingTarget"
             >
               {publishingChannels.map((publishingChannel) => (
                 <FormControlLabel
@@ -318,24 +318,24 @@ function PublishDialogForm(props: PublishFormProps) {
               ))}
             </RadioGroup>
           ) : (
-            <div className={classes.environmentLoaderContainer}>
-              <Typography variant="body1" className={classes.environmentEmpty}>
+            <div className={classes.publishingTargetLoaderContainer}>
+              <Typography variant="body1" className={classes.publishingTargetEmpty}>
                 No publishing channels are available.
               </Typography>
             </div>
           )
         ) : (
-          <div className={classes.environmentLoaderContainer}>
+          <div className={classes.publishingTargetLoaderContainer}>
             <Typography
               variant="body1"
               component="span"
-              className={`${classes.environmentLoader} ${classes.formInputs}`}
+              className={`${classes.publishingTargetLoader} ${classes.formInputs}`}
               color={publishingChannelsStatus === 'Error' ? 'error' : 'initial'}
             >
-              {formatMessage(messages[`environment${publishingChannelsStatus}`])}
+              {formatMessage(messages[`publishingTarget${publishingChannelsStatus}`])}
               {publishingChannelsStatus === 'Error' && (
                 <Link href="#" onClick={() => onPublishingChannelsFailRetry()}>
-                  ({formatMessage(messages.environmentRetry)})
+                  ({formatMessage(messages.publishingTargetRetry)})
                 </Link>
               )}
             </Typography>
@@ -356,7 +356,7 @@ function PublishDialogForm(props: PublishFormProps) {
         label={<FormattedMessage id="publishForm.submissionComment" defaultMessage="Submission Comment" />}
         fullWidth
         onChange={onChange}
-        value={dialog.submissionComment}
+        value={state.submissionComment}
         multiline
         disabled={disabled}
         required={submissionCommentRequired}
