@@ -200,6 +200,7 @@ function GlobalDialogManager() {
         open={state.publish.open}
         items={state.publish.items}
         scheduling={state.publish.scheduling}
+        disableQuickDismiss={state.publish.disableQuickDismiss}
         onClose={createCallback(state.publish.onClose, dispatch)}
         onClosed={createCallback(state.publish.onClosed, dispatch)}
         onDismiss={createCallback(state.publish.onDismiss, dispatch)}
@@ -251,9 +252,11 @@ function GlobalDialogManager() {
         open={state.delete.open}
         items={state.delete.items}
         isFetching={state.delete.isFetching}
+        dependentItems={state.delete.dependentItems}
+        childItems={state.delete.childItems}
+        disableQuickDismiss={state.delete.disableQuickDismiss}
         onClose={createCallback(state.delete.onClose, dispatch)}
         onClosed={createCallback(state.delete.onClosed, dispatch)}
-        onDismiss={createCallback(state.delete.onDismiss, dispatch)}
         onSuccess={createCallback(state.delete.onSuccess, dispatch)}
       />
       {/* endregion */}

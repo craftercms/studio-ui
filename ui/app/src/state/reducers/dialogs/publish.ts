@@ -16,19 +16,21 @@
 
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
-import { closePublishDialog, publishDialogClosed, showPublishDialog } from '../../actions/dialogs';
+import { closePublishDialog, publishDialogClosed, showPublishDialog, updatePublishDialog } from '../../actions/dialogs';
 
 export default createReducer<GlobalState['dialogs']['publish']>(
-  { open: false },
+  { open: false, disableQuickDismiss: false },
   {
     [showPublishDialog.type]: (state, { payload }) => ({
       ...state,
       onClose: closePublishDialog(),
       onClosed: publishDialogClosed(),
       onDismiss: closePublishDialog(),
+      disableQuickDismiss: false,
       ...payload,
       open: true
     }),
+    [updatePublishDialog.type]: (state, { payload }) => ({ ...state, ...payload }),
     [closePublishDialog.type]: (state) => ({ ...state, open: false }),
     [publishDialogClosed.type]: () => ({ open: false })
   }

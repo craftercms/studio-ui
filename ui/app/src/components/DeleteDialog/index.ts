@@ -14,20 +14,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-interface UseOnCloseProps {
-  onClose?(event: any, reason: 'backdropClick' | 'escapeKeyDown'): void;
-  disableBackdropClick?: boolean;
-  disableEscapeKeyDown?: boolean;
-}
+export { default } from './DeleteDialog';
 
-export function useOnClose({ onClose, disableBackdropClick = false, disableEscapeKeyDown = false }: UseOnCloseProps) {
-  return (event, reason) => {
-    if (disableBackdropClick && reason === 'backdropClick') {
-      return false;
-    } else if (disableEscapeKeyDown && reason === 'escapeKeyDown') {
-      return false;
-    } else {
-      onClose?.(event, reason);
-    }
-  };
-}
+export * from './DeleteDialog';
+
+export * from './DeleteDialogContainer';
+
+export * from './DeleteDialogUI';
+
+export * from './DeleteDialogUIBody';

@@ -248,9 +248,13 @@ function DateTimePicker(props: DateTimePickerProps) {
             error={!pickerState.dateValid}
             helperText={pickerState.dateValid ? '' : formatMessage(translations.dateInvalidMessage)}
             labelFunc={(date, invalidLabel) => invalidLabel || asLocalizedDateTime(date, localeCode)}
-            onClick={() => {
-              setDatePickerOpen(true);
-            }}
+            onClick={
+              disabled
+                ? null
+                : () => {
+                    setDatePickerOpen(true);
+                  }
+            }
             onAccept={() => {
               setDatePickerOpen(false);
             }}

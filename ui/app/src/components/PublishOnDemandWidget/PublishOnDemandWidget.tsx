@@ -40,6 +40,8 @@ import { useState } from 'react';
 import { useEffect } from 'react';
 import Link from '@material-ui/core/Link';
 import { useSpreadState } from '../../utils/hooks/useSpreadState';
+import { useSelection } from '../../utils/hooks/useSelection';
+import { isBlank } from '../../utils/string';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -133,6 +135,9 @@ export default function PublishOnDemandWidget(props: PublishOnDemandWidgetProps)
     initialPublishStudioFormData
   );
   const [publishStudioFormValid, setPublishStudioFormValid] = useState(false);
+  const { bulkPublishCommentRequired, publishByCommitCommentRequired } = useSelection(
+    (state) => state.uiConfig.publishing
+  );
   const idSuccess = 'bulkPublishSuccess';
   const idCancel = 'bulkPublishCancel';
 
@@ -228,14 +233,18 @@ export default function PublishOnDemandWidget(props: PublishOnDemandWidgetProps)
   useEffect(() => {
     if (mode === 'studio') {
       setPublishStudioFormValid(
-        publishStudioFormData.path.replace(/\s/g, '') !== '' && publishStudioFormData.environment !== ''
+        publishStudioFormData.path.replace(/\s/g, '') !== '' &&
+          publishStudioFormData.environment !== '' &&
+          (!bulkPublishCommentRequired || !isBlank(publishStudioFormData.comment))
       );
     } else {
       setPublishGitFormValid(
-        publishGitFormData.commitIds.replace(/\s/g, '') !== '' && publishGitFormData.environment !== ''
+        publishGitFormData.commitIds.replace(/\s/g, '') !== '' &&
+          publishGitFormData.environment !== '' &&
+          (!publishByCommitCommentRequired || !isBlank(publishGitFormData.comment))
       );
     }
-  }, [publishStudioFormData, publishGitFormData, mode]);
+  }, [publishStudioFormData, publishGitFormData, mode, bulkPublishCommentRequired, publishByCommitCommentRequired]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setMode((event.target as HTMLInputElement).value as PublishOnDemandMode);
@@ -249,7 +258,6 @@ export default function PublishOnDemandWidget(props: PublishOnDemandWidgetProps)
   return (
     <Paper elevation={2}>
       <DialogHeader title={<FormattedMessage id="publishOnDemand.title" defaultMessage="Publish on Demand" />} />
-
       <div className={classes.content}>
         <Paper elevation={0} className={classes.modeSelector}>
           <form>
@@ -288,7 +296,6 @@ export default function PublishOnDemandWidget(props: PublishOnDemandWidgetProps)
             </RadioGroup>
           </form>
         </Paper>
-
         <Collapse in={nnou(mode)} timeout={300} unmountOnExit className={classes.formContainer}>
           <PublishOnDemandForm
             formData={mode === 'studio' ? publishStudioFormData : publishGitFormData}
@@ -296,8 +303,9 @@ export default function PublishOnDemandWidget(props: PublishOnDemandWidgetProps)
             mode={mode}
             publishingTargets={publishingTargets}
             publishingTargetsError={publishingTargetsError}
+            bulkPublishCommentRequired={bulkPublishCommentRequired}
+            publishByCommitCommentRequired={publishByCommitCommentRequired}
           />
-
           <div className={classes.noteContainer}>
             <Typography variant="caption" className={classes.note}>
               {formatMessage(mode === 'studio' ? messages.publishStudioNote : messages.publishGitNote, {

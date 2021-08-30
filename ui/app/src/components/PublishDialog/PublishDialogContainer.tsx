@@ -19,15 +19,12 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { PublishingTarget } from '../../models/Publishing';
 import LookupTable from '../../models/LookupTable';
 import {
-  ApiState,
-  DependenciesResultObject,
   ExtendedGoLiveResponse,
   InternalDialogState,
   paths,
   PublishDialogBaseProps,
   PublishDialogResourceBody,
-  PublishDialogResourceInput,
-  updateCheckedList
+  PublishDialogResourceInput
 } from './utils';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { usePermissionsBySite } from '../../utils/hooks/usePermissionsBySite';
@@ -39,8 +36,7 @@ import { getComputedPublishingTarget, getDateScheduled } from '../../utils/detai
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import { createPresenceTable } from '../../utils/array';
-import { DetailedItem } from '../../models/Item';
-import { fetchDependencies } from '../../services/dependencies';
+import { fetchDependencies, FetchDependenciesResponse } from '../../services/dependencies';
 import { PublishDialogUI } from './PublishDialogUI';
 import translations from './translations';
 import useStyles from './styles';
@@ -50,6 +46,10 @@ import { isBlank } from '../../utils/string';
 import { useLocale } from '../../utils/hooks/useLocale';
 import { getUserTimeZone } from '../../utils/datetime';
 import { DateChangeData } from '../Controls/DateTimePicker';
+import { pluckProps } from '../../utils/object';
+import moment from 'moment-timezone';
+import { updatePublishDialog } from '../../state/actions/dialogs';
+import { batchActions } from '../../state/actions/misc';
 
 export interface PublishDialogContainerProps extends PublishDialogBaseProps {
   onClosed?(response?: any): any;
@@ -70,24 +70,21 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
     scheduling,
     scheduledDateTime: ((date) => {
       date.setSeconds(0);
-      return date;
+      return moment(date)
+        .tz(timeZone)
+        .format();
     })(new Date()),
     publishingChannel: null,
-    selectedItems: null,
-    scheduledTimeZone: timeZone
-  });
-  const [publishingChannels, setPublishingTargets] = useState<PublishingTarget[]>(null);
-  const [publishingChannelsStatus, setPublishingTargetsStatus] = useState('Loading');
-  const [checkedItems, setCheckedItems] = useState<LookupTable<boolean>>({}); // selected deps
-  const [checkedSoftDep, _setCheckedSoftDep] = useState<LookupTable<boolean>>({}); // selected soft deps
-  const [deps, setDeps] = useState<DependenciesResultObject>(null);
-  const [submitDisabled, setSubmitDisabled] = useState(true);
-  const [showDepsDisabled, setShowDepsDisabled] = useState(false);
-  const [apiState, setApiState] = useSpreadState<ApiState>({
+    scheduledTimeZone: timeZone,
     error: null,
     submitting: false,
     fetchingDependencies: false
   });
+  const [publishingTargets, setPublishingTargets] = useState<PublishingTarget[]>(null);
+  const [publishingTargetsStatus, setPublishingTargetsStatus] = useState('Loading');
+  const [selectedItems, setSelectedItems] = useState<LookupTable<boolean>>({});
+  const [dependencies, setDependencies] = useState<FetchDependenciesResponse>(null);
+  const [submitDisabled, setSubmitDisabled] = useState(true);
 
   const siteId = useActiveSiteId();
   const permissionsBySite = usePermissionsBySite();
@@ -109,7 +106,7 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
       publishingTarget: null
     };
 
-    let itemsChecked = items.filter((item) => checkedItems[item.path]);
+    let itemsChecked = items.filter((item) => selectedItems[item.path]);
 
     if (itemsChecked.length === 0) {
       state.publishingTarget = '';
@@ -150,7 +147,7 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
     // endregion
 
     // If there aren't any available target (or they haven't loaded), dialog should not have a selected target.
-    if (publishingChannels?.length) {
+    if (publishingTargets?.length) {
       // If there are mixed targets, we want manual user selection of a target.
       // Otherwise, use what was previously found as the target on the selected items.
       if (state.mixedPublishingTargets) {
@@ -161,30 +158,18 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
         if (state.publishingTarget === null) {
           state.publishingTarget = 'staging';
         }
-        state.publishingTarget = publishingChannels.some((target) => target.name === state.publishingTarget)
+        state.publishingTarget = publishingTargets.some((target) => target.name === state.publishingTarget)
           ? state.publishingTarget
-          : publishingChannels[0].name;
+          : publishingTargets[0].name;
       }
     } else {
       state.publishingTarget = '';
     }
 
     return state;
-  }, [checkedItems, items, publishingChannels]);
+  }, [selectedItems, items, publishingTargets]);
 
   const { formatMessage } = useIntl();
-
-  const setSelectedItems = useCallback(
-    (pItems) => {
-      if (!pItems || pItems.length === 0) {
-        setShowDepsDisabled(true);
-      } else {
-        setShowDepsDisabled(false);
-      }
-      setState({ selectedItems: pItems });
-    },
-    [setState]
-  );
 
   const getPublishingChannels = useCallback(
     (success?: (channels) => any, error?: (error) => any) => {
@@ -207,36 +192,27 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
   const publishSource = useMemo(
     () => ({
       items,
-      apiState,
-      publishingChannels,
+      error: state.error,
+      submitting: state.submitting,
+      publishingTargets,
       myPermissions
     }),
-    [items, publishingChannels, apiState, myPermissions]
+    [items, state.error, state.submitting, publishingTargets, myPermissions]
   );
 
   const resource = useLogicResource<PublishDialogResourceBody, PublishDialogResourceInput>(publishSource, {
-    shouldResolve: (source) => Boolean(source.items && source.publishingChannels && myPermissions.length),
-    shouldReject: (source) => Boolean(source.apiState.error),
-    shouldRenew: (source, resource) => source.apiState.submitting && resource.complete,
-    resultSelector: (source) => ({
-      items: source.items,
-      publishingChannels: source.publishingChannels
-    }),
-    errorSelector: (source) => source.apiState.error
+    shouldResolve: (source) => Boolean(source.items && source.publishingTargets && myPermissions.length),
+    shouldReject: (source) => Boolean(source.error),
+    shouldRenew: (source, resource) => source.submitting && resource.complete,
+    resultSelector: (source) => pluckProps(source, 'items', 'publishingTargets'),
+    errorSelector: (source) => source.error
   });
 
   useEffect(() => {
     getPublishingChannels(() => {
-      setCheckedItems(createPresenceTable(items, true, (item) => item.path));
+      setSelectedItems(createPresenceTable(items, true, (item) => item.path));
     });
   }, [getPublishingChannels, items]);
-
-  useEffect(() => {
-    const result = Object.entries({ ...checkedItems, ...checkedSoftDep })
-      .filter(([, value]) => value)
-      .map(([key]) => key);
-    setSelectedItems(result);
-  }, [checkedItems, checkedSoftDep, setSelectedItems]);
 
   useEffect(() => {
     setState({ scheduling });
@@ -263,20 +239,20 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
     // Submit button should be disabled:
     setSubmitDisabled(
       // While submitting
-      apiState.submitting ||
+      state.submitting ||
         // When no items are selected
-        !Object.values(checkedItems).filter(Boolean).length ||
+        !Object.values(selectedItems).filter(Boolean).length ||
         // When there are no available/loaded publishing targets
-        !publishingChannels?.length ||
+        !publishingTargets?.length ||
         // When no publishing target is selected
         !state.publishingTarget ||
         // If submission comment is required (per config) and blank
         (submissionCommentRequired && isBlank(state.submissionComment))
     );
   }, [
-    apiState.submitting,
-    checkedItems,
-    publishingChannels,
+    state.submitting,
+    selectedItems,
+    publishingTargets,
     state.publishingTarget,
     state.submissionComment,
     submissionCommentRequired
@@ -285,12 +261,15 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
   const handleSubmit = () => {
     const {
       publishingTarget,
-      selectedItems: items,
       scheduling: schedule,
       emailOnApprove: sendEmail,
       submissionComment,
       scheduledDateTime: scheduledDate
     } = state;
+
+    const items = Object.entries(selectedItems)
+      .filter(([, isChecked]) => isChecked)
+      .map(([path]) => path);
 
     const data = {
       ...(!hasPublishPermission || state.requestApproval
@@ -303,12 +282,18 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
       ...(schedule === 'custom' ? { scheduledDate } : {})
     };
 
-    setApiState({ ...apiState, submitting: true });
+    dispatch(updatePublishDialog({ disableQuickDismiss: true }));
+    setState({ submitting: true });
 
     submit(siteId, user.username, data).subscribe(
       (response) => {
-        setApiState({ ...apiState, error: null, submitting: false });
-        dispatch(emitSystemEvent(propagateAction({ targets: items })));
+        setState({ submitting: false });
+        dispatch(
+          batchActions([
+            updatePublishDialog({ disableQuickDismiss: false }),
+            emitSystemEvent(propagateAction({ targets: items }))
+          ])
+        );
         onSuccess?.({
           ...response,
           schedule: schedule,
@@ -320,64 +305,54 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
         });
       },
       (error) => {
-        setApiState({ ...apiState, error });
+        dispatch(updatePublishDialog({ disableQuickDismiss: false }));
+        setState({ submitting: false, error });
       }
     );
   };
 
-  const setChecked = (path: string[], isChecked: boolean) => {
-    setCheckedItems(updateCheckedList(path, isChecked, checkedItems));
-    setDeps(null);
-    cleanCheckedSoftDep();
-  };
-
-  const onClickSetChecked = (e: any, item: DetailedItem) => {
+  const onItemClicked = (e: any, path: string) => {
     e.stopPropagation();
     e.preventDefault();
-    setChecked([item.path], !checkedItems[item.path]);
+    setSelectedItems({ ...selectedItems, [path]: !selectedItems[path] });
   };
 
-  const selectAllDeps = () => {
-    const isAllChecked = !items.some((item) => !checkedItems[item.path]);
-    setChecked(
-      items.map((i) => i.path),
-      !isAllChecked
+  const onSelectAll = () => {
+    setSelectedItems(
+      items.reduce(
+        (checked, item) => {
+          checked[item.path] = true;
+          return checked;
+        },
+        { ...selectedItems }
+      )
     );
   };
 
-  const cleanCheckedSoftDep = () => {
-    const nextCheckedSoftDep = {};
-    _setCheckedSoftDep(nextCheckedSoftDep);
-  };
-
-  const setCheckedSoftDep = (e: any, path: string[], isChecked: boolean) => {
-    const nextCheckedSoftDep = { ...checkedSoftDep };
-    (Array.isArray(path) ? path : [path]).forEach((u) => {
-      nextCheckedSoftDep[u] = isChecked;
-    });
-    _setCheckedSoftDep(nextCheckedSoftDep);
-  };
-
-  function selectAllSoft() {
-    const isAllChecked = !deps.items2.some((path) => !checkedSoftDep[path]);
-    setCheckedSoftDep(null, deps.items2, !isAllChecked);
+  function onSelectAllSoft() {
+    // If one that is not checked is found, check all. Otherwise, uncheck all.
+    const check = Boolean(dependencies.softDependencies.find((path) => !selectedItems[path]));
+    setSelectedItems(
+      dependencies.softDependencies.reduce(
+        (nextCheckedSoftDependencies, path) => {
+          nextCheckedSoftDependencies[path] = check;
+          return nextCheckedSoftDependencies;
+        },
+        { ...selectedItems }
+      )
+    );
   }
 
-  function showAllDependencies() {
-    setApiState({ ...apiState, fetchingDependencies: true });
-    fetchDependencies(siteId, paths(checkedItems)).subscribe(
+  function onFetchDependenciesClick() {
+    setState({ fetchingDependencies: true });
+    fetchDependencies(siteId, paths(selectedItems)).subscribe(
       (items) => {
-        setApiState({ ...apiState, fetchingDependencies: false });
-        setDeps({
-          items1: items.hardDependencies,
-          items2: items.softDependencies
-        });
+        setState({ fetchingDependencies: false });
+        setDependencies(items);
       },
       () => {
-        setDeps({
-          items1: [],
-          items2: []
-        });
+        setState({ fetchingDependencies: false });
+        setDependencies(null);
       }
     );
   }
@@ -414,11 +389,10 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
   return (
     <PublishDialogUI
       resource={resource}
-      publishingChannelsStatus={publishingChannelsStatus}
+      publishingTargetsStatus={publishingTargetsStatus}
       onPublishingChannelsFailRetry={getPublishingChannels}
       onDismiss={onDismiss}
       handleSubmit={handleSubmit}
-      showDepsDisabled={showDepsDisabled}
       state={state}
       title={formatMessage(translations.title)}
       subtitle={
@@ -426,15 +400,12 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
           ? formatMessage(translations.requestPublishSubtitle) + ' ' + formatMessage(translations.subtitleHelperText)
           : formatMessage(translations.publishSubtitle) + ' ' + formatMessage(translations.subtitleHelperText)
       }
-      checkedItems={checkedItems}
-      checkedSoftDep={checkedSoftDep}
-      setCheckedSoftDep={setCheckedSoftDep}
-      onClickSetChecked={onClickSetChecked}
-      deps={deps}
-      selectAllDeps={selectAllDeps}
-      selectAllSoft={selectAllSoft}
-      onClickShowAllDeps={showAllDependencies}
-      apiState={apiState}
+      selectedItems={selectedItems}
+      onItemClicked={onItemClicked}
+      dependencies={dependencies}
+      onSelectAll={onSelectAll}
+      onSelectAllSoftDependencies={onSelectAllSoft}
+      onClickShowAllDeps={onFetchDependenciesClick}
       classes={useStyles()}
       showEmailCheckbox={!hasPublishPermission || state.requestApproval}
       showRequestApproval={hasPublishPermission && items.every((item) => !item.stateMap.submitted)}
@@ -455,3 +426,5 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
     />
   );
 }
+
+export default PublishDialogContainer;

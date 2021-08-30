@@ -17,19 +17,26 @@
 import React from 'react';
 import Dialog, { DialogProps } from '@material-ui/core/Dialog';
 import { PublishDialogContainer, PublishDialogContainerProps } from './PublishDialogContainer';
+import { useOnClose } from '../../utils/hooks/useOnClose';
 
 export type PublishDialogProps = DialogProps & PublishDialogContainerProps;
 
 export function PublishDialog(props: PublishDialogProps) {
-  const { items, scheduling, onClosed, onDismiss, onSuccess, ...dialogProps } = props;
+  const { items, scheduling, onClosed, onDismiss, onSuccess, onClose, disableQuickDismiss, ...dialogProps } = props;
+  const onCloseInternal = useOnClose({
+    onClose,
+    disableBackdropClick: disableQuickDismiss,
+    disableEscapeKeyDown: disableQuickDismiss
+  });
   return (
-    <Dialog fullWidth maxWidth="md" {...dialogProps}>
+    <Dialog fullWidth maxWidth="md" {...dialogProps} onClose={onCloseInternal}>
       <PublishDialogContainer
         items={items}
         scheduling={scheduling}
         onClosed={onClosed}
         onDismiss={onDismiss}
         onSuccess={onSuccess}
+        disableQuickDismiss={disableQuickDismiss}
       />
     </Dialog>
   );

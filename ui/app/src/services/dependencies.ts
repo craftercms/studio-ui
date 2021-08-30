@@ -19,10 +19,12 @@ import { catchError, pluck } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { LegacyItem } from '../models/Item';
 
-export function fetchDependencies(
-  siteId: string,
-  items: any
-): Observable<{ hardDependencies: string[]; softDependencies: string[] }> {
+export interface FetchDependenciesResponse {
+  hardDependencies: string[];
+  softDependencies: string[];
+}
+
+export function fetchDependencies(siteId: string, items: any): Observable<FetchDependenciesResponse> {
   return postJSON('/studio/api/2/dependency/dependencies', {
     siteId,
     paths: items
@@ -43,13 +45,12 @@ export function fetchDependant(siteId: string, path: string): Observable<LegacyI
   ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
 
-export function fetchDeleteDependencies(
-  siteId: string,
-  paths: string[]
-): Observable<{
+export interface FetchDeleteDependenciesResponse {
   childItems: string[];
   dependentItems: string[];
-}> {
+}
+
+export function fetchDeleteDependencies(siteId: string, paths: string[]): Observable<FetchDeleteDependenciesResponse> {
   return postJSON('/studio/api/2/content/get_delete_package', {
     siteId,
     paths

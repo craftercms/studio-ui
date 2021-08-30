@@ -130,8 +130,8 @@ const dialogEpics: CrafterCMSEpic[] = [
     action$.pipe(
       ofType(fetchDeleteDependencies.type),
       withLatestFrom(state$),
-      switchMap(([{ payload: items }, state]) =>
-        fetchDeleteDependenciesService(state.sites.active, items).pipe(
+      switchMap(([{ payload: { paths } }, state]) =>
+        fetchDeleteDependenciesService(state.sites.active, paths).pipe(
           map(fetchDeleteDependenciesComplete),
           catchAjaxError(fetchDeleteDependenciesFailed)
         )
