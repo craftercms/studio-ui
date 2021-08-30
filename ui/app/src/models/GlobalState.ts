@@ -27,9 +27,8 @@ import { ErrorDialogStateProps } from '../components/SystemStatus/ErrorDialog';
 import { MinimizedDialogsStateProps } from './MinimizedDialog';
 import { NewContentDialogStateProps } from '../modules/Content/Authoring/NewContentDialog';
 import { HistoryDialogStateProps } from '../modules/Content/History/HistoryDialog';
-import { PublishDialogStateProps } from '../modules/Content/Publish/PublishDialog';
 import { DependenciesDialogStateProps } from '../modules/Content/Dependencies/DependenciesDialog';
-import { DeleteDialogStateProps } from '../modules/Content/Delete/DeleteDialog';
+import { DeleteDialogStateProps } from '../components/DeleteDialog/DeleteDialog';
 import { EntityState } from './EntityState';
 import { ApiResponse } from './ApiResponse';
 import { ViewVersionDialogStateProps } from '../modules/Content/History/ViewVersionDialog';
@@ -62,7 +61,7 @@ import { UnlockPublisherDialogStateProps } from '../components/UnlockPublisherDi
 import { WidgetDialogStateProps } from '../components/WidgetDialog';
 import { CodeEditorDialogStateProps } from '../components/CodeEditorDialog';
 import { SystemLinkId } from '../utils/system';
-import DateTimeFormatOptions = Intl.DateTimeFormatOptions;
+import { PublishDialogStateProps } from '../components/PublishDialog/utils';
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
   page: any;
@@ -233,9 +232,10 @@ export interface GlobalState {
     };
     locale: {
       localeCode: string;
-      dateTimeFormatOptions?: DateTimeFormatOptions;
+      dateTimeFormatOptions: Intl.DateTimeFormatOptions;
     };
     publishing: {
+      publishCommentRequired: boolean;
       deleteCommentRequired: boolean;
       bulkPublishRequired: boolean;
       publishByCommitRequired: boolean;

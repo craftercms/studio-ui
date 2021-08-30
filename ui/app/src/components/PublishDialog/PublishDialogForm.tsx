@@ -25,15 +25,15 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import Collapse from '@material-ui/core/Collapse';
 import FormControl from '@material-ui/core/FormControl';
 import Link from '@material-ui/core/Link';
-import DateTimePicker from '../../../components/Controls/DateTimePicker';
-import moment from 'moment';
-import palette from '../../../styles/palette';
-import TextFieldWithMax from '../../../components/Controls/TextFieldWithMax';
-import GlobalState from '../../../models/GlobalState';
+import DateTimePicker from '../Controls/DateTimePicker';
+import palette from '../../styles/palette';
+import TextFieldWithMax from '../Controls/TextFieldWithMax';
+import GlobalState from '../../models/GlobalState';
 import FormLabel from '@material-ui/core/FormLabel';
-import { useSelection } from '../../../utils/hooks/useSelection';
+import { useSelection } from '../../utils/hooks/useSelection';
 import Alert from '@material-ui/lab/Alert';
-import { capitalize } from '../../../utils/string';
+import { capitalize } from '../../utils/string';
+import { PublishDialogUIProps } from './PublishDialogUI';
 
 const messages = defineMessages({
   emailLabel: {
@@ -52,24 +52,24 @@ const messages = defineMessages({
     id: 'publishForm.schedulingLater',
     defaultMessage: 'Later'
   },
-  environment: {
+  publishingTarget: {
     id: 'common.publishingTarget',
     defaultMessage: 'Publishing Target'
   },
-  environmentLoading: {
-    id: 'publishForm.environmentLoading',
+  publishingTargetLoading: {
+    id: 'publishForm.publishingTargetLoading',
     defaultMessage: 'Loading...'
   },
-  environmentError: {
-    id: 'publishForm.environmentError',
+  publishingTargetError: {
+    id: 'publishForm.publishingTargetError',
     defaultMessage: 'Publishing targets load failed.'
   },
-  environmentRetry: {
-    id: 'publishForm.environmentRetry',
+  publishingTargetRetry: {
+    id: 'publishForm.publishingTargetRetry',
     defaultMessage: 'retry'
   },
-  environmentSuccess: {
-    id: 'publishForm.environmentSuccess',
+  publishingTargetSuccess: {
+    id: 'publishForm.publishingTargetSuccess',
     defaultMessage: 'Success'
   },
   submissionComment: {
@@ -109,17 +109,17 @@ const useStyles = makeStyles((theme) =>
     selectInput: {
       padding: '10px 12px'
     },
-    environmentLoaderContainer: {
+    publishingTargetLoaderContainer: {
       paddingTop: '24px',
       display: 'inline-flex'
     },
-    environmentLoader: {
+    publishingTargetLoader: {
       border: '1px solid #ced4da',
       padding: '10px 12px',
       borderRadius: '4px',
       width: '100%'
     },
-    environmentEmpty: {
+    publishingTargetEmpty: {
       padding: '10px 12px',
       borderRadius: '4px',
       width: '100%'
@@ -160,81 +160,59 @@ const useStyles = makeStyles((theme) =>
   })
 );
 
-let schedulingTimeout;
-
-interface PublishFormProps {
-  inputs: any;
-  showEmailCheckbox: boolean;
-  showRequestApproval: boolean;
+export type PublishFormProps = Pick<
+  PublishDialogUIProps,
+  | 'state'
+  | 'showEmailCheckbox'
+  | 'showRequestApproval'
+  | 'publishingChannelsStatus'
+  | 'onPublishingChannelsFailRetry'
+  | 'mixedPublishingDates'
+  | 'mixedPublishingTargets'
+  | 'submissionCommentRequired'
+> & {
   publishingChannels: any[];
-  publishingChannelsStatus: string;
-  onPublishingChannelsFailRetry: Function;
   disabled: boolean;
-  mixedPublishingDates?: boolean;
-  mixedPublishingTargets?: boolean;
-  setSubmitDisabled: Function;
   classes?: any;
-  setInputs(state: any): any;
-}
+  onChange(event: React.ChangeEvent<HTMLInputElement>): void;
+};
 
-function PublishForm(props: PublishFormProps) {
+function PublishDialogForm(props: PublishFormProps) {
   const classes = useStyles();
   const { formatMessage } = useIntl();
   const {
-    inputs,
-    setInputs,
+    state,
     showEmailCheckbox,
     showRequestApproval,
     publishingChannels,
     publishingChannelsStatus,
     onPublishingChannelsFailRetry,
-    setSubmitDisabled,
     disabled = true,
     mixedPublishingDates,
-    mixedPublishingTargets
+    mixedPublishingTargets,
+    submissionCommentRequired,
+    onChange
   } = props;
+
+  const setSubmitDisabled = (...args) => void 0;
+  const onDateTimeChange = setSubmitDisabled;
+
   const locale = useSelection<GlobalState['uiConfig']['locale']>((state) => state.uiConfig.locale);
 
-  const handleInputChange = (name: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    e.persist();
-
-    if (e.target.type === 'checkbox') {
-      setInputs({ ...inputs, [name]: e.target.checked });
-    } else if (e.target.type === 'textarea') {
-      setInputs({ ...inputs, [name]: e.target.value });
-    } else if (e.target.type === 'radio') {
-      const inputValue = e.target.value;
-      setInputs({ ...inputs, [name]: inputValue });
-
-      if (inputValue === 'now') {
-        schedulingTimeout = setTimeout(() => {
-          setInputs({
-            ...inputs,
-            scheduling: 'now',
-            scheduledDateTime: moment().format()
-          });
-        }, 2000);
-      } else {
-        clearTimeout(schedulingTimeout);
+  const handleDateTimePickerChange = (dateChangeData) => {
+    onChange({
+      // @ts-ignore
+      target: {
+        name: 'scheduledDateTime',
+        type: 'dateTimePicker',
+        // @ts-ignore
+        value: dateChangeData
       }
-    }
+    });
   };
 
-  const handleSelectChange = (name: string) => (event: React.ChangeEvent<{ value: unknown }>) => {
-    // TODO: This component shouldn't know how this gets set internally.
-    //  The spread of the state is responsibility of the container
-    setInputs({ ...inputs, [name]: event.target.value as string });
-  };
-
-  const dateTimePickerChange = (scheduledDateTime: moment.Moment) => {
-    // TODO: This component shouldn't know how this gets set internally.
-    //  The spread of the state is responsibility of the container
-    setInputs({ scheduledDateTime: scheduledDateTime.format() });
-    if (scheduledDateTime.toString() === 'Invalid date') {
-      setSubmitDisabled(true);
-    } else {
-      setSubmitDisabled(false);
-    }
+  const handleDatePickerError = () => {
+    onDateTimeChange(null);
   };
 
   return (
@@ -245,26 +223,27 @@ function PublishForm(props: PublishFormProps) {
             control={
               <Checkbox
                 size="small"
-                checked={inputs.requestApproval}
-                onChange={handleInputChange('requestApproval')}
+                checked={state.requestApproval}
+                onChange={onChange}
                 disabled={disabled}
+                name="requestApproval"
               />
             }
             label={<FormattedMessage id="publishForm.requestApproval" defaultMessage="Request approval" />}
           />
         )}
-
         {showEmailCheckbox && (
           <FormControlLabel
             label={formatMessage(messages.emailLabel)}
             control={
               <Checkbox
                 size="small"
-                checked={inputs.emailOnApprove}
-                onChange={handleInputChange('emailOnApprove')}
+                checked={state.emailOnApprove}
+                onChange={onChange}
                 value="emailOnApprove"
                 color="primary"
                 disabled={disabled}
+                name="emailOnApprove"
               />
             }
           />
@@ -272,7 +251,7 @@ function PublishForm(props: PublishFormProps) {
       </section>
       <FormControl fullWidth className={classes.formSection}>
         <FormLabel component="legend">{formatMessage(messages.scheduling)}</FormLabel>
-        <RadioGroup className={classes.radioGroup} value={inputs.scheduling} onChange={handleInputChange('scheduling')}>
+        <RadioGroup className={classes.radioGroup} value={state.scheduling} onChange={onChange} name="scheduling">
           {mixedPublishingDates && (
             <Alert severity="warning" className={classes.mixedDatesWarningMessage}>
               <FormattedMessage
@@ -297,30 +276,31 @@ function PublishForm(props: PublishFormProps) {
           />
         </RadioGroup>
         <Collapse
-          in={inputs.scheduling === 'custom'}
+          in={state.scheduling === 'custom'}
           timeout={300}
-          className={inputs.scheduling === 'custom' ? classes.datePicker : ''}
+          className={state.scheduling === 'custom' ? classes.datePicker : ''}
         >
           <DateTimePicker
-            onChange={dateTimePickerChange}
-            onError={() => setSubmitDisabled(true)}
-            date={inputs.scheduledDateTime}
+            onChange={handleDateTimePickerChange}
+            onError={handleDatePickerError}
+            value={state.scheduledDateTime}
             localeCode={locale.localeCode}
-            hour12={locale.dateTimeFormatOptions?.hour12 ?? true}
-            timeZonePickerProps={{ timezone: inputs.scheduledTimeZone }}
-            datePickerProps={{ disablePast: true }}
+            dateTimeFormatOptions={locale.dateTimeFormatOptions}
+            timeZone={state.scheduledTimeZone}
+            disablePast
             disabled={disabled}
           />
         </Collapse>
       </FormControl>
       <FormControl fullWidth className={classes.formSection}>
-        <FormLabel component="legend">{formatMessage(messages.environment)}</FormLabel>
+        <FormLabel component="legend">{formatMessage(messages.publishingTarget)}</FormLabel>
         {publishingChannels ? (
           publishingChannels.length ? (
             <RadioGroup
               className={classes.radioGroup}
-              value={inputs.environment}
-              onChange={handleSelectChange('environment')}
+              value={state.publishingTarget}
+              onChange={onChange}
+              name="publishingTarget"
             >
               {publishingChannels.map((publishingChannel) => (
                 <FormControlLabel
@@ -338,24 +318,24 @@ function PublishForm(props: PublishFormProps) {
               ))}
             </RadioGroup>
           ) : (
-            <div className={classes.environmentLoaderContainer}>
-              <Typography variant="body1" className={classes.environmentEmpty}>
+            <div className={classes.publishingTargetLoaderContainer}>
+              <Typography variant="body1" className={classes.publishingTargetEmpty}>
                 No publishing channels are available.
               </Typography>
             </div>
           )
         ) : (
-          <div className={classes.environmentLoaderContainer}>
+          <div className={classes.publishingTargetLoaderContainer}>
             <Typography
               variant="body1"
               component="span"
-              className={`${classes.environmentLoader} ${classes.formInputs}`}
+              className={`${classes.publishingTargetLoader} ${classes.formInputs}`}
               color={publishingChannelsStatus === 'Error' ? 'error' : 'initial'}
             >
-              {formatMessage(messages[`environment${publishingChannelsStatus}`])}
+              {formatMessage(messages[`publishingTarget${publishingChannelsStatus}`])}
               {publishingChannelsStatus === 'Error' && (
                 <Link href="#" onClick={() => onPublishingChannelsFailRetry()}>
-                  ({formatMessage(messages.environmentRetry)})
+                  ({formatMessage(messages.publishingTargetRetry)})
                 </Link>
               )}
             </Typography>
@@ -375,13 +355,14 @@ function PublishForm(props: PublishFormProps) {
         name="submissionComment"
         label={<FormattedMessage id="publishForm.submissionComment" defaultMessage="Submission Comment" />}
         fullWidth
-        onChange={handleInputChange('submissionComment')}
-        value={inputs.submissionComment}
+        onChange={onChange}
+        value={state.submissionComment}
         multiline
         disabled={disabled}
+        required={submissionCommentRequired}
       />
     </form>
   );
 }
 
-export default PublishForm;
+export default PublishDialogForm;

@@ -26,7 +26,6 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
-import { updateCheckedList } from '../Publish/PublishDialog';
 import Button from '@material-ui/core/Button';
 import { useSelection } from '../../../utils/hooks/useSelection';
 import { useActiveSiteId } from '../../../utils/hooks/useActiveSiteId';
@@ -40,6 +39,7 @@ import ItemStateIcon from '../../../components/ItemStateIcon';
 import ItemPublishingTargetIcon from '../../../components/ItemPublishingTargetIcon';
 import { getItemStateText } from '../../../components/ItemDisplay/utils';
 import clsx from 'clsx';
+import { updateCheckedList } from '../../../components/PublishDialog/utils';
 
 interface DependencySelectionProps {
   items?: DetailedItem[];
