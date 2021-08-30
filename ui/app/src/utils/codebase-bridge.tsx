@@ -167,7 +167,7 @@ export function createCodebaseBridge() {
       SiteTools: lazy(() => import('../pages/SiteTools')),
       PublishDialog: lazy(() => import('../components/PublishDialog/PublishDialog')),
       DependenciesDialog: lazy(() => import('../modules/Content/Dependencies/DependenciesDialog')),
-      DeleteDialog: lazy(() => import('../modules/Content/Delete/DeleteDialog')),
+      DeleteDialog: lazy(() => import('../components/DeleteDialog/DeleteDialog')),
       LauncherOpenerButton: lazy(() => import('../components/LauncherOpenerButton/LauncherOpenerButton')),
       EncryptTool: lazy(() => import('../components/EncryptTool')),
       SiteEncryptTool: lazy(() => import('../components/SiteEncryptTool')),

@@ -21,7 +21,7 @@ import { ViewVersionDialogStateProps } from '../../modules/Content/History/ViewV
 import { FetchContentVersion } from '../../models/Version';
 import { CompareVersionsDialogStateProps } from '../../modules/Content/History/CompareVersionsDialog';
 import { ConfirmDialogStateProps } from '../../components/Dialogs/ConfirmDialog';
-import { DeleteDialogStateProps } from '../../modules/Content/Delete/DeleteDialog';
+import { DeleteDialogStateProps } from '../../components/DeleteDialog/DeleteDialog';
 import { NewContentDialogStateProps } from '../../modules/Content/Authoring/NewContentDialog';
 import { DependenciesDialogStateProps } from '../../modules/Content/Dependencies/DependenciesDialog';
 import { WorkflowCancellationDialogStateProps } from '../../components/Dialogs/WorkflowCancellationDialog';

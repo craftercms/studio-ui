@@ -28,7 +28,7 @@ import { MinimizedDialogsStateProps } from './MinimizedDialog';
 import { NewContentDialogStateProps } from '../modules/Content/Authoring/NewContentDialog';
 import { HistoryDialogStateProps } from '../modules/Content/History/HistoryDialog';
 import { DependenciesDialogStateProps } from '../modules/Content/Dependencies/DependenciesDialog';
-import { DeleteDialogStateProps } from '../modules/Content/Delete/DeleteDialog';
+import { DeleteDialogStateProps } from '../components/DeleteDialog/DeleteDialog';
 import { EntityState } from './EntityState';
 import { ApiResponse } from './ApiResponse';
 import { ViewVersionDialogStateProps } from '../modules/Content/History/ViewVersionDialog';

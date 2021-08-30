@@ -45,7 +45,7 @@ const ChangeContentTypeDialog = lazy(() => import('../../modules/Content/Authori
 const HistoryDialog = lazy(() => import('../../modules/Content/History/HistoryDialog'));
 const PublishDialog = lazy(() => import('../PublishDialog/PublishDialog'));
 const DependenciesDialog = lazy(() => import('../../modules/Content/Dependencies/DependenciesDialog'));
-const DeleteDialog = lazy(() => import('../../modules/Content/Delete/DeleteDialog'));
+const DeleteDialog = lazy(() => import('../DeleteDialog/DeleteDialog'));
 const WorkflowCancellationDialog = lazy(() => import('../Dialogs/WorkflowCancellationDialog'));
 const LegacyFormDialog = lazy(() => import('../Dialogs/LegacyFormDialog'));
 const CreateFolderDialog = lazy(() => import('../Dialogs/CreateFolderDialog'));

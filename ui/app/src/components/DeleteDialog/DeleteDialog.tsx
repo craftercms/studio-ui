@@ -15,31 +15,31 @@
  */
 
 import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
-import { DetailedItem, SandboxItem } from '../../../models/Item';
-import { DeleteDependencies, DependencySelectionDelete } from '../Dependencies/DependencySelection';
-import StandardAction from '../../../models/StandardAction';
+import { DetailedItem, SandboxItem } from '../../models/Item';
+import { DeleteDependencies, DependencySelectionDelete } from '../../modules/Content/Dependencies/DependencySelection';
+import StandardAction from '../../models/StandardAction';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { Resource } from '../../../models/Resource';
-import DialogHeader from '../../../components/Dialogs/DialogHeader';
-import DialogBody from '../../../components/Dialogs/DialogBody';
-import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
-import DialogFooter from '../../../components/Dialogs/DialogFooter';
+import { Resource } from '../../models/Resource';
+import DialogHeader from '../Dialogs/DialogHeader';
+import DialogBody from '../Dialogs/DialogBody';
+import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
+import DialogFooter from '../Dialogs/DialogFooter';
 import Dialog from '@material-ui/core/Dialog';
-import palette from '../../../styles/palette';
+import palette from '../../styles/palette';
 import Grid from '@material-ui/core/Grid';
-import TextFieldWithMax from '../../../components/Controls/TextFieldWithMax';
-import { fetchDeleteDependencies, showEditDialog } from '../../../state/actions/dialogs';
+import TextFieldWithMax from '../Controls/TextFieldWithMax';
+import { fetchDeleteDependencies, showEditDialog } from '../../state/actions/dialogs';
 import { useDispatch, useSelector } from 'react-redux';
-import GlobalState from '../../../models/GlobalState';
-import { deleteItems } from '../../../services/content';
-import { emitSystemEvent, itemsDeleted } from '../../../state/actions/system';
-import SecondaryButton from '../../../components/SecondaryButton';
-import PrimaryButton from '../../../components/PrimaryButton';
-import { useActiveSiteId } from '../../../utils/hooks/useActiveSiteId';
-import { useLogicResource } from '../../../utils/hooks/useLogicResource';
-import { useUnmount } from '../../../utils/hooks/useUnmount';
-import { useSpreadState } from '../../../utils/hooks/useSpreadState';
+import GlobalState from '../../models/GlobalState';
+import { deleteItems } from '../../services/content';
+import { emitSystemEvent, itemsDeleted } from '../../state/actions/system';
+import SecondaryButton from '../SecondaryButton';
+import PrimaryButton from '../PrimaryButton';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { useLogicResource } from '../../utils/hooks/useLogicResource';
+import { useUnmount } from '../../utils/hooks/useUnmount';
+import { useSpreadState } from '../../utils/hooks/useSpreadState';
 
 interface DeleteDialogContentUIProps {
   resource: Resource<DeleteDependencies>;
