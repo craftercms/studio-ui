@@ -231,8 +231,6 @@ export interface GlobalState {
       defaultLocaleCode: string;
     };
     locale: {
-      error: ApiResponse;
-      isFetching: boolean;
       localeCode: string;
       dateTimeFormatOptions: Intl.DateTimeFormatOptions;
     };
@@ -270,9 +268,6 @@ export interface GlobalState {
   };
   dashboard: {
     widgets: WidgetDescriptor[];
-  };
-  publishing: {
-    submissionCommentMaxLength: number;
   };
   globalNavigation: {
     error: AjaxError;
