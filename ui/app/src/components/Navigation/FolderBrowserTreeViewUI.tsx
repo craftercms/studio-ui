@@ -190,8 +190,8 @@ function RenderTreeNode(props: RenderTreeNodeProps) {
         selected: classes.treeItemSelected,
         label: clsx(classes.treeItemLabel, props.classes?.treeItemLabel)
       }}
-      onIconClick={(e) => onIconClick(e, node)}
-      onLabelClick={(e) => onLabelClick(e, node)}
+      onIconClick={(e) => onIconClick?.(e, node)}
+      onLabelClick={(e) => onLabelClick?.(e, node)}
     >
       {Array.isArray(node.children)
         ? node.children.map((childNode) => (

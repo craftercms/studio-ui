@@ -170,12 +170,15 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
       if (isNew) {
         if (isNew === true) {
           if (!path) {
+            // region embedded component
             let index;
             zone.forEach((zone, i) => {
               if (zone === trackingNumber) {
                 index = i;
               }
             });
+            const editDialogSuccess = 'editDialogSuccess';
+            const editDialogCancel = 'editDialogCancel';
             dispatch(
               showEditDialog({
                 site: siteId,
@@ -187,10 +190,46 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
                   index,
                   fieldId,
                   datasource
+                },
+                onSaveSuccess: {
+                  type: 'DISPATCH_DOM_EVENT',
+                  payload: { id: editDialogSuccess }
+                },
+                onClosed: {
+                  type: 'BATCH_ACTIONS',
+                  payload: [
+                    {
+                      type: 'DISPATCH_DOM_EVENT',
+                      payload: { id: editDialogCancel }
+                    },
+                    {
+                      type: 'EDIT_DIALOG_CLOSED'
+                    }
+                  ]
                 }
               })
             );
-            // embedded component
+            let unsubscribe, cancelUnsubscribe;
+
+            unsubscribe = createCustomDocumentEventListener(editDialogSuccess, (response) => {
+              dispatch(
+                showSystemNotification({
+                  message: formatMessage(guestMessages.insertOperationComplete)
+                })
+              );
+              hostToGuest$.next({
+                type: 'REFRESH_PREVIEW'
+              });
+              cancelUnsubscribe();
+            });
+
+            cancelUnsubscribe = createCustomDocumentEventListener(editDialogCancel, () => {
+              hostToGuest$.next({
+                type: 'REFRESH_PREVIEW'
+              });
+              unsubscribe();
+            });
+            // endregion
           } else {
             // region shared component
             let index;
@@ -207,8 +246,16 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
                   payload: { id: editDialogSuccess }
                 },
                 onClosed: {
-                  type: 'DISPATCH_DOM_EVENT',
-                  payload: { id: editDialogCancel }
+                  type: 'BATCH_ACTIONS',
+                  payload: [
+                    {
+                      type: 'DISPATCH_DOM_EVENT',
+                      payload: { id: editDialogCancel }
+                    },
+                    {
+                      type: 'EDIT_DIALOG_CLOSED'
+                    }
+                  ]
                 }
               })
             );
@@ -248,22 +295,22 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
             });
 
             cancelUnsubscribe = createCustomDocumentEventListener(editDialogCancel, () => {
+              hostToGuest$.next({
+                type: 'REFRESH_PREVIEW'
+              });
               unsubscribe();
             });
             // endregion
           }
         } else {
           // region browse component
-          let fieldId;
           let index;
 
-          Object.keys(zones).forEach((key) => {
-            zones[key].forEach((zone, i) => {
-              if (zone === trackingNumber) {
-                fieldId = key;
-                index = i;
-              }
-            });
+          forEach(zone, (item, i) => {
+            if (item === trackingNumber) {
+              index = 1;
+              return 'break';
+            }
           });
 
           fetchContentInstance(siteId, path, contentTypesLookup)
@@ -293,6 +340,7 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
           // endregion
         }
       } else {
+        // region sort/move components
         fetchContentDOM(siteId, compPath ? compPath : guestPath).subscribe((content) => {
           let contentModel = legacyXmlModelToMap(content.documentElement);
           let contentModelZone = contentModel[fieldId];
@@ -382,6 +430,7 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
             }
           }
         });
+        // endregion
       }
     },
     [authoringBase, contentTypesLookup, dispatch, formatMessage, guestPath, hostToGuest$, siteId]

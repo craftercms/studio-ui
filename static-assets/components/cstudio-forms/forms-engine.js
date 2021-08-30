@@ -943,7 +943,7 @@ var CStudioForms =
                     ds: message.ds,
                     order: message.order
                   });
-                  cfe.engine.saveForm(false, message.draft, false);
+                  cfe.engine.saveForm(false, message.draft, false, message.action);
                 } else {
                   amplify.publish('UPDATE_NODE_SELECTOR', message);
                   cfe.engine.saveForm(false, message.draft, true, message.action);
@@ -1966,7 +1966,8 @@ var CStudioForms =
                       false,
                       false,
                       {
-                        success: function(contentTO, editorId, objId, value, draft) {
+                        ...callback,
+                        success: function(contentTO, editorId, objId, value, draft, action) {
                           sendMessage({
                             type: FORM_SAVE_REQUEST,
                             key: objId,
@@ -1975,7 +1976,8 @@ var CStudioForms =
                             new: true,
                             selectorId: selectorId,
                             ds,
-                            order
+                            order,
+                            action
                           });
                         },
                         cancelled: function() {

@@ -150,19 +150,23 @@
                                 },
                                 renderComplete: () => {
                                   // TODO: embeddedData, support create embedded component
-                                  if (!modelId) {
-                                    window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED' }, '*');
-                                  } else {
+                                  if (modelId || embeddedData) {
                                     CStudioAuthoring.InContextEdit.messageDialogs({
                                       type: 'OPEN_CHILD_COMPONENT',
-                                      key: modelId,
+                                      key: Boolean(modelId)? modelId : null,
                                       iceId: null,
-                                      edit: true,
+                                      contentType: embeddedData? embeddedData.contentType : null,
+                                      edit: Boolean(modelId),
+                                      selectorId: embeddedData? embeddedData.fieldId : null,
+                                      ds: embeddedData? embeddedData.datasource : null,
+                                      order: embeddedData? embeddedData.index : null,
                                       callback: {
                                         renderComplete: 'EMBEDDED_LEGACY_FORM_RENDERED',
                                         pendingChanges: 'EMBEDDED_LEGACY_FORM_PENDING_CHANGES'
                                       }
                                     });
+                                  } else {
+                                    window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED' }, '*');
                                   }
                                 },
                                 pendingChanges: () => {
