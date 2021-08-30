@@ -21,8 +21,7 @@ import { ViewVersionDialogStateProps } from '../../modules/Content/History/ViewV
 import { FetchContentVersion } from '../../models/Version';
 import { CompareVersionsDialogStateProps } from '../../modules/Content/History/CompareVersionsDialog';
 import { ConfirmDialogStateProps } from '../../components/Dialogs/ConfirmDialog';
-import { PublishDialogStateProps } from '../../modules/Content/Publish/PublishDialog';
-import { DeleteDialogStateProps } from '../../modules/Content/Delete/DeleteDialog';
+import { DeleteDialogStateProps } from '../../components/DeleteDialog/DeleteDialog';
 import { NewContentDialogStateProps } from '../../modules/Content/Authoring/NewContentDialog';
 import { DependenciesDialogStateProps } from '../../modules/Content/Dependencies/DependenciesDialog';
 import { WorkflowCancellationDialogStateProps } from '../../components/Dialogs/WorkflowCancellationDialog';
@@ -43,6 +42,7 @@ import { PublishingStatusDialogStateProps } from '../../components/PublishingSta
 import { UnlockPublisherDialogStateProps } from '../../components/UnlockPublisherDialog';
 import { WidgetDialogStateProps } from '../../components/WidgetDialog';
 import { CodeEditorDialogStateProps } from '../../components/CodeEditorDialog';
+import { PublishDialogStateProps } from '../../components/PublishDialog/utils';
 
 // region History
 export const showHistoryDialog = /*#__PURE__*/ createAction<Partial<HistoryDialogStateProps>>('SHOW_HISTORY_DIALOG');

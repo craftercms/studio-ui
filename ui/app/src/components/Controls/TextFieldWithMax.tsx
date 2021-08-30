@@ -20,20 +20,18 @@ import { useSelector } from 'react-redux';
 import GlobalState from '../../models/GlobalState';
 import CharCountStatus from '../CharCountStatus';
 
-interface TextFieldWithMaxProps {
+export type TextFieldWithMaxProps = TextFieldProps & {
   maxLength?: number;
-}
+};
 
-function TextFieldWithMax(props: TextFieldProps & TextFieldWithMaxProps) {
+function TextFieldWithMax(props: TextFieldWithMaxProps) {
   // This value will be used by default, if a custom value is needed,
   // maxLength prop needs to be supplied.
   const configMaxLength = useSelector<GlobalState, number>(
     (state) => state.uiConfig.publishing.submissionCommentMaxLength
   );
   const maxLength = props.maxLength ? props.maxLength : configMaxLength;
-
   const value = props.value ?? props.defaultValue ?? '';
-
   return (
     <>
       <TextField {...props} inputProps={{ ...props.inputProps, maxLength }} />
