@@ -597,9 +597,9 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
   },
   [initToolbarConfig.type]: (state, { payload }) => {
     let toolbarConfig = {
-      leftSection: null,
-      middleSection: null,
-      rightSection: null
+      leftSection: { widgets: [] },
+      middleSection: { widgets: [] },
+      rightSection: { widgets: [] }
     };
     const arrays = ['widgets'];
     const configDOM = fromString(payload.configXml);
