@@ -163,6 +163,7 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
         this.getAnimator($p).slideOutRight(function() {
           $o.detach();
           $p.detach();
+          communicator.publish('DRAG_AND_DROP_COMPONENTS_PANEL_CLOSED');
         });
 
         $('.removeComp').remove();

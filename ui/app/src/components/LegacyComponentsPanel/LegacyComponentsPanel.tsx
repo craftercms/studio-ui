@@ -490,18 +490,16 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
     const guestToHostSubscription = guestToHost$.subscribe((action) => {
       const { type, payload } = action;
       switch (type) {
+        case 'DRAG_AND_DROP_COMPONENTS_PANEL_CLOSED': {
+          if (editMode) {
+            getHostToGuestBus().next({ type: 'ICE_TOOLS_ON' });
+          }
+          break;
+        }
         case 'SET_SESSION_STORAGE_ITEM': {
           if (payload['key'] === 'components-on') {
             let value = payload['value'] === 'true';
             setStoredLegacyComponentPanel({ open: value }, user.username);
-            if (!value && editMode) {
-              getHostToGuestBus().next({ type: 'ICE_TOOLS_ON' });
-              // After closing the component panel we should wait until the animation ends to repaint pencils
-              // because the panel is moving the content the pencil are in an incorrect position
-              setTimeout(() => {
-                getHostToGuestBus().next({ type: 'REPAINT_PENCILS' });
-              }, 500);
-            }
             setOpen(value);
           }
           break;

@@ -443,7 +443,8 @@ export function PreviewConcierge(props: any) {
               authoringBase,
               site: siteId,
               iceGroupId: payload.iceId || UNDEFINED,
-              modelId: payload.embeddedItemId || UNDEFINED
+              modelId: payload.embeddedItemId || UNDEFINED,
+              isHidden: Boolean(payload.embeddedItemId)
             })
           );
           break;

@@ -43,7 +43,8 @@ crafterDefine('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay'], fun
     $window = $(window),
     dndController,
     pointerControllerVar,
-    iceToolsOn = false;
+    iceToolsOn = false,
+    dndOn = false;
 
   window.studioICERepaint = iceRepaint;
 
@@ -82,6 +83,7 @@ crafterDefine('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay'], fun
     );
 
     communicator.on(Topics.START_DRAG_AND_DROP, function(message) {
+      dndOn = true;
       crafterRequire(['dnd-controller'], function(DnDController) {
         typeof dndController === 'undefined' &&
           (dndController = new DnDController({
@@ -108,6 +110,7 @@ crafterDefine('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay'], fun
     });
 
     communicator.on(Topics.DND_COMPONENTS_PANEL_OFF, function(message) {
+      dndOn = false;
       crafterRequire(['dnd-controller'], function(DnDController) {
         typeof dndController === 'undefined' &&
           (dndController = new DnDController({
@@ -135,7 +138,7 @@ crafterDefine('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay'], fun
 
     function iceToolsToggle(on) {
       iceToolsOn = Boolean(on);
-      if (on) {
+      if (on && !dndOn) {
         initICERegions();
       } else {
         removeICERegions();
@@ -291,9 +294,9 @@ crafterDefine('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay'], fun
 
   function initIceRegions_resizeIceRegions_handler(message) {
     if (!message) {
-      iceToolsOn && initICERegions();
+      iceToolsOn && !dndOn && initICERegions();
     } else {
-      iceToolsOn = !!message.iceOn && message.componentsOn != 'true';
+      iceToolsOn = !!message.iceOn && !dndOn;
       if (
         // TODO: REFACTOR
         // !!(window.parent.sessionStorage.getItem('ice-on')) &&
@@ -384,7 +387,7 @@ crafterDefine('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay'], fun
   }
 
   function repaintPencils() {
-    if (iceToolsOn) {
+    if (iceToolsOn && !dndOn) {
       initICERegions();
     }
   }
