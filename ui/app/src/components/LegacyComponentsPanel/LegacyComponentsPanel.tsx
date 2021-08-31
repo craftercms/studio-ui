@@ -33,14 +33,7 @@ import { useIntl } from 'react-intl';
 import { translations } from './translations';
 import BrowseFilesDialog from '../BrowseFilesDialog';
 import { MediaItem } from '../../models/Search';
-import {
-  deleteItem,
-  fetchContentDOM,
-  fetchContentInstance,
-  fetchLegacyItem,
-  insertInstance,
-  sortItem
-} from '../../services/content';
+import { deleteItem, fetchContentDOM, fetchLegacyItem, sortItem } from '../../services/content';
 import { useDispatch } from 'react-redux';
 import { showConfirmDialog, showEditDialog } from '../../state/actions/dialogs';
 import { dragAndDropMessages } from '../../utils/i18n-legacy';
@@ -48,7 +41,7 @@ import { fetchAndInsertContentInstance, legacyLoadFormDefinition, legacyXmlModel
 import LookupTable from '../../models/LookupTable';
 import { getPathFromPreviewURL } from '../../utils/path';
 import { useContentTypes } from '../../utils/hooks/useContentTypes';
-import { filter, switchMap } from 'rxjs/operators';
+import { filter } from 'rxjs/operators';
 import { showSystemNotification } from '../../state/actions/system';
 import { guestMessages } from '../../modules/Preview/PreviewConcierge';
 import { nou } from '../../utils/object';
@@ -267,30 +260,24 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
                   index = i;
                 }
               });
-              fetchContentInstance(siteId, response.item.uri, contentTypesLookup)
-                .pipe(
-                  switchMap((contentInstance) =>
-                    insertInstance(
-                      siteId,
-                      compPath ? compPath : guestPath,
-                      fieldId,
-                      index,
-                      contentInstance,
-                      null,
-                      datasource
-                    )
-                  )
-                )
-                .subscribe(() => {
-                  dispatch(
-                    showSystemNotification({
-                      message: formatMessage(guestMessages.insertOperationComplete)
-                    })
-                  );
-                  hostToGuest$.next({
-                    type: 'REFRESH_PREVIEW'
-                  });
+              fetchAndInsertContentInstance(
+                siteId,
+                compPath ? compPath : guestPath,
+                response.item.uri,
+                fieldId,
+                index,
+                datasource,
+                contentTypesLookup
+              ).subscribe(() => {
+                dispatch(
+                  showSystemNotification({
+                    message: formatMessage(guestMessages.insertOperationComplete)
+                  })
+                );
+                hostToGuest$.next({
+                  type: 'REFRESH_PREVIEW'
                 });
+              });
               cancelUnsubscribe();
             });
 
@@ -367,12 +354,9 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
             ).subscribe(() => {
               dispatch(
                 showSystemNotification({
-                  message: formatMessage(guestMessages.insertOperationComplete)
+                  message: formatMessage(guestMessages.moveOperationComplete)
                 })
               );
-              hostToGuest$.next({
-                type: 'REFRESH_PREVIEW'
-              });
             });
             // endregion
           } else {
