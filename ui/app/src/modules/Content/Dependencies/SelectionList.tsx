@@ -46,7 +46,6 @@ export interface SelectionListProps {
   // Optional since list may not have checkboxes
   selectedItems?: LookupTable<boolean>;
   disabled?: boolean;
-  showEdit?: boolean;
   onItemClicked?(event: React.MouseEvent, path: string): void;
   onSelectAllClicked?(event: React.ChangeEvent, checked: boolean): void;
   onEditClick?(event: React.MouseEvent, path: string): void;
@@ -69,9 +68,6 @@ const useStyles = makeStyles(() =>
     stateScheduledIcon: {
       fontSize: '1em',
       marginRight: '5px'
-    },
-    secondaryAction: {
-      padding: '0 80px 0 5px'
     },
     emptyDependencies: {
       display: 'flex',
@@ -106,7 +102,6 @@ export function SelectionList(props: SelectionListProps) {
     onSelectAllClicked,
     selectedItems,
     disabled = false,
-    showEdit = false,
     onEditClick
   } = props;
   // endregion
@@ -253,7 +248,6 @@ export function SelectionList(props: SelectionListProps) {
                   dense
                   key={path}
                   disabled={disabled}
-                  classes={{ secondaryAction: classes.secondaryAction }}
                   // @ts-ignore
                   button={Boolean(onItemClicked)}
                   onClick={onItemClicked ? (e) => onItemClicked(e, path) : null}
@@ -279,7 +273,7 @@ export function SelectionList(props: SelectionListProps) {
                       classes: { root: classes.overflowText }
                     }}
                   />
-                  {showEdit && (
+                  {onEditClick && (
                     <ListItemSecondaryAction>
                       <Button
                         color="primary"

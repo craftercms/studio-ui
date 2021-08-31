@@ -147,7 +147,7 @@ export const rejectDialogClosed = /*#__PURE__*/ createAction('REJECT_DIALOG_CLOS
 // endregion
 
 // region Legacy Form
-export const showEditDialog = /*#__PURE__*/ createAction<Partial<LegacyFormDialogStateProps>>('SHOW_EDIT_DIALOG');
+export const showEditDialog = /*#__PURE__*/ createAction<LegacyFormDialogStateProps>('SHOW_EDIT_DIALOG');
 export const closeEditDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_EDIT_DIALOG');
 export const editDialogClosed = /*#__PURE__*/ createAction<StandardAction>('EDIT_DIALOG_CLOSED');
 export const newContentCreationComplete = /*#__PURE__*/ createAction<StandardAction>('NEW_CONTENT_CREATION_COMPLETE');

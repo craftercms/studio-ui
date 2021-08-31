@@ -260,6 +260,7 @@ const QuickCreate = React.forwardRef<HTMLButtonElement, { item?: SandboxItem }>(
     dispatch(
       showNewContentDialog({
         item: lookupItemByPath(currentPreviewItemPath, items),
+        // @ts-ignore - required attributes of `showEditDialog` are submitted by new content dialog `onContentTypeSelected` callback and injected into the showEditDialog action by the GlobalDialogManger
         onContentTypeSelected: showEditDialog({})
       })
     );

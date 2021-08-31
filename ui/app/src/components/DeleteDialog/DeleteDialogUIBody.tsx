@@ -41,6 +41,7 @@ export interface DeleteDialogContentUIProps {
   onSelectAllClicked: SelectionListProps['onSelectAllClicked'];
   onSelectAllDependantClicked: SelectionListProps['onSelectAllClicked'];
   onConfirmDeleteChange(event: React.ChangeEvent, checked: boolean): void;
+  onEditDependantClick: SelectionListProps['onEditClick'];
 }
 
 export function DeleteDialogUIBody(props: DeleteDialogContentUIProps) {
@@ -56,7 +57,8 @@ export function DeleteDialogUIBody(props: DeleteDialogContentUIProps) {
     onItemClicked,
     onSelectAllClicked,
     onSelectAllDependantClicked,
-    onConfirmDeleteChange
+    onConfirmDeleteChange,
+    onEditDependantClick
   } = props;
   const deleteDependencies: DeleteDependencies = resource.read();
   const classes = useDeleteDialogUIStyles();
@@ -92,6 +94,7 @@ export function DeleteDialogUIBody(props: DeleteDialogContentUIProps) {
             onItemClicked={onItemClicked}
             selectedItems={selectedItems}
             disabled={isDisabled}
+            onEditClick={onEditDependantClick}
           />
         </div>
       </Grid>

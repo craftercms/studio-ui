@@ -49,7 +49,8 @@ export function DeleteDialogUI(props: DeleteDialogUIProps) {
     onItemClicked,
     onSelectAllClicked,
     onSelectAllDependantClicked,
-    onConfirmDeleteChange
+    onConfirmDeleteChange,
+    onEditDependantClick
   } = props;
   const { formatMessage } = useIntl();
   return (
@@ -75,6 +76,7 @@ export function DeleteDialogUI(props: DeleteDialogUIProps) {
             isCommentRequired={isCommentRequired}
             onConfirmDeleteChange={onConfirmDeleteChange}
             isConfirmDeleteChecked={isConfirmDeleteChecked}
+            onEditDependantClick={onEditDependantClick}
           />
         </SuspenseWithEmptyState>
       </DialogBody>

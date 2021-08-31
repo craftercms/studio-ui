@@ -23,6 +23,7 @@ import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import {
   fetchDeleteDependencies,
   fetchDeleteDependenciesComplete,
+  showEditDialog,
   updateDeleteDialog
 } from '../../state/actions/dialogs';
 import { deleteItems } from '../../services/content';
@@ -69,7 +70,7 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
     error: null,
     submitting: false
   });
-  const siteId = useActiveSiteId();
+  const site = useActiveSiteId();
   const isCommentRequired = useSelection((state) => state.uiConfig.publishing.deleteCommentRequired);
   const [selectedItems, setSelectedItems] = useState<LookupTable<boolean>>({});
   const dispatch = useDispatch();
@@ -81,18 +82,19 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
   ]);
   const [submitDisabled, setSubmitDisabled] = useState(true);
   const [confirmChecked, setConfirmChecked] = useState(false);
+  const authoringBase = useSelection((state) => state.env.authoringBase);
 
   const onSubmit = () => {
     const paths = createCheckedList(selectedItems);
     setApiState({ submitting: true });
     dispatch(updateDeleteDialog({ disableQuickDismiss: true }));
-    deleteItems(siteId, paths, comment).subscribe(
+    deleteItems(site, paths, comment).subscribe(
       (response) => {
         setApiState({ submitting: false });
         dispatch(
           batchActions([
             updateDeleteDialog({ disableQuickDismiss: false }),
-            emitSystemEvent(itemsDeleted({ targets: paths }))
+            emitSystemEvent(itemsDeleted({ targets: paths.concat(childItems ?? []) }))
           ])
         );
         onSuccess?.({
@@ -120,9 +122,14 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
   };
 
   const onItemClicked = (e, path) => {
-    const nextChecked = { ...selectedItems, [path]: !selectedItems[path] };
+    let nextChecked = { ...selectedItems, [path]: !selectedItems[path] };
+    // Clean the state, only keep checked items
     !nextChecked[path] && delete nextChecked[path];
-    fetchOrCleanDependencies(nextChecked);
+    // If there aren't any checked main items, uncheck everything.
+    const checkedMainItems = createCheckedList(nextChecked, dependentItems);
+    checkedMainItems.length === 0 && (nextChecked = {});
+    // Only recalculate dependencies for changes the main set items, not dependant.
+    !dependentItems.includes(path) && fetchOrCleanDependencies(nextChecked);
     setSelectedItems(nextChecked);
   };
 
@@ -162,6 +169,15 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
 
   const onConfirmChange = (e) => {
     setConfirmChecked(e.target.checked);
+  };
+
+  const onEditDependantClick = (e, path) => {
+    let paths = createCheckedList(selectedItems, dependentItems);
+    // We don't have a good way of knowing if the dependant item cleared it's dependency and if it's checked, it
+    // needs to get removed from selectedItems after the edit is complete and the item is not even listed as a dependency.
+    // Until we find a better way around that, will uncheck when the edit button is pressed.
+    selectedItems[path] && onItemClicked(null, path);
+    dispatch(showEditDialog({ path, authoringBase, site, onSaveSuccess: fetchDeleteDependencies({ paths }) }));
   };
 
   useUnmount(onClosed);
@@ -209,6 +225,7 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
       onSelectAllDependantClicked={onSelectAllDependantClicked}
       onConfirmDeleteChange={onConfirmChange}
       isConfirmDeleteChecked={confirmChecked}
+      onEditDependantClick={onEditDependantClick}
     />
   );
 }
