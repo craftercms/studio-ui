@@ -6118,12 +6118,12 @@ var nodeOpen = false,
         return scheduledDate;
       },
 
-      // TODO: use locale > dateTimeFormatOptions > timeZone
       getTimeZoneConfig: function() {
         if (!studioTimeZone) {
           CStudioAuthoring.Service.getConfiguration(CStudioAuthoringContext.site, '/site-config.xml', {
             success: function(config) {
-              studioTimeZone = config['default-timezone'];
+              studioTimeZone =
+                config.locale?.dateTimeFormatOptions?.timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
             }
           });
         }
