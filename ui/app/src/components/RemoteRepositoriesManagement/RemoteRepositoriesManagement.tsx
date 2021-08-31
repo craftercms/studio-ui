@@ -116,6 +116,15 @@ export default function RemoteRepositoriesManagement(props: RemoteRepositoriesMa
     );
   };
 
+  const onCreateError = ({ response }) => {
+    dispatch(
+      showSystemNotification({
+        message: response.response.message,
+        options: { variant: 'error' }
+      })
+    );
+  };
+
   useEffect(() => {
     fetchRepositories();
   }, [fetchRepositories]);
@@ -228,6 +237,7 @@ export default function RemoteRepositoriesManagement(props: RemoteRepositoriesMa
           open={openNewRemoteDialog}
           onClose={() => setOpenNewRemoteDialog(false)}
           onCreateSuccess={onCreateSuccess}
+          onCreateError={onCreateError}
         />
       </section>
     </Paper>
