@@ -21,7 +21,6 @@ import { ViewVersionDialogStateProps } from '../../modules/Content/History/ViewV
 import { FetchContentVersion } from '../../models/Version';
 import { CompareVersionsDialogStateProps } from '../../modules/Content/History/CompareVersionsDialog';
 import { ConfirmDialogStateProps } from '../../components/Dialogs/ConfirmDialog';
-import { DeleteDialogStateProps } from '../../components/DeleteDialog/DeleteDialog';
 import { NewContentDialogStateProps } from '../../modules/Content/Authoring/NewContentDialog';
 import { DependenciesDialogStateProps } from '../../modules/Content/Dependencies/DependenciesDialog';
 import { WorkflowCancellationDialogStateProps } from '../../components/Dialogs/WorkflowCancellationDialog';
@@ -43,6 +42,8 @@ import { UnlockPublisherDialogStateProps } from '../../components/UnlockPublishe
 import { WidgetDialogStateProps } from '../../components/WidgetDialog';
 import { CodeEditorDialogStateProps } from '../../components/CodeEditorDialog';
 import { PublishDialogStateProps } from '../../components/PublishDialog/utils';
+import { DeleteDialogStateProps } from '../../components/DeleteDialog/utils';
+import { FetchDeleteDependenciesResponse } from '../../services/dependencies';
 
 // region History
 export const showHistoryDialog = /*#__PURE__*/ createAction<Partial<HistoryDialogStateProps>>('SHOW_HISTORY_DIALOG');
@@ -80,16 +81,22 @@ export const confirmDialogClosed = /*#__PURE__*/ createAction('CONFIRM_DIALOG_CL
 
 // region Publish
 export const showPublishDialog = /*#__PURE__*/ createAction<Partial<PublishDialogStateProps>>('SHOW_PUBLISH_DIALOG');
+export const updatePublishDialog = /*#__PURE__*/ createAction<Partial<PublishDialogStateProps>>(
+  'UPDATE_PUBLISH_DIALOG'
+);
 export const closePublishDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_PUBLISH_DIALOG');
 export const publishDialogClosed = /*#__PURE__*/ createAction('PUBLISH_DIALOG_CLOSED');
 // endregion
 
 // region Delete
 export const showDeleteDialog = /*#__PURE__*/ createAction<Partial<DeleteDialogStateProps>>('SHOW_DELETE_DIALOG');
+export const updateDeleteDialog = /*#__PURE__*/ createAction<Partial<DeleteDialogStateProps>>('UPDATE_DELETE_DIALOG');
 export const closeDeleteDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_DELETE_DIALOG');
 export const deleteDialogClosed = /*#__PURE__*/ createAction('DELETE_DIALOG_CLOSED');
-export const fetchDeleteDependencies = /*#__PURE__*/ createAction<string[]>('FETCH_DELETE_DEPENDENCIES');
-export const fetchDeleteDependenciesComplete = /*#__PURE__*/ createAction('FETCH_DELETE_DEPENDENCIES_COMPLETE');
+export const fetchDeleteDependencies = /*#__PURE__*/ createAction<{ paths: string[] }>('FETCH_DELETE_DEPENDENCIES');
+export const fetchDeleteDependenciesComplete = /*#__PURE__*/ createAction<FetchDeleteDependenciesResponse>(
+  'FETCH_DELETE_DEPENDENCIES_COMPLETE'
+);
 export const fetchDeleteDependenciesFailed = /*#__PURE__*/ createAction('FETCH_DELETE_DEPENDENCIES_FAILED');
 // endregion
 
@@ -140,7 +147,7 @@ export const rejectDialogClosed = /*#__PURE__*/ createAction('REJECT_DIALOG_CLOS
 // endregion
 
 // region Legacy Form
-export const showEditDialog = /*#__PURE__*/ createAction<Partial<LegacyFormDialogStateProps>>('SHOW_EDIT_DIALOG');
+export const showEditDialog = /*#__PURE__*/ createAction<LegacyFormDialogStateProps>('SHOW_EDIT_DIALOG');
 export const closeEditDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_EDIT_DIALOG');
 export const editDialogClosed = /*#__PURE__*/ createAction<StandardAction>('EDIT_DIALOG_CLOSED');
 export const newContentCreationComplete = /*#__PURE__*/ createAction<StandardAction>('NEW_CONTENT_CREATION_COMPLETE');

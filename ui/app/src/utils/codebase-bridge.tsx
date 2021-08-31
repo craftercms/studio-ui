@@ -154,11 +154,6 @@ export function createCodebaseBridge() {
       GraphiQL: lazy(() => import('../components/GraphiQL/GraphiQL')),
       SingleFileUpload: lazy(() => import('../components/Controls/SingleFileUpload')),
       DependencySelection: lazy(() => import('../modules/Content/Dependencies/DependencySelection')),
-      DependencySelectionDelete: lazy(() =>
-        import('../modules/Content/Dependencies/DependencySelection').then((module) => ({
-          default: module.DependencySelectionDelete
-        }))
-      ),
       CreateSiteDialog: lazy(() => import('../modules/System/Sites/Create/CreateSiteDialog')),
       PublishingQueue: lazy(() => import('../modules/System/Publishing/Queue/PublishingQueue')),
       Search: lazy(() => import('../pages/Search')),

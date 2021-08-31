@@ -19,11 +19,14 @@ import { ApiResponse } from '../../models/ApiResponse';
 import StandardAction from '../../models/StandardAction';
 import { GoLiveResponse } from '../../services/publishing';
 
-export type ApiState = { error: ApiResponse; submitting: boolean; fetchingDependencies: boolean };
+export interface PublishDialogResourceInput {
+  items: DetailedItem[];
+  publishingTargets: any[];
+  error: ApiResponse;
+  submitting: boolean;
+}
 
-export type PublishDialogResourceInput = { items: DetailedItem[]; publishingChannels: any[]; apiState: ApiState };
-
-export type PublishDialogResourceBody = Omit<PublishDialogResourceInput, 'apiState'>;
+export type PublishDialogResourceBody = Omit<PublishDialogResourceInput, 'submitting' | 'error'>;
 
 export interface ExtendedGoLiveResponse extends GoLiveResponse {
   schedule: 'now' | 'custom';
@@ -32,15 +35,12 @@ export interface ExtendedGoLiveResponse extends GoLiveResponse {
   items: DetailedItem[];
 }
 
-export interface DependenciesResultObject {
-  items1: string[];
-  items2: string[];
-}
-
 export interface PublishDialogBaseProps {
   items?: DetailedItem[];
   // if null it means the dialog should determinate which one to use
   scheduling?: 'now' | 'custom';
+  // Disable dismissing through either backdrop click and escape key down
+  disableQuickDismiss: boolean;
 }
 
 export interface PublishDialogStateProps extends PublishDialogBaseProps {
@@ -59,8 +59,10 @@ export interface InternalDialogState {
   scheduling: 'now' | 'custom';
   scheduledDateTime: any;
   publishingChannel: string;
-  selectedItems: string[];
   scheduledTimeZone: string;
+  error: ApiResponse;
+  submitting: boolean;
+  fetchingDependencies: boolean;
 }
 
 export const updateCheckedList = (path: string[], isChecked: boolean, checked: any) => {

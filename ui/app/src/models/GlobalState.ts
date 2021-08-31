@@ -28,7 +28,6 @@ import { MinimizedDialogsStateProps } from './MinimizedDialog';
 import { NewContentDialogStateProps } from '../modules/Content/Authoring/NewContentDialog';
 import { HistoryDialogStateProps } from '../modules/Content/History/HistoryDialog';
 import { DependenciesDialogStateProps } from '../modules/Content/Dependencies/DependenciesDialog';
-import { DeleteDialogStateProps } from '../components/DeleteDialog/DeleteDialog';
 import { EntityState } from './EntityState';
 import { ApiResponse } from './ApiResponse';
 import { ViewVersionDialogStateProps } from '../modules/Content/History/ViewVersionDialog';
@@ -62,6 +61,7 @@ import { WidgetDialogStateProps } from '../components/WidgetDialog';
 import { CodeEditorDialogStateProps } from '../components/CodeEditorDialog';
 import { SystemLinkId } from '../utils/system';
 import { PublishDialogStateProps } from '../components/PublishDialog/utils';
+import { DeleteDialogStateProps } from '../components/DeleteDialog/utils';
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
   page: any;
@@ -237,8 +237,8 @@ export interface GlobalState {
     publishing: {
       publishCommentRequired: boolean;
       deleteCommentRequired: boolean;
-      bulkPublishRequired: boolean;
-      publishByCommitRequired: boolean;
+      bulkPublishCommentRequired: boolean;
+      publishByCommitCommentRequired: boolean;
       submissionCommentMaxLength: number;
     };
     cdataEscapedFieldPatterns: string[];

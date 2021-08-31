@@ -256,8 +256,8 @@ export interface StudioSiteConfig {
   publishing: {
     publishCommentRequired: boolean;
     deleteCommentRequired: boolean;
-    bulkPublishRequired: boolean;
-    publishByCommitRequired: boolean;
+    bulkPublishCommentRequired: boolean;
+    publishByCommitCommentRequired: boolean;
   };
 }
 
@@ -275,8 +275,8 @@ export function fetchSiteConfig(site: string): Observable<StudioSiteConfig> {
         return {
           publishCommentRequired: commentSettings['publishing-required'] ?? commentSettings.required,
           deleteCommentRequired: commentSettings['delete-required'] ?? commentSettings.required,
-          bulkPublishRequired: commentSettings['bulk-publish-required'] ?? commentSettings.required,
-          publishByCommitRequired: commentSettings['publish-by-commit-required'] ?? commentSettings.required
+          bulkPublishCommentRequired: commentSettings['bulk-publish-required'] ?? commentSettings.required,
+          publishByCommitCommentRequired: commentSettings['publish-by-commit-required'] ?? commentSettings.required
         };
       })(dom.querySelector(':scope > publishing'))
     }))

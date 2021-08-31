@@ -317,6 +317,7 @@ export function PreviewConcierge(props: any) {
   }
 
   // region Legacy Guest pencil repaint
+  // When the guest screen size changes, pencils need to be repainted.
   useEffect(() => {
     if (editMode) {
       let timeout = setTimeout(() => {

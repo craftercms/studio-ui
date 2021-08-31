@@ -55,8 +55,8 @@ const initialState: GlobalState['uiConfig'] = {
   xml: null,
   publishing: {
     deleteCommentRequired: false,
-    bulkPublishRequired: false,
-    publishByCommitRequired: false,
+    bulkPublishCommentRequired: false,
+    publishByCommitCommentRequired: false,
     publishCommentRequired: false,
     submissionCommentMaxLength: 250
   },

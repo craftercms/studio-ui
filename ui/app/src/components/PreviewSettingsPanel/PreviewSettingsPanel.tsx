@@ -31,7 +31,7 @@ const translations = defineMessages({
   },
   editModeHelperText: {
     id: 'settingsPanel.editModeHelperText',
-    defaultMessage: 'Enable In-context editing, highlighting editable zones as you hover on them.'
+    defaultMessage: 'Enable In-context editing, highlighting editable targets as you hover on them.'
   },
   highlightMode: {
     id: 'settingsPanel.highlightMode',
@@ -39,11 +39,12 @@ const translations = defineMessages({
   },
   highlightModeHelperText: {
     id: 'settingsPanel.highlightModeHelperText',
-    defaultMessage: 'When "highlight movable" is active, only content items you can move around drop zones highlight.'
+    defaultMessage:
+      'When "highlight movable" is selected, only content items you can be moved or sorted highlight. Text inputs and other non-movable won\'t highlight.'
   },
   highlightAllZones: {
-    id: 'settingsPanel.highlightAllZones',
-    defaultMessage: 'Highlight All Zones'
+    id: 'settingsPanel.highlightAllTargets',
+    defaultMessage: 'Highlight All Targets'
   },
   highlightMovable: {
     id: 'settingsPanel.highlightMovable',

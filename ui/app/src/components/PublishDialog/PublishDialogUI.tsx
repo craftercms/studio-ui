@@ -26,29 +26,27 @@ import { Resource } from '../../models/Resource';
 import LookupTable from '../../models/LookupTable';
 import { InternalDialogState, PublishDialogResourceBody } from './utils';
 import PublishDialogContentUI from './PublishDialogContentUI';
+import { FetchDependenciesResponse } from '../../services/dependencies';
+import { DependencySelectionProps } from '../../modules/Content/Dependencies/DependencySelection';
 
 export interface PublishDialogUIProps {
   resource: Resource<PublishDialogResourceBody>;
-  publishingChannelsStatus: string;
-  onPublishingChannelsFailRetry: Function;
+  publishingTargetsStatus: string;
+  onPublishingChannelsFailRetry(): void;
   onDismiss?(): void;
   handleSubmit: any;
   submitDisabled: boolean;
-  showDepsDisabled: boolean;
   state: InternalDialogState;
   title: string;
   subtitle?: string;
-  checkedItems: LookupTable<boolean>;
-  checkedSoftDep: LookupTable<boolean>;
-  setCheckedSoftDep: Function;
-  onClickSetChecked: Function;
-  deps: any;
-  selectAllDeps: Function;
-  selectAllSoft: Function;
+  selectedItems: LookupTable<boolean>;
+  onItemClicked: DependencySelectionProps['onItemClicked'];
+  dependencies: FetchDependenciesResponse;
+  onSelectAll(): void;
+  onSelectAllSoftDependencies(): void;
   onClickShowAllDeps?: any;
   showEmailCheckbox?: boolean;
   showRequestApproval: boolean;
-  apiState: any;
   classes?: any;
   submitLabel: ReactNode;
   mixedPublishingDates?: boolean;
@@ -61,26 +59,22 @@ export function PublishDialogUI(props: PublishDialogUIProps) {
   // region const { ... } = props
   const {
     resource,
-    publishingChannelsStatus,
+    publishingTargetsStatus,
     onPublishingChannelsFailRetry,
     onDismiss,
     handleSubmit,
     submitDisabled,
-    showDepsDisabled,
     state,
     title,
     subtitle,
-    checkedItems,
-    checkedSoftDep,
-    setCheckedSoftDep,
-    onClickSetChecked,
-    deps,
-    selectAllDeps,
-    selectAllSoft,
+    selectedItems,
+    onItemClicked,
+    dependencies,
+    onSelectAll,
+    onSelectAllSoftDependencies,
     onClickShowAllDeps,
     showEmailCheckbox,
     showRequestApproval,
-    apiState,
     classes,
     submitLabel,
     mixedPublishingDates,
@@ -91,7 +85,7 @@ export function PublishDialogUI(props: PublishDialogUIProps) {
   // endregion
   return (
     <>
-      <DialogHeader title={title} subtitle={subtitle} onDismiss={onDismiss} />
+      <DialogHeader title={title} subtitle={subtitle} onDismiss={onDismiss} disableDismiss={state.submitting} />
       <DialogBody>
         <SuspenseWithEmptyState
           resource={resource}
@@ -106,19 +100,16 @@ export function PublishDialogUI(props: PublishDialogUIProps) {
         >
           <PublishDialogContentUI
             resource={resource}
-            checkedItems={checkedItems}
-            checkedSoftDep={checkedSoftDep}
-            setCheckedSoftDep={setCheckedSoftDep}
-            onClickSetChecked={onClickSetChecked}
-            deps={deps}
-            selectAllDeps={selectAllDeps}
-            selectAllSoft={selectAllSoft}
+            selectedItems={selectedItems}
+            onItemClicked={onItemClicked}
+            dependencies={dependencies}
+            onSelectAll={onSelectAll}
+            onSelectAllSoftDependencies={onSelectAllSoftDependencies}
             state={state}
             showEmailCheckbox={showEmailCheckbox}
             showRequestApproval={showRequestApproval}
-            publishingChannelsStatus={publishingChannelsStatus}
+            publishingTargetsStatus={publishingTargetsStatus}
             onPublishingChannelsFailRetry={onPublishingChannelsFailRetry}
-            apiState={apiState}
             mixedPublishingDates={mixedPublishingDates}
             mixedPublishingTargets={mixedPublishingTargets}
             submissionCommentRequired={submissionCommentRequired}
@@ -131,18 +122,20 @@ export function PublishDialogUI(props: PublishDialogUIProps) {
           color="primary"
           onClick={onClickShowAllDeps}
           className={classes.leftAlignedAction}
-          disabled={showDepsDisabled || apiState.submitting || apiState.fetchingDependencies}
-          loading={apiState.fetchingDependencies}
+          disabled={state.submitting || state.fetchingDependencies}
+          loading={state.fetchingDependencies}
         >
           <FormattedMessage id="publishDialog.showAllDependencies" defaultMessage="Show All Dependencies" />
         </SecondaryButton>
-        <SecondaryButton onClick={onDismiss} disabled={apiState.submitting}>
+        <SecondaryButton onClick={onDismiss} disabled={state.submitting}>
           <FormattedMessage id="requestPublishDialog.cancel" defaultMessage="Cancel" />
         </SecondaryButton>
-        <PrimaryButton onClick={handleSubmit} disabled={submitDisabled} loading={apiState.submitting}>
+        <PrimaryButton onClick={handleSubmit} disabled={submitDisabled} loading={state.submitting}>
           {submitLabel}
         </PrimaryButton>
       </DialogFooter>
     </>
   );
 }
+
+export default PublishDialogUI;

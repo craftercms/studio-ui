@@ -165,7 +165,7 @@ export type PublishFormProps = Pick<
   | 'state'
   | 'showEmailCheckbox'
   | 'showRequestApproval'
-  | 'publishingChannelsStatus'
+  | 'publishingTargetsStatus'
   | 'onPublishingChannelsFailRetry'
   | 'mixedPublishingDates'
   | 'mixedPublishingTargets'
@@ -177,7 +177,7 @@ export type PublishFormProps = Pick<
   onChange(event: React.ChangeEvent<HTMLInputElement>): void;
 };
 
-function PublishDialogForm(props: PublishFormProps) {
+export function PublishDialogForm(props: PublishFormProps) {
   const classes = useStyles();
   const { formatMessage } = useIntl();
   const {
@@ -185,7 +185,7 @@ function PublishDialogForm(props: PublishFormProps) {
     showEmailCheckbox,
     showRequestApproval,
     publishingChannels,
-    publishingChannelsStatus,
+    publishingTargetsStatus,
     onPublishingChannelsFailRetry,
     disabled = true,
     mixedPublishingDates,
@@ -330,10 +330,10 @@ function PublishDialogForm(props: PublishFormProps) {
               variant="body1"
               component="span"
               className={`${classes.publishingTargetLoader} ${classes.formInputs}`}
-              color={publishingChannelsStatus === 'Error' ? 'error' : 'initial'}
+              color={publishingTargetsStatus === 'Error' ? 'error' : 'initial'}
             >
-              {formatMessage(messages[`publishingTarget${publishingChannelsStatus}`])}
-              {publishingChannelsStatus === 'Error' && (
+              {formatMessage(messages[`publishingTarget${publishingTargetsStatus}`])}
+              {publishingTargetsStatus === 'Error' && (
                 <Link href="#" onClick={() => onPublishingChannelsFailRetry()}>
                   ({formatMessage(messages.publishingTargetRetry)})
                 </Link>

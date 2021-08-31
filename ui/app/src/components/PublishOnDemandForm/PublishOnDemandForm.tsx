@@ -51,16 +51,24 @@ interface PublishOnDemandFormProps {
   setFormData(data): void;
   publishingTargets: PublishingTarget[];
   publishingTargetsError: ApiResponse;
+  bulkPublishCommentRequired: boolean;
+  publishByCommitCommentRequired: boolean;
 }
 
 export default function PublishOnDemandForm(props: PublishOnDemandFormProps) {
-  const { formData, setFormData, mode, publishingTargets, publishingTargetsError } = props;
+  const {
+    formData,
+    setFormData,
+    mode,
+    publishingTargets,
+    publishingTargetsError,
+    bulkPublishCommentRequired,
+    publishByCommitCommentRequired
+  } = props;
   const classes = useStyles();
-
   const handleFormChange = (name: string) => (event: React.ChangeEvent<{ value: unknown }>) => {
     setFormData({ [name]: event.target.value });
   };
-
   return (
     <form>
       <Grid container spacing={3}>
@@ -147,6 +155,7 @@ export default function PublishOnDemandForm(props: PublishOnDemandFormProps) {
               fullWidth
               multiline
               onChange={handleFormChange('comment')}
+              required={mode === 'studio' ? bulkPublishCommentRequired : publishByCommitCommentRequired}
             />
           </FormControl>
         </Grid>

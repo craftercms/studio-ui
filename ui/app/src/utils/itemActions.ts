@@ -106,7 +106,7 @@ import {
 import { getEditorMode, isNavigable } from '../components/PathNavigator/utils';
 import React from 'react';
 import { previewItem } from '../state/actions/preview';
-import { createPresenceTable } from './array';
+import { asArray, createPresenceTable } from './array';
 import { fetchPublishingStatus } from '../state/actions/publishingStatus';
 import { Clipboard } from '../models/GlobalState';
 
@@ -567,6 +567,7 @@ export const itemActionDispatcher = ({
           showNewContentDialog({
             item,
             rootPath: getRootPath(item.path),
+            // @ts-ignore - required attributes of `showEditDialog` are submitted by new content dialog `onContentTypeSelected` callback and injected into the showEditDialog action by the GlobalDialogManger
             onContentTypeSelected: showEditDialog({})
           })
         );
@@ -805,7 +806,7 @@ export const itemActionDispatcher = ({
     case 'deleteTemplate':
     case 'deleteController':
     case 'delete': {
-      let items = Array.isArray(item) ? item : [item];
+      let items = asArray(item);
       dispatch(
         showDeleteDialog({
           items,

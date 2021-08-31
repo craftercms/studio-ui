@@ -23,19 +23,16 @@ import { PublishDialogUIProps } from './PublishDialogUI';
 export type PublishDialogContentUIProps = Pick<
   PublishDialogUIProps,
   | 'resource'
-  | 'checkedItems'
-  | 'checkedSoftDep'
-  | 'setCheckedSoftDep'
-  | 'onClickSetChecked'
-  | 'deps'
-  | 'selectAllDeps'
-  | 'selectAllSoft'
+  | 'selectedItems'
+  | 'onItemClicked'
+  | 'dependencies'
+  | 'onSelectAll'
+  | 'onSelectAllSoftDependencies'
   | 'state'
   | 'showEmailCheckbox'
   | 'showRequestApproval'
-  | 'publishingChannelsStatus'
+  | 'publishingTargetsStatus'
   | 'onPublishingChannelsFailRetry'
-  | 'apiState'
   | 'mixedPublishingDates'
   | 'mixedPublishingTargets'
   | 'submissionCommentRequired'
@@ -46,40 +43,35 @@ export function PublishDialogContentUI(props: PublishDialogContentUIProps) {
   // region { ... } = props
   const {
     resource,
-    checkedItems,
-    checkedSoftDep,
-    setCheckedSoftDep,
-    onClickSetChecked,
-    deps,
-    selectAllDeps,
-    selectAllSoft,
+    selectedItems,
+    onItemClicked,
+    dependencies,
+    onSelectAll,
+    onSelectAllSoftDependencies,
     state,
     showEmailCheckbox,
     showRequestApproval,
-    publishingChannelsStatus,
+    publishingTargetsStatus,
     onPublishingChannelsFailRetry,
-    apiState,
     mixedPublishingDates,
     mixedPublishingTargets,
     submissionCommentRequired,
     onPublishingArgumentChange
   } = props;
   // endregion
-  const { items, publishingChannels } = resource.read();
+  const { items, publishingTargets } = resource.read();
   return (
     <>
       <Grid container spacing={3}>
         <Grid item xs={12} sm={7} md={7} lg={7} xl={7}>
           <DependencySelection
             items={items}
-            checked={checkedItems}
-            checkedSoftDep={checkedSoftDep}
-            setCheckedSoftDep={setCheckedSoftDep}
-            onClickSetChecked={onClickSetChecked}
-            deps={deps}
-            onSelectAllClicked={selectAllDeps}
-            onSelectAllSoftClicked={selectAllSoft}
-            disabled={apiState.submitting}
+            selectedItems={selectedItems}
+            onItemClicked={onItemClicked}
+            dependencies={dependencies}
+            onSelectAllClicked={onSelectAll}
+            onSelectAllSoftClicked={onSelectAllSoftDependencies}
+            disabled={state.submitting}
           />
         </Grid>
         <Grid item xs={12} sm={5} md={5} lg={5} xl={5}>
@@ -87,10 +79,10 @@ export function PublishDialogContentUI(props: PublishDialogContentUIProps) {
             state={state}
             showEmailCheckbox={showEmailCheckbox}
             showRequestApproval={showRequestApproval}
-            publishingChannels={publishingChannels}
-            publishingChannelsStatus={publishingChannelsStatus}
+            publishingChannels={publishingTargets}
+            publishingTargetsStatus={publishingTargetsStatus}
             onPublishingChannelsFailRetry={onPublishingChannelsFailRetry}
-            disabled={apiState.submitting}
+            disabled={state.submitting}
             mixedPublishingDates={mixedPublishingDates}
             mixedPublishingTargets={mixedPublishingTargets}
             submissionCommentRequired={submissionCommentRequired}
