@@ -80,6 +80,7 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
     isFetching
   ]);
   const [submitDisabled, setSubmitDisabled] = useState(true);
+  const [confirmChecked, setConfirmChecked] = useState(false);
 
   const onSubmit = () => {
     const paths = createCheckedList(selectedItems);
@@ -120,12 +121,16 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
 
   const onItemClicked = (e, path) => {
     const nextChecked = { ...selectedItems, [path]: !selectedItems[path] };
+    !nextChecked[path] && delete nextChecked[path];
     fetchOrCleanDependencies(nextChecked);
     setSelectedItems(nextChecked);
   };
 
   const onSelectAllClicked = () => {
     const setChecked = Boolean(items.find((item) => !selectedItems[item.path]));
+    // If the "select all" checkbox is working to check all, then clean all `false`s and
+    // check all main items. Otherwise, if it's working to uncheck all, everything should get
+    // unchecked (both main & dependant items).
     const nextChecked = setChecked
       ? {
           ...createPresenceTable(
@@ -143,12 +148,20 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
 
   const onSelectAllDependantClicked = () => {
     const setChecked = Boolean(dependentItems.find((path) => !selectedItems[path]));
+    // Clean up all set to `false` from the selected lookup.
     const cleanLookup = createPresenceTable(createCheckedList(selectedItems, dependentItems));
     const nextChecked = {
       ...cleanLookup,
+      // If "select all" checkbox is working as check all, add all dependant items. If checkbox is working
+      // as "uncheck all", then simply don't add anything. All dependant items would have gotten cleaned up
+      // on the `cleanLookup` creation above.
       ...(setChecked && createCheckedLookup(dependentItems, setChecked))
     };
     setSelectedItems(nextChecked);
+  };
+
+  const onConfirmChange = (e) => {
+    setConfirmChecked(e.target.checked);
   };
 
   useUnmount(onClosed);
@@ -171,9 +184,12 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
 
   useEffect(() => {
     setSubmitDisabled(
-      apiState.submitting || Object.values(selectedItems).length === 0 || (isCommentRequired && isBlank(comment))
+      apiState.submitting ||
+        Object.values(selectedItems).length === 0 ||
+        (isCommentRequired && isBlank(comment)) ||
+        !confirmChecked
     );
-  }, [apiState.submitting, comment, isCommentRequired, selectedItems]);
+  }, [apiState.submitting, comment, isCommentRequired, selectedItems, confirmChecked]);
 
   return (
     <DeleteDialogUI
@@ -182,14 +198,17 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
       selectedItems={selectedItems}
       comment={comment}
       onCommentChange={onCommentChange}
-      apiState={apiState}
+      isDisabled={apiState.submitting}
+      isSubmitting={apiState.submitting}
       onSubmit={onSubmit}
       onDismiss={onDismiss}
       isCommentRequired={isCommentRequired}
-      submitDisabled={submitDisabled}
+      isSubmitButtonDisabled={submitDisabled}
       onItemClicked={onItemClicked}
       onSelectAllClicked={onSelectAllClicked}
       onSelectAllDependantClicked={onSelectAllDependantClicked}
+      onConfirmDeleteChange={onConfirmChange}
+      isConfirmDeleteChecked={confirmChecked}
     />
   );
 }

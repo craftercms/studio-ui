@@ -52,6 +52,9 @@ export const useDeleteDialogUIStyles = makeStyles((theme) =>
     depsContainer: {
       background: theme.palette.background.paper,
       border: `1px solid ${theme.palette.divider}`
+    },
+    confirmCheck: {
+      margin: `${theme.spacing()}px 0`
     }
   })
 );

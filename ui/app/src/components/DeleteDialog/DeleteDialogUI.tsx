@@ -14,6 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import DialogHeader from '../Dialogs/DialogHeader';
 import { translations } from './translations';
@@ -22,29 +23,12 @@ import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import DialogFooter from '../Dialogs/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
-import React from 'react';
-import { Resource } from '../../models/Resource';
-import { DeleteDependencies } from '../../modules/Content/Dependencies/DependencySelection';
-import { DetailedItem } from '../../models/Item';
-import DeleteDialogUIBody from './DeleteDialogUIBody';
-import { InputProps as StandardInputProps } from '@material-ui/core/Input/Input';
-import { SelectionListProps } from '../../modules/Content/Dependencies/SelectionList';
-import LookupTable from '../../models/LookupTable';
-import ApiResponse from '../../models/ApiResponse';
+import DeleteDialogUIBody, { DeleteDialogContentUIProps } from './DeleteDialogUIBody';
 
-interface DeleteDialogUIProps {
-  resource: Resource<DeleteDependencies>;
-  items: DetailedItem[];
-  selectedItems: LookupTable<boolean>;
-  comment: string;
-  onCommentChange: StandardInputProps['onChange'];
-  apiState: { error: ApiResponse; submitting: boolean };
-  isCommentRequired: boolean;
-  onSubmit: any;
-  submitDisabled: boolean;
-  onItemClicked: SelectionListProps['onItemClicked'];
-  onSelectAllClicked: SelectionListProps['onSelectAllClicked'];
-  onSelectAllDependantClicked: SelectionListProps['onSelectAllClicked'];
+interface DeleteDialogUIProps extends DeleteDialogContentUIProps {
+  isSubmitting: boolean;
+  isSubmitButtonDisabled: boolean;
+  onSubmit(): void;
   onDismiss(): void;
 }
 
@@ -55,14 +39,17 @@ export function DeleteDialogUI(props: DeleteDialogUIProps) {
     selectedItems,
     comment,
     onCommentChange,
-    apiState,
+    isDisabled,
+    isSubmitting,
     onSubmit,
     onDismiss,
+    isConfirmDeleteChecked,
     isCommentRequired,
-    submitDisabled,
+    isSubmitButtonDisabled,
     onItemClicked,
     onSelectAllClicked,
-    onSelectAllDependantClicked
+    onSelectAllDependantClicked,
+    onConfirmDeleteChange
   } = props;
   const { formatMessage } = useIntl();
   return (
@@ -71,12 +58,12 @@ export function DeleteDialogUI(props: DeleteDialogUIProps) {
         title={formatMessage(translations.headerTitle)}
         subtitle={formatMessage(translations.headerSubTitle)}
         onDismiss={onDismiss}
-        disableDismiss={apiState.submitting}
+        disableDismiss={isDisabled}
       />
       <DialogBody minHeight>
         <SuspenseWithEmptyState resource={resource}>
           <DeleteDialogUIBody
-            disabled={apiState.submitting}
+            isDisabled={isDisabled}
             onItemClicked={onItemClicked}
             onSelectAllClicked={onSelectAllClicked}
             onSelectAllDependantClicked={onSelectAllDependantClicked}
@@ -86,14 +73,16 @@ export function DeleteDialogUI(props: DeleteDialogUIProps) {
             comment={comment}
             onCommentChange={onCommentChange}
             isCommentRequired={isCommentRequired}
+            onConfirmDeleteChange={onConfirmDeleteChange}
+            isConfirmDeleteChecked={isConfirmDeleteChecked}
           />
         </SuspenseWithEmptyState>
       </DialogBody>
       <DialogFooter>
-        <SecondaryButton onClick={onDismiss} disabled={apiState.submitting}>
+        <SecondaryButton onClick={onDismiss} disabled={isDisabled}>
           <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
         </SecondaryButton>
-        <PrimaryButton onClick={onSubmit} disabled={submitDisabled} loading={apiState.submitting}>
+        <PrimaryButton onClick={onSubmit} disabled={isSubmitButtonDisabled || isDisabled} loading={isSubmitting}>
           <FormattedMessage id="words.delete" defaultMessage="Delete" />
         </PrimaryButton>
       </DialogFooter>

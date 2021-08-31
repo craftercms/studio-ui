@@ -25,6 +25,8 @@ import { FormattedMessage } from 'react-intl';
 import { InputProps } from '@material-ui/core/Input';
 import { SelectionList, SelectionListProps } from '../../modules/Content/Dependencies/SelectionList';
 import LookupTable from '../../models/LookupTable';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 export interface DeleteDialogContentUIProps {
   resource: Resource<DeleteDependencies>;
@@ -32,11 +34,13 @@ export interface DeleteDialogContentUIProps {
   comment: string;
   selectedItems: LookupTable<boolean>;
   isCommentRequired: boolean;
-  disabled: boolean;
+  isDisabled: boolean;
+  isConfirmDeleteChecked: boolean;
   onCommentChange: InputProps['onChange'];
   onItemClicked: SelectionListProps['onItemClicked'];
   onSelectAllClicked: SelectionListProps['onSelectAllClicked'];
   onSelectAllDependantClicked: SelectionListProps['onSelectAllClicked'];
+  onConfirmDeleteChange(event: React.ChangeEvent, checked: boolean): void;
 }
 
 export function DeleteDialogUIBody(props: DeleteDialogContentUIProps) {
@@ -46,11 +50,13 @@ export function DeleteDialogUIBody(props: DeleteDialogContentUIProps) {
     comment,
     selectedItems,
     isCommentRequired = false,
+    isDisabled,
+    isConfirmDeleteChecked,
     onCommentChange,
     onItemClicked,
     onSelectAllClicked,
     onSelectAllDependantClicked,
-    disabled
+    onConfirmDeleteChange
   } = props;
   const deleteDependencies: DeleteDependencies = resource.read();
   const classes = useDeleteDialogUIStyles();
@@ -65,7 +71,7 @@ export function DeleteDialogUIBody(props: DeleteDialogContentUIProps) {
             onSelectAllClicked={onSelectAllClicked}
             displayItemTitle
             selectedItems={selectedItems}
-            disabled={disabled}
+            disabled={isDisabled}
           />
           <SelectionList
             title={<FormattedMessage id="deleteDialog.childItemsText" defaultMessage="Child Items" />}
@@ -85,7 +91,7 @@ export function DeleteDialogUIBody(props: DeleteDialogContentUIProps) {
             onSelectAllClicked={onSelectAllDependantClicked}
             onItemClicked={onItemClicked}
             selectedItems={selectedItems}
-            disabled={disabled}
+            disabled={isDisabled}
           />
         </div>
       </Grid>
@@ -97,7 +103,24 @@ export function DeleteDialogUIBody(props: DeleteDialogContentUIProps) {
             value={comment}
             onChange={onCommentChange}
             required={isCommentRequired}
-            disabled={disabled}
+            disabled={isDisabled}
+          />
+          <FormControlLabel
+            className={classes.confirmCheck}
+            control={
+              <Checkbox
+                color="primary"
+                checked={isConfirmDeleteChecked}
+                onChange={onConfirmDeleteChange}
+                disabled={isDisabled}
+              />
+            }
+            label={
+              <FormattedMessage
+                id="deleteDialog.confirmDeletion"
+                defaultMessage="By submitting, deleted items will be published immediately."
+              />
+            }
           />
         </form>
       </Grid>
