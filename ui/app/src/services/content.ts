@@ -426,10 +426,16 @@ export function deleteItem(
       fieldNode = extractNode(doc, fieldId, removeLastPiece(`${indexToDelete}`));
     }
 
-    $(fieldNode)
+    const $fieldNode = $(fieldNode);
+
+    $fieldNode
       .children()
       .eq(index as number)
       .remove();
+
+    if ($fieldNode.children().length === 0) {
+      $fieldNode.html('');
+    }
   });
 }
 

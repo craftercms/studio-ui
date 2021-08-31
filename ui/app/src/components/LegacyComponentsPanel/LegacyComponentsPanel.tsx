@@ -129,8 +129,8 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
 
   const onComponentDelete = useCallback(
     (props: Partial<ComponentDropProps>) => {
-      const { isNew, zones, compPath, conComp } = props;
-      // conComp is the parent path
+      const { zones, compPath } = props;
+      // compPath is the parent path
       fetchContentDOM(siteId, compPath ? compPath : guestPath).subscribe((content) => {
         let contentModel = legacyXmlModelToMap(content.documentElement);
         let fieldId = Object.keys(zones)[0];
@@ -159,7 +159,7 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
 
   const onComponentDrop = useCallback(
     (props: ComponentDropProps) => {
-      const { type, path, isNew, trackingNumber, zones, compPath, conComp, datasource, isInsert } = props;
+      const { type, path, isNew, trackingNumber, zones, compPath, datasource, isInsert } = props;
       // path is the component path(shared component) and conComp is the parent path
       // if isNew is false it means it is a sort, if it is new it means it a dnd for new component
       // if is 'existing' it means it is a browse component
@@ -171,7 +171,7 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
         if (isNew === true) {
           if (!path) {
             // region embedded component
-            let index;
+            let index = 0;
             zone.forEach((zone, i) => {
               if (zone === trackingNumber) {
                 index = i;
@@ -232,7 +232,7 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
             // endregion
           } else {
             // region shared component
-            let index;
+            let index = 0;
             const editDialogSuccess = 'editDialogSuccess';
             const editDialogCancel = 'editDialogCancel';
             dispatch(
@@ -304,11 +304,11 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
           }
         } else {
           // region browse component
-          let index;
+          let index = 0;
 
           forEach(zone, (item, i) => {
             if (item === trackingNumber) {
-              index = 1;
+              index = i;
               return 'break';
             }
           });
@@ -350,16 +350,17 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
             let index = 0;
             let indexByKey = {};
 
-            contentModelZone.forEach((item, i) => {
-              indexByKey[item.key] = i;
-            });
-
-            forEach(zone, (item, i) => {
-              if (!indexByKey[item.key]) {
-                index = 1;
-                return 'break';
-              }
-            });
+            if (contentModelZone) {
+              contentModelZone.forEach((item, i) => {
+                indexByKey[item.key] = i;
+              });
+              forEach(zone, (item, i) => {
+                if (!indexByKey[item.key]) {
+                  index = 1;
+                  return 'break';
+                }
+              });
+            }
 
             fetchContentInstance(siteId, path, contentTypesLookup)
               .pipe(
@@ -381,6 +382,9 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
                     message: formatMessage(guestMessages.moveOperationComplete)
                   })
                 );
+                hostToGuest$.next({
+                  type: 'REFRESH_PREVIEW'
+                });
               });
             // endregion
           } else {
@@ -492,7 +496,12 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
       switch (type) {
         case 'DRAG_AND_DROP_COMPONENTS_PANEL_CLOSED': {
           if (editMode) {
-            getHostToGuestBus().next({ type: 'ICE_TOOLS_ON' });
+            getHostToGuestBus().next({
+              type: 'ICE_TOOLS_ON',
+              payload: {
+                force: true
+              }
+            });
           }
           break;
         }
