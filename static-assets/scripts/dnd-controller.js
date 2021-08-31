@@ -38,7 +38,7 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
   var COMPONENT_TPL =
     '<sli><sa class="studio-component-drag-target" data-studio-component data-studio-component-path="%@" data-studio-component-type="%@"><span class="status-icon fa fa-puzzle-piece"></span>%@</sa></sli>';
   var BROWSE_TPL =
-    '<sdiv class="studio-category"><sh2 class="studio-category-name add-existing-component pointer" id="%@" data-path="%@">Browse %@</sh2><sul></sul></sdiv>';
+    '<sdiv><sbutton class="btn btn-primary add-existing-component pointer" id="%@" data-path="%@">Browse %@</sbutton><sul></sul></sdiv>';
   var DRAGGABLE_SELECTION = '.studio-components-container .studio-component-drag-target';
   var DROPPABLE_SELECTION = '[data-studio-components-target]';
   var PANEL_ON_BD_CLASS = 'studio-dnd-enabled';

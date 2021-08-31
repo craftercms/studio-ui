@@ -496,10 +496,11 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
             setStoredLegacyComponentPanel({ open: value }, user.username);
             if (!value && editMode) {
               getHostToGuestBus().next({ type: 'ICE_TOOLS_ON' });
-              // TODO: Review this
+              // After closing the component panel we should wait until the animation ends to repaint pencils
+              // because the panel is moving the content the pencil are in an incorrect position
               setTimeout(() => {
                 getHostToGuestBus().next({ type: 'REPAINT_PENCILS' });
-              }, 1000);
+              }, 500);
             }
             setOpen(value);
           }
