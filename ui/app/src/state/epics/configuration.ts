@@ -15,12 +15,21 @@
  */
 
 import { ofType } from 'redux-observable';
-import { exhaustMap, map } from 'rxjs/operators';
+import { exhaustMap, map, withLatestFrom } from 'rxjs/operators';
 import { catchAjaxError } from '../../utils/ajax';
-import { fetchSiteUiConfig, fetchSiteUiConfigComplete, fetchSiteUiConfigFailed } from '../actions/configuration';
-import { fetchSiteUiConfig as fetchSiteUiConfigService } from '../../services/configuration';
+import {
+  fetchSiteConfig,
+  fetchSiteConfigComplete,
+  fetchSiteConfigFailed,
+  fetchSiteUiConfig,
+  fetchSiteUiConfigComplete,
+  fetchSiteUiConfigFailed
+} from '../actions/configuration';
+import {
+  fetchSiteConfig as fetchSiteConfigService,
+  fetchSiteUiConfig as fetchSiteUiConfigService
+} from '../../services/configuration';
 import { CrafterCMSEpic } from '../store';
-import uiConfigDefaults from '../../assets/uiConfigDefaults';
 
 export default [
   (action$) =>
@@ -30,8 +39,19 @@ export default [
       // config that would be retrieved would be the first site.
       exhaustMap(({ payload }) =>
         fetchSiteUiConfigService(payload.site).pipe(
-          map((config) => fetchSiteUiConfigComplete(config === null ? uiConfigDefaults : config)),
+          map((config) => fetchSiteUiConfigComplete({ config, site: payload.site })),
           catchAjaxError(fetchSiteUiConfigFailed)
+        )
+      )
+    ),
+  (action$, state$) =>
+    action$.pipe(
+      ofType(fetchSiteConfig.type),
+      withLatestFrom(state$),
+      exhaustMap(([, state]) =>
+        fetchSiteConfigService(state.sites.active).pipe(
+          map((config) => fetchSiteConfigComplete(config)),
+          catchAjaxError(fetchSiteConfigFailed)
         )
       )
     )

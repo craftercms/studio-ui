@@ -54,9 +54,19 @@ export const useStyles = makeStyles((theme) =>
       justifyContent: 'space-between',
       padding: theme.spacing(2)
     },
-    drawerPaper: {},
+    drawerPaper: {
+      position: 'absolute'
+    },
     launcher: {
       margin: '10px 12px 0 auto'
+    }
+  })
+);
+
+export const embeddedStyles = makeStyles((theme) =>
+  createStyles({
+    root: {
+      height: '100%'
     }
   })
 );

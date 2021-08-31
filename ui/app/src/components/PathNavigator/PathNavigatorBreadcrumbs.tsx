@@ -47,7 +47,7 @@ function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
   const classes = useStyles();
   const { formatMessage } = useIntl();
   const { breadcrumb, onCrumbSelected, keyword, onSearch } = props;
-  const [showSearch, setShowSearch] = useState(false);
+  const [showSearch, setShowSearch] = useState(Boolean(keyword));
 
   const onChange = (keyword: string) => onSearch(keyword);
 
@@ -59,7 +59,7 @@ function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
       {(showSearch && onSearch) || forceSearch ? (
         <>
           <SearchBar
-            autoFocus
+            autoFocus={!forceSearch}
             onChange={onChange}
             keyword={keyword}
             placeholder={formatMessage(messages.filter, { name: breadcrumb[0]?.label })}

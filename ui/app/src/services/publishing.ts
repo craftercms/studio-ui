@@ -20,7 +20,7 @@ import { catchError, map, mapTo, pluck, switchMap } from 'rxjs/operators';
 import { LegacyItem } from '../models/Item';
 import { fetchDependencies } from './dependencies';
 import { toQueryString } from '../utils/object';
-import { PublishingStatus } from '../models/Publishing';
+import { PublishingStatus, PublishingTarget } from '../models/Publishing';
 
 export function fetchPackages(
   siteId: string,
@@ -41,22 +41,29 @@ export function cancelPackage(siteId: string, packageIds: any) {
   return postJSON('/studio/api/2/publish/cancel', { siteId, packageIds });
 }
 
-export function fetchPublishingTargets(
-  site: string
-): Observable<Array<{ name: string; order: number; publish: boolean; updateStatus: boolean }>> {
+export function fetchPublishingTargets(site: string): Observable<Array<PublishingTarget>> {
   return get(`/studio/api/1/services/api/1/deployment/get-available-publishing-channels.json?site_id=${site}`).pipe(
     pluck('response', 'availablePublishChannels')
   );
 }
 
-export function submitToGoLive(siteId: string, user: string, data): Observable<any> {
+export interface GoLiveResponse {
+  status: number;
+  commitId: string;
+  item: LegacyItem;
+  invalidateCache: boolean;
+  success: boolean;
+  message: string;
+}
+
+export function submitToGoLive(siteId: string, user: string, data): Observable<GoLiveResponse> {
   return postJSON(
     `/studio/api/1/services/api/1/workflow/submit-to-go-live.json?site=${siteId}&user=${user}`,
     data
   ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
 
-export function goLive(siteId: string, user: string, data): Observable<any> {
+export function goLive(siteId: string, user: string, data): Observable<GoLiveResponse> {
   return postJSON(`/studio/api/1/services/api/1/workflow/go-live.json?site=${siteId}&user=${user}`, data).pipe(
     pluck('response'),
     catchError(errorSelectorApi1)

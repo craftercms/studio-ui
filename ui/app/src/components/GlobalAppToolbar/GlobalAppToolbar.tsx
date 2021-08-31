@@ -25,7 +25,13 @@ import { defineMessages, useIntl } from 'react-intl';
 import ViewToolbar, { ViewToolbarClassKey } from '../ViewToolbar/ViewToolbar';
 import { useGlobalAppState } from '../GlobalApp';
 
-type GlobalAppToolbarClassKey = ViewToolbarClassKey | 'title' | 'leftContent' | 'rightContent' | 'ellipsis';
+type GlobalAppToolbarClassKey =
+  | ViewToolbarClassKey
+  | 'title'
+  | 'subtitle'
+  | 'leftContent'
+  | 'rightContent'
+  | 'ellipsis';
 
 type GlobalAppToolbarStyles = Partial<Record<GlobalAppToolbarClassKey, CSSProperties>>;
 
@@ -59,7 +65,11 @@ const useStyles = makeStyles((theme) =>
       flexDirection: 'column',
       justifyContent: 'center',
       overflow: 'hidden',
+      marginBottom: theme.spacing(1),
       ...styles.title
+    }),
+    subtitle: (styles) => ({
+      ...styles.subtitle
     }),
     leftContent: (styles) => ({
       marginLeft: '25px',
@@ -103,6 +113,7 @@ const GlobalAppToolbar = React.memo<GlobalAppToolbarProps>(function(props) {
     <ViewToolbar elevation={props.elevation} styles={styles} classes={props.classes}>
       {showHamburgerMenuButton && (
         <LogoAndMenuBundleButton
+          showCrafterIcon={showAppsButton}
           aria-label={formatMessage(translations.toggleSidebar)}
           onClick={() => setState({ openSidebar: !openSidebar })}
         />
@@ -116,7 +127,12 @@ const GlobalAppToolbar = React.memo<GlobalAppToolbarProps>(function(props) {
             </Typography>
           )}
           {subtitle && (
-            <Typography variant="body2" component="h2" color="textSecondary" className={classes.ellipsis}>
+            <Typography
+              variant="body2"
+              component="h2"
+              color="textSecondary"
+              className={clsx(classes.ellipsis, classes.subtitle, props.classes?.subtitle)}
+            >
               {subtitle}
             </Typography>
           )}

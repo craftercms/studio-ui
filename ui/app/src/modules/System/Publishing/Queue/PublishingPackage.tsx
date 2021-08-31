@@ -22,7 +22,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import { defineMessages, useIntl } from 'react-intl';
 import SelectButton from '../../../../components/Controls/ConfirmDropdown';
 import Typography from '@material-ui/core/Typography';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import { cancelPackage, fetchPackage } from '../../../../services/publishing';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -30,11 +29,11 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import '../../../../styles/animations.scss';
 import clsx from 'clsx';
 import { READY_FOR_LIVE } from '../constants';
-import { fade } from '@material-ui/core/styles/colorManipulator';
+import { alpha } from '@material-ui/core/styles';
 import palette from '../../../../styles/palette';
 import PrimaryButton from '../../../../components/PrimaryButton';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles((theme) => ({
   package: {
     padding: '20px 8px 20px 0',
     '& .loading-header': {
@@ -94,9 +93,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   cancelButton: {
     paddingRight: '10px',
     color: palette.orange.main,
-    border: `1px solid ${fade(palette.orange.main, 0.5)}`,
+    border: `1px solid ${alpha(palette.orange.main, 0.5)}`,
     '&:hover': {
-      backgroundColor: fade(palette.orange.main, 0.08)
+      backgroundColor: alpha(palette.orange.main, 0.08)
     }
   },
   username: {

@@ -22,14 +22,18 @@ import {
   pathNavigatorTreeExpandPath,
   pathNavigatorTreeFetchPathChildren,
   pathNavigatorTreeFetchPathChildrenComplete,
+  pathNavigatorTreeFetchPathPage,
   pathNavigatorTreeFetchPathPageComplete,
+  pathNavigatorTreeFetchPathsChildren,
   pathNavigatorTreeFetchPathsChildrenComplete,
   pathNavigatorTreeInit,
+  pathNavigatorTreeRefresh,
   pathNavigatorTreeRestoreComplete,
   pathNavigatorTreeSetKeyword,
   pathNavigatorTreeToggleExpanded
 } from '../actions/pathNavigatorTree';
 import { changeSite } from './sites';
+import { createPresenceTable } from '../../utils/array';
 
 const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
   {},
@@ -46,8 +50,10 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
           limit,
           expanded,
           childrenByParentPath: {},
+          offsetByPath: {},
           keywordByPath,
-          totalByPath: {}
+          totalByPath: {},
+          fetchingByPath: { ...createPresenceTable(expanded) }
         }
       };
     },
@@ -86,8 +92,15 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
           keywordByPath: {
             ...state[id].keywordByPath,
             [path]: keyword
-          }
+          },
+          fetchingByPath: { ...state[id].fetchingByPath, [path]: true }
         }
+      };
+    },
+    [pathNavigatorTreeFetchPathsChildren.type]: (state, { payload: { id, paths } }) => {
+      return {
+        ...state,
+        fetchingByPath: { ...state[id].fetchingByPath, ...createPresenceTable(Object.keys(paths)) }
       };
     },
     [pathNavigatorTreeFetchPathChildren.type]: (state, { payload: { id, path } }) => {
@@ -95,17 +108,24 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
         ...state,
         [id]: {
           ...state[id],
-          ...(!state[id].expanded.includes(path) && { expanded: [...state[id].expanded, path] })
+          ...(!state[id].expanded.includes(path) && { expanded: [...state[id].expanded, path] }),
+          fetchingByPath: { ...state[id].fetchingByPath, [path]: true }
         }
       };
     },
     [pathNavigatorTreeFetchPathChildrenComplete.type]: (state, { payload: { id, parentPath, children, options } }) => {
+      const totalByPath = { ...state[id].totalByPath };
+      totalByPath[parentPath] = children.levelDescriptor ? children.total + 1 : children.total;
       const nextChildren = [];
       if (children.levelDescriptor) {
         nextChildren.push(children.levelDescriptor.path);
+        totalByPath[children.levelDescriptor.path] = 0;
       }
 
-      children.forEach((item) => nextChildren.push(item.path));
+      children.forEach((item) => {
+        nextChildren.push(item.path);
+        totalByPath[item.path] = item.childrenCount;
+      });
 
       return {
         ...state,
@@ -120,40 +140,70 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
             ...state[id].childrenByParentPath,
             [parentPath]: nextChildren
           },
-          totalByPath: {
-            ...state[id].totalByPath,
-            [parentPath]: children.total
+          totalByPath,
+          offsetByPath: {
+            ...state[id].offsetByPath,
+            [parentPath]: 0
+          },
+          fetchingByPath: { ...state[id].fetchingByPath, [parentPath]: false }
+        }
+      };
+    },
+    [pathNavigatorTreeFetchPathPage.type]: (state, { payload: { id, path } }) => {
+      return {
+        ...state,
+        [id]: {
+          ...state[id],
+          offsetByPath: {
+            ...state[id].offsetByPath,
+            [path]: state[id].offsetByPath[path] ? state[id].offsetByPath[path] + state[id].limit : state[id].limit
           }
         }
       };
     },
     [pathNavigatorTreeFetchPathPageComplete.type]: (state, { payload: { id, parentPath, children, options } }) => {
+      const totalByPath = { ...state[id].totalByPath };
+      const nextChildren = [...state[id].childrenByParentPath[parentPath]];
+      totalByPath[parentPath] = children.levelDescriptor ? children.total + 1 : children.total;
+
+      if (children.levelDescriptor) {
+        totalByPath[children.levelDescriptor.path] = 0;
+      }
+
+      children.forEach((item) => {
+        nextChildren.push(item.path);
+        totalByPath[item.path] = item.childrenCount;
+      });
+
       return {
         ...state,
         [id]: {
           ...state[id],
           childrenByParentPath: {
             ...state[id].childrenByParentPath,
-            [parentPath]: [...state[id].childrenByParentPath[parentPath], ...children.map((item) => item.path)]
+            [parentPath]: nextChildren
           },
-          totalByPath: {
-            ...state[id].totalByPath,
-            [parentPath]: children.total
-          }
+          totalByPath
         }
       };
     },
     [pathNavigatorTreeFetchPathsChildrenComplete.type]: (state, { payload: { id, data } }) => {
       const childrenByParentPath = { ...state[id].childrenByParentPath };
       const totalByPath = { ...state[id].totalByPath };
+      const offsetByPath = { ...state[id].offsetByPath };
 
       Object.keys(data).forEach((path) => {
         childrenByParentPath[path] = [];
         if (data[path].levelDescriptor) {
           childrenByParentPath[path].push(data[path].levelDescriptor.path);
+          totalByPath[data[path].levelDescriptor.path] = 0;
         }
-        data[path].forEach((item) => childrenByParentPath[path].push(item.path));
-        totalByPath[path] = data[path].total;
+        data[path].forEach((item) => {
+          childrenByParentPath[path].push(item.path);
+          totalByPath[item.path] = item.childrenCount;
+        });
+        totalByPath[path] = data[path].levelDescriptor ? data[path].total + 1 : data[path].total;
+        offsetByPath[path] = 0;
       });
 
       return {
@@ -161,24 +211,38 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
         [id]: {
           ...state[id],
           childrenByParentPath,
-          totalByPath
+          totalByPath,
+          offsetByPath
         }
       };
     },
-    [pathNavigatorTreeRestoreComplete.type]: (state, { payload: { id, data } }) => {
+    [pathNavigatorTreeRefresh.type]: (state, { payload: { id } }) => {
+      return {
+        ...state,
+        [id]: {
+          ...state[id],
+          fetchingByPath: { ...state[id].fetchingByPath, [state[id].rootPath]: true }
+        }
+      };
+    },
+    [pathNavigatorTreeRestoreComplete.type]: (state, { payload: { id, data, items } }) => {
       const children = {};
       const total = {};
+      const offsetByPath = {};
       const keywordByPath = state[id].keywordByPath;
       const expanded = [];
       Object.keys(data).forEach((path) => {
         children[path] = [];
         if (data[path].levelDescriptor) {
           children[path].push(data[path].levelDescriptor.path);
+          total[data[path].levelDescriptor.path] = 0;
         }
         data[path].forEach((item) => {
           children[path].push(item.path);
+          total[item.path] = item.childrenCount;
         });
-        total[path] = data[path].total;
+        total[path] = data[path].levelDescriptor ? data[path].total + 1 : data[path].total;
+        offsetByPath[path] = 0;
 
         if (keywordByPath[path] || children[path].length) {
           // If the expanded node is filtered or has children it means, it's not a leaf and and we should keep it in 'expanded'
@@ -195,9 +259,20 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
             ...state[id].childrenByParentPath,
             ...children
           },
+          offsetByPath: {
+            ...state[id].offsetByPath,
+            ...offsetByPath
+          },
           totalByPath: {
             ...state[id].totalByPath,
             ...total
+          },
+          fetchingByPath: {
+            ...state[id].fetchingByPath,
+            ...createPresenceTable(
+              items.map((item) => item.path),
+              false
+            )
           }
         }
       };

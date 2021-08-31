@@ -19,10 +19,10 @@ import { ContentTypeField } from './ContentType';
 export interface Control<T = any> {
   field: ContentTypeField;
   value: T;
-  onChange: Function;
+  onChange(...args): any;
   disabled: boolean;
 }
 
 export interface DateTimeControl extends Control {
-  timezone?: string;
+  timeZone?: string;
 }

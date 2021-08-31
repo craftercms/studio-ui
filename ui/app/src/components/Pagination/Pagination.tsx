@@ -24,8 +24,8 @@ export interface PaginationProps {
   count: number;
   rowsPerPage: number;
   page: number;
-  onChangePage(page: number): void;
-  onChangeRowsPerPage?: React.ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
+  onPageChange(page: number): void;
+  onRowsPerPageChange?: React.ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
   labelRowsPerPage?: React.ReactNode;
   rowsPerPageOptions?: Array<number | { value: number; label: string }>;
   classes?: Partial<Record<'root', string>>;
@@ -84,10 +84,10 @@ export default function Pagination(props: PaginationProps) {
     count,
     rowsPerPage,
     page,
-    onChangePage,
+    onPageChange,
     labelRowsPerPage = '',
     rowsPerPageOptions,
-    onChangeRowsPerPage
+    onRowsPerPageChange
   } = props;
   const { formatMessage } = useIntl();
   const classes = useStyles();
@@ -107,8 +107,8 @@ export default function Pagination(props: PaginationProps) {
       page={page}
       backIconButtonProps={{ 'aria-label': formatMessage(translations.previousPage) }}
       nextIconButtonProps={{ 'aria-label': formatMessage(translations.nextPage) }}
-      onChangePage={(e, page: number) => onChangePage(page)}
-      onChangeRowsPerPage={onChangeRowsPerPage}
+      onPageChange={(e, page: number) => onPageChange(page)}
+      onRowsPerPageChange={onRowsPerPageChange}
     />
   );
 }

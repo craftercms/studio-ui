@@ -29,10 +29,10 @@ export const useStyles = makeStyles((theme) =>
       right: '0',
       zIndex: 2,
       position: 'absolute',
-      height: '62px'
+      height: '54px'
     },
     actionsBarCheckbox: {
-      margin: '10px 12px'
+      margin: '6px 8px'
     },
     wrapper: {
       transition: theme.transitions.create('padding-right', {

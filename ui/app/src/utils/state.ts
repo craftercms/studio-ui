@@ -30,24 +30,22 @@ export function getStoredGlobalMenuSiteViewPreference(user: string): 'grid' | 'l
 
 export function getStateMapFromLegacyItem(item: LegacyItem): ItemStateMap {
   return {
-    locked: Boolean(item.lockOwner),
-    modified: item.isInProgress,
     new: item.isNew,
-    systemProcessing: false,
-    translationInProgress: false,
-    translationPending: false,
-    translationUpToDate: false,
+    modified: item.isInProgress,
     deleted: Boolean(item.isDeleted),
+    locked: Boolean(item.lockOwner),
+    systemProcessing: false,
     submitted: Boolean(item.isSubmitted),
     scheduled: Boolean(item.isScheduled),
     publishing: false,
-    // TODO: The history API (for Recently Published Dashlet) returns the environment where it was published in
-    // `item.endpoint`, in other APIs that value is `null`. For the other APIs, the property where the item was
-    // submitted is `item.environment`.
-    submittedToStaging: (item.endpoint ?? item.environment) === 'staging',
-    submittedToLive: (item.endpoint ?? item.environment) === 'live',
+    submittedToStaging: item.submittedToEnvironment === 'staging',
+    submittedToLive: item.submittedToEnvironment === 'live',
     staged: item.isStaged,
-    live: item.isLive
+    live: item.isLive,
+    disabled: item.isDisabled,
+    translationInProgress: false,
+    translationPending: false,
+    translationUpToDate: false
   };
 }
 
@@ -67,47 +65,53 @@ export function setStoredHighlightModeChoice(value: string, user: string) {
   return window.localStorage.setItem(`craftercms.${user}.highlightModeChoice`, value);
 }
 
-export function setStoredClipboard(site: string, user: string, value: object) {
+export function setStoredClipboard(siteIdentifier: string, user: string, value: object) {
   return window.localStorage.setItem(
-    `craftercms.${user}.clipboard.${site}`,
+    `craftercms.${user}.clipboard.${siteIdentifier}`,
     JSON.stringify({ ...value, timestamp: Date.now() })
   );
 }
 
-export function getStoredClipboard(site: string, user: string) {
-  return JSON.parse(window.localStorage.getItem(`craftercms.${user}.clipboard.${site}`));
+export function getStoredClipboard(siteIdentifier: string, user: string) {
+  return JSON.parse(window.localStorage.getItem(`craftercms.${user}.clipboard.${siteIdentifier}`));
 }
 
-export function removeStoredClipboard(site: string, user: string) {
-  return window.localStorage.removeItem(`craftercms.${user}.clipboard.${site}`);
+export function removeStoredClipboard(siteIdentifier: string, user: string) {
+  return window.localStorage.removeItem(`craftercms.${user}.clipboard.${siteIdentifier}`);
 }
 
-export function setStoredPreviewToolsPanelPage(site: string, user: string, value: object) {
-  return window.localStorage.setItem(`craftercms.${user}.previewToolsPanelPage.${site}`, JSON.stringify(value));
+export function setStoredPreviewToolsPanelPage(siteIdentifier: string, user: string, value: object) {
+  return window.localStorage.setItem(
+    `craftercms.${user}.previewToolsPanelPage.${siteIdentifier}`,
+    JSON.stringify(value)
+  );
 }
 
-export function getStoredPreviewToolsPanelPage(site: string, user: string) {
-  return JSON.parse(window.localStorage.getItem(`craftercms.${user}.previewToolsPanelPage.${site}`));
+export function getStoredPreviewToolsPanelPage(siteIdentifier: string, user: string) {
+  return JSON.parse(window.localStorage.getItem(`craftercms.${user}.previewToolsPanelPage.${siteIdentifier}`));
 }
 
-export function removeStoredPreviewToolsPanelPage(site: string, user: string) {
-  return window.localStorage.removeItem(`craftercms.${user}.previewToolsPanelPage.${site}`);
+export function removeStoredPreviewToolsPanelPage(siteIdentifier: string, user: string) {
+  return window.localStorage.removeItem(`craftercms.${user}.previewToolsPanelPage.${siteIdentifier}`);
 }
 
-export function setStoredPathNavigator(site: string, user: string, id: string, value: object) {
-  return window.localStorage.setItem(`craftercms.${user}.pathNavigator.${site}.${id}`, JSON.stringify(value));
+export function setStoredPathNavigator(siteIdentifier: string, user: string, id: string, value: object) {
+  return window.localStorage.setItem(`craftercms.${user}.pathNavigator.${siteIdentifier}.${id}`, JSON.stringify(value));
 }
 
-export function getStoredPathNavigator(site: string, user: string, id: string) {
-  return JSON.parse(window.localStorage.getItem(`craftercms.${user}.pathNavigator.${site}.${id}`));
+export function getStoredPathNavigator(siteIdentifier: string, user: string, id: string) {
+  return JSON.parse(window.localStorage.getItem(`craftercms.${user}.pathNavigator.${siteIdentifier}.${id}`));
 }
 
-export function setStoredPathNavigatorTree(site: string, user: string, id: string, value: object) {
-  return window.localStorage.setItem(`craftercms.${user}.pathNavigatorTree.${site}.${id}`, JSON.stringify(value));
+export function setStoredPathNavigatorTree(siteIdentifier: string, user: string, id: string, value: object) {
+  return window.localStorage.setItem(
+    `craftercms.${user}.pathNavigatorTree.${siteIdentifier}.${id}`,
+    JSON.stringify(value)
+  );
 }
 
-export function getStoredPathNavigatorTree(site: string, user: string, id: string) {
-  return JSON.parse(window.localStorage.getItem(`craftercms.${user}.pathNavigatorTree.${site}.${id}`));
+export function getStoredPathNavigatorTree(siteIdentifier: string, user: string, id: string) {
+  return JSON.parse(window.localStorage.getItem(`craftercms.${user}.pathNavigatorTree.${siteIdentifier}.${id}`));
 }
 
 export function setStoredGlobalAppOpenSidebar(user: string, value) {
@@ -141,14 +145,21 @@ export function createWidgetDescriptor(widget: WidgetDescriptor): WidgetDescript
 export function setStoredDashboardPreferences(
   value: DashboardPreferences,
   user: string,
-  site: string,
+  siteIdentifier: string,
   dashletId: string
 ) {
-  return window.localStorage.setItem(`craftercms.dashboard.${dashletId}.${site}.${user}`, JSON.stringify(value));
+  return window.localStorage.setItem(
+    `craftercms.dashboard.${dashletId}.${siteIdentifier}.${user}`,
+    JSON.stringify(value)
+  );
 }
 
-export function getStoredDashboardPreferences(user: string, site: string, dashletId: string): DashboardPreferences {
+export function getStoredDashboardPreferences(
+  user: string,
+  siteIdentifier: string,
+  dashletId: string
+): DashboardPreferences {
   return JSON.parse(
-    window.localStorage.getItem(`craftercms.dashboard.${dashletId}.${site}.${user}`)
+    window.localStorage.getItem(`craftercms.dashboard.${dashletId}.${siteIdentifier}.${user}`)
   ) as DashboardPreferences;
 }

@@ -42,6 +42,8 @@ import { useSelection } from '../../utils/hooks/useSelection';
 import { usePreviewState } from '../../utils/hooks/usePreviewState';
 import { useQuickCreateListResource } from '../../utils/hooks/useQuickCreateListResource';
 import { useSystemVersionResource } from '../../utils/hooks/useSystemVersionResource';
+import { useItemsByPath } from '../../utils/hooks/useItemsByPath';
+import { lookupItemByPath } from '../../utils/content';
 
 const translations = defineMessages({
   quickCreateBtnLabel: {
@@ -235,21 +237,19 @@ const QuickCreate = React.forwardRef<HTMLButtonElement, { item?: SandboxItem }>(
   const { item } = props;
   const disabled = !item?.availableActionsMap.createContent;
   const [anchorEl, setAnchorEl] = useState(null);
-  const [currentPreview, setCurrentPreview] = useState(null);
+  const [currentPreviewItemPath, setCurrentPreviewItemPath] = useState<string>(null);
   const { guest } = usePreviewState();
   const dispatch = useDispatch();
+  const items = useItemsByPath();
 
   const onMenuBtnClick = (e) => {
     setAnchorEl(e.currentTarget);
     if (guest) {
       const { modelId, models } = guest;
       const {
-        craftercms: { label, path }
+        craftercms: { path }
       } = models[modelId];
-      setCurrentPreview({
-        label,
-        path
-      });
+      setCurrentPreviewItemPath(path);
     }
   };
 
@@ -259,7 +259,8 @@ const QuickCreate = React.forwardRef<HTMLButtonElement, { item?: SandboxItem }>(
     onMenuClose();
     dispatch(
       showNewContentDialog({
-        item: currentPreview,
+        item: lookupItemByPath(currentPreviewItemPath, items),
+        // @ts-ignore - required attributes of `showEditDialog` are submitted by new content dialog `onContentTypeSelected` callback and injected into the showEditDialog action by the GlobalDialogManger
         onContentTypeSelected: showEditDialog({})
       })
     );

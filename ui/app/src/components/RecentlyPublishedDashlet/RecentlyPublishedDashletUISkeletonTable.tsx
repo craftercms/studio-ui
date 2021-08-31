@@ -54,54 +54,48 @@ export default function RecentlyPublishedDashletUISkeletonTable(props: RecentlyP
       <Table size="small" className={classes.tableRoot}>
         <TableHead>
           <GlobalAppGridRow className="hoverDisabled">
-            <GlobalAppGridCell className="checkbox bordered width5">
-              <Skeleton variant="circle" width={30} height={30} className={classes.skeletonCheckbox} />
-            </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered width40">
+            <GlobalAppGridCell className="width40 pl20">
               <Typography variant="subtitle2">
                 <FormattedMessage id="words.item" defaultMessage="Item" />
               </Typography>
             </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered width20">
+            <GlobalAppGridCell className="width20">
               <Typography variant="subtitle2">
                 <FormattedMessage id="recentlyPublished.publishedTo" defaultMessage="Published To" />
               </Typography>
             </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered width20">
+            <GlobalAppGridCell className="width20">
               <Typography variant="subtitle2">
                 <FormattedMessage id="recentlyPublished.publishDate" defaultMessage="Publish Date" />
               </Typography>
             </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered width10">
+            <GlobalAppGridCell className="width20">
               <Typography variant="subtitle2">
                 <FormattedMessage id="recentlyPublished.publishedBy" defaultMessage="Published By" />
               </Typography>
             </GlobalAppGridCell>
-            <GlobalAppGridCell className="bordered width5" />
+            <GlobalAppGridCell className="checkbox" />
           </GlobalAppGridRow>
         </TableHead>
         <TableBody>
           {items.map((item, i) => (
             <Fragment key={i}>
               <GlobalAppGridRow>
-                <GlobalAppGridCell colSpan={6} className="expandableCell">
-                  <Box display="flex" className={classes.expandableCellBox}>
+                <GlobalAppGridCell colSpan={5} className="padded0">
+                  <Box display="flex" alignItems="center">
                     <Skeleton variant="circle" width={30} height={30} className={classes.skeletonCheckbox} />
-                    <Skeleton variant="text" width="100%" />
+                    <Skeleton variant="text" height="20px" width={`${rand(20, 50)}%`} />
                   </Box>
                 </GlobalAppGridCell>
               </GlobalAppGridRow>
               <GlobalAppGridRow className="hoverDisabled">
-                <GlobalAppGridCell colSpan={6} className="padded0">
+                <GlobalAppGridCell colSpan={5} className="padded0 bb0">
                   <Collapse in={expandedLookup[item.label]}>
                     <Table size="small" className={classes.tableRoot}>
                       <TableBody>
                         {item.children.map((item, i) => (
                           <GlobalAppGridRow key={i}>
-                            <GlobalAppGridCell className="checkbox">
-                              <Skeleton variant="circle" width={30} height={30} className={classes.skeletonCheckbox} />
-                            </GlobalAppGridCell>
-                            <GlobalAppGridCell className="ellipsis width40 padded0">
+                            <GlobalAppGridCell className="ellipsis width40 pl20">
                               <Skeleton variant="text" width={`${rand(70, 90)}%`} />
                               <Skeleton variant="text" width={`${rand(70, 90)}%`} />
                             </GlobalAppGridCell>
@@ -111,10 +105,10 @@ export default function RecentlyPublishedDashletUISkeletonTable(props: RecentlyP
                             <GlobalAppGridCell className="width20">
                               <Skeleton variant="text" width={`${rand(50, 60)}%`} />
                             </GlobalAppGridCell>
-                            <GlobalAppGridCell className="width10">
+                            <GlobalAppGridCell className="width20">
                               <Skeleton variant="text" width={`${rand(50, 60)}%`} />
                             </GlobalAppGridCell>
-                            <GlobalAppGridCell className="width5">
+                            <GlobalAppGridCell className="checkbox">
                               <Skeleton variant="circle" width={30} height={30} className={classes.skeletonCheckbox} />
                             </GlobalAppGridCell>
                           </GlobalAppGridRow>

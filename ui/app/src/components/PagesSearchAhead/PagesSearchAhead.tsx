@@ -36,6 +36,17 @@ import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useContentTypeList } from '../../utils/hooks/useContentTypeList';
 import { useSubject } from '../../utils/hooks/useSubject';
 
+export interface PagesSearchAheadProps {
+  value: string;
+  placeholder?: string;
+  disabled?: boolean;
+  onEnter(url: string): void;
+  onFocus?(): void;
+  onBlur?(): void;
+  classes: Partial<Record<'input', string>>;
+  autoFocus?: boolean;
+}
+
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     container: {
@@ -86,8 +97,8 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-export default function PagesSearchAhead(props) {
-  const { value, placeholder, disabled, onEnter, onFocus, onBlur } = props;
+export default function PagesSearchAhead(props: PagesSearchAheadProps) {
+  const { value, placeholder = '', disabled = false, onEnter, onFocus, onBlur, autoFocus = true } = props;
   const classes = useStyles();
   const onSearch$ = useSubject<string>();
   const site = useActiveSiteId();
@@ -188,7 +199,7 @@ export default function PagesSearchAhead(props) {
             inputProps.onFocus(e);
             onClean();
           }}
-          autoFocus
+          autoFocus={autoFocus}
           placeholder={placeholder}
           disabled={disabled}
           classes={{ root: classes.inputRoot, input: clsx(classes.input, props.classes?.input) }}

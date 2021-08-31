@@ -47,11 +47,12 @@ import StandardAction from '../../models/StandardAction';
 import { asArray } from '../../utils/array';
 import { changeCurrentUrl } from '../actions/preview';
 import { CrafterCMSEpic } from '../store';
-import { updateDialog } from '../reducers/dialogs/minimizedDialogs';
+import { minimizedDialogUpdate } from '../reducers/dialogs/minimizedDialogs';
 import { formEngineMessages } from '../../utils/i18n-legacy';
 import infoGraphic from '../../assets/information.svg';
 import { codeEditorId } from '../../components/CodeEditorDialog';
 import { legacyEditorId } from '../../components/Dialogs/LegacyFormDialog';
+import { nou } from '../../utils/object';
 
 function getDialogNameFromType(type: string): string {
   let name = getDialogActionNameFromType(type);
@@ -106,7 +107,7 @@ const dialogEpics: CrafterCMSEpic[] = [
       switchMap((actions) => actions)
     ),
   // endregion
-  // region View Version Dialog
+  // region fetchContentVersion
   (action$, state$) =>
     action$.pipe(
       ofType(fetchContentVersion.type),
@@ -119,32 +120,55 @@ const dialogEpics: CrafterCMSEpic[] = [
       )
     ),
   // endregion
+  // region newContentCreationComplete
   (action$, state$) =>
     action$.pipe(
       ofType(newContentCreationComplete.type),
-      switchMap(({ payload }) => (payload.item?.isPage ? of(changeCurrentUrl(payload.redirectUrl)) : NEVER))
+      filter(({ payload }) => payload.item?.isPage && payload.item.isPreviewable),
+      map(({ payload }) => changeCurrentUrl(payload.redirectUrl))
     ),
+  // endregion
+  // region fetchDeleteDependencies
   (action$, state$) =>
     action$.pipe(
       ofType(fetchDeleteDependencies.type),
       withLatestFrom(state$),
-      switchMap(([{ payload: items }, state]) =>
-        fetchDeleteDependenciesService(state.sites.active, items).pipe(
+      switchMap(([{ payload: { paths } }, state]) =>
+        fetchDeleteDependenciesService(state.sites.active, paths).pipe(
           map(fetchDeleteDependenciesComplete),
           catchAjaxError(fetchDeleteDependenciesFailed)
         )
       )
     ),
+  // endregion
+  // region showEditDialog, showCodeEditorDialog
   (action$, state$, { getIntl }) =>
     action$.pipe(
       ofType(showEditDialog.type, showCodeEditorDialog.type),
       withLatestFrom(state$),
       switchMap(([{ type, payload }, state]) => {
-        if (payload.path === (type === showEditDialog.type ? state.dialogs.edit.path : state.dialogs.codeEditor.path)) {
+        // If state.path isn't null and the payload.path is different, it means another form is getting opened.
+        // To avoid losing state of the form, we disallow this and show a dialog indicating to close the current
+        // form before opening another.
+        let showValidation = false;
+
+        if (type === showEditDialog.type) {
+          showValidation =
+            payload.path !== state.dialogs.edit.path ||
+            payload.iceGroupId !== state.dialogs.edit.iceGroupId ||
+            payload.modelId !== state.dialogs.edit.modelId;
+        } else {
+          showValidation = payload.path !== state.dialogs.codeEditor.path;
+        }
+
+        if (nou(payload.path) || !showValidation) {
+          // If showEditDialog action is called while the dialog is already open & minimized, we maximize it.
+          // Differences in the showEditDialog payload — to what's on the state — are ignored, except for the path,
+          // which is used to check if it's the same form that's getting opened.
           const id = type === showEditDialog.type ? legacyEditorId : codeEditorId;
           if (state.dialogs.minimizedDialogs[id]?.minimized === true) {
             return of(
-              updateDialog({
+              minimizedDialogUpdate({
                 id,
                 minimized: false
               })
@@ -162,6 +186,7 @@ const dialogEpics: CrafterCMSEpic[] = [
         }
       })
     )
+  // endregion
 ] as Epic[];
 
 export default dialogEpics;

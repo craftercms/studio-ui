@@ -16,13 +16,13 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import useStyles from './styles';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { fetchLegacyGetGoLiveItems } from '../../services/dashboard';
-import { DetailedItem } from '../../models/Item';
+import { AllItemActions, DetailedItem } from '../../models/Item';
 import AwaitingApprovalDashletGridUI from '../AwaitingApprovalDashletGrid';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import LookupTable from '../../models/LookupTable';
-import { parseLegacyItemToDetailedItem } from '../../utils/content';
+import { getNumOfMenuOptionsForItem, getSystemTypeFromPath, parseLegacyItemToDetailedItem } from '../../utils/content';
 import Dashlet from '../Dashlet';
 import ApiResponse from '../../models/ApiResponse';
 import AwaitingApprovalDashletSkeletonTable from '../AwaitingApprovalDashletGrid/AwaitingApprovalDashletSkeletonTable';
@@ -30,19 +30,22 @@ import Button from '@material-ui/core/Button';
 import { itemsApproved, itemsDeleted, itemsRejected, itemsScheduled } from '../../state/actions/system';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { filter } from 'rxjs/operators';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import { useSpreadState } from '../../utils/hooks/useSpreadState';
 import { DashboardPreferences } from '../../models/Dashboard';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import GlobalState from '../../models/GlobalState';
 import { getStoredDashboardPreferences, setStoredDashboardPreferences } from '../../utils/state';
-
-export interface AwaitingApprovalDashletProps {
-  selectedLookup: LookupTable<boolean>;
-  onItemChecked(paths: string[], forceChecked?: boolean): void;
-  onItemMenuClick(event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, item: DetailedItem): void;
-}
+import { completeDetailedItem } from '../../state/actions/content';
+import { showItemMegaMenu } from '../../state/actions/dialogs';
+import ActionsBar from '../ActionsBar';
+import translations from './translations';
+import { createPresenceTable } from '../../utils/array';
+import { itemActionDispatcher } from '../../utils/itemActions';
+import { useEnv } from '../../utils/hooks/useEnv';
+import { batchActions } from '../../state/actions/misc';
+import { getEmptyStateStyleSet } from '../SystemStatus/EmptyState';
+import { useActiveSite } from '../../utils/hooks/useActiveSite';
 
 export interface DashboardItem {
   label: string;
@@ -55,8 +58,8 @@ const dashletInitialPreferences: DashboardPreferences = {
   showUnpublished: false
 };
 
-export default function AwaitingApprovalDashlet(props: AwaitingApprovalDashletProps) {
-  const site = useActiveSiteId();
+export default function AwaitingApprovalDashlet() {
+  const { id: siteId, uuid } = useActiveSite();
   const classes = useStyles();
   const [state, setState] = useState<{
     itemsLookup: LookupTable<DetailedItem>;
@@ -69,20 +72,25 @@ export default function AwaitingApprovalDashlet(props: AwaitingApprovalDashletPr
     parentItems: null,
     total: null
   });
-  const { selectedLookup, onItemChecked, onItemMenuClick } = props;
+  const [selectedLookup, setSelectedLookup] = useState<LookupTable<boolean>>({});
   const [expandedLookup, setExpandedLookup] = useSpreadState<LookupTable<boolean>>({});
   const [error, setError] = useState<ApiResponse>();
   const currentUser = useSelector<GlobalState, string>((state) => state.user.username);
   const dashletPreferencesId = 'awaitingApprovalDashlet';
   const [preferences, setPreferences] = useSpreadState(
-    getStoredDashboardPreferences(currentUser, site, dashletPreferencesId) ?? dashletInitialPreferences
+    getStoredDashboardPreferences(currentUser, uuid, dashletPreferencesId) ?? dashletInitialPreferences
   );
   const [isFetching, setIsFetching] = useState(false);
+  const dispatch = useDispatch();
+  const { formatMessage } = useIntl();
+  const { authoringBase } = useEnv();
+
   const showExpanded = useMemo(() => Object.values(expandedLookup).some((value) => !value), [expandedLookup]);
   const isAllChecked = useMemo(() => !Object.keys(state.itemsLookup).some((path) => !selectedLookup[path]), [
     selectedLookup,
     state.itemsLookup
   ]);
+  const selectedItemsLength = useMemo(() => Object.values(selectedLookup).filter(Boolean).length, [selectedLookup]);
   const isIndeterminate = useMemo(
     () => Object.keys(state.itemsLookup).some((path) => selectedLookup[path]) && !isAllChecked,
     [isAllChecked, selectedLookup, state.itemsLookup]
@@ -90,7 +98,7 @@ export default function AwaitingApprovalDashlet(props: AwaitingApprovalDashletPr
 
   const refresh = useCallback(() => {
     setIsFetching(true);
-    fetchLegacyGetGoLiveItems(site, 'eventDate', null, preferences.showUnpublished, null).subscribe(
+    fetchLegacyGetGoLiveItems(siteId, 'eventDate', null, preferences.showUnpublished, null).subscribe(
       (response) => {
         const parentItems: DashboardItem[] = [];
         const itemsLookup = {};
@@ -123,7 +131,7 @@ export default function AwaitingApprovalDashlet(props: AwaitingApprovalDashletPr
         setError(response);
       }
     );
-  }, [setExpandedLookup, site, preferences.showUnpublished]);
+  }, [setExpandedLookup, siteId, preferences.showUnpublished]);
 
   useEffect(() => {
     refresh();
@@ -141,6 +149,7 @@ export default function AwaitingApprovalDashlet(props: AwaitingApprovalDashletPr
         case itemsRejected.type: {
           if (payload.targets.some((path) => state.itemsLookup[path])) {
             refresh();
+            setSelectedLookup({ ...selectedLookup, ...createPresenceTable(payload.targets, false) });
           }
           break;
         }
@@ -149,12 +158,12 @@ export default function AwaitingApprovalDashlet(props: AwaitingApprovalDashletPr
     return () => {
       subscription.unsubscribe();
     };
-  }, [refresh, state.itemsLookup]);
+  }, [refresh, selectedLookup, state.itemsLookup]);
   // endregion
 
   useEffect(() => {
-    setStoredDashboardPreferences(preferences, currentUser, site, dashletPreferencesId);
-  }, [preferences, currentUser, site]);
+    setStoredDashboardPreferences(preferences, currentUser, uuid, dashletPreferencesId);
+  }, [preferences, currentUser, uuid]);
 
   const resource = useLogicResource<
     DashboardItem[],
@@ -193,18 +202,57 @@ export default function AwaitingApprovalDashlet(props: AwaitingApprovalDashletPr
   };
 
   const onToggleCheckedAll = () => {
-    onItemChecked(Object.keys(state.itemsLookup), !isAllChecked);
+    if (isAllChecked) {
+      setSelectedLookup({});
+    } else {
+      setSelectedLookup({ ...selectedLookup, ...createPresenceTable(Object.keys(state.itemsLookup), true) });
+    }
   };
 
   const handleItemChecked = (path: string) => {
-    onItemChecked([path]);
+    setSelectedLookup({ ...selectedLookup, [path]: !selectedLookup[path] });
+  };
+
+  const onItemMenuClick = (event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, item: DetailedItem) => {
+    const path = item.path;
+    dispatch(
+      batchActions([
+        completeDetailedItem({ path }),
+        showItemMegaMenu({
+          path,
+          anchorReference: 'anchorPosition',
+          anchorPosition: { top: event.clientY, left: event.clientX },
+          numOfLoaderItems: getNumOfMenuOptionsForItem({
+            path: item.path,
+            systemType: getSystemTypeFromPath(item.path)
+          } as DetailedItem)
+        })
+      ])
+    );
+  };
+
+  const onActionBarOptionClicked = (option: string) => {
+    if (option === 'clear') {
+      setSelectedLookup({});
+    } else {
+      itemActionDispatcher({
+        site: siteId,
+        item: Object.keys(selectedLookup)
+          .filter((path) => selectedLookup[path])
+          .map((path) => state.itemsLookup[path]),
+        option: option as AllItemActions,
+        authoringBase,
+        dispatch,
+        formatMessage
+      });
+    }
   };
 
   return (
     <Dashlet
       title={
         <FormattedMessage
-          id="dashboardItemsApproval.itemsWaitingForApproval"
+          id="awaitingApprovalDashlet.dashletTitle"
           defaultMessage="Items Waiting For Approval ({count})"
           values={{ count: state.total }}
         />
@@ -217,16 +265,16 @@ export default function AwaitingApprovalDashlet(props: AwaitingApprovalDashletPr
         <>
           <Button disabled={isFetching} onClick={onToggleCollapse} className={classes.collapseAll}>
             {showExpanded ? (
-              <FormattedMessage id="dashboardItemsApproval.expandedAll" defaultMessage="Expand All" />
+              <FormattedMessage id="awaitingApprovalDashlet.expandedAll" defaultMessage="Expand All" />
             ) : (
-              <FormattedMessage id="dashboardItemsApproval.collapseAll" defaultMessage="Collapse All" />
+              <FormattedMessage id="awaitingApprovalDashlet.collapseAll" defaultMessage="Collapse All" />
             )}
           </Button>
           <Button disabled={isFetching} onClick={onShowInProgress}>
             {preferences.showUnpublished ? (
-              <FormattedMessage id="dashboardItemsApproval.hideUnpublished" defaultMessage="Hide Unpublished" />
+              <FormattedMessage id="awaitingApprovalDashlet.hideUnpublished" defaultMessage="Hide Unpublished" />
             ) : (
-              <FormattedMessage id="dashboardItemsApproval.showUnpublished" defaultMessage="Show Unpublished" />
+              <FormattedMessage id="awaitingApprovalDashlet.showUnpublished" defaultMessage="Show Unpublished" />
             )}
           </Button>
         </>
@@ -237,7 +285,38 @@ export default function AwaitingApprovalDashlet(props: AwaitingApprovalDashletPr
         suspenseProps={{
           fallback: <AwaitingApprovalDashletSkeletonTable items={state.parentItems} expandedLookup={expandedLookup} />
         }}
+        withEmptyStateProps={{
+          emptyStateProps: {
+            title: (
+              <FormattedMessage
+                id="awaitingApprovalDashlet.emptyMessage"
+                defaultMessage="No items are awaiting approval"
+              />
+            ),
+            styles: {
+              ...getEmptyStateStyleSet('horizontal'),
+              ...getEmptyStateStyleSet('image-sm')
+            }
+          }
+        }}
       >
+        {(isIndeterminate || isAllChecked) && (
+          <ActionsBar
+            classes={{
+              root: classes.actionsBarRoot,
+              checkbox: classes.actionsBarCheckbox
+            }}
+            options={[
+              { id: 'approvePublish', label: formatMessage(translations.publish) },
+              { id: 'rejectPublish', label: formatMessage(translations.reject) },
+              { id: 'clear', label: formatMessage(translations.clear, { count: selectedItemsLength }) }
+            ]}
+            isIndeterminate={isIndeterminate}
+            isChecked={isAllChecked}
+            onOptionClicked={onActionBarOptionClicked}
+            toggleSelectAll={onToggleCheckedAll}
+          />
+        )}
         <AwaitingApprovalDashletGridUI
           resource={resource}
           expandedLookup={expandedLookup}

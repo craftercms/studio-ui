@@ -420,8 +420,11 @@ div.yui-calcontainer.cstudio-form-field-calendar {
   width: 15px;
   height: 15px;
   margin-left: 5px;
+  margin-right: 5px;
   display: inline-block;
   background: url(../images/help-icons.png) no-repeat;
+  order: 1;
+  cursor: pointer;
 }
 
 .cstudio-form-field-help.on,
@@ -658,7 +661,6 @@ div.yui-calcontainer.cstudio-form-field-calendar {
   background-repeat: no-repeat;
   display: block;
   float: left;
-  width: 4%;
   height: 30px;
   font-size: 18px;
   position: relative;
@@ -1339,6 +1341,7 @@ body.yui-skin-cstudioTheme.masked {
   max-width: 100%;
   flex-wrap: wrap;
   padding-top: 5px;
+  align-items: center;
 }
 
 .cstudio-form-control-input.cstudio-form-control-file-name {
@@ -1404,6 +1407,24 @@ body.yui-skin-cstudioTheme.masked {
   box-sizing: content-box;
   border-radius: 4px;
   max-width: 100%;
+  order: 0;
+}
+
+.cstudio-form-field-help + .cstudio-form-control-input,
+.date-time-container .cstudio-form-field-help + .date-control,
+.date-time-container .cstudio-form-field-help + .time-control,
+.date-time-container .cstudio-form-field-help + .time-zone-picker,
+.cstudio-form-field-help + .cstudio-form-control-dropdown {
+  width: 95%;
+}
+
+.cstudio-form-control-checkbox-container {
+  display: flex;
+  align-items: center;
+}
+
+.cstudio-form-control-checkbox-container .cstudio-form-control-validation {
+  top: 0;
 }
 
 .date-time-container,
@@ -1595,7 +1616,8 @@ body.yui-skin-cstudioTheme.masked {
   float: left;
 }
 
-.cstudio-form-control-validation {
+.cstudio-form-control-validation.cstudio-form-control-invalid,
+.cstudio-form-control-validation.cstudio-form-control-valid {
   width: 16px;
 }
 

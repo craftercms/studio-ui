@@ -18,6 +18,8 @@ import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../models/GlobalState';
 import { changeCurrentUrl, checkInGuest, goToLastPage, goToNextPage } from '../actions/preview';
 import { changeSite } from './sites';
+import { emitSystemEvent, itemsDeleted } from '../actions/system';
+import { getPreviewURLFromPath } from '../../utils/path';
 
 function cleanseUrl(url: string) {
   const clean = url || '/';
@@ -116,7 +118,28 @@ const reducer = createReducer<GlobalState['previewNavigation']>(
       historyForwardStack: [],
       historyNavigationType: null,
       currentUrlPath: payload.nextUrl ?? state.currentUrlPath
-    })
+    }),
+    // A page has been deleted. If it is the current page, we should
+    // take the user somewhere else (last page or home).
+    [emitSystemEvent.type]: (state, { payload: action }) => {
+      const { type, payload } = action;
+      if (
+        // An item got deleted
+        type === itemsDeleted.type &&
+        // User is in preview app
+        state.currentUrlPath !== '' &&
+        // The current page was the one deleted
+        payload.targets.map((path) => getPreviewURLFromPath(path)).includes(state.currentUrlPath)
+      ) {
+        const historyBackStack = state.historyBackStack.slice(0, state.historyBackStack.length - 1);
+        return {
+          ...state,
+          historyBackStack,
+          currentUrlPath: cleanseUrl(historyBackStack[historyBackStack.length - 1])
+        };
+      }
+      return state;
+    }
   }
 );
 

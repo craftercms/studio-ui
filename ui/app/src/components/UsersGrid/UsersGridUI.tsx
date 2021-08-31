@@ -34,12 +34,12 @@ import Box from '@material-ui/core/Box';
 export interface UsersGridUIProps {
   resource: Resource<PagedArray<User>>;
   onRowClicked(user: User): void;
-  onChangePage(page: number): void;
-  onChangeRowsPerPage?: React.ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
+  onPageChange(page: number): void;
+  onRowsPerPageChange?: React.ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
 }
 
 export default function UsersGridUI(props: UsersGridUIProps) {
-  const { resource, onRowClicked, onChangePage, onChangeRowsPerPage } = props;
+  const { resource, onRowClicked, onPageChange, onRowsPerPageChange } = props;
   const classes = useStyles();
   const users = resource.read();
   return (
@@ -97,8 +97,8 @@ export default function UsersGridUI(props: UsersGridUIProps) {
         count={users.total}
         rowsPerPage={users.limit}
         page={users && Math.ceil(users.offset / users.limit)}
-        onChangePage={(page: number) => onChangePage(page)}
-        onChangeRowsPerPage={onChangeRowsPerPage}
+        onPageChange={(page: number) => onPageChange(page)}
+        onRowsPerPageChange={onRowsPerPageChange}
       />
     </Box>
   );

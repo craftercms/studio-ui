@@ -161,12 +161,6 @@ CStudioAuthoring.Module.requireModule(
               defaultValue: 'true'
             },
             {
-              label: this.formatMessage(this.contentTypesMessages.forcePNewLines),
-              name: 'forcePTags',
-              type: 'boolean',
-              defaultValue: 'true'
-            },
-            {
               label: this.formatMessage(this.contentTypesMessages.forceBRNewLines),
               name: 'forceBRTags',
               type: 'boolean',
@@ -265,9 +259,6 @@ CStudioAuthoring.Module.requireModule(
                 break;
               case 'maxlength':
                 inputEl.maxlength = prop.value;
-                break;
-              case 'forcePTags':
-                var forcePTags = prop.value == 'false' ? false : true;
                 break;
               case 'forceBRTags':
                 var forceBRTags = prop.value == 'true' ? true : false;
@@ -369,7 +360,6 @@ CStudioAuthoring.Module.requireModule(
             remove_script_host: false,
             convert_urls: false,
             readonly: _thisControl.readonly,
-            force_p_newlines: forcePTags,
             force_br_newlines: forceBRTags,
             forced_root_block: forceRootBlockPTag,
             remove_trailing_brs: false,
@@ -426,7 +416,7 @@ CStudioAuthoring.Module.requireModule(
                 _thisControl._onChange(null, _thisControl);
               });
 
-              editor.on('keyup paste', function(e) {
+              editor.on('keyup paste undo redo', function(e) {
                 _thisControl.save();
                 _thisControl._onChangeVal(null, _thisControl);
               });

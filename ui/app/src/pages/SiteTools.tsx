@@ -17,13 +17,13 @@
 import React from 'react';
 import { HashRouter } from 'react-router-dom';
 import { GlobalAppContextProvider } from '../components/GlobalApp';
-import SiteToolsApp from '../components/SiteToolsApp';
+import UrlDrivenSiteTools from '../components/SiteToolsApp/UrlDrivenSiteTools';
 
 export default function SiteTools(topProps: any) {
   return (
     <GlobalAppContextProvider>
       <HashRouter>
-        <SiteToolsApp {...topProps} />
+        <UrlDrivenSiteTools {...topProps} />
       </HashRouter>
     </GlobalAppContextProvider>
   );

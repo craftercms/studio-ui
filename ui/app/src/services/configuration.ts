@@ -17,14 +17,13 @@
 import { errorSelectorApi1, get, postJSON } from '../utils/ajax';
 import { catchError, map, pluck } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import { deserialize, fromString } from '../utils/xml';
+import { deserialize, fromString, getInnerHtml } from '../utils/xml';
 import { ContentTypeField } from '../models/ContentType';
-import { applyDeserializedXMLTransforms, reversePluckProps, toQueryString } from '../utils/object';
+import { reversePluckProps, toQueryString } from '../utils/object';
 import ContentInstance from '../models/ContentInstance';
 import { VersionsResponse } from '../models/Version';
 import LookupTable from '../models/LookupTable';
 import GlobalState from '../models/GlobalState';
-import { defineMessages } from 'react-intl';
 import { SiteConfigurationFile } from '../models/SiteConfigurationFile';
 
 export type CrafterCMSModules = 'studio' | 'engine';
@@ -156,158 +155,8 @@ export function setActiveTargetingModel(data): Observable<ActiveTargetingModel> 
 
 // endregion
 
-const messages = defineMessages({
-  emptyUiConfigMessageTitle: {
-    id: 'emptyUiConfigMessageTitle.title',
-    defaultMessage: 'Configuration is empty'
-  },
-  emptyUiConfigMessageSubtitle: {
-    id: 'emptyUiConfigMessageTitle.subtitle',
-    defaultMessage: 'Nothing is set to be shown here.'
-  }
-});
-
-export function fetchSiteUiConfig(site: string): Observable<Pick<GlobalState['uiConfig'], 'preview' | 'launcher'>> {
-  return fetchConfigurationDOM(site, '/ui.xml', 'studio').pipe(
-    map((xml) => {
-      if (xml) {
-        const config = {
-          preview: {
-            toolbar: {
-              leftSection: null,
-              middleSection: null,
-              rightSection: null
-            },
-            toolsPanel: {
-              widgets: [
-                {
-                  id: 'craftercms.component.EmptyState',
-                  uiKey: -1,
-                  configuration: {
-                    title: messages.emptyUiConfigMessageTitle,
-                    subtitle: messages.emptyUiConfigMessageSubtitle
-                  }
-                }
-              ]
-            },
-            pageBuilderPanel: {
-              widgets: [
-                {
-                  id: 'craftercms.component.EmptyState',
-                  uiKey: -1,
-                  configuration: {
-                    title: messages.emptyUiConfigMessageTitle,
-                    subtitle: messages.emptyUiConfigMessageSubtitle
-                  }
-                }
-              ]
-            }
-          },
-          launcher: null,
-          dashboard: null,
-          references: {}
-        };
-        const arrays = ['widgets', 'roles', 'excludes', 'devices', 'values', 'siteCardMenuLinks', 'tools'];
-        const renameTable = { permittedRoles: 'roles' };
-        // Reading references
-        const references = {};
-        xml.querySelectorAll(':scope > references > reference').forEach((tag) => {
-          references[tag.id] = tag.innerHTML;
-          config.references[tag.id] = applyDeserializedXMLTransforms(deserialize(tag.innerHTML), {
-            arrays,
-            renameTable
-          });
-        });
-        // Replacing references
-        xml.querySelectorAll('configuration > reference').forEach((tag) => {
-          tag.outerHTML = references[tag.id];
-        });
-        // Make sure any plugin reference has a valid site id to import the plugin from
-        xml.querySelectorAll('plugin').forEach((tag) => {
-          const siteAttr = tag.getAttribute('site');
-          if (siteAttr === '{site}' || siteAttr === null) {
-            tag.setAttribute('site', site);
-          }
-        });
-        const toolbar = xml.querySelector('[id="craftercms.components.PreviewToolbar"] > configuration');
-        if (toolbar) {
-          const leftSection = toolbar.querySelector('leftSection > widgets');
-          if (leftSection) {
-            leftSection.querySelectorAll('widget').forEach((e, index) => e.setAttribute('uiKey', String(index)));
-            config.preview.toolbar.leftSection = applyDeserializedXMLTransforms(deserialize(leftSection), {
-              arrays,
-              renameTable
-            });
-          }
-          const middleSection = toolbar.querySelector('middleSection > widgets');
-          if (middleSection) {
-            middleSection.querySelectorAll('widget').forEach((e, index) => e.setAttribute('uiKey', String(index)));
-            config.preview.toolbar.middleSection = applyDeserializedXMLTransforms(deserialize(middleSection), {
-              arrays,
-              renameTable
-            });
-          }
-          const rightSection = toolbar.querySelector('rightSection > widgets');
-          if (rightSection) {
-            rightSection.querySelectorAll('widget').forEach((e, index) => e.setAttribute('uiKey', String(index)));
-            config.preview.toolbar.rightSection = applyDeserializedXMLTransforms(deserialize(rightSection), {
-              arrays,
-              renameTable
-            });
-          }
-        }
-        const toolsPanelPages = xml.querySelector('[id="craftercms.components.ToolsPanel"] > configuration > widgets');
-        if (toolsPanelPages) {
-          // When rendering widgets dynamically and changing pages on the tools panel, if there are duplicate react key
-          // props across pages, react may no swap the components correctly, incurring in unexpected behaviours.
-          // We need a unique key for each widget.
-          toolsPanelPages.querySelectorAll('widget').forEach((e, index) => e.setAttribute('uiKey', String(index)));
-          const lookupTables = ['fields'];
-          config.preview.toolsPanel = applyDeserializedXMLTransforms(deserialize(toolsPanelPages), {
-            arrays,
-            lookupTables,
-            renameTable
-          });
-        }
-        const launcher = xml.querySelector('[id="craftercms.components.Launcher"] > configuration');
-        if (launcher) {
-          launcher.querySelectorAll('widget').forEach((e, index) => e.setAttribute('uiKey', String(index)));
-          config.launcher = applyDeserializedXMLTransforms(deserialize(launcher), {
-            arrays,
-            renameTable
-          }).configuration;
-        }
-        const pageBuilderPanel = xml.querySelector(
-          '[id="craftercms.components.PageBuilderPanel"] > configuration > widgets'
-        );
-        if (pageBuilderPanel) {
-          const lookupTables = ['fields'];
-          pageBuilderPanel.querySelectorAll('widget').forEach((e, index) => {
-            e.setAttribute('uiKey', String(index));
-            if (e.getAttribute('id') === 'craftercms.components.ToolsPanelPageButton') {
-              e.querySelector(':scope > configuration')?.setAttribute('target', 'pageBuilderPanel');
-            }
-          });
-          config.preview.pageBuilderPanel = applyDeserializedXMLTransforms(deserialize(pageBuilderPanel), {
-            arrays,
-            renameTable,
-            lookupTables
-          });
-        }
-        const dashboard = xml.querySelector('[id="craftercms.components.Dashboard"] > configuration');
-        if (dashboard) {
-          dashboard.querySelectorAll('widget').forEach((e, index) => e.setAttribute('uiKey', String(index)));
-          config.dashboard = applyDeserializedXMLTransforms(deserialize(dashboard), {
-            arrays,
-            renameTable
-          }).configuration;
-        }
-        return config;
-      } else {
-        return null;
-      }
-    })
-  );
+export function fetchSiteUiConfig(site: string): Observable<string> {
+  return fetchConfigurationXML(site, '/ui.xml', 'studio');
 }
 
 const legacyToNextMenuIconMap = {
@@ -323,7 +172,7 @@ const legacyToNextMenuIconMap = {
   'fa-key': '@material-ui/icons/VpnKeyRounded'
 };
 
-export function fetchGlobalMenuItems(): Observable<GlobalState['uiConfig']['globalNavigation']['items']> {
+export function fetchGlobalMenuItems(): Observable<GlobalState['globalNavigation']['items']> {
   return get('/studio/api/2/ui/views/global_menu.json').pipe(
     pluck('response', 'menuItems'),
     map((items) => [
@@ -363,7 +212,7 @@ export function fetchCannedMessage(site: string, locale: string, type: string): 
 }
 
 export function fetchSiteLocale(site: string): Observable<any> {
-  return fetchConfigurationDOM(site, '/site-config.xml', 'studio').pipe(
+  return fetchSiteConfigDOM(site).pipe(
     map((xml) => {
       let settings = {};
       if (xml) {
@@ -390,4 +239,50 @@ export function fetchSiteConfigurationFiles(site: string, environment?: string):
       return files;
     })
   );
+}
+
+export function fetchUseLegacyPreviewPreference(site: string): Observable<boolean> {
+  return fetchSiteConfigDOM(site).pipe(map((dom) => getInnerHtml(dom.querySelector('usePreview3')) === 'true'));
+}
+
+export interface StudioSiteConfig {
+  site: string;
+  usePreview3: boolean;
+  cdataEscapedFieldPatterns: string[];
+  locale: {
+    localeCode: string;
+    dateTimeFormatOptions: Intl.DateTimeFormatOptions;
+  };
+  publishing: {
+    publishCommentRequired: boolean;
+    deleteCommentRequired: boolean;
+    bulkPublishCommentRequired: boolean;
+    publishByCommitCommentRequired: boolean;
+  };
+}
+
+export function fetchSiteConfig(site: string): Observable<StudioSiteConfig> {
+  return fetchSiteConfigDOM(site).pipe(
+    map((dom) => ({
+      site,
+      usePreview3: getInnerHtml(dom.querySelector('usePreview3')) === 'true',
+      cdataEscapedFieldPatterns: Array.from(dom.querySelectorAll('cdata-escaped-field-patterns > pattern'))
+        .map(getInnerHtml as (node) => string)
+        .filter(Boolean),
+      locale: ((node) => (node ? deserialize(node).locale : {}))(dom.querySelector(':scope > locale')),
+      publishing: ((node) => {
+        const commentSettings = Object.assign({ required: false }, deserialize(node)?.publishing?.comments);
+        return {
+          publishCommentRequired: commentSettings['publishing-required'] ?? commentSettings.required,
+          deleteCommentRequired: commentSettings['delete-required'] ?? commentSettings.required,
+          bulkPublishCommentRequired: commentSettings['bulk-publish-required'] ?? commentSettings.required,
+          publishByCommitCommentRequired: commentSettings['publish-by-commit-required'] ?? commentSettings.required
+        };
+      })(dom.querySelector(':scope > publishing'))
+    }))
+  );
+}
+
+function fetchSiteConfigDOM(site: string): Observable<XMLDocument> {
+  return fetchConfigurationDOM(site, '/site-config.xml', 'studio');
 }

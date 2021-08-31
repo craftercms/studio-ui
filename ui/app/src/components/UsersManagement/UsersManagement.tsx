@@ -32,6 +32,7 @@ import SearchBar from '../Controls/SearchBar';
 import { useDebouncedInput } from '../../utils/hooks/useDebouncedInput';
 import useStyles from './styles';
 import clsx from 'clsx';
+import Paper from '@material-ui/core/Paper';
 
 interface UsersManagementProps {
   passwordRequirementsRegex?: string;
@@ -104,11 +105,11 @@ export default function UsersManagement(props: UsersManagementProps) {
     setViewUser(user);
   };
 
-  const onChangePage = (page: number) => {
+  const onPageChange = (page: number) => {
     setOffset(page * limit);
   };
 
-  const onChangeRowsPerPage = (e) => {
+  const onRowsPerPageChange = (e) => {
     setLimit(e.target.value);
   };
 
@@ -131,7 +132,7 @@ export default function UsersManagement(props: UsersManagementProps) {
   }
 
   return (
-    <section>
+    <Paper elevation={0}>
       <GlobalAppToolbar
         title={<FormattedMessage id="words.users" defaultMessage="Users" />}
         leftContent={
@@ -168,8 +169,8 @@ export default function UsersManagement(props: UsersManagementProps) {
         <UsersGridUI
           resource={resource}
           onRowClicked={onRowClicked}
-          onChangePage={onChangePage}
-          onChangeRowsPerPage={onChangeRowsPerPage}
+          onPageChange={onPageChange}
+          onRowsPerPageChange={onRowsPerPageChange}
         />
       </SuspenseWithEmptyState>
 
@@ -186,6 +187,6 @@ export default function UsersManagement(props: UsersManagementProps) {
         user={viewUser}
         passwordRequirementsRegex={passwordRequirementsRegex}
       />
-    </section>
+    </Paper>
   );
 }

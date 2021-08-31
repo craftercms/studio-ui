@@ -338,7 +338,7 @@ var CStudioForms =
           YAHOO.util.Dom.addClass(helpEl, 'hint');
           YAHOO.util.Dom.addClass(helpEl, 'cstudio-form-field-help');
           helpEl.innerHTML = '&nbsp;';
-          containerEl.appendChild(helpEl);
+          $(containerEl).prepend(helpEl);
 
           YAHOO.util.Event.on(
             helpEl,
@@ -915,7 +915,8 @@ var CStudioForms =
                       message.editorId,
                       objectId,
                       name,
-                      message.draft
+                      message.draft,
+                      message.action
                     );
                     if (!CStudioAuthoring.InContextEdit.getIceCallback(message.editorId).type) {
                       cfe.engine.saveForm(false, message.draft, false);
@@ -927,7 +928,8 @@ var CStudioForms =
                     message.editorId,
                     objectId,
                     name,
-                    message.draft
+                    message.draft,
+                    message.action
                   );
                 }
                 break;
@@ -944,7 +946,7 @@ var CStudioForms =
                   cfe.engine.saveForm(false, message.draft, false);
                 } else {
                   amplify.publish('UPDATE_NODE_SELECTOR', message);
-                  cfe.engine.saveForm(false, message.draft, true);
+                  cfe.engine.saveForm(false, message.draft, true, message.action);
                 }
                 break;
               }
@@ -1170,7 +1172,7 @@ var CStudioForms =
         CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/site-config.xml', {
           failure: crafter.noop,
           success: function(config) {
-            timezone = config['default-timezone'];
+            timezone = config.locale.dateTimeFormatOptions.timeZone ?? 'EST5EDT';
           }
         });
 
@@ -1442,7 +1444,8 @@ var CStudioForms =
                 payload: xml,
                 preview,
                 draft,
-                edit
+                edit,
+                action
               });
             } else {
               const saveContent = () => {
@@ -1566,7 +1569,7 @@ var CStudioForms =
                         'studioDialog'
                       );
                     } catch (e) {
-                      var error = eval('(' + err.responseText + ')'),
+                      const error = err.response,
                         errorMessage = error.message ? error.message : CMgs.format(formsLangBundle, 'errSaveFailed');
 
                       CStudioAuthoring.Operations.showSimpleDialog(
@@ -1586,7 +1589,8 @@ var CStudioForms =
               CrafterCMSNext.services.sites
                 .validateActionPolicy(CStudioAuthoringContext.site, {
                   type: 'CREATE',
-                  target: entityId
+                  target: entityId,
+                  contentMetadata: { contentType }
                 })
                 .subscribe(({ allowed, modifiedValue, target }) => {
                   if (allowed) {
@@ -1943,8 +1947,8 @@ var CStudioForms =
                       edit,
                       {
                         ...callback,
-                        success: function(contentTO, editorId, objId, value, draft) {
-                          sendMessage({ type: FORM_SAVE_REQUEST, objId, value, draft });
+                        success: function(contentTO, editorId, objId, value, draft, action) {
+                          sendMessage({ type: FORM_SAVE_REQUEST, objId, value, draft, action });
                         },
                         cancelled: function() {
                           sendMessage({ type: FORM_CANCEL_REQUEST });

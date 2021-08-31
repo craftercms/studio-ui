@@ -50,7 +50,7 @@ export const PublishingStatusButtonUI = forwardRef<HTMLButtonElement, Publishing
       <Badge
         badgeContent={status === 'error' || enabled === false ? '!' : null}
         color="error"
-        overlap="circle"
+        overlap="circular"
         style={{ position: 'relative' }}
       >
         <IconButton
@@ -71,6 +71,11 @@ export const PublishingStatusButtonUI = forwardRef<HTMLButtonElement, Publishing
             so when we have progress, it is show everywhere the publishing avatar shows up. */}
         {(isFetching || status === 'publishing') && (
           <CircularProgress
+            size={
+              // Default progress size matches small button, but the medium
+              // size (which is this component's default) needs a larger spinner
+              ['medium', void 0].includes(rest.size) ? 48 : void 0
+            }
             variant="indeterminate"
             style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none' }}
           />

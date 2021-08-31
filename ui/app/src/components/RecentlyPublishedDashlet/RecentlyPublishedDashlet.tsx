@@ -24,7 +24,7 @@ import { FormattedMessage } from 'react-intl';
 import Button from '@material-ui/core/Button';
 import MenuItem from '@material-ui/core/MenuItem';
 import { DetailedItem } from '../../models/Item';
-import { parseLegacyItemToDetailedItem } from '../../utils/content';
+import { getNumOfMenuOptionsForItem, getSystemTypeFromPath, parseLegacyItemToDetailedItem } from '../../utils/content';
 import LookupTable from '../../models/LookupTable';
 import Dashlet from '../Dashlet';
 import useStyles from './styles';
@@ -33,19 +33,17 @@ import TextField from '@material-ui/core/TextField';
 import { itemsApproved, itemsDeleted, itemsRejected, itemsScheduled } from '../../state/actions/system';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { filter } from 'rxjs/operators';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import { useSpreadState } from '../../utils/hooks/useSpreadState';
 import { useLocale } from '../../utils/hooks/useLocale';
 import { getStoredDashboardPreferences, setStoredDashboardPreferences } from '../../utils/state';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import GlobalState from '../../models/GlobalState';
-
-export interface RecentlyPublishedWidgetProps {
-  selectedLookup: LookupTable<boolean>;
-  onItemChecked(paths: string[], forceChecked?: boolean): void;
-  onItemMenuClick(event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, item: DetailedItem): void;
-}
+import { completeDetailedItem } from '../../state/actions/content';
+import { showItemMegaMenu } from '../../state/actions/dialogs';
+import { batchActions } from '../../state/actions/misc';
+import { getEmptyStateStyleSet } from '../SystemStatus/EmptyState';
+import { useActiveSite } from '../../utils/hooks/useActiveSite';
 
 export interface DashboardItem {
   label: string;
@@ -58,33 +56,25 @@ const dashletInitialPreferences: DashboardPreferences = {
   expanded: true
 };
 
-export default function RecentlyPublishedDashlet(props: RecentlyPublishedWidgetProps) {
-  const { selectedLookup, onItemChecked, onItemMenuClick } = props;
+export default function RecentlyPublishedDashlet() {
   const [fetchingHistory, setFetchingHistory] = useState(false);
   const [errorHistory, setErrorHistory] = useState<ApiResponse>();
   const [parentItems, setParentItems] = useState<DashboardItem[]>();
   const [itemsLookup, setItemsLookup] = useSpreadState<LookupTable<DetailedItem>>({});
   const dashletPreferencesId = 'recentlyPublishedDashlet';
   const currentUser = useSelector<GlobalState, string>((state) => state.user.username);
-  const siteId = useActiveSiteId();
+  const { id: siteId, uuid } = useActiveSite();
   const [preferences, setPreferences] = useSpreadState(
-    getStoredDashboardPreferences(currentUser, siteId, dashletPreferencesId) ?? dashletInitialPreferences
+    getStoredDashboardPreferences(currentUser, uuid, dashletPreferencesId) ?? dashletInitialPreferences
   );
   const [expandedItems, setExpandedItems] = useSpreadState<LookupTable<boolean>>({});
   const localeBranch = useLocale();
   const classes = useStyles();
+  const dispatch = useDispatch();
 
   const allCollapsed = useMemo(() => Object.keys(expandedItems).every((key) => !Boolean(expandedItems[key])), [
     expandedItems
   ]);
-  const isAllChecked = useMemo(() => !Object.keys(itemsLookup).some((path) => !selectedLookup[path]), [
-    itemsLookup,
-    selectedLookup
-  ]);
-  const isIndeterminate = useMemo(
-    () => Object.keys(itemsLookup).some((path) => selectedLookup[path]) && !isAllChecked,
-    [itemsLookup, selectedLookup, isAllChecked]
-  );
 
   const toggleCollapseAllItems = useCallback(
     (documents, expanded) => {
@@ -112,18 +102,12 @@ export default function RecentlyPublishedDashlet(props: RecentlyPublishedWidgetP
   };
 
   useEffect(() => {
-    setStoredDashboardPreferences(preferences, currentUser, siteId, dashletPreferencesId);
-  }, [preferences, currentUser, siteId]);
+    setStoredDashboardPreferences(preferences, currentUser, uuid, dashletPreferencesId);
+  }, [preferences, currentUser, uuid]);
 
   const onCollapseAll = (e) => {
     e.stopPropagation();
     toggleCollapseAllItems(parentItems, allCollapsed);
-  };
-
-  const toggleSelectAllItems = () => {
-    const checkedPaths = [];
-    Object.keys(itemsLookup).forEach((path) => checkedPaths.push(path));
-    onItemChecked(checkedPaths, !isAllChecked);
   };
 
   const fetchHistory = useCallback(() => {
@@ -158,7 +142,7 @@ export default function RecentlyPublishedDashlet(props: RecentlyPublishedWidgetP
         setFetchingHistory(false);
       }
     );
-  }, [siteId, preferences, toggleCollapseAllItems, setItemsLookup]);
+  }, [siteId, preferences.numItems, preferences.filterBy, toggleCollapseAllItems, setItemsLookup]);
 
   useEffect(() => {
     fetchHistory();
@@ -202,11 +186,29 @@ export default function RecentlyPublishedDashlet(props: RecentlyPublishedWidgetP
     }
   );
 
+  const onItemMenuClick = (event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, item: DetailedItem) => {
+    const path = item.path;
+    dispatch(
+      batchActions([
+        completeDetailedItem({ path }),
+        showItemMegaMenu({
+          path,
+          anchorReference: 'anchorPosition',
+          anchorPosition: { top: event.clientY, left: event.clientX },
+          numOfLoaderItems: getNumOfMenuOptionsForItem({
+            path: item.path,
+            systemType: getSystemTypeFromPath(item.path)
+          } as DetailedItem)
+        })
+      ])
+    );
+  };
+
   return (
     <Dashlet
       title={
         <FormattedMessage
-          id="recentlyPublished.recentlyPublished"
+          id="recentlyPublishedDashlet.dashletTitle"
           defaultMessage="RecentlyPublished ({total})"
           values={{
             total: Object.keys(itemsLookup).length
@@ -221,9 +223,9 @@ export default function RecentlyPublishedDashlet(props: RecentlyPublishedWidgetP
         <>
           <Button onClick={onCollapseAll} className={classes.rightAction} disabled={fetchingHistory}>
             {!allCollapsed ? (
-              <FormattedMessage id="recentlyPublished.collapseAll" defaultMessage="Collapse All" />
+              <FormattedMessage id="recentlyPublishedDashlet.collapseAll" defaultMessage="Collapse All" />
             ) : (
-              <FormattedMessage id="recentlyPublished.expandAll" defaultMessage="Expand All" />
+              <FormattedMessage id="recentlyPublishedDashlet.expandAll" defaultMessage="Expand All" />
             )}
           </Button>
 
@@ -252,7 +254,7 @@ export default function RecentlyPublishedDashlet(props: RecentlyPublishedWidgetP
             )}
           </TextField>
           <TextField
-            label={<FormattedMessage id="recentlyPublished.filterBy" defaultMessage="Filter by" />}
+            label={<FormattedMessage id="recentlyPublishedDashlet.filterBy" defaultMessage="Filter by" />}
             select
             size="small"
             value={preferences.filterBy}
@@ -277,6 +279,20 @@ export default function RecentlyPublishedDashlet(props: RecentlyPublishedWidgetP
         suspenseProps={{
           fallback: <RecentlyPublishedDashletUISkeletonTable items={parentItems} expandedLookup={expandedItems} />
         }}
+        withEmptyStateProps={{
+          emptyStateProps: {
+            title: (
+              <FormattedMessage
+                id="recentlyPublishedDashlet.emptyMessage"
+                defaultMessage="No items published recently"
+              />
+            ),
+            styles: {
+              ...getEmptyStateStyleSet('horizontal'),
+              ...getEmptyStateStyleSet('image-sm')
+            }
+          }
+        }}
       >
         <RecentlyPublishedWidgetUI
           resource={resource}
@@ -285,11 +301,6 @@ export default function RecentlyPublishedDashlet(props: RecentlyPublishedWidgetP
           expandedItems={expandedItems}
           setExpandedItems={setExpandedItems}
           onItemMenuClick={onItemMenuClick}
-          selectedItems={selectedLookup}
-          onItemChecked={onItemChecked}
-          onClickSelectAll={toggleSelectAllItems}
-          isAllChecked={isAllChecked}
-          isIndeterminate={isIndeterminate}
         />
       </SuspenseWithEmptyState>
     </Dashlet>

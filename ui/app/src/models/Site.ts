@@ -103,6 +103,7 @@ export interface MarketplaceSite {
 
 export interface Site {
   id: string;
+  uuid: string;
   name: string;
   description: string;
 }

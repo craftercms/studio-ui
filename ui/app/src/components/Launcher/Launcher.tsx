@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { Suspense, useMemo } from 'react';
+import React, { Suspense, useEffect, useMemo } from 'react';
 import { defineMessages, FormattedMessage, IntlShape, useIntl } from 'react-intl';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Popover from '@material-ui/core/Popover';
@@ -45,17 +45,21 @@ import { EnhancedUser } from '../../models/User';
 import LookupTable from '../../models/LookupTable';
 import { batchActions } from '../../state/actions/misc';
 import clsx from 'clsx';
-import { getSystemLink } from '../LauncherSection';
 import LauncherGlobalNav from '../LauncherGlobalNav';
 import GlobalState from '../../models/GlobalState';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import { usePreviewState } from '../../utils/hooks/usePreviewState';
 import { useEnv } from '../../utils/hooks/useEnv';
 import { useSystemVersion } from '../../utils/hooks/useSystemVersion';
 import { useActiveUser } from '../../utils/hooks/useActiveUser';
 import { useSiteList } from '../../utils/hooks/useSiteList';
 import { useSiteUIConfig } from '../../utils/hooks/useSiteUIConfig';
+import { initLauncherConfig } from '../../state/actions/launcher';
+import { useLauncherState } from '../../utils/hooks/useLauncherState';
+import { getSystemLink } from '../../utils/system';
+import { PREVIEW_URL_PATH } from '../../utils/constants';
+import { useLegacyPreviewPreference } from '../../utils/hooks/useLegacyPreviewPreference';
+import { fetchUseLegacyPreviewPreference } from '../../services/configuration';
 
 export interface LauncherProps {
   open: boolean;
@@ -193,7 +197,7 @@ interface AppsRailProps {
   user: EnhancedUser;
   onLogout(): void;
   closeButtonPosition: LauncherStateProps['closeButtonPosition'];
-  globalNavigationPosition: GlobalState['uiConfig']['launcher']['globalNavigationPosition'];
+  globalNavigationPosition: GlobalState['launcher']['globalNavigationPosition'];
   userRoles: string[];
 }
 
@@ -345,11 +349,12 @@ export default function Launcher(props: LauncherStateProps) {
   const user = useActiveUser();
   const dispatch = useDispatch();
   const version = useSystemVersion();
+  const useLegacy = useLegacyPreviewPreference();
   const { formatMessage } = useIntl();
   const { authoringBase } = useEnv();
-  const { previewChoice } = usePreviewState();
   const { open, anchor: anchorSelector, sitesRailPosition = 'left', closeButtonPosition = 'right' } = props;
-  const { launcher } = useSiteUIConfig();
+  const uiConfig = useSiteUIConfig();
+  const launcher = useLauncherState();
   const siteCardMenuLinks = launcher?.siteCardMenuLinks;
   const widgets = launcher?.widgets;
   const globalNavigationPosition = launcher?.globalNavigationPosition ?? 'after';
@@ -361,7 +366,8 @@ export default function Launcher(props: LauncherStateProps) {
         ? siteCardMenuLinks
             .filter(
               (widget) =>
-                (widget.roles ?? []).length === 0 || (userRoles ?? []).some((role) => widget.roles.includes(role))
+                (widget.permittedRoles ?? []).length === 0 ||
+                (userRoles ?? []).some((role) => widget.permittedRoles.includes(role))
             )
             .map((descriptor) => ({
               name: typeof descriptor.title === 'string' ? descriptor.title : formatMessage(descriptor.title),
@@ -369,7 +375,7 @@ export default function Launcher(props: LauncherStateProps) {
                 getSystemLink({
                   systemLinkId: descriptor.systemLinkId,
                   authoringBase,
-                  previewChoice,
+                  useLegacy,
                   site
                 }),
               onClick(site) {
@@ -377,34 +383,34 @@ export default function Launcher(props: LauncherStateProps) {
               }
             }))
         : null,
-    [siteCardMenuLinks, userRoles, formatMessage, authoringBase, previewChoice]
+    [siteCardMenuLinks, userRoles, formatMessage, authoringBase, useLegacy]
   );
 
+  useEffect(() => {
+    if (uiConfig.xml && !launcher) {
+      dispatch(initLauncherConfig({ configXml: uiConfig.xml }));
+    }
+  }, [uiConfig.xml, launcher, dispatch]);
+
   const onSiteCardClick = (site: string) => {
-    if (previewChoice[site] === '2' && window.location.href.includes('/next/preview')) {
-      // If site we're switching to is next compatible, there's no need for any sort of page postback.
-      dispatch(batchActions([changeSite(site), closeLauncher()]));
-    } else {
-      setSiteCookie(site);
-      setTimeout(() => {
-        const link = getSystemLink({
-          systemLinkId: 'preview',
-          previewChoice,
-          authoringBase,
-          site
-        });
+    setSiteCookie(site);
+    fetchUseLegacyPreviewPreference(site).subscribe((useLegacy) => {
+      if (!useLegacy && window.location.href.includes(PREVIEW_URL_PATH)) {
+        // If user is in UI next and switching to a site that's viewed in 4.
+        dispatch(batchActions([changeSite(site), closeLauncher()]));
+      } else {
         // If we're in legacy preview already (i.e. switching from a legacy-preview site to another legacy-preview
         // site) only the hash will change and the page won't reload or do anything perceivable since legacy isn't
         // fully integrated with the URL. In these cases, we need to programmatically reload.
-        const shouldReload =
-          // Currently in legacy...
-          window.location.pathname === `${authoringBase.replace(window.location.origin, '')}/preview` &&
-          // ...and not going to next
-          !link.includes('next/preview');
-        window.location.href = link;
-        shouldReload && window.location.reload();
-      });
-    }
+        window.location.href = getSystemLink({
+          systemLinkId: 'preview',
+          authoringBase,
+          useLegacy,
+          site
+        });
+        useLegacy && window.location.reload();
+      }
+    });
   };
 
   const onMenuClose = () => dispatch(closeLauncher());

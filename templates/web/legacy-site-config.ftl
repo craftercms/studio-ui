@@ -56,6 +56,7 @@
   </script>
 
   <script>window.entitlementValidator = '${applicationContext.get("crafter.entitlementValidator").getDescription()}';</script>
+  <script>IS_LEGACY_TOP_WINDOW = true</script>
 
 </head>
 <#if RequestParameters.mode?? && RequestParameters.mode == "embedded">

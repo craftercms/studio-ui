@@ -20,6 +20,7 @@ import ReactDOM from 'react-dom';
 import CrafterCMSNextBridge from '../components/CrafterCMSNextBridge';
 import * as string from './string';
 import * as object from './object';
+import * as system from './system';
 import { nou } from './object';
 import * as ajax from './ajax';
 import * as path from './path';
@@ -153,20 +154,15 @@ export function createCodebaseBridge() {
       GraphiQL: lazy(() => import('../components/GraphiQL/GraphiQL')),
       SingleFileUpload: lazy(() => import('../components/Controls/SingleFileUpload')),
       DependencySelection: lazy(() => import('../modules/Content/Dependencies/DependencySelection')),
-      DependencySelectionDelete: lazy(() =>
-        import('../modules/Content/Dependencies/DependencySelection').then((module) => ({
-          default: module.DependencySelectionDelete
-        }))
-      ),
       CreateSiteDialog: lazy(() => import('../modules/System/Sites/Create/CreateSiteDialog')),
       PublishingQueue: lazy(() => import('../modules/System/Publishing/Queue/PublishingQueue')),
       Search: lazy(() => import('../pages/Search')),
       Global: lazy(() => import('../pages/Global')),
       Preview: lazy(() => import('../pages/Preview')),
       SiteTools: lazy(() => import('../pages/SiteTools')),
-      PublishDialog: lazy(() => import('../modules/Content/Publish/PublishDialog')),
+      PublishDialog: lazy(() => import('../components/PublishDialog/PublishDialog')),
       DependenciesDialog: lazy(() => import('../modules/Content/Dependencies/DependenciesDialog')),
-      DeleteDialog: lazy(() => import('../modules/Content/Delete/DeleteDialog')),
+      DeleteDialog: lazy(() => import('../components/DeleteDialog/DeleteDialog')),
       LauncherOpenerButton: lazy(() => import('../components/LauncherOpenerButton/LauncherOpenerButton')),
       EncryptTool: lazy(() => import('../components/EncryptTool')),
       SiteEncryptTool: lazy(() => import('../components/SiteEncryptTool')),
@@ -237,6 +233,7 @@ export function createCodebaseBridge() {
       auth,
       babel,
       state,
+      system,
       content: contentUtil,
       redux: { useDispatch, useSelector, useStore }
     },

@@ -21,9 +21,8 @@ import { FormControl, FormControlLabel, FormHelperText, FormLabel, Radio, RadioG
 import { setHighlightMode } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 import EditModeSwitch from '../EditModeSwitch';
-import { usePreviewGuest } from '../../utils/hooks/usePreviewGuest';
 import { usePreviewState } from '../../utils/hooks/usePreviewState';
-import { useItemsByPath } from '../../utils/hooks/useItemsByPath';
+import { useCurrentPreviewItem } from '../../utils/hooks/useCurrentPreviewItem';
 
 const translations = defineMessages({
   editMode: {
@@ -32,7 +31,7 @@ const translations = defineMessages({
   },
   editModeHelperText: {
     id: 'settingsPanel.editModeHelperText',
-    defaultMessage: 'Enable In-context editing, highlighting editable zones as you hover on them.'
+    defaultMessage: 'Enable In-context editing, highlighting editable targets as you hover on them.'
   },
   highlightMode: {
     id: 'settingsPanel.highlightMode',
@@ -40,11 +39,12 @@ const translations = defineMessages({
   },
   highlightModeHelperText: {
     id: 'settingsPanel.highlightModeHelperText',
-    defaultMessage: 'When "highlight movable" is active, only content items you can move around drop zones highlight.'
+    defaultMessage:
+      'When "highlight movable" is selected, only content items you can be moved or sorted highlight. Text inputs and other non-movable won\'t highlight.'
   },
   highlightAllZones: {
-    id: 'settingsPanel.highlightAllZones',
-    defaultMessage: 'Highlight All Zones'
+    id: 'settingsPanel.highlightAllTargets',
+    defaultMessage: 'Highlight All Targets'
   },
   highlightMovable: {
     id: 'settingsPanel.highlightMovable',
@@ -72,14 +72,10 @@ const useStyles = makeStyles(() => ({
 }));
 
 export default function PreviewSettingsPanel() {
-  const classes = useStyles({});
+  const classes = useStyles();
   const { formatMessage } = useIntl();
   const { highlightMode } = usePreviewState();
-  const guest = usePreviewGuest();
-  const modelId = guest?.modelId;
-  const models = guest?.models;
-  const items = useItemsByPath();
-  const item = items?.[models?.[modelId]?.craftercms.path];
+  const item = useCurrentPreviewItem();
   const dispatch = useDispatch();
 
   return (

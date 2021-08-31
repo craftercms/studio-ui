@@ -14,55 +14,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useState } from 'react';
-import { BaseItem, SandboxItem } from '../../../models/Item';
-import { createStyles, makeStyles, withStyles } from '@material-ui/core/styles';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import React from 'react';
+import { DetailedItem } from '../../../models/Item';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { FormattedMessage } from 'react-intl';
-import Checkbox from '@material-ui/core/Checkbox';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
-import { createCheckedItems, onClickSetChecked, selectAllDeps, updateCheckedList } from '../Publish/PublishDialog';
-import Button from '@material-ui/core/Button';
+import LookupTable from '../../../models/LookupTable';
 import clsx from 'clsx';
-import { useSelection } from '../../../utils/hooks/useSelection';
-import { useActiveSiteId } from '../../../utils/hooks/useActiveSiteId';
+import { SelectionList, SelectionListProps } from './SelectionList';
+import { nnou } from '../../../utils/object';
+import { FetchDependenciesResponse } from '../../../services/dependencies';
 
-interface DependencySelectionProps<T extends BaseItem = BaseItem> {
-  items: T[];
-  siteId?: string; // for dependencySelectionDelete
-  onChange?: Function; // for dependencySelectionDelete
-  checked: T[];
-  setChecked: Function;
-  checkedSoftDep: any[];
-  setCheckedSoftDep: Function;
-  onClickSetChecked: Function;
-  deps: any;
-  showDepsButton: boolean;
-  onSelectAllClicked: Function;
-  onSelectAllSoftClicked: Function;
-  onClickShowAllDeps?: any;
+export interface DependencySelectionProps extends Pick<SelectionListProps, 'onItemClicked' | 'onSelectAllClicked'> {
+  items?: DetailedItem[];
+  selectedItems: LookupTable<boolean>;
+  dependencies: FetchDependenciesResponse;
   disabled?: boolean;
-}
-
-interface SelectionListProps<T extends BaseItem = BaseItem> {
-  title: any;
-  subtitle?: any;
-  items?: T[];
-  uris?: string[];
-  onItemClicked?: Function;
-  onSelectAllClicked?: Function;
-  displayItemTitle: boolean;
-  checked?: any;
-  setChecked?: Function;
-  disabled?: boolean;
-  showEdit?: boolean;
-  onEditClick?: Function;
+  onSelectAllSoftClicked: SelectionListProps['onSelectAllClicked'];
 }
 
 export interface DeleteDependencies {
@@ -70,56 +37,20 @@ export interface DeleteDependencies {
   dependentItems: string[];
 }
 
-const CenterCircularProgress = withStyles({
-  root: {
-    justifyContent: 'center',
-    color: '#7e9dbb',
-    width: '30px!important',
-    height: '30px!important',
-    marginRight: '10px'
-  }
-})(CircularProgress);
-
+// region useStyles
 const useStyles = makeStyles((theme) =>
   createStyles({
     dependencySelection: {
-      padding: '11px 12px',
       background: theme.palette.background.paper,
       border: `1px solid ${theme.palette.divider}`,
-      height: 'calc(100% - 24px)',
-      minHeight: '374px',
-      overflowY: 'hidden'
-    },
-    dependencySelectionDelete: {
-      overflowY: 'auto'
+      minHeight: '374px'
     },
     dependencySelectionDisabled: {
       opacity: 0.7
     },
-    selectAllBtn: {
-      marginLeft: 'auto',
-      fontWeight: 'bold',
-      verticalAlign: 'baseline'
-    },
     showAllBtn: {
       marginLeft: 0,
       verticalAlign: 'baseline'
-    },
-    bottomSection: {
-      marginLeft: '10px'
-    },
-    circularProgressText: {
-      position: 'relative',
-      bottom: '9px'
-    },
-    selectionList: {
-      paddingTop: 0
-    },
-    listItem: {
-      padding: '0 5px'
-    },
-    listItemIcon: {
-      minWidth: '36px'
     },
     listItemTitle: {
       '& h4': {
@@ -131,328 +62,64 @@ const useStyles = makeStyles((theme) =>
     },
     listItemPath: {
       padding: 0
-    },
-    secondaryAction: {
-      padding: '0 80px 0 5px'
-    },
-    overflowText: {
-      overflow: 'hidden',
-      whiteSpace: 'nowrap',
-      textOverflow: 'ellipsis'
     }
   })
 );
+// endregion
 
 export function DependencySelection(props: DependencySelectionProps) {
   const {
     items,
-    checked,
-    setChecked,
-    checkedSoftDep,
-    setCheckedSoftDep,
-    deps,
-    showDepsButton,
-    onClickSetChecked,
+    selectedItems,
+    dependencies,
+    onItemClicked,
     onSelectAllClicked,
     onSelectAllSoftClicked,
-    onClickShowAllDeps,
     disabled = false
   } = props;
-
-  const classes = useStyles({});
-
+  const classes = useStyles();
   return (
     <>
-      <div className={`${classes.dependencySelection} ${disabled ? classes.dependencySelectionDisabled : ''}`}>
+      <div className={clsx(classes.dependencySelection, disabled && classes.dependencySelectionDisabled)}>
         <SelectionList
           title={<FormattedMessage id="publishDialog.itemsToPublish" defaultMessage="Items To Publish" />}
           items={items}
-          onItemClicked={onClickSetChecked}
+          onItemClicked={onItemClicked}
           onSelectAllClicked={onSelectAllClicked}
           displayItemTitle={true}
-          checked={checked}
-          setChecked={setChecked}
+          selectedItems={selectedItems}
           disabled={disabled}
         />
-        {deps == null ? null : (
+        {nnou(dependencies) && (
           <>
             <SelectionList
               title={<FormattedMessage id="publishDialog.hardDependencies" defaultMessage="Hard Dependencies" />}
               subtitle={
                 <FormattedMessage id="publishDialog.submissionMandatory" defaultMessage="Submission Mandatory" />
               }
-              uris={deps.items1}
+              emptyMessage={
+                <FormattedMessage id="publishDialog.emptyHardDependencies" defaultMessage="No hard dependencies" />
+              }
+              paths={dependencies.hardDependencies ?? []}
               displayItemTitle={false}
               disabled={disabled}
             />
             <SelectionList
               title={<FormattedMessage id="publishDialog.softDependencies" defaultMessage="Soft Dependencies" />}
               subtitle={<FormattedMessage id="publishDialog.submissionOptional" defaultMessage="Submission Optional" />}
-              uris={deps.items2}
-              onItemClicked={setCheckedSoftDep}
+              emptyMessage={
+                <FormattedMessage id="publishDialog.emptySoftDependencies" defaultMessage="No soft dependencies" />
+              }
+              paths={dependencies.softDependencies ?? []}
+              onItemClicked={onItemClicked}
               onSelectAllClicked={onSelectAllSoftClicked}
               displayItemTitle={false}
-              checked={checkedSoftDep}
-              setChecked={setChecked}
+              selectedItems={selectedItems}
               disabled={disabled}
             />
           </>
         )}
       </div>
-      <div className={classes.bottomSection}>
-        {deps == null && !showDepsButton ? (
-          <div className="centerCircularProgress">
-            <CenterCircularProgress />
-            <span className={classes.circularProgressText}>
-              <FormattedMessage
-                id="publishDialog.loadingDependencies"
-                defaultMessage="Loading Dependencies, please wait{ellipsis}"
-                values={{ ellipsis: '&hellip;' }}
-              />
-            </span>
-          </div>
-        ) : (
-          // If no onClickShowAllDeps function defined, don't show button
-          showDepsButton &&
-          onClickShowAllDeps && (
-            <Button color="primary" onClick={onClickShowAllDeps} size="small" className={classes.showAllBtn}>
-              <FormattedMessage id="publishDialog.showAllDependencies" defaultMessage="Show All Dependencies" />
-            </Button>
-          )
-        )}
-        {onClickShowAllDeps && (
-          <p>
-            <FormattedMessage
-              id="publishDialog.changesInSelection"
-              defaultMessage={
-                'Changes in the selection of items to publish will require "all dependencies" to be recalculated.'
-              }
-            />
-          </p>
-        )}
-      </div>
-    </>
-  );
-}
-
-interface DependencySelectionDeleteProps {
-  items: SandboxItem[];
-  resultItems: DeleteDependencies;
-  onChange: Function;
-  onEditDependency?: Function;
-}
-
-export function DependencySelectionDelete(props: DependencySelectionDeleteProps) {
-  const classes = useStyles({});
-  const { items, resultItems, onChange, onEditDependency } = props;
-  const [checked, _setChecked] = useState<any>(createCheckedItems(items));
-  const siteId = useActiveSiteId();
-  const authoringBase = useSelection<string>((state) => state.env.authoringBase);
-
-  const setChecked = (uri: string[], isChecked: boolean) => {
-    _setChecked(updateCheckedList(uri, isChecked, checked));
-  };
-
-  useEffect(() => {
-    const result = Object.entries({ ...checked })
-      .filter(([key, value]) => value === true)
-      .map(([key]) => key);
-    onChange?.(result);
-  }, [checked, onChange]);
-
-  const onEditClick = (uri: string) => {
-    onEditDependency({ site: siteId, path: uri, authoringBase });
-  };
-
-  return (
-    <div className={clsx(classes.dependencySelection, classes.dependencySelectionDelete)}>
-      <SelectionList
-        title={<FormattedMessage id="deleteDialog.deleteItems" defaultMessage="Delete Items" />}
-        items={items}
-        onItemClicked={onClickSetChecked}
-        onSelectAllClicked={selectAllDeps}
-        displayItemTitle={true}
-        checked={checked}
-        setChecked={setChecked}
-      />
-      <>
-        <SelectionList
-          title={<FormattedMessage id="deleteDialog.childItemsText" defaultMessage="Child Items" />}
-          subtitle={<FormattedMessage id="deleteDialog.willGetDeleted" defaultMessage="Will get deleted" />}
-          uris={resultItems.childItems}
-          displayItemTitle={false}
-        />
-        <SelectionList
-          title={<FormattedMessage id="deleteDialog.dependentItems" defaultMessage="Dependent Items" />}
-          subtitle={<FormattedMessage id="deleteDialog.brokenItems" defaultMessage="Will have broken references" />}
-          uris={resultItems.dependentItems}
-          displayItemTitle={false}
-          showEdit
-          onEditClick={onEditClick}
-        />
-      </>
-      <div className={classes.bottomSection}>
-        {resultItems === null && (
-          <div className="centerCircularProgress">
-            <CenterCircularProgress />
-            <span className={classes.circularProgressText}>
-              <FormattedMessage
-                id="deleteDialog.updatingDependents"
-                defaultMessage="Updating dependents, please wait..."
-              />
-            </span>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function SelectionList(props: SelectionListProps) {
-  const {
-    title,
-    subtitle,
-    items,
-    uris,
-    onItemClicked,
-    onSelectAllClicked,
-    checked,
-    setChecked,
-    disabled = false,
-    showEdit = false,
-    onEditClick
-  } = props;
-
-  const classes = useStyles({});
-
-  return (
-    <>
-      <Box display="flex" alignItems="center" whiteSpace="break-spaces">
-        <Typography variant="subtitle1" component="h2">
-          {title}
-        </Typography>
-        {subtitle ? (
-          <Typography component="span">
-            {` • `}
-            {subtitle}
-          </Typography>
-        ) : null}
-        {onSelectAllClicked ? (
-          <Button
-            color="primary"
-            onClick={() => onSelectAllClicked(setChecked, items)}
-            size="small"
-            className={classes.selectAllBtn}
-          >
-            <FormattedMessage id="common.selectAll" defaultMessage="Select All" />
-          </Button>
-        ) : null}
-      </Box>
-      {items && (
-        <List className={classes.selectionList}>
-          {items.map((item) => {
-            const labelId = `checkbox-list-label-${item.path}`;
-
-            return (
-              <ListItem
-                className={classes.listItem}
-                key={item.path}
-                role={undefined}
-                {...(onItemClicked
-                  ? {
-                      button: true,
-                      onClick: (e) => onItemClicked(e, item, setChecked, checked)
-                    }
-                  : null)}
-              >
-                {onItemClicked && (
-                  <ListItemIcon className={classes.listItemIcon}>
-                    <Checkbox
-                      color="primary"
-                      edge="start"
-                      checked={!!checked[item.path]}
-                      tabIndex={-1}
-                      disableRipple
-                      inputProps={{ 'aria-labelledby': item.path }}
-                      disabled={disabled}
-                    />
-                  </ListItemIcon>
-                )}
-                <ListItemText
-                  id={labelId}
-                  primary={<h4>{item.label}</h4>}
-                  primaryTypographyProps={{
-                    title: item.label,
-                    className: clsx(classes.listItemTitle, classes.overflowText)
-                  }}
-                  secondary={<React.Fragment>{item.path}</React.Fragment>}
-                  secondaryTypographyProps={{
-                    title: item.path,
-                    className: clsx(classes.listItemPath, classes.overflowText)
-                  }}
-                />
-              </ListItem>
-            );
-          })}
-        </List>
-      )}
-      {uris ? (
-        <List>
-          {uris.map((uri: string) => {
-            const labelId = `checkbox-list-label-${uri}`;
-
-            return (
-              <ListItem
-                className={classes.listItem}
-                classes={{ secondaryAction: classes.secondaryAction }}
-                key={uri}
-                role={undefined}
-                dense
-                {...(onItemClicked
-                  ? {
-                      button: true,
-                      onClick: () => onItemClicked([uri], !checked[uri], setChecked, checked)
-                    }
-                  : null)}
-              >
-                {onItemClicked && (
-                  <ListItemIcon className={classes.listItemIcon}>
-                    <Checkbox
-                      color="primary"
-                      edge="start"
-                      checked={!!checked[uri]}
-                      tabIndex={-1}
-                      disableRipple
-                      inputProps={{ 'aria-labelledby': uri }}
-                      disabled={disabled}
-                    />
-                  </ListItemIcon>
-                )}
-                <ListItemText
-                  id={labelId}
-                  primary={uri}
-                  primaryTypographyProps={{
-                    title: uri,
-                    classes: { root: classes.overflowText }
-                  }}
-                />
-                {showEdit && (
-                  <ListItemSecondaryAction>
-                    <Button
-                      color="primary"
-                      onClick={() => onEditClick(uri)}
-                      size="small"
-                      className={classes.selectAllBtn}
-                    >
-                      <FormattedMessage id="words.edit" defaultMessage="Edit" />
-                    </Button>
-                  </ListItemSecondaryAction>
-                )}
-              </ListItem>
-            );
-          })}
-        </List>
-      ) : null}
     </>
   );
 }

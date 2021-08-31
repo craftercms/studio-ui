@@ -23,16 +23,18 @@ import LoadingState from '../SystemStatus/LoadingState';
 
 interface ContentTypeManagementProps {
   embedded?: boolean;
+  showAppsButton?: boolean;
 }
 
 export default function ContentTypeManagement(props: ContentTypeManagementProps) {
-  const { embedded = false } = props;
+  const { embedded = false, showAppsButton } = props;
   const [loading, setLoading] = useState(true);
   return (
-    <Box height="100vh" display="flex" flexDirection="column">
+    <Box height="100%" display="flex" flexDirection="column">
       {!embedded && (
         <GlobalAppToolbar
           title={<FormattedMessage id="dropTargetsMessages.contentTypes" defaultMessage="Content Types" />}
+          showAppsButton={showAppsButton}
         />
       )}
       {loading && <LoadingState styles={{ root: { flexGrow: 1 } }} />}

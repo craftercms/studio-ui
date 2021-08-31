@@ -15,14 +15,12 @@
  */
 
 import { ofType, StateObservable } from 'redux-observable';
-import { ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import { ignoreElements, tap, withLatestFrom } from 'rxjs/operators';
 import {
   popToolsPanelPage,
   previewItem,
   pushToolsPanelPage,
   setHighlightMode,
-  setPreviewChoice,
-  setPreviewChoiceComplete,
   setPreviewEditMode
 } from '../actions/preview';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
@@ -35,9 +33,8 @@ import {
 } from '../../utils/state';
 import GlobalState from '../../models/GlobalState';
 import { setClipboard } from '../actions/content';
-import { setProperties } from '../../services/users';
 import { CrafterCMSEpic } from '../store';
-import { getSystemLink } from '../../components/LauncherSection';
+import { getSystemLink } from '../../utils/system';
 
 export default [
   (action$, state$) =>
@@ -46,7 +43,8 @@ export default [
       withLatestFrom(state$),
       tap(([{ type, payload }, state]) => {
         if (payload) {
-          setStoredPreviewToolsPanelPage(state.sites.active, state.user.username, payload);
+          const uuid = state.sites.byId[state.sites.active].uuid;
+          setStoredPreviewToolsPanelPage(uuid, state.user.username, payload);
         }
       }),
       ignoreElements()
@@ -56,14 +54,15 @@ export default [
       ofType(popToolsPanelPage.type),
       withLatestFrom(state$),
       tap(([, state]) => {
+        const uuid = state.sites.byId[state.sites.active].uuid;
         if (state.preview.toolsPanelPageStack.length) {
           setStoredPreviewToolsPanelPage(
-            state.sites.active,
+            uuid,
             state.user.username,
             state.preview.toolsPanelPageStack[state.preview.toolsPanelPageStack.length - 1]
           );
         } else {
-          removeStoredPreviewToolsPanelPage(state.sites.active, state.user.username);
+          removeStoredPreviewToolsPanelPage(uuid, state.user.username);
         }
       }),
       ignoreElements()
@@ -77,19 +76,6 @@ export default [
         setStoredEditModeChoice(action.payload.editMode, state.user.username);
       }),
       ignoreElements()
-    ),
-  // endregion
-  // region setPreviewChoice
-  (action$, state$) =>
-    action$.pipe(
-      ofType(setPreviewChoice.type),
-      withLatestFrom(state$),
-      switchMap(([{ payload }, state]) =>
-        setProperties({
-          previewChoice: JSON.stringify({ ...state.preview.previewChoice, [payload.site]: payload.choice })
-        })
-      ),
-      map(setPreviewChoiceComplete)
     ),
   // endregion
   // region setHighlightMode
@@ -110,7 +96,8 @@ export default [
       ofType(setClipboard.type),
       withLatestFrom(state$),
       tap(([{ payload }, state]) => {
-        setStoredClipboard(state.sites.active, state.user.username, payload);
+        const uuid = state.sites.byId[state.sites.active].uuid;
+        setStoredClipboard(uuid, state.user.username, payload);
       }),
       ignoreElements()
     ),
@@ -124,9 +111,9 @@ export default [
         const url = getSystemLink({
           site: state.sites.active,
           systemLinkId: 'preview',
-          previewChoice: state.preview.previewChoice,
           authoringBase: state.env.authoringBase,
-          page: payload.item.previewUrl
+          page: payload.item.previewUrl,
+          useLegacy: Boolean(state.uiConfig.useLegacyPreviewLookup[state.sites.active])
         });
         if (payload.newTab) {
           window.open(url);

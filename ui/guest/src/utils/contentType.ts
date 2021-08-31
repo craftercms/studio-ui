@@ -16,7 +16,7 @@
 
 import { ContentType, ContentTypeField } from '@craftercms/studio-ui/models/ContentType';
 import { createLookupTable } from './object';
-import { loremIpsum } from 'lorem-ipsum';
+import { LoremIpsum } from 'lorem-ipsum';
 import LookupTable from '@craftercms/studio-ui/models/LookupTable';
 
 export function getRelatedContentTypeIds(contentType: ContentType): string[] {
@@ -95,33 +95,38 @@ export function getFieldsByType(contentType: ContentType, fieldType): ContentTyp
   return Object.values(contentType.fields).filter((field) => field.type === fieldType);
 }
 
-export function getDefaultValue(field: ContentTypeField): string {
+export function getDefaultValue(field: ContentTypeField): string | number {
   if (field.defaultValue) {
     return field.defaultValue;
-  } else {
+  } else if (field.validations.required) {
     switch (field.type) {
       case 'image':
         const width = field.validations.width?.value ?? field.validations.minWidth?.value ?? 150;
         const height = field.validations.height?.value ?? field.validations.minHeight?.value ?? width;
         return `https://via.placeholder.com/${width}x${height}`;
-      case 'text':
-      case 'html':
       case 'textarea':
-        const maxLength = field.validations.maxLength?.value;
-        let text = loremIpsum({
-          count: 1,
-          format: 'plain',
-          sentenceLowerBound: 4,
-          sentenceUpperBound: 4,
-          units: 'sentences'
+      case 'text': {
+        let maxLength = parseInt(field.validations.maxLength?.value);
+        let lorem = new LoremIpsum({
+          wordsPerSentence: {
+            max: 4,
+            min: 4
+          }
         });
-        maxLength && text.substring(0, maxLength);
-
-        return text;
+        return maxLength ? lorem.generateSentences(1).substring(0, maxLength / 2) : lorem.generateWords(1);
+      }
+      case 'html':
+        let lorem = new LoremIpsum();
+        return lorem.generateParagraphs(1);
+      case 'numeric-input': {
+        return field.validations.minValue?.value ?? 1;
+      }
       case 'boolean':
         return 'false';
       case 'date-time':
         return new Date().toISOString();
     }
+  } else {
+    return null;
   }
 }

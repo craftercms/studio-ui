@@ -21,10 +21,18 @@ import { useEnv } from '../../utils/hooks/useEnv';
 
 interface SiteGraphiQLProps {
   embedded?: boolean;
+  showAppsButton?: boolean;
 }
 
 export default function SiteGraphiQL(props: SiteGraphiQLProps) {
   const site = useActiveSiteId();
   const { guestBase } = useEnv();
-  return <Graphi storageKey={site} url={`${guestBase}/api/1/site/graphql`} embedded={props.embedded} />;
+  return (
+    <Graphi
+      storageKey={site}
+      url={`${guestBase}/api/1/site/graphql`}
+      embedded={props.embedded}
+      showAppsButton={props.showAppsButton}
+    />
+  );
 }

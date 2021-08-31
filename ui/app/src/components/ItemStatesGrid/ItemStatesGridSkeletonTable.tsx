@@ -59,12 +59,12 @@ export const ItemStatesGridSkeletonTable = React.memo((props: WorkflowStatesGrid
             </GlobalAppGridCell>
             <GlobalAppGridCell className="width20">
               <Typography variant="subtitle2">
-                <FormattedMessage id="workflowStates.live" defaultMessage="Live" />
+                <FormattedMessage id="words.live" defaultMessage="Live" />
               </Typography>
             </GlobalAppGridCell>
             <GlobalAppGridCell className="width20">
               <Typography variant="subtitle2">
-                <FormattedMessage id="workflowStates.staged" defaultMessage="Staged" />
+                <FormattedMessage id="words.staged" defaultMessage="Staged" />
               </Typography>
             </GlobalAppGridCell>
           </GlobalAppGridRow>

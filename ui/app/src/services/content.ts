@@ -17,7 +17,7 @@
 import { errorSelectorApi1, get, getBinary, getGlobalHeaders, getText, post, postJSON } from '../utils/ajax';
 import { catchError, map, mapTo, pluck, switchMap, tap } from 'rxjs/operators';
 import { forkJoin, Observable, of, zip } from 'rxjs';
-import { createElements, fromString, getInnerHtml, serialize, wrapElementInAuxDocument } from '../utils/xml';
+import { cdataWrap, createElements, fromString, getInnerHtml, serialize, wrapElementInAuxDocument } from '../utils/xml';
 import { ContentType } from '../models/ContentType';
 import { createLookupTable, nnou, nou, reversePluckProps, toQueryString } from '../utils/object';
 import { LookupTable } from '../models/LookupTable';
@@ -36,7 +36,6 @@ import {
   createItemActionMap,
   createItemStateMap,
   parseContentXML,
-  parseLegacyItemToSandBoxItem,
   parseSandBoxItemToDetailedItem
 } from '../utils/content';
 import QuickCreateItem from '../models/content/QuickCreateItem';
@@ -190,7 +189,8 @@ export function updateField(
   fieldId: string,
   indexToUpdate: number,
   parentModelId: string = null,
-  value: any
+  value: any,
+  serializeValue: boolean | ((value: any) => string) = false
 ): Observable<any> {
   return performMutation(site, modelId, parentModelId, (doc) => {
     let node = extractNode(doc, removeLastPiece(fieldId) || fieldId, indexToUpdate);
@@ -209,7 +209,8 @@ export function updateField(
       node = doc.createElement(fieldId);
       doc.documentElement.appendChild(node);
     }
-    node.innerHTML = `<![CDATA[${value}]]>`;
+    node.innerHTML =
+      typeof serializeValue === 'function' ? serializeValue(value) : Boolean(serializeValue) ? cdataWrap(value) : value;
   });
 }
 
@@ -272,7 +273,8 @@ export function insertComponent(
       '@attributes': { id },
       'content-type': contentType.id,
       'display-template': contentType.displayTemplate,
-      'internal-name': instance.craftercms.label,
+      // TODO: per this, at this point, internal-name is always cdata wrapped, not driven by config.
+      'internal-name': cdataWrap(instance.craftercms.label),
       'file-name': `${id}.xml`,
       objectId: id,
       locale: instance.craftercms.locale,
@@ -1008,9 +1010,8 @@ export function unlock(site: string, path: string): Observable<boolean> {
 }
 
 export function fetchWorkflowAffectedItems(site: string, path: string): Observable<SandboxItem[]> {
-  return get(`/studio/api/1/services/api/1/workflow/get-workflow-affected-paths.json?site=${site}&path=${path}`).pipe(
+  return get(`/studio/api/2/workflow/affected_paths?siteId=${site}&path=${path}`).pipe(
     pluck('response', 'items'),
-    map((items) => items.map(parseLegacyItemToSandBoxItem)),
     catchError(errorSelectorApi1)
   );
 }

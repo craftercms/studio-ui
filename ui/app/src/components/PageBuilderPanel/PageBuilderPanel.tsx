@@ -15,9 +15,9 @@
  */
 
 import * as React from 'react';
-import { Suspense } from 'react';
+import { Suspense, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { updatePageBuilderPanelWidth } from '../../state/actions/preview';
+import { initPageBuilderPanelConfig, updatePageBuilderPanelWidth } from '../../state/actions/preview';
 import LoadingState, { ConditionalLoadingState } from '../SystemStatus/LoadingState';
 import { useSelection } from '../../utils/hooks/useSelection';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
@@ -25,23 +25,50 @@ import { useActiveUser } from '../../utils/hooks/useActiveUser';
 import { useSiteUIConfig } from '../../utils/hooks/useSiteUIConfig';
 import { renderWidgets } from '../Widget';
 import ResizeableDrawer from '../../modules/Preview/ResizeableDrawer';
+import { usePreviewState } from '../../utils/hooks/usePreviewState';
+import EmptyState from '../SystemStatus/EmptyState';
+import { FormattedMessage } from 'react-intl';
+import { nnou } from '../../utils/object';
+import { getComputedEditMode } from '../../utils/content';
+import { useCurrentPreviewItem } from '../../utils/hooks/useCurrentPreviewItem';
 
 export function PageBuilderPanel() {
   const dispatch = useDispatch();
   const uiConfig = useSiteUIConfig();
+  const { pageBuilderPanel } = usePreviewState();
   const site = useActiveSiteId();
-  const { rolesBySite } = useActiveUser();
+  const { rolesBySite, username } = useActiveUser();
   const { pageBuilderPanelWidth: width, editMode, pageBuilderPanelStack } = useSelection((state) => state.preview);
   const onWidthChange = (width) => dispatch(updatePageBuilderPanelWidth({ width }));
+  const item = useCurrentPreviewItem();
+  const isOpen = getComputedEditMode({ item, editMode, username });
+
+  useEffect(() => {
+    if (nnou(uiConfig.xml) && !pageBuilderPanel) {
+      dispatch(initPageBuilderPanelConfig({ configXml: uiConfig.xml }));
+    }
+  }, [uiConfig.xml, dispatch, pageBuilderPanel]);
+
   return (
-    <ResizeableDrawer open={editMode} belowToolbar anchor="right" width={width} onWidthChange={onWidthChange}>
+    <ResizeableDrawer open={isOpen} belowToolbar anchor="right" width={width} onWidthChange={onWidthChange}>
       <Suspense fallback={<LoadingState />}>
-        <ConditionalLoadingState isLoading={!Boolean(uiConfig.preview.pageBuilderPanel.widgets)}>
-          {renderWidgets(
-            pageBuilderPanelStack.length
-              ? pageBuilderPanelStack.slice(pageBuilderPanelStack.length - 1)
-              : uiConfig.preview.pageBuilderPanel.widgets,
-            rolesBySite[site]
+        <ConditionalLoadingState isLoading={!Boolean(pageBuilderPanel)}>
+          {pageBuilderPanel?.widgets && pageBuilderPanel.widgets.length > 0 ? (
+            renderWidgets(
+              pageBuilderPanelStack.length
+                ? pageBuilderPanelStack.slice(pageBuilderPanelStack.length - 1)
+                : pageBuilderPanel.widgets,
+              rolesBySite[site]
+            )
+          ) : (
+            <EmptyState
+              title={
+                <FormattedMessage
+                  id="pageBuilderPanel.noWidgetsMessage"
+                  defaultMessage="No tools have been configured"
+                />
+              }
+            />
           )}
         </ConditionalLoadingState>
       </Suspense>

@@ -54,6 +54,7 @@ import {
   PUBLISHING_STAGED_MASK,
   READ_MASK,
   STATE_DELETED_MASK,
+  STATE_DISABLED_MASK,
   STATE_LOCKED_MASK,
   STATE_MODIFIED_MASK,
   STATE_NEW_MASK,
@@ -215,7 +216,8 @@ export function parseLegacyItemToBaseItem(item: LegacyItem): BaseItem {
     localeCode: 'en',
     translationSourceId: null,
     availableActions: null,
-    availableActionsMap: null
+    availableActionsMap: null,
+    childrenCount: 0
   };
 }
 
@@ -277,10 +279,21 @@ export function parseLegacyItemToDetailedItem(item: LegacyItem | LegacyItem[]): 
 
 export function parseSandBoxItemToDetailedItem(item: SandboxItem): DetailedItem;
 export function parseSandBoxItemToDetailedItem(item: SandboxItem[]): DetailedItem[];
-export function parseSandBoxItemToDetailedItem(item: SandboxItem | SandboxItem[]): DetailedItem | DetailedItem[] {
+export function parseSandBoxItemToDetailedItem(
+  item: SandboxItem,
+  detailedItemComplement: Pick<DetailedItem, 'live' | 'staging'>
+): DetailedItem;
+export function parseSandBoxItemToDetailedItem(
+  item: SandboxItem[],
+  detailedItemComplementByPath: LookupTable<Pick<DetailedItem, 'live' | 'staging'>>
+): DetailedItem[];
+export function parseSandBoxItemToDetailedItem(
+  item: SandboxItem | SandboxItem[],
+  detailedItemComplement?: Pick<DetailedItem, 'live' | 'staging'> | LookupTable<Pick<DetailedItem, 'live' | 'staging'>>
+): DetailedItem | DetailedItem[] {
   if (Array.isArray(item)) {
     // including level descriptors to avoid issues on pathNavigator;
-    return item.map((i) => parseSandBoxItemToDetailedItem(i));
+    return item.map((i) => parseSandBoxItemToDetailedItem(i, detailedItemComplement?.[i.path]));
   }
   return {
     sandbox: {
@@ -292,8 +305,8 @@ export function parseSandBoxItemToDetailedItem(item: SandboxItem | SandboxItem[]
       sizeInBytes: item.sizeInBytes,
       expiresOn: item.expiresOn
     },
-    staging: null,
-    live: null,
+    staging: (detailedItemComplement?.staging as DetailedItem['staging']) ?? null,
+    live: (detailedItemComplement?.live as DetailedItem['live']) ?? null,
     ...(reversePluckProps(
       item,
       'creator',
@@ -668,6 +681,7 @@ export const isSubmittedToLive = (value: number) =>
   Boolean(value & PUBLISHING_DESTINATION_MASK);
 export const isStaged = (value: number) => Boolean(value & PUBLISHING_STAGED_MASK);
 export const isLive = (value: number) => Boolean(value & PUBLISHING_LIVE_MASK);
+export const isDisabled = (value: number) => Boolean(value & STATE_DISABLED_MASK);
 export const isTranslationUpToDateState = (value: number) => Boolean(value & STATE_TRANSLATION_UP_TO_DATE_MASK);
 export const isTranslationPendingState = (value: number) => Boolean(value & STATE_TRANSLATION_PENDING_MASK);
 export const isTranslationInProgressState = (value: number) => Boolean(value & STATE_TRANSLATION_IN_PROGRESS_MASK);
@@ -686,6 +700,7 @@ export const createItemStateMap: (status: number) => ItemStateMap = (status: num
   submittedToLive: isSubmittedToLive(status),
   staged: isStaged(status),
   live: isLive(status),
+  disabled: isDisabled(status),
   translationUpToDate: isTranslationUpToDateState(status),
   translationPending: isTranslationPendingState(status),
   translationInProgress: isTranslationInProgressState(status)

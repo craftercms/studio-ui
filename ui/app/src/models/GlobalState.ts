@@ -27,9 +27,7 @@ import { ErrorDialogStateProps } from '../components/SystemStatus/ErrorDialog';
 import { MinimizedDialogsStateProps } from './MinimizedDialog';
 import { NewContentDialogStateProps } from '../modules/Content/Authoring/NewContentDialog';
 import { HistoryDialogStateProps } from '../modules/Content/History/HistoryDialog';
-import { PublishDialogStateProps } from '../modules/Content/Publish/PublishDialog';
 import { DependenciesDialogStateProps } from '../modules/Content/Dependencies/DependenciesDialog';
-import { DeleteDialogStateProps } from '../modules/Content/Delete/DeleteDialog';
 import { EntityState } from './EntityState';
 import { ApiResponse } from './ApiResponse';
 import { ViewVersionDialogStateProps } from '../modules/Content/History/ViewVersionDialog';
@@ -55,14 +53,15 @@ import { ItemMegaMenuStateProps } from '../components/ItemMegaMenu';
 import { LauncherStateProps } from '../components/Launcher';
 import { PublishingStatusDialogStateProps } from '../components/PublishingStatusDialog';
 import TranslationOrText from './TranslationOrText';
-import { SystemLinkId } from '../components/LauncherSection';
 import { SystemIconDescriptor } from '../components/SystemIcon';
 import { AjaxError } from 'rxjs/ajax';
 import { PathNavigatorTreeStateProps } from '../components/PathNavigatorTree';
 import { UnlockPublisherDialogStateProps } from '../components/UnlockPublisherDialog';
 import { WidgetDialogStateProps } from '../components/WidgetDialog';
 import { CodeEditorDialogStateProps } from '../components/CodeEditorDialog';
-import DateTimeFormatOptions = Intl.DateTimeFormatOptions;
+import { SystemLinkId } from '../utils/system';
+import { PublishDialogStateProps } from '../components/PublishDialog/utils';
+import { DeleteDialogStateProps } from '../components/DeleteDialog/utils';
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
   page: any;
@@ -145,7 +144,6 @@ export interface GlobalState {
   preview: {
     editMode: boolean;
     highlightMode: string;
-    previewChoice: LookupTable<'1' | '2'>;
     showToolsPanel: boolean;
     toolsPanelPageStack: WidgetDescriptor[];
     toolsPanelWidth: number;
@@ -165,6 +163,23 @@ export interface GlobalState {
     dropTargets: {
       selectedContentType: string;
       byId: LookupTable<ContentTypeDropTarget>;
+    };
+    toolsPanel: {
+      widgets: WidgetDescriptor[];
+    };
+    toolbar: {
+      leftSection: {
+        widgets: WidgetDescriptor[];
+      };
+      middleSection: {
+        widgets: WidgetDescriptor[];
+      };
+      rightSection: {
+        widgets: WidgetDescriptor[];
+      };
+    };
+    pageBuilderPanel: {
+      widgets: WidgetDescriptor[];
     };
   };
   previewNavigation: {
@@ -209,47 +224,6 @@ export interface GlobalState {
     error: ApiResponse;
     isFetching: boolean;
     currentSite: string;
-    preview: {
-      toolbar: {
-        leftSection: {
-          widgets: WidgetDescriptor[];
-        };
-        middleSection: {
-          widgets: WidgetDescriptor[];
-        };
-        rightSection: {
-          widgets: WidgetDescriptor[];
-        };
-      };
-      toolsPanel: {
-        widgets: WidgetDescriptor[];
-      };
-      pageBuilderPanel: {
-        widgets: WidgetDescriptor[];
-      };
-    };
-    launcher: {
-      widgets: WidgetDescriptor[];
-      /**
-       * Whether to render the global nav before or after
-       * the additional widgets coming from configuration
-       **/
-      globalNavigationPosition?: 'before' | 'after';
-      siteCardMenuLinks: Array<{
-        title: TranslationOrText;
-        systemLinkId: SystemLinkId;
-        icon?: SystemIconDescriptor;
-        roles?: string[];
-      }>;
-    };
-    dashboard: {
-      widgets: WidgetDescriptor[];
-    };
-    globalNavigation: {
-      error: AjaxError;
-      items: Array<{ icon: SystemIconDescriptor; id: string; label: string }>;
-      isFetching: boolean;
-    };
     siteLocales: {
       error: ApiResponse;
       isFetching: boolean;
@@ -257,21 +231,48 @@ export interface GlobalState {
       defaultLocaleCode: string;
     };
     locale: {
-      error: ApiResponse;
-      isFetching: boolean;
       localeCode: string;
-      dateTimeFormatOptions?: DateTimeFormatOptions;
+      dateTimeFormatOptions: Intl.DateTimeFormatOptions;
     };
     publishing: {
+      publishCommentRequired: boolean;
+      deleteCommentRequired: boolean;
+      bulkPublishCommentRequired: boolean;
+      publishByCommitCommentRequired: boolean;
       submissionCommentMaxLength: number;
     };
-    references: LookupTable<LookupTable<any>>;
+    cdataEscapedFieldPatterns: string[];
+    useLegacyPreviewLookup: LookupTable<boolean>;
+    references: LookupTable;
+    xml: string;
   };
   pathNavigator: {
     [id: string]: PathNavigatorStateProps;
   };
   pathNavigatorTree: {
     [id: string]: PathNavigatorTreeStateProps;
+  };
+  launcher: {
+    widgets: WidgetDescriptor[];
+    /**
+     * Whether to render the global nav before or after
+     * the additional widgets coming from configuration
+     **/
+    globalNavigationPosition?: 'before' | 'after';
+    siteCardMenuLinks: Array<{
+      title: TranslationOrText;
+      systemLinkId: SystemLinkId;
+      icon?: SystemIconDescriptor;
+      permittedRoles?: string[];
+    }>;
+  };
+  dashboard: {
+    widgets: WidgetDescriptor[];
+  };
+  globalNavigation: {
+    error: AjaxError;
+    items: Array<{ icon: SystemIconDescriptor; id: string; label: string }>;
+    isFetching: boolean;
   };
 }
 

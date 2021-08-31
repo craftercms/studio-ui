@@ -14,9 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { defineMessages, FormattedMessage } from 'react-intl';
-import { updateToolsPanelWidth } from '../../state/actions/preview';
+import { initToolsPanelConfig, updateToolsPanelWidth } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 import ResizeableDrawer from './ResizeableDrawer';
 import { renderWidgets, WidgetDescriptor } from '../../components/Widget';
@@ -29,6 +29,10 @@ import { usePreviewState } from '../../utils/hooks/usePreviewState';
 import { useActiveUser } from '../../utils/hooks/useActiveUser';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import { useSiteUIConfig } from '../../utils/hooks/useSiteUIConfig';
+import LookupTable from '../../models/LookupTable';
+import { nnou } from '../../utils/object';
+import { getStoredPreviewToolsPanelPage } from '../../utils/state';
+import { useActiveSite } from '../../utils/hooks/useActiveSite';
 
 defineMessages({
   previewSiteExplorerPanelTitle: {
@@ -58,17 +62,25 @@ const useStyles = makeStyles((theme) =>
 
 export default function ToolsPanel() {
   const dispatch = useDispatch();
-  const site = useActiveSiteId();
+  const { id: siteId, uuid } = useActiveSite();
   const classes = useStyles();
-  const { showToolsPanel } = usePreviewState();
+  const { showToolsPanel, toolsPanel } = usePreviewState();
   const toolsPanelWidth = useSelection<number>((state) => state.preview.toolsPanelWidth);
   const pages = useSelection<WidgetDescriptor[]>((state) => state.preview.toolsPanelPageStack);
   const uiConfig = useSiteUIConfig();
   const baseUrl = useSelection<string>((state) => state.env.authoringBase);
+  const { username } = useActiveUser();
 
-  const resource = useLogicResource<WidgetDescriptor[], WidgetDescriptor[]>(uiConfig.preview.toolsPanel.widgets, {
+  useEffect(() => {
+    if (nnou(uiConfig.xml) && !toolsPanel) {
+      const storedPage = getStoredPreviewToolsPanelPage(uuid, username);
+      dispatch(initToolsPanelConfig({ configXml: uiConfig.xml, pageStack: storedPage }));
+    }
+  }, [uiConfig.xml, toolsPanel, dispatch, uuid, username]);
+
+  const resource = useLogicResource<WidgetDescriptor[], LookupTable<WidgetDescriptor[]>>(toolsPanel, {
     errorSelector: (source) => uiConfig.error,
-    resultSelector: (source) => source,
+    resultSelector: (source) => source.widgets,
     shouldReject: (source) => false,
     shouldResolve: (source) => Boolean(source),
     shouldRenew: (source, resource) => uiConfig.isFetching || resource.complete
@@ -94,14 +106,14 @@ export default function ToolsPanel() {
           classes: { root: classes.loadingViewRoot }
         }}
         withEmptyStateProps={{
-          isEmpty: (widgets) => !site || widgets?.length === 0,
+          isEmpty: (widgets) => !siteId || widgets?.length === 0,
           emptyStateProps: {
-            title: site ? (
+            title: siteId ? (
               <FormattedMessage id="previewTools.noWidgetsMessage" defaultMessage="No tools have been configured" />
             ) : (
               <FormattedMessage id="previewTools.choseSiteMessage" defaultMessage="Please choose site" />
             ),
-            ...(!site && { image: `${baseUrl}/static-assets/images/choose_option.svg` }),
+            ...(!siteId && { image: `${baseUrl}/static-assets/images/choose_option.svg` }),
             classes: { root: classes.emptyState, image: classes.emptyStateImage }
           }
         }}

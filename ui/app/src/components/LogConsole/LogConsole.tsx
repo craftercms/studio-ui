@@ -37,10 +37,11 @@ import { useMount } from '../../utils/hooks/useMount';
 interface LogConsoleManagementProps {
   logType?: 'studio' | 'preview';
   embedded?: boolean;
+  showAppsButton?: boolean;
 }
 
 export default function LogConsole(props: LogConsoleManagementProps) {
-  const { logType = 'studio', embedded } = props;
+  const { logType = 'studio', embedded, showAppsButton = !embedded } = props;
   const [logEvents, setLogEvents] = useState<LogEvent[]>();
   const [showLogEventDialog, setShowLogEventDialog] = useState(false);
   const site = useActiveSiteId();
@@ -136,7 +137,7 @@ export default function LogConsole(props: LogConsoleManagementProps) {
           </>
         }
         showHamburgerMenuButton={!embedded}
-        showAppsButton={!embedded}
+        showAppsButton={showAppsButton}
       />
       <ConditionalLoadingState isLoading={!logEvents}>
         <LogConsoleGridUI logEvents={logEvents} onLogEventDetails={onLogEventDetails} />

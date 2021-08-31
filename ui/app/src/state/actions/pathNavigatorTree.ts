@@ -69,15 +69,6 @@ export const pathNavigatorTreeToggleExpanded = /*#__PURE__*/ createAction<Payloa
   'PATH_NAVIGATOR_TREE_TOGGLE_EXPANDED'
 );
 
-export const pathNavigatorTreeFetchRootItemComplete = /*#__PURE__*/ createAction<PayloadWithId<{ item: DetailedItem }>>(
-  'PATH_NAVIGATOR_TREE_FETCH_ROOT_ITEM_COMPLETE'
-);
-
-export const pathNavigatorTreeFetchRootItemFailed = /*#__PURE__*/ createAction<{
-  id: string;
-  error: Omit<AjaxError, 'request' | 'xhr'>;
-}>('PATH_NAVIGATOR_TREE_FETCH_ROOT_ITEM_FAILED');
-
 export const pathNavigatorTreeFetchPathPage = /*#__PURE__*/ createAction<
   PayloadWithId<{ path: string; options?: Partial<GetChildrenOptions> }>
 >('PATH_NAVIGATOR_TREE_FETCH_PATH_PAGE');

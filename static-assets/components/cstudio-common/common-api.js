@@ -1565,7 +1565,7 @@ var nodeOpen = false,
       /**
        * given a transfer object, open a preview URL
        */
-      openPreview: function(contentTO, windowId, soundTone, incontextEdit, targetWindowId) {
+      openPreview: function(contentTO, windowId, soundTone, inContextEdit, targetWindowId) {
         if (!targetWindowId) {
           // if no target is supplied assume local call
           // basically mimics behavior before target was implmented
@@ -1574,7 +1574,7 @@ var nodeOpen = false,
 
         var url = this.getPreviewUrl(contentTO);
 
-        if (incontextEdit) {
+        if (inContextEdit) {
           window.location.reload();
         } else {
           // remove server name and port etc
@@ -1585,11 +1585,14 @@ var nodeOpen = false,
               url = '/';
             }
           }
-          if (CrafterCMSNext.system.store.getState().preview.previewChoice[CStudioAuthoringContext.site] === '2') {
-            window.location = `/studio/next/preview#/?page=${url}&site=${CStudioAuthoringContext.site}`;
-          } else {
-            window.location = `/studio/preview#/?page=${url}&site=${CStudioAuthoringContext.site}`;
-          }
+          const state = CrafterCMSNext.system.store.getState();
+          window.location = CrafterCMSNext.util.system.getSystemLink({
+            systemLinkId: 'preview',
+            authoringBase: state.env.authoringBase,
+            site: CStudioAuthoringContext.site,
+            page: url,
+            useLegacy: Boolean(state.uiConfig.useLegacyPreviewLookup[CStudioAuthoringContext.site])
+          });
         }
       },
 
@@ -2096,7 +2099,7 @@ var nodeOpen = false,
           .appendTo(parentEl);
         $modal.find('.studio-ice-container').css('z-index', 1035);
 
-        parent.iframeOpener = window;
+        getTopLegacyWindow().iframeOpener = window;
         window.open(url, name);
 
         animator.slideInDown();
@@ -6119,7 +6122,8 @@ var nodeOpen = false,
         if (!studioTimeZone) {
           CStudioAuthoring.Service.getConfiguration(CStudioAuthoringContext.site, '/site-config.xml', {
             success: function(config) {
-              studioTimeZone = config['default-timezone'];
+              studioTimeZone =
+                config.locale?.dateTimeFormatOptions?.timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
             }
           });
         }

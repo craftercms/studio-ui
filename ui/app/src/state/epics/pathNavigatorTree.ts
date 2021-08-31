@@ -15,7 +15,7 @@
  */
 
 import { ofType } from 'redux-observable';
-import { ignoreElements, map, mergeMap, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import { filter, ignoreElements, map, mergeMap, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { CrafterCMSEpic } from '../store';
 import {
   pathNavigatorTreeBackgroundRefresh,
@@ -30,8 +30,6 @@ import {
   pathNavigatorTreeFetchPathsChildren,
   pathNavigatorTreeFetchPathsChildrenComplete,
   pathNavigatorTreeFetchPathsChildrenFailed,
-  pathNavigatorTreeFetchRootItemComplete,
-  pathNavigatorTreeFetchRootItemFailed,
   pathNavigatorTreeInit,
   pathNavigatorTreeRefresh,
   pathNavigatorTreeRestoreComplete,
@@ -39,7 +37,7 @@ import {
   pathNavigatorTreeSetKeyword,
   pathNavigatorTreeToggleExpanded
 } from '../actions/pathNavigatorTree';
-import { fetchChildrenByPath, fetchChildrenByPaths, fetchItemByPath, fetchItemsByPath } from '../../services/content';
+import { fetchChildrenByPath, fetchChildrenByPaths, fetchItemsByPath } from '../../services/content';
 import { catchAjaxError } from '../../utils/ajax';
 import { setStoredPathNavigatorTree } from '../../utils/state';
 import { forkJoin } from 'rxjs';
@@ -52,6 +50,7 @@ export default [
     action$.pipe(
       ofType(pathNavigatorTreeInit.type, pathNavigatorTreeRefresh.type, pathNavigatorTreeBackgroundRefresh.type),
       withLatestFrom(state$),
+      filter(([{ payload }, state]) => Boolean(state.pathNavigatorTree[payload.id].expanded?.length)),
       mergeMap(([{ payload }, state]) => {
         const {
           id,
@@ -61,35 +60,29 @@ export default [
           keywordByPath = state.pathNavigatorTree[id].keywordByPath,
           limit = state.pathNavigatorTree[id].limit
         } = payload;
-        if (expanded?.length) {
-          let paths = [];
-          expanded.forEach((expandedPath) => {
-            getIndividualPaths(expandedPath, withoutIndex(path)).forEach((parentPath) => {
-              if (!paths.includes(parentPath)) {
-                paths.push(parentPath);
-              }
-            });
+        let paths = [];
+        expanded.forEach((expandedPath) => {
+          getIndividualPaths(expandedPath, withoutIndex(path)).forEach((parentPath) => {
+            if (!paths.includes(parentPath)) {
+              paths.push(parentPath);
+            }
           });
-          return forkJoin([
-            fetchItemsByPath(state.sites.active, paths, { castAsDetailedItem: true }),
-            fetchChildrenByPaths(
-              state.sites.active,
-              createPresenceTable(expanded, (value) => {
-                if (keywordByPath[value]) {
-                  return { keyword: keywordByPath[value] };
-                }
-                return {};
-              }),
-              { limit }
-            )
-          ]).pipe(
-            map(([items, data]) => pathNavigatorTreeRestoreComplete({ id, expanded, collapsed, items, data })),
-            catchAjaxError((error) => pathNavigatorTreeRestoreFailed({ error, id }))
-          );
-        }
-        return fetchItemByPath(state.sites.active, path, { castAsDetailedItem: true }).pipe(
-          map((item) => pathNavigatorTreeFetchRootItemComplete({ id, item })),
-          catchAjaxError((error) => pathNavigatorTreeFetchRootItemFailed({ error, id }))
+        });
+        return forkJoin([
+          fetchItemsByPath(state.sites.active, paths, { castAsDetailedItem: true }),
+          fetchChildrenByPaths(
+            state.sites.active,
+            createPresenceTable(expanded, (value) => {
+              if (keywordByPath[value]) {
+                return { keyword: keywordByPath[value] };
+              }
+              return {};
+            }),
+            { limit }
+          )
+        ]).pipe(
+          map(([items, data]) => pathNavigatorTreeRestoreComplete({ id, expanded, collapsed, items, data })),
+          catchAjaxError((error) => pathNavigatorTreeRestoreFailed({ error, id }))
         );
       })
     ),
@@ -154,11 +147,11 @@ export default [
       mergeMap(([{ payload }, state]) => {
         const { id, path } = payload;
         const keyword = state.pathNavigatorTree[id].keywordByPath[path];
-        const offset = state.pathNavigatorTree[id].childrenByParentPath[path].length;
+        const offset = state.pathNavigatorTree[id].offsetByPath[path];
         return fetchChildrenByPath(state.sites.active, path, {
           limit: state.pathNavigatorTree[id].limit,
           keyword: keyword,
-          offset: state.pathNavigatorTree[id].childrenByParentPath[path].length
+          offset: offset
         }).pipe(
           map((children) =>
             pathNavigatorTreeFetchPathPageComplete({
@@ -187,7 +180,8 @@ export default [
       tap(([{ payload }, state]) => {
         const { id } = payload;
         const { expanded, collapsed, keywordByPath } = state.pathNavigatorTree[id];
-        setStoredPathNavigatorTree(state.sites.active, state.user.username, id, {
+        const uuid = state.sites.byId[state.sites.active].uuid;
+        setStoredPathNavigatorTree(uuid, state.user.username, id, {
           expanded,
           collapsed,
           keywordByPath

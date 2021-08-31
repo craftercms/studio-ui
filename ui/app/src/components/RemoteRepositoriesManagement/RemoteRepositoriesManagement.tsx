@@ -36,13 +36,15 @@ import useStyles from './styles';
 import translations from './translations';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
+import Paper from '@material-ui/core/Paper';
 
 interface RemoteRepositoriesManagementProps {
   embedded?: boolean;
+  showAppsButton?: boolean;
 }
 
 export default function RemoteRepositoriesManagement(props: RemoteRepositoriesManagementProps) {
-  const { embedded } = props;
+  const { embedded, showAppsButton = !embedded } = props;
   const [fetchingRepositories, setFetchingRepositories] = useState(false);
   const [errorRepositories, setErrorRepositories] = useState<ApiResponse>();
   const [repositories, setRepositories] = useState<Array<Repository>>(null);
@@ -114,6 +116,15 @@ export default function RemoteRepositoriesManagement(props: RemoteRepositoriesMa
     );
   };
 
+  const onCreateError = ({ response }) => {
+    dispatch(
+      showSystemNotification({
+        message: response.response.message,
+        options: { variant: 'error' }
+      })
+    );
+  };
+
   useEffect(() => {
     fetchRepositories();
   }, [fetchRepositories]);
@@ -159,7 +170,7 @@ export default function RemoteRepositoriesManagement(props: RemoteRepositoriesMa
   );
 
   return (
-    <section className={classes.root}>
+    <Paper className={classes.root} elevation={0}>
       <GlobalAppToolbar
         title={!embedded && <FormattedMessage id="repositories.title" defaultMessage="Remote Repositories" />}
         leftContent={
@@ -173,7 +184,7 @@ export default function RemoteRepositoriesManagement(props: RemoteRepositoriesMa
           </Button>
         }
         showHamburgerMenuButton={!embedded}
-        showAppsButton={!embedded}
+        showAppsButton={showAppsButton}
       />
       <section className={classes.wrapper}>
         {currentStatusValue && (
@@ -226,8 +237,9 @@ export default function RemoteRepositoriesManagement(props: RemoteRepositoriesMa
           open={openNewRemoteDialog}
           onClose={() => setOpenNewRemoteDialog(false)}
           onCreateSuccess={onCreateSuccess}
+          onCreateError={onCreateError}
         />
       </section>
-    </section>
+    </Paper>
   );
 }

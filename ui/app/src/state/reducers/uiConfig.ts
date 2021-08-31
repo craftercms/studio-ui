@@ -16,41 +16,23 @@
 
 import { GlobalState } from '../../models/GlobalState';
 import { createReducer } from '@reduxjs/toolkit';
-import { fetchSiteUiConfig, fetchSiteUiConfigComplete, fetchSiteUiConfigFailed } from '../actions/configuration';
-import { changeSite } from './sites';
 import {
-  fetchGlobalMenuComplete,
-  fetchGlobalMenuFailed,
-  fetchSiteLocale,
-  fetchSiteLocaleComplete,
-  fetchSiteLocaleFailed
-} from '../actions/system';
+  fetchSiteConfig,
+  fetchSiteConfigComplete,
+  fetchSiteUiConfig,
+  fetchSiteUiConfigComplete,
+  fetchSiteUiConfigFailed
+} from '../actions/configuration';
+import { changeSite } from './sites';
+import { fetchUseLegacyPreviewPreferenceComplete } from '../actions/system';
 import { fetchSiteLocales, fetchSiteLocalesComplete, fetchSiteLocalesFailed } from '../actions/translation';
+import { deserialize, fromString, serialize } from '../../utils/xml';
+import { applyDeserializedXMLTransforms } from '../../utils/object';
 
 const initialState: GlobalState['uiConfig'] = {
   error: null,
   isFetching: null,
   currentSite: null,
-  preview: {
-    toolbar: {
-      leftSection: null,
-      middleSection: null,
-      rightSection: null
-    },
-    toolsPanel: {
-      widgets: null
-    },
-    pageBuilderPanel: {
-      widgets: null
-    }
-  },
-  launcher: null,
-  dashboard: null,
-  globalNavigation: {
-    error: null,
-    items: null,
-    isFetching: false
-  },
   siteLocales: {
     error: null,
     isFetching: false,
@@ -58,8 +40,6 @@ const initialState: GlobalState['uiConfig'] = {
     defaultLocaleCode: null
   },
   locale: {
-    error: null,
-    isFetching: false,
     localeCode: 'en-US',
     dateTimeFormatOptions: {
       timeZone: 'EST5EDT',
@@ -70,52 +50,68 @@ const initialState: GlobalState['uiConfig'] = {
       minute: 'numeric'
     }
   },
+  useLegacyPreviewLookup: {},
+  references: null,
+  xml: null,
   publishing: {
+    deleteCommentRequired: false,
+    bulkPublishCommentRequired: false,
+    publishByCommitCommentRequired: false,
+    publishCommentRequired: false,
     submissionCommentMaxLength: 250
   },
-  references: null
+  cdataEscapedFieldPatterns: []
 };
 
 const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
-  [changeSite.type]: (state) => ({ ...initialState, globalNavigation: state.globalNavigation }),
+  [changeSite.type]: (state) => ({ ...initialState, useLegacyPreviewLookup: state.useLegacyPreviewLookup }),
   [fetchSiteUiConfig.type]: (state, { payload: { site } }) => ({
     ...state,
     isFetching: true,
     currentSite: site
   }),
-  [fetchSiteUiConfigComplete.type]: (state, { payload }) => ({
-    ...state,
-    isFetching: false,
-    ...payload
-  }),
+  [fetchSiteUiConfigComplete.type]: (state, { payload }) => {
+    let config = payload.config;
+    const references = {};
+    if (config) {
+      const configDOM = fromString(config);
+      const site = payload.site;
+      const arrays = ['tools'];
+
+      configDOM.querySelectorAll('plugin').forEach((tag) => {
+        const siteAttr = tag.getAttribute('site');
+        if (siteAttr === '{site}' || siteAttr === null) {
+          tag.setAttribute('site', site);
+        }
+      });
+
+      configDOM.querySelectorAll(':scope > references > reference').forEach((tag) => {
+        references[tag.id] = applyDeserializedXMLTransforms(deserialize(tag.innerHTML), {
+          arrays
+        });
+      });
+
+      configDOM.querySelectorAll('configuration > reference').forEach((tag) => {
+        tag.outerHTML = references[tag.id];
+      });
+
+      configDOM.querySelectorAll('widget').forEach((e, index) => e.setAttribute('uiKey', String(index)));
+
+      config = serialize(configDOM);
+    }
+
+    return {
+      ...state,
+      isFetching: false,
+      xml: config,
+      references: references
+    };
+  },
   [fetchSiteUiConfigFailed.type]: (state, { payload }) => ({
     ...state,
     error: payload,
     isFetching: false,
     currentSite: null
-  }),
-  [fetchGlobalMenuComplete.type]: (state, { payload }) => ({
-    ...state,
-    globalNavigation: {
-      ...state.globalNavigation,
-      isFetching: true
-    }
-  }),
-  [fetchGlobalMenuComplete.type]: (state, { payload }) => ({
-    ...state,
-    globalNavigation: {
-      error: null,
-      items: payload,
-      isFetching: false
-    }
-  }),
-  [fetchGlobalMenuFailed.type]: (state, { payload }) => ({
-    ...state,
-    globalNavigation: {
-      error: payload,
-      items: state.globalNavigation.items,
-      isFetching: false
-    }
   }),
   [fetchSiteLocales.type]: (state) => ({
     ...state,
@@ -141,31 +137,37 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
       error: payload
     }
   }),
-  [changeSite.type]: () => initialState,
-  [fetchSiteLocale.type]: (state) => ({
+  [fetchUseLegacyPreviewPreferenceComplete.type]: (state, { payload: { site, useLegacyPreview } }) => ({
     ...state,
-    locale: {
-      ...state.locale,
-      isFetching: true
+    useLegacyPreviewLookup: {
+      ...state.useLegacyPreviewLookup,
+      [site]: useLegacyPreview
     }
   }),
-  [fetchSiteLocaleComplete.type]: (state, { payload }) => ({
-    ...state,
-    locale: {
-      ...state.locale,
-      isFetching: false,
-      localeCode: payload.localeCode ?? state.locale.localeCode,
-      dateTimeFormatOptions: payload.dateTimeFormatOptions ?? state.locale.dateTimeFormatOptions
-    }
-  }),
-  [fetchSiteLocaleFailed.type]: (state, { payload }) => ({
-    ...state,
-    locale: {
-      ...state.locale,
-      isFetching: false,
-      error: payload
-    }
-  })
+  [fetchSiteConfig.type]: (state) => ({ ...state }),
+  [fetchSiteConfigComplete.type]: (state, { payload }) => {
+    const { cdataEscapedFieldPatterns, locale, publishing, site, usePreview3 } = payload;
+    return {
+      ...state,
+      cdataEscapedFieldPatterns,
+      locale: {
+        ...state.locale,
+        // If locale has localeCode different than empty string -> set it as the localeCode.
+        // If locale.localeCode is empty string -> set empty array to use browsers localeCode.
+        // If locale.localCode doesn't exist -> use default localeCode from state.
+        localeCode: locale?.localeCode ? locale.localeCode : locale?.localeCode === '' ? [] : state.locale.localeCode,
+        dateTimeFormatOptions: locale.dateTimeFormatOptions ?? state.locale.dateTimeFormatOptions
+      },
+      publishing: {
+        ...state.publishing,
+        ...publishing
+      },
+      useLegacyPreviewLookup: {
+        ...state.useLegacyPreviewLookup,
+        [site]: usePreview3
+      }
+    };
+  }
 });
 
 export default reducer;

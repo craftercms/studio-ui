@@ -47,7 +47,6 @@ import {
   pathNavigatorTreeFetchPathChildrenComplete,
   pathNavigatorTreeFetchPathPageComplete,
   pathNavigatorTreeFetchPathsChildrenComplete,
-  pathNavigatorTreeFetchRootItemComplete,
   pathNavigatorTreeRestoreComplete
 } from '../actions/pathNavigatorTree';
 import { GetChildrenResponse } from '../../models/GetChildrenResponse';
@@ -70,10 +69,13 @@ const initialState: ContentState = {
 const updateItemByPath = (state: ContentState, { payload: { parent, children } }) => {
   const nextByPath = {
     ...state.itemsByPath,
-    ...createLookupTable(parseSandBoxItemToDetailedItem(children as SandboxItem[]), 'path')
+    ...createLookupTable(parseSandBoxItemToDetailedItem(children as SandboxItem[], state.itemsByPath), 'path')
   };
   if (children.levelDescriptor) {
-    nextByPath[children.levelDescriptor.path] = parseSandBoxItemToDetailedItem(children.levelDescriptor);
+    nextByPath[children.levelDescriptor.path] = parseSandBoxItemToDetailedItem(
+      children.levelDescriptor,
+      state.itemsByPath[children.levelDescriptor.path]
+    );
   }
   if (parent) {
     nextByPath[parent.path] = parent;
@@ -136,7 +138,7 @@ const reducer = createReducer<ContentState>(initialState, {
     ...state,
     itemsByPath: {
       ...state.itemsByPath,
-      [item.path]: parseSandBoxItemToDetailedItem(item)
+      [item.path]: parseSandBoxItemToDetailedItem(item, state.itemsByPath[item.path])
     },
     itemsBeingFetchedByPath: {
       ...reversePluckProps(state.itemsBeingFetchedByPath, item.path)
@@ -156,25 +158,31 @@ const reducer = createReducer<ContentState>(initialState, {
   }),
   [pathNavigatorConditionallySetPathComplete.type]: updateItemByPath,
   [pathNavigatorFetchPathComplete.type]: updateItemByPath,
-  [pathNavigatorFetchParentItemsComplete.type]: (state, { payload: { items, children } }) => {
+  [pathNavigatorFetchParentItemsComplete.type]: (
+    state,
+    { payload: { items, children } }: { payload: { items: DetailedItem[]; children: GetChildrenResponse } }
+  ) => {
     return {
       ...state,
       itemsByPath: {
         ...state.itemsByPath,
-        ...createLookupTable(children.map(parseSandBoxItemToDetailedItem), 'path'),
+        ...createLookupTable(parseSandBoxItemToDetailedItem(children, state.itemsByPath), 'path'),
         ...(children.levelDescriptor && {
-          [children.levelDescriptor.path]: parseSandBoxItemToDetailedItem(children.levelDescriptor)
+          [children.levelDescriptor.path]: parseSandBoxItemToDetailedItem(
+            children.levelDescriptor,
+            state.itemsByPath[children.levelDescriptor.path]
+          )
         }),
-        ...createLookupTable(items, 'path')
-      }
-    };
-  },
-  [pathNavigatorTreeFetchRootItemComplete.type]: (state, { payload: { item } }) => {
-    return {
-      ...state,
-      itemsByPath: {
-        ...state.itemsByPath,
-        [item.path]: item
+        ...createLookupTable(
+          items.reduce((items, item) => {
+            if (state.itemsByPath[item.path]?.live) {
+              item.live = state.itemsByPath[item.path].live;
+              item.staging = state.itemsByPath[item.path].staging;
+            }
+            return items;
+          }, items),
+          'path'
+        )
       }
     };
   },
@@ -186,16 +194,20 @@ const reducer = createReducer<ContentState>(initialState, {
   ) => {
     let nextByPath = {};
     Object.values(data).forEach((children) => {
-      Object.assign(nextByPath, createLookupTable(parseSandBoxItemToDetailedItem(children as SandboxItem[]), 'path'));
+      Object.assign(
+        nextByPath,
+        createLookupTable(parseSandBoxItemToDetailedItem(children as SandboxItem[], state.itemsByPath), 'path')
+      );
       if (children.levelDescriptor) {
-        nextByPath[children.levelDescriptor.path] = parseSandBoxItemToDetailedItem(children.levelDescriptor);
+        nextByPath[children.levelDescriptor.path] = parseSandBoxItemToDetailedItem(
+          children.levelDescriptor,
+          state.itemsByPath[children.levelDescriptor.path]
+        );
       }
     });
-
     items.forEach((item) => {
       nextByPath[item.path] = item;
     });
-
     return { ...state, itemsByPath: { ...state.itemsByPath, ...nextByPath } };
   },
   [pathNavigatorTreeFetchPathsChildrenComplete.type]: (
@@ -204,12 +216,17 @@ const reducer = createReducer<ContentState>(initialState, {
   ) => {
     let nextByPath = {};
     Object.values(data).forEach((children) => {
-      Object.assign(nextByPath, createLookupTable(parseSandBoxItemToDetailedItem(children as SandboxItem[]), 'path'));
+      Object.assign(
+        nextByPath,
+        createLookupTable(parseSandBoxItemToDetailedItem(children as SandboxItem[], state.itemsByPath), 'path')
+      );
       if (children.levelDescriptor) {
-        nextByPath[children.levelDescriptor.path] = parseSandBoxItemToDetailedItem(children.levelDescriptor);
+        nextByPath[children.levelDescriptor.path] = parseSandBoxItemToDetailedItem(
+          children.levelDescriptor,
+          state.itemsByPath[children.levelDescriptor.path]
+        );
       }
     });
-
     return { ...state, itemsByPath: { ...state.itemsByPath, ...nextByPath } };
   },
   [localItemLock.type]: (state, { payload }) => {

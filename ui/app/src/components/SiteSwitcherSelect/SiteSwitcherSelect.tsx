@@ -22,12 +22,13 @@ import useStyles from './styles';
 import { isBlank } from '../../utils/string';
 import { changeSite } from '../../state/reducers/sites';
 import { setSiteCookie } from '../../utils/auth';
-import { getSystemLink } from '../LauncherSection';
 import { useDispatch } from 'react-redux';
-import { usePreviewState } from '../../utils/hooks/usePreviewState';
 import { useEnv } from '../../utils/hooks/useEnv';
 import { useSiteList } from '../../utils/hooks/useSiteList';
 import clsx from 'clsx';
+import { getSystemLink } from '../../utils/system';
+import { PREVIEW_URL_PATH } from '../../utils/constants';
+import { useLegacyPreviewPreference } from '../../utils/hooks/useLegacyPreviewPreference';
 
 export interface SiteSwitcherSelectProps extends SelectProps {
   site: string;
@@ -37,13 +38,13 @@ function SiteSwitcherSelect(props: SiteSwitcherSelectProps) {
   const { site, ...rest } = props;
   const sites = useSiteList();
   const classes = useStyles();
-  const { previewChoice } = usePreviewState();
   const { authoringBase } = useEnv();
   const dispatch = useDispatch();
+  const useLegacy = useLegacyPreviewPreference();
 
   const onSiteChange = ({ target: { value } }) => {
     if (!isBlank(value) && site !== value) {
-      if (previewChoice[value] === '2') {
+      if (window.location.href.includes(PREVIEW_URL_PATH)) {
         dispatch(changeSite(value));
       } else {
         setSiteCookie(value);
@@ -52,8 +53,8 @@ function SiteSwitcherSelect(props: SiteSwitcherSelectProps) {
             (window.location.href = getSystemLink({
               site: value,
               systemLinkId: 'preview',
-              previewChoice,
-              authoringBase
+              authoringBase,
+              useLegacy
             }))
         );
       }

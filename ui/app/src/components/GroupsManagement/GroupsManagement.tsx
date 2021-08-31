@@ -27,6 +27,7 @@ import EditGroupDialog from '../EditGroupDialog';
 import Button from '@material-ui/core/Button';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
+import Paper from '@material-ui/core/Paper';
 
 export default function GroupsManagement() {
   const [offset, setOffset] = useState(0);
@@ -74,11 +75,11 @@ export default function GroupsManagement() {
     setSelectedGroup(group);
   };
 
-  const onChangePage = (page: number) => {
+  const onPageChange = (page: number) => {
     setOffset(page * limit);
   };
 
-  const onChangeRowsPerPage = (e) => {
+  const onRowsPerPageChange = (e) => {
     setLimit(e.target.value);
   };
 
@@ -101,7 +102,7 @@ export default function GroupsManagement() {
   };
 
   return (
-    <section>
+    <Paper elevation={0}>
       <GlobalAppToolbar
         title={<FormattedMessage id="words.groups" defaultMessage="Groups" />}
         leftContent={
@@ -124,8 +125,8 @@ export default function GroupsManagement() {
         <GroupsGridUI
           resource={resource}
           onRowClicked={onRowClicked}
-          onChangePage={onChangePage}
-          onChangeRowsPerPage={onChangeRowsPerPage}
+          onPageChange={onPageChange}
+          onRowsPerPageChange={onRowsPerPageChange}
         />
       </SuspenseWithEmptyState>
       <EditGroupDialog
@@ -136,6 +137,6 @@ export default function GroupsManagement() {
         onGroupSaved={onGroupSaved}
         onGroupDeleted={onGroupDeleted}
       />
-    </section>
+    </Paper>
   );
 }

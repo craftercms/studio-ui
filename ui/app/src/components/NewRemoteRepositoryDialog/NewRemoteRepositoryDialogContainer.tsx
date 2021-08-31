@@ -25,6 +25,7 @@ export interface NewRemoteRepositoryDialogContainerProps {
   setDisableQuickDismiss?(disable: boolean): void;
   onClose(): void;
   onCreateSuccess?(): void;
+  onCreateError?(e): void;
 }
 
 const inputsInitialState = {
@@ -61,7 +62,7 @@ const isFormValid = (inputs) => {
 };
 
 export default function NewRemoteRepositoryDialogContainer(props: NewRemoteRepositoryDialogContainerProps) {
-  const { open, onClose, onCreateSuccess, setDisableQuickDismiss } = props;
+  const { open, onClose, onCreateSuccess, onCreateError, setDisableQuickDismiss } = props;
   const siteId = useActiveSiteId();
   const [inputs, setInputs] = useSpreadState(inputsInitialState);
 
@@ -80,9 +81,14 @@ export default function NewRemoteRepositoryDialogContainer(props: NewRemoteRepos
           : inputs.repoAuthentication === 'key'
           ? { remotePrivateKey: inputs.repoToken }
           : {})
-      }).subscribe(() => {
-        onCreateSuccess?.();
-      });
+      }).subscribe(
+        () => {
+          onCreateSuccess?.();
+        },
+        (e) => {
+          onCreateError?.(e);
+        }
+      );
     }
   };
 

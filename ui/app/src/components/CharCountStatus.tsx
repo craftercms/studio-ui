@@ -50,7 +50,7 @@ function CharCountStatus(props: CharCountStatusProps) {
   const { commentLength, commentMaxLength } = props;
 
   return (
-    <Grid container direction="row" justify="space-between" className={classes.countContainer}>
+    <Grid container direction="row" justifyContent="space-between" className={classes.countContainer}>
       <Grid item>
         <Typography className={classes.submissionCommentCount}>
           <FormattedMessage

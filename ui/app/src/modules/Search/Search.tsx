@@ -39,7 +39,8 @@ import { completeDetailedItem } from '../../state/actions/content';
 import { getPreviewURLFromPath } from '../../utils/path';
 import ApiResponseErrorState from '../../components/ApiResponseErrorState';
 import SiteSearchToolBar from '../../components/SiteSearchToolbar';
-import { Drawer, ListItem, ListItemSecondaryAction, ListItemText } from '@material-ui/core';
+import Drawer from '@material-ui/core/Drawer';
+import ListItemText from '@material-ui/core/ListItemText';
 import SiteSearchFilters from '../../components/SiteSearchFilters';
 import ItemActionsSnackbar from '../../components/ItemActionsSnackbar';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
@@ -48,15 +49,14 @@ import palette from '../../styles/palette';
 import Button from '@material-ui/core/Button';
 import { itemCreated, itemDuplicated, itemsDeleted, itemsPasted, itemUpdated } from '../../state/actions/system';
 import { getHostToHostBus } from '../Preview/previewContext';
-import IconButton from '@material-ui/core/IconButton';
-import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import { generateMultipleItemOptions, generateSingleItemOptions, itemActionDispatcher } from '../../utils/itemActions';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { getNumOfMenuOptionsForItem, getSystemTypeFromPath } from '../../utils/content';
 import { useSelection } from '../../utils/hooks/useSelection';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useEnv } from '../../utils/hooks/useEnv';
-import { useItemsByPath } from '../../utils/hooks/useItemsByPath';
+import { batchActions } from '../../state/actions/misc';
+import { useDetailedItems } from '../../utils/hooks/useDetailedItems';
 
 interface SearchProps {
   history: History;
@@ -317,9 +317,9 @@ const messages = defineMessages({
     id: 'search.acceptSelection',
     defaultMessage: 'Accept Selection'
   },
-  selectionCount: {
-    id: 'search.selectionCount',
-    defaultMessage: '{count} selected'
+  clearSelected: {
+    id: 'search.clearSelected',
+    defaultMessage: 'Clear {count} selected'
   },
   nextPage: {
     id: 'pagination.nextPage',
@@ -335,13 +335,12 @@ const messages = defineMessages({
   }
 });
 
-const actionsToBeShown = [
+const actionsToBeShown: AllItemActions[] = [
   'edit',
-  'publish',
   'delete',
-  'reject',
-  'schedule',
-  'duplicate,',
+  'publish',
+  'rejectPublish',
+  'duplicate',
   'duplicateAsset',
   'dependencies',
   'history'
@@ -373,30 +372,32 @@ export default function Search(props: SearchProps) {
   const theme = useTheme();
   const desktopScreen = useMediaQuery(theme.breakpoints.up('md'));
   const [selectedPath, setSelectedPath] = useState(queryParams['path'] as string);
-  const items = useItemsByPath();
+  const { itemsByPath, isFetching } = useDetailedItems(selected);
+
   const selectionOptions = useMemo(() => {
     if (selected.length === 0) {
       return null;
     } else if (selected.length) {
       if (selected.length === 1) {
         const path = selected[0];
-        const item = items[path];
+        const item = itemsByPath[path];
         if (item) {
-          const options = generateSingleItemOptions(item, formatMessage);
-          return options[0].filter((option) => actionsToBeShown.includes(option.id));
+          return generateSingleItemOptions(item, formatMessage, { includeOnly: actionsToBeShown }).flat();
         }
       } else {
-        let itemsDetails = [];
+        let items = [];
         selected.forEach((itemPath) => {
-          const item = items[itemPath];
+          const item = itemsByPath[itemPath];
           if (item) {
-            itemsDetails.push({ item });
+            items.push(item);
           }
         });
-        return generateMultipleItemOptions(itemsDetails, formatMessage);
+        if (items.length && !isFetching) {
+          return generateMultipleItemOptions(items, formatMessage, { includeOnly: actionsToBeShown });
+        }
       }
     }
-  }, [formatMessage, items, selected]);
+  }, [formatMessage, isFetching, itemsByPath, selected]);
 
   refs.current.createQueryString = createQueryString;
 
@@ -598,7 +599,7 @@ export default function Search(props: SearchProps) {
 
   function handleSelect(path: string, isSelected: boolean) {
     if (isSelected) {
-      dispatch(completeDetailedItem({ path }));
+      // dispatch(completeDetailedItem({ path }));
       setSelected([...selected, path]);
     } else {
       let selectedItems = [...selected];
@@ -639,17 +640,19 @@ export default function Search(props: SearchProps) {
 
   const onHeaderButtonClick = (event: any, item: MediaItem) => {
     const path = item.path;
-    dispatch(completeDetailedItem({ path }));
     dispatch(
-      showItemMegaMenu({
-        path,
-        anchorReference: 'anchorPosition',
-        anchorPosition: { top: event.clientY, left: event.clientX },
-        numOfLoaderItems: getNumOfMenuOptionsForItem({
-          path: item.path,
-          systemType: getSystemTypeFromPath(item.path)
-        } as DetailedItem)
-      })
+      batchActions([
+        completeDetailedItem({ path }),
+        showItemMegaMenu({
+          path,
+          anchorReference: 'anchorPosition',
+          anchorPosition: { top: event.clientY, left: event.clientX },
+          numOfLoaderItems: getNumOfMenuOptionsForItem({
+            path: item.path,
+            systemType: getSystemTypeFromPath(item.path)
+          } as DetailedItem)
+        })
+      ])
     );
   };
 
@@ -721,7 +724,7 @@ export default function Search(props: SearchProps) {
     if (selected.length > 1) {
       const detailedItems = [];
       selected.forEach((path) => {
-        items?.[path] && detailedItems.push(items[path]);
+        itemsByPath?.[path] && detailedItems.push(itemsByPath[path]);
       });
       itemActionDispatcher({
         site,
@@ -735,7 +738,7 @@ export default function Search(props: SearchProps) {
       });
     } else {
       const path = selected[0];
-      const item = items?.[path];
+      const item = itemsByPath?.[path];
       itemActionDispatcher({
         site,
         item,
@@ -856,8 +859,8 @@ export default function Search(props: SearchProps) {
             nextIconButtonProps={{
               'aria-label': formatMessage(messages.nextPage)
             }}
-            onChangePage={handleChangePage}
-            onChangeRowsPerPage={handleChangeRowsPerPage}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
             classes={{
               caption: classes.paginationCaption,
               selectRoot: classes.paginationSelectRoot,
@@ -910,20 +913,13 @@ export default function Search(props: SearchProps) {
           options={selectionOptions}
           onActionClicked={onActionClicked}
           append={
-            <ListItem>
+            <Button size="small" color="primary" variant="text" onClick={handleClearSelected}>
               <ListItemText
-                style={{ textAlign: 'center', minWidth: '65px' }}
-                primaryTypographyProps={{ variant: 'caption' }}
-                primary={formatMessage(messages.selectionCount, {
+                primary={formatMessage(messages.clearSelected, {
                   count: selected.length
                 })}
               />
-              <ListItemSecondaryAction>
-                <IconButton edge="end" size="small" onClick={handleClearSelected}>
-                  <HighlightOffIcon color="primary" />
-                </IconButton>
-              </ListItemSecondaryAction>
-            </ListItem>
+            </Button>
           }
         />
       )}
@@ -936,7 +932,7 @@ export default function Search(props: SearchProps) {
             variant="contained"
             color="primary"
             disabled={selected.length === 0}
-            onClick={() => onAcceptSelection?.(selected.map((path) => items?.[path]))}
+            onClick={() => onAcceptSelection?.(selected.map((path) => itemsByPath?.[path]))}
           >
             {formatMessage(messages.acceptSelection)}
           </Button>

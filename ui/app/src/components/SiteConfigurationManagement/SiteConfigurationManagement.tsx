@@ -64,17 +64,18 @@ import { encrypt } from '../../services/security';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import ResizeBar from '../ResizeBar';
 import { useHistory } from 'react-router';
-import { fetchSiteUiConfig } from '../../state/actions/configuration';
+import { fetchSiteConfig, fetchSiteUiConfig } from '../../state/actions/configuration';
 import { useSelection } from '../../utils/hooks/useSelection';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useMount } from '../../utils/hooks/useMount';
 
 interface SiteConfigurationManagementProps {
   embedded?: boolean;
+  showAppsButton?: boolean;
 }
 
 export default function SiteConfigurationManagement(props: SiteConfigurationManagementProps) {
-  const { embedded } = props;
+  const { embedded, showAppsButton } = props;
   const site = useActiveSiteId();
   const baseUrl = useSelection<string>((state) => state.env.authoringBase);
   const classes = useStyles();
@@ -387,8 +388,10 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
                 message: formatMessage(translations.configSaved)
               })
             );
-            if (`${selectedConfigFile.module}/${selectedConfigFile.path}` === 'studio/ui.xml') {
+            if (selectedConfigFile.id === 'studio/ui.xml') {
               dispatch(fetchSiteUiConfig({ site }));
+            } else if (selectedConfigFile.id === 'studio/site-config.xml') {
+              dispatch(fetchSiteConfig());
             }
             setDisabledSaveButton(true);
             setSelectedConfigFileXml(content);
@@ -448,6 +451,7 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
       {!embedded && (
         <GlobalAppToolbar
           title={<FormattedMessage id="siteConfigurationManagement.title" defaultMessage="Configuration" />}
+          showAppsButton={showAppsButton}
         />
       )}
       <ResizeableDrawer
