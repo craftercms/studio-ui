@@ -44,7 +44,7 @@ import {
 import { useDispatch } from 'react-redux';
 import { showConfirmDialog, showEditDialog } from '../../state/actions/dialogs';
 import { dragAndDropMessages } from '../../utils/i18n-legacy';
-import { LegacyLoadFormDefinition, legacyXmlModelToMap } from './utils';
+import { fetchAndInsertContentInstance, legacyLoadFormDefinition, legacyXmlModelToMap } from './utils';
 import LookupTable from '../../models/LookupTable';
 import { getPathFromPreviewURL } from '../../utils/path';
 import { useContentTypes } from '../../utils/hooks/useContentTypes';
@@ -313,30 +313,24 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
             }
           });
 
-          fetchContentInstance(siteId, path, contentTypesLookup)
-            .pipe(
-              switchMap((contentInstance) =>
-                insertInstance(
-                  siteId,
-                  compPath ? compPath : guestPath,
-                  fieldId,
-                  index,
-                  contentInstance,
-                  null,
-                  datasource
-                )
-              )
-            )
-            .subscribe(() => {
-              dispatch(
-                showSystemNotification({
-                  message: formatMessage(guestMessages.insertOperationComplete)
-                })
-              );
-              hostToGuest$.next({
-                type: 'REFRESH_PREVIEW'
-              });
+          fetchAndInsertContentInstance(
+            siteId,
+            compPath ? compPath : guestPath,
+            path,
+            fieldId,
+            index,
+            datasource,
+            contentTypesLookup
+          ).subscribe(() => {
+            dispatch(
+              showSystemNotification({
+                message: formatMessage(guestMessages.insertOperationComplete)
+              })
+            );
+            hostToGuest$.next({
+              type: 'REFRESH_PREVIEW'
             });
+          });
           // endregion
         }
       } else {
@@ -362,30 +356,24 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
               });
             }
 
-            fetchContentInstance(siteId, path, contentTypesLookup)
-              .pipe(
-                switchMap((contentInstance) =>
-                  insertInstance(
-                    siteId,
-                    compPath ? compPath : guestPath,
-                    fieldId,
-                    index,
-                    contentInstance,
-                    null,
-                    datasource
-                  )
-                )
-              )
-              .subscribe(() => {
-                dispatch(
-                  showSystemNotification({
-                    message: formatMessage(guestMessages.moveOperationComplete)
-                  })
-                );
-                hostToGuest$.next({
-                  type: 'REFRESH_PREVIEW'
-                });
+            fetchAndInsertContentInstance(
+              siteId,
+              compPath ? compPath : guestPath,
+              path,
+              fieldId,
+              index,
+              datasource,
+              contentTypesLookup
+            ).subscribe(() => {
+              dispatch(
+                showSystemNotification({
+                  message: formatMessage(guestMessages.insertOperationComplete)
+                })
+              );
+              hostToGuest$.next({
+                type: 'REFRESH_PREVIEW'
               });
+            });
             // endregion
           } else {
             if (zones[fieldId].length === contentModel[fieldId].length) {
@@ -539,7 +527,7 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
         }
         case 'REQUEST_FORM_DEFINITION': {
           const { contentType } = payload;
-          LegacyLoadFormDefinition(siteId, contentType).subscribe((config) => {
+          legacyLoadFormDefinition(siteId, contentType).subscribe((config) => {
             hostToGuest$.next({
               type: 'REQUEST_FORM_DEFINITION_RESPONSE',
               payload: config
@@ -557,7 +545,6 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
         }
         case 'LOAD_MODEL_REQUEST': {
           if (payload.aNotFound) {
-            // TODO: this should block the ui until resolved
             fetchContentDOM(siteId, payload.aNotFound.path).subscribe((content) => {
               let contentModel = legacyXmlModelToMap(content.documentElement);
               hostToGuest$.next({

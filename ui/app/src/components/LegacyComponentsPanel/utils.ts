@@ -17,7 +17,10 @@
 import { nanoid as uuid } from 'nanoid';
 import { Observable } from 'rxjs';
 import { fetchConfigurationJSON } from '../../services/configuration';
-import { map } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
+import { LookupTable } from '../../models/LookupTable';
+import { ContentType } from '../../models/ContentType';
+import { fetchContentInstance, insertInstance } from '../../services/content';
 
 export const legacyXmlModelToMap = (dom) => {
   let map = {};
@@ -49,7 +52,7 @@ export const legacyXmlModelToMapChildren = (node, children) => {
         if (hasChildren) {
           legacyXmlModelToMapArray(node, child);
         } else {
-          node[child.nodeName] = LegacyGetModelItemValue(child);
+          node[child.nodeName] = legacyGetModelItemValue(child);
         }
       }
     } catch (err) {}
@@ -86,10 +89,10 @@ export const legacyXmlModelToMapArray = (node, child) => {
               let value = '';
 
               try {
-                value = LegacyGetModelItemValue(repeatField);
+                value = legacyGetModelItemValue(repeatField);
               } catch (noValue) {}
 
-              node[child.nodeName][repeatCount][repeatField.nodeName] = UnEscapeXml(value);
+              node[child.nodeName][repeatCount][repeatField.nodeName] = unEscapeXml(value);
             }
           }
         }
@@ -109,11 +112,11 @@ export const legacyXmlModelToMapArray = (node, child) => {
   }
 };
 
-export const LegacyGetModelItemValue = (item) => {
+export const legacyGetModelItemValue = (item) => {
   return !item.wholeText ? item.firstChild.wholeText : item.wholeText;
 };
 
-export const UnEscapeXml = (value) => {
+export const unEscapeXml = (value) => {
   if (value && typeof value === 'string') {
     value = value
       .replace(/&lt;/g, '<')
@@ -124,7 +127,7 @@ export const UnEscapeXml = (value) => {
   return value;
 };
 
-export const LegacyLoadFormDefinition = (siteId: string, contentType: string): Observable<unknown> => {
+export const legacyLoadFormDefinition = (siteId: string, contentType: string): Observable<unknown> => {
   return fetchConfigurationJSON(siteId, `/content-types/${contentType}/form-definition.xml`, 'studio').pipe(
     map((config) => {
       let def = config.form;
@@ -225,5 +228,21 @@ export const LegacyLoadFormDefinition = (siteId: string, contentType: string): O
 
       return def;
     })
+  );
+};
+
+export const fetchAndInsertContentInstance = (
+  siteId: string,
+  parentPath: string,
+  path: string,
+  fieldId: string,
+  index: number,
+  datasource: string,
+  contentTypesLookup: LookupTable<ContentType>
+): Observable<any> => {
+  return fetchContentInstance(siteId, path, contentTypesLookup).pipe(
+    switchMap((contentInstance) =>
+      insertInstance(siteId, parentPath, fieldId, index, contentInstance, null, datasource)
+    )
   );
 };
