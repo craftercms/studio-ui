@@ -66,6 +66,7 @@ YAHOO.extend(
             case 'transcoded-video-picker':
               addPostfixes = '_o';
               break;
+            case 'rte':
             case 'rte-tinymce5':
               addPostfixes = '_html';
               break;
