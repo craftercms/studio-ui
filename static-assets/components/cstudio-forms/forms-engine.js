@@ -1892,22 +1892,6 @@ var CStudioForms =
               focusEl.focus();
             }, 500);
           }
-          if (!iceWindowCallback.id) {
-            var colExpButtonEl = document.createElement('input');
-            colExpButtonEl.id = 'colExpButtonBtn';
-            YDom.addClass(colExpButtonEl, 'btn btn-default');
-            colExpButtonEl.type = 'button';
-            colExpButtonEl.value = 'Collapse';
-            formControlBarEl.appendChild(colExpButtonEl);
-            YAHOO.util.Event.addListener(
-              colExpButtonEl,
-              'click',
-              function() {
-                collapseFn();
-              },
-              me
-            );
-          }
 
           var overlayContainer = parent.document.getElementById(window.frameElement.id).parentElement;
           YDom.addClass(overlayContainer, 'overlay');
