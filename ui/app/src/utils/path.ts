@@ -215,3 +215,7 @@ export function getCodeEditorSrc({
   });
   return `${authoringBase}/legacy/form${qs}`;
 }
+
+export function stripDuplicateSlashes(str: string): string {
+  return str.replace(/\/+/g, '/');
+}
