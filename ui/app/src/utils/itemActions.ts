@@ -45,7 +45,7 @@ import {
   showUploadDialog,
   showWorkflowCancellationDialog
 } from '../state/actions/dialogs';
-import { fetchLegacyItemsTree, fetchWorkflowAffectedItems } from '../services/content';
+import { fetchLegacyItemsTree, fetchSandboxItem, fetchWorkflowAffectedItems } from '../services/content';
 import {
   batchActions,
   changeContentType,
@@ -109,6 +109,8 @@ import { previewItem } from '../state/actions/preview';
 import { asArray, createPresenceTable } from './array';
 import { fetchPublishingStatus } from '../state/actions/publishingStatus';
 import { Clipboard } from '../models/GlobalState';
+import { popDialog, pushDialog } from '../state/reducers/dialogs/minimizedDialogs';
+import { nanoid as uuid } from 'nanoid';
 
 export type ContextMenuOptionDescriptor<ID extends string = string> = {
   id: ID;
@@ -803,8 +805,6 @@ export const itemActionDispatcher = ({
   }
   // actions that support multiple items
   switch (option) {
-    case 'deleteTemplate':
-    case 'deleteController':
     case 'delete': {
       let items = asArray(item);
       dispatch(
@@ -817,6 +817,44 @@ export const itemActionDispatcher = ({
           ])
         })
       );
+      break;
+    }
+    case 'deleteController': {
+      const id = uuid();
+      dispatch(
+        pushDialog({
+          minimized: true,
+          id,
+          status: 'indeterminate',
+          title: 'Processing', // TODO: i18n?
+          onMaximized: null
+        })
+      );
+      const currentItem = item as DetailedItem;
+      const contentTypeName = /[^/]*$/.exec(currentItem.contentTypeId)[0];
+      fetchSandboxItem(site, `/scripts/${currentItem.systemType}s/${contentTypeName}.groovy`).subscribe(
+        (controllerItem) => {
+          dispatch(popDialog({ id }));
+
+          let items = asArray(controllerItem);
+          dispatch(
+            showDeleteDialog({
+              items,
+              onSuccess: batchActions([
+                showDeleteItemSuccessNotification(),
+                closeDeleteDialog(),
+                ...(onActionSuccess ? [onActionSuccess] : [])
+              ])
+            })
+          );
+        },
+        (e) => {
+          dispatch(popDialog({ id }));
+        }
+      );
+      break;
+    }
+    case 'deleteTemplate': {
       break;
     }
     case 'approvePublish':
