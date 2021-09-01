@@ -287,7 +287,7 @@ export const updatePageBuilderPanelWidth = /*#__PURE__#*/ createAction<{ width: 
 
 export const initToolsPanelConfig = /*#__PURE__*/ createAction<{
   configXml: string;
-  pageStack?: LookupTable<any>;
+  storedPage?: WidgetDescriptor;
 }>('INIT_TOOLS_PANEL_CONFIG');
 
 export const initToolbarConfig = /*#__PURE__*/ createAction<{ configXml: string }>('INIT_TOOLBAR_CONFIG');

@@ -592,7 +592,7 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
     }
     return {
       ...state,
-      ...(payload.pageStack && { toolsPanelPageStack: payload.pageStack }),
+      ...(payload.storedPage && { toolsPanelPageStack: [payload.storedPage] }),
       toolsPanel: toolsPanelConfig
     };
   },

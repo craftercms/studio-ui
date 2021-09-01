@@ -74,7 +74,7 @@ export default function ToolsPanel() {
   useEffect(() => {
     if (nnou(uiConfig.xml) && !toolsPanel) {
       const storedPage = getStoredPreviewToolsPanelPage(uuid, username);
-      dispatch(initToolsPanelConfig({ configXml: uiConfig.xml, pageStack: storedPage }));
+      dispatch(initToolsPanelConfig({ configXml: uiConfig.xml, storedPage }));
     }
   }, [uiConfig.xml, toolsPanel, dispatch, uuid, username]);
 
