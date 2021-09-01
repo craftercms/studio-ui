@@ -85,6 +85,7 @@
   const readOnly = CStudioAuthoring.Utils.getQueryVariable(location.search, 'readonly') === 'true';
   const iceId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'iceId');
   const selectedFields = CStudioAuthoring.Utils.getQueryVariable(location.search, 'selectedFields');
+  const newEmbedded = CStudioAuthoring.Utils.getQueryVariable(location.search, 'newEmbedded');
   const contentTypeId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'contentTypeId');
   const isNewContent = CStudioAuthoring.Utils.getQueryVariable(location.search, 'isNewContent') === 'true';
   const LEGACY_FORM_DIALOG_CANCEL_REQUEST = 'LEGACY_FORM_DIALOG_CANCEL_REQUEST'
@@ -97,6 +98,8 @@
         var modelId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'modelId');
         var isHidden = CStudioAuthoring.Utils.getQueryVariable(location.search, 'isHidden') === 'true';
         var changeTemplate = CStudioAuthoring.Utils.getQueryVariable(location.search, 'changeTemplate');
+
+        const embeddedData = newEmbedded ? JSON.parse(newEmbedded) : false;
 
         const aux = [];
         if (readOnly) aux.push({ name: 'readonly' });
@@ -146,19 +149,23 @@
                                   }, '*');
                                 },
                                 renderComplete: () => {
-                                  if (!modelId) {
-                                    window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED' }, '*');
-                                  } else {
+                                  if (modelId || embeddedData) {
                                     CStudioAuthoring.InContextEdit.messageDialogs({
                                       type: 'OPEN_CHILD_COMPONENT',
-                                      key: modelId,
+                                      key: Boolean(modelId) ? modelId : null,
                                       iceId: null,
-                                      edit: true,
+                                      contentType: embeddedData ? embeddedData.contentType : null,
+                                      edit: Boolean(modelId),
+                                      selectorId: embeddedData ? embeddedData.fieldId : null,
+                                      ds: embeddedData ? embeddedData.datasource : null,
+                                      order: embeddedData ? embeddedData.index : null,
                                       callback: {
                                         renderComplete: 'EMBEDDED_LEGACY_FORM_RENDERED',
                                         pendingChanges: 'EMBEDDED_LEGACY_FORM_PENDING_CHANGES'
                                       }
                                     });
+                                  } else {
+                                    window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED' }, '*');
                                   }
                                 },
                                 pendingChanges: () => {

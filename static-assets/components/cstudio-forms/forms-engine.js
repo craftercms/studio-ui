@@ -943,7 +943,7 @@ var CStudioForms =
                     ds: message.ds,
                     order: message.order
                   });
-                  cfe.engine.saveForm(false, message.draft, false);
+                  cfe.engine.saveForm(false, message.draft, false, message.action);
                 } else {
                   amplify.publish('UPDATE_NODE_SELECTOR', message);
                   cfe.engine.saveForm(false, message.draft, true, message.action);
@@ -1892,22 +1892,6 @@ var CStudioForms =
               focusEl.focus();
             }, 500);
           }
-          if (!iceWindowCallback.id) {
-            var colExpButtonEl = document.createElement('input');
-            colExpButtonEl.id = 'colExpButtonBtn';
-            YDom.addClass(colExpButtonEl, 'btn btn-default');
-            colExpButtonEl.type = 'button';
-            colExpButtonEl.value = 'Collapse';
-            formControlBarEl.appendChild(colExpButtonEl);
-            YAHOO.util.Event.addListener(
-              colExpButtonEl,
-              'click',
-              function() {
-                collapseFn();
-              },
-              me
-            );
-          }
 
           var overlayContainer = parent.document.getElementById(window.frameElement.id).parentElement;
           YDom.addClass(overlayContainer, 'overlay');
@@ -1966,7 +1950,8 @@ var CStudioForms =
                       false,
                       false,
                       {
-                        success: function(contentTO, editorId, objId, value, draft) {
+                        ...callback,
+                        success: function(contentTO, editorId, objId, value, draft, action) {
                           sendMessage({
                             type: FORM_SAVE_REQUEST,
                             key: objId,
@@ -1975,7 +1960,8 @@ var CStudioForms =
                             new: true,
                             selectorId: selectorId,
                             ds,
-                            order
+                            order,
+                            action
                           });
                         },
                         cancelled: function() {

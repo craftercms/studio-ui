@@ -38,7 +38,7 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
   var COMPONENT_TPL =
     '<sli><sa class="studio-component-drag-target" data-studio-component data-studio-component-path="%@" data-studio-component-type="%@"><span class="status-icon fa fa-puzzle-piece"></span>%@</sa></sli>';
   var BROWSE_TPL =
-    '<sdiv class="studio-category"><sh2 class="studio-category-name add-existing-component pointer" id="%@" data-path="%@">Browse %@</sh2><sul></sul></sdiv>';
+    '<sdiv><sbutton class="btn btn-primary add-existing-component pointer" id="%@" data-path="%@">Browse %@</sbutton><sul></sul></sdiv>';
   var DRAGGABLE_SELECTION = '.studio-components-container .studio-component-drag-target';
   var DROPPABLE_SELECTION = '[data-studio-components-target]';
   var PANEL_ON_BD_CLASS = 'studio-dnd-enabled';
@@ -163,6 +163,7 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
         this.getAnimator($p).slideOutRight(function() {
           $o.detach();
           $p.detach();
+          communicator.publish('DRAG_AND_DROP_COMPONENTS_PANEL_CLOSED');
         });
 
         $('.removeComp').remove();
@@ -414,7 +415,7 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
           let key = `${zone}-${componentType}`;
           if (cacheValidation[key] && cacheValidation[key].supported) {
             communicator.unsubscribe(Topics.REQUEST_FORM_DEFINITION_RESPONSE, callback);
-            componentDropped.call(me, $dropZone, $component, cacheValidation[key].ds);
+            componentDropped.call(me, $dropZone, $component, cacheValidation[key].ds, Boolean(ui.sender));
           } else if (validationInProgress === null) {
             validationInProgress = true;
             publish.call(me, Topics.REQUEST_FORM_DEFINITION, { contentType: destContentType });
@@ -449,9 +450,11 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
       update: function(e, ui) {
         var self = this;
         if (!ui.sender) {
+          // from where
           updateDop(self, me, ui);
         } else {
           setTimeout(function() {
+            // to where
             updateDop(self, me, ui);
           }, 300);
         }
@@ -568,7 +571,7 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
     });
   }
 
-  function componentDropped($dropZone, $component, datasource) {
+  function componentDropped($dropZone, $component, datasource, isInsert) {
     var compPath = $dropZone.parents('[data-studio-component-path]').attr('data-studio-component-path');
     var compTracking = $dropZone.parents('[data-studio-component-path]').attr('data-studio-tracking-number');
     var objectId = $dropZone.attr('data-studio-components-objectid');
@@ -653,7 +656,8 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
         trackingNumber: tracking,
         compPath: compPath,
         conComp: conRepeat > 1 ? true : false,
-        datasource: datasource
+        datasource: datasource,
+        isInsert
       });
     });
   }
