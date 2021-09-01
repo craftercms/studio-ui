@@ -99,7 +99,7 @@
         var isHidden = CStudioAuthoring.Utils.getQueryVariable(location.search, 'isHidden') === 'true';
         var changeTemplate = CStudioAuthoring.Utils.getQueryVariable(location.search, 'changeTemplate');
 
-        const embeddedData = newEmbedded?  JSON.parse(newEmbedded) : false;
+        const embeddedData = newEmbedded ? JSON.parse(newEmbedded) : false;
 
         const aux = [];
         if (readOnly) aux.push({ name: 'readonly' });
