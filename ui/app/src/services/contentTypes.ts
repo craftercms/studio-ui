@@ -412,7 +412,7 @@ export function dissociateTemplate(site: string, contentTypeId: string): Observa
         (node) => node.querySelector('name').innerHTML.trim() === 'display-template'
       );
       if (property) {
-        property.parentNode.removeChild(property);
+        property.querySelector('value').innerHTML = '';
         return writeConfiguration(site, path, module, beautify(serialize(doc)));
       } else {
         return of(false);
