@@ -174,6 +174,12 @@
                                 renderFailed(error) {
                                   window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDER_FAILED', payload: { error } }, '*');
                                 },
+                                minimize: () => {
+                                  window.top.postMessage({
+                                    type: 'EMBEDDED_LEGACY_MINIMIZE_REQUEST'
+                                  }, '*')
+                                },
+                                isParent: true,
                                 id: type
                               },
                               aux,

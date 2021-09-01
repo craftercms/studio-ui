@@ -29,6 +29,7 @@ import {
   EMBEDDED_LEGACY_FORM_RENDERED,
   EMBEDDED_LEGACY_FORM_SAVE,
   EMBEDDED_LEGACY_FORM_SUCCESS,
+  EMBEDDED_LEGACY_MINIMIZE_REQUEST,
   RELOAD_REQUEST
 } from '../../state/actions/preview';
 import { fromEvent } from 'rxjs';
@@ -103,7 +104,7 @@ interface LegacyFormDialogBaseProps {
   pendingChanges?: boolean;
   iceGroupId?: string;
   newEmbedded?: {
-    contentType: 'string';
+    contentType: string;
     index: number;
     datasource: string;
     fieldId: string;
@@ -274,6 +275,13 @@ const EmbeddedLegacyEditor = React.forwardRef(function EmbeddedLegacyEditor(prop
         case EMBEDDED_LEGACY_FORM_PENDING_CHANGES: {
           dispatch(updateEditConfig({ pendingChanges: true }));
           break;
+        }
+        case EMBEDDED_LEGACY_MINIMIZE_REQUEST: {
+          dispatch(
+            minimizeDialog({
+              id: 'legacy-editor'
+            })
+          );
         }
       }
     });
