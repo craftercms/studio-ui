@@ -163,3 +163,11 @@ export function getStoredDashboardPreferences(
     window.localStorage.getItem(`craftercms.dashboard.${dashletId}.${siteIdentifier}.${user}`)
   ) as DashboardPreferences;
 }
+
+export function getStoredLegacyComponentPanel(user: string): object {
+  return JSON.parse(window.localStorage.getItem(`craftercms.${user}.legacyComponentPanel`));
+}
+
+export function setStoredLegacyComponentPanel(value: object, user: string) {
+  return window.localStorage.setItem(`craftercms.${user}.legacyComponentPanel`, JSON.stringify(value));
+}

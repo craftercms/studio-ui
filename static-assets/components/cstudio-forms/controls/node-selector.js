@@ -28,7 +28,6 @@ CStudioForms.Controls.NodeSelector = function(id, form, owner, properties, const
   this.form = form;
   this.id = id;
   this.allowEdit = false;
-  this.selectedItemIndex = -1;
   this.items = [];
   this.readonly = readonly;
   this.allowDuplicates = false;
@@ -327,10 +326,6 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
 
     var items = this.items;
 
-    if (items.length === 0) {
-      this.selectedItemIndex = -1;
-    }
-
     itemsContainerEl.innerHTML = '';
     var tar = new YAHOO.util.DDTarget(itemsContainerEl);
     for (var i = 0; i < items.length; i++) {
@@ -357,10 +352,6 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
         '<span class="fa fa-trash node-selector-item-icon" title="Delete" aria-label="Delete" role="button"></span>'
       );
 
-      if (this.selectedItemIndex == i) {
-        YAHOO.util.Dom.addClass(itemEl, 'cstudio-form-control-node-selector-item-selected');
-      }
-
       if (this.allowEdit) {
         if (isComponent || !this.readonly) {
           $(itemEl).append(editBtn);
@@ -368,7 +359,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
             const elIndex = $(this).data('index');
             let selectedDatasource =
               _self.datasources.find((item) => item.id === _self.items[elIndex].datasource) || _self.datasources[0];
-            selectedDatasource.edit(item.key, _self);
+            selectedDatasource.edit(item.key, _self, elIndex);
           });
         }
 
@@ -418,7 +409,6 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     var item = this.items[onTheMoveIndex];
     this.items.splice(onTheMoveIndex, 1);
     this.items.splice(beforeItemIndex, 0, item);
-    this.selectedItemIndex = beforeItemIndex;
     this._onChangeVal(this);
   },
 
@@ -599,10 +589,12 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     return this.items;
   },
 
-  updateEditedItem: function(value, datasource) {
-    var item = this.items[this.selectedItemIndex];
+  updateEditedItem: function(value, datasource, index) {
+    var item = this.items[index];
     item.value = value;
-    item.datasource = datasource;
+    if (datasource) {
+      item.datasource;
+    }
     this._renderItems();
     this._onChangeVal(this);
   },

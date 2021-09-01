@@ -3917,14 +3917,21 @@ var nodeOpen = false,
           serviceUri = serviceUri + '&populateDependencies=false';
         }
 
-        CrafterCMSNext.util.ajax.get(this.createServiceUri(serviceUri)).subscribe(
-          function(response) {
-            callback.success(response.response, callback.argument);
-          },
-          function() {
-            callback.failure(response, callback.argument);
-          }
-        );
+        CrafterCMSNext.system
+          .getStore()
+          .pipe(
+            CrafterCMSNext.rxjs.operators.switchMap(() =>
+              CrafterCMSNext.util.ajax.get(this.createServiceUri(serviceUri))
+            )
+          )
+          .subscribe(
+            function(response) {
+              callback.success(response.response, callback.argument);
+            },
+            function() {
+              callback.failure(response, callback.argument);
+            }
+          );
       },
 
       /**

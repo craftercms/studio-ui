@@ -310,7 +310,8 @@ export function insertInstance(
   fieldId: string,
   targetIndex: string | number,
   instance: ContentInstance,
-  parentModelId: string = null
+  parentModelId: string = null,
+  datasource?: string
 ): Observable<any> {
   return performMutation(site, modelId, parentModelId, (doc) => {
     const path = instance.craftercms.path;
@@ -320,7 +321,7 @@ export function insertInstance(
     createElements(doc, newItem, {
       '@attributes': {
         // TODO: Hardcoded value. Fix.
-        datasource: 'TODO'
+        datasource: datasource ?? 'TODO'
       },
       key: path,
       value: instance.craftercms.label,
@@ -425,10 +426,18 @@ export function deleteItem(
       fieldNode = extractNode(doc, fieldId, removeLastPiece(`${indexToDelete}`));
     }
 
-    $(fieldNode)
+    const $fieldNode = $(fieldNode);
+
+    $fieldNode
       .children()
       .eq(index as number)
       .remove();
+
+    if ($fieldNode.children().length === 0) {
+      // If the node isn't completely blank, the xml formatter won't do it's job in converting to a self-closing tag.
+      // Also, later on, when retrieved, some *legacy* functions would impaired as the deserializing into JSON had unexpected content
+      $fieldNode.html('');
+    }
   });
 }
 

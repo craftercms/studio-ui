@@ -119,7 +119,7 @@ YAHOO.extend(CStudioForms.Datasources.EmbeddedContent, CStudioForms.CStudioFormD
     }
   },
 
-  edit: function(key, control) {
+  edit: function(key, control, index) {
     var _self = this;
     const readonly = control.readonly;
     CStudioForms.communication.sendAndAwait(key, (message) => {
@@ -135,9 +135,12 @@ YAHOO.extend(CStudioForms.Datasources.EmbeddedContent, CStudioForms.CStudioFormD
         null, // field
         true,
         {
-          success: function(contentTO, editorId, name, value) {
+          success: function(contentTO, editorId, name, value, draft, action) {
             if (control) {
-              control.updateEditedItem(value, _self.id);
+              control.updateEditedItem(value, _self.id, index);
+              if (action === 'saveAndClose') {
+                CStudioAuthoring.InContextEdit.unstackDialog(editorId);
+              }
             }
           }
         },

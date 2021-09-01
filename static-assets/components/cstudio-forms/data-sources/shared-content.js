@@ -269,7 +269,7 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
     }
   },
 
-  edit: function(key, control) {
+  edit: function(key, control, index) {
     var _self = this;
     const readonly = control.readonly;
     const action = readonly ? CStudioAuthoring.Operations.viewContent : CStudioAuthoring.Operations.editContent;
@@ -284,10 +284,12 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
           contentTO.item.uri,
           false,
           {
-            success: function(contentTO, editorId, name, value) {
+            success: function(contentTO, editorId, name, value, draft, action) {
               if (control) {
-                control.updateEditedItem(value, _self.id);
-                CStudioAuthoring.InContextEdit.unstackDialog(editorId);
+                control.updateEditedItem(value, _self.id, index);
+                if (action === 'saveAndClose') {
+                  CStudioAuthoring.InContextEdit.unstackDialog(editorId);
+                }
               }
             }
           }
