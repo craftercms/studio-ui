@@ -155,11 +155,11 @@
                                       type: 'OPEN_CHILD_COMPONENT',
                                       key: Boolean(modelId) ? modelId : null,
                                       iceId: null,
-                                      contentType: embeddedData? embeddedData.contentType : null,
+                                      contentType: embeddedData ? embeddedData.contentType : null,
                                       edit: Boolean(modelId),
-                                      selectorId: embeddedData? embeddedData.fieldId : null,
-                                      ds: embeddedData? embeddedData.datasource : null,
-                                      order: embeddedData? embeddedData.index : null,
+                                      selectorId: embeddedData ? embeddedData.fieldId : null,
+                                      ds: embeddedData ? embeddedData.datasource : null,
+                                      order: embeddedData ? embeddedData.index : null,
                                       callback: {
                                         renderComplete: 'EMBEDDED_LEGACY_FORM_RENDERED',
                                         pendingChanges: 'EMBEDDED_LEGACY_FORM_PENDING_CHANGES'
