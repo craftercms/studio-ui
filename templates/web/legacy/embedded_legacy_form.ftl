@@ -149,7 +149,6 @@
                                   }, '*');
                                 },
                                 renderComplete: () => {
-                                  // TODO: embeddedData, support create embedded component
                                   if (modelId || embeddedData) {
                                     CStudioAuthoring.InContextEdit.messageDialogs({
                                       type: 'OPEN_CHILD_COMPONENT',

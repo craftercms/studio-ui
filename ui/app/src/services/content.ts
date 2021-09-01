@@ -434,6 +434,8 @@ export function deleteItem(
       .remove();
 
     if ($fieldNode.children().length === 0) {
+      // If the node isn't completely blank, the xml formatter won't do it's job in converting to a self-closing tag.
+      // Also, later on, when retrieved, some *legacy* functions would impaired as the deserializing into JSON had unexpected content
       $fieldNode.html('');
     }
   });

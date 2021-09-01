@@ -15,31 +15,18 @@
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
-import DialogHeader from '../Dialogs/DialogHeader';
-import DialogBody from '../Dialogs/DialogBody';
-import DialogFooter from '../Dialogs/DialogFooter';
-import SecondaryButton from '../SecondaryButton';
-import PrimaryButton from '../PrimaryButton';
-import { FormattedMessage } from 'react-intl';
 import { search } from '../../services/search';
 import { ElasticParams, MediaItem, SearchItem } from '../../models/Search';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import MediaCard from '../MediaCard';
 import { useEnv } from '../../utils/hooks/useEnv';
 import { useUnmount } from '../../utils/hooks/useUnmount';
 import { useStyles } from './styles';
-import SearchBar from '../Controls/SearchBar';
-import clsx from 'clsx';
-import MediaSkeletonCard from './MediaSkeletonCard';
 import { useDebouncedInput } from '../../utils/hooks/useDebouncedInput';
 import { useSpreadState } from '../../utils/hooks/useSpreadState';
-import EmptyState from '../SystemStatus/EmptyState';
-import Pagination from '../Pagination';
 import { showPreviewDialog } from '../../state/actions/dialogs';
 import { useDispatch } from 'react-redux';
 import LookupTable from '../../models/LookupTable';
-import FolderBrowserTreeView from '../Navigation';
-import Box from '@material-ui/core/Box';
+import { BrowseFilesDialogUI } from '.';
 
 export interface BrowseFilesDialogUIProps {
   path: string;
@@ -161,79 +148,26 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogUIProps) {
   };
 
   return (
-    <>
-      <DialogHeader
-        title={<FormattedMessage id="browseFilesDialog.uploadImage" defaultMessage="Select a file" />}
-        onDismiss={onClose}
-      />
-      <DialogBody className={classes.dialogBody}>
-        <Box display="flex">
-          <section className={classes.leftWrapper}>
-            <FolderBrowserTreeView
-              classes={{ treeItemLabel: classes.treeItemLabel }}
-              rootPath={path}
-              showPathTextBox={false}
-              onPathSelected={onPathSelected}
-            />
-          </section>
-          <section className={classes.rightWrapper}>
-            <SearchBar
-              keyword={keyword}
-              onChange={handleSearchKeyword}
-              showDecoratorIcon={true}
-              showActionButton={Boolean(keyword)}
-              classes={{ root: classes.searchRoot }}
-            />
-            <div className={classes.cardsContainer}>
-              {items
-                ? items.map((item: SearchItem) => {
-                    return (
-                      <MediaCard
-                        classes={{
-                          root: clsx(classes.mediaCardRoot, item.path === selectedCard?.path && 'selected'),
-                          header: clsx(!multiSelect && classes.cardHeader)
-                        }}
-                        key={item.path}
-                        item={item}
-                        selected={multiSelect ? selectedArray : null}
-                        onSelect={multiSelect ? onCheckboxChecked : null}
-                        onPreviewButton={item.type === 'Image' ? onPreviewImage : null}
-                        previewAppBaseUri={guestBase}
-                        onCardClicked={onCardSelected}
-                        hasSubheader={false}
-                      />
-                    );
-                  })
-                : new Array(numOfLoaderItems).fill(null).map((x, i) => <MediaSkeletonCard key={i} />)}
-            </div>
-            {items && items.length === 0 && (
-              <EmptyState
-                classes={{ root: classes.emptyState }}
-                title={<FormattedMessage id="browseFilesDialog.noResults" defaultMessage="No files found." />}
-              />
-            )}
-          </section>
-        </Box>
-      </DialogBody>
-      <DialogFooter>
-        {items && (
-          <Pagination
-            rowsPerPageOptions={rowsPerPageOptions}
-            classes={{ root: classes.paginationRoot }}
-            count={total}
-            rowsPerPage={searchParameters.limit}
-            page={Math.ceil(searchParameters.offset / searchParameters.limit)}
-            onPageChange={(page: number) => onChangePage(page)}
-            onRowsPerPageChange={onChangeRowsPerPage}
-          />
-        )}
-        <SecondaryButton onClick={onClose}>
-          <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
-        </SecondaryButton>
-        <PrimaryButton disabled={!Boolean(selectedArray.length) && !selectedCard} onClick={onSelectButtonClick}>
-          <FormattedMessage id="words.select" defaultMessage="Select" />
-        </PrimaryButton>
-      </DialogFooter>
-    </>
+    <BrowseFilesDialogUI
+      items={items}
+      path={path}
+      guestBase={guestBase}
+      keyword={keyword}
+      selectedCard={selectedCard}
+      selectedArray={selectedArray}
+      multiSelect={multiSelect}
+      limit={searchParameters.limit}
+      offset={searchParameters.offset}
+      total={total}
+      onCardSelected={onCardSelected}
+      onChangePage={onChangePage}
+      onChangeRowsPerPage={onChangeRowsPerPage}
+      onCheckboxChecked={onCheckboxChecked}
+      handleSearchKeyword={handleSearchKeyword}
+      onClose={onClose}
+      onPathSelected={onPathSelected}
+      onPreviewImage={onPreviewImage}
+      onSelectButtonClick={onSelectButtonClick}
+    />
   );
 }

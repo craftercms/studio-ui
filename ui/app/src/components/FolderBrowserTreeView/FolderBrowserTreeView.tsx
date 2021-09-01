@@ -16,7 +16,7 @@
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { getIndividualPaths } from '../../utils/path';
-import FolderBrowserTreeViewUI, { legacyItemsToTreeNodes, TreeNode } from './FolderBrowserTreeViewUI';
+import FolderBrowserTreeViewUI, { TreeNode } from './FolderBrowserTreeViewUI';
 import LookupTable from '../../models/LookupTable';
 import { ApiResponse } from '../../models/ApiResponse';
 import { forkJoin, Observable } from 'rxjs';
@@ -26,6 +26,7 @@ import Suspencified from '../SystemStatus/Suspencified';
 import FolderBrowserTreeViewSkeleton from './FolderBrowserTreeViewSkeleton';
 import { LegacyItem } from '../../models/Item';
 import { fetchLegacyItemsTree } from '../../services/content';
+import { legacyItemsToTreeNodes } from './utils';
 
 interface FolderBrowserTreeViewProps {
   rootPath: string;

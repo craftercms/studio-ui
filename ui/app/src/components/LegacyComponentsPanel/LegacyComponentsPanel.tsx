@@ -43,11 +43,11 @@ import { getPathFromPreviewURL } from '../../utils/path';
 import { useContentTypes } from '../../utils/hooks/useContentTypes';
 import { filter } from 'rxjs/operators';
 import { showSystemNotification } from '../../state/actions/system';
-import { guestMessages } from '../../modules/Preview/PreviewConcierge';
 import { nou } from '../../utils/object';
 import { forEach } from '../../utils/array';
 import { useEnv } from '../../utils/hooks/useEnv';
 import { createCustomDocumentEventListener } from '../../utils/dom';
+import { guestMessages } from '../../assets/guestMessages';
 
 export interface LegacyComponentsPanelProps {
   title: string;
@@ -72,7 +72,7 @@ interface ComponentDropProps {
   path: string;
   isNew: boolean | 'existing';
   trackingNumber: string;
-  zones: LookupTable<Array<any>>;
+  zones: LookupTable<Array<{ key: string } | string>>;
   compPath: string;
   conComp: boolean;
   datasource: string;
@@ -130,7 +130,7 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
         let index = null;
         let indexByKey = {};
         zones[fieldId].forEach((item, i) => {
-          indexByKey[item.key] = i;
+          indexByKey[(item as { key: string }).key] = i;
         });
         contentModel[fieldId].forEach((item, i) => {
           if (nou(indexByKey[item.key]) && index === null) {
@@ -335,7 +335,7 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
               contentModelZone.forEach((item, i) => {
                 indexByKey[item.key] = i;
               });
-              forEach(zone, (item, i) => {
+              forEach(zone as { key: string }[], (item, i) => {
                 if (!indexByKey[item.key]) {
                   index = 1;
                   return 'break';
@@ -370,7 +370,7 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
                 indexByKey[item.key] = i;
               });
 
-              forEach(zone, (item, i) => {
+              forEach(zone as { key: string }[], (item, i) => {
                 if (indexByKey[item.key] !== i && currentIndex === null) {
                   currentIndex = indexByKey[item.key];
                   targetIndex = i;
@@ -392,7 +392,7 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
               let indexByKey = {};
 
               zone.forEach((item, i) => {
-                indexByKey[item.key] = i;
+                indexByKey[(item as { key: string }).key] = i;
               });
 
               forEach(contentModelZone, (item, i) => {

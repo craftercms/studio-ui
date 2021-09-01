@@ -14,10 +14,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './FolderBrowserTreeView';
+import { LegacyItem } from '../../models/Item';
 
-export * from './FolderBrowserTreeView';
-
-export * from './FolderBrowserTreeViewUI';
-
-export * from './FolderBrowserTreeViewSkeleton';
+export function legacyItemsToTreeNodes(items: LegacyItem[]) {
+  return items
+    .filter((item) => item.contentType === 'folder')
+    .map((item) => ({
+      id: item.path,
+      name: item.name,
+      children: [
+        {
+          id: 'loading'
+        }
+      ]
+    }));
+}

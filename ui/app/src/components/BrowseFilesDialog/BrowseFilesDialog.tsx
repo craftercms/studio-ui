@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren } from 'react';
-import Dialog from '@material-ui/core/Dialog';
+import React from 'react';
+import Dialog, { DialogProps } from '@material-ui/core/Dialog';
 import { BrowseFilesDialogContainer } from './BrowseFilesDialogContainer';
 import StandardAction from '../../models/StandardAction';
 import { MediaItem } from '../../models/Search';
@@ -30,13 +30,11 @@ export interface BrowseFilesDialogBaseProps {
   numOfLoaderItems?: number;
 }
 
-export type BrowseFilesDialogProps = PropsWithChildren<
-  BrowseFilesDialogBaseProps & {
-    onClose(): void;
-    onSuccess?(items: MediaItem | MediaItem[]): void;
-    onClosed?(): void;
-  }
->;
+export interface BrowseFilesDialogProps extends DialogProps, BrowseFilesDialogBaseProps {
+  onClose(): void;
+  onSuccess?(items: MediaItem | MediaItem[]): void;
+  onClosed?(): void;
+}
 
 export interface BrowseFilesDialogPropsStateProps extends BrowseFilesDialogBaseProps {
   onClose?: StandardAction;

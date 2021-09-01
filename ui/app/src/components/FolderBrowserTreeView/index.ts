@@ -14,22 +14,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+export { default } from './FolderBrowserTreeView';
 
-export const useStyles = makeStyles(() => createStyles({}));
+export * from './FolderBrowserTreeView';
 
-export const useSkeletonStyles = makeStyles(() =>
-  createStyles({
-    iconContainer: {
-      display: 'none'
-    },
-    label: {
-      background: 'none',
-      '&:hover': {
-        background: 'none'
-      }
-    }
-  })
-);
+export * from './FolderBrowserTreeViewUI';
 
-export default useStyles;
+export * from './FolderBrowserTreeViewSkeleton';
+
+export * from './PathSelected';
