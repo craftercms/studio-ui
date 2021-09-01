@@ -153,7 +153,7 @@
                                   if (modelId || embeddedData) {
                                     CStudioAuthoring.InContextEdit.messageDialogs({
                                       type: 'OPEN_CHILD_COMPONENT',
-                                      key: Boolean(modelId)? modelId : null,
+                                      key: Boolean(modelId) ? modelId : null,
                                       iceId: null,
                                       contentType: embeddedData? embeddedData.contentType : null,
                                       edit: Boolean(modelId),
