@@ -176,6 +176,6 @@ export function setStoredShowToolsPanel(siteIdentifier: string, user: string, va
   return window.localStorage.setItem(`craftercms.${user}.openToolsPanel.${siteIdentifier}`, JSON.stringify(value));
 }
 
-export function getStoredShowToolsPanel(siteIdentifier: string, user: string): string {
+export function getStoredShowToolsPanel(siteIdentifier: string, user: string): boolean {
   return JSON.parse(window.localStorage.getItem(`craftercms.${user}.openToolsPanel.${siteIdentifier}`));
 }
