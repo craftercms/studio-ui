@@ -177,7 +177,7 @@
                                 minimize: () => {
                                   window.top.postMessage({
                                     type: 'EMBEDDED_LEGACY_MINIMIZE_REQUEST'
-                                  }, '*')
+                                  }, '*');
                                 },
                                 isParent: true,
                                 id: type
