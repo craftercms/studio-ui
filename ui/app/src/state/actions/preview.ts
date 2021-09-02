@@ -127,13 +127,9 @@ export function clearSelectForEdit() {
   return { type: CLEAR_SELECT_FOR_EDIT };
 }
 
-export function openTools(): StandardAction {
-  return { type: OPEN_TOOLS };
-}
+export const openToolsPanel = /*#__PURE__*/ createAction(OPEN_TOOLS);
 
-export function closeTools(): StandardAction {
-  return { type: CLOSE_TOOLS };
-}
+export const closeToolsPanel = /*#__PURE__*/ createAction(CLOSE_TOOLS);
 
 export function setHostSize(dimensions: WidthAndHeight): StandardAction {
   return {

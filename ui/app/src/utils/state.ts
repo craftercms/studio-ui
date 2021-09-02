@@ -114,8 +114,8 @@ export function getStoredPathNavigatorTree(siteIdentifier: string, user: string,
   return JSON.parse(window.localStorage.getItem(`craftercms.${user}.pathNavigatorTree.${siteIdentifier}.${id}`));
 }
 
-export function setStoredGlobalAppOpenSidebar(user: string, value) {
-  return window.localStorage.setItem(`craftercms.${user}.globalAppOpenSidebar`, value);
+export function setStoredGlobalAppOpenSidebar(user: string, value: boolean) {
+  return window.localStorage.setItem(`craftercms.${user}.globalAppOpenSidebar`, JSON.stringify(value));
 }
 
 export function getStoredGlobalAppOpenSidebar(user: string): string {
@@ -170,4 +170,12 @@ export function getStoredLegacyComponentPanel(user: string): object {
 
 export function setStoredLegacyComponentPanel(value: object, user: string) {
   return window.localStorage.setItem(`craftercms.${user}.legacyComponentPanel`, JSON.stringify(value));
+}
+
+export function setStoredShowToolsPanel(siteIdentifier: string, user: string, value: boolean) {
+  return window.localStorage.setItem(`craftercms.${user}.openToolsPanel.${siteIdentifier}`, JSON.stringify(value));
+}
+
+export function getStoredShowToolsPanel(siteIdentifier: string, user: string): string {
+  return JSON.parse(window.localStorage.getItem(`craftercms.${user}.openToolsPanel.${siteIdentifier}`));
 }

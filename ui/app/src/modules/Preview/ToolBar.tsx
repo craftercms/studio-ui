@@ -17,7 +17,7 @@
 import React, { useEffect } from 'react';
 import ViewToolbar from '../../components/ViewToolbar';
 import LauncherOpenerButton from '../../components/LauncherOpenerButton';
-import { closeTools, initToolbarConfig, openTools } from '../../state/actions/preview';
+import { closeToolsPanel, initToolbarConfig, openToolsPanel } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 import { defineMessages, useIntl } from 'react-intl';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -71,7 +71,7 @@ export default function ToolBar() {
         <Tooltip title={formatMessage(translations.toggleSidebarTooltip)}>
           <LogoAndMenuBundleButton
             aria-label={formatMessage(translations.openToolsPanel)}
-            onClick={() => dispatch(showToolsPanel ? closeTools() : openTools())}
+            onClick={() => dispatch(showToolsPanel ? closeToolsPanel() : openToolsPanel())}
           />
         </Tooltip>
         {renderWidgets(toolbar.leftSection?.widgets, userRoles, { site, item })}
