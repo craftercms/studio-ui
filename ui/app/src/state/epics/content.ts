@@ -130,7 +130,7 @@ const content: CrafterCMSEpic[] = [
       ofType(completeDetailedItem.type),
       withLatestFrom(state$),
       // Only fetch if the item isn't fully loaded (i.e. it's a parsed SandboxItem and need the DetailedItems)
-      filter(([{ payload }, state]) => !state.content.itemsByPath?.[payload.path]?.live),
+      filter(([{ payload }, state]) => payload.force || !state.content.itemsByPath?.[payload.path]?.live),
       mergeMap(([{ payload }, state]) =>
         fetchDetailedItemService(state.sites.active, payload.path).pipe(
           map((item) => fetchDetailedItemComplete(item)),

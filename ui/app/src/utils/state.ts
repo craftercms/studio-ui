@@ -80,14 +80,14 @@ export function removeStoredClipboard(siteIdentifier: string, user: string) {
   return window.localStorage.removeItem(`craftercms.${user}.clipboard.${siteIdentifier}`);
 }
 
-export function setStoredPreviewToolsPanelPage(siteIdentifier: string, user: string, value: object) {
+export function setStoredPreviewToolsPanelPage(siteIdentifier: string, user: string, value: WidgetDescriptor) {
   return window.localStorage.setItem(
     `craftercms.${user}.previewToolsPanelPage.${siteIdentifier}`,
     JSON.stringify(value)
   );
 }
 
-export function getStoredPreviewToolsPanelPage(siteIdentifier: string, user: string) {
+export function getStoredPreviewToolsPanelPage(siteIdentifier: string, user: string): WidgetDescriptor {
   return JSON.parse(window.localStorage.getItem(`craftercms.${user}.previewToolsPanelPage.${siteIdentifier}`));
 }
 

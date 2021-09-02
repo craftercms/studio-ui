@@ -23,13 +23,13 @@ import epic from './epics/root';
 import { BehaviorSubject, forkJoin, fromEvent, Observable, of } from 'rxjs';
 import { filter, map, pluck, switchMap, take, tap } from 'rxjs/operators';
 import { fetchGlobalProperties, me } from '../services/users';
-import { fetchAll } from '../services/sites';
+import { exists, fetchAll } from '../services/sites';
 import LookupTable from '../models/LookupTable';
 import { Middleware } from 'redux';
 import { getCurrentIntl } from '../utils/i18n';
 import { IntlShape } from 'react-intl';
 import { ObtainAuthTokenResponse } from '../services/auth';
-import { setJwt } from '../utils/auth';
+import { getSiteCookie, removeSiteCookie, setJwt } from '../utils/auth';
 import { storeInitialized } from './actions/system';
 import User from '../models/User';
 import { Site } from '../models/Site';
@@ -142,10 +142,21 @@ export function fetchStateInitialization(): Observable<{
   sites: Site[];
   properties: LookupTable<any>;
 }> {
+  const siteCookieValue = getSiteCookie();
   return forkJoin({
     user: me(),
     sites: fetchAll(),
-    properties: fetchGlobalProperties()
+    properties: fetchGlobalProperties(),
+    activeSiteId:
+      // A site cookie may be set but the site may have been deleted.
+      // If there is a cookie with a site name, verify that it still exists.
+      siteCookieValue
+        ? exists(siteCookieValue).pipe(
+            // If the site doesn't exist, delete the cookie so it doesn't cause further issues
+            tap((siteExists) => !siteExists && removeSiteCookie()),
+            map((siteExists) => (siteExists ? siteCookieValue : null))
+          )
+        : of(null)
   });
 }
 

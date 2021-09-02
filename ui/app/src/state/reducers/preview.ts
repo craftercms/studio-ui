@@ -79,6 +79,7 @@ import ContentInstance from '../../models/ContentInstance';
 import { changeSite } from './sites';
 import { deserialize, fromString } from '../../utils/xml';
 import { defineMessages } from 'react-intl';
+import { fetchSiteUiConfigComplete } from '../actions/configuration';
 
 const messages = defineMessages({
   emptyUiConfigMessageTitle: {
@@ -131,7 +132,7 @@ const componentsInitialState = createEntityState({
   inPageInstances: {}
 }) as PagedEntityState<ContentInstance>;
 
-const initialState = {
+const initialState: GlobalState['preview'] = {
   editMode: true,
   highlightMode: 'ALL',
   hostSize: { width: null, height: null },
@@ -591,10 +592,19 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
     }
     return {
       ...state,
-      ...(payload.pageStack ? { toolsPanelPageStack: [...state.toolsPanelPageStack, payload.pageStack] } : {}),
+      ...(payload.storedPage && { toolsPanelPageStack: [payload.storedPage] }),
       toolsPanel: toolsPanelConfig
     };
   },
+  // After re-fetching site ui config (e.g. when config is modified), we need the tools to be
+  // re-initialized with the latest config. The components checks for whether their property is null before
+  // initializing so props must be nulled when config gets re-fetched in order for the components to re-initialize.
+  [fetchSiteUiConfigComplete.type]: (state) => ({
+    ...state,
+    toolsPanel: initialState.toolsPanel,
+    toolbar: initialState.toolbar,
+    pageBuilderPanel: initialState.pageBuilderPanel
+  }),
   [initToolbarConfig.type]: (state, { payload }) => {
     let toolbarConfig = {
       leftSection: { widgets: [] },

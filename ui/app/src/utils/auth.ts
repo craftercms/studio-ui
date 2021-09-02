@@ -60,8 +60,8 @@ export function getCookieDomain(): string {
   return domain;
 }
 
-export function setSiteCookie(value: string, cookieName: string = 'crafterSite'): void {
-  Cookies.set(cookieName, value, {
+export function setSiteCookie(value: string): void {
+  Cookies.set(SITE_COOKIE_NAME, value, {
     domain: getCookieDomain(),
     path: '/'
   });
@@ -69,4 +69,8 @@ export function setSiteCookie(value: string, cookieName: string = 'crafterSite')
 
 export function getSiteCookie(cookieName: string = SITE_COOKIE_NAME): string {
   return Cookies.get(cookieName) || null;
+}
+
+export function removeSiteCookie(): void {
+  Cookies.remove(SITE_COOKIE_NAME);
 }

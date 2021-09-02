@@ -15,7 +15,7 @@
  */
 
 import { ofType } from 'redux-observable';
-import { exhaustMap, map, withLatestFrom } from 'rxjs/operators';
+import { exhaustMap, filter, map, withLatestFrom } from 'rxjs/operators';
 import { catchAjaxError } from '../../utils/ajax';
 import {
   fetchSiteConfig,
@@ -32,12 +32,14 @@ import {
 import { CrafterCMSEpic } from '../store';
 
 export default [
-  (action$) =>
+  (action$, state$) =>
     action$.pipe(
       ofType(fetchSiteUiConfig.type),
+      withLatestFrom(state$),
+      filter(([, state]) => Boolean(state.sites.active)),
       // A very quick site change may present problematic as the
       // config that would be retrieved would be the first site.
-      exhaustMap(({ payload }) =>
+      exhaustMap(([{ payload }]) =>
         fetchSiteUiConfigService(payload.site).pipe(
           map((config) => fetchSiteUiConfigComplete({ config, site: payload.site })),
           catchAjaxError(fetchSiteUiConfigFailed)
@@ -48,6 +50,7 @@ export default [
     action$.pipe(
       ofType(fetchSiteConfig.type),
       withLatestFrom(state$),
+      filter(([, state]) => Boolean(state.sites.active)),
       exhaustMap(([, state]) =>
         fetchSiteConfigService(state.sites.active).pipe(
           map((config) => fetchSiteConfigComplete(config)),
