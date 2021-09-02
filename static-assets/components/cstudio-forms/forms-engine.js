@@ -983,7 +983,6 @@ var CStudioForms =
                     break;
                   }
                 }
-                // unstack
                 break;
               }
             }
