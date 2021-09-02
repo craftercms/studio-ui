@@ -46,6 +46,10 @@ import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useDetailedItem } from '../../utils/hooks/useDetailedItem';
 import { useReferences } from '../../utils/hooks/useReferences';
 import { useUnmount } from '../../utils/hooks/useUnmount';
+import { getItemGroovyPath, getItemTemplatePath } from '../../utils/path';
+import { getHostToGuestBus } from '../../modules/Preview/previewContext';
+import { RELOAD_REQUEST } from '../../state/actions/preview';
+import { usePreviewGuest } from '../../utils/hooks/usePreviewGuest';
 
 export interface CodeEditorDialogContainerProps extends CodeEditorDialogProps {
   path: string;
@@ -78,6 +82,8 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
     'craftercms.freemarkerCodeSnippets': freemarkerCodeSnippets,
     'craftercms.groovyCodeSnippets': groovyCodeSnippets
   } = useReferences();
+  const { path: previewPath } = usePreviewGuest() ?? {};
+  const previewItem = useDetailedItem(previewPath);
 
   // add content model variables
   useEffect(() => {
@@ -152,13 +158,21 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
               message: formatMessage(translations.saved)
             })
           );
+          if (
+            ['groovy', 'ftl'].includes(mode) &&
+            [getItemGroovyPath(previewItem, contentTypes), getItemTemplatePath(previewItem, contentTypes)].includes(
+              item.path
+            )
+          ) {
+            getHostToGuestBus().next({ type: RELOAD_REQUEST });
+          }
         },
         ({ response }) => {
           dispatch(showErrorDialog({ error: response }));
         }
       );
     },
-    [dispatch, formatMessage, item?.path, site]
+    [contentTypes, dispatch, formatMessage, item.path, mode, previewItem, site]
   );
 
   const onCancel = () => {
