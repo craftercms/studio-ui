@@ -75,10 +75,15 @@ import { fetchSiteConfig } from '../actions/configuration';
 
 const systemEpics: CrafterCMSEpic[] = [
   // region storeInitialized
-  (action$) =>
+  (action$, state$) =>
     action$.pipe(
       ofType(storeInitialized.type),
-      switchMap(() => [startPublishingStatusFetcher(), fetchGlobalMenu(), fetchSiteConfig()])
+      withLatestFrom(state$),
+      map(([, state]) => Boolean(state.sites.active)),
+      switchMap((hasActiveSite) => [
+        fetchGlobalMenu(),
+        ...(hasActiveSite ? [startPublishingStatusFetcher(), fetchSiteConfig()] : [])
+      ])
     ),
   // endregion
   // region changeSite

@@ -31,7 +31,9 @@ export const fetchQuickCreateListFailed = /*#__PURE__*/ createAction('FETCH_QUIC
 // region Detailed Item
 export const fetchDetailedItem = /*#__PURE__*/ createAction<{ path: string }>('FETCH_DETAILED_ITEM');
 export const reloadDetailedItem = /*#__PURE__*/ createAction<{ path: string }>('RELOAD_DETAILED_ITEM');
-export const completeDetailedItem = /*#__PURE__*/ createAction<{ path: string }>('COMPLETE_DETAILED_ITEM');
+export const completeDetailedItem = /*#__PURE__*/ createAction<{ path: string; force?: boolean }>(
+  'COMPLETE_DETAILED_ITEM'
+);
 export const fetchDetailedItemComplete = /*#__PURE__*/ createAction<DetailedItem>('FETCH_DETAILED_ITEM_COMPLETE');
 export const fetchDetailedItemFailed = /*#__PURE__*/ createAction<AjaxError>('FETCH_DETAILED_ITEM_FAILED');
 // endregion

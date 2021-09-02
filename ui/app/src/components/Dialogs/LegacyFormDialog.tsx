@@ -103,7 +103,7 @@ interface LegacyFormDialogBaseProps {
   pendingChanges?: boolean;
   iceGroupId?: string;
   newEmbedded?: {
-    contentType: 'string';
+    contentType: string;
     index: number;
     datasource: string;
     fieldId: string;
