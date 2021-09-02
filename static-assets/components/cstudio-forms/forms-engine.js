@@ -491,7 +491,7 @@ var CStudioForms =
         for (var i = 0; i < this.fields.length; i++) {
           var field = this.fields[i];
 
-          if (field.id == 'file-name') {
+          if (['file-name', 'internal-name'].includes(field.id)) {
             requirements += field.getRequirementCount();
 
             var errors = field.getErrors();
@@ -1196,7 +1196,7 @@ var CStudioForms =
         CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/site-config.xml', {
           failure: crafter.noop,
           success: function(config) {
-            timezone = config.locale.dateTimeFormatOptions.timeZone ?? 'EST5EDT';
+            timezone = config.locale?.dateTimeFormatOptions?.timeZone ?? 'EST5EDT';
           }
         });
 
@@ -1376,6 +1376,7 @@ var CStudioForms =
 
             var entityId = buildEntityIdFn(draft);
             var entityFile = entityId.substring(entityId.lastIndexOf('/') + 1);
+
             if ((form.isInError() && draft == false) || (form.isInErrorDraft() && draft == true)) {
               var dialogEl = document.getElementById('errMissingRequirements');
               if (!dialogEl) {
@@ -1503,6 +1504,16 @@ var CStudioForms =
                           contentTO.updatedModel = CStudioForms.updatedModel;
 
                           iceWindowCallback.success(contentTO, editorId, name, value, draft, action);
+
+                          if (!iceWindowCallback.isParent) {
+                            CStudioForms.communication.sendMessage({
+                              type: 'CHILD_FORM_SUCCESS',
+                              payload: {
+                                action: action,
+                                editorId: editorId
+                              }
+                            });
+                          }
 
                           if (draft) {
                             CStudioAuthoring.Utils.Cookies.createCookie('cstudio-save-draft', 'true');

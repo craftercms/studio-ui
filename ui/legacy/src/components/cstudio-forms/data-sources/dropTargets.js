@@ -239,13 +239,6 @@
               success: function(contentTO, editorId, name, value, draft, action) {
                 if (control) {
                   control.updateEditedItem(value, datasource, index);
-                  CStudioForms.communication.sendMessage({
-                    type: 'CHILD_FORM_SUCCESS',
-                    payload: {
-                      action: action,
-                      editorId: editorId
-                    }
-                  });
                 }
               }
             }
@@ -338,10 +331,9 @@
         false,
         false,
         {
-          success: function(contentTO, editorId, name, value) {
+          success: function(contentTO, editorId, name, value, draft, action) {
             control.newInsertItem(name, value, type);
             control._renderItems();
-            CStudioAuthoring.InContextEdit.unstackDialog(editorId);
           },
           failure: function() {}
         },
