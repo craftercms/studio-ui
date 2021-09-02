@@ -15,10 +15,8 @@
  */
 
 import { parse, ParsedQuery } from 'query-string';
-import { DetailedItem, PasteItem } from '../models/Item';
+import { PasteItem } from '../models/Item';
 import { toQueryString } from './object';
-import LookupTable from '../models/LookupTable';
-import ContentType from '../models/ContentType';
 
 // Originally from ComponentPanel.getPreviewPagePath
 export function getPathFromPreviewURL(previewURL: string): string {
@@ -223,12 +221,4 @@ export function getCodeEditorSrc({
 
 export function stripDuplicateSlashes(str: string): string {
   return str.replace(/\/+/g, '/');
-}
-
-export function getItemGroovyPath(item: DetailedItem, contentTypes: LookupTable<ContentType>): string {
-  return `/scripts/${item.systemType}s/${contentTypes[item.contentTypeId].name.toLowerCase()}.groovy`;
-}
-
-export function getItemTemplatePath(item: DetailedItem, contentTypes: LookupTable<ContentType>): string {
-  return contentTypes[item.contentTypeId].displayTemplate;
 }
