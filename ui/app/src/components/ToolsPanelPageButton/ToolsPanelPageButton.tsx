@@ -17,21 +17,21 @@
 import React from 'react';
 import ToolsPanelListItemButton from '../ToolsPanelListItemButton';
 import { useDispatch } from 'react-redux';
-import { pushPageBuilderPanelPage, pushToolsPanelPage } from '../../state/actions/preview';
+import { pushIcePanelPage, pushToolsPanelPage } from '../../state/actions/preview';
 import { createWidgetDescriptor } from '../../utils/state';
 import { SystemIconDescriptor } from '../SystemIcon';
 
 export interface ToolsPanelPageButtonProps {
   title: string;
   subtitle: string;
-  target?: 'pageBuilderPanel' | 'toolsPanel';
+  target?: 'icePanel' | 'toolsPanel';
   icon: SystemIconDescriptor;
 }
 
 export default function ToolsPanelPageButton(props: ToolsPanelPageButtonProps) {
   const { target = 'toolsPanel' } = props;
   const dispatch = useDispatch();
-  const pushPage = target === 'toolsPanel' ? pushToolsPanelPage : pushPageBuilderPanelPage;
+  const pushPage = target === 'toolsPanel' ? pushToolsPanelPage : pushIcePanelPage;
   const turnPage = () => {
     dispatch(
       pushPage(

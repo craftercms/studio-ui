@@ -281,9 +281,7 @@ export const setPreviewEditMode = /*#__PURE__*/ createAction<{ editMode: boolean
 
 export const previewItem = /*#__PURE__*/ createAction<{ item: DetailedItem; newTab?: boolean }>('PREVIEW_ITEM');
 
-export const updatePageBuilderPanelWidth = /*#__PURE__#*/ createAction<{ width: number }>(
-  'UPDATE_PAGE_BUILDER_PANEL_WIDTH'
-);
+export const updateIcePanelWidth = /*#__PURE__#*/ createAction<{ width: number }>('UPDATE_ICE_PANEL_WIDTH');
 
 export const initToolsPanelConfig = /*#__PURE__*/ createAction<{
   configXml: string;
@@ -292,9 +290,9 @@ export const initToolsPanelConfig = /*#__PURE__*/ createAction<{
 
 export const initToolbarConfig = /*#__PURE__*/ createAction<{ configXml: string }>('INIT_TOOLBAR_CONFIG');
 
-export const initPageBuilderPanelConfig = /*#__PURE__*/ createAction<{
+export const initIcePanelConfig = /*#__PURE__*/ createAction<{
   configXml: string;
-}>('INIT_PAGE_BUILDER_PANEL_CONFIG');
+}>('INIT_ICE_PANEL_CONFIG');
 
 // endregion
 
@@ -306,11 +304,11 @@ export const popToolsPanelPage = /*#__PURE__*/ createAction('POP_TOOLS_PANEL_PAG
 
 // endregion
 
-// region Page builder panel stack
+// region ICE panel stack
 
-export const pushPageBuilderPanelPage = /*#__PURE__*/ createAction<WidgetDescriptor>('PUSH_PAGE_BUILDER_PANEL_PAGE');
+export const pushIcePanelPage = /*#__PURE__*/ createAction<WidgetDescriptor>('PUSH_ICE_PANEL_PAGE');
 
-export const popPageBuilderPanelPage = /*#__PURE__*/ createAction('POP_PAGE_BUILDER_PANEL_PAGE');
+export const popIcePanelPage = /*#__PURE__*/ createAction('POP_ICE_PANEL_PAGE');
 
 // endregion
 

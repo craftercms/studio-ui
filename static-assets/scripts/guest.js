@@ -251,7 +251,7 @@ crafterDefine('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay'], fun
       communicator.publish(Topics.ICE_ZONE_ON, props);
     });
 
-    // Toggle PageBuilder edit mode
+    // Toggle edit mode on UI4
     $document.on('keypress', function(e) {
       if (e.key.toLowerCase() === 'e') {
         communicator.publish('EDIT_MODE_TOGGLE_HOTKEY');

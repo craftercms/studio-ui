@@ -247,7 +247,7 @@
           if ('topic' in data) {
             doLocalPublish(data.topic, data.scope, data.message);
           } else if (
-            // This is the signature of PageBuilder messages
+            // This is the signature of ui4 messages
             'type' in data &&
             'meta' in data
           ) {
@@ -257,12 +257,12 @@
       }
     }
 
-    /*private*/
+    /* private */
     function getScopeSpecificTopic(topic, scope) {
       return topic + (scope ? ':' + scope : '');
     }
 
-    /*private*/
+    /* private */
     function doLocalPublish(topic, scope, message) {
       amplify.publish(ALL_TOPICS, topic, message, scope);
       amplify.publish(topic, message, scope);

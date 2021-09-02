@@ -18,7 +18,7 @@ import React from 'react';
 import ToolPanel from '../../modules/Preview/Tools/ToolPanel';
 import { renderWidgets, WidgetDescriptor } from '../Widget';
 import { useDispatch } from 'react-redux';
-import { popPageBuilderPanelPage, popToolsPanelPage } from '../../state/actions/preview';
+import { popIcePanelPage, popToolsPanelPage } from '../../state/actions/preview';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useActiveUser } from '../../utils/hooks/useActiveUser';
 import { usePossibleTranslation } from '../../utils/hooks/usePossibleTranslation';
@@ -26,7 +26,7 @@ import { usePossibleTranslation } from '../../utils/hooks/usePossibleTranslation
 export interface ToolsPanelPageDescriptor {
   title: string;
   widgets: WidgetDescriptor[];
-  target?: 'pageBuilderPanel' | 'toolsPanel';
+  target?: 'icePanel' | 'toolsPanel';
 }
 
 export interface ToolsPanelPageProps extends ToolsPanelPageDescriptor {}
@@ -36,7 +36,7 @@ export default function ToolsPanelPage(props: ToolsPanelPageProps) {
   const dispatch = useDispatch();
   const site = useActiveSiteId();
   const { rolesBySite } = useActiveUser();
-  const popPage = target === 'toolsPanel' ? popToolsPanelPage : popPageBuilderPanelPage;
+  const popPage = target === 'toolsPanel' ? popToolsPanelPage : popIcePanelPage;
   const pop = () => dispatch(popPage());
   return (
     <ToolPanel title={usePossibleTranslation(props.title)} onBack={pop}>

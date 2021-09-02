@@ -234,6 +234,7 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
             ? (anchor) => onHeaderButtonClick(anchor, 'language')
             : null
         }
+        collapsed={state.collapsed}
       />
       <AccordionDetails className={clsx(classes.accordionDetails, props.classes?.body)}>
         <Breadcrumbs
