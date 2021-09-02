@@ -82,10 +82,11 @@ const systemEpics: CrafterCMSEpic[] = [
       ofType(storeInitialized.type),
       withLatestFrom(state$),
       switchMap(([, state]) => {
-        const showToolsPanel = getStoredShowToolsPanel(state.sites.byId[state.sites.active].uuid, state.user.username);
+        const hasActiveSite = Boolean(state.sites.active);
+        const showToolsPanel = hasActiveSite && getStoredShowToolsPanel(state.sites.byId[state.sites.active].uuid, state.user.username);
         return [
           fetchGlobalMenu(),
-          ...(Boolean(state.sites.active)
+          ...(hasActiveSite
             ? [
                 startPublishingStatusFetcher(),
                 fetchSiteConfig(),
