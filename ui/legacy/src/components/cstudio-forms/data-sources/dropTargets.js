@@ -239,9 +239,6 @@
               success: function(contentTO, editorId, name, value, draft, action) {
                 if (control) {
                   control.updateEditedItem(value, datasource, index);
-                  if (action === 'saveAndClose') {
-                    CStudioAuthoring.InContextEdit.unstackDialog(editorId);
-                  }
                 }
               }
             }
@@ -334,10 +331,9 @@
         false,
         false,
         {
-          success: function(contentTO, editorId, name, value) {
+          success: function(contentTO, editorId, name, value, draft, action) {
             control.newInsertItem(name, value, type);
             control._renderItems();
-            CStudioAuthoring.InContextEdit.unstackDialog(editorId);
           },
           failure: function() {}
         },

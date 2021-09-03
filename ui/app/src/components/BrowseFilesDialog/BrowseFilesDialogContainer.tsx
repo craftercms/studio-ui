@@ -20,7 +20,6 @@ import { ElasticParams, MediaItem, SearchItem } from '../../models/Search';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useEnv } from '../../utils/hooks/useEnv';
 import { useUnmount } from '../../utils/hooks/useUnmount';
-import { useStyles } from './styles';
 import { useDebouncedInput } from '../../utils/hooks/useDebouncedInput';
 import { useSpreadState } from '../../utils/hooks/useSpreadState';
 import { showPreviewDialog } from '../../state/actions/dialogs';
@@ -56,17 +55,16 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogUIProps) {
     onClose,
     onClosed,
     onSuccess,
-    rowsPerPageOptions = [10, 15, 20],
+    rowsPerPageOptions,
     multiSelect = false,
     mimeTypes,
     contentTypes,
-    numOfLoaderItems = 12
+    numOfLoaderItems
   } = props;
   const [items, setItems] = useState<SearchItem[]>();
   const site = useActiveSiteId();
   const { guestBase } = useEnv();
   const dispatch = useDispatch();
-  const classes = useStyles();
   const [keyword, setKeyword] = useState('');
   const [selectedCard, setSelectedCard] = useState<MediaItem>();
   const [searchParameters, setSearchParameters] = useSpreadState({
@@ -168,6 +166,8 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogUIProps) {
       onPathSelected={onPathSelected}
       onPreviewImage={onPreviewImage}
       onSelectButtonClick={onSelectButtonClick}
+      numOfLoaderItems={numOfLoaderItems}
+      rowsPerPageOptions={rowsPerPageOptions}
     />
   );
 }

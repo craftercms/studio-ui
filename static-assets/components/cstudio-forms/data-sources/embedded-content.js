@@ -138,9 +138,6 @@ YAHOO.extend(CStudioForms.Datasources.EmbeddedContent, CStudioForms.CStudioFormD
           success: function(contentTO, editorId, name, value, draft, action) {
             if (control) {
               control.updateEditedItem(value, _self.id, index);
-              if (action === 'saveAndClose') {
-                CStudioAuthoring.InContextEdit.unstackDialog(editorId);
-              }
             }
           }
         },

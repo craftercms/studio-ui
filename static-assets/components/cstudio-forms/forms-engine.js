@@ -491,7 +491,7 @@ var CStudioForms =
         for (var i = 0; i < this.fields.length; i++) {
           var field = this.fields[i];
 
-          if (field.id == 'file-name') {
+          if (['file-name', 'internal-name'].includes(field.id)) {
             requirements += field.getRequirementCount();
 
             var errors = field.getErrors();
@@ -730,7 +730,8 @@ var CStudioForms =
       FORM_ENGINE_RENDER_COMPLETE = 'FORM_ENGINE_RENDER_COMPLETE',
       FORM_CANCEL_REQUEST = 'FORM_CANCEL_REQUEST',
       FORM_CANCEL = 'FORM_CANCEL',
-      LEGACY_FORM_DIALOG_CANCEL_REQUEST = 'LEGACY_FORM_DIALOG_CANCEL_REQUEST';
+      LEGACY_FORM_DIALOG_CANCEL_REQUEST = 'LEGACY_FORM_DIALOG_CANCEL_REQUEST',
+      CHILD_FORM_SUCCESS = 'CHILD_FORM_SUCCESS';
 
     const { fromEvent, operators } = CrafterCMSNext.rxjs;
     const { map, filter, take } = operators;
@@ -908,7 +909,7 @@ var CStudioForms =
                 if (message.draft) {
                   if (message.edit) {
                     amplify.publish('UPDATE_NODE_SELECTOR', { objId: objectId, value: name });
-                    cfe.engine.saveForm(false, message.draft, false);
+                    cfe.engine.saveForm(false, message.draft, false, message.action);
                   } else {
                     CStudioAuthoring.InContextEdit.getIceCallback(message.editorId).success(
                       {},
@@ -919,7 +920,7 @@ var CStudioForms =
                       message.action
                     );
                     if (!CStudioAuthoring.InContextEdit.getIceCallback(message.editorId).type) {
-                      cfe.engine.saveForm(false, message.draft, false);
+                      cfe.engine.saveForm(false, message.draft, false, message.action);
                     }
                   }
                 } else if (CStudioAuthoring.InContextEdit.unstackDialog(message.editorId)) {
@@ -959,6 +960,28 @@ var CStudioForms =
                 const dialogs = CStudioAuthoring.InContextEdit.getDialogs();
                 if (dialog.stackNumber === dialogs.length) {
                   cfe.engine.cancelForm();
+                }
+                break;
+              }
+              case CHILD_FORM_SUCCESS: {
+                const { editorId, action } = message.payload;
+                const isParent = CStudioAuthoring.InContextEdit.getIceCallback(_self.config.editorId).isParent;
+                switch (action) {
+                  case 'save': {
+                    break;
+                  }
+                  case 'saveAndMinimize': {
+                    if (isParent) {
+                      CStudioAuthoring.InContextEdit.getIceCallback(_self.config.editorId).minimize();
+                    }
+                    break;
+                  }
+                  case 'saveAndClose': {
+                    if (editorId === _self.config.editorId) {
+                      CStudioAuthoring.InContextEdit.unstackDialog(editorId);
+                    }
+                    break;
+                  }
                 }
                 break;
               }
@@ -1352,6 +1375,7 @@ var CStudioForms =
 
             var entityId = buildEntityIdFn(draft);
             var entityFile = entityId.substring(entityId.lastIndexOf('/') + 1);
+
             if ((form.isInError() && draft == false) || (form.isInErrorDraft() && draft == true)) {
               var dialogEl = document.getElementById('errMissingRequirements');
               if (!dialogEl) {
@@ -1479,6 +1503,17 @@ var CStudioForms =
                           contentTO.updatedModel = CStudioForms.updatedModel;
 
                           iceWindowCallback.success(contentTO, editorId, name, value, draft, action);
+
+                          if (!iceWindowCallback.isParent) {
+                            CStudioForms.communication.sendMessage({
+                              type: 'CHILD_FORM_SUCCESS',
+                              payload: {
+                                action: action,
+                                editorId: editorId
+                              }
+                            });
+                          }
+
                           if (draft) {
                             CStudioAuthoring.Utils.Cookies.createCookie('cstudio-save-draft', 'true');
                           } else {

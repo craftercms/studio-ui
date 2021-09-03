@@ -72,6 +72,8 @@ import {
   fetchUseLegacyPreviewPreference as fetchUseLegacyPreviewPreferenceService
 } from '../../services/configuration';
 import { fetchSiteConfig } from '../actions/configuration';
+import { getStoredShowToolsPanel } from '../../utils/state';
+import { closeToolsPanel, openToolsPanel } from '../actions/preview';
 
 const systemEpics: CrafterCMSEpic[] = [
   // region storeInitialized
@@ -79,11 +81,25 @@ const systemEpics: CrafterCMSEpic[] = [
     action$.pipe(
       ofType(storeInitialized.type),
       withLatestFrom(state$),
-      map(([, state]) => Boolean(state.sites.active)),
-      switchMap((hasActiveSite) => [
-        fetchGlobalMenu(),
-        ...(hasActiveSite ? [startPublishingStatusFetcher(), fetchSiteConfig()] : [])
-      ])
+      switchMap(([, state]) => {
+        const hasActiveSite = Boolean(state.sites.active);
+        const showToolsPanel =
+          hasActiveSite && getStoredShowToolsPanel(state.sites.byId[state.sites.active].uuid, state.user.username);
+        return [
+          fetchGlobalMenu(),
+          ...(hasActiveSite
+            ? [
+                startPublishingStatusFetcher(),
+                fetchSiteConfig(),
+                showToolsPanel === null || state.preview.showToolsPanel === showToolsPanel
+                  ? false
+                  : state.preview.showToolsPanel
+                  ? closeToolsPanel()
+                  : openToolsPanel()
+              ].filter(Boolean)
+            : [])
+        ];
+      })
     ),
   // endregion
   // region changeSite

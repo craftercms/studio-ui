@@ -19,7 +19,7 @@ import GlobalState, { PagedEntityState } from '../../models/GlobalState';
 import {
   CLEAR_DROP_TARGETS,
   CLEAR_SELECT_FOR_EDIT,
-  CLOSE_TOOLS,
+  closeToolsPanel,
   CONTENT_TYPE_DROP_TARGETS_RESPONSE,
   EDIT_MODE_CHANGED,
   FETCH_ASSETS_PANEL_ITEMS,
@@ -41,7 +41,7 @@ import {
   initPageBuilderPanelConfig,
   initToolbarConfig,
   initToolsPanelConfig,
-  OPEN_TOOLS,
+  openToolsPanel,
   popPageBuilderPanelPage,
   popToolsPanelPage,
   pushPageBuilderPanelPage,
@@ -187,13 +187,13 @@ const fetchGuestModelsCompleteHandler = (state, { type, payload }) => {
 };
 
 const reducer = createReducer<GlobalState['preview']>(initialState, {
-  [OPEN_TOOLS]: (state) => {
+  [openToolsPanel.type]: (state) => {
     return {
       ...state,
       showToolsPanel: true
     };
   },
-  [CLOSE_TOOLS]: (state) => {
+  [closeToolsPanel.type]: (state) => {
     return {
       ...state,
       showToolsPanel: false

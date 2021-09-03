@@ -17,6 +17,8 @@
 import { ofType, StateObservable } from 'redux-observable';
 import { ignoreElements, tap, withLatestFrom } from 'rxjs/operators';
 import {
+  closeToolsPanel,
+  openToolsPanel,
   popToolsPanelPage,
   previewItem,
   pushToolsPanelPage,
@@ -29,7 +31,8 @@ import {
   setStoredClipboard,
   setStoredEditModeChoice,
   setStoredHighlightModeChoice,
-  setStoredPreviewToolsPanelPage
+  setStoredPreviewToolsPanelPage,
+  setStoredShowToolsPanel
 } from '../../utils/state';
 import GlobalState from '../../models/GlobalState';
 import { setClipboard } from '../actions/content';
@@ -120,6 +123,18 @@ export default [
         } else {
           window.location.href = url;
         }
+      }),
+      ignoreElements()
+    ),
+  // endregion
+  // region close/open toolbar
+  (action$, state$) =>
+    action$.pipe(
+      ofType(openToolsPanel.type, closeToolsPanel.type),
+      withLatestFrom(state$),
+      tap(([, state]) => {
+        const uuid = state.sites.byId[state.sites.active].uuid;
+        setStoredShowToolsPanel(uuid, state.user.username, state.preview.showToolsPanel);
       }),
       ignoreElements()
     )
