@@ -970,7 +970,7 @@ CStudioAuthoring.Module.requireModule(
           obj.value = obj.inputEl.value;
 
           if (obj.required) {
-            if (obj.inputEl.value == '') {
+            if (CStudioAuthoring.Utils.isEmptyHtml(obj.value)) {
               obj.setError('required', 'Field is Required');
               obj.renderValidation(true, false);
             } else {
