@@ -25,7 +25,7 @@ import {
   COMPONENT_DRAG_ENDED,
   COMPONENT_DRAG_STARTED,
   CONTENT_TYPE_DROP_TARGETS_REQUEST,
-  pushToolsPanelPage,
+  pushPageBuilderPanelPage,
   setContentTypeFilter,
   setPreviewEditMode
 } from '../../state/actions/preview';
@@ -123,10 +123,12 @@ export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
     dispatch(
       batchActions([
         setContentTypeFilter(menuContext.contentType.id),
-        pushToolsPanelPage(
-          createToolsPanelPage({ id: 'previewBrowseComponentsPanel.title' }, [
-            createWidgetDescriptor({ id: 'craftercms.components.PreviewBrowseComponentsPanel' })
-          ])
+        pushPageBuilderPanelPage(
+          createToolsPanelPage(
+            { id: 'previewBrowseComponentsPanel.title' },
+            [createWidgetDescriptor({ id: 'craftercms.components.PreviewBrowseComponentsPanel' })],
+            'pageBuilderPanel'
+          )
         )
       ])
     );
@@ -136,10 +138,12 @@ export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
     dispatch(
       batchActions([
         setContentTypeFilter(menuContext.contentType.id),
-        pushToolsPanelPage(
-          createToolsPanelPage({ id: 'previewInPageInstancesPanel.title' }, [
-            createWidgetDescriptor({ id: 'craftercms.components.PreviewInPageInstancesPanel' })
-          ])
+        pushPageBuilderPanelPage(
+          createToolsPanelPage(
+            { id: 'previewInPageInstancesPanel.title' },
+            [createWidgetDescriptor({ id: 'craftercms.components.PreviewInPageInstancesPanel' })],
+            'pageBuilderPanel'
+          )
         )
       ])
     );
@@ -147,10 +151,12 @@ export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
 
   const onListDropTargetsClick = () => {
     dispatch(
-      pushToolsPanelPage(
-        createToolsPanelPage({ id: 'previewDropTargetsPanel.title', defaultMessage: 'Component Drop Targets' }, [
-          createWidgetDescriptor({ id: 'craftercms.components.PreviewDropTargetsPanel' })
-        ])
+      pushPageBuilderPanelPage(
+        createToolsPanelPage(
+          { id: 'previewDropTargetsPanel.title', defaultMessage: 'Component Drop Targets' },
+          [createWidgetDescriptor({ id: 'craftercms.components.PreviewDropTargetsPanel' })],
+          'pageBuilderPanel'
+        )
       )
     );
     hostToGuest$.next({

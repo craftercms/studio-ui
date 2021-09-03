@@ -122,11 +122,16 @@ export function getStoredGlobalAppOpenSidebar(user: string): string {
   return window.localStorage.getItem(`craftercms.${user}.globalAppOpenSidebar`);
 }
 
-export function createToolsPanelPage(title: TranslationOrText, widgets: WidgetDescriptor[]): WidgetDescriptor {
+export function createToolsPanelPage(
+  title: TranslationOrText,
+  widgets: WidgetDescriptor[],
+  target?: 'pageBuilderPanel' | 'toolsPanel'
+): WidgetDescriptor {
   return createWidgetDescriptor({
     id: 'craftercms.components.ToolsPanelPage',
     configuration: {
       title,
+      target,
       widgets
     }
   });
