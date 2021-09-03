@@ -132,7 +132,11 @@ crafterDefine('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay'], fun
       });
     });
 
-    communicator.on(Topics.REFRESH_PREVIEW, function(message) {
+    communicator.on(Topics.REFRESH_PREVIEW, function() {
+      window.location.reload();
+    });
+
+    communicator.on('RELOAD_REQUEST', function() {
       window.location.reload();
     });
 
