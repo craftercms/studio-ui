@@ -103,7 +103,6 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
           success: function(contentTO, editorId, name, value) {
             control.insertItem(name, value, null, null, _self.id);
             control._renderItems();
-            CStudioAuthoring.InContextEdit.unstackDialog(editorId);
           },
           failure: function() {}
         },
@@ -287,9 +286,13 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
             success: function(contentTO, editorId, name, value, draft, action) {
               if (control) {
                 control.updateEditedItem(value, _self.id, index);
-                if (action === 'saveAndClose') {
-                  CStudioAuthoring.InContextEdit.unstackDialog(editorId);
-                }
+                CStudioForms.communication.sendMessage({
+                  type: 'CHILD_FORM_SUCCESS',
+                  payload: {
+                    action: action,
+                    editorId: editorId
+                  }
+                });
               }
             }
           }

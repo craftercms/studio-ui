@@ -110,6 +110,7 @@ export const LEGACY_CODE_EDITOR_SUCCESS = 'LEGACY_CODE_EDITOR_SUCCESS';
 export const LEGACY_CODE_EDITOR_CLOSE = 'LEGACY_CODE_EDITOR_CLOSE';
 export const LEGACY_CODE_EDITOR_PENDING_CHANGES = 'LEGACY_CODE_EDITOR_PENDING_CHANGES';
 export const LEGACY_CODE_EDITOR_RENDERED = 'LEGACY_CODE_EDITOR_RENDERED';
+export const EMBEDDED_LEGACY_MINIMIZE_REQUEST = 'EMBEDDED_LEGACY_MINIMIZE_REQUEST';
 
 // endregion
 
@@ -126,13 +127,9 @@ export function clearSelectForEdit() {
   return { type: CLEAR_SELECT_FOR_EDIT };
 }
 
-export function openTools(): StandardAction {
-  return { type: OPEN_TOOLS };
-}
+export const openToolsPanel = /*#__PURE__*/ createAction(OPEN_TOOLS);
 
-export function closeTools(): StandardAction {
-  return { type: CLOSE_TOOLS };
-}
+export const closeToolsPanel = /*#__PURE__*/ createAction(CLOSE_TOOLS);
 
 export function setHostSize(dimensions: WidthAndHeight): StandardAction {
   return {
