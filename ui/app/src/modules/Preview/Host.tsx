@@ -179,7 +179,7 @@ export default function Host() {
   const classes = useStyles({});
   const site = useActiveSiteId();
   const { guestBase, previewLandingBase } = useEnv();
-  const { hostSize, showToolsPanel, toolsPanelWidth, pageBuilderPanelWidth, editMode } = usePreviewState();
+  const { hostSize, showToolsPanel, toolsPanelWidth, icePanelWidth, editMode } = usePreviewState();
   const { currentUrlPath } = usePreviewNavigation();
   const { username } = useActiveUser();
   const item = useCurrentPreviewItem();
@@ -194,7 +194,7 @@ export default function Host() {
   return (
     <div
       style={{
-        width: `calc(100% - ${showToolsPanel ? toolsPanelWidth : 0}px - ${isEditMode ? pageBuilderPanelWidth : 0}px)`,
+        width: `calc(100% - ${showToolsPanel ? toolsPanelWidth : 0}px - ${isEditMode ? icePanelWidth : 0}px)`,
         marginLeft: showToolsPanel ? toolsPanelWidth : 0
       }}
       className={clsx(classes.hostContainer, { [classes.shift]: showToolsPanel })}

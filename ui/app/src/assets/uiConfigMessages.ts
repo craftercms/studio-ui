@@ -17,10 +17,6 @@
 import { defineMessages } from 'react-intl';
 
 const messages = defineMessages({
-  pageBuilder: {
-    id: 'pageBuilder.title',
-    defaultMessage: 'Page Building'
-  },
   siteTools: {
     id: 'siteTools.title',
     defaultMessage: 'Site Tools'

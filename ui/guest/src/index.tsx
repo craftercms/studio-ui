@@ -73,7 +73,7 @@ export function fetchIsAuthoring(config?: BaseCrafterConfig): Promise<boolean> {
     .then((response) => response.preview);
 }
 
-export function initPageBuilder(props: GuestProps) {
+export function initInContextEditing(props: GuestProps) {
   const guestProxyElement = document.createElement('craftercms-guest-proxy');
   ReactDOM.render(
     <Guest isAuthoring {...props}>

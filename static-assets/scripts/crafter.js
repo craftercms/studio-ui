@@ -73,7 +73,7 @@
       Topics: {
         ALL: '*',
 
-        // PageBuilder
+        // UI4
         GUEST_CHECK_IN: 'GUEST_CHECK_IN',
         LEGACY_CHECK_IN: 'LEGACY_CHECK_IN',
 
