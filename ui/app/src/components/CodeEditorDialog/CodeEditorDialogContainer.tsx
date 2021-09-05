@@ -151,8 +151,8 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 
   const save = useCallback(
     (unlock: boolean = true) => {
-      writeContent(site, item.path, editorRef.current.getValue(), { unlock }).subscribe(
-        (response) => {
+      writeContent(site, path, editorRef.current.getValue(), { unlock }).subscribe(
+        () => {
           dispatch(
             showSystemNotification({
               message: formatMessage(translations.saved)
@@ -161,7 +161,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
           if (
             ['groovy', 'ftl'].includes(mode) &&
             [getItemGroovyPath(previewItem, contentTypes), getItemTemplatePath(previewItem, contentTypes)].includes(
-              item.path
+              path
             )
           ) {
             getHostToGuestBus().next({ type: RELOAD_REQUEST });
@@ -172,7 +172,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
         }
       );
     },
-    [contentTypes, dispatch, formatMessage, item.path, mode, previewItem, site]
+    [contentTypes, dispatch, formatMessage, path, mode, previewItem, site]
   );
 
   const onCancel = () => {
