@@ -55,6 +55,7 @@ export interface CodeEditorDialogContainerProps extends CodeEditorDialogProps {
   path: string;
   title: string;
   onMinimized(): void;
+  onSaveClose(): void;
 }
 
 export const contentTypePropsMap = {
@@ -64,7 +65,7 @@ export const contentTypePropsMap = {
 };
 
 export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps) {
-  const { path, onMinimized, onClose, onClosed, mode, readonly, contentType } = props;
+  const { path, onMinimized, onClose, onSaveClose, onClosed, mode, readonly, contentType } = props;
   const item = useDetailedItem(path);
   const site = useActiveSiteId();
   const user = useActiveUser();
@@ -150,9 +151,10 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
   };
 
   const save = useCallback(
-    (unlock: boolean = true) => {
+    (unlock: boolean = true, callback?: Function) => {
       writeContent(site, path, editorRef.current.getValue(), { unlock }).subscribe(
         () => {
+          setTimeout(callback);
           dispatch(
             showSystemNotification({
               message: formatMessage(translations.saved)
@@ -172,7 +174,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
         }
       );
     },
-    [contentTypes, dispatch, formatMessage, path, mode, previewItem, site]
+    [site, path, dispatch, formatMessage, mode, previewItem, contentTypes]
   );
 
   const onCancel = () => {
@@ -180,19 +182,20 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
   };
 
   const onSave = useCallback(() => {
-    save();
-    setContent(editorRef.current.getValue());
+    save(true, () => {
+      setContent(editorRef.current.getValue());
+    });
   }, [save]);
 
   const onSaveAndMinimize = () => {
-    save(false);
-    setContent(editorRef.current.getValue());
-    onMinimized();
+    save(false, () => {
+      setContent(editorRef.current.getValue());
+      onMinimized?.();
+    });
   };
 
   const saveAndClose = () => {
-    save(false);
-    onClose();
+    save(false, onSaveClose);
   };
 
   const onAddSnippet = (event) => {

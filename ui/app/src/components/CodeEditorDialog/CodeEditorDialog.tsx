@@ -93,9 +93,20 @@ export default function CodeEditorDialog(props: CodeEditorDialogProps) {
     }
   };
 
+  const onSaveClose = () => {
+    dispatch(conditionallyUnlockItem({ path: props.path }));
+    onClose();
+  };
+
   return (
     <Dialog fullWidth maxWidth="xl" {...rest} open={open && !minimized} keepMounted={minimized} onClose={onDialogClose}>
-      <CodeEditorDialogContainer {...props} onClose={onDialogClose} title={title} onMinimized={onMinimized} />
+      <CodeEditorDialogContainer
+        {...props}
+        onClose={onDialogClose}
+        onSaveClose={onSaveClose}
+        title={title}
+        onMinimized={onMinimized}
+      />
     </Dialog>
   );
 }
