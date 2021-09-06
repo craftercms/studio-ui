@@ -17,3 +17,5 @@
 export { default } from './PreviewBrowseComponentsPanel';
 
 export * from './PreviewBrowseComponentsPanel';
+export { translations } from './translations';
+export { useStyles } from './styles';

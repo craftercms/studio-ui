@@ -247,15 +247,9 @@ export const fetchAssetsPanelItemsComplete = /*#__PURE__*/ createAction<SearchRe
 
 export const fetchAssetsPanelItemsFailed = /*#__PURE__*/ createAction(FETCH_ASSETS_PANEL_ITEMS_FAILED);
 
-export function fetchComponentsByContentType(
-  contentTypeFilter?: string,
-  options?: Partial<ComponentsContentTypeParams>
-): StandardAction {
-  return {
-    type: FETCH_COMPONENTS_BY_CONTENT_TYPE,
-    payload: { contentTypeFilter, options }
-  };
-}
+export const fetchComponentsByContentType = /*#__PURE__*/ createAction<Partial<ComponentsContentTypeParams>>(
+  FETCH_COMPONENTS_BY_CONTENT_TYPE
+);
 
 export const fetchComponentsByContentTypeComplete = /*#__PURE__*/ createAction<ContentInstancePage>(
   FETCH_COMPONENTS_BY_CONTENT_TYPE_COMPLETE

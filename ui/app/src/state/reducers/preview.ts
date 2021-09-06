@@ -25,13 +25,13 @@ import {
   FETCH_ASSETS_PANEL_ITEMS,
   FETCH_ASSETS_PANEL_ITEMS_COMPLETE,
   FETCH_ASSETS_PANEL_ITEMS_FAILED,
-  FETCH_COMPONENTS_BY_CONTENT_TYPE,
-  FETCH_COMPONENTS_BY_CONTENT_TYPE_COMPLETE,
   FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED,
   FETCH_CONTENT_MODEL_COMPLETE,
   fetchAudiencesPanelModel,
   fetchAudiencesPanelModelComplete,
   fetchAudiencesPanelModelFailed,
+  fetchComponentsByContentType,
+  fetchComponentsByContentTypeComplete,
   fetchGuestModelComplete,
   fetchPrimaryGuestModelComplete,
   GUEST_CHECK_IN,
@@ -68,13 +68,7 @@ import {
   nou,
   reversePluckProps
 } from '../../utils/object';
-import {
-  ComponentsContentTypeParams,
-  ContentInstancePage,
-  ElasticParams,
-  MediaItem,
-  SearchResult
-} from '../../models/Search';
+import { ContentInstancePage, ElasticParams, MediaItem, SearchResult } from '../../models/Search';
 import ContentInstance from '../../models/ContentInstance';
 import { changeSite } from './sites';
 import { deserialize, fromString } from '../../utils/xml';
@@ -128,7 +122,7 @@ const componentsInitialState = createEntityState({
     limit: 10,
     type: 'Component'
   },
-  contentTypeFilter: '',
+  contentTypeFilter: 'all',
   inPageInstances: {}
 }) as PagedEntityState<ContentInstance>;
 
@@ -418,27 +412,18 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
     ...state,
     assets: { ...state.assets, error: payload.response, isFetching: false }
   }),
-  [FETCH_COMPONENTS_BY_CONTENT_TYPE]: (
-    state,
-    {
-      payload: { contentTypeFilter, options }
-    }: {
-      payload: { contentTypeFilter: string[] | string; options?: ComponentsContentTypeParams };
-    }
-  ) => {
-    let newQuery = { ...state.components.query, ...options };
+  [fetchComponentsByContentType.type]: (state, { payload }) => {
     return {
       ...state,
       components: {
         ...state.components,
         isFetching: true,
-        query: newQuery,
-        pageNumber: Math.ceil(newQuery.offset / newQuery.limit),
-        contentTypeFilter: contentTypeFilter ? contentTypeFilter : state.components.contentTypeFilter
+        query: { ...state.components.query, ...payload },
+        pageNumber: Math.ceil((payload.offset ?? state.components.query.offset) / state.components.query.limit)
       }
     };
   },
-  [FETCH_COMPONENTS_BY_CONTENT_TYPE_COMPLETE]: (state, { payload }: { payload: ContentInstancePage }) => {
+  [fetchComponentsByContentTypeComplete.type]: (state, { payload }: { payload: ContentInstancePage }) => {
     let page = [...state.components.page];
     page[state.components.pageNumber] = Object.keys(payload.lookup);
     return {
