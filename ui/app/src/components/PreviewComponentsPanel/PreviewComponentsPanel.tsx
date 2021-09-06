@@ -25,7 +25,6 @@ import {
   COMPONENT_DRAG_ENDED,
   COMPONENT_DRAG_STARTED,
   CONTENT_TYPE_DROP_TARGETS_REQUEST,
-  pushPageBuilderPanelPage,
   setContentTypeFilter,
   setPreviewEditMode
 } from '../../state/actions/preview';
