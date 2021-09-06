@@ -21,7 +21,7 @@ import Host from './Host';
 import ToolBar from './ToolBar';
 import { PreviewConcierge } from './PreviewConcierge';
 import usePreviewUrlControl from './usePreviewUrlControl';
-import PageBuilderPanel from '../../components/PageBuilderPanel';
+import ICEToolsPanel from '../../components/ICEToolsPanel';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -41,7 +41,7 @@ function Preview(props) {
           <ToolBar />
           <Host />
           <ToolsPanel />
-          <PageBuilderPanel />
+          <ICEToolsPanel />
         </section>
       </PreviewConcierge>
     </>

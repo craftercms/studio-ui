@@ -15,7 +15,7 @@
  */
 
 import { errorSelectorApi1, get, postJSON } from '../utils/ajax';
-import { catchError, map, pluck } from 'rxjs/operators';
+import { catchError, map, mapTo, pluck } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { deserialize, fromString, getInnerHtml } from '../utils/xml';
 import { ContentTypeField } from '../models/ContentType';
@@ -79,14 +79,14 @@ export function writeConfiguration(
   module: CrafterCMSModules,
   content: string,
   environment?: string
-): Observable<any> {
+): Observable<boolean> {
   return postJSON('/studio/api/2/configuration/write_configuration', {
     siteId: site,
     module,
     path,
     content,
     ...(environment && { environment })
-  });
+  }).pipe(mapTo(true));
 }
 
 // region AudiencesPanelConfig

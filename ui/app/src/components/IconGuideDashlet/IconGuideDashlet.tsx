@@ -75,7 +75,8 @@ const states = {
   systemProcessing: { stateMap: { systemProcessing: true } },
   submitted: { stateMap: { submitted: true } },
   scheduled: { stateMap: { scheduled: true } },
-  publishing: { stateMap: { publishing: true } }
+  publishing: { stateMap: { publishing: true } },
+  disabled: { stateMap: { disabled: true } }
 };
 
 const status = {

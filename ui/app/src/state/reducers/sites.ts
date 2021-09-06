@@ -19,7 +19,6 @@ import { GlobalState } from '../../models/GlobalState';
 import { StandardAction } from '../../models/StandardAction';
 import { Site } from '../../models/Site';
 import { createLookupTable, reversePluckProps } from '../../utils/object';
-import { getSiteCookie } from '../../utils/auth';
 import { storeInitialized } from '../actions/system';
 
 const CHANGE_SITE = 'CHANGE_SITE';
@@ -40,12 +39,16 @@ export const popSite = /*#__PURE__*/ createAction<{ siteId: string }>('POP_SITE'
 
 export const initialState: GlobalState['sites'] = {
   byId: {},
-  active: getSiteCookie(),
+  active: null,
   isFetching: false
 };
 
 const reducer = createReducer<GlobalState['sites']>(initialState, {
-  [storeInitialized.type]: (state, { payload }) => ({ ...state, byId: createLookupTable(payload.sites) }),
+  [storeInitialized.type]: (state, { payload }) => ({
+    ...state,
+    byId: createLookupTable(payload.sites),
+    active: payload.activeSiteId
+  }),
   [CHANGE_SITE]: (state, { payload }) =>
     payload.nextSite === state.active
       ? state

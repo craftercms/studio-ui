@@ -19,7 +19,7 @@ import GlobalState, { PagedEntityState } from '../../models/GlobalState';
 import {
   CLEAR_DROP_TARGETS,
   CLEAR_SELECT_FOR_EDIT,
-  CLOSE_TOOLS,
+  closeToolsPanel,
   CONTENT_TYPE_DROP_TARGETS_RESPONSE,
   EDIT_MODE_CHANGED,
   FETCH_ASSETS_PANEL_ITEMS,
@@ -38,13 +38,13 @@ import {
   GUEST_CHECK_OUT,
   guestModelUpdated,
   guestPathUpdated,
-  initPageBuilderPanelConfig,
+  initIcePanelConfig,
   initToolbarConfig,
   initToolsPanelConfig,
-  OPEN_TOOLS,
-  popPageBuilderPanelPage,
+  openToolsPanel,
+  popIcePanelPage,
   popToolsPanelPage,
-  pushPageBuilderPanelPage,
+  pushIcePanelPage,
   pushToolsPanelPage,
   SELECT_FOR_EDIT,
   SET_ACTIVE_TARGETING_MODEL,
@@ -57,7 +57,7 @@ import {
   SET_ITEM_BEING_DRAGGED,
   setHighlightMode,
   UPDATE_AUDIENCES_PANEL_MODEL,
-  updatePageBuilderPanelWidth,
+  updateIcePanelWidth,
   updateToolsPanelWidth
 } from '../actions/preview';
 import {
@@ -79,6 +79,7 @@ import ContentInstance from '../../models/ContentInstance';
 import { changeSite } from './sites';
 import { deserialize, fromString } from '../../utils/xml';
 import { defineMessages } from 'react-intl';
+import { fetchSiteUiConfigComplete } from '../actions/configuration';
 
 const messages = defineMessages({
   emptyUiConfigMessageTitle: {
@@ -131,15 +132,15 @@ const componentsInitialState = createEntityState({
   inPageInstances: {}
 }) as PagedEntityState<ContentInstance>;
 
-const initialState = {
+const initialState: GlobalState['preview'] = {
   editMode: true,
   highlightMode: 'ALL',
   hostSize: { width: null, height: null },
   toolsPanelPageStack: [],
   showToolsPanel: process.env.REACT_APP_SHOW_TOOLS_PANEL ? process.env.REACT_APP_SHOW_TOOLS_PANEL === 'true' : true,
   toolsPanelWidth: 240,
-  pageBuilderPanelWidth: 240,
-  pageBuilderPanelStack: [],
+  icePanelWidth: 240,
+  icePanelStack: [],
   guest: null,
   assets: assetsPanelInitialState,
   audiencesPanel: audiencesPanelInitialState,
@@ -154,7 +155,7 @@ const initialState = {
     middleSection: null,
     rightSection: null
   },
-  pageBuilderPanel: null
+  icePanel: null
 };
 
 const fetchGuestModelsCompleteHandler = (state, { type, payload }) => {
@@ -186,13 +187,13 @@ const fetchGuestModelsCompleteHandler = (state, { type, payload }) => {
 };
 
 const reducer = createReducer<GlobalState['preview']>(initialState, {
-  [OPEN_TOOLS]: (state) => {
+  [openToolsPanel.type]: (state) => {
     return {
       ...state,
       showToolsPanel: true
     };
   },
-  [CLOSE_TOOLS]: (state) => {
+  [closeToolsPanel.type]: (state) => {
     return {
       ...state,
       showToolsPanel: false
@@ -500,7 +501,7 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
       toolsPanelWidth: payload.width
     };
   },
-  [updatePageBuilderPanelWidth.type]: (state, { payload }) => {
+  [updateIcePanelWidth.type]: (state, { payload }) => {
     const minDrawerWidth = 240;
     const maxDrawerWidth = 500;
     if (payload.width < minDrawerWidth || payload.width > maxDrawerWidth) {
@@ -508,7 +509,7 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
     }
     return {
       ...state,
-      pageBuilderPanelWidth: payload.width
+      icePanelWidth: payload.width
     };
   },
   [pushToolsPanelPage.type]: (state, { payload }) => {
@@ -525,18 +526,18 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
       toolsPanelPageStack: stack
     };
   },
-  [pushPageBuilderPanelPage.type]: (state, { payload }) => {
+  [pushIcePanelPage.type]: (state, { payload }) => {
     return {
       ...state,
-      pageBuilderPanelStack: [...state.pageBuilderPanelStack, payload]
+      icePanelStack: [...state.icePanelStack, payload]
     };
   },
-  [popPageBuilderPanelPage.type]: (state) => {
-    let stack = [...state.pageBuilderPanelStack];
+  [popIcePanelPage.type]: (state) => {
+    let stack = [...state.icePanelStack];
     stack.pop();
     return {
       ...state,
-      pageBuilderPanelStack: stack
+      icePanelStack: stack
     };
   },
   [guestPathUpdated.type]: (state, { payload }) => ({
@@ -560,7 +561,7 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
         'previewChoice',
         'showToolsPanel',
         'toolsPanelWidth',
-        'pageBuilderPanelWidth'
+        'icePanelWidth'
       )
     };
   },
@@ -591,10 +592,19 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
     }
     return {
       ...state,
-      ...(payload.pageStack ? { toolsPanelPageStack: [...state.toolsPanelPageStack, payload.pageStack] } : {}),
+      ...(payload.storedPage && { toolsPanelPageStack: [payload.storedPage] }),
       toolsPanel: toolsPanelConfig
     };
   },
+  // After re-fetching site ui config (e.g. when config is modified), we need the tools to be
+  // re-initialized with the latest config. The components checks for whether their property is null before
+  // initializing so props must be nulled when config gets re-fetched in order for the components to re-initialize.
+  [fetchSiteUiConfigComplete.type]: (state) => ({
+    ...state,
+    toolsPanel: initialState.toolsPanel,
+    toolbar: initialState.toolbar,
+    icePanel: initialState.icePanel
+  }),
   [initToolbarConfig.type]: (state, { payload }) => {
     let toolbarConfig = {
       leftSection: { widgets: [] },
@@ -631,8 +641,8 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
       toolbar: toolbarConfig
     };
   },
-  [initPageBuilderPanelConfig.type]: (state, { payload }) => {
-    let pageBuilderPanelConfig = {
+  [initIcePanelConfig.type]: (state, { payload }) => {
+    let icePanelConfig = {
       widgets: [
         {
           id: 'craftercms.component.EmptyState',
@@ -646,25 +656,22 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
     };
     const arrays = ['widgets', 'devices', 'values'];
     const configDOM = fromString(payload.configXml);
-    const pageBuilderPanel = configDOM.querySelector(
-      '[id="craftercms.components.PageBuilderPanel"] > configuration > widgets'
-    );
-    if (pageBuilderPanel) {
+    const icePanel = configDOM.querySelector('[id="craftercms.components.PageBuilderPanel"] > configuration > widgets');
+    if (icePanel) {
       const lookupTables = ['fields'];
-      pageBuilderPanel.querySelectorAll('widget').forEach((e, index) => {
+      icePanel.querySelectorAll('widget').forEach((e) => {
         if (e.getAttribute('id') === 'craftercms.components.ToolsPanelPageButton') {
-          e.querySelector(':scope > configuration')?.setAttribute('target', 'pageBuilderPanel');
+          e.querySelector(':scope > configuration')?.setAttribute('target', 'icePanel');
         }
       });
-      pageBuilderPanelConfig = applyDeserializedXMLTransforms(deserialize(pageBuilderPanel), {
+      icePanelConfig = applyDeserializedXMLTransforms(deserialize(icePanel), {
         arrays,
         lookupTables
       });
     }
-
     return {
       ...state,
-      pageBuilderPanel: pageBuilderPanelConfig
+      icePanel: icePanelConfig
     };
   }
 });

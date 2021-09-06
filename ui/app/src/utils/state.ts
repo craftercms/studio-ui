@@ -80,14 +80,14 @@ export function removeStoredClipboard(siteIdentifier: string, user: string) {
   return window.localStorage.removeItem(`craftercms.${user}.clipboard.${siteIdentifier}`);
 }
 
-export function setStoredPreviewToolsPanelPage(siteIdentifier: string, user: string, value: object) {
+export function setStoredPreviewToolsPanelPage(siteIdentifier: string, user: string, value: WidgetDescriptor) {
   return window.localStorage.setItem(
     `craftercms.${user}.previewToolsPanelPage.${siteIdentifier}`,
     JSON.stringify(value)
   );
 }
 
-export function getStoredPreviewToolsPanelPage(siteIdentifier: string, user: string) {
+export function getStoredPreviewToolsPanelPage(siteIdentifier: string, user: string): WidgetDescriptor {
   return JSON.parse(window.localStorage.getItem(`craftercms.${user}.previewToolsPanelPage.${siteIdentifier}`));
 }
 
@@ -114,8 +114,8 @@ export function getStoredPathNavigatorTree(siteIdentifier: string, user: string,
   return JSON.parse(window.localStorage.getItem(`craftercms.${user}.pathNavigatorTree.${siteIdentifier}.${id}`));
 }
 
-export function setStoredGlobalAppOpenSidebar(user: string, value) {
-  return window.localStorage.setItem(`craftercms.${user}.globalAppOpenSidebar`, value);
+export function setStoredGlobalAppOpenSidebar(user: string, value: boolean) {
+  return window.localStorage.setItem(`craftercms.${user}.globalAppOpenSidebar`, JSON.stringify(value));
 }
 
 export function getStoredGlobalAppOpenSidebar(user: string): string {
@@ -162,4 +162,20 @@ export function getStoredDashboardPreferences(
   return JSON.parse(
     window.localStorage.getItem(`craftercms.dashboard.${dashletId}.${siteIdentifier}.${user}`)
   ) as DashboardPreferences;
+}
+
+export function getStoredLegacyComponentPanel(user: string): object {
+  return JSON.parse(window.localStorage.getItem(`craftercms.${user}.legacyComponentPanel`));
+}
+
+export function setStoredLegacyComponentPanel(value: object, user: string) {
+  return window.localStorage.setItem(`craftercms.${user}.legacyComponentPanel`, JSON.stringify(value));
+}
+
+export function setStoredShowToolsPanel(siteIdentifier: string, user: string, value: boolean) {
+  return window.localStorage.setItem(`craftercms.${user}.openToolsPanel.${siteIdentifier}`, JSON.stringify(value));
+}
+
+export function getStoredShowToolsPanel(siteIdentifier: string, user: string): boolean {
+  return JSON.parse(window.localStorage.getItem(`craftercms.${user}.openToolsPanel.${siteIdentifier}`));
 }

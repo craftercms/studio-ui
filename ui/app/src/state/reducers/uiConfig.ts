@@ -28,6 +28,7 @@ import { fetchUseLegacyPreviewPreferenceComplete } from '../actions/system';
 import { fetchSiteLocales, fetchSiteLocalesComplete, fetchSiteLocalesFailed } from '../actions/translation';
 import { deserialize, fromString, serialize } from '../../utils/xml';
 import { applyDeserializedXMLTransforms } from '../../utils/object';
+import { getUserLocaleCode, getUserTimeZone } from '../../utils/datetime';
 
 const initialState: GlobalState['uiConfig'] = {
   error: null,
@@ -40,9 +41,9 @@ const initialState: GlobalState['uiConfig'] = {
     defaultLocaleCode: null
   },
   locale: {
-    localeCode: 'en-US',
+    localeCode: getUserLocaleCode(),
     dateTimeFormatOptions: {
-      timeZone: 'EST5EDT',
+      timeZone: getUserTimeZone(),
       day: 'numeric',
       month: 'numeric',
       year: 'numeric',
@@ -152,11 +153,9 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
       cdataEscapedFieldPatterns,
       locale: {
         ...state.locale,
-        // If locale has localeCode different than empty string -> set it as the localeCode.
-        // If locale.localeCode is empty string -> set empty array to use browsers localeCode.
-        // If locale.localCode doesn't exist -> use default localeCode from state.
-        localeCode: locale?.localeCode ? locale.localeCode : locale?.localeCode === '' ? [] : state.locale.localeCode,
-        dateTimeFormatOptions: locale.dateTimeFormatOptions ?? state.locale.dateTimeFormatOptions
+        // If localization config is not present in the config, use the browser's resolved options.
+        localeCode: locale?.localeCode || initialState.locale.localeCode,
+        dateTimeFormatOptions: locale?.dateTimeFormatOptions || initialState.locale.dateTimeFormatOptions
       },
       publishing: {
         ...state.publishing,

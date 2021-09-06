@@ -25,7 +25,7 @@ import { lookupItemByPath } from '../content';
 export function useDetailedItem(path: string): DetailedItem {
   const dispatch = useDispatch();
   const itemsByPath = useSelection((state) => state.content.itemsByPath);
-  const item = lookupItemByPath(path, itemsByPath);
+  const item = path ? lookupItemByPath(path, itemsByPath) : null;
   const beingFetching = useSelection((state) => state.content.itemsBeingFetchedByPath[path]);
   useEffect(() => {
     if (nou(item) && path && beingFetching === undefined) {
