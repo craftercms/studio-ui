@@ -91,6 +91,8 @@ import { asArray } from '../../utils/array';
 import { getIntl } from '../../utils/craftercms';
 import { AjaxError } from 'rxjs/ajax';
 import { showErrorDialog } from '../reducers/dialogs/error';
+import { dissociateTemplate } from '../actions/preview';
+import { isBlank } from '../../utils/string';
 
 export const sitePolicyMessages = defineMessages({
   itemPastePolicyConfirm: {
@@ -445,46 +447,65 @@ const content: CrafterCMSEpic[] = [
             ? getItemGroovyPath(item, state.contentTypes.byId)
             : getItemTemplatePath(item, state.contentTypes.byId);
 
-        return merge(
-          of(
-            pushDialog({
-              minimized: true,
-              id,
-              status: 'indeterminate',
-              title: getIntl().formatMessage(inProgressMessages.processing),
-              onMaximized: null
-            })
-          ),
-          fetchItemByPath(state.sites.active, path).pipe(
-            map((item) =>
-              batchActions([
-                showDeleteDialog({
-                  items: asArray(item),
-                  onSuccess: batchActions([
-                    showDeleteItemSuccessNotification(),
-                    closeDeleteDialog(),
-                    ...(onActionSuccess ? [onActionSuccess] : [])
-                  ])
-                }),
-                popDialog({ id })
-              ])
+        // path may be empty string if the displayTemplate has not been set for a content type.
+        if (isBlank(path)) {
+          return merge(
+            of(
+              showConfirmDialog({
+                body: getIntl().formatMessage(
+                  itemFailureMessages[type === 'DELETE_CONTROLLER' ? 'controllerNotFound' : 'templateNotFound']
+                )
+              })
             ),
-            catchAjaxError((error: AjaxError) => {
-              return batchActions([
-                popDialog({ id }),
-                ...(error.status === 404
-                  ? [
-                      showConfirmDialog({
-                        body: getIntl().formatMessage(
-                          itemFailureMessages[type === 'DELETE_CONTROLLER' ? 'controllerNotFound' : 'templateNotFound']
-                        )
-                      })
-                    ]
-                  : [showErrorDialog({ error: error.response ?? error })])
-              ]);
-            })
-          )
-        );
+            of(popDialog({ id }))
+          );
+        } else {
+          return merge(
+            of(
+              pushDialog({
+                minimized: true,
+                id,
+                status: 'indeterminate',
+                title: getIntl().formatMessage(inProgressMessages.processing),
+                onMaximized: null
+              })
+            ),
+            fetchItemByPath(state.sites.active, path).pipe(
+              map((itemToDelete) =>
+                batchActions([
+                  showDeleteDialog({
+                    items: asArray(itemToDelete),
+                    onSuccess: batchActions([
+                      showDeleteItemSuccessNotification(),
+                      ...(type === 'DELETE_TEMPLATE'
+                        ? [dissociateTemplate({ contentTypeId: item.contentTypeId })]
+                        : []),
+                      closeDeleteDialog(),
+                      ...(onActionSuccess ? [onActionSuccess] : [])
+                    ])
+                  }),
+                  popDialog({ id })
+                ])
+              ),
+              catchAjaxError((error: AjaxError) => {
+                return batchActions([
+                  popDialog({ id }),
+                  ...(error.status === 404
+                    ? [
+                        showConfirmDialog({
+                          body: getIntl().formatMessage(
+                            itemFailureMessages[
+                              type === 'DELETE_CONTROLLER' ? 'controllerNotFound' : 'templateNotFound'
+                            ]
+                          )
+                        })
+                      ]
+                    : [showErrorDialog({ error: error.response ?? error })])
+                ]);
+              })
+            )
+          );
+        }
       })
     )
   // endregion

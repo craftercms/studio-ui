@@ -16,6 +16,8 @@
 
 import { Epic, ofType } from 'redux-observable';
 import {
+  dissociateTemplateComplete,
+  dissociateTemplateFailed,
   FETCH_COMPONENTS_BY_CONTENT_TYPE,
   FETCH_CONTENT_TYPES,
   fetchComponentsByContentTypeComplete,
@@ -29,6 +31,8 @@ import { catchAjaxError } from '../../utils/ajax';
 import GlobalState from '../../models/GlobalState';
 import { Observable } from 'rxjs';
 import { fetchContentTypes } from '../../services/contentTypes';
+import { dissociateTemplate as dissociateTemplateActionCreator } from '../actions/preview';
+import { dissociateTemplate as dissociateTemplateService } from '../../services/contentTypes';
 
 const fetch: Epic = (action$, state$) =>
   action$.pipe(
@@ -53,4 +57,16 @@ const fetchComponentsByContentType: Epic = (action$, state$: Observable<GlobalSt
     )
   );
 
-export default [fetch, fetchComponentsByContentType] as Epic[];
+const dissociateTemplate: Epic = (action$, state$) =>
+  action$.pipe(
+    ofType(dissociateTemplateActionCreator.type),
+    withLatestFrom(state$),
+    switchMap(([{ payload }, { sites: { active } }]) =>
+      dissociateTemplateService(active, payload.contentTypeId).pipe(
+        map(() => dissociateTemplateComplete({ contentTypeId: payload.contentTypeId })), // TODO: send content type id so it can be updated in reducer
+        catchAjaxError(dissociateTemplateFailed)
+      )
+    )
+  );
+
+export default [fetch, fetchComponentsByContentType, dissociateTemplate] as Epic[];

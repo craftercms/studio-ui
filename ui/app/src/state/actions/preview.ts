@@ -291,6 +291,14 @@ export const initIcePanelConfig = /*#__PURE__*/ createAction<{
   configXml: string;
 }>('INIT_ICE_PANEL_CONFIG');
 
+export const dissociateTemplate = /*#__PURE__*/ createAction<{ contentTypeId: string }>('DISSOCIATE_TEMPLATE');
+
+export const dissociateTemplateComplete = /*#__PURE__*/ createAction<{ contentTypeId: string }>(
+  'DISSOCIATE_TEMPLATE_COMPLETE'
+);
+
+export const dissociateTemplateFailed = /*#__PURE__*/ createAction('DISSOCIATE_TEMPLATE_FAILED');
+
 // endregion
 
 // region toolsPanelPageStack
