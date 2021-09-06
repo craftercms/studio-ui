@@ -151,8 +151,8 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
   };
 
   const save = useCallback(
-    (unlock: boolean = true, callback?: Function) => {
-      writeContent(site, path, editorRef.current.getValue(), { unlock }).subscribe(
+    (callback?: Function) => {
+      writeContent(site, path, editorRef.current.getValue(), { unlock: false }).subscribe(
         () => {
           setTimeout(callback);
           dispatch(
@@ -182,20 +182,20 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
   };
 
   const onSave = useCallback(() => {
-    save(true, () => {
+    save(() => {
       setContent(editorRef.current.getValue());
     });
   }, [save]);
 
   const onSaveAndMinimize = () => {
-    save(false, () => {
+    save(() => {
       setContent(editorRef.current.getValue());
       onMinimized?.();
     });
   };
 
   const saveAndClose = () => {
-    save(false, onSaveClose);
+    save(onSaveClose);
   };
 
   const onAddSnippet = (event) => {
