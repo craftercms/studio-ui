@@ -38,6 +38,7 @@ import { batchActions } from '../../state/actions/misc';
 import { createToolsPanelPage, createWidgetDescriptor } from '../../utils/state';
 import { useSelection } from '../../utils/hooks/useSelection';
 import { useSelectorResource } from '../../utils/hooks/useSelectorResource';
+import EmptyState from '../SystemStatus/EmptyState';
 
 const translations = defineMessages({
   previewComponentsPanelTitle: {
@@ -68,7 +69,6 @@ export default function PreviewComponentsPanel() {
     errorSelector: (source) => source.error,
     resultSelector: (source) => Object.values(reversePluckProps(source.byId, '/component/level-descriptor'))
   });
-
   return (
     <>
       <SuspenseWithEmptyState
@@ -78,13 +78,7 @@ export default function PreviewComponentsPanel() {
         }}
         withEmptyStateProps={{
           emptyStateProps: {
-            title: <FormattedMessage id="componentsPanel.emptyStateMessage" defaultMessage="No components found" />,
-            subtitle: (
-              <FormattedMessage
-                id="componentsPanel.emptyStateMessageSubtitle"
-                defaultMessage="Communicate with your developers to create the required components in the system."
-              />
-            )
+            title: <FormattedMessage id="componentsPanel.emptyStateMessage" defaultMessage="No contentTypes found" />
           }
         }}
       >
@@ -168,16 +162,28 @@ export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
   return (
     <>
       <List>
-        {componentTypes.map((contentType) => (
-          <DraggablePanelListItem
-            key={contentType.id}
-            primaryText={contentType.name}
-            secondaryText={contentType.id}
-            onDragStart={() => onDragStart(contentType)}
-            onDragEnd={onDragEnd}
-            onMenu={(anchor) => setMenuContext({ anchor, contentType })}
+        {componentTypes.length ? (
+          componentTypes.map((contentType) => (
+            <DraggablePanelListItem
+              key={contentType.id}
+              primaryText={contentType.name}
+              secondaryText={contentType.id}
+              onDragStart={() => onDragStart(contentType)}
+              onDragEnd={onDragEnd}
+              onMenu={(anchor) => setMenuContext({ anchor, contentType })}
+            />
+          ))
+        ) : (
+          <EmptyState
+            title={<FormattedMessage id="componentsPanel.emptyComponents" defaultMessage="No components found" />}
+            subtitle={
+              <FormattedMessage
+                id="componentsPanel.emptyComponentsSubtitle"
+                defaultMessage="Communicate with your developers to create the required components in the system."
+              />
+            }
           />
-        ))}
+        )}
       </List>
 
       <Menu open={!!menuContext} anchorEl={menuContext?.anchor} onClose={onMenuClose}>
