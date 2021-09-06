@@ -226,7 +226,8 @@ export function stripDuplicateSlashes(str: string): string {
 }
 
 export function getItemGroovyPath(item: DetailedItem, contentTypes: LookupTable<ContentType>): string {
-  return `/scripts/${item.systemType}s/${contentTypes[item.contentTypeId].name.toLowerCase()}.groovy`;
+  const contentTypeName = /[^/]*$/.exec(item.contentTypeId)[0];
+  return `/scripts/${item.systemType}s/${contentTypeName}.groovy`;
 }
 
 export function getItemTemplatePath(item: DetailedItem, contentTypes: LookupTable<ContentType>): string {

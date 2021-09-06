@@ -20,6 +20,8 @@ import {
   clearClipboard,
   completeDetailedItem,
   conditionallyUnlockItem,
+  deleteController,
+  deleteTemplate,
   duplicateAsset,
   duplicateItem,
   duplicateWithPolicyValidation,
@@ -42,26 +44,42 @@ import { catchAjaxError } from '../../utils/ajax';
 import {
   duplicate,
   fetchDetailedItem as fetchDetailedItemService,
+  fetchItemByPath,
   fetchQuickCreateList,
   fetchSandboxItem as fetchSandboxItemService,
   paste,
   unlock
 } from '../../services/content';
 import { merge, of } from 'rxjs';
-import { closeConfirmDialog, showCodeEditorDialog, showConfirmDialog, showEditDialog } from '../actions/dialogs';
+import {
+  closeConfirmDialog,
+  closeDeleteDialog,
+  showCodeEditorDialog,
+  showConfirmDialog,
+  showDeleteDialog,
+  showEditDialog
+} from '../actions/dialogs';
 import { isEditableAsset } from '../../utils/content';
 import {
   emitSystemEvent,
   itemDuplicated,
   itemsPasted,
   itemUnlocked,
+  showDeleteItemSuccessNotification,
   showDuplicatedItemSuccessNotification,
   showPasteItemSuccessNotification,
   showSystemNotification,
   showUnlockItemSuccessNotification
 } from '../actions/system';
 import { batchActions } from '../actions/misc';
-import { getParentPath, isValidCutPastePath, withIndex, withoutIndex } from '../../utils/path';
+import {
+  getItemGroovyPath,
+  getItemTemplatePath,
+  getParentPath,
+  isValidCutPastePath,
+  withIndex,
+  withoutIndex
+} from '../../utils/path';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { validateActionPolicy } from '../../services/sites';
 import { defineMessages } from 'react-intl';
@@ -69,6 +87,10 @@ import { CrafterCMSEpic } from '../store';
 import { popDialog, pushDialog } from '../reducers/dialogs/minimizedDialogs';
 import { nanoid as uuid } from 'nanoid';
 import StandardAction from '../../models/StandardAction';
+import { asArray } from '../../utils/array';
+import { getIntl } from '../../utils/craftercms';
+import { AjaxError } from 'rxjs/ajax';
+import { showErrorDialog } from '../reducers/dialogs/error';
 
 export const sitePolicyMessages = defineMessages({
   itemPastePolicyConfirm: {
@@ -86,6 +108,14 @@ export const itemFailureMessages = defineMessages({
   itemPasteToChildNotAllowed: {
     id: 'item.itemPasteToChildNotAllowed',
     defaultMessage: 'Pasting to a child item is not allowed for cut'
+  },
+  controllerNotFound: {
+    id: 'item.controllerNotFound',
+    defaultMessage: 'Controller not found.'
+  },
+  templateNotFound: {
+    id: 'item.templateNotFound',
+    defaultMessage: 'Template not found.'
   }
 });
 
@@ -93,6 +123,10 @@ const inProgressMessages = defineMessages({
   pasting: {
     id: 'item.pasting',
     defaultMessage: 'Pasting...'
+  },
+  processing: {
+    id: 'words.processing',
+    defaultMessage: 'Processing...'
   }
 });
 
@@ -394,6 +428,62 @@ const content: CrafterCMSEpic[] = [
               });
             }
           })
+        );
+      })
+    ),
+  // endregion
+  // region Delete Controller
+  (action$, state$) =>
+    action$.pipe(
+      ofType(deleteController.type, deleteTemplate.type),
+      withLatestFrom(state$),
+      switchMap(([{ type, payload }, state]) => {
+        const id = uuid();
+        const { item, onActionSuccess } = payload;
+        const path =
+          type === 'DELETE_CONTROLLER'
+            ? getItemGroovyPath(item, state.contentTypes.byId)
+            : getItemTemplatePath(item, state.contentTypes.byId);
+
+        return merge(
+          of(
+            pushDialog({
+              minimized: true,
+              id,
+              status: 'indeterminate',
+              title: getIntl().formatMessage(inProgressMessages.processing),
+              onMaximized: null
+            })
+          ),
+          fetchItemByPath(state.sites.active, path).pipe(
+            map((item) =>
+              batchActions([
+                showDeleteDialog({
+                  items: asArray(item),
+                  onSuccess: batchActions([
+                    showDeleteItemSuccessNotification(),
+                    closeDeleteDialog(),
+                    ...(onActionSuccess ? [onActionSuccess] : [])
+                  ])
+                }),
+                popDialog({ id })
+              ])
+            ),
+            catchAjaxError((error: AjaxError) => {
+              return batchActions([
+                popDialog({ id }),
+                ...(error.status === 404
+                  ? [
+                      showConfirmDialog({
+                        body: getIntl().formatMessage(
+                          itemFailureMessages[type === 'DELETE_CONTROLLER' ? 'controllerNotFound' : 'templateNotFound']
+                        )
+                      })
+                    ]
+                  : [showErrorDialog({ error: error.response ?? error })])
+              ]);
+            })
+          )
         );
       })
     )
