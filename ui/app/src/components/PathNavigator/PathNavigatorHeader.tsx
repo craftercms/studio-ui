@@ -26,7 +26,8 @@ import SystemIcon, { SystemIconDescriptor } from '../SystemIcon';
 interface HeaderProps {
   locale: string;
   title: string;
-  icon?: SystemIconDescriptor;
+  icon?: SystemIconDescriptor & Partial<{ expandedStyle: {}; collapsedStyle: {} }>;
+  collapsed: boolean;
   onLanguageMenu?(anchor: Element): void;
   onContextMenu?(anchor: Element): void;
 }
@@ -34,12 +35,18 @@ interface HeaderProps {
 // PathNavigatorHeader
 export function PathNavigatorHeader(props: HeaderProps) {
   const classes = useStyles();
-  const { title, icon, locale, onLanguageMenu, onContextMenu } = props;
+  const { title, icon, locale, onLanguageMenu, onContextMenu, collapsed = false } = props;
   const currentFlag = (locale: string) => <LanguageRounded />;
   return (
     <AccordionSummary classes={{ root: classes.accordionSummary, content: classes.accordionSummaryContent }}>
       <div className={classes.accordionSummaryTitle}>
-        {icon && <SystemIcon icon={icon} className={classes.headerIcon} />}
+        {icon && (
+          <SystemIcon
+            icon={icon}
+            className={classes.headerIcon}
+            style={icon[collapsed ? 'collapsedStyle' : 'expandedStyle']}
+          />
+        )}
         <Typography variant="body1" component="h6" className={classes.headerTitle} children={title} />
       </div>
       <div className={classes.accordionSummaryActions}>

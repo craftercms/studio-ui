@@ -17,7 +17,7 @@
 import * as React from 'react';
 import { Suspense, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { initPageBuilderPanelConfig, updatePageBuilderPanelWidth } from '../../state/actions/preview';
+import { initIcePanelConfig, updateIcePanelWidth } from '../../state/actions/preview';
 import LoadingState, { ConditionalLoadingState } from '../SystemStatus/LoadingState';
 import { useSelection } from '../../utils/hooks/useSelection';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
@@ -32,42 +32,35 @@ import { nnou } from '../../utils/object';
 import { getComputedEditMode } from '../../utils/content';
 import { useCurrentPreviewItem } from '../../utils/hooks/useCurrentPreviewItem';
 
-export function PageBuilderPanel() {
+export function ICEToolsPanel() {
   const dispatch = useDispatch();
   const uiConfig = useSiteUIConfig();
-  const { pageBuilderPanel } = usePreviewState();
+  const { icePanel } = usePreviewState();
   const site = useActiveSiteId();
   const { rolesBySite, username } = useActiveUser();
-  const { pageBuilderPanelWidth: width, editMode, pageBuilderPanelStack } = useSelection((state) => state.preview);
-  const onWidthChange = (width) => dispatch(updatePageBuilderPanelWidth({ width }));
+  const { icePanelWidth: width, editMode, icePanelStack } = useSelection((state) => state.preview);
+  const onWidthChange = (width) => dispatch(updateIcePanelWidth({ width }));
   const item = useCurrentPreviewItem();
   const isOpen = getComputedEditMode({ item, editMode, username });
 
   useEffect(() => {
-    if (nnou(uiConfig.xml) && !pageBuilderPanel) {
-      dispatch(initPageBuilderPanelConfig({ configXml: uiConfig.xml }));
+    if (nnou(uiConfig.xml) && !icePanel) {
+      dispatch(initIcePanelConfig({ configXml: uiConfig.xml }));
     }
-  }, [uiConfig.xml, dispatch, pageBuilderPanel]);
+  }, [uiConfig.xml, dispatch, icePanel]);
 
   return (
     <ResizeableDrawer open={isOpen} belowToolbar anchor="right" width={width} onWidthChange={onWidthChange}>
       <Suspense fallback={<LoadingState />}>
-        <ConditionalLoadingState isLoading={!Boolean(pageBuilderPanel)}>
-          {pageBuilderPanel?.widgets && pageBuilderPanel.widgets.length > 0 ? (
+        <ConditionalLoadingState isLoading={!Boolean(icePanel)}>
+          {icePanel?.widgets && icePanel.widgets.length > 0 ? (
             renderWidgets(
-              pageBuilderPanelStack.length
-                ? pageBuilderPanelStack.slice(pageBuilderPanelStack.length - 1)
-                : pageBuilderPanel.widgets,
+              icePanelStack.length ? icePanelStack.slice(icePanelStack.length - 1) : icePanel.widgets,
               rolesBySite[site]
             )
           ) : (
             <EmptyState
-              title={
-                <FormattedMessage
-                  id="pageBuilderPanel.noWidgetsMessage"
-                  defaultMessage="No tools have been configured"
-                />
-              }
+              title={<FormattedMessage id="icePanel.noWidgetsMessage" defaultMessage="No tools have been configured" />}
             />
           )}
         </ConditionalLoadingState>
@@ -76,4 +69,4 @@ export function PageBuilderPanel() {
   );
 }
 
-export default PageBuilderPanel;
+export default ICEToolsPanel;

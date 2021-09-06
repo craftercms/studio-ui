@@ -206,7 +206,7 @@ export function PreviewConcierge(props: any) {
     guest,
     editMode,
     highlightMode,
-    pageBuilderPanelWidth,
+    icePanelWidth,
     toolsPanelWidth,
     hostSize,
     showToolsPanel
@@ -245,7 +245,7 @@ export function PreviewConcierge(props: any) {
         clearTimeout(timeout);
       };
     }
-  }, [pageBuilderPanelWidth, toolsPanelWidth, hostSize, editMode, showToolsPanel]);
+  }, [icePanelWidth, toolsPanelWidth, hostSize, editMode, showToolsPanel]);
   // endregion
 
   // region Permissions and fetch of DetailedItem
