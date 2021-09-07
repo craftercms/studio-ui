@@ -752,7 +752,14 @@ export const itemActionDispatcher = ({
         break;
       }
       case 'editCode': {
-        dispatch(showCodeEditorDialog({ path: item.path, mode: getEditorMode(item) }));
+        const path = item.path;
+        fetchWorkflowAffectedItems(site, path).subscribe((items) => {
+          if (items?.length > 0) {
+            dispatch(showCodeEditorDialog({ path: item.path, mode: getEditorMode(item) }));
+          } else {
+            dispatch(showCodeEditorDialog({ path: item.path, mode: getEditorMode(item) }));
+          }
+        });
         break;
       }
       case 'viewCode': {
