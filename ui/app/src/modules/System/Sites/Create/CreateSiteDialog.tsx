@@ -385,6 +385,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
                 id: 'GIT',
                 name: formatMessage(messages.gitBlueprintName),
                 description: formatMessage(messages.gitBlueprintDescription),
+                documentation: null,
                 media: {
                   screenshots: [
                     {

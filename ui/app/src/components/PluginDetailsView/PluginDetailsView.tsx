@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import SwipeableViews from 'react-swipeable-views';
@@ -33,6 +33,7 @@ import clsx from 'clsx';
 // @ts-ignore
 import { fadeIn } from 'react-animations';
 import PrimaryButton from '../PrimaryButton';
+import Marked from 'marked';
 
 const useStyles = makeStyles((theme) => ({
   '@keyframes fadeIn': fadeIn,
@@ -207,6 +208,7 @@ export default function PluginDetailsView(props: PluginDetailsViewProps) {
   const [index, setIndex] = useState(selectedImageSlideIndex);
   const { media, name, description, version, license, developer, website, searchEngine, compatible } = plugin;
   const fullVersion = version ? `${version.major}.${version.minor}.${version.patch}` : null;
+  const [markdown, setMarkdown] = useState(null);
 
   const { formatMessage } = useIntl();
 
@@ -262,6 +264,16 @@ export default function PluginDetailsView(props: PluginDetailsViewProps) {
   plugin.media && plugin.media.screenshots ? (steps = plugin.media.screenshots.length) : (steps = 0);
   plugin.media && plugin.media.videos ? (steps += plugin.media.videos.length) : (steps += 0);
 
+  useEffect(() => {
+    if (/(\/readme$)|(.md$)/.test(plugin.documentation)) {
+      fetch('https://api.github.com/repos/craftercms/googlemaps-plugin/readme')
+        .then((response) => response.json())
+        .then((data) => {
+          setMarkdown(Marked(decodeURIComponent(escape(atob(data.content)))));
+        });
+    }
+  }, [plugin]);
+
   return (
     <div className={clsx(classes.detailsView, classes.fadeIn)}>
       <div className={classes.topBar}>
@@ -315,7 +327,7 @@ export default function PluginDetailsView(props: PluginDetailsViewProps) {
                 />
               </Alert>
             )}
-
+            {markdown && <div dangerouslySetInnerHTML={{ __html: markdown }} />}
             <Typography variant="body1">{description}</Typography>
           </Grid>
           <Grid item xs={4}>
