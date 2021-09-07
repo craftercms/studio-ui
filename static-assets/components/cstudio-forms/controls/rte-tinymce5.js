@@ -810,7 +810,7 @@ CStudioAuthoring.Module.requireModule(
           obj.value = this.editor ? this.editor.getContent() : obj.value;
 
           if (obj.required) {
-            if (obj.value == '') {
+            if (CStudioAuthoring.Utils.isEmptyHtml(obj.value)) {
               obj.setError('required', this.formatMessage(this.messages.requiredField));
               obj.renderValidation(true, false);
             } else {
