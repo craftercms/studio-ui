@@ -110,7 +110,6 @@ crafterDefine('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay'], fun
     });
 
     communicator.on(Topics.DND_COMPONENTS_PANEL_OFF, function(message) {
-      dndOn = false;
       crafterRequire(['dnd-controller'], function(DnDController) {
         typeof dndController === 'undefined' &&
           (dndController = new DnDController({
@@ -153,6 +152,9 @@ crafterDefine('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay'], fun
     communicator.on('EDIT_MODE_CHANGED', (message) => iceToolsToggle(message.editMode));
     communicator.on(Topics.ICE_TOOLS_OFF, () => iceToolsToggle(false));
     communicator.on(Topics.ICE_TOOLS_ON, () => iceToolsToggle(true));
+    communicator.on('DRAG_AND_DROP_COMPONENTS_PANEL_CLOSED', () => {
+      dndOn = false;
+    });
 
     communicator.on(Topics.REPAINT_PENCILS, repaintPencils);
 
