@@ -19,7 +19,7 @@
     formatMessage = i18n.intl.formatMessage,
     contentTypesMessages = i18n.messages.contentTypesMessages,
     words = i18n.messages.words,
-    defaultFields = ['file-name', 'internal-name', 'placeInNav', 'navLabel', 'localeCode'];
+    defaultFields = ['file-name', 'internal-name', 'placeInNav', 'navLabel'];
 
   const WORK_AREA_HTML = '<div id="content-type-canvas"></div><div id="content-type-tools"></div>';
 
