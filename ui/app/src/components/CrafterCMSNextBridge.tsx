@@ -66,26 +66,24 @@ function Bridge(
   return (
     <StoreProvider resource={props.resource}>
       <I18nProvider>
-        <CrafterThemeProvider themeOptions={props.themeOptions} generateClassName={props.generateClassName}>
-          {mountSnackbarProvider ? (
-            <SnackbarProvider
-              maxSnack={5}
-              autoHideDuration={5000}
-              anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-              action={(id) => <SnackbarCloseButton id={id} />}
-              children={body}
-              classes={{
-                // TODO: For some reason, these classes are not getting applied by notistack.
-                // containerAnchorOriginTopRight: classes.topSnackbar,
-                // containerAnchorOriginTopLeft: classes.topSnackbar,
-                // containerAnchorOriginTopCenter: classes.topSnackbar,
-                containerRoot: classes.topSnackbar
-              }}
-            />
-          ) : (
-            body
-          )}
-        </CrafterThemeProvider>
+        {mountSnackbarProvider ? (
+          <SnackbarProvider
+            maxSnack={5}
+            autoHideDuration={5000}
+            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            action={(id) => <SnackbarCloseButton id={id} />}
+            children={body}
+            classes={{
+              // TODO: For some reason, these classes are not getting applied by notistack.
+              // containerAnchorOriginTopRight: classes.topSnackbar,
+              // containerAnchorOriginTopLeft: classes.topSnackbar,
+              // containerAnchorOriginTopCenter: classes.topSnackbar,
+              containerRoot: classes.topSnackbar
+            }}
+          />
+        ) : (
+          body
+        )}
       </I18nProvider>
     </StoreProvider>
   );
@@ -98,6 +96,7 @@ export default function CrafterCMSNextBridge(
     mountLegacyConcierge?: boolean;
     generateClassName?: GenerateId;
     suspenseFallback?: ReactNode;
+    themeOptions?: ThemeOptions;
   }>
 ) {
   const [storeResource] = useState(() => createResource(() => getStore().toPromise()));
@@ -111,14 +110,16 @@ export default function CrafterCMSNextBridge(
             }
       }
     >
-      <Bridge
-        generateClassName={props.generateClassName}
-        mountGlobalDialogManager={props.mountGlobalDialogManager}
-        mountSnackbarProvider={props.mountSnackbarProvider}
-        mountLegacyConcierge={props.mountLegacyConcierge}
-        resource={storeResource}
-        children={props.children}
-      />
+      <CrafterThemeProvider themeOptions={props.themeOptions} generateClassName={props.generateClassName}>
+        <Bridge
+          generateClassName={props.generateClassName}
+          mountGlobalDialogManager={props.mountGlobalDialogManager}
+          mountSnackbarProvider={props.mountSnackbarProvider}
+          mountLegacyConcierge={props.mountLegacyConcierge}
+          resource={storeResource}
+          children={props.children}
+        />
+      </CrafterThemeProvider>
     </Suspencified>
   );
 }
