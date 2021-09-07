@@ -50,18 +50,13 @@ import { getItemGroovyPath, getItemTemplatePath } from '../../utils/path';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 import { RELOAD_REQUEST } from '../../state/actions/preview';
 import { usePreviewGuest } from '../../utils/hooks/usePreviewGuest';
+import { getContentModelSnippets } from './utils';
 
 export interface CodeEditorDialogContainerProps extends CodeEditorDialogProps {
   path: string;
   title: string;
   onMinimized(): void;
 }
-
-export const contentTypePropsMap = {
-  fileName: 'file-name',
-  internalName: 'internal-name',
-  localeCode: 'locale-code'
-};
 
 export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps) {
   const { path, onMinimized, onClose, onClosed, mode, readonly, contentType } = props;
@@ -91,34 +86,17 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
       const _contentType = contentType
         ? contentType
         : Object.values(contentTypes).find((contentType) => contentType.displayTemplate === item.path)?.id;
-      if (_contentType) {
-        const fields = contentTypes[_contentType].fields;
-        if (mode === 'ftl') {
-          if (freemarkerCodeSnippets?.['contentVariable']) {
-            let { contentVariable, ...rest } = freemarkerCodeSnippets;
-            setSnippets(rest);
-            const snippets = Object.keys(fields).map((key) => ({
-              label: fields[key].name,
-              value: contentVariable.value.replace(
-                'VARIABLE_NAME',
-                contentTypePropsMap[fields[key].id] ? `["${contentTypePropsMap[fields[key].id]}"]` : fields[key].id
-              )
-            }));
-            setContentModelSnippets(snippets);
-          }
-        } else if (mode === 'groovy') {
-          if (groovyCodeSnippets?.['accessContentModel']) {
-            let { accessContentModel, ...rest } = groovyCodeSnippets;
-            setSnippets(rest);
-            const snippets = Object.keys(fields).map((key) => ({
-              label: fields[key].name,
-              value: accessContentModel.value.replace(
-                'VARIABLE_NAME',
-                contentTypePropsMap[fields[key].id] ? `"${contentTypePropsMap[fields[key].id]}"` : fields[key].id
-              )
-            }));
-            setContentModelSnippets(snippets);
-          }
+      if (mode === 'ftl') {
+        let { contentVariable, ...rest } = freemarkerCodeSnippets;
+        setSnippets(rest);
+        if (contentVariable && _contentType) {
+          setContentModelSnippets(getContentModelSnippets(contentVariable, contentTypes[_contentType].fields));
+        }
+      } else if (mode === 'groovy') {
+        let { accessContentModel, ...rest } = groovyCodeSnippets;
+        setSnippets(rest);
+        if (accessContentModel && _contentType) {
+          setContentModelSnippets(getContentModelSnippets(accessContentModel, contentTypes[_contentType].fields));
         }
       }
     }

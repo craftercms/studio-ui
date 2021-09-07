@@ -755,7 +755,12 @@ export const itemActionDispatcher = ({
         const path = item.path;
         fetchWorkflowAffectedItems(site, path).subscribe((items) => {
           if (items?.length > 0) {
-            dispatch(showCodeEditorDialog({ path: item.path, mode: getEditorMode(item) }));
+            dispatch(
+              showWorkflowCancellationDialog({
+                items,
+                onContinue: showCodeEditorDialog({ path: item.path, mode: getEditorMode(item) })
+              })
+            );
           } else {
             dispatch(showCodeEditorDialog({ path: item.path, mode: getEditorMode(item) }));
           }
