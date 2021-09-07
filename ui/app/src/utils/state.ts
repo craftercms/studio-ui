@@ -42,7 +42,7 @@ export function getStateMapFromLegacyItem(item: LegacyItem): ItemStateMap {
     submittedToLive: item.submittedToEnvironment === 'live',
     staged: item.isStaged,
     live: item.isLive,
-    disabled: item.isDisabled,
+    disabled: item.disabled,
     translationInProgress: false,
     translationPending: false,
     translationUpToDate: false
