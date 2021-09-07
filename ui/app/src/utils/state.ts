@@ -19,6 +19,7 @@ import { WidgetDescriptor } from '../components/Widget';
 import { nanoid as uuid } from 'nanoid';
 import TranslationOrText from '../models/TranslationOrText';
 import { DashboardPreferences } from '../models/Dashboard';
+import ToolsPanelTarget from '../models/ToolsPanelTarget';
 
 export function setStoredGlobalMenuSiteViewPreference(value: 'grid' | 'list', user: string) {
   return window.localStorage.setItem(`craftercms.${user}.globalMenuSiteViewPreference`, value);
@@ -125,7 +126,7 @@ export function getStoredGlobalAppOpenSidebar(user: string): string {
 export function createToolsPanelPage(
   title: TranslationOrText,
   widgets: WidgetDescriptor[],
-  target?: 'pageBuilderPanel' | 'toolsPanel'
+  target?: ToolsPanelTarget
 ): WidgetDescriptor {
   return createWidgetDescriptor({
     id: 'craftercms.components.ToolsPanelPage',

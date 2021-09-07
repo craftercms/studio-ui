@@ -78,7 +78,13 @@ export default function PreviewComponentsPanel() {
         }}
         withEmptyStateProps={{
           emptyStateProps: {
-            title: <FormattedMessage id="componentsPanel.emptyStateMessage" defaultMessage="No contentTypes found" />
+            title: <FormattedMessage id="componentsPanel.emptyStateMessage" defaultMessage="No content types found" />,
+            subtitle: (
+              <FormattedMessage
+                id="componentsPanel.emptyComponentsSubtitle"
+                defaultMessage="Communicate with your developers to create the required components in the system."
+              />
+            )
           }
         }}
       >
@@ -121,7 +127,7 @@ export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
           createToolsPanelPage(
             { id: 'previewBrowseComponentsPanel.title' },
             [createWidgetDescriptor({ id: 'craftercms.components.PreviewBrowseComponentsPanel' })],
-            'pageBuilderPanel'
+            'icePanel'
           )
         )
       ])
@@ -136,7 +142,7 @@ export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
           createToolsPanelPage(
             { id: 'previewInPageInstancesPanel.title' },
             [createWidgetDescriptor({ id: 'craftercms.components.PreviewInPageInstancesPanel' })],
-            'pageBuilderPanel'
+            'icePanel'
           )
         )
       ])
@@ -149,7 +155,7 @@ export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
         createToolsPanelPage(
           { id: 'previewDropTargetsPanel.title', defaultMessage: 'Component Drop Targets' },
           [createWidgetDescriptor({ id: 'craftercms.components.PreviewDropTargetsPanel' })],
-          'pageBuilderPanel'
+          'icePanel'
         )
       )
     );
@@ -175,7 +181,7 @@ export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
           ))
         ) : (
           <EmptyState
-            title={<FormattedMessage id="componentsPanel.emptyComponents" defaultMessage="No components found" />}
+            title={<FormattedMessage id="componentsPanel.emptyStateMessage" defaultMessage="No content types found" />}
             subtitle={
               <FormattedMessage
                 id="componentsPanel.emptyComponentsSubtitle"
