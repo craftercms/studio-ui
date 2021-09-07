@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import List from '@material-ui/core/List';
 import ContentType from '../../models/ContentType';
@@ -38,7 +38,6 @@ import { batchActions } from '../../state/actions/misc';
 import { createToolsPanelPage, createWidgetDescriptor } from '../../utils/state';
 import { useSelection } from '../../utils/hooks/useSelection';
 import { useSelectorResource } from '../../utils/hooks/useSelectorResource';
-import EmptyState from '../SystemStatus/EmptyState';
 
 const translations = defineMessages({
   previewComponentsPanelTitle: {
@@ -67,7 +66,10 @@ export default function PreviewComponentsPanel() {
     shouldResolve: (source) => !source.isFetching && nnou(source.byId),
     shouldReject: (source) => nnou(source.error),
     errorSelector: (source) => source.error,
-    resultSelector: (source) => Object.values(reversePluckProps(source.byId, '/component/level-descriptor'))
+    resultSelector: (source) =>
+      Object.values(reversePluckProps(source.byId, '/component/level-descriptor')).filter(
+        (contentType) => contentType.type === 'component'
+      )
   });
   return (
     <>
@@ -78,7 +80,7 @@ export default function PreviewComponentsPanel() {
         }}
         withEmptyStateProps={{
           emptyStateProps: {
-            title: <FormattedMessage id="componentsPanel.emptyStateMessage" defaultMessage="No content types found" />,
+            title: <FormattedMessage id="componentsPanel.emptyStateMessage" defaultMessage="No components found" />,
             subtitle: (
               <FormattedMessage
                 id="componentsPanel.emptyComponentsSubtitle"
@@ -97,16 +99,13 @@ export default function PreviewComponentsPanel() {
 export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
   const { resource } = props;
 
-  const contentTypes = resource.read();
+  const componentTypes = resource.read();
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const editMode = useSelection((state) => state.preview.editMode);
 
   const hostToGuest$ = getHostToGuestBus();
   const [menuContext, setMenuContext] = useState<{ anchor: Element; contentType: ContentType }>();
-  const componentTypes = useMemo(() => contentTypes.filter((contentType) => contentType.type === 'component'), [
-    contentTypes
-  ]);
 
   const onDragStart = (contentType) => {
     if (!editMode) {
@@ -168,28 +167,16 @@ export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
   return (
     <>
       <List>
-        {componentTypes.length ? (
-          componentTypes.map((contentType) => (
-            <DraggablePanelListItem
-              key={contentType.id}
-              primaryText={contentType.name}
-              secondaryText={contentType.id}
-              onDragStart={() => onDragStart(contentType)}
-              onDragEnd={onDragEnd}
-              onMenu={(anchor) => setMenuContext({ anchor, contentType })}
-            />
-          ))
-        ) : (
-          <EmptyState
-            title={<FormattedMessage id="componentsPanel.emptyStateMessage" defaultMessage="No content types found" />}
-            subtitle={
-              <FormattedMessage
-                id="componentsPanel.emptyComponentsSubtitle"
-                defaultMessage="Communicate with your developers to create the required components in the system."
-              />
-            }
+        {componentTypes.map((contentType) => (
+          <DraggablePanelListItem
+            key={contentType.id}
+            primaryText={contentType.name}
+            secondaryText={contentType.id}
+            onDragStart={() => onDragStart(contentType)}
+            onDragEnd={onDragEnd}
+            onMenu={(anchor) => setMenuContext({ anchor, contentType })}
           />
-        )}
+        ))}
       </List>
 
       <Menu open={!!menuContext} anchorEl={menuContext?.anchor} onClose={onMenuClose}>
