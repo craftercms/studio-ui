@@ -35,7 +35,6 @@ import { fadeIn } from 'react-animations';
 import PrimaryButton from '../PrimaryButton';
 import Marked from 'marked';
 import Link from '@material-ui/core/Link';
-import ErrorState from '../ErrorState';
 
 const useStyles = makeStyles((theme) => ({
   '@keyframes fadeIn': fadeIn,
@@ -172,10 +171,6 @@ const messages = defineMessages({
   searchEngine: {
     id: 'common.searchEngine',
     defaultMessage: 'Search Engine'
-  },
-  markdownError: {
-    id: 'pluginDetails.markdownError',
-    defaultMessage: 'Error getting the content from the documentation link'
   }
 });
 
@@ -340,13 +335,15 @@ export default function PluginDetailsView(props: PluginDetailsViewProps) {
             )}
             <Typography variant="body1">{description}</Typography>
             {markdown && <Typography component="div" dangerouslySetInnerHTML={{ __html: markdown }} />}
-            {link && <Link href={link} />}
+            {link && <Link href={link}>{link}</Link>}
             {markdownError && (
-              <ErrorState message={formatMessage(messages.markdownError)}>
-                <Typography>
-                  <Link href={plugin.documentation}>{plugin.documentation}</Link>
-                </Typography>
-              </ErrorState>
+              <Typography>
+                <FormattedMessage
+                  id="pluginDetails.markdownError"
+                  defaultMessage="Unable to render documentation. Visit <a>{link}</a> to view."
+                  values={{ link: plugin.documentation, a: (text) => <a href={text}>{text}</a> }}
+                />
+              </Typography>
             )}
           </Grid>
           <Grid item xs={4}>
