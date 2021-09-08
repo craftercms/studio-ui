@@ -166,5 +166,9 @@ export const translations = defineMessages({
   verifyingAffectedWorkflows: {
     id: 'itemActions.verifyingAffectedWorkflows',
     defaultMessage: 'Verifying affected workflows...'
+  },
+  unableToVerifyWorkflows: {
+    id: 'itemActions.unableToVerifyWorkflows',
+    defaultMessage: 'Unable to verify affected workflows please try again momentary'
   }
 });
