@@ -46,10 +46,9 @@ import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useDetailedItem } from '../../utils/hooks/useDetailedItem';
 import { useReferences } from '../../utils/hooks/useReferences';
 import { useUnmount } from '../../utils/hooks/useUnmount';
-import { getItemGroovyPath, getItemTemplatePath } from '../../utils/path';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 import { RELOAD_REQUEST } from '../../state/actions/preview';
-import { usePreviewGuest } from '../../utils/hooks/usePreviewGuest';
+import { getContentModelSnippets } from './utils';
 
 export interface CodeEditorDialogContainerProps extends CodeEditorDialogProps {
   path: string;
@@ -57,12 +56,6 @@ export interface CodeEditorDialogContainerProps extends CodeEditorDialogProps {
   onMinimized(): void;
   onSaveClose(): void;
 }
-
-export const contentTypePropsMap = {
-  fileName: 'file-name',
-  internalName: 'internal-name',
-  localeCode: 'locale-code'
-};
 
 export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps) {
   const { path, onMinimized, onClose, onSaveClose, onClosed, mode, readonly, contentType } = props;
@@ -83,8 +76,6 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
     'craftercms.freemarkerCodeSnippets': freemarkerCodeSnippets,
     'craftercms.groovyCodeSnippets': groovyCodeSnippets
   } = useReferences();
-  const { path: previewPath } = usePreviewGuest() ?? {};
-  const previewItem = useDetailedItem(previewPath);
 
   // add content model variables
   useEffect(() => {
@@ -92,34 +83,17 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
       const _contentType = contentType
         ? contentType
         : Object.values(contentTypes).find((contentType) => contentType.displayTemplate === item.path)?.id;
-      if (_contentType) {
-        const fields = contentTypes[_contentType].fields;
-        if (mode === 'ftl') {
-          if (freemarkerCodeSnippets?.['contentVariable']) {
-            let { contentVariable, ...rest } = freemarkerCodeSnippets;
-            setSnippets(rest);
-            const snippets = Object.keys(fields).map((key) => ({
-              label: fields[key].name,
-              value: contentVariable.value.replace(
-                'VARIABLE_NAME',
-                contentTypePropsMap[fields[key].id] ? `["${contentTypePropsMap[fields[key].id]}"]` : fields[key].id
-              )
-            }));
-            setContentModelSnippets(snippets);
-          }
-        } else if (mode === 'groovy') {
-          if (groovyCodeSnippets?.['accessContentModel']) {
-            let { accessContentModel, ...rest } = groovyCodeSnippets;
-            setSnippets(rest);
-            const snippets = Object.keys(fields).map((key) => ({
-              label: fields[key].name,
-              value: accessContentModel.value.replace(
-                'VARIABLE_NAME',
-                contentTypePropsMap[fields[key].id] ? `"${contentTypePropsMap[fields[key].id]}"` : fields[key].id
-              )
-            }));
-            setContentModelSnippets(snippets);
-          }
+      if (mode === 'ftl') {
+        let { contentVariable, ...rest } = freemarkerCodeSnippets;
+        setSnippets(rest);
+        if (contentVariable && _contentType) {
+          setContentModelSnippets(getContentModelSnippets(contentVariable, contentTypes[_contentType].fields));
+        }
+      } else if (mode === 'groovy') {
+        let { accessContentModel, ...rest } = groovyCodeSnippets;
+        setSnippets(rest);
+        if (accessContentModel && _contentType) {
+          setContentModelSnippets(getContentModelSnippets(accessContentModel, contentTypes[_contentType].fields));
         }
       }
     }
@@ -160,21 +134,14 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
               message: formatMessage(translations.saved)
             })
           );
-          if (
-            ['groovy', 'ftl'].includes(mode) &&
-            [getItemGroovyPath(previewItem, contentTypes), getItemTemplatePath(previewItem, contentTypes)].includes(
-              path
-            )
-          ) {
-            getHostToGuestBus().next({ type: RELOAD_REQUEST });
-          }
+          getHostToGuestBus().next({ type: RELOAD_REQUEST });
         },
         ({ response }) => {
           dispatch(showErrorDialog({ error: response }));
         }
       );
     },
-    [site, path, dispatch, formatMessage, mode, previewItem, contentTypes]
+    [dispatch, formatMessage, path, site]
   );
 
   const onCancel = () => {
