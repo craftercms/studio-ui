@@ -18,14 +18,14 @@ import React, { useEffect, useRef, useState } from 'react';
 import { fetchActiveEnvironment } from '../../services/environment';
 import { fetchConfigurationXML, fetchSiteConfigurationFiles, writeConfiguration } from '../../services/configuration';
 import { SiteConfigurationFileWithId } from '../../models/SiteConfigurationFile';
-import Box from '@material-ui/core/Box';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
+import Box from '@mui/material/Box';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
 import useStyles from './styles';
-import ListSubheader from '@material-ui/core/ListSubheader';
+import ListSubheader from '@mui/material/ListSubheader';
 import { FormattedMessage, useIntl } from 'react-intl';
-import Skeleton from '@material-ui/lab/Skeleton';
+import Skeleton from '@mui/material/Skeleton';
 import EmptyState from '../SystemStatus/EmptyState';
 import { translations } from './translations';
 import { getTranslation } from '../../utils/i18n';
@@ -33,25 +33,25 @@ import { ConditionalLoadingState } from '../SystemStatus/LoadingState';
 import AceEditor from '../AceEditor';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import ResizeableDrawer from '../../modules/Preview/ResizeableDrawer';
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
-import MenuOpenRoundedIcon from '@material-ui/icons/MenuOpenRounded';
-import MenuRoundedIcon from '@material-ui/icons/MenuRounded';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import MenuOpenRoundedIcon from '@mui/icons-material/MenuOpenRounded';
+import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
 import PrimaryButton from '../PrimaryButton';
 import DialogFooter from '../Dialogs/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
-import HelpOutlineRoundedIcon from '@material-ui/icons/HelpOutlineRounded';
-import Button from '@material-ui/core/Button';
-import ButtonGroup from '@material-ui/core/ButtonGroup';
+import HelpOutlineRoundedIcon from '@mui/icons-material/HelpOutlineRounded';
+import Button from '@mui/material/Button';
+import ButtonGroup from '@mui/material/ButtonGroup';
 import ConfirmDialog, { ConfirmDialogProps } from '../Dialogs/ConfirmDialog';
 import informationGraphicUrl from '../../assets/information.svg';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import clsx from 'clsx';
 import { useDispatch } from 'react-redux';
 import { fetchItemVersions } from '../../state/reducers/versions';
 import { fetchItemByPath } from '../../services/content';
 import SearchBar from '../Controls/SearchBar';
-import Alert from '@material-ui/lab/Alert';
+import Alert from '@mui/material/Alert';
 import { showHistoryDialog } from '../../state/actions/dialogs';
 import { batchActions } from '../../state/actions/misc';
 import { capitalize } from '../../utils/string';
@@ -576,7 +576,7 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
               showHamburgerMenuButton={false}
               showAppsButton={false}
               startContent={
-                <IconButton onClick={onToggleDrawer}>
+                <IconButton onClick={onToggleDrawer} size="large">
                   {openDrawer ? <MenuOpenRoundedIcon /> : <MenuRoundedIcon />}
                 </IconButton>
               }

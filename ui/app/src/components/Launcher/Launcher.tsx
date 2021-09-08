@@ -16,30 +16,31 @@
 
 import React, { Suspense, useEffect, useMemo } from 'react';
 import { defineMessages, FormattedMessage, IntlShape, useIntl } from 'react-intl';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import Popover from '@material-ui/core/Popover';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import Popover from '@mui/material/Popover';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
 import LauncherSiteCard, { LauncherSiteCardOption } from '../LauncherSiteCard/LauncherSiteCard';
-import CloseIcon from '@material-ui/icons/Close';
-import IconButton from '@material-ui/core/IconButton';
-import Hidden from '@material-ui/core/Hidden';
+import CloseIcon from '@mui/icons-material/Close';
+import IconButton from '@mui/material/IconButton';
+import Hidden from '@mui/material/Hidden';
 import { useDispatch } from 'react-redux';
 import { getInitials } from '../../utils/string';
 import { changeSite } from '../../state/reducers/sites';
 import palette from '../../styles/palette';
-import Avatar from '@material-ui/core/Avatar';
-import ExitToAppRoundedIcon from '@material-ui/icons/ExitToAppRounded';
-import Card from '@material-ui/core/Card/Card';
-import CardHeader from '@material-ui/core/CardHeader';
+import Avatar from '@mui/material/Avatar';
+import ExitToAppRoundedIcon from '@mui/icons-material/ExitToAppRounded';
+import Card from '@mui/material/Card';
+import CardHeader from '@mui/material/CardHeader';
 import { Site } from '../../models/Site';
 import EmptyState from '../SystemStatus/EmptyState';
 import { setSiteCookie } from '../../utils/auth';
-import List from '@material-ui/core/List';
+import List from '@mui/material/List';
 import CrafterCMSLogo from '../Icons/CrafterCMSLogo';
 import { renderWidgets, WidgetDescriptor } from '../Widget';
 import { logout } from '../../state/actions/auth';
-import { ListItem, Tooltip } from '@material-ui/core';
+import { ListItem, Tooltip } from '@mui/material';
 import { closeLauncher } from '../../state/actions/dialogs';
 import { EnhancedUser } from '../../models/User';
 import LookupTable from '../../models/LookupTable';
@@ -47,7 +48,7 @@ import { batchActions } from '../../state/actions/misc';
 import clsx from 'clsx';
 import LauncherGlobalNav from '../LauncherGlobalNav';
 import GlobalState from '../../models/GlobalState';
-import Skeleton from '@material-ui/lab/Skeleton';
+import Skeleton from '@mui/material/Skeleton';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useEnv } from '../../utils/hooks/useEnv';
 import { useSystemVersion } from '../../utils/hooks/useSystemVersion';
@@ -124,7 +125,7 @@ const useLauncherStyles = makeStyles((theme) =>
       display: 'inline-flex'
     },
     sitesRail: {
-      backgroundColor: theme.palette.type === 'dark' ? palette.gray.dark1 : palette.gray.light1
+      backgroundColor: theme.palette.mode === 'dark' ? palette.gray.dark1 : palette.gray.light1
     },
     appsRail: {},
     railTop: {
@@ -218,7 +219,7 @@ const UserDisplaySection = ({ classes, formatMessage, user, onLogout }) => (
         }
         action={
           <Tooltip title={formatMessage(messages.logout)}>
-            <IconButton aria-label={formatMessage(messages.signOut)} onClick={onLogout}>
+            <IconButton aria-label={formatMessage(messages.signOut)} onClick={onLogout} size="large">
               <ExitToAppRoundedIcon />
             </IconButton>
           </Tooltip>
@@ -259,7 +260,7 @@ const AppsRailSkeleton = ({ classes, closeButtonPosition, formatMessage, onLogou
     <div className={clsx(classes.railTop, closeButtonPosition === 'left' && classes.railTopExtraPadded)}>
       <Skeleton variant="text" width="150px" style={{ marginBottom: 20 }} />
       {new Array(9).fill(null).map((_, i) => (
-        <Skeleton key={i} variant="rect" className={classes.appsSkeletonTile} />
+        <Skeleton key={i} variant="rectangular" className={classes.appsSkeletonTile} />
       ))}
     </div>
     <UserDisplaySection classes={classes} formatMessage={formatMessage} onLogout={onLogout} user={user} />
@@ -326,7 +327,7 @@ const SiteRailSkeleton = ({ classes, formatMessage, version }) => (
       <List>
         {new Array(3).fill(null).map((_, i) => (
           <ListItem key={i}>
-            <Skeleton variant="rect" width="100%" height="72px" />
+            <Skeleton variant="rectangular" width="100%" height="72px" />
           </ListItem>
         ))}
       </List>
@@ -477,6 +478,7 @@ export default function Launcher(props: LauncherStateProps) {
           aria-label={formatMessage(messages.closeMenu)}
           className={clsx(classes.closeButton, closeButtonPosition)}
           onClick={onMenuClose}
+          size="large"
         >
           <CloseIcon />
         </IconButton>

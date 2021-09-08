@@ -15,15 +15,16 @@
  */
 
 import React, { useCallback, useEffect, useRef } from 'react';
-import Dialog from '@material-ui/core/Dialog';
-import DialogHeader from '../Dialogs/DialogHeader';
+import Dialog from '@mui/material/Dialog';
+import DialogHeader from '../DialogHeader/DialogHeader';
 import { defineMessages, FormattedMessage } from 'react-intl';
 import DialogBody from '../Dialogs/DialogBody';
 import DialogFooter from '../Dialogs/DialogFooter';
 import { Token } from '../../models/Token';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import InputBase from '@material-ui/core/InputBase';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import FormHelperText from '@mui/material/FormHelperText';
+import InputBase from '@mui/material/InputBase';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import { useUnmount } from '../../utils/hooks/useUnmount';
@@ -47,7 +48,7 @@ export const translations = defineMessages({
   }
 });
 
-const styles = makeStyles((theme) =>
+const styles = makeStyles(() =>
   createStyles({
     footer: {
       display: 'flex',
@@ -64,7 +65,7 @@ const styles = makeStyles((theme) =>
 export default function CopyTokenDialog(props: CopyTokenProps) {
   const { open, onClose } = props;
   return (
-    <Dialog open={open} fullWidth maxWidth="xs" onClose={onClose} onEscapeKeyDown={onClose}>
+    <Dialog open={open} fullWidth maxWidth="xs" onClose={onClose}>
       <CopyTokenUI {...props} />
     </Dialog>
   );

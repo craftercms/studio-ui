@@ -16,8 +16,8 @@
 
 import * as React from 'react';
 import { useState } from 'react';
-import IconButton from '@material-ui/core/IconButton';
-import DeleteRounded from '@material-ui/icons/DeleteRounded';
+import IconButton from '@mui/material/IconButton';
+import DeleteRounded from '@mui/icons-material/DeleteRounded';
 import DeleteContentTypeDialog from '../components/DeleteContentTypeDialog';
 import ContentType from '../models/ContentType';
 
@@ -30,7 +30,7 @@ function DeleteContentTypeButton({ contentType, onComplete }: DeleteContentTypeB
   const [open, setOpen] = useState(false);
   return (
     <>
-      <IconButton onClick={() => setOpen(true)}>
+      <IconButton onClick={() => setOpen(true)} size="large">
         <DeleteRounded />
       </IconButton>
       <DeleteContentTypeDialog

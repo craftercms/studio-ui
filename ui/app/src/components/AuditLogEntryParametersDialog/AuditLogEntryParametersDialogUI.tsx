@@ -14,14 +14,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import DialogHeader from '../Dialogs/DialogHeader';
+import DialogHeader from '../DialogHeader/DialogHeader';
 import { FormattedMessage } from 'react-intl';
 import DialogBody from '../Dialogs/DialogBody';
-import Table from '@material-ui/core/Table';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import TableCell from '@material-ui/core/TableCell';
-import TableBody from '@material-ui/core/TableBody';
+import Table from '@mui/material/Table';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import TableCell from '@mui/material/TableCell';
+import TableBody from '@mui/material/TableBody';
 import React from 'react';
 import { AuditLogEntryParametersDialogProps } from './AuditLogEntryParametersDialog';
 import { useUnmount } from '../../utils/hooks/useUnmount';

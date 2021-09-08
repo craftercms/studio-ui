@@ -32,13 +32,13 @@ import {
 import { StateStylingProps } from '../../models/UiConfig';
 import LookupTable from '../../models/LookupTable';
 import { getEditorMode, isEditableViaFormEditor, isImage, isNavigable, isPreviewable } from '../PathNavigator/utils';
-import ContextMenu, { ContextMenuOption } from '../ContextMenu';
+import ContextMenu, { ContextMenuOption } from '../ContextMenu/ContextMenu';
 import { getNumOfMenuOptionsForItem, lookupItemByPath } from '../../utils/content';
 import { ContextMenuOptionDescriptor, toContextMenuOptionsLookup } from '../../utils/itemActions';
 import { defineMessages, useIntl } from 'react-intl';
 import { previewItem } from '../../state/actions/preview';
 // @ts-ignore
-import { getOffsetLeft, getOffsetTop } from '@material-ui/core/Popover/Popover';
+import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover/Popover';
 import { showEditDialog, showItemMegaMenu, showPreviewDialog, updatePreviewDialog } from '../../state/actions/dialogs';
 import { getStoredPathNavigatorTree } from '../../utils/state';
 import GlobalState from '../../models/GlobalState';

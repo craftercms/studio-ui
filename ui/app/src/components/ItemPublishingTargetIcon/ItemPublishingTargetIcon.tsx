@@ -14,14 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Tooltip from '@material-ui/core/Tooltip/Tooltip';
-import PublishingTargetIcon from '@material-ui/icons/FiberManualRecordRounded';
+import Tooltip from '@mui/material/Tooltip';
+import PublishingTargetIcon from '@mui/icons-material/FiberManualRecordRounded';
 import clsx from 'clsx';
 import * as React from 'react';
 import { getItemPublishingTargetText } from '../ItemDisplay/utils';
-import { makeStyles, createStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
+import createStyles from '@mui/styles/createStyles';
 import palette from '../../styles/palette';
-import { CSSProperties } from '@material-ui/styles';
+import { CSSProperties } from '@mui/styles';
 import { DetailedItem, SandboxItem } from '../../models/Item';
 
 export type ItemPublishingTargetIconClassKey =

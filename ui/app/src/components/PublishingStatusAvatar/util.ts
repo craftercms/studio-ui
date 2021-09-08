@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Theme } from '@material-ui/core/styles';
+import { Theme } from '@mui/material/styles';
 import palette from '../../styles/palette';
 import { PublishingStatusTileProps } from '../PublishingStatusTile';
 

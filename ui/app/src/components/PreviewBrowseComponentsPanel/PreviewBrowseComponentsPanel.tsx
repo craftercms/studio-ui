@@ -20,10 +20,11 @@ import { PagedEntityState } from '../../models/GlobalState';
 import { nnou, pluckProps } from '../../utils/object';
 import { ErrorBoundary } from '../SystemStatus/ErrorBoundary';
 import LoadingState from '../SystemStatus/LoadingState';
-import { createStyles, makeStyles } from '@material-ui/core';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import ContentInstance from '../../models/ContentInstance';
 import { DraggablePanelListItem } from '../../modules/Preview/Tools/DraggablePanelListItem';
-import List from '@material-ui/core/List';
+import List from '@mui/material/List';
 import {
   COMPONENT_INSTANCE_DRAG_ENDED,
   COMPONENT_INSTANCE_DRAG_STARTED,
@@ -34,10 +35,10 @@ import {
 import { useDispatch } from 'react-redux';
 import SearchBar from '../Controls/SearchBar';
 import EmptyState from '../SystemStatus/EmptyState';
-import TablePagination from '@material-ui/core/TablePagination';
+import TablePagination from '@mui/material/TablePagination';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 import ContentType from '../../models/ContentType';
 import { Resource } from '../../models/Resource';
 import { useSelection } from '../../utils/hooks/useSelection';
@@ -126,7 +127,7 @@ const useStyles = makeStyles((theme) =>
       marginTop: '15px'
     },
     emptyState: {
-      margin: `${theme.spacing(4)}px ${theme.spacing(1)}px`
+      margin: `${theme.spacing(4)} ${theme.spacing(1)}`
     },
     emptyStateImage: {
       width: '50%',

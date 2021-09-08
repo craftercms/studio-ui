@@ -15,12 +15,12 @@
  */
 
 import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
-import Dialog from '@material-ui/core/Dialog';
-import DialogHeader from './DialogHeader';
+import Dialog from '@mui/material/Dialog';
+import DialogHeader from '../DialogHeader/DialogHeader';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import DialogBody from './DialogBody';
 import DialogFooter from './DialogFooter';
-import TextField from '@material-ui/core/TextField';
+import TextField from '@mui/material/TextField';
 import { createFolder, renameFolder } from '../../services/content';
 import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';

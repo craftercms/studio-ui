@@ -16,16 +16,17 @@
 
 import React, { PropsWithChildren, useCallback, useState } from 'react';
 import { defineMessages, FormattedMessage, MessageDescriptor, useIntl } from 'react-intl';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import ContextMenu, { ContextMenuOption } from '../../../components/ContextMenu';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import ContextMenu, { ContextMenuOption } from '../../../components/ContextMenu/ContextMenu';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import { LookupTable } from '../../../models/LookupTable';
 import StandardAction from '../../../models/StandardAction';
 import { useDispatch } from 'react-redux';
 import { VersionList } from './VersionList';
-import TablePagination from '@material-ui/core/TablePagination';
+import TablePagination from '@mui/material/TablePagination';
 import { fetchContentTypes } from '../../../state/actions/preview';
-import DialogHeader from '../../../components/Dialogs/DialogHeader';
+import DialogHeader from '../../../components/DialogHeader/DialogHeader';
 import DialogFooter from '../../../components/Dialogs/DialogFooter';
 import DialogBody from '../../../components/Dialogs/DialogBody';
 import { LegacyVersion, VersionsStateProps } from '../../../models/Version';
@@ -48,7 +49,7 @@ import {
   showViewVersionDialog
 } from '../../../state/actions/dialogs';
 import SingleItemSelector from '../Authoring/SingleItemSelector';
-import Dialog from '@material-ui/core/Dialog';
+import Dialog from '@mui/material/Dialog';
 import { batchActions } from '../../../state/actions/misc';
 import { asDayMonthDateTime } from '../../../utils/datetime';
 import { hasRevertAction } from '../../../utils/content';

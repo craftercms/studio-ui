@@ -15,15 +15,16 @@
  */
 
 import React, { useState } from 'react';
-import DialogHeader from '../Dialogs/DialogHeader';
+import DialogHeader from '../DialogHeader/DialogHeader';
 import DialogBody from '../Dialogs/DialogBody';
 import DialogFooter from '../Dialogs/DialogFooter';
 import { FormattedMessage } from 'react-intl';
-import InputLabel from '@material-ui/core/InputLabel';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { MergeStrategy } from '../../models/Repository';
 import { pull } from '../../services/repositories';
 import ApiResponse from '../../models/ApiResponse';

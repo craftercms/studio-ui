@@ -19,27 +19,27 @@ import { Site } from '../../models/Site';
 import LookupTable from '../../models/LookupTable';
 import useStyles from './styles';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import Avatar from '@material-ui/core/Avatar';
-import Typography from '@material-ui/core/Typography';
-import Tooltip from '@material-ui/core/Tooltip';
-import IconButton from '@material-ui/core/IconButton';
-import PasswordRoundedIcon from '@material-ui/icons/VpnKeyRounded';
+import Avatar from '@mui/material/Avatar';
+import Typography from '@mui/material/Typography';
+import Tooltip from '@mui/material/Tooltip';
+import IconButton from '@mui/material/IconButton';
+import PasswordRoundedIcon from '@mui/icons-material/VpnKeyRounded';
 import ConfirmDropdown from '../Controls/ConfirmDropdown';
-import DeleteRoundedIcon from '@material-ui/icons/DeleteRounded';
-import CloseRoundedIcon from '@material-ui/icons/CloseRounded';
-import Divider from '@material-ui/core/Divider';
+import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
+import Divider from '@mui/material/Divider';
 import DialogBody from '../Dialogs/DialogBody';
-import Switch from '@material-ui/core/Switch';
-import Chip from '@material-ui/core/Chip';
+import Switch from '@mui/material/Switch';
+import Chip from '@mui/material/Chip';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
-import Grid from '@material-ui/core/Grid';
-import Skeleton from '@material-ui/lab/Skeleton';
+import Grid from '@mui/material/Grid';
+import Skeleton from '@mui/material/Skeleton';
 import { rand } from '../PathNavigator/utils';
 import ResetPasswordDialog from '../ResetPasswordDialog';
 import * as React from 'react';
-import InputLabel from '@material-ui/core/InputLabel';
-import OutlinedInput from '@material-ui/core/OutlinedInput';
+import InputLabel from '@mui/material/InputLabel';
+import OutlinedInput from '@mui/material/OutlinedInput';
 import { UserGroupMembershipEditor } from '../UserGroupMembershipEditor';
 
 export interface EditUserDialogUIProps {
@@ -126,7 +126,7 @@ export function EditUserDialogUI(props: EditUserDialogUIProps) {
           {managedInStudio ? (
             <>
               <Tooltip title={<FormattedMessage id="userInfoDialog.resetPassword" defaultMessage="Reset password" />}>
-                <IconButton onClick={() => onResetPassword(true)}>
+                <IconButton onClick={() => onResetPassword(true)} size="large">
                   <PasswordRoundedIcon />
                 </IconButton>
               </Tooltip>
@@ -148,7 +148,7 @@ export function EditUserDialogUI(props: EditUserDialogUIProps) {
             <Chip label={formatMessage(translations.externallyManaged)} size="small" className={classes.chip} />
           )}
           <Tooltip title={<FormattedMessage id="userInfoDialog.close" defaultMessage="Close" />}>
-            <IconButton edge="end" onClick={onClose}>
+            <IconButton edge="end" onClick={onClose} size="large">
               <CloseRoundedIcon />
             </IconButton>
           </Tooltip>

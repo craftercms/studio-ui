@@ -15,13 +15,14 @@
  */
 
 import { defineMessages, useIntl } from 'react-intl';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { CSSProperties } from '@material-ui/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import { CSSProperties } from '@mui/styles';
 import clsx from 'clsx';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import * as React from 'react';
 import { ElementType } from 'react';
-import Skeleton from '@material-ui/lab/Skeleton';
+import Skeleton from '@mui/material/Skeleton';
 import { PublishingStatus } from '../../models/Publishing';
 import PublishingStatusAvatar from '../PublishingStatusAvatar/PublishingStatusAvatar';
 

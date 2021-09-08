@@ -17,12 +17,12 @@
 import React from 'react';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import { FormattedMessage } from 'react-intl';
-import Paper from '@material-ui/core/Paper';
+import Paper from '@mui/material/Paper';
 import useStyles from './styles';
 import CrafterCMSLogo from '../Icons/CrafterCMSLogo';
-import Box from '@material-ui/core/Box';
-import Link from '@material-ui/core/Link';
-import Typography from '@material-ui/core/Typography';
+import Box from '@mui/material/Box';
+import Link from '@mui/material/Link';
+import Typography from '@mui/material/Typography';
 import { useSelection } from '../../utils/hooks/useSelection';
 import { useEnv } from '../../utils/hooks/useEnv';
 
@@ -35,7 +35,7 @@ export default function AboutCrafterCMSView() {
     <Paper elevation={0}>
       <Box display="flex" flexDirection="column" height="calc(100vh - 215px)">
         <GlobalAppToolbar title={<FormattedMessage id="global.about" defaultMessage="About" />} />
-        <Box display="flex" alignItems="center" justifyContent="center" flexGrow="1">
+        <Box display="flex" alignItems="center" justifyContent="center" flexGrow={[1]}>
           <Paper className={classes.paperRoot}>
             <CrafterCMSLogo width={250} className={classes.logo} />
             <div className={classes.row}>

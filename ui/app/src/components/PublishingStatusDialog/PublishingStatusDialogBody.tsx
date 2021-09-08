@@ -14,18 +14,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { useIntl } from 'react-intl';
-import DialogHeader from '../Dialogs/DialogHeader';
+import DialogHeader from '../DialogHeader/DialogHeader';
 import { publishingStatusTileMessages } from '../PublishingStatusTile';
-import RefreshRoundedIcon from '@material-ui/icons/RefreshRounded';
-import LockOpenRoundedIcon from '@material-ui/icons/LockOpenRounded';
+import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
+import LockOpenRoundedIcon from '@mui/icons-material/LockOpenRounded';
 import DialogBody from '../Dialogs/DialogBody';
 import * as React from 'react';
 import { PublishingStatus } from '../../models/Publishing';
 import PublishingStatusDisplay from '../PublishingStatusDisplay';
-import PauseCircleOutlineOutlinedIcon from '@material-ui/icons/PauseCircleOutlineOutlined';
-import PlayCircleOutlineOutlinedIcon from '@material-ui/icons/PlayCircleOutlineOutlined';
+import PauseCircleOutlineOutlinedIcon from '@mui/icons-material/PauseCircleOutlineOutlined';
+import PlayCircleOutlineOutlinedIcon from '@mui/icons-material/PlayCircleOutlineOutlined';
 
 export type PublishingStatusDialogBodyProps = PublishingStatus & {
   isFetching: boolean;

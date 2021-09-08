@@ -19,14 +19,14 @@ import { Resource } from '../../models/Resource';
 import { DeleteDependencies } from '../../modules/Content/Dependencies/DependencySelection';
 import { DetailedItem } from '../../models/Item';
 import { useDeleteDialogUIStyles } from './styles';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 import TextFieldWithMax from '../Controls/TextFieldWithMax';
 import { FormattedMessage } from 'react-intl';
-import { InputProps } from '@material-ui/core/Input';
+import { InputProps } from '@mui/material/Input';
 import { SelectionList, SelectionListProps } from '../../modules/Content/Dependencies/SelectionList';
 import LookupTable from '../../models/LookupTable';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
 
 export interface DeleteDialogContentUIProps {
   resource: Resource<DeleteDependencies>;

@@ -16,9 +16,9 @@
 
 import * as React from 'react';
 import ConfirmDialog from '../Dialogs/ConfirmDialog';
-import { Alert } from '@material-ui/lab';
+import { Alert } from '@mui/material';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import { TextField } from '@material-ui/core';
+import { TextField } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { clearLock } from '../../services/publishing';
 import { useDispatch } from 'react-redux';

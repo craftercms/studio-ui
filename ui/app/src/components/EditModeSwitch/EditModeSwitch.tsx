@@ -14,16 +14,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { withStyles } from '@material-ui/core/styles';
-import Switch from '@material-ui/core/Switch';
-import Tooltip from '@material-ui/core/Tooltip';
+import withStyles from '@mui/styles/withStyles';
+import Switch from '@mui/material/Switch';
+import Tooltip from '@mui/material/Tooltip';
 import React from 'react';
 import { DetailedItem, SandboxItem } from '../../models/Item';
 import { useIntl } from 'react-intl';
 import translations from './translations';
 import { useDispatch } from 'react-redux';
 import { setPreviewEditMode } from '../../state/actions/preview';
-import { SwitchProps } from '@material-ui/core/Switch/Switch';
+import { SwitchProps } from '@mui/material/Switch';
 import { useSelection } from '../../utils/hooks/useSelection';
 import { isItemLockedForMe } from '../../utils/content';
 import { useActiveUser } from '../../utils/hooks/useActiveUser';

@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import DialogHeader from '../Dialogs/DialogHeader';
+import DialogHeader from '../DialogHeader/DialogHeader';
 import { Widget, WidgetDescriptor } from '../Widget';
 import useStyles from './styles';
 

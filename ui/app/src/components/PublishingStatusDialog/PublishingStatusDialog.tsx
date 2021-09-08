@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Dialog from '@material-ui/core/Dialog';
+import Dialog from '@mui/material/Dialog';
 import * as React from 'react';
 import StandardAction from '../../models/StandardAction';
 import PublishingStatusDialogBody, { PublishingStatusDialogBodyProps } from './PublishingStatusDialogBody';

@@ -27,7 +27,7 @@ import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { showSystemNotification } from '../../state/actions/system';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
-import Paper from '@material-ui/core/Paper';
+import Paper from '@mui/material/Paper';
 
 const messages = defineMessages({
   levelChangedSuccess: {

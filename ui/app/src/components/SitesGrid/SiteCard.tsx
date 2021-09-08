@@ -15,18 +15,18 @@
  */
 
 import React from 'react';
-import Card from '@material-ui/core/Card';
-import CardHeader from '@material-ui/core/CardHeader';
-import IconButton from '@material-ui/core/IconButton';
-import EditRoundedIcon from '@material-ui/icons/EditRounded';
-import DeleteRoundedIcon from '@material-ui/icons/DeleteRounded';
+import Card from '@mui/material/Card';
+import CardHeader from '@mui/material/CardHeader';
+import IconButton from '@mui/material/IconButton';
+import EditRoundedIcon from '@mui/icons-material/EditRounded';
+import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import { Site } from '../../models/Site';
-import CardMedia from '@material-ui/core/CardMedia';
-import CardActions from '@material-ui/core/CardActions';
-import Tooltip from '@material-ui/core/Tooltip';
+import CardMedia from '@mui/material/CardMedia';
+import CardActions from '@mui/material/CardActions';
+import Tooltip from '@mui/material/Tooltip';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import CardActionArea from '@material-ui/core/CardActionArea';
-import { Typography } from '@material-ui/core';
+import CardActionArea from '@mui/material/CardActionArea';
+import { Typography } from '@mui/material';
 import ConfirmDropdown from '../Controls/ConfirmDropdown';
 import clsx from 'clsx';
 import { useSiteCardStyles } from './styles';

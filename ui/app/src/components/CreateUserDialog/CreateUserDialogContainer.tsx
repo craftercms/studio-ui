@@ -19,18 +19,19 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
 import { create } from '../../services/users';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
-import DialogHeader from '../Dialogs/DialogHeader';
+import DialogHeader from '../DialogHeader/DialogHeader';
 import DialogBody from '../Dialogs/DialogBody';
-import TextField from '@material-ui/core/TextField';
+import TextField from '@mui/material/TextField';
 import PasswordTextField from '../Controls/PasswordTextField';
-import Popper from '@material-ui/core/Popper';
-import Paper from '@material-ui/core/Paper';
+import Popper from '@mui/material/Popper';
+import Paper from '@mui/material/Paper';
 import PasswordRequirementsDisplay from '../PasswordRequirementsDisplay';
 import DialogFooter from '../Dialogs/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import Grid from '@mui/material/Grid';
 import clsx from 'clsx';
 import UserGroupMembershipEditor from '../UserGroupMembershipEditor';
 import { mapTo, switchMap } from 'rxjs/operators';
@@ -347,12 +348,15 @@ export function CreateUserDialogContainer(props: CreateUserDialogUIProps) {
           open={Boolean(anchorEl)}
           className={classes.popper}
           anchorEl={anchorEl}
-          modifiers={{
-            arrow: {
+          modifiers={[
+            {
+              name: 'arrow',
               enabled: true,
-              element: arrowRef.current
+              options: {
+                element: arrowRef.current
+              }
             }
-          }}
+          ]}
         >
           <Paper className={classes.paper}>
             <PasswordRequirementsDisplay

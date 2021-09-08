@@ -18,7 +18,7 @@ import { ConfigurationSamplePreviewDialogProps } from './ConfigurationSamplePrev
 import AceEditor from '../AceEditor';
 import React from 'react';
 import DialogBody from '../Dialogs/DialogBody';
-import DialogHeader from '../Dialogs/DialogHeader';
+import DialogHeader from '../DialogHeader/DialogHeader';
 import { FormattedMessage } from 'react-intl';
 import DialogFooter from '../Dialogs/DialogFooter';
 import ConfirmDropdown from '../Controls/ConfirmDropdown';

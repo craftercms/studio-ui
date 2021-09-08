@@ -16,14 +16,15 @@
 
 import React, { useEffect, useMemo } from 'react';
 import { isBlank } from '../../utils/string';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import clsx from 'clsx';
-import CheckCircleOutlineRoundedIcon from '@material-ui/icons/CheckCircleOutlineRounded';
-import ErrorOutlineRoundedIcon from '@material-ui/icons/ErrorOutlineRounded';
+import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlineRounded';
+import ErrorOutlineRoundedIcon from '@mui/icons-material/ErrorOutlineRounded';
 import { passwordRequirementMessages } from '../../utils/i18n-legacy';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import palette from '../../styles/palette';
-import { CSSProperties } from '@material-ui/styles';
+import { CSSProperties } from '@mui/styles';
 
 type PasswordRequirementsDisplayClassKey =
   | 'listOfConditions'

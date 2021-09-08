@@ -15,23 +15,23 @@
  */
 import React, { useEffect } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
-import Typography from '@material-ui/core/Typography';
-import ExpandMoreIcon from '@material-ui/icons/KeyboardArrowDown';
+import Typography from '@mui/material/Typography';
+import ExpandMoreIcon from '@mui/icons-material/KeyboardArrowDown';
 import { camelize } from '../../utils/string';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import { ElasticParams, Facet, Filter as FilterType } from '../../models/Search';
-import CheckIcon from '@material-ui/icons/Check';
+import CheckIcon from '@mui/icons-material/Check';
 import { LookupTable } from '../../models/LookupTable';
 import SiteSearchSortBy from '../SiteSearchSortBy';
 import SiteSearchSortOrder from '../SiteSearchSortOrder';
 import SiteSearchFilter from '../SiteSearchFilter';
 import PathSelector from '../SiteSearchPathSelector';
-import Button from '@material-ui/core/Button';
+import Button from '@mui/material/Button';
 import palette from '../../styles/palette';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import Divider from '@material-ui/core/Divider/Divider';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import Divider from '@mui/material/Divider';
 import { useSpreadState } from '../../utils/hooks/useSpreadState';
 
 interface SiteSearchFiltersProps {
@@ -56,7 +56,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
     justifyContent: 'space-between',
     border: 'none',
-    color: theme.palette.type === 'dark' ? palette.white : ''
+    color: theme.palette.mode === 'dark' ? palette.white : ''
   },
   accordionTitle: {
     display: 'flex',

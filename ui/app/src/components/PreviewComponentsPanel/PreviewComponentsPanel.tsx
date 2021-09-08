@@ -16,10 +16,10 @@
 
 import React, { useMemo, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import List from '@material-ui/core/List';
+import List from '@mui/material/List';
 import ContentType from '../../models/ContentType';
-import MenuItem from '@material-ui/core/MenuItem';
-import Menu from '@material-ui/core/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Menu from '@mui/material/Menu';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 import {
   COMPONENT_DRAG_ENDED,

@@ -14,16 +14,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createGenerateClassName, createTheme, ThemeOptions } from '@material-ui/core/styles';
+import { createTheme, DeprecatedThemeOptions } from '@mui/material/styles';
+import createGenerateClassName from '@mui/styles/createGenerateClassName';
 import palette from './palette';
 import { GenerateId } from 'jss';
 
 export const backgroundColor = palette.gray.light1;
 export const RedColor = palette.red.main;
 
-export const defaultThemeOptions: ThemeOptions = (function() {
+export const defaultThemeOptions: DeprecatedThemeOptions = (function() {
   const defaultTheme = createTheme();
-  const theme: ThemeOptions = {
+  const theme: DeprecatedThemeOptions = {
     typography: {
       button: {
         textTransform: 'none'

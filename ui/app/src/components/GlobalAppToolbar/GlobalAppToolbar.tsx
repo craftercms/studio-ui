@@ -14,11 +14,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
-import { CSSProperties } from '@material-ui/styles';
+import { CSSProperties } from '@mui/styles';
 import clsx from 'clsx';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import LauncherOpenerButton from '../LauncherOpenerButton';
 import LogoAndMenuBundleButton from '../LogoAndMenuBundleButton';
 import { defineMessages, useIntl } from 'react-intl';

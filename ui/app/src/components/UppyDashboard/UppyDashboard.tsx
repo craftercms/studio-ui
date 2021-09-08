@@ -17,7 +17,8 @@
 import { Dashboard } from '@craftercms/uppy';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { Uppy } from '@uppy/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import palette from '../../styles/palette';
 import { validateActionPolicy } from '../../services/sites';
 import { defineMessages, useIntl } from 'react-intl';

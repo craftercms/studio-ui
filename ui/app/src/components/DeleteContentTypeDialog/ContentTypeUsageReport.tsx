@@ -14,11 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import List from '@material-ui/core/List';
-import ListSubheader from '@material-ui/core/ListSubheader';
-import { ListItem, ListItemText } from '@material-ui/core';
+import List from '@mui/material/List';
+import ListSubheader from '@mui/material/ListSubheader';
+import { ListItem, ListItemText } from '@mui/material';
 import ItemDisplay from '../ItemDisplay';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import * as React from 'react';
 import { FetchContentTypeUsageResponse } from '../../services/contentTypes';
 import { ReactNode } from 'react';

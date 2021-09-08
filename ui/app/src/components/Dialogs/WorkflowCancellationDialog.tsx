@@ -16,19 +16,20 @@
 
 import React, { PropsWithChildren } from 'react';
 import StandardAction from '../../models/StandardAction';
-import Dialog from '@material-ui/core/Dialog';
-import DialogHeader from './DialogHeader';
+import Dialog from '@mui/material/Dialog';
+import DialogHeader from '../DialogHeader/DialogHeader';
 import DialogBody from './DialogBody';
 import DialogFooter from './DialogFooter';
 import { FormattedMessage } from 'react-intl';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import { Resource } from '../../models/Resource';
 import { SandboxItem } from '../../models/Item';
-import Grid from '@material-ui/core/Grid';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import Grid from '@mui/material/Grid';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';

@@ -14,23 +14,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import DialogContent from '@material-ui/core/DialogContent';
-import TextField from '@material-ui/core/TextField';
-import DialogActions from '@material-ui/core/DialogActions';
-import Button from '@material-ui/core/Button';
+import DialogContent from '@mui/material/DialogContent';
+import TextField from '@mui/material/TextField';
+import DialogActions from '@mui/material/DialogActions';
+import Button from '@mui/material/Button';
 import React, { CSSProperties, PropsWithChildren, useEffect, useRef, useState } from 'react';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { useDispatch } from 'react-redux';
 import { login, loginComplete, logout } from '../../state/actions/auth';
 import loginGraphicUrl from '../../assets/authenticate.svg';
 import { isBlank } from '../../utils/string';
-import Typography from '@material-ui/core/Typography';
-import OpenInNewRounded from '@material-ui/icons/OpenInNewRounded';
+import Typography from '@mui/material/Typography';
+import OpenInNewRounded from '@mui/icons-material/OpenInNewRounded';
 import LogInForm from './LoginForm';
-import { ClassNameMap } from '@material-ui/styles';
+import { ClassNameMap } from '@mui/styles';
 import { me } from '../../services/users';
 import ApiResponseErrorState from '../ApiResponseErrorState';
 import ErrorState from '../ErrorState/ErrorState';

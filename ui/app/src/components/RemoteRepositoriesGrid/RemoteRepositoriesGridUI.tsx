@@ -16,20 +16,20 @@
 
 import { Resource } from '../../models/Resource';
 import { Repository } from '../../models/Repository';
-import Table from '@material-ui/core/Table';
-import TableHead from '@material-ui/core/TableHead';
+import Table from '@mui/material/Table';
+import TableHead from '@mui/material/TableHead';
 import GlobalAppGridRow from '../GlobalAppGridRow';
 import GlobalAppGridCell from '../GlobalAppGridCell';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
-import TableBody from '@material-ui/core/TableBody';
-import TableContainer from '@material-ui/core/TableContainer';
+import TableBody from '@mui/material/TableBody';
+import TableContainer from '@mui/material/TableContainer';
 import React from 'react';
-import ArrowDownwardRoundedIcon from '@material-ui/icons/ArrowDownwardRounded';
-import ArrowUpwardRoundedIcon from '@material-ui/icons/ArrowUpwardRounded';
-import DeleteRoundedIcon from '@material-ui/icons/DeleteRounded';
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip/Tooltip';
+import ArrowDownwardRoundedIcon from '@mui/icons-material/ArrowDownwardRounded';
+import ArrowUpwardRoundedIcon from '@mui/icons-material/ArrowUpwardRounded';
+import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
 import ConfirmDropdown from '../Controls/ConfirmDropdown';
 
 export interface RemoteRepositoriesGridUIProps {
@@ -61,6 +61,7 @@ export function RemoteRepositoriesGridUI(props: RemoteRepositoriesGridUIProps) {
                     <IconButton
                       onClick={() => onPullClick(repository.name, repository.branches)}
                       disabled={disableActions}
+                      size="large"
                     >
                       <ArrowDownwardRoundedIcon />
                     </IconButton>
@@ -71,6 +72,7 @@ export function RemoteRepositoriesGridUI(props: RemoteRepositoriesGridUIProps) {
                     <IconButton
                       onClick={() => onPushClick(repository.name, repository.branches)}
                       disabled={disableActions}
+                      size="large"
                     >
                       <ArrowUpwardRoundedIcon />
                     </IconButton>

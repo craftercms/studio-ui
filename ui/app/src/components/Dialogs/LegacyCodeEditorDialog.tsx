@@ -15,11 +15,12 @@
  */
 
 import React, { PropsWithChildren, useEffect, useMemo, useRef } from 'react';
-import Dialog from '@material-ui/core/Dialog';
+import Dialog from '@mui/material/Dialog';
 import { useDispatch } from 'react-redux';
 import LoadingState from '../../components/SystemStatus/LoadingState';
 import clsx from 'clsx';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { defineMessages, useIntl } from 'react-intl';
 import {
   LEGACY_CODE_EDITOR_CLOSE,
@@ -39,7 +40,7 @@ import {
   showConfirmDialog,
   updateCodeEditorDialog
 } from '../../state/actions/dialogs';
-import DialogHeader from './DialogHeader';
+import DialogHeader from '../DialogHeader/DialogHeader';
 import { getCodeEditorSrc } from '../../utils/path';
 import { batchActions } from '../../state/actions/misc';
 import { unlockItem } from '../../state/actions/content';

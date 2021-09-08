@@ -14,12 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Avatar from '@material-ui/core/Avatar';
+import Avatar from '@mui/material/Avatar';
 import clsx from 'clsx';
-import CloudUploadOutlined from '@material-ui/icons/CloudUploadOutlined';
+import CloudUploadOutlined from '@mui/icons-material/CloudUploadOutlined';
 import * as React from 'react';
 import { PublishingStatus } from '../../models/Publishing';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { CSSProperties } from 'react';
 import { getPublishingStatusCodeColor } from './util';
 

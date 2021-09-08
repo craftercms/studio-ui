@@ -14,13 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Alert from '@material-ui/lab/Alert';
+import Alert from '@mui/material/Alert';
 import { publishingStatusTileMessages } from '../PublishingStatusTile';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar/ListItemAvatar';
+import ListItem from '@mui/material/ListItem';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
 import PublishingStatusAvatar from '../PublishingStatusAvatar';
-import ListItemText from '@material-ui/core/ListItemText/ListItemText';
-import Skeleton from '@material-ui/lab/Skeleton';
+import ListItemText from '@mui/material/ListItemText';
+import Skeleton from '@mui/material/Skeleton';
 import * as React from 'react';
 import { useIntl } from 'react-intl';
 import { PublishingStatus } from '../../models/Publishing';

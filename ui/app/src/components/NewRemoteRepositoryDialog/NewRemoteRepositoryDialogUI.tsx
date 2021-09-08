@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import DialogHeader from '../Dialogs/DialogHeader';
+import DialogHeader from '../DialogHeader';
 import { FormattedMessage } from 'react-intl';
 import DialogBody from '../Dialogs/DialogBody';
 import NewRemoteRepositoryForm from '../NewRemoteRepositoryForm/NewRemoteRepositoryForm';

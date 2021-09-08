@@ -16,8 +16,8 @@
 
 import React from 'react';
 import ToolPanel from './ToolPanel';
-import CloseRounded from '@material-ui/icons/CloseRounded';
-import Typography from '@material-ui/core/Typography';
+import CloseRounded from '@mui/icons-material/CloseRounded';
+import Typography from '@mui/material/Typography';
 import { useDispatch } from 'react-redux';
 import { defineMessages, useIntl } from 'react-intl';
 import { findParentModelId, nnou } from '../../../utils/object';
@@ -25,7 +25,7 @@ import { popPiece } from '../../../utils/string';
 import * as ModelHelper from '../../../utils/model';
 import { showCodeEditorDialog, showEditDialog } from '../../../state/actions/dialogs';
 import { getField } from '../../../utils/contentType';
-import { Menu, MenuItem } from '@material-ui/core';
+import { Menu, MenuItem } from '@mui/material';
 import { GuestData } from '../../../models/GlobalState';
 import { useSelection } from '../../../utils/hooks/useSelection';
 import { useActiveSiteId } from '../../../utils/hooks/useActiveSiteId';

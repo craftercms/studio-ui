@@ -15,15 +15,15 @@
  */
 
 import React, { ReactNode } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { ListItem, ListItemText, Snackbar } from '@material-ui/core';
+import makeStyles from '@mui/styles/makeStyles';
+import { ListItem, ListItemText, Snackbar } from '@mui/material';
 import palette from '../../styles/palette';
 import { defineMessages, useIntl } from 'react-intl';
-import List from '@material-ui/core/List';
-import Skeleton from '@material-ui/lab/Skeleton';
+import List from '@mui/material/List';
+import Skeleton from '@mui/material/Skeleton';
 import { rand } from '../PathNavigator/utils';
-import Button from '@material-ui/core/Button';
-import { ContextMenuOption } from '../ContextMenu';
+import Button from '@mui/material/Button';
+import { ContextMenuOption } from '../ContextMenu/ContextMenu';
 
 export interface ItemActionsSnackbarProps {
   open: boolean;

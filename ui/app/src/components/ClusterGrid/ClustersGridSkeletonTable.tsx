@@ -15,15 +15,15 @@
  */
 
 import React from 'react';
-import TableContainer from '@material-ui/core/TableContainer';
-import Table from '@material-ui/core/Table';
-import TableHead from '@material-ui/core/TableHead';
+import TableContainer from '@mui/material/TableContainer';
+import Table from '@mui/material/Table';
+import TableHead from '@mui/material/TableHead';
 import GlobalAppGridRow from '../GlobalAppGridRow';
 import GlobalAppGridCell from '../GlobalAppGridCell';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
-import TableBody from '@material-ui/core/TableBody';
-import Skeleton from '@material-ui/lab/Skeleton';
+import TableBody from '@mui/material/TableBody';
+import Skeleton from '@mui/material/Skeleton';
 import { rand } from '../PathNavigator/utils';
 import useStyles from './styles';
 
@@ -75,7 +75,7 @@ export const ClustersGridSkeletonTable = React.memo((props: ClustersGridSkeleton
                 <Skeleton variant="text" width={`${rand(60, 80)}%`} />
               </GlobalAppGridCell>
               <GlobalAppGridCell align="center">
-                <Skeleton className={classes.marginCenter} variant="circle" width={20} height={20} />
+                <Skeleton className={classes.marginCenter} variant="circular" width={20} height={20} />
               </GlobalAppGridCell>
               <GlobalAppGridCell align="left" className="width50">
                 <Skeleton variant="text" width={`${rand(70, 90)}%`} />
@@ -87,7 +87,7 @@ export const ClustersGridSkeletonTable = React.memo((props: ClustersGridSkeleton
                 <Skeleton variant="text" width={`${rand(60, 70)}%`} />
               </GlobalAppGridCell>
               <GlobalAppGridCell align="left" className="width10">
-                <Skeleton variant="circle" width={40} height={40} />
+                <Skeleton variant="circular" width={40} height={40} />
               </GlobalAppGridCell>
             </GlobalAppGridRow>
           ))}

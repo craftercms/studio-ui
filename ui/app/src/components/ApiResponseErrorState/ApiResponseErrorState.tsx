@@ -16,8 +16,8 @@
 
 import { ApiResponse } from '../../models/ApiResponse';
 import { nnou } from '../../utils/object';
-import Button from '@material-ui/core/Button';
-import OpenInNewIcon from '@material-ui/icons/OpenInNew';
+import Button from '@mui/material/Button';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import ErrorState, { ErrorStateProps } from '../ErrorState/ErrorState';

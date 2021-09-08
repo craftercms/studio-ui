@@ -15,13 +15,13 @@
  */
 
 import React, { PropsWithChildren, useMemo, useState } from 'react';
-import Dialog from '@material-ui/core/Dialog';
-import DialogHeader from '../../../../components/Dialogs/DialogHeader';
+import Dialog from '@mui/material/Dialog';
+import DialogHeader from '../../../../components/DialogHeader/DialogHeader';
 import DialogBody from '../../../../components/Dialogs/DialogBody';
 import DialogFooter from '../../../../components/Dialogs/DialogFooter';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import StandardAction from '../../../../models/StandardAction';
-import TextField from '@material-ui/core/TextField';
+import TextField from '@mui/material/TextField';
 import { Site } from '../../../../models/Site';
 import Suspencified from '../../../../components/SystemStatus/Suspencified';
 import { update } from '../../../../services/sites';
@@ -30,7 +30,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import GlobalState from '../../../../models/GlobalState';
 import { LookupTable } from '../../../../models/LookupTable';
 import { fetchSites } from '../../../../state/reducers/sites';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 import SecondaryButton from '../../../../components/SecondaryButton';
 import PrimaryButton from '../../../../components/PrimaryButton';
 import { isBlank } from '../../../../utils/string';

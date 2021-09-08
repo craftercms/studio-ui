@@ -29,9 +29,9 @@ import useStyles from './styles';
 // prettier-ignore
 import ApprovedScheduledDashletSkeletonTable
   from '../ApprovedScheduledDashletGrid/ApprovedScheduledDashletSkeletonTable';
-import MenuItem from '@material-ui/core/MenuItem';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
+import MenuItem from '@mui/material/MenuItem';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
 import { itemsApproved, itemsDeleted, itemsRejected, itemsScheduled } from '../../state/actions/system';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { filter } from 'rxjs/operators';

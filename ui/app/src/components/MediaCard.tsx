@@ -14,23 +14,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import React from 'react';
-import Card from '@material-ui/core/Card';
-import CardHeader from '@material-ui/core/CardHeader';
-import CardMedia from '@material-ui/core/CardMedia';
-import CardActionArea from '@material-ui/core/CardActionArea';
-import IconButton from '@material-ui/core/IconButton';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import Card from '@mui/material/Card';
+import CardHeader from '@mui/material/CardHeader';
+import CardMedia from '@mui/material/CardMedia';
+import CardActionArea from '@mui/material/CardActionArea';
+import IconButton from '@mui/material/IconButton';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import { MediaItem } from '../models/Search';
-import FormGroup from '@material-ui/core/FormGroup';
-import Checkbox from '@material-ui/core/Checkbox';
-import MoreVertRounded from '@material-ui/icons/MoreVertRounded';
+import FormGroup from '@mui/material/FormGroup';
+import Checkbox from '@mui/material/Checkbox';
+import MoreVertRounded from '@mui/icons-material/MoreVertRounded';
 import cardTitleStyles from '../styles/card';
 import { defineMessages, useIntl } from 'react-intl';
 import palette from '../styles/palette';
 import moment from 'moment-timezone';
 import SystemIcon from './SystemIcon';
-import ZoomInRoundedIcon from '@material-ui/icons/ZoomInRounded';
+import ZoomInRoundedIcon from '@mui/icons-material/ZoomInRounded';
 
 const translations = defineMessages({
   options: {
@@ -163,27 +165,27 @@ function MediaCard(props: MediaCardProps) {
 
   const renderIcon = (type: string) => {
     let iconClass = 'media-icon';
-    let icon = { id: '@material-ui/icons/InsertDriveFileOutlined' };
+    let icon = { id: '@mui/icons-material/InsertDriveFileOutlined' };
     switch (type) {
       case 'Page':
-        icon.id = '@material-ui/icons/InsertDriveFileOutlined';
+        icon.id = '@mui/icons-material/InsertDriveFileOutlined';
         break;
       case 'Video':
-        icon.id = '@material-ui/icons/VideocamOutlined';
+        icon.id = '@mui/icons-material/VideocamOutlined';
         break;
       case 'Template':
-        icon.id = '@material-ui/icons/CodeRounded';
+        icon.id = '@mui/icons-material/CodeRounded';
         break;
       case 'Taxonomy':
-        icon.id = '@material-ui/icons/LocalOfferOutlined';
+        icon.id = '@mui/icons-material/LocalOfferOutlined';
         break;
       case 'Component':
-        icon.id = '@material-ui/icons/ExtensionOutlined';
+        icon.id = '@mui/icons-material/ExtensionOutlined';
         break;
       case 'Groovy':
       case 'JavaScript':
       case 'CSS':
-        icon.id = '@material-ui/icons/CodeRounded';
+        icon.id = '@mui/icons-material/CodeRounded';
         break;
       default:
         break;
@@ -273,6 +275,7 @@ function MediaCard(props: MediaCardProps) {
             aria-label={formatMessage(translations.options)}
             className={classes.cardOptions}
             onClick={(e) => onHeaderButtonClick(e, item)}
+            size="large"
           >
             <HeaderButtonIcon />
           </IconButton>
@@ -294,6 +297,7 @@ function MediaCard(props: MediaCardProps) {
                   onPreviewButton(item);
                 }}
                 className={classes.previewButton}
+                size="large"
               >
                 <ZoomInRoundedIcon />
               </IconButton>

@@ -16,8 +16,9 @@
 
 import React, { PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import Dialog from '@material-ui/core/Dialog';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import Dialog from '@mui/material/Dialog';
 import DialogBody from './DialogBody';
 import { minimizeDialog } from '../../state/reducers/dialogs/minimizedDialogs';
 import { useDispatch } from 'react-redux';
@@ -31,8 +32,8 @@ import '@uppy/dashboard/dist/style.css';
 import { getBulkUploadUrl } from '../../services/content';
 import { getGlobalHeaders } from '../../utils/ajax';
 import UppyDashboard from '../UppyDashboard';
-import { Button, IconButton } from '@material-ui/core';
-import CloseIconRounded from '@material-ui/icons/CloseRounded';
+import { Button, IconButton } from '@mui/material';
+import CloseIconRounded from '@mui/icons-material/CloseRounded';
 import { closeConfirmDialog, closeUploadDialog, showConfirmDialog } from '../../state/actions/dialogs';
 import { batchActions } from '../../state/actions/misc';
 import { useSelection } from '../../utils/hooks/useSelection';
@@ -229,7 +230,7 @@ function UploadDialogUI(props: UploadDialogUIProps) {
   return (
     <>
       <Button style={{ display: 'none' }}>test</Button>
-      <IconButton style={{ display: 'none' }}>
+      <IconButton style={{ display: 'none' }} size="large">
         <CloseIconRounded />
       </IconButton>
       <DialogBody className={classes.dialogBody}>

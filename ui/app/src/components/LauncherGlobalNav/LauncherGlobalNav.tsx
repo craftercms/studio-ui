@@ -25,7 +25,7 @@ import { closeLauncher } from '../../state/actions/dialogs';
 import { useDispatch } from 'react-redux';
 import ApiResponseErrorState from '../ApiResponseErrorState';
 import { globalMenuMessages } from '../../utils/i18n-legacy';
-import Skeleton from '@material-ui/lab/Skeleton';
+import Skeleton from '@mui/material/Skeleton';
 import { useEnv } from '../../utils/hooks/useEnv';
 import { useSystemVersion } from '../../utils/hooks/useSystemVersion';
 import { useGlobalNavigation } from '../../utils/hooks/useGlobalNavigation';

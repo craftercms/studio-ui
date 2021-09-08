@@ -15,10 +15,11 @@
  */
 
 import React from 'react';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import GitAuthForm from '../GitAuthForm';
-import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
+import Grid from '@mui/material/Grid';
+import TextField from '@mui/material/TextField';
 import { FormattedMessage } from 'react-intl';
 import { SiteState } from '../../models/Site';
 

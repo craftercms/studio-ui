@@ -14,21 +14,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import DialogHeader from '../Dialogs/DialogHeader';
+import DialogHeader from '../DialogHeader/DialogHeader';
 import { FormattedMessage } from 'react-intl';
 import DialogBody from '../Dialogs/DialogBody';
 import React from 'react';
 import { SetItemStateDialogProps } from './SetItemStateDialog';
-import FormGroup from '@material-ui/core/FormGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
 import { useStyles } from './styles';
 import DialogFooter from '../Dialogs/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import Box from '@material-ui/core/Box';
-import { CSSProperties } from '@material-ui/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import Box from '@mui/material/Box';
+import { CSSProperties } from '@mui/styles';
 import { useUnmount } from '../../utils/hooks/useUnmount';
 import { useSpreadState } from '../../utils/hooks/useSpreadState';
 

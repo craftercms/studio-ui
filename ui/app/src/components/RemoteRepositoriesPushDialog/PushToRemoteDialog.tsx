@@ -15,7 +15,7 @@
  */
 
 import React, { useState } from 'react';
-import Dialog from '@material-ui/core/Dialog';
+import Dialog from '@mui/material/Dialog';
 import PushToRemoteDialogContainer, { PushToRemoteDialogContainerProps } from './PushToRemoteDialogContainer';
 import { useOnClose } from '../../utils/hooks/useOnClose';
 

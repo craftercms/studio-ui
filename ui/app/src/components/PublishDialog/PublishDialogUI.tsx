@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import DialogHeader from '../Dialogs/DialogHeader';
+import DialogHeader from '../DialogHeader/DialogHeader';
 import DialogBody from '../Dialogs/DialogBody';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import { FormattedMessage } from 'react-intl';

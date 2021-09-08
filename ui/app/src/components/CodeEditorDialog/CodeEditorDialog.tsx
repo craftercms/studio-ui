@@ -23,7 +23,7 @@ import { closeCodeEditorDialog, closeConfirmDialog, showConfirmDialog } from '..
 import { batchActions } from '../../state/actions/misc';
 import { conditionallyUnlockItem } from '../../state/actions/content';
 import translations from './translations';
-import Dialog, { DialogProps } from '@material-ui/core/Dialog';
+import Dialog, { DialogProps } from '@mui/material/Dialog';
 import { CodeEditorDialogContainer } from './CodeEditorDialogContainer';
 import { useMinimizeDialog } from '../../utils/hooks/useMinimizeDialog';
 

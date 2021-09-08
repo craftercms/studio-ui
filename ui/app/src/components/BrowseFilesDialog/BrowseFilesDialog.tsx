@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import Dialog, { DialogProps } from '@material-ui/core/Dialog';
+import Dialog, { DialogProps } from '@mui/material/Dialog';
 import { BrowseFilesDialogContainer } from './BrowseFilesDialogContainer';
 import StandardAction from '../../models/StandardAction';
 import { MediaItem } from '../../models/Search';

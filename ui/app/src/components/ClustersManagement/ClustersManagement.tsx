@@ -17,9 +17,9 @@
 import React, { useMemo, useState } from 'react';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import Tooltip from '@material-ui/core/Tooltip';
-import IconButton from '@material-ui/core/IconButton';
-import RefreshRoundedIcon from '@material-ui/icons/RefreshRounded';
+import Tooltip from '@mui/material/Tooltip';
+import IconButton from '@mui/material/IconButton';
+import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import { ApiResponse } from '../../models/ApiResponse';
 import { deleteMember, fetchMembers } from '../../services/clusters';
@@ -31,7 +31,7 @@ import { showSystemNotification } from '../../state/actions/system';
 import { ClustersGridSkeletonTable } from '../ClusterGrid/ClustersGridSkeletonTable';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import { useMount } from '../../utils/hooks/useMount';
-import Paper from '@material-ui/core/Paper';
+import Paper from '@mui/material/Paper';
 
 const translations = defineMessages({
   clusterDeleted: {
@@ -101,7 +101,7 @@ export default function ClustersManagement() {
         title={<FormattedMessage id="words.cluster" defaultMessage="Cluster" />}
         rightContent={
           <Tooltip title={<FormattedMessage id="words.refresh" defaultMessage="Refresh" />}>
-            <IconButton onClick={refresh}>
+            <IconButton onClick={refresh} size="large">
               <RefreshRoundedIcon />
             </IconButton>
           </Tooltip>

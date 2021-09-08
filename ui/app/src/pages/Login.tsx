@@ -15,7 +15,8 @@
  */
 
 import React from 'react';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import LoginView, { LoginViewProps } from '../components/SystemStatus/LoginView';
 import CrafterThemeProvider from '../components/CrafterThemeProvider';
 import I18nProvider from '../components/I18nProvider';

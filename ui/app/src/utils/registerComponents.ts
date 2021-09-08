@@ -19,33 +19,35 @@ import { lazy } from 'react';
 
 export const registerComponents = () => {
   Object.entries({
-    '@material-ui/icons/SearchRounded': lazy(() => import('@material-ui/icons/SearchRounded')),
-    '@material-ui/icons/ExtensionOutlined': lazy(() => import('@material-ui/icons/ExtensionOutlined')),
-    '@material-ui/icons/ImageOutlined': lazy(() => import('@material-ui/icons/ImageOutlined')),
-    '@material-ui/icons/EmojiPeopleRounded': lazy(() => import('@material-ui/icons/EmojiPeopleRounded')),
-    '@material-ui/icons/DevicesRounded': lazy(() => import('@material-ui/icons/DevicesRounded')),
-    '@material-ui/icons/BrushOutlined': lazy(() => import('@material-ui/icons/BrushOutlined')),
-    '@material-ui/icons/SettingsOutlined': lazy(() => import('@material-ui/icons/SettingsOutlined')),
-    '@material-ui/icons/DashboardRounded': lazy(() => import('@material-ui/icons/DashboardRounded')),
-    '@material-ui/icons/TuneRounded': lazy(() => import('@material-ui/icons/TuneRounded')),
-    '@material-ui/icons/DescriptionOutlined': lazy(() => import('@material-ui/icons/DescriptionOutlined')),
-    '@material-ui/icons/DescriptionRounded': lazy(() => import('@material-ui/icons/DescriptionRounded')),
-    '@material-ui/icons/ExtensionRounded': lazy(() => import('@material-ui/icons/ExtensionRounded')),
-    '@material-ui/icons/LocalOfferOutlined': lazy(() => import('@material-ui/icons/LocalOfferOutlined')),
-    '@material-ui/icons/LocalOfferRounded': lazy(() => import('@material-ui/icons/LocalOfferRounded')),
-    '@material-ui/icons/ImageRounded': lazy(() => import('@material-ui/icons/ImageRounded')),
-    '@material-ui/icons/CodeRounded': lazy(() => import('@material-ui/icons/CodeRounded')),
-    '@material-ui/icons/InsertDriveFileRounded': lazy(() => import('@material-ui/icons/InsertDriveFileRounded')),
-    '@material-ui/icons/InsertDriveFileOutlined': lazy(() => import('@material-ui/icons/InsertDriveFileOutlined')),
-    '@material-ui/icons/WidgetsOutlined': lazy(() => import('@material-ui/icons/WidgetsOutlined')),
-    '@material-ui/icons/LockOutlined': lazy(() => import('@material-ui/icons/LockOutlined')),
-    '@material-ui/icons/SettingsApplicationsOutlined': lazy(() =>
-      import('@material-ui/icons/SettingsApplicationsOutlined')
+    '@mui/icons-material/SearchRounded': lazy(() => import('@mui/icons-material/SearchRounded')),
+    '@mui/icons-material/ExtensionOutlined': lazy(() => import('@mui/icons-material/ExtensionOutlined')),
+    '@mui/icons-material/ImageOutlined': lazy(() => import('@mui/icons-material/ImageOutlined')),
+    '@mui/icons-material/EmojiPeopleRounded': lazy(() => import('@mui/icons-material/EmojiPeopleRounded')),
+    '@mui/icons-material/DevicesRounded': lazy(() => import('@mui/icons-material/DevicesRounded')),
+    '@mui/icons-material/BrushOutlined': lazy(() => import('@mui/icons-material/BrushOutlined')),
+    '@mui/icons-material/SettingsOutlined': lazy(() => import('@mui/icons-material/SettingsOutlined')),
+    '@mui/icons-material/DashboardRounded': lazy(() => import('@mui/icons-material/DashboardRounded')),
+    '@mui/icons-material/TuneRounded': lazy(() => import('@mui/icons-material/TuneRounded')),
+    '@mui/icons-material/DescriptionOutlined': lazy(() => import('@mui/icons-material/DescriptionOutlined')),
+    '@mui/icons-material/DescriptionRounded': lazy(() => import('@mui/icons-material/DescriptionRounded')),
+    '@mui/icons-material/ExtensionRounded': lazy(() => import('@mui/icons-material/ExtensionRounded')),
+    '@mui/icons-material/LocalOfferOutlined': lazy(() => import('@mui/icons-material/LocalOfferOutlined')),
+    '@mui/icons-material/LocalOfferRounded': lazy(() => import('@mui/icons-material/LocalOfferRounded')),
+    '@mui/icons-material/ImageRounded': lazy(() => import('@mui/icons-material/ImageRounded')),
+    '@mui/icons-material/CodeRounded': lazy(() => import('@mui/icons-material/CodeRounded')),
+    '@mui/icons-material/InsertDriveFileRounded': lazy(() => import('@mui/icons-material/InsertDriveFileRounded')),
+    '@mui/icons-material/InsertDriveFileOutlined': lazy(() => import('@mui/icons-material/InsertDriveFileOutlined')),
+    '@mui/icons-material/WidgetsOutlined': lazy(() => import('@mui/icons-material/WidgetsOutlined')),
+    '@mui/icons-material/LockOutlined': lazy(() => import('@mui/icons-material/LockOutlined')),
+    '@mui/icons-material/SettingsApplicationsOutlined': lazy(() =>
+      import('@mui/icons-material/SettingsApplicationsOutlined')
     ),
-    '@material-ui/icons/FormatAlignJustifyRounded': lazy(() => import('@material-ui/icons/FormatAlignJustifyRounded')),
-    '@material-ui/icons/FormatAlignLeftRounded': lazy(() => import('@material-ui/icons/FormatAlignLeftRounded')),
-    '@material-ui/icons/CloudUploadOutlined': lazy(() => import('@material-ui/icons/CloudUploadOutlined')),
-    '@material-ui/icons/PollOutlined': lazy(() => import('@material-ui/icons/PollOutlined')),
+    '@mui/icons-material/FormatAlignJustifyRounded': lazy(() =>
+      import('@mui/icons-material/FormatAlignJustifyRounded')
+    ),
+    '@mui/icons-material/FormatAlignLeftRounded': lazy(() => import('@mui/icons-material/FormatAlignLeftRounded')),
+    '@mui/icons-material/CloudUploadOutlined': lazy(() => import('@mui/icons-material/CloudUploadOutlined')),
+    '@mui/icons-material/PollOutlined': lazy(() => import('@mui/icons-material/PollOutlined')),
     'craftercms.icons.PageExplorer': lazy(() => import('../components/Icons/PageExplorerRounded')),
     'craftercms.icons.SiteExplorer': lazy(() => import('../components/Icons/SiteExplorerRounded')),
     'craftercms.icons.Component': lazy(() => import('../components/Icons/Component')),
@@ -60,22 +62,22 @@ export const registerComponents = () => {
     'craftercms.icons.CrafterIcon': lazy(() => import('../components/Icons/About')),
     'craftercms.icons.Docs': lazy(() => import('../components/Icons/Docs')),
     'craftercms.icons.Sites': lazy(() => import('../components/Icons/SitesRounded')),
-    '@material-ui/icons/BuildRounded': lazy(() => import('@material-ui/icons/BuildRounded')),
-    '@material-ui/icons/AccountCircleRounded': lazy(() => import('@material-ui/icons/AccountCircleRounded')),
-    '@material-ui/icons/PeopleRounded': lazy(() => import('@material-ui/icons/PeopleRounded')),
-    '@material-ui/icons/SupervisedUserCircleRounded': lazy(() =>
-      import('@material-ui/icons/SupervisedUserCircleRounded')
+    '@mui/icons-material/BuildRounded': lazy(() => import('@mui/icons-material/BuildRounded')),
+    '@mui/icons-material/AccountCircleRounded': lazy(() => import('@mui/icons-material/AccountCircleRounded')),
+    '@mui/icons-material/PeopleRounded': lazy(() => import('@mui/icons-material/PeopleRounded')),
+    '@mui/icons-material/SupervisedUserCircleRounded': lazy(() =>
+      import('@mui/icons-material/SupervisedUserCircleRounded')
     ),
-    '@material-ui/icons/StorageRounded': lazy(() => import('@material-ui/icons/StorageRounded')),
-    '@material-ui/icons/SubjectRounded': lazy(() => import('@material-ui/icons/SubjectRounded')),
-    '@material-ui/icons/SettingsApplicationsRounded': lazy(() =>
-      import('@material-ui/icons/SettingsApplicationsRounded')
+    '@mui/icons-material/StorageRounded': lazy(() => import('@mui/icons-material/StorageRounded')),
+    '@mui/icons-material/SubjectRounded': lazy(() => import('@mui/icons-material/SubjectRounded')),
+    '@mui/icons-material/SettingsApplicationsRounded': lazy(() =>
+      import('@mui/icons-material/SettingsApplicationsRounded')
     ),
-    '@material-ui/icons/FormatAlignCenterRounded': lazy(() => import('@material-ui/icons/FormatAlignCenterRounded')),
-    '@material-ui/icons/LockRounded': lazy(() => import('@material-ui/icons/LockRounded')),
-    '@material-ui/icons/VpnKeyRounded': lazy(() => import('@material-ui/icons/VpnKeyRounded')),
-    '@material-ui/icons/PublicRounded': lazy(() => import('@material-ui/icons/PublicRounded')),
-    '@material-ui/icons/VideocamOutlined': lazy(() => import('@material-ui/icons/VideocamOutlined')),
+    '@mui/icons-material/FormatAlignCenterRounded': lazy(() => import('@mui/icons-material/FormatAlignCenterRounded')),
+    '@mui/icons-material/LockRounded': lazy(() => import('@mui/icons-material/LockRounded')),
+    '@mui/icons-material/VpnKeyRounded': lazy(() => import('@mui/icons-material/VpnKeyRounded')),
+    '@mui/icons-material/PublicRounded': lazy(() => import('@mui/icons-material/PublicRounded')),
+    '@mui/icons-material/VideocamOutlined': lazy(() => import('@mui/icons-material/VideocamOutlined')),
     'craftercms.components.ToolsPanelEmbeddedAppViewButton': lazy(() =>
       import('../components/ToolsPanelEmbeddedAppViewButton')
     ),

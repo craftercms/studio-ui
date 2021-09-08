@@ -15,18 +15,18 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+import makeStyles from '@mui/styles/makeStyles';
+import Grid from '@mui/material/Grid';
+import TextField from '@mui/material/TextField';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import GitForm from './GitForm';
 import { MarketplacePlugin } from '../../../../models/MarketplacePlugin';
 import { SiteState } from '../../../../models/Site';
 import { defineMessages, useIntl } from 'react-intl';
 import FormBuilder from './FormBuilder';
 import { fetchAll } from '../../../../services/sites';
-import Switch from '@material-ui/core/Switch';
-import Typography from '@material-ui/core/Typography';
+import Switch from '@mui/material/Switch';
+import Typography from '@mui/material/Typography';
 import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({

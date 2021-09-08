@@ -14,22 +14,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import FormGroup from '@material-ui/core/FormGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
 import React, { ChangeEvent, useRef, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import { defineMessages, useIntl } from 'react-intl';
 import SelectButton from '../../../../components/Controls/ConfirmDropdown';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import { cancelPackage, fetchPackage } from '../../../../services/publishing';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import CircularProgress from '@mui/material/CircularProgress';
 import '../../../../styles/animations.scss';
 import clsx from 'clsx';
 import { READY_FOR_LIVE } from '../constants';
-import { alpha } from '@material-ui/core/styles';
+import { alpha } from '@mui/material/styles';
 import palette from '../../../../styles/palette';
 import PrimaryButton from '../../../../components/PrimaryButton';
 

@@ -17,22 +17,23 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import TreeView from '@material-ui/lab/TreeView';
-import IconButton from '@material-ui/core/IconButton';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMoreRounded';
-import ChevronRightIcon from '@material-ui/icons/ChevronRightRounded';
-import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
-import TreeItem from '@material-ui/lab/TreeItem';
-import MuiBreadcrumbs from '@material-ui/core/Breadcrumbs';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import TreeView from '@mui/lab/TreeView';
+import IconButton from '@mui/material/IconButton';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMoreRounded';
+import ChevronRightIcon from '@mui/icons-material/ChevronRightRounded';
+import MoreVertIcon from '@mui/icons-material/MoreVertRounded';
+import TreeItem from '@mui/lab/TreeItem';
+import MuiBreadcrumbs from '@mui/material/Breadcrumbs';
 import { ContentType, ContentTypeField } from '../../models/ContentType';
 import Page from '../Icons/Page';
 import ContentTypeFieldIcon from '../Icons/ContentTypeField';
 import Component from '../Icons/Component';
 import NodeSelector from '../Icons/NodeSelector';
 import RepeatGroupItem from '../Icons/RepeatGroupItem';
-import Root from '@material-ui/icons/HomeRounded';
-import NavigateNextIcon from '@material-ui/icons/NavigateNextRounded';
+import Root from '@mui/icons-material/HomeRounded';
+import NavigateNextIcon from '@mui/icons-material/NavigateNextRounded';
 import { LookupTable } from '../../models/LookupTable';
 import ContentInstance from '../../models/ContentInstance';
 import RepeatGroup from '../Icons/RepeatGroup';
@@ -48,14 +49,14 @@ import Suspencified from '../SystemStatus/Suspencified';
 import { Resource } from '../../models/Resource';
 import palette from '../../styles/palette';
 import { useDispatch } from 'react-redux';
-import Typography from '@material-ui/core/Typography';
-import Link from '@material-ui/core/Link';
+import Typography from '@mui/material/Typography';
+import Link from '@mui/material/Link';
 import ItemActionsMenu from '../ItemActionsMenu';
 import { completeDetailedItem } from '../../state/actions/content';
 import SearchBar from '../Controls/SearchBar';
-import Divider from '@material-ui/core/Divider';
+import Divider from '@mui/material/Divider';
 // @ts-ignore
-import { getOffsetLeft, getOffsetTop } from '@material-ui/core/Popover/Popover';
+import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover/Popover';
 import { showItemMegaMenu } from '../../state/actions/dialogs';
 import { useSelection } from '../../utils/hooks/useSelection';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
@@ -96,7 +97,7 @@ const useStyles = makeStyles((theme) =>
     },
     rootIcon: {
       fontSize: '1.2em',
-      color: theme.palette.type === 'dark' ? palette.white : palette.gray.medium7
+      color: theme.palette.mode === 'dark' ? palette.white : palette.gray.medium7
     },
     breadcrumbs: {
       display: 'flex',
@@ -114,15 +115,15 @@ const useStyles = makeStyles((theme) =>
       display: 'flex'
     },
     breadcrumbsTypography: {
-      color: theme.palette.type === 'dark' ? palette.white : palette.gray.medium4
+      color: theme.palette.mode === 'dark' ? palette.white : palette.gray.medium4
     },
     currentContentItems: {
       fontWeight: 600,
-      color: theme.palette.type === 'dark' ? palette.white : palette.gray.medium7,
+      color: theme.palette.mode === 'dark' ? palette.white : palette.gray.medium7,
       padding: '0 12px 2px 12px'
     },
     chevron: {
-      color: theme.palette.type === 'dark' ? palette.white : palette.gray.medium3,
+      color: theme.palette.mode === 'dark' ? palette.white : palette.gray.medium3,
       fontSize: '1.4rem'
     }
   })
@@ -186,11 +187,11 @@ const treeItemStyles = makeStyles((theme) =>
       padding: '6px'
     },
     chevron: {
-      color: theme.palette.type === 'dark' ? palette.white : palette.gray.medium3,
+      color: theme.palette.mode === 'dark' ? palette.white : palette.gray.medium3,
       fontSize: '1.4rem'
     },
     nameLabel: {
-      color: theme.palette.type === 'dark' ? palette.white : palette.gray.medium4
+      color: theme.palette.mode === 'dark' ? palette.white : palette.gray.medium4
     }
   })
 );
@@ -445,6 +446,7 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
               className={classes.options}
               onMouseOver={(e) => setOverState(e, true)}
               onClick={(e) => handleOptions(e, node)}
+              size="large"
             >
               <MoreVertIcon />
             </IconButton>

@@ -18,13 +18,13 @@ import { Facet } from '../../models/Search';
 import { LookupTable } from '../../models/LookupTable';
 import { defineMessages, useIntl } from 'react-intl';
 import { formatBytes } from '../../utils/string';
-import RadioGroup from '@material-ui/core/RadioGroup';
+import RadioGroup from '@mui/material/RadioGroup';
 import { nnou } from '../../utils/object';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Radio from '@material-ui/core/Radio';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Radio from '@mui/material/Radio';
 import React from 'react';
-import { Theme } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Theme } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 
 const useStyles = makeStyles((theme: Theme) => ({
   checkboxLabel: {

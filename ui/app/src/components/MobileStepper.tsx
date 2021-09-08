@@ -16,9 +16,9 @@
 
 import React, { ReactNode } from 'react';
 import clsx from 'clsx';
-import Paper from '@material-ui/core/Paper';
-import { LinearProgress } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
+import Paper from '@mui/material/Paper';
+import { LinearProgress } from '@mui/material';
+import withStyles from '@mui/styles/withStyles';
 import { RedColor } from '../styles/theme';
 import { capitalize } from '../utils/string';
 
@@ -75,7 +75,7 @@ const useStyles = (theme) => ({
   }
 });
 
-const MobileStepper = React.forwardRef(function MobileStepper(props: MobileStepperProps, ref) {
+const MobileStepper = React.forwardRef<HTMLDivElement, MobileStepperProps>(function MobileStepper(props, ref) {
   const {
     activeStep = 0,
     backButton,

@@ -16,18 +16,19 @@
 
 import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import Dialog from '@material-ui/core/Dialog';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import Dialog from '@mui/material/Dialog';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { LegacyContentType, LegacyFormConfig } from '../../../models/ContentType';
 import { Resource } from '../../../models/Resource';
 import StandardAction from '../../../models/StandardAction';
 import { DetailedItem } from '../../../models/Item';
-import DialogHeader from '../../../components/Dialogs/DialogHeader';
+import DialogHeader from '../../../components/DialogHeader/DialogHeader';
 import NewContentCard, { ContentSkeletonCard } from './NewContentCard';
 import SearchBar from '../../../components/Controls/SearchBar';
 import ContentTypesFilter from './ContentTypesFilter';
 import DialogFooter from '../../../components/Dialogs/DialogFooter';
-import { Box, Checkbox, FormControlLabel, Grid } from '@material-ui/core';
+import { Box, Checkbox, FormControlLabel, Grid } from '@mui/material';
 import DialogBody from '../../../components/Dialogs/DialogBody';
 import SingleItemSelector from './SingleItemSelector';
 import { fetchLegacyContentTypes } from '../../../services/contentTypes';

@@ -15,17 +15,18 @@
  */
 
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import React, { useEffect, useState } from 'react';
 import GlobalState from '../../models/GlobalState';
-import DialogHeader from '../Dialogs/DialogHeader';
+import DialogHeader from '../DialogHeader/DialogHeader';
 import DialogBody from '../Dialogs/DialogBody';
-import Typography from '@material-ui/core/Typography';
-import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import Collapse from '@material-ui/core/Collapse';
+import Typography from '@mui/material/Typography';
+import TextField from '@mui/material/TextField';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
+import FormHelperText from '@mui/material/FormHelperText';
+import Collapse from '@mui/material/Collapse';
 import DateTimePicker from '../Controls/DateTimePicker';
 import DialogFooter from '../Dialogs/DialogFooter';
 import SecondaryButton from '../SecondaryButton';

@@ -15,7 +15,7 @@
  */
 
 import React, { useState } from 'react';
-import Dialog from '@material-ui/core/Dialog';
+import Dialog from '@mui/material/Dialog';
 import { createToken } from '../../services/tokens';
 import { Token } from '../../models/Token';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';

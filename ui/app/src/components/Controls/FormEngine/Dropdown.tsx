@@ -15,10 +15,10 @@
  */
 
 import React from 'react';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import InputLabel from '@material-ui/core/InputLabel';
-import FormControl from '@material-ui/core/FormControl';
+import MenuItem from '@mui/material/MenuItem';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
 import { Control } from '../../../models/FormsEngine';
 import useStyles from './styles';
 
@@ -26,7 +26,7 @@ export default function Dropdown(props: Control) {
   const { field, value = '', onChange, disabled } = props;
   const classes = useStyles();
 
-  const handleSelectChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+  const handleSelectChange = (event: SelectChangeEvent<{ value: unknown }>) => {
     onChange(event.target.value);
   };
 

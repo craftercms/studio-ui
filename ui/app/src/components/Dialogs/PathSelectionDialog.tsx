@@ -14,14 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import DialogHeader from './DialogHeader';
+import DialogHeader from '../DialogHeader/DialogHeader';
 import DialogBody from './DialogBody';
 import DialogFooter from './DialogFooter';
 import React, { PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import Dialog from '@material-ui/core/Dialog';
+import Dialog from '@mui/material/Dialog';
 import FolderBrowserTreeViewUI, { TreeNode } from '../FolderBrowserTreeView/FolderBrowserTreeViewUI';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import CreateFolderDialog from './CreateFolderDialog';
 import { get } from '../../utils/ajax';
 import LookupTable from '../../models/LookupTable';

@@ -22,7 +22,8 @@ import ResizeableDrawer from './ResizeableDrawer';
 import { renderWidgets, WidgetDescriptor } from '../../components/Widget';
 import { Resource } from '../../models/Resource';
 import { SuspenseWithEmptyState } from '../../components/SystemStatus/Suspencified';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { useSelection } from '../../utils/hooks/useSelection';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { usePreviewState } from '../../utils/hooks/usePreviewState';
@@ -44,7 +45,7 @@ defineMessages({
 const useStyles = makeStyles((theme) =>
   createStyles({
     emptyState: {
-      margin: `${theme.spacing(4)}px ${theme.spacing(1)}px`
+      margin: `${theme.spacing(4)} ${theme.spacing(1)}`
     },
     emptyStateImage: {
       width: '50%',

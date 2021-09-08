@@ -14,19 +14,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import InputBase from '@material-ui/core/InputBase';
+import InputBase from '@mui/material/InputBase';
 import React, { useEffect, useState } from 'react';
 import { debounceTime, switchMap, tap } from 'rxjs/operators';
 import { search } from '../../services/search';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import useAutocomplete from '@material-ui/lab/useAutocomplete';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import useAutocomplete from '@mui/material/useAutocomplete';
 import { SearchItem } from '../../models/Search';
 import clsx from 'clsx';
-import { CircularProgress, IconButton, List, ListItem, ListItemIcon, ListItemText, Paper } from '@material-ui/core';
+import { CircularProgress, IconButton, List, ListItem, ListItemIcon, ListItemText, Paper } from '@mui/material';
 import LoadingState from '../SystemStatus/LoadingState';
 import EmptyState from '../SystemStatus/EmptyState';
 import Page from '../Icons/Page';
-import CloseIcon from '@material-ui/icons/Close';
+import CloseIcon from '@mui/icons-material/Close';
 import { getPreviewURLFromPath } from '../../utils/path';
 import { FormattedMessage } from 'react-intl';
 import parse from 'autosuggest-highlight/parse';
@@ -92,7 +94,7 @@ const useStyles = makeStyles((theme: Theme) =>
     highlighted: {
       display: 'inline-block',
       background: 'yellow',
-      color: theme.palette.type === 'dark' ? palette.gray.medium6 : theme.palette.text.secondary
+      color: theme.palette.mode === 'dark' ? palette.gray.medium6 : theme.palette.text.secondary
     }
   })
 );
@@ -131,8 +133,9 @@ export default function PagesSearchAhead(props: PagesSearchAheadProps) {
     filterOptions: (options: SearchItem[], state) => options,
     getOptionLabel: (item: SearchItem | string) => {
       return typeof item === 'string' ? item : item.path;
-    },
-    getOptionSelected: (option: SearchItem, value) => option.path === value.path
+    }
+    // TODO: replace `getOptionSelected` (possibly with `onChange`?)
+    // getOptionSelected: (option: SearchItem, value) => option.path === value.path
   });
 
   useEffect(() => {
@@ -181,7 +184,10 @@ export default function PagesSearchAhead(props: PagesSearchAheadProps) {
               if (keyword.startsWith('/')) {
                 onEnter(keyword);
               } else if (groupedOptions.length > 0) {
-                const previewUrl = getPreviewURLFromPath(groupedOptions[0].path);
+                // TODO:
+                //   1. Check groupedOptions[0] still the expected SearchItem type
+                //   2. Fix typing so cast is not required
+                const previewUrl = getPreviewURLFromPath((groupedOptions[0] as SearchItem).path);
                 onEnter(previewUrl);
                 setKeyword(previewUrl);
                 setItems(null);
@@ -207,7 +213,7 @@ export default function PagesSearchAhead(props: PagesSearchAheadProps) {
             isFetching ? (
               <CircularProgress className={classes.progress} size={15} />
             ) : keyword && keyword !== value ? (
-              <IconButton className={classes.closeIcon} onClick={onClean}>
+              <IconButton className={classes.closeIcon} onClick={onClean} size="large">
                 <CloseIcon fontSize="small" />
               </IconButton>
             ) : null
@@ -219,6 +225,8 @@ export default function PagesSearchAhead(props: PagesSearchAheadProps) {
           {isFetching && <LoadingState />}
           {!isFetching && groupedOptions.length > 0 && (
             <List dense className={classes.listBox} {...getListboxProps()}>
+              {/* TODO: Fix typings so no ignore is required */}
+              {/* @ts-ignore */}
               {groupedOptions.map((option: SearchItem, index) => (
                 <ListItem button dense component="li" {...getOptionProps({ option, index })}>
                   <ListItemIcon className={classes.listItemIcon}>

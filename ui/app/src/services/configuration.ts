@@ -161,15 +161,15 @@ export function fetchSiteUiConfig(site: string): Observable<string> {
 
 const legacyToNextMenuIconMap = {
   'fa-sitemap': 'craftercms.icons.Sites',
-  'fa-user': '@material-ui/icons/PeopleRounded',
-  'fa-users': '@material-ui/icons/SupervisedUserCircleRounded',
-  'fa-database': '@material-ui/icons/StorageRounded',
-  'fa-bars': '@material-ui/icons/SubjectRounded',
-  'fa-level-down': '@material-ui/icons/SettingsApplicationsRounded',
-  'fa-align-left': '@material-ui/icons/FormatAlignCenterRounded',
-  'fa-globe': '@material-ui/icons/PublicRounded',
-  'fa-lock': '@material-ui/icons/LockRounded',
-  'fa-key': '@material-ui/icons/VpnKeyRounded'
+  'fa-user': '@mui/icons-material/PeopleRounded',
+  'fa-users': '@mui/icons-material/SupervisedUserCircleRounded',
+  'fa-database': '@mui/icons-material/StorageRounded',
+  'fa-bars': '@mui/icons-material/SubjectRounded',
+  'fa-level-down': '@mui/icons-material/SettingsApplicationsRounded',
+  'fa-align-left': '@mui/icons-material/FormatAlignCenterRounded',
+  'fa-globe': '@mui/icons-material/PublicRounded',
+  'fa-lock': '@mui/icons-material/LockRounded',
+  'fa-key': '@mui/icons-material/VpnKeyRounded'
 };
 
 export function fetchGlobalMenuItems(): Observable<GlobalState['globalNavigation']['items']> {
@@ -183,7 +183,7 @@ export function fetchGlobalMenuItems(): Observable<GlobalState['globalNavigation
           : { baseClass: item.icon.includes('fa') ? `fa ${item.icon}` : item.icon }
       })),
       { id: 'home.globalMenu.about-us', icon: { id: 'craftercms.icons.CrafterIcon' }, label: 'About' },
-      { id: 'home.globalMenu.settings', icon: { id: '@material-ui/icons/AccountCircleRounded' }, label: 'Account' }
+      { id: 'home.globalMenu.settings', icon: { id: '@mui/icons-material/AccountCircleRounded' }, label: 'Account' }
     ])
   );
 }

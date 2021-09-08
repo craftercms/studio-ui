@@ -20,7 +20,10 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { AsDayMonthDateTime, VersionList } from './VersionList';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import ApiResponse from '../../../models/ApiResponse';
-import DialogHeader, { DialogHeaderAction, DialogHeaderStateAction } from '../../../components/Dialogs/DialogHeader';
+import DialogHeader, {
+  DialogHeaderAction,
+  DialogHeaderStateAction
+} from '../../../components/DialogHeader/DialogHeader';
 import { CompareVersionsBranch, LegacyVersion, VersionsStateProps } from '../../../models/Version';
 import DialogBody from '../../../components/Dialogs/DialogBody';
 import DialogFooter from '../../../components/Dialogs/DialogFooter';
@@ -32,13 +35,14 @@ import {
   versionsChangePage
 } from '../../../state/reducers/versions';
 import { useDispatch } from 'react-redux';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import ContentType from '../../../models/ContentType';
 import { EntityState } from '../../../models/EntityState';
 import EmptyState from '../../../components/SystemStatus/EmptyState';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import SingleItemSelector from '../Authoring/SingleItemSelector';
-import Dialog from '@material-ui/core/Dialog';
+import Dialog from '@mui/material/Dialog';
 import { CompareVersions, CompareVersionsResource } from './CompareVersions';
 import clsx from 'clsx';
 import { useLogicResource } from '../../../utils/hooks/useLogicResource';

@@ -20,31 +20,32 @@ import { fetchDependant, fetchSimpleDependencies } from '../../../services/depen
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { isAsset, isCode, isEditableAsset, isImage, parseLegacyItemToSandBoxItem } from '../../../utils/content';
 import StandardAction from '../../../models/StandardAction';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { Resource } from '../../../models/Resource';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
 import clsx from 'clsx';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import Avatar from '@material-ui/core/Avatar';
-import ListItemText from '@material-ui/core/ListItemText';
-import IconButton from '@material-ui/core/IconButton';
-import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import DialogHeader from '../../../components/Dialogs/DialogHeader';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import Avatar from '@mui/material/Avatar';
+import ListItemText from '@mui/material/ListItemText';
+import IconButton from '@mui/material/IconButton';
+import MoreVertIcon from '@mui/icons-material/MoreVertRounded';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import DialogHeader from '../../../components/DialogHeader/DialogHeader';
 import DialogBody from '../../../components/Dialogs/DialogBody';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
+import FormControl from '@mui/material/FormControl';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import DialogFooter from '../../../components/Dialogs/DialogFooter';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
-import Radio from '@material-ui/core/Radio';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+import Radio from '@mui/material/Radio';
 import { useDispatch } from 'react-redux';
 import { ApiResponse } from '../../../models/ApiResponse';
 import SingleItemSelector from '../Authoring/SingleItemSelector';
-import Dialog from '@material-ui/core/Dialog';
+import Dialog from '@mui/material/Dialog';
 import { showCodeEditorDialog, showEditDialog, showHistoryDialog } from '../../../state/actions/dialogs';
 import { batchActions } from '../../../state/actions/misc';
 import { fetchItemVersions } from '../../../state/reducers/versions';
@@ -201,6 +202,7 @@ function DependenciesList(props: DependenciesListProps) {
                 handleContextMenuClick(e, dependency);
               }}
               className={classes.listEllipsis}
+              size="large"
             >
               <MoreVertIcon />
             </IconButton>
@@ -276,7 +278,7 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
           <FormControl className={classes.formControl}>
             <Select
               value={dependenciesShown ?? 'depends-on'}
-              onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
+              onChange={(event: SelectChangeEvent) => {
                 setDependenciesShown(event.target.value);
               }}
               inputProps={{
@@ -386,7 +388,7 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
         <FormControl className={classes.formControl}>
           <Select
             value={showTypes}
-            onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
+            onChange={(event: SelectChangeEvent) => {
               setShowTypes(event.target.value);
             }}
             inputProps={{
@@ -397,8 +399,7 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
               transformOrigin: {
                 vertical: 'bottom',
                 horizontal: 'left'
-              },
-              getContentAnchorEl: null
+              }
             }}
           >
             {Object.keys(assetsTypes).map((typeId) => (

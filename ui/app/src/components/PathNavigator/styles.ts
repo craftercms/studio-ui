@@ -14,7 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import palette from '../../styles/palette';
 
 const flagColor = 'rgba(255, 59, 48, 0.5)';
@@ -141,7 +142,7 @@ export const useStyles = makeStyles(
         color: theme.palette.text.secondary
       },
       breadcrumbLast: {
-        color: theme.palette.type === 'dark' ? palette.teal.tint : palette.teal.shade,
+        color: theme.palette.mode === 'dark' ? palette.teal.tint : palette.teal.shade,
         textDecoration: 'underline'
       },
       breadcrumbActionsWrapper: {
@@ -217,7 +218,7 @@ export const useStyles = makeStyles(
       },
       navItemLevelDescriptor: {},
       navItemText: {
-        color: theme.palette.type === 'dark' ? palette.teal.tint : palette.teal.shade,
+        color: theme.palette.mode === 'dark' ? palette.teal.tint : palette.teal.shade,
         padding: 0,
         marginRight: 'auto',
         whiteSpace: 'nowrap',

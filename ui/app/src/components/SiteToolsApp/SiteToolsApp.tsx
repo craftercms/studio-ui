@@ -17,21 +17,21 @@
 import useStyles from './styles';
 import ResizeableDrawer from '../../modules/Preview/ResizeableDrawer';
 import React from 'react';
-import MenuList from '@material-ui/core/MenuList';
-import MenuItem from '@material-ui/core/MenuItem';
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
+import MenuList from '@mui/material/MenuList';
+import MenuItem from '@mui/material/MenuItem';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 import { FormattedMessage, useIntl } from 'react-intl';
 import SystemIcon, { SystemIconDescriptor } from '../SystemIcon';
 import EmptyState from '../SystemStatus/EmptyState';
 import CrafterCMSLogo from '../Icons/CrafterCMSLogo';
 import { getPossibleTranslation } from '../../utils/i18n';
 import Widget, { WidgetDescriptor } from '../Widget';
-import IconButton from '@material-ui/core/IconButton';
-import KeyboardArrowLeftRoundedIcon from '@material-ui/icons/KeyboardArrowLeftRounded';
+import IconButton from '@mui/material/IconButton';
+import KeyboardArrowLeftRoundedIcon from '@mui/icons-material/KeyboardArrowLeftRounded';
 import SiteSwitcherSelect from '../SiteSwitcherSelect';
-import Tooltip from '@material-ui/core/Tooltip';
-import Paper from '@material-ui/core/Paper';
+import Tooltip from '@mui/material/Tooltip';
+import Paper from '@mui/material/Paper';
 import TranslationOrText from '../../models/TranslationOrText';
 import clsx from 'clsx';
 import Suspencified from '../SystemStatus/Suspencified';
@@ -97,7 +97,7 @@ export default function SiteToolsApp(props: SiteToolsAppProps) {
           <Box display="flex" justifyContent="space-between" marginBottom="10px">
             {onBackClick && (
               <Tooltip title={<FormattedMessage id="words.preview" defaultMessage="Preview" />}>
-                <IconButton onClick={onBackClick}>
+                <IconButton onClick={onBackClick} size="large">
                   <KeyboardArrowLeftRoundedIcon />
                 </IconButton>
               </Tooltip>

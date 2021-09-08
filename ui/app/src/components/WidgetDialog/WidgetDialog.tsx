@@ -20,7 +20,7 @@ import React, { PropsWithChildren } from 'react';
 import StandardAction from '../../models/StandardAction';
 import { useDispatch } from 'react-redux';
 import useStyles from './styles';
-import { Dialog } from '@material-ui/core';
+import { Dialog } from '@mui/material';
 import { WidgetDialogUI } from '.';
 import { useMinimizeDialog } from '../../utils/hooks/useMinimizeDialog';
 

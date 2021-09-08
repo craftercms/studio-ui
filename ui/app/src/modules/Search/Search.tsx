@@ -15,8 +15,9 @@
  */
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
+import { useTheme } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
+import Grid from '@mui/material/Grid';
 import MediaCard from '../../components/MediaCard';
 import { search } from '../../services/search';
 import { ElasticParams, Filter, MediaItem } from '../../models/Search';
@@ -25,11 +26,11 @@ import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
 import EmptyState from '../../components/SystemStatus/EmptyState';
 import queryString from 'query-string';
-import TablePagination from '@material-ui/core/TablePagination';
-import Typography from '@material-ui/core/Typography';
-import FormGroup from '@material-ui/core/FormGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
+import TablePagination from '@mui/material/TablePagination';
+import Typography from '@mui/material/Typography';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
 import clsx from 'clsx';
 import { History, Location } from 'history';
 import { fetchContentXML } from '../../services/content';
@@ -39,14 +40,14 @@ import { completeDetailedItem } from '../../state/actions/content';
 import { getPreviewURLFromPath } from '../../utils/path';
 import ApiResponseErrorState from '../../components/ApiResponseErrorState';
 import SiteSearchToolBar from '../../components/SiteSearchToolbar';
-import Drawer from '@material-ui/core/Drawer';
-import ListItemText from '@material-ui/core/ListItemText';
+import Drawer from '@mui/material/Drawer';
+import ListItemText from '@mui/material/ListItemText';
 import SiteSearchFilters from '../../components/SiteSearchFilters';
 import ItemActionsSnackbar from '../../components/ItemActionsSnackbar';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import { AllItemActions, DetailedItem } from '../../models/Item';
 import palette from '../../styles/palette';
-import Button from '@material-ui/core/Button';
+import Button from '@mui/material/Button';
 import { itemCreated, itemDuplicated, itemsDeleted, itemsPasted, itemUpdated } from '../../state/actions/system';
 import { getHostToHostBus } from '../Preview/previewContext';
 import { generateMultipleItemOptions, generateSingleItemOptions, itemActionDispatcher } from '../../utils/itemActions';
@@ -224,7 +225,7 @@ const useStyles = makeStyles((theme) => ({
   },
   selectToolbar: {
     placeContent: 'center space-between',
-    backgroundColor: theme.palette.type === 'dark' ? theme.palette.background.default : palette.white
+    backgroundColor: theme.palette.mode === 'dark' ? theme.palette.background.default : palette.white
   },
   selectToolbarTitle: {
     flexGrow: 1
@@ -862,7 +863,8 @@ export default function Search(props: SearchProps) {
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
             classes={{
-              caption: classes.paginationCaption,
+              // TODO: replace, adjust or remove `caption`
+              // caption: classes.paginationCaption,
               selectRoot: classes.paginationSelectRoot,
               select: classes.paginationSelect
             }}

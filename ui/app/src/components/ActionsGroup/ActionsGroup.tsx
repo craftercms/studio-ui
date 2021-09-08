@@ -16,12 +16,13 @@
 
 import * as React from 'react';
 import { forwardRef, useState } from 'react';
-import { MenuItem, StandardProps } from '@material-ui/core';
+import { MenuItem, StandardProps } from '@mui/material';
 import clsx from 'clsx';
-import Fab from '@material-ui/core/Fab';
-import Menu from '@material-ui/core/Menu';
-import Button from '@material-ui/core/Button';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import Fab from '@mui/material/Fab';
+import Menu from '@mui/material/Menu';
+import Button from '@mui/material/Button';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { ContextMenuOption } from '../ContextMenu';
 
 export type ActionsGroupPropsClassKey = 'root' | 'action' | 'more';

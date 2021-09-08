@@ -14,17 +14,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import DialogContent from '@material-ui/core/DialogContent';
+import DialogContent from '@mui/material/DialogContent';
 import DialogFooter from './DialogFooter';
-import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogContentText from '@mui/material/DialogContentText';
 import React, { PropsWithChildren, ReactNode } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import StandardAction from '../../models/StandardAction';
-import Dialog, { DialogProps } from '@material-ui/core/Dialog';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+import Dialog, { DialogProps } from '@mui/material/Dialog';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import Typography from '@mui/material/Typography';
 import questionGraphicUrl from '../../assets/question.svg';
-import { CSSProperties } from '@material-ui/styles';
+import { CSSProperties } from '@mui/styles';
 import PrimaryButton from '../PrimaryButton';
 import SecondaryButton from '../SecondaryButton';
 import { useUnmount } from '../../utils/hooks/useUnmount';

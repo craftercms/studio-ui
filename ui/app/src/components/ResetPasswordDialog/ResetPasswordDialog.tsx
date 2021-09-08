@@ -14,13 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Dialog from '@material-ui/core/Dialog';
+import Dialog from '@mui/material/Dialog';
 import React, { useState } from 'react';
 import User from '../../models/User';
-import DialogHeader from '../Dialogs/DialogHeader';
+import DialogHeader from '../DialogHeader/DialogHeader';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import DialogBody from '../Dialogs/DialogBody';
-import { Typography } from '@material-ui/core';
+import { Typography } from '@mui/material';
 import DialogFooter from '../Dialogs/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';

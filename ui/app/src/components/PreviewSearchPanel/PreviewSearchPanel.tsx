@@ -16,13 +16,13 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
-import { makeStyles } from '@material-ui/core/styles';
-import List from '@material-ui/core/List';
+import makeStyles from '@mui/styles/makeStyles';
+import List from '@mui/material/List';
 import SearchBar from '../Controls/SearchBar';
 import { ComponentsContentTypeParams, ElasticParams, SearchItem } from '../../models/Search';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import { DraggablePanelListItem } from '../../modules/Preview/Tools/DraggablePanelListItem';
-import TablePagination from '@material-ui/core/TablePagination';
+import TablePagination from '@mui/material/TablePagination';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 import {
   ASSET_DRAG_ENDED,

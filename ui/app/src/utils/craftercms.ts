@@ -17,7 +17,7 @@
 import jss from 'jss';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import * as MaterialUI from '@material-ui/core';
+import * as MaterialUI from '@mui/material';
 import * as ReactRedux from 'react-redux';
 import * as ReactIntl from 'react-intl';
 import { IntlShape } from 'react-intl';
@@ -45,7 +45,7 @@ export interface CrafterCMSGlobal {
     'react-dom': typeof ReactDOM;
     'react-redux': typeof ReactRedux;
     'react-intl': typeof ReactIntl;
-    '@material-ui/core': typeof MaterialUI;
+    '@mui/material': typeof MaterialUI;
   };
   plugins: Map<string, PluginDescriptor>;
   components: Map<string, ComponentRecord>;
@@ -72,7 +72,7 @@ export const libs: CrafterCMSGlobal['libs'] = {
   'react-dom': ReactDOM,
   'react-redux': ReactRedux,
   'react-intl': ReactIntl,
-  '@material-ui/core': MaterialUI
+  '@mui/material': MaterialUI
 };
 
 // UMD builds wouldn't give the chance to track the file builder the plugin loads from

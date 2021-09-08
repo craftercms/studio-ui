@@ -17,12 +17,13 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { MediaItem } from '../../models/Search';
-import { createStyles, alpha } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { alpha } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import SearchBar from '../Controls/SearchBar';
 import { useDispatch, useSelector } from 'react-redux';
 import GlobalState, { PagedEntityState } from '../../models/GlobalState';
-import TablePagination from '@material-ui/core/TablePagination';
+import TablePagination from '@mui/material/TablePagination';
 import { fromEvent, interval } from 'rxjs';
 import { filter, mapTo, share, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
@@ -33,9 +34,9 @@ import {
   setPreviewEditMode
 } from '../../state/actions/preview';
 import MediaCard from '../MediaCard';
-import DragIndicatorRounded from '@material-ui/icons/DragIndicatorRounded';
+import DragIndicatorRounded from '@mui/icons-material/DragIndicatorRounded';
 import EmptyState from '../SystemStatus/EmptyState';
-import UploadIcon from '@material-ui/icons/Publish';
+import UploadIcon from '@mui/icons-material/Publish';
 import { nnou, pluckProps } from '../../utils/object';
 import { uploadDataUrl } from '../../services/content';
 import Suspencified from '../SystemStatus/Suspencified';

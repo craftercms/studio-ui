@@ -15,11 +15,12 @@
  */
 
 import React from 'react';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { Theme } from '@material-ui/core/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import { Theme } from '@mui/material/styles';
 import palette from '../styles/palette';
-import { Grid } from '@material-ui/core';
-import Typography from '@material-ui/core/Typography';
+import { Grid } from '@mui/material';
+import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
 import GlobalState from '../models/GlobalState';

@@ -30,7 +30,7 @@ import { deleteItems } from '../../services/content';
 import { emitSystemEvent, itemsDeleted } from '../../state/actions/system';
 import { DeleteDialogUI } from './DeleteDialogUI';
 import { DeleteDialogBaseProps } from './utils';
-import { DialogProps } from '@material-ui/core/Dialog';
+import { DialogProps } from '@mui/material/Dialog';
 import { useSelection } from '../../utils/hooks/useSelection';
 import { DeleteDependencies } from '../../modules/Content/Dependencies/DependencySelection';
 import { Resource } from '../../models/Resource';

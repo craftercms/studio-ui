@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import Dialog, { DialogProps } from '@material-ui/core/Dialog';
+import Dialog, { DialogProps } from '@mui/material/Dialog';
 import { PublishDialogContainer, PublishDialogContainerProps } from './PublishDialogContainer';
 import { useOnClose } from '../../utils/hooks/useOnClose';
 

@@ -14,16 +14,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Box from '@material-ui/core/Box';
+import Box from '@mui/material/Box';
 import React, { ReactNode, useCallback, useMemo, useState } from 'react';
-import IconButton from '@material-ui/core/IconButton';
-import NavigateNextIcon from '@material-ui/icons/NavigateNext';
-import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
+import IconButton from '@mui/material/IconButton';
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import useStyles from './styles';
 import { createLookupTable } from '../../utils/object';
 import TransferListColumn, { TransferListItem } from '../TransferListColumn';
 import { FormattedMessage } from 'react-intl';
-import Tooltip from '@material-ui/core/Tooltip';
+import Tooltip from '@mui/material/Tooltip';
 
 export interface TransferListProps {
   source: TransferListObject;
@@ -160,7 +160,7 @@ export default function TransferList(props: TransferListProps) {
           }
         >
           <span>
-            <IconButton onClick={addToTarget} disabled={disableAdd}>
+            <IconButton onClick={addToTarget} disabled={disableAdd} size="large">
               <NavigateNextIcon />
             </IconButton>
           </span>
@@ -178,7 +178,7 @@ export default function TransferList(props: TransferListProps) {
           }
         >
           <span>
-            <IconButton onClick={removeFromTarget} disabled={disableRemove}>
+            <IconButton onClick={removeFromTarget} disabled={disableRemove} size="large">
               <NavigateBeforeIcon />
             </IconButton>
           </span>

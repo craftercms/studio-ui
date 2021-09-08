@@ -16,9 +16,9 @@
 
 import React, { PropsWithChildren } from 'react';
 import { ContentTypeField } from '../../models/ContentType';
-import Grid from '@material-ui/core/Grid';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import Divider from '@material-ui/core/Divider';
+import Grid from '@mui/material/Grid';
+import FormHelperText from '@mui/material/FormHelperText';
+import Divider from '@mui/material/Divider';
 
 type AudiencesFormSectionProps = PropsWithChildren<{
   field: ContentTypeField;

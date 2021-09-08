@@ -55,8 +55,8 @@ import { debounceTime, filter, map, pluck, switchMap, take, tap } from 'rxjs/ope
 import { IntlShape } from 'react-intl/src/types';
 import * as messages from './i18n-legacy';
 import { translateElements } from './i18n-legacy';
-import { ThemeOptions } from '@material-ui/core/styles';
-import * as mui from '@material-ui/core';
+import { DeprecatedThemeOptions as ThemeOptions } from '@mui/material/styles';
+import * as mui from '@mui/material';
 import { defaultThemeOptions, generateClassName } from '../styles/theme';
 import getStore, { CrafterCMSStore } from '../state/store';
 import { useDispatch, useSelector, useStore } from 'react-redux';

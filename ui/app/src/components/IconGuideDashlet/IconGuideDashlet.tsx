@@ -17,9 +17,10 @@
 import React, { useState } from 'react';
 import Dashlet from '../Dashlet';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import ItemStateIcon from '../ItemStateIcon';
 import { getItemPublishingTargetText, getItemStateText } from '../ItemDisplay/utils';
 import ItemTypeIcon from '../ItemTypeIcon';

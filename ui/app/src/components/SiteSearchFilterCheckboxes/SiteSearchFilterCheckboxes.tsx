@@ -16,12 +16,12 @@
 
 import { Facet } from '../../models/Search';
 import { LookupTable } from '../../models/LookupTable';
-import FormGroup from '@material-ui/core/FormGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { Theme } from '@material-ui/core';
+import makeStyles from '@mui/styles/makeStyles';
+import { Theme } from '@mui/material';
 
 const useStyles = makeStyles((theme: Theme) => ({
   checkboxLabel: {

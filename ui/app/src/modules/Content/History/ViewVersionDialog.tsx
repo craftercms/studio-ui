@@ -16,17 +16,20 @@
 
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import StandardAction from '../../../models/StandardAction';
 import ContentType from '../../../models/ContentType';
 import { LookupTable } from '../../../models/LookupTable';
 import { ApiResponse } from '../../../models/ApiResponse';
 import { EntityState } from '../../../models/EntityState';
-import DialogHeader, { DialogHeaderAction, DialogHeaderStateAction } from '../../../components/Dialogs/DialogHeader';
+import DialogHeader, {
+  DialogHeaderAction,
+  DialogHeaderStateAction
+} from '../../../components/DialogHeader/DialogHeader';
 import DialogBody from '../../../components/Dialogs/DialogBody';
 import { Resource } from '../../../models/Resource';
-import Dialog from '@material-ui/core/Dialog';
+import Dialog from '@mui/material/Dialog';
 import { useSelection } from '../../../utils/hooks/useSelection';
 import { useLogicResource } from '../../../utils/hooks/useLogicResource';
 import { useUnmount } from '../../../utils/hooks/useUnmount';
@@ -112,13 +115,13 @@ const getLegacyDialogStyles = makeStyles(() => ({
       <section className={classes.viewVersionContent}>
         {contentTypes &&
           values.map((field) => (
-            <ExpansionPanel key={field.id} classes={{ root: classes.root }}>
-              <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+            <Accordion key={field.id} classes={{ root: classes.root }}>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography>
                   <span className={classes.bold}>{field.name}</span> ({field.id})
                 </Typography>
-              </ExpansionPanelSummary>
-              <ExpansionPanelDetails>
+              </AccordionSummary>
+              <AccordionDetails>
                 <Typography>
                   {field.type === 'html' ? (
                     <span
@@ -132,8 +135,8 @@ const getLegacyDialogStyles = makeStyles(() => ({
                     version.content[version.id][field.id]
                   )}
                 </Typography>
-              </ExpansionPanelDetails>
-            </ExpansionPanel>
+              </AccordionDetails>
+            </Accordion>
           ))}
       </section>
     </>

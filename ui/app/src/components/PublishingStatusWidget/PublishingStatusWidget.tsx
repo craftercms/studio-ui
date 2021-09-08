@@ -15,7 +15,7 @@
  */
 
 import * as React from 'react';
-import Paper from '@material-ui/core/Paper';
+import Paper from '@mui/material/Paper';
 import { PublishingStatusDialogBody } from '../PublishingStatusDialog';
 import { clearLock, start, stop } from '../../services/publishing';
 import { fetchPublishingStatus } from '../../state/actions/publishingStatus';

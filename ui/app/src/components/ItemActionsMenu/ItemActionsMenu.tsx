@@ -15,13 +15,13 @@
  */
 
 import React, { PropsWithChildren } from 'react';
-import ContextMenu, { ContextMenuProps } from '../ContextMenu';
-import { PopoverOrigin, PopoverPosition, PopoverReference } from '@material-ui/core';
+import ContextMenu, { ContextMenuProps } from '../ContextMenu/ContextMenu';
+import { PopoverOrigin, PopoverPosition, PopoverReference } from '@mui/material';
 import { useDispatch } from 'react-redux';
 import { useIntl } from 'react-intl';
 import StandardAction from '../../models/StandardAction';
 import { generateSingleItemOptions, itemActionDispatcher } from '../../utils/itemActions';
-import { PopoverProps } from '@material-ui/core/Popover';
+import { PopoverProps } from '@mui/material/Popover';
 import { getRootPath, isValidCutPastePath } from '../../utils/path';
 import { AllItemActions } from '../../models/Item';
 import { useSelection } from '../../utils/hooks/useSelection';

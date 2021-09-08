@@ -15,7 +15,7 @@
  */
 
 import React, { useState } from 'react';
-import Dialog from '@material-ui/core/Dialog';
+import Dialog from '@mui/material/Dialog';
 import EditGroupDialogContainer, { EditGroupDialogContainerProps } from './EditGroupDialogContainer';
 import { FormattedMessage } from 'react-intl';
 import ConfirmDialog from '../Dialogs/ConfirmDialog';

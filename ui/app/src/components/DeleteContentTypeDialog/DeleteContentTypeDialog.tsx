@@ -16,7 +16,7 @@
 
 import * as React from 'react';
 import { useMemo, useState } from 'react';
-import { Dialog } from '@material-ui/core';
+import { Dialog } from '@mui/material';
 import { defineMessages, useIntl } from 'react-intl';
 import { deleteContentType, fetchContentTypeUsage } from '../../services/contentTypes';
 import ContentType from '../../models/ContentType';

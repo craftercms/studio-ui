@@ -15,8 +15,8 @@
  */
 
 import React, { useEffect, useMemo, useState } from 'react';
-import Dialog from '@material-ui/core/Dialog';
-import DialogHeader from '../Dialogs/DialogHeader';
+import Dialog from '@mui/material/Dialog';
+import DialogHeader from '../DialogHeader/DialogHeader';
 import DialogBody from '../Dialogs/DialogBody';
 import DialogFooter from '../Dialogs/DialogFooter';
 import { FormattedMessage } from 'react-intl';
@@ -29,9 +29,10 @@ import SecondaryButton from '../SecondaryButton';
 import ConfirmDropdown from '../Controls/ConfirmDropdown';
 import { useIntl } from 'react-intl';
 import { messages } from '../RemoteRepositoriesStatus';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import Tab from '@material-ui/core/Tab';
-import Tabs from '@material-ui/core/Tabs';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
 

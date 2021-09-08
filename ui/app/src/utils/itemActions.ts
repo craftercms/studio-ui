@@ -16,7 +16,7 @@
 
 import { translations } from '../components/ItemActionsMenu/translations';
 import { AllItemActions, DetailedItem, LegacyItem } from '../models/Item';
-import { ContextMenuOption } from '../components/ContextMenu';
+import { ContextMenuOption } from '../components/ContextMenu/ContextMenu';
 import { getRootPath, withoutIndex } from './path';
 import {
   closeChangeContentTypeDialog,

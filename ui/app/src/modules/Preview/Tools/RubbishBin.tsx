@@ -15,13 +15,14 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import Grow from '@material-ui/core/Grow';
-import Paper from '@material-ui/core/Paper';
-import DeleteRounded from '@material-ui/icons/DeleteRounded';
+import Grow from '@mui/material/Grow';
+import Paper from '@mui/material/Paper';
+import DeleteRounded from '@mui/icons-material/DeleteRounded';
 import DeleteRoundedTilted from '../../../components/Icons/DeleteRoundedTilted';
-import { Typography } from '@material-ui/core';
+import { Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import palette from '../../../styles/palette';
 import clsx from 'clsx';
 import { useSelection } from '../../../utils/hooks/useSelection';

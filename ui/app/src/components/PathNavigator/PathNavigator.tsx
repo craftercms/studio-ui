@@ -17,7 +17,7 @@
 import React, { ElementType, useCallback, useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { DetailedItem } from '../../models/Item';
-import ContextMenu, { ContextMenuOption } from '../ContextMenu';
+import ContextMenu, { ContextMenuOption } from '../ContextMenu/ContextMenu';
 import { useDispatch } from 'react-redux';
 import { getParentPath, withIndex, withoutIndex } from '../../utils/path';
 import { translations } from './translations';
@@ -61,7 +61,7 @@ import PathNavigatorSkeleton from './PathNavigatorSkeleton';
 import GlobalState from '../../models/GlobalState';
 import { SystemIconDescriptor } from '../SystemIcon';
 // @ts-ignore
-import { getOffsetLeft, getOffsetTop } from '@material-ui/core/Popover/Popover';
+import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover/Popover';
 import { getNumOfMenuOptionsForItem } from '../../utils/content';
 import { batchActions } from '../../state/actions/misc';
 import { useSelection } from '../../utils/hooks/useSelection';

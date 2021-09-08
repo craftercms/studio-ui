@@ -16,25 +16,25 @@
 
 import React from 'react';
 import { useStyles } from './styles';
-import DeleteRoundedIcon from '@material-ui/icons/DeleteRounded';
+import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import Group from '../../models/Group';
 import DialogBody from '../Dialogs/DialogBody';
 import clsx from 'clsx';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import Divider from '@material-ui/core/Divider';
-import Tooltip from '@material-ui/core/Tooltip';
-import IconButton from '@material-ui/core/IconButton';
+import Divider from '@mui/material/Divider';
+import Tooltip from '@mui/material/Tooltip';
+import IconButton from '@mui/material/IconButton';
 import ConfirmDropdown from '../Controls/ConfirmDropdown';
-import CloseRoundedIcon from '@material-ui/icons/CloseRounded';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
-import Box from '@material-ui/core/Box';
+import Box from '@mui/material/Box';
 import User from '../../models/User';
 import TransferList from '../TransferList';
-import InputLabel from '@material-ui/core/InputLabel';
-import OutlinedInput from '@material-ui/core/OutlinedInput';
-import FormHelperText from '@material-ui/core/FormHelperText';
+import InputLabel from '@mui/material/InputLabel';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import FormHelperText from '@mui/material/FormHelperText';
 
 interface GroupEditDialogUIProps {
   group?: Group;
@@ -114,7 +114,7 @@ export default function EditGroupDialogUI(props: GroupEditDialogUIProps) {
             />
           )}
           <Tooltip title={<FormattedMessage id="editGroupDialog.close" defaultMessage="Close" />}>
-            <IconButton edge="end" onClick={onClose}>
+            <IconButton edge="end" onClick={onClose} size="large">
               <CloseRoundedIcon />
             </IconButton>
           </Tooltip>

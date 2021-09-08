@@ -17,18 +17,19 @@
 import useStyles from './styles';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
-import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
-import Avatar from '@material-ui/core/Avatar';
-import ClearRoundedIcon from '@material-ui/icons/ClearRounded';
-import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
-import DateFnsUtils from '@date-io/date-fns';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import TextField from '@material-ui/core/TextField';
-import MenuItem from '@material-ui/core/MenuItem';
-import Tooltip from '@material-ui/core/Tooltip';
-import IconButton from '@material-ui/core/IconButton';
+import Avatar from '@mui/material/Avatar';
+import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
+import DatePicker from '@mui/lab/DatePicker';
+import TimePicker from '@mui/lab/TimePicker';
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Autocomplete from '@mui/material/Autocomplete';
+import TextField from '@mui/material/TextField';
+import MenuItem from '@mui/material/MenuItem';
+import Tooltip from '@mui/material/Tooltip';
+import IconButton from '@mui/material/IconButton';
 import { AuditGridFilterPopoverProps } from './AuditGridFilterPopover';
 import moment from 'moment-timezone';
 import { useDebouncedInput } from '../../utils/hooks/useDebouncedInput';
@@ -141,12 +142,12 @@ export default function AuditGridFilterPopoverBody(props: AuditGridFilterPopover
     }
   };
 
-  const onFromDateSelected = (date: MaterialUiPickersDate) => {
+  const onFromDateSelected = (date) => {
     onFilterChange('dateFrom', date ? moment(date).format() : 'all');
     setFromDate(date);
   };
 
-  const onToDateSelected = (date: MaterialUiPickersDate) => {
+  const onToDateSelected = (date) => {
     onFilterChange('dateTo', date ? moment(date).format() : 'all');
     setToDate(date);
   };
@@ -168,26 +169,25 @@ export default function AuditGridFilterPopoverBody(props: AuditGridFilterPopover
         <ClearRoundedIcon fontSize="small" />
       </Avatar>
       {filterId === 'operationTimestamp' && (
-        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
           <form className={classes.popoverForm} noValidate autoComplete="off">
             <Box display="flex" alignItems="center" marginBottom="20px">
-              <KeyboardDatePicker
+              <DatePicker
                 className={classes.fromDatePicker}
                 clearable
-                margin="none"
                 label={<FormattedMessage id="words.from" defaultMessage="From" />}
-                format="MM/dd/yyyy"
+                inputFormat="MM/dd/yyyy"
                 value={fromDate}
                 onChange={onFromDateSelected}
+                renderInput={(props) => <TextField {...props} />}
               />
-              <KeyboardDatePicker
+              <TimePicker
                 className={classes.toDatePicker}
                 clearable
-                margin="none"
                 label={<FormattedMessage id="words.to" defaultMessage="To" />}
-                format="MM/dd/yyyy"
                 value={toDate}
                 onChange={onToDateSelected}
+                renderInput={(props) => <TextField {...props} />}
               />
               <Button
                 className={classes.clearButton}
@@ -217,7 +217,7 @@ export default function AuditGridFilterPopoverBody(props: AuditGridFilterPopover
               )}
             />
           </form>
-        </MuiPickersUtilsProvider>
+        </LocalizationProvider>
       )}
       {['siteId', 'user', 'origin'].includes(filterId) && (
         <Box display="flex" alignItems="center">

@@ -16,16 +16,16 @@
 
 import React from 'react';
 import { LogEvent } from '../../models/monitoring/LogEvent';
-import TableContainer from '@material-ui/core/TableContainer';
-import Table from '@material-ui/core/Table';
-import TableHead from '@material-ui/core/TableHead';
+import TableContainer from '@mui/material/TableContainer';
+import Table from '@mui/material/Table';
+import TableHead from '@mui/material/TableHead';
 import GlobalAppGridRow from '../GlobalAppGridRow';
 import GlobalAppGridCell from '../GlobalAppGridCell';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
-import TableBody from '@material-ui/core/TableBody';
-import VisibilityRoundedIcon from '@material-ui/icons/VisibilityRounded';
-import { IconButton } from '@material-ui/core';
+import TableBody from '@mui/material/TableBody';
+import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
+import { IconButton } from '@mui/material';
 import { useSelection } from '../../utils/hooks/useSelection';
 
 interface LogConsoleGridUIProps {
@@ -93,7 +93,7 @@ export default function LogConsoleGridUI(props: LogConsoleGridUIProps) {
                 {logEvent.message}
               </GlobalAppGridCell>
               <GlobalAppGridCell align="left" className="action">
-                <IconButton onClick={() => onLogEventDetails(logEvent)}>
+                <IconButton onClick={() => onLogEventDetails(logEvent)} size="large">
                   <VisibilityRoundedIcon />
                 </IconButton>
               </GlobalAppGridCell>

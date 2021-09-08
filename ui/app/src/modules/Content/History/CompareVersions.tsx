@@ -16,7 +16,7 @@
 
 // Next UI code disabled temporarily
 
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import ContentInstance from '../../../models/ContentInstance';
 import { LookupTable } from '../../../models/LookupTable';
 import ContentType from '../../../models/ContentType';
@@ -270,12 +270,12 @@ export function CompareVersions(props: CompareVersionsProps) {
   });
 
   return (
-    <ExpansionPanel
+    <Accordion
       key={field.id}
       classes={{ root: classes.root }}
       TransitionProps={{ mountOnEnter: true }}
     >
-      <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Typography>
           <span className={classes.bold}>{field.name} </span>({field.id})
         </Typography>
@@ -287,8 +287,8 @@ export function CompareVersions(props: CompareVersionsProps) {
           field.type === 'node-selector' && !contentA.length && !contentB.length &&
           <Chip label={formatMessage(translations.empty)} className={classes.unchangedChip} />
         }
-      </ExpansionPanelSummary>
-      <ExpansionPanelDetails>
+      </AccordionSummary>
+      <AccordionDetails>
         {
           (field.type === 'text' || field.type === 'html') && (!unChanged ? (
               <MonacoWrapper
@@ -319,8 +319,8 @@ export function CompareVersions(props: CompareVersionsProps) {
           (field.type === 'node-selector') &&
           <ContentInstanceComponents contentA={contentA} contentB={contentB} />
         }
-      </ExpansionPanelDetails>
-    </ExpansionPanel>
+      </AccordionDetails>
+    </Accordion>
   );
 } */
 

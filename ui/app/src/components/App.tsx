@@ -17,7 +17,8 @@
 import React, { lazy, Suspense } from 'react';
 import CrafterCMSNextBridge from './CrafterCMSNextBridge';
 import crafterIconUrl from '../assets/crafter-icon.svg';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import palette from '../styles/palette';
 import AuthBoundary from './AuthBoundary';
 

@@ -15,22 +15,23 @@
  */
 
 import * as React from 'react';
-import Paper from '@material-ui/core/Paper';
+import Paper from '@mui/material/Paper';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import DialogHeader from '../Dialogs/DialogHeader';
+import DialogHeader from '../DialogHeader/DialogHeader';
 import DialogFooter from '../Dialogs/DialogFooter';
-import { createStyles, makeStyles } from '@material-ui/core';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import palette from '../../styles/palette';
-import FormControlLabel from '@material-ui/core/FormControlLabel/FormControlLabel';
-import Radio from '@material-ui/core/Radio/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup/RadioGroup';
-import Collapse from '@material-ui/core/Collapse/Collapse';
-import Button from '@material-ui/core/Button';
-import ListItemText from '@material-ui/core/ListItemText';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import Collapse from '@mui/material/Collapse';
+import Button from '@mui/material/Button';
+import ListItemText from '@mui/material/ListItemText';
 import PublishOnDemandForm from '../PublishOnDemandForm';
 import { PublishFormData, PublishOnDemandMode } from '../../models/Publishing';
 import { nnou } from '../../utils/object';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import { bulkGoLive, fetchPublishingTargets, publishByCommits } from '../../services/publishing';
 import { showSystemNotification } from '../../state/actions/system';
 import { useDispatch } from 'react-redux';
@@ -38,7 +39,7 @@ import { closeConfirmDialog, showConfirmDialog } from '../../state/actions/dialo
 import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
 import { useState } from 'react';
 import { useEffect } from 'react';
-import Link from '@material-ui/core/Link';
+import Link from '@mui/material/Link';
 import { useSpreadState } from '../../utils/hooks/useSpreadState';
 import { useSelection } from '../../utils/hooks/useSelection';
 import { isBlank } from '../../utils/string';
@@ -322,7 +323,7 @@ export default function PublishOnDemandWidget(props: PublishOnDemandWidgetProps)
 
       {mode && (
         <DialogFooter>
-          <Button variant="outlined" color="default" onClick={onCancel}>
+          <Button variant="outlined" onClick={onCancel}>
             <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
           </Button>
           <Button

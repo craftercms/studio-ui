@@ -15,18 +15,19 @@
  */
 
 import React from 'react';
-import TreeView from '@material-ui/lab/TreeView';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import Accordion from '@material-ui/core/Accordion';
+import TreeView from '@mui/lab/TreeView';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import Accordion from '@mui/material/Accordion';
 import clsx from 'clsx';
 import Header from '../PathNavigator/PathNavigatorHeader';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
+import AccordionDetails from '@mui/material/AccordionDetails';
 import { StateStylingProps } from '../../models/UiConfig';
 import PathNavigatorTreeItem from './PathNavigatorTreeItem';
 import LookupTable from '../../models/LookupTable';
 import { DetailedItem } from '../../models/Item';
-import ArrowRightRoundedIcon from '@material-ui/icons/ArrowRightRounded';
-import ArrowDropDownRoundedIcon from '@material-ui/icons/ArrowDropDownRounded';
+import ArrowRightRoundedIcon from '@mui/icons-material/ArrowRightRounded';
+import ArrowDropDownRoundedIcon from '@mui/icons-material/ArrowDropDownRounded';
 import { SystemIconDescriptor } from '../SystemIcon';
 
 export interface TreeNode {

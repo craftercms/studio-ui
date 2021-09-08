@@ -18,7 +18,7 @@ import React, { useState } from 'react';
 import NewRemoteRepositoryDialogContainer, {
   NewRemoteRepositoryDialogContainerProps
 } from './NewRemoteRepositoryDialogContainer';
-import Dialog from '@material-ui/core/Dialog/Dialog';
+import Dialog from '@mui/material/Dialog';
 import { useOnClose } from '../../utils/hooks/useOnClose';
 
 export default function NewRemoteRepositoryDialog(props: NewRemoteRepositoryDialogContainerProps) {

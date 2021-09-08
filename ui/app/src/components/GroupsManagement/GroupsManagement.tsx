@@ -16,7 +16,7 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import AddIcon from '@material-ui/icons/Add';
+import AddIcon from '@mui/icons-material/Add';
 import { PagedArray } from '../../models/PagedArray';
 import { ApiResponse } from '../../models/ApiResponse';
 import Group from '../../models/Group';
@@ -24,10 +24,10 @@ import { fetchAll } from '../../services/groups';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import GroupsGridUI, { GroupsGridSkeletonTable } from '../GroupsGrid';
 import EditGroupDialog from '../EditGroupDialog';
-import Button from '@material-ui/core/Button';
+import Button from '@mui/material/Button';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
-import Paper from '@material-ui/core/Paper';
+import Paper from '@mui/material/Paper';
 
 export default function GroupsManagement() {
   const [offset, setOffset] = useState(0);

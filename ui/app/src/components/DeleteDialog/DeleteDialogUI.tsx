@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import DialogHeader from '../Dialogs/DialogHeader';
+import DialogHeader from '../DialogHeader/DialogHeader';
 import { translations } from './translations';
 import DialogBody from '../Dialogs/DialogBody';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';

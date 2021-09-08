@@ -15,21 +15,21 @@
  */
 
 import { Resource } from '../../models/Resource';
-import TableContainer from '@material-ui/core/TableContainer';
-import Table from '@material-ui/core/Table';
-import TableHead from '@material-ui/core/TableHead';
-import Typography from '@material-ui/core/Typography';
+import TableContainer from '@mui/material/TableContainer';
+import Table from '@mui/material/Table';
+import TableHead from '@mui/material/TableHead';
+import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
-import TableBody from '@material-ui/core/TableBody';
+import TableBody from '@mui/material/TableBody';
 import React from 'react';
-import Avatar from '@material-ui/core/Avatar';
+import Avatar from '@mui/material/Avatar';
 import User from '../../models/User';
 import { PagedArray } from '../../models/PagedArray';
 import Pagination from '../Pagination';
 import useStyles from './styles';
 import GlobalAppGridRow from '../GlobalAppGridRow';
 import GlobalAppGridCell from '../GlobalAppGridCell';
-import Box from '@material-ui/core/Box';
+import Box from '@mui/material/Box';
 
 export interface UsersGridUIProps {
   resource: Resource<PagedArray<User>>;

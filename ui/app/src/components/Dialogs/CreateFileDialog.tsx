@@ -15,12 +15,12 @@
  */
 
 import React, { PropsWithChildren, useState } from 'react';
-import Dialog from '@material-ui/core/Dialog';
-import DialogHeader from './DialogHeader';
+import Dialog from '@mui/material/Dialog';
+import DialogHeader from '../DialogHeader/DialogHeader';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import DialogBody from './DialogBody';
 import DialogFooter from './DialogFooter';
-import TextField from '@material-ui/core/TextField';
+import TextField from '@mui/material/TextField';
 import { createFile } from '../../services/content';
 import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
@@ -30,8 +30,8 @@ import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import { validateActionPolicy } from '../../services/sites';
 import ConfirmDialog from './ConfirmDialog';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useUnmount } from '../../utils/hooks/useUnmount';
 

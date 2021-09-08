@@ -14,14 +14,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
 import SystemIcon, { SystemIconDescriptor } from '../SystemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
+import ListItemText from '@mui/material/ListItemText';
 import { usePossibleTranslation } from '../../utils/hooks/usePossibleTranslation';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import React, { useCallback, useEffect, useState } from 'react';
-import Switch from '@material-ui/core/Switch';
+import Switch from '@mui/material/Switch';
 import { fetchConfigurationJSON } from '../../services/configuration';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { usePreviewState } from '../../utils/hooks/usePreviewState';

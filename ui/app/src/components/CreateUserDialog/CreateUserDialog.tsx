@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Dialog from '@material-ui/core/Dialog';
+import Dialog from '@mui/material/Dialog';
 import React, { useState } from 'react';
 import { CreateUserDialogUIProps, CreateUserDialogContainer } from './CreateUserDialogContainer';
 import { useOnClose } from '../../utils/hooks/useOnClose';

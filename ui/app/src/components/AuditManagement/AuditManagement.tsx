@@ -30,14 +30,13 @@ import moment from 'moment-timezone';
 import LookupTable from '../../models/LookupTable';
 import AuditLogEntryParametersDialog from '../AuditLogEntryParametersDialog';
 import { nnou } from '../../utils/object';
-import Button from '@material-ui/core/Button';
+import Button from '@mui/material/Button';
 import AuditGridSkeleton from '../AuditGrid/AuditGridSkeleton';
-import { GridPageChangeParams } from '@material-ui/data-grid';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import { useMount } from '../../utils/hooks/useMount';
 import { useSpreadState } from '../../utils/hooks/useSpreadState';
 import { useSiteList } from '../../utils/hooks/useSiteList';
-import Paper from '@material-ui/core/Paper';
+import Paper from '@mui/material/Paper';
 
 interface AuditManagementProps {
   site?: string;
@@ -113,13 +112,13 @@ export default function AuditManagement(props: AuditManagementProps) {
     }
   );
 
-  const onPageChange = (params: GridPageChangeParams) => {
-    setPage(params.page);
-    setOptions({ offset: params.page * options.limit });
+  const onPageChange = (pageNumber: number) => {
+    setPage(pageNumber);
+    setOptions({ offset: pageNumber * options.limit });
   };
 
-  const onPageSizeChange = (param: GridPageChangeParams) => {
-    setOptions({ limit: param.pageSize });
+  const onPageSizeChange = (pageSize: number) => {
+    setOptions({ limit: pageSize });
   };
 
   const onFilterChange = ({ id, value }: { id: string; value: string | string[] }) => {

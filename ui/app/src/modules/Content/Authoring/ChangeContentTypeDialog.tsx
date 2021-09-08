@@ -16,14 +16,16 @@
 
 import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import Dialog from '@material-ui/core/Dialog';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import Dialog from '@mui/material/Dialog';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { LegacyContentType, LegacyFormConfig } from '../../../models/ContentType';
 import StandardAction from '../../../models/StandardAction';
 import { DetailedItem } from '../../../models/Item';
-import DialogHeader from '../../../components/Dialogs/DialogHeader';
+import DialogHeader from '../../../components/DialogHeader/DialogHeader';
 import DialogFooter from '../../../components/Dialogs/DialogFooter';
-import { Box, Checkbox, FormControlLabel } from '@material-ui/core';
+import { Box, Checkbox, FormControlLabel } from '@mui/material';
 import DialogBody from '../../../components/Dialogs/DialogBody';
 import SingleItemSelector from './SingleItemSelector';
 import SearchBar from '../../../components/Controls/SearchBar';

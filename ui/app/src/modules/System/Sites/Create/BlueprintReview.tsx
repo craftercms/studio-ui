@@ -15,16 +15,16 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import EditIcon from '@material-ui/icons/Edit';
+import makeStyles from '@mui/styles/makeStyles';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import EditIcon from '@mui/icons-material/Edit';
 import { SiteState } from '../../../../models/Site';
 import { MarketplacePlugin, MarketplacePluginParameter } from '../../../../models/MarketplacePlugin';
 import { defineMessages, useIntl } from 'react-intl';
-import Visibility from '@material-ui/icons/Visibility';
-import VisibilityOff from '@material-ui/icons/VisibilityOff';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import palette from '../../../../styles/palette';
 
 const useStyles = makeStyles((theme) => ({
@@ -198,6 +198,7 @@ function BlueprintReview(props: BlueprintReviewProps) {
             onClick={() => {
               showPassword(parameter);
             }}
+            size="large"
           >
             {passwordFields && passwordFields[parameter.name] ? <VisibilityOff /> : <Visibility />}
           </IconButton>
@@ -251,7 +252,7 @@ function BlueprintReview(props: BlueprintReviewProps) {
         <Grid item xs={12}>
           <Typography variant="h6" gutterBottom className={classes.section}>
             {formatMessage(messages.creationStrategy)}
-            <IconButton aria-label="goto" className={classes.edit} onClick={() => onGoTo(0)}>
+            <IconButton aria-label="goto" className={classes.edit} onClick={() => onGoTo(0)} size="large">
               <EditIcon />
             </IconButton>
           </Typography>
@@ -276,7 +277,7 @@ function BlueprintReview(props: BlueprintReviewProps) {
         <Grid item xs={12}>
           <Typography variant="h6" gutterBottom className={classes.section}>
             {formatMessage(messages.siteInfo)}
-            <IconButton aria-label="goto" className={classes.edit} onClick={() => onGoTo(1)}>
+            <IconButton aria-label="goto" className={classes.edit} onClick={() => onGoTo(1)} size="large">
               <EditIcon />
             </IconButton>
           </Typography>
@@ -305,7 +306,7 @@ function BlueprintReview(props: BlueprintReviewProps) {
           <Grid item xs={12}>
             <Typography variant="h6" gutterBottom className={classes.section}>
               {formatMessage(messages.blueprintParameters)}
-              <IconButton aria-label="goto" className={classes.edit} onClick={() => onGoTo(1)}>
+              <IconButton aria-label="goto" className={classes.edit} onClick={() => onGoTo(1)} size="large">
                 <EditIcon />
               </IconButton>
             </Typography>

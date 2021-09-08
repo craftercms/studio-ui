@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -14,18 +14,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import Typography, { TypographyProps } from '@material-ui/core/Typography';
-import IconButton, { IconButtonProps } from '@material-ui/core/IconButton';
-import MuiDialogTitle from '@material-ui/core/DialogTitle/DialogTitle';
-import CloseIconRounded from '@material-ui/icons/CloseRounded';
-import ArrowBack from '@material-ui/icons/ArrowBackIosRounded';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import Typography, { TypographyProps } from '@mui/material/Typography';
+import IconButton, { IconButtonProps } from '@mui/material/IconButton';
+import MuiDialogTitle from '@mui/material/DialogTitle';
+import CloseIconRounded from '@mui/icons-material/CloseRounded';
+import ArrowBack from '@mui/icons-material/ArrowBackIosRounded';
 import React, { ElementType, PropsWithChildren, ReactNode } from 'react';
 import clsx from 'clsx';
-import Tooltip from '@material-ui/core/Tooltip';
+import Tooltip from '@mui/material/Tooltip';
 import { defineMessages, useIntl } from 'react-intl';
 import StandardAction from '../../models/StandardAction';
-import Action, { ActionIcon } from './DialogHeaderAction';
+import Action, { ActionIcon } from '../Dialogs/DialogHeaderAction';
 
 const dialogTitleStyles = makeStyles((theme) =>
   createStyles({
@@ -44,7 +45,7 @@ const dialogTitleStyles = makeStyles((theme) =>
       alignItems: 'center'
     },
     title: {
-      padding: `0 ${theme.spacing(1)}px`,
+      padding: `0 ${theme.spacing(1)}`,
       overflow: 'hidden',
       whiteSpace: 'nowrap',
       textOverflow: 'ellipsis'
@@ -54,7 +55,7 @@ const dialogTitleStyles = makeStyles((theme) =>
       lineHeight: '18px'
     },
     subtitleWrapper: {
-      padding: `${theme.spacing(1)}px`,
+      padding: theme.spacing(1),
       paddingTop: 0
     },
     leftActions: {
@@ -115,7 +116,7 @@ export type DialogTitleProps<
   onBack?(): void;
 }>;
 
-export default function DialogHeader(props: DialogTitleProps) {
+export function DialogHeader(props: DialogTitleProps) {
   // region
   const classes = dialogTitleStyles({});
   const { formatMessage } = useIntl();
@@ -143,18 +144,13 @@ export default function DialogHeader(props: DialogTitleProps) {
   } = props;
   // endregion
   return (
-    <MuiDialogTitle
-      id={id}
-      disableTypography
-      className={className}
-      classes={{ root: clsx(classes.root, props.classes?.root) }}
-    >
+    <MuiDialogTitle id={id} className={className} classes={{ root: clsx(classes.root, props.classes?.root) }}>
       <section className={clsx(classes.titleWrapper, props.classes?.titleWrapper)}>
         {(leftActions || onBack) && (
           <div className={classes.leftActions}>
             {onBack && (
               <Tooltip title={formatMessage(translations.back)}>
-                <IconButton aria-label="close" onClick={onBack} className={classes.backIcon}>
+                <IconButton aria-label="close" onClick={onBack} className={classes.backIcon} size="large">
                   <BackIcon />
                 </IconButton>
               </Tooltip>
@@ -174,7 +170,7 @@ export default function DialogHeader(props: DialogTitleProps) {
             ))}
             {onDismiss && (
               <Tooltip title={formatMessage(translations.dismiss)}>
-                <IconButton aria-label="close" onClick={onDismiss} disabled={disableDismiss}>
+                <IconButton aria-label="close" onClick={onDismiss} disabled={disableDismiss} size="large">
                   <CloseIcon />
                 </IconButton>
               </Tooltip>
@@ -195,3 +191,5 @@ export default function DialogHeader(props: DialogTitleProps) {
     </MuiDialogTitle>
   );
 }
+
+export default DialogHeader;

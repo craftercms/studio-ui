@@ -16,12 +16,12 @@
 
 import React, { PropsWithChildren, useState } from 'react';
 import StandardAction from '../../models/StandardAction';
-import { Dialog } from '@material-ui/core';
-import DialogHeader from './DialogHeader';
+import { Dialog } from '@mui/material';
+import DialogHeader from '../DialogHeader/DialogHeader';
 import AsyncVideoPlayer from '../AsyncVideoPlayer';
 import IFrame from '../IFrame';
 import AceEditor from '../AceEditor';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import LoadingState, { ConditionalLoadingState } from '../SystemStatus/LoadingState';
 import { nou } from '../../utils/object';
 import { useUnmount } from '../../utils/hooks/useUnmount';

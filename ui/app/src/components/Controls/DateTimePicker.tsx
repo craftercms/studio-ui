@@ -14,28 +14,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo, useState } from 'react';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import React, { useMemo } from 'react';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { defineMessages, useIntl } from 'react-intl';
 import moment from 'moment-timezone';
-import AccessTimeIcon from '@material-ui/icons/AccessTimeRounded';
-import PublicRoundedIcon from '@material-ui/icons/PublicRounded';
-import DateFnsUtils from '@date-io/date-fns';
-import { KeyboardDatePicker, KeyboardTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
-import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import {
-  asLocalizedDateTime,
-  create8601String,
-  get8601Pieces,
-  getTimezones,
-  TimezoneDescriptor
-} from '../../utils/datetime';
-import FormControl from '@material-ui/core/FormControl';
+import PublicRoundedIcon from '@mui/icons-material/PublicRounded';
+// import DateFnsUtils from '@date-io/date-fns';
+// import { KeyboardDatePicker, KeyboardTimePicker, MuiPickersUtilsProvider } from '@mui/lab/DatePicker';
+import DatePicker from '@mui/lab/DatePicker';
+import TimePicker from '@mui/lab/TimePicker';
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import TextField from '@mui/material/TextField';
+import Autocomplete from '@mui/material/Autocomplete';
+import { create8601String, get8601Pieces, getTimezones, TimezoneDescriptor } from '../../utils/datetime';
+import FormControl from '@mui/material/FormControl';
 import { nnou } from '../../utils/object';
 import palette from '../../styles/palette';
-import { UNDEFINED } from '../../utils/constants';
-import { useSpreadState } from '../../utils/hooks/useSpreadState';
 
 export interface DateChangeData {
   date: Date;
@@ -165,25 +161,20 @@ function DateTimePicker(props: DateTimePickerProps) {
   const timeZones = getTimezones();
   const classes = useStyles();
   const hour12 = dateTimeFormatOptions?.hour12 ?? true;
-  const [pickerState, setPickerState] = useSpreadState({
-    dateValid: true,
-    timeValid: true,
-    timezoneValid: true
-  });
   const currentTimeZoneDesc = timeZones.find((tz) => tz.name === unescape(timeZone));
 
   const { formatMessage } = useIntl();
 
   const createOnDateChange = (name: string) =>
     // Date/time change handler
-    (newDate: Date | null) => {
+    (newDate: unknown, input: string) => {
+      console.log(`Check newDate type (${typeof newDate})`, newDate);
       if (newDate === null) {
-        setPickerState({ dateValid: false });
         onError?.();
       }
       let changes: DateChangeData;
       const internalDatePieces = get8601Pieces(internalDate);
-      const pickerDatePieces = get8601Pieces(newDate);
+      const pickerDatePieces = get8601Pieces(newDate as string);
       switch (name) {
         case 'date': {
           // Grab the picker-sent date, keep the time we had
@@ -200,7 +191,6 @@ function DateTimePicker(props: DateTimePickerProps) {
           break;
         }
       }
-      setPickerState({ dateValid: true });
       onChange?.(changes);
     };
 
@@ -223,76 +213,62 @@ function DateTimePicker(props: DateTimePickerProps) {
     formControlProps['id'] = id;
   }
 
-  const [datePickerOpen, setDatePickerOpen] = useState(false);
-
   return (
     <FormControl {...formControlProps} fullWidth>
-      <MuiPickersUtilsProvider utils={DateFnsUtils}>
+      <LocalizationProvider dateAdapter={AdapterDateFns}>
         {controls.includes('date') && (
-          <KeyboardDatePicker
-            open={datePickerOpen}
-            margin="normal"
+          <DatePicker
+            renderInput={(props) => <TextField {...props} />}
             value={internalDate}
             onChange={createOnDateChange('date')}
             className={classes.picker}
             InputAdornmentProps={{
               className: classes.pickerButton
             }}
-            inputProps={{
+            InputProps={{
               className: classes.pickerInput,
-              disabled: true
+              disabled: true,
+              placeholder: formatMessage(translations.datePlaceholder)
             }}
-            placeholder={formatMessage(translations.datePlaceholder)}
             disabled={disabled}
             disablePast={disablePast}
-            error={!pickerState.dateValid}
-            helperText={pickerState.dateValid ? '' : formatMessage(translations.dateInvalidMessage)}
-            labelFunc={(date, invalidLabel) => invalidLabel || asLocalizedDateTime(date, localeCode)}
-            onClick={
-              disabled
-                ? null
-                : () => {
-                    setDatePickerOpen(true);
-                  }
-            }
-            onAccept={() => {
-              setDatePickerOpen(false);
-            }}
-            // Both clicking cancel and outside the calendar trigger onClose
-            onClose={() => {
-              setDatePickerOpen(false);
-            }}
+            // TODO: Check/Restore error state, helper text
+            // error={!pickerState.dateValid}
+            // helperText={pickerState.dateValid ? '' : formatMessage(translations.dateInvalidMessage)}
+            // labelFunc={(date, invalidLabel) => invalidLabel || asLocalizedDateTime(date, localeCode)}
+            // onClick={
+            //   disabled
+            //     ? null
+            //     : () => {
+            //         setDatePickerOpen(true);
+            //       }
+            // }
+            // onAccept={() => {
+            //   setDatePickerOpen(false);
+            // }}
+            // // Both clicking cancel and outside the calendar trigger onClose
+            // onClose={() => {
+            //   setDatePickerOpen(false);
+            // }}
           />
         )}
         {controls.includes('time') && (
-          <KeyboardTimePicker
-            margin="normal"
+          <TimePicker
             value={internalDate}
             onChange={createOnDateChange('time')}
-            keyboardIcon={<AccessTimeIcon />}
             className={classes.picker}
             InputAdornmentProps={{ className: classes.pickerButton }}
-            inputProps={{ className: classes.pickerInput }}
-            placeholder={formatMessage(translations.timePlaceholder)}
+            InputProps={{ className: classes.pickerInput, placeholder: formatMessage(translations.timePlaceholder) }}
             disabled={disabled}
-            error={!pickerState.timeValid}
-            helperText={pickerState.timeValid ? '' : formatMessage(translations.timeInvalidMessage)}
+            // TODO: re-add helper text
+            // helperText={pickerState.timeValid ? '' : formatMessage(translations.timeInvalidMessage)}
             ampm={hour12}
-            labelFunc={(date, invalidLabel) =>
-              invalidLabel ||
-              asLocalizedDateTime(internalDate, localeCode, {
-                hour12,
-                hour: dateTimeFormatOptions?.hour || '2-digit',
-                minute: dateTimeFormatOptions?.minute || '2-digit',
-                // If the timezone control isn't displayed, the time displayed may
-                // be misleading/unexpected to the user, so if timezone isn't displayed,
-                // display timezone here.
-                timeZoneName: controls.includes('timeZone') ? UNDEFINED : 'short'
-              })
-            }
+            inputFormat="HH:mm"
+            mask="__:__"
+            renderInput={(props) => <TextField {...props} />}
           />
         )}
-      </MuiPickersUtilsProvider>
+      </LocalizationProvider>
       {controls.includes('timeZone') && (
         <Autocomplete
           options={timeZones}
