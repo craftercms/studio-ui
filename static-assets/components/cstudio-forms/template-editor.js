@@ -683,7 +683,7 @@ CStudioAuthoring.Module.requireModule(
                           CStudioAuthoringContext.site +
                           '&phase=onSave' +
                           '&path=' +
-                          path +
+                          encodeURIComponent(path) +
                           '&fileName=' +
                           encodeURI(filename) +
                           '&user=' +

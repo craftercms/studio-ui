@@ -1405,8 +1405,7 @@
           return;
         }
 
-        var plainpath = node.treeNodeTO.path,
-          path = encodeURI(plainpath),
+        var path = node.treeNodeTO.path,
           site = node.treeNodeTO.site,
           pathToOpenTo = node.openToPath;
 

@@ -108,7 +108,7 @@
               '?&siteId=' +
               CStudioAuthoringContext.site +
               '&paths=' +
-              data +
+              encodeURIComponent(data) +
               '&submissionComment=' +
               _this.getComponent('.delete-submission-comment').value
           ),

@@ -663,7 +663,7 @@ var storage = CStudioAuthoring.Storage;
      * method fired when tree node is expanded for first time
      */
     onLoadNodeDataOnClick: function (node, fnLoadComplete) {
-      var path = encodeURI(node.treeNodeTO.path);
+      var path = node.treeNodeTO.path;
       var site = node.treeNodeTO.site;
       var pathToOpenTo = node.openToPath;
 
