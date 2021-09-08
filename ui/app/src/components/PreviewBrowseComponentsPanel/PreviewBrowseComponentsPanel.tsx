@@ -21,8 +21,6 @@ import { nnou, pluckProps } from '../../utils/object';
 import { ErrorBoundary } from '../SystemStatus/ErrorBoundary';
 import LoadingState from '../SystemStatus/LoadingState';
 import ContentInstance from '../../models/ContentInstance';
-import { DraggablePanelListItem } from '../../modules/Preview/Tools/DraggablePanelListItem';
-import List from '@material-ui/core/List';
 import {
   COMPONENT_INSTANCE_DRAG_ENDED,
   COMPONENT_INSTANCE_DRAG_STARTED,
@@ -32,19 +30,17 @@ import {
 } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 import SearchBar from '../Controls/SearchBar';
-import EmptyState from '../SystemStatus/EmptyState';
-import TablePagination from '@material-ui/core/TablePagination';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import ContentType from '../../models/ContentType';
-import { Resource } from '../../models/Resource';
 import { useSelection } from '../../utils/hooks/useSelection';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useSelectorResource } from '../../utils/hooks/useSelectorResource';
 import { useDebouncedInput } from '../../utils/hooks/useDebouncedInput';
 import translations from './translations';
 import useStyles from './styles';
+import PreviewBrowseComponentsPanelUI from './PreviewBrowseComponentsPanelUI';
 
 interface ComponentResource {
   count: number;
@@ -84,13 +80,10 @@ export default function PreviewBrowseComponentsPanel() {
       shouldReject: (source) => nnou(source.error),
       errorSelector: (source) => source.error,
       resultSelector: (source) => {
-        const items =
-          source.page[source.pageNumber]
-            ?.map((id: string) => source.byId[id])
-            .filter(
-              (item: ContentInstance) =>
-                source.contentTypeFilter === 'all' || item.craftercms.contentTypeId === source.contentTypeFilter
-            ) || [];
+        let items = source.page[source.pageNumber]?.map((id: string) => source.byId[id]) ?? [];
+        if (source.contentTypeFilter !== 'all') {
+          items = items.filter((item: ContentInstance) => item.craftercms.contentTypeId === source.contentTypeFilter);
+        }
         return {
           ...pluckProps(source, 'count', 'query.limit' as 'limit', 'pageNumber', 'contentTypeFilter'),
           items
@@ -150,7 +143,7 @@ export default function PreviewBrowseComponentsPanel() {
             <Select
               value={contentTypeFilter}
               displayEmpty
-              className={classes.Select}
+              className={classes.select}
               onChange={(event: any) => handleSelectChange(event.target.value)}
             >
               <MenuItem value="all">{formatMessage(translations.allContentTypes)}</MenuItem>
@@ -165,9 +158,8 @@ export default function PreviewBrowseComponentsPanel() {
           )}
         </div>
         <React.Suspense fallback={<LoadingState title={formatMessage(translations.loading)} />}>
-          <BrowsePanelUI
+          <PreviewBrowseComponentsPanelUI
             componentsResource={resource}
-            classes={classes}
             onPageChanged={onPageChanged}
             onDragStart={onDragStart}
             onDragEnd={onDragEnd}
@@ -175,74 +167,5 @@ export default function PreviewBrowseComponentsPanel() {
         </React.Suspense>
       </ErrorBoundary>
     </>
-  );
-}
-
-interface BrowsePanelUIProps {
-  componentsResource: Resource<ComponentResource>;
-  classes?: Partial<
-    Record<
-      | 'browsePanelWrapper'
-      | 'paginationContainer'
-      | 'pagination'
-      | 'toolbar'
-      | 'list'
-      | 'noResultsImage'
-      | 'noResultsTitle'
-      | 'emptyState'
-      | 'emptyStateImage'
-      | 'emptyStateTitle',
-      string
-    >
-  >;
-  onPageChanged(e: React.MouseEvent<HTMLButtonElement>, page: number): void;
-  onDragStart(item: ContentInstance): void;
-  onDragEnd(): void;
-}
-
-function BrowsePanelUI(props: BrowsePanelUIProps) {
-  const { componentsResource, classes, onPageChanged, onDragStart, onDragEnd } = props;
-  const { formatMessage } = useIntl();
-  const components = componentsResource.read();
-  const { count, pageNumber, items, limit } = components;
-  return (
-    <div className={classes.browsePanelWrapper}>
-      <div className={classes.paginationContainer}>
-        <TablePagination
-          className={classes.pagination}
-          classes={{ root: classes.pagination, selectRoot: 'hidden', toolbar: classes.toolbar }}
-          component="div"
-          labelRowsPerPage=""
-          count={count}
-          rowsPerPage={limit}
-          page={pageNumber}
-          backIconButtonProps={{
-            'aria-label': formatMessage(translations.previousPage),
-            size: 'small'
-          }}
-          nextIconButtonProps={{
-            'aria-label': formatMessage(translations.nextPage),
-            size: 'small'
-          }}
-          onPageChange={(e: React.MouseEvent<HTMLButtonElement>, page: number) => onPageChanged(e, page * limit)}
-        />
-      </div>
-      <List className={classes.list}>
-        {items.map((item: ContentInstance) => (
-          <DraggablePanelListItem
-            key={item.craftercms.id}
-            primaryText={item.craftercms.label}
-            onDragStart={() => onDragStart(item)}
-            onDragEnd={onDragEnd}
-          />
-        ))}
-      </List>
-      {count === 0 && (
-        <EmptyState
-          title={formatMessage(translations.noResults)}
-          classes={{ image: classes.noResultsImage, title: classes.noResultsTitle }}
-        />
-      )}
-    </div>
   );
 }

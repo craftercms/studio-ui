@@ -61,9 +61,64 @@ export const useStyles = makeStyles((theme) =>
       fontSize: 'inherit',
       marginTop: '10px'
     },
-    Select: {
+    select: {
       width: '100%',
       marginTop: '15px'
+    },
+    emptyState: {
+      margin: `${theme.spacing(4)}px ${theme.spacing(1)}px`
+    },
+    emptyStateImage: {
+      width: '50%',
+      marginBottom: theme.spacing(1)
+    },
+    emptyStateTitle: {
+      fontSize: '1em'
+    }
+  })
+);
+
+export const useComponentsPanelUI = makeStyles((theme) =>
+  createStyles({
+    browsePanelWrapper: {
+      padding: '16px 0 55px 0'
+    },
+    paginationContainer: {
+      padding: '0 16px'
+    },
+    list: {
+      padding: 0
+    },
+    pagination: {
+      borderTop: '1px solid rgba(0, 0, 0, 0.12)',
+      '& p': {
+        padding: 0
+      },
+      '& svg': {
+        top: 'inherit'
+      },
+      '& .hidden': {
+        display: 'none'
+      }
+    },
+    toolbar: {
+      padding: 0,
+      display: 'flex',
+      justifyContent: 'space-between',
+      paddingLeft: '12px',
+      '& .MuiTablePagination-spacer': {
+        display: 'none'
+      },
+      '& .MuiTablePagination-spacer + p': {
+        display: 'none'
+      }
+    },
+    noResultsImage: {
+      width: '150px'
+    },
+    noResultsTitle: {
+      fontSize: 'inherit',
+      marginTop: '10px'
     },
     emptyState: {
       margin: `${theme.spacing(4)}px ${theme.spacing(1)}px`

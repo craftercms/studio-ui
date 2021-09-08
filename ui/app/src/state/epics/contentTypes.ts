@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Epic, ofType } from 'redux-observable';
+import { ofType } from 'redux-observable';
 import {
   fetchComponentsByContentType,
   fetchComponentsByContentTypeComplete,
@@ -29,6 +29,7 @@ import { catchAjaxError } from '../../utils/ajax';
 import GlobalState from '../../models/GlobalState';
 import { Observable } from 'rxjs';
 import { fetchContentTypes as fetchContentTypesService } from '../../services/contentTypes';
+import { CrafterCMSEpic } from '../store';
 
 export default [
   (action$, state$) =>
@@ -54,4 +55,4 @@ export default [
         ).pipe(map(fetchComponentsByContentTypeComplete), catchAjaxError(fetchComponentsByContentTypeFailed))
       )
     )
-] as Epic[];
+] as CrafterCMSEpic[];

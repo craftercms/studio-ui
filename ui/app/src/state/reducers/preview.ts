@@ -25,13 +25,13 @@ import {
   FETCH_ASSETS_PANEL_ITEMS,
   FETCH_ASSETS_PANEL_ITEMS_COMPLETE,
   FETCH_ASSETS_PANEL_ITEMS_FAILED,
-  FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED,
   FETCH_CONTENT_MODEL_COMPLETE,
   fetchAudiencesPanelModel,
   fetchAudiencesPanelModelComplete,
   fetchAudiencesPanelModelFailed,
   fetchComponentsByContentType,
   fetchComponentsByContentTypeComplete,
+  fetchComponentsByContentTypeFailed,
   fetchGuestModelComplete,
   fetchPrimaryGuestModelComplete,
   GUEST_CHECK_IN,
@@ -119,8 +119,7 @@ const componentsInitialState = createEntityState({
   query: {
     keywords: '',
     offset: 0,
-    limit: 10,
-    type: 'Component'
+    limit: 10
   },
   contentTypeFilter: 'all',
   inPageInstances: {}
@@ -438,7 +437,7 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
       }
     };
   },
-  [FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED]: (state, { payload }) => ({
+  [fetchComponentsByContentTypeFailed.type]: (state, { payload }) => ({
     ...state,
     components: { ...state.components, error: payload.response, isFetching: false }
   }),

@@ -464,7 +464,7 @@ export function fetchItemsByContentType(
   }
 
   return postJSON(`/studio/api/2/search/search.json?siteId=${site}`, {
-    ...reversePluckProps(options, 'type'),
+    ...options,
     filters: { 'content-type': contentTypes }
   }).pipe(
     map<AjaxResponse, { count: number; paths: string[] }>(({ response }) => ({

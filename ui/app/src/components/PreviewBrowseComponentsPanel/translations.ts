@@ -39,7 +39,7 @@ export const translations = defineMessages({
   },
   allContentTypes: {
     id: 'previewBrowseComponentsPanel.allContentType',
-    defaultMessage: 'All content types'
+    defaultMessage: 'All Content types'
   },
   filter: {
     id: 'previewBrowseComponentsPanel.filter',
