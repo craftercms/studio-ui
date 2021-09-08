@@ -131,12 +131,11 @@ export const useComponentsPanelUI = makeStyles((theme) =>
       fontSize: '1em'
     },
     helperTextWrapper: {
-      alignItems: 'center',
-      padding: '10px 20px',
-      display: 'flex',
-      '& svg': {
-        marginRight: '10px'
-      }
+      margin: '10px 16px',
+      paddingTop: '10px',
+      textAlign: 'center',
+      lineHeight: 1.2,
+      borderTop: `1px solid ${theme.palette.divider}`
     }
   })
 );

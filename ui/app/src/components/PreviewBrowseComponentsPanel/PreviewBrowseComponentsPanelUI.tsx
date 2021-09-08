@@ -25,7 +25,6 @@ import EmptyState from '../SystemStatus/EmptyState';
 import { Resource } from '../../models/Resource';
 import { useComponentsPanelUI } from './styles';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import InfoIcon from '@material-ui/icons/InfoOutlined';
 
 export interface ComponentResource {
   count: number;
@@ -101,15 +100,12 @@ export default function PreviewBrowseComponentsPanelUI(props: PreviewBrowseCompo
           classes={{ image: classes.noResultsImage, title: classes.noResultsTitle }}
         />
       )}
-      <section className={classes.helperTextWrapper}>
-        <InfoIcon color="action" fontSize="small" />
-        <FormHelperText>
-          <FormattedMessage
-            id="previewBrowseComponentsPanel.sharedComponentsHelperText"
-            defaultMessage="Only shared components are shown here"
-          />
-        </FormHelperText>
-      </section>
+      <FormHelperText className={classes.helperTextWrapper}>
+        <FormattedMessage
+          id="previewBrowseComponentsPanel.sharedComponentsHelperText"
+          defaultMessage="Only shared components are shown here"
+        />
+      </FormHelperText>
     </div>
   );
 }
