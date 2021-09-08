@@ -130,6 +130,7 @@ static-assets/components/cstudio-forms/data-sources/receptacles.js
 static-assets/libs/monaco
 static-assets/libs/ace
 static-assets/images/blueprints
+static-assets/libs/js-yaml
 
 # misc
 *.ignore.*

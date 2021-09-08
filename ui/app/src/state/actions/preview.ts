@@ -111,6 +111,7 @@ export const LEGACY_CODE_EDITOR_SUCCESS = 'LEGACY_CODE_EDITOR_SUCCESS';
 export const LEGACY_CODE_EDITOR_CLOSE = 'LEGACY_CODE_EDITOR_CLOSE';
 export const LEGACY_CODE_EDITOR_PENDING_CHANGES = 'LEGACY_CODE_EDITOR_PENDING_CHANGES';
 export const LEGACY_CODE_EDITOR_RENDERED = 'LEGACY_CODE_EDITOR_RENDERED';
+export const EMBEDDED_LEGACY_MINIMIZE_REQUEST = 'EMBEDDED_LEGACY_MINIMIZE_REQUEST';
 
 // endregion
 
@@ -127,13 +128,9 @@ export function clearSelectForEdit() {
   return { type: CLEAR_SELECT_FOR_EDIT };
 }
 
-export function openTools(): StandardAction {
-  return { type: OPEN_TOOLS };
-}
+export const openToolsPanel = /*#__PURE__*/ createAction(OPEN_TOOLS);
 
-export function closeTools(): StandardAction {
-  return { type: CLOSE_TOOLS };
-}
+export const closeToolsPanel = /*#__PURE__*/ createAction(CLOSE_TOOLS);
 
 export function setHostSize(dimensions: WidthAndHeight): StandardAction {
   return {
@@ -282,20 +279,18 @@ export const setPreviewEditMode = /*#__PURE__*/ createAction<{ editMode: boolean
 
 export const previewItem = /*#__PURE__*/ createAction<{ item: DetailedItem; newTab?: boolean }>('PREVIEW_ITEM');
 
-export const updatePageBuilderPanelWidth = /*#__PURE__#*/ createAction<{ width: number }>(
-  'UPDATE_PAGE_BUILDER_PANEL_WIDTH'
-);
+export const updateIcePanelWidth = /*#__PURE__#*/ createAction<{ width: number }>('UPDATE_ICE_PANEL_WIDTH');
 
 export const initToolsPanelConfig = /*#__PURE__*/ createAction<{
   configXml: string;
-  pageStack?: LookupTable<any>;
+  storedPage?: WidgetDescriptor;
 }>('INIT_TOOLS_PANEL_CONFIG');
 
 export const initToolbarConfig = /*#__PURE__*/ createAction<{ configXml: string }>('INIT_TOOLBAR_CONFIG');
 
-export const initPageBuilderPanelConfig = /*#__PURE__*/ createAction<{
+export const initIcePanelConfig = /*#__PURE__*/ createAction<{
   configXml: string;
-}>('INIT_PAGE_BUILDER_PANEL_CONFIG');
+}>('INIT_ICE_PANEL_CONFIG');
 
 export const initRichTextEditorConfig = /*#__PURE__*/ createAction<{ configXml: string }>(
   'INIT_RICH_TEXT_EDITOR_CONFIG'
@@ -311,11 +306,11 @@ export const popToolsPanelPage = /*#__PURE__*/ createAction('POP_TOOLS_PANEL_PAG
 
 // endregion
 
-// region Page builder panel stack
+// region ICE panel stack
 
-export const pushPageBuilderPanelPage = /*#__PURE__*/ createAction<WidgetDescriptor>('PUSH_PAGE_BUILDER_PANEL_PAGE');
+export const pushIcePanelPage = /*#__PURE__*/ createAction<WidgetDescriptor>('PUSH_ICE_PANEL_PAGE');
 
-export const popPageBuilderPanelPage = /*#__PURE__*/ createAction('POP_PAGE_BUILDER_PANEL_PAGE');
+export const popIcePanelPage = /*#__PURE__*/ createAction('POP_ICE_PANEL_PAGE');
 
 // endregion
 

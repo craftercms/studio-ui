@@ -78,12 +78,12 @@
       }
     },
 
-    edit: function(key, control) {
+    edit: function(key, control, index) {
       const self = this;
       if (key.endsWith('.xml')) {
-        self._editShared(key, control);
+        self._editShared(key, control, self.id, index);
       } else {
-        self._editEmbedded(key, control);
+        self._editEmbedded(key, control, self.id, index);
       }
     },
 
@@ -222,7 +222,7 @@
       );
     },
 
-    _editShared(key, control) {
+    _editShared(key, control, datasource, index) {
       const readonly = control.readonly;
       const action = readonly ? CStudioAuthoring.Operations.viewContent : CStudioAuthoring.Operations.editContent;
 
@@ -236,10 +236,9 @@
             contentTO.item.uri,
             false,
             {
-              success: function(contentTO, editorId, name, value) {
+              success: function(contentTO, editorId, name, value, draft, action) {
                 if (control) {
-                  control.updateEditedItem(value);
-                  CStudioAuthoring.InContextEdit.unstackDialog(editorId);
+                  control.updateEditedItem(value, datasource, index);
                 }
               }
             }
@@ -249,7 +248,7 @@
       });
     },
 
-    _editEmbedded(key, control) {
+    _editEmbedded(key, control, datasource, index) {
       const readonly = control.readonly;
       CStudioForms.communication.sendAndAwait(key, (message) => {
         const contentType = CStudioForms.communication.parseDOM(message.payload).querySelector('content-type')
@@ -266,7 +265,7 @@
           {
             success: function(contentTO, editorId, name, value) {
               if (control) {
-                control.updateEditedItem(value);
+                control.updateEditedItem(value, datasource, index);
               }
             }
           },
@@ -332,10 +331,9 @@
         false,
         false,
         {
-          success: function(contentTO, editorId, name, value) {
+          success: function(contentTO, editorId, name, value, draft, action) {
             control.newInsertItem(name, value, type);
             control._renderItems();
-            CStudioAuthoring.InContextEdit.unstackDialog(editorId);
           },
           failure: function() {}
         },

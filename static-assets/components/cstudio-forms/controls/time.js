@@ -1194,24 +1194,18 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
       this._setValue(value, this.timezone);
     } else {
       if (!this.timezone) {
-        var timezoneCb = {
+        CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/site-config.xml', {
           context: this,
 
           success: function(config) {
-            if (config['default-timezone']) {
-              this.context.timezone = config['default-timezone'];
-            } else {
-              this.context.timezone = this.context.defaultTimezone;
-            }
+            this.context.timezone = config.locale?.dateTimeFormatOptions?.timeZone ?? this.context.defaultTimezone;
             this.context.setStaticTimezone(value, this.context.timezone);
           },
 
           failure: function() {
             this.context.timezone = this.context.defaultTimezone;
           }
-        };
-
-        CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/site-config.xml', timezoneCb);
+        });
       } else {
         this.setStaticTimezone(value, this.timezone);
       }

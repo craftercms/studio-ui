@@ -28,6 +28,7 @@ import { fetchUseLegacyPreviewPreferenceComplete } from '../actions/system';
 import { fetchSiteLocales, fetchSiteLocalesComplete, fetchSiteLocalesFailed } from '../actions/translation';
 import { deserialize, fromString, serialize } from '../../utils/xml';
 import { applyDeserializedXMLTransforms } from '../../utils/object';
+import { getUserLocaleCode, getUserTimeZone } from '../../utils/datetime';
 
 const initialState: GlobalState['uiConfig'] = {
   error: null,
@@ -40,9 +41,9 @@ const initialState: GlobalState['uiConfig'] = {
     defaultLocaleCode: null
   },
   locale: {
-    localeCode: 'en-US',
+    localeCode: getUserLocaleCode(),
     dateTimeFormatOptions: {
-      timeZone: 'EST5EDT',
+      timeZone: getUserTimeZone(),
       day: 'numeric',
       month: 'numeric',
       year: 'numeric',
@@ -55,8 +56,8 @@ const initialState: GlobalState['uiConfig'] = {
   xml: null,
   publishing: {
     deleteCommentRequired: false,
-    bulkPublishRequired: false,
-    publishByCommitRequired: false,
+    bulkPublishCommentRequired: false,
+    publishByCommitCommentRequired: false,
     publishCommentRequired: false,
     submissionCommentMaxLength: 250
   },
@@ -152,8 +153,9 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
       cdataEscapedFieldPatterns,
       locale: {
         ...state.locale,
-        localeCode: locale.localeCode ?? state.locale.localeCode,
-        dateTimeFormatOptions: locale.dateTimeFormatOptions ?? state.locale.dateTimeFormatOptions
+        // If localization config is not present in the config, use the browser's resolved options.
+        localeCode: locale?.localeCode || initialState.locale.localeCode,
+        dateTimeFormatOptions: locale?.dateTimeFormatOptions || initialState.locale.dateTimeFormatOptions
       },
       publishing: {
         ...state.publishing,

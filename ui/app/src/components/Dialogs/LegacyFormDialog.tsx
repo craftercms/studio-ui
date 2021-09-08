@@ -29,6 +29,7 @@ import {
   EMBEDDED_LEGACY_FORM_RENDERED,
   EMBEDDED_LEGACY_FORM_SAVE,
   EMBEDDED_LEGACY_FORM_SUCCESS,
+  EMBEDDED_LEGACY_MINIMIZE_REQUEST,
   RELOAD_REQUEST
 } from '../../state/actions/preview';
 import { fromEvent } from 'rxjs';
@@ -102,6 +103,12 @@ interface LegacyFormDialogBaseProps {
   onMinimized?(): void;
   pendingChanges?: boolean;
   iceGroupId?: string;
+  newEmbedded?: {
+    contentType: string;
+    index: number;
+    datasource: string;
+    fieldId: string;
+  };
 }
 
 export type LegacyFormDialogProps = PropsWithChildren<
@@ -137,7 +144,8 @@ const EmbeddedLegacyEditor = React.forwardRef(function EmbeddedLegacyEditor(prop
     onDismiss,
     onClosed,
     onMinimized,
-    iceGroupId
+    iceGroupId,
+    newEmbedded
   } = props;
 
   const src = useMemo(
@@ -153,20 +161,22 @@ const EmbeddedLegacyEditor = React.forwardRef(function EmbeddedLegacyEditor(prop
         contentTypeId,
         isNewContent,
         iceGroupId,
-        ...(selectedFields ? { selectedFields: JSON.stringify(selectedFields) } : {})
+        ...(selectedFields ? { selectedFields: JSON.stringify(selectedFields) } : {}),
+        ...(newEmbedded ? { newEmbedded: JSON.stringify(newEmbedded) } : {})
       }),
     [
+      path,
+      site,
       authoringBase,
+      readonly,
+      isHidden,
+      modelId,
       changeTemplate,
       contentTypeId,
-      isHidden,
       isNewContent,
-      modelId,
-      path,
+      iceGroupId,
       selectedFields,
-      readonly,
-      site,
-      iceGroupId
+      newEmbedded
     ]
   );
 
@@ -265,6 +275,13 @@ const EmbeddedLegacyEditor = React.forwardRef(function EmbeddedLegacyEditor(prop
         case EMBEDDED_LEGACY_FORM_PENDING_CHANGES: {
           dispatch(updateEditConfig({ pendingChanges: true }));
           break;
+        }
+        case EMBEDDED_LEGACY_MINIMIZE_REQUEST: {
+          dispatch(
+            minimizeDialog({
+              id: 'legacy-editor'
+            })
+          );
         }
       }
     });

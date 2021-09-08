@@ -33,7 +33,9 @@ import { catchError, map, mapTo, pluck, switchMap } from 'rxjs/operators';
 import { createLookupTable, nou, toQueryString } from '../utils/object';
 import { fetchItemsByPath } from './content';
 import { SandboxItem } from '../models/Item';
-import { fetchConfigurationJSON } from './configuration';
+import { fetchConfigurationDOM, fetchConfigurationJSON, writeConfiguration } from './configuration';
+import { beautify, serialize } from '../utils/xml';
+import { stripDuplicateSlashes } from '../utils/path';
 
 const typeMap = {
   input: 'text',
@@ -420,4 +422,23 @@ export function deleteContentType(site: string, contentTypeId: string): Observab
     contentType: contentTypeId,
     deleteDependencies: true
   }).pipe(mapTo(true));
+}
+
+export function dissociateTemplate(site: string, contentTypeId: string): Observable<boolean> {
+  const path = stripDuplicateSlashes(`/content-types/${contentTypeId}/form-definition.xml`);
+  const module = 'studio';
+  return fetchConfigurationDOM(site, path, 'studio').pipe(
+    switchMap((doc) => {
+      const properties = doc.querySelectorAll('properties > property');
+      const property = Array.from(properties).find(
+        (node) => node.querySelector('name').innerHTML.trim() === 'display-template'
+      );
+      if (property) {
+        property.querySelector('value').innerHTML = '';
+        return writeConfiguration(site, path, module, beautify(serialize(doc)));
+      } else {
+        return of(false);
+      }
+    })
+  );
 }

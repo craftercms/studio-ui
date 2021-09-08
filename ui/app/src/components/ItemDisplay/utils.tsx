@@ -65,6 +65,8 @@ export function getItemStateId(stateMap: ItemStateMap): ItemStates {
   switch (true) {
     case stateMap.deleted:
       return 'deleted';
+    case stateMap.disabled:
+      return 'disabled';
     case stateMap.systemProcessing:
       return 'systemProcessing';
     case stateMap.locked:
@@ -87,8 +89,6 @@ export function getItemStateId(stateMap: ItemStateMap): ItemStates {
       return 'staged';
     case stateMap.live:
       return 'live';
-    case stateMap.disabled:
-      return 'disabled';
     case stateMap.translationUpToDate:
       return 'translationUpToDate';
     case stateMap.translationPending:

@@ -3917,14 +3917,21 @@ var nodeOpen = false,
           serviceUri = serviceUri + '&populateDependencies=false';
         }
 
-        CrafterCMSNext.util.ajax.get(this.createServiceUri(serviceUri)).subscribe(
-          function(response) {
-            callback.success(response.response, callback.argument);
-          },
-          function() {
-            callback.failure(response, callback.argument);
-          }
-        );
+        CrafterCMSNext.system
+          .getStore()
+          .pipe(
+            CrafterCMSNext.rxjs.operators.switchMap(() =>
+              CrafterCMSNext.util.ajax.get(this.createServiceUri(serviceUri))
+            )
+          )
+          .subscribe(
+            function(response) {
+              callback.success(response.response, callback.argument);
+            },
+            function() {
+              callback.failure(response, callback.argument);
+            }
+          );
       },
 
       /**
@@ -5640,6 +5647,18 @@ var nodeOpen = false,
       },
 
       /**
+       * return true if html render empty string
+       */
+      isEmptyHtml: function (html) {
+        if (html === '') return true;
+        const textarea = document.createElement('textarea');
+        const div = document.createElement('div');
+        textarea.innerHTML = html;
+        div.innerHTML = textarea.value;
+        return div.innerText.trim() === '';
+      },
+
+        /**
        * given a list of content items, return an XML
        */
       createContentItemsXml: function(contentItems) {
@@ -6118,12 +6137,12 @@ var nodeOpen = false,
         return scheduledDate;
       },
 
-      // TODO: use locale > dateTimeFormatOptions > timeZone
       getTimeZoneConfig: function() {
         if (!studioTimeZone) {
           CStudioAuthoring.Service.getConfiguration(CStudioAuthoringContext.site, '/site-config.xml', {
             success: function(config) {
-              studioTimeZone = config['default-timezone'];
+              studioTimeZone =
+                config.locale?.dateTimeFormatOptions?.timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
             }
           });
         }

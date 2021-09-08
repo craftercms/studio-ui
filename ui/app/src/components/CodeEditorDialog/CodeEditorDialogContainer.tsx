@@ -46,11 +46,16 @@ import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useDetailedItem } from '../../utils/hooks/useDetailedItem';
 import { useReferences } from '../../utils/hooks/useReferences';
 import { useUnmount } from '../../utils/hooks/useUnmount';
+import { getItemGroovyPath, getItemTemplatePath } from '../../utils/path';
+import { getHostToGuestBus } from '../../modules/Preview/previewContext';
+import { RELOAD_REQUEST } from '../../state/actions/preview';
+import { usePreviewGuest } from '../../utils/hooks/usePreviewGuest';
 
 export interface CodeEditorDialogContainerProps extends CodeEditorDialogProps {
   path: string;
   title: string;
   onMinimized(): void;
+  onSaveClose(): void;
 }
 
 export const contentTypePropsMap = {
@@ -60,7 +65,7 @@ export const contentTypePropsMap = {
 };
 
 export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps) {
-  const { path, onMinimized, onClose, onClosed, mode, readonly, contentType } = props;
+  const { path, onMinimized, onClose, onSaveClose, onClosed, mode, readonly, contentType } = props;
   const item = useDetailedItem(path);
   const site = useActiveSiteId();
   const user = useActiveUser();
@@ -78,6 +83,8 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
     'craftercms.freemarkerCodeSnippets': freemarkerCodeSnippets,
     'craftercms.groovyCodeSnippets': groovyCodeSnippets
   } = useReferences();
+  const { path: previewPath } = usePreviewGuest() ?? {};
+  const previewItem = useDetailedItem(previewPath);
 
   // add content model variables
   useEffect(() => {
@@ -144,21 +151,30 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
   };
 
   const save = useCallback(
-    (unlock: boolean = true) => {
-      writeContent(site, item.path, editorRef.current.getValue(), { unlock }).subscribe(
-        (response) => {
+    (callback?: Function) => {
+      writeContent(site, path, editorRef.current.getValue(), { unlock: false }).subscribe(
+        () => {
+          setTimeout(callback);
           dispatch(
             showSystemNotification({
               message: formatMessage(translations.saved)
             })
           );
+          if (
+            ['groovy', 'ftl'].includes(mode) &&
+            [getItemGroovyPath(previewItem, contentTypes), getItemTemplatePath(previewItem, contentTypes)].includes(
+              path
+            )
+          ) {
+            getHostToGuestBus().next({ type: RELOAD_REQUEST });
+          }
         },
         ({ response }) => {
           dispatch(showErrorDialog({ error: response }));
         }
       );
     },
-    [dispatch, formatMessage, item?.path, site]
+    [site, path, dispatch, formatMessage, mode, previewItem, contentTypes]
   );
 
   const onCancel = () => {
@@ -166,19 +182,20 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
   };
 
   const onSave = useCallback(() => {
-    save();
-    setContent(editorRef.current.getValue());
+    save(() => {
+      setContent(editorRef.current.getValue());
+    });
   }, [save]);
 
   const onSaveAndMinimize = () => {
-    save(false);
-    setContent(editorRef.current.getValue());
-    onMinimized();
+    save(() => {
+      setContent(editorRef.current.getValue());
+      onMinimized?.();
+    });
   };
 
   const saveAndClose = () => {
-    save(false);
-    onClose();
+    save(onSaveClose);
   };
 
   const onAddSnippet = (event) => {

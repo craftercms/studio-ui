@@ -108,7 +108,13 @@ interface NewContentDialogBaseProps {
 
 export type NewContentDialogProps = PropsWithChildren<
   NewContentDialogBaseProps & {
-    onContentTypeSelected?(response?: any): any;
+    onContentTypeSelected?(response: {
+      authoringBase: string;
+      path: string;
+      isNewContent: boolean;
+      contentTypeId: string;
+      onSaveSuccess: StandardAction;
+    }): void;
     onClose?(): void;
     onClosed?(): void;
     onDismiss?(): void;

@@ -16,8 +16,8 @@
 
 interface UseOnCloseProps {
   onClose?(event: any, reason: 'backdropClick' | 'escapeKeyDown'): void;
-  disableBackdropClick: boolean;
-  disableEscapeKeyDown: boolean;
+  disableBackdropClick?: boolean;
+  disableEscapeKeyDown?: boolean;
 }
 
 export function useOnClose({ onClose, disableBackdropClick = false, disableEscapeKeyDown = false }: UseOnCloseProps) {

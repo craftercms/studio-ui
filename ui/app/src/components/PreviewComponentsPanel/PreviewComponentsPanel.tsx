@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import List from '@material-ui/core/List';
 import ContentType from '../../models/ContentType';
@@ -25,7 +25,7 @@ import {
   COMPONENT_DRAG_ENDED,
   COMPONENT_DRAG_STARTED,
   CONTENT_TYPE_DROP_TARGETS_REQUEST,
-  pushToolsPanelPage,
+  pushIcePanelPage,
   setContentTypeFilter,
   setPreviewEditMode
 } from '../../state/actions/preview';
@@ -66,9 +66,11 @@ export default function PreviewComponentsPanel() {
     shouldResolve: (source) => !source.isFetching && nnou(source.byId),
     shouldReject: (source) => nnou(source.error),
     errorSelector: (source) => source.error,
-    resultSelector: (source) => Object.values(reversePluckProps(source.byId, '/component/level-descriptor'))
+    resultSelector: (source) =>
+      Object.values(reversePluckProps(source.byId, '/component/level-descriptor')).filter(
+        (contentType) => contentType.type === 'component'
+      )
   });
-
   return (
     <>
       <SuspenseWithEmptyState
@@ -81,7 +83,7 @@ export default function PreviewComponentsPanel() {
             title: <FormattedMessage id="componentsPanel.emptyStateMessage" defaultMessage="No components found" />,
             subtitle: (
               <FormattedMessage
-                id="componentsPanel.emptyStateMessageSubtitle"
+                id="componentsPanel.emptyComponentsSubtitle"
                 defaultMessage="Communicate with your developers to create the required components in the system."
               />
             )
@@ -97,16 +99,13 @@ export default function PreviewComponentsPanel() {
 export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
   const { resource } = props;
 
-  const contentTypes = resource.read();
+  const componentTypes = resource.read();
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const editMode = useSelection((state) => state.preview.editMode);
 
   const hostToGuest$ = getHostToGuestBus();
   const [menuContext, setMenuContext] = useState<{ anchor: Element; contentType: ContentType }>();
-  const componentTypes = useMemo(() => contentTypes.filter((contentType) => contentType.type === 'component'), [
-    contentTypes
-  ]);
 
   const onDragStart = (contentType) => {
     if (!editMode) {
@@ -123,10 +122,12 @@ export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
     dispatch(
       batchActions([
         setContentTypeFilter(menuContext.contentType.id),
-        pushToolsPanelPage(
-          createToolsPanelPage({ id: 'previewBrowseComponentsPanel.title' }, [
-            createWidgetDescriptor({ id: 'craftercms.components.PreviewBrowseComponentsPanel' })
-          ])
+        pushIcePanelPage(
+          createToolsPanelPage(
+            { id: 'previewBrowseComponentsPanel.title' },
+            [createWidgetDescriptor({ id: 'craftercms.components.PreviewBrowseComponentsPanel' })],
+            'icePanel'
+          )
         )
       ])
     );
@@ -136,10 +137,12 @@ export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
     dispatch(
       batchActions([
         setContentTypeFilter(menuContext.contentType.id),
-        pushToolsPanelPage(
-          createToolsPanelPage({ id: 'previewInPageInstancesPanel.title' }, [
-            createWidgetDescriptor({ id: 'craftercms.components.PreviewInPageInstancesPanel' })
-          ])
+        pushIcePanelPage(
+          createToolsPanelPage(
+            { id: 'previewInPageInstancesPanel.title' },
+            [createWidgetDescriptor({ id: 'craftercms.components.PreviewInPageInstancesPanel' })],
+            'icePanel'
+          )
         )
       ])
     );
@@ -147,10 +150,12 @@ export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
 
   const onListDropTargetsClick = () => {
     dispatch(
-      pushToolsPanelPage(
-        createToolsPanelPage({ id: 'previewDropTargetsPanel.title', defaultMessage: 'Component Drop Targets' }, [
-          createWidgetDescriptor({ id: 'craftercms.components.PreviewDropTargetsPanel' })
-        ])
+      pushIcePanelPage(
+        createToolsPanelPage(
+          { id: 'previewDropTargetsPanel.title', defaultMessage: 'Component Drop Targets' },
+          [createWidgetDescriptor({ id: 'craftercms.components.PreviewDropTargetsPanel' })],
+          'icePanel'
+        )
       )
     );
     hostToGuest$.next({

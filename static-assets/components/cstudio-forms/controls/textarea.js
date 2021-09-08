@@ -47,7 +47,7 @@ YAHOO.extend(CStudioForms.Controls.Textarea, CStudioForms.CStudioFormField, {
     obj.value = obj.inputEl.value;
 
     if (obj.required) {
-      if (obj.inputEl.value == '') {
+      if (obj.inputEl.value.trim() === '') {
         obj.setError('required', 'Field is Required');
         obj.renderValidation(true, false);
       } else {

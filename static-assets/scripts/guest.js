@@ -43,7 +43,8 @@ crafterDefine('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay'], fun
     $window = $(window),
     dndController,
     pointerControllerVar,
-    iceToolsOn = false;
+    iceToolsOn = false,
+    dndOn = false;
 
   window.studioICERepaint = iceRepaint;
 
@@ -82,6 +83,7 @@ crafterDefine('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay'], fun
     );
 
     communicator.on(Topics.START_DRAG_AND_DROP, function(message) {
+      dndOn = true;
       crafterRequire(['dnd-controller'], function(DnDController) {
         typeof dndController === 'undefined' &&
           (dndController = new DnDController({
@@ -129,13 +131,17 @@ crafterDefine('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay'], fun
       });
     });
 
-    communicator.on(Topics.REFRESH_PREVIEW, function(message) {
+    communicator.on(Topics.REFRESH_PREVIEW, function() {
+      window.location.reload();
+    });
+
+    communicator.on('RELOAD_REQUEST', function() {
       window.location.reload();
     });
 
     function iceToolsToggle(on) {
       iceToolsOn = Boolean(on);
-      if (on) {
+      if (on && !dndOn) {
         initICERegions();
       } else {
         removeICERegions();
@@ -146,6 +152,9 @@ crafterDefine('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay'], fun
     communicator.on('EDIT_MODE_CHANGED', (message) => iceToolsToggle(message.editMode));
     communicator.on(Topics.ICE_TOOLS_OFF, () => iceToolsToggle(false));
     communicator.on(Topics.ICE_TOOLS_ON, () => iceToolsToggle(true));
+    communicator.on('DRAG_AND_DROP_COMPONENTS_PANEL_CLOSED', () => {
+      dndOn = false;
+    });
 
     communicator.on(Topics.REPAINT_PENCILS, repaintPencils);
 
@@ -248,7 +257,7 @@ crafterDefine('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay'], fun
       communicator.publish(Topics.ICE_ZONE_ON, props);
     });
 
-    // Toggle PageBuilder edit mode
+    // Toggle edit mode on UI4
     $document.on('keypress', function(e) {
       if (e.key.toLowerCase() === 'e') {
         communicator.publish('EDIT_MODE_TOGGLE_HOTKEY');
@@ -291,9 +300,9 @@ crafterDefine('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay'], fun
 
   function initIceRegions_resizeIceRegions_handler(message) {
     if (!message) {
-      iceToolsOn && initICERegions();
+      iceToolsOn && !dndOn && initICERegions();
     } else {
-      iceToolsOn = !!message.iceOn && message.componentsOn != 'true';
+      iceToolsOn = !!message.iceOn && !dndOn;
       if (
         // TODO: REFACTOR
         // !!(window.parent.sessionStorage.getItem('ice-on')) &&
@@ -384,7 +393,7 @@ crafterDefine('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay'], fun
   }
 
   function repaintPencils() {
-    if (iceToolsOn) {
+    if (iceToolsOn && !dndOn) {
       initICERegions();
     }
   }

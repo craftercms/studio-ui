@@ -107,7 +107,7 @@ const dialogEpics: CrafterCMSEpic[] = [
       switchMap((actions) => actions)
     ),
   // endregion
-  // region View Version Dialog
+  // region fetchContentVersion
   (action$, state$) =>
     action$.pipe(
       ofType(fetchContentVersion.type),
@@ -120,23 +120,28 @@ const dialogEpics: CrafterCMSEpic[] = [
       )
     ),
   // endregion
+  // region newContentCreationComplete
   (action$, state$) =>
     action$.pipe(
       ofType(newContentCreationComplete.type),
       filter(({ payload }) => payload.item?.isPage && payload.item.isPreviewable),
-      switchMap(({ payload }) => of(changeCurrentUrl(payload.redirectUrl)))
+      map(({ payload }) => changeCurrentUrl(payload.redirectUrl))
     ),
+  // endregion
+  // region fetchDeleteDependencies
   (action$, state$) =>
     action$.pipe(
       ofType(fetchDeleteDependencies.type),
       withLatestFrom(state$),
-      switchMap(([{ payload: items }, state]) =>
-        fetchDeleteDependenciesService(state.sites.active, items).pipe(
+      switchMap(([{ payload: { paths } }, state]) =>
+        fetchDeleteDependenciesService(state.sites.active, paths).pipe(
           map(fetchDeleteDependenciesComplete),
           catchAjaxError(fetchDeleteDependenciesFailed)
         )
       )
     ),
+  // endregion
+  // region showEditDialog, showCodeEditorDialog
   (action$, state$, { getIntl }) =>
     action$.pipe(
       ofType(showEditDialog.type, showCodeEditorDialog.type),
@@ -181,6 +186,7 @@ const dialogEpics: CrafterCMSEpic[] = [
         }
       })
     )
+  // endregion
 ] as Epic[];
 
 export default dialogEpics;

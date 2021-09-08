@@ -15,7 +15,7 @@
  */
 
 import { errorSelectorApi1, get, postJSON } from '../utils/ajax';
-import { catchError, map, pluck } from 'rxjs/operators';
+import { catchError, map, mapTo, pluck } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { deserialize, fromString, getInnerHtml } from '../utils/xml';
 import { ContentTypeField } from '../models/ContentType';
@@ -79,14 +79,14 @@ export function writeConfiguration(
   module: CrafterCMSModules,
   content: string,
   environment?: string
-): Observable<any> {
+): Observable<boolean> {
   return postJSON('/studio/api/2/configuration/write_configuration', {
     siteId: site,
     module,
     path,
     content,
     ...(environment && { environment })
-  });
+  }).pipe(mapTo(true));
 }
 
 // region AudiencesPanelConfig
@@ -256,8 +256,8 @@ export interface StudioSiteConfig {
   publishing: {
     publishCommentRequired: boolean;
     deleteCommentRequired: boolean;
-    bulkPublishRequired: boolean;
-    publishByCommitRequired: boolean;
+    bulkPublishCommentRequired: boolean;
+    publishByCommitCommentRequired: boolean;
   };
 }
 
@@ -275,8 +275,8 @@ export function fetchSiteConfig(site: string): Observable<StudioSiteConfig> {
         return {
           publishCommentRequired: commentSettings['publishing-required'] ?? commentSettings.required,
           deleteCommentRequired: commentSettings['delete-required'] ?? commentSettings.required,
-          bulkPublishRequired: commentSettings['bulk-publish-required'] ?? commentSettings.required,
-          publishByCommitRequired: commentSettings['publish-by-commit-required'] ?? commentSettings.required
+          bulkPublishCommentRequired: commentSettings['bulk-publish-required'] ?? commentSettings.required,
+          publishByCommitCommentRequired: commentSettings['publish-by-commit-required'] ?? commentSettings.required
         };
       })(dom.querySelector(':scope > publishing'))
     }))

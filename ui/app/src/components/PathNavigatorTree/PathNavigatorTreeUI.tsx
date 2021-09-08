@@ -123,6 +123,7 @@ export default function PathNavigatorTreeUI(props: PathNavigatorTreeUIProps) {
         icon={icon}
         title={title}
         locale={null}
+        collapsed={isCollapsed}
         onContextMenu={(element) => {
           onHeaderButtonClick(element);
         }}

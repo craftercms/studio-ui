@@ -21,14 +21,18 @@ import {
   deleteDialogClosed,
   fetchDeleteDependencies,
   fetchDeleteDependenciesComplete,
-  showDeleteDialog
+  showDeleteDialog,
+  updateDeleteDialog
 } from '../../actions/dialogs';
+import { DeleteDialogStateProps } from '../../../components/DeleteDialog/utils';
 
-const initialState = {
+const initialState: DeleteDialogStateProps = {
   open: false,
+  items: null,
   isFetching: false,
   childItems: null,
-  dependentItems: null
+  dependentItems: null,
+  disableQuickDismiss: false
 };
 
 export default createReducer<GlobalState['dialogs']['delete']>(initialState, {
@@ -36,11 +40,14 @@ export default createReducer<GlobalState['dialogs']['delete']>(initialState, {
     ...state,
     onClose: closeDeleteDialog(),
     onClosed: deleteDialogClosed(),
-    onDismiss: closeDeleteDialog(),
     ...payload,
     open: true
   }),
-  [closeDeleteDialog.type]: (state) => ({ ...state, open: false }),
+  [updateDeleteDialog.type]: (state, { payload }) => ({
+    ...state,
+    ...payload
+  }),
+  [closeDeleteDialog.type]: (state) => ({ ...state, open: false, disableQuickDismiss: false }),
   [deleteDialogClosed.type]: () => initialState,
   [fetchDeleteDependencies.type]: (state) => ({
     ...state,

@@ -43,9 +43,9 @@ const ErrorDialog = lazy(() => import('./ErrorDialog'));
 const NewContentDialog = lazy(() => import('../../modules/Content/Authoring/NewContentDialog'));
 const ChangeContentTypeDialog = lazy(() => import('../../modules/Content/Authoring/ChangeContentTypeDialog'));
 const HistoryDialog = lazy(() => import('../../modules/Content/History/HistoryDialog'));
-const PublishDialog = lazy(() => import('../../modules/Content/Publish/PublishDialog'));
+const PublishDialog = lazy(() => import('../PublishDialog/PublishDialog'));
 const DependenciesDialog = lazy(() => import('../../modules/Content/Dependencies/DependenciesDialog'));
-const DeleteDialog = lazy(() => import('../../modules/Content/Delete/DeleteDialog'));
+const DeleteDialog = lazy(() => import('../DeleteDialog/DeleteDialog'));
 const WorkflowCancellationDialog = lazy(() => import('../Dialogs/WorkflowCancellationDialog'));
 const LegacyFormDialog = lazy(() => import('../Dialogs/LegacyFormDialog'));
 const CreateFolderDialog = lazy(() => import('../Dialogs/CreateFolderDialog'));
@@ -174,6 +174,7 @@ function GlobalDialogManager() {
         inProgress={state.edit.inProgress}
         pendingChanges={state.edit.pendingChanges}
         iceGroupId={state.edit.iceGroupId}
+        newEmbedded={state.edit.newEmbedded}
         onClose={createCallback(state.edit.onClose, dispatch)}
         onClosed={createCallback(state.edit.onClosed, dispatch)}
         onDismiss={createCallback(state.edit.onDismiss, dispatch)}
@@ -200,6 +201,7 @@ function GlobalDialogManager() {
         open={state.publish.open}
         items={state.publish.items}
         scheduling={state.publish.scheduling}
+        disableQuickDismiss={state.publish.disableQuickDismiss}
         onClose={createCallback(state.publish.onClose, dispatch)}
         onClosed={createCallback(state.publish.onClosed, dispatch)}
         onDismiss={createCallback(state.publish.onDismiss, dispatch)}
@@ -251,9 +253,11 @@ function GlobalDialogManager() {
         open={state.delete.open}
         items={state.delete.items}
         isFetching={state.delete.isFetching}
+        dependentItems={state.delete.dependentItems}
+        childItems={state.delete.childItems}
+        disableQuickDismiss={state.delete.disableQuickDismiss}
         onClose={createCallback(state.delete.onClose, dispatch)}
         onClosed={createCallback(state.delete.onClosed, dispatch)}
-        onDismiss={createCallback(state.delete.onDismiss, dispatch)}
         onSuccess={createCallback(state.delete.onSuccess, dispatch)}
       />
       {/* endregion */}

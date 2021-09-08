@@ -27,9 +27,7 @@ import { ErrorDialogStateProps } from '../components/SystemStatus/ErrorDialog';
 import { MinimizedDialogsStateProps } from './MinimizedDialog';
 import { NewContentDialogStateProps } from '../modules/Content/Authoring/NewContentDialog';
 import { HistoryDialogStateProps } from '../modules/Content/History/HistoryDialog';
-import { PublishDialogStateProps } from '../modules/Content/Publish/PublishDialog';
 import { DependenciesDialogStateProps } from '../modules/Content/Dependencies/DependenciesDialog';
-import { DeleteDialogStateProps } from '../modules/Content/Delete/DeleteDialog';
 import { EntityState } from './EntityState';
 import { ApiResponse } from './ApiResponse';
 import { ViewVersionDialogStateProps } from '../modules/Content/History/ViewVersionDialog';
@@ -62,7 +60,8 @@ import { UnlockPublisherDialogStateProps } from '../components/UnlockPublisherDi
 import { WidgetDialogStateProps } from '../components/WidgetDialog';
 import { CodeEditorDialogStateProps } from '../components/CodeEditorDialog';
 import { SystemLinkId } from '../utils/system';
-import DateTimeFormatOptions = Intl.DateTimeFormatOptions;
+import { PublishDialogStateProps } from '../components/PublishDialog/utils';
+import { DeleteDialogStateProps } from '../components/DeleteDialog/utils';
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
   page: any;
@@ -148,8 +147,8 @@ export interface GlobalState {
     showToolsPanel: boolean;
     toolsPanelPageStack: WidgetDescriptor[];
     toolsPanelWidth: number;
-    pageBuilderPanelWidth: number;
-    pageBuilderPanelStack: WidgetDescriptor[];
+    icePanelWidth: number;
+    icePanelStack: WidgetDescriptor[];
     hostSize: WidthAndHeight;
     guest: GuestData;
     assets: PagedEntityState<MediaItem>;
@@ -179,7 +178,7 @@ export interface GlobalState {
         widgets: WidgetDescriptor[];
       };
     };
-    pageBuilderPanel: {
+    icePanel: {
       widgets: WidgetDescriptor[];
     };
     richTextEditor: LookupTable;
@@ -234,13 +233,13 @@ export interface GlobalState {
     };
     locale: {
       localeCode: string;
-      dateTimeFormatOptions?: DateTimeFormatOptions;
+      dateTimeFormatOptions: Intl.DateTimeFormatOptions;
     };
     publishing: {
-      deleteCommentRequired: boolean;
-      bulkPublishRequired: boolean;
-      publishByCommitRequired: boolean;
       publishCommentRequired: boolean;
+      deleteCommentRequired: boolean;
+      bulkPublishCommentRequired: boolean;
+      publishByCommitCommentRequired: boolean;
       submissionCommentMaxLength: number;
     };
     cdataEscapedFieldPatterns: string[];
