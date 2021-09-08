@@ -129,6 +129,14 @@ export const useComponentsPanelUI = makeStyles((theme) =>
     },
     emptyStateTitle: {
       fontSize: '1em'
+    },
+    helperTextWrapper: {
+      alignItems: 'center',
+      padding: '10px 20px',
+      display: 'flex',
+      '& svg': {
+        marginRight: '10px'
+      }
     }
   })
 );

@@ -60,7 +60,9 @@ export default function PreviewBrowseComponentsPanel() {
   const contentTypesBranch = useSelection((state) => state.contentTypes);
   const editMode = useSelection((state) => state.preview.editMode);
   const contentTypes = contentTypesBranch.byId
-    ? Object.values(contentTypesBranch.byId).filter((contentType) => contentType.type === 'component')
+    ? Object.values(contentTypesBranch.byId).filter(
+        (contentType) => contentType.type === 'component' && !contentType.id.includes('/level-descriptor')
+      )
     : null;
   const isFetching = useSelection((state) => state.preview.components.isFetching);
 

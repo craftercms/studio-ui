@@ -30,6 +30,7 @@ import GlobalState from '../../models/GlobalState';
 import { Observable } from 'rxjs';
 import { fetchContentTypes as fetchContentTypesService } from '../../services/contentTypes';
 import { CrafterCMSEpic } from '../store';
+import ContentType from '../../models/ContentType';
 
 export default [
   (action$, state$) =>
@@ -48,7 +49,12 @@ export default [
         fetchItemsByContentType(
           state.sites.active,
           state.preview.components.contentTypeFilter === 'all'
-            ? Object.keys(state.contentTypes.byId).filter((string) => string.startsWith('/component/'))
+            ? Object.values(state.contentTypes.byId)
+                .filter(
+                  (contentType: ContentType) =>
+                    contentType.type === 'component' && !contentType.id.includes('/level-descriptor')
+                )
+                .map((contentType) => contentType.id)
             : state.preview.components.contentTypeFilter,
           state.contentTypes.byId,
           state.preview.components.query
