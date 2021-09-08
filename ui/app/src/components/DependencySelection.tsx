@@ -91,7 +91,7 @@ const onClickSetChecked = (e: any, item: any, setChecked: Function, checked: any
 const paths = (checked: any) =>
   Object.entries({ ...checked })
     .filter(([, value]) => value)
-    .map(([key]) => key);
+    .map(([key]) => encodeURIComponent(key));
 
 const selectAll = (setChecked: Function, items: Item[]) => {
   setChecked(

@@ -138,7 +138,7 @@ CStudioAuthoring.Dialogs.NewFolderNameDialog = CStudioAuthoring.Dialogs.NewFolde
             // esc
             me.createPopupCancel();
           } else {
-            me.processKey(e, inputEl);
+            me.processKey(e, inputEl, eventParams.self.path.startsWith('/scripts/rest'));
           }
         } else {
           me.createPopupSubmit(e, eventParams);
@@ -157,7 +157,13 @@ CStudioAuthoring.Dialogs.NewFolderNameDialog = CStudioAuthoring.Dialogs.NewFolde
     var contentType = 'folder';
     var newFolderName = document.getElementById('folderNameId').value;
     var serviceUri = CStudioAuthoring.Service.createServiceUri(
-      args.self.serviceUri + '?site=' + args.self.site + '&path=' + args.self.path + '&name=' + newFolderName
+      args.self.serviceUri +
+        '?site=' +
+        args.self.site +
+        '&path=' +
+        args.self.path +
+        '&name=' +
+        encodeURIComponent(newFolderName)
     );
 
     var serviceCallback = {
@@ -191,8 +197,11 @@ CStudioAuthoring.Dialogs.NewFolderNameDialog = CStudioAuthoring.Dialogs.NewFolde
   /**
    * don't allow characters which are invalid for file names and check length
    */
-  processKey: function (evt, el) {
+  processKey: function (evt, el, allowBraces) {
     var invalid = new RegExp('[!@#$%^&*\\(\\)\\+=\\[\\]\\\\\\\'`;,\\.\\/\\{\\}|":<>\\?~ ]', 'g');
+    if (allowBraces) {
+      invalid = new RegExp('[!@#$%^&*\\(\\)\\+=\\[\\]\\\\\\\'`;,\\.\\/|":<>\\?~ ]', 'g');
+    }
     var cursorPosition = el.selectionStart;
     //change url to lower case
     if (el.value != '' && el.value != el.value.toLowerCase()) {
