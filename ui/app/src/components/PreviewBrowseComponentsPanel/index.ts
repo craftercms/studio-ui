@@ -17,3 +17,5 @@
 export { default } from './PreviewBrowseComponentsPanel';
 
 export * from './PreviewBrowseComponentsPanel';
+
+export * from './PreviewBrowseComponentsPanelUI';
