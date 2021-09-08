@@ -54,38 +54,6 @@
     "rules": {
       "prettier/prettier": [
         "error"
-      ],
-      "spaced-comment": [
-        "error",
-        "always",
-        {
-          "line": {
-            "markers": [
-              "/",
-              "#"
-            ]
-          },
-          "block": {
-            "markers": [
-              "!",
-              "*",
-              "#",
-              "function",
-              "const",
-              "if",
-              "export",
-              "interface",
-              "#__PURE__",
-              "@__PURE__"
-            ],
-            "exceptions": [
-              "!",
-              "*",
-              "#"
-            ],
-            "balanced": false
-          }
-        }
       ]
     }
   },
