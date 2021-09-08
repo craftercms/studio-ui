@@ -394,34 +394,6 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
       '<type>boolean</type>\r\n' +
       '</constraint>\r\n' +
       '</constraints>\r\n' +
-      '</field>\r\n' +
-      '<field>' +
-      /**/ '<type>locale-selector</type>' +
-      /**/ '<id>localeCode</id>' +
-      /**/ '<iceId></iceId>' +
-      /**/ '<title>Locale</title>' +
-      /**/ '<description></description>' +
-      /**/ '<defaultValue>en</defaultValue>' +
-      /**/ '<help></help>' +
-      /**/ '<properties>' +
-      /****/ '<property>' +
-      /******/ '<name>datasource</name>' +
-      /******/ '<value></value>' +
-      /****/ '<type>datasource:item</type>' +
-      /****/ '</property>' +
-      /****/ '<property>' +
-      /******/ '<name>readonly</name>' +
-      /******/ '<value></value>' +
-      /******/ '<type>boolean</type>' +
-      /****/ '</property>' +
-      /**/ '</properties>' +
-      /**/ '<constraints>' +
-      /****/ '<constraint>' +
-      /******/ '<name>required</name>' +
-      /******/ '<value><![CDATA[]]></value>' +
-      /******/ '<type>boolean</type>' +
-      /****/ '</constraint>' +
-      /**/ '</constraints>' +
       '</field>';
 
     if (type == 'page') {
