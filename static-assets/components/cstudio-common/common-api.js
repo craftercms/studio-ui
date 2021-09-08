@@ -5647,6 +5647,18 @@ var nodeOpen = false,
       },
 
       /**
+       * return true if html render empty string
+       */
+      isEmptyHtml: function (html) {
+        if (html === '') return true;
+        const textarea = document.createElement('textarea');
+        const div = document.createElement('div');
+        textarea.innerHTML = html;
+        div.innerHTML = textarea.value;
+        return div.innerText.trim() === '';
+      },
+
+        /**
        * given a list of content items, return an XML
        */
       createContentItemsXml: function(contentItems) {

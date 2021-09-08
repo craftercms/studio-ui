@@ -80,6 +80,7 @@ import { changeSite } from './sites';
 import { deserialize, fromString } from '../../utils/xml';
 import { defineMessages } from 'react-intl';
 import { fetchSiteUiConfigComplete } from '../actions/configuration';
+import ToolsPanelTarget from '../../models/ToolsPanelTarget';
 
 const messages = defineMessages({
   emptyUiConfigMessageTitle: {
@@ -656,12 +657,13 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
     };
     const arrays = ['widgets', 'devices', 'values'];
     const configDOM = fromString(payload.configXml);
-    const icePanel = configDOM.querySelector('[id="craftercms.components.PageBuilderPanel"] > configuration > widgets');
+    const icePanel = configDOM.querySelector('[id="craftercms.components.ICEToolsPanel"] > configuration > widgets');
     if (icePanel) {
       const lookupTables = ['fields'];
       icePanel.querySelectorAll('widget').forEach((e) => {
         if (e.getAttribute('id') === 'craftercms.components.ToolsPanelPageButton') {
-          e.querySelector(':scope > configuration')?.setAttribute('target', 'icePanel');
+          let target: ToolsPanelTarget = 'icePanel';
+          e.querySelector(':scope > configuration')?.setAttribute('target', target);
         }
       });
       icePanelConfig = applyDeserializedXMLTransforms(deserialize(icePanel), {
