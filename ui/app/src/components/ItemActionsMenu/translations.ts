@@ -162,5 +162,9 @@ export const translations = defineMessages({
   cancel: {
     id: 'words.cancel',
     defaultMessage: 'Cancel'
+  },
+  verifyingAffectedWorkflows: {
+    id: 'itemActions.verifyingAffectedWorkflows',
+    defaultMessage: 'Verifying affected workflows...'
   }
 });

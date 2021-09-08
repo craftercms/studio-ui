@@ -109,6 +109,8 @@ import { previewItem } from '../state/actions/preview';
 import { asArray, createPresenceTable } from './array';
 import { fetchPublishingStatus } from '../state/actions/publishingStatus';
 import { Clipboard } from '../models/GlobalState';
+import { popDialog, pushDialog } from '../state/reducers/dialogs/minimizedDialogs';
+import { nanoid as uuid } from 'nanoid';
 
 export type ContextMenuOptionDescriptor<ID extends string = string> = {
   id: ID;
@@ -753,16 +755,32 @@ export const itemActionDispatcher = ({
       }
       case 'editCode': {
         const path = item.path;
+        const id = uuid();
+        dispatch(
+          pushDialog({
+            minimized: true,
+            id,
+            status: 'indeterminate',
+            title: formatMessage(translations.verifyingAffectedWorkflows),
+            onMaximized: null
+          })
+        );
+
         fetchWorkflowAffectedItems(site, path).subscribe((items) => {
           if (items?.length > 0) {
             dispatch(
-              showWorkflowCancellationDialog({
-                items,
-                onContinue: showCodeEditorDialog({ path: item.path, mode: getEditorMode(item) })
-              })
+              batchActions([
+                popDialog({ id }),
+                showWorkflowCancellationDialog({
+                  items,
+                  onContinue: showCodeEditorDialog({ path: item.path, mode: getEditorMode(item) })
+                })
+              ])
             );
           } else {
-            dispatch(showCodeEditorDialog({ path: item.path, mode: getEditorMode(item) }));
+            dispatch(
+              batchActions([popDialog({ id }), showCodeEditorDialog({ path: item.path, mode: getEditorMode(item) })])
+            );
           }
         });
         break;
