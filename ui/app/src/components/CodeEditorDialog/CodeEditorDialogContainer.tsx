@@ -54,10 +54,11 @@ export interface CodeEditorDialogContainerProps extends CodeEditorDialogProps {
   path: string;
   title: string;
   onMinimized(): void;
+  onSaveClose(): void;
 }
 
 export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps) {
-  const { path, onMinimized, onClose, onClosed, mode, readonly, contentType } = props;
+  const { path, onMinimized, onClose, onSaveClose, onClosed, mode, readonly, contentType } = props;
   const item = useDetailedItem(path);
   const site = useActiveSiteId();
   const user = useActiveUser();
@@ -124,9 +125,10 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
   };
 
   const save = useCallback(
-    (unlock: boolean = true) => {
-      writeContent(site, path, editorRef.current.getValue(), { unlock }).subscribe(
+    (callback?: Function) => {
+      writeContent(site, path, editorRef.current.getValue(), { unlock: false }).subscribe(
         () => {
+          setTimeout(callback);
           dispatch(
             showSystemNotification({
               message: formatMessage(translations.saved)
@@ -147,19 +149,20 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
   };
 
   const onSave = useCallback(() => {
-    save();
-    setContent(editorRef.current.getValue());
+    save(() => {
+      setContent(editorRef.current.getValue());
+    });
   }, [save]);
 
   const onSaveAndMinimize = () => {
-    save(false);
-    setContent(editorRef.current.getValue());
-    onMinimized();
+    save(() => {
+      setContent(editorRef.current.getValue());
+      onMinimized?.();
+    });
   };
 
   const saveAndClose = () => {
-    save(false);
-    onClose();
+    save(onSaveClose);
   };
 
   const onAddSnippet = (event) => {

@@ -22,11 +22,12 @@ import { popIcePanelPage, popToolsPanelPage } from '../../state/actions/preview'
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useActiveUser } from '../../utils/hooks/useActiveUser';
 import { usePossibleTranslation } from '../../utils/hooks/usePossibleTranslation';
+import ToolsPanelTarget from '../../models/ToolsPanelTarget';
 
 export interface ToolsPanelPageDescriptor {
   title: string;
   widgets: WidgetDescriptor[];
-  target?: 'icePanel' | 'toolsPanel';
+  target?: ToolsPanelTarget;
 }
 
 export interface ToolsPanelPageProps extends ToolsPanelPageDescriptor {}
