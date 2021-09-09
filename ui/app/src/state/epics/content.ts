@@ -123,7 +123,7 @@ export const itemFailureMessages = defineMessages({
 
 const inProgressMessages = defineMessages({
   pasting: {
-    id: 'item.pasting',
+    id: 'words.pasting',
     defaultMessage: 'Pasting...'
   },
   processing: {
@@ -440,7 +440,6 @@ const content: CrafterCMSEpic[] = [
       ofType(deleteController.type, deleteTemplate.type),
       withLatestFrom(state$),
       switchMap(([{ type, payload }, state]) => {
-        const id = uuid();
         const { item, onActionSuccess } = payload;
         const path =
           type === 'DELETE_CONTROLLER'
@@ -456,10 +455,10 @@ const content: CrafterCMSEpic[] = [
                   itemFailureMessages[type === 'DELETE_CONTROLLER' ? 'controllerNotFound' : 'templateNotFound']
                 )
               })
-            ),
-            of(popDialog({ id }))
+            )
           );
         } else {
+          const id = uuid();
           return merge(
             of(
               pushDialog({
@@ -475,14 +474,14 @@ const content: CrafterCMSEpic[] = [
                 batchActions([
                   showDeleteDialog({
                     items: asArray(itemToDelete),
-                    onSuccess: batchActions([
-                      showDeleteItemSuccessNotification(),
-                      ...(type === 'DELETE_TEMPLATE'
-                        ? [dissociateTemplate({ contentTypeId: item.contentTypeId })]
-                        : []),
-                      closeDeleteDialog(),
-                      ...(onActionSuccess ? [onActionSuccess] : [])
-                    ])
+                    onSuccess: batchActions(
+                      [
+                        showDeleteItemSuccessNotification(),
+                        type === 'DELETE_TEMPLATE' && dissociateTemplate({ contentTypeId: item.contentTypeId }),
+                        closeDeleteDialog(),
+                        onActionSuccess
+                      ].filter(Boolean)
+                    )
                   }),
                   popDialog({ id })
                 ])
@@ -490,17 +489,13 @@ const content: CrafterCMSEpic[] = [
               catchAjaxError((error: AjaxError) => {
                 return batchActions([
                   popDialog({ id }),
-                  ...(error.status === 404
-                    ? [
-                        showConfirmDialog({
-                          body: getIntl().formatMessage(
-                            itemFailureMessages[
-                              type === 'DELETE_CONTROLLER' ? 'controllerNotFound' : 'templateNotFound'
-                            ]
-                          )
-                        })
-                      ]
-                    : [showErrorDialog({ error: error.response ?? error })])
+                  error.status === 404
+                    ? showConfirmDialog({
+                        body: getIntl().formatMessage(
+                          itemFailureMessages[type === 'DELETE_CONTROLLER' ? 'controllerNotFound' : 'templateNotFound']
+                        )
+                      })
+                    : showErrorDialog({ error: error.response ?? error })
                 ]);
               })
             )
