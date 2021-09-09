@@ -90,9 +90,6 @@ export const CHANGE_CURRENT_URL = 'CHANGE_CURRENT_URL';
 export const FETCH_ASSETS_PANEL_ITEMS = 'FETCH_ASSETS_PANEL_ITEMS';
 export const FETCH_ASSETS_PANEL_ITEMS_COMPLETE = 'FETCH_ASSETS_PANEL_ITEMS_COMPLETE';
 export const FETCH_ASSETS_PANEL_ITEMS_FAILED = 'FETCH_ASSETS_PANEL_ITEMS_FAILED';
-export const FETCH_COMPONENTS_BY_CONTENT_TYPE = 'FETCH_COMPONENTS_BY_CONTENT_TYPE';
-export const FETCH_COMPONENTS_BY_CONTENT_TYPE_COMPLETE = 'FETCH_COMPONENTS_BY_CONTENT_TYPE_COMPLETE';
-export const FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED = 'FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED';
 export const UPDATE_AUDIENCES_PANEL_MODEL = 'UPDATE_AUDIENCES_PANEL_MODEL';
 export const SET_ACTIVE_TARGETING_MODEL = 'SET_ACTIVE_TARGETING_MODEL';
 export const SET_ACTIVE_TARGETING_MODEL_COMPLETE = 'SET_ACTIVE_TARGETING_MODEL_COMPLETE';
@@ -247,21 +244,15 @@ export const fetchAssetsPanelItemsComplete = /*#__PURE__*/ createAction<SearchRe
 
 export const fetchAssetsPanelItemsFailed = /*#__PURE__*/ createAction(FETCH_ASSETS_PANEL_ITEMS_FAILED);
 
-export function fetchComponentsByContentType(
-  contentTypeFilter?: string,
-  options?: Partial<ComponentsContentTypeParams>
-): StandardAction {
-  return {
-    type: FETCH_COMPONENTS_BY_CONTENT_TYPE,
-    payload: { contentTypeFilter, options }
-  };
-}
-
-export const fetchComponentsByContentTypeComplete = /*#__PURE__*/ createAction<ContentInstancePage>(
-  FETCH_COMPONENTS_BY_CONTENT_TYPE_COMPLETE
+export const fetchComponentsByContentType = /*#__PURE__*/ createAction<Partial<ComponentsContentTypeParams>>(
+  'FETCH_COMPONENTS_BY_CONTENT_TYPE'
 );
 
-export const fetchComponentsByContentTypeFailed = /*#__PURE__*/ createAction(FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED);
+export const fetchComponentsByContentTypeComplete = /*#__PURE__*/ createAction<ContentInstancePage>(
+  'FETCH_COMPONENTS_BY_CONTENT_TYPE_COMPLETE'
+);
+
+export const fetchComponentsByContentTypeFailed = /*#__PURE__*/ createAction('FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED');
 
 export const clearDropTargets = /*#__PURE__*/ createAction(CLEAR_DROP_TARGETS);
 

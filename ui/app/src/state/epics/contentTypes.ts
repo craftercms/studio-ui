@@ -18,8 +18,8 @@ import { ofType } from 'redux-observable';
 import {
   dissociateTemplateComplete,
   dissociateTemplateFailed,
-  FETCH_COMPONENTS_BY_CONTENT_TYPE,
-  FETCH_CONTENT_TYPES,
+  fetchComponentsByContentType,
+  fetchContentTypes,
   fetchComponentsByContentTypeComplete,
   fetchComponentsByContentTypeFailed,
   fetchContentTypesComplete,
@@ -28,38 +28,48 @@ import {
 import { exhaustMap, map, switchMap, withLatestFrom } from 'rxjs/operators';
 import { fetchItemsByContentType } from '../../services/content';
 import { catchAjaxError } from '../../utils/ajax';
-import { fetchContentTypes } from '../../services/contentTypes';
+import GlobalState from '../../models/GlobalState';
+import { Observable } from 'rxjs';
+import { fetchContentTypes as fetchContentTypesService } from '../../services/contentTypes';
 import { dissociateTemplate as dissociateTemplateActionCreator } from '../actions/preview';
 import { dissociateTemplate as dissociateTemplateService } from '../../services/contentTypes';
 import { CrafterCMSEpic } from '../store';
+import ContentType from '../../models/ContentType';
 
 export default [
   // region fetchContentTypes
   (action$, state$) =>
     action$.pipe(
-      ofType(FETCH_CONTENT_TYPES),
+      ofType(fetchContentTypes.type),
       withLatestFrom(state$),
       exhaustMap(([, { sites: { active: site } }]) =>
-        fetchContentTypes(site).pipe(map(fetchContentTypesComplete), catchAjaxError(fetchContentTypesFailed))
+        fetchContentTypesService(site).pipe(map(fetchContentTypesComplete), catchAjaxError(fetchContentTypesFailed))
       )
     ),
   // endregion
   // region fetchCommponentsByContentType
-  (action$, state$) =>
+  (action$, state$: Observable<GlobalState>) =>
     action$.pipe(
-      ofType(FETCH_COMPONENTS_BY_CONTENT_TYPE),
+      ofType(fetchComponentsByContentType.type),
       withLatestFrom(state$),
       switchMap(([, state]) =>
         fetchItemsByContentType(
           state.sites.active,
-          state.preview.components.contentTypeFilter,
+          state.preview.components.contentTypeFilter === 'all'
+            ? Object.values(state.contentTypes.byId)
+              .filter(
+                (contentType: ContentType) =>
+                  contentType.type === 'component' && !contentType.id.includes('/level-descriptor')
+              )
+              .map((contentType) => contentType.id)
+            : state.preview.components.contentTypeFilter,
           state.contentTypes.byId,
           state.preview.components.query
         ).pipe(map(fetchComponentsByContentTypeComplete), catchAjaxError(fetchComponentsByContentTypeFailed))
       )
     ),
   // endregion
-  // region fetchCommponentsByContentType
+  // region dissociateTemplate
   (action$, state$) =>
     action$.pipe(
       ofType(dissociateTemplateActionCreator.type),
@@ -73,5 +83,3 @@ export default [
     )
   // endregion dissociateTemplate
 ] as CrafterCMSEpic[];
-
-// export default [fetch, fetchComponentsByContentType, dissociateTemplate] as CrafterCMSEpic[];

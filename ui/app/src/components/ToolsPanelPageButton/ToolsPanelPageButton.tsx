@@ -20,11 +20,12 @@ import { useDispatch } from 'react-redux';
 import { pushIcePanelPage, pushToolsPanelPage } from '../../state/actions/preview';
 import { createWidgetDescriptor } from '../../utils/state';
 import { SystemIconDescriptor } from '../SystemIcon';
+import ToolsPanelTarget from '../../models/ToolsPanelTarget';
 
 export interface ToolsPanelPageButtonProps {
   title: string;
   subtitle: string;
-  target?: 'icePanel' | 'toolsPanel';
+  target?: ToolsPanelTarget;
   icon: SystemIconDescriptor;
 }
 

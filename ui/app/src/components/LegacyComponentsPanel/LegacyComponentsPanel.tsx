@@ -469,10 +469,7 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
         case 'DRAG_AND_DROP_COMPONENTS_PANEL_CLOSED': {
           if (editMode) {
             getHostToGuestBus().next({
-              type: 'ICE_TOOLS_ON',
-              payload: {
-                force: true
-              }
+              type: 'ICE_TOOLS_ON'
             });
           }
           break;
