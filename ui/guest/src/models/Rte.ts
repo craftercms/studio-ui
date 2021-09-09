@@ -22,8 +22,8 @@ export interface TinymceOptions extends Settings {
 }
 
 export interface RteSetup {
-  id: string;
-  tinymceOptions: TinymceOptions;
+  id?: string;
+  tinymceOptions?: TinymceOptions;
 }
 
 export type RteConfig = LookupTable<RteSetup>;
