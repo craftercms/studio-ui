@@ -35,6 +35,7 @@ import { fadeIn } from 'react-animations';
 import PrimaryButton from '../PrimaryButton';
 import Marked from 'marked';
 import Link from '@material-ui/core/Link';
+import hljs from '../../utils/hljs';
 
 const useStyles = makeStyles((theme) => ({
   '@keyframes fadeIn': fadeIn,
@@ -211,7 +212,7 @@ export default function PluginDetailsView(props: PluginDetailsViewProps) {
   const fullVersion = version ? `${version.major}.${version.minor}.${version.patch}` : null;
   const [markdown, setMarkdown] = useState(null);
   const [link, setLink] = useState(null);
-  const [markdownError, setMarkdownError] = useState<boolean>(true);
+  const [markdownError, setMarkdownError] = useState<boolean>(null);
 
   const { formatMessage } = useIntl();
 
@@ -268,13 +269,40 @@ export default function PluginDetailsView(props: PluginDetailsViewProps) {
   plugin.media && plugin.media.videos ? (steps += plugin.media.videos.length) : (steps += 0);
 
   useEffect(() => {
+    Marked.setOptions({
+      highlight: function(code, lang) {
+        return hljs.highlightAuto(code).value;
+      },
+      langPrefix: 'hljs language-'
+    });
     if (/(\/readme$)|(.md$)/.test(plugin.documentation)) {
       fetch(plugin.documentation)
         .then((r) => r.text())
         .then((content) => {
-          setMarkdown(Marked(content));
+          const js =
+            '### view.ftl : contents\n' +
+            '```ftl\n' +
+            '<@layout.extends name="layouts/base.ftl">\n' +
+            '    <@layout.put block="head">\n' +
+            '        <script src="//ajax.googleapis.com/ajax/libs/mootools/1.4.5/mootools-yui-compressed.js"></script>\n' +
+            '    </@layout.put>\n' +
+            '    <@layout.put block="header" type="prepend">\n' +
+            '        <h2>Index Page</h2>\n' +
+            '    </@layout.put>\n' +
+            '    <@layout.put block="contents">\n' +
+            '        <p>blah.. blah..</p>\n' +
+            '    </@layout.put>\n' +
+            '    <@layout.put block="footer" type="replace">\n' +
+            '        <hr/>\n' +
+            '        <div class="footer">Footer replaced by index</div>\n' +
+            '    </@layout.put>\n' +
+            '</@layout.extends>\n' +
+            '```';
+          setMarkdown(Marked(js));
         })
-        .catch((error) => setMarkdownError(true));
+        .catch((error) => {
+          setMarkdownError(true);
+        });
     } else if (plugin.documentation) {
       setLink(plugin.documentation);
     }
