@@ -48,7 +48,8 @@ import {
   HIGHLIGHT_MODE_CHANGED,
   HighlightMode,
   HOST_CHECK_IN,
-  TRASHED
+  TRASHED,
+  UPDATE_RTE_CONFIG
 } from '../../constants';
 
 // region mouseover
@@ -741,6 +742,10 @@ const reducerFunctions: {
     editMode: action.payload.editMode,
     rteConfig: action.payload.rteConfig,
     activeSite: action.payload.site
+  }),
+  [UPDATE_RTE_CONFIG]: (state, action) => ({
+    ...state,
+    rteConfig: action.payload.rteConfig
   })
 };
 

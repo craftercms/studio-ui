@@ -607,7 +607,8 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
     ...state,
     toolsPanel: initialState.toolsPanel,
     toolbar: initialState.toolbar,
-    icePanel: initialState.icePanel
+    icePanel: initialState.icePanel,
+    richTextEditor: initialState.richTextEditor
   }),
   [initToolbarConfig.type]: (state, { payload }) => {
     let toolbarConfig = {

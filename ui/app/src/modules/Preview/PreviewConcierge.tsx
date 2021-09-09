@@ -58,7 +58,8 @@ import {
   SORT_ITEM_OPERATION_COMPLETE,
   TRASHED,
   UPDATE_FIELD_VALUE_OPERATION,
-  VALIDATION_MESSAGE
+  VALIDATION_MESSAGE,
+  UPDATE_RTE_CONFIG
 } from '../../state/actions/preview';
 import {
   deleteItem,
@@ -280,6 +281,12 @@ export function PreviewConcierge(props: any) {
     }
   }, [item, dispatch, editMode, user.username]);
 
+  // endregion
+
+  // region Update rte config
+  useEffect(() => {
+    getHostToGuestBus().next({ type: UPDATE_RTE_CONFIG, payload: { rteConfig } });
+  }, [rteConfig]);
   // endregion
 
   // Guest detection, document domain restoring, editMode/highlightMode preference retrieval, clipboard retrieval
@@ -758,6 +765,12 @@ export function PreviewConcierge(props: any) {
             })
           );
           break;
+        }
+        case UPDATE_RTE_CONFIG: {
+          getHostToGuestBus().next({
+            type: UPDATE_RTE_CONFIG,
+            payload: { rteConfig: rteConfig ?? {} }
+          });
         }
       }
     });

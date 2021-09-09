@@ -57,7 +57,8 @@ import {
   NAVIGATION_REQUEST,
   RELOAD_REQUEST,
   SCROLL_TO_DROP_TARGET,
-  TRASHED
+  TRASHED,
+  UPDATE_RTE_CONFIG
 } from '../constants';
 import { createGuestStore } from '../store/store';
 import { Provider } from 'react-redux';
@@ -282,6 +283,9 @@ function Guest(props: GuestProps) {
           dispatch(action);
           break;
         case DESKTOP_ASSET_UPLOAD_COMPLETE:
+          dispatch(action);
+          break;
+        case UPDATE_RTE_CONFIG:
           dispatch(action);
           break;
       }
