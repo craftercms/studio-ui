@@ -292,7 +292,7 @@ export const initIcePanelConfig = /*#__PURE__*/ createAction<{
   configXml: string;
 }>('INIT_ICE_PANEL_CONFIG');
 
-export const initRichTextEditorConfig = /*#__PURE__*/ createAction<{ configXml: string }>(
+export const initRichTextEditorConfig = /*#__PURE__*/ createAction<{ configXml: string; siteId: string }>(
   'INIT_RICH_TEXT_EDITOR_CONFIG'
 );
 

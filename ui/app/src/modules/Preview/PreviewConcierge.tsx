@@ -801,9 +801,9 @@ export function PreviewConcierge(props: any) {
 
   useEffect(() => {
     if (nnou(uiConfig.xml) && !rteConfig) {
-      dispatch(initRichTextEditorConfig({ configXml: uiConfig.xml }));
+      dispatch(initRichTextEditorConfig({ configXml: uiConfig.xml, siteId }));
     }
-  }, [uiConfig.xml, rteConfig, dispatch]);
+  }, [uiConfig.xml, siteId, rteConfig, dispatch]);
 
   // Hotkeys
   useHotkeys(

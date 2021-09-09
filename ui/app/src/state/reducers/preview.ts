@@ -694,7 +694,7 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
         let setups: LookupTable = {};
 
         conf.setups.forEach((setup) => {
-          setup.tinymceOptions = JSON.parse(setup.tinymceOptions);
+          setup.tinymceOptions = JSON.parse(setup.tinymceOptions.replaceAll('{site}', payload.siteId));
           setups[setup.id] = setup;
         });
 
