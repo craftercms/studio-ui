@@ -26,7 +26,9 @@ export interface PublishingStatusButtonProps extends IconButtonProps {
 }
 
 export const PublishingStatusButton = forwardRef<HTMLButtonElement, PublishingStatusButtonProps>((props, ref) => {
-  const { enabled, status, isFetching } = useSelection((state) => state.dialogs.publishingStatus);
+  const { enabled, status, isFetching, totalItems, numberOfItems } = useSelection(
+    (state) => state.dialogs.publishingStatus
+  );
   const dispatch = useDispatch();
   return (
     <PublishingStatusButtonUI
@@ -35,6 +37,7 @@ export const PublishingStatusButton = forwardRef<HTMLButtonElement, PublishingSt
       enabled={enabled}
       status={status}
       isFetching={isFetching}
+      value={Math.round((numberOfItems / totalItems) * 100)}
       onClick={() => {
         dispatch(showPublishingStatusDialog({}));
       }}

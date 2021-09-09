@@ -27,7 +27,7 @@ import PublishingStatusDisplay from '../PublishingStatusDisplay';
 import PauseCircleOutlineOutlinedIcon from '@material-ui/icons/PauseCircleOutlineOutlined';
 import PlayCircleOutlineOutlinedIcon from '@material-ui/icons/PlayCircleOutlineOutlined';
 
-export type PublishingStatusDialogBodyProps = PublishingStatus & {
+export type PublishingStatusDialogBodyProps = Partial<PublishingStatus> & {
   isFetching: boolean;
   onClose(): void;
   onRefresh?(): void;

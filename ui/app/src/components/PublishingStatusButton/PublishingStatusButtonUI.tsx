@@ -25,12 +25,13 @@ import { publishingStatusTileMessages } from '../PublishingStatusTile';
 export interface PublishingStatusButtonUIProps extends IconButtonProps {
   isFetching: boolean;
   enabled: boolean;
+  value?: number;
   status: PublishingStatus['status'];
   variant?: PublishingStatusAvatarProps['variant'];
 }
 
 export const PublishingStatusButtonUI = forwardRef<HTMLButtonElement, PublishingStatusButtonUIProps>(
-  ({ enabled, status, isFetching, style, onClick, variant, ...rest }, ref) => (
+  ({ enabled, value, status, isFetching, style, onClick, variant, ...rest }, ref) => (
     <Tooltip
       title={
         <>
@@ -69,14 +70,15 @@ export const PublishingStatusButtonUI = forwardRef<HTMLButtonElement, Publishing
         {/* TODO:
             The spinner might be better suited to be on the PublishingStatusAvatar component
             so when we have progress, it is show everywhere the publishing avatar shows up. */}
-        {(isFetching || status === 'publishing') && (
+        {(isFetching || ['publishing', 'processing'].includes(status)) && (
           <CircularProgress
             size={
               // Default progress size matches small button, but the medium
               // size (which is this component's default) needs a larger spinner
               ['medium', void 0].includes(rest.size) ? 48 : void 0
             }
-            variant="indeterminate"
+            value={value}
+            variant={['publishing', 'processing'].includes(status) ? 'determinate' : 'indeterminate'}
             style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none' }}
           />
         )}

@@ -25,7 +25,7 @@ import * as React from 'react';
 import { useIntl } from 'react-intl';
 import { PublishingStatus } from '../../models/Publishing';
 
-export type PublishingStatusDisplayProps = PublishingStatus & {
+export type PublishingStatusDisplayProps = Partial<PublishingStatus> & {
   isFetching: boolean;
 };
 

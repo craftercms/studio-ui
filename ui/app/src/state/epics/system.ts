@@ -58,6 +58,7 @@ import {
   fetchPublishingStatus,
   fetchPublishingStatusComplete,
   fetchPublishingStatusFailed,
+  fetchPublishingStatusProcessingComplete,
   startPublishingStatusFetcher,
   stopPublishingStatusFetcher
 } from '../actions/publishingStatus';
@@ -74,6 +75,7 @@ import {
 import { fetchSiteConfig } from '../actions/configuration';
 import { getStoredShowToolsPanel } from '../../utils/state';
 import { closeToolsPanel, openToolsPanel } from '../actions/preview';
+import { batchActions } from '../actions/misc';
 
 const systemEpics: CrafterCMSEpic[] = [
   // region storeInitialized
@@ -342,16 +344,6 @@ const systemEpics: CrafterCMSEpic[] = [
       ignoreElements()
     ),
   // endregion
-  // region messageSharedWorker
-  (action$, state$, { worker }) =>
-    action$.pipe(
-      ofType(messageSharedWorker.type),
-      tap((action) => {
-        worker.port.postMessage(action.payload);
-      }),
-      ignoreElements()
-    ),
-  // endregion
   // region fetchPublishingStatus
   (action$, state$) =>
     action$.pipe(
@@ -360,10 +352,27 @@ const systemEpics: CrafterCMSEpic[] = [
       filter(([, state]) => Boolean(state.sites.active)),
       exhaustMap(([, state]) =>
         fetchStatus(state.sites.active).pipe(
-          map((response) => fetchPublishingStatusComplete(response)),
+          // switchMap
+          map((response) => {
+            let actions = [fetchPublishingStatusComplete(response)];
+            if (['ready', 'stopped', 'error'].includes(response.status)) {
+              actions.push(fetchPublishingStatusProcessingComplete());
+            }
+            return batchActions(actions);
+          }),
           catchAjaxError(fetchPublishingStatusFailed)
         )
       )
+    ),
+  // endregion
+  // region messageSharedWorker
+  (action$, state$, { worker }) =>
+    action$.pipe(
+      ofType(messageSharedWorker.type),
+      tap((action) => {
+        worker.port.postMessage(action.payload);
+      }),
+      ignoreElements()
     ),
   // endregion
   // region startPublishingStatusFetcher
@@ -379,6 +388,29 @@ const systemEpics: CrafterCMSEpic[] = [
           takeUntil(
             action$.pipe(
               ofType(stopPublishingStatusFetcher.type, sessionTimeout.type, sharedWorkerUnauthenticated.type)
+            )
+          )
+        )
+      )
+    ),
+  // endregion
+  // region fetchPublishingStatusProcessing
+  (action$, state$) =>
+    action$.pipe(
+      ofType(fetchPublishingStatusComplete.type),
+      withLatestFrom(state$),
+      filter(([, state]) => ['queued', 'processing', 'publishing'].includes(state.dialogs.publishingStatus.status)),
+      switchMap(() =>
+        interval(1000).pipe(
+          startWith(0), // To fetch status immediately
+          mapTo(fetchPublishingStatus()),
+          takeUntil(
+            action$.pipe(
+              ofType(
+                fetchPublishingStatusProcessingComplete.type,
+                sessionTimeout.type,
+                sharedWorkerUnauthenticated.type
+              )
             )
           )
         )
