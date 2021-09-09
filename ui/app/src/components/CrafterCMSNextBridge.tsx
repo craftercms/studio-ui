@@ -23,7 +23,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import { setRequestForgeryToken } from '../utils/auth';
 import { CrafterCMSStore, getStore } from '../state/store';
 import GlobalDialogManager from './SystemStatus/GlobalDialogManager';
-import { SnackbarProvider } from 'notistack';
+import { SnackbarProvider } from '@craftercms/notistack';
 import { Resource } from '../models/Resource';
 import Suspencified from './SystemStatus/Suspencified';
 import I18nProvider from './I18nProvider';

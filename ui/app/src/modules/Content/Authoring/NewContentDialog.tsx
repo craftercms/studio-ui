@@ -23,7 +23,7 @@ import { LegacyContentType, LegacyFormConfig } from '../../../models/ContentType
 import { Resource } from '../../../models/Resource';
 import StandardAction from '../../../models/StandardAction';
 import { DetailedItem } from '../../../models/Item';
-import DialogHeader from '../../../components/DialogHeader/DialogHeader';
+import DialogHeader from '../../../components/DialogHeader';
 import NewContentCard, { ContentSkeletonCard } from './NewContentCard';
 import SearchBar from '../../../components/Controls/SearchBar';
 import ContentTypesFilter from './ContentTypesFilter';

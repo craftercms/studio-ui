@@ -20,7 +20,7 @@ import { PagedArray } from '../../models/PagedArray';
 import Box from '@mui/material/Box';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useStyles } from './styles';
-import { DataGrid, GridCellParams, GridColDef, GridOptions, GridOverlay, GridSortModel } from '@mui/x-data-grid';
+import { DataGrid, GridCellParams, GridColDef, GridComponentProps, GridOverlay, GridSortModel } from '@mui/x-data-grid';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { AuditOptions } from '../../services/audit';
 import { Site } from '../../models/Site';
@@ -49,11 +49,11 @@ export interface AuditGridUIProps {
   hasActiveFilters: boolean;
   timezones: string[];
   siteMode?: boolean;
-  onPageChange: GridOptions['onPageChange'];
+  onPageChange: GridComponentProps['onPageChange'];
   onResetFilters(): void;
   onResetFilter(id: string | string[]): void;
   onFetchParameters(id: number): void;
-  onPageSizeChange: GridOptions['onPageSizeChange'];
+  onPageSizeChange: GridComponentProps['onPageSizeChange'];
   onFilterChange(filter: { id: string; value: string | string[] }): void;
 }
 

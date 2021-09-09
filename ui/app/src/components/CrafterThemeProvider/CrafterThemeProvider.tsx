@@ -68,6 +68,11 @@ export function CrafterThemeProvider(props: CrafterThemeProviderProps) {
       components: extend(
         (props.themeOptions ?? defaultThemeOptions).overrides ?? {},
         {
+          MuiLink: {
+            defaultProps: {
+              underline: 'hover'
+            }
+          },
           MuiInputBase: {
             root: {
               backgroundColor: auxTheme.palette.background.paper
