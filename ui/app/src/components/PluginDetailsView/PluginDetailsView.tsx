@@ -279,26 +279,7 @@ export default function PluginDetailsView(props: PluginDetailsViewProps) {
       fetch(plugin.documentation)
         .then((r) => r.text())
         .then((content) => {
-          const js =
-            '### view.ftl : contents\n' +
-            '```ftl\n' +
-            '<@layout.extends name="layouts/base.ftl">\n' +
-            '    <@layout.put block="head">\n' +
-            '        <script src="//ajax.googleapis.com/ajax/libs/mootools/1.4.5/mootools-yui-compressed.js"></script>\n' +
-            '    </@layout.put>\n' +
-            '    <@layout.put block="header" type="prepend">\n' +
-            '        <h2>Index Page</h2>\n' +
-            '    </@layout.put>\n' +
-            '    <@layout.put block="contents">\n' +
-            '        <p>blah.. blah..</p>\n' +
-            '    </@layout.put>\n' +
-            '    <@layout.put block="footer" type="replace">\n' +
-            '        <hr/>\n' +
-            '        <div class="footer">Footer replaced by index</div>\n' +
-            '    </@layout.put>\n' +
-            '</@layout.extends>\n' +
-            '```';
-          setMarkdown(Marked(js));
+          setMarkdown(Marked(content));
         })
         .catch((error) => {
           setMarkdownError(true);
