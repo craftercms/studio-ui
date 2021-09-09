@@ -434,7 +434,7 @@ const content: CrafterCMSEpic[] = [
       })
     ),
   // endregion
-  // region Delete Controller
+  // region Delete Controller/Template
   (action$, state$) =>
     action$.pipe(
       ofType(deleteController.type, deleteTemplate.type),
