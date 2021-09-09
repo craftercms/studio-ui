@@ -379,7 +379,7 @@ export function PreviewConcierge(props: any) {
           if (type === GUEST_CHECK_IN) {
             getHostToGuestBus().next({
               type: HOST_CHECK_IN,
-              payload: { editMode: false, highlightMode, rteConfig: rteConfig ?? {}, site: siteId }
+              payload: { editMode: false, highlightMode, rteConfig: rteConfig ?? {} }
             });
             dispatch(checkInGuest(payload));
 

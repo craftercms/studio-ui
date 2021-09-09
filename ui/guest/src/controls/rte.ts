@@ -24,16 +24,15 @@ import { GuestStandardAction } from '../store/models/GuestStandardAction';
 import { Observable, Subject } from 'rxjs';
 import { startWith } from 'rxjs/operators';
 import $ from 'jquery';
-import LookupTable from '@craftercms/studio-ui/models/LookupTable';
 import { reversePluckProps } from '../utils/object';
 // TODO: this needs to be imported from studio-ui
 import { SHOW_EDIT_DIALOG } from '../constants';
+import { RteSetup } from '../models/Rte';
 
 export function initTinyMCE(
   record: ElementRecord,
   validations: Partial<ContentTypeFieldValidations>,
-  rteConfig?: LookupTable<any>,
-  site?: string
+  rteSetup?: RteSetup
 ): Observable<GuestStandardAction> {
   const dispatch$ = new Subject<GuestStandardAction>();
   const { field } = iceRegistry.getReferentialEntries(record.iceIds[0]);
@@ -66,7 +65,7 @@ export function initTinyMCE(
   });
 
   const external = {
-    ...rteConfig?.tinymceOptions?.external_plugins,
+    ...rteSetup?.tinymceOptions?.external_plugins,
     acecode: '/studio/static-assets/js/tinymce-plugins/ace/plugin.min.js',
     editform: '/studio/static-assets/js/tinymce-plugins/editform/plugin.js'
   };
@@ -190,10 +189,10 @@ export function initTinyMCE(
         }
       });
     },
-    ...(rteConfig?.tinymceOptions
+    ...(rteSetup?.tinymceOptions
       ? {
           ...reversePluckProps(
-            rteConfig.tinymceOptions,
+            rteSetup.tinymceOptions,
             'target', // Target can't be changed
             'inline', // Not using inline view doesn't behave well on pageBuilder, this setting shouldn't be changed.
             'setup',

@@ -341,7 +341,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
                 );
               } else if (not(validations?.readOnly?.value)) {
                 const setupId = field.properties?.rteConfiguration?.value ?? 'generic';
-                return initTinyMCE(record, validations, state.rteConfig[setupId], state.activeSite);
+                return initTinyMCE(record, validations, state.rteConfig[setupId]);
               }
               return NEVER;
             }

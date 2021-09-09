@@ -22,6 +22,7 @@ import { StateObservable } from 'redux-observable';
 import ContentType from '@craftercms/studio-ui/models/ContentType';
 import { ContentInstance } from '@craftercms/studio-ui/models/ContentInstance';
 import { EditingStatus } from '../../constants';
+import { RteConfig } from '../../models/Rte';
 
 interface T {
   [K: string]: any;
@@ -64,7 +65,7 @@ export interface GuestState {
     currentElement: number;
     registryEntryIds: number[];
   };
-  rteConfig: LookupTable<any>;
+  rteConfig: RteConfig;
   activeSite: string;
 }
 
