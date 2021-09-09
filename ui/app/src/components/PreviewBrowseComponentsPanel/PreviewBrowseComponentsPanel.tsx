@@ -31,8 +31,8 @@ import {
 import { useDispatch } from 'react-redux';
 import SearchBar from '../Controls/SearchBar';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 import ContentType from '../../models/ContentType';
 import { useSelection } from '../../utils/hooks/useSelection';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';

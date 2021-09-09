@@ -318,7 +318,7 @@ export default function PluginDetailsView(props: PluginDetailsViewProps) {
           steps={steps}
           onDotClick={onDotClick}
           className={classes.dots}
-          position={'static'}
+          position="static"
           activeStep={index}
         />
       )}
