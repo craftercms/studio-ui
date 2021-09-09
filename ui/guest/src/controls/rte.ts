@@ -66,15 +66,10 @@ export function initTinyMCE(
   });
 
   const external = {
+    ...rteConfig?.tinymceOptions?.external_plugins,
     acecode: '/studio/static-assets/js/tinymce-plugins/ace/plugin.min.js',
     editform: '/studio/static-assets/js/tinymce-plugins/editform/plugin.js'
   };
-
-  if (rteConfig?.tinymceOptions?.external_plugins) {
-    Object.entries(rteConfig.tinymceOptions.external_plugins).forEach((entry) => {
-      external[entry[0]] = (entry[1] as string).replaceAll('{site}', site);
-    });
-  }
 
   window.tinymce.init({
     mode: 'none',
