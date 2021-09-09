@@ -47,7 +47,7 @@ export default [
       )
     ),
   // endregion
-  // region fetchCommponentsByContentType
+  // region fetchComponentsByContentType
   (action$, state$: Observable<GlobalState>) =>
     action$.pipe(
       ofType(fetchComponentsByContentType.type),
@@ -57,11 +57,11 @@ export default [
           state.sites.active,
           state.preview.components.contentTypeFilter === 'all'
             ? Object.values(state.contentTypes.byId)
-              .filter(
-                (contentType: ContentType) =>
-                  contentType.type === 'component' && !contentType.id.includes('/level-descriptor')
-              )
-              .map((contentType) => contentType.id)
+                .filter(
+                  (contentType: ContentType) =>
+                    contentType.type === 'component' && !contentType.id.includes('/level-descriptor')
+                )
+                .map((contentType) => contentType.id)
             : state.preview.components.contentTypeFilter,
           state.contentTypes.byId,
           state.preview.components.query
@@ -76,7 +76,7 @@ export default [
       withLatestFrom(state$),
       switchMap(([{ payload }, { sites: { active } }]) =>
         dissociateTemplateService(active, payload.contentTypeId).pipe(
-          map(() => dissociateTemplateComplete({ contentTypeId: payload.contentTypeId })), // TODO: send content type id so it can be updated in reducer
+          map(() => dissociateTemplateComplete({ contentTypeId: payload.contentTypeId })),
           catchAjaxError(dissociateTemplateFailed)
         )
       )
