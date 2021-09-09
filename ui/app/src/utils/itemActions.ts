@@ -820,11 +820,11 @@ export const itemActionDispatcher = ({
       break;
     }
     case 'deleteController': {
-      dispatch(deleteController({ item: item as DetailedItem, onActionSuccess }));
+      dispatch(deleteController({ item: item as DetailedItem, onSuccess: onActionSuccess }));
       break;
     }
     case 'deleteTemplate': {
-      dispatch(deleteTemplate({ item: item as DetailedItem, onActionSuccess }));
+      dispatch(deleteTemplate({ item: item as DetailedItem, onSuccess: onActionSuccess }));
       break;
     }
     case 'approvePublish':

@@ -440,7 +440,7 @@ const content: CrafterCMSEpic[] = [
       ofType(deleteController.type, deleteTemplate.type),
       withLatestFrom(state$),
       switchMap(([{ type, payload }, state]) => {
-        const { item, onActionSuccess } = payload;
+        const { item, onSuccess } = payload;
         const path =
           type === 'DELETE_CONTROLLER'
             ? getItemGroovyPath(item, state.contentTypes.byId)
@@ -479,7 +479,7 @@ const content: CrafterCMSEpic[] = [
                         showDeleteItemSuccessNotification(),
                         type === 'DELETE_TEMPLATE' && dissociateTemplate({ contentTypeId: item.contentTypeId }),
                         closeDeleteDialog(),
-                        onActionSuccess
+                        onSuccess
                       ].filter(Boolean)
                     )
                   }),

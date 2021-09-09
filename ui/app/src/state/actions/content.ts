@@ -93,11 +93,11 @@ export const conditionallyUnlockItem = /*#__PURE__*/ createAction<{ path: string
   'CONDITIONALLY_UNLOCK_ITEM'
 );
 
-export const deleteController = /*#__PURE__*/ createAction<{ item: DetailedItem; onActionSuccess?: any }>(
+export const deleteController = /*#__PURE__*/ createAction<{ item: DetailedItem; onSuccess?: StandardAction }>(
   'DELETE_CONTROLLER'
 );
 
-export const deleteTemplate = /*#__PURE__*/ createAction<{ item: DetailedItem; onActionSuccess?: any }>(
+export const deleteTemplate = /*#__PURE__*/ createAction<{ item: DetailedItem; onSuccess?: StandardAction }>(
   'DELETE_TEMPLATE'
 );
 
