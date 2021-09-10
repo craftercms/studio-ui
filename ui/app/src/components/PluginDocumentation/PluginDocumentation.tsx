@@ -22,7 +22,7 @@ import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
 import { FormattedMessage } from 'react-intl';
 
-interface PluginDocumentationProps {
+export interface PluginDocumentationProps {
   plugin: MarketplacePlugin;
 }
 
