@@ -575,7 +575,6 @@ function mergeContentDocumentProps(type: string, data: AnyObject): LegacyContent
       createdDate_dt: dateCreated,
       lastModifiedDate_dt: dateModified,
       objectId: ''
-      // locale: 'en'
     },
     type === 'page' ? { placeInNav: 'false' as 'false' } : {},
     data || {}
