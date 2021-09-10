@@ -54,7 +54,7 @@ YAHOO.extend(CStudioForms.Controls.Input, CStudioForms.CStudioFormField, {
     var validationExist = false;
     var validationResult = true;
     if (obj.required) {
-      if (obj.inputEl.value == '') {
+      if (obj.inputEl.value.trim() === '') {
         obj.setError('required', 'Field is Required');
         validationExist = true;
         validationResult = false;
