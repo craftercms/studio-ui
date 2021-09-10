@@ -448,14 +448,12 @@ const content: CrafterCMSEpic[] = [
 
         // path may be empty string if the displayTemplate has not been set for a content type.
         if (isBlank(path)) {
-          return merge(
-            of(
-              showConfirmDialog({
-                body: getIntl().formatMessage(
-                  itemFailureMessages[type === 'DELETE_CONTROLLER' ? 'controllerNotFound' : 'templateNotFound']
-                )
-              })
-            )
+          return of(
+            showConfirmDialog({
+              body: getIntl().formatMessage(
+                itemFailureMessages[type === 'DELETE_CONTROLLER' ? 'controllerNotFound' : 'templateNotFound']
+              )
+            })
           );
         } else {
           const id = uuid();
@@ -470,34 +468,30 @@ const content: CrafterCMSEpic[] = [
               })
             ),
             fetchItemByPath(state.sites.active, path).pipe(
-              map((itemToDelete) =>
-                batchActions([
-                  showDeleteDialog({
-                    items: asArray(itemToDelete),
-                    onSuccess: batchActions(
-                      [
-                        showDeleteItemSuccessNotification(),
-                        type === 'DELETE_TEMPLATE' && dissociateTemplate({ contentTypeId: item.contentTypeId }),
-                        closeDeleteDialog(),
-                        onSuccess
-                      ].filter(Boolean)
-                    )
-                  }),
-                  popDialog({ id })
-                ])
-              ),
-              catchAjaxError((error: AjaxError) => {
-                return batchActions([
-                  popDialog({ id }),
-                  error.status === 404
-                    ? showConfirmDialog({
-                        body: getIntl().formatMessage(
-                          itemFailureMessages[type === 'DELETE_CONTROLLER' ? 'controllerNotFound' : 'templateNotFound']
-                        )
-                      })
-                    : showErrorDialog({ error: error.response ?? error })
-                ]);
-              })
+              switchMap((itemToDelete) => [
+                showDeleteDialog({
+                  items: asArray(itemToDelete),
+                  onSuccess: batchActions(
+                    [
+                      showDeleteItemSuccessNotification(),
+                      type === 'DELETE_TEMPLATE' && dissociateTemplate({ contentTypeId: item.contentTypeId }),
+                      closeDeleteDialog(),
+                      onSuccess
+                    ].filter(Boolean)
+                  )
+                }),
+                popDialog({ id })
+              ]),
+              catchAjaxError((error: AjaxError) => [
+                popDialog({ id }),
+                error.status === 404
+                  ? showConfirmDialog({
+                      body: getIntl().formatMessage(
+                        itemFailureMessages[type === 'DELETE_CONTROLLER' ? 'controllerNotFound' : 'templateNotFound']
+                      )
+                    })
+                  : showErrorDialog({ error: error.response ?? error })
+              ])
             )
           );
         }
