@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import SwipeableViews from 'react-swipeable-views';
@@ -33,8 +33,7 @@ import clsx from 'clsx';
 // @ts-ignore
 import { fadeIn } from 'react-animations';
 import PrimaryButton from '../PrimaryButton';
-import Marked from 'marked';
-import Link from '@material-ui/core/Link';
+import PluginDocumentation from '../PluginDocumentation';
 
 const useStyles = makeStyles((theme) => ({
   '@keyframes fadeIn': fadeIn,
@@ -209,9 +208,6 @@ export default function PluginDetailsView(props: PluginDetailsViewProps) {
   const [index, setIndex] = useState(selectedImageSlideIndex);
   const { media, name, description, version, license, developer, website, searchEngine, compatible } = plugin;
   const fullVersion = version ? `${version.major}.${version.minor}.${version.patch}` : null;
-  const [markdown, setMarkdown] = useState(null);
-  const [link, setLink] = useState(null);
-  const [markdownError, setMarkdownError] = useState<boolean>(true);
 
   const { formatMessage } = useIntl();
 
@@ -267,19 +263,6 @@ export default function PluginDetailsView(props: PluginDetailsViewProps) {
   plugin.media && plugin.media.screenshots ? (steps = plugin.media.screenshots.length) : (steps = 0);
   plugin.media && plugin.media.videos ? (steps += plugin.media.videos.length) : (steps += 0);
 
-  useEffect(() => {
-    if (/(\/readme$)|(.md$)/.test(plugin.documentation)) {
-      fetch(plugin.documentation)
-        .then((r) => r.text())
-        .then((content) => {
-          setMarkdown(Marked(content));
-        })
-        .catch((error) => setMarkdownError(true));
-    } else if (plugin.documentation) {
-      setLink(plugin.documentation);
-    }
-  }, [plugin]);
-
   return (
     <div className={clsx(classes.detailsView, classes.fadeIn)}>
       <div className={classes.topBar}>
@@ -334,17 +317,7 @@ export default function PluginDetailsView(props: PluginDetailsViewProps) {
               </Alert>
             )}
             <Typography variant="body1">{description}</Typography>
-            {markdown && <Typography component="div" dangerouslySetInnerHTML={{ __html: markdown }} />}
-            {link && <Link href={link}>{link}</Link>}
-            {markdownError && (
-              <Typography>
-                <FormattedMessage
-                  id="pluginDetails.markdownError"
-                  defaultMessage="Unable to render documentation. Visit <a>{link}</a> to view."
-                  values={{ link: plugin.documentation, a: (text) => <a href={text}>{text}</a> }}
-                />
-              </Typography>
-            )}
+            <PluginDocumentation plugin={plugin} />
           </Grid>
           <Grid item xs={4}>
             <div className={classes.section}>
