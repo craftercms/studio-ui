@@ -181,6 +181,7 @@ export interface GlobalState {
     icePanel: {
       widgets: WidgetDescriptor[];
     };
+    richTextEditor: LookupTable;
   };
   previewNavigation: {
     currentUrlPath: string;

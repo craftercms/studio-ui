@@ -39,6 +39,7 @@ import {
   guestModelUpdated,
   guestPathUpdated,
   initIcePanelConfig,
+  initRichTextEditorConfig,
   initToolbarConfig,
   initToolsPanelConfig,
   openToolsPanel,
@@ -73,6 +74,7 @@ import ContentInstance from '../../models/ContentInstance';
 import { changeSite } from './sites';
 import { deserialize, fromString } from '../../utils/xml';
 import { defineMessages } from 'react-intl';
+import LookupTable from '../../models/LookupTable';
 import { fetchSiteUiConfigComplete } from '../actions/configuration';
 import ToolsPanelTarget from '../../models/ToolsPanelTarget';
 
@@ -149,7 +151,8 @@ const initialState: GlobalState['preview'] = {
     middleSection: null,
     rightSection: null
   },
-  icePanel: null
+  icePanel: null,
+  richTextEditor: null
 };
 
 const fetchGuestModelsCompleteHandler = (state, { type, payload }) => {
@@ -588,7 +591,8 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
     ...state,
     toolsPanel: initialState.toolsPanel,
     toolbar: initialState.toolbar,
-    icePanel: initialState.icePanel
+    icePanel: initialState.icePanel,
+    richTextEditor: initialState.richTextEditor
   }),
   [initToolbarConfig.type]: (state, { payload }) => {
     let toolbarConfig = {
@@ -658,6 +662,36 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
     return {
       ...state,
       icePanel: icePanelConfig
+    };
+  },
+  [initRichTextEditorConfig.type]: (state, { payload }) => {
+    let rteConfig = {};
+    const arrays = ['setups'];
+    const renameTable = { '#text': 'data' };
+    const configDOM = fromString(payload.configXml);
+    const rte = configDOM.querySelector('[id="craftercms.components.TinyMCE"] > configuration');
+    if (rte) {
+      try {
+        const conf = applyDeserializedXMLTransforms(deserialize(rte), {
+          arrays,
+          renameTable
+        }).configuration;
+        let setups: LookupTable = {};
+
+        conf.setups.forEach((setup) => {
+          setup.tinymceOptions = JSON.parse(setup.tinymceOptions.replaceAll('{site}', payload.siteId));
+          setups[setup.id] = setup;
+        });
+
+        rteConfig = setups;
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    return {
+      ...state,
+      richTextEditor: rteConfig
     };
   }
 });
