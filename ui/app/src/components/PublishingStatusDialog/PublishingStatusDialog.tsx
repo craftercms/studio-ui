@@ -24,7 +24,7 @@ export interface PublishingStatusDialogProps extends PublishingStatusDialogBodyP
   open: boolean;
 }
 
-export interface PublishingStatusDialogStateProps extends Partial<PublishingStatus> {
+export interface PublishingStatusDialogStateProps extends PublishingStatus {
   open: boolean;
   isFetching: boolean;
   onClose: StandardAction;

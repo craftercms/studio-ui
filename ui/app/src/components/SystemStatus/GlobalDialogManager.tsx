@@ -461,6 +461,10 @@ function GlobalDialogManager() {
         lockOwner={state.publishingStatus.lockOwner}
         lockTTL={state.publishingStatus.lockTTL}
         isFetching={state.publishingStatus.isFetching}
+        totalItems={state.publishingStatus.totalItems}
+        numberOfItems={state.publishingStatus.numberOfItems}
+        environment={state.publishingStatus.environment}
+        submissionId={state.publishingStatus.submissionId}
         onClose={createCallback(state.publishingStatus.onClose, dispatch)}
         onRefresh={createCallback(state.publishingStatus.onRefresh, dispatch)}
         onUnlock={createCallback(state.publishingStatus.onUnlock, dispatch)}

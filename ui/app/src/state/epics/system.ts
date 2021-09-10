@@ -75,7 +75,6 @@ import {
 import { fetchSiteConfig } from '../actions/configuration';
 import { getStoredShowToolsPanel } from '../../utils/state';
 import { closeToolsPanel, openToolsPanel } from '../actions/preview';
-import { batchActions } from '../actions/misc';
 
 const systemEpics: CrafterCMSEpic[] = [
   // region storeInitialized
@@ -352,13 +351,12 @@ const systemEpics: CrafterCMSEpic[] = [
       filter(([, state]) => Boolean(state.sites.active)),
       exhaustMap(([, state]) =>
         fetchStatus(state.sites.active).pipe(
-          // switchMap
-          map((response) => {
+          switchMap((response) => {
             let actions = [fetchPublishingStatusComplete(response)];
             if (['ready', 'stopped', 'error'].includes(response.status)) {
               actions.push(fetchPublishingStatusProcessingComplete());
             }
-            return batchActions(actions);
+            return actions;
           }),
           catchAjaxError(fetchPublishingStatusFailed)
         )

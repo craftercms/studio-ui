@@ -37,7 +37,8 @@ export const PublishingStatusButton = forwardRef<HTMLButtonElement, PublishingSt
       enabled={enabled}
       status={status}
       isFetching={isFetching}
-      value={Math.round((numberOfItems / totalItems) * 100)}
+      totalItems={totalItems}
+      numberOfItems={numberOfItems}
       onClick={() => {
         dispatch(showPublishingStatusDialog({}));
       }}

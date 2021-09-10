@@ -39,7 +39,11 @@ const initialState: PublishingStatusDialogStateProps = {
   isFetching: false,
   onClose: closePublishingStatusDialog(),
   onRefresh: fetchPublishingStatus(),
-  onUnlock: null
+  onUnlock: null,
+  numberOfItems: null,
+  totalItems: null,
+  environment: null,
+  submissionId: null
 };
 
 const publishingStatus = createReducer<GlobalState['dialogs']['publishingStatus']>(initialState, {
