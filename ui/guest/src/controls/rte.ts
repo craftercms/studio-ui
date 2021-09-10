@@ -24,25 +24,58 @@ import { GuestStandardAction } from '../store/models/GuestStandardAction';
 import { Observable, Subject } from 'rxjs';
 import { startWith } from 'rxjs/operators';
 import $ from 'jquery';
+import { reversePluckProps } from '../utils/object';
+// TODO: this needs to be imported from studio-ui
+import { SHOW_EDIT_DIALOG } from '../constants';
+import { RteSetup } from '../models/Rte';
 
 export function initTinyMCE(
   record: ElementRecord,
-  validations: Partial<ContentTypeFieldValidations>
+  validations: Partial<ContentTypeFieldValidations>,
+  rteSetup?: RteSetup
 ): Observable<GuestStandardAction> {
   const dispatch$ = new Subject<GuestStandardAction>();
   const { field } = iceRegistry.getReferentialEntries(record.iceIds[0]);
   const type = field?.type;
-  const plugins = ['paste'];
+  const plugins = 'paste';
   const elementDisplay = $(record.element).css('display');
   if (elementDisplay === 'inline') {
     $(record.element).css('display', 'inline-block');
   }
+
+  const openEditForm = () => {
+    post({
+      type: SHOW_EDIT_DIALOG,
+      payload: {
+        selectedFields: [field.id]
+      }
+    });
+  };
+
+  const controlPropsMap = {
+    enableSpellCheck: 'browser_spellcheck',
+    forceRootBlockPTag: 'forced_root_block'
+  };
+  const controlProps = {};
+  Object.keys(controlPropsMap).forEach((key) => {
+    if (field.properties?.[key]) {
+      const propKey = controlPropsMap[key];
+      controlProps[propKey] = field.properties[key].value;
+    }
+  });
+
+  const external = {
+    ...rteSetup?.tinymceOptions?.external_plugins,
+    acecode: '/studio/static-assets/js/tinymce-plugins/ace/plugin.min.js',
+    editform: '/studio/static-assets/js/tinymce-plugins/editform/plugin.js'
+  };
+
   window.tinymce.init({
     mode: 'none',
     target: record.element,
     // For some reason this is not working.
     // body_class: 'craftercms-rich-text-editor',
-    plugins,
+    plugins: plugins + ' editform', // edit form will always be loaded
     paste_as_text: true,
     paste_data_images: type === 'html',
     toolbar: type === 'html',
@@ -50,6 +83,7 @@ export function initTinyMCE(
     inline: true,
     base_url: '/studio/static-assets/modules/editors/tinymce/v5/tinymce',
     suffix: '.min',
+    external_plugins: external,
     setup(editor: Editor) {
       editor.on('init', function() {
         let changed = false;
@@ -145,14 +179,41 @@ export function initTinyMCE(
         }
       });
       editor.on('keydown', (e) => {
-        if ((type === 'text' || type === 'textarea') && (e.key === 'Enter' || (e.shiftKey && e.key === 'Enter'))) {
-          e.preventDefault();
-        }
         if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
           e.preventDefault();
         }
       });
-    }
+      editor.on('DblClick', function(e) {
+        if (e.target.nodeName === 'IMG') {
+          window.tinymce.activeEditor.execCommand('mceImage');
+        }
+      });
+    },
+    ...(rteSetup?.tinymceOptions
+      ? {
+          ...reversePluckProps(
+            rteSetup.tinymceOptions,
+            'target', // Target can't be changed
+            'inline', // Not using inline view doesn't behave well on pageBuilder, this setting shouldn't be changed.
+            'setup',
+            'base_url',
+            'encoding',
+            'autosave_ask_before_unload', // Autosave options are removed since it is not supported in control.
+            'autosave_interval',
+            'autosave_prefix',
+            'autosave_restore_when_empty',
+            'autosave_retention',
+            'file_picker_callback', // No file picker is set by default, and functions are not supported in config file.
+            'height', // Height is set to the size of content
+            'file_picker_callback', // Files/images handlers currently not supported
+            'paste_postprocess',
+            'images_upload_handler'
+          )
+        }
+      : {}),
+    ...controlProps,
+    openEditForm
   });
+
   return dispatch$.pipe(startWith({ type: 'edit_component_inline' }));
 }

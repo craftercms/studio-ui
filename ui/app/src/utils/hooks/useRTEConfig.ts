@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -14,8 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './PreviewBrowseComponentsPanel';
+import GlobalState from '../../models/GlobalState';
+import { useSelection } from './useSelection';
 
-export * from './PreviewBrowseComponentsPanel';
-
-export * from './PreviewBrowseComponentsPanelUI';
+export function useRTEConfig(): GlobalState['preview']['richTextEditor'] {
+  const config = useSelection((state) => state.preview.richTextEditor);
+  return config;
+}

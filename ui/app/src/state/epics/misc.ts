@@ -16,7 +16,7 @@
 
 import { ofType } from 'redux-observable';
 import { catchError, filter, map, switchMap, withLatestFrom } from 'rxjs/operators';
-import { NEVER, Observable, of } from 'rxjs';
+import { merge, NEVER, Observable, of } from 'rxjs';
 import GlobalState from '../../models/GlobalState';
 import {
   batchActions,
@@ -30,6 +30,10 @@ import { showCodeEditorDialog, showEditDialog, showWorkflowCancellationDialog } 
 import { reloadDetailedItem } from '../actions/content';
 import { showEditItemSuccessNotification } from '../actions/system';
 import { CrafterCMSEpic } from '../store';
+import { nanoid as uuid } from 'nanoid';
+import { popDialog, pushDialog } from '../reducers/dialogs/minimizedDialogs';
+import { translations } from '../../components/ItemActionsMenu/translations';
+import { showErrorDialog } from '../reducers/dialogs/error';
 
 const epics = [
   (action$, state$: Observable<GlobalState>) =>
@@ -55,70 +59,73 @@ const epics = [
         return NEVER;
       })
     ),
-  (action$, state$: Observable<GlobalState>) =>
+  (action$, state$, { getIntl }) =>
     action$.pipe(
-      ofType(editContentTypeTemplate.type),
-      withLatestFrom(state$),
-      switchMap(([{ payload }, state]) => {
-        const path = state.contentTypes.byId[payload.contentTypeId].displayTemplate;
-        return fetchWorkflowAffectedItems(state.sites.active, path).pipe(
-          map((items) => {
-            if (items?.length > 0) {
-              return showWorkflowCancellationDialog({
-                onContinue: showCodeEditorDialog({
-                  path,
-                  mode: 'ftl',
-                  contentType: payload.contentTypeId
-                })
-              });
-            } else {
-              return showCodeEditorDialog({
-                path,
-                mode: 'ftl',
-                contentType: payload.contentTypeId
-              });
-            }
-          })
-        );
-      })
-    ),
-  (action$, state$) =>
-    action$.pipe(
-      ofType(editTemplate.type, editController.type),
+      ofType(editTemplate.type, editController.type, editContentTypeTemplate.type),
       filter(({ payload }) => payload.openOnSuccess || payload.openOnSuccess === void 0),
       withLatestFrom(state$),
       switchMap(([action, state]) => {
         const { payload, type } = action;
-        const path = `${payload.path}/${payload.fileName}`.replace(/\/{2,}/g, '/');
-        return fetchWorkflowAffectedItems(state.sites.active, path).pipe(
-          map((items) =>
-            items?.length > 0
-              ? showWorkflowCancellationDialog({
-                  onContinue: showCodeEditorDialog({
-                    path,
-                    mode: payload.mode,
-                    contentType: payload.contentType
-                  })
-                })
-              : showCodeEditorDialog({
-                  authoringBase: state.env.authoringBase,
-                  site: state.sites.active,
-                  path,
-                  mode: payload.mode,
-                  contentType: payload.contentType
-                })
+        const id = uuid();
+        let path;
+        let mode;
+        let contentType;
+        if (editContentTypeTemplate.type === type) {
+          path = state.contentTypes.byId[payload.contentTypeId].displayTemplate;
+          mode = 'ftl';
+          contentType = payload.contentTypeId;
+        } else {
+          path = `${payload.path}/${payload.fileName}`.replace(/\/{2,}/g, '/');
+          mode = payload.mode;
+          contentType = payload.contentType;
+        }
+        return merge(
+          of(
+            pushDialog({
+              minimized: true,
+              id,
+              status: 'indeterminate',
+              title: getIntl().formatMessage(translations.verifyingAffectedWorkflows),
+              onMaximized: null
+            })
           ),
-          catchError(() => {
-            return of(
-              showCodeEditorDialog({
-                authoringBase: state.env.authoringBase,
-                site: state.sites.active,
-                path,
-                type: editTemplate.type === type ? 'template' : 'controller',
-                contentType: payload.contentType
-              })
-            );
-          })
+          fetchWorkflowAffectedItems(state.sites.active, path).pipe(
+            map((items) =>
+              items?.length > 0
+                ? batchActions([
+                    showWorkflowCancellationDialog({
+                      onContinue: showCodeEditorDialog({
+                        path,
+                        mode,
+                        contentType
+                      })
+                    }),
+                    popDialog({ id })
+                  ])
+                : batchActions([
+                    showCodeEditorDialog({
+                      authoringBase: state.env.authoringBase,
+                      site: state.sites.active,
+                      path,
+                      mode,
+                      contentType
+                    }),
+                    popDialog({ id })
+                  ])
+            ),
+            catchError(() => {
+              return of(
+                batchActions([
+                  showErrorDialog({
+                    error: {
+                      message: getIntl().formatMessage(translations.unableToVerifyWorkflows)
+                    }
+                  }),
+                  popDialog({ id })
+                ])
+              );
+            })
+          )
         );
       })
     )

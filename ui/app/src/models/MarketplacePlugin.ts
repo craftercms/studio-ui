@@ -53,6 +53,7 @@ export interface MarketplacePlugin {
   tags?: string[];
   version?: MarketplacePluginVersion;
   description: string;
+  documentation: string;
   website?: {
     name: string;
     url: string;

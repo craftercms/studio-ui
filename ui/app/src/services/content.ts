@@ -461,13 +461,14 @@ export function fetchItemsByContentType(
   if (typeof contentTypes === 'string') {
     contentTypes = [contentTypes];
   }
+
   return postJSON(`/studio/api/2/search/search.json?siteId=${site}`, {
-    ...reversePluckProps(options, 'type'),
+    ...options,
     filters: { 'content-type': contentTypes }
   }).pipe(
     map<AjaxResponse, { count: number; paths: string[] }>(({ response }) => ({
       count: response.result.total,
-      paths: response.result.items.filter((item) => item.type === options.type).map((item) => item.path)
+      paths: response.result.items.map((item) => item.path)
     })),
     switchMap(({ paths, count }) =>
       zip(
@@ -475,17 +476,22 @@ export function fetchItemsByContentType(
         paths.length
           ? forkJoin(
               paths.reduce((array, path) => {
-                array.push(fetchContentInstanceLookup(site, path, contentTypesLookup));
+                array.push(fetchContentInstance(site, path, contentTypesLookup));
                 return array;
-              }, []) as Array<Observable<LookupTable<ContentInstance>>>
+              }, []) as Array<Observable<ContentInstance>>
             )
           : of([])
       )
     ),
-    map(([count, array]) => ({
-      count,
-      lookup: array.reduce((hash, lookupTable) => Object.assign(hash, lookupTable), {})
-    }))
+    map(([count, array]) => {
+      return {
+        count,
+        lookup: array.reduce(
+          (hash, contentInstance) => Object.assign(hash, { [contentInstance.craftercms.path]: contentInstance }),
+          {}
+        )
+      };
+    })
   );
 }
 

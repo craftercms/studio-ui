@@ -90,7 +90,6 @@ export interface SearchResult {
 
 export interface ComponentsContentTypeParams extends PaginationOptions {
   keywords?: string;
-  type?: string;
 }
 
 export interface ContentInstancePage {

@@ -33,6 +33,7 @@ import clsx from 'clsx';
 // @ts-ignore
 import { fadeIn } from 'react-animations';
 import PrimaryButton from '../PrimaryButton';
+import PluginDocumentation from '../PluginDocumentation';
 
 const useStyles = makeStyles((theme) => ({
   '@keyframes fadeIn': fadeIn,
@@ -315,8 +316,8 @@ export default function PluginDetailsView(props: PluginDetailsViewProps) {
                 />
               </Alert>
             )}
-
             <Typography variant="body1">{description}</Typography>
+            <PluginDocumentation plugin={plugin} />
           </Grid>
           <Grid item xs={4}>
             <div className={classes.section}>

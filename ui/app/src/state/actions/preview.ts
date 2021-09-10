@@ -70,6 +70,8 @@ export const CONTENT_TREE_FIELD_SELECTED = 'CONTENT_TREE_FIELD_SELECTED';
 export const CLEAR_CONTENT_TREE_FIELD_SELECTED = 'CLEAR_CONTENT_TREE_FIELD_SELECTED';
 export const VALIDATION_MESSAGE = 'VALIDATION_MESSAGE';
 export const EDIT_MODE_TOGGLE_HOTKEY = 'EDIT_MODE_TOGGLE_HOTKEY';
+export const SHOW_EDIT_DIALOG = 'SHOW_EDIT_DIALOG';
+export const UPDATE_RTE_CONFIG = 'UPDATE_RTE_CONFIG';
 // endregion
 
 // region Actions
@@ -90,9 +92,6 @@ export const CHANGE_CURRENT_URL = 'CHANGE_CURRENT_URL';
 export const FETCH_ASSETS_PANEL_ITEMS = 'FETCH_ASSETS_PANEL_ITEMS';
 export const FETCH_ASSETS_PANEL_ITEMS_COMPLETE = 'FETCH_ASSETS_PANEL_ITEMS_COMPLETE';
 export const FETCH_ASSETS_PANEL_ITEMS_FAILED = 'FETCH_ASSETS_PANEL_ITEMS_FAILED';
-export const FETCH_COMPONENTS_BY_CONTENT_TYPE = 'FETCH_COMPONENTS_BY_CONTENT_TYPE';
-export const FETCH_COMPONENTS_BY_CONTENT_TYPE_COMPLETE = 'FETCH_COMPONENTS_BY_CONTENT_TYPE_COMPLETE';
-export const FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED = 'FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED';
 export const UPDATE_AUDIENCES_PANEL_MODEL = 'UPDATE_AUDIENCES_PANEL_MODEL';
 export const SET_ACTIVE_TARGETING_MODEL = 'SET_ACTIVE_TARGETING_MODEL';
 export const SET_ACTIVE_TARGETING_MODEL_COMPLETE = 'SET_ACTIVE_TARGETING_MODEL_COMPLETE';
@@ -247,21 +246,15 @@ export const fetchAssetsPanelItemsComplete = /*#__PURE__*/ createAction<SearchRe
 
 export const fetchAssetsPanelItemsFailed = /*#__PURE__*/ createAction(FETCH_ASSETS_PANEL_ITEMS_FAILED);
 
-export function fetchComponentsByContentType(
-  contentTypeFilter?: string,
-  options?: Partial<ComponentsContentTypeParams>
-): StandardAction {
-  return {
-    type: FETCH_COMPONENTS_BY_CONTENT_TYPE,
-    payload: { contentTypeFilter, options }
-  };
-}
-
-export const fetchComponentsByContentTypeComplete = /*#__PURE__*/ createAction<ContentInstancePage>(
-  FETCH_COMPONENTS_BY_CONTENT_TYPE_COMPLETE
+export const fetchComponentsByContentType = /*#__PURE__*/ createAction<Partial<ComponentsContentTypeParams>>(
+  'FETCH_COMPONENTS_BY_CONTENT_TYPE'
 );
 
-export const fetchComponentsByContentTypeFailed = /*#__PURE__*/ createAction(FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED);
+export const fetchComponentsByContentTypeComplete = /*#__PURE__*/ createAction<ContentInstancePage>(
+  'FETCH_COMPONENTS_BY_CONTENT_TYPE_COMPLETE'
+);
+
+export const fetchComponentsByContentTypeFailed = /*#__PURE__*/ createAction('FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED');
 
 export const clearDropTargets = /*#__PURE__*/ createAction(CLEAR_DROP_TARGETS);
 
@@ -290,6 +283,10 @@ export const initToolbarConfig = /*#__PURE__*/ createAction<{ configXml: string 
 export const initIcePanelConfig = /*#__PURE__*/ createAction<{
   configXml: string;
 }>('INIT_ICE_PANEL_CONFIG');
+
+export const initRichTextEditorConfig = /*#__PURE__*/ createAction<{ configXml: string; siteId: string }>(
+  'INIT_RICH_TEXT_EDITOR_CONFIG'
+);
 
 // endregion
 
