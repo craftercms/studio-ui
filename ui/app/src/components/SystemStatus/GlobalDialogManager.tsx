@@ -40,7 +40,7 @@ const RejectDialog = lazy(() => import('../Dialogs/RejectDialog'));
 const EditSiteDialog = lazy(() => import('../../modules/System/Sites/Edit/EditSiteDialog'));
 const ConfirmDialog = lazy(() => import('../Dialogs/ConfirmDialog'));
 const ErrorDialog = lazy(() => import('./ErrorDialog'));
-const NewContentDialog = lazy(() => import('../../modules/Content/Authoring/NewContentDialog'));
+const NewContentDialog = lazy(() => import('../NewContentDialog'));
 const ChangeContentTypeDialog = lazy(() => import('../../modules/Content/Authoring/ChangeContentTypeDialog'));
 const HistoryDialog = lazy(() => import('../../modules/Content/History/HistoryDialog'));
 const PublishDialog = lazy(() => import('../PublishDialog/PublishDialog'));
@@ -218,7 +218,6 @@ function GlobalDialogManager() {
         onContentTypeSelected={createCallback(state.newContent.onContentTypeSelected, dispatch)}
         onClose={createCallback(state.newContent.onClose, dispatch)}
         onClosed={createCallback(state.newContent.onClosed, dispatch)}
-        onDismiss={createCallback(state.newContent.onDismiss, dispatch)}
       />
       {/* endregion */}
 

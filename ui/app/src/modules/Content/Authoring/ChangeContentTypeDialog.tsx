@@ -32,7 +32,7 @@ import { showErrorDialog } from '../../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import { debounceTime } from 'rxjs/operators';
-import { ContentTypesGrid, ContentTypesLoader } from './NewContentDialog';
+import { ContentTypesGrid, ContentTypesLoader } from '../../../components/NewContentDialog';
 import { useActiveSiteId } from '../../../utils/hooks/useActiveSiteId';
 import { useLogicResource } from '../../../utils/hooks/useLogicResource';
 import { useSubject } from '../../../utils/hooks/useSubject';

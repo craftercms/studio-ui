@@ -25,7 +25,7 @@ import { ContentTypeDropTarget } from './ContentTypeDropTarget';
 import { ConfirmDialogStateProps } from '../components/Dialogs/ConfirmDialog';
 import { ErrorDialogStateProps } from '../components/SystemStatus/ErrorDialog';
 import { MinimizedDialogsStateProps } from './MinimizedDialog';
-import { NewContentDialogStateProps } from '../modules/Content/Authoring/NewContentDialog';
+import { NewContentDialogStateProps } from '../components/NewContentDialog/utils';
 import { HistoryDialogStateProps } from '../modules/Content/History/HistoryDialog';
 import { DependenciesDialogStateProps } from '../modules/Content/Dependencies/DependenciesDialog';
 import { EntityState } from './EntityState';

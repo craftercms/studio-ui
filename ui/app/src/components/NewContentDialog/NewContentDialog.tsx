@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -14,134 +14,49 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
-import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { LegacyContentType, LegacyFormConfig } from '../../../models/ContentType';
-import { Resource } from '../../../models/Resource';
-import StandardAction from '../../../models/StandardAction';
-import { DetailedItem } from '../../../models/Item';
-import DialogHeader from '../../../components/Dialogs/DialogHeader';
+import React, { useEffect, useMemo, useState } from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { LegacyContentType, LegacyFormConfig } from '../../models/ContentType';
+import DialogHeader from '../Dialogs/DialogHeader';
 import NewContentCard, { ContentSkeletonCard } from './NewContentCard';
-import SearchBar from '../../../components/Controls/SearchBar';
-import ContentTypesFilter from './ContentTypesFilter';
-import DialogFooter from '../../../components/Dialogs/DialogFooter';
+import SearchBar from '../Controls/SearchBar';
+import ContentTypesFilter from '../../modules/Content/Authoring/ContentTypesFilter';
+import DialogFooter from '../Dialogs/DialogFooter';
 import { Box, Checkbox, FormControlLabel, Grid } from '@material-ui/core';
-import DialogBody from '../../../components/Dialogs/DialogBody';
-import SingleItemSelector from './SingleItemSelector';
-import { fetchLegacyContentTypes } from '../../../services/contentTypes';
-import { showErrorDialog } from '../../../state/reducers/dialogs/error';
+import DialogBody from '../Dialogs/DialogBody';
+import SingleItemSelector from '../../modules/Content/Authoring/SingleItemSelector';
+import { fetchLegacyContentTypes } from '../../services/contentTypes';
+import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';
-import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
+import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import { debounceTime } from 'rxjs/operators';
-import { closeNewContentDialog, newContentCreationComplete } from '../../../state/actions/dialogs';
-import { batchActions } from '../../../state/actions/misc';
-import { useSelection } from '../../../utils/hooks/useSelection';
-import { useActiveSiteId } from '../../../utils/hooks/useActiveSiteId';
-import { useLogicResource } from '../../../utils/hooks/useLogicResource';
-import { useSubject } from '../../../utils/hooks/useSubject';
-import { withoutIndex } from '../../../utils/path';
-import Dialog from '../../../components/Dialog';
-
-const translations = defineMessages({
-  title: {
-    id: 'newContentDialog.title',
-    defaultMessage: 'Create Content'
-  },
-  subtitle: {
-    id: 'newContentDialog.subtitle',
-    defaultMessage: 'Choose a content type template for your new content item.'
-  },
-  compactInput: {
-    id: 'words.compact',
-    defaultMessage: 'Compact'
-  },
-  contentTypeAllLabel: {
-    id: 'newContentDialog.contentTypeAllLabel',
-    defaultMessage: 'Show all types'
-  },
-  contentTypePageLabel: {
-    id: 'newContentDialog.contentTypePageLabel',
-    defaultMessage: 'Pages only'
-  },
-  contentTypeComponentLabel: {
-    id: 'newContentDialog.contentTypeComponentLabel',
-    defaultMessage: 'Components only'
-  }
-});
-
-const useStyles = makeStyles(() =>
-  createStyles({
-    compact: {
-      marginRight: 'auto'
-    },
-    dialogContent: {
-      minHeight: 455
-    },
-    cardsContainer: {
-      marginTop: 14
-    },
-    searchBox: {
-      minWidth: '33%'
-    },
-    emptyStateImg: {
-      width: 250,
-      marginBottom: 17
-    }
-  })
-);
-
-interface ContentTypesGridProps {
-  resource: Resource<LegacyFormConfig[] | any>;
-  isCompact: boolean;
-  selectedContentType?: string;
-  onTypeOpen(data: LegacyFormConfig): void;
-  getPrevImg(data: LegacyFormConfig): string;
-}
-
-interface NewContentDialogBaseProps {
-  open: boolean;
-  item: DetailedItem;
-  rootPath: string;
-  compact: boolean;
-}
-
-export type NewContentDialogProps = PropsWithChildren<
-  NewContentDialogBaseProps & {
-    onContentTypeSelected?(response: {
-      authoringBase: string;
-      path: string;
-      isNewContent: boolean;
-      contentTypeId: string;
-      onSaveSuccess: StandardAction;
-    }): void;
-    onClose?(): void;
-    onClosed?(): void;
-    onDismiss?(): void;
-  }
->;
-
-export interface NewContentDialogStateProps extends NewContentDialogBaseProps {
-  onContentTypeSelected?: StandardAction;
-  onClose?: StandardAction;
-  onClosed?: StandardAction;
-  onDismiss?: StandardAction;
-}
+import { closeNewContentDialog, newContentCreationComplete } from '../../state/actions/dialogs';
+import { batchActions } from '../../state/actions/misc';
+import { useSelection } from '../../utils/hooks/useSelection';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { useLogicResource } from '../../utils/hooks/useLogicResource';
+import { useSubject } from '../../utils/hooks/useSubject';
+import { withoutIndex } from '../../utils/path';
+import Dialog from '../Dialog';
+import useStyles from './styles';
+import translations from './translations';
+import { ContentTypesGridProps, NewContentDialogContainerProps, NewContentDialogProps } from './utils';
 
 export default function NewContentDialog(props: NewContentDialogProps) {
+  const { open, onClose, ...rest } = props;
   return (
-    <Dialog open={props.open} onClose={props.onClose}>
-      <NewContentDialogBody {...props} />
+    <Dialog open={open} onClose={onClose}>
+      <NewContentDialogContainer {...rest} />
     </Dialog>
   );
 }
 
-function NewContentDialogBody(props: NewContentDialogProps) {
+function NewContentDialogContainer(props: NewContentDialogContainerProps) {
   const { onClose, item, onContentTypeSelected, compact = false, rootPath } = props;
   const site = useActiveSiteId();
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
-  const classes = useStyles({});
+  const classes = useStyles();
   const authoringBase = useSelection<string>((state) => state.env.authoringBase);
 
   const [isCompact, setIsCompact] = useState(compact);
@@ -233,12 +148,14 @@ function NewContentDialogBody(props: NewContentDialogProps) {
     setKeyword(keyword);
   };
 
+  const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
+
   return (
     <>
       <DialogHeader
         title={formatMessage(translations.title)}
         subtitle={formatMessage(translations.subtitle)}
-        onCloseButtonClick={onClose}
+        onCloseButtonClick={onCloseButtonClick}
       />
       <DialogBody classes={{ root: classes.dialogContent }}>
         <Box display="flex" justifyContent="space-between" alignItems="center">

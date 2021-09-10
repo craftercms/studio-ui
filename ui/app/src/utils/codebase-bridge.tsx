@@ -20,8 +20,8 @@ import ReactDOM from 'react-dom';
 import CrafterCMSNextBridge from '../components/CrafterCMSNextBridge';
 import * as string from './string';
 import * as object from './object';
-import * as system from './system';
 import { nou } from './object';
+import * as system from './system';
 import * as ajax from './ajax';
 import * as path from './path';
 import * as auth from './auth';
@@ -173,7 +173,7 @@ export function createCodebaseBridge() {
       GlobalDialogManager: lazy(() => import('../components/SystemStatus/GlobalDialogManager')),
       PagesWidget: lazy(() => import('../components/PathNavigator/PathNavigator')),
       QuickCreateMenu: lazy(() => import('../pages/QuickCreateMenu')),
-      NewContentDialog: lazy(() => import('../modules/Content/Authoring/NewContentDialog')),
+      NewContentDialog: lazy(() => import('../components/NewContentDialog/NewContentDialog')),
       PreviewCompatDialog: lazy(() => import('../components/Dialogs/PreviewCompatibilityDialog')),
       PathSelectionDialog: lazy(() => import('../components/Dialogs/PathSelectionDialog')),
       SplitButton: lazy(() => import('../components/Controls/SplitButton')),

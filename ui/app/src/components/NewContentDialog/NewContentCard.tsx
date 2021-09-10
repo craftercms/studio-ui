@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -15,35 +15,14 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardMedia from '@material-ui/core/CardMedia';
 import Divider from '@material-ui/core/Divider';
-import palette from '../../../styles/palette';
 import clsx from 'clsx';
 import Skeleton from '@material-ui/lab/Skeleton';
-import { getBinary } from '../../../utils/ajax';
-
-const useStyles = makeStyles(() => ({
-  defaultCard: {
-    maxWidth: 345,
-    cursor: 'pointer'
-  },
-  compactCard: {
-    display: 'flex',
-    cursor: 'pointer'
-  },
-  media: {
-    paddingTop: '75%'
-  },
-  compactMedia: {
-    width: 151
-  },
-  selected: {
-    border: `1px solid ${palette.blue.tint}`
-  }
-}));
+import { getBinary } from '../../utils/ajax';
+import { useContentCardStyles } from './styles';
 
 interface NewContentCardProps {
   headerTitle: string;
@@ -94,7 +73,7 @@ const CompactCardContent = (props) => {
 
 export default function NewContentCard(props: NewContentCardProps) {
   const { onClick, isCompact, isSelected } = props;
-  const classes = useStyles();
+  const classes = useContentCardStyles();
   const rootClass = !isCompact ? classes.defaultCard : classes.compactCard;
   const [hover, setHover] = useState(false);
 
@@ -116,7 +95,7 @@ export default function NewContentCard(props: NewContentCardProps) {
 }
 
 export function ContentSkeletonCard(props: { isCompact: boolean }) {
-  const classes = useStyles();
+  const classes = useContentCardStyles();
   const rootClass = !props.isCompact ? classes.defaultCard : classes.compactCard;
   return (
     <Card className={rootClass}>
