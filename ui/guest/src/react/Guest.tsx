@@ -57,7 +57,8 @@ import {
   NAVIGATION_REQUEST,
   RELOAD_REQUEST,
   SCROLL_TO_DROP_TARGET,
-  TRASHED
+  TRASHED,
+  UPDATE_RTE_CONFIG
 } from '../constants';
 import { createGuestStore } from '../store/store';
 import { Provider } from 'react-redux';
@@ -284,6 +285,9 @@ function Guest(props: GuestProps) {
         case DESKTOP_ASSET_UPLOAD_COMPLETE:
           dispatch(action);
           break;
+        case UPDATE_RTE_CONFIG:
+          dispatch(action);
+          break;
       }
     });
     return () => {
@@ -317,6 +321,16 @@ function Guest(props: GuestProps) {
       script.src = '/studio/static-assets/modules/editors/tinymce/v5/tinymce/tinymce.min.js';
       // script.onload = () => ...;
       document.head.appendChild(script);
+    }
+    if (hasHost && !window.ace) {
+      const script = document.createElement('script');
+      script.src = '/studio/static-assets/libs/ace/ace.js';
+      document.head.appendChild(script);
+
+      const styleSheet = document.createElement('link');
+      styleSheet.rel = 'stylesheet';
+      styleSheet.href = '/studio/static-assets/styles/tinymce-ace.css';
+      document.head.appendChild(styleSheet);
     }
   }, [hasHost]);
 
