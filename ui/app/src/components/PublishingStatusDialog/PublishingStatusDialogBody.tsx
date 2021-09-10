@@ -27,7 +27,10 @@ import PublishingStatusDisplay from '../PublishingStatusDisplay';
 import PauseCircleOutlineOutlinedIcon from '@material-ui/icons/PauseCircleOutlineOutlined';
 import PlayCircleOutlineOutlinedIcon from '@material-ui/icons/PlayCircleOutlineOutlined';
 
-export type PublishingStatusDialogBodyProps = PublishingStatus & {
+export type PublishingStatusDialogBodyProps = Pick<
+  PublishingStatus,
+  'enabled' | 'status' | 'message' | 'lockOwner' | 'lockTTL'
+> & {
   isFetching: boolean;
   onClose(): void;
   onRefresh?(): void;
@@ -45,22 +48,7 @@ const useStyles = makeStyles(() =>
 );
 
 function PublishingStatusDialogBody(props: PublishingStatusDialogBodyProps) {
-  const {
-    status,
-    message,
-    enabled,
-    lockOwner,
-    lockTTL,
-    onClose,
-    onRefresh,
-    onUnlock,
-    onStartStop,
-    isFetching,
-    numberOfItems,
-    totalItems,
-    environment,
-    submissionId
-  } = props;
+  const { status, message, enabled, lockOwner, lockTTL, onClose, onRefresh, onUnlock, onStartStop, isFetching } = props;
   const classes = useStyles();
   const { formatMessage } = useIntl();
   return (
@@ -96,10 +84,6 @@ function PublishingStatusDialogBody(props: PublishingStatusDialogBodyProps) {
           message={message}
           lockOwner={lockOwner}
           lockTTL={lockTTL}
-          numberOfItems={numberOfItems}
-          totalItems={totalItems}
-          environment={environment}
-          submissionId={submissionId}
         />
       </DialogBody>
     </>

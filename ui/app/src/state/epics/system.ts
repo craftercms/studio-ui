@@ -343,6 +343,16 @@ const systemEpics: CrafterCMSEpic[] = [
       ignoreElements()
     ),
   // endregion
+  // region messageSharedWorker
+  (action$, state$, { worker }) =>
+    action$.pipe(
+      ofType(messageSharedWorker.type),
+      tap((action) => {
+        worker.port.postMessage(action.payload);
+      }),
+      ignoreElements()
+    ),
+  // endregion
   // region fetchPublishingStatus
   (action$, state$) =>
     action$.pipe(
@@ -361,16 +371,6 @@ const systemEpics: CrafterCMSEpic[] = [
           catchAjaxError(fetchPublishingStatusFailed)
         )
       )
-    ),
-  // endregion
-  // region messageSharedWorker
-  (action$, state$, { worker }) =>
-    action$.pipe(
-      ofType(messageSharedWorker.type),
-      tap((action) => {
-        worker.port.postMessage(action.payload);
-      }),
-      ignoreElements()
     ),
   // endregion
   // region startPublishingStatusFetcher

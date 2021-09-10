@@ -31,7 +31,9 @@ export interface PublishingStatusButtonUIProps extends IconButtonProps {
   variant?: PublishingStatusAvatarProps['variant'];
 }
 
-const inProgressPublishingStatus = ['publishing', 'processing'];
+const isInProgressPublishingStatus = (status: PublishingStatus['status']) => {
+  return ['publishing', 'processing'].includes(status);
+};
 
 export const PublishingStatusButtonUI = forwardRef<HTMLButtonElement, PublishingStatusButtonUIProps>(
   ({ enabled, numberOfItems, totalItems, status, isFetching, style, onClick, variant, ...rest }, ref) => (
@@ -73,7 +75,7 @@ export const PublishingStatusButtonUI = forwardRef<HTMLButtonElement, Publishing
         {/* TODO:
             The spinner might be better suited to be on the PublishingStatusAvatar component
             so when we have progress, it is show everywhere the publishing avatar shows up. */}
-        {(isFetching || inProgressPublishingStatus.includes(status)) && (
+        {(isFetching || isInProgressPublishingStatus(status)) && (
           <CircularProgress
             size={
               // Default progress size matches small button, but the medium
@@ -81,7 +83,7 @@ export const PublishingStatusButtonUI = forwardRef<HTMLButtonElement, Publishing
               ['medium', void 0].includes(rest.size) ? 48 : void 0
             }
             value={Math.round((numberOfItems / totalItems) * 100)}
-            variant={inProgressPublishingStatus.includes(status) ? 'determinate' : 'indeterminate'}
+            variant={isInProgressPublishingStatus(status) ? 'determinate' : 'indeterminate'}
             style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none' }}
           />
         )}

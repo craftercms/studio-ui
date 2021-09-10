@@ -49,7 +49,7 @@ export interface PublishingStatus {
   lockOwner: string;
   lockTTL: string;
   submissionId: string;
-  environment: string;
+  publishingTarget: string;
   numberOfItems: number;
   totalItems: number;
 }

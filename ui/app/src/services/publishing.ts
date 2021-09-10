@@ -106,6 +106,7 @@ export function fetchStatus(siteId: string): Observable<PublishingStatus> {
       ...status,
       // Address backend sending status as null.
       status: status.status ?? '',
+      publishingTarget: status.environment,
       // Parse and express the formatted date if present.
       message:
         status.message?.replace(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z/, (match) =>

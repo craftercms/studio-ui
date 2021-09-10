@@ -42,7 +42,7 @@ const initialState: PublishingStatusDialogStateProps = {
   onUnlock: null,
   numberOfItems: null,
   totalItems: null,
-  environment: null,
+  publishingTarget: null,
   submissionId: null
 };
 

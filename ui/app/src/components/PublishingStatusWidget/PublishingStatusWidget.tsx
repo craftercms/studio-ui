@@ -29,7 +29,7 @@ type PublishingStatusWidgetProps = {
 export default function PublishingStatusWidget(props: PublishingStatusWidgetProps) {
   const { siteId } = props;
   const state = useSelection((state) => state.dialogs.publishingStatus);
-  const { enabled, status, message, lockOwner, lockTTL, numberOfItems, environment, submissionId, totalItems } = state;
+  const { enabled, status, message, lockOwner, lockTTL } = state;
   const dispatch = useDispatch();
 
   const onStartStop = () => {
@@ -63,10 +63,6 @@ export default function PublishingStatusWidget(props: PublishingStatusWidgetProp
         onRefresh={onRefresh}
         onStartStop={onStartStop}
         onUnlock={lockOwner ? onUnlock : null}
-        numberOfItems={numberOfItems}
-        totalItems={totalItems}
-        environment={environment}
-        submissionId={submissionId}
       />
     </Paper>
   );
