@@ -57,17 +57,9 @@ export const translations = defineMessages({
     id: 'siteConfigurationManagement.confTabTargetsConfDesc',
     defaultMessage: 'Defines a list of targets used for form datasource'
   },
-  confTabRTEConf: { id: 'siteConfigurationManagement.confTabRTEConf', defaultMessage: 'RTE (TinyMCE 2) Configuration' },
-  confTabRTEConfDesc: {
-    id: 'siteConfigurationManagement.confTabRTEConfDesc',
-    defaultMessage: 'Defines Rich Text Editors configurations in form'
-  },
-  confTabRTEtMCE5Conf: {
-    id: 'siteConfigurationManagement.confTabRTEtMCE5Conf',
-    defaultMessage: 'RTE (TinyMCE 5) Configuration'
-  },
-  confTabRTEtMCE5ConfDesc: {
-    id: 'siteConfigurationManagement.confTabRTEtMCE5ConfDesc',
+  rteConfigTitle: { id: 'siteConfigurationManagement.rteConfigTitle', defaultMessage: 'RTE Configuration' },
+  rteConfigDescription: {
+    id: 'siteConfigurationManagement.rteConfigDescription',
     defaultMessage: 'Defines Rich Text Editors configurations in form'
   },
   confTabCodeEditorConf: {
