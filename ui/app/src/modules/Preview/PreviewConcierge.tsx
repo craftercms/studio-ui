@@ -285,7 +285,7 @@ export function PreviewConcierge(props: any) {
 
   // region Update rte config
   useEffect(() => {
-    getHostToGuestBus().next({ type: UPDATE_RTE_CONFIG, payload: { rteConfig } });
+    if (rteConfig) getHostToGuestBus().next({ type: UPDATE_RTE_CONFIG, payload: { rteConfig } });
   }, [rteConfig]);
   // endregion
 
