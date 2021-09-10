@@ -16,7 +16,6 @@
 
 import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import Dialog from '@material-ui/core/Dialog';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { LegacyContentType, LegacyFormConfig } from '../../../models/ContentType';
 import { Resource } from '../../../models/Resource';
@@ -42,6 +41,7 @@ import { useActiveSiteId } from '../../../utils/hooks/useActiveSiteId';
 import { useLogicResource } from '../../../utils/hooks/useLogicResource';
 import { useSubject } from '../../../utils/hooks/useSubject';
 import { withoutIndex } from '../../../utils/path';
+import Dialog from '../../../components/Dialog';
 
 const translations = defineMessages({
   title: {
@@ -130,14 +130,14 @@ export interface NewContentDialogStateProps extends NewContentDialogBaseProps {
 
 export default function NewContentDialog(props: NewContentDialogProps) {
   return (
-    <Dialog open={props.open} onClose={props.onClose} fullWidth maxWidth="md">
+    <Dialog open={props.open} onClose={props.onClose}>
       <NewContentDialogBody {...props} />
     </Dialog>
   );
 }
 
 function NewContentDialogBody(props: NewContentDialogProps) {
-  const { onDismiss, item, onContentTypeSelected, compact = false, rootPath } = props;
+  const { onClose, item, onContentTypeSelected, compact = false, rootPath } = props;
   const site = useActiveSiteId();
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
@@ -238,7 +238,7 @@ function NewContentDialogBody(props: NewContentDialogProps) {
       <DialogHeader
         title={formatMessage(translations.title)}
         subtitle={formatMessage(translations.subtitle)}
-        onDismiss={onDismiss}
+        onCloseButtonClick={onClose}
       />
       <DialogBody classes={{ root: classes.dialogContent }}>
         <Box display="flex" justifyContent="space-between" alignItems="center">

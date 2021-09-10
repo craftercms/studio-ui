@@ -188,7 +188,7 @@ function InstallPluginDialogUI(props: InstallPluginDialogProps) {
             <FormattedMessage id="words.search" defaultMessage="Search" />
           )
         }
-        onDismiss={props.onClose}
+        onCloseButtonClick={props.onClose}
         rightActions={[
           {
             icon: SearchIcon,

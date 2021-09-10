@@ -174,7 +174,7 @@ function ChangeContentTypeDialogBody(props: ChangeContentTypeDialogProps) {
       <DialogHeader
         title={formatMessage(translations.title)}
         subtitle={formatMessage(translations.subtitle)}
-        onDismiss={onDismiss}
+        onCloseButtonClick={onDismiss}
       />
       <DialogBody classes={{ root: classes.dialogContent }}>
         <Box display="flex" justifyContent="space-between" alignItems="center">

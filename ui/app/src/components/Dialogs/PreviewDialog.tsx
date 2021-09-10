@@ -118,7 +118,7 @@ function PreviewDialogUI(props: PreviewDialogProps) {
   };
   return (
     <>
-      <DialogHeader title={props.title} subtitle={props.subtitle} onDismiss={props.onClose} />
+      <DialogHeader title={props.title} subtitle={props.subtitle} onCloseButtonClick={props.onClose} />
       <section className={classes.container}>{renderPreview()}</section>
     </>
   );

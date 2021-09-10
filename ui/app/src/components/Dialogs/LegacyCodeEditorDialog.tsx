@@ -255,7 +255,7 @@ export default function LegacyCodeEditorDialog(props: LegacyCodeEditorDialogProp
     >
       <DialogHeader
         title={title}
-        onDismiss={onClose}
+        onCloseButtonClick={onClose}
         rightActions={[
           {
             icon: 'MinimizeIcon',

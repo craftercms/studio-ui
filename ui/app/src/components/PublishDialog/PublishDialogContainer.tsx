@@ -19,10 +19,9 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { PublishingTarget } from '../../models/Publishing';
 import LookupTable from '../../models/LookupTable';
 import {
-  ExtendedGoLiveResponse,
   InternalDialogState,
   paths,
-  PublishDialogBaseProps,
+  PublishDialogContainerProps,
   PublishDialogResourceBody,
   PublishDialogResourceInput
 } from './utils';
@@ -51,14 +50,8 @@ import moment from 'moment-timezone';
 import { updatePublishDialog } from '../../state/actions/dialogs';
 import { batchActions } from '../../state/actions/misc';
 
-export interface PublishDialogContainerProps extends PublishDialogBaseProps {
-  onClosed?(response?: any): any;
-  onDismiss?(response?: any): any;
-  onSuccess?(response?: ExtendedGoLiveResponse): any;
-}
-
 export function PublishDialogContainer(props: PublishDialogContainerProps) {
-  const { items, scheduling = 'now', onDismiss, onSuccess } = props;
+  const { items, scheduling = 'now', onSuccess, onClose, onClosed, isSubmitting } = props;
   const {
     dateTimeFormatOptions: { timeZone = getUserTimeZone() }
   } = useLocale();
@@ -77,7 +70,6 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
     publishingChannel: null,
     scheduledTimeZone: timeZone,
     error: null,
-    submitting: false,
     fetchingDependencies: false
   });
   const [publishingTargets, setPublishingTargets] = useState<PublishingTarget[]>(null);
@@ -93,7 +85,7 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
   const dispatch = useDispatch();
   const submissionCommentRequired = useSelection((state) => state.uiConfig.publishing.publishCommentRequired);
 
-  useUnmount(props.onClosed);
+  useUnmount(onClosed);
 
   const user = useActiveUser();
   const submit = !hasPublishPermission || state.requestApproval ? submitToGoLive : goLive;
@@ -193,11 +185,11 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
     () => ({
       items,
       error: state.error,
-      submitting: state.submitting,
+      submitting: isSubmitting,
       publishingTargets,
       myPermissions
     }),
-    [items, state.error, state.submitting, publishingTargets, myPermissions]
+    [items, state.error, isSubmitting, publishingTargets, myPermissions]
   );
 
   const resource = useLogicResource<PublishDialogResourceBody, PublishDialogResourceInput>(publishSource, {
@@ -239,7 +231,7 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
     // Submit button should be disabled:
     setSubmitDisabled(
       // While submitting
-      state.submitting ||
+      isSubmitting ||
         // When no items are selected
         !Object.values(selectedItems).filter(Boolean).length ||
         // When there are no available/loaded publishing targets
@@ -250,7 +242,7 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
         (submissionCommentRequired && isBlank(state.submissionComment))
     );
   }, [
-    state.submitting,
+    isSubmitting,
     selectedItems,
     publishingTargets,
     state.publishingTarget,
@@ -282,15 +274,13 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
       ...(schedule === 'custom' ? { scheduledDate } : {})
     };
 
-    dispatch(updatePublishDialog({ disableQuickDismiss: true }));
-    setState({ submitting: true });
+    dispatch(updatePublishDialog({ isSubmitting: true }));
 
     submit(siteId, user.username, data).subscribe(
       (response) => {
-        setState({ submitting: false });
         dispatch(
           batchActions([
-            updatePublishDialog({ disableQuickDismiss: false }),
+            updatePublishDialog({ isSubmitting: false }),
             emitSystemEvent(propagateAction({ targets: items }))
           ])
         );
@@ -305,8 +295,7 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
         });
       },
       (error) => {
-        dispatch(updatePublishDialog({ disableQuickDismiss: false }));
-        setState({ submitting: false, error });
+        dispatch(updatePublishDialog({ isSubmitting: false }));
       }
     );
   };
@@ -386,14 +375,17 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
     setState({ [e.target.name]: value });
   };
 
+  const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
+
   return (
     <PublishDialogUI
       resource={resource}
       publishingTargetsStatus={publishingTargetsStatus}
       onPublishingChannelsFailRetry={getPublishingChannels}
-      onDismiss={onDismiss}
+      onCloseButtonClick={onCloseButtonClick}
       handleSubmit={handleSubmit}
       state={state}
+      isSubmitting={isSubmitting}
       title={formatMessage(translations.title)}
       subtitle={
         !hasPublishPermission || state.requestApproval

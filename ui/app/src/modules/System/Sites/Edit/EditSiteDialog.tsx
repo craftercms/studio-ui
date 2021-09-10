@@ -231,7 +231,7 @@ function EditSiteDialogUI(props: EditSiteDialogUIProps) {
       <DialogHeader
         id="editSiteDialogTitle"
         title={<FormattedMessage id="editSiteDialog.title" defaultMessage="Edit Site" />}
-        onDismiss={onDismiss}
+        onCloseButtonClick={onDismiss}
       />
       <DialogBody>
         <Grid container spacing={1} component="form">

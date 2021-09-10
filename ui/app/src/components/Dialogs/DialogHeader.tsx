@@ -111,7 +111,7 @@ export type DialogTitleProps<
   };
   className?: string;
   disableDismiss?: boolean;
-  onDismiss?(): void;
+  onCloseButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
   onBack?(): void;
 }>;
 
@@ -121,7 +121,7 @@ export default function DialogHeader(props: DialogTitleProps) {
   const { formatMessage } = useIntl();
   const {
     id,
-    onDismiss,
+    onCloseButtonClick,
     disableDismiss = false,
     onBack,
     title,
@@ -167,14 +167,14 @@ export default function DialogHeader(props: DialogTitleProps) {
         <Typography className={classes.title} {...titleTypographyProps}>
           {title}
         </Typography>
-        {(rightActions || onDismiss) && (
+        {(rightActions || onCloseButtonClick) && (
           <div className={classes.rightActions}>
             {rightActions?.map(({ icon, 'aria-label': tooltip, ...rest }: DialogHeaderAction, i: number) => (
               <Action key={i} icon={icon} tooltip={tooltip} {...rest} />
             ))}
-            {onDismiss && (
+            {onCloseButtonClick && (
               <Tooltip title={formatMessage(translations.dismiss)}>
-                <IconButton aria-label="close" onClick={onDismiss} disabled={disableDismiss}>
+                <IconButton aria-label="close" onClick={onCloseButtonClick} disabled={disableDismiss}>
                   <CloseIcon />
                 </IconButton>
               </Tooltip>

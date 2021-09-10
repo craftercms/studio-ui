@@ -354,7 +354,7 @@ export default function LegacyFormDialog(props: LegacyFormDialogProps) {
     >
       <DialogHeader
         title={title}
-        onDismiss={onClose}
+        onCloseButtonClick={onClose}
         rightActions={[
           {
             icon: 'MinimizeIcon',

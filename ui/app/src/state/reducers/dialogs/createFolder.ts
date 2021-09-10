@@ -16,12 +16,19 @@
 
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
-import { closeCreateFolderDialog, createFolderDialogClosed, showCreateFolderDialog } from '../../actions/dialogs';
+import {
+  closeCreateFolderDialog,
+  createFolderDialogClosed,
+  showCreateFolderDialog,
+  updateCreateFolderDialog
+} from '../../actions/dialogs';
 
 import { CreateFolderStateProps } from '../../../components/Dialogs/CreateFolderDialog';
 
 const initialState: CreateFolderStateProps = {
-  open: false
+  open: false,
+  isSubmitting: null,
+  hasPendingChanges: null
 };
 
 export default createReducer<GlobalState['dialogs']['createFolder']>(initialState, {
@@ -33,6 +40,10 @@ export default createReducer<GlobalState['dialogs']['createFolder']>(initialStat
     onRenamed: closeCreateFolderDialog(),
     ...payload,
     open: true
+  }),
+  [updateCreateFolderDialog.type]: (state, { payload }) => ({
+    ...state,
+    ...payload
   }),
   [closeCreateFolderDialog.type]: (state) => ({
     ...state,

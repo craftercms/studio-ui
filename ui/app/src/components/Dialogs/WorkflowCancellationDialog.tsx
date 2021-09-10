@@ -101,7 +101,7 @@ function WorkflowCancellationDialogUI(props: WorkflowCancellationDialogUIProps) 
             defaultMessage="Edit will cancel all items that are in the scheduled deployment batch. Please review the list of files below and chose “Continue” to cancel workflow and edit or “Cancel” to remain in your dashboard."
           />
         }
-        onDismiss={onDismiss}
+        onCloseButtonClick={onDismiss}
       />
       <DialogBody>
         <Grid container spacing={3}>

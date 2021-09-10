@@ -18,6 +18,7 @@ import { DetailedItem } from '../../models/Item';
 import { ApiResponse } from '../../models/ApiResponse';
 import StandardAction from '../../models/StandardAction';
 import { GoLiveResponse } from '../../services/publishing';
+import { DialogProps } from '../Dialog';
 
 export interface PublishDialogResourceInput {
   items: DetailedItem[];
@@ -39,17 +40,23 @@ export interface PublishDialogBaseProps {
   items?: DetailedItem[];
   // if null it means the dialog should determinate which one to use
   scheduling?: 'now' | 'custom';
-  // Disable dismissing through either backdrop click and escape key down
-  disableQuickDismiss: boolean;
 }
 
-export interface PublishDialogStateProps extends PublishDialogBaseProps {
-  open: boolean;
+export interface PublishDialogProps extends PublishDialogBaseProps, DialogProps {
+  onSuccess?(response?: ExtendedGoLiveResponse): any;
+}
+
+export interface PublishDialogStateProps
+  extends PublishDialogBaseProps,
+    Pick<PublishDialogProps, 'open' | 'isSubmitting' | 'hasPendingChanges' | 'minimized'> {
   onClose?: StandardAction;
   onClosed?: StandardAction;
-  onDismiss?: StandardAction;
   onSuccess?: StandardAction;
 }
+
+export interface PublishDialogContainerProps
+  extends PublishDialogBaseProps,
+    Pick<PublishDialogProps, 'isSubmitting' | 'onClose' | 'onSuccess' | 'onClosed'> {}
 
 export interface InternalDialogState {
   emailOnApprove: boolean;
@@ -61,7 +68,6 @@ export interface InternalDialogState {
   publishingChannel: string;
   scheduledTimeZone: string;
   error: ApiResponse;
-  submitting: boolean;
   fetchingDependencies: boolean;
 }
 

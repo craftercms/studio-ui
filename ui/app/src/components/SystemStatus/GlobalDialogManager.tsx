@@ -201,10 +201,10 @@ function GlobalDialogManager() {
         open={state.publish.open}
         items={state.publish.items}
         scheduling={state.publish.scheduling}
-        disableQuickDismiss={state.publish.disableQuickDismiss}
+        isSubmitting={state.publish.isSubmitting}
+        hasPendingChanges={state.publish.hasPendingChanges}
         onClose={createCallback(state.publish.onClose, dispatch)}
         onClosed={createCallback(state.publish.onClosed, dispatch)}
-        onDismiss={createCallback(state.publish.onDismiss, dispatch)}
         onSuccess={createCallback(state.publish.onSuccess, dispatch)}
       />
       {/* endregion */}
@@ -346,6 +346,8 @@ function GlobalDialogManager() {
         rename={state.createFolder.rename}
         value={state.createFolder.value}
         allowBraces={state.createFolder.allowBraces}
+        isSubmitting={state.createFolder.isSubmitting}
+        hasPendingChanges={state.createFolder.hasPendingChanges}
         onClose={createCallback(state.createFolder.onClose, dispatch)}
         onClosed={createCallback(state.createFolder.onClosed, dispatch)}
         onCreated={createCallback(state.createFolder.onCreated, dispatch)}

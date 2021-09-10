@@ -52,7 +52,7 @@ function PublishingStatusDialogBody(props: PublishingStatusDialogBodyProps) {
     <>
       <DialogHeader
         title={formatMessage(publishingStatusTileMessages.publishingStatus)}
-        onDismiss={onClose}
+        onCloseButtonClick={onClose}
         rightActions={[
           onUnlock && {
             icon: LockOpenRoundedIcon,

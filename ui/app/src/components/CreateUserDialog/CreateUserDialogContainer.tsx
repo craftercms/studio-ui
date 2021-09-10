@@ -213,7 +213,7 @@ export function CreateUserDialogContainer(props: CreateUserDialogUIProps) {
     <form className={classes.form}>
       <DialogHeader
         title={<FormattedMessage id="CreateUserDialog.title" defaultMessage="Create User" />}
-        onDismiss={onClose}
+        onCloseButtonClick={onClose}
       />
       <DialogBody className={classes.dialogBody}>
         <Grid container spacing={2}>

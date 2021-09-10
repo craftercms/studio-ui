@@ -15,7 +15,6 @@
  */
 
 import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
-import Dialog from '@material-ui/core/Dialog';
 import DialogHeader from './DialogHeader';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import DialogBody from './DialogBody';
@@ -36,6 +35,9 @@ import { useUnmount } from '../../utils/hooks/useUnmount';
 import { useDetailedItem } from '../../utils/hooks/useDetailedItem';
 import SingleItemSelector from '../../modules/Content/Authoring/SingleItemSelector';
 import { DetailedItem, SandboxItem } from '../../models/Item';
+import Dialog from '../Dialog';
+import { updateCreateFolderDialog } from '../../state/actions/dialogs';
+import { batchActions } from '../../state/actions/misc';
 
 export const translations = defineMessages({
   placeholder: {
@@ -59,6 +61,8 @@ interface CreateFolderBaseProps {
   rename?: boolean;
   value?: string;
   allowBraces?: boolean;
+  isSubmitting: boolean;
+  hasPendingChanges: boolean;
 }
 
 export type CreateFolderProps = PropsWithChildren<
@@ -78,40 +82,32 @@ export interface CreateFolderStateProps extends CreateFolderBaseProps {
 }
 
 export default function CreateFolderDialog(props: CreateFolderProps) {
-  const { open, onClose } = props;
-  const [state, setState] = useState({
-    submitted: null,
-    inProgress: null
-  });
+  const { open, onClose, isSubmitting, hasPendingChanges, ...rest } = props;
 
   return (
     <Dialog
       open={open}
-      fullWidth
       maxWidth={'xs'}
       onClose={onClose}
-      TransitionProps={{
-        onExited: () => setState({ inProgress: null, submitted: null })
-      }}
+      isSubmitting={isSubmitting}
+      hasPendingChanges={hasPendingChanges}
     >
-      <CreateFolderUI {...props} submitted={state.submitted} inProgress={state.inProgress} setState={setState} />
+      <CreateFolderContainer {...rest} onClose={onClose} isSubmitting={isSubmitting} />
     </Dialog>
   );
 }
 
-interface CreateFolderUIProps extends CreateFolderProps {
-  submitted: boolean;
-  inProgress: boolean;
-  setState(values: object): void;
-}
+interface CreateFolderContainerProps
+  extends Pick<
+    CreateFolderProps,
+    'path' | 'allowBraces' | 'value' | 'rename' | 'isSubmitting' | 'onRenamed' | 'onCreated' | 'onClose' | 'onClosed'
+  > {}
 
-function CreateFolderUI(props: CreateFolderUIProps) {
+function CreateFolderContainer(props: CreateFolderContainerProps) {
   const {
     onClosed,
     onClose,
-    submitted,
-    inProgress,
-    setState,
+    isSubmitting,
     onCreated,
     onRenamed,
     rename = false,
@@ -142,10 +138,17 @@ function CreateFolderUI(props: CreateFolderUIProps) {
     renameFolder(site, path, name).subscribe(
       (response) => {
         onRenamed?.({ path, name, rename });
-        dispatch(emitSystemEvent(folderRenamed({ target: path, oldName: value, newName: name })));
+        dispatch(
+          batchActions([
+            updateCreateFolderDialog({
+              isSubmitting: true,
+              hasPendingChanges: false
+            }),
+            emitSystemEvent(folderRenamed({ target: path, oldName: value, newName: name }))
+          ])
+        );
       },
       (response) => {
-        setState({ inProgress: false, submitted: true });
         dispatch(showErrorDialog({ error: response }));
       }
     );
@@ -155,18 +158,28 @@ function CreateFolderUI(props: CreateFolderUIProps) {
     createFolder(site, path, name).subscribe(
       (response) => {
         onCreated?.({ path, name, rename });
-        dispatch(emitSystemEvent(folderCreated({ target: path, name: name })));
+        dispatch(
+          batchActions([
+            updateCreateFolderDialog({
+              isSubmitting: true,
+              hasPendingChanges: false
+            }),
+            emitSystemEvent(folderCreated({ target: path, name: name }))
+          ])
+        );
       },
       (response) => {
-        setState({ inProgress: false, submitted: true });
         dispatch(showErrorDialog({ error: response }));
       }
     );
   };
 
   const onCreate = () => {
-    setState({ inProgress: true, submitted: true });
-
+    dispatch(
+      updateCreateFolderDialog({
+        isSubmitting: true
+      })
+    );
     if (name) {
       const parentPath = rename ? getParentPath(path) : path;
       validateActionPolicy(site, {
@@ -188,6 +201,11 @@ function CreateFolderUI(props: CreateFolderUIProps) {
             error: true,
             body: formatMessage(translations.policyError)
           });
+          dispatch(
+            updateCreateFolderDialog({
+              isSubmitting: false
+            })
+          );
         }
       });
     }
@@ -203,7 +221,20 @@ function CreateFolderUI(props: CreateFolderUIProps) {
 
   const onConfirmCancel = () => {
     setConfirm(null);
-    setState({ inProgress: false, submitted: true });
+    dispatch(
+      updateCreateFolderDialog({
+        isSubmitting: false
+      })
+    );
+  };
+
+  const onInputChanges = (value: string) => {
+    setName(value);
+    dispatch(
+      updateCreateFolderDialog({
+        hasPendingChanges: true
+      })
+    );
   };
 
   const itemSelectorFilterChildren = useMemo(() => (item: SandboxItem) => item.availableActionsMap.createFolder, []);
@@ -218,7 +249,7 @@ function CreateFolderUI(props: CreateFolderUIProps) {
             <FormattedMessage id="newFolder.title" defaultMessage="Create a New Folder" />
           )
         }
-        onDismiss={inProgress === null ? onClose : null}
+        onCloseButtonClick={onClose}
       />
       <DialogBody>
         {selectedItem && (
@@ -255,10 +286,10 @@ function CreateFolderUI(props: CreateFolderUIProps) {
             value={name}
             autoFocus
             required
-            error={!name && submitted}
+            error={!name && isSubmitting !== null}
             placeholder={formatMessage(translations.placeholder)}
             helperText={
-              !name && submitted ? (
+              !name && isSubmitting !== null ? (
                 <FormattedMessage id="newFolder.required" defaultMessage="Folder name is required." />
               ) : (
                 <FormattedMessage
@@ -267,22 +298,22 @@ function CreateFolderUI(props: CreateFolderUIProps) {
                 />
               )
             }
-            disabled={inProgress}
+            disabled={isSubmitting}
             margin="normal"
             InputLabelProps={{
               shrink: true
             }}
             onChange={(event) =>
-              setName(event.target.value.replace(allowBraces ? /[^a-zA-Z0-9-_{}]/g : /[^a-zA-Z0-9-_]/g, ''))
+              onInputChanges(event.target.value.replace(allowBraces ? /[^a-zA-Z0-9-_{}]/g : /[^a-zA-Z0-9-_]/g, ''))
             }
           />
         </form>
       </DialogBody>
       <DialogFooter>
-        <SecondaryButton onClick={onClose} disabled={inProgress}>
+        <SecondaryButton onClick={onClose} disabled={isSubmitting}>
           <FormattedMessage id="words.close" defaultMessage="Close" />
         </SecondaryButton>
-        <PrimaryButton onClick={onCreate} disabled={inProgress || name === ''} loading={inProgress}>
+        <PrimaryButton onClick={onCreate} disabled={isSubmitting || name === ''} loading={isSubmitting}>
           {rename ? (
             <FormattedMessage id="words.rename" defaultMessage="Rename" />
           ) : (

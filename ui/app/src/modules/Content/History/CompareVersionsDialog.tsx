@@ -206,7 +206,7 @@ function CompareVersionsDialog(props: CompareVersionsDialogProps) {
             : null
         }
         rightActions={rightActions}
-        onDismiss={onDismiss}
+        onCloseButtonClick={onDismiss}
       />
       <DialogBody className={clsx(classes.dialogBody, compareMode && classes.noPadding)}>
         {!compareMode && (

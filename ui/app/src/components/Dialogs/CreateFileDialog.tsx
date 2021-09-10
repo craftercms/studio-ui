@@ -182,7 +182,7 @@ function CreateFileDialogUI(props: CreateFileUIProps) {
             <FormattedMessage id="createFileDialog.template" defaultMessage="New Template" />
           )
         }
-        onDismiss={inProgress === null ? onClose : null}
+        onCloseButtonClick={inProgress === null ? onClose : null}
       />
       <DialogBody>
         <form

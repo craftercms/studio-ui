@@ -15,29 +15,15 @@
  */
 
 import React from 'react';
-import Dialog, { DialogProps } from '@material-ui/core/Dialog';
-import { PublishDialogContainer, PublishDialogContainerProps } from './PublishDialogContainer';
-import { useOnClose } from '../../utils/hooks/useOnClose';
-
-export type PublishDialogProps = DialogProps & PublishDialogContainerProps;
+import Dialog from '../Dialog';
+import { PublishDialogContainer } from './PublishDialogContainer';
+import { PublishDialogProps } from './utils';
 
 export function PublishDialog(props: PublishDialogProps) {
-  const { items, scheduling, onClosed, onDismiss, onSuccess, onClose, disableQuickDismiss, ...dialogProps } = props;
-  const onCloseInternal = useOnClose({
-    onClose,
-    disableBackdropClick: disableQuickDismiss,
-    disableEscapeKeyDown: disableQuickDismiss
-  });
+  const { open, onClose, hasPendingChanges, isSubmitting, ...rest } = props;
   return (
-    <Dialog fullWidth maxWidth="md" {...dialogProps} onClose={onCloseInternal}>
-      <PublishDialogContainer
-        items={items}
-        scheduling={scheduling}
-        onClosed={onClosed}
-        onDismiss={onDismiss}
-        onSuccess={onSuccess}
-        disableQuickDismiss={disableQuickDismiss}
-      />
+    <Dialog open={open} onClose={onClose} hasPendingChanges={hasPendingChanges} isSubmitting={isSubmitting}>
+      <PublishDialogContainer {...rest} isSubmitting={isSubmitting} />
     </Dialog>
   );
 }

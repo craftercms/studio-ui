@@ -175,7 +175,7 @@ function ViewVersionDialogBody(props: ViewVersionDialogProps) {
       <DialogHeader
         title={<FormattedMessage id="viewVersionDialog.headerTitle" defaultMessage="Viewing item version" />}
         rightActions={rightActions}
-        onDismiss={onDismiss}
+        onCloseButtonClick={onDismiss}
       />
       <DialogBody>
         <SuspenseWithEmptyState resource={resource}>

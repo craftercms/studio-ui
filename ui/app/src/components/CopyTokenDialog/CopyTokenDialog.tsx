@@ -98,7 +98,7 @@ function CopyTokenUI(props: CopyTokenProps) {
     <>
       <DialogHeader
         title={<FormattedMessage id="copyTokenDialog.title" defaultMessage="Access Token Created" />}
-        onDismiss={onClose}
+        onCloseButtonClick={onClose}
       />
       <DialogBody>
         <FormHelperText>

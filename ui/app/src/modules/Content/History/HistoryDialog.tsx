@@ -48,7 +48,6 @@ import {
   showViewVersionDialog
 } from '../../../state/actions/dialogs';
 import SingleItemSelector from '../Authoring/SingleItemSelector';
-import Dialog from '@material-ui/core/Dialog';
 import { batchActions } from '../../../state/actions/misc';
 import { asDayMonthDateTime } from '../../../utils/datetime';
 import { hasRevertAction } from '../../../utils/content';
@@ -58,6 +57,7 @@ import { useSpreadState } from '../../../utils/hooks/useSpreadState';
 import { getEditorMode, isImage } from '../../../components/PathNavigator/utils';
 import { fetchContentByCommitId } from '../../../services/content';
 import { useActiveSiteId } from '../../../utils/hooks/useActiveSiteId';
+import { Dialog } from '../../../components/Dialog';
 
 const translations = defineMessages({
   previousPage: {
@@ -214,14 +214,14 @@ export interface HistoryDialogStateProps extends HistoryDialogBaseProps {
 
 export default function HistoryDialog(props: HistoryDialogProps) {
   return (
-    <Dialog open={props.open} onClose={props.onClose} fullWidth maxWidth="md">
+    <Dialog open={props.open} onClose={props.onClose}>
       <HistoryDialogBody {...props} />
     </Dialog>
   );
 }
 
 function HistoryDialogBody(props: HistoryDialogProps) {
-  const { onDismiss, versionsBranch } = props;
+  const { onClose, versionsBranch } = props;
   const { count, page, limit, current, item, rootPath, isConfig } = versionsBranch;
   const path = item ? item.path : '';
   const [openSelector, setOpenSelector] = useState(false);
@@ -435,7 +435,7 @@ function HistoryDialogBody(props: HistoryDialogProps) {
     <>
       <DialogHeader
         title={<FormattedMessage id="historyDialog.headerTitle" defaultMessage="Item History" />}
-        onDismiss={onDismiss}
+        onCloseButtonClick={onClose}
       />
       <DialogBody className={classes.dialogBody}>
         <SingleItemSelector

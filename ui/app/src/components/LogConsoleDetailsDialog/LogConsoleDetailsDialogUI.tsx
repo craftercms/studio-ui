@@ -36,7 +36,7 @@ export default function LogConsoleDetailsDialogUI(props: LogConsoleDetailsDialog
     <>
       <DialogHeader
         title={<FormattedMessage id="logConsoleDetailsDialog.title" defaultMessage="Log Details" />}
-        onDismiss={onClose}
+        onCloseButtonClick={onClose}
       />
       <DialogBody>
         <Box display="flex" p="10px 0" alignItems="center">

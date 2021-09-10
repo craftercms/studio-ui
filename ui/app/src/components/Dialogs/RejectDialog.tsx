@@ -215,7 +215,7 @@ function RejectDialogUI(props: RejectDialogUIProps) {
             defaultMessage="The following checked item(s) will be rejected."
           />
         }
-        onDismiss={onDismiss}
+        onCloseButtonClick={onDismiss}
       />
       <DialogBody id="confirmDialogBody">
         <Grid container spacing={3} className={classes.contentRoot}>

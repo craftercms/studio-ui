@@ -279,7 +279,7 @@ function ContentLocalizationDialogUI(props: ContentLocalizationDialogProps) {
     <>
       <DialogHeader
         title={<FormattedMessage id="contentLocalization.title" defaultMessage="Content Localization" />}
-        onDismiss={onClose}
+        onCloseButtonClick={onClose}
       />
       <DialogBody>
         <SingleItemSelector

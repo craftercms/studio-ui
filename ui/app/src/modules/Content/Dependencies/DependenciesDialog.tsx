@@ -44,7 +44,6 @@ import Radio from '@material-ui/core/Radio';
 import { useDispatch } from 'react-redux';
 import { ApiResponse } from '../../../models/ApiResponse';
 import SingleItemSelector from '../Authoring/SingleItemSelector';
-import Dialog from '@material-ui/core/Dialog';
 import { showCodeEditorDialog, showEditDialog, showHistoryDialog } from '../../../state/actions/dialogs';
 import { batchActions } from '../../../state/actions/misc';
 import { fetchItemVersions } from '../../../state/reducers/versions';
@@ -54,6 +53,7 @@ import { useActiveSiteId } from '../../../utils/hooks/useActiveSiteId';
 import { useLogicResource } from '../../../utils/hooks/useLogicResource';
 import { useUnmount } from '../../../utils/hooks/useUnmount';
 import { useSpreadState } from '../../../utils/hooks/useSpreadState';
+import Dialog from '../../../components/Dialog';
 
 const assetsTypes = {
   'all-deps': {
@@ -258,7 +258,7 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
 
   return (
     <>
-      <DialogHeader title={formatMessage(translations.headerTitle)} onDismiss={onDismiss} />
+      <DialogHeader title={formatMessage(translations.headerTitle)} onCloseButtonClick={onDismiss} />
       <DialogBody className={classes.dialogBody}>
         <div className={classes.selectionContent}>
           <SingleItemSelector
@@ -444,14 +444,14 @@ const dialogInitialState = {
 
 export default function DependenciesDialog(props: DependenciesDialogProps) {
   return (
-    <Dialog open={props.open} onClose={props.onClose} fullWidth maxWidth="md">
+    <Dialog open={props.open} onClose={props.onClose}>
       <DependenciesDialogBody {...props} />
     </Dialog>
   );
 }
 
 function DependenciesDialogBody(props: DependenciesDialogProps) {
-  const { item, dependenciesShown = 'depends-on', onDismiss, rootPath } = props;
+  const { item, dependenciesShown = 'depends-on', onClose, rootPath } = props;
   const [dialog, setDialog] = useSpreadState({
     ...dialogInitialState,
     item,
@@ -610,7 +610,7 @@ function DependenciesDialogBody(props: DependenciesDialogProps) {
       setShowTypes={setShowTypes}
       dependenciesShown={dialog.dependenciesShown}
       setDependenciesShown={setDependenciesShow}
-      onDismiss={onDismiss}
+      onDismiss={onClose}
       isEditableItem={isEditableAsset}
       handleEditorDisplay={handleEditorDisplay}
       handleHistoryDisplay={handleHistoryDisplay}

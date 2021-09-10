@@ -19,7 +19,7 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogHeader from '../Dialogs/DialogHeader';
 import DialogBody from '../Dialogs/DialogBody';
 import DialogFooter from '../Dialogs/DialogFooter';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { diffConflictedFile as diffConflictedFileService } from '../../services/repositories';
 import ApiResponse from '../../models/ApiResponse';
 import { FileDiff } from '../../models/Repository';
@@ -27,7 +27,6 @@ import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import RemoteRepositoriesDiffDialogUI from './RemoteRepositoriesDiffDialogUI';
 import SecondaryButton from '../SecondaryButton';
 import ConfirmDropdown from '../Controls/ConfirmDropdown';
-import { useIntl } from 'react-intl';
 import { messages } from '../RemoteRepositoriesStatus';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Tab from '@material-ui/core/Tab';
@@ -122,7 +121,7 @@ export default function RemoteRepositoriesDiffDialog(props: RemoteRepositoriesDi
             <FormattedMessage id="words.diff" defaultMessage="Diff" />: {path}
           </>
         }
-        onDismiss={onClose}
+        onCloseButtonClick={onClose}
         classes={{
           root: classes.dialogHeader,
           subtitleWrapper: classes.dialogHeaderChildren

@@ -87,13 +87,13 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
   const onSubmit = () => {
     const paths = createCheckedList(selectedItems);
     setApiState({ submitting: true });
-    dispatch(updateDeleteDialog({ disableQuickDismiss: true }));
+    dispatch(updateDeleteDialog({ isSubmitting: true }));
     deleteItems(site, paths, comment).subscribe(
       (response) => {
         setApiState({ submitting: false });
         dispatch(
           batchActions([
-            updateDeleteDialog({ disableQuickDismiss: false }),
+            updateDeleteDialog({ isSubmitting: false }),
             emitSystemEvent(itemsDeleted({ targets: paths.concat(childItems ?? []) }))
           ])
         );

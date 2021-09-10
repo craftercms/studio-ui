@@ -58,7 +58,7 @@ export function DeleteDialogUI(props: DeleteDialogUIProps) {
       <DialogHeader
         title={formatMessage(translations.headerTitle)}
         subtitle={formatMessage(translations.headerSubTitle)}
-        onDismiss={onDismiss}
+        onCloseButtonClick={onDismiss}
         disableDismiss={isDisabled}
       />
       <DialogBody minHeight>

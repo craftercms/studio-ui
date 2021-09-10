@@ -87,7 +87,7 @@ export function CreateTokenDialogUI(props: CreateTokenUIProps) {
     <form onSubmit={onSubmit}>
       <DialogHeader
         title={<FormattedMessage id="createTokenDialog.title" defaultMessage="Create Access Token" />}
-        onDismiss={onDismiss}
+        onCloseButtonClick={onDismiss}
       />
       <DialogBody>
         <Typography variant="body2">

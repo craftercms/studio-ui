@@ -300,7 +300,7 @@ export function PathSelectionDialogBodyUI(props: PathSelectionDialogBodyUIProps)
     <>
       <DialogHeader
         title={title ?? <FormattedMessage id="pathSelectionDialog.title" defaultMessage="Select Path" />}
-        onDismiss={onClose}
+        onCloseButtonClick={onClose}
       />
       <DialogBody className={classes.dialogBody}>
         <Suspencified>
@@ -344,6 +344,8 @@ export function PathSelectionDialogBodyUI(props: PathSelectionDialogBodyUIProps)
       </DialogFooter>
       <CreateFolderDialog
         path={currentPath}
+        isSubmitting={null}
+        hasPendingChanges={null}
         open={createFolderDialogOpen}
         onClose={onCloseCreateFolder}
         onCreated={onFolderCreated}

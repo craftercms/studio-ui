@@ -20,43 +20,52 @@ import { useOnClose } from '../../utils/hooks/useOnClose';
 import { useDispatch } from 'react-redux';
 import { maximizeDialog, minimizeDialog, popDialog, pushDialog } from '../../state/reducers/dialogs/minimizedDialogs';
 import MuiDialog, { DialogProps as MuiDialogProps } from '@material-ui/core/Dialog';
-import { showConfirmDialog } from '../../state/actions/dialogs';
+import { closeConfirmDialog, showConfirmDialog } from '../../state/actions/dialogs';
 import translations from '../CodeEditorDialog/translations';
 import { useIntl } from 'react-intl';
+import TranslationOrText from '../../models/TranslationOrText';
+import { getPossibleTranslation } from '../../utils/i18n';
+import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
+import { createCustomDocumentEventListener } from '../../utils/dom';
 
-interface DialogProps<P = {}> extends PropsWithChildren<MuiDialogProps> {
-  ChildProps: P;
-  title: string;
-  readonly: boolean;
-  minimized: boolean;
-  hasPendingChanges: boolean;
-  isSubmitting: boolean;
-  onClose?(): void;
+export interface DialogProps extends PropsWithChildren<Omit<MuiDialogProps, 'title'>> {
+  title?: TranslationOrText;
+  minimized?: boolean;
+  hasPendingChanges?: boolean;
+  isSubmitting?: boolean;
+  onClosed?(): void;
 }
 
 export function Dialog(props: DialogProps) {
-  const { id, ChildProps, readonly, isSubmitting, hasPendingChanges, minimized, title, ...dialogProps } = props;
+  const { id, open, isSubmitting, hasPendingChanges, minimized, title, ...dialogProps } = props;
   const onMinimize = () => dispatch(minimizeDialog({ id }));
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
+
   const onClose = useOnClose({
     onClose(e, reason) {
-      if (readonly) {
-        dialogProps.onClose();
-      } else if (hasPendingChanges) {
+      if (hasPendingChanges) {
+        let unsubscribe, cancelUnsubscribe;
+        const idSuccess = 'confirmDialogSuccess';
+        const idCancel = 'configDialogCancel';
         dispatch(
           showConfirmDialog({
-            title: formatMessage(translations.pendingChanges)
-            // onOk: batchActions([
-            //   conditionallyUnlockItem({ path: props.path }),
-            //   closeConfirmDialog(),
-            //   closeCodeEditorDialog()
-            // ]),
-            // onCancel: closeConfirmDialog()
+            title: formatMessage(translations.pendingChanges),
+            onOk: batchActions([dispatchDOMEvent({ id: idSuccess }), closeConfirmDialog()]),
+            onCancel: batchActions([dispatchDOMEvent({ id: idCancel }), closeConfirmDialog()])
           })
         );
+
+        unsubscribe = createCustomDocumentEventListener(idSuccess, () => {
+          dialogProps.onClose(e, reason);
+          cancelUnsubscribe();
+        });
+
+        cancelUnsubscribe = createCustomDocumentEventListener(idCancel, () => {
+          unsubscribe();
+        });
       } else {
-        dialogProps.onClose();
+        dialogProps.onClose(e, reason);
       }
     },
     disableBackdropClick: isSubmitting,
@@ -64,16 +73,30 @@ export function Dialog(props: DialogProps) {
   });
   useEffect(() => {
     if (minimized) {
-      dispatch(pushDialog({ id, onMaximized: maximizeDialog({ id }), minimized, title }));
+      dispatch(
+        pushDialog({
+          id,
+          onMaximized: maximizeDialog({ id }),
+          minimized,
+          title: getPossibleTranslation(title, formatMessage)
+        })
+      );
       return () => {
         dispatch(popDialog({ id }));
       };
     }
-  }, [dispatch, id, minimized, title]);
+  }, [dispatch, formatMessage, id, minimized, title]);
   return (
-    <MuiDialog {...dialogProps} onClose={onClose}>
+    <MuiDialog
+      open={open && !minimized}
+      keepMounted={minimized}
+      fullWidth
+      maxWidth="md"
+      {...dialogProps}
+      onClose={onClose}
+    >
       {React.Children.map(props.children, (child) =>
-        React.cloneElement(child as React.ReactElement, { ...ChildProps, onMinimize, onClose })
+        React.cloneElement(child as React.ReactElement, { onMinimize, onClose })
       )}
     </MuiDialog>
   );

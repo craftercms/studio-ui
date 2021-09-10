@@ -194,7 +194,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
     <>
       <DialogHeader
         title={item ? item.label : <Skeleton width="120px" />}
-        onDismiss={onClose}
+        onCloseButtonClick={onClose}
         rightActions={[
           {
             icon: 'MinimizeIcon',

@@ -169,6 +169,9 @@ export const showCreateFolderDialog = /*#__PURE__*/ createAction<Partial<CreateF
 );
 export const closeCreateFolderDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_CREATE_FOLDER_DIALOG');
 export const createFolderDialogClosed = /*#__PURE__*/ createAction('CREATE_FOLDER_DIALOG_CLOSED');
+export const updateCreateFolderDialog = /*#__PURE__*/ createAction<Partial<CreateFolderStateProps>>(
+  'UPDATE_CREATE_FOLDER_DIALOG'
+);
 // endregion
 
 // region Create File Dialog
