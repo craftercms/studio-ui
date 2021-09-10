@@ -70,6 +70,8 @@ export const CONTENT_TREE_FIELD_SELECTED = 'CONTENT_TREE_FIELD_SELECTED';
 export const CLEAR_CONTENT_TREE_FIELD_SELECTED = 'CLEAR_CONTENT_TREE_FIELD_SELECTED';
 export const VALIDATION_MESSAGE = 'VALIDATION_MESSAGE';
 export const EDIT_MODE_TOGGLE_HOTKEY = 'EDIT_MODE_TOGGLE_HOTKEY';
+export const SHOW_EDIT_DIALOG = 'SHOW_EDIT_DIALOG';
+export const UPDATE_RTE_CONFIG = 'UPDATE_RTE_CONFIG';
 // endregion
 
 // region Actions
@@ -281,6 +283,10 @@ export const initToolbarConfig = /*#__PURE__*/ createAction<{ configXml: string 
 export const initIcePanelConfig = /*#__PURE__*/ createAction<{
   configXml: string;
 }>('INIT_ICE_PANEL_CONFIG');
+
+export const initRichTextEditorConfig = /*#__PURE__*/ createAction<{ configXml: string; siteId: string }>(
+  'INIT_RICH_TEXT_EDITOR_CONFIG'
+);
 
 // endregion
 

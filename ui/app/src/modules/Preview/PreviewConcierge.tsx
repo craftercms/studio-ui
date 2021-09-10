@@ -40,6 +40,7 @@ import {
   guestModelUpdated,
   HOST_CHECK_IN,
   ICE_ZONE_SELECTED,
+  initRichTextEditorConfig,
   INSERT_COMPONENT_OPERATION,
   INSERT_INSTANCE_OPERATION,
   INSERT_ITEM_OPERATION,
@@ -52,11 +53,13 @@ import {
   setHighlightMode,
   setItemBeingDragged,
   setPreviewEditMode,
+  SHOW_EDIT_DIALOG,
   SORT_ITEM_OPERATION,
   SORT_ITEM_OPERATION_COMPLETE,
   TRASHED,
   UPDATE_FIELD_VALUE_OPERATION,
-  VALIDATION_MESSAGE
+  VALIDATION_MESSAGE,
+  UPDATE_RTE_CONFIG
 } from '../../state/actions/preview';
 import {
   deleteItem,
@@ -116,6 +119,7 @@ import { showEditDialog } from '../../state/actions/dialogs';
 import { UNDEFINED } from '../../utils/constants';
 import { useCurrentPreviewItem } from '../../utils/hooks/useCurrentPreviewItem';
 import { useSiteUIConfig } from '../../utils/hooks/useSiteUIConfig';
+import { useRTEConfig } from '../../utils/hooks/useRTEConfig';
 import { guestMessages } from '../../assets/guestMessages';
 
 const originalDocDomain = document.domain;
@@ -227,7 +231,9 @@ export function PreviewConcierge(props: any) {
   const guestDetectionTimeoutRef = useRef<number>();
   const [guestDetectionSnackbarOpen, setGuestDetectionSnackbarOpen] = useState(false);
   const currentItemPath = guest?.path;
-  const { cdataEscapedFieldPatterns } = useSiteUIConfig();
+  const uiConfig = useSiteUIConfig();
+  const { cdataEscapedFieldPatterns } = uiConfig;
+  const rteConfig = useRTEConfig();
 
   function clearSelectedZonesHandler() {
     dispatch(clearSelectForEdit());
@@ -275,6 +281,12 @@ export function PreviewConcierge(props: any) {
     }
   }, [item, dispatch, editMode, user.username]);
 
+  // endregion
+
+  // region Update rte config
+  useEffect(() => {
+    if (rteConfig) getHostToGuestBus().next({ type: UPDATE_RTE_CONFIG, payload: { rteConfig } });
+  }, [rteConfig]);
   // endregion
 
   // Guest detection, document domain restoring, editMode/highlightMode preference retrieval, clipboard retrieval
@@ -374,7 +386,7 @@ export function PreviewConcierge(props: any) {
           if (type === GUEST_CHECK_IN) {
             getHostToGuestBus().next({
               type: HOST_CHECK_IN,
-              payload: { editMode: false, highlightMode }
+              payload: { editMode: false, highlightMode, rteConfig: rteConfig ?? {} }
             });
             dispatch(checkInGuest(payload));
 
@@ -743,6 +755,23 @@ export function PreviewConcierge(props: any) {
           conditionallyToggleEditMode();
           break;
         }
+        case SHOW_EDIT_DIALOG: {
+          dispatch(
+            showEditDialog({
+              authoringBase,
+              path: guest.path,
+              selectedFields: payload.selectedFields,
+              site: siteId
+            })
+          );
+          break;
+        }
+        case UPDATE_RTE_CONFIG: {
+          getHostToGuestBus().next({
+            type: UPDATE_RTE_CONFIG,
+            payload: { rteConfig: rteConfig ?? {} }
+          });
+        }
       }
     });
     return () => {
@@ -764,7 +793,9 @@ export function PreviewConcierge(props: any) {
     xsrfArgument,
     highlightMode,
     conditionallyToggleEditMode,
-    cdataEscapedFieldPatterns
+    cdataEscapedFieldPatterns,
+    rteConfig,
+    guest
   ]);
 
   // Guest detection
@@ -780,6 +811,12 @@ export function PreviewConcierge(props: any) {
       }
     }
   }, [siteId, guest, dispatch]);
+
+  useEffect(() => {
+    if (nnou(uiConfig.xml) && !rteConfig) {
+      dispatch(initRichTextEditorConfig({ configXml: uiConfig.xml, siteId }));
+    }
+  }, [uiConfig.xml, siteId, rteConfig, dispatch]);
 
   // Hotkeys
   useHotkeys(

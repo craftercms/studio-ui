@@ -48,7 +48,8 @@ import {
   HIGHLIGHT_MODE_CHANGED,
   HighlightMode,
   HOST_CHECK_IN,
-  TRASHED
+  TRASHED,
+  UPDATE_RTE_CONFIG
 } from '../../constants';
 
 // region mouseover
@@ -680,7 +681,9 @@ const initialState: GuestState = {
   uploading: {},
   models: {},
   contentTypes: {},
-  hostCheckedIn: false
+  hostCheckedIn: false,
+  rteConfig: {},
+  activeSite: ''
 };
 
 const foo = (state) => state;
@@ -736,7 +739,13 @@ const reducerFunctions: {
     ...state,
     hostCheckedIn: true,
     highlightMode: action.payload.highlightMode,
-    editMode: action.payload.editMode
+    editMode: action.payload.editMode,
+    rteConfig: action.payload.rteConfig,
+    activeSite: action.payload.site
+  }),
+  [UPDATE_RTE_CONFIG]: (state, action) => ({
+    ...state,
+    rteConfig: action.payload.rteConfig
   })
 };
 
