@@ -16,7 +16,7 @@
 
 import { createAction } from '@reduxjs/toolkit';
 import StandardAction from '../../models/StandardAction';
-import { OptionsObject } from '@craftercms/notistack';
+import { OptionsObject } from 'notistack';
 import GlobalState, { Clipboard } from '../../models/GlobalState';
 import { ObtainAuthTokenResponse } from '../../services/auth';
 import User from '../../models/User';

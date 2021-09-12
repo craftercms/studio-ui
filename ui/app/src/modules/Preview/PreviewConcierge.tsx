@@ -81,7 +81,7 @@ import { getGuestToHostBus, getHostToGuestBus, getHostToHostBus } from './previe
 import { useDispatch } from 'react-redux';
 import { findParentModelId, nnou, pluckProps } from '../../utils/object';
 import RubbishBin from './Tools/RubbishBin';
-import { useSnackbar } from '@craftercms/notistack';
+import { useSnackbar } from 'notistack';
 import {
   getStoredClipboard,
   getStoredEditModeChoice,

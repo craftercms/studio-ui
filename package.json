@@ -7,8 +7,7 @@
     "ui/scss",
     "ui/monaco",
     "ui/ace",
-    "ui/uppy",
-    "ui/notistack"
+    "ui/uppy"
   ],
   "scripts": {
     "prettier": "node scripts/prettier.js",

@@ -25,7 +25,7 @@ import { MinimizedBar } from './MinimizedBar';
 import GlobalState from '../../models/GlobalState';
 import { isPlainObject } from '../../utils/object';
 import PathSelectionDialog from '../Dialogs/PathSelectionDialog';
-import { useSnackbar } from '@craftercms/notistack';
+import { useSnackbar } from 'notistack';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { filter } from 'rxjs/operators';
 import { showSystemNotification } from '../../state/actions/system';
