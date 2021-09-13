@@ -41,9 +41,7 @@ export function fetchEnvironments(siteId: string) {
   return get(`/studio/api/1/services/api/1/deployment/get-available-publishing-channels.json?site_id=${siteId}`);
 }
 
-export function fetchStatus(
-  siteId: string
-): Observable<{
+export function fetchStatus(siteId: string): Observable<{
   enabled: boolean;
   status: 'ready' | 'publishing' | 'queued' | 'stopped' | 'error';
   message: string;
@@ -56,10 +54,3 @@ export function fetchStatus(
 export function clearLock(siteId: string): Observable<boolean> {
   return postJSON('/studio/api/2/publish/clear_lock', { siteId }).pipe(mapTo(true));
 }
-
-export default {
-  fetchPackages,
-  fetchPackage,
-  cancelPackage,
-  fetchEnvironments
-};
