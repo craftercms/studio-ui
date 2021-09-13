@@ -334,8 +334,7 @@ export function insertComponent(
       label: `New ${contentType.name}`,
       contentTypeId: contentType.id,
       dateCreated: null,
-      dateModified: null,
-      locale: 'en'
+      dateModified: null
     }
   };
 
