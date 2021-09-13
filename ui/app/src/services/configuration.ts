@@ -138,7 +138,6 @@ export function deserializeActiveTargetingModelData<T extends Object>(
       id: '',
       path: null,
       label: null,
-      locale: null,
       dateCreated: null,
       dateModified: null,
       contentTypeId: null
