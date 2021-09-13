@@ -16,10 +16,12 @@
 
 import { ofType } from 'redux-observable';
 import {
+  dissociateTemplateComplete,
+  dissociateTemplateFailed,
   fetchComponentsByContentType,
+  fetchContentTypes,
   fetchComponentsByContentTypeComplete,
   fetchComponentsByContentTypeFailed,
-  fetchContentTypes,
   fetchContentTypesComplete,
   fetchContentTypesFailed
 } from '../actions/preview';
@@ -29,10 +31,13 @@ import { catchAjaxError } from '../../utils/ajax';
 import GlobalState from '../../models/GlobalState';
 import { Observable } from 'rxjs';
 import { fetchContentTypes as fetchContentTypesService } from '../../services/contentTypes';
+import { dissociateTemplate as dissociateTemplateActionCreator } from '../actions/preview';
+import { dissociateTemplate as dissociateTemplateService } from '../../services/contentTypes';
 import { CrafterCMSEpic } from '../store';
 import ContentType from '../../models/ContentType';
 
 export default [
+  // region fetchContentTypes
   (action$, state$) =>
     action$.pipe(
       ofType(fetchContentTypes.type),
@@ -41,6 +46,8 @@ export default [
         fetchContentTypesService(site).pipe(map(fetchContentTypesComplete), catchAjaxError(fetchContentTypesFailed))
       )
     ),
+  // endregion
+  // region fetchComponentsByContentType
   (action$, state$: Observable<GlobalState>) =>
     action$.pipe(
       ofType(fetchComponentsByContentType.type),
@@ -60,5 +67,19 @@ export default [
           state.preview.components.query
         ).pipe(map(fetchComponentsByContentTypeComplete), catchAjaxError(fetchComponentsByContentTypeFailed))
       )
+    ),
+  // endregion
+  // region dissociateTemplate
+  (action$, state$) =>
+    action$.pipe(
+      ofType(dissociateTemplateActionCreator.type),
+      withLatestFrom(state$),
+      switchMap(([{ payload }, { sites: { active } }]) =>
+        dissociateTemplateService(active, payload.contentTypeId).pipe(
+          map(() => dissociateTemplateComplete({ contentTypeId: payload.contentTypeId })),
+          catchAjaxError(dissociateTemplateFailed)
+        )
+      )
     )
+  // endregion
 ] as CrafterCMSEpic[];

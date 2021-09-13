@@ -288,6 +288,14 @@ export const initRichTextEditorConfig = /*#__PURE__*/ createAction<{ configXml: 
   'INIT_RICH_TEXT_EDITOR_CONFIG'
 );
 
+export const dissociateTemplate = /*#__PURE__*/ createAction<{ contentTypeId: string }>('DISSOCIATE_TEMPLATE');
+
+export const dissociateTemplateComplete = /*#__PURE__*/ createAction<{ contentTypeId: string }>(
+  'DISSOCIATE_TEMPLATE_COMPLETE'
+);
+
+export const dissociateTemplateFailed = /*#__PURE__*/ createAction('DISSOCIATE_TEMPLATE_FAILED');
+
 // endregion
 
 // region toolsPanelPageStack

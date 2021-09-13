@@ -66,6 +66,8 @@ import {
   showRejectItemSuccessNotification
 } from '../state/actions/system';
 import {
+  deleteController,
+  deleteTemplate,
   duplicateWithPolicyValidation,
   pasteItem,
   pasteItemWithPolicyValidation,
@@ -833,8 +835,6 @@ export const itemActionDispatcher = ({
   }
   // actions that support multiple items
   switch (option) {
-    case 'deleteTemplate':
-    case 'deleteController':
     case 'delete': {
       let items = asArray(item);
       dispatch(
@@ -847,6 +847,14 @@ export const itemActionDispatcher = ({
           ])
         })
       );
+      break;
+    }
+    case 'deleteController': {
+      dispatch(deleteController({ item: item as DetailedItem, onSuccess: onActionSuccess }));
+      break;
+    }
+    case 'deleteTemplate': {
+      dispatch(deleteTemplate({ item: item as DetailedItem, onSuccess: onActionSuccess }));
       break;
     }
     case 'approvePublish':
