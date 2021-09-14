@@ -18,9 +18,9 @@ import Avatar from '@material-ui/core/Avatar';
 import clsx from 'clsx';
 import CloudUploadOutlined from '@material-ui/icons/CloudUploadOutlined';
 import * as React from 'react';
+import { CSSProperties } from 'react';
 import { PublishingStatus } from '../../models/Publishing';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { CSSProperties } from 'react';
 import { getPublishingStatusCodeColor } from './util';
 
 type PublishingStatusAvatarClassKey = 'root' | 'icon';
@@ -47,6 +47,9 @@ const useStyles = makeStyles((theme) =>
       }),
       '&.ready': {
         [stylingTarget]: getPublishingStatusCodeColor('ready', theme)
+      },
+      '&.processing': {
+        [stylingTarget]: getPublishingStatusCodeColor('processing', theme)
       },
       '&.publishing': {
         [stylingTarget]: getPublishingStatusCodeColor('publishing', theme)
