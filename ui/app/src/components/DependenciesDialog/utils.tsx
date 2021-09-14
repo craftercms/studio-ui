@@ -21,7 +21,6 @@ import React from 'react';
 import { Resource } from '../../models/Resource';
 import StandardAction from '../../models/StandardAction';
 import { DialogProps } from '../Dialog';
-import { PublishDialogProps } from '../PublishDialog/utils';
 
 export interface DependenciesDialogBaseProps {
   item?: DetailedItem;
@@ -31,7 +30,7 @@ export interface DependenciesDialogBaseProps {
 
 export interface DependenciesDialogProps extends DependenciesDialogBaseProps, DialogProps {}
 
-export interface DependenciesDialogStateProps extends DependenciesDialogBaseProps, Pick<PublishDialogProps, 'open'> {
+export interface DependenciesDialogStateProps extends DependenciesDialogBaseProps, Pick<DialogProps, 'open'> {
   onClose?: StandardAction;
   onClosed?: StandardAction;
   onDismiss?: StandardAction;

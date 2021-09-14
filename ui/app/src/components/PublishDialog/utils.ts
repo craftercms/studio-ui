@@ -48,7 +48,7 @@ export interface PublishDialogProps extends PublishDialogBaseProps, DialogProps 
 
 export interface PublishDialogStateProps
   extends PublishDialogBaseProps,
-    Pick<PublishDialogProps, 'open' | 'isSubmitting' | 'hasPendingChanges' | 'minimized'> {
+    Pick<DialogProps, 'open' | 'isSubmitting' | 'hasPendingChanges' | 'minimized'> {
   onClose?: StandardAction;
   onClosed?: StandardAction;
   onSuccess?: StandardAction;

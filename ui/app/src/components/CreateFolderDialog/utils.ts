@@ -16,7 +16,6 @@
 
 import StandardAction from '../../models/StandardAction';
 import { DialogProps } from '../Dialog';
-import { PublishDialogProps } from '../PublishDialog/utils';
 
 export interface CreateFolderBaseProps {
   path?: string;
@@ -32,7 +31,7 @@ export interface CreateFolderProps extends CreateFolderBaseProps, DialogProps {
 
 export interface CreateFolderStateProps
   extends CreateFolderBaseProps,
-    Pick<PublishDialogProps, 'open' | 'isSubmitting' | 'hasPendingChanges' | 'minimized'> {
+    Pick<DialogProps, 'open' | 'isSubmitting' | 'hasPendingChanges' | 'minimized'> {
   onClose?: StandardAction;
   onClosed?: StandardAction;
   onCreated?: StandardAction;
