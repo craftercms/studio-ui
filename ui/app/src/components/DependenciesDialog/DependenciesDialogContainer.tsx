@@ -30,9 +30,9 @@ import { getRootPath } from '../../utils/path';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import { fetchDependant, fetchSimpleDependencies } from '../../services/dependencies';
 import { isEditableAsset, parseLegacyItemToSandBoxItem } from '../../utils/content';
-import { DependenciesDialogUI } from './DependenciesDialogUI';
+import DependenciesDialogUI from './DependenciesDialogUI';
 
-export function DependenciesDialogContainer(props: DependenciesDialogProps) {
+export default function DependenciesDialogContainer(props: DependenciesDialogProps) {
   const { item, dependenciesShown = 'depends-on', onClose, rootPath } = props;
   const [dialog, setDialog] = useSpreadState({
     ...dialogInitialState,

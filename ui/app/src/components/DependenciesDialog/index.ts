@@ -19,3 +19,7 @@ export { default } from './DependenciesDialog';
 export * from './DependenciesDialog';
 
 export * from './DependenciesList';
+
+export * from './DependenciesDialogUI';
+
+export * from './DependenciesDialogContainer';

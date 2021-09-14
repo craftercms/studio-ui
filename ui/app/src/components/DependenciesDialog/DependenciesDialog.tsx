@@ -17,7 +17,7 @@
 import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Dialog from '../Dialog';
-import { DependenciesDialogContainer } from './DependenciesDialogContainer';
+import DependenciesDialogContainer from './DependenciesDialogContainer';
 import { DependenciesDialogProps } from './utils';
 
 export const dependenciesDialogStyles = makeStyles((theme) =>

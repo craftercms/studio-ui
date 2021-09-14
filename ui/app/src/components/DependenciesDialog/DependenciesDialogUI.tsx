@@ -24,7 +24,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
-import { DependenciesList } from './DependenciesList';
+import DependenciesList from './DependenciesList';
 import Menu from '@material-ui/core/Menu';
 import DialogFooter from '../Dialogs/DialogFooter';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -33,7 +33,7 @@ import { assetsTypes, DependenciesDialogUIProps } from './utils';
 import Radio from '@material-ui/core/Radio';
 import { dependenciesDialogStyles } from './DependenciesDialog';
 
-export function DependenciesDialogUI(props: DependenciesDialogUIProps) {
+export default function DependenciesDialogUI(props: DependenciesDialogUIProps) {
   const {
     resource,
     item,

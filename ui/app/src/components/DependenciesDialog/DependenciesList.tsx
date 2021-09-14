@@ -27,7 +27,7 @@ import React from 'react';
 import { dependenciesDialogStyles } from './DependenciesDialog';
 import { assetsTypes, DependenciesListProps } from './utils';
 
-export function DependenciesList(props: DependenciesListProps) {
+export default function DependenciesList(props: DependenciesListProps) {
   const { resource, compactView, showTypes, handleContextMenuClick } = props;
   const classes = dependenciesDialogStyles({});
   const dependencies: DetailedItem[] = resource.read();
