@@ -31,12 +31,11 @@ export interface PublishingStatusButtonUIProps extends IconButtonProps {
   variant?: PublishingStatusAvatarProps['variant'];
 }
 
-const isInProgressPublishingStatus = (status: PublishingStatus['status']) => {
-  return ['publishing', 'processing'].includes(status);
-};
+export const PublishingStatusButtonUI = forwardRef<HTMLButtonElement, PublishingStatusButtonUIProps>((props, ref) => {
+  const isInProgressPublishingStatus = ['publishing', 'processing'].includes(props.status);
+  const { enabled, numberOfItems, totalItems, status, isFetching, style, onClick, variant, ...rest } = props;
 
-export const PublishingStatusButtonUI = forwardRef<HTMLButtonElement, PublishingStatusButtonUIProps>(
-  ({ enabled, numberOfItems, totalItems, status, isFetching, style, onClick, variant, ...rest }, ref) => (
+  return (
     <Tooltip
       title={
         <>
@@ -52,6 +51,7 @@ export const PublishingStatusButtonUI = forwardRef<HTMLButtonElement, Publishing
             ))}
         </>
       }
+      ref={ref}
     >
       <Badge
         badgeContent={status === 'error' || enabled === false ? '!' : null}
@@ -75,7 +75,7 @@ export const PublishingStatusButtonUI = forwardRef<HTMLButtonElement, Publishing
         {/* TODO:
             The spinner might be better suited to be on the PublishingStatusAvatar component
             so when we have progress, it is show everywhere the publishing avatar shows up. */}
-        {(isFetching || isInProgressPublishingStatus(status)) && (
+        {(isFetching || isInProgressPublishingStatus) && (
           <CircularProgress
             size={
               // Default progress size matches small button, but the medium
@@ -83,13 +83,13 @@ export const PublishingStatusButtonUI = forwardRef<HTMLButtonElement, Publishing
               ['medium', void 0].includes(rest.size) ? 48 : void 0
             }
             value={Math.round((numberOfItems / totalItems) * 100)}
-            variant={isInProgressPublishingStatus(status) ? 'determinate' : 'indeterminate'}
+            variant={isInProgressPublishingStatus ? 'determinate' : 'indeterminate'}
             style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none' }}
           />
         )}
       </Badge>
     </Tooltip>
-  )
-);
+  );
+});
 
 export default PublishingStatusButtonUI;
