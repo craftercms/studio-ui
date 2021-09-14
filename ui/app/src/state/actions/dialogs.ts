@@ -22,7 +22,6 @@ import { FetchContentVersion } from '../../models/Version';
 import { CompareVersionsDialogStateProps } from '../../modules/Content/History/CompareVersionsDialog';
 import { ConfirmDialogStateProps } from '../../components/Dialogs/ConfirmDialog';
 import { NewContentDialogStateProps } from '../../components/NewContentDialog/utils';
-import { DependenciesDialogStateProps } from '../../modules/Content/Dependencies/DependenciesDialog';
 import { WorkflowCancellationDialogStateProps } from '../../components/Dialogs/WorkflowCancellationDialog';
 import { RejectDialogStateProps } from '../../components/Dialogs/RejectDialog';
 import { LegacyFormDialogStateProps } from '../../components/Dialogs/LegacyFormDialog';
@@ -44,6 +43,7 @@ import { PublishDialogStateProps } from '../../components/PublishDialog/utils';
 import { DeleteDialogStateProps } from '../../components/DeleteDialog/utils';
 import { FetchDeleteDependenciesResponse } from '../../services/dependencies';
 import { CreateFolderStateProps } from '../../components/CreateFolderDialog/utils';
+import { DependenciesDialogStateProps } from '../../components/DependenciesDialog/utils';
 
 // region History
 export const showHistoryDialog = /*#__PURE__*/ createAction<Partial<HistoryDialogStateProps>>('SHOW_HISTORY_DIALOG');

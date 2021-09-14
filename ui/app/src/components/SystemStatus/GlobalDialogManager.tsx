@@ -44,7 +44,7 @@ const NewContentDialog = lazy(() => import('../NewContentDialog'));
 const ChangeContentTypeDialog = lazy(() => import('../../modules/Content/Authoring/ChangeContentTypeDialog'));
 const HistoryDialog = lazy(() => import('../../modules/Content/History/HistoryDialog'));
 const PublishDialog = lazy(() => import('../PublishDialog/PublishDialog'));
-const DependenciesDialog = lazy(() => import('../../modules/Content/Dependencies/DependenciesDialog'));
+const DependenciesDialog = lazy(() => import('../DependenciesDialog/DependenciesDialog'));
 const DeleteDialog = lazy(() => import('../DeleteDialog/DeleteDialog'));
 const WorkflowCancellationDialog = lazy(() => import('../Dialogs/WorkflowCancellationDialog'));
 const LegacyFormDialog = lazy(() => import('../Dialogs/LegacyFormDialog'));
@@ -243,7 +243,6 @@ function GlobalDialogManager() {
         dependenciesShown={state.dependencies.dependenciesShown}
         onClose={createCallback(state.dependencies.onClose, dispatch)}
         onClosed={createCallback(state.dependencies.onClosed, dispatch)}
-        onDismiss={createCallback(state.dependencies.onDismiss, dispatch)}
       />
       {/* endregion */}
 

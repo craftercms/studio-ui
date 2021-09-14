@@ -19,7 +19,6 @@ import { DialogProps } from '../Dialog';
 import { PublishDialogProps } from '../PublishDialog/utils';
 
 export interface CreateFolderBaseProps {
-  open: boolean;
   path?: string;
   rename?: boolean;
   value?: string;
