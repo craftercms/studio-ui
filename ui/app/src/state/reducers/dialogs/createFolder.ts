@@ -23,7 +23,7 @@ import {
   updateCreateFolderDialog
 } from '../../actions/dialogs';
 
-import { CreateFolderStateProps } from '../../../components/Dialogs/CreateFolderDialog';
+import { CreateFolderStateProps } from '../../../components/CreateFolderDialog/utils';
 
 const initialState: CreateFolderStateProps = {
   open: false,

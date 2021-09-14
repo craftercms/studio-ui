@@ -22,7 +22,7 @@ import { FormattedMessage } from 'react-intl';
 import Dialog from '@material-ui/core/Dialog';
 import FolderBrowserTreeViewUI, { TreeNode } from '../FolderBrowserTreeView/FolderBrowserTreeViewUI';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import CreateFolderDialog from './CreateFolderDialog';
+import CreateFolderDialog from '../CreateFolderDialog/CreateFolderDialog';
 import { get } from '../../utils/ajax';
 import LookupTable from '../../models/LookupTable';
 import Suspencified from '../SystemStatus/Suspencified';

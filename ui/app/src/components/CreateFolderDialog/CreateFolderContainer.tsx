@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -13,97 +13,32 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
-import DialogHeader from './DialogHeader';
-import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import DialogBody from './DialogBody';
-import DialogFooter from './DialogFooter';
-import TextField from '@material-ui/core/TextField';
-import { createFolder, renameFolder } from '../../services/content';
+import { CreateFolderContainerProps } from './utils';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
-import StandardAction from '../../models/StandardAction';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { useDetailedItem } from '../../utils/hooks/useDetailedItem';
+import { DetailedItem, SandboxItem } from '../../models/Item';
+import { getParentPath, getRootPath, withoutIndex } from '../../utils/path';
+import { useUnmount } from '../../utils/hooks/useUnmount';
+import { createFolder, renameFolder } from '../../services/content';
+import { batchActions } from '../../state/actions/misc';
+import { updateCreateFolderDialog } from '../../state/actions/dialogs';
 import { emitSystemEvent, folderCreated, folderRenamed } from '../../state/actions/system';
+import { showErrorDialog } from '../../state/reducers/dialogs/error';
+import { validateActionPolicy } from '../../services/sites';
+import { translations } from './translations';
+import DialogHeader from '../Dialogs/DialogHeader';
+import DialogBody from '../Dialogs/DialogBody';
+import SingleItemSelector from '../../modules/Content/Authoring/SingleItemSelector';
+import TextField from '@material-ui/core/TextField';
+import DialogFooter from '../Dialogs/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
-import { validateActionPolicy } from '../../services/sites';
-import { getParentPath, getRootPath, withoutIndex } from '../../utils/path';
-import ConfirmDialog from './ConfirmDialog';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import { useUnmount } from '../../utils/hooks/useUnmount';
-import { useDetailedItem } from '../../utils/hooks/useDetailedItem';
-import SingleItemSelector from '../../modules/Content/Authoring/SingleItemSelector';
-import { DetailedItem, SandboxItem } from '../../models/Item';
-import Dialog from '../Dialog';
-import { updateCreateFolderDialog } from '../../state/actions/dialogs';
-import { batchActions } from '../../state/actions/misc';
+import ConfirmDialog from '../Dialogs/ConfirmDialog';
 
-export const translations = defineMessages({
-  placeholder: {
-    id: 'createFolder.placeholder',
-    defaultMessage: 'Please type a folder name'
-  },
-  createPolicy: {
-    id: 'createFolder.createPolicy',
-    defaultMessage:
-      'The supplied name goes against site policies. Suggested modified name is: "{name}". Would you like to use the suggested name?'
-  },
-  policyError: {
-    id: 'createFolder.policyError',
-    defaultMessage: 'The supplied name goes against site policies.'
-  }
-});
-
-interface CreateFolderBaseProps {
-  open: boolean;
-  path?: string;
-  rename?: boolean;
-  value?: string;
-  allowBraces?: boolean;
-  isSubmitting: boolean;
-  hasPendingChanges: boolean;
-}
-
-export type CreateFolderProps = PropsWithChildren<
-  CreateFolderBaseProps & {
-    onClose(): void;
-    onClosed?(): void;
-    onCreated?(response: { path: string; name: string; rename: boolean }): void;
-    onRenamed?(response: { path: string; name: string; rename: boolean }): void;
-  }
->;
-
-export interface CreateFolderStateProps extends CreateFolderBaseProps {
-  onClose?: StandardAction;
-  onClosed?: StandardAction;
-  onCreated?: StandardAction;
-  onRenamed?: StandardAction;
-}
-
-export default function CreateFolderDialog(props: CreateFolderProps) {
-  const { open, onClose, isSubmitting, hasPendingChanges, ...rest } = props;
-
-  return (
-    <Dialog
-      open={open}
-      maxWidth={'xs'}
-      onClose={onClose}
-      isSubmitting={isSubmitting}
-      hasPendingChanges={hasPendingChanges}
-    >
-      <CreateFolderContainer {...rest} onClose={onClose} isSubmitting={isSubmitting} />
-    </Dialog>
-  );
-}
-
-interface CreateFolderContainerProps
-  extends Pick<
-    CreateFolderProps,
-    'path' | 'allowBraces' | 'value' | 'rename' | 'isSubmitting' | 'onRenamed' | 'onCreated' | 'onClose' | 'onClosed'
-  > {}
-
-function CreateFolderContainer(props: CreateFolderContainerProps) {
+export default function CreateFolderContainer(props: CreateFolderContainerProps) {
   const {
     onClosed,
     onClose,

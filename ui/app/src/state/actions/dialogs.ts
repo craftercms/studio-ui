@@ -27,7 +27,6 @@ import { WorkflowCancellationDialogStateProps } from '../../components/Dialogs/W
 import { RejectDialogStateProps } from '../../components/Dialogs/RejectDialog';
 import { LegacyFormDialogStateProps } from '../../components/Dialogs/LegacyFormDialog';
 import { EditSiteDialogStateProps } from '../../modules/System/Sites/Edit/EditSiteDialog';
-import { CreateFolderStateProps } from '../../components/Dialogs/CreateFolderDialog';
 import { CreateFileStateProps } from '../../components/Dialogs/CreateFileDialog';
 import { UploadDialogStateProps } from '../../components/Dialogs/UploadDialog';
 import { PreviewDialogStateProps } from '../../components/Dialogs/PreviewDialog';
@@ -44,6 +43,7 @@ import { CodeEditorDialogStateProps } from '../../components/CodeEditorDialog';
 import { PublishDialogStateProps } from '../../components/PublishDialog/utils';
 import { DeleteDialogStateProps } from '../../components/DeleteDialog/utils';
 import { FetchDeleteDependenciesResponse } from '../../services/dependencies';
+import { CreateFolderStateProps } from '../../components/CreateFolderDialog/utils';
 
 // region History
 export const showHistoryDialog = /*#__PURE__*/ createAction<Partial<HistoryDialogStateProps>>('SHOW_HISTORY_DIALOG');
