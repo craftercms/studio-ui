@@ -28,7 +28,10 @@ import PublishingStatusDisplay from '../PublishingStatusDisplay';
 import PauseCircleOutlineOutlinedIcon from '@mui/icons-material/PauseCircleOutlineOutlined';
 import PlayCircleOutlineOutlinedIcon from '@mui/icons-material/PlayCircleOutlineOutlined';
 
-export type PublishingStatusDialogBodyProps = PublishingStatus & {
+export type PublishingStatusDialogBodyProps = Pick<
+  PublishingStatus,
+  'enabled' | 'status' | 'message' | 'lockOwner' | 'lockTTL'
+> & {
   isFetching: boolean;
   onClose(): void;
   onRefresh?(): void;

@@ -28,6 +28,10 @@ export const fetchPublishingStatusComplete = /*#__PURE__*/ createAction<Publishi
   'FETCH_PUBLISHING_STATUS_COMPLETE'
 );
 
+export const fetchPublishingStatusProcessingComplete = /*#__PURE__*/ createAction<PublishingStatus>(
+  'FETCH_PUBLISHING_STATUS_PROCESSING_COMPLETE'
+);
+
 export const fetchPublishingStatusFailed = /*#__PURE__*/ createAction('FETCH_PUBLISHING_STATUS_FAILED');
 
 export const startPublishingStatusFetcher = /*#__PURE__*/ createAction('START_PUBLISHING_STATUS_FETCHER');

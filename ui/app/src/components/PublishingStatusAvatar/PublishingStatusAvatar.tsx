@@ -18,10 +18,10 @@ import Avatar from '@mui/material/Avatar';
 import clsx from 'clsx';
 import CloudUploadOutlined from '@mui/icons-material/CloudUploadOutlined';
 import * as React from 'react';
+import { CSSProperties } from 'react';
 import { PublishingStatus } from '../../models/Publishing';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
-import { CSSProperties } from 'react';
 import { getPublishingStatusCodeColor } from './util';
 
 type PublishingStatusAvatarClassKey = 'root' | 'icon';
@@ -48,6 +48,9 @@ const useStyles = makeStyles((theme) =>
       }),
       '&.ready': {
         [stylingTarget]: getPublishingStatusCodeColor('ready', theme)
+      },
+      '&.processing': {
+        [stylingTarget]: getPublishingStatusCodeColor('processing', theme)
       },
       '&.publishing': {
         [stylingTarget]: getPublishingStatusCodeColor('publishing', theme)

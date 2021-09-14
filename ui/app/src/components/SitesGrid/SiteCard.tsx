@@ -113,6 +113,8 @@ export default function SiteCard(props: SiteCardProps) {
           isFetching={!publishingStatus}
           enabled={publishingStatus?.enabled}
           status={publishingStatus?.status}
+          totalItems={publishingStatus?.totalItems}
+          numberOfItems={publishingStatus?.numberOfItems}
           variant="icon"
           size={compact ? 'small' : 'medium'}
           onClick={(e) => onPublishButtonClick(e, site)}
