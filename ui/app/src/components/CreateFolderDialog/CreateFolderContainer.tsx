@@ -174,6 +174,8 @@ export default function CreateFolderContainer(props: CreateFolderContainerProps)
 
   const itemSelectorFilterChildren = useMemo(() => (item: SandboxItem) => item.availableActionsMap.createFolder, []);
 
+  const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
+
   return (
     <>
       <DialogHeader
@@ -184,7 +186,7 @@ export default function CreateFolderContainer(props: CreateFolderContainerProps)
             <FormattedMessage id="newFolder.title" defaultMessage="Create a New Folder" />
           )
         }
-        onCloseButtonClick={onClose}
+        onCloseButtonClick={onCloseButtonClick}
       />
       <DialogBody>
         {selectedItem && (
@@ -245,7 +247,7 @@ export default function CreateFolderContainer(props: CreateFolderContainerProps)
         </form>
       </DialogBody>
       <DialogFooter>
-        <SecondaryButton onClick={onClose} disabled={isSubmitting}>
+        <SecondaryButton onClick={onCloseButtonClick} disabled={isSubmitting}>
           <FormattedMessage id="words.close" defaultMessage="Close" />
         </SecondaryButton>
         <PrimaryButton onClick={onCreate} disabled={isSubmitting || name === ''} loading={isSubmitting}>
