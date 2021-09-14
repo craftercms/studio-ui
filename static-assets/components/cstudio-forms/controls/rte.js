@@ -83,7 +83,7 @@ CStudioAuthoring.Module.requireModule(
               },
               failure: function() {}
             },
-            '/form-control-config/rte/rte-setup.xml'
+            '/form-control-config/rte/rte-config.xml'
           );
         },
 
