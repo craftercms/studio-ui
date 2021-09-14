@@ -280,7 +280,7 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
       (response) => {
         dispatch(
           batchActions([
-            updatePublishDialog({ isSubmitting: false }),
+            updatePublishDialog({ isSubmitting: false, hasPendingChanges: false }),
             emitSystemEvent(propagateAction({ targets: items }))
           ])
         );
@@ -354,6 +354,11 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
         break;
       case 'textarea':
         value = e.target.value;
+        dispatch(
+          updatePublishDialog({
+            hasPendingChanges: true
+          })
+        );
         break;
       case 'radio':
         value = e.target.value;

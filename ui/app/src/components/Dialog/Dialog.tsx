@@ -45,24 +45,16 @@ export function Dialog(props: DialogProps) {
   const onClose = useOnClose({
     onClose(e, reason) {
       if (hasPendingChanges) {
-        let unsubscribe, cancelUnsubscribe;
-        const idSuccess = 'confirmDialogSuccess';
-        const idCancel = 'configDialogCancel';
+        const customEventId = 'dialogDismissConfirm';
         dispatch(
           showConfirmDialog({
             title: formatMessage(translations.pendingChanges),
-            onOk: batchActions([dispatchDOMEvent({ id: idSuccess }), closeConfirmDialog()]),
-            onCancel: batchActions([dispatchDOMEvent({ id: idCancel }), closeConfirmDialog()])
+            onOk: batchActions([dispatchDOMEvent({ id: customEventId, type: 'success' }), closeConfirmDialog()]),
+            onCancel: batchActions([dispatchDOMEvent({ id: customEventId, type: 'cancel' }), closeConfirmDialog()])
           })
         );
-
-        unsubscribe = createCustomDocumentEventListener(idSuccess, () => {
-          dialogProps.onClose(e, reason);
-          cancelUnsubscribe();
-        });
-
-        cancelUnsubscribe = createCustomDocumentEventListener(idCancel, () => {
-          unsubscribe();
+        createCustomDocumentEventListener(customEventId, ({ type }) => {
+          type === 'success' && dialogProps.onClose(e, reason);
         });
       } else {
         dialogProps.onClose(e, reason);
