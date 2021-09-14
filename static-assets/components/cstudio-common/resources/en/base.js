@@ -701,8 +701,7 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'en', {
   /*Controls*/
   textArea: 'Text Area',
   linkTextarea: 'Link Text Area',
-  richTextEditor: 'Rich Text Editor (TinyMCE 2)',
-  rteTinyMCE5: 'Rich Text Editor (TinyMCE 5)',
+  rte: 'Rich Text Editor',
   input: 'Input',
   numericInput: 'Numeric input',
   uuid: 'UUID',
