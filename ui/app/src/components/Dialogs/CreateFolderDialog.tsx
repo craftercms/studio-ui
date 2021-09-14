@@ -141,7 +141,7 @@ function CreateFolderContainer(props: CreateFolderContainerProps) {
         dispatch(
           batchActions([
             updateCreateFolderDialog({
-              isSubmitting: true,
+              isSubmitting: false,
               hasPendingChanges: false
             }),
             emitSystemEvent(folderRenamed({ target: path, oldName: value, newName: name }))
@@ -161,7 +161,7 @@ function CreateFolderContainer(props: CreateFolderContainerProps) {
         dispatch(
           batchActions([
             updateCreateFolderDialog({
-              isSubmitting: true,
+              isSubmitting: false,
               hasPendingChanges: false
             }),
             emitSystemEvent(folderCreated({ target: path, name: name }))
