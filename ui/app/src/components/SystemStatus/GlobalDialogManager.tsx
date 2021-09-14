@@ -42,7 +42,7 @@ const ConfirmDialog = lazy(() => import('../Dialogs/ConfirmDialog'));
 const ErrorDialog = lazy(() => import('./ErrorDialog'));
 const NewContentDialog = lazy(() => import('../NewContentDialog'));
 const ChangeContentTypeDialog = lazy(() => import('../../modules/Content/Authoring/ChangeContentTypeDialog'));
-const HistoryDialog = lazy(() => import('../../modules/Content/History/HistoryDialog'));
+const HistoryDialog = lazy(() => import('../HistoryDialog'));
 const PublishDialog = lazy(() => import('../PublishDialog/PublishDialog'));
 const DependenciesDialog = lazy(() => import('../DependenciesDialog/DependenciesDialog'));
 const DeleteDialog = lazy(() => import('../DeleteDialog/DeleteDialog'));
@@ -266,7 +266,6 @@ function GlobalDialogManager() {
         versionsBranch={versionsBranch}
         onClose={createCallback(state.history.onClose, dispatch)}
         onClosed={createCallback(state.history.onClosed, dispatch)}
-        onDismiss={createCallback(state.history.onDismiss, dispatch)}
       />
       {/* endregion */}
 

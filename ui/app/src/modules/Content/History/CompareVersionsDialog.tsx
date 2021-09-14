@@ -24,7 +24,6 @@ import DialogHeader, { DialogHeaderAction, DialogHeaderStateAction } from '../..
 import { CompareVersionsBranch, LegacyVersion, VersionsStateProps } from '../../../models/Version';
 import DialogBody from '../../../components/Dialogs/DialogBody';
 import DialogFooter from '../../../components/Dialogs/DialogFooter';
-import { Pagination } from './HistoryDialog';
 import {
   compareBothVersions,
   compareVersion,
@@ -43,6 +42,7 @@ import { CompareVersions, CompareVersionsResource } from './CompareVersions';
 import clsx from 'clsx';
 import { useLogicResource } from '../../../utils/hooks/useLogicResource';
 import { useUnmount } from '../../../utils/hooks/useUnmount';
+import { Pagination } from '../../../components/HistoryDialog/Pagination';
 
 const translations = defineMessages({
   backToSelectRevision: {

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -14,30 +14,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren, useCallback, useState } from 'react';
-import { defineMessages, FormattedMessage, MessageDescriptor, useIntl } from 'react-intl';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import ContextMenu, { ContextMenuOption } from '../../../components/ContextMenu';
-import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
-import { LookupTable } from '../../../models/LookupTable';
-import StandardAction from '../../../models/StandardAction';
+import React, { useCallback, useState } from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
-import { VersionList } from './VersionList';
-import TablePagination from '@material-ui/core/TablePagination';
-import { fetchContentTypes } from '../../../state/actions/preview';
-import DialogHeader from '../../../components/Dialogs/DialogHeader';
-import DialogFooter from '../../../components/Dialogs/DialogFooter';
-import DialogBody from '../../../components/Dialogs/DialogBody';
-import { LegacyVersion, VersionsStateProps } from '../../../models/Version';
-import {
-  compareBothVersions,
-  compareToPreviousVersion,
-  compareVersion,
-  revertContent,
-  revertToPreviousVersion,
-  versionsChangeItem,
-  versionsChangePage
-} from '../../../state/reducers/versions';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { useUnmount } from '../../utils/hooks/useUnmount';
+import { useSpreadState } from '../../utils/hooks/useSpreadState';
+import { HistoryDialogContainerProps, Menu, menuInitialState, menuOptions } from './utils';
+import { useLogicResource } from '../../utils/hooks/useLogicResource';
+import { LegacyVersion, VersionsStateProps } from '../../models/Version';
+import ContextMenu, { ContextMenuOption } from '../ContextMenu';
+import { hasRevertAction } from '../../utils/content';
 import {
   closeConfirmDialog,
   fetchContentVersion,
@@ -46,181 +33,32 @@ import {
   showHistoryDialog,
   showPreviewDialog,
   showViewVersionDialog
-} from '../../../state/actions/dialogs';
-import SingleItemSelector from '../Authoring/SingleItemSelector';
-import { batchActions } from '../../../state/actions/misc';
-import { asDayMonthDateTime } from '../../../utils/datetime';
-import { hasRevertAction } from '../../../utils/content';
-import { useLogicResource } from '../../../utils/hooks/useLogicResource';
-import { useUnmount } from '../../../utils/hooks/useUnmount';
-import { useSpreadState } from '../../../utils/hooks/useSpreadState';
-import { getEditorMode, isImage } from '../../../components/PathNavigator/utils';
-import { fetchContentByCommitId } from '../../../services/content';
-import { useActiveSiteId } from '../../../utils/hooks/useActiveSiteId';
-import { Dialog } from '../../../components/Dialog';
+} from '../../state/actions/dialogs';
+import translations from './translations';
+import { batchActions } from '../../state/actions/misc';
+import { fetchContentTypes } from '../../state/actions/preview';
+import { fetchContentByCommitId } from '../../services/content';
+import { getEditorMode, isImage } from '../PathNavigator/utils';
+import {
+  compareBothVersions,
+  compareToPreviousVersion,
+  compareVersion,
+  revertContent,
+  revertToPreviousVersion,
+  versionsChangeItem,
+  versionsChangePage
+} from '../../state/reducers/versions';
+import { asDayMonthDateTime } from '../../utils/datetime';
+import DialogHeader from '../Dialogs/DialogHeader';
+import DialogBody from '../Dialogs/DialogBody';
+import SingleItemSelector from '../../modules/Content/Authoring/SingleItemSelector';
+import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
+import { VersionList } from '../../modules/Content/History/VersionList';
+import DialogFooter from '../Dialogs/DialogFooter';
+import { Pagination } from './Pagination';
+import { historyStyles } from './HistoryDialog';
 
-const translations = defineMessages({
-  previousPage: {
-    id: 'pagination.PreviousPage',
-    defaultMessage: 'Previous page'
-  },
-  nextPage: {
-    id: 'pagination.nextPage',
-    defaultMessage: 'Next page'
-  },
-  view: {
-    id: 'words.view',
-    defaultMessage: 'View'
-  },
-  compareTo: {
-    id: 'historyDialog.options.compareTo',
-    defaultMessage: 'Compare to...'
-  },
-  compareToCurrent: {
-    id: 'historyDialog.options.compareToCurrent',
-    defaultMessage: 'Compare to current'
-  },
-  compareToPrevious: {
-    id: 'historyDialog.options.compareToPrevious',
-    defaultMessage: 'Compare to previous'
-  },
-  revertToPrevious: {
-    id: 'historyDialog.options.revertToPrevious',
-    defaultMessage: 'Revert to <b>previous</b>'
-  },
-  revertToThisVersion: {
-    id: 'historyDialog.options.revertToThisVersion',
-    defaultMessage: 'Revert to <b>this version</b>'
-  },
-  backToHistoryList: {
-    id: 'historyDialog.back.selectRevision',
-    defaultMessage: 'Back to history list'
-  },
-  confirmRevertTitle: {
-    id: 'historyDialog.confirmRevertTitle',
-    defaultMessage: 'Revert confirmation'
-  },
-  confirmRevertBody: {
-    id: 'historyDialog.confirmRevertBody',
-    defaultMessage: 'Are you sure you want to revert to {versionTitle}?'
-  }
-});
-
-const historyStyles = makeStyles(() =>
-  createStyles({
-    dialogBody: {
-      overflow: 'auto',
-      minHeight: '50vh'
-    },
-    dialogFooter: {
-      padding: 0
-    },
-    singleItemSelector: {
-      marginBottom: '10px'
-    }
-  })
-);
-
-const paginationStyles = makeStyles((theme) =>
-  createStyles({
-    pagination: {
-      marginLeft: 'auto',
-      background: theme.palette.background.paper,
-      color: theme.palette.text.primary,
-      '& p': {
-        padding: 0
-      },
-      '& svg': {
-        top: 'inherit'
-      },
-      '& .hidden': {
-        display: 'none'
-      }
-    },
-    toolbar: {
-      padding: 0,
-      display: 'flex',
-      justifyContent: 'space-between',
-      paddingLeft: '20px',
-      '& .MuiTablePagination-spacer': {
-        display: 'none'
-      },
-      '& .MuiTablePagination-spacer + p': {
-        display: 'none'
-      }
-    }
-  })
-);
-
-const menuOptions: LookupTable<{ id: string; label: MessageDescriptor; values?: any }> = {
-  view: {
-    id: 'view',
-    label: translations.view
-  },
-  compareTo: {
-    id: 'compareTo',
-    label: translations.compareTo
-  },
-  compareToCurrent: {
-    id: 'compareToCurrent',
-    label: translations.compareToCurrent
-  },
-  compareToPrevious: {
-    id: 'compareToPrevious',
-    label: translations.compareToPrevious
-  },
-  revertToPrevious: {
-    id: 'revertToPrevious',
-    label: translations.revertToPrevious,
-    values: { b: (msg) => <b key="bold">&nbsp;{msg}</b> }
-  },
-  revertToThisVersion: {
-    id: 'revertToThisVersion',
-    label: translations.revertToThisVersion,
-    values: { b: (msg) => <b key="bold">&nbsp;{msg}</b> }
-  }
-};
-
-const menuInitialState = {
-  sections: [],
-  anchorEl: null,
-  activeItem: null
-};
-
-interface Menu {
-  sections: ContextMenuOption[][];
-  anchorEl: Element;
-  activeItem: LegacyVersion;
-}
-
-interface HistoryDialogBaseProps {
-  open: boolean;
-}
-
-export type HistoryDialogProps = PropsWithChildren<
-  HistoryDialogBaseProps & {
-    versionsBranch: VersionsStateProps;
-    onClose?(): void;
-    onClosed?(): void;
-    onDismiss?(): void;
-  }
->;
-
-export interface HistoryDialogStateProps extends HistoryDialogBaseProps {
-  onClose?: StandardAction;
-  onClosed?: StandardAction;
-  onDismiss?: StandardAction;
-}
-
-export default function HistoryDialog(props: HistoryDialogProps) {
-  return (
-    <Dialog open={props.open} onClose={props.onClose}>
-      <HistoryDialogBody {...props} />
-    </Dialog>
-  );
-}
-
-function HistoryDialogBody(props: HistoryDialogProps) {
+export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
   const { onClose, versionsBranch } = props;
   const { count, page, limit, current, item, rootPath, isConfig } = versionsBranch;
   const path = item ? item.path : '';
@@ -431,11 +269,13 @@ function HistoryDialogBody(props: HistoryDialogProps) {
     dispatch(versionsChangePage({ page: nextPage }));
   };
 
+  const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
+
   return (
     <>
       <DialogHeader
         title={<FormattedMessage id="historyDialog.headerTitle" defaultMessage="Item History" />}
-        onCloseButtonClick={onClose}
+        onCloseButtonClick={onCloseButtonClick}
       />
       <DialogBody className={classes.dialogBody}>
         <SingleItemSelector
@@ -474,37 +314,5 @@ function HistoryDialogBody(props: HistoryDialogProps) {
         />
       )}
     </>
-  );
-}
-
-interface PaginationProps {
-  count: number;
-  page: number;
-  rowsPerPage: number;
-  onPageChanged(nextPage: number): void;
-}
-
-export function Pagination(props: PaginationProps) {
-  const classes = paginationStyles({});
-  const { formatMessage } = useIntl();
-  const { count, page, rowsPerPage } = props;
-  return (
-    <TablePagination
-      className={classes.pagination}
-      classes={{ root: classes.pagination, selectRoot: 'hidden', toolbar: classes.toolbar }}
-      component="div"
-      labelRowsPerPage=""
-      rowsPerPageOptions={[10, 20, 30]}
-      count={count}
-      rowsPerPage={rowsPerPage}
-      page={page}
-      backIconButtonProps={{
-        'aria-label': formatMessage(translations.previousPage)
-      }}
-      nextIconButtonProps={{
-        'aria-label': formatMessage(translations.nextPage)
-      }}
-      onPageChange={(e: React.MouseEvent<HTMLButtonElement>, nextPage: number) => props.onPageChanged(nextPage)}
-    />
   );
 }
