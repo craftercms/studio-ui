@@ -562,15 +562,12 @@ const minimizedBarStyles = makeStyles((theme: Theme) =>
 interface MinimizedBarProps {
   title: string;
   subtitle?: string;
-  status?: {
-    status: string;
-    progress: number;
-  };
+  status?: object;
 
   onMaximized(): void;
 }
 
-function MinimizedBar(props: MinimizedBarProps) {
+function MinimizedBar(props: any) {
   const { title, onMaximized, subtitle, status } = props;
   const classes = minimizedBarStyles({});
   return (

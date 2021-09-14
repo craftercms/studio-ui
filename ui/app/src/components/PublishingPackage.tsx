@@ -19,10 +19,11 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
 import React, { ChangeEvent, useRef, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@material-ui/styles/makeStyles/makeStyles';
 import { defineMessages, useIntl } from 'react-intl';
 import SelectButton from './ConfirmDropdown';
 import Typography from '@material-ui/core/Typography';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import { cancelPackage, fetchPackage } from '../services/publishing';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -31,7 +32,7 @@ import '../styles/animations.scss';
 import clsx from 'clsx';
 import { READY_FOR_LIVE } from '../models/publishing';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   package: {
     padding: '20px 8px 20px 0',
     '& .loading-header': {

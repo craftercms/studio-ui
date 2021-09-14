@@ -35,3 +35,7 @@ export function createSite(site: MarketplaceSite) {
     'Content-Type': 'application/json'
   });
 }
+
+export default {
+  fetchBlueprints
+};

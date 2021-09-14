@@ -82,3 +82,13 @@ export function bytesToSize(bytes: number, separator: string = '') {
 export function insureSingleSlash(url: string): string {
   return /^(http|https):\/\//g.test(url) ? url.replace(/([^:]\/)\/+/g, '$1') : url.replace(/\/+/g, '/');
 }
+
+export default {
+  camelize,
+  capitalize,
+  underscore,
+  dasherize,
+  escapeHTML,
+  unescapeHTML,
+  bytesToSize
+};

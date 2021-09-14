@@ -18,23 +18,22 @@ import React, { JSXElementConstructor, lazy } from 'react';
 import ReactDOM from 'react-dom';
 
 import CrafterCMSNextBridge, { intl } from '../components/CrafterCMSNextBridge';
-import * as string from './string';
-import * as ajax from './ajax';
-import * as path from './path';
-import * as auth from './auth';
-import * as configuration from '../services/configuration';
-import * as sites from '../services/sites';
-import * as marketplace from '../services/marketplace';
-import * as publishing from '../services/publishing';
+import string from './string';
+import ajax from './ajax';
+import path from './path';
+import auth from './auth';
+import configuration from '../services/configuration';
+import sites from '../services/sites';
+import marketplace from '../services/marketplace';
+import publishing from '../services/publishing';
 import * as content from '../services/content';
 import { forkJoin, fromEvent, Subject } from 'rxjs';
 import { filter, map, take, debounceTime, pluck, switchMap, tap } from 'rxjs/operators';
 import { IntlShape } from 'react-intl/src/types';
-import * as messages from './i18n-legacy';
-import { translateElements } from './i18n-legacy';
-import * as babel from '../utils/babelHelpers-legacy';
-import * as security from '../services/security';
-import * as authService from '../services/auth';
+import messages, { translateElements } from './i18n-legacy';
+import babel from '../utils/babelHelpers-legacy';
+import security from '../services/security';
+import authService from '../services/auth';
 import * as mui from '@material-ui/core';
 import { themeOptions } from '../styles/theme';
 import { ThemeOptions } from '@material-ui/core/styles';
@@ -161,12 +160,10 @@ export function createCodebaseBridge() {
       component: string | JSXElementConstructor<any>,
       props: object = {}
     ): Promise<any> {
-      if (typeof component === 'string') {
-        if (!Boolean(Bridge.components[component])) {
-          throw new Error(`The supplied component name ('${component}') is not a know component of CrafterCMSNext.`);
-        }
-      } else if (!Object.values(Bridge.components).includes(component)) {
+      if (typeof component !== 'string' && !Object.values(Bridge.components).includes(component)) {
         throw new Error('The supplied module is not a know component of CrafterCMSNext.');
+      } else if (!(component in Bridge.components)) {
+        throw new Error(`The supplied component name ('${component}') is not a know component of CrafterCMSNext.`);
       }
 
       if (typeof container === 'string') {

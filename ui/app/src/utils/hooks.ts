@@ -36,6 +36,5 @@ export function useDebouncedInput(observer: (keywords: string) => any, time: num
 }
 
 export function useMount(onMount: EffectCallback): void {
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(onMount, []);
 }

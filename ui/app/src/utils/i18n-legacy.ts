@@ -35,7 +35,7 @@ export function translateElements(
   });
 }
 
-export const approveDialogMessages = defineMessages({
+const approveDialogMessages = defineMessages({
   approveForPublish: {
     id: 'publishDialog.approveForPublish',
     defaultMessage: 'Approve for Publish'
@@ -60,14 +60,14 @@ export const approveDialogMessages = defineMessages({
   }
 });
 
-export const deleteDialogMessages = defineMessages({
+const deleteDialogMessages = defineMessages({
   submissionCommentFieldError: {
     id: 'deleteDialog.submissionCommentFieldError',
     defaultMessage: 'Please write submission comment.'
   }
 });
 
-export const usersAdminMessages = defineMessages({
+const usersAdminMessages = defineMessages({
   maxLengthError: {
     id: 'usersAdmin.maxLengthError',
     defaultMessage: "{field} can't be longer than {size} characters"
@@ -153,7 +153,7 @@ export const passwordRequirementMessages = defineMessages({
   }
 });
 
-export const groupsAdminMessages = defineMessages({
+const groupsAdminMessages = defineMessages({
   maxLengthError: {
     id: 'groupsAdmin.maxLengthError',
     defaultMessage: "{field} can't be longer than {size} characters"
@@ -164,7 +164,7 @@ export const groupsAdminMessages = defineMessages({
   }
 });
 
-export const profileSettingsMessages = defineMessages({
+const profileSettingsMessages = defineMessages({
   password: {
     id: 'profileSettings.password',
     defaultMessage: 'Password'
@@ -199,7 +199,7 @@ export const profileSettingsMessages = defineMessages({
   }
 });
 
-export const numericInputControlMessages = defineMessages({
+const numericInputControlMessages = defineMessages({
   minimun: {
     id: 'numericInputControl.childContent',
     defaultMessage: 'Minimum'
@@ -214,7 +214,7 @@ export const numericInputControlMessages = defineMessages({
   }
 });
 
-export const reposAdminMessages = defineMessages({
+const reposAdminMessages = defineMessages({
   pendingCommit: {
     id: 'reposAdmin.pendingCommit',
     defaultMessage: 'Repo contains files pending commit. See Repository status below for details.'
@@ -235,28 +235,28 @@ export const reposAdminMessages = defineMessages({
   }
 });
 
-export const sharedContentDSMessages = defineMessages({
+const sharedContentDSMessages = defineMessages({
   sharedContent: {
     id: 'sharedContentDS.sharedContent',
     defaultMessage: 'Shared Content'
   }
 });
 
-export const embeddedContentDSMessages = defineMessages({
+const embeddedContentDSMessages = defineMessages({
   embeddedContent: {
     id: 'embeddedContentDS.embeddedContent',
     defaultMessage: 'Embedded Content'
   }
 });
 
-export const childContentDSMessages = defineMessages({
+const childContentDSMessages = defineMessages({
   childContent: {
     id: 'childContentDS.childContent',
     defaultMessage: 'Child Content (Deprecated)'
   }
 });
 
-export const contentTypesMessages = defineMessages({
+const contentTypesMessages = defineMessages({
   notice: {
     id: 'contentType.notice',
     defaultMessage: 'Notice'
@@ -382,7 +382,7 @@ export const contentTypesMessages = defineMessages({
   }
 });
 
-export const targetingDialog = defineMessages({
+const targetingDialog = defineMessages({
   setNow: {
     id: 'targetingDialog.setNow',
     defaultMessage: 'Set Now'
@@ -393,7 +393,7 @@ export const targetingDialog = defineMessages({
   }
 });
 
-export const words = defineMessages({
+const words = defineMessages({
   notification: {
     id: 'words.notification',
     defaultMessage: 'Notification'
@@ -452,7 +452,7 @@ export const words = defineMessages({
   }
 });
 
-export const siteComponentDSMessages = defineMessages({
+const siteComponentDSMessages = defineMessages({
   label: {
     id: 'siteComponentDS.label',
     defaultMessage: 'Taxonomy Selector'
@@ -499,7 +499,7 @@ export const siteComponentDSMessages = defineMessages({
   }
 });
 
-export const codeEditorMessages = defineMessages({
+const codeEditorMessages = defineMessages({
   confirm: {
     id: 'codeEditor.confirm',
     defaultMessage: 'Confirm Close'
@@ -510,7 +510,7 @@ export const codeEditorMessages = defineMessages({
   }
 });
 
-export const globalConfigMessages = defineMessages({
+const globalConfigMessages = defineMessages({
   title: {
     id: 'globalConfig.title',
     defaultMessage: 'Global Config'
@@ -565,7 +565,7 @@ export const globalConfigMessages = defineMessages({
   }
 });
 
-export const publishingMessages = defineMessages({
+const publishingMessages = defineMessages({
   ready: {
     id: 'words.ready',
     defaultMessage: 'Ready'
@@ -610,7 +610,7 @@ export const publishingMessages = defineMessages({
   }
 });
 
-export const browseCMISMessages = defineMessages({
+const browseCMISMessages = defineMessages({
   cmis: {
     id: 'browseCMIS.cmis',
     defaultMessage: 'CMIS'
@@ -621,14 +621,14 @@ export const browseCMISMessages = defineMessages({
   }
 });
 
-export const formEngineMessages = defineMessages({
+const formEngineMessages = defineMessages({
   saveDraftCompleted: {
     id: 'formEngine.saveDraftCompleted',
     defaultMessage: 'Draft Save Completed'
   }
 });
 
-export const dragAndDropMessages = defineMessages({
+const dragAndDropMessages = defineMessages({
   componentNotWelcomeWithinDropZone: {
     id: 'dragAndDropMessages.componentNotWelcomeWithinDropZone',
     defaultMessage: 'The drop zone does not support this type of component. Check your content model.'
@@ -669,7 +669,7 @@ export const dragAndDropMessages = defineMessages({
   }
 });
 
-export const internalNameControlMessages = defineMessages({
+const internalNameControlMessages = defineMessages({
   label: {
     id: 'internalNameControl.label',
     defaultMessage: 'Internal Name'
@@ -684,7 +684,7 @@ export const internalNameControlMessages = defineMessages({
   }
 });
 
-export const checkboxGroupControlMessages = defineMessages({
+const checkboxGroupControlMessages = defineMessages({
   datasource: {
     id: 'checkboxGroupControl.datasource',
     defaultMessage: 'Data Source'
@@ -711,14 +711,14 @@ export const checkboxGroupControlMessages = defineMessages({
   }
 });
 
-export const transcodedVideoPickerControlMessages = defineMessages({
+const transcodedVideoPickerControlMessages = defineMessages({
   label: {
     id: 'transcodedVideoPickerControl.label',
     defaultMessage: 'Transcoded Video'
   }
 });
 
-export const globalMenuMessages = defineMessages({
+const globalMenuMessages = defineMessages({
   'home.globalMenu.sites': {
     id: 'GlobalMenu.SitesEntryLabel',
     defaultMessage: 'Sites'
@@ -773,7 +773,7 @@ export const globalMenuMessages = defineMessages({
   }
 });
 
-export const adminConfigurationMessages = defineMessages({
+const adminConfigurationMessages = defineMessages({
   encryptMarked: {
     id: 'adminConfigurations.encryptMarked',
     defaultMessage: 'Encrypt Marked'
@@ -849,7 +849,7 @@ export const adminConfigurationMessages = defineMessages({
   }
 });
 
-export const encryptToolMessages = defineMessages({
+const encryptToolMessages = defineMessages({
   pageTitle: {
     id: 'encryptTool.pageTitle',
     defaultMessage: 'Encryption Tool'
@@ -876,7 +876,7 @@ export const encryptToolMessages = defineMessages({
   }
 });
 
-export const fileNameControlMessages = defineMessages({
+const fileNameControlMessages = defineMessages({
   urlChangeWaring: {
     id: 'fileNameControl.urlChangeWarning',
     defaultMessage: 'Changing this value may result in broken references and links.'
@@ -887,7 +887,7 @@ export const fileNameControlMessages = defineMessages({
   }
 });
 
-export const rteControlMessages = defineMessages({
+const rteControlMessages = defineMessages({
   escapeScripts: {
     id: 'rteControlMessages.escapeScripts',
     defaultMessage: 'Escape Scripts'
@@ -903,21 +903,21 @@ export const rteControlMessages = defineMessages({
   }
 });
 
-export const ossAttribution = defineMessages({
+const ossAttribution = defineMessages({
   attribution: {
     id: 'aboutView.attribution',
     defaultMessage: 'Crafter CMS is made possible by these other <a>open source software projects</a>.'
   }
 });
 
-export const dashboardWidgetsMessages = defineMessages({
+const dashboardWidgetsMessages = defineMessages({
   publishingTarget: {
     id: 'dashboardWidgetsMessages.publishingTarget',
     defaultMessage: 'Publishing Target'
   }
 });
 
-export const bulkUploadConfirmDialogMessages = defineMessages({
+const bulkUploadConfirmDialogMessages = defineMessages({
   title: {
     id: 'bulkUploadConfirmDialogMessages.title',
     defaultMessage: 'Upload in progress'
@@ -928,16 +928,53 @@ export const bulkUploadConfirmDialogMessages = defineMessages({
   }
 });
 
-export const wcmRootFolder = defineMessages({
+const wcmRootFolder = defineMessages({
   pathNotFound: {
     id: 'wcmRootFolder.pathNotFound',
     defaultMessage: 'Folder {path} not found.'
   }
 });
 
-export const controlsCommonMessages = defineMessages({
+const controlsCommonMessages = defineMessages({
   escapeContent: {
     id: 'controlsCommonMessages.escapeContent',
     defaultMessage: 'Escape Content'
   }
 });
+
+export default {
+  approveDialogMessages,
+  deleteDialogMessages,
+  reposAdminMessages,
+  usersAdminMessages,
+  passwordRequirementMessages,
+  groupsAdminMessages,
+  profileSettingsMessages,
+  numericInputControlMessages,
+  sharedContentDSMessages,
+  embeddedContentDSMessages,
+  childContentDSMessages,
+  contentTypesMessages,
+  codeEditorMessages,
+  targetingDialog,
+  words,
+  globalConfigMessages,
+  publishingMessages,
+  siteComponentDSMessages,
+  formEngineMessages,
+  browseCMISMessages,
+  dragAndDropMessages,
+  internalNameControlMessages,
+  checkboxGroupControlMessages,
+  transcodedVideoPickerControlMessages,
+  globalMenuMessages,
+  adminConfigurationMessages,
+  encryptToolMessages,
+  fileNameControlMessages,
+  rteControlMessages,
+  ossAttribution,
+  dashboardWidgetsMessages,
+  bulkUploadConfirmDialogMessages,
+  wcmRootFolder,
+  controlsCommonMessages
+};

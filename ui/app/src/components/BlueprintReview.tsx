@@ -23,10 +23,11 @@ import EditIcon from '@material-ui/icons/Edit';
 import { SiteState } from '../models/Site';
 import { Blueprint, Parameter } from '../models/Blueprint';
 import { defineMessages, useIntl } from 'react-intl';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   review: {
     maxWidth: '600px',
     margin: 'auto'

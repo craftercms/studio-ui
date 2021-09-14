@@ -45,3 +45,8 @@ export function getPathFromPreviewURL(previewURL: string) {
 export function parseQueryString() {
   return parse(window.location.search);
 }
+
+export default {
+  getPathFromPreviewURL,
+  parseQueryString
+};

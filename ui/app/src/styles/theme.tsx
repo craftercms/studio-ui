@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createTheme, ThemeOptions } from '@material-ui/core/styles';
+import createMuiTheme, { ThemeOptions } from '@material-ui/core/styles/createMuiTheme';
 import { darken, fade } from '@material-ui/core/styles';
 
 export const palette = {
@@ -58,7 +58,7 @@ export const palette = {
 export const backgroundColor = palette.gray.light1;
 export const RedColor = palette.red.main;
 
-const defaultTheme = createTheme();
+const defaultTheme = createMuiTheme();
 
 export const themeOptions: ThemeOptions = {
   typography: {
@@ -155,4 +155,4 @@ export const themeOptions: ThemeOptions = {
   }
 };
 
-export const theme = createTheme(themeOptions);
+export const theme = createMuiTheme(themeOptions);

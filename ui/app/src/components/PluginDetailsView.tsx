@@ -15,6 +15,7 @@
  */
 
 import React, { useState } from 'react';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 import SwipeableViews from 'react-swipeable-views';
@@ -34,7 +35,7 @@ import clsx from 'clsx';
 import { fadeIn } from 'react-animations';
 import ErrorOutlineRoundedIcon from '@material-ui/icons/ErrorOutlineRounded';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   '@keyframes fadeIn': fadeIn,
   fadeIn: {
     animationName: '$fadeIn',

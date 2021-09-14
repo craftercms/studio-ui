@@ -113,3 +113,14 @@ export const errorSelectorApi1: <T, O extends ObservableInput<any>>(err: any, ca
     };
   }
 };
+
+export default {
+  OMIT_GLOBAL_HEADERS,
+  getGlobalHeaders,
+  setGlobalHeaders,
+  get,
+  post,
+  patch,
+  put,
+  del
+};

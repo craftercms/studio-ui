@@ -33,3 +33,8 @@ export function getDOM(site: string, configPath: string, module: string): Observ
 export function getProductLanguages(): Observable<{ id: string; label: string }[]> {
   return get('/studio/api/1/services/api/1/server/get-available-languages.json').pipe(pluck('response'));
 }
+
+export default {
+  getRawContent,
+  getDOM
+};

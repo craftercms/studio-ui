@@ -44,7 +44,7 @@ const useStyles = makeStyles(() =>
   })
 );
 
-export default function Login(props: LoginViewProps) {
+export default function (props: LoginViewProps) {
   const classes = useStyles({});
   // **************************************************************************
   // TODO: To be enabled or removed depending on the background video decision.

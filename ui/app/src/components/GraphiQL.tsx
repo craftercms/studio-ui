@@ -15,9 +15,9 @@
  */
 
 import React, { useEffect, useState, useRef } from 'react';
-// @ts-ignore
+//@ts-ignore
 import GraphiQL from 'graphiql';
-// @ts-ignore
+//@ts-ignore
 import GraphiQLExplorer from 'graphiql-explorer';
 import { buildClientSchema, getIntrospectionQuery, GraphQLSchema } from 'graphql';
 

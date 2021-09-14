@@ -324,8 +324,17 @@ export function DependencySelectionDelete(props: DependencySelectionProps) {
 }
 
 function SelectionList(props: SelectionListProps) {
-  const { title, subtitle, items, uris, onItemClicked, onSelectAllClicked, displayItemTitle, checked, setChecked } =
-    props;
+  const {
+    title,
+    subtitle,
+    items,
+    uris,
+    onItemClicked,
+    onSelectAllClicked,
+    displayItemTitle,
+    checked,
+    setChecked
+  } = props;
 
   return (
     <div>
