@@ -27,7 +27,7 @@ import clsx from 'clsx';
 import BlueprintForm from './BlueprintForm';
 import BlueprintReview from './BlueprintReview';
 import LoadingState from '../../../../components/SystemStatus/LoadingState';
-import ConfirmDialog from '../../../../components/Dialogs/ConfirmDialog';
+import ConfirmDialog from '../../../../components/ConfirmDialog/ConfirmDialog';
 import { MarketplacePlugin } from '../../../../models/MarketplacePlugin';
 import { CreateSiteMeta, MarketplaceSite, SiteState, Views } from '../../../../models/Site';
 import { defineMessages, useIntl } from 'react-intl';

@@ -29,7 +29,7 @@ import { emitSystemEvent, itemCreated } from '../../state/actions/system';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import { validateActionPolicy } from '../../services/sites';
-import ConfirmDialog from './ConfirmDialog';
+import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';

@@ -18,7 +18,7 @@ import React, { useState } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import EditGroupDialogContainer, { EditGroupDialogContainerProps } from './EditGroupDialogContainer';
 import { FormattedMessage } from 'react-intl';
-import ConfirmDialog from '../Dialogs/ConfirmDialog';
+import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
 
 export interface EditGroupDialogProps extends Omit<EditGroupDialogContainerProps, 'setPendingChanges'> {
   open: boolean;

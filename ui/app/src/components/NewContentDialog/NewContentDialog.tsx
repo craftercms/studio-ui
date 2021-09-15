@@ -22,7 +22,7 @@ import NewContentCard, { ContentSkeletonCard } from './NewContentCard';
 import SearchBar from '../Controls/SearchBar';
 import ContentTypesFilter from '../../modules/Content/Authoring/ContentTypesFilter';
 import DialogFooter from '../Dialogs/DialogFooter';
-import { Box, Checkbox, FormControlLabel, Grid } from '@material-ui/core';
+import { Box, Checkbox, Dialog, FormControlLabel, Grid } from '@material-ui/core';
 import DialogBody from '../Dialogs/DialogBody';
 import SingleItemSelector from '../../modules/Content/Authoring/SingleItemSelector';
 import { fetchLegacyContentTypes } from '../../services/contentTypes';
@@ -37,16 +37,14 @@ import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import { useSubject } from '../../utils/hooks/useSubject';
 import { withoutIndex } from '../../utils/path';
-import Dialog from '../Dialog';
 import useStyles from './styles';
 import translations from './translations';
 import { ContentTypesGridProps, NewContentDialogContainerProps, NewContentDialogProps } from './utils';
 
 export default function NewContentDialog(props: NewContentDialogProps) {
-  const { open, onClose, ...rest } = props;
   return (
-    <Dialog open={open} onClose={onClose}>
-      <NewContentDialogContainer {...rest} />
+    <Dialog open={props.open} onClose={props.onClose} fullWidth maxWidth="md">
+      <NewContentDialogContainer {...props} />
     </Dialog>
   );
 }

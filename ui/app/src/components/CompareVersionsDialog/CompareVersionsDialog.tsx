@@ -18,7 +18,7 @@ import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { CompareVersionsDialogProps } from './utils';
 import CompareVersionsDialogContainer from './CompareVersionsDialogContainer';
-import Dialog from '../Dialog';
+import Dialog from '@material-ui/core/Dialog';
 
 export const useStyles = makeStyles(() =>
   createStyles({
@@ -40,10 +40,9 @@ export const useStyles = makeStyles(() =>
 
 export default function CompareVersionsDialog(props: CompareVersionsDialogProps) {
   const isCompareMode = props.selectedA && props.selectedB;
-  const { open, onClose, ...rest } = props;
   return (
-    <Dialog open={open} onClose={onClose} maxWidth={isCompareMode ? 'xl' : 'md'}>
-      <CompareVersionsDialogContainer {...rest} />
+    <Dialog open={props.open} onClose={props.onClose} fullWidth maxWidth={isCompareMode ? 'xl' : 'md'}>
+      <CompareVersionsDialogContainer {...props} />
     </Dialog>
   );
 }

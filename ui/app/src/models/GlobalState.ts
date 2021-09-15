@@ -22,7 +22,6 @@ import { WidthAndHeight } from './WidthAndHeight';
 import { ElasticParams, MediaItem } from './Search';
 import ContentInstance from './ContentInstance';
 import { ContentTypeDropTarget } from './ContentTypeDropTarget';
-import { ConfirmDialogStateProps } from '../components/Dialogs/ConfirmDialog';
 import { ErrorDialogStateProps } from '../components/SystemStatus/ErrorDialog';
 import { MinimizedDialogsStateProps } from './MinimizedDialog';
 import { NewContentDialogStateProps } from '../components/NewContentDialog/utils';
@@ -62,6 +61,7 @@ import { DependenciesDialogStateProps } from '../components/DependenciesDialog/u
 import { HistoryDialogStateProps } from '../components/HistoryDialog/utils';
 import { ViewVersionDialogStateProps } from '../components/ViewVersionDialog/utils';
 import { CompareVersionsDialogStateProps } from '../components/CompareVersionsDialog/utils';
+import { ConfirmDialogStateProps } from '../components/ConfirmDialog/utils';
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
   page: any;

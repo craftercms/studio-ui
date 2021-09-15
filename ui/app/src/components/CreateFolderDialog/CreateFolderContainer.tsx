@@ -36,7 +36,7 @@ import TextField from '@material-ui/core/TextField';
 import DialogFooter from '../Dialogs/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
-import ConfirmDialog from '../Dialogs/ConfirmDialog';
+import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
 
 export default function CreateFolderContainer(props: CreateFolderContainerProps) {
   const {

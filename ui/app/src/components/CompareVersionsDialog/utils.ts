@@ -20,7 +20,7 @@ import ApiResponse from '../../models/ApiResponse';
 import { LegacyVersion, VersionsStateProps } from '../../models/Version';
 import { EntityState } from '../../models/EntityState';
 import ContentType from '../../models/ContentType';
-import { DialogProps } from '../Dialog';
+import { DialogProps } from '@material-ui/core';
 
 export interface CompareVersionsDialogBaseProps {
   error: ApiResponse;
@@ -34,6 +34,7 @@ export interface CompareVersionsDialogProps extends CompareVersionsDialogBasePro
   selectedB: LegacyVersion;
   contentTypesBranch?: EntityState<ContentType>;
   rightActions?: DialogHeaderAction[];
+  onClosed?(): void;
 }
 
 export interface CompareVersionsDialogStateProps extends CompareVersionsDialogBaseProps, Pick<DialogProps, 'open'> {

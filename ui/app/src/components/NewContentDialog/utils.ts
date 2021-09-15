@@ -18,7 +18,7 @@ import { Resource } from '../../models/Resource';
 import { LegacyFormConfig } from '../../models/ContentType';
 import { DetailedItem } from '../../models/Item';
 import StandardAction from '../../models/StandardAction';
-import { DialogProps } from '../Dialog';
+import { DialogProps } from '@material-ui/core';
 
 export interface ContentTypesGridProps {
   resource: Resource<LegacyFormConfig[] | any>;
@@ -42,6 +42,7 @@ export interface NewContentDialogProps extends NewContentDialogBaseProps, Dialog
     contentTypeId: string;
     onSaveSuccess: StandardAction;
   }): void;
+  onClosed?(): void;
 }
 
 export interface NewContentDialogStateProps extends NewContentDialogBaseProps {

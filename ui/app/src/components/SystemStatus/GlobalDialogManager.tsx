@@ -38,7 +38,7 @@ const ViewVersionDialog = lazy(() => import('../ViewVersionDialog'));
 const CompareVersionsDialog = lazy(() => import('../CompareVersionsDialog'));
 const RejectDialog = lazy(() => import('../Dialogs/RejectDialog'));
 const EditSiteDialog = lazy(() => import('../../modules/System/Sites/Edit/EditSiteDialog'));
-const ConfirmDialog = lazy(() => import('../Dialogs/ConfirmDialog'));
+const ConfirmDialog = lazy(() => import('../ConfirmDialog'));
 const ErrorDialog = lazy(() => import('./ErrorDialog'));
 const NewContentDialog = lazy(() => import('../NewContentDialog'));
 const ChangeContentTypeDialog = lazy(() => import('../../modules/Content/Authoring/ChangeContentTypeDialog'));
@@ -144,7 +144,6 @@ function GlobalDialogManager() {
         onCancel={createCallback(state.confirm.onCancel, dispatch)}
         onClose={createCallback(state.confirm.onClose, dispatch)}
         onClosed={createCallback(state.confirm.onClosed, dispatch)}
-        onDismiss={createCallback(state.confirm.onDismiss, dispatch)}
       />
       {/* endregion */}
 

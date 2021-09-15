@@ -16,9 +16,9 @@
 
 import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import Dialog from '../Dialog';
 import DependenciesDialogContainer from './DependenciesDialogContainer';
 import { DependenciesDialogProps } from './utils';
+import Dialog from '@material-ui/core/Dialog';
 
 export const dependenciesDialogStyles = makeStyles((theme) =>
   createStyles({
@@ -100,7 +100,7 @@ export const dependenciesDialogStyles = makeStyles((theme) =>
 
 export default function DependenciesDialog(props: DependenciesDialogProps) {
   return (
-    <Dialog open={props.open} onClose={props.onClose}>
+    <Dialog open={props.open} onClose={props.onClose} fullWidth maxWidth="md">
       <DependenciesDialogContainer {...props} />
     </Dialog>
   );

@@ -21,7 +21,7 @@ import { ApiResponse } from '../../models/ApiResponse';
 import StandardAction from '../../models/StandardAction';
 import { LookupTable } from '../../models/LookupTable';
 import { Resource } from '../../models/Resource';
-import { DialogProps } from '../Dialog';
+import { DialogProps } from '@material-ui/core';
 
 export interface VersionViewProps {
   resource: Resource<VersionResource>;
@@ -42,6 +42,7 @@ export interface ViewVersionDialogProps extends ViewVersionDialogBaseProps, Dial
   contentTypesBranch: EntityState<ContentType>;
   leftActions?: DialogHeaderAction[];
   rightActions?: DialogHeaderAction[];
+  onClosed?(): void;
 }
 
 export interface ViewVersionDialogStateProps extends ViewVersionDialogBaseProps, Pick<DialogProps, 'open'> {
