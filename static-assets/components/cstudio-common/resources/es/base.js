@@ -676,8 +676,7 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'es', {
   /*Controls*/
   textArea: 'Área de Texto',
   linkTextarea: 'Área de Texto Vinculante',
-  richTextEditor: 'Editor de Texto Enriquecido (TinyMCE 2)',
-  rteTinyMCE5: 'Editor de Texto Enriquecido (TinyMCE 5)',
+  rte: 'Editor de Texto Enriquecido',
   input: 'Campo de Entrada',
   numericInput: 'Entrada numérica',
   uuid: 'UUID',

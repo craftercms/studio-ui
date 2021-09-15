@@ -646,8 +646,7 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'kr', {
 
   /*Controls*/
   textArea: '텍스트 영역',
-  richTextEditor: '서식있는 텍스트 편집기s (TinyMCE 2)',
-  rteTinyMCE5: '서식있는 텍스트 편집기s (TinyMCE 5)',
+  rte: '서식있는 텍스트 편집기s',
   input: '입력',
   numericInput: '숫자 입력',
   uuid: 'UUID',

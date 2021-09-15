@@ -67,7 +67,6 @@ YAHOO.extend(
               addPostfixes = '_o';
               break;
             case 'rte':
-            case 'rte-tinymce5':
               addPostfixes = '_html';
               break;
             case 'time':
