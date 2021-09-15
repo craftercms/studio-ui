@@ -16,9 +16,9 @@
 
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import Dialog from '@material-ui/core/Dialog';
 import { ViewVersionDialogProps } from './utils';
 import ViewVersionDialogContainer from './ViewVersionDialogContainer';
+import Dialog from '../Dialog';
 
 /*const versionViewStyles = makeStyles(() => ({
   viewVersionBox: {
@@ -105,9 +105,10 @@ export const getLegacyDialogStyles = makeStyles(() => ({
 } */
 
 export default function ViewVersionDialog(props: ViewVersionDialogProps) {
+  const { open, onClose, ...rest } = props;
   return (
-    <Dialog open={props.open} onClose={props.onClose} fullWidth maxWidth="md">
-      <ViewVersionDialogContainer {...props} />
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
+      <ViewVersionDialogContainer {...rest} />
     </Dialog>
   );
 }

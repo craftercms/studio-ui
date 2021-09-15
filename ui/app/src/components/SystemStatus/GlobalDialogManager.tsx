@@ -34,7 +34,7 @@ import WidgetDialog from '../WidgetDialog';
 import { useSelection } from '../../utils/hooks/useSelection';
 import CodeEditorDialog from '../CodeEditorDialog';
 
-const ViewVersionDialog = lazy(() => import('../ViewVersionDialog/ViewVersionDialog'));
+const ViewVersionDialog = lazy(() => import('../ViewVersionDialog'));
 const CompareVersionsDialog = lazy(() => import('../../modules/Content/History/CompareVersionsDialog'));
 const RejectDialog = lazy(() => import('../Dialogs/RejectDialog'));
 const EditSiteDialog = lazy(() => import('../../modules/System/Sites/Edit/EditSiteDialog'));
@@ -282,7 +282,6 @@ function GlobalDialogManager() {
         contentTypesBranch={contentTypesBranch}
         onClose={createCallback(state.viewVersion.onClose, dispatch)}
         onClosed={createCallback(state.viewVersion.onClosed, dispatch)}
-        onDismiss={createCallback(state.viewVersion.onDismiss, dispatch)}
       />
       {/* endregion */}
 

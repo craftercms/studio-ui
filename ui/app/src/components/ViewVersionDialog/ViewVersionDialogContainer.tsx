@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { VersionResource, ViewVersionDialogProps } from './utils';
+import { VersionResource, ViewVersionDialogContainerProps } from './utils';
 import { useUnmount } from '../../utils/hooks/useUnmount';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import DialogHeader from '../Dialogs/DialogHeader';
@@ -24,10 +24,10 @@ import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import React from 'react';
 import LegacyVersionDialog from './LegacyVersionDialog';
 
-export default function ViewVersionDialogContainer(props: ViewVersionDialogProps) {
-  const { onDismiss, rightActions } = props;
-  useUnmount(props.onClosed);
-  const resource = useLogicResource<VersionResource, ViewVersionDialogProps>(props, {
+export default function ViewVersionDialogContainer(props: ViewVersionDialogContainerProps) {
+  const { rightActions, onClose, onClosed } = props;
+  useUnmount(onClosed);
+  const resource = useLogicResource<VersionResource, ViewVersionDialogContainerProps>(props, {
     shouldResolve: (source) =>
       source.version && source.contentTypesBranch.byId && !source.isFetching && !source.contentTypesBranch.isFetching,
     shouldReject: (source) => Boolean(source.error) || Boolean(source.contentTypesBranch.error),
@@ -38,12 +38,15 @@ export default function ViewVersionDialogContainer(props: ViewVersionDialogProps
     }),
     errorSelector: (source) => source.error || source.contentTypesBranch.error
   });
+
+  const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
+
   return (
     <>
       <DialogHeader
         title={<FormattedMessage id="viewVersionDialog.headerTitle" defaultMessage="Viewing item version" />}
         rightActions={rightActions}
-        onCloseButtonClick={onDismiss}
+        onCloseButtonClick={onCloseButtonClick}
       />
       <DialogBody>
         <SuspenseWithEmptyState resource={resource}>

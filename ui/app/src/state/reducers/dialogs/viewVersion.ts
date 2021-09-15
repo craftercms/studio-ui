@@ -39,7 +39,6 @@ export default createReducer<GlobalState['dialogs']['viewVersion']>(initialState
     ...state,
     onClose: closeViewVersionDialog(),
     onClosed: viewVersionDialogClosed(),
-    onDismiss: closeViewVersionDialog(),
     ...payload,
     open: true
   }),

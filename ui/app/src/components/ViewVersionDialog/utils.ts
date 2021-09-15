@@ -21,6 +21,7 @@ import { ApiResponse } from '../../models/ApiResponse';
 import StandardAction from '../../models/StandardAction';
 import { LookupTable } from '../../models/LookupTable';
 import { Resource } from '../../models/Resource';
+import { DialogProps } from '../Dialog';
 
 export interface VersionViewProps {
   resource: Resource<VersionResource>;
@@ -32,25 +33,24 @@ export interface VersionResource {
 }
 
 export interface ViewVersionDialogBaseProps {
-  open: boolean;
   error: ApiResponse;
   isFetching: boolean;
   version: any;
 }
 
-export interface ViewVersionDialogProps extends ViewVersionDialogBaseProps {
+export interface ViewVersionDialogProps extends ViewVersionDialogBaseProps, DialogProps {
   contentTypesBranch: EntityState<ContentType>;
   leftActions?: DialogHeaderAction[];
   rightActions?: DialogHeaderAction[];
-  onClose?(): void;
-  onClosed?(): void;
-  onDismiss?(): void;
 }
 
-export interface ViewVersionDialogStateProps extends ViewVersionDialogBaseProps {
+export interface ViewVersionDialogStateProps extends ViewVersionDialogBaseProps, Pick<DialogProps, 'open'> {
   leftActions?: DialogHeaderStateAction[];
   rightActions?: DialogHeaderStateAction[];
   onClose?: StandardAction;
   onClosed?: StandardAction;
-  onDismiss?: StandardAction;
 }
+
+export interface ViewVersionDialogContainerProps
+  extends ViewVersionDialogBaseProps,
+    Pick<ViewVersionDialogProps, 'onClose' | 'onClosed' | 'contentTypesBranch' | 'rightActions'> {}
