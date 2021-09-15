@@ -19,7 +19,7 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { createStyles, darken, lighten, makeStyles, withStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/DeleteOutline';
-import { AsDayMonthDateTime } from '../../modules/Content/History/VersionList';
+import { AsDayMonthDateTime } from '../VersionList/VersionList';
 import { deleteToken, fetchTokens as fetchTokensService, updateToken } from '../../services/tokens';
 import { useDispatch } from 'react-redux';
 import { Token } from '../../models/Token';

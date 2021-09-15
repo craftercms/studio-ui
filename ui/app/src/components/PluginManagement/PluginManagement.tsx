@@ -26,7 +26,7 @@ import Table from '@material-ui/core/Table';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
-import { AsDayMonthDateTime } from '../../modules/Content/History/VersionList';
+import { AsDayMonthDateTime } from '../VersionList/VersionList';
 import EmptyState from '../SystemStatus/EmptyState';
 import InstallPluginDialog from '../MarketplaceDialog';
 import { MarketplacePlugin } from '../../models/MarketplacePlugin';

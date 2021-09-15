@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -17,12 +17,12 @@
 // Next UI code disabled temporarily
 
 import { makeStyles } from '@material-ui/core/styles';
-import ContentInstance from '../../../models/ContentInstance';
-import { LookupTable } from '../../../models/LookupTable';
-import ContentType from '../../../models/ContentType';
+import ContentInstance from '../../models/ContentInstance';
+import { LookupTable } from '../../models/LookupTable';
+import ContentType from '../../models/ContentType';
 import React from 'react';
-import { Resource } from '../../../models/Resource';
-import { useSelection } from '../../../utils/hooks/useSelection';
+import { Resource } from '../../models/Resource';
+import { useSelection } from '../../utils/hooks/useSelection';
 
 // declare const monaco: any;
 

@@ -107,7 +107,7 @@ export const getLegacyDialogStyles = makeStyles(() => ({
 export default function ViewVersionDialog(props: ViewVersionDialogProps) {
   const { open, onClose, ...rest } = props;
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
+    <Dialog open={open} onClose={onClose}>
       <ViewVersionDialogContainer {...rest} />
     </Dialog>
   );

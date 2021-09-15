@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -14,101 +14,41 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import StandardAction from '../../../models/StandardAction';
+import { CompareVersionsDialogContainerProps } from './utils';
+import { FormattedMessage, useIntl } from 'react-intl';
 import React, { useMemo, useState } from 'react';
-import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import { AsDayMonthDateTime, VersionList } from './VersionList';
-import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
-import ApiResponse from '../../../models/ApiResponse';
-import DialogHeader, { DialogHeaderAction, DialogHeaderStateAction } from '../../../components/Dialogs/DialogHeader';
-import { CompareVersionsBranch, LegacyVersion, VersionsStateProps } from '../../../models/Version';
-import DialogBody from '../../../components/Dialogs/DialogBody';
-import DialogFooter from '../../../components/Dialogs/DialogFooter';
+import { useDispatch } from 'react-redux';
+import { useUnmount } from '../../utils/hooks/useUnmount';
+import { useLogicResource } from '../../utils/hooks/useLogicResource';
+import { CompareVersionsBranch, LegacyVersion, VersionsStateProps } from '../../models/Version';
+import { CompareVersions, CompareVersionsResource } from './CompareVersions';
+import { EntityState } from '../../models/EntityState';
+import ContentType from '../../models/ContentType';
 import {
   compareBothVersions,
   compareVersion,
   versionsChangeItem,
   versionsChangePage
-} from '../../../state/reducers/versions';
-import { useDispatch } from 'react-redux';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import ContentType from '../../../models/ContentType';
-import { EntityState } from '../../../models/EntityState';
-import EmptyState from '../../../components/SystemStatus/EmptyState';
-import Typography from '@material-ui/core/Typography';
-import SingleItemSelector from '../Authoring/SingleItemSelector';
-import Dialog from '@material-ui/core/Dialog';
-import { CompareVersions, CompareVersionsResource } from './CompareVersions';
+} from '../../state/reducers/versions';
+import DialogHeader from '../Dialogs/DialogHeader';
+import { AsDayMonthDateTime, VersionList } from '../VersionList/VersionList';
+import { translations } from './translations';
+import DialogBody from '../Dialogs/DialogBody';
 import clsx from 'clsx';
-import { useLogicResource } from '../../../utils/hooks/useLogicResource';
-import { useUnmount } from '../../../utils/hooks/useUnmount';
-import { Pagination } from '../../../components/HistoryDialog/Pagination';
+import SingleItemSelector from '../../modules/Content/Authoring/SingleItemSelector';
+import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
+import EmptyState from '../SystemStatus/EmptyState';
+import Typography from '@material-ui/core/Typography';
+import DialogFooter from '../Dialogs/DialogFooter';
+import { Pagination } from '../HistoryDialog';
+import { useStyles } from './CompareVersionsDialog';
 
-const translations = defineMessages({
-  backToSelectRevision: {
-    id: 'compareVersionsDialog.back.selectRevision',
-    defaultMessage: 'Back to select revision'
-  }
-});
-
-const useStyles = makeStyles(() =>
-  createStyles({
-    dialogBody: {
-      overflow: 'auto',
-      minHeight: '50vh'
-    },
-    noPadding: {
-      padding: 0
-    },
-    singleItemSelector: {
-      marginBottom: '10px'
-    },
-    typography: {
-      lineHeight: '1.5'
-    }
-  })
-);
-
-interface CompareVersionsDialogBaseProps {
-  open: boolean;
-  error: ApiResponse;
-  isFetching: boolean;
-  disableItemSwitching?: boolean;
-}
-
-interface CompareVersionsDialogProps extends CompareVersionsDialogBaseProps {
-  versionsBranch: VersionsStateProps;
-  selectedA: LegacyVersion;
-  selectedB: LegacyVersion;
-  contentTypesBranch?: EntityState<ContentType>;
-  rightActions?: DialogHeaderAction[];
-  onClose?(): void;
-  onClosed?(): void;
-  onDismiss?(): void;
-}
-
-export interface CompareVersionsDialogStateProps extends CompareVersionsDialogBaseProps {
-  rightActions?: DialogHeaderStateAction[];
-  onClose?: StandardAction;
-  onClosed?: StandardAction;
-  onDismiss?: StandardAction;
-}
-
-export default function CompareVersionsDialogWrapper(props: CompareVersionsDialogProps) {
-  const isCompareMode = props.selectedA && props.selectedB;
-  return (
-    <Dialog open={props.open} onClose={props.onClose} fullWidth maxWidth={isCompareMode ? 'xl' : 'md'}>
-      <CompareVersionsDialog {...props} />
-    </Dialog>
-  );
-}
-
-function CompareVersionsDialog(props: CompareVersionsDialogProps) {
+export default function CompareVersionsDialogContainer(props: CompareVersionsDialogContainerProps) {
   const {
     rightActions,
     selectedA,
     selectedB,
-    onDismiss,
+    onClose,
     versionsBranch,
     disableItemSwitching = false,
     contentTypesBranch
@@ -174,6 +114,8 @@ function CompareVersionsDialog(props: CompareVersionsDialogProps) {
     dispatch(versionsChangePage({ page: nextPage }));
   };
 
+  const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
+
   return (
     <>
       <DialogHeader
@@ -206,7 +148,7 @@ function CompareVersionsDialog(props: CompareVersionsDialogProps) {
             : null
         }
         rightActions={rightActions}
-        onCloseButtonClick={onDismiss}
+        onCloseButtonClick={onCloseButtonClick}
       />
       <DialogBody className={clsx(classes.dialogBody, compareMode && classes.noPadding)}>
         {!compareMode && (

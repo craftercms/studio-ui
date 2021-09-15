@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -24,12 +24,12 @@ import Chip from '@material-ui/core/Chip';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
-import { Resource } from '../../../models/Resource';
-import { LegacyVersion } from '../../../models/Version';
+import { Resource } from '../../models/Resource';
+import { LegacyVersion } from '../../models/Version';
 import clsx from 'clsx';
-import palette from '../../../styles/palette';
-import GlobalState from '../../../models/GlobalState';
-import { useSelection } from '../../../utils/hooks/useSelection';
+import palette from '../../styles/palette';
+import GlobalState from '../../models/GlobalState';
+import { useSelection } from '../../utils/hooks/useSelection';
 
 const versionListStyles = makeStyles((theme) =>
   createStyles({

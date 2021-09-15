@@ -35,7 +35,7 @@ import { useSelection } from '../../utils/hooks/useSelection';
 import CodeEditorDialog from '../CodeEditorDialog';
 
 const ViewVersionDialog = lazy(() => import('../ViewVersionDialog'));
-const CompareVersionsDialog = lazy(() => import('../../modules/Content/History/CompareVersionsDialog'));
+const CompareVersionsDialog = lazy(() => import('../CompareVersionsDialog'));
 const RejectDialog = lazy(() => import('../Dialogs/RejectDialog'));
 const EditSiteDialog = lazy(() => import('../../modules/System/Sites/Edit/EditSiteDialog'));
 const ConfirmDialog = lazy(() => import('../Dialogs/ConfirmDialog'));
@@ -301,7 +301,6 @@ function GlobalDialogManager() {
         disableItemSwitching={state.compareVersions.disableItemSwitching}
         onClose={createCallback(state.compareVersions.onClose, dispatch)}
         onClosed={createCallback(state.compareVersions.onClosed, dispatch)}
-        onDismiss={createCallback(state.compareVersions.onDismiss, dispatch)}
       />
       {/* endregion */}
 
