@@ -101,7 +101,7 @@ interface VersionListProps {
   onOpenMenu?(anchorEl: Element, version: LegacyVersion, isCurrent: boolean, lastOne: boolean): void;
 }
 
-export function VersionList(props: VersionListProps) {
+export default function VersionList(props: VersionListProps) {
   const classes = versionListStyles({});
   const { versions: versionsResource, onOpenMenu, onItemClick, current, selected } = props;
   const versions = versionsResource.read();

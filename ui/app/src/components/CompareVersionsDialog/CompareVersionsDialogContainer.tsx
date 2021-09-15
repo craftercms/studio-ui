@@ -31,7 +31,7 @@ import {
   versionsChangePage
 } from '../../state/reducers/versions';
 import DialogHeader from '../Dialogs/DialogHeader';
-import { AsDayMonthDateTime, VersionList } from '../VersionList/VersionList';
+import VersionList, { AsDayMonthDateTime } from '../VersionList';
 import { translations } from './translations';
 import DialogBody from '../Dialogs/DialogBody';
 import clsx from 'clsx';

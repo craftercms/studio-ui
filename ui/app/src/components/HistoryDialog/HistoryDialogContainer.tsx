@@ -53,7 +53,7 @@ import DialogHeader from '../Dialogs/DialogHeader';
 import DialogBody from '../Dialogs/DialogBody';
 import SingleItemSelector from '../../modules/Content/Authoring/SingleItemSelector';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
-import { VersionList } from '../VersionList/VersionList';
+import VersionList from '../VersionList';
 import DialogFooter from '../Dialogs/DialogFooter';
 import { Pagination } from './Pagination';
 import { historyStyles } from './HistoryDialog';
