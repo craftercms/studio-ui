@@ -72,6 +72,10 @@ const translations = defineMessages({
     id: 'bulkUpload.dropHere',
     defaultMessage: 'Drop files here or <span>browse</span>'
   },
+  maxFiles: {
+    id: 'bulkUpload.maxFiles',
+    defaultMessage: '{maxFiles} max.'
+  },
   browse: {
     id: 'words.browse',
     defaultMessage: 'Browse'
@@ -204,7 +208,14 @@ const useUppyItemStyles = makeStyles(() =>
   })
 );
 
-const uppy = Core({ debug: false, autoProceed: true });
+const maxTotalFiles = 2;
+const uppy = Core({
+  debug: false,
+  autoProceed: true,
+  restrictions: {
+    maxNumberOfFiles: maxTotalFiles
+  }
+});
 
 type FileWithRelativePath = File & { relativePath?: string };
 
@@ -300,7 +311,13 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
   const handleOnDrop = (event: React.DragEvent<HTMLElement>) => {
     event.preventDefault();
     event.stopPropagation();
-    getDroppedFiles(event.dataTransfer).then((files) => addFiles(files));
+    getDroppedFiles(event.dataTransfer).then((files) => {
+      if (files.length <= maxTotalFiles) {
+        addFiles(files);
+      } else {
+        addFiles(files.slice(0, maxTotalFiles));
+      }
+    });
     setDragOver(false);
     removeDragData(event);
   };
@@ -313,7 +330,12 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = toArray(event.target.files);
-    addFiles(files);
+
+    if (files.length <= maxTotalFiles) {
+      addFiles(files);
+    } else {
+      addFiles(files.slice(0, maxTotalFiles));
+    }
     event.target.value = null;
   };
 
@@ -517,6 +539,11 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
                   </span>
                 )
               })}
+              &nbsp; (
+              {formatMessage(translations.maxFiles, {
+                maxFiles: maxTotalFiles
+              })}
+              )
             </Typography>
           </>
         )}
