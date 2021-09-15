@@ -185,3 +185,19 @@ export function setStoredShowToolsPanel(siteIdentifier: string, user: string, va
 export function getStoredShowToolsPanel(siteIdentifier: string, user: string): boolean {
   return JSON.parse(window.localStorage.getItem(`craftercms.${user}.openToolsPanel.${siteIdentifier}`));
 }
+
+export function getStoredPreviewToolsPanelWidth(siteIdentifier: string, user: string): number {
+  return parseInt(window.localStorage.getItem(`craftercms.${user}.previewToolsPanelWidth.${siteIdentifier}`));
+}
+
+export function setStoredPreviewToolsPanelWidth(siteIdentifier: string, user: string, value: number) {
+  return window.localStorage.setItem(`craftercms.${user}.previewToolsPanelWidth.${siteIdentifier}`, value.toString());
+}
+
+export function getStoredICEToolsPanelWidth(siteIdentifier: string, user: string): number {
+  return parseInt(window.localStorage.getItem(`craftercms.${user}.iceToolsPanelWidth.${siteIdentifier}`));
+}
+
+export function setStoredICEToolsPanelWidth(siteIdentifier: string, user: string, value: number) {
+  return window.localStorage.setItem(`craftercms.${user}.iceToolsPanelWidth.${siteIdentifier}`, value.toString());
+}
