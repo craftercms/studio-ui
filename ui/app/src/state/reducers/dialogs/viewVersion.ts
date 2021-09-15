@@ -16,7 +16,6 @@
 
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
-import { ViewVersionDialogStateProps } from '../../../modules/Content/History/ViewVersionDialog';
 import {
   closeViewVersionDialog,
   fetchContentVersion,
@@ -26,6 +25,7 @@ import {
   showViewVersionDialog,
   viewVersionDialogClosed
 } from '../../actions/dialogs';
+import { ViewVersionDialogStateProps } from '../../../components/ViewVersionDialog/utils';
 
 const initialState: ViewVersionDialogStateProps = {
   open: false,

@@ -28,7 +28,6 @@ import { MinimizedDialogsStateProps } from './MinimizedDialog';
 import { NewContentDialogStateProps } from '../components/NewContentDialog/utils';
 import { EntityState } from './EntityState';
 import { ApiResponse } from './ApiResponse';
-import { ViewVersionDialogStateProps } from '../modules/Content/History/ViewVersionDialog';
 import { CompareVersionsDialogStateProps } from '../modules/Content/History/CompareVersionsDialog';
 import { VersionsStateProps } from './Version';
 import QuickCreateItem from './content/QuickCreateItem';
@@ -62,6 +61,7 @@ import { DeleteDialogStateProps } from '../components/DeleteDialog/utils';
 import { CreateFolderStateProps } from '../components/CreateFolderDialog/utils';
 import { DependenciesDialogStateProps } from '../components/DependenciesDialog/utils';
 import { HistoryDialogStateProps } from '../components/HistoryDialog/utils';
+import { ViewVersionDialogStateProps } from '../components/ViewVersionDialog/utils';
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
   page: any;
