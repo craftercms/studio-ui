@@ -18,7 +18,8 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { ViewVersionDialogProps } from './utils';
 import ViewVersionDialogContainer from './ViewVersionDialogContainer';
-import Dialog from '@material-ui/core/Dialog';
+import EnhancedDialog from '../Dialog/EnhancedDialog';
+import { FormattedMessage } from 'react-intl';
 
 /*const versionViewStyles = makeStyles(() => ({
   viewVersionBox: {
@@ -105,9 +106,22 @@ export const getLegacyDialogStyles = makeStyles(() => ({
 } */
 
 export default function ViewVersionDialog(props: ViewVersionDialogProps) {
+  const { rightActions, contentTypesBranch, error, isFetching, version, ...rest } = props;
+
   return (
-    <Dialog open={props.open} onClose={props.onClose} fullWidth maxWidth="md">
-      <ViewVersionDialogContainer {...props} />
-    </Dialog>
+    <EnhancedDialog
+      title={<FormattedMessage id="viewVersionDialog.headerTitle" defaultMessage="Viewing item version" />}
+      dialogHeaderProps={{
+        rightActions
+      }}
+      {...rest}
+    >
+      <ViewVersionDialogContainer
+        version={version}
+        contentTypesBranch={contentTypesBranch}
+        error={error}
+        isFetching={isFetching}
+      />
+    </EnhancedDialog>
   );
 }

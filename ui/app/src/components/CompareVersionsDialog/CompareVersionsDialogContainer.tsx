@@ -15,10 +15,9 @@
  */
 
 import { CompareVersionsDialogContainerProps } from './utils';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import React, { useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { useUnmount } from '../../utils/hooks/useUnmount';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import { CompareVersionsBranch, LegacyVersion, VersionsStateProps } from '../../models/Version';
 import { CompareVersions, CompareVersionsResource } from './CompareVersions';
@@ -30,9 +29,7 @@ import {
   versionsChangeItem,
   versionsChangePage
 } from '../../state/reducers/versions';
-import DialogHeader from '../Dialogs/DialogHeader';
-import VersionList, { AsDayMonthDateTime } from '../VersionList';
-import { translations } from './translations';
+import VersionList from '../VersionList';
 import DialogBody from '../Dialogs/DialogBody';
 import clsx from 'clsx';
 import SingleItemSelector from '../../modules/Content/Authoring/SingleItemSelector';
@@ -44,24 +41,12 @@ import { Pagination } from '../HistoryDialog';
 import { useStyles } from './CompareVersionsDialog';
 
 export default function CompareVersionsDialogContainer(props: CompareVersionsDialogContainerProps) {
-  const {
-    rightActions,
-    selectedA,
-    selectedB,
-    onClose,
-    versionsBranch,
-    disableItemSwitching = false,
-    contentTypesBranch
-  } = props;
+  const { selectedA, selectedB, versionsBranch, disableItemSwitching = false, contentTypesBranch } = props;
   const { count, page, limit, selected, compareVersionsBranch, current, item, rootPath } = versionsBranch;
-  const { formatMessage } = useIntl();
   const classes = useStyles({});
   const [openSelector, setOpenSelector] = useState(false);
   const dispatch = useDispatch();
-  const selectMode = selectedA && !selectedB;
   const compareMode = selectedA && selectedB;
-
-  useUnmount(props.onClosed);
 
   const versionsResource = useLogicResource<LegacyVersion[], VersionsStateProps>(versionsBranch, {
     shouldResolve: (_versionsBranch) => Boolean(_versionsBranch.versions) && !_versionsBranch.isFetching,
@@ -114,42 +99,8 @@ export default function CompareVersionsDialogContainer(props: CompareVersionsDia
     dispatch(versionsChangePage({ page: nextPage }));
   };
 
-  const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
-
   return (
     <>
-      <DialogHeader
-        title={<FormattedMessage id="compareVersionsDialog.headerTitle" defaultMessage="Compare item versions" />}
-        subtitle={
-          selectMode ? (
-            <FormattedMessage
-              id="compareVersionsDialog.headerSubtitleCompareTo"
-              defaultMessage="Select a revision to compare to “{selectedA}”"
-              values={{ selectedA: <AsDayMonthDateTime date={selectedA.lastModifiedDate} /> }}
-            />
-          ) : (
-            !compareMode && (
-              <FormattedMessage
-                id="compareVersionsDialog.headerSubtitleCompare"
-                defaultMessage="Select a revision to compare"
-              />
-            )
-          )
-        }
-        leftActions={
-          compareMode
-            ? [
-                {
-                  icon: 'BackIcon',
-                  onClick: () => dispatch(compareVersion({ id: selected[0] })),
-                  'aria-label': formatMessage(translations.backToSelectRevision)
-                }
-              ]
-            : null
-        }
-        rightActions={rightActions}
-        onCloseButtonClick={onCloseButtonClick}
-      />
       <DialogBody className={clsx(classes.dialogBody, compareMode && classes.noPadding)}>
         {!compareMode && (
           <SingleItemSelector

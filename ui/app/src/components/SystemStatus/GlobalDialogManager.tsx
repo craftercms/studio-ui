@@ -287,6 +287,9 @@ function GlobalDialogManager() {
         }))}
         version={state.viewVersion.version}
         contentTypesBranch={contentTypesBranch}
+        hasPendingChanges={state.viewVersion.hasPendingChanges}
+        isSubmitting={state.viewVersion.isSubmitting}
+        isMinimized={state.viewVersion.isMinimized}
         onClose={createCallback(state.viewVersion.onClose, dispatch)}
         onClosed={createCallback(state.viewVersion.onClosed, dispatch)}
       />
@@ -306,6 +309,9 @@ function GlobalDialogManager() {
         selectedB={versionsBranch?.selected[1] ? versionsBranch.byId[versionsBranch.selected[1]] : null}
         versionsBranch={versionsBranch}
         disableItemSwitching={state.compareVersions.disableItemSwitching}
+        hasPendingChanges={state.compareVersions.hasPendingChanges}
+        isSubmitting={state.compareVersions.isSubmitting}
+        isMinimized={state.compareVersions.isMinimized}
         onClose={createCallback(state.compareVersions.onClose, dispatch)}
         onClosed={createCallback(state.compareVersions.onClosed, dispatch)}
       />

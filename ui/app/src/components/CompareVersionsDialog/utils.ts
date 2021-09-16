@@ -20,7 +20,8 @@ import ApiResponse from '../../models/ApiResponse';
 import { LegacyVersion, VersionsStateProps } from '../../models/Version';
 import { EntityState } from '../../models/EntityState';
 import ContentType from '../../models/ContentType';
-import { DialogProps } from '@material-ui/core';
+import { EnhancedDialogProps } from '../Dialog';
+import { EnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
 
 export interface CompareVersionsDialogBaseProps {
   error: ApiResponse;
@@ -28,16 +29,15 @@ export interface CompareVersionsDialogBaseProps {
   disableItemSwitching?: boolean;
 }
 
-export interface CompareVersionsDialogProps extends CompareVersionsDialogBaseProps, DialogProps {
+export interface CompareVersionsDialogProps extends CompareVersionsDialogBaseProps, EnhancedDialogProps {
   versionsBranch: VersionsStateProps;
   selectedA: LegacyVersion;
   selectedB: LegacyVersion;
   contentTypesBranch?: EntityState<ContentType>;
   rightActions?: DialogHeaderAction[];
-  onClosed?(): void;
 }
 
-export interface CompareVersionsDialogStateProps extends CompareVersionsDialogBaseProps, Pick<DialogProps, 'open'> {
+export interface CompareVersionsDialogStateProps extends CompareVersionsDialogBaseProps, EnhancedDialogState {
   rightActions?: DialogHeaderStateAction[];
   onClose?: StandardAction;
   onClosed?: StandardAction;
@@ -47,12 +47,5 @@ export interface CompareVersionsDialogContainerProps
   extends CompareVersionsDialogBaseProps,
     Pick<
       CompareVersionsDialogProps,
-      | 'onClose'
-      | 'onClosed'
-      | 'contentTypesBranch'
-      | 'versionsBranch'
-      | 'rightActions'
-      | 'selectedA'
-      | 'selectedB'
-      | 'disableItemSwitching'
+      'contentTypesBranch' | 'versionsBranch' | 'selectedA' | 'selectedB' | 'disableItemSwitching'
     > {}

@@ -46,6 +46,7 @@ export function EnhancedDialog(props: EnhancedDialogProps) {
     onMaximize,
     onWithPendingChangesCloseRequest,
     children,
+    dialogHeaderProps,
     ...dialogProps
   } = props;
   // endregion
@@ -72,7 +73,7 @@ export function EnhancedDialog(props: EnhancedDialogProps) {
         onClose={onClose}
       >
         <DialogHeader
-          {...props.dialogHeaderProps}
+          {...dialogHeaderProps}
           onMinimizeButtonClick={onMinimize}
           title={title}
           onCloseButtonClick={(e) => onClose(e, null)}

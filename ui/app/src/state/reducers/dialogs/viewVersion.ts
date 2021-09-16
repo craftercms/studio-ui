@@ -29,6 +29,9 @@ import { ViewVersionDialogStateProps } from '../../../components/ViewVersionDial
 
 const initialState: ViewVersionDialogStateProps = {
   open: false,
+  isSubmitting: null,
+  isMinimized: null,
+  hasPendingChanges: null,
   isFetching: null,
   error: null,
   version: null

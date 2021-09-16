@@ -21,7 +21,8 @@ import { ApiResponse } from '../../models/ApiResponse';
 import StandardAction from '../../models/StandardAction';
 import { LookupTable } from '../../models/LookupTable';
 import { Resource } from '../../models/Resource';
-import { DialogProps } from '@material-ui/core';
+import { EnhancedDialogProps } from '../Dialog';
+import { EnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
 
 export interface VersionViewProps {
   resource: Resource<VersionResource>;
@@ -38,14 +39,13 @@ export interface ViewVersionDialogBaseProps {
   version: any;
 }
 
-export interface ViewVersionDialogProps extends ViewVersionDialogBaseProps, DialogProps {
+export interface ViewVersionDialogProps extends ViewVersionDialogBaseProps, EnhancedDialogProps {
   contentTypesBranch: EntityState<ContentType>;
   leftActions?: DialogHeaderAction[];
   rightActions?: DialogHeaderAction[];
-  onClosed?(): void;
 }
 
-export interface ViewVersionDialogStateProps extends ViewVersionDialogBaseProps, Pick<DialogProps, 'open'> {
+export interface ViewVersionDialogStateProps extends ViewVersionDialogBaseProps, EnhancedDialogState {
   leftActions?: DialogHeaderStateAction[];
   rightActions?: DialogHeaderStateAction[];
   onClose?: StandardAction;
@@ -54,4 +54,4 @@ export interface ViewVersionDialogStateProps extends ViewVersionDialogBaseProps,
 
 export interface ViewVersionDialogContainerProps
   extends ViewVersionDialogBaseProps,
-    Pick<ViewVersionDialogProps, 'onClose' | 'onClosed' | 'contentTypesBranch' | 'rightActions'> {}
+    Pick<ViewVersionDialogProps, 'contentTypesBranch'> {}

@@ -15,18 +15,13 @@
  */
 
 import { VersionResource, ViewVersionDialogContainerProps } from './utils';
-import { useUnmount } from '../../utils/hooks/useUnmount';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
-import DialogHeader from '../Dialogs/DialogHeader';
-import { FormattedMessage } from 'react-intl';
 import DialogBody from '../Dialogs/DialogBody';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import React from 'react';
 import LegacyVersionDialog from './LegacyVersionDialog';
 
 export default function ViewVersionDialogContainer(props: ViewVersionDialogContainerProps) {
-  const { rightActions, onClose, onClosed } = props;
-  useUnmount(onClosed);
   const resource = useLogicResource<VersionResource, ViewVersionDialogContainerProps>(props, {
     shouldResolve: (source) =>
       source.version && source.contentTypesBranch.byId && !source.isFetching && !source.contentTypesBranch.isFetching,
@@ -39,15 +34,8 @@ export default function ViewVersionDialogContainer(props: ViewVersionDialogConta
     errorSelector: (source) => source.error || source.contentTypesBranch.error
   });
 
-  const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
-
   return (
     <>
-      <DialogHeader
-        title={<FormattedMessage id="viewVersionDialog.headerTitle" defaultMessage="Viewing item version" />}
-        rightActions={rightActions}
-        onCloseButtonClick={onCloseButtonClick}
-      />
       <DialogBody>
         <SuspenseWithEmptyState resource={resource}>
           <LegacyVersionDialog resource={resource} />

@@ -26,6 +26,9 @@ import { CompareVersionsDialogStateProps } from '../../../components/CompareVers
 
 const initialState: CompareVersionsDialogStateProps = {
   open: false,
+  isSubmitting: null,
+  isMinimized: null,
+  hasPendingChanges: null,
   isFetching: null,
   error: null
 };

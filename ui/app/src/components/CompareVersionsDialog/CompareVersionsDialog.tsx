@@ -18,7 +18,12 @@ import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { CompareVersionsDialogProps } from './utils';
 import CompareVersionsDialogContainer from './CompareVersionsDialogContainer';
-import Dialog from '@material-ui/core/Dialog';
+import EnhancedDialog from '../Dialog/EnhancedDialog';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { AsDayMonthDateTime } from '../VersionList';
+import { compareVersion } from '../../state/reducers/versions';
+import { translations } from './translations';
+import { useDispatch } from 'react-redux';
 
 export const useStyles = makeStyles(() =>
   createStyles({
@@ -39,10 +44,64 @@ export const useStyles = makeStyles(() =>
 );
 
 export default function CompareVersionsDialog(props: CompareVersionsDialogProps) {
+  const isSelectMode = props.selectedA && !props.selectedB;
   const isCompareMode = props.selectedA && props.selectedB;
+  const {
+    selectedA,
+    selectedB,
+    rightActions,
+    versionsBranch,
+    isFetching,
+    error,
+    disableItemSwitching,
+    contentTypesBranch,
+    ...rest
+  } = props;
+
+  const dispatch = useDispatch();
+  const { formatMessage } = useIntl();
+
   return (
-    <Dialog open={props.open} onClose={props.onClose} fullWidth maxWidth={isCompareMode ? 'xl' : 'md'}>
-      <CompareVersionsDialogContainer {...props} />
-    </Dialog>
+    <EnhancedDialog
+      title={<FormattedMessage id="compareVersionsDialog.headerTitle" defaultMessage="Compare item versions" />}
+      dialogHeaderProps={{
+        subtitle: isSelectMode ? (
+          <FormattedMessage
+            id="compareVersionsDialog.headerSubtitleCompareTo"
+            defaultMessage="Select a revision to compare to “{selectedA}”"
+            values={{ selectedA: <AsDayMonthDateTime date={selectedA.lastModifiedDate} /> }}
+          />
+        ) : (
+          !isCompareMode && (
+            <FormattedMessage
+              id="compareVersionsDialog.headerSubtitleCompare"
+              defaultMessage="Select a revision to compare"
+            />
+          )
+        ),
+        leftActions: isCompareMode
+          ? [
+              {
+                icon: 'BackIcon',
+                onClick: () => dispatch(compareVersion({ id: versionsBranch.selected[0] })),
+                'aria-label': formatMessage(translations.backToSelectRevision)
+              }
+            ]
+          : null,
+        rightActions
+      }}
+      maxWidth={isCompareMode ? 'xl' : 'md'}
+      {...rest}
+    >
+      <CompareVersionsDialogContainer
+        versionsBranch={versionsBranch}
+        isFetching={isFetching}
+        error={error}
+        disableItemSwitching={disableItemSwitching}
+        contentTypesBranch={contentTypesBranch}
+        selectedA={selectedA}
+        selectedB={selectedB}
+      />
+    </EnhancedDialog>
   );
 }
