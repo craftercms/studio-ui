@@ -252,7 +252,8 @@ function GlobalDialogManager() {
         isFetching={state.delete.isFetching}
         dependentItems={state.delete.dependentItems}
         childItems={state.delete.childItems}
-        disableQuickDismiss={state.delete.disableQuickDismiss}
+        hasPendingChanges={state.delete.hasPendingChanges}
+        isSubmitting={state.delete.isSubmitting}
         onClose={createCallback(state.delete.onClose, dispatch)}
         onClosed={createCallback(state.delete.onClosed, dispatch)}
         onSuccess={createCallback(state.delete.onSuccess, dispatch)}

@@ -15,42 +15,15 @@
  */
 
 import React from 'react';
-import Dialog, { DialogProps } from '@material-ui/core/Dialog';
-import { DeleteDialogContainer, DeleteDialogContainerProps } from './DeleteDialogContainer';
-import { useOnClose } from '../../utils/hooks/useOnClose';
-
-export type DeleteDialogProps = DialogProps & DeleteDialogContainerProps;
+import { DeleteDialogContainer } from './DeleteDialogContainer';
+import { DeleteDialogProps } from './utils';
+import Dialog from '../Dialog';
 
 export default function DeleteDialog(props: DeleteDialogProps) {
-  const {
-    items,
-    isFetching,
-    onClose,
-    onClosed,
-    onSuccess,
-    childItems,
-    dependentItems,
-    disableQuickDismiss,
-    ...dialogProps
-  } = props;
-  const containerProps: DeleteDialogContainerProps = {
-    items,
-    onClose: props.onClose,
-    isFetching,
-    onClosed,
-    onSuccess,
-    childItems,
-    dependentItems,
-    disableQuickDismiss
-  };
-  const onCloseInternal = useOnClose({
-    onClose,
-    disableEscapeKeyDown: disableQuickDismiss,
-    disableBackdropClick: disableQuickDismiss
-  });
+  const { open, onClose, isSubmitting, hasPendingChanges, ...rest } = props;
   return (
-    <Dialog {...dialogProps} onClose={onCloseInternal} fullWidth maxWidth="md">
-      <DeleteDialogContainer {...containerProps} />
+    <Dialog open={open} onClose={onClose} isSubmitting={isSubmitting} hasPendingChanges={hasPendingChanges}>
+      <DeleteDialogContainer {...rest} isSubmitting={isSubmitting} />
     </Dialog>
   );
 }

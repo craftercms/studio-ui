@@ -23,14 +23,8 @@ import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import DialogFooter from '../Dialogs/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
-import DeleteDialogUIBody, { DeleteDialogContentUIProps } from './DeleteDialogUIBody';
-
-interface DeleteDialogUIProps extends DeleteDialogContentUIProps {
-  isSubmitting: boolean;
-  isSubmitButtonDisabled: boolean;
-  onSubmit(): void;
-  onDismiss(): void;
-}
+import DeleteDialogUIBody from './DeleteDialogUIBody';
+import { DeleteDialogUIProps } from './utils';
 
 export function DeleteDialogUI(props: DeleteDialogUIProps) {
   const {
@@ -42,7 +36,7 @@ export function DeleteDialogUI(props: DeleteDialogUIProps) {
     isDisabled,
     isSubmitting,
     onSubmit,
-    onDismiss,
+    onCloseButtonClick,
     isConfirmDeleteChecked,
     isCommentRequired,
     isSubmitButtonDisabled,
@@ -58,7 +52,7 @@ export function DeleteDialogUI(props: DeleteDialogUIProps) {
       <DialogHeader
         title={formatMessage(translations.headerTitle)}
         subtitle={formatMessage(translations.headerSubTitle)}
-        onCloseButtonClick={onDismiss}
+        onCloseButtonClick={onCloseButtonClick}
         disableDismiss={isDisabled}
       />
       <DialogBody minHeight>
@@ -81,7 +75,7 @@ export function DeleteDialogUI(props: DeleteDialogUIProps) {
         </SuspenseWithEmptyState>
       </DialogBody>
       <DialogFooter>
-        <SecondaryButton onClick={onDismiss} disabled={isDisabled}>
+        <SecondaryButton onClick={onCloseButtonClick} disabled={isDisabled}>
           <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
         </SecondaryButton>
         <PrimaryButton onClick={onSubmit} disabled={isSubmitButtonDisabled || isDisabled} loading={isSubmitting}>

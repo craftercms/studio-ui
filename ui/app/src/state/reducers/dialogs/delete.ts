@@ -31,8 +31,7 @@ const initialState: DeleteDialogStateProps = {
   items: null,
   isFetching: false,
   childItems: null,
-  dependentItems: null,
-  disableQuickDismiss: null
+  dependentItems: null
 };
 
 export default createReducer<GlobalState['dialogs']['delete']>(initialState, {

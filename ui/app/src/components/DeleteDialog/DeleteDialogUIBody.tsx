@@ -15,34 +15,15 @@
  */
 
 import React from 'react';
-import { Resource } from '../../models/Resource';
 import { DeleteDependencies } from '../../modules/Content/Dependencies/DependencySelection';
-import { DetailedItem } from '../../models/Item';
 import { useDeleteDialogUIStyles } from './styles';
 import Grid from '@material-ui/core/Grid';
 import TextFieldWithMax from '../Controls/TextFieldWithMax';
 import { FormattedMessage } from 'react-intl';
-import { InputProps } from '@material-ui/core/Input';
-import { SelectionList, SelectionListProps } from '../../modules/Content/Dependencies/SelectionList';
-import LookupTable from '../../models/LookupTable';
+import { SelectionList } from '../../modules/Content/Dependencies/SelectionList';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-
-export interface DeleteDialogContentUIProps {
-  resource: Resource<DeleteDependencies>;
-  items: DetailedItem[];
-  comment: string;
-  selectedItems: LookupTable<boolean>;
-  isCommentRequired: boolean;
-  isDisabled: boolean;
-  isConfirmDeleteChecked: boolean;
-  onCommentChange: InputProps['onChange'];
-  onItemClicked: SelectionListProps['onItemClicked'];
-  onSelectAllClicked: SelectionListProps['onSelectAllClicked'];
-  onSelectAllDependantClicked: SelectionListProps['onSelectAllClicked'];
-  onConfirmDeleteChange(event: React.ChangeEvent, checked: boolean): void;
-  onEditDependantClick: SelectionListProps['onEditClick'];
-}
+import { DeleteDialogContentUIProps } from './utils';
 
 export function DeleteDialogUIBody(props: DeleteDialogContentUIProps) {
   const {
