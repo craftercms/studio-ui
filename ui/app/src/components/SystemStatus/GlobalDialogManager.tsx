@@ -220,6 +220,9 @@ function GlobalDialogManager() {
         item={state.newContent.item}
         rootPath={state.newContent.rootPath}
         compact={state.newContent.compact}
+        isMinimized={state.newContent.isMinimized}
+        isSubmitting={state.newContent.isSubmitting}
+        hasPendingChanges={state.newContent.hasPendingChanges}
         onContentTypeSelected={createCallback(state.newContent.onContentTypeSelected, dispatch)}
         onClose={createCallback(state.newContent.onClose, dispatch)}
         onClosed={createCallback(state.newContent.onClosed, dispatch)}

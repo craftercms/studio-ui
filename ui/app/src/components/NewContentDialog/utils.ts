@@ -18,7 +18,8 @@ import { Resource } from '../../models/Resource';
 import { LegacyFormConfig } from '../../models/ContentType';
 import { DetailedItem } from '../../models/Item';
 import StandardAction from '../../models/StandardAction';
-import { DialogProps } from '@material-ui/core';
+import { EnhancedDialogProps } from '../Dialog';
+import { EnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
 
 export interface ContentTypesGridProps {
   resource: Resource<LegacyFormConfig[] | any>;
@@ -34,7 +35,7 @@ export interface NewContentDialogBaseProps {
   compact: boolean;
 }
 
-export interface NewContentDialogProps extends NewContentDialogBaseProps, DialogProps {
+export interface NewContentDialogProps extends NewContentDialogBaseProps, EnhancedDialogProps {
   onContentTypeSelected?(response: {
     authoringBase: string;
     path: string;
@@ -42,11 +43,9 @@ export interface NewContentDialogProps extends NewContentDialogBaseProps, Dialog
     contentTypeId: string;
     onSaveSuccess: StandardAction;
   }): void;
-  onClosed?(): void;
 }
 
-export interface NewContentDialogStateProps extends NewContentDialogBaseProps {
-  open: boolean;
+export interface NewContentDialogStateProps extends NewContentDialogBaseProps, EnhancedDialogState {
   onContentTypeSelected?: StandardAction;
   onClose?: StandardAction;
   onClosed?: StandardAction;
@@ -54,4 +53,4 @@ export interface NewContentDialogStateProps extends NewContentDialogBaseProps {
 
 export interface NewContentDialogContainerProps
   extends NewContentDialogBaseProps,
-    Pick<NewContentDialogProps, 'onContentTypeSelected' | 'onClose' | 'onClosed'> {}
+    Pick<NewContentDialogProps, 'onContentTypeSelected'> {}

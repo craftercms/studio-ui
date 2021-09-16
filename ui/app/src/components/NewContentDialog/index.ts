@@ -19,3 +19,5 @@ export { default } from './NewContentDialog';
 export * from './NewContentDialog';
 
 export * from './NewContentCard';
+
+export * from './NewContentDialogContainer';

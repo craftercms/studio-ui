@@ -17,14 +17,6 @@
 import { defineMessages } from 'react-intl';
 
 export const translations = defineMessages({
-  title: {
-    id: 'newContentDialog.title',
-    defaultMessage: 'Create Content'
-  },
-  subtitle: {
-    id: 'newContentDialog.subtitle',
-    defaultMessage: 'Choose a content type template for your new content item.'
-  },
   compactInput: {
     id: 'words.compact',
     defaultMessage: 'Compact'

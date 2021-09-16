@@ -20,6 +20,9 @@ import { NewContentDialogStateProps } from '../../../components/NewContentDialog
 
 const initialState: NewContentDialogStateProps = {
   open: false,
+  isSubmitting: null,
+  isMinimized: null,
+  hasPendingChanges: null,
   compact: false,
   item: null,
   rootPath: '/site/website'

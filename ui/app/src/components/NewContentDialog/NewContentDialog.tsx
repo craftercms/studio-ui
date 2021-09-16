@@ -14,201 +14,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo, useState } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
-import { LegacyContentType, LegacyFormConfig } from '../../models/ContentType';
-import DialogHeader from '../Dialogs/DialogHeader';
+import React from 'react';
 import NewContentCard, { ContentSkeletonCard } from './NewContentCard';
-import SearchBar from '../Controls/SearchBar';
-import ContentTypesFilter from '../../modules/Content/Authoring/ContentTypesFilter';
-import DialogFooter from '../Dialogs/DialogFooter';
-import { Box, Checkbox, Dialog, FormControlLabel, Grid } from '@material-ui/core';
-import DialogBody from '../Dialogs/DialogBody';
-import SingleItemSelector from '../../modules/Content/Authoring/SingleItemSelector';
-import { fetchLegacyContentTypes } from '../../services/contentTypes';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
-import { useDispatch } from 'react-redux';
-import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
-import { debounceTime } from 'rxjs/operators';
-import { closeNewContentDialog, newContentCreationComplete } from '../../state/actions/dialogs';
-import { batchActions } from '../../state/actions/misc';
-import { useSelection } from '../../utils/hooks/useSelection';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import { useLogicResource } from '../../utils/hooks/useLogicResource';
-import { useSubject } from '../../utils/hooks/useSubject';
-import { withoutIndex } from '../../utils/path';
+import { Grid } from '@material-ui/core';
 import useStyles from './styles';
-import translations from './translations';
-import { ContentTypesGridProps, NewContentDialogContainerProps, NewContentDialogProps } from './utils';
+import { ContentTypesGridProps, NewContentDialogProps } from './utils';
+import { NewContentDialogContainer } from './NewContentDialogContainer';
+import EnhancedDialog from '../Dialog';
+import { FormattedMessage } from 'react-intl';
 
 export default function NewContentDialog(props: NewContentDialogProps) {
+  const { item, rootPath, compact, onContentTypeSelected, ...rest } = props;
   return (
-    <Dialog open={props.open} onClose={props.onClose} fullWidth maxWidth="md">
-      <NewContentDialogContainer {...props} />
-    </Dialog>
-  );
-}
-
-function NewContentDialogContainer(props: NewContentDialogContainerProps) {
-  const { onClose, item, onContentTypeSelected, compact = false, rootPath } = props;
-  const site = useActiveSiteId();
-  const { formatMessage } = useIntl();
-  const dispatch = useDispatch();
-  const classes = useStyles();
-  const authoringBase = useSelection<string>((state) => state.env.authoringBase);
-
-  const [isCompact, setIsCompact] = useState(compact);
-  const [openSelector, setOpenSelector] = useState(false);
-  const [selectedItem, setSelectedItem] = useState(item);
-  const [contentTypes, setContentTypes] = useState<LegacyContentType[]>();
-  const [keyword, setKeyword] = useState('');
-  const [debounceKeyword, setDebounceKeyword] = useState('');
-  const [selectedFilter, setSelectedFilter] = useState('all');
-
-  const filters = [
-    {
-      label: formatMessage(translations.contentTypeAllLabel),
-      type: 'all'
-    },
-    {
-      label: formatMessage(translations.contentTypePageLabel),
-      type: 'page'
-    },
-    {
-      label: formatMessage(translations.contentTypeComponentLabel),
-      type: 'component'
-    }
-  ];
-
-  const getPrevImg = (content: LegacyFormConfig) => {
-    return content?.imageThumbnail
-      ? `/studio/api/1/services/api/1/content/get-content-at-path.bin?site=${site}&path=/config/studio/content-types${content.form}/${content.imageThumbnail}`
-      : '/studio/static-assets/themes/cstudioTheme/images/default-contentType.jpg';
-  };
-
-  const onSelectedContentType = (contentType: LegacyFormConfig) => {
-    const path = withoutIndex(selectedItem.path);
-    onContentTypeSelected?.({
-      authoringBase,
-      path,
-      isNewContent: true,
-      contentTypeId: contentType.form,
-      onSaveSuccess: batchActions([closeNewContentDialog(), newContentCreationComplete()])
-    });
-  };
-
-  useEffect(() => {
-    if (selectedItem.path) {
-      // TODO: https://github.com/craftercms/craftercms/issues/4473
-      const path =
-        selectedItem.systemType === 'folder' && !selectedItem.path.endsWith('/')
-          ? `${selectedItem.path}/`
-          : selectedItem.path;
-
-      fetchLegacyContentTypes(site, path).subscribe(
-        (response) => {
-          setContentTypes(response);
-        },
-        (response) => {
-          dispatch(showErrorDialog({ error: response }));
-        }
-      );
-    }
-  }, [dispatch, selectedItem, site]);
-
-  const resource = useLogicResource(
-    useMemo(() => ({ contentTypes, selectedFilter, debounceKeyword }), [contentTypes, selectedFilter, debounceKeyword]),
-    {
-      shouldResolve: ({ contentTypes }) => Boolean(contentTypes),
-      shouldReject: () => null,
-      shouldRenew: (source, resource) => resource.complete,
-      resultSelector: ({ contentTypes, debounceKeyword, selectedFilter }) => {
-        return contentTypes.filter(
-          (contentType) =>
-            contentType.label.toLowerCase().includes(debounceKeyword.toLowerCase()) &&
-            (selectedFilter === 'all' || contentType.type === selectedFilter)
-        );
-      },
-      errorSelector: () => null
-    }
-  );
-
-  const onSearch$ = useSubject<string>();
-
-  useEffect(() => {
-    onSearch$.pipe(debounceTime(400)).subscribe((keywords) => {
-      setDebounceKeyword(keywords);
-    });
-  });
-
-  const onSearch = (keyword: string) => {
-    onSearch$.next(keyword);
-    setKeyword(keyword);
-  };
-
-  const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
-
-  return (
-    <>
-      <DialogHeader
-        title={formatMessage(translations.title)}
-        subtitle={formatMessage(translations.subtitle)}
-        onCloseButtonClick={onCloseButtonClick}
-      />
-      <DialogBody classes={{ root: classes.dialogContent }}>
-        <Box display="flex" justifyContent="space-between" alignItems="center">
-          <Box>
-            <SingleItemSelector
-              label={<FormattedMessage id="words.item" defaultMessage="Item" />}
-              open={openSelector}
-              onClose={() => setOpenSelector(false)}
-              onDropdownClick={() => setOpenSelector(!openSelector)}
-              rootPath={rootPath}
-              selectedItem={selectedItem}
-              canSelectFolders
-              onItemClicked={(item) => {
-                setOpenSelector(false);
-                setSelectedItem(item);
-              }}
-            />
-          </Box>
-          <Box className={classes.searchBox}>
-            <SearchBar onChange={onSearch} keyword={keyword} autoFocus showActionButton={Boolean(keyword)} />
-          </Box>
-        </Box>
-        <SuspenseWithEmptyState
-          resource={resource}
-          suspenseProps={{
-            fallback: <ContentTypesLoader isCompact={isCompact} />
-          }}
-          withEmptyStateProps={{
-            emptyStateProps: {
-              classes: {
-                image: classes.emptyStateImg
-              },
-              title: (
-                <FormattedMessage id="newContentDialog.emptyStateMessage" defaultMessage="No Content Types Found" />
-              )
-            }
-          }}
-        >
-          <ContentTypesGrid
-            resource={resource}
-            isCompact={isCompact}
-            onTypeOpen={onSelectedContentType}
-            getPrevImg={getPrevImg}
+    <EnhancedDialog
+      title={<FormattedMessage id="newContentDialog.title" defaultMessage="Create Content" />}
+      dialogHeaderProps={{
+        subtitle: (
+          <FormattedMessage
+            id="newContentDialog.subtitle"
+            defaultMessage="Choose a content type template for your new content item."
           />
-        </SuspenseWithEmptyState>
-      </DialogBody>
-      <DialogFooter>
-        <FormControlLabel
-          className={classes.compact}
-          control={<Checkbox checked={isCompact} onChange={() => setIsCompact(!isCompact)} color="primary" />}
-          label={formatMessage(translations.compactInput)}
-        />
-        <ContentTypesFilter filters={filters} selected={selectedFilter} onFilterChange={setSelectedFilter} />
-      </DialogFooter>
-    </>
+        )
+      }}
+      {...rest}
+    >
+      <NewContentDialogContainer
+        item={item}
+        rootPath={rootPath}
+        compact={compact}
+        onContentTypeSelected={onContentTypeSelected}
+      />
+    </EnhancedDialog>
   );
 }
 
