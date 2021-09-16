@@ -69,7 +69,7 @@
     "redux": "^4.0.4",
     "redux-observable": "^1.2.0",
     "rxjs": "^6.5.4",
-    "uppy": "^1.25.2",
+    "uppy": "^2.0.0",
     "video.js": "^7.9.7"
   },
   "scripts": {
