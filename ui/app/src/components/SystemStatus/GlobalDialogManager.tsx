@@ -106,7 +106,11 @@ export const useStyles = makeStyles((theme) =>
       width: '100%',
       overflow: 'auto',
       padding: '2px 20px',
-      zIndex: theme.zIndex.modal
+      zIndex: theme.zIndex.modal,
+      pointerEvents: 'none',
+      '& > *': {
+        pointerEvents: 'all'
+      }
     }
   })
 );
@@ -304,10 +308,6 @@ function GlobalDialogManager() {
       />
       {/* endregion */}
 
-      {/* region Minimized Dialogs */}
-      <MinimizedDialogManager state={state} dispatch={dispatch} />
-      {/* endregion */}
-
       {/* region Auth Monitor */}
       <AuthMonitor />
       {/* endregion */}
@@ -336,13 +336,7 @@ function GlobalDialogManager() {
 
       {/* region Create Folder */}
       <CreateFolderDialog
-        open={state.createFolder.open}
-        path={state.createFolder.path}
-        rename={state.createFolder.rename}
-        value={state.createFolder.value}
-        allowBraces={state.createFolder.allowBraces}
-        isSubmitting={state.createFolder.isSubmitting}
-        hasPendingChanges={state.createFolder.hasPendingChanges}
+        {...state.createFolder}
         onClose={createCallback(state.createFolder.onClose, dispatch)}
         onClosed={createCallback(state.createFolder.onClosed, dispatch)}
         onCreated={createCallback(state.createFolder.onCreated, dispatch)}
@@ -486,46 +480,5 @@ function GlobalDialogManager() {
     </Suspense>
   );
 }
-
-// @formatter:off
-function MinimizedDialogManager({ state, dispatch }: { state: GlobalState['dialogs']; dispatch: Dispatch }) {
-  const classes = useStyles({});
-
-  const el = useMemo(() => {
-    return document.createElement('div');
-  }, []);
-
-  useEffect(() => {
-    el.className = classes.wrapper;
-  }, [el, classes.wrapper]);
-
-  const inventory = useMemo(() => Object.values(state.minimizedDialogs).filter((tab) => tab.minimized), [
-    state.minimizedDialogs
-  ]);
-  useLayoutEffect(() => {
-    if (inventory.length) {
-      document.body.appendChild(el);
-      return () => {
-        document.body.removeChild(el);
-      };
-    }
-  }, [el, inventory]);
-
-  return inventory.length
-    ? ReactDOM.createPortal(
-        inventory.map(({ id, title, subtitle, status, onMaximized }) => (
-          <MinimizedBar
-            key={id}
-            title={title}
-            subtitle={subtitle}
-            status={status}
-            onMaximized={createCallback(onMaximized, dispatch)}
-          />
-        )),
-        el
-      )
-    : null;
-}
-// @formatter:on
 
 export default React.memo(GlobalDialogManager);

@@ -7,6 +7,7 @@ import IconButton from '@material-ui/core/IconButton';
 import MaximizeIcon from '@material-ui/icons/OpenInBrowserRounded';
 import React from 'react';
 import LinearProgress from '@material-ui/core/LinearProgress';
+import MinimizedBarPortal from '../MinimizedBarPortal/MinimizedBarPortal';
 
 export const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -39,31 +40,34 @@ export const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface MinimizedBarProps {
+  open: boolean;
   title: string;
   subtitle?: string;
   status?: 'indeterminate' | number;
-  onMaximized?(): void;
+  onMaximize?(): void;
 }
 
 export function MinimizedBar(props: MinimizedBarProps) {
-  const { title, onMaximized, subtitle, status } = props;
+  const { open, title, onMaximize, subtitle, status } = props;
   const classes = useStyles();
-  return (
-    <Paper className={classes.root} elevation={4}>
-      <Box>
-        <Typography variant="body1" children={title} />
-        {subtitle && <Typography variant="body2" className={classes.subtitle} children={subtitle} />}
-      </Box>
-      {onMaximized ? <IconButton aria-label="Maximize" onClick={onMaximized} children={<MaximizeIcon />} /> : null}
-      {status && (
-        <LinearProgress
-          className={classes.indeterminateProgressBar}
-          variant={status === 'indeterminate' ? 'indeterminate' : 'determinate'}
-          value={status === 'indeterminate' ? null : status}
-        />
-      )}
-    </Paper>
-  );
+  return open ? (
+    <MinimizedBarPortal>
+      <Paper className={classes.root} elevation={4}>
+        <Box>
+          <Typography variant="body1" children={title} />
+          {subtitle && <Typography variant="body2" className={classes.subtitle} children={subtitle} />}
+        </Box>
+        {onMaximize ? <IconButton aria-label="Maximize" onClick={onMaximize} children={<MaximizeIcon />} /> : null}
+        {status && (
+          <LinearProgress
+            className={classes.indeterminateProgressBar}
+            variant={status === 'indeterminate' ? 'indeterminate' : 'determinate'}
+            value={status === 'indeterminate' ? null : status}
+          />
+        )}
+      </Paper>
+    </MinimizedBarPortal>
+  ) : null;
 }
 
 export default MinimizedBar;

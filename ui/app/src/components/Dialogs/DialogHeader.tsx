@@ -91,7 +91,7 @@ const translations = defineMessages({
   }
 });
 
-export type DialogTitleProps<
+export type DialogHeaderProps<
   PrimaryTypographyComponent extends ElementType = 'h2',
   SecondaryTypographyComponent extends ElementType = 'p'
 > = PropsWithChildren<{
@@ -115,7 +115,7 @@ export type DialogTitleProps<
   onBack?(): void;
 }>;
 
-export default function DialogHeader(props: DialogTitleProps) {
+export default function DialogHeader(props: DialogHeaderProps) {
   // region
   const classes = dialogTitleStyles({});
   const { formatMessage } = useIntl();

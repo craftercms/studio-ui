@@ -15,18 +15,18 @@
  */
 
 import * as React from 'react';
-import { PropsWithChildren, useEffect } from 'react';
+import { PropsWithChildren } from 'react';
 import { useOnClose } from '../../utils/hooks/useOnClose';
 import { useDispatch } from 'react-redux';
-import { maximizeDialog, minimizeDialog, popDialog, pushDialog } from '../../state/reducers/dialogs/minimizedDialogs';
 import MuiDialog, { DialogProps as MuiDialogProps } from '@material-ui/core/Dialog';
-import { closeConfirmDialog, showConfirmDialog } from '../../state/actions/dialogs';
-import translations from '../CodeEditorDialog/translations';
-import { useIntl } from 'react-intl';
+import { updateCreateFolderDialog } from '../../state/actions/dialogs';
 import TranslationOrText from '../../models/TranslationOrText';
-import { getPossibleTranslation } from '../../utils/i18n';
-import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
-import { createCustomDocumentEventListener } from '../../utils/dom';
+import { Button } from '@material-ui/core';
+import { usePossibleTranslation } from '../../utils/hooks/usePossibleTranslation';
+import { useUnmount } from '../../utils/hooks/useUnmount';
+import { DialogHeaderProps } from '../Dialogs/DialogHeader';
+import { useWithPendingChangesCloseRequest } from '../../utils/hooks/useWithPendingChangesCloseRequest';
+import MinimizedBar from '../SystemStatus/MinimizedBar';
 
 export interface DialogProps extends PropsWithChildren<Omit<MuiDialogProps, 'title'>> {
   title?: TranslationOrText;
@@ -37,61 +37,87 @@ export interface DialogProps extends PropsWithChildren<Omit<MuiDialogProps, 'tit
 }
 
 export function Dialog(props: DialogProps) {
-  const { id, open, isSubmitting, hasPendingChanges, minimized, title, ...dialogProps } = props;
-  const onMinimize = () => dispatch(minimizeDialog({ id }));
+  const { id, minimized, title, ...dialogProps } = props;
   const dispatch = useDispatch();
-  const { formatMessage } = useIntl();
+  const onMinimize = () => dispatch(updateCreateFolderDialog({ minimized: true }));
+  const onMaximize = () => dispatch(updateCreateFolderDialog({ minimized: false }));
+  const onWithPendingChangesCloseRequest = useWithPendingChangesCloseRequest(dialogProps.onClose);
+  return (
+    <EnhancedDialog
+      {...dialogProps}
+      open={props.open && !minimized}
+      keepMounted={minimized}
+      title={title}
+      minimized={minimized}
+      onMaximize={onMaximize}
+      onMinimize={onMinimize}
+      onWithPendingChangesCloseRequest={onWithPendingChangesCloseRequest}
+    />
+  );
+}
 
+export default Dialog;
+
+interface EnhancedDialogProps extends DialogProps /* , EnhancedDialogState */ {
+  onMinimize(): void;
+  onMaximize(): void;
+  onWithPendingChangesCloseRequest: MuiDialogProps['onClose'];
+  dialogHeaderProps?: Partial<DialogHeaderProps>;
+}
+
+export function EnhancedDialog(props: EnhancedDialogProps) {
+  // region const { ... } = props
+  const {
+    id,
+    open,
+    isSubmitting,
+    hasPendingChanges,
+    minimized,
+    title,
+    onClosed,
+    onMinimize,
+    onMaximize,
+    onWithPendingChangesCloseRequest,
+    ...dialogProps
+  } = props;
+  // endregion
   const onClose = useOnClose({
     onClose(e, reason) {
       if (hasPendingChanges) {
-        const customEventId = 'dialogDismissConfirm';
-        dispatch(
-          showConfirmDialog({
-            title: formatMessage(translations.pendingChanges),
-            onOk: batchActions([dispatchDOMEvent({ id: customEventId, type: 'success' }), closeConfirmDialog()]),
-            onCancel: batchActions([dispatchDOMEvent({ id: customEventId, type: 'cancel' }), closeConfirmDialog()])
-          })
-        );
-        createCustomDocumentEventListener(customEventId, ({ type }) => {
-          type === 'success' && dialogProps.onClose(e, reason);
-        });
+        onWithPendingChangesCloseRequest(e, reason);
       } else {
-        dialogProps.onClose(e, reason);
+        dialogProps.onClose?.(e, reason);
       }
     },
     disableBackdropClick: isSubmitting,
     disableEscapeKeyDown: isSubmitting
   });
-  useEffect(() => {
-    if (minimized) {
-      dispatch(
-        pushDialog({
-          id,
-          onMaximized: maximizeDialog({ id }),
-          minimized,
-          title: getPossibleTranslation(title, formatMessage)
-        })
-      );
-      return () => {
-        dispatch(popDialog({ id }));
-      };
-    }
-  }, [dispatch, formatMessage, id, minimized, title]);
+  const titleText = usePossibleTranslation(title);
   return (
-    <MuiDialog
-      open={open && !minimized}
-      keepMounted={minimized}
-      fullWidth
-      maxWidth="md"
-      {...dialogProps}
-      onClose={onClose}
-    >
-      {React.Children.map(props.children, (child) =>
-        React.cloneElement(child as React.ReactElement, { onMinimize, onClose })
-      )}
-    </MuiDialog>
+    <>
+      <MuiDialog
+        open={open && !minimized}
+        keepMounted={minimized}
+        fullWidth
+        maxWidth="md"
+        {...dialogProps}
+        onClose={onClose}
+      >
+        {/* <DialogHeader ... /> */}
+        <Button onClick={onMinimize}>Minimize</Button>
+        {React.Children.map(props.children, (child) =>
+          React.cloneElement(child as React.ReactElement, { onMinimize, onClose })
+        )}
+        <OnClosedInvoker onClosed={onClosed} />
+      </MuiDialog>
+      <MinimizedBar open={minimized} onMaximize={onMaximize} title={titleText} />
+    </>
   );
 }
 
-export default Dialog;
+// export default EnhancedDialog;
+
+function OnClosedInvoker({ onClosed }: { onClosed }) {
+  useUnmount(onClosed);
+  return null as JSX.Element;
+}
