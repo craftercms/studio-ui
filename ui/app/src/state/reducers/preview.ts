@@ -589,7 +589,7 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
       ...state,
       ...(payload.storedPage && { toolsPanelPageStack: [payload.storedPage] }),
       toolsPanel: toolsPanelConfig,
-      ...(toolsPanelWidth && { toolsPanelWidth })
+      toolsPanelWidth: toolsPanelWidth ?? state.toolsPanelWidth
     };
   },
   // After re-fetching site ui config (e.g. when config is modified), we need the tools to be
@@ -678,7 +678,7 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
     return {
       ...state,
       icePanel: icePanelConfig,
-      ...(icePanelWidth && { icePanelWidth })
+      icePanelWidth: icePanelWidth ?? state. icePanelWidth
     };
   },
   [initRichTextEditorConfig.type]: (state, { payload }) => {

@@ -187,17 +187,19 @@ export function getStoredShowToolsPanel(siteIdentifier: string, user: string): b
 }
 
 export function getStoredPreviewToolsPanelWidth(siteIdentifier: string, user: string): number {
-  return parseInt(window.localStorage.getItem(`craftercms.${user}.previewToolsPanelWidth.${siteIdentifier}`));
+  const value = window.localStorage.getItem(`craftercms.${user}.previewToolsPanelWidth.${siteIdentifier}`);
+  return value === null ? (value as null) : parseInt(value);
 }
 
 export function setStoredPreviewToolsPanelWidth(siteIdentifier: string, user: string, value: number) {
-  return window.localStorage.setItem(`craftercms.${user}.previewToolsPanelWidth.${siteIdentifier}`, value.toString());
+  window.localStorage.setItem(`craftercms.${user}.previewToolsPanelWidth.${siteIdentifier}`, value.toString());
 }
 
 export function getStoredICEToolsPanelWidth(siteIdentifier: string, user: string): number {
-  return parseInt(window.localStorage.getItem(`craftercms.${user}.iceToolsPanelWidth.${siteIdentifier}`));
+  const value = window.localStorage.getItem(`craftercms.${user}.iceToolsPanelWidth.${siteIdentifier}`);
+  return value === null ? (value as null) : parseInt(value);
 }
 
 export function setStoredICEToolsPanelWidth(siteIdentifier: string, user: string, value: number) {
-  return window.localStorage.setItem(`craftercms.${user}.iceToolsPanelWidth.${siteIdentifier}`, value.toString());
+  window.localStorage.setItem(`craftercms.${user}.iceToolsPanelWidth.${siteIdentifier}`, value.toString());
 }
