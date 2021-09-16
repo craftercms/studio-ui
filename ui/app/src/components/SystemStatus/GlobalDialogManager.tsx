@@ -14,14 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { lazy, Suspense, useEffect, useLayoutEffect, useMemo } from 'react';
-import ReactDOM from 'react-dom';
+import React, { lazy, Suspense, useEffect } from 'react';
 import StandardAction from '../../models/StandardAction';
 import { Dispatch } from 'redux';
 import { useDispatch } from 'react-redux';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { MinimizedBar } from './MinimizedBar';
-import GlobalState from '../../models/GlobalState';
 import { isPlainObject } from '../../utils/object';
 import PathSelectionDialog from '../Dialogs/PathSelectionDialog';
 import { useSnackbar } from 'notistack';
