@@ -5,9 +5,17 @@ import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import MaximizeIcon from '@material-ui/icons/OpenInBrowserRounded';
-import React from 'react';
+import React, { ReactNode } from 'react';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import MinimizedBarPortal from '../MinimizedBarPortal/MinimizedBarPortal';
+
+export interface MinimizedBarProps {
+  open: boolean;
+  title: ReactNode;
+  subtitle?: string;
+  status?: 'indeterminate' | number;
+  onMaximize?(): void;
+}
 
 export const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -38,14 +46,6 @@ export const useStyles = makeStyles((theme: Theme) =>
     }
   })
 );
-
-interface MinimizedBarProps {
-  open: boolean;
-  title: string;
-  subtitle?: string;
-  status?: 'indeterminate' | number;
-  onMaximize?(): void;
-}
 
 export function MinimizedBar(props: MinimizedBarProps) {
   const { open, title, onMaximize, subtitle, status } = props;

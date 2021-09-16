@@ -18,16 +18,16 @@ import { useSpreadState } from './useSpreadState';
 import { useMemo } from 'react';
 
 export interface EnhancedDialogState {
-  open?: boolean;
-  minimized?: boolean;
-  hasPendingChanges?: boolean;
-  isSubmitting?: boolean;
+  open: boolean;
+  isMinimized: boolean;
+  hasPendingChanges: boolean;
+  isSubmitting: boolean;
 }
 
 export function useEnhancedDialogState(initialState?: Partial<EnhancedDialogState>) {
   const [state, setState] = useSpreadState<EnhancedDialogState>({
     open: false,
-    minimized: false,
+    isMinimized: false,
     hasPendingChanges: false,
     isSubmitting: false,
     ...initialState
@@ -35,8 +35,8 @@ export function useEnhancedDialogState(initialState?: Partial<EnhancedDialogStat
   return useMemo(() => {
     const onOpen = () => setState({ open: true });
     const onClose = () => setState({ open: false });
-    const onMaximize = () => setState({ minimized: false });
-    const onMinimize = () => setState({ minimized: true });
+    const onMaximize = () => setState({ isMinimized: false });
+    const onMinimize = () => setState({ isMinimized: true });
     const onSubmittingAndOrPendingChange = ({ isSubmitting, hasPendingChanges }) =>
       setState({
         isSubmitting: isSubmitting ?? state.isSubmitting,

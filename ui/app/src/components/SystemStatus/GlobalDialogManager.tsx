@@ -30,6 +30,7 @@ import UnlockPublisherDialog from '../UnlockPublisherDialog';
 import WidgetDialog from '../WidgetDialog';
 import { useSelection } from '../../utils/hooks/useSelection';
 import CodeEditorDialog from '../CodeEditorDialog';
+import { useWithPendingChangesCloseRequest } from '../../utils/hooks/useWithPendingChangesCloseRequest';
 
 const ViewVersionDialog = lazy(() => import('../ViewVersionDialog'));
 const CompareVersionsDialog = lazy(() => import('../CompareVersionsDialog'));
@@ -40,9 +41,9 @@ const ErrorDialog = lazy(() => import('./ErrorDialog'));
 const NewContentDialog = lazy(() => import('../NewContentDialog'));
 const ChangeContentTypeDialog = lazy(() => import('../../modules/Content/Authoring/ChangeContentTypeDialog'));
 const HistoryDialog = lazy(() => import('../HistoryDialog'));
-const PublishDialog = lazy(() => import('../PublishDialog/PublishDialog'));
+const PublishDialog = lazy(() => import('../PublishDialog'));
 const DependenciesDialog = lazy(() => import('../DependenciesDialog/DependenciesDialog'));
-const DeleteDialog = lazy(() => import('../DeleteDialog/DeleteDialog'));
+const DeleteDialog = lazy(() => import('../DeleteDialog'));
 const WorkflowCancellationDialog = lazy(() => import('../Dialogs/WorkflowCancellationDialog'));
 const LegacyFormDialog = lazy(() => import('../Dialogs/LegacyFormDialog'));
 const CreateFolderDialog = lazy(() => import('../CreateFolderDialog'));
@@ -201,6 +202,7 @@ function GlobalDialogManager() {
         open={state.publish.open}
         items={state.publish.items}
         scheduling={state.publish.scheduling}
+        isMinimized={state.publish.isMinimized}
         isSubmitting={state.publish.isSubmitting}
         hasPendingChanges={state.publish.hasPendingChanges}
         onClose={createCallback(state.publish.onClose, dispatch)}
@@ -255,6 +257,7 @@ function GlobalDialogManager() {
         childItems={state.delete.childItems}
         hasPendingChanges={state.delete.hasPendingChanges}
         isSubmitting={state.delete.isSubmitting}
+        isMinimized={state.delete.isMinimized}
         onClose={createCallback(state.delete.onClose, dispatch)}
         onClosed={createCallback(state.delete.onClosed, dispatch)}
         onSuccess={createCallback(state.delete.onSuccess, dispatch)}
@@ -265,6 +268,9 @@ function GlobalDialogManager() {
       <HistoryDialog
         open={state.history.open}
         versionsBranch={versionsBranch}
+        hasPendingChanges={state.history.hasPendingChanges}
+        isSubmitting={state.history.isSubmitting}
+        isMinimized={state.history.isMinimized}
         onClose={createCallback(state.history.onClose, dispatch)}
         onClosed={createCallback(state.history.onClosed, dispatch)}
       />
@@ -338,6 +344,11 @@ function GlobalDialogManager() {
         onClosed={createCallback(state.createFolder.onClosed, dispatch)}
         onCreated={createCallback(state.createFolder.onCreated, dispatch)}
         onRenamed={createCallback(state.createFolder.onRenamed, dispatch)}
+        onMinimize={createCallback(state.createFolder.onMinimize, dispatch)}
+        onMaximize={createCallback(state.createFolder.onMinimize, dispatch)}
+        onWithPendingChangesCloseRequest={useWithPendingChangesCloseRequest(
+          createCallback(state.createFolder.onClose, dispatch)
+        )}
       />
       {/* endregion */}
 

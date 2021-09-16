@@ -18,7 +18,6 @@ import React, { useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import { useUnmount } from '../../utils/hooks/useUnmount';
 import { useSpreadState } from '../../utils/hooks/useSpreadState';
 import { HistoryDialogContainerProps, Menu, menuInitialState, menuOptions } from './utils';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
@@ -49,7 +48,6 @@ import {
   versionsChangePage
 } from '../../state/reducers/versions';
 import { asDayMonthDateTime } from '../../utils/datetime';
-import DialogHeader from '../Dialogs/DialogHeader';
 import DialogBody from '../Dialogs/DialogBody';
 import SingleItemSelector from '../../modules/Content/Authoring/SingleItemSelector';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
@@ -59,7 +57,7 @@ import { Pagination } from './Pagination';
 import { historyStyles } from './HistoryDialog';
 
 export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
-  const { onClose, versionsBranch } = props;
+  const { versionsBranch } = props;
   const { count, page, limit, current, item, rootPath, isConfig } = versionsBranch;
   const path = item ? item.path : '';
   const [openSelector, setOpenSelector] = useState(false);
@@ -67,8 +65,6 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
   const classes = historyStyles({});
   const dispatch = useDispatch();
   const site = useActiveSiteId();
-
-  useUnmount(props.onClosed);
 
   const [menu, setMenu] = useSpreadState<Menu>(menuInitialState);
 
@@ -269,14 +265,8 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
     dispatch(versionsChangePage({ page: nextPage }));
   };
 
-  const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
-
   return (
     <>
-      <DialogHeader
-        title={<FormattedMessage id="historyDialog.headerTitle" defaultMessage="Item History" />}
-        onCloseButtonClick={onCloseButtonClick}
-      />
       <DialogBody className={classes.dialogBody}>
         <SingleItemSelector
           classes={{ root: classes.singleItemSelector }}

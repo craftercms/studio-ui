@@ -15,29 +15,20 @@
  */
 
 import * as React from 'react';
-import { PropsWithChildren } from 'react';
+import { ReactNode } from 'react';
 import { useOnClose } from '../../utils/hooks/useOnClose';
 import MuiDialog, { DialogProps as MuiDialogProps } from '@material-ui/core/Dialog';
-import TranslationOrText from '../../models/TranslationOrText';
-import { Button } from '@material-ui/core';
-import { usePossibleTranslation } from '../../utils/hooks/usePossibleTranslation';
 import { useUnmount } from '../../utils/hooks/useUnmount';
-import { DialogHeaderProps } from '../Dialogs/DialogHeader';
+import DialogHeader, { DialogHeaderProps } from '../Dialogs/DialogHeader';
 import MinimizedBar from '../SystemStatus/MinimizedBar';
 import { EnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
 
-export interface DialogProps extends PropsWithChildren<Omit<MuiDialogProps, 'open'>> {
-  title?: TranslationOrText;
-  minimized?: boolean;
-  hasPendingChanges?: boolean;
-  isSubmitting?: boolean;
+export interface EnhancedDialogProps extends Omit<MuiDialogProps, 'title'>, EnhancedDialogState {
+  title?: ReactNode;
+  onMinimize?(): void;
+  onMaximize?(): void;
   onClosed?(): void;
-}
-
-interface EnhancedDialogProps extends DialogProps, EnhancedDialogState {
-  onMinimize(): void;
-  onMaximize(): void;
-  onWithPendingChangesCloseRequest: MuiDialogProps['onClose'];
+  onWithPendingChangesCloseRequest?: MuiDialogProps['onClose'];
   dialogHeaderProps?: Partial<DialogHeaderProps>;
 }
 
@@ -48,12 +39,13 @@ export function EnhancedDialog(props: EnhancedDialogProps) {
     open,
     isSubmitting,
     hasPendingChanges,
-    minimized,
+    isMinimized,
     title,
     onClosed,
     onMinimize,
     onMaximize,
     onWithPendingChangesCloseRequest,
+    children,
     ...dialogProps
   } = props;
   // endregion
@@ -68,25 +60,27 @@ export function EnhancedDialog(props: EnhancedDialogProps) {
     disableBackdropClick: isSubmitting,
     disableEscapeKeyDown: isSubmitting
   });
-  const titleText = usePossibleTranslation(title);
+
   return (
     <>
       <MuiDialog
-        open={open && !minimized}
-        keepMounted={minimized}
+        open={open && !isMinimized}
+        keepMounted={isMinimized}
         fullWidth
         maxWidth="md"
         {...dialogProps}
         onClose={onClose}
       >
-        {/* <DialogHeader ... /> */}
-        <Button onClick={onMinimize}>Minimize</Button>
-        {React.Children.map(props.children, (child) =>
-          React.cloneElement(child as React.ReactElement, { onMinimize, onClose })
-        )}
+        <DialogHeader
+          {...props.dialogHeaderProps}
+          onMinimizeButtonClick={onMinimize}
+          title={title}
+          onCloseButtonClick={(e) => onClose(e, null)}
+        />
+        {children}
         <OnClosedInvoker onClosed={onClosed} />
       </MuiDialog>
-      <MinimizedBar open={minimized} onMaximize={onMaximize} title={titleText} />
+      <MinimizedBar open={isMinimized} onMaximize={onMaximize} title={title} />
     </>
   );
 }

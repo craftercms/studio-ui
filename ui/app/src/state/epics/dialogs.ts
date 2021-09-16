@@ -166,7 +166,7 @@ const dialogEpics: CrafterCMSEpic[] = [
           // Differences in the showEditDialog payload — to what's on the state — are ignored, except for the path,
           // which is used to check if it's the same form that's getting opened.
           const id = type === showEditDialog.type ? legacyEditorId : codeEditorId;
-          if (state.dialogs.minimizedDialogs[id]?.minimized === true) {
+          if (state.dialogs.minimizedDialogs[id]?.isMinimized === true) {
             return of(
               minimizedDialogUpdate({
                 id,

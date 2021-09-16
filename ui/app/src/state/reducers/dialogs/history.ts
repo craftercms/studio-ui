@@ -26,7 +26,10 @@ import {
 import { HistoryDialogStateProps } from '../../../components/HistoryDialog/utils';
 
 const initialState: HistoryDialogStateProps = {
-  open: false
+  open: false,
+  isSubmitting: null,
+  isMinimized: null,
+  hasPendingChanges: null
 };
 
 export default createReducer<GlobalState['dialogs']['history']>(initialState, {

@@ -19,6 +19,7 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { EnhancedDialog } from '../Dialog';
 import { HistoryDialogContainer } from './HistoryDialogContainer';
 import { HistoryDialogProps } from './utils';
+import { FormattedMessage } from 'react-intl';
 
 export const historyStyles = makeStyles(() =>
   createStyles({
@@ -67,10 +68,13 @@ export const paginationStyles = makeStyles((theme) =>
 );
 
 export default function HistoryDialog(props: HistoryDialogProps) {
-  const { open, onClose, ...rest } = props;
+  const { versionsBranch } = props;
   return (
-    <EnhancedDialog open={props.open} onClose={props.onClose}>
-      <HistoryDialogContainer {...rest} />
+    <EnhancedDialog
+      title={<FormattedMessage id="historyDialog.headerTitle" defaultMessage="Item History" />}
+      {...props}
+    >
+      <HistoryDialogContainer versionsBranch={versionsBranch} />
     </EnhancedDialog>
   );
 }

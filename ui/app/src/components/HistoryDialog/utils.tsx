@@ -20,7 +20,8 @@ import React from 'react';
 import { ContextMenuOption } from '../ContextMenu';
 import { LegacyVersion, VersionsStateProps } from '../../models/Version';
 import StandardAction from '../../models/StandardAction';
-import { DialogProps } from '../Dialog';
+import { EnhancedDialogProps } from '../Dialog';
+import { EnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
 
 export interface Menu {
   sections: ContextMenuOption[][];
@@ -30,18 +31,18 @@ export interface Menu {
 
 export interface HistoryDialogBaseProps {}
 
-export interface HistoryDialogProps extends HistoryDialogBaseProps, DialogProps {
+export interface HistoryDialogProps extends HistoryDialogBaseProps, EnhancedDialogProps {
   versionsBranch: VersionsStateProps;
 }
 
-export interface HistoryDialogStateProps extends HistoryDialogBaseProps, Pick<DialogProps, 'open'> {
+export interface HistoryDialogStateProps extends HistoryDialogBaseProps, EnhancedDialogState {
   onClose?: StandardAction;
   onClosed?: StandardAction;
 }
 
 export interface HistoryDialogContainerProps
   extends HistoryDialogBaseProps,
-    Pick<HistoryDialogProps, 'onClose' | 'onClosed' | 'versionsBranch'> {}
+    Pick<HistoryDialogProps, 'versionsBranch'> {}
 
 export interface PaginationProps {
   count: number;
