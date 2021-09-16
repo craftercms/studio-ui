@@ -155,6 +155,9 @@ const initialState: GlobalState['preview'] = {
   richTextEditor: null
 };
 
+const minDrawerWidth = 240;
+const maxDrawerWidth = 500;
+
 const fetchGuestModelsCompleteHandler = (state, { type, payload }) => {
   if (nnou(state.guest)) {
     return {
@@ -479,8 +482,6 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
     editMode: payload.editMode
   }),
   [updateToolsPanelWidth.type]: (state, { payload }) => {
-    const minDrawerWidth = 240;
-    const maxDrawerWidth = 500;
     if (payload.width < minDrawerWidth || payload.width > maxDrawerWidth) {
       return state;
     }
@@ -490,8 +491,6 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
     };
   },
   [updateIcePanelWidth.type]: (state, { payload }) => {
-    const minDrawerWidth = 240;
-    const maxDrawerWidth = 500;
     if (payload.width < minDrawerWidth || payload.width > maxDrawerWidth) {
       return state;
     }
@@ -578,10 +577,19 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
         lookupTables
       });
     }
+
+    const toolsPanelWidth =
+      payload.toolsPanelWidth < minDrawerWidth
+        ? minDrawerWidth
+        : payload.toolsPanelWidth > maxDrawerWidth
+        ? maxDrawerWidth
+        : payload.toolsPanelWidth;
+
     return {
       ...state,
       ...(payload.storedPage && { toolsPanelPageStack: [payload.storedPage] }),
-      toolsPanel: toolsPanelConfig
+      toolsPanel: toolsPanelConfig,
+      toolsPanelWidth: toolsPanelWidth ?? state.toolsPanelWidth
     };
   },
   // After re-fetching site ui config (e.g. when config is modified), we need the tools to be
@@ -659,9 +667,18 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
         lookupTables
       });
     }
+
+    const icePanelWidth =
+      payload.icePanelWidth < minDrawerWidth
+        ? minDrawerWidth
+        : payload.icePanelWidth > maxDrawerWidth
+        ? maxDrawerWidth
+        : payload.icePanelWidth;
+
     return {
       ...state,
-      icePanel: icePanelConfig
+      icePanel: icePanelConfig,
+      icePanelWidth: icePanelWidth ?? state.icePanelWidth
     };
   },
   [initRichTextEditorConfig.type]: (state, { payload }) => {

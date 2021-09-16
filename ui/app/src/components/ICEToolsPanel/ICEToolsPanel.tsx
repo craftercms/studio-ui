@@ -31,6 +31,7 @@ import { FormattedMessage } from 'react-intl';
 import { nnou } from '../../utils/object';
 import { getComputedEditMode } from '../../utils/content';
 import { useCurrentPreviewItem } from '../../utils/hooks/useCurrentPreviewItem';
+import { getStoredICEToolsPanelWidth, setStoredICEToolsPanelWidth } from '../../utils/state';
 
 export function ICEToolsPanel() {
   const dispatch = useDispatch();
@@ -39,15 +40,20 @@ export function ICEToolsPanel() {
   const site = useActiveSiteId();
   const { rolesBySite, username } = useActiveUser();
   const { icePanelWidth: width, editMode, icePanelStack } = useSelection((state) => state.preview);
-  const onWidthChange = (width) => dispatch(updateIcePanelWidth({ width }));
   const item = useCurrentPreviewItem();
   const isOpen = getComputedEditMode({ item, editMode, username });
 
+  const onWidthChange = (width) => {
+    setStoredICEToolsPanelWidth(site, username, width);
+    dispatch(updateIcePanelWidth({ width }));
+  };
+
   useEffect(() => {
     if (nnou(uiConfig.xml) && !icePanel) {
-      dispatch(initIcePanelConfig({ configXml: uiConfig.xml }));
+      const icePanelWidth = getStoredICEToolsPanelWidth(site, username);
+      dispatch(initIcePanelConfig({ configXml: uiConfig.xml, icePanelWidth }));
     }
-  }, [uiConfig.xml, dispatch, icePanel]);
+  }, [uiConfig.xml, dispatch, icePanel, site, username]);
 
   return (
     <ResizeableDrawer open={isOpen} belowToolbar anchor="right" width={width} onWidthChange={onWidthChange}>

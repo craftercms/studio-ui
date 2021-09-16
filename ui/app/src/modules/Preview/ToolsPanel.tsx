@@ -31,7 +31,11 @@ import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import { useSiteUIConfig } from '../../utils/hooks/useSiteUIConfig';
 import LookupTable from '../../models/LookupTable';
 import { nnou } from '../../utils/object';
-import { getStoredPreviewToolsPanelPage } from '../../utils/state';
+import {
+  getStoredPreviewToolsPanelPage,
+  getStoredPreviewToolsPanelWidth,
+  setStoredPreviewToolsPanelWidth
+} from '../../utils/state';
 import { useActiveSite } from '../../utils/hooks/useActiveSite';
 
 defineMessages({
@@ -74,9 +78,10 @@ export default function ToolsPanel() {
   useEffect(() => {
     if (nnou(uiConfig.xml) && !toolsPanel) {
       const storedPage = getStoredPreviewToolsPanelPage(uuid, username);
-      dispatch(initToolsPanelConfig({ configXml: uiConfig.xml, storedPage }));
+      const toolsPanelWidth = getStoredPreviewToolsPanelWidth(siteId, username);
+      dispatch(initToolsPanelConfig({ configXml: uiConfig.xml, storedPage, toolsPanelWidth }));
     }
-  }, [uiConfig.xml, toolsPanel, dispatch, uuid, username]);
+  }, [uiConfig.xml, toolsPanel, dispatch, uuid, username, siteId]);
 
   const resource = useLogicResource<WidgetDescriptor[], LookupTable<WidgetDescriptor[]>>(toolsPanel, {
     errorSelector: (source) => uiConfig.error,
@@ -86,19 +91,22 @@ export default function ToolsPanel() {
     shouldRenew: (source, resource) => uiConfig.isFetching || resource.complete
   });
 
+  const onWidthChange = (width) => {
+    setStoredPreviewToolsPanelWidth(siteId, username, width);
+    dispatch(
+      updateToolsPanelWidth({
+        width
+      })
+    );
+  };
+
   return (
     <ResizeableDrawer
       belowToolbar
       open={showToolsPanel}
       width={toolsPanelWidth}
       classes={{ drawerBody: classes.drawerBody }}
-      onWidthChange={(width) => {
-        dispatch(
-          updateToolsPanelWidth({
-            width
-          })
-        );
-      }}
+      onWidthChange={onWidthChange}
     >
       <SuspenseWithEmptyState
         resource={resource}

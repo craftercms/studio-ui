@@ -276,12 +276,14 @@ export const updateIcePanelWidth = /*#__PURE__#*/ createAction<{ width: number }
 export const initToolsPanelConfig = /*#__PURE__*/ createAction<{
   configXml: string;
   storedPage?: WidgetDescriptor;
+  toolsPanelWidth?: number;
 }>('INIT_TOOLS_PANEL_CONFIG');
 
 export const initToolbarConfig = /*#__PURE__*/ createAction<{ configXml: string }>('INIT_TOOLBAR_CONFIG');
 
 export const initIcePanelConfig = /*#__PURE__*/ createAction<{
   configXml: string;
+  icePanelWidth?: number;
 }>('INIT_ICE_PANEL_CONFIG');
 
 export const initRichTextEditorConfig = /*#__PURE__*/ createAction<{ configXml: string; siteId: string }>(
