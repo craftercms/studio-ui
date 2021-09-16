@@ -15,22 +15,35 @@
  */
 
 import React from 'react';
-import Dialog from '../Dialog';
+import { EnhancedDialog as Dialog } from '../Dialog';
 import { CreateFolderProps } from './utils';
 import CreateFolderContainer from './CreateFolderContainer';
+import { useDispatch } from 'react-redux';
+import { updateCreateFolderDialog } from '../../state/actions/dialogs';
+import { useWithPendingChangesCloseRequest } from '../../utils/hooks/useWithPendingChangesCloseRequest';
 
-export default function CreateFolderDialog(props: CreateFolderProps) {
-  const { open, onClose, isSubmitting, hasPendingChanges, ...rest } = props;
-
+export function CreateFolderDialog(props: CreateFolderProps) {
+  const { open, onClose, isSubmitting, hasPendingChanges, minimized, ...rest } = props;
+  const dispatch = useDispatch();
+  const onMinimize = () => dispatch(updateCreateFolderDialog({ minimized: true }));
+  const onMaximize = () => dispatch(updateCreateFolderDialog({ minimized: false }));
+  const onWithPendingChangesCloseRequest = useWithPendingChangesCloseRequest(onClose);
   return (
     <Dialog
       open={open}
-      maxWidth={'xs'}
+      title="Create a New Folder"
+      maxWidth="xs"
       onClose={onClose}
       isSubmitting={isSubmitting}
       hasPendingChanges={hasPendingChanges}
+      minimized={minimized}
+      onMaximize={onMaximize}
+      onMinimize={onMinimize}
+      onWithPendingChangesCloseRequest={onWithPendingChangesCloseRequest}
     >
       <CreateFolderContainer {...rest} onClose={onClose} isSubmitting={isSubmitting} />
     </Dialog>
   );
 }
+
+export default CreateFolderDialog;

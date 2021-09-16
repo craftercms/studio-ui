@@ -39,6 +39,7 @@ import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import { useUnmount } from '../../utils/hooks/useUnmount';
 import { usePossibleTranslation } from '../../utils/hooks/usePossibleTranslation';
 import { legacyItemsToTreeNodes } from '../FolderBrowserTreeView/utils';
+import { useSelection } from '../../utils/hooks/useSelection';
 
 export interface PathSelectionDialogBaseProps {
   open: boolean;
@@ -286,6 +287,7 @@ export function PathSelectionDialogBodyUI(props: PathSelectionDialogBodyUIProps)
   } = props;
   const classes = useStyles({});
   const title = usePossibleTranslation(props.title);
+  const createFolderState = useSelection((state) => state.dialogs.createFolder);
   const resource = useLogicResource<TreeNode, { treeNodes: TreeNode; error?: ApiResponse }>(
     useMemo(() => ({ treeNodes, error }), [treeNodes, error]),
     {
@@ -344,8 +346,8 @@ export function PathSelectionDialogBodyUI(props: PathSelectionDialogBodyUIProps)
       </DialogFooter>
       <CreateFolderDialog
         path={currentPath}
-        isSubmitting={null}
-        hasPendingChanges={null}
+        isSubmitting={createFolderState.isSubmitting}
+        hasPendingChanges={createFolderState.hasPendingChanges}
         open={createFolderDialogOpen}
         onClose={onCloseCreateFolder}
         onCreated={onFolderCreated}
