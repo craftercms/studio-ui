@@ -22,6 +22,7 @@ import { PublishDialogStateProps } from '../../../components/PublishDialog/utils
 const initialState: PublishDialogStateProps = {
   open: false,
   isSubmitting: null,
+  isMinimized: null,
   hasPendingChanges: null
 };
 

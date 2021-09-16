@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import DialogHeader from '../Dialogs/DialogHeader';
 import DialogBody from '../Dialogs/DialogBody';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import { FormattedMessage } from 'react-intl';
@@ -38,8 +37,6 @@ export interface PublishDialogUIProps {
   isSubmitting: boolean;
   submitDisabled: boolean;
   state: InternalDialogState;
-  title: string;
-  subtitle?: string;
   selectedItems: LookupTable<boolean>;
   onItemClicked: DependencySelectionProps['onItemClicked'];
   dependencies: FetchDependenciesResponse;
@@ -67,8 +64,6 @@ export function PublishDialogUI(props: PublishDialogUIProps) {
     isSubmitting,
     submitDisabled,
     state,
-    title,
-    subtitle,
     selectedItems,
     onItemClicked,
     dependencies,
@@ -87,12 +82,6 @@ export function PublishDialogUI(props: PublishDialogUIProps) {
   // endregion
   return (
     <>
-      <DialogHeader
-        title={title}
-        subtitle={subtitle}
-        onCloseButtonClick={onCloseButtonClick}
-        disableDismiss={isSubmitting}
-      />
       <DialogBody>
         <SuspenseWithEmptyState
           resource={resource}

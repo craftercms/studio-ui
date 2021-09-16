@@ -18,12 +18,25 @@ import React from 'react';
 import EnhancedDialog from '../Dialog';
 import { PublishDialogContainer } from './PublishDialogContainer';
 import { PublishDialogProps } from './utils';
+import { FormattedMessage } from 'react-intl';
 
 export function PublishDialog(props: PublishDialogProps) {
-  const { open, onClose, hasPendingChanges, isSubmitting, ...rest } = props;
+  const { items, scheduling, onSuccess, isSubmitting, ...rest } = props;
   return (
-    <EnhancedDialog open={open} onClose={onClose} hasPendingChanges={hasPendingChanges} isSubmitting={isSubmitting}>
-      <PublishDialogContainer {...rest} isSubmitting={isSubmitting} />
+    <EnhancedDialog
+      title={<FormattedMessage id="publishDialog.title" defaultMessage="Publish" />}
+      dialogHeaderProps={{
+        subtitle: (
+          <FormattedMessage
+            id="publishDialog.subtitle"
+            defaultMessage="Hard dependencies are automatically submitted with the main items. You may choose whether to submit or not soft dependencies"
+          />
+        )
+      }}
+      {...rest}
+      isSubmitting={isSubmitting}
+    >
+      <PublishDialogContainer items={items} scheduling={scheduling} onSuccess={onSuccess} isSubmitting={isSubmitting} />
     </EnhancedDialog>
   );
 }

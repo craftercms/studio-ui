@@ -28,16 +28,14 @@ import {
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { usePermissionsBySite } from '../../utils/hooks/usePermissionsBySite';
 import { useDispatch } from 'react-redux';
-import { useUnmount } from '../../utils/hooks/useUnmount';
 import { fetchPublishingTargets, goLive, submitToGoLive } from '../../services/publishing';
 import { emitSystemEvent, itemsApproved, itemsScheduled } from '../../state/actions/system';
 import { getComputedPublishingTarget, getDateScheduled } from '../../utils/detailedItem';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import { createPresenceTable } from '../../utils/array';
 import { fetchDependencies, FetchDependenciesResponse } from '../../services/dependencies';
 import { PublishDialogUI } from './PublishDialogUI';
-import translations from './translations';
 import useStyles from './styles';
 import { useActiveUser } from '../../utils/hooks/useActiveUser';
 import { useSelection } from '../../utils/hooks/useSelection';
@@ -51,7 +49,7 @@ import { updatePublishDialog } from '../../state/actions/dialogs';
 import { batchActions } from '../../state/actions/misc';
 
 export function PublishDialogContainer(props: PublishDialogContainerProps) {
-  const { items, scheduling = 'now', onSuccess, onClose, onClosed, isSubmitting } = props;
+  const { items, scheduling = 'now', onSuccess, onClose, isSubmitting } = props;
   const {
     dateTimeFormatOptions: { timeZone = getUserTimeZone() }
   } = useLocale();
@@ -84,8 +82,6 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
   const hasPublishPermission = myPermissions.includes('publish');
   const dispatch = useDispatch();
   const submissionCommentRequired = useSelection((state) => state.uiConfig.publishing.publishCommentRequired);
-
-  useUnmount(onClosed);
 
   const user = useActiveUser();
   const submit = !hasPublishPermission || state.requestApproval ? submitToGoLive : goLive;
@@ -160,8 +156,6 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 
     return state;
   }, [selectedItems, items, publishingTargets]);
-
-  const { formatMessage } = useIntl();
 
   const getPublishingChannels = useCallback(
     (success?: (channels) => any, error?: (error) => any) => {
@@ -391,12 +385,6 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
       handleSubmit={handleSubmit}
       state={state}
       isSubmitting={isSubmitting}
-      title={formatMessage(translations.title)}
-      subtitle={
-        !hasPublishPermission || state.requestApproval
-          ? formatMessage(translations.requestPublishSubtitle) + ' ' + formatMessage(translations.subtitleHelperText)
-          : formatMessage(translations.publishSubtitle) + ' ' + formatMessage(translations.subtitleHelperText)
-      }
       selectedItems={selectedItems}
       onItemClicked={onItemClicked}
       dependencies={dependencies}

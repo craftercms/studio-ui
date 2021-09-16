@@ -18,7 +18,8 @@ import { DetailedItem } from '../../models/Item';
 import { ApiResponse } from '../../models/ApiResponse';
 import StandardAction from '../../models/StandardAction';
 import { GoLiveResponse } from '../../services/publishing';
-import { DialogProps } from '../Dialog';
+import { EnhancedDialogProps } from '../Dialog';
+import { EnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
 
 export interface PublishDialogResourceInput {
   items: DetailedItem[];
@@ -42,13 +43,11 @@ export interface PublishDialogBaseProps {
   scheduling?: 'now' | 'custom';
 }
 
-export interface PublishDialogProps extends PublishDialogBaseProps, DialogProps {
+export interface PublishDialogProps extends PublishDialogBaseProps, EnhancedDialogProps {
   onSuccess?(response?: ExtendedGoLiveResponse): any;
 }
 
-export interface PublishDialogStateProps
-  extends PublishDialogBaseProps,
-    Pick<DialogProps, 'open' | 'isSubmitting' | 'hasPendingChanges' | 'minimized'> {
+export interface PublishDialogStateProps extends PublishDialogBaseProps, EnhancedDialogState {
   onClose?: StandardAction;
   onClosed?: StandardAction;
   onSuccess?: StandardAction;
@@ -56,7 +55,7 @@ export interface PublishDialogStateProps
 
 export interface PublishDialogContainerProps
   extends PublishDialogBaseProps,
-    Pick<PublishDialogProps, 'isSubmitting' | 'onClose' | 'onSuccess' | 'onClosed'> {}
+    Pick<PublishDialogProps, 'isSubmitting' | 'onSuccess' | 'onClose'> {}
 
 export interface InternalDialogState {
   emailOnApprove: boolean;

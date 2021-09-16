@@ -77,8 +77,9 @@ export function EnhancedDialog(props: EnhancedDialogProps) {
           onMinimizeButtonClick={onMinimize}
           title={title}
           onCloseButtonClick={(e) => onClose(e, null)}
+          disableDismiss={isSubmitting}
         />
-        {children}
+        {React.Children.map(children, (child) => React.cloneElement(child as React.ReactElement, { onClose }))}
         <OnClosedInvoker onClosed={onClosed} />
       </MuiDialog>
       <MinimizedBar open={isMinimized} onMaximize={onMaximize} title={title} />
