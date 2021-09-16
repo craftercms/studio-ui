@@ -17,18 +17,16 @@
 import * as React from 'react';
 import { PropsWithChildren } from 'react';
 import { useOnClose } from '../../utils/hooks/useOnClose';
-import { useDispatch } from 'react-redux';
 import MuiDialog, { DialogProps as MuiDialogProps } from '@material-ui/core/Dialog';
-import { updateCreateFolderDialog } from '../../state/actions/dialogs';
 import TranslationOrText from '../../models/TranslationOrText';
 import { Button } from '@material-ui/core';
 import { usePossibleTranslation } from '../../utils/hooks/usePossibleTranslation';
 import { useUnmount } from '../../utils/hooks/useUnmount';
 import { DialogHeaderProps } from '../Dialogs/DialogHeader';
-import { useWithPendingChangesCloseRequest } from '../../utils/hooks/useWithPendingChangesCloseRequest';
 import MinimizedBar from '../SystemStatus/MinimizedBar';
+import { EnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
 
-export interface DialogProps extends PropsWithChildren<Omit<MuiDialogProps, 'title'>> {
+export interface DialogProps extends PropsWithChildren<Omit<MuiDialogProps, 'open'>> {
   title?: TranslationOrText;
   minimized?: boolean;
   hasPendingChanges?: boolean;
@@ -36,29 +34,7 @@ export interface DialogProps extends PropsWithChildren<Omit<MuiDialogProps, 'tit
   onClosed?(): void;
 }
 
-export function Dialog(props: DialogProps) {
-  const { id, minimized, title, ...dialogProps } = props;
-  const dispatch = useDispatch();
-  const onMinimize = () => dispatch(updateCreateFolderDialog({ minimized: true }));
-  const onMaximize = () => dispatch(updateCreateFolderDialog({ minimized: false }));
-  const onWithPendingChangesCloseRequest = useWithPendingChangesCloseRequest(dialogProps.onClose);
-  return (
-    <EnhancedDialog
-      {...dialogProps}
-      open={props.open && !minimized}
-      keepMounted={minimized}
-      title={title}
-      minimized={minimized}
-      onMaximize={onMaximize}
-      onMinimize={onMinimize}
-      onWithPendingChangesCloseRequest={onWithPendingChangesCloseRequest}
-    />
-  );
-}
-
-export default Dialog;
-
-interface EnhancedDialogProps extends DialogProps /* , EnhancedDialogState */ {
+interface EnhancedDialogProps extends DialogProps, EnhancedDialogState {
   onMinimize(): void;
   onMaximize(): void;
   onWithPendingChangesCloseRequest: MuiDialogProps['onClose'];
@@ -115,7 +91,7 @@ export function EnhancedDialog(props: EnhancedDialogProps) {
   );
 }
 
-// export default EnhancedDialog;
+export default EnhancedDialog;
 
 function OnClosedInvoker({ onClosed }: { onClosed }) {
   useUnmount(onClosed);

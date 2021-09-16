@@ -15,16 +15,16 @@
  */
 
 import React from 'react';
-import Dialog from '../Dialog';
+import EnhancedDialog from '../Dialog';
 import { PublishDialogContainer } from './PublishDialogContainer';
 import { PublishDialogProps } from './utils';
 
 export function PublishDialog(props: PublishDialogProps) {
   const { open, onClose, hasPendingChanges, isSubmitting, ...rest } = props;
   return (
-    <Dialog open={open} onClose={onClose} hasPendingChanges={hasPendingChanges} isSubmitting={isSubmitting}>
+    <EnhancedDialog open={open} onClose={onClose} hasPendingChanges={hasPendingChanges} isSubmitting={isSubmitting}>
       <PublishDialogContainer {...rest} isSubmitting={isSubmitting} />
-    </Dialog>
+    </EnhancedDialog>
   );
 }
 

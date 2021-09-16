@@ -17,13 +17,13 @@
 import React from 'react';
 import { DeleteDialogContainer } from './DeleteDialogContainer';
 import { DeleteDialogProps } from './utils';
-import Dialog from '../Dialog';
+import EnhancedDialog from '../Dialog';
 
 export default function DeleteDialog(props: DeleteDialogProps) {
   const { open, onClose, isSubmitting, hasPendingChanges, ...rest } = props;
   return (
-    <Dialog open={open} onClose={onClose} isSubmitting={isSubmitting} hasPendingChanges={hasPendingChanges}>
+    <EnhancedDialog open={open} onClose={onClose} isSubmitting={isSubmitting} hasPendingChanges={hasPendingChanges}>
       <DeleteDialogContainer {...rest} isSubmitting={isSubmitting} />
-    </Dialog>
+    </EnhancedDialog>
   );
 }

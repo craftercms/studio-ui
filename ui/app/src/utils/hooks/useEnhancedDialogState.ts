@@ -18,10 +18,10 @@ import { useSpreadState } from './useSpreadState';
 import { useMemo } from 'react';
 
 export interface EnhancedDialogState {
-  open: boolean;
-  minimized: boolean;
-  hasPendingChanges: boolean;
-  isSubmitting: boolean;
+  open?: boolean;
+  minimized?: boolean;
+  hasPendingChanges?: boolean;
+  isSubmitting?: boolean;
 }
 
 export function useEnhancedDialogState(initialState?: Partial<EnhancedDialogState>) {

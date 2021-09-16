@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { Dialog } from '../Dialog';
+import { EnhancedDialog } from '../Dialog';
 import { HistoryDialogContainer } from './HistoryDialogContainer';
 import { HistoryDialogProps } from './utils';
 
@@ -69,8 +69,8 @@ export const paginationStyles = makeStyles((theme) =>
 export default function HistoryDialog(props: HistoryDialogProps) {
   const { open, onClose, ...rest } = props;
   return (
-    <Dialog open={props.open} onClose={props.onClose}>
+    <EnhancedDialog open={props.open} onClose={props.onClose}>
       <HistoryDialogContainer {...rest} />
-    </Dialog>
+    </EnhancedDialog>
   );
 }
