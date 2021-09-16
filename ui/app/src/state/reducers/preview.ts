@@ -678,7 +678,7 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
     return {
       ...state,
       icePanel: icePanelConfig,
-      icePanelWidth: icePanelWidth ?? state. icePanelWidth
+      icePanelWidth: icePanelWidth ?? state.icePanelWidth
     };
   },
   [initRichTextEditorConfig.type]: (state, { payload }) => {
