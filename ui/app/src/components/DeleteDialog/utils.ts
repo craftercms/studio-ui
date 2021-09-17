@@ -6,7 +6,8 @@ import { DeleteDependencies } from '../../modules/Content/Dependencies/Dependenc
 import LookupTable from '../../models/LookupTable';
 import { InputProps } from '@material-ui/core/Input';
 import { SelectionListProps } from '../../modules/Content/Dependencies/SelectionList';
-import { DialogProps } from '../Dialog';
+import { EnhancedDialogProps } from '../Dialog';
+import { EnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
 
 export interface DeleteDialogBaseProps {
   items: DetailedItem[];
@@ -15,13 +16,11 @@ export interface DeleteDialogBaseProps {
   dependentItems: string[];
 }
 
-export interface DeleteDialogProps extends DeleteDialogBaseProps, DialogProps {
+export interface DeleteDialogProps extends DeleteDialogBaseProps, EnhancedDialogProps {
   onSuccess?(response?: any): any;
 }
 
-export interface DeleteDialogStateProps
-  extends DeleteDialogBaseProps,
-    Pick<DialogProps, 'open' | 'isSubmitting' | 'hasPendingChanges'> {
+export interface DeleteDialogStateProps extends DeleteDialogBaseProps, EnhancedDialogState {
   onClose?: StandardAction;
   onClosed?: StandardAction;
   onSuccess?: StandardAction;
@@ -29,7 +28,7 @@ export interface DeleteDialogStateProps
 
 export interface DeleteDialogContainerProps
   extends DeleteDialogBaseProps,
-    Pick<DeleteDialogProps, 'isSubmitting' | 'onClose' | 'onSuccess' | 'onClosed'> {}
+    Pick<DeleteDialogProps, 'isSubmitting' | 'onClose' | 'onSuccess'> {}
 
 export interface DeleteDialogContentUIProps {
   resource: Resource<DeleteDependencies>;

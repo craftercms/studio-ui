@@ -28,6 +28,9 @@ import { DeleteDialogStateProps } from '../../../components/DeleteDialog/utils';
 
 const initialState: DeleteDialogStateProps = {
   open: false,
+  isSubmitting: null,
+  isMinimized: null,
+  hasPendingChanges: null,
   items: null,
   isFetching: false,
   childItems: null,

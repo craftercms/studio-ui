@@ -15,9 +15,7 @@
  */
 
 import React from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
-import DialogHeader from '../Dialogs/DialogHeader';
-import { translations } from './translations';
+import { FormattedMessage } from 'react-intl';
 import DialogBody from '../Dialogs/DialogBody';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import DialogFooter from '../Dialogs/DialogFooter';
@@ -46,15 +44,8 @@ export function DeleteDialogUI(props: DeleteDialogUIProps) {
     onConfirmDeleteChange,
     onEditDependantClick
   } = props;
-  const { formatMessage } = useIntl();
   return (
     <>
-      <DialogHeader
-        title={formatMessage(translations.headerTitle)}
-        subtitle={formatMessage(translations.headerSubTitle)}
-        onCloseButtonClick={onCloseButtonClick}
-        disableDismiss={isDisabled}
-      />
       <DialogBody minHeight>
         <SuspenseWithEmptyState resource={resource}>
           <DeleteDialogUIBody

@@ -18,12 +18,32 @@ import React from 'react';
 import { DeleteDialogContainer } from './DeleteDialogContainer';
 import { DeleteDialogProps } from './utils';
 import EnhancedDialog from '../Dialog';
+import { FormattedMessage } from 'react-intl';
 
 export default function DeleteDialog(props: DeleteDialogProps) {
-  const { open, onClose, isSubmitting, hasPendingChanges, ...rest } = props;
+  const { items, isSubmitting, onSuccess, isFetching, childItems, dependentItems, ...rest } = props;
   return (
-    <EnhancedDialog open={open} onClose={onClose} isSubmitting={isSubmitting} hasPendingChanges={hasPendingChanges}>
-      <DeleteDialogContainer {...rest} isSubmitting={isSubmitting} />
+    <EnhancedDialog
+      title={<FormattedMessage id="deleteDialog.title" defaultMessage="Delete" />}
+      dialogHeaderProps={{
+        subtitle: (
+          <FormattedMessage
+            id="deleteDialog.subtitle"
+            defaultMessage="Selected items will be deleted along with their child items. Please review dependent items before deleting as these will end-up with broken link references."
+          />
+        )
+      }}
+      isSubmitting={isSubmitting}
+      {...rest}
+    >
+      <DeleteDialogContainer
+        items={items}
+        onSuccess={onSuccess}
+        isFetching={isFetching}
+        childItems={childItems}
+        dependentItems={dependentItems}
+        isSubmitting={isSubmitting}
+      />
     </EnhancedDialog>
   );
 }

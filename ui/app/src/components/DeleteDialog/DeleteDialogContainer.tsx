@@ -18,7 +18,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useSpreadState } from '../../utils/hooks/useSpreadState';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useDispatch } from 'react-redux';
-import { useUnmount } from '../../utils/hooks/useUnmount';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import {
   fetchDeleteDependencies,
@@ -55,7 +54,7 @@ function createCheckedLookup(items: Array<DetailedItem | string>, setChecked = t
 }
 
 export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
-  const { items, onClose, isSubmitting, onSuccess, isFetching, onClosed, childItems, dependentItems } = props;
+  const { items, onClose, isSubmitting, onSuccess, isFetching, childItems, dependentItems } = props;
   const [comment, setComment] = useState('');
   const [apiState, setApiState] = useSpreadState({
     error: null
@@ -171,8 +170,6 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
     selectedItems[path] && onItemClicked(null, path);
     dispatch(showEditDialog({ path, authoringBase, site, onSaveSuccess: fetchDeleteDependencies({ paths }) }));
   };
-
-  useUnmount(onClosed);
 
   const resource: Resource<DeleteDependencies> = useLogicResource(depsSource, {
     shouldResolve: (source) => Boolean(source.childItems && source.dependentItems && !source.isFetching),
