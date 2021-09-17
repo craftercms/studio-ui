@@ -50,6 +50,7 @@ import Paper from '@material-ui/core/Paper';
 import { interval, Observable } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
 import { UppyFile } from '@uppy/core';
+import Snackbar from '@material-ui/core/Snackbar';
 
 const translations = defineMessages({
   title: {
@@ -208,13 +209,10 @@ const useUppyItemStyles = makeStyles(() =>
   })
 );
 
-const maxTotalFiles = 2;
+const maxUploadsAtOnce = 1000;
 const uppy = Core({
   debug: false,
-  autoProceed: true,
-  restrictions: {
-    maxNumberOfFiles: maxTotalFiles
-  }
+  autoProceed: true
 });
 
 type FileWithRelativePath = File & { relativePath?: string };
@@ -282,6 +280,7 @@ interface DropZoneProps {
   site: string;
   maxSimultaneousUploads: number;
   cancelRequestObservable$: Observable<any>;
+  dropZoneStatus: DropZoneStatus;
 
   onStatusChange(status: any): void;
 }
@@ -289,7 +288,7 @@ interface DropZoneProps {
 const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
   const classes = useStyles({});
   const dndRef = useRef(null);
-  const { onStatusChange, path, site, maxSimultaneousUploads, cancelRequestObservable$ } = props;
+  const { onStatusChange, dropZoneStatus, path, site, maxSimultaneousUploads, cancelRequestObservable$ } = props;
   const { formatMessage } = useIntl();
   const [filesPerPath, setFilesPerPath] = useState<LookupTable<string[]>>(null);
   const [files, setFiles] = useSpreadState<LookupTable<LocalUppyFile>>(null);
@@ -312,11 +311,7 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
     event.preventDefault();
     event.stopPropagation();
     getDroppedFiles(event.dataTransfer).then((files) => {
-      if (files.length <= maxTotalFiles) {
-        addFiles(files);
-      } else {
-        addFiles(files.slice(0, maxTotalFiles));
-      }
+      addFiles(files);
     });
     setDragOver(false);
     removeDragData(event);
@@ -330,18 +325,25 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = toArray(event.target.files);
-
-    if (files.length <= maxTotalFiles) {
-      addFiles(files);
-    } else {
-      addFiles(files.slice(0, maxTotalFiles));
-    }
+    addFiles(files);
     event.target.value = null;
   };
 
   function addFiles(files: File[]) {
+    const filesUploading = dropZoneStatus.filesUploading;
+
+    if (files.length + filesUploading > maxUploadsAtOnce) {
+      const availableUploads = maxUploadsAtOnce - filesUploading;
+      files = files.slice(0, availableUploads);
+      // TODO: show notification
+    }
+
     setTotalFiles(totalFiles + files.length);
-    onStatusChange({ status: 'adding', files: totalFiles + files.length });
+    onStatusChange({
+      status: 'adding',
+      files: totalFiles + files.length,
+      filesUploading: filesUploading + files.length
+    });
     interval(50)
       .pipe(takeUntil(cancelRequestObservable$), take(files.length))
       .subscribe((index) => {
@@ -469,7 +471,7 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
   useEffect(() => {
     const handleUploadSuccess = () => {
       setUploadedFiles(uploadedFiles + 1);
-      onStatusChange({ uploadedFiles: uploadedFiles + 1 });
+      onStatusChange({ uploadedFiles: uploadedFiles + 1, filesUploading: dropZoneStatus.filesUploading-- });
     };
 
     const handleComplete = () => {
@@ -541,7 +543,7 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
               })}
               &nbsp; (
               {formatMessage(translations.maxFiles, {
-                maxFiles: maxTotalFiles
+                maxFiles: maxUploadsAtOnce
               })}
               )
             </Typography>
@@ -662,6 +664,7 @@ export interface DropZoneStatus {
   files?: number;
   uploadedFiles?: number;
   progress?: number;
+  filesUploading?: number;
 }
 
 export default function BulkUpload(props: any) {
@@ -672,11 +675,13 @@ export default function BulkUpload(props: any) {
     status: 'idle',
     files: null,
     uploadedFiles: 0,
-    progress: 0
+    progress: 0,
+    filesUploading: 0
   });
   const inputRef = useRef(null);
   const cancelRef = useRef(null);
   const [minimized, setMinimized] = useState(!open);
+  const [restrictionNotificationOpen, setRestrictionNotificationOpen] = useState(false);
 
   const onStatusChange = useCallback(
     (status: DropZoneStatus) => {
@@ -759,6 +764,7 @@ export default function BulkUpload(props: any) {
         <DialogContent dividers className={classes.dialogContent}>
           <DropZone
             onStatusChange={onStatusChange}
+            dropZoneStatus={dropZoneStatus}
             path={path}
             site={site}
             maxSimultaneousUploads={maxSimultaneousUploads}
@@ -792,6 +798,16 @@ export default function BulkUpload(props: any) {
           </Button>
         </DialogActions>
       </Dialog>
+      <Snackbar
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'right'
+        }}
+        open={restrictionNotificationOpen}
+        autoHideDuration={5000}
+        onClose={() => setRestrictionNotificationOpen(false)}
+        message="Only 10 files have been accepted."
+      />
     </div>
   );
 }
