@@ -20,7 +20,9 @@ import { isAsset, isCode } from '../../utils/content';
 import React from 'react';
 import { Resource } from '../../models/Resource';
 import StandardAction from '../../models/StandardAction';
-import { DialogProps } from '@material-ui/core';
+import { EnhancedDialogProps } from '../Dialog';
+import { EnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
+import { PublishDialogProps } from '../PublishDialog/utils';
 
 export interface DependenciesDialogBaseProps {
   item?: DetailedItem;
@@ -28,18 +30,16 @@ export interface DependenciesDialogBaseProps {
   dependenciesShown?: string;
 }
 
-export interface DependenciesDialogProps extends DependenciesDialogBaseProps, DialogProps {
-  onClosed?(): void;
-}
+export interface DependenciesDialogProps extends DependenciesDialogBaseProps, EnhancedDialogProps {}
 
-export interface DependenciesDialogStateProps extends DependenciesDialogBaseProps, Pick<DialogProps, 'open'> {
+export interface DependenciesDialogStateProps extends DependenciesDialogBaseProps, EnhancedDialogState {
   onClose?: StandardAction;
   onClosed?: StandardAction;
 }
 
-export interface DependenciesDialogProps
+export interface DependenciesDialogContainerProps
   extends DependenciesDialogBaseProps,
-    Pick<DependenciesDialogProps, 'onClose' | 'onClosed'> {}
+    Pick<PublishDialogProps, 'onClose'> {}
 
 export interface DependenciesListProps {
   resource: Resource<DetailedItem[]>;

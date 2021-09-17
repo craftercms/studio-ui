@@ -20,6 +20,9 @@ import { closeDependenciesDialog, dependenciesDialogClosed, showDependenciesDial
 import { DependenciesDialogStateProps } from '../../../components/DependenciesDialog/utils';
 
 const initialState: DependenciesDialogStateProps = {
+  isMinimized: null,
+  isSubmitting: null,
+  hasPendingChanges: null,
   open: false,
   rootPath: '/site/website'
 };

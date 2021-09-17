@@ -15,8 +15,7 @@
  */
 
 import { useSpreadState } from '../../utils/hooks/useSpreadState';
-import { DependenciesDialogProps, dialogInitialState } from './utils';
-import { useUnmount } from '../../utils/hooks/useUnmount';
+import { DependenciesDialogContainerProps, dialogInitialState } from './utils';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ApiResponse } from '../../models/ApiResponse';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
@@ -32,14 +31,13 @@ import { fetchDependant, fetchSimpleDependencies } from '../../services/dependen
 import { isEditableAsset, parseLegacyItemToSandBoxItem } from '../../utils/content';
 import DependenciesDialogUI from './DependenciesDialogUI';
 
-export default function DependenciesDialogContainer(props: DependenciesDialogProps) {
+export default function DependenciesDialogContainer(props: DependenciesDialogContainerProps) {
   const { item, dependenciesShown = 'depends-on', onClose, rootPath } = props;
   const [dialog, setDialog] = useSpreadState({
     ...dialogInitialState,
     item,
     dependenciesShown
   });
-  useUnmount(props.onClosed);
   const [deps, setDeps] = useState(null);
   const [error, setError] = useState<ApiResponse>(null);
   const siteId = useActiveSiteId();

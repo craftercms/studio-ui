@@ -14,10 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import React, { useState } from 'react';
-import DialogHeader from '../Dialogs/DialogHeader';
-import { translations } from './translations';
 import DialogBody from '../Dialogs/DialogBody';
 import SingleItemSelector from '../../modules/Content/Authoring/SingleItemSelector';
 import FormControl from '@material-ui/core/FormControl';
@@ -54,12 +52,10 @@ export default function DependenciesDialogUI(props: DependenciesDialogUIProps) {
     handleContextMenuClose
   } = props;
   const classes = dependenciesDialogStyles({});
-  const { formatMessage } = useIntl();
   const [openSelector, setOpenSelector] = useState(false);
 
   return (
     <>
-      <DialogHeader title={formatMessage(translations.headerTitle)} onCloseButtonClick={onCloseButtonClick} />
       <DialogBody className={classes.dialogBody}>
         <div className={classes.selectionContent}>
           <SingleItemSelector

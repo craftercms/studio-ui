@@ -249,6 +249,9 @@ function GlobalDialogManager() {
         item={state.dependencies.item}
         rootPath={state.dependencies.rootPath}
         dependenciesShown={state.dependencies.dependenciesShown}
+        hasPendingChanges={state.dependencies.hasPendingChanges}
+        isSubmitting={state.dependencies.isSubmitting}
+        isMinimized={state.dependencies.isMinimized}
         onClose={createCallback(state.dependencies.onClose, dispatch)}
         onClosed={createCallback(state.dependencies.onClosed, dispatch)}
       />

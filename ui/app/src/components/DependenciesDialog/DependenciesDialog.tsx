@@ -18,7 +18,8 @@ import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import DependenciesDialogContainer from './DependenciesDialogContainer';
 import { DependenciesDialogProps } from './utils';
-import Dialog from '@material-ui/core/Dialog';
+import EnhancedDialog from '../Dialog/EnhancedDialog';
+import { FormattedMessage } from 'react-intl';
 
 export const dependenciesDialogStyles = makeStyles((theme) =>
   createStyles({
@@ -99,9 +100,13 @@ export const dependenciesDialogStyles = makeStyles((theme) =>
 );
 
 export default function DependenciesDialog(props: DependenciesDialogProps) {
+  const { item, dependenciesShown, rootPath, ...rest } = props;
   return (
-    <Dialog open={props.open} onClose={props.onClose} fullWidth maxWidth="md">
-      <DependenciesDialogContainer {...props} />
-    </Dialog>
+    <EnhancedDialog
+      title={<FormattedMessage id="dependenciesDialog.title" defaultMessage="Content Item Dependencies" />}
+      {...rest}
+    >
+      <DependenciesDialogContainer item={item} rootPath={rootPath} dependenciesShown={dependenciesShown} />
+    </EnhancedDialog>
   );
 }
