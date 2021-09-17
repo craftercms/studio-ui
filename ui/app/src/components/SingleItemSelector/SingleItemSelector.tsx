@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -17,33 +17,32 @@
 import React, { ReactNode, useCallback, useReducer, useRef } from 'react';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, TypographyVariant as Variant } from '@material-ui/core/styles';
 import clsx from 'clsx';
-import { TypographyVariant as Variant } from '@material-ui/core/styles';
-import { DetailedItem, SandboxItem } from '../../../models/Item';
+import { DetailedItem, SandboxItem } from '../../models/Item';
 import ExpandMoreRoundedIcon from '@material-ui/icons/ExpandMoreRounded';
 import Popover from '@material-ui/core/Popover';
 import Paper from '@material-ui/core/Paper';
-import StandardAction from '../../../models/StandardAction';
-import PaginationOptions from '../../../models/PaginationOptions';
-import { LookupTable } from '../../../models/LookupTable';
-import ApiResponse from '../../../models/ApiResponse';
+import StandardAction from '../../models/StandardAction';
+import PaginationOptions from '../../models/PaginationOptions';
+import { LookupTable } from '../../models/LookupTable';
+import ApiResponse from '../../models/ApiResponse';
 import { createAction } from '@reduxjs/toolkit';
-import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
-import Breadcrumbs from '../../../components/PathNavigator/PathNavigatorBreadcrumbs';
-import PathNavigatorList from '../../../components/PathNavigator/PathNavigatorList';
-import { fetchChildrenByPath, fetchItemsByPath, fetchItemWithChildrenByPath } from '../../../services/content';
-import { getIndividualPaths, getParentPath, withIndex, withoutIndex } from '../../../utils/path';
-import { createLookupTable, nou } from '../../../utils/object';
+import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
+import Breadcrumbs from '../PathNavigator/PathNavigatorBreadcrumbs';
+import PathNavigatorList from '../PathNavigator/PathNavigatorList';
+import { fetchChildrenByPath, fetchItemsByPath, fetchItemWithChildrenByPath } from '../../services/content';
+import { getIndividualPaths, getParentPath, withIndex, withoutIndex } from '../../utils/path';
+import { createLookupTable, nou } from '../../utils/object';
 import { forkJoin } from 'rxjs';
-import { isFolder } from '../../../components/PathNavigator/utils';
-import { lookupItemByPath, parseSandBoxItemToDetailedItem } from '../../../utils/content';
-import { GetChildrenResponse } from '../../../models/GetChildrenResponse';
-import Pagination from '../../../components/Pagination';
-import NavItem from '../../../components/PathNavigator/PathNavigatorItem';
-import { useActiveSiteId } from '../../../utils/hooks/useActiveSiteId';
-import { useLogicResource } from '../../../utils/hooks/useLogicResource';
-import ItemDisplay from '../../../components/ItemDisplay';
+import { isFolder } from '../PathNavigator/utils';
+import { lookupItemByPath, parseSandBoxItemToDetailedItem } from '../../utils/content';
+import { GetChildrenResponse } from '../../models/GetChildrenResponse';
+import Pagination from '../Pagination';
+import NavItem from '../PathNavigator/PathNavigatorItem';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { useLogicResource } from '../../utils/hooks/useLogicResource';
+import ItemDisplay from '../ItemDisplay';
 
 const useStyles = makeStyles((theme) => ({
   popoverRoot: {

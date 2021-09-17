@@ -33,11 +33,11 @@ import { useSubject } from '../../utils/hooks/useSubject';
 import { debounceTime } from 'rxjs/operators';
 import DialogBody from '../Dialogs/DialogBody';
 import { Box, Checkbox, FormControlLabel } from '@material-ui/core';
-import SingleItemSelector from '../../modules/Content/Authoring/SingleItemSelector';
+import SingleItemSelector from '../SingleItemSelector';
 import SearchBar from '../Controls/SearchBar';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import DialogFooter from '../Dialogs/DialogFooter';
-import ContentTypesFilter from '../../modules/Content/Authoring/ContentTypesFilter';
+import ContentTypesFilter from '../ContentTypeFilter';
 import { ContentTypesGrid, ContentTypesLoader } from './NewContentDialog';
 
 export function NewContentDialogContainer(props: NewContentDialogContainerProps) {

@@ -26,7 +26,6 @@ import { CreateFileStateProps } from '../../components/Dialogs/CreateFileDialog'
 import { UploadDialogStateProps } from '../../components/Dialogs/UploadDialog';
 import { PreviewDialogStateProps } from '../../components/Dialogs/PreviewDialog';
 import { PathSelectionDialogStateProps } from '../../components/Dialogs/PathSelectionDialog';
-import { ChangeContentTypeDialogStateProps } from '../../modules/Content/Authoring/ChangeContentTypeDialog';
 import { CopyDialogStateProps } from '../../components/Dialogs/CopyDialog';
 import { ItemMenuStateProps } from '../../components/ItemActionsMenu';
 import { ItemMegaMenuStateProps } from '../../components/ItemMegaMenu';
@@ -44,6 +43,7 @@ import { HistoryDialogStateProps } from '../../components/HistoryDialog/utils';
 import { ViewVersionDialogStateProps } from '../../components/ViewVersionDialog/utils';
 import { CompareVersionsDialogStateProps } from '../../components/CompareVersionsDialog/utils';
 import { ConfirmDialogStateProps } from '../../components/ConfirmDialog/utils';
+import { ChangeContentTypeDialogStateProps } from '../../components/ChangeContentTypeDialog/utils';
 
 // region History
 export const showHistoryDialog = /*#__PURE__*/ createAction<Partial<HistoryDialogStateProps>>('SHOW_HISTORY_DIALOG');

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -14,43 +14,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
-import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import Dialog from '@material-ui/core/Dialog';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { LegacyContentType, LegacyFormConfig } from '../../../models/ContentType';
-import StandardAction from '../../../models/StandardAction';
-import { DetailedItem } from '../../../models/Item';
-import DialogHeader from '../../../components/Dialogs/DialogHeader';
-import DialogFooter from '../../../components/Dialogs/DialogFooter';
-import { Box, Checkbox, FormControlLabel } from '@material-ui/core';
-import DialogBody from '../../../components/Dialogs/DialogBody';
-import SingleItemSelector from './SingleItemSelector';
-import SearchBar from '../../../components/Controls/SearchBar';
-import { fetchLegacyContentTypes } from '../../../services/contentTypes';
-import { showErrorDialog } from '../../../state/reducers/dialogs/error';
+import { ChangeContentTypeDialogContainerProps } from './utils';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useDispatch } from 'react-redux';
-import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
+import React, { useEffect, useMemo, useState } from 'react';
+import { LegacyContentType, LegacyFormConfig } from '../../models/ContentType';
+import { fetchLegacyContentTypes } from '../../services/contentTypes';
+import { showErrorDialog } from '../../state/reducers/dialogs/error';
+import { useLogicResource } from '../../utils/hooks/useLogicResource';
+import { useSubject } from '../../utils/hooks/useSubject';
 import { debounceTime } from 'rxjs/operators';
-import { ContentTypesGrid, ContentTypesLoader } from '../../../components/NewContentDialog';
-import { useActiveSiteId } from '../../../utils/hooks/useActiveSiteId';
-import { useLogicResource } from '../../../utils/hooks/useLogicResource';
-import { useSubject } from '../../../utils/hooks/useSubject';
-
-const translations = defineMessages({
-  title: {
-    id: 'changeContentTypeDialog.title',
-    defaultMessage: 'Choose Content Type'
-  },
-  subtitle: {
-    id: 'changeContentTypeDialog.subtitle',
-    defaultMessage: 'The following starter templates are available for use within this section.'
-  },
-  compactInput: {
-    id: 'words.compact',
-    defaultMessage: 'Compact'
-  }
-});
+import DialogBody from '../Dialogs/DialogBody';
+import { Box, Checkbox, FormControlLabel } from '@material-ui/core';
+import SingleItemSelector from '../SingleItemSelector';
+import { FormattedMessage } from 'react-intl';
+import SearchBar from '../Controls/SearchBar';
+import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
+import { ContentTypesGrid, ContentTypesLoader } from '../NewContentDialog';
+import DialogFooter from '../Dialogs/DialogFooter';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -71,42 +53,9 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-interface ChangeContentTypeDialogBaseProps {
-  open: boolean;
-  item: DetailedItem;
-  rootPath: string;
-  compact: boolean;
-  selectedContentType: string;
-}
-
-export type ChangeContentTypeDialogProps = PropsWithChildren<
-  ChangeContentTypeDialogBaseProps & {
-    onContentTypeSelected?(response?: any): any;
-    onClose?(): void;
-    onClosed?(): void;
-    onDismiss?(): void;
-  }
->;
-
-export interface ChangeContentTypeDialogStateProps extends ChangeContentTypeDialogBaseProps {
-  onContentTypeSelected?: StandardAction;
-  onClose?: StandardAction;
-  onClosed?: StandardAction;
-  onDismiss?: StandardAction;
-}
-
-export default function ChangeContentTypeDialog(props: ChangeContentTypeDialogProps) {
-  return (
-    <Dialog open={props.open} onClose={props.onClose} fullWidth maxWidth="md">
-      <ChangeContentTypeDialogBody {...props} />
-    </Dialog>
-  );
-}
-
-function ChangeContentTypeDialogBody(props: ChangeContentTypeDialogProps) {
-  const { onDismiss, item, onContentTypeSelected, compact = false, rootPath, selectedContentType } = props;
+export default function ChangeContentTypeDialogContainer(props: ChangeContentTypeDialogContainerProps) {
+  const { item, onContentTypeSelected, compact = false, rootPath, selectedContentType } = props;
   const site = useActiveSiteId();
-  const { formatMessage } = useIntl();
   const dispatch = useDispatch();
   const classes = useStyles({});
 
@@ -171,11 +120,6 @@ function ChangeContentTypeDialogBody(props: ChangeContentTypeDialogProps) {
 
   return (
     <>
-      <DialogHeader
-        title={formatMessage(translations.title)}
-        subtitle={formatMessage(translations.subtitle)}
-        onCloseButtonClick={onDismiss}
-      />
       <DialogBody classes={{ root: classes.dialogContent }}>
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Box>
@@ -228,7 +172,7 @@ function ChangeContentTypeDialogBody(props: ChangeContentTypeDialogProps) {
         <FormControlLabel
           className={classes.compact}
           control={<Checkbox checked={isCompact} onChange={() => setIsCompact(!isCompact)} color="primary" />}
-          label={formatMessage(translations.compactInput)}
+          label={<FormattedMessage id="words.compact" defaultMessage="Compact" />}
         />
       </DialogFooter>
     </>

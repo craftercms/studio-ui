@@ -30,7 +30,7 @@ import { useDispatch } from 'react-redux';
 import palette from '../../styles/palette';
 import DialogBody from './DialogBody';
 import DialogHeader from './DialogHeader';
-import SingleItemSelector from '../../modules/Content/Authoring/SingleItemSelector';
+import SingleItemSelector from '../SingleItemSelector';
 import { DetailedItem } from '../../models/Item';
 import ActionsBar from '../ActionsBar';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';

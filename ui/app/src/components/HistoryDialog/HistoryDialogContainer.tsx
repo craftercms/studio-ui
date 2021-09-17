@@ -49,7 +49,7 @@ import {
 } from '../../state/reducers/versions';
 import { asDayMonthDateTime } from '../../utils/datetime';
 import DialogBody from '../Dialogs/DialogBody';
-import SingleItemSelector from '../../modules/Content/Authoring/SingleItemSelector';
+import SingleItemSelector from '../SingleItemSelector';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import VersionList from '../VersionList';
 import DialogFooter from '../Dialogs/DialogFooter';

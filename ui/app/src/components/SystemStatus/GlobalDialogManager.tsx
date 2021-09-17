@@ -39,7 +39,7 @@ const EditSiteDialog = lazy(() => import('../../modules/System/Sites/Edit/EditSi
 const ConfirmDialog = lazy(() => import('../ConfirmDialog'));
 const ErrorDialog = lazy(() => import('./ErrorDialog'));
 const NewContentDialog = lazy(() => import('../NewContentDialog'));
-const ChangeContentTypeDialog = lazy(() => import('../../modules/Content/Authoring/ChangeContentTypeDialog'));
+const ChangeContentTypeDialog = lazy(() => import('../ChangeContentTypeDialog'));
 const HistoryDialog = lazy(() => import('../HistoryDialog'));
 const PublishDialog = lazy(() => import('../PublishDialog'));
 const DependenciesDialog = lazy(() => import('../DependenciesDialog/DependenciesDialog'));
@@ -236,10 +236,12 @@ function GlobalDialogManager() {
         rootPath={state.changeContentType.rootPath}
         compact={state.changeContentType.compact}
         selectedContentType={state.changeContentType.selectedContentType}
+        isMinimized={state.changeContentType.isMinimized}
+        isSubmitting={state.changeContentType.isSubmitting}
+        hasPendingChanges={state.changeContentType.hasPendingChanges}
         onContentTypeSelected={createCallback(state.changeContentType.onContentTypeSelected, dispatch)}
         onClose={createCallback(state.changeContentType.onClose, dispatch)}
         onClosed={createCallback(state.changeContentType.onClosed, dispatch)}
-        onDismiss={createCallback(state.changeContentType.onDismiss, dispatch)}
       />
       {/* endregion */}
 

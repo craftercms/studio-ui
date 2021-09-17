@@ -29,7 +29,7 @@ import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { validateActionPolicy } from '../../services/sites';
 import { translations } from './translations';
 import DialogBody from '../Dialogs/DialogBody';
-import SingleItemSelector from '../../modules/Content/Authoring/SingleItemSelector';
+import SingleItemSelector from '../SingleItemSelector';
 import TextField from '@material-ui/core/TextField';
 import DialogFooter from '../Dialogs/DialogFooter';
 import SecondaryButton from '../SecondaryButton';

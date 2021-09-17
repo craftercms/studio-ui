@@ -20,10 +20,13 @@ import {
   closeChangeContentTypeDialog,
   showChangeContentTypeDialog
 } from '../../actions/dialogs';
-import { ChangeContentTypeDialogStateProps } from '../../../modules/Content/Authoring/ChangeContentTypeDialog';
+import { ChangeContentTypeDialogStateProps } from '../../../components/ChangeContentTypeDialog/utils';
 
 const initialState: ChangeContentTypeDialogStateProps = {
   open: false,
+  isSubmitting: null,
+  isMinimized: null,
+  hasPendingChanges: null,
   compact: false,
   item: null,
   rootPath: '/site/website',

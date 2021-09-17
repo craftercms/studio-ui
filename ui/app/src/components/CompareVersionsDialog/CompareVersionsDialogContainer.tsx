@@ -32,7 +32,7 @@ import {
 import VersionList from '../VersionList';
 import DialogBody from '../Dialogs/DialogBody';
 import clsx from 'clsx';
-import SingleItemSelector from '../../modules/Content/Authoring/SingleItemSelector';
+import SingleItemSelector from '../SingleItemSelector';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import EmptyState from '../SystemStatus/EmptyState';
 import Typography from '@material-ui/core/Typography';

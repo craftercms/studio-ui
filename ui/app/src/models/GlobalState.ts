@@ -40,7 +40,6 @@ import { UploadDialogStateProps } from '../components/Dialogs/UploadDialog';
 import { PreviewDialogStateProps } from '../components/Dialogs/PreviewDialog';
 import { EditSiteDialogStateProps } from '../modules/System/Sites/Edit/EditSiteDialog';
 import { PathSelectionDialogStateProps } from '../components/Dialogs/PathSelectionDialog';
-import { ChangeContentTypeDialogStateProps } from '../modules/Content/Authoring/ChangeContentTypeDialog';
 import { WidgetDescriptor } from '../components/Widget';
 import { ItemMenuStateProps } from '../components/ItemActionsMenu';
 import { ItemMegaMenuStateProps } from '../components/ItemMegaMenu';
@@ -62,6 +61,7 @@ import { HistoryDialogStateProps } from '../components/HistoryDialog/utils';
 import { ViewVersionDialogStateProps } from '../components/ViewVersionDialog/utils';
 import { CompareVersionsDialogStateProps } from '../components/CompareVersionsDialog/utils';
 import { ConfirmDialogStateProps } from '../components/ConfirmDialog/utils';
+import { ChangeContentTypeDialogStateProps } from '../components/ChangeContentTypeDialog/utils';
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
   page: any;

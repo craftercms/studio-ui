@@ -17,7 +17,7 @@
 import { FormattedMessage } from 'react-intl';
 import React, { useState } from 'react';
 import DialogBody from '../Dialogs/DialogBody';
-import SingleItemSelector from '../../modules/Content/Authoring/SingleItemSelector';
+import SingleItemSelector from '../SingleItemSelector';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
