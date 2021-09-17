@@ -277,7 +277,6 @@ export function insertComponent(
       'internal-name': cdataWrap(instance.craftercms.label),
       'file-name': `${id}.xml`,
       objectId: id,
-      locale: instance.craftercms.locale,
       ...reversePluckProps(instance, 'craftercms')
     });
 
@@ -522,7 +521,7 @@ interface LegacyContentDocumentProps {
   createdDate_dt: string;
   lastModifiedDate_dt: string;
   objectId: string;
-  locale: string;
+  locale?: string;
   placeInNav?: 'true' | 'false';
 }
 
@@ -575,8 +574,7 @@ function mergeContentDocumentProps(type: string, data: AnyObject): LegacyContent
       'merge-strategy': 'inherit-levels',
       createdDate_dt: dateCreated,
       lastModifiedDate_dt: dateModified,
-      objectId: '',
-      locale: 'en'
+      objectId: ''
     },
     type === 'page' ? { placeInNav: 'false' as 'false' } : {},
     data || {}
@@ -846,9 +844,7 @@ export function fetchChildrenByPath(
   return postJSON('/studio/api/2/content/children_by_path', {
     siteId,
     path,
-    ...options,
-    // `excludes` may not come at all or be an array of paths
-    ...(options?.excludes ? { excludes: options.excludes.join(',') } : {})
+    ...options
   }).pipe(
     pluck('response'),
     map(({ children, levelDescriptor, total, offset, limit }) =>

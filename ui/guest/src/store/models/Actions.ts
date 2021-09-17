@@ -39,7 +39,8 @@ import {
   EDIT_MODE_CHANGED,
   HIGHLIGHT_MODE_CHANGED,
   HOST_CHECK_IN,
-  TRASHED
+  TRASHED,
+  UPDATE_RTE_CONFIG
 } from '../../constants';
 
 export type GuestActionTypes =
@@ -89,7 +90,8 @@ export type GuestActionTypes =
   | typeof HOST_CHECK_IN
   | typeof CONTENT_TREE_FIELD_SELECTED
   | typeof CLEAR_CONTENT_TREE_FIELD_SELECTED
-  | typeof CONTENT_TREE_SWITCH_FIELD_INSTANCE;
+  | typeof CONTENT_TREE_SWITCH_FIELD_INSTANCE
+  | typeof UPDATE_RTE_CONFIG;
 
 export type MouseEventAction = GuestStandardAction<{
   event: JQueryMouseEventObject | SyntheticEvent<Element, MouseEvent> | MouseEvent;

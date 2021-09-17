@@ -23,6 +23,9 @@ export const getPublishingStatusCodeColor = (code: PublishingStatusTileProps['st
     case 'ready': {
       return theme.palette.success.main;
     }
+    case 'processing': {
+      return theme.palette.info.dark;
+    }
     case 'publishing': {
       return theme.palette.info.main;
     }

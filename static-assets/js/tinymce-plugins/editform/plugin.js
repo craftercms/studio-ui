@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -14,19 +14,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export interface ContentInstanceSystemProps {
-  id: string;
-  path: string;
-  label: string; // Internal name
-  dateCreated: string;
-  dateModified: string;
-  contentTypeId: string;
-  sourceMap?: { [fieldId: string]: string }; // fieldId: path
-}
+tinymce.PluginManager.add('editform', function(editor, url) {
+  editor.ui.registry.addButton('editform', {
+    icon: 'edit-block',
+    tooltip: 'Edit',
+    onAction: () => {
+      const openEditForm = editor.getParam('openEditForm');
+      openEditForm?.();
+    }
+  });
 
-export interface ContentInstance {
-  craftercms: ContentInstanceSystemProps;
-  [fieldId: string]: any;
-}
-
-export default ContentInstance;
+  return {
+    getMetadata: function() {
+      return {
+        name: 'Edit Form'
+      };
+    }
+  };
+});
