@@ -52,6 +52,7 @@
       copiedItem: null,
       cutItem: null,
       instanceCount: 0,
+      instances: {},
       lastSelectedTextNode: null, //used for holding last selected node; to use it to hold hover effect on a text node when cotex menu is open.
       treePaths: [],
       menuOn: false,
@@ -86,6 +87,7 @@
 
         if (config.name == 'wcm-root-folder') {
           var instance = new CStudioAuthoring.ContextualNav.WcmRootFolderInstance(config);
+          this.instances[config.params.path] = instance;
           instance.cannedSearchCache = [];
           instance.excludeCache = [];
           instance.excludeRegexCache = [];
@@ -3865,6 +3867,9 @@
         (highlightVisible = $highlightEl.is(':visible')), (treeExists = $('#pages-tree + div').children().length > 0);
 
         if (!highlightVisible && treeExists && reload) {
+          // destroy current instance's context menu.
+          self.instances[config.params.path].tree.oContextMenu.destroy();
+
           var $container = $(config.containerEl).empty();
           CStudioAuthoring.ContextualNav.WcmRootFolder.initialize(
             Object.assign({}, config, { containerEl: $container[0] })
