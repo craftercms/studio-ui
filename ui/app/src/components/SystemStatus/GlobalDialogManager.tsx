@@ -136,12 +136,7 @@ function GlobalDialogManager() {
     <Suspense fallback="">
       {/* region Confirm */}
       <ConfirmDialog
-        open={state.confirm.open}
-        title={state.confirm.title}
-        body={state.confirm.body}
-        styles={state.confirm.styles}
-        imageUrl={state.confirm.imageUrl}
-        hideBackdrop={state.confirm.hideBackdrop}
+        {...state.confirm}
         onOk={createCallback(state.confirm.onOk, dispatch)}
         onCancel={createCallback(state.confirm.onCancel, dispatch)}
         onClose={createCallback(state.confirm.onClose, dispatch)}
@@ -151,8 +146,7 @@ function GlobalDialogManager() {
 
       {/* region Error */}
       <ErrorDialog
-        open={state.error.open}
-        error={state.error.error}
+        {...state.error}
         onClose={createCallback(state.error.onClose, dispatch)}
         onClosed={createCallback(state.error.onClosed, dispatch)}
         onDismiss={createCallback(state.error.onDismiss, dispatch)}
@@ -161,21 +155,7 @@ function GlobalDialogManager() {
 
       {/* region Edit (LegacyFormDialog) */}
       <LegacyFormDialog
-        open={state.edit.open}
-        path={state.edit.path}
-        selectedFields={state.edit.selectedFields}
-        site={state.edit.site}
-        authoringBase={state.edit.authoringBase}
-        readonly={state.edit.readonly}
-        isHidden={state.edit.isHidden}
-        modelId={state.edit.modelId}
-        changeTemplate={state.edit.changeTemplate}
-        contentTypeId={state.edit.contentTypeId}
-        isNewContent={state.edit.isNewContent}
-        inProgress={state.edit.inProgress}
-        pendingChanges={state.edit.pendingChanges}
-        iceGroupId={state.edit.iceGroupId}
-        newEmbedded={state.edit.newEmbedded}
+        {...state.edit}
         onClose={createCallback(state.edit.onClose, dispatch)}
         onClosed={createCallback(state.edit.onClosed, dispatch)}
         onDismiss={createCallback(state.edit.onDismiss, dispatch)}
@@ -185,12 +165,7 @@ function GlobalDialogManager() {
 
       {/* region Code Editor */}
       <CodeEditorDialog
-        open={state.codeEditor.open}
-        path={state.codeEditor.path}
-        mode={state.codeEditor.mode}
-        readonly={state.codeEditor.readonly}
-        contentType={state.codeEditor.contentType}
-        pendingChanges={state.codeEditor.pendingChanges}
+        {...state.codeEditor}
         onClose={createCallback(state.codeEditor.onClose, dispatch)}
         onClosed={createCallback(state.codeEditor.onClosed, dispatch)}
         onSuccess={createCallback(state.codeEditor.onSuccess, dispatch)}
@@ -199,12 +174,7 @@ function GlobalDialogManager() {
 
       {/* region Publish */}
       <PublishDialog
-        open={state.publish.open}
-        items={state.publish.items}
-        scheduling={state.publish.scheduling}
-        isMinimized={state.publish.isMinimized}
-        isSubmitting={state.publish.isSubmitting}
-        hasPendingChanges={state.publish.hasPendingChanges}
+        {...state.publish}
         onClose={createCallback(state.publish.onClose, dispatch)}
         onClosed={createCallback(state.publish.onClosed, dispatch)}
         onSuccess={createCallback(state.publish.onSuccess, dispatch)}
@@ -216,13 +186,7 @@ function GlobalDialogManager() {
 
       {/* region Create Content */}
       <NewContentDialog
-        open={state.newContent.open}
-        item={state.newContent.item}
-        rootPath={state.newContent.rootPath}
-        compact={state.newContent.compact}
-        isMinimized={state.newContent.isMinimized}
-        isSubmitting={state.newContent.isSubmitting}
-        hasPendingChanges={state.newContent.hasPendingChanges}
+        {...state.newContent}
         onContentTypeSelected={createCallback(state.newContent.onContentTypeSelected, dispatch)}
         onClose={createCallback(state.newContent.onClose, dispatch)}
         onClosed={createCallback(state.newContent.onClosed, dispatch)}
@@ -231,14 +195,7 @@ function GlobalDialogManager() {
 
       {/* region Change ContentType */}
       <ChangeContentTypeDialog
-        open={state.changeContentType.open}
-        item={state.changeContentType.item}
-        rootPath={state.changeContentType.rootPath}
-        compact={state.changeContentType.compact}
-        selectedContentType={state.changeContentType.selectedContentType}
-        isMinimized={state.changeContentType.isMinimized}
-        isSubmitting={state.changeContentType.isSubmitting}
-        hasPendingChanges={state.changeContentType.hasPendingChanges}
+        {...state.changeContentType}
         onContentTypeSelected={createCallback(state.changeContentType.onContentTypeSelected, dispatch)}
         onClose={createCallback(state.changeContentType.onClose, dispatch)}
         onClosed={createCallback(state.changeContentType.onClosed, dispatch)}
@@ -247,13 +204,7 @@ function GlobalDialogManager() {
 
       {/* region Dependencies */}
       <DependenciesDialog
-        open={state.dependencies.open}
-        item={state.dependencies.item}
-        rootPath={state.dependencies.rootPath}
-        dependenciesShown={state.dependencies.dependenciesShown}
-        hasPendingChanges={state.dependencies.hasPendingChanges}
-        isSubmitting={state.dependencies.isSubmitting}
-        isMinimized={state.dependencies.isMinimized}
+        {...state.dependencies}
         onClose={createCallback(state.dependencies.onClose, dispatch)}
         onClosed={createCallback(state.dependencies.onClosed, dispatch)}
       />
@@ -261,14 +212,7 @@ function GlobalDialogManager() {
 
       {/* region Delete */}
       <DeleteDialog
-        open={state.delete.open}
-        items={state.delete.items}
-        isFetching={state.delete.isFetching}
-        dependentItems={state.delete.dependentItems}
-        childItems={state.delete.childItems}
-        hasPendingChanges={state.delete.hasPendingChanges}
-        isSubmitting={state.delete.isSubmitting}
-        isMinimized={state.delete.isMinimized}
+        {...state.delete}
         onClose={createCallback(state.delete.onClose, dispatch)}
         onClosed={createCallback(state.delete.onClosed, dispatch)}
         onSuccess={createCallback(state.delete.onSuccess, dispatch)}
@@ -280,11 +224,8 @@ function GlobalDialogManager() {
 
       {/* region History */}
       <HistoryDialog
-        open={state.history.open}
+        {...state.history}
         versionsBranch={versionsBranch}
-        hasPendingChanges={state.history.hasPendingChanges}
-        isSubmitting={state.history.isSubmitting}
-        isMinimized={state.history.isMinimized}
         onClose={createCallback(state.history.onClose, dispatch)}
         onClosed={createCallback(state.history.onClosed, dispatch)}
       />
@@ -292,18 +233,16 @@ function GlobalDialogManager() {
 
       {/* region View Versions */}
       <ViewVersionDialog
-        open={state.viewVersion.open}
-        isFetching={state.viewVersion.isFetching}
-        error={state.viewVersion.error}
+        {...state.viewVersion}
         rightActions={state.viewVersion.rightActions?.map((action) => ({
           ...action,
           onClick: createCallback(action.onClick, dispatch)
         }))}
-        version={state.viewVersion.version}
+        leftActions={state.viewVersion.leftActions?.map((action) => ({
+          ...action,
+          onClick: createCallback(action.onClick, dispatch)
+        }))}
         contentTypesBranch={contentTypesBranch}
-        hasPendingChanges={state.viewVersion.hasPendingChanges}
-        isSubmitting={state.viewVersion.isSubmitting}
-        isMinimized={state.viewVersion.isMinimized}
         onClose={createCallback(state.viewVersion.onClose, dispatch)}
         onClosed={createCallback(state.viewVersion.onClosed, dispatch)}
       />
@@ -311,9 +250,7 @@ function GlobalDialogManager() {
 
       {/* region Compare Versions */}
       <CompareVersionsDialog
-        open={state.compareVersions.open}
-        isFetching={state.compareVersions.isFetching}
-        error={state.compareVersions.error}
+        {...state.compareVersions}
         rightActions={state.compareVersions.rightActions?.map((action) => ({
           ...action,
           onClick: createCallback(action.onClick, dispatch)
@@ -322,10 +259,6 @@ function GlobalDialogManager() {
         selectedA={versionsBranch?.selected[0] ? versionsBranch.byId[versionsBranch.selected[0]] : null}
         selectedB={versionsBranch?.selected[1] ? versionsBranch.byId[versionsBranch.selected[1]] : null}
         versionsBranch={versionsBranch}
-        disableItemSwitching={state.compareVersions.disableItemSwitching}
-        hasPendingChanges={state.compareVersions.hasPendingChanges}
-        isSubmitting={state.compareVersions.isSubmitting}
-        isMinimized={state.compareVersions.isMinimized}
         onClose={createCallback(state.compareVersions.onClose, dispatch)}
         onClosed={createCallback(state.compareVersions.onClosed, dispatch)}
       />
@@ -337,11 +270,7 @@ function GlobalDialogManager() {
 
       {/* region Workflow Cancellation */}
       <WorkflowCancellationDialog
-        open={state.workflowCancellation.open}
-        items={state.workflowCancellation.items}
-        hasPendingChanges={state.workflowCancellation.hasPendingChanges}
-        isSubmitting={state.workflowCancellation.isSubmitting}
-        isMinimized={state.workflowCancellation.isMinimized}
+        {...state.workflowCancellation}
         onClose={createCallback(state.workflowCancellation.onClose, dispatch)}
         onClosed={createCallback(state.workflowCancellation.onClosed, dispatch)}
         onContinue={createCallback(state.workflowCancellation.onContinue, dispatch)}

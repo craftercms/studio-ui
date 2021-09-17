@@ -106,12 +106,13 @@ export const getLegacyDialogStyles = makeStyles(() => ({
 } */
 
 export default function ViewVersionDialog(props: ViewVersionDialogProps) {
-  const { rightActions, contentTypesBranch, error, isFetching, version, ...rest } = props;
+  const { rightActions, leftActions, contentTypesBranch, error, isFetching, version, ...rest } = props;
 
   return (
     <EnhancedDialog
       title={<FormattedMessage id="viewVersionDialog.headerTitle" defaultMessage="Viewing item version" />}
       dialogHeaderProps={{
+        leftActions,
         rightActions
       }}
       {...rest}
