@@ -15,7 +15,8 @@
  */
 
 import StandardAction from '../../models/StandardAction';
-import { DialogProps } from '../Dialog';
+import { EnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
+import { EnhancedDialogProps } from '../Dialog';
 
 export interface CreateFolderBaseProps {
   path?: string;
@@ -24,14 +25,12 @@ export interface CreateFolderBaseProps {
   allowBraces?: boolean;
 }
 
-export interface CreateFolderProps extends CreateFolderBaseProps, DialogProps {
+export interface CreateFolderProps extends CreateFolderBaseProps, EnhancedDialogProps {
   onCreated?(response: { path: string; name: string; rename: boolean }): void;
   onRenamed?(response: { path: string; name: string; rename: boolean }): void;
 }
 
-export interface CreateFolderStateProps
-  extends CreateFolderBaseProps,
-    Pick<DialogProps, 'open' | 'isSubmitting' | 'hasPendingChanges' | 'minimized'> {
+export interface CreateFolderStateProps extends CreateFolderBaseProps, EnhancedDialogState {
   onClose?: StandardAction;
   onClosed?: StandardAction;
   onCreated?: StandardAction;
@@ -41,5 +40,5 @@ export interface CreateFolderStateProps
 export interface CreateFolderContainerProps
   extends Pick<
     CreateFolderProps,
-    'path' | 'allowBraces' | 'value' | 'rename' | 'isSubmitting' | 'onRenamed' | 'onCreated' | 'onClose' | 'onClosed'
+    'path' | 'allowBraces' | 'value' | 'rename' | 'isSubmitting' | 'onRenamed' | 'onCreated' | 'onClose'
   > {}

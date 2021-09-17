@@ -40,6 +40,7 @@ import { useUnmount } from '../../utils/hooks/useUnmount';
 import { usePossibleTranslation } from '../../utils/hooks/usePossibleTranslation';
 import { legacyItemsToTreeNodes } from '../FolderBrowserTreeView/utils';
 import { useSelection } from '../../utils/hooks/useSelection';
+import { useWithPendingChangesCloseRequest } from '../../utils/hooks/useWithPendingChangesCloseRequest';
 
 export interface PathSelectionDialogBaseProps {
   open: boolean;
@@ -298,6 +299,7 @@ export function PathSelectionDialogBodyUI(props: PathSelectionDialogBodyUIProps)
       errorSelector: ({ error }) => error
     }
   );
+  const onWithPendingChangesCloseRequest = useWithPendingChangesCloseRequest(onCloseCreateFolder);
   return (
     <>
       <DialogHeader
@@ -345,9 +347,12 @@ export function PathSelectionDialogBodyUI(props: PathSelectionDialogBodyUIProps)
         </PrimaryButton>
       </DialogFooter>
       <CreateFolderDialog
+        title={<FormattedMessage id="newFolder.title" defaultMessage="Create a New Folder" />}
         path={currentPath}
         isSubmitting={createFolderState.isSubmitting}
         hasPendingChanges={createFolderState.hasPendingChanges}
+        isMinimized={createFolderState.isMinimized}
+        onWithPendingChangesCloseRequest={onWithPendingChangesCloseRequest}
         open={createFolderDialogOpen}
         onClose={onCloseCreateFolder}
         onCreated={onFolderCreated}

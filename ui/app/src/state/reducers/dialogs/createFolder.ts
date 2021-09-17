@@ -28,6 +28,7 @@ import { CreateFolderStateProps } from '../../../components/CreateFolderDialog/u
 const initialState: CreateFolderStateProps = {
   open: false,
   isSubmitting: null,
+  isMinimized: null,
   hasPendingChanges: null
 };
 

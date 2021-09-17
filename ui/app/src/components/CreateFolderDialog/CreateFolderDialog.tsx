@@ -15,34 +15,36 @@
  */
 
 import React from 'react';
-import { EnhancedDialog as Dialog } from '../Dialog';
+import EnhancedDialog from '../Dialog';
 import { CreateFolderProps } from './utils';
 import CreateFolderContainer from './CreateFolderContainer';
-import { useDispatch } from 'react-redux';
-import { updateCreateFolderDialog } from '../../state/actions/dialogs';
-import { useWithPendingChangesCloseRequest } from '../../utils/hooks/useWithPendingChangesCloseRequest';
+import { FormattedMessage } from 'react-intl';
 
 export function CreateFolderDialog(props: CreateFolderProps) {
-  const { open, onClose, isSubmitting, hasPendingChanges, minimized, ...rest } = props;
-  const dispatch = useDispatch();
-  const onMinimize = () => dispatch(updateCreateFolderDialog({ minimized: true }));
-  const onMaximize = () => dispatch(updateCreateFolderDialog({ minimized: false }));
-  const onWithPendingChangesCloseRequest = useWithPendingChangesCloseRequest(onClose);
+  const { path, isSubmitting, allowBraces, value, rename, onRenamed, onCreated, ...rest } = props;
   return (
-    <Dialog
-      open={open}
-      title="Create a New Folder"
+    <EnhancedDialog
+      title={
+        rename ? (
+          <FormattedMessage id="newFolder.title.rename" defaultMessage="Rename Folder" />
+        ) : (
+          <FormattedMessage id="newFolder.title" defaultMessage="Create a New Folder" />
+        )
+      }
       maxWidth="xs"
-      onClose={onClose}
       isSubmitting={isSubmitting}
-      hasPendingChanges={hasPendingChanges}
-      minimized={minimized}
-      onMaximize={onMaximize}
-      onMinimize={onMinimize}
-      onWithPendingChangesCloseRequest={onWithPendingChangesCloseRequest}
+      {...rest}
     >
-      <CreateFolderContainer {...rest} onClose={onClose} isSubmitting={isSubmitting} />
-    </Dialog>
+      <CreateFolderContainer
+        path={path}
+        rename={rename}
+        allowBraces={allowBraces}
+        value={value}
+        isSubmitting={isSubmitting}
+        onCreated={onCreated}
+        onRenamed={onRenamed}
+      />
+    </EnhancedDialog>
   );
 }
 

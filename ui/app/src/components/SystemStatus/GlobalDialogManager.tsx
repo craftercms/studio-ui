@@ -356,8 +356,6 @@ function GlobalDialogManager() {
         onClosed={createCallback(state.createFolder.onClosed, dispatch)}
         onCreated={createCallback(state.createFolder.onCreated, dispatch)}
         onRenamed={createCallback(state.createFolder.onRenamed, dispatch)}
-        onMinimize={createCallback(state.createFolder.onMinimize, dispatch)}
-        onMaximize={createCallback(state.createFolder.onMinimize, dispatch)}
         onWithPendingChangesCloseRequest={useWithPendingChangesCloseRequest(
           createCallback(state.createFolder.onClose, dispatch)
         )}

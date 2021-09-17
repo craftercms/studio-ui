@@ -21,7 +21,6 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useDetailedItem } from '../../utils/hooks/useDetailedItem';
 import { DetailedItem, SandboxItem } from '../../models/Item';
 import { getParentPath, getRootPath, withoutIndex } from '../../utils/path';
-import { useUnmount } from '../../utils/hooks/useUnmount';
 import { createFolder, renameFolder } from '../../services/content';
 import { batchActions } from '../../state/actions/misc';
 import { updateCreateFolderDialog } from '../../state/actions/dialogs';
@@ -29,7 +28,6 @@ import { emitSystemEvent, folderCreated, folderRenamed } from '../../state/actio
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { validateActionPolicy } from '../../services/sites';
 import { translations } from './translations';
-import DialogHeader from '../Dialogs/DialogHeader';
 import DialogBody from '../Dialogs/DialogBody';
 import SingleItemSelector from '../../modules/Content/Authoring/SingleItemSelector';
 import TextField from '@material-ui/core/TextField';
@@ -39,16 +37,7 @@ import PrimaryButton from '../PrimaryButton';
 import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
 
 export default function CreateFolderContainer(props: CreateFolderContainerProps) {
-  const {
-    onClosed,
-    onClose,
-    isSubmitting,
-    onCreated,
-    onRenamed,
-    rename = false,
-    value = '',
-    allowBraces = false
-  } = props;
+  const { onClose, isSubmitting, onCreated, onRenamed, rename = false, value = '', allowBraces = false } = props;
   const [name, setName] = useState(value);
   const [confirm, setConfirm] = useState(null);
   const dispatch = useDispatch();
@@ -66,8 +55,6 @@ export default function CreateFolderContainer(props: CreateFolderContainerProps)
       setSelectedItem(item);
     }
   }, [item, rename]);
-
-  useUnmount(onClosed);
 
   const onRenameFolder = (site: string, path: string, name: string) => {
     renameFolder(site, path, name).subscribe(
@@ -178,16 +165,6 @@ export default function CreateFolderContainer(props: CreateFolderContainerProps)
 
   return (
     <>
-      <DialogHeader
-        title={
-          rename ? (
-            <FormattedMessage id="newFolder.title.rename" defaultMessage="Rename Folder" />
-          ) : (
-            <FormattedMessage id="newFolder.title" defaultMessage="Create a New Folder" />
-          )
-        }
-        onCloseButtonClick={onCloseButtonClick}
-      />
       <DialogBody>
         {selectedItem && (
           <SingleItemSelector
