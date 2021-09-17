@@ -44,7 +44,7 @@ const HistoryDialog = lazy(() => import('../HistoryDialog'));
 const PublishDialog = lazy(() => import('../PublishDialog'));
 const DependenciesDialog = lazy(() => import('../DependenciesDialog/DependenciesDialog'));
 const DeleteDialog = lazy(() => import('../DeleteDialog'));
-const WorkflowCancellationDialog = lazy(() => import('../Dialogs/WorkflowCancellationDialog'));
+const WorkflowCancellationDialog = lazy(() => import('../WorkflowCancellationDialog'));
 const LegacyFormDialog = lazy(() => import('../Dialogs/LegacyFormDialog'));
 const CreateFolderDialog = lazy(() => import('../CreateFolderDialog'));
 const CopyItemsDialog = lazy(() => import('../Dialogs/CopyDialog'));
@@ -339,9 +339,11 @@ function GlobalDialogManager() {
       <WorkflowCancellationDialog
         open={state.workflowCancellation.open}
         items={state.workflowCancellation.items}
+        hasPendingChanges={state.workflowCancellation.hasPendingChanges}
+        isSubmitting={state.workflowCancellation.isSubmitting}
+        isMinimized={state.workflowCancellation.isMinimized}
         onClose={createCallback(state.workflowCancellation.onClose, dispatch)}
         onClosed={createCallback(state.workflowCancellation.onClosed, dispatch)}
-        onDismiss={createCallback(state.workflowCancellation.onDismiss, dispatch)}
         onContinue={createCallback(state.workflowCancellation.onContinue, dispatch)}
       />
       {/* endregion */}

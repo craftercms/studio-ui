@@ -18,7 +18,6 @@ import { createAction } from '@reduxjs/toolkit';
 import StandardAction from '../../models/StandardAction';
 import { FetchContentVersion } from '../../models/Version';
 import { NewContentDialogStateProps } from '../../components/NewContentDialog/utils';
-import { WorkflowCancellationDialogStateProps } from '../../components/Dialogs/WorkflowCancellationDialog';
 import { RejectDialogStateProps } from '../../components/Dialogs/RejectDialog';
 import { LegacyFormDialogStateProps } from '../../components/Dialogs/LegacyFormDialog';
 import { EditSiteDialogStateProps } from '../../modules/System/Sites/Edit/EditSiteDialog';
@@ -44,6 +43,7 @@ import { ViewVersionDialogStateProps } from '../../components/ViewVersionDialog/
 import { CompareVersionsDialogStateProps } from '../../components/CompareVersionsDialog/utils';
 import { ConfirmDialogStateProps } from '../../components/ConfirmDialog/utils';
 import { ChangeContentTypeDialogStateProps } from '../../components/ChangeContentTypeDialog/utils';
+import { WorkflowCancellationDialogStateProps } from '../../components/WorkflowCancellationDialog/utils';
 
 // region History
 export const showHistoryDialog = /*#__PURE__*/ createAction<Partial<HistoryDialogStateProps>>('SHOW_HISTORY_DIALOG');

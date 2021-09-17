@@ -29,7 +29,6 @@ import { EntityState } from './EntityState';
 import { ApiResponse } from './ApiResponse';
 import { VersionsStateProps } from './Version';
 import QuickCreateItem from './content/QuickCreateItem';
-import { WorkflowCancellationDialogStateProps } from '../components/Dialogs/WorkflowCancellationDialog';
 import { RejectDialogStateProps } from '../components/Dialogs/RejectDialog';
 import { PathNavigatorStateProps } from '../components/PathNavigator';
 import { LegacyFormDialogStateProps } from '../components/Dialogs/LegacyFormDialog';
@@ -62,6 +61,7 @@ import { ViewVersionDialogStateProps } from '../components/ViewVersionDialog/uti
 import { CompareVersionsDialogStateProps } from '../components/CompareVersionsDialog/utils';
 import { ConfirmDialogStateProps } from '../components/ConfirmDialog/utils';
 import { ChangeContentTypeDialogStateProps } from '../components/ChangeContentTypeDialog/utils';
+import { WorkflowCancellationDialogStateProps } from '../components/WorkflowCancellationDialog/utils';
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
   page: any;
