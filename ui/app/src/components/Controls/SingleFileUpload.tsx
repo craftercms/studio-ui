@@ -102,7 +102,7 @@ export default function SingleFileUpload(props: UppyProps) {
   const classes = singleFileUploadStyles();
   const uppy = useMemo(
     () =>
-      Core({
+      new Core({
         autoProceed: false,
         ...(fileTypes ? { restrictions: { allowedFileTypes: fileTypes } } : {})
       }),
@@ -115,7 +115,8 @@ export default function SingleFileUpload(props: UppyProps) {
     const instance = uppy
       .use(FileInput, {
         target: '.uppy-file-input-container',
-        replaceTargetContent: false,
+        // TODO: check removing this option doesn't break anything
+        // replaceTargetContent: false,
         locale: {
           strings: {
             chooseFiles: formatMessage(messages.chooseFile)

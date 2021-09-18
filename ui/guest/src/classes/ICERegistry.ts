@@ -33,6 +33,9 @@ import { forEach } from '../utils/array';
 import { findComponentContainerFields } from '../utils/ice';
 
 const validationChecks: { [key in ValidationKeys]: Function } = {
+  // TODO: implement max/min value.
+  maxValue(p0) {},
+  minValue(p0) {},
   minCount(id, minCount, level, length) {
     if (length < minCount) {
       return {

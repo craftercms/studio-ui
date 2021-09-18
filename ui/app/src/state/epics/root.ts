@@ -36,9 +36,11 @@ import misc from './misc';
 import system from './system';
 import users from './users';
 import { CrafterCMSEpic } from '../store';
+import { Observable } from 'rxjs';
+import StandardAction from '../../models/StandardAction';
 
-const epic: CrafterCMSEpic = combineEpics.apply(this, [
-  (action$) =>
+const epic: CrafterCMSEpic = combineEpics(
+  (action$: Observable<StandardAction<StandardAction[]>>) =>
     action$.pipe(
       ofType(batchActions.type),
       switchMap(({ payload }) => payload)
@@ -61,6 +63,6 @@ const epic: CrafterCMSEpic = combineEpics.apply(this, [
   ...misc,
   ...system,
   ...users
-]);
+);
 
 export default epic;

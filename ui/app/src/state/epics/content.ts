@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ActionsObservable, ofType } from 'redux-observable';
+import { ofType } from 'redux-observable';
 import { filter, map, mergeMap, switchMap, withLatestFrom } from 'rxjs/operators';
 import {
   clearClipboard,
@@ -50,7 +50,7 @@ import {
   paste,
   unlock
 } from '../../services/content';
-import { merge, of } from 'rxjs';
+import { merge, Observable, of } from 'rxjs';
 import {
   closeConfirmDialog,
   closeDeleteDialog,
@@ -176,7 +176,7 @@ const content: CrafterCMSEpic[] = [
     ),
   // endregion
   // region fetchSandboxItem
-  (action$: ActionsObservable<StandardAction<FetchSandboxItemPayload>>, state$) =>
+  (action$: Observable<StandardAction<FetchSandboxItemPayload>>, state$) =>
     action$.pipe(
       ofType(fetchSandboxItem.type),
       withLatestFrom(state$),

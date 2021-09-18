@@ -263,15 +263,15 @@ export default function PublishingPackage(props: PublishingPackageProps) {
 
   function onFetchPackages(packageId: string) {
     setLoading(true);
-    fetchPackage(siteId, packageId).subscribe(
-      ({ response }) => {
+    fetchPackage(siteId, packageId).subscribe({
+      next: (pkg) => {
         setLoading(false);
-        setFilesPerPackage({ ...filesPerPackage, [packageId]: response.package.items });
+        setFilesPerPackage({ ...filesPerPackage, [packageId]: pkg.items });
       },
-      ({ response }) => {
+      error: ({ response }) => {
         setApiState({ error: true, errorResponse: response });
       }
-    );
+    });
   }
 
   function renderFiles(files: [File]) {

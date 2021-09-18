@@ -29,9 +29,7 @@
       "prettier"
     ],
     "rules": {
-      "prettier/prettier": [
-        "error"
-      ],
+      "prettier/prettier": "error",
       "spaced-comment": [
         "error",
         "always",
@@ -50,13 +48,41 @@
       "ecmaVersion": 2015
     }
   },
+  "dependencies": {
+    "@emotion/react": "^11.4.1",
+    "@emotion/styled": "^11.3.0",
+    "@mui/icons-material": "^5.0.0",
+    "@mui/material": "^5.0.0",
+    "@mui/styles": "^5.0.0",
+    "@reduxjs/toolkit": "^1.5.1",
+    "clsx": "^1.1.1",
+    "jquery": "^3.6.0",
+    "js-cookie": "^3.0.1",
+    "nanoid": "^3.1.25",
+    "prettier": "^1.19.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-redux": "^7.2.5",
+    "redux-observable": "^2.0.0",
+    "rxjs": "^7.0.0",
+    "uppy": "^2.0.0"
+  },
   "devDependencies": {
+    "@types/jquery": "^3.5.6",
+    "@types/js-cookie": "^2.2.7",
+    "@types/node": "^16.9.1",
+    "@types/prettier": "^2.3.2",
+    "@types/react": "^17.0.21",
+    "@types/react-dom": "^17.0.9",
+    "@types/react-redux": "^7.1.18",
+    "@types/react-router-dom": "^5.1.9",
     "build-if-changed": "^1.5.5",
-    "eslint-config-prettier": "^6.15.0",
-    "eslint-plugin-prettier": "^3.1.4",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
     "glob-gitignore": "^1.0.14",
+    "node-sass": "^5.0.0",
     "npm-run-all": "^4.1.5",
-    "typescript": "^4.1.2",
+    "typescript": "^4.0.0",
     "yargs": "^15.3.1"
   }
 }

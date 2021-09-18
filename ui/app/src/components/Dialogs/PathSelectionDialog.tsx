@@ -24,12 +24,10 @@ import FolderBrowserTreeViewUI, { TreeNode } from '../FolderBrowserTreeView/Fold
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import CreateFolderDialog from './CreateFolderDialog';
-import { get } from '../../utils/ajax';
 import LookupTable from '../../models/LookupTable';
 import Suspencified from '../SystemStatus/Suspencified';
 import { getIndividualPaths } from '../../utils/path';
 import { forkJoin, Observable } from 'rxjs';
-import { AjaxResponse } from 'rxjs/ajax';
 import StandardAction from '../../models/StandardAction';
 import PrimaryButton from '../PrimaryButton';
 import SecondaryButton from '../SecondaryButton';
@@ -40,6 +38,8 @@ import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import { useUnmount } from '../../utils/hooks/useUnmount';
 import { usePossibleTranslation } from '../../utils/hooks/usePossibleTranslation';
 import { legacyItemsToTreeNodes } from '../FolderBrowserTreeView/utils';
+import { fetchLegacyItemsTree } from '../../services/content';
+import { LegacyItem } from '../../models/Item';
 
 export interface PathSelectionDialogBaseProps {
   open: boolean;
@@ -135,19 +135,15 @@ export function PathSelectionDialogBody(props: PathSelectionDialogBodyProps) {
         const allPaths = getIndividualPaths(currentPath, rootPath).filter(
           (path) => !nodesLookup[path] || !nodesLookup[path].fetched
         );
-        const requests: Observable<AjaxResponse>[] = [];
+        const requests: Observable<LegacyItem>[] = [];
         allPaths.forEach((nextPath) => {
-          requests.push(
-            get(
-              `/studio/api/1/services/api/1/content/get-items-tree.json?site=${site}&path=${nextPath}&depth=1&order=default`
-            )
-          );
+          requests.push(fetchLegacyItemsTree(site, nextPath, { depth: 1, order: 'default' }));
         });
 
         if (requests.length) {
           setIsFetching(true);
-          forkJoin(requests).subscribe(
-            (responses) => {
+          forkJoin(requests).subscribe({
+            next: (responses) => {
               let rootNode;
               setIsFetching(false);
               responses.forEach(({ response: { item } }, i) => {
@@ -184,10 +180,10 @@ export function PathSelectionDialogBody(props: PathSelectionDialogBodyProps) {
               });
               rootNode && setTreeNodes({ ...rootNode });
             },
-            (response) => {
+            error: (response) => {
               setError(response);
             }
-          );
+          });
         }
       }
     }

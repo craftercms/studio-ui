@@ -33,6 +33,7 @@ import SnackbarCloseButton from './SnackbarCloseButton';
 import LegacyConcierge from './LegacyConcierge';
 import { GenerateId } from 'jss';
 import { createResource } from '../utils/resource';
+import { lastValueFrom } from 'rxjs';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -99,7 +100,7 @@ export default function CrafterCMSNextBridge(
     themeOptions?: DeprecatedThemeOptions;
   }>
 ) {
-  const [storeResource] = useState(() => createResource(() => getStore().toPromise()));
+  const [storeResource] = useState(() => createResource(() => lastValueFrom(getStore())));
   return (
     <CrafterThemeProvider themeOptions={props.themeOptions} generateClassName={props.generateClassName}>
       <I18nProvider>

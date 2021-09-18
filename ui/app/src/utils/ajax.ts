@@ -14,12 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ajax, AjaxError, AjaxResponse, AjaxRequest } from 'rxjs/ajax';
+import { ajax, AjaxError, AjaxResponse, AjaxConfig } from 'rxjs/ajax';
 import { catchError } from 'rxjs/operators';
 import { reversePluckProps } from './object';
 import { Observable, ObservableInput, of } from 'rxjs';
 import { sessionTimeout } from '../state/actions/user';
 import StandardAction from '../models/StandardAction';
+import { UNDEFINED } from './constants';
+
+type Headers = Record<string, any>;
 
 const HEADERS = {};
 export const CONTENT_TYPE_JSON = { 'Content-Type': 'application/json' };
@@ -35,27 +38,27 @@ export function removeGlobalHeaders(...headersToDelete: string[]): void {
   });
 }
 
-export function getGlobalHeaders(): object {
+export function getGlobalHeaders(): Record<string, string> {
   return { ...HEADERS };
 }
 
 /**
  * Merges the supplied `headers` object with the current global headers and returns the resulting object.
  **/
-function mergeHeaders(headers: object | typeof OMIT_GLOBAL_HEADERS = {}): object {
-  if (headers === OMIT_GLOBAL_HEADERS) {
-    return null;
-  } else if (Object.values(headers).includes(OMIT_GLOBAL_HEADERS)) {
+function mergeHeaders(headers: Record<string, string> | typeof OMIT_GLOBAL_HEADERS = {}): Record<string, string> {
+  if (!headers || headers === OMIT_GLOBAL_HEADERS) {
+    return UNDEFINED;
+  } else if (Object.values(headers as any).includes(OMIT_GLOBAL_HEADERS)) {
     return headers;
   }
   return Object.assign({}, HEADERS, headers);
 }
 
-export function get(url: string, headers: object = {}): Observable<AjaxResponse> {
-  return ajax.get(url, mergeHeaders(headers));
+export function get<T = any>(url: string, headers?: Headers): Observable<AjaxResponse<T>> {
+  return ajax.get<T>(url, mergeHeaders(headers));
 }
 
-export function getText(url: string, headers?: object): Observable<AjaxResponse> {
+export function getText<T = any>(url: string, headers?: Headers): Observable<AjaxResponse<T>> {
   return ajax({
     url,
     headers: mergeHeaders(headers),
@@ -63,7 +66,11 @@ export function getText(url: string, headers?: object): Observable<AjaxResponse>
   });
 }
 
-export function getBinary(url: string, headers?: object, responseType = 'arraybuffer'): Observable<AjaxResponse> {
+export function getBinary<T = Blob>(
+  url: string,
+  headers?: Headers,
+  responseType: XMLHttpRequestResponseType = 'arraybuffer'
+): Observable<AjaxResponse<T>> {
   return ajax({
     url,
     responseType,
@@ -71,36 +78,38 @@ export function getBinary(url: string, headers?: object, responseType = 'arraybu
   });
 }
 
-export function post(url: string, body?: any, headers: object = {}): Observable<AjaxResponse> {
-  return ajax.post(url, body, mergeHeaders(headers));
+export function post<T = any>(url: string, body?: any, headers?: Headers): Observable<AjaxResponse<T>> {
+  return ajax.post<T>(url, body, mergeHeaders(headers));
 }
 
-export function postJSON(url: string, body: any, headers: object = {}): Observable<AjaxResponse> {
-  return ajax.post(url, body, mergeHeaders({ ...CONTENT_TYPE_JSON, ...headers }));
+export function postJSON<T = any>(url: string, body: any, headers?: Headers): Observable<AjaxResponse<T>> {
+  return ajax.post<T>(url, body, mergeHeaders({ ...CONTENT_TYPE_JSON, ...headers }));
 }
 
-export function patch(url: string, body: any, headers: object = {}): Observable<AjaxResponse> {
-  return ajax.patch(url, body, mergeHeaders(headers));
+export function patch<T = any>(url: string, body: any, headers?: Headers): Observable<AjaxResponse<T>> {
+  return ajax.patch<T>(url, body, mergeHeaders(headers));
 }
 
-export function patchJSON(url: string, body: any, headers: object = {}): Observable<AjaxResponse> {
-  return ajax.patch(url, body, mergeHeaders({ ...CONTENT_TYPE_JSON, ...headers }));
+export function patchJSON<T = any>(url: string, body: any, headers?: Headers): Observable<AjaxResponse<T>> {
+  return ajax.patch<T>(url, body, mergeHeaders({ ...CONTENT_TYPE_JSON, ...headers }));
 }
 
-export function put(url: string, body: any, headers: object = {}): Observable<AjaxResponse> {
-  return ajax.put(url, body, mergeHeaders(headers));
+export function put<T = any>(url: string, body: any, headers?: Headers): Observable<AjaxResponse<T>> {
+  return ajax.put<T>(url, body, mergeHeaders(headers));
 }
 
-export function del(url: string, headers: object = {}): Observable<AjaxResponse> {
-  return ajax.delete(url, mergeHeaders(headers));
+export function del<T = any>(url: string, headers?: Headers): Observable<AjaxResponse<T>> {
+  return ajax.delete<T>(url, mergeHeaders(headers));
 }
 
-function ajaxWithCrafterHeaders(url: string): Observable<AjaxResponse>;
-function ajaxWithCrafterHeaders(request: AjaxRequest): Observable<AjaxResponse>;
-function ajaxWithCrafterHeaders(urlOrRequest: string | AjaxRequest): Observable<AjaxResponse> {
-  return ajax(
-    typeof urlOrRequest === 'string' ? urlOrRequest : { ...urlOrRequest, headers: mergeHeaders(urlOrRequest.headers) }
-  );
+function ajaxWithCrafterHeaders<T = any>(url: string): Observable<AjaxResponse<T>>;
+function ajaxWithCrafterHeaders<T = any>(request: AjaxConfig): Observable<AjaxResponse<T>>;
+function ajaxWithCrafterHeaders<T = any>(urlOrRequest: string | AjaxConfig): Observable<AjaxResponse<T>> {
+  if (typeof urlOrRequest === 'string') {
+    return ajax(urlOrRequest);
+  } else {
+    return ajax({ ...urlOrRequest, headers: mergeHeaders(urlOrRequest.headers) });
+  }
 }
 
 export { ajaxWithCrafterHeaders as ajax };

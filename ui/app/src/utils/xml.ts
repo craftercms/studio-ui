@@ -14,8 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// @ts-ignore
-import prettierXmlPlugin from '@prettier/plugin-xml/src/plugin';
+import prettierXmlPlugin from '@prettier/plugin-xml';
 import prettier from 'prettier/standalone';
 import { nnou } from './object';
 import parser, { X2jOptionsOptional } from 'fast-xml-parser';

@@ -94,16 +94,16 @@ function InstallPluginDialogUI(props: InstallPluginDialogProps) {
 
   useMount(() => {
     setIsFetching(true);
-    fetchMarketplacePlugins('site').subscribe((plugins) => {
+    fetchMarketplacePlugins({ type: 'site' }).subscribe((plugins) => {
       setIsFetching(false);
       setPlugins(plugins);
     });
   });
 
   useEffect(() => {
-    const subscription = onSearch$.pipe(debounceTime(400)).subscribe((keyword) => {
+    const subscription = onSearch$.pipe(debounceTime(400)).subscribe((keywords) => {
       setIsFetching(true);
-      fetchMarketplacePlugins('site', keyword).subscribe((plugins) => {
+      fetchMarketplacePlugins({ type: 'site', keywords }).subscribe((plugins) => {
         // Moving setPlugins above of setIsFetching to avoid resolve the resource with the prev plugins
         setPlugins(plugins);
         setIsFetching(false);

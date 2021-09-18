@@ -25,6 +25,7 @@ import { defineMessages, useIntl } from 'react-intl';
 import { emitSystemEvent, itemsUploaded } from '../../state/actions/system';
 import { useDispatch } from 'react-redux';
 import { useDebouncedInput } from '../../utils/hooks/useDebouncedInput';
+import { DashboardOptions } from '@uppy/dashboard';
 
 interface UppyDashboardProps {
   uppy: Uppy;
@@ -34,7 +35,7 @@ interface UppyDashboardProps {
   onMinimized?(): void;
   onPendingChanges?(pending: boolean): void;
   onClose?(): void;
-  options?: Dashboard.DashboardOptions;
+  options?: DashboardOptions;
 }
 
 const useStyles = makeStyles((theme) =>
@@ -319,6 +320,7 @@ export default function UppyDashboard(props: UppyDashboardProps) {
       path,
       locale: {
         strings: {
+          // @ts-ignore - TODO: find substitution(s)
           cancelPending: formatMessage(translations.cancelPending),
           clearCompleted: formatMessage(translations.clearCompleted),
           clear: formatMessage(translations.clear),

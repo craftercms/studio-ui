@@ -397,57 +397,58 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
       '</field>';
 
     if (type == 'page') {
+      // prettier-ignore
       formDefContent +=
         '<field>\r\n' +
-        '<type>page-nav-order</type>\r\n' +
-        '<id>placeInNav</id>\r\n' +
-        '<iceId></iceId>\r\n' +
-        '<title>Place in Nav</title>\r\n' +
-        '<description></description>\r\n' +
-        '<defaultValue></defaultValue>\r\n' +
-        '<help></help>\r\n' +
-        '<properties>\r\n' +
-        '<property>\r\n' +
-        '<name>readonly</name>\r\n' +
-        '<value>[]</value>\r\n' +
-        '<type>boolean</type>\r\n' +
-        '</property>\r\n' +
-        '</properties>\r\n' +
-        '<constraints>\r\n' +
-        '<constraint>\r\n' +
-        '<name>required</name>\r\n' +
-        '<value><![CDATA[]]></value>\r\n' +
-        '<type>boolean</type>\r\n' +
-        '</constraint>\r\n' +
-        '</constraints>\r\n' +
+          '<type>page-nav-order</type>\r\n' +
+          '<id>placeInNav</id>\r\n' +
+          '<iceId></iceId>\r\n' +
+          '<title>Place in Nav</title>\r\n' +
+          '<description></description>\r\n' +
+          '<defaultValue></defaultValue>\r\n' +
+          '<help></help>\r\n' +
+          '<properties>\r\n' +
+            '<property>\r\n' +
+              '<name>readonly</name>\r\n' +
+              '<value>[]</value>\r\n' +
+              '<type>boolean</type>\r\n' +
+            '</property>\r\n' +
+          '</properties>\r\n' +
+          '<constraints>\r\n' +
+            '<constraint>\r\n' +
+              '<name>required</name>\r\n' +
+              '<value><![CDATA[]]></value>\r\n' +
+              '<type>boolean</type>\r\n' +
+            '</constraint>\r\n' +
+          '</constraints>\r\n' +
         '</field>' +
         '<field>\r\n' +
-        '<type>input</type>\r\n' +
-        '<id>navLabel</id>\r\n' +
-        '<iceId></iceId>\r\n' +
-        '<title>Nav Label</title>\r\n' +
-        '<description></description>\r\n' +
-        '<defaultValue></defaultValue>\r\n' +
-        '<help></help>\r\n' +
-        '<properties>\r\n' +
-        '<property>\r\n' +
-        '<name>size</name>\r\n' +
-        '<value>50</value>\r\n' +
-        '<type>int</type>\r\n' +
-        '</property>\r\n' +
-        '<property>\r\n' +
-        '<name>maxlength</name>\r\n' +
-        '<value>50</value>\r\n' +
-        '<type>int</type>\r\n' +
-        '</property>\r\n' +
-        '</properties>\r\n' +
-        '<constraints>\r\n' +
-        '<constraint>\r\n' +
-        '<name>required</name>\r\n' +
-        '<value>true</value>\r\n' +
-        '<type>boolean</type>\r\n' +
-        '</constraint>\r\n' +
-        '</constraints>\r\n' +
+          '<type>input</type>\r\n' +
+          '<id>navLabel</id>\r\n' +
+          '<iceId></iceId>\r\n' +
+          '<title>Nav Label</title>\r\n' +
+          '<description></description>\r\n' +
+          '<defaultValue></defaultValue>\r\n' +
+          '<help></help>\r\n' +
+          '<properties>\r\n' +
+            '<property>\r\n' +
+              '<name>size</name>\r\n' +
+              '<value>50</value>\r\n' +
+              '<type>int</type>\r\n' +
+            '</property>\r\n' +
+            '<property>\r\n' +
+              '<name>maxlength</name>\r\n' +
+              '<value>50</value>\r\n' +
+              '<type>int</type>\r\n' +
+            '</property>\r\n' +
+          '</properties>\r\n' +
+          '<constraints>\r\n' +
+            '<constraint>\r\n' +
+              '<name>required</name>\r\n' +
+              '<value>true</value>\r\n' +
+              '<type>boolean</type>\r\n' +
+            '</constraint>\r\n' +
+          '</constraints>\r\n' +
         '</field>\r\n';
     }
 

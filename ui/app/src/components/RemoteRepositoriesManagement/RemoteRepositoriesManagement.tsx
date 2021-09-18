@@ -74,16 +74,16 @@ export default function RemoteRepositoriesManagement(props: RemoteRepositoriesMa
 
   const fetchRepositories = useCallback(() => {
     setFetchingRepositories(true);
-    fetchRepositoriesService(siteId).subscribe(
-      (repositories) => {
+    fetchRepositoriesService(siteId).subscribe({
+      next: (repositories) => {
         setRepositories(repositories);
         setFetchingRepositories(false);
       },
-      ({ response }) => {
+      error: ({ response }) => {
         setErrorRepositories(response);
         setFetchingRepositories(false);
       }
-    );
+    });
   }, [siteId]);
 
   const fetchRepositoriesStatus = useCallback(() => {
@@ -137,11 +137,10 @@ export default function RemoteRepositoriesManagement(props: RemoteRepositoriesMa
     Array<Repository>,
     { repositories: Array<Repository>; error: ApiResponse; fetching: boolean }
   >(
-    useMemo(() => ({ repositories, error: errorRepositories, fetching: fetchingRepositories }), [
-      repositories,
-      errorRepositories,
-      fetchingRepositories
-    ]),
+    useMemo(
+      () => ({ repositories, error: errorRepositories, fetching: fetchingRepositories }),
+      [repositories, errorRepositories, fetchingRepositories]
+    ),
     {
       shouldResolve: (source) => Boolean(source.repositories) && !fetchingRepositories,
       shouldReject: ({ error }) => Boolean(error),
@@ -155,11 +154,10 @@ export default function RemoteRepositoriesManagement(props: RemoteRepositoriesMa
     RepositoryStatus,
     { status: RepositoryStatus; error: ApiResponse; fetching: boolean }
   >(
-    useMemo(() => ({ status: repositoriesStatus, error: errorStatus, fetching: fetchingStatus }), [
-      repositoriesStatus,
-      errorStatus,
-      fetchingStatus
-    ]),
+    useMemo(
+      () => ({ status: repositoriesStatus, error: errorStatus, fetching: fetchingStatus }),
+      [repositoriesStatus, errorStatus, fetchingStatus]
+    ),
     {
       shouldResolve: (source) => Boolean(source.status) && !fetchingStatus,
       shouldReject: ({ error }) => Boolean(error),

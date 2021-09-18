@@ -363,7 +363,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
   setRequestForgeryToken();
 
   useEffect(() => {
-    const loginListener = function(event: any) {
+    const loginListener = function (event: any) {
       if (event.detail.state === 'logged') {
         setDisableEnforceFocus(false);
       } else if (event.detail.state === 'reLogin') {
@@ -380,9 +380,9 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
     let subscriptions: Subscription[] = [];
     if (tab === 0 && blueprints === null && !apiState.error) {
       subscriptions.push(
-        fetchBuiltInBlueprints().subscribe(
-          (blueprints) => {
-            const _blueprints: [MarketplacePlugin] = [
+        fetchBuiltInBlueprints().subscribe({
+          next: (blueprints) => {
+            setBlueprints([
               {
                 id: 'GIT',
                 name: formatMessage(messages.gitBlueprintName),
@@ -398,35 +398,32 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
                   ],
                   videos: []
                 }
-              }
-            ];
-            blueprints.forEach((bp: any) => {
-              _blueprints.push(bp.plugin);
-            });
-            setBlueprints(_blueprints);
+              },
+              ...blueprints.map((bp) => bp.plugin)
+            ]);
           },
-          ({ response }) => {
+          error: ({ response }) => {
             if (response) {
               setApiState({ creatingSite: false, error: true, errorResponse: response.response });
             }
           }
-        )
+        })
       );
     }
     if (tab === 1 && marketplace === null && !apiState.error) {
       subscriptions.push(
         fetchMarketplaceBlueprints({
           showIncompatible: site.showIncompatible
-        }).subscribe(
-          ({ response }) => {
-            setMarketplace(response.plugins);
+        }).subscribe({
+          next: (plugins) => {
+            setMarketplace(plugins);
           },
-          ({ response }) => {
+          error: ({ response }) => {
             if (response) {
               setApiState({ creatingSite: false, error: true, errorResponse: response.response });
             }
           }
-        )
+        })
       );
     }
     if (finishRef && finishRef.current && site.selectedView === 2) {

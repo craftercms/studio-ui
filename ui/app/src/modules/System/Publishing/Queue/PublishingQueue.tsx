@@ -210,15 +210,15 @@ function PublishingQueue(props: PublishingQueueProps) {
 
   const getPackages = useCallback(
     (siteId: string) =>
-      fetchPackages(siteId, getFilters(currentFilters)).subscribe(
-        ({ response }) => {
-          setTotal(response.total);
-          setPackages(response.packages);
+      fetchPackages(siteId, getFilters(currentFilters)).subscribe({
+        next: (packages) => {
+          setTotal(packages.total);
+          setPackages(packages);
         },
-        ({ response }) => {
+        error: ({ response }) => {
           setApiState({ error: true, errorResponse: response });
         }
-      ),
+      }),
     [currentFilters, setApiState]
   );
 

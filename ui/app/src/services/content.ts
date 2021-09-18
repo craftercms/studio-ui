@@ -88,7 +88,7 @@ export function fetchDescriptorDOM(
 }
 
 export function fetchSandboxItem(site: string, path: string): Observable<SandboxItem> {
-  return fetchItemsByPath(site, [path]).pipe(pluck('0'));
+  return fetchItemsByPath(site, [path]).pipe(pluck(0));
 }
 
 export function fetchDetailedItem(
@@ -162,9 +162,10 @@ export function fetchContentInstanceDescriptor(
   options?: Partial<GetDescriptorOptions>,
   contentTypeLookup?: LookupTable<ContentType>
 ): Observable<{ model: ContentInstance; modelLookup: LookupTable<ContentInstance> }> {
-  return (contentTypeLookup
-    ? of(contentTypeLookup)
-    : fetchContentTypes(site).pipe(map((contentTypes) => createLookupTable(contentTypes)))
+  return (
+    contentTypeLookup
+      ? of(contentTypeLookup)
+      : fetchContentTypes(site).pipe(map((contentTypes) => createLookupTable(contentTypes)))
   ).pipe(
     switchMap((contentTypeLookup) =>
       fetchDescriptorDOM(site, path, options).pipe(
@@ -440,6 +441,34 @@ export function deleteItem(
   });
 }
 
+interface SearchServiceResponse {
+  response: ApiResponse;
+  result: {
+    total: number;
+    items: Array<{
+      lastModified: string;
+      lastModifier: string;
+      mimeType: string;
+      name: string;
+      path: string;
+      previewUrl: string;
+      size: number;
+      snippets: unknown;
+    }>;
+    facets: Array<{
+      date: boolean;
+      multiple: boolean;
+      name: string;
+      range: boolean;
+      values: Array<{
+        count: number;
+        from: number;
+        to: number;
+      }>;
+    }>;
+  };
+}
+
 export function fetchItemsByContentType(
   site: string,
   contentType: string,
@@ -466,7 +495,7 @@ export function fetchItemsByContentType(
     ...options,
     filters: { 'content-type': contentTypes }
   }).pipe(
-    map<AjaxResponse, { count: number; paths: string[] }>(({ response }) => ({
+    map<AjaxResponse<SearchServiceResponse>, { count: number; paths: string[] }>(({ response }) => ({
       count: response.result.total,
       paths: response.result.items.map((item) => item.path)
     })),
@@ -639,7 +668,7 @@ export function createFileUpload(
 ): Observable<StandardAction> {
   const qs = toQueryString({ [xsrfArgumentName]: getRequestForgeryToken() });
   return new Observable((subscriber) => {
-    const uppy = Core({ autoProceed: true });
+    const uppy = new Core({ autoProceed: true });
     uppy.use(XHRUpload, { endpoint: `${uploadUrl}${qs}`, headers: getGlobalHeaders() });
     uppy.setMeta(metaData);
 
@@ -975,7 +1004,7 @@ export function fetchItemByPath(
         };
       }
     }),
-    pluck('0')
+    pluck(0)
   );
 }
 
@@ -1093,7 +1122,7 @@ export function fetchContentByCommitId(site: string, path: string, commitId: str
     'blob'
   ).pipe(
     switchMap((ajax) => {
-      const blob: Blob = ajax.response;
+      const blob = ajax.response;
       const type = ajax.xhr.getResponseHeader('content-type');
       if (
         /^text\//.test(type) ||

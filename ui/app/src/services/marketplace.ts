@@ -19,35 +19,43 @@ import { MarketplaceSite } from '../models/Site';
 import { map, mapTo, pluck } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { MarketplacePlugin, MarketplacePluginVersion } from '../models/MarketplacePlugin';
-import { toQueryString } from '../utils/object';
+import { pluckProps, toQueryString } from '../utils/object';
 import { PagedArray } from '../models/PagedArray';
 import { PluginRecord } from '../models/Plugin';
+import { Api2BulkResponseFormat, Api2ResponseFormat } from '../models/ApiResponse';
 
-export function fetchBlueprints(options?: { type?: string; limit?: number; showIncompatible?: boolean }) {
-  const params = {
-    type: 'blueprint',
+export function fetchBlueprints(options?: {
+  type?: string;
+  limit?: number;
+  showIncompatible?: boolean;
+}): Observable<PagedArray<MarketplacePlugin>> {
+  return fetchMarketplacePlugins({
     limit: 1000,
     showIncompatible: true,
-    ...options
-  };
+    ...options,
+    type: 'blueprint'
+  });
+}
 
-  return get(
-    `/studio/api/2/marketplace/search?type=${params.type}&limit=${params.limit}&showIncompatible=${params.showIncompatible}`
-  );
+interface MarketplacePluginSearchOptions {
+  type: string;
+  limit: number;
+  keywords: string;
+  showIncompatible: boolean;
 }
 
 export function fetchMarketplacePlugins(
-  type: string,
-  keywords?: string,
-  options?: {
-    limit?: number;
-    showIncompatible?: boolean;
-  }
+  options: Partial<MarketplacePluginSearchOptions>
 ): Observable<PagedArray<MarketplacePlugin>> {
-  const qs = toQueryString({ type, keywords, ...options });
-  return get(`/studio/api/2/marketplace/search${qs}`).pipe(
-    pluck('response'),
-    map(({ plugins, offset, total, limit }) => Object.assign(plugins, { total, offset, limit }))
+  const qs = toQueryString(options);
+  return get<
+    Api2BulkResponseFormat<{
+      plugins: MarketplacePlugin[];
+    }>
+  >(`/studio/api/2/marketplace/search${qs}`).pipe(
+    map((response) =>
+      Object.assign(response.response.plugins, pluckProps(response.response, 'limit', 'total', 'offset'))
+    )
   );
 }
 
@@ -60,7 +68,9 @@ export function installMarketplacePlugin(
 }
 
 export function fetchInstalledMarketplacePlugins(siteId: string): Observable<PluginRecord[]> {
-  return get(`/studio/api/2/marketplace/installed?siteId=${siteId}`).pipe(pluck('response', 'plugins'));
+  return get<Api2ResponseFormat<{ plugins: PluginRecord[] }>>(
+    `/studio/api/2/marketplace/installed?siteId=${siteId}`
+  ).pipe(pluck('response', 'plugins'));
 }
 
 export function createSite(site: MarketplaceSite): Observable<boolean> {

@@ -17,7 +17,6 @@
 import { GuestStandardAction } from './GuestStandardAction';
 import { SyntheticEvent } from 'react';
 import { ElementRecord } from '../../models/InContextEditing';
-import { ActionsObservable } from 'redux-observable';
 import GuestReducer from './GuestReducer';
 import {
   ASSET_DRAG_ENDED,
@@ -42,6 +41,7 @@ import {
   TRASHED,
   UPDATE_RTE_CONFIG
 } from '../../constants';
+import { Observable } from 'rxjs';
 
 export type GuestActionTypes =
   // dom events
@@ -91,7 +91,11 @@ export type GuestActionTypes =
   | typeof CONTENT_TREE_FIELD_SELECTED
   | typeof CLEAR_CONTENT_TREE_FIELD_SELECTED
   | typeof CONTENT_TREE_SWITCH_FIELD_INSTANCE
-  | typeof UPDATE_RTE_CONFIG;
+  | typeof UPDATE_RTE_CONFIG
+  | 'document:dragover'
+  | 'document:dragleave'
+  | 'document:drop'
+  | 'document:dragend';
 
 export type MouseEventAction = GuestStandardAction<{
   event: JQueryMouseEventObject | SyntheticEvent<Element, MouseEvent> | MouseEvent;
@@ -102,4 +106,4 @@ export type WithRecordAction = GuestReducer<{
   record: ElementRecord;
 }>;
 
-export type MouseEventActionObservable = ActionsObservable<MouseEventAction>;
+export type MouseEventActionObservable = Observable<GuestStandardAction>;

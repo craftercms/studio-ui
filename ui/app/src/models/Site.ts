@@ -108,6 +108,13 @@ export interface Site {
   description: string;
 }
 
+export interface BackendSite {
+  siteId: string;
+  uuid: string;
+  name: string;
+  desc: string;
+}
+
 export interface LegacySite {
   siteId: string;
   desc: string;

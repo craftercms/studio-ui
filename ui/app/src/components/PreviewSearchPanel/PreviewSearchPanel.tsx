@@ -156,11 +156,12 @@ export default function PreviewSearchPanel() {
   const contentTypes = useContentTypeList(
     (contentType) => contentType.id !== '/component/level-descriptor' && contentType.type === 'component'
   );
-  const contentTypesLookup = useMemo(() => (contentTypes ? createLookupTable(contentTypes, 'id') : null), [
-    contentTypes
-  ]);
+  const contentTypesLookup = useMemo(
+    () => (contentTypes ? createLookupTable(contentTypes, 'id') : null),
+    [contentTypes]
+  );
 
-  const unMount$ = useSubject();
+  const unMount$ = useSubject<void>();
   const [pageNumber, setPageNumber] = useState(0);
 
   const resource = useLogicResource<SearchItem[], { isFetching: Boolean; items: Array<SearchItem> }>(state, {
@@ -194,8 +195,8 @@ export default function PreviewSearchPanel() {
               : of({ result, contentInstances: null });
           })
         )
-        .subscribe(
-          (response) => {
+        .subscribe({
+          next: (response) => {
             setPageNumber(options ? options.offset / options.limit : 0);
             if (response.contentInstances) {
               setState({
@@ -208,10 +209,10 @@ export default function PreviewSearchPanel() {
               setState({ isFetching: false, items: response.result.items, count: response.result.total });
             }
           },
-          ({ response }) => {
+          error: ({ response }) => {
             setError(response);
           }
-        );
+        });
     },
     [setState, site, contentTypes, unMount$, contentTypesLookup]
   );

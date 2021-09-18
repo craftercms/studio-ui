@@ -691,6 +691,10 @@ const foo = (state) => state;
 const reducerFunctions: {
   [K in GuestActionTypes]: (...args: any) => GuestState;
 } = {
+  'document:dragend': foo,
+  'document:dragleave': foo,
+  'document:dragover': foo,
+  'document:drop': foo,
   computed_dragend,
   computed_dragover,
   dblclick,

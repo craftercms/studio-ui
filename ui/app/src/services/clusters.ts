@@ -20,7 +20,7 @@ import { mapTo, pluck } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 
 export function fetchMembers(): Observable<ClusterMember[]> {
-  return get(`/studio/api/2/cluster`).pipe(pluck('response', 'clusterMembers'));
+  return get<{ clusterMembers: ClusterMember[] }>(`/studio/api/2/cluster`).pipe(pluck('response', 'clusterMembers'));
 }
 
 export function deleteMember(id: number): Observable<true> {

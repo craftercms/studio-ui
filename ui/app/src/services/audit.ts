@@ -21,6 +21,7 @@ import { Observable } from 'rxjs';
 import { PagedArray } from '../models/PagedArray';
 import { AuditLogEntry } from '../models/Audit';
 import PaginationOptions from '../models/PaginationOptions';
+import { Api2BulkResponseFormat, Api2ResponseFormat } from '../models/ApiResponse';
 
 export type AuditOptions = Partial<
   PaginationOptions & {
@@ -45,7 +46,9 @@ export function fetchAuditLog(options: AuditOptions): Observable<PagedArray<Audi
     offset: 0,
     ...options
   };
-  return get(`/studio/api/2/audit${toQueryString(mergedOptions)}`).pipe(
+  return get<Api2BulkResponseFormat<{ auditLog: AuditLogEntry[] }>>(
+    `/studio/api/2/audit${toQueryString(mergedOptions)}`
+  ).pipe(
     map(({ response }) =>
       Object.assign(response.auditLog, {
         limit: response.limit < mergedOptions.limit ? mergedOptions.limit : response.limit,
@@ -57,5 +60,7 @@ export function fetchAuditLog(options: AuditOptions): Observable<PagedArray<Audi
 }
 
 export function fetchAuditLogEntry(id: number): Observable<AuditLogEntry> {
-  return get(`/studio/api/2/audit/${id}`).pipe(pluck('response', 'auditLog'));
+  return get<Api2ResponseFormat<{ auditLog: AuditLogEntry }>>(`/studio/api/2/audit/${id}`).pipe(
+    pluck('response', 'auditLog')
+  );
 }
