@@ -40,8 +40,7 @@ import { Api2ResponseFormat } from '../models/ApiResponse';
 
 const typeMap = {
   input: 'text',
-  'rte-tinymce5': 'html',
-  'rte-tinymce4': 'html',
+  rte: 'html',
   checkbox: 'boolean',
   'image-picker': 'image'
 };

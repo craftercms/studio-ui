@@ -873,9 +873,7 @@ export function fetchChildrenByPath(
   return postJSON('/studio/api/2/content/children_by_path', {
     siteId,
     path,
-    ...options,
-    // `excludes` may not come at all or be an array of paths
-    ...(options?.excludes ? { excludes: options.excludes.join(',') } : {})
+    ...options
   }).pipe(
     pluck('response'),
     map(({ children, levelDescriptor, total, offset, limit }) =>

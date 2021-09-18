@@ -23,7 +23,7 @@
     "@mui/x-data-grid": "https://pkg.csb.dev/mui-org/material-ui-x/commit/9f39f255/@mui/x-data-grid",
     "@prettier/plugin-xml": "^1.0.2",
     "@types/graphql": "^14.5.0",
-    "@types/jest": "24.0.23",
+    "@types/jest": "25.1.0",
     "@types/marked": "^3.0.0",
     "@types/node": "^16.9.1",
     "@types/react-swipeable-views": "^0.13.0",
