@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -14,70 +14,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren, useState } from 'react';
-import StandardAction from '../../models/StandardAction';
-import { Dialog } from '@material-ui/core';
-import DialogHeader from './DialogHeader';
+import React, { useState } from 'react';
 import AsyncVideoPlayer from '../AsyncVideoPlayer';
-import IFrame from '../IFrame';
-import AceEditor from '../AceEditor';
-import { makeStyles } from '@material-ui/core/styles';
 import LoadingState, { ConditionalLoadingState } from '../SystemStatus/LoadingState';
+import IFrame from '../IFrame';
 import { nou } from '../../utils/object';
-import { useUnmount } from '../../utils/hooks/useUnmount';
+import AceEditor from '../AceEditor';
+import { useStyles } from './PreviewDialog';
+import { PreviewDialogContainerProps } from './utils';
 
-const useStyles = makeStyles(() => ({
-  container: {
-    maxWidth: '700px',
-    minWidth: '500px',
-    minHeight: '400px',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    '& img': {
-      maxWidth: '100%'
-    }
-  },
-  editor: {
-    width: 900,
-    height: 600,
-    border: 'none'
-  }
-}));
-
-interface PreviewDialogBaseProps {
-  open: boolean;
-  type: string;
-  title: string;
-  subtitle?: string;
-  mode?: string;
-  url?: string;
-  content?: string;
-}
-
-export type PreviewDialogProps = PropsWithChildren<
-  PreviewDialogBaseProps & {
-    onClose(): void;
-    onClosed?(): void;
-  }
->;
-
-export interface PreviewDialogStateProps extends PreviewDialogBaseProps {
-  onClose?: StandardAction;
-  onClosed?: StandardAction;
-}
-
-export default function PreviewDialog(props: PreviewDialogProps) {
-  return (
-    <Dialog open={props.open} onClose={props.onClose} maxWidth="md">
-      <PreviewDialogUI {...props} />
-    </Dialog>
-  );
-}
-
-function PreviewDialogUI(props: PreviewDialogProps) {
+export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
   const classes = useStyles();
-  useUnmount(props.onClosed);
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -118,7 +65,6 @@ function PreviewDialogUI(props: PreviewDialogProps) {
   };
   return (
     <>
-      <DialogHeader title={props.title} subtitle={props.subtitle} onCloseButtonClick={props.onClose} />
       <section className={classes.container}>{renderPreview()}</section>
     </>
   );

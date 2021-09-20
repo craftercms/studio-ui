@@ -50,7 +50,7 @@ const CreateFolderDialog = lazy(() => import('../CreateFolderDialog'));
 const CopyItemsDialog = lazy(() => import('../Dialogs/CopyDialog'));
 const CreateFileDialog = lazy(() => import('../CreateFileDialog'));
 const BulkUploadDialog = lazy(() => import('../UploadDialog'));
-const PreviewDialog = lazy(() => import('../Dialogs/PreviewDialog'));
+const PreviewDialog = lazy(() => import('../PreviewDialog'));
 const ItemMenu = lazy(() => import('../ItemActionsMenu'));
 const ItemMegaMenu = lazy(() => import('../ItemMegaMenu'));
 const AuthMonitor = lazy(() => import('../SystemStatus/AuthMonitor'));
@@ -336,13 +336,7 @@ function GlobalDialogManager() {
 
       {/* region PreviewDialog */}
       <PreviewDialog
-        open={state.preview.open}
-        url={state.preview.url}
-        type={state.preview.type}
-        mode={state.preview.mode}
-        title={state.preview.title}
-        content={state.preview.content}
-        subtitle={state.preview.subtitle}
+        {...state.preview}
         onClose={createCallback(state.preview.onClose, dispatch)}
         onClosed={createCallback(state.preview.onClosed, dispatch)}
       />
