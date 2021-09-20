@@ -20,7 +20,6 @@ import { FetchContentVersion } from '../../models/Version';
 import { NewContentDialogStateProps } from '../../components/NewContentDialog/utils';
 import { LegacyFormDialogStateProps } from '../../components/Dialogs/LegacyFormDialog';
 import { EditSiteDialogStateProps } from '../../modules/System/Sites/Edit/EditSiteDialog';
-import { CreateFileStateProps } from '../../components/Dialogs/CreateFileDialog';
 import { UploadDialogStateProps } from '../../components/Dialogs/UploadDialog';
 import { PreviewDialogStateProps } from '../../components/Dialogs/PreviewDialog';
 import { PathSelectionDialogStateProps } from '../../components/Dialogs/PathSelectionDialog';
@@ -44,6 +43,7 @@ import { ConfirmDialogStateProps } from '../../components/ConfirmDialog/utils';
 import { ChangeContentTypeDialogStateProps } from '../../components/ChangeContentTypeDialog/utils';
 import { WorkflowCancellationDialogStateProps } from '../../components/WorkflowCancellationDialog/utils';
 import { RejectDialogStateProps } from '../../components/RejectDialog/utils';
+import { CreateFileStateProps } from '../../components/CreateFileDialog/utils';
 
 // region History
 export const showHistoryDialog = /*#__PURE__*/ createAction<Partial<HistoryDialogStateProps>>('SHOW_HISTORY_DIALOG');
@@ -181,6 +181,9 @@ export const showCreateFileDialog = /*#__PURE__*/ createAction<Partial<CreateFil
 );
 export const closeCreateFileDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_CREATE_FILE_DIALOG');
 export const createFileDialogClosed = /*#__PURE__*/ createAction('CREATE_FILE_DIALOG_CLOSED');
+export const updateCreateFileDialog = /*#__PURE__*/ createAction<Partial<CreateFileStateProps>>(
+  'UPDATE_CREATE_FILE_DIALOG'
+);
 // endregion
 
 // region Copy Dialog

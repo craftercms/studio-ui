@@ -16,11 +16,19 @@
 
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
-import { closeCreateFileDialog, createFileDialogClosed, showCreateFileDialog } from '../../actions/dialogs';
-import { CreateFileStateProps } from '../../../components/Dialogs/CreateFileDialog';
+import {
+  closeCreateFileDialog,
+  createFileDialogClosed,
+  showCreateFileDialog,
+  updateCreateFileDialog
+} from '../../actions/dialogs';
+import { CreateFileStateProps } from '../../../components/CreateFileDialog/utils';
 
 const initialState: CreateFileStateProps = {
   open: false,
+  isSubmitting: null,
+  isMinimized: null,
+  hasPendingChanges: null,
   path: null,
   type: null
 };
@@ -37,6 +45,10 @@ export default createReducer<GlobalState['dialogs']['createFile']>(initialState,
   [closeCreateFileDialog.type]: (state) => ({
     ...state,
     open: false
+  }),
+  [updateCreateFileDialog.type]: (state, { payload }) => ({
+    ...state,
+    ...payload
   }),
   [createFileDialogClosed.type]: () => initialState
 });

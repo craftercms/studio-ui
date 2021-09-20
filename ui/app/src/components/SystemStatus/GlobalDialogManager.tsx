@@ -48,7 +48,7 @@ const WorkflowCancellationDialog = lazy(() => import('../WorkflowCancellationDia
 const LegacyFormDialog = lazy(() => import('../Dialogs/LegacyFormDialog'));
 const CreateFolderDialog = lazy(() => import('../CreateFolderDialog'));
 const CopyItemsDialog = lazy(() => import('../Dialogs/CopyDialog'));
-const CreateFileDialog = lazy(() => import('../Dialogs/CreateFileDialog'));
+const CreateFileDialog = lazy(() => import('../CreateFileDialog'));
 const BulkUploadDialog = lazy(() => import('../Dialogs/UploadDialog'));
 const PreviewDialog = lazy(() => import('../Dialogs/PreviewDialog'));
 const ItemMenu = lazy(() => import('../ItemActionsMenu'));
@@ -304,13 +304,13 @@ function GlobalDialogManager() {
 
       {/* region Create File */}
       <CreateFileDialog
-        open={state.createFile.open}
-        path={state.createFile.path}
-        type={state.createFile.type}
-        allowBraces={state.createFile.allowBraces}
+        {...state.createFile}
         onClose={createCallback(state.createFile.onClose, dispatch)}
         onClosed={createCallback(state.createFile.onClosed, dispatch)}
         onCreated={createCallback(state.createFile.onCreated, dispatch)}
+        onWithPendingChangesCloseRequest={useWithPendingChangesCloseRequest(
+          createCallback(state.createFile.onClose, dispatch)
+        )}
       />
       {/* endregion */}
 

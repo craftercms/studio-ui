@@ -91,7 +91,14 @@ export default function CreateFolderContainer(props: CreateFolderContainerProps)
         );
       },
       (response) => {
-        dispatch(showErrorDialog({ error: response }));
+        dispatch(
+          batchActions([
+            showErrorDialog({ error: response }),
+            updateCreateFolderDialog({
+              isSubmitting: false
+            })
+          ])
+        );
       }
     );
   };

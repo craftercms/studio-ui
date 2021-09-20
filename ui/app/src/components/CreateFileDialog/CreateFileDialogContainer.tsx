@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -14,106 +14,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren, useState } from 'react';
-import Dialog from '@material-ui/core/Dialog';
-import DialogHeader from './DialogHeader';
-import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import DialogBody from './DialogBody';
-import DialogFooter from './DialogFooter';
-import TextField from '@material-ui/core/TextField';
-import { createFile } from '../../services/content';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
-import StandardAction from '../../models/StandardAction';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { createFile } from '../../services/content';
 import { emitSystemEvent, itemCreated } from '../../state/actions/system';
-import SecondaryButton from '../SecondaryButton';
-import PrimaryButton from '../PrimaryButton';
+import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { validateActionPolicy } from '../../services/sites';
-import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
+import DialogBody from '../Dialogs/DialogBody';
+import TextField from '@material-ui/core/TextField';
+import DialogFooter from '../Dialogs/DialogFooter';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import { useUnmount } from '../../utils/hooks/useUnmount';
+import SecondaryButton from '../SecondaryButton';
+import PrimaryButton from '../PrimaryButton';
+import ConfirmDialog from '../ConfirmDialog';
+import { CreateFileContainerProps, getExtension, getName } from './utils';
+import { translations } from './translations';
+import { updateCreateFileDialog, updateCreateFolderDialog } from '../../state/actions/dialogs';
+import { batchActions } from '../../state/actions/misc';
 
-interface CreateFileBaseProps {
-  open: boolean;
-  type: 'controller' | 'template';
-  path: string;
-  allowBraces?: boolean;
-}
-
-export type CreateFileProps = PropsWithChildren<
-  CreateFileBaseProps & {
-    onClose(): void;
-    onClosed?(): void;
-    onCreated?(response: { path: string; fileName: string; mode: string; openOnSuccess: boolean }): void;
-  }
->;
-
-export interface CreateFileUIProps extends CreateFileProps {
-  submitted: boolean;
-  inProgress: boolean;
-  setState(values: object): void;
-}
-
-export interface CreateFileStateProps extends CreateFileBaseProps {
-  onClose?: StandardAction;
-  onClosed?: StandardAction;
-  onCreated?: StandardAction;
-}
-
-export const translations = defineMessages({
-  placeholder: {
-    id: 'createFileDialog.placeholder',
-    defaultMessage: 'Please type a name'
-  },
-  createPolicy: {
-    id: 'createFileDialog.createPolicy',
-    defaultMessage:
-      'The supplied name goes against site policies. Suggested modified name is: "{name}". Would you like to use the suggested name?'
-  },
-  policyError: {
-    id: 'createFileDialog.policyError',
-    defaultMessage: 'The supplied name goes against site policies.'
-  },
-  openOnSuccess: {
-    id: 'createFileDialog.openOnSuccess',
-    defaultMessage: 'Open file'
-  },
-  openOnSuccessTitle: {
-    id: 'createFileDialog.openOnSuccessTip',
-    defaultMessage: 'Open for edit after creation'
-  }
-});
-
-export default function CreateFileDialog(props: CreateFileProps) {
-  const { open, onClose } = props;
-  const [state, setState] = useState({
-    submitted: null,
-    inProgress: null
-  });
-  return (
-    <Dialog
-      open={open}
-      fullWidth
-      maxWidth="xs"
-      onClose={onClose}
-      TransitionProps={{
-        onExited: () => setState({ inProgress: null, submitted: null })
-      }}
-    >
-      <CreateFileDialogUI {...props} submitted={state.submitted} inProgress={state.inProgress} setState={setState} />
-    </Dialog>
-  );
-}
-
-const getExtension = (type: string) => (type === 'controller' ? `groovy` : `ftl`);
-
-const getName = (type: string, name: string) =>
-  `${name}.${getExtension(type)}`.replace(/(\.groovy)(\.groovy)|(\.ftl)(\.ftl)/g, '$1$3').replace(/\.{2,}/g, '.');
-
-function CreateFileDialogUI(props: CreateFileUIProps) {
-  const { onClosed, onClose, submitted, inProgress, setState, onCreated, type, path, allowBraces } = props;
+export function CreateFileDialogContainer(props: CreateFileContainerProps) {
+  const { onClose, onCreated, type, path, allowBraces, isSubmitting } = props;
   const [name, setName] = useState('');
   const [confirm, setConfirm] = useState(null);
   const [openOnSuccess, setOpenOnSuccess] = useState(true);
@@ -121,23 +44,40 @@ function CreateFileDialogUI(props: CreateFileUIProps) {
   const site = useActiveSiteId();
   const { formatMessage } = useIntl();
 
-  useUnmount(onClosed);
-
   const onCreateFile = (site: string, path: string, fileName: string) => {
     createFile(site, path, fileName).subscribe(
       () => {
         onCreated?.({ path, fileName, mode: getExtension(type), openOnSuccess });
-        dispatch(emitSystemEvent(itemCreated({ target: `${path}/${fileName}` })));
+
+        dispatch(
+          batchActions([
+            updateCreateFileDialog({
+              hasPendingChanges: false,
+              isSubmitting: false
+            }),
+            emitSystemEvent(itemCreated({ target: `${path}/${fileName}` }))
+          ])
+        );
       },
       (response) => {
-        setState({ inProgress: false, submitted: true });
-        dispatch(showErrorDialog({ error: response }));
+        dispatch(
+          batchActions([
+            showErrorDialog({ error: response }),
+            updateCreateFileDialog({
+              isSubmitting: false
+            })
+          ])
+        );
       }
     );
   };
 
   const onCreate = () => {
-    setState({ inProgress: true, submitted: true });
+    dispatch(
+      updateCreateFileDialog({
+        isSubmitting: true
+      })
+    );
     if (name) {
       validateActionPolicy(site, {
         type: 'CREATE',
@@ -157,6 +97,11 @@ function CreateFileDialogUI(props: CreateFileUIProps) {
             error: true,
             body: formatMessage(translations.policyError)
           });
+          dispatch(
+            updateCreateFolderDialog({
+              isSubmitting: false
+            })
+          );
         }
       });
     }
@@ -169,21 +114,24 @@ function CreateFileDialogUI(props: CreateFileUIProps) {
 
   const onConfirmCancel = () => {
     setConfirm(null);
-    setState({ inProgress: false, submitted: true });
+    dispatch(
+      updateCreateFileDialog({
+        isSubmitting: false
+      })
+    );
+  };
+
+  const onInputChanges = (value: string) => {
+    setName(value);
+    dispatch(
+      updateCreateFileDialog({
+        hasPendingChanges: true
+      })
+    );
   };
 
   return (
     <>
-      <DialogHeader
-        title={
-          type === 'controller' ? (
-            <FormattedMessage id="createFileDialog.controller" defaultMessage="New Controller" />
-          ) : (
-            <FormattedMessage id="createFileDialog.template" defaultMessage="New Template" />
-          )
-        }
-        onCloseButtonClick={inProgress === null ? onClose : null}
-      />
       <DialogBody>
         <form
           onSubmit={(e) => {
@@ -197,10 +145,10 @@ function CreateFileDialogUI(props: CreateFileUIProps) {
             fullWidth
             autoFocus
             required
-            error={!name && submitted}
+            error={!name && isSubmitting !== null}
             placeholder={formatMessage(translations.placeholder)}
             helperText={
-              !name && submitted ? (
+              !name && isSubmitting ? (
                 <FormattedMessage id="createFileDialog.fileNameRequired" defaultMessage="File name is required." />
               ) : (
                 <FormattedMessage
@@ -209,13 +157,13 @@ function CreateFileDialogUI(props: CreateFileUIProps) {
                 />
               )
             }
-            disabled={inProgress}
+            disabled={isSubmitting}
             margin="normal"
             InputLabelProps={{
               shrink: true
             }}
             onChange={(event) =>
-              setName(
+              onInputChanges(
                 event.target.value
                   .replace(allowBraces ? /[^a-zA-Z0-9-_{}.]/g : /[^a-zA-Z0-9-_.]/g, '')
                   .replace(/\.{1,}/g, '.')
@@ -233,10 +181,10 @@ function CreateFileDialogUI(props: CreateFileUIProps) {
             <Checkbox checked={openOnSuccess} onChange={(e) => setOpenOnSuccess(e.target.checked)} color="primary" />
           }
         />
-        <SecondaryButton onClick={onClose} disabled={inProgress}>
+        <SecondaryButton onClick={(e) => onClose(e, null)} disabled={isSubmitting}>
           <FormattedMessage id="words.close" defaultMessage="Close" />
         </SecondaryButton>
-        <PrimaryButton onClick={onCreate} disabled={inProgress || name === ''} loading={inProgress}>
+        <PrimaryButton onClick={onCreate} disabled={isSubmitting || name === ''} loading={isSubmitting}>
           <FormattedMessage id="words.create" defaultMessage="Create" />
         </PrimaryButton>
       </DialogFooter>
