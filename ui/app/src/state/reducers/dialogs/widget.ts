@@ -17,10 +17,13 @@
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
 import { closeWidgetDialog, showWidgetDialog, widgetDialogClosed } from '../../actions/dialogs';
-import { WidgetDialogStateProps } from '../../../components/WidgetDialog';
+import { WidgetDialogStateProps } from '../../../components/WidgetDialog/utils';
 
 const initialState: WidgetDialogStateProps = {
   open: false,
+  isMinimized: null,
+  isSubmitting: null,
+  hasPendingChanges: null,
   title: null,
   id: null,
   widget: null

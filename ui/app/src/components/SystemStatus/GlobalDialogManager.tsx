@@ -395,10 +395,7 @@ function GlobalDialogManager() {
 
       {/* region Widget Dialog */}
       <WidgetDialog
-        id={state.widget.id}
-        open={state.widget.open}
-        title={state.widget.title}
-        widget={state.widget.widget}
+        {...state.widget}
         onClose={createCallback(state.widget.onClose, dispatch)}
         onClosed={createCallback(state.widget.onClosed, dispatch)}
       />

@@ -44,7 +44,7 @@ import { SystemIconDescriptor } from '../components/SystemIcon';
 import { AjaxError } from 'rxjs/ajax';
 import { PathNavigatorTreeStateProps } from '../components/PathNavigatorTree';
 import { UnlockPublisherDialogStateProps } from '../components/UnlockPublisherDialog';
-import { WidgetDialogStateProps } from '../components/WidgetDialog';
+import { WidgetDialogStateProps } from '../components/WidgetDialog/utils';
 import { CodeEditorDialogStateProps } from '../components/CodeEditorDialog';
 import { SystemLinkId } from '../utils/system';
 import { PublishDialogStateProps } from '../components/PublishDialog/utils';

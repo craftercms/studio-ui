@@ -15,38 +15,19 @@
  */
 
 import React from 'react';
-import DialogHeader from '../Dialogs/DialogHeader';
-import { Widget, WidgetDescriptor } from '../Widget';
+import { Widget } from '../Widget';
 import useStyles from './styles';
+import { WidgetDialogContainerProps } from './utils';
+import Suspencified from '../SystemStatus/Suspencified';
 
-interface WidgetDialogUIProps {
-  title: string;
-  onMinimize(): void;
-  onClose(): void;
-  widget: WidgetDescriptor;
-}
-
-export function WidgetDialogUI(props: WidgetDialogUIProps) {
-  const { title, onMinimize, onClose, widget } = props;
+export function WidgetDialogContainer(props: WidgetDialogContainerProps) {
+  const { widget } = props;
   const classes = useStyles();
   return (
-    <>
-      <DialogHeader
-        title={title}
-        rightActions={[
-          {
-            icon: 'MinimizeIcon',
-            onClick: onMinimize
-          },
-          {
-            icon: 'CloseIcon',
-            onClick: onClose
-          }
-        ]}
-      />
-      <section className={classes.toolPanelBody}>
+    <section className={classes.toolPanelBody}>
+      <Suspencified>
         <Widget {...widget} />
-      </section>
-    </>
+      </Suspencified>
+    </section>
   );
 }

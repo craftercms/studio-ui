@@ -18,4 +18,4 @@ export { default } from './WidgetDialog';
 
 export * from './WidgetDialog';
 
-export * from './WidgetDialogUI';
+export * from './WidgetDialogContainer';
