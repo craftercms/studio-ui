@@ -17,10 +17,10 @@
 import Dialog from '@material-ui/core/Dialog';
 import * as React from 'react';
 import StandardAction from '../../models/StandardAction';
-import PublishingStatusDialogBody, { PublishingStatusDialogBodyProps } from './PublishingStatusDialogBody';
+import PublishingStatusDialogContainer, { PublishingStatusDialogContainerProps } from './PublishingStatusDialogContainer';
 import { PublishingStatus } from '../../models/Publishing';
 
-export interface PublishingStatusDialogProps extends PublishingStatusDialogBodyProps {
+export interface PublishingStatusDialogProps extends PublishingStatusDialogContainerProps {
   open: boolean;
 }
 
@@ -36,7 +36,7 @@ function PublishingStatusDialog(props: PublishingStatusDialogProps) {
   const { open, onClose } = props;
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
-      <PublishingStatusDialogBody {...props} />
+      <PublishingStatusDialogContainer {...props} />
     </Dialog>
   );
 }

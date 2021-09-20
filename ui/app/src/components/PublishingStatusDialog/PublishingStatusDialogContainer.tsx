@@ -27,7 +27,7 @@ import PublishingStatusDisplay from '../PublishingStatusDisplay';
 import PauseCircleOutlineOutlinedIcon from '@material-ui/icons/PauseCircleOutlineOutlined';
 import PlayCircleOutlineOutlinedIcon from '@material-ui/icons/PlayCircleOutlineOutlined';
 
-export type PublishingStatusDialogBodyProps = Pick<
+export type PublishingStatusDialogContainerProps = Pick<
   PublishingStatus,
   'enabled' | 'status' | 'message' | 'lockOwner' | 'lockTTL'
 > & {
@@ -47,7 +47,7 @@ const useStyles = makeStyles(() =>
   })
 );
 
-function PublishingStatusDialogBody(props: PublishingStatusDialogBodyProps) {
+function PublishingStatusDialogContainer(props: PublishingStatusDialogContainerProps) {
   const { status, message, enabled, lockOwner, lockTTL, onClose, onRefresh, onUnlock, onStartStop, isFetching } = props;
   const classes = useStyles();
   const { formatMessage } = useIntl();
@@ -90,4 +90,4 @@ function PublishingStatusDialogBody(props: PublishingStatusDialogBodyProps) {
   );
 }
 
-export default PublishingStatusDialogBody;
+export default PublishingStatusDialogContainer;
