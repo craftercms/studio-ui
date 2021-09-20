@@ -114,7 +114,7 @@ export default function UploadDialog(props: UploadDialogProps) {
       <MinimizedBar
         open={isMinimized}
         onMaximize={onMaximize}
-        title={<FormattedMessage id="upload" defaultMessage="Upload" />}
+        title={<FormattedMessage id="words.upload" defaultMessage="Upload" />}
       />
     </>
   );
