@@ -172,6 +172,7 @@ function UploadDialogUI(props: UploadDialogUIProps) {
   const { formatMessage } = useIntl();
   const expiresAt = useSelection((state) => state.auth.expiresAt);
   const classes = useStyles({});
+  const maxActiveUploads = 1000;
   const {
     site,
     path,
@@ -241,6 +242,7 @@ function UploadDialogUI(props: UploadDialogUIProps) {
           onPendingChanges={setPendingChanges}
           onClose={onClose}
           title={formatMessage(translations.title)}
+          maxActiveUploads={maxActiveUploads}
         />
       </DialogBody>
     </>
