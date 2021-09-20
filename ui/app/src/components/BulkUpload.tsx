@@ -96,9 +96,9 @@ const translations = defineMessages({
     defaultMessage:
       'Uploads are still in progress. Leaving this page would stop the pending uploads. Are you sure you wish to leave?'
   },
-  maxFilesAccepted: {
-    id: 'bulkUpload.maxFilesAccepted',
-    defaultMessage: 'Only {maxFiles} files have been accepted.'
+  maxActiveUploadsReached: {
+    id: 'bulkUpload.maxActiveUploadsReached',
+    defaultMessage: 'Max active uploads reached.'
   }
 });
 
@@ -215,7 +215,7 @@ const useUppyItemStyles = makeStyles(() =>
   })
 );
 
-const maxUploadsAtOnce = 1000;
+const maxActiveUploads = 1000;
 const uppy = Core({
   debug: false,
   autoProceed: true
@@ -339,8 +339,8 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
   function addFiles(files: File[]) {
     const filesUploading = dropZoneStatus.filesUploading;
 
-    if (files.length + filesUploading > maxUploadsAtOnce) {
-      const availableUploads = maxUploadsAtOnce - filesUploading;
+    if (files.length + filesUploading > maxActiveUploads) {
+      const availableUploads = maxActiveUploads - filesUploading;
       files = files.slice(0, availableUploads);
       setRestrictionNotificationOpen(true);
     }
@@ -550,7 +550,7 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
               })}
               &nbsp; (
               {formatMessage(translations.maxFiles, {
-                maxFiles: maxUploadsAtOnce
+                maxFiles: maxActiveUploads
               })}
               )
             </Typography>
@@ -580,8 +580,8 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
       >
         <SnackbarContent
           aria-describedby="client-snackbar"
-          message={formatMessage(translations.maxFilesAccepted, {
-            maxFiles: maxUploadsAtOnce
+          message={formatMessage(translations.maxActiveUploadsReached, {
+            maxFiles: maxActiveUploads
           })}
           action={[
             <IconButton
