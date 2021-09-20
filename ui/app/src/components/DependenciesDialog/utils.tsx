@@ -22,7 +22,6 @@ import { Resource } from '../../models/Resource';
 import StandardAction from '../../models/StandardAction';
 import { EnhancedDialogProps } from '../Dialog';
 import { EnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
-import { PublishDialogProps } from '../PublishDialog/utils';
 
 export interface DependenciesDialogBaseProps {
   item?: DetailedItem;
@@ -37,9 +36,7 @@ export interface DependenciesDialogStateProps extends DependenciesDialogBaseProp
   onClosed?: StandardAction;
 }
 
-export interface DependenciesDialogContainerProps
-  extends DependenciesDialogBaseProps,
-    Pick<PublishDialogProps, 'onClose'> {}
+export interface DependenciesDialogContainerProps extends DependenciesDialogBaseProps {}
 
 export interface DependenciesListProps {
   resource: Resource<DetailedItem[]>;
@@ -60,7 +57,6 @@ export interface DependenciesDialogUIProps {
   setShowTypes: Function;
   dependenciesShown: string;
   setDependenciesShown: Function;
-  onCloseButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
   isEditableItem: Function;
   handleEditorDisplay(item: DetailedItem): void;
   handleHistoryDisplay(item: DetailedItem): void;

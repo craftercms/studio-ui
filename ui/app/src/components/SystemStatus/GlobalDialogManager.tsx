@@ -34,7 +34,7 @@ import { useWithPendingChangesCloseRequest } from '../../utils/hooks/useWithPend
 
 const ViewVersionDialog = lazy(() => import('../ViewVersionDialog'));
 const CompareVersionsDialog = lazy(() => import('../CompareVersionsDialog'));
-const RejectDialog = lazy(() => import('../Dialogs/RejectDialog'));
+const RejectDialog = lazy(() => import('../RejectDialog'));
 const EditSiteDialog = lazy(() => import('../../modules/System/Sites/Edit/EditSiteDialog'));
 const ConfirmDialog = lazy(() => import('../ConfirmDialog'));
 const ErrorDialog = lazy(() => import('./ErrorDialog'));
@@ -279,12 +279,13 @@ function GlobalDialogManager() {
 
       {/* region Reject */}
       <RejectDialog
-        open={state.reject.open}
-        items={state.reject.items}
+        {...state.reject}
         onClose={createCallback(state.reject.onClose, dispatch)}
         onClosed={createCallback(state.reject.onClosed, dispatch)}
-        onDismiss={createCallback(state.reject.onDismiss, dispatch)}
         onRejectSuccess={createCallback(state.reject.onRejectSuccess, dispatch)}
+        onWithPendingChangesCloseRequest={useWithPendingChangesCloseRequest(
+          createCallback(state.reject.onClose, dispatch)
+        )}
       />
       {/* endregion */}
 

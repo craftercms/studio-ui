@@ -18,7 +18,6 @@ import { createAction } from '@reduxjs/toolkit';
 import StandardAction from '../../models/StandardAction';
 import { FetchContentVersion } from '../../models/Version';
 import { NewContentDialogStateProps } from '../../components/NewContentDialog/utils';
-import { RejectDialogStateProps } from '../../components/Dialogs/RejectDialog';
 import { LegacyFormDialogStateProps } from '../../components/Dialogs/LegacyFormDialog';
 import { EditSiteDialogStateProps } from '../../modules/System/Sites/Edit/EditSiteDialog';
 import { CreateFileStateProps } from '../../components/Dialogs/CreateFileDialog';
@@ -44,6 +43,7 @@ import { CompareVersionsDialogStateProps } from '../../components/CompareVersion
 import { ConfirmDialogStateProps } from '../../components/ConfirmDialog/utils';
 import { ChangeContentTypeDialogStateProps } from '../../components/ChangeContentTypeDialog/utils';
 import { WorkflowCancellationDialogStateProps } from '../../components/WorkflowCancellationDialog/utils';
+import { RejectDialogStateProps } from '../../components/RejectDialog/utils';
 
 // region History
 export const showHistoryDialog = /*#__PURE__*/ createAction<Partial<HistoryDialogStateProps>>('SHOW_HISTORY_DIALOG');
@@ -144,6 +144,7 @@ export const workflowCancellationDialogClosed = /*#__PURE__*/ createAction('WORK
 export const showRejectDialog = /*#__PURE__*/ createAction<Partial<RejectDialogStateProps>>('SHOW_REJECT_DIALOG');
 export const closeRejectDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_REJECT_DIALOG');
 export const rejectDialogClosed = /*#__PURE__*/ createAction('REJECT_DIALOG_CLOSED');
+export const updateRejectDialog = /*#__PURE__*/ createAction<Partial<RejectDialogStateProps>>('UPDATE_REJECT_DIALOG');
 // endregion
 
 // region Legacy Form

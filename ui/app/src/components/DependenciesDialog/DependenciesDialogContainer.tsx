@@ -32,7 +32,7 @@ import { isEditableAsset, parseLegacyItemToSandBoxItem } from '../../utils/conte
 import DependenciesDialogUI from './DependenciesDialogUI';
 
 export default function DependenciesDialogContainer(props: DependenciesDialogContainerProps) {
-  const { item, dependenciesShown = 'depends-on', onClose, rootPath } = props;
+  const { item, dependenciesShown = 'depends-on', rootPath } = props;
   const [dialog, setDialog] = useSpreadState({
     ...dialogInitialState,
     item,
@@ -178,8 +178,6 @@ export default function DependenciesDialogContainer(props: DependenciesDialogCon
     });
   };
 
-  const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
-
   return (
     <DependenciesDialogUI
       resource={resource}
@@ -192,7 +190,6 @@ export default function DependenciesDialogContainer(props: DependenciesDialogCon
       setShowTypes={setShowTypes}
       dependenciesShown={dialog.dependenciesShown}
       setDependenciesShown={setDependenciesShow}
-      onCloseButtonClick={onCloseButtonClick}
       isEditableItem={isEditableAsset}
       handleEditorDisplay={handleEditorDisplay}
       handleHistoryDisplay={handleHistoryDisplay}

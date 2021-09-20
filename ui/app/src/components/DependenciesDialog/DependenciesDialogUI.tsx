@@ -43,7 +43,6 @@ export default function DependenciesDialogUI(props: DependenciesDialogUIProps) {
     setShowTypes,
     dependenciesShown,
     setDependenciesShown,
-    onCloseButtonClick,
     isEditableItem,
     handleEditorDisplay,
     handleHistoryDisplay,
