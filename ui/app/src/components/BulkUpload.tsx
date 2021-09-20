@@ -51,6 +51,8 @@ import { interval, Observable } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
 import { UppyFile } from '@uppy/core';
 import Snackbar from '@material-ui/core/Snackbar';
+import SnackbarContent from '@material-ui/core/SnackbarContent';
+import CloseIcon from '@material-ui/icons/Close';
 
 const translations = defineMessages({
   title: {
@@ -299,7 +301,7 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
   const [dragOver, setDragOver] = useState(null);
   const [uploadedFiles, setUploadedFiles] = useState(0);
   const [totalFiles, setTotalFiles] = useState(null);
-  const [restrictionNotificationOpen, setRestrictionNotificationOpen] = useState(false);
+  const [restrictionNotificationOpen, setRestrictionNotificationOpen] = useState(true);
 
   const retryFileUpload = (file: LocalUppyFile) => {
     uppy.retryUpload(file.id);
@@ -575,10 +577,24 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
         open={restrictionNotificationOpen}
         autoHideDuration={5000}
         onClose={() => setRestrictionNotificationOpen(false)}
-        message={formatMessage(translations.maxFilesAccepted, {
-          maxFiles: maxUploadsAtOnce
-        })}
-      />
+      >
+        <SnackbarContent
+          aria-describedby="client-snackbar"
+          message={formatMessage(translations.maxFilesAccepted, {
+            maxFiles: maxUploadsAtOnce
+          })}
+          action={[
+            <IconButton
+              key="close"
+              aria-label="close"
+              color="inherit"
+              onClick={() => setRestrictionNotificationOpen(false)}
+            >
+              <CloseIcon />
+            </IconButton>
+          ]}
+        />
+      </Snackbar>
     </>
   );
 });
