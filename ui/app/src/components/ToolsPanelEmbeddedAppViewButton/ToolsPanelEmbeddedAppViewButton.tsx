@@ -16,7 +16,6 @@
 
 import React, { useState } from 'react';
 import ToolsPanelListItemButton, { ToolsPanelListItemButtonProps } from '../ToolsPanelListItemButton';
-import { useDispatch } from 'react-redux';
 import WidgetDialog from '../WidgetDialog';
 import { usePossibleTranslation } from '../../utils/hooks/usePossibleTranslation';
 import { WidgetDescriptor } from '../Widget';

@@ -25,7 +25,6 @@ const initialState: WidgetDialogStateProps = {
   isSubmitting: null,
   hasPendingChanges: null,
   title: null,
-  id: null,
   widget: null
 };
 
