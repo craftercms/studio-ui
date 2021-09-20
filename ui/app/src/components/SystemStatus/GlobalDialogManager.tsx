@@ -356,11 +356,7 @@ function GlobalDialogManager() {
 
       {/* region Path Selection */}
       <PathSelectionDialog
-        open={state.pathSelection.open}
-        rootPath={state.pathSelection.rootPath}
-        initialPath={state.pathSelection.initialPath}
-        showCreateFolderOption={state.pathSelection.showCreateFolderOption}
-        title={state.pathSelection.title}
+        {...state.pathSelection}
         onClose={createCallback(state.pathSelection.onClose, dispatch)}
         onClosed={createCallback(state.pathSelection.onClosed, dispatch)}
         onOk={createCallback(state.pathSelection.onOk, dispatch)}
@@ -368,25 +364,11 @@ function GlobalDialogManager() {
       {/* endregion */}
 
       {/* region Item Menu */}
-      <ItemMenu
-        open={state.itemMenu.open}
-        path={state.itemMenu.path}
-        numOfLoaderItems={state.itemMenu.numOfLoaderItems}
-        onClose={createCallback(state.itemMenu.onClose, dispatch)}
-        anchorReference={state.itemMenu.anchorReference}
-        anchorPosition={state.itemMenu.anchorPosition}
-      />
+      <ItemMenu {...state.itemMenu} onClose={createCallback(state.itemMenu.onClose, dispatch)} />
       {/* endregion */}
 
       {/* region Item Mega Menu */}
-      <ItemMegaMenu
-        open={state.itemMegaMenu.open}
-        path={state.itemMegaMenu.path}
-        numOfLoaderItems={state.itemMegaMenu.numOfLoaderItems}
-        onClose={createCallback(state.itemMegaMenu.onClose, dispatch)}
-        anchorReference={state.itemMegaMenu.anchorReference}
-        anchorPosition={state.itemMegaMenu.anchorPosition}
-      />
+      <ItemMegaMenu {...state.itemMegaMenu} onClose={createCallback(state.itemMegaMenu.onClose, dispatch)} />
       {/* endregion */}
 
       {/* region Launcher */}
@@ -395,13 +377,7 @@ function GlobalDialogManager() {
 
       {/* region Publishing Status Dialog */}
       <PublishingStatusDialog
-        open={state.publishingStatus.open}
-        enabled={state.publishingStatus.enabled}
-        status={state.publishingStatus.status}
-        message={state.publishingStatus.message}
-        lockOwner={state.publishingStatus.lockOwner}
-        lockTTL={state.publishingStatus.lockTTL}
-        isFetching={state.publishingStatus.isFetching}
+        {...state.publishingStatus}
         onClose={createCallback(state.publishingStatus.onClose, dispatch)}
         onRefresh={createCallback(state.publishingStatus.onRefresh, dispatch)}
         onUnlock={createCallback(state.publishingStatus.onUnlock, dispatch)}
