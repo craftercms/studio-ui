@@ -49,7 +49,7 @@ const LegacyFormDialog = lazy(() => import('../Dialogs/LegacyFormDialog'));
 const CreateFolderDialog = lazy(() => import('../CreateFolderDialog'));
 const CopyItemsDialog = lazy(() => import('../Dialogs/CopyDialog'));
 const CreateFileDialog = lazy(() => import('../CreateFileDialog'));
-const BulkUploadDialog = lazy(() => import('../Dialogs/UploadDialog'));
+const BulkUploadDialog = lazy(() => import('../UploadDialog'));
 const PreviewDialog = lazy(() => import('../Dialogs/PreviewDialog'));
 const ItemMenu = lazy(() => import('../ItemActionsMenu'));
 const ItemMegaMenu = lazy(() => import('../ItemMegaMenu'));
@@ -328,10 +328,7 @@ function GlobalDialogManager() {
 
       {/* region Bulk Upload */}
       <BulkUploadDialog
-        open={state.upload.open}
-        path={state.upload.path}
-        site={state.upload.site}
-        maxSimultaneousUploads={state.upload.maxSimultaneousUploads}
+        {...state.upload}
         onClose={createCallback(state.upload.onClose, dispatch)}
         onClosed={createCallback(state.upload.onClosed, dispatch)}
       />

@@ -14,8 +14,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './CommitResolutionDialog';
+import StandardAction from '../../models/StandardAction';
+import { PropsWithChildren } from 'react';
 
-export * from './CommitResolutionDialog';
+export interface UploadDialogBaseProps {
+  open: boolean;
+  path: string;
+  site: string;
+  maxSimultaneousUploads?: number;
+}
 
-export * from './CommitResolutionDialogContainer';
+export type UploadDialogProps = PropsWithChildren<
+  UploadDialogBaseProps & {
+    onClose(): void;
+    onClosed?(): void;
+  }
+>;
+
+export interface UploadDialogStateProps extends UploadDialogBaseProps {
+  onClose?: StandardAction;
+  onClosed?: StandardAction;
+}
+
+export interface UploadDialogContainerProps extends UploadDialogProps {
+  hasPendingChanges: boolean;
+  setPendingChanges?(pending: boolean): void;
+  onMinimized?(): void;
+}

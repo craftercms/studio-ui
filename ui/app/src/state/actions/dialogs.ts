@@ -20,7 +20,6 @@ import { FetchContentVersion } from '../../models/Version';
 import { NewContentDialogStateProps } from '../../components/NewContentDialog/utils';
 import { LegacyFormDialogStateProps } from '../../components/Dialogs/LegacyFormDialog';
 import { EditSiteDialogStateProps } from '../../modules/System/Sites/Edit/EditSiteDialog';
-import { UploadDialogStateProps } from '../../components/Dialogs/UploadDialog';
 import { PreviewDialogStateProps } from '../../components/Dialogs/PreviewDialog';
 import { PathSelectionDialogStateProps } from '../../components/Dialogs/PathSelectionDialog';
 import { CopyDialogStateProps } from '../../components/Dialogs/CopyDialog';
@@ -44,6 +43,7 @@ import { ChangeContentTypeDialogStateProps } from '../../components/ChangeConten
 import { WorkflowCancellationDialogStateProps } from '../../components/WorkflowCancellationDialog/utils';
 import { RejectDialogStateProps } from '../../components/RejectDialog/utils';
 import { CreateFileStateProps } from '../../components/CreateFileDialog/utils';
+import { UploadDialogStateProps } from '../../components/UploadDialog/util';
 
 // region History
 export const showHistoryDialog = /*#__PURE__*/ createAction<Partial<HistoryDialogStateProps>>('SHOW_HISTORY_DIALOG');

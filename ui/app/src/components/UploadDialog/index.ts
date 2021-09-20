@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './CommitResolutionDialog';
+export { default } from './UploadDialog';
 
-export * from './CommitResolutionDialog';
+export * from './UploadDialog';
 
-export * from './CommitResolutionDialogContainer';
+export * from './UploadDialogContainer';
