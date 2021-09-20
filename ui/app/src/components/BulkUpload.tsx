@@ -93,6 +93,10 @@ const translations = defineMessages({
     id: 'bulkUpload.uploadInProgress',
     defaultMessage:
       'Uploads are still in progress. Leaving this page would stop the pending uploads. Are you sure you wish to leave?'
+  },
+  maxFilesAccepted: {
+    id: 'bulkUpload.maxFilesAccepted',
+    defaultMessage: 'Only {maxFiles} files have been accepted.'
   }
 });
 
@@ -295,6 +299,7 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
   const [dragOver, setDragOver] = useState(null);
   const [uploadedFiles, setUploadedFiles] = useState(0);
   const [totalFiles, setTotalFiles] = useState(null);
+  const [restrictionNotificationOpen, setRestrictionNotificationOpen] = useState(false);
 
   const retryFileUpload = (file: LocalUppyFile) => {
     uppy.retryUpload(file.id);
@@ -335,7 +340,7 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
     if (files.length + filesUploading > maxUploadsAtOnce) {
       const availableUploads = maxUploadsAtOnce - filesUploading;
       files = files.slice(0, availableUploads);
-      // TODO: show notification
+      setRestrictionNotificationOpen(true);
     }
 
     setTotalFiles(totalFiles + files.length);
@@ -471,7 +476,7 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
   useEffect(() => {
     const handleUploadSuccess = () => {
       setUploadedFiles(uploadedFiles + 1);
-      onStatusChange({ uploadedFiles: uploadedFiles + 1, filesUploading: dropZoneStatus.filesUploading-- });
+      onStatusChange({ uploadedFiles: uploadedFiles + 1, filesUploading: dropZoneStatus.filesUploading - 1 });
     };
 
     const handleComplete = () => {
@@ -492,7 +497,7 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
       uppy.off('complete', handleComplete);
       uppy.off('error', handleError);
     };
-  }, [onStatusChange, totalFiles, uploadedFiles]);
+  }, [onStatusChange, totalFiles, uploadedFiles, dropZoneStatus]);
 
   useEffect(() => {
     if (files !== null) {
@@ -562,6 +567,18 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
       <section className={clsx(classes.generalProgress, !filesPerPath && 'hidden')}>
         <ProgressBar progress={percentageCalculator(uploadedFiles, totalFiles)} />
       </section>
+      <Snackbar
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'right'
+        }}
+        open={restrictionNotificationOpen}
+        autoHideDuration={5000}
+        onClose={() => setRestrictionNotificationOpen(false)}
+        message={formatMessage(translations.maxFilesAccepted, {
+          maxFiles: maxUploadsAtOnce
+        })}
+      />
     </>
   );
 });
@@ -681,7 +698,6 @@ export default function BulkUpload(props: any) {
   const inputRef = useRef(null);
   const cancelRef = useRef(null);
   const [minimized, setMinimized] = useState(!open);
-  const [restrictionNotificationOpen, setRestrictionNotificationOpen] = useState(false);
 
   const onStatusChange = useCallback(
     (status: DropZoneStatus) => {
@@ -798,16 +814,6 @@ export default function BulkUpload(props: any) {
           </Button>
         </DialogActions>
       </Dialog>
-      <Snackbar
-        anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'right'
-        }}
-        open={restrictionNotificationOpen}
-        autoHideDuration={5000}
-        onClose={() => setRestrictionNotificationOpen(false)}
-        message="Only 10 files have been accepted."
-      />
     </div>
   );
 }
