@@ -301,7 +301,7 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
   const [dragOver, setDragOver] = useState(null);
   const [uploadedFiles, setUploadedFiles] = useState(0);
   const [totalFiles, setTotalFiles] = useState(null);
-  const [restrictionNotificationOpen, setRestrictionNotificationOpen] = useState(true);
+  const [restrictionNotificationOpen, setRestrictionNotificationOpen] = useState(false);
 
   const retryFileUpload = (file: LocalUppyFile) => {
     uppy.retryUpload(file.id);
