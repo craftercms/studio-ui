@@ -33,7 +33,6 @@ import { PathNavigatorStateProps } from '../components/PathNavigator';
 import { LegacyFormDialogStateProps } from '../components/Dialogs/LegacyFormDialog';
 import { DetailedItem } from './Item';
 import { CopyDialogStateProps } from '../components/Dialogs/CopyDialog';
-import { EditSiteDialogStateProps } from '../modules/System/Sites/Edit/EditSiteDialog';
 import { PathSelectionDialogStateProps } from '../components/Dialogs/PathSelectionDialog';
 import { WidgetDescriptor } from '../components/Widget';
 import { ItemMenuStateProps } from '../components/ItemActionsMenu';
@@ -62,6 +61,7 @@ import { RejectDialogStateProps } from '../components/RejectDialog/utils';
 import { CreateFileStateProps } from '../components/CreateFileDialog/utils';
 import { UploadDialogStateProps } from '../components/UploadDialog/util';
 import { PreviewDialogStateProps } from '../components/PreviewDialog/utils';
+import { EditSiteDialogStateProps } from '../components/EditSiteDialog/utils';
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
   page: any;

@@ -35,7 +35,7 @@ import { useWithPendingChangesCloseRequest } from '../../utils/hooks/useWithPend
 const ViewVersionDialog = lazy(() => import('../ViewVersionDialog'));
 const CompareVersionsDialog = lazy(() => import('../CompareVersionsDialog'));
 const RejectDialog = lazy(() => import('../RejectDialog'));
-const EditSiteDialog = lazy(() => import('../../modules/System/Sites/Edit/EditSiteDialog'));
+const EditSiteDialog = lazy(() => import('../EditSiteDialog'));
 const ConfirmDialog = lazy(() => import('../ConfirmDialog'));
 const ErrorDialog = lazy(() => import('./ErrorDialog'));
 const NewContentDialog = lazy(() => import('../NewContentDialog'));
@@ -344,12 +344,13 @@ function GlobalDialogManager() {
 
       {/* region Edit Site */}
       <EditSiteDialog
-        open={state.editSite.open}
-        site={state.editSite.site}
+        {...state.editSite}
         onClose={createCallback(state.editSite.onClose, dispatch)}
         onClosed={createCallback(state.editSite.onClosed, dispatch)}
-        onDismiss={createCallback(state.editSite.onDismiss, dispatch)}
         onSaveSuccess={createCallback(state.editSite.onSaveSuccess, dispatch)}
+        onWithPendingChangesCloseRequest={useWithPendingChangesCloseRequest(
+          createCallback(state.editSite.onClose, dispatch)
+        )}
       />
       {/* endregion */}
 

@@ -19,7 +19,6 @@ import StandardAction from '../../models/StandardAction';
 import { FetchContentVersion } from '../../models/Version';
 import { NewContentDialogStateProps } from '../../components/NewContentDialog/utils';
 import { LegacyFormDialogStateProps } from '../../components/Dialogs/LegacyFormDialog';
-import { EditSiteDialogStateProps } from '../../modules/System/Sites/Edit/EditSiteDialog';
 import { PathSelectionDialogStateProps } from '../../components/Dialogs/PathSelectionDialog';
 import { CopyDialogStateProps } from '../../components/Dialogs/CopyDialog';
 import { ItemMenuStateProps } from '../../components/ItemActionsMenu';
@@ -44,6 +43,7 @@ import { RejectDialogStateProps } from '../../components/RejectDialog/utils';
 import { CreateFileStateProps } from '../../components/CreateFileDialog/utils';
 import { UploadDialogStateProps } from '../../components/UploadDialog/util';
 import { PreviewDialogStateProps } from '../../components/PreviewDialog/utils';
+import { EditSiteDialogStateProps } from '../../components/EditSiteDialog/utils';
 
 // region History
 export const showHistoryDialog = /*#__PURE__*/ createAction<Partial<HistoryDialogStateProps>>('SHOW_HISTORY_DIALOG');
@@ -213,6 +213,9 @@ export const showEditSiteDialog = /*#__PURE__*/ createAction<Partial<EditSiteDia
 );
 export const closeEditSiteDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_EDIT_SITE_DIALOG');
 export const editSiteDialogClosed = /*#__PURE__*/ createAction('EDIT_SITE_DIALOG_CLOSED');
+export const updateEditSiteDialog = /*#__PURE__*/ createAction<Partial<EditSiteDialogStateProps>>(
+  'UPDATE_EDIT_SITE_DIALOG'
+);
 // endregion
 
 // region Path Selection Dialog
