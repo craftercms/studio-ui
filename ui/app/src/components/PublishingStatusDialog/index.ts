@@ -18,6 +18,4 @@ export { default } from './PublishingStatusDialog';
 
 export * from './PublishingStatusDialog';
 
-export { default as PublishingStatusDialogBody } from './PublishingStatusDialogContainer';
-
 export * from './PublishingStatusDialogContainer';

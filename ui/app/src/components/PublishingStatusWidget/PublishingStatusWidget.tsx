@@ -16,7 +16,7 @@
 
 import * as React from 'react';
 import Paper from '@material-ui/core/Paper';
-import { PublishingStatusDialogBody } from '../PublishingStatusDialog';
+import { PublishingStatusDialogContainer } from '../PublishingStatusDialog';
 import { clearLock, start, stop } from '../../services/publishing';
 import { fetchPublishingStatus } from '../../state/actions/publishingStatus';
 import { useDispatch } from 'react-redux';
@@ -52,7 +52,7 @@ export default function PublishingStatusWidget(props: PublishingStatusWidgetProp
 
   return (
     <Paper elevation={2}>
-      <PublishingStatusDialogBody
+      <PublishingStatusDialogContainer
         enabled={enabled}
         status={status}
         message={message}

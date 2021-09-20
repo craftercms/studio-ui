@@ -17,7 +17,9 @@
 import Dialog from '@material-ui/core/Dialog';
 import * as React from 'react';
 import StandardAction from '../../models/StandardAction';
-import PublishingStatusDialogContainer, { PublishingStatusDialogContainerProps } from './PublishingStatusDialogContainer';
+import PublishingStatusDialogContainer, {
+  PublishingStatusDialogContainerProps
+} from './PublishingStatusDialogContainer';
 import { PublishingStatus } from '../../models/Publishing';
 
 export interface PublishingStatusDialogProps extends PublishingStatusDialogContainerProps {

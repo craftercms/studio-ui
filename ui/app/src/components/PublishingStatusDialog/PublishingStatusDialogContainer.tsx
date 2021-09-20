@@ -47,7 +47,7 @@ const useStyles = makeStyles(() =>
   })
 );
 
-function PublishingStatusDialogContainer(props: PublishingStatusDialogContainerProps) {
+export function PublishingStatusDialogContainer(props: PublishingStatusDialogContainerProps) {
   const { status, message, enabled, lockOwner, lockTTL, onClose, onRefresh, onUnlock, onStartStop, isFetching } = props;
   const classes = useStyles();
   const { formatMessage } = useIntl();
