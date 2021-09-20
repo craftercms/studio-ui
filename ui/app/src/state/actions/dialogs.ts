@@ -52,9 +52,8 @@ export const historyDialogClosed = /*#__PURE__*/ createAction('HISTORY_DIALOG_CL
 // endregion
 
 // region View Versions
-export const showViewVersionDialog = /*#__PURE__*/ createAction<Partial<ViewVersionDialogStateProps>>(
-  'SHOW_VIEW_VERSION_DIALOG'
-);
+export const showViewVersionDialog =
+  /*#__PURE__*/ createAction<Partial<ViewVersionDialogStateProps>>('SHOW_VIEW_VERSION_DIALOG');
 export const closeViewVersionDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_VIEW_VERSION_DIALOG');
 export const viewVersionDialogClosed = /*#__PURE__*/ createAction<StandardAction>('VERSION_DIALOG_CLOSED');
 // endregion
@@ -66,9 +65,8 @@ export const fetchContentVersionFailed = /*#__PURE__*/ createAction<any>('FETCH_
 // endregion
 
 // region Compare Versions
-export const showCompareVersionsDialog = /*#__PURE__*/ createAction<Partial<CompareVersionsDialogStateProps>>(
-  'SHOW_COMPARE_VERSIONS_DIALOG'
-);
+export const showCompareVersionsDialog =
+  /*#__PURE__*/ createAction<Partial<CompareVersionsDialogStateProps>>('SHOW_COMPARE_VERSIONS_DIALOG');
 export const closeCompareVersionsDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_COMPARE_VERSIONS_DIALOG');
 export const compareVersionsDialogClosed = /*#__PURE__*/ createAction('COMPARE_VERSIONS_DIALOG_CLOSED');
 // endregion
@@ -81,9 +79,8 @@ export const confirmDialogClosed = /*#__PURE__*/ createAction('CONFIRM_DIALOG_CL
 
 // region Publish
 export const showPublishDialog = /*#__PURE__*/ createAction<Partial<PublishDialogStateProps>>('SHOW_PUBLISH_DIALOG');
-export const updatePublishDialog = /*#__PURE__*/ createAction<Partial<PublishDialogStateProps>>(
-  'UPDATE_PUBLISH_DIALOG'
-);
+export const updatePublishDialog =
+  /*#__PURE__*/ createAction<Partial<PublishDialogStateProps>>('UPDATE_PUBLISH_DIALOG');
 export const closePublishDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_PUBLISH_DIALOG');
 export const publishDialogClosed = /*#__PURE__*/ createAction('PUBLISH_DIALOG_CLOSED');
 // endregion
@@ -101,9 +98,8 @@ export const fetchDeleteDependenciesFailed = /*#__PURE__*/ createAction('FETCH_D
 // endregion
 
 // region New Content
-export const showNewContentDialog = /*#__PURE__*/ createAction<Partial<NewContentDialogStateProps>>(
-  'SHOW_NEW_CONTENT_DIALOG'
-);
+export const showNewContentDialog =
+  /*#__PURE__*/ createAction<Partial<NewContentDialogStateProps>>('SHOW_NEW_CONTENT_DIALOG');
 export const closeNewContentDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_NEW_CONTENT_DIALOG');
 export const newContentDialogClosed = /*#__PURE__*/ createAction('NEW_CONTENT_DIALOG_CLOSED');
 // endregion
@@ -119,9 +115,8 @@ export const changeContentTypeDialogClosed = /*#__PURE__*/ createAction('CHANGE_
 // endregion
 
 // region Dependencies
-export const showDependenciesDialog = /*#__PURE__*/ createAction<Partial<DependenciesDialogStateProps>>(
-  'SHOW_DEPENDENCIES_DIALOG'
-);
+export const showDependenciesDialog =
+  /*#__PURE__*/ createAction<Partial<DependenciesDialogStateProps>>('SHOW_DEPENDENCIES_DIALOG');
 export const closeDependenciesDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_DEPENDENCIES_DIALOG');
 export const dependenciesDialogClosed = /*#__PURE__*/ createAction('DEPENDENCIES_DIALOG_CLOSED');
 // endregion
@@ -155,26 +150,23 @@ export const updateEditConfig = /*#__PURE__*/ createAction<any>('UPDATE_EDIT_CON
 // endregion
 
 // region Legacy Code Editor
-export const showCodeEditorDialog = /*#__PURE__*/ createAction<Partial<CodeEditorDialogStateProps>>(
-  'SHOW_CODE_EDITOR_DIALOG'
-);
+export const showCodeEditorDialog =
+  /*#__PURE__*/ createAction<Partial<CodeEditorDialogStateProps>>('SHOW_CODE_EDITOR_DIALOG');
 export const closeCodeEditorDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_CODE_EDITOR_DIALOG');
 export const codeEditorDialogClosed = /*#__PURE__*/ createAction('CODE_EDITOR_DIALOG_CLOSED');
 export const updateCodeEditorDialog = /*#__PURE__*/ createAction<any>('UPDATE_CODE_EDITOR_DIALOG');
 // endregion
 
 // region Create Folder Dialog
-export const showCreateFolderDialog = /*#__PURE__*/ createAction<Partial<CreateFolderStateProps>>(
-  'SHOW_CREATE_FOLDER_DIALOG'
-);
+export const showCreateFolderDialog =
+  /*#__PURE__*/ createAction<Partial<CreateFolderStateProps>>('SHOW_CREATE_FOLDER_DIALOG');
 export const closeCreateFolderDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_CREATE_FOLDER_DIALOG');
 export const createFolderDialogClosed = /*#__PURE__*/ createAction('CREATE_FOLDER_DIALOG_CLOSED');
 // endregion
 
 // region Create File Dialog
-export const showCreateFileDialog = /*#__PURE__*/ createAction<Partial<CreateFileStateProps>>(
-  'SHOW_CREATE_FILE_DIALOG'
-);
+export const showCreateFileDialog =
+  /*#__PURE__*/ createAction<Partial<CreateFileStateProps>>('SHOW_CREATE_FILE_DIALOG');
 export const closeCreateFileDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_CREATE_FILE_DIALOG');
 export const createFileDialogClosed = /*#__PURE__*/ createAction('CREATE_FILE_DIALOG_CLOSED');
 // endregion
@@ -193,25 +185,22 @@ export const uploadDialogClosed = /*#__PURE__*/ createAction('UPLOAD_DIALOG_CLOS
 
 // region Preview Dialog
 export const showPreviewDialog = /*#__PURE__*/ createAction<Partial<PreviewDialogStateProps>>('SHOW_PREVIEW_DIALOG');
-export const updatePreviewDialog = /*#__PURE__*/ createAction<Partial<PreviewDialogStateProps>>(
-  'UPDATE_PREVIEW_DIALOG'
-);
+export const updatePreviewDialog =
+  /*#__PURE__*/ createAction<Partial<PreviewDialogStateProps>>('UPDATE_PREVIEW_DIALOG');
 export const closePreviewDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_PREVIEW_DIALOG');
 export const previewDialogClosed = /*#__PURE__*/ createAction('PREVIEW_DIALOG_CLOSED');
 // endregion
 
 // region Edit Site
-export const showEditSiteDialog = /*#__PURE__*/ createAction<Partial<EditSiteDialogStateProps>>(
-  'SHOW_EDIT_SITE_DIALOG'
-);
+export const showEditSiteDialog =
+  /*#__PURE__*/ createAction<Partial<EditSiteDialogStateProps>>('SHOW_EDIT_SITE_DIALOG');
 export const closeEditSiteDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_EDIT_SITE_DIALOG');
 export const editSiteDialogClosed = /*#__PURE__*/ createAction('EDIT_SITE_DIALOG_CLOSED');
 // endregion
 
 // region Path Selection Dialog
-export const showPathSelectionDialog = /*#__PURE__*/ createAction<Partial<PathSelectionDialogStateProps>>(
-  'SHOW_PATH_SELECTION_DIALOG'
-);
+export const showPathSelectionDialog =
+  /*#__PURE__*/ createAction<Partial<PathSelectionDialogStateProps>>('SHOW_PATH_SELECTION_DIALOG');
 export const closePathSelectionDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_PATH_SELECTION_DIALOG');
 export const pathSelectionDialogClosed = /*#__PURE__*/ createAction('PATH_SELECTION_CLOSED');
 // endregion
@@ -241,9 +230,8 @@ export const closePublishingStatusDialog = /*#__PURE__*/ createAction('HIDE_PUBL
 // endregion
 
 // region Unlock Publisher Dialog
-export const showUnlockPublisherDialog = /*#__PURE__*/ createAction<Partial<UnlockPublisherDialogStateProps>>(
-  'SHOW_UNLOCK_PUBLISHER_DIALOG'
-);
+export const showUnlockPublisherDialog =
+  /*#__PURE__*/ createAction<Partial<UnlockPublisherDialogStateProps>>('SHOW_UNLOCK_PUBLISHER_DIALOG');
 export const closeUnlockPublisherDialog = /*#__PURE__*/ createAction('CLOSE_UNLOCK_PUBLISHER_DIALOG');
 // endregion
 

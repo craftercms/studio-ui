@@ -243,9 +243,7 @@ export function getChildArrangement(children: Element[], childrenRects: DOMRect[
   for (let i = 0, l = children.length, topValue, marginTop; i < l; i++) {
     marginTop = parseInt(
       // jQuery is kind enough to always provide the value in pixels :)
-      $(children[i])
-        .css('margin-top')
-        .replace(/px/i, '') || '',
+      $(children[i]).css('margin-top').replace(/px/i, '') || '',
       10
     );
 
@@ -332,7 +330,7 @@ export function addAnimation($element: JQuery<Element> | JQuery<HTMLElement>, an
   const END_EVENT = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
   $element.addClass(animationClass);
   // @ts-ignore
-  $element.one(END_EVENT, function() {
+  $element.one(END_EVENT, function () {
     $element.removeClass(animationClass);
   });
 }
@@ -356,7 +354,7 @@ export function scrollToElement(element: Element, scrollElement: string, animate
         scrollTop: $element.offset().top - 100
       },
       300,
-      function() {
+      function () {
         if (animate) addAnimation($element, 'craftercms-content-tree-locate');
       }
     );

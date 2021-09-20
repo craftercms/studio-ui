@@ -34,7 +34,7 @@ export default function PluginDocumentation(props: PluginDocumentationProps) {
   useEffect(() => {
     if (plugin.documentation) {
       Marked.setOptions({
-        highlight: function(code, lang) {
+        highlight: function (code, lang) {
           return hljs.highlightAuto(code).value;
         },
         langPrefix: 'hljs language-'

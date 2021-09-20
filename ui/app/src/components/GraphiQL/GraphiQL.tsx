@@ -76,7 +76,7 @@ function getGraphQLFetcher(url: string, method = 'post') {
       method,
       headers: { 'Content-Type': 'application/json' },
       ...(method === 'post' ? { body: JSON.stringify(graphQLParams) } : {})
-    }).then(function(responseBody: any) {
+    }).then(function (responseBody: any) {
       try {
         return responseBody.json();
       } catch (error) {

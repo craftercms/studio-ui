@@ -10,7 +10,7 @@
     "ui/uppy"
   ],
   "scripts": {
-    "prettier": "node scripts/prettier.js",
+    "prettier:raw": "node scripts/prettier.js",
     "prettier:all": "node scripts/prettier.js write",
     "prettier:next": "node scripts/prettier.js next",
     "prettier:legacy": "node scripts/prettier.js legacy",
@@ -19,17 +19,19 @@
     "prettier:certify": "node scripts/prettier.js check",
     "prettier:sass": "prettier --config prettier.config.js --write 'ui/scss/**/*.scss'",
     "prettier:css": "prettier --config prettier.config.js --write 'static-assets/css/**/*.css' 'static-assets/themes/cstudioTheme/**/*.css'",
-    "lint:ci": "eslint --report-unused-disable-directives --ext .ts,.tsx ."
+    "lint:ci": "eslint --ext .ts,.tsx ."
   },
   "eslintConfig": {
     "extends": [
-      "prettier"
+      "plugin:prettier/recommended"
     ],
     "plugins": [
       "prettier"
     ],
     "rules": {
-      "prettier/prettier": "error",
+      "prettier/prettier": [
+        "error"
+      ],
       "spaced-comment": [
         "error",
         "always",
@@ -40,7 +42,26 @@
               "#"
             ]
           },
-          "block": false
+          "block": {
+            "markers": [
+              "!",
+              "*",
+              "#",
+              "function",
+              "const",
+              "if",
+              "export",
+              "interface",
+              "#__PURE__",
+              "@__PURE__"
+            ],
+            "exceptions": [
+              "!",
+              "*",
+              "#"
+            ],
+            "balanced": false
+          }
         }
       ]
     },
@@ -59,7 +80,7 @@
     "jquery": "^3.6.0",
     "js-cookie": "^3.0.1",
     "nanoid": "^3.1.25",
-    "prettier": "^1.19.1",
+    "prettier": "^2.4.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-redux": "^7.2.5",
@@ -80,7 +101,7 @@
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
     "glob-gitignore": "^1.0.14",
-    "node-sass": "^5.0.0",
+    "node-sass": "^6.0.1",
     "npm-run-all": "^4.1.5",
     "typescript": "^4.0.0",
     "yargs": "^15.3.1"

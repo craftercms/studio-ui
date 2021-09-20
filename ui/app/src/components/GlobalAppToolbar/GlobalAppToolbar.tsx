@@ -94,7 +94,7 @@ const useStyles = makeStyles((theme) =>
   })
 );
 
-const GlobalAppToolbar = React.memo<GlobalAppToolbarProps>(function(props) {
+const GlobalAppToolbar = React.memo<GlobalAppToolbarProps>(function (props) {
   const {
     title,
     subtitle,

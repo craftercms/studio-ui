@@ -26,9 +26,8 @@ export type GuestContextProps = {
   onEvent: (event, elementRegistryId?: number) => any;
 };
 
-export const GuestReduxContext: React.Context<ReactReduxContextValue> = React.createContext<ReactReduxContextValue>(
-  null
-);
+export const GuestReduxContext: React.Context<ReactReduxContextValue> =
+  React.createContext<ReactReduxContextValue>(null);
 if (process.env.NODE_ENV !== 'production') {
   GuestReduxContext.displayName = 'GuestRedux';
 }

@@ -39,7 +39,10 @@ export type LogoAndMenuBundleButtonProps = ButtonProps & {
   showCrafterIcon?: boolean;
 };
 
-const LogoAndMenuBundleButton = React.forwardRef<HTMLButtonElement, LogoAndMenuBundleButtonProps>(function(props, ref) {
+const LogoAndMenuBundleButton = React.forwardRef<HTMLButtonElement, LogoAndMenuBundleButtonProps>(function (
+  props,
+  ref
+) {
   const classes = useStyles();
   const { showCrafterIcon = true, ...buttonProps } = props;
   return (

@@ -128,7 +128,7 @@ export const publishingStatusTileMessages = defineMessages({
   }
 });
 
-const PublishingStatusTile = React.forwardRef<HTMLDivElement | HTMLButtonElement, PublishingStatusTileProps>(function(
+const PublishingStatusTile = React.forwardRef<HTMLDivElement | HTMLButtonElement, PublishingStatusTileProps>(function (
   props,
   ref
 ) {

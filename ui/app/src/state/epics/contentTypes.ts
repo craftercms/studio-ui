@@ -42,8 +42,14 @@ export default [
     action$.pipe(
       ofType(fetchContentTypes.type),
       withLatestFrom(state$),
-      exhaustMap(([, { sites: { active: site } }]) =>
-        fetchContentTypesService(site).pipe(map(fetchContentTypesComplete), catchAjaxError(fetchContentTypesFailed))
+      exhaustMap(
+        ([
+          ,
+          {
+            sites: { active: site }
+          }
+        ]) =>
+          fetchContentTypesService(site).pipe(map(fetchContentTypesComplete), catchAjaxError(fetchContentTypesFailed))
       )
     ),
   // endregion
@@ -74,11 +80,17 @@ export default [
     action$.pipe(
       ofType(dissociateTemplateActionCreator.type),
       withLatestFrom(state$),
-      switchMap(([{ payload }, { sites: { active } }]) =>
-        dissociateTemplateService(active, payload.contentTypeId).pipe(
-          map(() => dissociateTemplateComplete({ contentTypeId: payload.contentTypeId })),
-          catchAjaxError(dissociateTemplateFailed)
-        )
+      switchMap(
+        ([
+          { payload },
+          {
+            sites: { active }
+          }
+        ]) =>
+          dissociateTemplateService(active, payload.contentTypeId).pipe(
+            map(() => dissociateTemplateComplete({ contentTypeId: payload.contentTypeId })),
+            catchAjaxError(dissociateTemplateFailed)
+          )
       )
     )
   // endregion

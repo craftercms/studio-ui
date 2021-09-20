@@ -111,9 +111,10 @@ export default function PreviewBrowseComponentsPanel() {
 
   const onDragEnd = () => hostToGuest$.next({ type: COMPONENT_INSTANCE_DRAG_ENDED });
 
-  const onSearch = useCallback((keywords: string) => dispatch(fetchComponentsByContentType({ keywords, offset: 0 })), [
-    dispatch
-  ]);
+  const onSearch = useCallback(
+    (keywords: string) => dispatch(fetchComponentsByContentType({ keywords, offset: 0 })),
+    [dispatch]
+  );
 
   const onSearch$ = useDebouncedInput(onSearch, 600);
 

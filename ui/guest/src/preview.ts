@@ -19,7 +19,7 @@ import { message$, post } from './utils/communicator';
 import { GUEST_CHECK_IN, GUEST_CHECK_OUT, NAVIGATION_REQUEST } from './constants';
 import { createLocationArgument } from './utils/util';
 
-message$.subscribe(function({ type, payload }) {
+message$.subscribe(function ({ type, payload }) {
   switch (type) {
     case NAVIGATION_REQUEST: {
       window.location.href = payload.url;

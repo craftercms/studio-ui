@@ -42,16 +42,8 @@ export interface TransferListColumnProps {
 }
 
 export default function TransferListColumn(props: TransferListColumnProps) {
-  const {
-    title,
-    items,
-    onItemClick,
-    checkedList,
-    isAllChecked,
-    onCheckAllClicked,
-    inProgressIds,
-    emptyStateMessage
-  } = props;
+  const { title, items, onItemClick, checkedList, isAllChecked, onCheckAllClicked, inProgressIds, emptyStateMessage } =
+    props;
   const classes = useStyles();
   const [keyword, setKeyword] = useState('');
 

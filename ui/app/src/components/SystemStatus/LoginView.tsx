@@ -334,17 +334,8 @@ function RecoverView(props: SubViewProps) {
 }
 
 function ResetView(props: SubViewProps) {
-  const {
-    children,
-    isFetching,
-    onSubmit,
-    classes,
-    formatMessage,
-    onSnack,
-    setMode,
-    token,
-    passwordRequirementsRegex
-  } = props;
+  const { children, isFetching, onSubmit, classes, formatMessage, onSnack, setMode, token, passwordRequirementsRegex } =
+    props;
   const [newPassword, setNewPassword] = useState('');
   const [newPasswordConfirm, setNewPasswordConfirm] = useState('');
   const [isValid, setValid] = useState<boolean>(null);

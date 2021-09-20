@@ -187,7 +187,7 @@ export default function SiteSearchFilters(props: SiteSearchFiltersProps) {
   });
 
   useEffect(
-    function() {
+    function () {
       setCheckedFilters(setCheckedParameterFromURL(queryParams));
     },
     [queryParams, setCheckedFilters]

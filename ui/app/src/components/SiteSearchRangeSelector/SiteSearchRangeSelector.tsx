@@ -71,7 +71,7 @@ export default function SiteSearchRangeSelector(props: RangeSelectorProps) {
   const [range, setRange] = useState({ min: '', max: '' });
 
   useEffect(
-    function() {
+    function () {
       let minMax = { min: '', max: '' };
       if (checkedFilters && checkedFilters[facet]) {
         let range = checkedFilters[facet].split('TO');

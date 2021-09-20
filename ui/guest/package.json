@@ -30,14 +30,13 @@
   "eslintConfig": {
     "extends": [
       "react-app",
-      "prettier",
-      "prettier/react"
+      "plugin:prettier/recommended"
     ],
     "plugins": [
       "prettier"
     ],
     "rules": {
-      "prettier": [
+      "prettier/prettier": [
         "error"
       ],
       "spaced-comment": [

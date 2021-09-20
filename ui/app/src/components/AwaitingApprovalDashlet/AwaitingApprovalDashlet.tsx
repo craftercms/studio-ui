@@ -86,10 +86,10 @@ export default function AwaitingApprovalDashlet() {
   const { authoringBase } = useEnv();
 
   const showExpanded = useMemo(() => Object.values(expandedLookup).some((value) => !value), [expandedLookup]);
-  const isAllChecked = useMemo(() => !Object.keys(state.itemsLookup).some((path) => !selectedLookup[path]), [
-    selectedLookup,
-    state.itemsLookup
-  ]);
+  const isAllChecked = useMemo(
+    () => !Object.keys(state.itemsLookup).some((path) => !selectedLookup[path]),
+    [selectedLookup, state.itemsLookup]
+  );
   const selectedItemsLength = useMemo(() => Object.values(selectedLookup).filter(Boolean).length, [selectedLookup]);
   const isIndeterminate = useMemo(
     () => Object.keys(state.itemsLookup).some((path) => selectedLookup[path]) && !isAllChecked,

@@ -56,10 +56,10 @@ export function DeleteContentTypeDialogContainer(props: DeleteContentTypeDialogP
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
   const [submitting, setSubmitting] = useState(false);
-  const resource = useMemo(() => createResource(() => fetchContentTypeUsage(site, contentType.id).toPromise()), [
-    site,
-    contentType.id
-  ]);
+  const resource = useMemo(
+    () => createResource(() => fetchContentTypeUsage(site, contentType.id).toPromise()),
+    [site, contentType.id]
+  );
   const onSubmit = () => {
     setSubmitting(true);
     deleteContentType(site, contentType.id).subscribe(

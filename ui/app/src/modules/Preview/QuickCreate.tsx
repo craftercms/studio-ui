@@ -215,7 +215,7 @@ function QuickCreateSection(props: QuickCreateSectionProps) {
   );
 }
 
-const QuickCreateMenuButton = React.forwardRef<HTMLButtonElement, QuickCreateMenuButtonProps>(function(props, ref) {
+const QuickCreateMenuButton = React.forwardRef<HTMLButtonElement, QuickCreateMenuButtonProps>(function (props, ref) {
   const { onMenuBtnClick, disabled = false } = props;
   const { formatMessage } = useIntl();
   return (
@@ -234,7 +234,7 @@ const QuickCreateMenuButton = React.forwardRef<HTMLButtonElement, QuickCreateMen
   );
 });
 
-const QuickCreate = React.forwardRef<HTMLButtonElement, { item?: SandboxItem }>(function(props, ref) {
+const QuickCreate = React.forwardRef<HTMLButtonElement, { item?: SandboxItem }>(function (props, ref) {
   const { item } = props;
   const disabled = !item?.availableActionsMap.createContent;
   const [anchorEl, setAnchorEl] = useState(null);

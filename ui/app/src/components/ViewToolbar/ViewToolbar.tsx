@@ -53,7 +53,7 @@ const useStyles = makeStyles((theme) =>
   })
 );
 
-export const ViewToolbar = React.memo<ViewToolbarProps>(function(props) {
+export const ViewToolbar = React.memo<ViewToolbarProps>(function (props) {
   const classes = useStyles(props.styles);
   const { children, elevation = 0 } = props;
   return (

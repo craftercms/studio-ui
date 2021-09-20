@@ -70,9 +70,7 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
     scheduling,
     scheduledDateTime: ((date) => {
       date.setSeconds(0);
-      return moment(date)
-        .tz(timeZone)
-        .format();
+      return moment(date).tz(timeZone).format();
     })(new Date()),
     publishingChannel: null,
     scheduledTimeZone: timeZone,

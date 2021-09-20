@@ -206,15 +206,8 @@ export function PreviewConcierge(props: any) {
   const dispatch = useDispatch();
   const { id: siteId, uuid } = useActiveSite();
   const user = useActiveUser();
-  const {
-    guest,
-    editMode,
-    highlightMode,
-    icePanelWidth,
-    toolsPanelWidth,
-    hostSize,
-    showToolsPanel
-  } = usePreviewState();
+  const { guest, editMode, highlightMode, icePanelWidth, toolsPanelWidth, hostSize, showToolsPanel } =
+    usePreviewState();
   const item = useCurrentPreviewItem();
   const { currentUrlPath } = usePreviewNavigation();
   const contentTypes = useContentTypes();

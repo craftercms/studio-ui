@@ -503,9 +503,10 @@ function MinimizedDialogManager({ state, dispatch }: { state: GlobalState['dialo
     el.className = classes.wrapper;
   }, [el, classes.wrapper]);
 
-  const inventory = useMemo(() => Object.values(state.minimizedDialogs).filter((tab) => tab.minimized), [
-    state.minimizedDialogs
-  ]);
+  const inventory = useMemo(
+    () => Object.values(state.minimizedDialogs).filter((tab) => tab.minimized),
+    [state.minimizedDialogs]
+  );
   useLayoutEffect(() => {
     if (inventory.length) {
       document.body.appendChild(el);

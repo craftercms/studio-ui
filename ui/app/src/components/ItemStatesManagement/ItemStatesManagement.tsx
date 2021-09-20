@@ -77,14 +77,14 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
 
   const hasSelectedItems = useMemo(() => Object.values(selectedItems).some(Boolean), [selectedItems]);
   const selectedItemsLength = useMemo(() => Object.values(selectedItems).filter(Boolean).length, [selectedItems]);
-  const isThisPageIndeterminate = useMemo(() => items?.some((item) => !selectedItems[item.path]), [
-    items,
-    selectedItems
-  ]);
-  const hasThisPageItemsChecked = useMemo(() => items?.some((item) => selectedItems[item.path]), [
-    items,
-    selectedItems
-  ]);
+  const isThisPageIndeterminate = useMemo(
+    () => items?.some((item) => !selectedItems[item.path]),
+    [items, selectedItems]
+  );
+  const hasThisPageItemsChecked = useMemo(
+    () => items?.some((item) => selectedItems[item.path]),
+    [items, selectedItems]
+  );
 
   const rootRef = useRef<HTMLDivElement>();
 

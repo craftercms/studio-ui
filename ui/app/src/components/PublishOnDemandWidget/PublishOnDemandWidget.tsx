@@ -132,9 +132,8 @@ export default function PublishOnDemandWidget(props: PublishOnDemandWidgetProps)
   const [publishingTargetsError, setPublishingTargetsError] = useState(null);
   const [publishGitFormData, setPublishGitFormData] = useSpreadState<PublishFormData>(initialPublishGitFormData);
   const [publishGitFormValid, setPublishGitFormValid] = useState(false);
-  const [publishStudioFormData, setPublishStudioFormData] = useSpreadState<PublishFormData>(
-    initialPublishStudioFormData
-  );
+  const [publishStudioFormData, setPublishStudioFormData] =
+    useSpreadState<PublishFormData>(initialPublishStudioFormData);
   const [publishStudioFormValid, setPublishStudioFormValid] = useState(false);
   const { bulkPublishCommentRequired, publishByCommitCommentRequired } = useSelection(
     (state) => state.uiConfig.publishing

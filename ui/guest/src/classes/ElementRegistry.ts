@@ -207,7 +207,7 @@ export function getDraggable(id: number): number | boolean {
   const record = get(id);
   return forEach(
     record.iceIds,
-    function(iceId): boolean | number {
+    function (iceId): boolean | number {
       if (iceRegistry.isMovable(iceId)) {
         return iceId;
       }

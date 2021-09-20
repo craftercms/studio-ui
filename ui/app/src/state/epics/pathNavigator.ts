@@ -47,15 +47,21 @@ export default [
     action$.pipe(
       ofType(pathNavigatorInit.type),
       withLatestFrom(state$),
-      map(([{ payload: { id, excludes } }, state]) =>
-        pathNavigatorFetchParentItems({
-          id,
-          path: state.pathNavigator[id].currentPath,
-          offset: state.pathNavigator[id].offset,
-          keyword: state.pathNavigator[id].keyword,
-          excludes,
-          limit: state.pathNavigator[id].limit
-        })
+      map(
+        ([
+          {
+            payload: { id, excludes }
+          },
+          state
+        ]) =>
+          pathNavigatorFetchParentItems({
+            id,
+            path: state.pathNavigator[id].currentPath,
+            offset: state.pathNavigator[id].offset,
+            keyword: state.pathNavigator[id].keyword,
+            excludes,
+            limit: state.pathNavigator[id].limit
+          })
       )
     ),
   // endregion
@@ -64,21 +70,28 @@ export default [
     action$.pipe(
       ofType(pathNavigatorRefresh.type, pathNavigatorBackgroundRefresh.type),
       withLatestFrom(state$),
-      mergeMap(([{ type, payload: { id } }, state]) =>
-        fetchItemWithChildrenByPath(state.sites.active, state.pathNavigator[id].currentPath, {
-          keyword: state.pathNavigator[id].keyword,
-          limit: state.pathNavigator[id].limit,
-          offset: state.pathNavigator[id].offset
-        }).pipe(
-          map(({ item, children }) => pathNavigatorFetchPathComplete({ id, parent: item, children })),
-          catchAjaxError((error: AjaxError) => {
-            if (error.status === 404 && state.pathNavigator[id].rootPath !== state.pathNavigator[id].currentPath) {
-              return pathNavigatorConditionallySetPath({ id, path: state.pathNavigator[id].rootPath });
-            } else {
-              return pathNavigatorFetchPathFailed({ error, id });
-            }
-          })
-        )
+      mergeMap(
+        ([
+          {
+            type,
+            payload: { id }
+          },
+          state
+        ]) =>
+          fetchItemWithChildrenByPath(state.sites.active, state.pathNavigator[id].currentPath, {
+            keyword: state.pathNavigator[id].keyword,
+            limit: state.pathNavigator[id].limit,
+            offset: state.pathNavigator[id].offset
+          }).pipe(
+            map(({ item, children }) => pathNavigatorFetchPathComplete({ id, parent: item, children })),
+            catchAjaxError((error: AjaxError) => {
+              if (error.status === 404 && state.pathNavigator[id].rootPath !== state.pathNavigator[id].currentPath) {
+                return pathNavigatorConditionallySetPath({ id, path: state.pathNavigator[id].rootPath });
+              } else {
+                return pathNavigatorFetchPathFailed({ error, id });
+              }
+            })
+          )
       )
     ),
   // endregion
@@ -87,14 +100,23 @@ export default [
     action$.pipe(
       ofType(pathNavigatorConditionallySetPath.type),
       withLatestFrom(state$),
-      mergeMap(([{ type, payload: { id, path } }, state]) =>
-        fetchItemWithChildrenByPath(state.sites.active, path).pipe(
-          map(({ item, children }) => pathNavigatorConditionallySetPathComplete({ id, path, parent: item, children })),
-          catchAjaxError(
-            (error) => pathNavigatorConditionallySetPathFailed({ id, error }),
-            (error) => showErrorDialog({ error: error.response ?? error })
+      mergeMap(
+        ([
+          {
+            type,
+            payload: { id, path }
+          },
+          state
+        ]) =>
+          fetchItemWithChildrenByPath(state.sites.active, path).pipe(
+            map(({ item, children }) =>
+              pathNavigatorConditionallySetPathComplete({ id, path, parent: item, children })
+            ),
+            catchAjaxError(
+              (error) => pathNavigatorConditionallySetPathFailed({ id, error }),
+              (error) => showErrorDialog({ error: error.response ?? error })
+            )
           )
-        )
       )
     ),
   // endregion
@@ -103,11 +125,17 @@ export default [
     action$.pipe(
       ofType(pathNavigatorSetCurrentPath.type),
       withLatestFrom(state$),
-      mergeMap(([{ payload: { id, path } }, state]) =>
-        fetchItemWithChildrenByPath(state.sites.active, path).pipe(
-          map(({ item, children }) => pathNavigatorFetchPathComplete({ id, parent: item, children })),
-          catchAjaxError((error) => pathNavigatorFetchPathFailed({ error, id }))
-        )
+      mergeMap(
+        ([
+          {
+            payload: { id, path }
+          },
+          state
+        ]) =>
+          fetchItemWithChildrenByPath(state.sites.active, path).pipe(
+            map(({ item, children }) => pathNavigatorFetchPathComplete({ id, parent: item, children })),
+            catchAjaxError((error) => pathNavigatorFetchPathFailed({ error, id }))
+          )
       )
     ),
   // endregion
@@ -116,20 +144,27 @@ export default [
     action$.pipe(
       ofType(pathNavigatorSetKeyword.type),
       withLatestFrom(state$),
-      mergeMap(([{ type, payload: { id, keyword } }, state]) =>
-        fetchChildrenByPath(state.sites.active, state.pathNavigator[id].currentPath, {
-          keyword,
-          limit: state.pathNavigator[id].limit
-        }).pipe(
-          map((children) =>
-            pathNavigatorFetchPathComplete({
-              id,
-              parent: state.content.itemsByPath[state.pathNavigator[id].currentPath],
-              children
-            })
-          ),
-          catchAjaxError((error) => pathNavigatorFetchPathFailed({ error, id }))
-        )
+      mergeMap(
+        ([
+          {
+            type,
+            payload: { id, keyword }
+          },
+          state
+        ]) =>
+          fetchChildrenByPath(state.sites.active, state.pathNavigator[id].currentPath, {
+            keyword,
+            limit: state.pathNavigator[id].limit
+          }).pipe(
+            map((children) =>
+              pathNavigatorFetchPathComplete({
+                id,
+                parent: state.content.itemsByPath[state.pathNavigator[id].currentPath],
+                children
+              })
+            ),
+            catchAjaxError((error) => pathNavigatorFetchPathFailed({ error, id }))
+          )
       )
     ),
   // endregion
@@ -138,15 +173,22 @@ export default [
     action$.pipe(
       ofType(pathNavigatorChangePage.type),
       withLatestFrom(state$),
-      mergeMap(([{ type, payload: { id, offset } }, state]) =>
-        fetchChildrenByPath(state.sites.active, state.pathNavigator[id].currentPath, {
-          limit: state.pathNavigator[id].limit,
-          ...(Boolean(state.pathNavigator[id].keyword) && { keyword: state.pathNavigator[id].keyword }),
-          offset
-        }).pipe(
-          map((children) => pathNavigatorFetchPathComplete({ id, children })),
-          catchAjaxError((error) => pathNavigatorFetchPathFailed({ error, id }))
-        )
+      mergeMap(
+        ([
+          {
+            type,
+            payload: { id, offset }
+          },
+          state
+        ]) =>
+          fetchChildrenByPath(state.sites.active, state.pathNavigator[id].currentPath, {
+            limit: state.pathNavigator[id].limit,
+            ...(Boolean(state.pathNavigator[id].keyword) && { keyword: state.pathNavigator[id].keyword }),
+            offset
+          }).pipe(
+            map((children) => pathNavigatorFetchPathComplete({ id, children })),
+            catchAjaxError((error) => pathNavigatorFetchPathFailed({ error, id }))
+          )
       )
     ),
   // endregion

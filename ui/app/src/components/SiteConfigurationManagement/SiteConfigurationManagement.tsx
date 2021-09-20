@@ -507,12 +507,8 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
                 .filter(
                   (file) =>
                     file.path.toLowerCase().includes(keyword) ||
-                    getTranslation(file.title, translations, formatMessage)
-                      .toLowerCase()
-                      .includes(keyword) ||
-                    getTranslation(file.description, translations, formatMessage)
-                      .toLowerCase()
-                      .includes(keyword)
+                    getTranslation(file.title, translations, formatMessage).toLowerCase().includes(keyword) ||
+                    getTranslation(file.description, translations, formatMessage).toLowerCase().includes(keyword)
                 )
                 .map((file, i) => (
                   <ListItem

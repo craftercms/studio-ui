@@ -76,13 +76,15 @@
   "eslintConfig": {
     "extends": [
       "react-app",
-      "prettier"
+      "plugin:prettier/recommended"
     ],
     "plugins": [
       "prettier"
     ],
     "rules": {
-
+      "prettier/prettier": [
+        "error"
+      ],
       "spaced-comment": [
         "error",
         "always",
@@ -137,7 +139,6 @@
     "ncp": "^2.0.0",
     "prop-types": "^15.7.2",
     "react-app-rewire-aliases": "^0.2.0",
-    "react-app-rewired": "^2.1.8",
     "react-intl-translations-manager": "^5.0.3",
     "rimraf": "^3.0.0",
     "rollup": "^2.3.1",

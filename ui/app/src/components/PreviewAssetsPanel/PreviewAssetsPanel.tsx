@@ -207,7 +207,7 @@ export default function PreviewAssetsPanel() {
       }
 
       const reader = new FileReader();
-      reader.onloadend = function() {
+      reader.onloadend = function () {
         uploadDataUrl(
           site,
           {
@@ -272,9 +272,10 @@ export default function PreviewAssetsPanel() {
     }
   }, [dragInProgress, onDragDrop]);
 
-  const onSearch = useCallback((keywords: string) => dispatch(fetchAssetsPanelItems({ keywords, offset: 0 })), [
-    dispatch
-  ]);
+  const onSearch = useCallback(
+    (keywords: string) => dispatch(fetchAssetsPanelItems({ keywords, offset: 0 })),
+    [dispatch]
+  );
 
   const onSearch$ = useDebouncedInput(onSearch, 400);
 

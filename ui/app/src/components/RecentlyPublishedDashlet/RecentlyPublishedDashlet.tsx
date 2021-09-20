@@ -72,9 +72,10 @@ export default function RecentlyPublishedDashlet() {
   const classes = useStyles();
   const dispatch = useDispatch();
 
-  const allCollapsed = useMemo(() => Object.keys(expandedItems).every((key) => !Boolean(expandedItems[key])), [
-    expandedItems
-  ]);
+  const allCollapsed = useMemo(
+    () => Object.keys(expandedItems).every((key) => !Boolean(expandedItems[key])),
+    [expandedItems]
+  );
 
   const toggleCollapseAllItems = useCallback(
     (documents, expanded) => {
@@ -172,11 +173,10 @@ export default function RecentlyPublishedDashlet() {
   // endregion
 
   const resource = useLogicResource<DashboardItem[], { items: DashboardItem[]; error: ApiResponse; fetching: boolean }>(
-    useMemo(() => ({ items: parentItems, error: errorHistory, fetching: fetchingHistory }), [
-      parentItems,
-      errorHistory,
-      fetchingHistory
-    ]),
+    useMemo(
+      () => ({ items: parentItems, error: errorHistory, fetching: fetchingHistory }),
+      [parentItems, errorHistory, fetchingHistory]
+    ),
     {
       shouldResolve: (source) => Boolean(source.items) && !fetchingHistory,
       shouldReject: ({ error }) => Boolean(error),

@@ -222,7 +222,7 @@ export default React.forwardRef(function AceEditor(props: AceEditorProps, ref) {
           typeof ref === 'function' ? ref(aceEditor) : (ref.current = aceEditor);
         }
 
-        aceEditor.getSession().on('change', function(e) {
+        aceEditor.getSession().on('change', function (e) {
           refs.current.onChange?.(e);
         });
         setInitialized((initialized = true));

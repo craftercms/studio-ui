@@ -117,7 +117,7 @@ export default function TransferList(props: TransferListProps) {
       return items.length
         ? !items.some(
             (item) =>
-              !Object.keys(checkedList).find(function(checked) {
+              !Object.keys(checkedList).find(function (checked) {
                 return checked === item.id && checkedList[checked];
               })
           )

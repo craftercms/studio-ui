@@ -109,10 +109,10 @@ export function SelectionList(props: SelectionListProps) {
 
   const classes = useStyles();
   const locale = useLocale();
-  const isAllChecked = useMemo(() => (selectedItems ? !paths?.some((path) => !selectedItems[path]) : null), [
-    paths,
-    selectedItems
-  ]);
+  const isAllChecked = useMemo(
+    () => (selectedItems ? !paths?.some((path) => !selectedItems[path]) : null),
+    [paths, selectedItems]
+  );
   const isIndeterminate = useMemo(
     () => (selectedItems ? paths?.some((path) => selectedItems?.[path] && !isAllChecked) : null),
     [paths, selectedItems, isAllChecked]

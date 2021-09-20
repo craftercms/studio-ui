@@ -75,10 +75,10 @@ const useStyles = makeStyles((theme) =>
 export default function PasswordRequirementsDisplay(props: PasswordRequirementsDisplayProps) {
   const classes = useStyles(props.styles);
   const { passwordRequirementsRegex, formatMessage, value, onValidStateChanged } = props;
-  const { regEx, conditions } = useMemo(() => getPrimeMatter({ passwordRequirementsRegex, formatMessage }), [
-    passwordRequirementsRegex,
-    formatMessage
-  ]);
+  const { regEx, conditions } = useMemo(
+    () => getPrimeMatter({ passwordRequirementsRegex, formatMessage }),
+    [passwordRequirementsRegex, formatMessage]
+  );
   useEffect(() => {
     onValidStateChanged(isBlank(value) ? null : regEx.test(value));
   }, [onValidStateChanged, regEx, value]);

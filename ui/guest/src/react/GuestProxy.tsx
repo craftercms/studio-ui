@@ -188,10 +188,7 @@ export function GuestProxy() {
 
           const phyRecord = ElementRegistry.fromICEId(iceId);
           const $el = $(phyRecord.element);
-          const $targetSibling = $el
-            .parent()
-            .children()
-            .eq(targetIndexParsed);
+          const $targetSibling = $el.parent().children().eq(targetIndexParsed);
 
           // Move...
           if (currentIndexParsed < targetIndexParsed) {
@@ -306,7 +303,7 @@ export function GuestProxy() {
               ),
               take(1)
             )
-            .subscribe(function({ payload }) {
+            .subscribe(function ({ payload }) {
               const { modelId, fieldId, targetIndex, currentFullUrl } = payload;
               let ifrm = document.createElement('iframe');
               ifrm.setAttribute('src', currentFullUrl);
@@ -314,7 +311,7 @@ export function GuestProxy() {
               ifrm.style.height = '0';
               document.body.appendChild(ifrm);
 
-              ifrm.onload = function() {
+              ifrm.onload = function () {
                 $spinner.remove();
                 const itemElement = ifrm.contentWindow.document.documentElement.querySelector(
                   `[data-craftercms-model-id="${modelId}"][data-craftercms-field-id="${fieldId}"][data-craftercms-index="${targetIndex}"]`
@@ -339,20 +336,14 @@ export function GuestProxy() {
           const fieldType = ContentType.getField(contentType, fieldId).type;
 
           if (fieldType === 'image') {
-            const tagName = updatedField
-              .eq(index)
-              .prop('tagName')
-              .toLowerCase();
+            const tagName = updatedField.eq(index).prop('tagName').toLowerCase();
             if (tagName === 'img') {
               updatedField.eq(index).attr('src', value);
             } else {
               updatedField.eq(index).css('background-image', `url(${value})`);
             }
           } else if (fieldType === 'video-picker') {
-            updatedField
-              .eq(index)
-              .find('source')
-              .attr('src', value);
+            updatedField.eq(index).find('source').attr('src', value);
             updatedField.eq(index)[0].load();
           }
 
@@ -379,9 +370,7 @@ export function GuestProxy() {
   useEffect(() => {
     const persistence = persistenceRef.current;
     if (notNullOrUndefined(persistence.draggableElement)) {
-      $(persistence.draggableElement)
-        .attr('draggable', 'false')
-        .removeAttr('draggable');
+      $(persistence.draggableElement).attr('draggable', 'false').removeAttr('draggable');
     }
     forEach(Object.entries(draggable), ([elemId, iceId]) => {
       if (iceId !== false) {

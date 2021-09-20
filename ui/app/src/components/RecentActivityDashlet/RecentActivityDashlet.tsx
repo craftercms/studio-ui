@@ -90,15 +90,14 @@ export default function RecentActivityDashlet() {
   const { authoringBase } = useEnv();
   const { itemsByPath, isFetching } = useDetailedItems(Object.keys(selectedLookup));
 
-  const isAllChecked = useMemo(() => !items.some((item) => !item.stateMap.deleted && !selectedLookup[item.path]), [
-    items,
-    selectedLookup
-  ]);
-  const isIndeterminate = useMemo(() => items.some((item) => selectedLookup[item.path] && !isAllChecked), [
-    items,
-    selectedLookup,
-    isAllChecked
-  ]);
+  const isAllChecked = useMemo(
+    () => !items.some((item) => !item.stateMap.deleted && !selectedLookup[item.path]),
+    [items, selectedLookup]
+  );
+  const isIndeterminate = useMemo(
+    () => items.some((item) => selectedLookup[item.path] && !isAllChecked),
+    [items, selectedLookup, isAllChecked]
+  );
   const selectedItemsLength = useMemo(() => Object.values(selectedLookup).filter(Boolean).length, [selectedLookup]);
 
   const onFilterChange = (e) => {
@@ -181,11 +180,10 @@ export default function RecentActivityDashlet() {
   // endregion
 
   const resource = useLogicResource<DetailedItem[], { items: DetailedItem[]; error: ApiResponse; fetching: boolean }>(
-    useMemo(() => ({ items, error: errorActivity, fetching: fetchingActivity }), [
-      items,
-      errorActivity,
-      fetchingActivity
-    ]),
+    useMemo(
+      () => ({ items, error: errorActivity, fetching: fetchingActivity }),
+      [items, errorActivity, fetchingActivity]
+    ),
     {
       shouldResolve: (source) => Boolean(source.items) && !fetchingActivity,
       shouldReject: ({ error }) => Boolean(error),

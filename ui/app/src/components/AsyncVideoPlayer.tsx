@@ -44,14 +44,14 @@ function AsyncVideoPlayer(props: AsyncVideoPlayerProps) {
     // async request to check for 404
     // if response is 200 setPlayable(true)
     fetch(playerOptions.src)
-      .then(function(response) {
+      .then(function (response) {
         if (response.status === 200) {
           setPlayable(true);
         } else {
           setPlayable(false);
         }
       })
-      .catch(function() {
+      .catch(function () {
         setPlayable(false);
       });
   }, [playerOptions.src]);

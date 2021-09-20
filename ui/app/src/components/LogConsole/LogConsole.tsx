@@ -52,11 +52,7 @@ export default function LogConsole(props: LogConsoleManagementProps) {
 
   const refresh = useCallback(
     (since?: number) => {
-      since =
-        since ??
-        moment()
-          .subtract(1, 'hour')
-          .valueOf();
+      since = since ?? moment().subtract(1, 'hour').valueOf();
 
       (logType === 'studio' ? fetchLog(since) : fetchPreviewLog(site, since)).subscribe(
         (newLogEvents) => {
@@ -79,9 +75,7 @@ export default function LogConsole(props: LogConsoleManagementProps) {
   useEffect(() => {
     if (!paused && !error) {
       const timer = setTimeout(() => {
-        const since = moment()
-          .subtract(5, 'seconds')
-          .valueOf();
+        const since = moment().subtract(5, 'seconds').valueOf();
         refresh(since);
       }, 5000);
       return () => clearTimeout(timer);

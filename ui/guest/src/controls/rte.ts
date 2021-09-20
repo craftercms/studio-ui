@@ -85,7 +85,7 @@ export function initTinyMCE(
     suffix: '.min',
     external_plugins: external,
     setup(editor: Editor) {
-      editor.on('init', function() {
+      editor.on('init', function () {
         let changed = false;
         let originalContent = getContent();
 
@@ -183,7 +183,7 @@ export function initTinyMCE(
           e.preventDefault();
         }
       });
-      editor.on('DblClick', function(e) {
+      editor.on('DblClick', function (e) {
         if (e.target.nodeName === 'IMG') {
           window.tinymce.activeEditor.execCommand('mceImage');
         }

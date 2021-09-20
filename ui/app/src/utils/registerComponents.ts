@@ -39,11 +39,11 @@ export const registerComponents = () => {
     '@mui/icons-material/InsertDriveFileOutlined': lazy(() => import('@mui/icons-material/InsertDriveFileOutlined')),
     '@mui/icons-material/WidgetsOutlined': lazy(() => import('@mui/icons-material/WidgetsOutlined')),
     '@mui/icons-material/LockOutlined': lazy(() => import('@mui/icons-material/LockOutlined')),
-    '@mui/icons-material/SettingsApplicationsOutlined': lazy(() =>
-      import('@mui/icons-material/SettingsApplicationsOutlined')
+    '@mui/icons-material/SettingsApplicationsOutlined': lazy(
+      () => import('@mui/icons-material/SettingsApplicationsOutlined')
     ),
-    '@mui/icons-material/FormatAlignJustifyRounded': lazy(() =>
-      import('@mui/icons-material/FormatAlignJustifyRounded')
+    '@mui/icons-material/FormatAlignJustifyRounded': lazy(
+      () => import('@mui/icons-material/FormatAlignJustifyRounded')
     ),
     '@mui/icons-material/FormatAlignLeftRounded': lazy(() => import('@mui/icons-material/FormatAlignLeftRounded')),
     '@mui/icons-material/CloudUploadOutlined': lazy(() => import('@mui/icons-material/CloudUploadOutlined')),
@@ -53,8 +53,8 @@ export const registerComponents = () => {
     'craftercms.icons.Component': lazy(() => import('../components/Icons/Component')),
     'craftercms.icons.GraphQL': lazy(() => import('../components/Icons/GraphQL')),
     'craftercms.components.LauncherLinkTile': lazy(() => import('../components/LauncherLinkTile')),
-    'craftercms.components.LauncherPublishingStatusTile': lazy(() =>
-      import('../components/LauncherPublishingStatusTile')
+    'craftercms.components.LauncherPublishingStatusTile': lazy(
+      () => import('../components/LauncherPublishingStatusTile')
     ),
     'craftercms.components.LauncherSection': lazy(() => import('../components/LauncherSection')),
     'craftercms.components.LauncherGlobalNav': lazy(() => import('../components/LauncherGlobalNav')),
@@ -65,21 +65,21 @@ export const registerComponents = () => {
     '@mui/icons-material/BuildRounded': lazy(() => import('@mui/icons-material/BuildRounded')),
     '@mui/icons-material/AccountCircleRounded': lazy(() => import('@mui/icons-material/AccountCircleRounded')),
     '@mui/icons-material/PeopleRounded': lazy(() => import('@mui/icons-material/PeopleRounded')),
-    '@mui/icons-material/SupervisedUserCircleRounded': lazy(() =>
-      import('@mui/icons-material/SupervisedUserCircleRounded')
+    '@mui/icons-material/SupervisedUserCircleRounded': lazy(
+      () => import('@mui/icons-material/SupervisedUserCircleRounded')
     ),
     '@mui/icons-material/StorageRounded': lazy(() => import('@mui/icons-material/StorageRounded')),
     '@mui/icons-material/SubjectRounded': lazy(() => import('@mui/icons-material/SubjectRounded')),
-    '@mui/icons-material/SettingsApplicationsRounded': lazy(() =>
-      import('@mui/icons-material/SettingsApplicationsRounded')
+    '@mui/icons-material/SettingsApplicationsRounded': lazy(
+      () => import('@mui/icons-material/SettingsApplicationsRounded')
     ),
     '@mui/icons-material/FormatAlignCenterRounded': lazy(() => import('@mui/icons-material/FormatAlignCenterRounded')),
     '@mui/icons-material/LockRounded': lazy(() => import('@mui/icons-material/LockRounded')),
     '@mui/icons-material/VpnKeyRounded': lazy(() => import('@mui/icons-material/VpnKeyRounded')),
     '@mui/icons-material/PublicRounded': lazy(() => import('@mui/icons-material/PublicRounded')),
     '@mui/icons-material/VideocamOutlined': lazy(() => import('@mui/icons-material/VideocamOutlined')),
-    'craftercms.components.ToolsPanelEmbeddedAppViewButton': lazy(() =>
-      import('../components/ToolsPanelEmbeddedAppViewButton')
+    'craftercms.components.ToolsPanelEmbeddedAppViewButton': lazy(
+      () => import('../components/ToolsPanelEmbeddedAppViewButton')
     ),
     'craftercms.components.ToolsPanelPageButton': lazy(() => import('../components/ToolsPanelPageButton')),
     'craftercms.components.PathNavigator': lazy(() => import('../components/PathNavigator')),
@@ -91,11 +91,11 @@ export const registerComponents = () => {
     'craftercms.components.PreviewAudiencesPanel': lazy(() => import('../components/PreviewAudiencesPanel')),
     'craftercms.components.PreviewPageExplorerPanel': lazy(() => import('../components/PreviewPageExplorerPanel')),
     'craftercms.components.PreviewSimulatorPanel': lazy(() => import('../components/PreviewSimulatorPanel')),
-    'craftercms.components.PreviewBrowseComponentsPanel': lazy(() =>
-      import('../components/PreviewBrowseComponentsPanel')
+    'craftercms.components.PreviewBrowseComponentsPanel': lazy(
+      () => import('../components/PreviewBrowseComponentsPanel')
     ),
-    'craftercms.components.PreviewInPageInstancesPanel': lazy(() =>
-      import('../components/PreviewInPageInstancesPanel')
+    'craftercms.components.PreviewInPageInstancesPanel': lazy(
+      () => import('../components/PreviewInPageInstancesPanel')
     ),
     'craftercms.components.PreviewDropTargetsPanel': lazy(() => import('../components/PreviewDropTargetsPanel')),
     'craftercms.components.LegacySiteToolsFrame': lazy(() => import('../components/LegacySiteToolsFrame')),
@@ -105,16 +105,16 @@ export const registerComponents = () => {
     'craftercms.component.EmptyState': lazy(() => import('../components/SystemStatus/EmptyState')),
     'craftercms.components.SiteEncryptTool': lazy(() => import('../components/SiteEncryptTool')),
     'craftercms.components.ContentTypeManagement': lazy(() => import('../components/ContentTypesManagement')),
-    'craftercms.components.SiteConfigurationManagement': lazy(() =>
-      import('../components/SiteConfigurationManagement')
+    'craftercms.components.SiteConfigurationManagement': lazy(
+      () => import('../components/SiteConfigurationManagement')
     ),
     'craftercms.components.SiteAuditManagement': lazy(() => import('../components/SiteAuditManagement')),
     'craftercms.components.LogConsole': lazy(() => import('../components/LogConsole')),
     'craftercms.components.PublishingDashboard': lazy(() => import('../components/PublishingDashboard')),
     'craftercms.components.SiteGraphiQL': lazy(() => import('../components/SiteGraphiQL')),
     'craftercms.components.EmbeddedSiteTools': lazy(() => import('../components/SiteToolsApp/EmbeddedSiteTools')),
-    'craftercms.components.RemoteRepositoriesManagement': lazy(() =>
-      import('../components/RemoteRepositoriesManagement')
+    'craftercms.components.RemoteRepositoriesManagement': lazy(
+      () => import('../components/RemoteRepositoriesManagement')
     ),
     'craftercms.components.ItemStatesManagement': lazy(() => import('../components/ItemStatesManagement')),
     'craftercms.components.AwaitingApprovalDashlet': lazy(() => import('../components/AwaitingApprovalDashlet')),

@@ -149,13 +149,8 @@ function DateTimePicker(props: DateTimePickerProps) {
   // used to sync the timepicker with what's displayed to the user.
   const internalDate = useMemo(() => {
     const date = value ? new Date(value) : new Date();
-    const localOffset = moment()
-      .format()
-      .substr(-6);
-    const dateWithoutOffset = moment(date)
-      .tz(timeZone)
-      .format()
-      .substr(0, 19);
+    const localOffset = moment().format().substr(-6);
+    const dateWithoutOffset = moment(date).tz(timeZone).format().substr(0, 19);
     return new Date(`${dateWithoutOffset}${localOffset}`);
   }, [value, timeZone]);
   const timeZones = getTimezones();
@@ -165,7 +160,8 @@ function DateTimePicker(props: DateTimePickerProps) {
 
   const { formatMessage } = useIntl();
 
-  const createOnDateChange = (name: string) =>
+  const createOnDateChange =
+    (name: string) =>
     // Date/time change handler
     (newDate: unknown, input: string) => {
       console.log(`Check newDate type (${typeof newDate})`, newDate);

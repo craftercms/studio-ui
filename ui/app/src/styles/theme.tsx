@@ -22,7 +22,7 @@ import { GenerateId } from 'jss';
 export const backgroundColor = palette.gray.light1;
 export const RedColor = palette.red.main;
 
-export const defaultThemeOptions: DeprecatedThemeOptions = (function() {
+export const defaultThemeOptions: DeprecatedThemeOptions = (function () {
   const defaultTheme = createTheme();
   const theme: DeprecatedThemeOptions = {
     typography: {

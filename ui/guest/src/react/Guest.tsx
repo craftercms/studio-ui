@@ -207,7 +207,7 @@ function Guest(props: GuestProps) {
 
   // Subscribes to host messages and routes them.
   useEffect(() => {
-    const sub = message$.subscribe(function(action) {
+    const sub = message$.subscribe(function (action) {
       const { type, payload } = action;
       switch (type) {
         case HIGHLIGHT_MODE_CHANGED:

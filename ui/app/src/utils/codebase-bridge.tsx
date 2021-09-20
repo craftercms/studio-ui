@@ -293,7 +293,7 @@ export function createCodebaseBridge() {
         typeof component === 'string' ? Bridge.components[component] : component;
 
       if (nou(Component)) {
-        Component = function() {
+        Component = function () {
           return (
             <ErrorState
               imageUrl="/studio/static-assets/images/warning_state.svg"

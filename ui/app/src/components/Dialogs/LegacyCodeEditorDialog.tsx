@@ -131,14 +131,10 @@ function EmbeddedLegacyCodeEditor(props: LegacyCodeEditorDialogProps) {
     onMinimized
   } = props;
 
-  const src = useMemo(() => getCodeEditorSrc({ site, path, type, readonly, authoringBase, contentType }), [
-    authoringBase,
-    path,
-    readonly,
-    site,
-    type,
-    contentType
-  ]);
+  const src = useMemo(
+    () => getCodeEditorSrc({ site, path, type, readonly, authoringBase, contentType }),
+    [authoringBase, path, readonly, site, type, contentType]
+  );
 
   const { formatMessage } = useIntl();
   const classes = styles({});

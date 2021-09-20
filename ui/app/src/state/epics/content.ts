@@ -138,8 +138,17 @@ const content: CrafterCMSEpic[] = [
     action$.pipe(
       ofType(fetchQuickCreateListAction.type),
       withLatestFrom($state),
-      switchMap(([, { sites: { active } }]) =>
-        fetchQuickCreateList(active).pipe(map(fetchQuickCreateListComplete), catchAjaxError(fetchQuickCreateListFailed))
+      switchMap(
+        ([
+          ,
+          {
+            sites: { active }
+          }
+        ]) =>
+          fetchQuickCreateList(active).pipe(
+            map(fetchQuickCreateListComplete),
+            catchAjaxError(fetchQuickCreateListFailed)
+          )
       )
     ),
   // endregion
@@ -393,9 +402,7 @@ const content: CrafterCMSEpic[] = [
       ofType(pasteItemWithPolicyValidation.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
-        let fileName = withoutIndex(state.content.clipboard.sourcePath)
-          .split('/')
-          .pop();
+        let fileName = withoutIndex(state.content.clipboard.sourcePath).split('/').pop();
         if (
           state.content.clipboard.sourcePath.startsWith('/site/website') &&
           state.content.clipboard.sourcePath.endsWith('index.xml')
