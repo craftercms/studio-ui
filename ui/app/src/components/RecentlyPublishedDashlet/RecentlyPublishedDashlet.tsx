@@ -112,7 +112,7 @@ export default function RecentlyPublishedDashlet() {
 
   const fetchHistory = useCallback(() => {
     setFetchingHistory(true);
-    fetchLegacyDeploymentHistory(siteId, 'eventDate', false, 30, preferences.numItems, preferences.filterBy).subscribe(
+    fetchLegacyDeploymentHistory(siteId, 30, preferences.numItems, preferences.filterBy).subscribe(
       (history) => {
         const parentItems = [];
         const childrenLookup = {};
