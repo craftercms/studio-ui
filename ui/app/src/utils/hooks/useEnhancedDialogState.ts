@@ -24,6 +24,11 @@ export interface EnhancedDialogState {
   isSubmitting: boolean;
 }
 
+export interface onSubmittingAndOrPendingChangeProps {
+  hasPendingChanges?: boolean;
+  isSubmitting?: boolean;
+}
+
 export function useEnhancedDialogState(initialState?: Partial<EnhancedDialogState>) {
   const [state, setState] = useSpreadState<EnhancedDialogState>({
     open: false,
@@ -37,13 +42,7 @@ export function useEnhancedDialogState(initialState?: Partial<EnhancedDialogStat
     const onClose = () => setState({ open: false });
     const onMaximize = () => setState({ isMinimized: false });
     const onMinimize = () => setState({ isMinimized: true });
-    const onSubmittingAndOrPendingChange = ({
-      isSubmitting,
-      hasPendingChanges
-    }: {
-      isSubmitting?: boolean;
-      hasPendingChanges?: boolean;
-    }) =>
+    const onSubmittingAndOrPendingChange = ({ isSubmitting, hasPendingChanges }: onSubmittingAndOrPendingChangeProps) =>
       setState({
         isSubmitting: isSubmitting ?? state.isSubmitting,
         hasPendingChanges: hasPendingChanges ?? state.hasPendingChanges

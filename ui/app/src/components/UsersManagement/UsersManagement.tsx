@@ -33,6 +33,8 @@ import { useDebouncedInput } from '../../utils/hooks/useDebouncedInput';
 import useStyles from './styles';
 import clsx from 'clsx';
 import Paper from '@material-ui/core/Paper';
+import { useEnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
+import { useWithPendingChangesCloseRequest } from '../../utils/hooks/useWithPendingChangesCloseRequest';
 
 interface UsersManagementProps {
   passwordRequirementsRegex?: string;
@@ -88,8 +90,12 @@ export default function UsersManagement(props: UsersManagementProps) {
     }
   );
 
+  const createUserDialogState = useEnhancedDialogState();
+  const createUserDialogPendingChangesCloseRequest = useWithPendingChangesCloseRequest(createUserDialogState.onClose);
+
   const onUserCreated = () => {
-    setOpenCreateUserDialog(false);
+    createUserDialogState.onClose();
+    // setOpenCreateUserDialog(false);
     fetchUsers();
   };
 
@@ -140,7 +146,7 @@ export default function UsersManagement(props: UsersManagementProps) {
             startIcon={<AddIcon />}
             variant="outlined"
             color="primary"
-            onClick={() => setOpenCreateUserDialog(true)}
+            onClick={() => createUserDialogState.onOpen()}
           >
             <FormattedMessage id="usersGrid.createUser" defaultMessage="Create User" />
           </Button>
@@ -175,10 +181,15 @@ export default function UsersManagement(props: UsersManagementProps) {
       </SuspenseWithEmptyState>
 
       <CreateUserDialog
-        open={openCreateUserDialog}
+        open={createUserDialogState.open}
         onCreateSuccess={onUserCreated}
-        onClose={() => setOpenCreateUserDialog(false)}
+        onClose={() => createUserDialogState.onClose()}
         passwordRequirementsRegex={passwordRequirementsRegex}
+        isSubmitting={createUserDialogState.isSubmitting}
+        isMinimized={createUserDialogState.isMinimized}
+        hasPendingChanges={createUserDialogState.hasPendingChanges}
+        onWithPendingChangesCloseRequest={createUserDialogPendingChangesCloseRequest}
+        onSubmittingAndOrPendingChange={createUserDialogState.onSubmittingAndOrPendingChange}
       />
       <EditUserDialog
         open={Boolean(viewUser)}

@@ -19,7 +19,6 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
 import { create } from '../../services/users';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
-import DialogHeader from '../Dialogs/DialogHeader';
 import DialogBody from '../Dialogs/DialogBody';
 import TextField from '@material-ui/core/TextField';
 import PasswordTextField from '../Controls/PasswordTextField';
@@ -37,13 +36,7 @@ import { mapTo, switchMap } from 'rxjs/operators';
 import { forkJoin, of } from 'rxjs';
 import { addUserToGroup } from '../../services/groups';
 import { useSpreadState } from '../../utils/hooks/useSpreadState';
-
-export interface CreateUserDialogUIProps {
-  onClose(): void;
-  onCreateSuccess?(): void;
-  setDisableBackdropClick?(disabled: boolean): void;
-  passwordRequirementsRegex: string;
-}
+import { CreateUserDialogContainerProps } from './utils';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -125,8 +118,8 @@ const useStyles = makeStyles((theme) =>
   })
 );
 
-export function CreateUserDialogContainer(props: CreateUserDialogUIProps) {
-  const { onClose, passwordRequirementsRegex, onCreateSuccess, setDisableBackdropClick = () => void 0 } = props;
+export function CreateUserDialogContainer(props: CreateUserDialogContainerProps) {
+  const { onClose, passwordRequirementsRegex, onCreateSuccess, isSubmitting, onSubmittingAndOrPendingChange } = props;
   const [newUser, setNewUser] = useSpreadState({
     firstName: '',
     lastName: '',
@@ -149,6 +142,9 @@ export function CreateUserDialogContainer(props: CreateUserDialogUIProps) {
   const onSubmit = (e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
     if (submitOk) {
+      onSubmittingAndOrPendingChange({
+        isSubmitting: true
+      });
       setSubmitted(true);
       if (Object.values(newUser).every(Boolean)) {
         create(newUser)
@@ -164,8 +160,14 @@ export function CreateUserDialogContainer(props: CreateUserDialogUIProps) {
           .subscribe(
             () => {
               onCreateSuccess?.();
+              onSubmittingAndOrPendingChange({
+                isSubmitting: false
+              });
             },
             ({ response: { response } }) => {
+              onSubmittingAndOrPendingChange({
+                isSubmitting: false
+              });
               dispatch(showErrorDialog({ error: response }));
             }
           );
@@ -204,17 +206,15 @@ export function CreateUserDialogContainer(props: CreateUserDialogUIProps) {
           newUser.password === passwordConfirm
       )
     );
-    setDisableBackdropClick(
-      Boolean(newUser.firstName || newUser.lastName || newUser.email || newUser.password || passwordConfirm)
-    );
-  }, [newUser, passwordConfirm, setDisableBackdropClick, validPassword]);
+    onSubmittingAndOrPendingChange({
+      hasPendingChanges: Boolean(
+        newUser.firstName || newUser.lastName || newUser.email || newUser.password || passwordConfirm
+      )
+    });
+  }, [newUser, passwordConfirm, onSubmittingAndOrPendingChange, validPassword]);
 
   return (
     <form className={classes.form}>
-      <DialogHeader
-        title={<FormattedMessage id="CreateUserDialog.title" defaultMessage="Create User" />}
-        onCloseButtonClick={onClose}
-      />
       <DialogBody className={classes.dialogBody}>
         <Grid container spacing={2}>
           <Grid item sm={6}>
@@ -366,10 +366,10 @@ export function CreateUserDialogContainer(props: CreateUserDialogUIProps) {
         </Popper>
       </DialogBody>
       <DialogFooter>
-        <SecondaryButton onClick={onClose}>
+        <SecondaryButton onClick={(e) => onClose(e, null)}>
           <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
         </SecondaryButton>
-        <PrimaryButton type="submit" onClick={onSubmit} disabled={!submitOk}>
+        <PrimaryButton type="submit" onClick={onSubmit} disabled={!submitOk} loading={isSubmitting}>
           <FormattedMessage id="words.submit" defaultMessage="Submit" />
         </PrimaryButton>
       </DialogFooter>
