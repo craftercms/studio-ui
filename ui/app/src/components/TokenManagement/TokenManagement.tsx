@@ -149,7 +149,6 @@ export default function TokenManagement() {
   const { formatMessage } = useIntl();
   const [tokens, setTokens] = useState<Token[]>(null);
   const [checkedLookup, setCheckedLookup] = useState({});
-  const [openCreateDialog, setOpenCreateDialog] = useState(false);
   const [createdToken, setCreatedToken] = useState<Token>(null);
   const checkedCount = useMemo(() => Object.values(checkedLookup).filter(Boolean).length, [checkedLookup]);
   const options = useMemo(
@@ -178,12 +177,14 @@ export default function TokenManagement() {
 
   const createTokenDialogState = useEnhancedDialogState();
   const createTokenDialogPendingChangesCloseRequest = useWithPendingChangesCloseRequest(createTokenDialogState.onClose);
+  const copyTokenDialogState = useEnhancedDialogState();
+  const copyTokenDialogPendingChangesCloseRequest = useWithPendingChangesCloseRequest(copyTokenDialogState.onClose);
 
   const onCreateToken = () => {
     createTokenDialogState.onOpen();
   };
 
-  const onCopyTokenDialogClose = () => {
+  const onCopyTokenDialogClosed = () => {
     setCreatedToken(null);
   };
 
@@ -194,7 +195,8 @@ export default function TokenManagement() {
         message: formatMessage(translations.tokenCreated)
       })
     );
-    setOpenCreateDialog(false);
+    createTokenDialogState.onClose();
+    copyTokenDialogState.onOpen();
     setCreatedToken(token);
   };
 
@@ -460,9 +462,14 @@ export default function TokenManagement() {
         onClose={createTokenDialogState.onClose}
       />
       <CopyTokenDialog
-        open={Boolean(createdToken)}
+        open={copyTokenDialogState.open}
         token={createdToken}
-        onClose={onCopyTokenDialogClose}
+        hasPendingChanges={copyTokenDialogState.hasPendingChanges}
+        isSubmitting={copyTokenDialogState.isSubmitting}
+        isMinimized={copyTokenDialogState.isMinimized}
+        onWithPendingChangesCloseRequest={copyTokenDialogPendingChangesCloseRequest}
+        onClose={copyTokenDialogState.onClose}
+        onClosed={onCopyTokenDialogClosed}
         onCopy={onTokenCopied}
       />
     </Paper>

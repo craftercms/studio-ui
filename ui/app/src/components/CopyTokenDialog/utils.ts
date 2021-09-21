@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -13,9 +13,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+import { Token } from '../../models/Token';
+import { EnhancedDialogProps } from '../Dialog';
 
-export { default } from './CopyTokenDialog';
+export interface CopyTokenBaseProps {
+  token: Token;
+}
 
-export * from './CopyTokenDialog';
+export interface CopyTokenProps extends CopyTokenBaseProps, EnhancedDialogProps {
+  onCopy?(): void;
+}
 
-export * from './CopyTokenContainer';
+export interface CopyTokenContainerProps extends CopyTokenBaseProps, Pick<CopyTokenProps, 'onClose' | 'onCopy'> {}
