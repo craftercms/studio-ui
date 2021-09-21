@@ -92,18 +92,14 @@ export default function UsersManagement(props: UsersManagementProps) {
   const createUserDialogState = useEnhancedDialogState();
   const createUserDialogPendingChangesCloseRequest = useWithPendingChangesCloseRequest(createUserDialogState.onClose);
   const editUserDialogState = useEnhancedDialogState();
-  const editUserDialogClose = () => {
-    editUserDialogState.onClose();
-    onUserInfoClose();
-  };
-  const editUserDialogPendingChangesCloseRequest = useWithPendingChangesCloseRequest(editUserDialogClose);
+  const editUserDialogPendingChangesCloseRequest = useWithPendingChangesCloseRequest(editUserDialogState.onClose);
 
   const onUserCreated = () => {
     createUserDialogState.onClose();
     fetchUsers();
   };
 
-  const onUserInfoClose = () => {
+  const editUserDialogClosed = () => {
     setViewUser(null);
   };
 
@@ -198,7 +194,8 @@ export default function UsersManagement(props: UsersManagementProps) {
       />
       <EditUserDialog
         open={editUserDialogState.open}
-        onClose={editUserDialogClose}
+        onClose={editUserDialogState.onClose}
+        onClosed={editUserDialogClosed}
         onUserEdited={onUserEdited}
         user={viewUser}
         isSubmitting={editUserDialogState.isSubmitting}
