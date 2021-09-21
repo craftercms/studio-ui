@@ -29,6 +29,7 @@ export interface EnhancedDialogProps extends Omit<MuiDialogProps, 'title'>, Enha
   onMaximize?(): void;
   onClosed?(): void;
   onWithPendingChangesCloseRequest?: MuiDialogProps['onClose'];
+  omitHeader?: boolean;
   dialogHeaderProps?: Partial<DialogHeaderProps>;
 }
 
@@ -47,6 +48,7 @@ export function EnhancedDialog(props: EnhancedDialogProps) {
     onWithPendingChangesCloseRequest,
     children,
     dialogHeaderProps,
+    omitHeader = false,
     ...dialogProps
   } = props;
   // endregion
@@ -72,13 +74,15 @@ export function EnhancedDialog(props: EnhancedDialogProps) {
         {...dialogProps}
         onClose={onClose}
       >
-        <DialogHeader
-          {...dialogHeaderProps}
-          onMinimizeButtonClick={onMinimize}
-          title={title}
-          onCloseButtonClick={(e) => onClose(e, null)}
-          disableDismiss={isSubmitting}
-        />
+        {!omitHeader && (
+          <DialogHeader
+            {...dialogHeaderProps}
+            onMinimizeButtonClick={onMinimize}
+            title={title}
+            onCloseButtonClick={(e) => onClose(e, null)}
+            disableDismiss={isSubmitting}
+          />
+        )}
         {React.Children.map(children, (child) => React.cloneElement(child as React.ReactElement, { onClose }))}
         <OnClosedInvoker onClosed={onClosed} />
       </MuiDialog>

@@ -49,7 +49,6 @@ export default function UsersManagement(props: UsersManagementProps) {
   const [fetching, setFetching] = useState(false);
   const [users, setUsers] = useState<PagedArray<User>>(null);
   const [error, setError] = useState<ApiResponse>();
-  const [openCreateUserDialog, setOpenCreateUserDialog] = useState(false);
   const [viewUser, setViewUser] = useState(null);
   const [showSearchBox, setShowSearchBox] = useState(false);
   const [keyword, setKeyword] = useState('');
@@ -95,7 +94,6 @@ export default function UsersManagement(props: UsersManagementProps) {
 
   const onUserCreated = () => {
     createUserDialogState.onClose();
-    // setOpenCreateUserDialog(false);
     fetchUsers();
   };
 
@@ -183,7 +181,7 @@ export default function UsersManagement(props: UsersManagementProps) {
       <CreateUserDialog
         open={createUserDialogState.open}
         onCreateSuccess={onUserCreated}
-        onClose={() => createUserDialogState.onClose()}
+        onClose={createUserDialogState.onClose}
         passwordRequirementsRegex={passwordRequirementsRegex}
         isSubmitting={createUserDialogState.isSubmitting}
         isMinimized={createUserDialogState.isMinimized}

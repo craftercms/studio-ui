@@ -208,7 +208,7 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
     );
     onSubmittingAndOrPendingChange({
       hasPendingChanges: Boolean(
-        newUser.firstName || newUser.lastName || newUser.email || newUser.password || passwordConfirm
+        newUser.firstName || newUser.email || newUser.password || validPassword || passwordConfirm
       )
     });
   }, [newUser, passwordConfirm, onSubmittingAndOrPendingChange, validPassword]);

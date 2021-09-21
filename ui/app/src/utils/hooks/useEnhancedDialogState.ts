@@ -16,6 +16,7 @@
 
 import { useSpreadState } from './useSpreadState';
 import { useMemo } from 'react';
+import { nnou } from '../object';
 
 export interface EnhancedDialogState {
   open: boolean;
@@ -42,11 +43,20 @@ export function useEnhancedDialogState(initialState?: Partial<EnhancedDialogStat
     const onClose = () => setState({ open: false });
     const onMaximize = () => setState({ isMinimized: false });
     const onMinimize = () => setState({ isMinimized: true });
-    const onSubmittingAndOrPendingChange = ({ isSubmitting, hasPendingChanges }: onSubmittingAndOrPendingChangeProps) =>
-      setState({
-        isSubmitting: isSubmitting ?? state.isSubmitting,
-        hasPendingChanges: hasPendingChanges ?? state.hasPendingChanges
-      });
+    const onSubmittingAndOrPendingChange = ({
+      isSubmitting,
+      hasPendingChanges
+    }: onSubmittingAndOrPendingChangeProps) => {
+      if (
+        (nnou(isSubmitting) && state.isSubmitting !== isSubmitting) ||
+        (nnou(hasPendingChanges) && state.hasPendingChanges !== hasPendingChanges)
+      ) {
+        setState({
+          isSubmitting: isSubmitting ?? state.isSubmitting,
+          hasPendingChanges: hasPendingChanges ?? state.hasPendingChanges
+        });
+      }
+    };
     return {
       ...state,
       onOpen,
