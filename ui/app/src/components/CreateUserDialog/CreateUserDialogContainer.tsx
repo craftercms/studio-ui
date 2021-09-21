@@ -369,7 +369,7 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
         <SecondaryButton onClick={(e) => onClose(e, null)}>
           <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
         </SecondaryButton>
-        <PrimaryButton type="submit" onClick={onSubmit} disabled={!submitOk} loading={isSubmitting}>
+        <PrimaryButton type="submit" onClick={onSubmit} disabled={!submitOk || isSubmitting} loading={isSubmitting}>
           <FormattedMessage id="words.submit" defaultMessage="Submit" />
         </PrimaryButton>
       </DialogFooter>

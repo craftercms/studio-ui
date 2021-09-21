@@ -91,6 +91,12 @@ export default function UsersManagement(props: UsersManagementProps) {
 
   const createUserDialogState = useEnhancedDialogState();
   const createUserDialogPendingChangesCloseRequest = useWithPendingChangesCloseRequest(createUserDialogState.onClose);
+  const editUserDialogState = useEnhancedDialogState();
+  const editUserDialogClose = () => {
+    editUserDialogState.onClose();
+    onUserInfoClose();
+  };
+  const editUserDialogPendingChangesCloseRequest = useWithPendingChangesCloseRequest(editUserDialogClose);
 
   const onUserCreated = () => {
     createUserDialogState.onClose();
@@ -106,6 +112,7 @@ export default function UsersManagement(props: UsersManagementProps) {
   };
 
   const onRowClicked = (user: User) => {
+    editUserDialogState.onOpen();
     setViewUser(user);
   };
 
@@ -190,11 +197,16 @@ export default function UsersManagement(props: UsersManagementProps) {
         onSubmittingAndOrPendingChange={createUserDialogState.onSubmittingAndOrPendingChange}
       />
       <EditUserDialog
-        open={Boolean(viewUser)}
-        onClose={onUserInfoClose}
+        open={editUserDialogState.open}
+        onClose={editUserDialogClose}
         onUserEdited={onUserEdited}
         user={viewUser}
+        isSubmitting={editUserDialogState.isSubmitting}
+        isMinimized={editUserDialogState.isMinimized}
+        hasPendingChanges={editUserDialogState.hasPendingChanges}
         passwordRequirementsRegex={passwordRequirementsRegex}
+        onWithPendingChangesCloseRequest={editUserDialogPendingChangesCloseRequest}
+        onSubmittingAndOrPendingChange={editUserDialogState.onSubmittingAndOrPendingChange}
       />
     </Paper>
   );
