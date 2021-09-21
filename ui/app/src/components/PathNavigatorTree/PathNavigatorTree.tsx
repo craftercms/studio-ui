@@ -70,6 +70,7 @@ import {
 } from '../../state/actions/system';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { useActiveSite } from '../../utils/hooks/useActiveSite';
+import { useMount } from '../../utils/hooks/useMount';
 
 interface PathNavigatorTreeProps {
   id: string;
@@ -163,6 +164,12 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
       dispatch(pathNavigatorTreeBackgroundRefresh({ id, excludes }));
     }, backgroundRefreshTimeoutMs);
   }, [backgroundRefreshTimeoutMs, dispatch, id, excludes]);
+
+  useMount(() => {
+    if (state) {
+      dispatch(pathNavigatorTreeBackgroundRefresh({ id, excludes }));
+    }
+  });
 
   useEffect(() => {
     if (hasActiveSession) {
