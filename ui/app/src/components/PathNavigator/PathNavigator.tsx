@@ -123,6 +123,7 @@ export interface PathNavigatorStateProps {
   limit: number;
   offset: number;
   collapsed?: boolean;
+  excludes?: string[];
   isFetching: boolean;
   error: any;
 }
@@ -173,13 +174,13 @@ export default function PathNavigator(props: PathNavigatorProps) {
   useEffect(() => {
     if (backgroundRefreshTimeoutMs && hasActiveSession) {
       let interval = setInterval(() => {
-        dispatch(pathNavigatorBackgroundRefresh({ id, excludes }));
+        dispatch(pathNavigatorBackgroundRefresh({ id }));
       }, backgroundRefreshTimeoutMs);
       return () => {
         clearInterval(interval);
       };
     }
-  }, [backgroundRefreshTimeoutMs, dispatch, id, hasActiveSession, excludes]);
+  }, [backgroundRefreshTimeoutMs, dispatch, id, hasActiveSession]);
 
   useEffect(() => {
     // Adding uiConfig as means to stop navigator from trying to
@@ -195,7 +196,7 @@ export default function PathNavigator(props: PathNavigatorProps) {
 
   useMount(() => {
     if (state) {
-      dispatch(pathNavigatorBackgroundRefresh({ id, excludes }));
+      dispatch(pathNavigatorBackgroundRefresh({ id }));
     }
   });
 
@@ -318,7 +319,7 @@ export default function PathNavigator(props: PathNavigatorProps) {
           break;
         }
         case pluginInstalled.type: {
-          dispatch(pathNavigatorBackgroundRefresh({ id, excludes }));
+          dispatch(pathNavigatorBackgroundRefresh({ id }));
           break;
         }
         case itemsUploaded.type: {
@@ -332,7 +333,7 @@ export default function PathNavigator(props: PathNavigatorProps) {
     return () => {
       subscription.unsubscribe();
     };
-  }, [state, id, dispatch, excludes]);
+  }, [state, id, dispatch]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const computeActiveItems = useCallback(computeActiveItemsProp ?? (() => []), [computeActiveItemsProp]);
@@ -345,8 +346,7 @@ export default function PathNavigator(props: PathNavigatorProps) {
     dispatch(
       pathNavigatorConditionallySetPath({
         id,
-        path: item.path,
-        excludes
+        path: item.path
       })
     );
   };
@@ -487,7 +487,7 @@ export default function PathNavigator(props: PathNavigatorProps) {
 
   const onBreadcrumbSelected = (item: DetailedItem) => {
     if (withoutIndex(item.path) !== withoutIndex(state.currentPath)) {
-      dispatch(pathNavigatorConditionallySetPath({ id, path: item.path, excludes }));
+      dispatch(pathNavigatorConditionallySetPath({ id, path: item.path }));
     }
   };
 
@@ -496,8 +496,7 @@ export default function PathNavigator(props: PathNavigatorProps) {
     if (option === 'refresh') {
       dispatch(
         pathNavigatorRefresh({
-          id,
-          excludes
+          id
         })
       );
     }

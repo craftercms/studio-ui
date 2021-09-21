@@ -95,6 +95,7 @@ export interface PathNavigatorTreeStateProps {
   fetchingByPath: LookupTable<boolean>;
   totalByPath: LookupTable<number>;
   offsetByPath: LookupTable<number>;
+  excludes?: string[];
 }
 
 interface Menu {
@@ -161,13 +162,13 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   const resetBackgroundRefreshInterval = useCallback(() => {
     clearInterval(intervalRef.current);
     intervalRef.current = setInterval(() => {
-      dispatch(pathNavigatorTreeBackgroundRefresh({ id, excludes }));
+      dispatch(pathNavigatorTreeBackgroundRefresh({ id }));
     }, backgroundRefreshTimeoutMs);
-  }, [backgroundRefreshTimeoutMs, dispatch, id, excludes]);
+  }, [backgroundRefreshTimeoutMs, dispatch, id]);
 
   useMount(() => {
     if (state) {
-      dispatch(pathNavigatorTreeBackgroundRefresh({ id, excludes }));
+      dispatch(pathNavigatorTreeBackgroundRefresh({ id }));
     }
   });
 
@@ -328,8 +329,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
               dispatch(
                 pathNavigatorTreeFetchPathChildren({
                   id,
-                  path,
-                  options: { excludes }
+                  path
                 })
               );
             }
@@ -348,8 +348,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
             dispatch(
               pathNavigatorTreeFetchPathChildren({
                 id,
-                path,
-                options: { excludes }
+                path
               })
             );
           }
@@ -389,8 +388,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
             dispatch(
               pathNavigatorTreeFetchPathChildren({
                 id,
-                path,
-                options: { excludes }
+                path
               })
             );
           }
@@ -463,8 +461,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
         dispatch(
           pathNavigatorTreeFetchPathChildren({
             id,
-            path,
-            options: { excludes }
+            path
           })
         );
       }
@@ -501,8 +498,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     if (option === 'refresh') {
       dispatch(
         pathNavigatorTreeRefresh({
-          id,
-          excludes
+          id
         })
       );
       resetBackgroundRefreshInterval();

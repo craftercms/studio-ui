@@ -59,7 +59,7 @@ export default [
           collapsed = state.pathNavigatorTree[id].collapsed,
           keywordByPath = state.pathNavigatorTree[id].keywordByPath,
           limit = state.pathNavigatorTree[id].limit,
-          excludes = []
+          excludes = state.pathNavigatorTree[id].excludes
         } = payload;
         let paths = [];
         expanded.forEach((expandedPath) => {
@@ -97,7 +97,8 @@ export default [
         const { id, path, options } = payload;
         return fetchChildrenByPath(state.sites.active, path, {
           limit: state.pathNavigatorTree[id].limit,
-          ...options
+          ...options,
+          excludes: state.pathNavigatorTree[id].excludes
         }).pipe(
           map((children) => pathNavigatorTreeFetchPathChildrenComplete({ id, parentPath: path, children, options })),
           catchAjaxError((error) => pathNavigatorTreeFetchPathChildrenFailed({ error, id }))

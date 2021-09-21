@@ -42,9 +42,9 @@ export const pathNavigatorSetCurrentPath = /*#__PURE__*/ createAction<PayloadWit
   'PATH_NAVIGATOR_SET_CURRENT_PATH'
 );
 
-export const pathNavigatorConditionallySetPath = /*#__PURE__*/ createAction<
-  PayloadWithId<{ path: string; excludes?: string[] }>
->('PATH_NAVIGATOR_CONDITIONALLY_SET_PATH');
+export const pathNavigatorConditionallySetPath = /*#__PURE__*/ createAction<PayloadWithId<{ path: string }>>(
+  'PATH_NAVIGATOR_CONDITIONALLY_SET_PATH'
+);
 
 export const pathNavigatorConditionallySetPathComplete = /*#__PURE__*/ createAction<
   PayloadWithId<{ path: string; parent?: DetailedItem; children: GetChildrenResponse }>
@@ -55,11 +55,9 @@ export const pathNavigatorConditionallySetPathFailed = /*#__PURE__*/ createActio
   error: { status: number; message: string };
 }>('PATH_NAVIGATOR_CONDITIONALLY_SET_PATH_FAILED');
 
-export const pathNavigatorRefresh = /*#__PURE__*/ createAction<{ id: string; excludes?: string[] }>(
-  'PATH_NAVIGATOR_REFRESH'
-);
+export const pathNavigatorRefresh = /*#__PURE__*/ createAction<{ id: string }>('PATH_NAVIGATOR_REFRESH');
 
-export const pathNavigatorBackgroundRefresh = /*#__PURE__*/ createAction<{ id: string; excludes?: string[] }>(
+export const pathNavigatorBackgroundRefresh = /*#__PURE__*/ createAction<{ id: string }>(
   'PATH_NAVIGATOR_BACKGROUND_REFRESH'
 );
 
