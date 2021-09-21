@@ -64,11 +64,12 @@ export default [
     action$.pipe(
       ofType(pathNavigatorRefresh.type, pathNavigatorBackgroundRefresh.type),
       withLatestFrom(state$),
-      mergeMap(([{ type, payload: { id } }, state]) =>
+      mergeMap(([{ type, payload: { id, excludes } }, state]) =>
         fetchItemWithChildrenByPath(state.sites.active, state.pathNavigator[id].currentPath, {
           keyword: state.pathNavigator[id].keyword,
           limit: state.pathNavigator[id].limit,
-          offset: state.pathNavigator[id].offset
+          offset: state.pathNavigator[id].offset,
+          excludes
         }).pipe(
           map(({ item, children }) => pathNavigatorFetchPathComplete({ id, parent: item, children })),
           catchAjaxError((error: AjaxError) => {
@@ -87,8 +88,8 @@ export default [
     action$.pipe(
       ofType(pathNavigatorConditionallySetPath.type),
       withLatestFrom(state$),
-      mergeMap(([{ type, payload: { id, path } }, state]) =>
-        fetchItemWithChildrenByPath(state.sites.active, path).pipe(
+      mergeMap(([{ type, payload: { id, path, excludes } }, state]) =>
+        fetchItemWithChildrenByPath(state.sites.active, path, { excludes }).pipe(
           map(({ item, children }) => pathNavigatorConditionallySetPathComplete({ id, path, parent: item, children })),
           catchAjaxError(
             (error) => pathNavigatorConditionallySetPathFailed({ id, error }),

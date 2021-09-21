@@ -33,9 +33,11 @@ export const pathNavigatorTreeInit = /*#__PURE__*/ createAction<
   }>
 >('PATH_NAVIGATOR_TREE_INIT');
 
-export const pathNavigatorTreeRefresh = /*#__PURE__*/ createAction<{ id: string }>('PATH_NAVIGATOR_TREE_REFRESH');
+export const pathNavigatorTreeRefresh = /*#__PURE__*/ createAction<{ id: string; excludes?: string[] }>(
+  'PATH_NAVIGATOR_TREE_REFRESH'
+);
 
-export const pathNavigatorTreeBackgroundRefresh = /*#__PURE__*/ createAction<{ id: string }>(
+export const pathNavigatorTreeBackgroundRefresh = /*#__PURE__*/ createAction<{ id: string; excludes?: string[] }>(
   'PATH_NAVIGATOR_TREE_BACKGROUND_REFRESH'
 );
 

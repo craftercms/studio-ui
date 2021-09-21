@@ -160,9 +160,9 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   const resetBackgroundRefreshInterval = useCallback(() => {
     clearInterval(intervalRef.current);
     intervalRef.current = setInterval(() => {
-      dispatch(pathNavigatorTreeBackgroundRefresh({ id }));
+      dispatch(pathNavigatorTreeBackgroundRefresh({ id, excludes }));
     }, backgroundRefreshTimeoutMs);
-  }, [backgroundRefreshTimeoutMs, dispatch, id]);
+  }, [backgroundRefreshTimeoutMs, dispatch, id, excludes]);
 
   useEffect(() => {
     if (hasActiveSession) {
@@ -490,7 +490,8 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     if (option === 'refresh') {
       dispatch(
         pathNavigatorTreeRefresh({
-          id
+          id,
+          excludes
         })
       );
       resetBackgroundRefreshInterval();
