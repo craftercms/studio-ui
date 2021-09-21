@@ -319,7 +319,7 @@ export default function RecentActivityDashlet() {
             <MenuItem value="page">
               <FormattedMessage id="words.pages" defaultMessage="Pages" />
             </MenuItem>
-            <MenuItem value="components">
+            <MenuItem value="component">
               <FormattedMessage id="words.components" defaultMessage="Components" />
             </MenuItem>
             <MenuItem value="all">
