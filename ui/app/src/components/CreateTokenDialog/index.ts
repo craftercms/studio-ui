@@ -18,4 +18,4 @@ export { default } from './CreateTokenDialog';
 
 export * from './CreateTokenDialog';
 
-export * from './CreateTokenDialogUI';
+export * from './CreateTokenDialogContainer';

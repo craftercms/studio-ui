@@ -19,11 +19,11 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { createStyles, darken, lighten, makeStyles, withStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/DeleteOutline';
-import { AsDayMonthDateTime } from '../VersionList/VersionList';
+import { AsDayMonthDateTime } from '../VersionList';
 import { deleteToken, fetchTokens as fetchTokensService, updateToken } from '../../services/tokens';
 import { useDispatch } from 'react-redux';
 import { Token } from '../../models/Token';
-import CreateTokenDialog from '../CreateTokenDialog/CreateTokenDialog';
+import CreateTokenDialog from '../CreateTokenDialog';
 import clsx from 'clsx';
 import { showSystemNotification } from '../../state/actions/system';
 import ConfirmDropdown from '../Controls/ConfirmDropdown';
@@ -47,6 +47,8 @@ import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
+import { useEnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
+import { useWithPendingChangesCloseRequest } from '../../utils/hooks/useWithPendingChangesCloseRequest';
 
 const styles = makeStyles((theme) =>
   createStyles({
@@ -174,12 +176,11 @@ export default function TokenManagement() {
     fetchTokens();
   }, []);
 
-  const onCreateToken = () => {
-    setOpenCreateDialog(true);
-  };
+  const createTokenDialogState = useEnhancedDialogState();
+  const createTokenDialogPendingChangesCloseRequest = useWithPendingChangesCloseRequest(createTokenDialogState.onClose);
 
-  const onCreateTokenDialogClose = () => {
-    setOpenCreateDialog(false);
+  const onCreateToken = () => {
+    createTokenDialogState.onOpen();
   };
 
   const onCopyTokenDialogClose = () => {
@@ -448,7 +449,16 @@ export default function TokenManagement() {
           <EmptyState title={formatMessage(translations.emptyTokens)} />
         )}
       </ConditionalLoadingState>
-      <CreateTokenDialog open={openCreateDialog} onCreated={onTokenCreated} onClose={onCreateTokenDialogClose} />
+      <CreateTokenDialog
+        open={createTokenDialogState.open}
+        hasPendingChanges={createTokenDialogState.hasPendingChanges}
+        isSubmitting={createTokenDialogState.isSubmitting}
+        isMinimized={createTokenDialogState.isMinimized}
+        onSubmittingAndOrPendingChange={createTokenDialogState.onSubmittingAndOrPendingChange}
+        onWithPendingChangesCloseRequest={createTokenDialogPendingChangesCloseRequest}
+        onCreated={onTokenCreated}
+        onClose={createTokenDialogState.onClose}
+      />
       <CopyTokenDialog
         open={Boolean(createdToken)}
         token={createdToken}

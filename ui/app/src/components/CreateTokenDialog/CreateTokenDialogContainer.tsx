@@ -18,7 +18,6 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import React, { useEffect, useState } from 'react';
 import GlobalState from '../../models/GlobalState';
-import DialogHeader from '../Dialogs/DialogHeader';
 import DialogBody from '../Dialogs/DialogBody';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
@@ -31,16 +30,11 @@ import DialogFooter from '../Dialogs/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import { useSelection } from '../../utils/hooks/useSelection';
-import { useUnmount } from '../../utils/hooks/useUnmount';
 import { getUserTimeZone } from '../../utils/datetime';
-
-export interface CreateTokenUIProps {
-  disabled: boolean;
-  onOk({ label, expiresAt }): void;
-  onDismiss?(): void;
-  onClosed?(): void;
-  setDisableQuickDismiss?(disabled: boolean): void;
-}
+import { CreateTokenContainerProps } from './utils';
+import { createToken } from '../../services/tokens';
+import { showErrorDialog } from '../../state/reducers/dialogs/error';
+import { useDispatch } from 'react-redux';
 
 export const translations = defineMessages({
   placeholder: {
@@ -63,13 +57,14 @@ const useStyles = makeStyles(() =>
   })
 );
 
-export function CreateTokenDialogUI(props: CreateTokenUIProps) {
+export function CreateTokenDialogContainer(props: CreateTokenContainerProps) {
   const classes = useStyles();
-  const { onClosed, onDismiss, onOk, disabled, setDisableQuickDismiss } = props;
+  const { isSubmitting, onCreated, onClose, onSubmittingAndOrPendingChange } = props;
   const [expires, setExpires] = useState(false);
   const [expiresAt, setExpiresAt] = useState(new Date());
   const [label, setLabel] = useState('');
   const { formatMessage } = useIntl();
+  const dispatch = useDispatch();
   const onSubmit = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -77,18 +72,31 @@ export function CreateTokenDialogUI(props: CreateTokenUIProps) {
   };
   const locale = useSelection<GlobalState['uiConfig']['locale']>((state) => state.uiConfig.locale);
 
-  useUnmount(onClosed);
-
   useEffect(() => {
-    setDisableQuickDismiss(Boolean(expires || label));
-  }, [setDisableQuickDismiss, expires, label]);
+    onSubmittingAndOrPendingChange({
+      hasPendingChanges: Boolean(expires || label)
+    });
+  }, [onSubmittingAndOrPendingChange, expires, label]);
+
+  const onOk = ({ label, expiresAt }) => {
+    onSubmittingAndOrPendingChange({
+      isSubmitting: true
+    });
+    createToken(label, expiresAt).subscribe(
+      (token) => {
+        onSubmittingAndOrPendingChange({
+          isSubmitting: false
+        });
+        onCreated?.(token);
+      },
+      (response) => {
+        dispatch(showErrorDialog({ error: response }));
+      }
+    );
+  };
 
   return (
     <form onSubmit={onSubmit}>
-      <DialogHeader
-        title={<FormattedMessage id="createTokenDialog.title" defaultMessage="Create Access Token" />}
-        onCloseButtonClick={onDismiss}
-      />
       <DialogBody>
         <Typography variant="body2">
           <FormattedMessage
@@ -139,10 +147,10 @@ export function CreateTokenDialogUI(props: CreateTokenUIProps) {
         </Collapse>
       </DialogBody>
       <DialogFooter>
-        <SecondaryButton onClick={onDismiss}>
+        <SecondaryButton onClick={(e) => onClose(e, null)}>
           <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
         </SecondaryButton>
-        <PrimaryButton type="submit" autoFocus disabled={disabled || label === ''} loading={disabled}>
+        <PrimaryButton type="submit" autoFocus disabled={isSubmitting || label === ''} loading={isSubmitting}>
           <FormattedMessage id="words.submit" defaultMessage="Submit" />
         </PrimaryButton>
       </DialogFooter>
@@ -150,4 +158,4 @@ export function CreateTokenDialogUI(props: CreateTokenUIProps) {
   );
 }
 
-export default CreateTokenDialogUI;
+export default CreateTokenDialogContainer;
