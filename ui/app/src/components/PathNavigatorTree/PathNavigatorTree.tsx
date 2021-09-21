@@ -321,7 +321,8 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
               dispatch(
                 pathNavigatorTreeFetchPathChildren({
                   id,
-                  path
+                  path,
+                  options: { excludes }
                 })
               );
             }
@@ -340,7 +341,8 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
             dispatch(
               pathNavigatorTreeFetchPathChildren({
                 id,
-                path
+                path,
+                options: { excludes }
               })
             );
           }
@@ -380,7 +382,8 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
             dispatch(
               pathNavigatorTreeFetchPathChildren({
                 id,
-                path
+                path,
+                options: { excludes }
               })
             );
           }
@@ -453,7 +456,8 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
         dispatch(
           pathNavigatorTreeFetchPathChildren({
             id,
-            path
+            path,
+            options: { excludes }
           })
         );
       }

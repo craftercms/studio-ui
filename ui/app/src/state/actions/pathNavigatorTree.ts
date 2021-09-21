@@ -85,7 +85,7 @@ export const pathNavigatorTreeFetchPathPageFailed = /*#__PURE__*/ createAction<{
 }>('PATH_NAVIGATOR_TREE_FETCH_PATH_PAGE_FAILED');
 
 export const pathNavigatorTreeFetchPathChildren = /*#__PURE__*/ createAction<
-  PayloadWithId<{ path: string; options?: Partial<GetChildrenOptions> }>
+  PayloadWithId<{ path: string; options?: Partial<GetChildrenOptions>; excludes?: string[] }>
 >('PATH_NAVIGATOR_TREE_FETCH_PATH_CHILDREN');
 
 export const pathNavigatorTreeFetchPathChildrenComplete = /*#__PURE__*/ createAction<
