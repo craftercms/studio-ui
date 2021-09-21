@@ -34,6 +34,7 @@ import {
 } from '../actions/pathNavigatorTree';
 import { changeSite } from './sites';
 import { createPresenceTable } from '../../utils/array';
+import { fetchSiteUiConfig } from '../actions/configuration';
 
 const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
   {},
@@ -278,7 +279,8 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
         }
       };
     },
-    [changeSite.type]: () => ({})
+    [changeSite.type]: () => ({}),
+    [fetchSiteUiConfig.type]: () => ({})
   }
 );
 

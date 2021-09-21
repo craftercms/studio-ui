@@ -40,6 +40,7 @@ import {
 } from '../actions/pathNavigator';
 import { changeSite } from './sites';
 import { SandboxItem } from '../../models/Item';
+import { fetchSiteUiConfig } from '../actions/configuration';
 
 const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
   {},
@@ -242,7 +243,8 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
       ...state,
       [id]: { ...state[id], isFetching: true }
     }),
-    [changeSite.type]: () => ({})
+    [changeSite.type]: () => ({}),
+    [fetchSiteUiConfig.type]: () => ({})
   }
 );
 
