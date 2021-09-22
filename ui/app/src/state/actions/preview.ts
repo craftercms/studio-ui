@@ -24,6 +24,7 @@ import { ContentTypeDropTarget } from '../../models/ContentTypeDropTarget';
 import { WidgetDescriptor } from '../../components/Widget';
 import LookupTable from '../../models/LookupTable';
 import { DetailedItem } from '../../models/Item';
+import { HighlightMode } from '../../models/GlobalState';
 
 // region Accommodation Actions
 // To be moved to a common file for sharing across apps
@@ -45,7 +46,6 @@ export const DELETE_ITEM_OPERATION_COMPLETE = 'DELETE_ITEM_OPERATION_COMPLETE';
 export const UPDATE_FIELD_VALUE_OPERATION = 'UPDATE_FIELD_VALUE_OPERATION';
 export const ICE_ZONE_SELECTED = 'ICE_ZONE_SELECTED';
 export const CLEAR_SELECTED_ZONES = 'CLEAR_SELECTED_ZONES';
-export const EDIT_MODE_CHANGED = 'EDIT_MODE_CHANGED';
 export const ASSET_DRAG_STARTED = 'ASSET_DRAG_STARTED';
 export const ASSET_DRAG_ENDED = 'ASSET_DRAG_ENDED';
 export const COMPONENT_DRAG_STARTED = 'COMPONENT_DRAG_STARTED';
@@ -266,7 +266,8 @@ export const setContentTypeFilter = /*#__PURE__*/ createAction<string>(SET_CONTE
 
 export const updateToolsPanelWidth = /*#__PURE__*/ createAction<{ width: number }>('UPDATE_TOOLS_PANEL_WIDTH');
 
-export const setPreviewEditMode = /*#__PURE__*/ createAction<{ editMode: boolean }>(EDIT_MODE_CHANGED);
+export const setPreviewEditMode =
+  /*#__PURE__*/ createAction<{ editMode: boolean; highlightMode?: HighlightMode }>('EDIT_MODE_CHANGED');
 
 export const previewItem = /*#__PURE__*/ createAction<{ item: DetailedItem; newTab?: boolean }>('PREVIEW_ITEM');
 
@@ -315,7 +316,7 @@ export const popIcePanelPage = /*#__PURE__*/ createAction('POP_ICE_PANEL_PAGE');
 
 // region settings Mode
 
-export const setHighlightMode = /*#__PURE__*/ createAction<{ highlightMode: string }>('HIGHLIGHT_MODE_CHANGED');
+export const setHighlightMode = /*#__PURE__*/ createAction<{ highlightMode: HighlightMode }>('HIGHLIGHT_MODE_CHANGED');
 
 // endregion
 

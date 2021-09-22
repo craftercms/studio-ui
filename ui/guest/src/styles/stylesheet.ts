@@ -72,10 +72,9 @@ const getAllGuestRules: () => string[] = () => {
 };
 
 export type GuestStyles<RuleName extends GuestRules | string | number | symbol = string> = Styles<RuleName> & {
-  '@global'?: Record<RuleName, JssStyle | string> &
-    {
-      [key in GuestRules]?: Record<RuleName | GuestRules, JssStyle | string>;
-    };
+  '@global'?: Record<RuleName, JssStyle | string> & {
+    [key in GuestRules]?: Record<RuleName | GuestRules, JssStyle | string>;
+  };
 };
 
 export interface GuestStyleSheetConfig<RuleName extends string | number | symbol = string> {
@@ -97,7 +96,7 @@ export interface GuestStyleSheetConfig<RuleName extends string | number | symbol
   inlineTextEditorFocusOutlineColor: string;
 }
 
-const defaults: GuestStyleSheetConfig = {
+export const defaultStyleConfig: GuestStyleSheetConfig = {
   styles: undefined,
   assetUploadMaskZIndex: 1010,
   assetUploadMaskBackgroundColor: 'white',
@@ -142,7 +141,7 @@ function collectRules(styles): { overrides; global; other } {
 }
 
 export default function stylesheet(config: GuestStyleSheetConfig): Styles<'@global'> {
-  config = Object.assign({}, defaults, config);
+  config = Object.assign({}, defaultStyleConfig, config);
   const { overrides, global, other } = collectRules(config.styles);
   const styles: Record<GuestRules, JssStyle> = {
     // Attributes
@@ -165,41 +164,6 @@ export default function stylesheet(config: GuestStyleSheetConfig): Styles<'@glob
       transition: 'height 0.3s ease-out',
       animation: 'craftercms-uploader-mask-animation 1.5s infinite ease-in-out',
       ...overrides['craftercms-asset-uploader-mask']
-    },
-    'craftercms-zone-marker': {
-      boxSizing: 'border-box',
-      outline: `2px solid ${config.zoneMarkerOutlineColor}`,
-      outlineOffset: '-2px',
-      textAlign: 'center',
-      position: 'absolute',
-      zIndex: config.zoneMarkerZIndex,
-      pointerEvents: 'none',
-      ...overrides['craftercms-zone-marker']
-    },
-    'craftercms-zone-marker-label': {
-      boxSizing: 'border-box',
-      background: config.zoneLabelBackground,
-      color: config.zoneLabelTextColor,
-      padding: '10px',
-      borderRadius: 10,
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      fontSize: '14px',
-      position: 'fixed',
-      top: '1em',
-      left: '50%',
-      right: '0',
-      marginLeft: '-150px',
-      textAlign: 'center',
-      minWidth: '300px',
-      maxWidth: '300px',
-      overflow: 'hidden',
-      fontWeight: 700,
-      pointerEvents: 'none',
-      zIndex: config.zoneLabelZIndex,
-      boxShadow: `0 2px 4px -1px rgba(0,0,0,0.2), 0 4px 5px 0 rgba(0,0,0,0.14), 0 1px 10px 0 rgba(0,0,0,0.12)`,
-      ...overrides['craftercms-zone-marker-label']
     },
     'craftercms-drop-marker': {
       zIndex: config.dropMarkerZIndex,
@@ -312,23 +276,7 @@ export default function stylesheet(config: GuestStyleSheetConfig): Styles<'@glob
       }
     },
     // Classes
-    '.craftercms-zone-marker-icon': {
-      marginLeft: '10px'
-    },
-    '.craftercms-required-validation-failed': {
-      outlineColor: config.validationMandatoryColor,
-      '& craftercms-zone-marker-label': {
-        background: config.validationMandatoryColor
-      },
-      ...overrides['.craftercms-required-validation-failed']
-    },
-    '.craftercms-suggestion-validation-failed': {
-      outlineColor: config.validationSuggestedColor,
-      '& craftercms-zone-marker-label': {
-        background: config.validationSuggestedColor
-      },
-      ...overrides['.craftercms-suggestion-validation-failed']
-    },
+
     '.craftercms-placeholder-spinner': {
       animation: 'craftercms-placeholder-animation 2s linear infinite',
       '& .path': {

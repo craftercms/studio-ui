@@ -29,7 +29,6 @@ import {
   DESKTOP_ASSET_UPLOAD_COMPLETE,
   DESKTOP_ASSET_UPLOAD_PROGRESS,
   DESKTOP_ASSET_UPLOAD_STARTED,
-  EDIT_MODE_CHANGED,
   EDIT_MODE_TOGGLE_HOTKEY,
   FETCH_GUEST_MODEL,
   fetchGuestModelComplete,
@@ -121,6 +120,7 @@ import { useCurrentPreviewItem } from '../../utils/hooks/useCurrentPreviewItem';
 import { useSiteUIConfig } from '../../utils/hooks/useSiteUIConfig';
 import { useRTEConfig } from '../../utils/hooks/useRTEConfig';
 import { guestMessages } from '../../assets/guestMessages';
+import { HighlightMode } from '../../models/GlobalState';
 
 const originalDocDomain = document.domain;
 
@@ -252,7 +252,7 @@ export function PreviewConcierge(props: any) {
   useEffect(() => {
     if (item) {
       getHostToGuestBus().next({
-        type: EDIT_MODE_CHANGED,
+        type: setPreviewEditMode.type,
         payload: { editMode: getComputedEditMode({ item, username: user.username, editMode }) }
       });
     }
@@ -264,15 +264,20 @@ export function PreviewConcierge(props: any) {
     }
   }, [dispatch, currentItemPath, siteId]);
 
-  const conditionallyToggleEditMode = useCallback(() => {
-    if (item && !isItemLockedForMe(item, user.username) && hasEditAction(item.availableActions)) {
-      dispatch(
-        setPreviewEditMode({
-          editMode: !editMode
-        })
-      );
-    }
-  }, [item, dispatch, editMode, user.username]);
+  const conditionallyToggleEditMode = useCallback(
+    (nextHighlightMode?: HighlightMode) => {
+      if (item && !isItemLockedForMe(item, user.username) && hasEditAction(item.availableActions)) {
+        dispatch(
+          setPreviewEditMode({
+            // If switching from highlight modes (all vs move), we just want to switch modes without turning off edit mode.
+            editMode: nextHighlightMode !== highlightMode ? true : !editMode,
+            highlightMode: nextHighlightMode
+          })
+        );
+      }
+    },
+    [dispatch, item, editMode, user.username, highlightMode]
+  );
 
   // endregion
 
@@ -285,9 +290,7 @@ export function PreviewConcierge(props: any) {
   // Guest detection, document domain restoring, editMode/highlightMode preference retrieval, clipboard retrieval
   // and contentType subject cleanup.
   useMount(() => {
-    const localEditMode = getStoredEditModeChoice(user.username)
-      ? getStoredEditModeChoice(user.username) === 'true'
-      : null;
+    const localEditMode = getStoredEditModeChoice(user.username);
     if (nnou(localEditMode) && editMode !== localEditMode) {
       dispatch(setPreviewEditMode({ editMode: localEditMode }));
     }
@@ -745,7 +748,7 @@ export function PreviewConcierge(props: any) {
           break;
         }
         case EDIT_MODE_TOGGLE_HOTKEY: {
-          conditionallyToggleEditMode();
+          conditionallyToggleEditMode(payload.mode);
           break;
         }
         case SHOW_EDIT_DIALOG: {
@@ -811,14 +814,10 @@ export function PreviewConcierge(props: any) {
     }
   }, [uiConfig.xml, siteId, rteConfig, dispatch]);
 
-  // Hotkeys
-  useHotkeys(
-    'e',
-    () => {
-      conditionallyToggleEditMode();
-    },
-    [conditionallyToggleEditMode]
-  );
+  // region Hotkeys
+  useHotkeys('e', () => conditionallyToggleEditMode('all'), [conditionallyToggleEditMode]);
+  useHotkeys('m', () => conditionallyToggleEditMode('move'), [conditionallyToggleEditMode]);
+  // endregion
 
   return (
     <>

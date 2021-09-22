@@ -371,6 +371,20 @@ export function isMovable(recordId: number): boolean {
   );
 }
 
+export function collectMoveTargets(): ICERecord[] {
+  const movableRecords = [];
+  registry.forEach((a) => {
+    const entries = getReferentialEntries(a);
+    if (entries.field && ['repeat', 'node-selector'].includes(entries.field.type)) {
+      if (entries.index !== null) {
+        // Component or repeat group item record
+        movableRecords.push(a);
+      }
+    }
+  });
+  return movableRecords;
+}
+
 /* private */
 export function checkComponentMovability(entries): boolean {
   // Can't move if

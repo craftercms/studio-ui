@@ -14,15 +14,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export * from './Guest';
-export * from './GuestProxy';
-export * from './DropMarker';
-export * from './CrafterCMSPortal';
-export * from './AssetUploaderMask';
-export * from './GuestContext';
-export * from './ZoneMarker';
-export * from './Spinner';
-export * from './ContentType';
-export * from './Field';
-export * from './hooks';
-export * from './UltraStyledIconButton';
+import { IconButton, styled } from '@mui/material';
+
+// Since this button runs guest-side, there may be all sorts of styles that affect button styles.
+// The idea of this component is to be as specific as possible to avoid guest site styles to break ours.
+
+export const UltraStyledIconButton = styled(IconButton)({
+  boxShadow: 'none !important',
+  border: 'none !important',
+  color: 'inherit !important',
+  height: 'inherit !important',
+  width: 'inherit !important'
+});
+
+export default UltraStyledIconButton;

@@ -110,8 +110,8 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
   // endregion
 
   // region dragover
-  (action$: MouseEventActionObservable, state$) => {
-    return action$.pipe(
+  (action$: MouseEventActionObservable, state$) =>
+    action$.pipe(
       ofType('dragover'),
       withLatestFrom(state$),
       tap(([action, state]) => {
@@ -126,8 +126,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
         }
       }),
       ignoreElements()
-    );
-  },
+    ),
   (action$) =>
     action$.pipe(
       ofType('document:dragover'),
@@ -299,8 +298,8 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
   // endregion
 
   // region click
-  (action$: MouseEventActionObservable, state$) => {
-    return action$.pipe(
+  (action$: MouseEventActionObservable, state$) =>
+    action$.pipe(
       ofType('click'),
       withLatestFrom(state$),
       filter(([, state]) => state.status === EditingStatus.LISTENING),
@@ -355,8 +354,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
           return NEVER;
         }
       })
-    );
-  },
+    ),
   // endregion
 
   // region dblclick
@@ -635,8 +633,6 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
   // endregion
 );
 
-export default epic;
-
 const moveComponent = (dragContext) => {
   let { dragged, dropZone, dropZones, targetIndex } = dragContext,
     record = dragged,
@@ -696,3 +692,5 @@ const moveComponent = (dragContext) => {
     }, 20);
   }
 };
+
+export default epic;

@@ -86,7 +86,7 @@ const EditSwitch = withStyles((theme) => {
   };
 })(Switch);
 
-interface EditModeSwitchProps extends Partial<SwitchProps> {
+export interface EditModeSwitchProps extends Partial<SwitchProps> {
   item?: SandboxItem | DetailedItem;
 }
 

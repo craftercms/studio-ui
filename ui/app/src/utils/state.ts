@@ -20,9 +20,10 @@ import { nanoid as uuid } from 'nanoid';
 import TranslationOrText from '../models/TranslationOrText';
 import { DashboardPreferences } from '../models/Dashboard';
 import ToolsPanelTarget from '../models/ToolsPanelTarget';
+import { HighlightMode } from '../models/GlobalState';
 
 export function setStoredGlobalMenuSiteViewPreference(value: 'grid' | 'list', user: string) {
-  return window.localStorage.setItem(`craftercms.${user}.globalMenuSiteViewPreference`, value);
+  window.localStorage.setItem(`craftercms.${user}.globalMenuSiteViewPreference`, value);
 }
 
 export function getStoredGlobalMenuSiteViewPreference(user: string): 'grid' | 'list' {
@@ -50,24 +51,25 @@ export function getStateMapFromLegacyItem(item: LegacyItem): ItemStateMap {
   };
 }
 
-export function getStoredEditModeChoice(user: string): string {
-  return window.localStorage.getItem(`craftercms.${user}.editModeChoice`);
+export function setStoredEditModeChoice(value: string, user: string): void {
+  window.localStorage.setItem(`craftercms.${user}.editModeChoice`, value);
 }
 
-export function setStoredEditModeChoice(value: string, user: string) {
-  return window.localStorage.setItem(`craftercms.${user}.editModeChoice`, value);
+export function getStoredEditModeChoice(user: string): boolean {
+  const value = window.localStorage.getItem(`craftercms.${user}.editModeChoice`);
+  return value ? value === 'true' : null;
 }
 
-export function getStoredHighlightModeChoice(user: string): string {
-  return window.localStorage.getItem(`craftercms.${user}.highlightModeChoice`);
+export function setStoredHighlightModeChoice(value: HighlightMode, user: string): void {
+  window.localStorage.setItem(`craftercms.${user}.highlightModeChoice`, value);
 }
 
-export function setStoredHighlightModeChoice(value: string, user: string) {
-  return window.localStorage.setItem(`craftercms.${user}.highlightModeChoice`, value);
+export function getStoredHighlightModeChoice(user: string): HighlightMode {
+  return window.localStorage.getItem(`craftercms.${user}.highlightModeChoice`) as HighlightMode;
 }
 
-export function setStoredClipboard(siteIdentifier: string, user: string, value: object) {
-  return window.localStorage.setItem(
+export function setStoredClipboard(siteIdentifier: string, user: string, value: object): void {
+  window.localStorage.setItem(
     `craftercms.${user}.clipboard.${siteIdentifier}`,
     JSON.stringify({ ...value, timestamp: Date.now() })
   );
@@ -81,11 +83,8 @@ export function removeStoredClipboard(siteIdentifier: string, user: string) {
   return window.localStorage.removeItem(`craftercms.${user}.clipboard.${siteIdentifier}`);
 }
 
-export function setStoredPreviewToolsPanelPage(siteIdentifier: string, user: string, value: WidgetDescriptor) {
-  return window.localStorage.setItem(
-    `craftercms.${user}.previewToolsPanelPage.${siteIdentifier}`,
-    JSON.stringify(value)
-  );
+export function setStoredPreviewToolsPanelPage(siteIdentifier: string, user: string, value: WidgetDescriptor): void {
+  window.localStorage.setItem(`craftercms.${user}.previewToolsPanelPage.${siteIdentifier}`, JSON.stringify(value));
 }
 
 export function getStoredPreviewToolsPanelPage(siteIdentifier: string, user: string): WidgetDescriptor {
@@ -96,8 +95,8 @@ export function removeStoredPreviewToolsPanelPage(siteIdentifier: string, user: 
   return window.localStorage.removeItem(`craftercms.${user}.previewToolsPanelPage.${siteIdentifier}`);
 }
 
-export function setStoredPathNavigator(siteIdentifier: string, user: string, id: string, value: object) {
-  return window.localStorage.setItem(`craftercms.${user}.pathNavigator.${siteIdentifier}.${id}`, JSON.stringify(value));
+export function setStoredPathNavigator(siteIdentifier: string, user: string, id: string, value: object): void {
+  window.localStorage.setItem(`craftercms.${user}.pathNavigator.${siteIdentifier}.${id}`, JSON.stringify(value));
 }
 
 export function getStoredPathNavigator(siteIdentifier: string, user: string, id: string) {
@@ -105,10 +104,7 @@ export function getStoredPathNavigator(siteIdentifier: string, user: string, id:
 }
 
 export function setStoredPathNavigatorTree(siteIdentifier: string, user: string, id: string, value: object) {
-  return window.localStorage.setItem(
-    `craftercms.${user}.pathNavigatorTree.${siteIdentifier}.${id}`,
-    JSON.stringify(value)
-  );
+  window.localStorage.setItem(`craftercms.${user}.pathNavigatorTree.${siteIdentifier}.${id}`, JSON.stringify(value));
 }
 
 export function getStoredPathNavigatorTree(siteIdentifier: string, user: string, id: string) {
@@ -116,7 +112,7 @@ export function getStoredPathNavigatorTree(siteIdentifier: string, user: string,
 }
 
 export function setStoredGlobalAppOpenSidebar(user: string, value: boolean) {
-  return window.localStorage.setItem(`craftercms.${user}.globalAppOpenSidebar`, JSON.stringify(value));
+  window.localStorage.setItem(`craftercms.${user}.globalAppOpenSidebar`, JSON.stringify(value));
 }
 
 export function getStoredGlobalAppOpenSidebar(user: string): string {
@@ -153,11 +149,8 @@ export function setStoredDashboardPreferences(
   user: string,
   siteIdentifier: string,
   dashletId: string
-) {
-  return window.localStorage.setItem(
-    `craftercms.dashboard.${dashletId}.${siteIdentifier}.${user}`,
-    JSON.stringify(value)
-  );
+): void {
+  window.localStorage.setItem(`craftercms.dashboard.${dashletId}.${siteIdentifier}.${user}`, JSON.stringify(value));
 }
 
 export function getStoredDashboardPreferences(
@@ -170,20 +163,24 @@ export function getStoredDashboardPreferences(
   ) as DashboardPreferences;
 }
 
+export function setStoredLegacyComponentPanel(value: object, user: string): void {
+  window.localStorage.setItem(`craftercms.${user}.legacyComponentPanel`, JSON.stringify(value));
+}
+
 export function getStoredLegacyComponentPanel(user: string): object {
   return JSON.parse(window.localStorage.getItem(`craftercms.${user}.legacyComponentPanel`));
 }
 
-export function setStoredLegacyComponentPanel(value: object, user: string) {
-  return window.localStorage.setItem(`craftercms.${user}.legacyComponentPanel`, JSON.stringify(value));
-}
-
-export function setStoredShowToolsPanel(siteIdentifier: string, user: string, value: boolean) {
-  return window.localStorage.setItem(`craftercms.${user}.openToolsPanel.${siteIdentifier}`, JSON.stringify(value));
+export function setStoredShowToolsPanel(siteIdentifier: string, user: string, value: boolean): void {
+  window.localStorage.setItem(`craftercms.${user}.openToolsPanel.${siteIdentifier}`, JSON.stringify(value));
 }
 
 export function getStoredShowToolsPanel(siteIdentifier: string, user: string): boolean {
   return JSON.parse(window.localStorage.getItem(`craftercms.${user}.openToolsPanel.${siteIdentifier}`));
+}
+
+export function setStoredPreviewToolsPanelWidth(siteIdentifier: string, user: string, value: number): void {
+  window.localStorage.setItem(`craftercms.${user}.previewToolsPanelWidth.${siteIdentifier}`, value.toString());
 }
 
 export function getStoredPreviewToolsPanelWidth(siteIdentifier: string, user: string): number {
@@ -191,15 +188,11 @@ export function getStoredPreviewToolsPanelWidth(siteIdentifier: string, user: st
   return value === null ? (value as null) : parseInt(value);
 }
 
-export function setStoredPreviewToolsPanelWidth(siteIdentifier: string, user: string, value: number) {
-  window.localStorage.setItem(`craftercms.${user}.previewToolsPanelWidth.${siteIdentifier}`, value.toString());
+export function setStoredICEToolsPanelWidth(siteIdentifier: string, user: string, value: number): void {
+  window.localStorage.setItem(`craftercms.${user}.iceToolsPanelWidth.${siteIdentifier}`, value.toString());
 }
 
 export function getStoredICEToolsPanelWidth(siteIdentifier: string, user: string): number {
   const value = window.localStorage.getItem(`craftercms.${user}.iceToolsPanelWidth.${siteIdentifier}`);
   return value === null ? (value as null) : parseInt(value);
-}
-
-export function setStoredICEToolsPanelWidth(siteIdentifier: string, user: string, value: number) {
-  window.localStorage.setItem(`craftercms.${user}.iceToolsPanelWidth.${siteIdentifier}`, value.toString());
 }

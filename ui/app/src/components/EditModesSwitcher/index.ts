@@ -14,15 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export * from './Guest';
-export * from './GuestProxy';
-export * from './DropMarker';
-export * from './CrafterCMSPortal';
-export * from './AssetUploaderMask';
-export * from './GuestContext';
-export * from './ZoneMarker';
-export * from './Spinner';
-export * from './ContentType';
-export * from './Field';
-export * from './hooks';
-export * from './UltraStyledIconButton';
+export { default } from './EditModesSwitcher';
+
+export * from './EditModesSwitcher';
+
+export * from './EditModesSwitcherUI';

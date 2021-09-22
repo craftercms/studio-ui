@@ -14,15 +14,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export * from './Guest';
-export * from './GuestProxy';
-export * from './DropMarker';
-export * from './CrafterCMSPortal';
-export * from './AssetUploaderMask';
-export * from './GuestContext';
-export * from './ZoneMarker';
-export * from './Spinner';
-export * from './ContentType';
-export * from './Field';
-export * from './hooks';
-export * from './UltraStyledIconButton';
+import { SxProps } from '@mui/system';
+import { Theme } from '@mui/material';
+
+export type PartialRecord<K extends string | number | symbol, V> = Partial<Record<K, V>>;
+
+export type PartialSxRecord<K extends string | number | symbol> = PartialRecord<K, SxProps<Theme>>;
+
+export type PartialClassRecord<K extends string | number | symbol> = PartialRecord<K, string>;
+
+export type FullSxRecord<K extends string | number | symbol> = Record<K, SxProps<Theme>>;
+
+export type FullClassRecord<K extends string | number | symbol> = Record<K, string>;
+
+export default PartialRecord;

@@ -77,6 +77,10 @@ export default [
       withLatestFrom(state$),
       tap(([action, state]) => {
         setStoredEditModeChoice(action.payload.editMode, state.user.username);
+        if (action.payload.highlightMode) {
+          setStoredHighlightModeChoice(action.payload.highlightMode, state.user.username);
+          getHostToGuestBus().next(setHighlightMode(action.payload));
+        }
       }),
       ignoreElements()
     ),

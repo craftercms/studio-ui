@@ -448,8 +448,6 @@ function parseElementByContentType(
       });
       return array;
     }
-    // TODO: type RTE on editorial
-    case 'rte':
     case 'html':
       return unescapeHTML(getInnerHtml(element));
     case 'checkbox-group': {

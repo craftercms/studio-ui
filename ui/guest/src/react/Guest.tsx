@@ -25,7 +25,7 @@ import { GuestContextProvider, GuestReduxContext, useDispatch, useSelector } fro
 import CrafterCMSPortal from './CrafterCMSPortal';
 import ZoneMarker from './ZoneMarker';
 import DropMarker from './DropMarker';
-import { appendStyleSheet, GuestStyleConfig } from '../styles/styles';
+import { appendStyleSheet, GuestStyleConfig, useGuestTheme, styleSxDefaults, GuestStylesSx } from '../styles/styles';
 import { fromTopic, message$, post } from '../utils/communicator';
 import Cookies from 'js-cookie';
 import { HighlightData } from '../models/InContextEditing';
@@ -46,7 +46,7 @@ import {
   DESKTOP_ASSET_DRAG_STARTED,
   DESKTOP_ASSET_UPLOAD_COMPLETE,
   DESKTOP_ASSET_UPLOAD_PROGRESS,
-  EDIT_MODE_CHANGED,
+  EDIT_MODE_CHANGED, // ==> setPreviewEditMode
   EDIT_MODE_TOGGLE_HOTKEY,
   EditingStatus,
   GUEST_CHECK_IN,
@@ -72,6 +72,10 @@ import { createLocationArgument } from '../utils/util';
 import FieldInstanceSwitcher from './FieldInstanceSwitcher';
 import LookupTable from '@craftercms/studio-ui/models/LookupTable';
 import { useHotkeys } from 'react-hotkeys-hook';
+import { ThemeOptions, ThemeProvider } from '@mui/material';
+import { deepmerge } from '@mui/utils';
+import { DeepPartial } from 'redux';
+import MoveModeZoneMenu from './MoveModeZoneMenu';
 // TinyMCE makes the build quite large. Temporarily, importing this externally via
 // the site's ftl. Need to evaluate whether to include the core as part of guest build or not
 // import tinymce from 'tinymce';
@@ -79,7 +83,10 @@ import { useHotkeys } from 'react-hotkeys-hook';
 export type GuestProps = PropsWithChildren<{
   documentDomain?: string;
   path?: string;
+  themeOptions?: ThemeOptions;
+  // TODO: remove styleConfig in favour of themeOptions & sxOverrides.
   styleConfig?: GuestStyleConfig;
+  sxOverrides?: DeepPartial<GuestStylesSx>;
   isAuthoring?: boolean; // boolean | Promise<boolean> | () => boolean | Promise<boolean>
   scrollElement?: string;
 }>;
@@ -94,16 +101,21 @@ export function getEditModeClass() {
 function Guest(props: GuestProps) {
   // TODO: support path driven Guest.
   // TODO: consider supporting developer to provide the data source (promise/observable?)
-  const { path, styleConfig, children, documentDomain, scrollElement = 'html, body' } = props;
+  const {
+    path,
+    themeOptions,
+    sxOverrides,
+    styleConfig,
+    children,
+    documentDomain,
+    scrollElement = 'html, body'
+  } = props;
 
+  const theme = useGuestTheme(themeOptions);
   const [snack, setSnack] = useState<Partial<Snack>>();
   const dispatch = useDispatch();
   const state = useSelector<GuestState>((state) => state);
-  const editMode = state.editMode;
-  const highlightMode = state.highlightMode;
-  const status = state.status;
-  const hasHost = state.hostCheckedIn;
-  const draggable = state.draggable;
+  const { editMode, highlightMode, status, hostCheckedIn: hasHost, draggable } = state;
   const refs = useRef({
     contentReady: false,
     firstRender: true,
@@ -130,7 +142,7 @@ function Guest(props: GuestProps) {
             // HighlightMode validations helps to dont stop the event propagation
             if (
               ['click', 'dblclick'].includes(type) &&
-              (highlightMode === HighlightMode.ALL || (highlightMode === HighlightMode.MOVABLE && !draggable))
+              (highlightMode === HighlightMode.ALL || (highlightMode === HighlightMode.MOVE_TARGETS && !draggable))
             ) {
               event.preventDefault();
               event.stopPropagation();
@@ -145,10 +157,13 @@ function Guest(props: GuestProps) {
     [dispatch, hasHost, draggable, editMode, highlightMode]
   );
 
+  const sxStylesConfig = useMemo(() => {
+    return deepmerge(styleSxDefaults, sxOverrides);
+  }, [sxOverrides]);
+
   // Hotkeys propagation to preview
-  useHotkeys('e', () => {
-    post(EDIT_MODE_TOGGLE_HOTKEY);
-  });
+  useHotkeys('e', () => post(EDIT_MODE_TOGGLE_HOTKEY, { mode: HighlightMode.ALL }));
+  useHotkeys('m', () => post(EDIT_MODE_TOGGLE_HOTKEY, { mode: HighlightMode.MOVE_TARGETS }));
 
   // Key press/hold keeper events
   useEffect(() => {
@@ -314,7 +329,7 @@ function Guest(props: GuestProps) {
     }
   }, [dispatch, hasHost]);
 
-  // Load dependencies (tinymce)
+  // Load dependencies (tinymce, ace)
   useEffect(() => {
     if (hasHost && !window.tinymce) {
       const script = document.createElement('script');
@@ -340,7 +355,6 @@ function Guest(props: GuestProps) {
     // This only triggers when navigation occurs from within the guest page.
     const handler = () => post({ type: GUEST_CHECK_OUT });
     window.addEventListener('beforeunload', handler, false);
-
     return () => {
       post(GUEST_CHECK_OUT);
       window.removeEventListener('beforeunload', handler);
@@ -453,72 +467,94 @@ function Guest(props: GuestProps) {
   return (
     <GuestContextProvider value={context}>
       {children}
-      {editMode && (
-        <CrafterCMSPortal>
-          {draggableItemElemRecId && (
-            <craftercms-dragged-element>
-              {elementRegistry.get(parseInt(draggableItemElemRecId))?.label}
-            </craftercms-dragged-element>
-          )}
-          {Object.values(state.uploading).map((highlight: HighlightData) => (
-            <AssetUploaderMask key={highlight.id} {...highlight} />
-          ))}
-          {state.fieldSwitcher && (
-            <FieldInstanceSwitcher
-              onNext={() =>
-                dispatch({
-                  type: CONTENT_TREE_SWITCH_FIELD_INSTANCE,
-                  payload: { type: 'next', scrollElement }
-                })
-              }
-              onPrev={() =>
-                dispatch({
-                  type: CONTENT_TREE_SWITCH_FIELD_INSTANCE,
-                  payload: { type: 'prev', scrollElement }
-                })
-              }
-              registryEntryIds={state.fieldSwitcher.registryEntryIds}
-              currentElement={state.fieldSwitcher.currentElement}
-            />
-          )}
 
-          {Object.values(state.highlighted).map((highlight: HighlightData, index, array) => (
-            <ZoneMarker
-              key={highlight.id}
-              {...highlight}
-              classes={{
-                label: array.length > 1 && 'craftercms-zone-marker-label__multi-mode',
-                marker: Object.values(highlight.validations).length
-                  ? Object.values(highlight.validations).some(({ level }) => level === 'required')
-                    ? 'craftercms-required-validation-failed'
-                    : 'craftercms-suggestion-validation-failed'
-                  : null
-              }}
-            />
-          ))}
-          {[
-            EditingStatus.SORTING_COMPONENT,
-            EditingStatus.PLACING_NEW_COMPONENT,
-            EditingStatus.PLACING_DETACHED_COMPONENT
-          ].includes(status) &&
-            state.dragContext.inZone &&
-            !state.dragContext.invalidDrop && (
-              <DropMarker
-                onDropPosition={(payload) => dispatch({ type: 'set_drop_position', payload })}
-                dropZone={state.dragContext.dropZone}
-                over={state.dragContext.over}
-                prev={state.dragContext.prev}
-                next={state.dragContext.next}
-                coordinates={state.dragContext.coordinates}
+      <ThemeProvider theme={theme}>
+        {editMode && (
+          <CrafterCMSPortal>
+            {draggableItemElemRecId && (
+              <craftercms-dragged-element>
+                {elementRegistry.get(parseInt(draggableItemElemRecId))?.label}
+              </craftercms-dragged-element>
+            )}
+
+            {Object.values(state.uploading).map((highlight: HighlightData) => (
+              <AssetUploaderMask key={highlight.id} {...highlight} />
+            ))}
+
+            {state.fieldSwitcher && (
+              <FieldInstanceSwitcher
+                onNext={() =>
+                  dispatch({
+                    type: CONTENT_TREE_SWITCH_FIELD_INSTANCE,
+                    payload: { type: 'next', scrollElement }
+                  })
+                }
+                onPrev={() =>
+                  dispatch({
+                    type: CONTENT_TREE_SWITCH_FIELD_INSTANCE,
+                    payload: { type: 'prev', scrollElement }
+                  })
+                }
+                registryEntryIds={state.fieldSwitcher.registryEntryIds}
+                currentElement={state.fieldSwitcher.currentElement}
               />
             )}
-        </CrafterCMSPortal>
-      )}
-      {snack && (
-        <SnackBar open={true} onClose={() => setSnack(null)} {...snack}>
-          {snack.message}
-        </SnackBar>
-      )}
+
+            {Object.values(state.highlighted).map((highlight: HighlightData) => {
+              const isMove = HighlightMode.MOVE_TARGETS === highlightMode;
+              const validations = Object.values(highlight.validations);
+              const hasValidations = Boolean(validations.length);
+              const hasFailedRequired = validations.some(({ level }) => level === 'required');
+              // TODO: allow customizing zone marker theming.
+              return (
+                <ZoneMarker
+                  key={highlight.id}
+                  label={highlight.label}
+                  rect={highlight.rect}
+                  inherited={highlight.inherited}
+                  menuItems={isMove ? <MoveModeZoneMenu /> : null}
+                  showZoneTooltip={!isMove}
+                  sx={deepmerge(
+                    deepmerge(
+                      { ...sxStylesConfig.zoneMarker.base },
+                      isMove
+                        ? styleSxDefaults.zoneMarker.moveModeHighlight
+                        : styleSxDefaults.zoneMarker.selectModeHighlight
+                    ),
+                    hasValidations
+                      ? hasFailedRequired
+                        ? styleSxDefaults.zoneMarker.errorHighlight
+                        : styleSxDefaults.zoneMarker.warnHighlight
+                      : null
+                  )}
+                />
+              );
+            })}
+
+            {[
+              EditingStatus.SORTING_COMPONENT,
+              EditingStatus.PLACING_NEW_COMPONENT,
+              EditingStatus.PLACING_DETACHED_COMPONENT
+            ].includes(status) &&
+              state.dragContext.inZone &&
+              !state.dragContext.invalidDrop && (
+                <DropMarker
+                  onDropPosition={(payload) => dispatch({ type: 'set_drop_position', payload })}
+                  dropZone={state.dragContext.dropZone}
+                  over={state.dragContext.over}
+                  prev={state.dragContext.prev}
+                  next={state.dragContext.next}
+                  coordinates={state.dragContext.coordinates}
+                />
+              )}
+          </CrafterCMSPortal>
+        )}
+        {snack && (
+          <SnackBar open={true} onClose={() => setSnack(null)} {...snack}>
+            {snack.message}
+          </SnackBar>
+        )}
+      </ThemeProvider>
     </GuestContextProvider>
   );
 }

@@ -21,7 +21,6 @@ import {
   CLEAR_SELECT_FOR_EDIT,
   closeToolsPanel,
   CONTENT_TYPE_DROP_TARGETS_RESPONSE,
-  EDIT_MODE_CHANGED,
   FETCH_ASSETS_PANEL_ITEMS,
   FETCH_ASSETS_PANEL_ITEMS_COMPLETE,
   FETCH_ASSETS_PANEL_ITEMS_FAILED,
@@ -57,6 +56,7 @@ import {
   SET_HOST_WIDTH,
   SET_ITEM_BEING_DRAGGED,
   setHighlightMode,
+  setPreviewEditMode,
   UPDATE_AUDIENCES_PANEL_MODEL,
   updateIcePanelWidth,
   updateToolsPanelWidth
@@ -130,7 +130,7 @@ const componentsInitialState = createEntityState({
 
 const initialState: GlobalState['preview'] = {
   editMode: true,
-  highlightMode: 'ALL',
+  highlightMode: 'all',
   hostSize: { width: null, height: null },
   toolsPanelPageStack: [],
   showToolsPanel: process.env.REACT_APP_SHOW_TOOLS_PANEL ? process.env.REACT_APP_SHOW_TOOLS_PANEL === 'true' : true,
@@ -477,9 +477,10 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
       }
     }
   }),
-  [EDIT_MODE_CHANGED]: (state, { payload }) => ({
+  [setPreviewEditMode.type]: (state, { payload }) => ({
     ...state,
-    editMode: payload.editMode
+    editMode: payload.editMode,
+    highlightMode: payload.highlightMode ?? state.highlightMode
   }),
   [updateToolsPanelWidth.type]: (state, { payload }) => {
     if (payload.width < minDrawerWidth || payload.width > maxDrawerWidth) {

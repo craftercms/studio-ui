@@ -22,7 +22,7 @@ import { GuestStateObservable } from './models/GuestStore';
 import { GuestStandardAction } from './models/GuestStandardAction';
 import { GuestActionTypes } from './models/Actions';
 
-export const clearAndListen$ = new Subject();
+export const clearAndListen$ = new Subject<void>();
 
 export const escape$ = fromEvent<KeyboardEvent>(document, 'keydown').pipe(filter((e) => e.key === 'Escape'));
 

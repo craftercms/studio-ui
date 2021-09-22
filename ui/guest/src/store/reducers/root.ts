@@ -14,10 +14,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as ElementRegistry from '../../classes/ElementRegistry';
-import { getDragContextFromDropTargets, getHighlighted, getRecordsFromIceId } from '../../classes/ElementRegistry';
+import {
+  compileDropZone,
+  fromICEId,
+  getDragContextFromDropTargets,
+  getDraggable,
+  getHighlighted,
+  getHoverData,
+  getRecordsFromIceId,
+  getSiblingRects
+} from '../../classes/ElementRegistry';
 import { dragOk } from '../util';
 import * as iceRegistry from '../../classes/ICERegistry';
+import { collectMoveTargets } from '../../classes/ICERegistry';
 import { createReducer } from '@reduxjs/toolkit';
 import GuestReducer from '../models/GuestReducer';
 import { GuestStandardAction } from '../models/GuestStandardAction';
@@ -57,12 +66,12 @@ import {
 const mouseover: GuestReducer = (state, action) => {
   const { record } = action.payload;
   if (state.status === EditingStatus.LISTENING) {
-    const highlight = ElementRegistry.getHoverData(record.id);
-    const draggable = ElementRegistry.getDraggable(record.id);
+    const highlight = getHoverData(record.id);
+    const draggable = getDraggable(record.id);
     const nextState = { ...state };
 
     if (
-      (state.highlightMode === HighlightMode.MOVABLE && draggable !== false) ||
+      (state.highlightMode === HighlightMode.MOVE_TARGETS && draggable !== false) ||
       state.highlightMode === HighlightMode.ALL
     ) {
       nextState.highlighted = { [record.id]: highlight };
@@ -334,7 +343,7 @@ const exit_component_inline_edit: GuestReducer = (state) => {
 // TODO: Not pure
 const ice_zone_selected: GuestReducer = (state, action) => {
   const { record } = action.payload;
-  const highlight = ElementRegistry.getHoverData(record.id);
+  const highlight = getHoverData(record.id);
   return {
     ...state,
     status: EditingStatus.EDITING_COMPONENT,
@@ -356,7 +365,7 @@ const content_tree_field_selected: GuestReducer = (state, action) => {
     return;
   }
 
-  const highlight = ElementRegistry.getHoverData(registryEntries[0].id);
+  const highlight = getHoverData(registryEntries[0].id);
   return {
     ...state,
     status: EditingStatus.SELECT_FIELD,
@@ -378,7 +387,7 @@ const content_tree_switch_field: GuestReducer = (state, action) => {
   const { type } = action.payload;
   let nextElem = type === 'next' ? state.fieldSwitcher.currentElement + 1 : state.fieldSwitcher.currentElement - 1;
   let id = state.fieldSwitcher.registryEntryIds[nextElem];
-  const highlight = ElementRegistry.getHoverData(state.fieldSwitcher.registryEntryIds[nextElem]);
+  const highlight = getHoverData(state.fieldSwitcher.registryEntryIds[nextElem]);
 
   return {
     ...state,
@@ -441,9 +450,7 @@ const computed_dragover: GuestReducer = (state, action) => {
     if (dragContext.players.includes(element)) {
       let { next, prev } =
         // No point finding siblings for the drop zone element
-        dragContext.containers.includes(element)
-          ? { next: null, prev: null }
-          : ElementRegistry.getSiblingRects(record.id);
+        dragContext.containers.includes(element) ? { next: null, prev: null } : getSiblingRects(record.id);
       return {
         ...state,
         dragContext: {
@@ -498,7 +505,7 @@ const desktop_asset_upload_started: GuestReducer = (state, action) => {
     ...state,
     uploading: {
       ...state.uploading,
-      [record.id]: ElementRegistry.getHoverData(record.id)
+      [record.id]: getHoverData(record.id)
     }
   };
 };
@@ -521,8 +528,8 @@ const content_type_drop_targets_request: GuestReducer = (state, action) => {
   const highlighted = {};
 
   iceRegistry.getContentTypeDropTargets(contentTypeId).forEach((item) => {
-    let { elementRecordId } = ElementRegistry.compileDropZone(item.id);
-    highlighted[elementRecordId] = ElementRegistry.getHoverData(elementRecordId);
+    let { elementRecordId } = compileDropZone(item.id);
+    highlighted[elementRecordId] = getHoverData(elementRecordId);
   });
 
   return {
@@ -663,10 +670,15 @@ const set_edit_mode = (state, action) => ({
 // endregion
 
 // region set_edit_mode
-const set_highlight_mode = (state, { payload }) => ({
-  ...state,
-  highlightMode: payload.highlightMode
-});
+const set_highlight_mode = (state, { payload }) => {
+  const isMoveTargetsMode = payload.highlightMode === HighlightMode.MOVE_TARGETS;
+  return {
+    ...state,
+    highlightMode: payload.highlightMode,
+    highlighted: isMoveTargetsMode ? prepareMoveMode() : {},
+    status: isMoveTargetsMode ? EditingStatus.HIGHLIGHT_MOVE_TARGETS : EditingStatus.LISTENING
+  };
+};
 // endregion
 
 const initialState: GuestState = {
@@ -739,18 +751,33 @@ const reducerFunctions: {
   [CONTENT_TREE_FIELD_SELECTED]: content_tree_field_selected,
   [CONTENT_TREE_SWITCH_FIELD_INSTANCE]: content_tree_switch_field,
   [CLEAR_CONTENT_TREE_FIELD_SELECTED]: clear_content_tree_field_selected,
-  [HOST_CHECK_IN]: (state, action) => ({
-    ...state,
-    hostCheckedIn: true,
-    highlightMode: action.payload.highlightMode,
-    editMode: action.payload.editMode,
-    rteConfig: action.payload.rteConfig,
-    activeSite: action.payload.site
-  }),
+  [HOST_CHECK_IN]: (state, action) => {
+    const isMoveTargetsMode = action.payload.highlightMode === HighlightMode.MOVE_TARGETS;
+    return {
+      ...state,
+      hostCheckedIn: true,
+      highlightMode: action.payload.highlightMode,
+      editMode: action.payload.editMode,
+      rteConfig: action.payload.rteConfig,
+      activeSite: action.payload.site,
+      highlighted: isMoveTargetsMode ? prepareMoveMode() : {},
+      status: isMoveTargetsMode ? EditingStatus.HIGHLIGHT_MOVE_TARGETS : EditingStatus.LISTENING
+    };
+  },
   [UPDATE_RTE_CONFIG]: (state, action) => ({
     ...state,
     rteConfig: action.payload.rteConfig
   })
 };
+
+function prepareMoveMode() {
+  const highlighted = {};
+  const movableIceRecords = collectMoveTargets();
+  const movableElementRecords = movableIceRecords.map(({ id }) => fromICEId(id));
+  movableElementRecords.forEach((er) => {
+    highlighted[er.id] = getHoverData(er.id);
+  });
+  return highlighted;
+}
 
 export default createReducer<GuestState>(initialState, reducerFunctions);
