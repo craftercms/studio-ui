@@ -83,20 +83,12 @@ export function fetchLegacyScheduledItems(
 
 export function fetchLegacyDeploymentHistory(
   siteId: string,
-  sortBy: string,
-  sortAsc: boolean,
   days: number,
   numResults: number,
   filterBy: string
 ): Observable<LegacyDeploymentHistoryResponse> {
   const qs = toQueryString({
     siteId,
-    ...(sortBy
-      ? {
-          sort: sortBy,
-          ascending: sortAsc
-        }
-      : {}),
     ...(days && { days }),
     ...(numResults && { num: numResults }),
     ...(filterBy && { filterType: filterBy })

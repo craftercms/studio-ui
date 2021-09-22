@@ -363,7 +363,7 @@ const systemEpics: CrafterCMSEpic[] = [
         fetchStatus(state.sites.active).pipe(
           switchMap((response) => {
             let actions = [fetchPublishingStatusComplete(response)];
-            if (['ready', 'stopped', 'error'].includes(response.status)) {
+            if (['queued', 'ready', 'stopped', 'error'].includes(response.status)) {
               actions.push(fetchPublishingStatusProcessingComplete());
             }
             return actions;
@@ -397,7 +397,7 @@ const systemEpics: CrafterCMSEpic[] = [
     action$.pipe(
       ofType(fetchPublishingStatusComplete.type),
       withLatestFrom(state$),
-      filter(([, state]) => ['queued', 'processing', 'publishing'].includes(state.dialogs.publishingStatus.status)),
+      filter(([, state]) => ['processing', 'publishing'].includes(state.dialogs.publishingStatus.status)),
       switchMap(() =>
         interval(1000).pipe(
           startWith(0), // To fetch status immediately
