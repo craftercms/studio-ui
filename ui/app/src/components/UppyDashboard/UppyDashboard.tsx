@@ -280,7 +280,7 @@ const translations = defineMessages({
   },
   maxActiveUploadsReached: {
     id: 'uppyDashboard.maxActiveUploadsReached',
-    defaultMessage: 'Max active uploads reached.'
+    defaultMessage: '{maxFiles} maximum active uploads reached. Excess has been discarded.'
   }
 });
 
@@ -308,7 +308,11 @@ export default function UppyDashboard(props: UppyDashboardProps) {
   );
 
   const onMaxActiveUploadsReached = () => {
-    dispatch(showSystemNotification({ message: formatMessage(translations.maxActiveUploadsReached) }));
+    dispatch(
+      showSystemNotification({
+        message: formatMessage(translations.maxActiveUploadsReached, { maxFiles: maxActiveUploads })
+      })
+    );
   };
 
   const onItemsUploaded$ = useDebouncedInput(onItemsUploaded, 1000);
