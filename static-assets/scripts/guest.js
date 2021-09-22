@@ -233,9 +233,7 @@ crafterDefine('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay'], fun
     });
 
     $(window).on('beforeunload', function () {
-      communicator.publish(Topics.GUEST_CHECKOUT, {
-        location: window.location.href
-      });
+      communicator.publish(Topics.GUEST_CHECKOUT);
     });
 
     loadCss(
