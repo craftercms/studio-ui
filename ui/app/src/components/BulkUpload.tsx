@@ -98,7 +98,7 @@ const translations = defineMessages({
   },
   maxActiveUploadsReached: {
     id: 'bulkUpload.maxActiveUploadsReached',
-    defaultMessage: 'Max active uploads reached.'
+    defaultMessage: '{maxFiles} maximum active uploads reached. Excess has been discarded.'
   }
 });
 
@@ -174,6 +174,9 @@ const useStyles = makeStyles(() =>
     },
     minimized: {
       display: 'none'
+    },
+    maxFilesIndicator: {
+      marginLeft: '5px'
     }
   })
 );
@@ -548,11 +551,13 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
                   </span>
                 )
               })}
-              &nbsp; (
-              {formatMessage(translations.maxFiles, {
-                maxFiles: maxActiveUploads
-              })}
-              )
+              <span className={classes.maxFilesIndicator}>
+                (
+                {formatMessage(translations.maxFiles, {
+                  maxFiles: maxActiveUploads
+                })}
+                )
+              </span>
             </Typography>
           </>
         )}
