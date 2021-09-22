@@ -22,14 +22,16 @@ import {
   showCodeEditorDialog,
   updateCodeEditorDialog
 } from '../../actions/dialogs';
-import { CodeEditorDialogStateProps } from '../../../components/CodeEditorDialog';
+import { CodeEditorDialogStateProps } from '../../../components/CodeEditorDialog/utils';
 
 const initialState: CodeEditorDialogStateProps = {
   open: false,
+  isSubmitting: null,
+  isMinimized: null,
+  hasPendingChanges: null,
   path: null,
   mode: null,
   contentType: null,
-  pendingChanges: null,
   readonly: false
 };
 
@@ -41,7 +43,8 @@ export default createReducer<GlobalState['dialogs']['codeEditor']>(initialState,
           ...state,
           onClose: closeCodeEditorDialog(),
           onClosed: codeEditorDialogClosed(),
-          onDismiss: closeCodeEditorDialog(),
+          onMinimize: updateCodeEditorDialog({ isMinimized: true }),
+          onMaximize: updateCodeEditorDialog({ isMinimized: false }),
           ...payload,
           open: true
         };

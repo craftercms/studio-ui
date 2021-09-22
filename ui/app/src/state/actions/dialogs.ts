@@ -27,7 +27,7 @@ import { LauncherStateProps } from '../../components/Launcher/Launcher';
 import { PublishingStatusDialogStateProps } from '../../components/PublishingStatusDialog';
 import { UnlockPublisherDialogStateProps } from '../../components/UnlockPublisherDialog';
 import { WidgetDialogStateProps } from '../../components/WidgetDialog/utils';
-import { CodeEditorDialogStateProps } from '../../components/CodeEditorDialog';
+import { CodeEditorDialogStateProps } from '../../components/CodeEditorDialog/utils';
 import { PublishDialogStateProps } from '../../components/PublishDialog/utils';
 import { DeleteDialogStateProps } from '../../components/DeleteDialog/utils';
 import { FetchDeleteDependenciesResponse } from '../../services/dependencies';

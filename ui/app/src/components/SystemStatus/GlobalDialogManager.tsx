@@ -31,6 +31,8 @@ import WidgetDialog from '../WidgetDialog';
 import { useSelection } from '../../utils/hooks/useSelection';
 import CodeEditorDialog from '../CodeEditorDialog';
 import { useWithPendingChangesCloseRequest } from '../../utils/hooks/useWithPendingChangesCloseRequest';
+import { batchActions } from '../../state/actions/misc';
+import { conditionallyUnlockItem } from '../../state/actions/content';
 
 const ViewVersionDialog = lazy(() => import('../ViewVersionDialog'));
 const CompareVersionsDialog = lazy(() => import('../CompareVersionsDialog'));
@@ -166,9 +168,16 @@ function GlobalDialogManager() {
       {/* region Code Editor */}
       <CodeEditorDialog
         {...state.codeEditor}
-        onClose={createCallback(state.codeEditor.onClose, dispatch)}
+        onClose={() => {
+          dispatch(batchActions([state.codeEditor.onClose, conditionallyUnlockItem({ path: state.codeEditor.path })]));
+        }}
+        onMinimize={createCallback(state.codeEditor.onMinimize, dispatch)}
+        onMaximize={createCallback(state.codeEditor.onMaximize, dispatch)}
         onClosed={createCallback(state.codeEditor.onClosed, dispatch)}
         onSuccess={createCallback(state.codeEditor.onSuccess, dispatch)}
+        onWithPendingChangesCloseRequest={useWithPendingChangesCloseRequest(() => {
+          dispatch(batchActions([state.codeEditor.onClose, conditionallyUnlockItem({ path: state.codeEditor.path })]));
+        })}
       />
       {/* endregion */}
 
