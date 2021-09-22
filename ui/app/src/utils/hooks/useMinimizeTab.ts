@@ -14,21 +14,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { MinimizedDialog } from '../../models/MinimizedDialog';
+import { MinimizedTab } from '../../models/MinimizedTab';
 import { useDispatch } from 'react-redux';
 import { useSelection } from './useSelection';
 import { useEffect } from 'react';
-import { popDialog, pushDialog } from '../../state/reducers/dialogs/minimizedDialogs';
+import { popTab, pushTab } from '../../state/reducers/dialogs/minimizedTabs';
 
-export function useMinimizeDialog(initialTab: MinimizedDialog) {
+export function useMinimizeTab(initialTab: MinimizedTab) {
   const dispatch = useDispatch();
-  const state = useSelection((state) => state.dialogs.minimizedDialogs[initialTab.id]);
+  const state = useSelection((state) => state.dialogs.minimizedTabs[initialTab.id]);
 
   useEffect(
     () => {
-      dispatch(pushDialog(initialTab));
+      dispatch(pushTab(initialTab));
       return () => {
-        dispatch(popDialog({ id: initialTab.id }));
+        dispatch(popTab({ id: initialTab.id }));
       };
     },
     // `initialTab` omitted purposely to facilitate use without memo from consumer side

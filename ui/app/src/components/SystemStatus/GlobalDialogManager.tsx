@@ -31,8 +31,7 @@ import WidgetDialog from '../WidgetDialog';
 import { useSelection } from '../../utils/hooks/useSelection';
 import CodeEditorDialog from '../CodeEditorDialog';
 import { useWithPendingChangesCloseRequest } from '../../utils/hooks/useWithPendingChangesCloseRequest';
-import { batchActions } from '../../state/actions/misc';
-import { conditionallyUnlockItem } from '../../state/actions/content';
+import MinimizedBar from './MinimizedBar';
 
 const ViewVersionDialog = lazy(() => import('../ViewVersionDialog'));
 const CompareVersionsDialog = lazy(() => import('../CompareVersionsDialog'));
@@ -168,16 +167,14 @@ function GlobalDialogManager() {
       {/* region Code Editor */}
       <CodeEditorDialog
         {...state.codeEditor}
-        onClose={() => {
-          dispatch(batchActions([state.codeEditor.onClose, conditionallyUnlockItem({ path: state.codeEditor.path })]));
-        }}
+        onClose={createCallback(state.codeEditor.onClose, dispatch)}
         onMinimize={createCallback(state.codeEditor.onMinimize, dispatch)}
         onMaximize={createCallback(state.codeEditor.onMaximize, dispatch)}
         onClosed={createCallback(state.codeEditor.onClosed, dispatch)}
         onSuccess={createCallback(state.codeEditor.onSuccess, dispatch)}
-        onWithPendingChangesCloseRequest={useWithPendingChangesCloseRequest(() => {
-          dispatch(batchActions([state.codeEditor.onClose, conditionallyUnlockItem({ path: state.codeEditor.path })]));
-        })}
+        onWithPendingChangesCloseRequest={useWithPendingChangesCloseRequest(
+          createCallback(state.codeEditor.onClose, dispatch)
+        )}
       />
       {/* endregion */}
 
@@ -408,6 +405,19 @@ function GlobalDialogManager() {
         onClose={createCallback(state.widget.onClose, dispatch)}
         onClosed={createCallback(state.widget.onClosed, dispatch)}
       />
+      {/* endregion */}
+
+      {/* region Minimized Tabs */}
+      {Object.values(state.minimizedTabs).map((tab) => (
+        <MinimizedBar
+          key={tab.id}
+          open={tab.minimized}
+          title={tab.title}
+          subtitle={tab.subtitle}
+          status={tab.status}
+          onMaximize={createCallback(tab.onMaximized, dispatch)}
+        />
+      ))}
       {/* endregion */}
     </Suspense>
   );

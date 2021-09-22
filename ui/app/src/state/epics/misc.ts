@@ -31,9 +31,9 @@ import { reloadDetailedItem } from '../actions/content';
 import { showEditItemSuccessNotification } from '../actions/system';
 import { CrafterCMSEpic } from '../store';
 import { nanoid as uuid } from 'nanoid';
-import { popDialog, pushDialog } from '../reducers/dialogs/minimizedDialogs';
 import { translations } from '../../components/ItemActionsMenu/translations';
 import { showErrorDialog } from '../reducers/dialogs/error';
+import { popTab, pushTab } from '../reducers/dialogs/minimizedTabs';
 
 const epics = [
   (action$, state$: Observable<GlobalState>) =>
@@ -81,7 +81,7 @@ const epics = [
         }
         return merge(
           of(
-            pushDialog({
+            pushTab({
               minimized: true,
               id,
               status: 'indeterminate',
@@ -100,7 +100,7 @@ const epics = [
                         contentType
                       })
                     }),
-                    popDialog({ id })
+                    popTab({ id })
                   ])
                 : batchActions([
                     showCodeEditorDialog({
@@ -110,7 +110,7 @@ const epics = [
                       mode,
                       contentType
                     }),
-                    popDialog({ id })
+                    popTab({ id })
                   ])
             ),
             catchError(() => {
@@ -121,7 +121,7 @@ const epics = [
                       message: getIntl().formatMessage(translations.unableToVerifyWorkflows)
                     }
                   }),
-                  popDialog({ id })
+                  popTab({ id })
                 ])
               );
             })

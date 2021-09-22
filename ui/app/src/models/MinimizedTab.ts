@@ -1,7 +1,7 @@
 import StandardAction from './StandardAction';
 import { LookupTable } from './LookupTable';
 
-export interface MinimizedDialog {
+export interface MinimizedTab {
   id: string;
   title: string;
   minimized: boolean;
@@ -10,4 +10,4 @@ export interface MinimizedDialog {
   onMaximized?: StandardAction;
 }
 
-export type MinimizedDialogsStateProps = LookupTable<MinimizedDialog>;
+export type MinimizedDialogsStateProps = LookupTable<MinimizedTab>;

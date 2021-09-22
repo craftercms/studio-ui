@@ -23,7 +23,7 @@ import { ElasticParams, MediaItem } from './Search';
 import ContentInstance from './ContentInstance';
 import { ContentTypeDropTarget } from './ContentTypeDropTarget';
 import { ErrorDialogStateProps } from '../components/SystemStatus/ErrorDialog';
-import { MinimizedDialogsStateProps } from './MinimizedDialog';
+import { MinimizedDialogsStateProps } from './MinimizedTab';
 import { NewContentDialogStateProps } from '../components/NewContentDialog/utils';
 import { EntityState } from './EntityState';
 import { ApiResponse } from './ApiResponse';
@@ -194,7 +194,7 @@ export interface GlobalState {
   dialogs: {
     confirm: ConfirmDialogStateProps;
     error: ErrorDialogStateProps;
-    minimizedDialogs: MinimizedDialogsStateProps;
+    minimizedTabs: MinimizedDialogsStateProps;
     newContent: NewContentDialogStateProps;
     history: HistoryDialogStateProps;
     viewVersion: ViewVersionDialogStateProps;
