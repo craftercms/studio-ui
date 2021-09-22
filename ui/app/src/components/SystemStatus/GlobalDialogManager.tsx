@@ -31,7 +31,7 @@ import WidgetDialog from '../WidgetDialog';
 import { useSelection } from '../../utils/hooks/useSelection';
 import CodeEditorDialog from '../CodeEditorDialog';
 import { useWithPendingChangesCloseRequest } from '../../utils/hooks/useWithPendingChangesCloseRequest';
-import MinimizedBar from './MinimizedBar';
+import MinimizedBar from '../MinimizedBar';
 
 const ViewVersionDialog = lazy(() => import('../ViewVersionDialog'));
 const CompareVersionsDialog = lazy(() => import('../CompareVersionsDialog'));
@@ -46,7 +46,7 @@ const PublishDialog = lazy(() => import('../PublishDialog'));
 const DependenciesDialog = lazy(() => import('../DependenciesDialog/DependenciesDialog'));
 const DeleteDialog = lazy(() => import('../DeleteDialog'));
 const WorkflowCancellationDialog = lazy(() => import('../WorkflowCancellationDialog'));
-const LegacyFormDialog = lazy(() => import('../Dialogs/LegacyFormDialog'));
+const LegacyFormDialog = lazy(() => import('../LegacyFormDialog/LegacyFormDialog'));
 const CreateFolderDialog = lazy(() => import('../CreateFolderDialog'));
 const CopyItemsDialog = lazy(() => import('../Dialogs/CopyDialog'));
 const CreateFileDialog = lazy(() => import('../CreateFileDialog'));
@@ -158,8 +158,9 @@ function GlobalDialogManager() {
       <LegacyFormDialog
         {...state.edit}
         onClose={createCallback(state.edit.onClose, dispatch)}
+        onMinimize={createCallback(state.edit.onMinimize, dispatch)}
+        onMaximize={createCallback(state.edit.onMaximize, dispatch)}
         onClosed={createCallback(state.edit.onClosed, dispatch)}
-        onDismiss={createCallback(state.edit.onDismiss, dispatch)}
         onSaveSuccess={createCallback(state.edit.onSaveSuccess, dispatch)}
       />
       {/* endregion */}

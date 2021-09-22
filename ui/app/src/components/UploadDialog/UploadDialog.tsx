@@ -27,7 +27,7 @@ import { batchActions } from '../../state/actions/misc';
 import { UploadDialogProps } from './util';
 import { translations } from './translations';
 import { UploadDialogContainer } from './UploadDialogContainer';
-import MinimizedBar from '../SystemStatus/MinimizedBar';
+import MinimizedBar from '../MinimizedBar';
 import { useEnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
 
 export const useStyles = makeStyles(() =>

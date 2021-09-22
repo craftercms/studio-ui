@@ -18,7 +18,6 @@ import { createAction } from '@reduxjs/toolkit';
 import StandardAction from '../../models/StandardAction';
 import { FetchContentVersion } from '../../models/Version';
 import { NewContentDialogStateProps } from '../../components/NewContentDialog/utils';
-import { LegacyFormDialogStateProps } from '../../components/Dialogs/LegacyFormDialog';
 import { PathSelectionDialogStateProps } from '../../components/Dialogs/PathSelectionDialog';
 import { CopyDialogStateProps } from '../../components/Dialogs/CopyDialog';
 import { ItemMenuStateProps } from '../../components/ItemActionsMenu';
@@ -44,6 +43,7 @@ import { CreateFileStateProps } from '../../components/CreateFileDialog/utils';
 import { UploadDialogStateProps } from '../../components/UploadDialog/util';
 import { PreviewDialogStateProps } from '../../components/PreviewDialog/utils';
 import { EditSiteDialogStateProps } from '../../components/EditSiteDialog/utils';
+import { LegacyFormDialogStateProps } from '../../components/LegacyFormDialog/utils';
 
 // region History
 export const showHistoryDialog = /*#__PURE__*/ createAction<Partial<HistoryDialogStateProps>>('SHOW_HISTORY_DIALOG');
@@ -148,7 +148,7 @@ export const updateRejectDialog = /*#__PURE__*/ createAction<Partial<RejectDialo
 // endregion
 
 // region Legacy Form
-export const showEditDialog = /*#__PURE__*/ createAction<LegacyFormDialogStateProps>('SHOW_EDIT_DIALOG');
+export const showEditDialog = /*#__PURE__*/ createAction<Partial<LegacyFormDialogStateProps>>('SHOW_EDIT_DIALOG');
 export const closeEditDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_EDIT_DIALOG');
 export const editDialogClosed = /*#__PURE__*/ createAction<StandardAction>('EDIT_DIALOG_CLOSED');
 export const newContentCreationComplete = /*#__PURE__*/ createAction<StandardAction>('NEW_CONTENT_CREATION_COMPLETE');

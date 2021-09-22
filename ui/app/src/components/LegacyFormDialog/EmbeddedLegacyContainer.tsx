@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -14,13 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import Dialog from '@material-ui/core/Dialog';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { LegacyFormDialogContainerProps } from './utils';
+import { getEditFormSrc } from '../../utils/path';
+import { useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
-import LoadingState from '../../components/SystemStatus/LoadingState';
-import clsx from 'clsx';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { defineMessages, useIntl } from 'react-intl';
+import { ApiResponse } from '../../models/ApiResponse';
+import { fromEvent } from 'rxjs';
+import { filter } from 'rxjs/operators';
+import { emitSystemEvent, itemCreated, itemUpdated } from '../../state/actions/system';
 import {
   EMBEDDED_LEGACY_FORM_CLOSE,
   EMBEDDED_LEGACY_FORM_FAILURE,
@@ -32,102 +34,19 @@ import {
   EMBEDDED_LEGACY_MINIMIZE_REQUEST,
   RELOAD_REQUEST
 } from '../../state/actions/preview';
-import { fromEvent } from 'rxjs';
-import { filter } from 'rxjs/operators';
-import ErrorDialog from '../../components/SystemStatus/ErrorDialog';
-import { ApiResponse } from '../../models/ApiResponse';
-import StandardAction from '../../models/StandardAction';
-import { minimizeDialog } from '../../state/reducers/dialogs/minimizedDialogs';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 import { updateEditConfig } from '../../state/actions/dialogs';
-import { emitSystemEvent, itemCreated, itemUpdated } from '../../state/actions/system';
-import { getEditFormSrc } from '../../utils/path';
-import DialogHeader from './DialogHeader';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useUnmount } from '../../utils/hooks/useUnmount';
-import { useMinimizeDialog } from '../../utils/hooks/useMinimizeDialog';
+import LoadingState from '../SystemStatus/LoadingState';
+import clsx from 'clsx';
+import ErrorDialog from '../SystemStatus/ErrorDialog';
+import { styles, translations } from './LegacyFormDialog';
 
-const translations = defineMessages({
-  title: {
-    id: 'legacyFormDialog.title',
-    defaultMessage: 'Content Form'
-  },
-  loadingForm: {
-    id: 'legacyFormDialog.loadingForm',
-    defaultMessage: 'Loading...'
-  },
-  error: {
-    id: 'legacyFormDialog.errorLoadingForm',
-    defaultMessage: 'An error occurred trying to load the form'
-  }
-});
-
-const styles = makeStyles(() =>
-  createStyles({
-    iframe: {
-      height: '0',
-      border: 0,
-      '&.complete': {
-        height: '100%',
-        flexGrow: 1
-      }
-    },
-    dialog: {
-      minHeight: '90vh'
-    },
-    loadingRoot: {
-      flexGrow: 1,
-      justifyContent: 'center'
-    },
-    edited: {
-      width: '12px',
-      height: '12px',
-      marginLeft: '5px'
-    }
-  })
-);
-
-interface LegacyFormDialogBaseProps {
-  open?: boolean;
-  path: string;
-  selectedFields?: string[];
-  authoringBase: string;
-  site?: string;
-  isHidden?: boolean;
-  modelId?: string;
-  readonly?: boolean;
-  changeTemplate?: string;
-  contentTypeId?: string;
-  isNewContent?: boolean;
-  inProgress?: boolean;
-  onMinimized?(): void;
-  pendingChanges?: boolean;
-  iceGroupId?: string;
-  newEmbedded?: {
-    contentType: string;
-    index: number;
-    datasource: string;
-    fieldId: string;
-  };
-}
-
-export type LegacyFormDialogProps = PropsWithChildren<
-  LegacyFormDialogBaseProps & {
-    onClose?(): any;
-    onClosed?(): any;
-    onDismiss?(): any;
-    onSaveSuccess?(response?: any): any;
-  }
->;
-
-export interface LegacyFormDialogStateProps extends LegacyFormDialogBaseProps {
-  onSaveSuccess?: StandardAction;
-  onClose?: StandardAction;
-  onClosed?: StandardAction;
-  onDismiss?: StandardAction;
-}
-
-const EmbeddedLegacyEditor = React.forwardRef(function EmbeddedLegacyEditor(props: LegacyFormDialogProps, ref) {
+export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyEditor(
+  props: LegacyFormDialogContainerProps,
+  ref
+) {
   const {
     path,
     selectedFields,
@@ -141,9 +60,9 @@ const EmbeddedLegacyEditor = React.forwardRef(function EmbeddedLegacyEditor(prop
     changeTemplate,
     inProgress,
     onSaveSuccess,
-    onDismiss,
+    onMinimize,
+    onClose,
     onClosed,
-    onMinimized,
     iceGroupId,
     newEmbedded
   } = props;
@@ -190,7 +109,7 @@ const EmbeddedLegacyEditor = React.forwardRef(function EmbeddedLegacyEditor(prop
 
   const onErrorClose = () => {
     setError(null);
-    onDismiss();
+    onClose();
   };
 
   const onSave = useCallback(
@@ -217,12 +136,12 @@ const EmbeddedLegacyEditor = React.forwardRef(function EmbeddedLegacyEditor(prop
               break;
             }
             case 'saveAndMinimize': {
-              onMinimized();
+              onMinimize();
               break;
             }
             case 'saveAndPreview':
             case 'saveAndClose': {
-              onDismiss();
+              onClose();
               break;
             }
           }
@@ -230,7 +149,7 @@ const EmbeddedLegacyEditor = React.forwardRef(function EmbeddedLegacyEditor(prop
         }
         case EMBEDDED_LEGACY_FORM_CLOSE: {
           if (e.data.close) {
-            onDismiss();
+            onClose();
           }
           if (e.data.refresh) {
             getHostToGuestBus().next({ type: RELOAD_REQUEST });
@@ -244,7 +163,7 @@ const EmbeddedLegacyEditor = React.forwardRef(function EmbeddedLegacyEditor(prop
           break;
         }
         case EMBEDDED_LEGACY_FORM_RENDER_FAILED: {
-          onDismiss();
+          onClose();
           dispatch(showErrorDialog({ error: { message: formatMessage(translations.error) } }));
           break;
         }
@@ -260,7 +179,7 @@ const EmbeddedLegacyEditor = React.forwardRef(function EmbeddedLegacyEditor(prop
             }
             case 'saveAndClose':
             case 'saveAndPreview': {
-              onDismiss();
+              onClose();
               break;
             }
           }
@@ -277,18 +196,14 @@ const EmbeddedLegacyEditor = React.forwardRef(function EmbeddedLegacyEditor(prop
           break;
         }
         case EMBEDDED_LEGACY_MINIMIZE_REQUEST: {
-          dispatch(
-            minimizeDialog({
-              id: 'legacy-editor'
-            })
-          );
+          onMinimize();
         }
       }
     });
     return () => {
       messagesSubscription.unsubscribe();
     };
-  }, [inProgress, onSave, messages, dispatch, onDismiss, formatMessage, onMinimized]);
+  }, [inProgress, onSave, messages, dispatch, onClose, formatMessage, onMinimize]);
 
   useUnmount(onClosed);
 
@@ -312,57 +227,3 @@ const EmbeddedLegacyEditor = React.forwardRef(function EmbeddedLegacyEditor(prop
     </>
   );
 });
-
-export const legacyEditorId = 'legacy-editor';
-
-export default function LegacyFormDialog(props: LegacyFormDialogProps) {
-  const id = legacyEditorId;
-  const dispatch = useDispatch();
-  const { formatMessage } = useIntl();
-  const classes = styles();
-  const { open, inProgress } = props;
-
-  const iframeRef = useRef<HTMLIFrameElement>();
-
-  const title = formatMessage(translations.title);
-
-  const minimized = useMinimizeDialog({
-    id,
-    title,
-    minimized: false
-  });
-
-  const onMinimized = () => {
-    dispatch(minimizeDialog({ id }));
-  };
-
-  const onClose = () => {
-    if (inProgress) {
-      props?.onClose();
-    }
-    iframeRef.current.contentWindow.postMessage({ type: 'LEGACY_FORM_DIALOG_CANCEL_REQUEST' }, '*');
-  };
-
-  return (
-    <Dialog
-      open={open && !minimized}
-      keepMounted={minimized}
-      onClose={onClose}
-      fullWidth
-      maxWidth="xl"
-      classes={{ paper: classes.dialog }}
-    >
-      <DialogHeader
-        title={title}
-        onCloseButtonClick={onClose}
-        rightActions={[
-          {
-            icon: 'MinimizeIcon',
-            onClick: onMinimized
-          }
-        ]}
-      />
-      <EmbeddedLegacyEditor ref={iframeRef} {...props} onMinimized={onMinimized} />
-    </Dialog>
-  );
-}

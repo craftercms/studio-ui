@@ -20,7 +20,7 @@ import { useOnClose } from '../../utils/hooks/useOnClose';
 import MuiDialog, { DialogProps as MuiDialogProps } from '@material-ui/core/Dialog';
 import { useUnmount } from '../../utils/hooks/useUnmount';
 import DialogHeader, { DialogHeaderProps } from '../Dialogs/DialogHeader';
-import MinimizedBar from '../SystemStatus/MinimizedBar';
+import MinimizedBar from '../MinimizedBar';
 import { EnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
 
 export interface EnhancedDialogProps extends Omit<MuiDialogProps, 'title'>, EnhancedDialogState {
