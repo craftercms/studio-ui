@@ -286,8 +286,11 @@ export default function ApprovedScheduledDashlet() {
             <MenuItem value="page">
               <FormattedMessage id="words.pages" defaultMessage="Pages" />
             </MenuItem>
-            <MenuItem value="components">
+            <MenuItem value="component">
               <FormattedMessage id="words.components" defaultMessage="Components" />
+            </MenuItem>
+            <MenuItem value="asset">
+              <FormattedMessage id="words.assets" defaultMessage="Assets" />
             </MenuItem>
             <MenuItem value="all">
               <FormattedMessage id="words.all" defaultMessage="All" />
