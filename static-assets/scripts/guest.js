@@ -232,6 +232,12 @@ crafterDefine('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay'], fun
       clearSetTimeout(Constants.TIME_SCROLL);
     });
 
+    $(window).on('beforeunload', function () {
+      communicator.publish(Topics.GUEST_CHECKOUT, {
+        location: window.location.href
+      });
+    });
+
     loadCss(
       config.hostOrigin + crafter.join('/', config.studioContext, config.studioStaticAssets, 'styles', 'guest.css')
     );
