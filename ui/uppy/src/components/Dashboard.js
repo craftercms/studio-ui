@@ -83,7 +83,31 @@ module.exports = function Dashboard(props) {
           {showFileList ? (
             <FileList {...props} itemsPerRow={itemsPerRow} />
           ) : (
-            <AddFiles {...props} isSizeMD={isSizeMD} />
+            <div
+              style={{
+                textAlign: 'center',
+                verticalAlign: 'middle',
+                top: '50%',
+                position: 'relative',
+                transform: 'translate(0, -50%)'
+              }}
+            >
+              <div>
+                <AddFiles {...props} isSizeMD={isSizeMD} />
+              </div>
+              <div>
+                <div
+                  className="uppy-Dashboard-AddFiles"
+                  style={{
+                    color: '#949494',
+                    fontWeight: 'bold',
+                    fontSize: '20px'
+                  }}
+                >
+                  {props.externalMessages.maxFiles}
+                </div>
+              </div>
+            </div>
           )}
 
           <Slide>

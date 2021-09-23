@@ -1379,6 +1379,14 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
               }
 
               return itemLockedOut;
+            },
+
+            disableNav: function(disable) {
+              if (disable) {
+                $('#activeContentActions').addClass('disabled');
+              } else {
+                $('#activeContentActions').removeClass('disabled');
+              }
             }
           }
         });

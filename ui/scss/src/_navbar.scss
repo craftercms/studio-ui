@@ -189,6 +189,15 @@
       }
     }
   }
+
+  &.disabled {
+    li {
+      > a {
+        pointer-events: none;
+        opacity: 0.6;
+      }
+    }
+  }
 }
 
 .active-content-icon-with-item-name {

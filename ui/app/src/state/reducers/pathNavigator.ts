@@ -40,13 +40,14 @@ import {
 } from '../actions/pathNavigator';
 import { changeSite } from './sites';
 import { SandboxItem } from '../../models/Item';
+import { fetchSiteUiConfig } from '../actions/configuration';
 
 const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
   {},
   {
     [pathNavigatorInit.type]: (
       state,
-      { payload: { id, path, currentPath, locale = 'en', collapsed = false, limit, keyword, offset } }
+      { payload: { id, path, currentPath, locale = 'en', collapsed = false, limit, keyword, offset, excludes } }
     ) => {
       return {
         ...state,
@@ -67,7 +68,8 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
           total: 0,
           collapsed,
           isFetching: null,
-          error: null
+          error: null,
+          excludes
         }
       };
     },
@@ -241,7 +243,8 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
       ...state,
       [id]: { ...state[id], isFetching: true }
     }),
-    [changeSite.type]: () => ({})
+    [changeSite.type]: () => ({}),
+    [fetchSiteUiConfig.type]: () => ({})
   }
 );
 
