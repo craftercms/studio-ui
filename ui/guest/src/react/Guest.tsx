@@ -76,6 +76,7 @@ import { ThemeOptions, ThemeProvider } from '@mui/material';
 import { deepmerge } from '@mui/utils';
 import { DeepPartial } from 'redux';
 import MoveModeZoneMenu from './MoveModeZoneMenu';
+import { contentReady } from '../store/actions';
 // TinyMCE makes the build quite large. Temporarily, importing this externally via
 // the site's ftl. Need to evaluate whether to include the core as part of guest build or not
 // import tinymce from 'tinymce';
@@ -380,6 +381,7 @@ function Guest(props: GuestProps) {
       .subscribe(([model]) => {
         iceId = iceRegistry.register({ modelId: model.craftercms.id });
         refs.current.contentReady = true;
+        dispatch(contentReady());
       });
 
     post(GUEST_CHECK_IN, { location, path, site, documentDomain });

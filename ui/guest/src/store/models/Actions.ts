@@ -42,6 +42,7 @@ import {
   UPDATE_RTE_CONFIG
 } from '../../constants';
 import { Observable } from 'rxjs';
+import { contentReady } from '../actions';
 
 export type GuestActionTypes =
   // dom events
@@ -95,7 +96,8 @@ export type GuestActionTypes =
   | 'document:dragover'
   | 'document:dragleave'
   | 'document:drop'
-  | 'document:dragend';
+  | 'document:dragend'
+  | typeof contentReady.type;
 
 export type MouseEventAction = GuestStandardAction<{
   event: JQueryMouseEventObject | SyntheticEvent<Element, MouseEvent> | MouseEvent;

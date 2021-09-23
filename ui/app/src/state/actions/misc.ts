@@ -22,7 +22,9 @@ export const batchActions = /*#__PURE__*/ createAction<StandardAction[]>('BATCH_
 // endregion
 
 // region dispatch DOM Event
-export const dispatchDOMEvent = /*#__PURE__*/ createAction<{ id: string }>('DISPATCH_DOM_EVENT');
+export const dispatchDOMEvent = /*#__PURE__*/ createAction<{ id: string } & { [key: string | number]: any }>(
+  'DISPATCH_DOM_EVENT'
+);
 // endregion
 
 // region TemplateActions
