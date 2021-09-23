@@ -95,10 +95,6 @@ const translations = defineMessages({
   editController: {
     id: 'previewEditFormTool.editController',
     defaultMessage: 'Edit Controller'
-  },
-  cancel: {
-    id: 'words.cancel',
-    defaultMessage: 'Cancel'
   }
 });
 
@@ -236,7 +232,6 @@ function EditFormPanelBody(props: EditFormPanelBodyProps) {
       {selectedContentTypeId.includes('/page') && (
         <MenuItem onClick={() => openDialog('controller')}>{formatMessage(translations.editController)}</MenuItem>
       )}
-      <MenuItem onClick={onDismiss}>{formatMessage(translations.cancel)}</MenuItem>
     </>
   );
 }
