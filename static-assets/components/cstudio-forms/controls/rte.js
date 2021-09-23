@@ -41,6 +41,7 @@ CStudioForms.Controls.RTE =
     this.pencilMode = pencilMode;
     this.supportedPostFixes = ['_html'];
     this.enableSpellCheck = true;
+    this.charCount;
 
     this.formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
     this.contentTypesMessages = CrafterCMSNext.i18n.messages.contentTypesMessages;
@@ -525,6 +526,7 @@ CStudioAuthoring.Module.requireModule(
                 break;
               case 'maxlength':
                 inputEl.maxlength = prop.value;
+                this.maxLength = parseInt(prop.value);
                 break;
               case 'forcePTags':
                 var forcePTags = prop.value == 'false' ? false : true;
@@ -968,21 +970,32 @@ CStudioAuthoring.Module.requireModule(
          */
         _onChange: function (evt, obj) {
           obj.value = obj.inputEl.value;
+          obj.count(evt, obj.countEl, obj.inputEl);
+          const requirementsEnabled = obj.required || Boolean(obj.maxLength);
 
-          if (obj.required) {
-            if (CStudioAuthoring.Utils.isEmptyHtml(obj.value)) {
-              obj.setError('required', 'Field is Required');
-              obj.renderValidation(true, false);
-            } else {
-              obj.clearError('required');
-              obj.renderValidation(true, true);
+          if (requirementsEnabled) {
+            if (obj.required) {
+              if (CStudioAuthoring.Utils.isEmptyHtml(obj.value)) {
+                obj.setError('required', 'Field is Required');
+                obj.renderValidation(true, false);
+              } else {
+                obj.clearError('required');
+                obj.renderValidation(true, true);
+              }
+            }
+            if (obj.maxLength) {
+              if (obj.charCount > obj.maxLength) {
+                obj.setError('maxLength');
+                obj.renderValidation(true, false);
+              } else {
+                obj.clearError('maxLength');
+                obj.renderValidation(true, true);
+              }
             }
           } else {
             obj.renderValidation(false, true);
           }
-
           obj.owner.notifyValidation();
-          obj.count(evt, obj.countEl, obj.inputEl);
         },
 
         _onChangeVal: function (evt, obj) {
@@ -998,17 +1011,19 @@ CStudioAuthoring.Module.requireModule(
         count: function (evt, countEl, el) {
           // 'this' is the input box
           el = el ? el : this;
-          var text = el.value;
 
-          var charCount = text.length ? text.length : el.textLength ? el.textLength : 0;
+          // get length of only the textContent (no markup or escaped characters)
+          const editorBody = tinymce2.activeEditor.getBody();
+          const text = tinymce.trim(editorBody.innerText || editorBody.textContent);
+
+          this.charCount = text.length;
           var maxlength = el.maxlength && el.maxlength != '' ? el.maxlength : -1;
 
           if (maxlength != -1) {
-            if (charCount > el.maxlength) {
+            if (this.charCount > el.maxlength) {
               // truncate if exceeds max chars
-              if (charCount > el.maxlength) {
+              if (this.charCount > el.maxlength) {
                 this.value = text.substr(0, el.maxlength);
-                charCount = el.maxlength;
               }
 
               if (
@@ -1032,9 +1047,9 @@ CStudioAuthoring.Module.requireModule(
           }
 
           if (maxlength != -1) {
-            countEl.innerHTML = charCount + ' / ' + el.maxlength;
+            countEl.innerHTML = this.charCount + ' / ' + el.maxlength;
           } else {
-            countEl.innerHTML = charCount;
+            countEl.innerHTML = this.charCount;
           }
         },
 
