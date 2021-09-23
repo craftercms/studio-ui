@@ -148,8 +148,7 @@ function InstallPluginDialogUI(props: InstallPluginDialogProps) {
         minimized: true,
         id: plugin.id,
         status: 'indeterminate',
-        title: formatMessage(translations.installing, { name: plugin.name }),
-        onMaximized: null
+        title: formatMessage(translations.installing, { name: plugin.name })
       })
     );
     installMarketplacePlugin(siteId, plugin.id, plugin.version).subscribe(

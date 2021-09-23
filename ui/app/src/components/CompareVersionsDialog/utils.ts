@@ -20,7 +20,7 @@ import ApiResponse from '../../models/ApiResponse';
 import { LegacyVersion, VersionsStateProps } from '../../models/Version';
 import { EntityState } from '../../models/EntityState';
 import ContentType from '../../models/ContentType';
-import { EnhancedDialogProps } from '../Dialog';
+import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
 
 export interface CompareVersionsDialogBaseProps {

@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import EnhancedDialog from '../Dialog';
+import EnhancedDialog from '../EnhancedDialog';
 import { CreateFolderProps } from './utils';
 import CreateFolderContainer from './CreateFolderContainer';
 import { FormattedMessage } from 'react-intl';

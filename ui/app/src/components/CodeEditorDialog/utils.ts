@@ -17,11 +17,11 @@
 import { LookupTable } from '../../models/LookupTable';
 import { ContentTypeField } from '../../models/ContentType';
 import StandardAction from '../../models/StandardAction';
-import { EnhancedDialogProps } from '../Dialog';
+import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
 import React from 'react';
 
-interface CodeEditorDialogBaseProps {
+export interface CodeEditorDialogBaseProps {
   path: string;
   mode: string;
   contentType?: string;

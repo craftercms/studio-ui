@@ -23,17 +23,14 @@ import {
   updateCodeEditorDialog
 } from '../../actions/dialogs';
 import { CodeEditorDialogStateProps } from '../../../components/CodeEditorDialog/utils';
+import { commonDialogProps } from '../../../utils/state';
 
-const initialState: CodeEditorDialogStateProps = {
-  open: false,
-  isSubmitting: null,
-  isMinimized: null,
-  hasPendingChanges: null,
+const initialState: CodeEditorDialogStateProps = commonDialogProps({
   path: null,
   mode: null,
   contentType: null,
   readonly: false
-};
+});
 
 export default createReducer<GlobalState['dialogs']['codeEditor']>(initialState, {
   [showCodeEditorDialog.type]: (state, { payload }) => {

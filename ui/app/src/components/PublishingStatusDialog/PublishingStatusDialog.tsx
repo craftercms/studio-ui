@@ -14,32 +14,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Dialog from '@material-ui/core/Dialog';
 import * as React from 'react';
-import StandardAction from '../../models/StandardAction';
-import PublishingStatusDialogContainer, {
-  PublishingStatusDialogContainerProps
-} from './PublishingStatusDialogContainer';
-import { PublishingStatus } from '../../models/Publishing';
-
-export interface PublishingStatusDialogProps extends PublishingStatusDialogContainerProps {
-  open: boolean;
-}
-
-export interface PublishingStatusDialogStateProps extends PublishingStatus {
-  open: boolean;
-  isFetching: boolean;
-  onClose: StandardAction;
-  onRefresh: StandardAction;
-  onUnlock: StandardAction;
-}
+import PublishingStatusDialogContainer from './PublishingStatusDialogContainer';
+import { PublishingStatusDialogProps } from './utils';
+import EnhancedDialog from '../EnhancedDialog';
 
 function PublishingStatusDialog(props: PublishingStatusDialogProps) {
-  const { open, onClose } = props;
+  const { status, message, enabled, lockOwner, lockTTL, onRefresh, onUnlock, onStartStop, isFetching, ...rest } = props;
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
+    <EnhancedDialog omitHeader={true} maxWidth="xs" {...rest}>
       <PublishingStatusDialogContainer {...props} />
-    </Dialog>
+    </EnhancedDialog>
   );
 }
 

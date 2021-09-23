@@ -53,7 +53,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-export default function ChangeContentTypeDialogContainer(props: ChangeContentTypeDialogContainerProps) {
+export function ChangeContentTypeDialogContainer(props: ChangeContentTypeDialogContainerProps) {
   const { item, onContentTypeSelected, compact = false, rootPath, selectedContentType } = props;
   const site = useActiveSiteId();
   const dispatch = useDispatch();
@@ -178,3 +178,5 @@ export default function ChangeContentTypeDialogContainer(props: ChangeContentTyp
     </>
   );
 }
+
+export default ChangeContentTypeDialogContainer;

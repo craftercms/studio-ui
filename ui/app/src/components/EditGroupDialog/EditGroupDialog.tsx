@@ -17,7 +17,7 @@
 import React from 'react';
 import EditGroupDialogContainer from './EditGroupDialogContainer';
 import { EditGroupDialogProps } from './utils';
-import EnhancedDialog from '../Dialog';
+import EnhancedDialog from '../EnhancedDialog';
 
 export default function EditGroupDialog(props: EditGroupDialogProps) {
   const { group, onGroupDeleted, onGroupSaved, onSubmittingAndOrPendingChange, ...rest } = props;

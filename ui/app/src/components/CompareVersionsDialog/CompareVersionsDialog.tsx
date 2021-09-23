@@ -18,7 +18,7 @@ import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { CompareVersionsDialogProps } from './utils';
 import CompareVersionsDialogContainer from './CompareVersionsDialogContainer';
-import EnhancedDialog from '../Dialog/EnhancedDialog';
+import EnhancedDialog from '../EnhancedDialog/EnhancedDialog';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { AsDayMonthDateTime } from '../VersionList';
 import { compareVersion } from '../../state/reducers/versions';

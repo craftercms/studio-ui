@@ -60,7 +60,7 @@ const useStyles = makeStyles(() =>
   })
 );
 
-export default function ConfirmDialog(props: ConfirmDialogProps) {
+export function ConfirmDialog(props: ConfirmDialogProps) {
   const classes = useStyles(props.styles);
   const {
     open,
@@ -95,3 +95,5 @@ export default function ConfirmDialog(props: ConfirmDialogProps) {
     </Dialog>
   );
 }
+
+export default ConfirmDialog;

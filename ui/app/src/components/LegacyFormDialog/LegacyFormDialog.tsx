@@ -63,8 +63,6 @@ export const styles = makeStyles(() =>
   })
 );
 
-export const legacyEditorId = 'legacy-editor';
-
 export default function LegacyFormDialog(props: LegacyFormDialogProps) {
   const { formatMessage } = useIntl();
   const classes = styles();

@@ -17,7 +17,7 @@
 import { Site } from '../../models/Site';
 import React from 'react';
 import StandardAction from '../../models/StandardAction';
-import { EnhancedDialogProps } from '../Dialog';
+import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
 
 export type Source = { site: Site; error: Error };

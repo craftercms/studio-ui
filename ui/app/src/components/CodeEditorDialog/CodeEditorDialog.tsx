@@ -19,9 +19,9 @@ import { useIntl } from 'react-intl';
 import translations from './translations';
 import { CodeEditorDialogContainer } from './CodeEditorDialogContainer';
 import { CodeEditorDialogProps } from './utils';
-import EnhancedDialog from '../Dialog';
+import EnhancedDialog from '../EnhancedDialog';
 
-export default function CodeEditorDialog(props: CodeEditorDialogProps) {
+export function CodeEditorDialog(props: CodeEditorDialogProps) {
   const { formatMessage } = useIntl();
   const { mode, isSubmitting, path, readonly, contentType, onSuccess, onClose, onMinimize, ...rest } = props;
 
@@ -48,3 +48,5 @@ export default function CodeEditorDialog(props: CodeEditorDialogProps) {
     </EnhancedDialog>
   );
 }
+
+export default CodeEditorDialog;

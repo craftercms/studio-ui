@@ -27,8 +27,6 @@ export const pushTab = /*#__PURE__*/ createAction<MinimizedTab>('PUSH_TAB');
 
 export const popTab = /*#__PURE__*/ createAction<Payload>('POP_TAB');
 
-export const maximizeTab = /*#__PURE__*/ createAction<Payload>('MAXIMIZE_TAB');
-
 export const updateTab = /*#__PURE__*/ createAction<Partial<MinimizedTab> & Payload>('UPDATE_TAB');
 
 export default createReducer<GlobalState['dialogs']['minimizedTabs']>(
@@ -37,7 +35,6 @@ export default createReducer<GlobalState['dialogs']['minimizedTabs']>(
     [pushTab.type]: (state, { payload }) => ({
       ...state,
       [payload.id]: {
-        onMaximized: maximizeTab({ id: payload.id }),
         ...payload
       }
     }),

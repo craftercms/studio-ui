@@ -85,8 +85,7 @@ const epics = [
               minimized: true,
               id,
               status: 'indeterminate',
-              title: getIntl().formatMessage(translations.verifyingAffectedWorkflows),
-              onMaximized: null
+              title: getIntl().formatMessage(translations.verifyingAffectedWorkflows)
             })
           ),
           fetchWorkflowAffectedItems(state.sites.active, path).pipe(

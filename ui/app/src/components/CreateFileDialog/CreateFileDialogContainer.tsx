@@ -197,3 +197,5 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
     </>
   );
 }
+
+export default CreateFileDialogContainer;

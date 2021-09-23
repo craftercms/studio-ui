@@ -21,7 +21,7 @@ import { ApiResponse } from '../../models/ApiResponse';
 import StandardAction from '../../models/StandardAction';
 import { LookupTable } from '../../models/LookupTable';
 import { Resource } from '../../models/Resource';
-import { EnhancedDialogProps } from '../Dialog';
+import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
 
 export interface VersionViewProps {

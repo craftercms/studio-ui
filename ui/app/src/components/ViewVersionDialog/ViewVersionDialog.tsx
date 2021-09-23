@@ -18,7 +18,7 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { ViewVersionDialogProps } from './utils';
 import ViewVersionDialogContainer from './ViewVersionDialogContainer';
-import EnhancedDialog from '../Dialog/EnhancedDialog';
+import EnhancedDialog from '../EnhancedDialog/EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
 
 /*const versionViewStyles = makeStyles(() => ({

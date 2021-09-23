@@ -20,7 +20,7 @@ import React from 'react';
 import { ContextMenuOption } from '../ContextMenu';
 import { LegacyVersion, VersionsStateProps } from '../../models/Version';
 import StandardAction from '../../models/StandardAction';
-import { EnhancedDialogProps } from '../Dialog';
+import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
 
 export interface Menu {

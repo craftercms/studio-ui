@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { EnhancedDialog } from '../Dialog';
+import { EnhancedDialog } from '../EnhancedDialog';
 import { HistoryDialogContainer } from './HistoryDialogContainer';
 import { HistoryDialogProps } from './utils';
 import { FormattedMessage } from 'react-intl';

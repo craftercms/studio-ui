@@ -14,23 +14,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { WidgetDescriptor } from '../Widget';
 import StandardAction from '../../models/StandardAction';
 import { EnhancedDialogProps } from '../EnhancedDialog';
+import { PublishingStatus } from '../../models/Publishing';
 import { EnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
 
-interface WidgetDialogBaseProps {
-  title: string;
-  widget: WidgetDescriptor;
+export interface PublishingStatusBaseProps extends PublishingStatus {
+  isFetching: boolean;
 }
 
-export interface WidgetDialogProps extends WidgetDialogBaseProps, Omit<EnhancedDialogProps, 'title'> {
-  title: string;
+export interface PublishingStatusDialogProps extends PublishingStatusBaseProps, EnhancedDialogProps {
+  onRefresh?(): void;
+  onUnlock?(): void;
+  onStartStop?(): void;
 }
 
-export interface WidgetDialogStateProps extends WidgetDialogBaseProps, EnhancedDialogState {
-  onClose?: StandardAction;
-  onClosed?: StandardAction;
+export interface PublishingStatusDialogStateProps extends PublishingStatusBaseProps, EnhancedDialogState {
+  onClose: StandardAction;
+  onRefresh: StandardAction;
+  onUnlock: StandardAction;
 }
 
-export interface WidgetDialogContainerProps extends Omit<WidgetDialogBaseProps, 'title'> {}
+export interface PublishingStatusDialogContainerProps
+  extends PublishingStatusBaseProps,
+    Pick<PublishingStatusDialogProps, 'onClose' | 'onRefresh' | 'onUnlock' | 'onStartStop'> {}

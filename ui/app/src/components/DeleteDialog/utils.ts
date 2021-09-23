@@ -6,7 +6,7 @@ import { DeleteDependencies } from '../../modules/Content/Dependencies/Dependenc
 import LookupTable from '../../models/LookupTable';
 import { InputProps } from '@material-ui/core/Input';
 import { SelectionListProps } from '../../modules/Content/Dependencies/SelectionList';
-import { EnhancedDialogProps } from '../Dialog';
+import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
 
 export interface DeleteDialogBaseProps {

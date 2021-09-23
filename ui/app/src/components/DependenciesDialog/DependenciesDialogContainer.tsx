@@ -31,7 +31,7 @@ import { fetchDependant, fetchSimpleDependencies } from '../../services/dependen
 import { isEditableAsset, parseLegacyItemToSandBoxItem } from '../../utils/content';
 import DependenciesDialogUI from './DependenciesDialogUI';
 
-export default function DependenciesDialogContainer(props: DependenciesDialogContainerProps) {
+export function DependenciesDialogContainer(props: DependenciesDialogContainerProps) {
   const { item, dependenciesShown = 'depends-on', rootPath } = props;
   const [dialog, setDialog] = useSpreadState({
     ...dialogInitialState,
@@ -199,3 +199,5 @@ export default function DependenciesDialogContainer(props: DependenciesDialogCon
     />
   );
 }
+
+export default DependenciesDialogContainer;

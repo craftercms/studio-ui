@@ -19,7 +19,7 @@ import { defineMessages, FormattedMessage } from 'react-intl';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { CopyTokenProps } from './utils';
 import { CopyTokenContainer } from './CopyTokenContainer';
-import EnhancedDialog from '../Dialog';
+import EnhancedDialog from '../EnhancedDialog';
 
 export const translations = defineMessages({
   placeholder: {
@@ -46,7 +46,7 @@ export const styles = makeStyles((theme) =>
   })
 );
 
-export default function CopyTokenDialog(props: CopyTokenProps) {
+export function CopyTokenDialog(props: CopyTokenProps) {
   const { token, onCopy, ...rest } = props;
   return (
     <EnhancedDialog
@@ -58,3 +58,5 @@ export default function CopyTokenDialog(props: CopyTokenProps) {
     </EnhancedDialog>
   );
 }
+
+export default CopyTokenDialog;

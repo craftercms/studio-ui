@@ -153,7 +153,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
   const onSaveAndMinimize = () => {
     save(() => {
       setContent(editorRef.current.getValue());
-      onMinimize();
+      onMinimize?.();
     });
   };
 
@@ -193,12 +193,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
       <DialogHeader
         title={item ? item.label : <Skeleton width="120px" />}
         onCloseButtonClick={onCloseButtonClick}
-        rightActions={[
-          {
-            icon: 'MinimizeIcon',
-            onClick: onMinimize
-          }
-        ]}
+        {...(onMinimize && { rightActions: [] })}
       />
       <DialogBody className={classes.dialogBody}>
         <ConditionalLoadingState isLoading={loading} classes={{ root: classes.loadingState }}>
@@ -256,3 +251,5 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
     </>
   );
 }
+
+export default CodeEditorDialogContainer;

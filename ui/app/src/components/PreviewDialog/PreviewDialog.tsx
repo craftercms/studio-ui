@@ -18,7 +18,7 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { PreviewDialogContainer } from './PreviewDialogContainer';
 import { PreviewDialogProps } from './utils';
-import EnhancedDialog from '../Dialog';
+import EnhancedDialog from '../EnhancedDialog';
 
 export const useStyles = makeStyles(() => ({
   container: {

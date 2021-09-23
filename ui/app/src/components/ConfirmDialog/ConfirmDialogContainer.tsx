@@ -27,7 +27,7 @@ import translations from './translations';
 import SecondaryButton from '../SecondaryButton';
 import React from 'react';
 
-export default function ConfirmDialogContainer(props: ConfirmDialogContainerProps) {
+export function ConfirmDialogContainer(props: ConfirmDialogContainerProps) {
   const {
     onOk,
     onCancel,
@@ -73,3 +73,5 @@ export default function ConfirmDialogContainer(props: ConfirmDialogContainerProp
     </>
   );
 }
+
+export default ConfirmDialogContainer;

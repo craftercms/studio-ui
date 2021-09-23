@@ -31,7 +31,7 @@ import { assetsTypes, DependenciesDialogUIProps } from './utils';
 import Radio from '@material-ui/core/Radio';
 import { dependenciesDialogStyles } from './DependenciesDialog';
 
-export default function DependenciesDialogUI(props: DependenciesDialogUIProps) {
+export function DependenciesDialogUI(props: DependenciesDialogUIProps) {
   const {
     resource,
     item,
@@ -209,3 +209,5 @@ export default function DependenciesDialogUI(props: DependenciesDialogUIProps) {
     </>
   );
 }
+
+export default DependenciesDialogUI;

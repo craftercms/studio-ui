@@ -17,7 +17,7 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import EnhancedDialog from '../Dialog';
+import EnhancedDialog from '../EnhancedDialog';
 import WorkflowCancellationDialogContainer from './WorkflowCancellationDialogContainer';
 import { WorkflowCancellationDialogProps } from './utils';
 

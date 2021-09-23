@@ -15,7 +15,7 @@
  */
 
 import { SiteState } from '../../models/Site';
-import { EnhancedDialogProps } from '../Dialog';
+import { EnhancedDialogProps } from '../EnhancedDialog';
 import { onSubmittingAndOrPendingChangeProps } from '../../utils/hooks/useEnhancedDialogState';
 import React from 'react';
 

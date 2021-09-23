@@ -19,3 +19,5 @@ export { default } from './ChangeContentTypeDialog';
 export * from './ChangeContentTypeDialog';
 
 export * from './ChangeContentTypeDialogContainer';
+
+export * from './utils';

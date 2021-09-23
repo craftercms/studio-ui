@@ -19,3 +19,5 @@ export { default } from './CompareVersionsDialog';
 export * from './CompareVersionsDialog';
 
 export * from './CompareVersionsDialogContainer';
+
+export * from './utils';

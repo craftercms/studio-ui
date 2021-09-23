@@ -18,7 +18,7 @@ import React from 'react';
 import useStyles from './styles';
 import { WidgetDialogContainer } from '.';
 import { WidgetDialogProps } from './utils';
-import EnhancedDialog from '../Dialog';
+import EnhancedDialog from '../EnhancedDialog';
 
 export default function WidgetDialog(props: WidgetDialogProps) {
   const { title, widget, ...rest } = props;

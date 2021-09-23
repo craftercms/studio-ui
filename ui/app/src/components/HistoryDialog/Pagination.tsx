@@ -21,6 +21,8 @@ import React from 'react';
 import { paginationStyles } from './HistoryDialog';
 import { PaginationProps } from './utils';
 
+// TODO: Check if we can use the components/Pagination component
+
 export function Pagination(props: PaginationProps) {
   const classes = paginationStyles({});
   const { formatMessage } = useIntl();

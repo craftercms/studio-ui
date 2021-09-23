@@ -20,7 +20,7 @@ import { Grid } from '@material-ui/core';
 import useStyles from './styles';
 import { ContentTypesGridProps, NewContentDialogProps } from './utils';
 import { NewContentDialogContainer } from './NewContentDialogContainer';
-import EnhancedDialog from '../Dialog';
+import EnhancedDialog from '../EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
 
 export default function NewContentDialog(props: NewContentDialogProps) {

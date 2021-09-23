@@ -369,8 +369,7 @@ const content: CrafterCMSEpic[] = [
               minimized: true,
               id,
               status: 'indeterminate',
-              title: getIntl().formatMessage(inProgressMessages.pasting),
-              onMaximized: null
+              title: getIntl().formatMessage(inProgressMessages.pasting)
             })
           ),
           paste(state.sites.active, payload.path, state.content.clipboard).pipe(
@@ -463,8 +462,7 @@ const content: CrafterCMSEpic[] = [
                 minimized: true,
                 id,
                 status: 'indeterminate',
-                title: getIntl().formatMessage(inProgressMessages.processing),
-                onMaximized: null
+                title: getIntl().formatMessage(inProgressMessages.processing)
               })
             ),
             fetchItemByPath(state.sites.active, path).pipe(

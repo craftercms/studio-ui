@@ -19,3 +19,5 @@ export { default } from './PublishingStatusDialog';
 export * from './PublishingStatusDialog';
 
 export * from './PublishingStatusDialogContainer';
+
+export * from './utils';

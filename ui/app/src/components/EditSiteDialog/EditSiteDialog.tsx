@@ -17,7 +17,7 @@
 import React from 'react';
 import { EditSiteDialogContainer } from './EditSiteDialogContainer';
 import { EditSiteDialogProps } from './utils';
-import EnhancedDialog from '../Dialog';
+import EnhancedDialog from '../EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
 
 export default function EditSiteDialog(props: EditSiteDialogProps) {

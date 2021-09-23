@@ -36,7 +36,7 @@ import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
 
-export default function CreateFolderContainer(props: CreateFolderContainerProps) {
+export function CreateFolderContainer(props: CreateFolderContainerProps) {
   const { onClose, isSubmitting, onCreated, onRenamed, rename = false, value = '', allowBraces = false } = props;
   const [name, setName] = useState(value);
   const [confirm, setConfirm] = useState(null);
@@ -251,3 +251,5 @@ export default function CreateFolderContainer(props: CreateFolderContainerProps)
     </>
   );
 }
+
+export default CreateFolderContainer;

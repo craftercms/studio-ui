@@ -16,11 +16,11 @@
 
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
-import EnhancedDialog from '../Dialog';
+import EnhancedDialog from '../EnhancedDialog';
 import { ChangeContentTypeDialogProps } from './utils';
 import ChangeContentTypeDialogContainer from './ChangeContentTypeDialogContainer';
 
-export default function ChangeContentTypeDialog(props: ChangeContentTypeDialogProps) {
+export function ChangeContentTypeDialog(props: ChangeContentTypeDialogProps) {
   const { item, onContentTypeSelected, compact, rootPath, selectedContentType, ...rest } = props;
   return (
     <EnhancedDialog
@@ -45,3 +45,5 @@ export default function ChangeContentTypeDialog(props: ChangeContentTypeDialogPr
     </EnhancedDialog>
   );
 }
+
+export default ChangeContentTypeDialog;

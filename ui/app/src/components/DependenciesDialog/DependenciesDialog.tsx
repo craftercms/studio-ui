@@ -18,7 +18,7 @@ import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import DependenciesDialogContainer from './DependenciesDialogContainer';
 import { DependenciesDialogProps } from './utils';
-import EnhancedDialog from '../Dialog/EnhancedDialog';
+import EnhancedDialog from '../EnhancedDialog/EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
 
 export const dependenciesDialogStyles = makeStyles((theme) =>
@@ -99,7 +99,7 @@ export const dependenciesDialogStyles = makeStyles((theme) =>
   })
 );
 
-export default function DependenciesDialog(props: DependenciesDialogProps) {
+export function DependenciesDialog(props: DependenciesDialogProps) {
   const { item, dependenciesShown, rootPath, ...rest } = props;
   return (
     <EnhancedDialog
@@ -110,3 +110,5 @@ export default function DependenciesDialog(props: DependenciesDialogProps) {
     </EnhancedDialog>
   );
 }
+
+export default DependenciesDialog;

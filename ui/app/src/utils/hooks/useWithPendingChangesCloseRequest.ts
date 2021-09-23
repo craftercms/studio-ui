@@ -20,7 +20,7 @@ import { closeConfirmDialog, showConfirmDialog } from '../../state/actions/dialo
 import translations from '../../components/CodeEditorDialog/translations';
 import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
 import { createCustomDocumentEventListener } from '../dom';
-import { EnhancedDialogProps as DialogProps } from '../../components/Dialog';
+import { EnhancedDialogProps as DialogProps } from '../../components/EnhancedDialog';
 
 export function useWithPendingChangesCloseRequest(onClose: DialogProps['onClose']): DialogProps['onClose'] {
   const dispatch = useDispatch();

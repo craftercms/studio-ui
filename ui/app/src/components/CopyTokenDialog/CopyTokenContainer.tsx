@@ -69,3 +69,5 @@ export function CopyTokenContainer(props: CopyTokenContainerProps) {
     </>
   );
 }
+
+export default CopyTokenContainer;

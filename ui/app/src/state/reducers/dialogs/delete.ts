@@ -49,7 +49,7 @@ export default createReducer<GlobalState['dialogs']['delete']>(initialState, {
     ...state,
     ...payload
   }),
-  [closeDeleteDialog.type]: (state) => ({ ...state, open: false, isSubmitting: false }),
+  [closeDeleteDialog.type]: (state) => ({ ...state, open: false }),
   [deleteDialogClosed.type]: () => initialState,
   [fetchDeleteDependencies.type]: (state) => ({
     ...state,

@@ -19,3 +19,5 @@ export { default } from './CreateFileDialog';
 export * from './CreateFileDialog';
 
 export * from './CreateFileDialogContainer';
+
+export * from './utils';

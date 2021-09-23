@@ -765,8 +765,7 @@ export const itemActionDispatcher = ({
             minimized: true,
             id,
             status: 'indeterminate',
-            title: formatMessage(translations.verifyingAffectedWorkflows),
-            onMaximized: null
+            title: formatMessage(translations.verifyingAffectedWorkflows)
           })
         );
 

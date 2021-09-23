@@ -22,21 +22,10 @@ import RefreshRoundedIcon from '@material-ui/icons/RefreshRounded';
 import LockOpenRoundedIcon from '@material-ui/icons/LockOpenRounded';
 import DialogBody from '../Dialogs/DialogBody';
 import * as React from 'react';
-import { PublishingStatus } from '../../models/Publishing';
 import PublishingStatusDisplay from '../PublishingStatusDisplay';
 import PauseCircleOutlineOutlinedIcon from '@material-ui/icons/PauseCircleOutlineOutlined';
 import PlayCircleOutlineOutlinedIcon from '@material-ui/icons/PlayCircleOutlineOutlined';
-
-export type PublishingStatusDialogContainerProps = Pick<
-  PublishingStatus,
-  'enabled' | 'status' | 'message' | 'lockOwner' | 'lockTTL'
-> & {
-  isFetching: boolean;
-  onClose(): void;
-  onRefresh?(): void;
-  onUnlock?(): void;
-  onStartStop?(): void;
-};
+import { PublishingStatusDialogContainerProps } from './utils';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -55,7 +44,7 @@ export function PublishingStatusDialogContainer(props: PublishingStatusDialogCon
     <>
       <DialogHeader
         title={formatMessage(publishingStatusTileMessages.publishingStatus)}
-        onCloseButtonClick={onClose}
+        onCloseButtonClick={(e) => onClose(e, null)}
         rightActions={[
           onUnlock && {
             icon: LockOpenRoundedIcon,

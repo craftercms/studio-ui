@@ -18,7 +18,6 @@ import React, { lazy, Suspense, useEffect } from 'react';
 import StandardAction from '../../models/StandardAction';
 import { Dispatch } from 'redux';
 import { useDispatch } from 'react-redux';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { isPlainObject } from '../../utils/object';
 import PathSelectionDialog from '../Dialogs/PathSelectionDialog';
 import { useSnackbar } from 'notistack';
@@ -93,26 +92,6 @@ function createCallback(action: StandardAction, dispatch: Dispatch): (output?: u
   } : null;
 }
 // @formatter:on
-
-export const useStyles = makeStyles((theme) =>
-  createStyles({
-    wrapper: {
-      right: '0',
-      bottom: '20px',
-      display: 'flex',
-      position: 'fixed',
-      flexDirection: 'row-reverse',
-      width: '100%',
-      overflow: 'auto',
-      padding: '2px 20px',
-      zIndex: theme.zIndex.modal,
-      pointerEvents: 'none',
-      '& > *': {
-        pointerEvents: 'all'
-      }
-    }
-  })
-);
 
 function GlobalDialogManager() {
   const state = useSelection((state) => state.dialogs);

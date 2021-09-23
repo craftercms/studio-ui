@@ -17,10 +17,10 @@
 import React from 'react';
 import { CreateFileDialogContainer } from './CreateFileDialogContainer';
 import { CreateFileProps } from './utils';
-import EnhancedDialog from '../Dialog/EnhancedDialog';
+import EnhancedDialog from '../EnhancedDialog/EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
 
-export default function CreateFileDialog(props: CreateFileProps) {
+export function CreateFileDialog(props: CreateFileProps) {
   const { isSubmitting, type, path, allowBraces, onCreated, ...rest } = props;
   return (
     <EnhancedDialog
@@ -45,3 +45,5 @@ export default function CreateFileDialog(props: CreateFileProps) {
     </EnhancedDialog>
   );
 }
+
+export default CreateFileDialog;
