@@ -115,6 +115,10 @@
     communicator.dispatch({ type: Topics.LEGACY_CHECK_IN, payload: { editMode: false } });
   });
 
+  communicator.subscribe(Topics.GUEST_CHECKOUT, function() {
+    CStudioAuthoring.ContextualNav.WcmActiveContent?.disableNav(true);
+  });
+
   // Opens studio form on pencil click
   communicator.subscribe(Topics.ICE_ZONE_ON, function(message, scope) {
     var isWrite = false;
@@ -641,6 +645,7 @@
         success: function(content) {
           CStudioAuthoring.SelectedContent.setContent(content.item);
           selectContentSet(content.item, false);
+          CStudioAuthoring.ContextualNav.WcmActiveContent?.disableNav(false);
         }
       });
     });
@@ -694,6 +699,7 @@
         if (content.item.isPage) {
           CStudioAuthoring.SelectedContent.setContent(content.item);
           selectContentSet(content.item, true);
+          CStudioAuthoring.ContextualNav.WcmActiveContent?.disableNav(false);
         }
       }
     });
