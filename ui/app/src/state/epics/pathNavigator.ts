@@ -68,7 +68,8 @@ export default [
         fetchItemWithChildrenByPath(state.sites.active, state.pathNavigator[id].currentPath, {
           keyword: state.pathNavigator[id].keyword,
           limit: state.pathNavigator[id].limit,
-          offset: state.pathNavigator[id].offset
+          offset: state.pathNavigator[id].offset,
+          excludes: state.pathNavigator[id].excludes
         }).pipe(
           map(({ item, children }) => pathNavigatorFetchPathComplete({ id, parent: item, children })),
           catchAjaxError((error: AjaxError) => {
@@ -88,7 +89,7 @@ export default [
       ofType(pathNavigatorConditionallySetPath.type),
       withLatestFrom(state$),
       mergeMap(([{ type, payload: { id, path } }, state]) =>
-        fetchItemWithChildrenByPath(state.sites.active, path).pipe(
+        fetchItemWithChildrenByPath(state.sites.active, path, { excludes: state.pathNavigator[id].excludes }).pipe(
           map(({ item, children }) => pathNavigatorConditionallySetPathComplete({ id, path, parent: item, children })),
           catchAjaxError(
             (error) => pathNavigatorConditionallySetPathFailed({ id, error }),

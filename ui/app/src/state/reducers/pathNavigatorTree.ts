@@ -34,13 +34,14 @@ import {
 } from '../actions/pathNavigatorTree';
 import { changeSite } from './sites';
 import { createPresenceTable } from '../../utils/array';
+import { fetchSiteUiConfig } from '../actions/configuration';
 
 const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
   {},
   {
     [pathNavigatorTreeInit.type]: (
       state,
-      { payload: { id, path, collapsed = false, limit, expanded = [], keywordByPath = {} } }
+      { payload: { id, path, collapsed = false, limit, expanded = [], keywordByPath = {}, excludes } }
     ) => {
       return {
         ...state,
@@ -53,7 +54,8 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
           offsetByPath: {},
           keywordByPath,
           totalByPath: {},
-          fetchingByPath: { ...createPresenceTable(expanded) }
+          fetchingByPath: { ...createPresenceTable(expanded) },
+          excludes
         }
       };
     },
@@ -277,7 +279,8 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
         }
       };
     },
-    [changeSite.type]: () => ({})
+    [changeSite.type]: () => ({}),
+    [fetchSiteUiConfig.type]: () => ({})
   }
 );
 

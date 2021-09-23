@@ -58,7 +58,8 @@ export default [
           expanded = state.pathNavigatorTree[id].expanded,
           collapsed = state.pathNavigatorTree[id].collapsed,
           keywordByPath = state.pathNavigatorTree[id].keywordByPath,
-          limit = state.pathNavigatorTree[id].limit
+          limit = state.pathNavigatorTree[id].limit,
+          excludes = state.pathNavigatorTree[id].excludes
         } = payload;
         let paths = [];
         expanded.forEach((expandedPath) => {
@@ -78,7 +79,7 @@ export default [
               }
               return {};
             }),
-            { limit }
+            { limit, excludes }
           )
         ]).pipe(
           map(([items, data]) => pathNavigatorTreeRestoreComplete({ id, expanded, collapsed, items, data })),
@@ -96,7 +97,8 @@ export default [
         const { id, path, options } = payload;
         return fetchChildrenByPath(state.sites.active, path, {
           limit: state.pathNavigatorTree[id].limit,
-          ...options
+          ...options,
+          excludes: state.pathNavigatorTree[id].excludes
         }).pipe(
           map((children) => pathNavigatorTreeFetchPathChildrenComplete({ id, parentPath: path, children, options })),
           catchAjaxError((error) => pathNavigatorTreeFetchPathChildrenFailed({ error, id }))
