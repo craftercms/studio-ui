@@ -34,6 +34,7 @@ export function UploadDialogContainer(props: UploadDialogContainerProps) {
   const { formatMessage } = useIntl();
   const expiresAt = useSelection((state) => state.auth.expiresAt);
   const classes = useStyles({});
+  const maxActiveUploads = 1000;
   const {
     site,
     path,
@@ -103,6 +104,7 @@ export function UploadDialogContainer(props: UploadDialogContainerProps) {
           onPendingChanges={setPendingChanges}
           onClose={onClose}
           title={formatMessage(translations.title)}
+          maxActiveUploads={maxActiveUploads}
         />
       </DialogBody>
     </>
