@@ -14,61 +14,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { addRemote } from '../../services/repositories';
 import NewRemoteRepositoryDialogUI from './NewRemoteRepositoryDialogUI';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useSpreadState } from '../../utils/hooks/useSpreadState';
-
-export interface NewRemoteRepositoryDialogContainerProps {
-  open: boolean;
-  setDisableQuickDismiss?(disable: boolean): void;
-  onClose(): void;
-  onCreateSuccess?(): void;
-  onCreateError?(e): void;
-}
-
-const inputsInitialState = {
-  authenticationType: 'none',
-  expanded: {
-    basic: false,
-    token: false,
-    key: false
-  },
-  repoAuthentication: 'none',
-  repoUsername: '',
-  repoToken: '',
-  repoPassword: '',
-  repoKey: '',
-  remoteName: '',
-  remoteUrl: '',
-  submitted: false
-};
-
-const isFormValid = (inputs) => {
-  if (!inputs.remoteName || !inputs.remoteUrl) {
-    return false;
-  } else if (inputs.repoAuthentication === 'none') {
-    return true;
-  } else if (inputs.repoAuthentication === 'basic' && inputs.repoUsername !== '' && inputs.repoPassword !== '') {
-    return true;
-  } else if (inputs.repoAuthentication === 'token' && inputs.repoUsername !== '' && inputs.repoToken !== '') {
-    return true;
-  } else if (inputs.repoAuthentication === 'key' && inputs.repoKey) {
-    return true;
-  } else {
-    return false;
-  }
-};
+import { inputsInitialState, isFormValid, NewRemoteRepositoryDialogContainerProps } from './utils';
 
 export default function NewRemoteRepositoryDialogContainer(props: NewRemoteRepositoryDialogContainerProps) {
-  const { open, onClose, onCreateSuccess, onCreateError, setDisableQuickDismiss } = props;
+  const { onClose, onCreateSuccess, onCreateError, isSubmitting, onSubmittingAndOrPendingChange } = props;
   const siteId = useActiveSiteId();
   const [inputs, setInputs] = useSpreadState(inputsInitialState);
+  const isValid = useMemo(() => isFormValid(inputs), [inputs]);
 
   const createRemote = () => {
     setInputs({ submitted: true });
-    if (isFormValid(inputs)) {
+    if (isValid) {
+      onSubmittingAndOrPendingChange({
+        isSubmitting: true
+      });
       addRemote({
         siteId,
         remoteName: inputs.remoteName,
@@ -83,6 +47,10 @@ export default function NewRemoteRepositoryDialogContainer(props: NewRemoteRepos
           : {})
       }).subscribe(
         () => {
+          onSubmittingAndOrPendingChange({
+            isSubmitting: false,
+            hasPendingChanges: false
+          });
           onCreateSuccess?.();
         },
         (e) => {
@@ -94,16 +62,21 @@ export default function NewRemoteRepositoryDialogContainer(props: NewRemoteRepos
 
   useEffect(() => {
     const { remoteName, repoKey, repoPassword, repoToken, repoUsername } = inputs;
-    setDisableQuickDismiss?.(Boolean(remoteName || repoKey || repoPassword || repoToken || repoUsername));
-  }, [inputs, setDisableQuickDismiss]);
+    onSubmittingAndOrPendingChange({
+      hasPendingChanges: Boolean(remoteName || repoKey || repoPassword || repoToken || repoUsername)
+    });
+  }, [inputs, onSubmittingAndOrPendingChange]);
+
+  const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
 
   return (
     <NewRemoteRepositoryDialogUI
-      open={open}
       inputs={inputs}
       setInputs={setInputs}
+      isValid={isValid}
+      isSubmitting={isSubmitting}
       onCreate={createRemote}
-      onClose={onClose}
+      onCloseButtonClick={onCloseButtonClick}
     />
   );
 }
