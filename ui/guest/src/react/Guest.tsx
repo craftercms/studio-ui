@@ -361,7 +361,7 @@ function Guest(props: GuestProps) {
     };
   }, []);
 
-  // Registers parent zone, check in, checkout (when model is changed)
+  // Registers parent zone, check in, checkout (when model is changed), content ready subscription
   useEffect(() => {
     let iceId;
     const location = createLocationArgument();
@@ -467,7 +467,6 @@ function Guest(props: GuestProps) {
   return (
     <GuestContextProvider value={context}>
       {children}
-
       <ThemeProvider theme={theme}>
         {editMode && (
           <CrafterCMSPortal>

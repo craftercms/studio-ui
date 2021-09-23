@@ -23,6 +23,7 @@ import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
 import { HighlightMode } from '../../models/GlobalState';
 import { UNDEFINED } from '../../utils/constants';
+import { FormattedMessage } from 'react-intl';
 
 export interface EditModesSwitcherUIProps {
   isEditMode: boolean;
@@ -53,7 +54,21 @@ export function EditModesSwitcherUI(props: EditModesSwitcherUIProps) {
         transition: (theme) => theme.transitions.create(['background-color', 'border'])
       }}
     >
-      <Tooltip title={isEditMode ? `Switch off editing (${isAllHighlightMode ? 'e' : 'm'})` : ''}>
+      <Tooltip
+        title={
+          disabled ? (
+            ''
+          ) : (
+            <FormattedMessage
+              id="editModesSwitcher.offButtonTooltip"
+              defaultMessage="Switch off editing ({shortcutKey})"
+              values={{
+                shortcutKey: isEditMode ? (isAllHighlightMode ? 'e' : 'm') : 'e | m'
+              }}
+            />
+          )
+        }
+      >
         <IconButton
           size={size}
           disabled={disabled}
@@ -70,7 +85,11 @@ export function EditModesSwitcherUI(props: EditModesSwitcherUIProps) {
           <PowerSettingsNewRoundedIcon />
         </IconButton>
       </Tooltip>
-      <Tooltip title="Edit mode (e)">
+      <Tooltip
+        title={
+          disabled ? '' : <FormattedMessage id="editModesSwitcher.editModeTooltip" defaultMessage="Edit mode (e)" />
+        }
+      >
         <IconButton
           color={isAllHighlightMode ? 'success' : UNDEFINED}
           disabled={disabled}
@@ -81,7 +100,11 @@ export function EditModesSwitcherUI(props: EditModesSwitcherUIProps) {
           <EditRoundedIcon />
         </IconButton>
       </Tooltip>
-      <Tooltip title="Move mode (m)">
+      <Tooltip
+        title={
+          disabled ? '' : <FormattedMessage id="editModesSwitcher.moveModeTooltip" defaultMessage="Move mode (m)" />
+        }
+      >
         <IconButton
           color={isMoveHighlightMode ? 'primary' : UNDEFINED}
           disabled={disabled}
