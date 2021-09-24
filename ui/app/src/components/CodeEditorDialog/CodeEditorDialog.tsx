@@ -15,98 +15,38 @@
  */
 
 import React from 'react';
-import StandardAction from '../../models/StandardAction';
-import { useDispatch } from 'react-redux';
 import { useIntl } from 'react-intl';
-import { minimizeDialog } from '../../state/reducers/dialogs/minimizedDialogs';
-import { closeCodeEditorDialog, closeConfirmDialog, showConfirmDialog } from '../../state/actions/dialogs';
-import { batchActions } from '../../state/actions/misc';
-import { conditionallyUnlockItem } from '../../state/actions/content';
 import translations from './translations';
-import Dialog, { DialogProps } from '@mui/material/Dialog';
 import { CodeEditorDialogContainer } from './CodeEditorDialogContainer';
-import { useMinimizeDialog } from '../../utils/hooks/useMinimizeDialog';
+import { CodeEditorDialogProps } from './utils';
+import EnhancedDialog from '../EnhancedDialog';
 
-interface CodeEditorDialogBaseProps {
-  open: boolean;
-  path: string;
-  mode: string;
-  pendingChanges: boolean;
-  contentType?: string;
-  readonly?: boolean;
-}
-
-export type CodeEditorDialogProps = DialogProps &
-  CodeEditorDialogBaseProps & {
-    onSuccess?(response?: any): void;
-    onClose?(): void;
-    onClosed?(): void;
-  };
-
-export interface CodeEditorDialogStateProps extends CodeEditorDialogBaseProps {
-  onSuccess?: StandardAction;
-  onClose?: StandardAction;
-  onClosed?: StandardAction;
-  onDismiss?: StandardAction;
-}
-
-export const codeEditorId = 'code-editor';
-
-export default function CodeEditorDialog(props: CodeEditorDialogProps) {
-  const id = codeEditorId;
-  const dispatch = useDispatch();
+export function CodeEditorDialog(props: CodeEditorDialogProps) {
   const { formatMessage } = useIntl();
-  const { open, mode, pendingChanges, path, readonly, contentType, onClosed, onClose, onSuccess, ...rest } = props;
+  const { mode, isSubmitting, path, readonly, contentType, onSuccess, onClose, onMinimize, ...rest } = props;
 
   const title = formatMessage(translations.title);
 
-  const minimized = useMinimizeDialog({
-    id,
-    title,
-    minimized: false
-  });
-
-  const onMinimized = () => {
-    dispatch(minimizeDialog({ id }));
-  };
-
-  const onDialogClose = () => {
-    if (readonly) {
-      props.onClose();
-      return;
-    }
-    if (pendingChanges) {
-      dispatch(
-        showConfirmDialog({
-          title: formatMessage(translations.pendingChanges),
-          onOk: batchActions([
-            conditionallyUnlockItem({ path: props.path }),
-            closeConfirmDialog(),
-            closeCodeEditorDialog()
-          ]),
-          onCancel: closeConfirmDialog()
-        })
-      );
-    } else {
-      dispatch(conditionallyUnlockItem({ path: props.path }));
-      onClose();
-    }
-  };
-
-  const onSaveClose = () => {
-    dispatch(conditionallyUnlockItem({ path: props.path }));
-    onClose();
-  };
-
   return (
-    <Dialog fullWidth maxWidth="xl" {...rest} open={open && !minimized} keepMounted={minimized} onClose={onDialogClose}>
+    <EnhancedDialog
+      title={title}
+      omitHeader
+      maxWidth="xl"
+      isSubmitting={isSubmitting}
+      onMinimize={onMinimize}
+      onClose={onClose}
+      {...rest}
+    >
       <CodeEditorDialogContainer
-        {...props}
-        onClose={onDialogClose}
-        onSaveClose={onSaveClose}
+        path={path}
+        mode={mode}
+        onSaveClose={(e) => onClose(e, null)}
         title={title}
-        onMinimized={onMinimized}
+        isSubmitting={isSubmitting}
+        onMinimize={onMinimize}
       />
-    </Dialog>
+    </EnhancedDialog>
   );
 }
+
+export default CodeEditorDialog;

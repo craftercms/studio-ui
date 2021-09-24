@@ -24,6 +24,7 @@ import Paper from '@mui/material/Paper';
 import Popper from '@mui/material/Popper';
 import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
+import PrimaryButton from '../PrimaryButton';
 
 interface SplitButtonProps {
   options: {
@@ -33,10 +34,11 @@ interface SplitButtonProps {
   defaultSelected?: number;
   disablePortal?: boolean;
   disabled?: boolean;
+  loading?: boolean;
 }
 
 export default function SplitButton(props: SplitButtonProps) {
-  const { options, defaultSelected = 0, disablePortal = true, disabled } = props;
+  const { options, defaultSelected = 0, disablePortal = true, disabled, loading } = props;
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef<HTMLDivElement>(null);
   const [selectedIndex, setSelectedIndex] = React.useState(defaultSelected);
@@ -65,20 +67,25 @@ export default function SplitButton(props: SplitButtonProps) {
 
   return (
     <>
-      <ButtonGroup disabled={disabled} variant="contained" color="primary" ref={anchorRef} aria-label="split button">
-        <Button onClick={handleClick}>{options[selectedIndex].label}</Button>
-        <Button
-          color="primary"
-          size="small"
-          aria-controls={open ? 'split-button-menu' : undefined}
-          aria-expanded={open ? 'true' : undefined}
-          aria-label="select option"
-          aria-haspopup="menu"
-          onClick={handleToggle}
-        >
-          <ArrowDropDownIcon />
-        </Button>
-      </ButtonGroup>
+      {loading ? (
+        <PrimaryButton loading disabled />
+      ) : (
+        <ButtonGroup disabled={disabled} variant="contained" color="primary" ref={anchorRef} aria-label="split button">
+          <Button onClick={handleClick}>{options[selectedIndex].label}</Button>
+          <Button
+            color="primary"
+            size="small"
+            aria-controls={open ? 'split-button-menu' : undefined}
+            aria-expanded={open ? 'true' : undefined}
+            aria-label="select option"
+            aria-haspopup="menu"
+            onClick={handleToggle}
+          >
+            <ArrowDropDownIcon />
+          </Button>
+        </ButtonGroup>
+      )}
+
       <Popper open={open} anchorEl={anchorRef.current} role={undefined} transition disablePortal={disablePortal}>
         {({ TransitionProps, placement }) => (
           <Grow

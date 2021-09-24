@@ -63,8 +63,7 @@ export default function Dashlet(props: DashletProps) {
               onRefresh();
             }}
             className={clsx(!headerRightSection && classes.refresh)}
-            size="large"
-          >
+            size="large">
             <Tooltip title={<FormattedMessage id="words.refresh" defaultMessage="Refresh" />}>
               <RefreshRoundedIcon />
             </Tooltip>

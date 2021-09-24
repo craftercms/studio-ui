@@ -14,11 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useSpreadState } from '../../utils/hooks/useSpreadState';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useDispatch } from 'react-redux';
-import { useUnmount } from '../../utils/hooks/useUnmount';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import {
   fetchDeleteDependencies,
@@ -29,8 +28,7 @@ import {
 import { deleteItems } from '../../services/content';
 import { emitSystemEvent, itemsDeleted } from '../../state/actions/system';
 import { DeleteDialogUI } from './DeleteDialogUI';
-import { DeleteDialogBaseProps } from './utils';
-import { DialogProps } from '@mui/material/Dialog';
+import { DeleteDialogContainerProps } from './utils';
 import { useSelection } from '../../utils/hooks/useSelection';
 import { DeleteDependencies } from '../../modules/Content/Dependencies/DependencySelection';
 import { Resource } from '../../models/Resource';
@@ -39,14 +37,6 @@ import { createPresenceTable } from '../../utils/array';
 import { DetailedItem } from '../../models/Item';
 import { isBlank } from '../../utils/string';
 import { batchActions } from '../../state/actions/misc';
-
-export type DeleteDialogContainerProps = PropsWithChildren<
-  DeleteDialogBaseProps & {
-    onClose: DialogProps['onClose'];
-    onClosed?(): any;
-    onSuccess?(response?: any): any;
-  }
->;
 
 function createCheckedList(selectedItems: LookupTable<boolean>, excludedPaths?: string[]) {
   return Object.entries(selectedItems)
@@ -64,34 +54,33 @@ function createCheckedLookup(items: Array<DetailedItem | string>, setChecked = t
 }
 
 export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
-  const { items, onClose, onSuccess, isFetching, onClosed, childItems, dependentItems } = props;
+  const { items, onClose, isSubmitting, onSuccess, isFetching, childItems, dependentItems } = props;
   const [comment, setComment] = useState('');
   const [apiState, setApiState] = useSpreadState({
-    error: null,
-    submitting: false
+    error: null
   });
   const site = useActiveSiteId();
   const isCommentRequired = useSelection((state) => state.uiConfig.publishing.deleteCommentRequired);
   const [selectedItems, setSelectedItems] = useState<LookupTable<boolean>>({});
   const dispatch = useDispatch();
-  const depsSource = useMemo(
-    () => ({ childItems, dependentItems, apiState, isFetching }),
-    [childItems, dependentItems, apiState, isFetching]
-  );
+  const depsSource = useMemo(() => ({ childItems, dependentItems, apiState, isFetching }), [
+    childItems,
+    dependentItems,
+    apiState,
+    isFetching
+  ]);
   const [submitDisabled, setSubmitDisabled] = useState(true);
   const [confirmChecked, setConfirmChecked] = useState(false);
   const authoringBase = useSelection((state) => state.env.authoringBase);
 
   const onSubmit = () => {
     const paths = createCheckedList(selectedItems);
-    setApiState({ submitting: true });
-    dispatch(updateDeleteDialog({ disableQuickDismiss: true }));
+    dispatch(updateDeleteDialog({ isSubmitting: true }));
     deleteItems(site, paths, comment).subscribe(
       (response) => {
-        setApiState({ submitting: false });
         dispatch(
           batchActions([
-            updateDeleteDialog({ disableQuickDismiss: false }),
+            updateDeleteDialog({ isSubmitting: false, hasPendingChanges: false }),
             emitSystemEvent(itemsDeleted({ targets: paths.concat(childItems ?? []) }))
           ])
         );
@@ -101,14 +90,18 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
         });
       },
       (error) => {
-        setApiState({ error, submitting: false });
+        dispatch(updateDeleteDialog({ isSubmitting: false }));
+        setApiState({ error });
       }
     );
   };
 
-  const onCommentChange = (e) => setComment(e.target.value);
+  const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
 
-  const onDismiss = () => onClose({}, null);
+  const onCommentChange = (e) => {
+    dispatch(updateDeleteDialog({ hasPendingChanges: true }));
+    setComment(e.target.value);
+  };
 
   const fetchOrCleanDependencies = (nextChecked) => {
     let paths = createCheckedList(nextChecked, dependentItems);
@@ -178,8 +171,6 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
     dispatch(showEditDialog({ path, authoringBase, site, onSaveSuccess: fetchDeleteDependencies({ paths }) }));
   };
 
-  useUnmount(onClosed);
-
   const resource: Resource<DeleteDependencies> = useLogicResource(depsSource, {
     shouldResolve: (source) => Boolean(source.childItems && source.dependentItems && !source.isFetching),
     shouldReject: (source) => Boolean(source.apiState.error),
@@ -198,12 +189,12 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
 
   useEffect(() => {
     setSubmitDisabled(
-      apiState.submitting ||
+      isSubmitting ||
         Object.values(selectedItems).length === 0 ||
         (isCommentRequired && isBlank(comment)) ||
         !confirmChecked
     );
-  }, [apiState.submitting, comment, isCommentRequired, selectedItems, confirmChecked]);
+  }, [isSubmitting, comment, isCommentRequired, selectedItems, confirmChecked]);
 
   return (
     <DeleteDialogUI
@@ -212,10 +203,10 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
       selectedItems={selectedItems}
       comment={comment}
       onCommentChange={onCommentChange}
-      isDisabled={apiState.submitting}
-      isSubmitting={apiState.submitting}
+      isDisabled={isSubmitting}
+      isSubmitting={isSubmitting}
       onSubmit={onSubmit}
-      onDismiss={onDismiss}
+      onCloseButtonClick={onCloseButtonClick}
       isCommentRequired={isCommentRequired}
       isSubmitButtonDisabled={submitDisabled}
       onItemClicked={onItemClicked}

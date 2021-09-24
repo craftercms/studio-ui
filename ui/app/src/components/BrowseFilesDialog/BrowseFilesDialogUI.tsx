@@ -85,7 +85,7 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
     <>
       <DialogHeader
         title={<FormattedMessage id="browseFilesDialog.uploadImage" defaultMessage="Select a file" />}
-        onDismiss={onClose}
+        onCloseButtonClick={onClose}
       />
       <DialogBody className={classes.dialogBody}>
         <Box display="flex">

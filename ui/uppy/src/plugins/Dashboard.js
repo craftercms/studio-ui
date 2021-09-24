@@ -52,7 +52,7 @@ class Dashboard extends UppyDashboard {
   }
 
   addFiles = (files) => {
-    const descriptors = files.map((file) => ({
+    let descriptors = files.map((file) => ({
       source: this.id,
       name: file.name,
       type: file.type,
@@ -68,6 +68,19 @@ class Dashboard extends UppyDashboard {
           : this.opts.path
       }
     }));
+    const maxActiveUploads = this.opts.maxActiveUploads;
+    const uppyFiles = this.uppy.getFiles();
+    // TODO: There's a TODO in uppy code to move the code to Core so it can be used as an util,
+    // check when updating to v.2 if this can be replaced with the util.
+    const inProgressFiles = Object.keys(uppyFiles).filter((file) => {
+      return !uppyFiles[file].progress.uploadComplete && uppyFiles[file].progress.uploadStarted;
+    });
+
+    if (inProgressFiles.length + descriptors.length > maxActiveUploads) {
+      const availableUploads = maxActiveUploads - inProgressFiles.length;
+      descriptors = descriptors.slice(0, availableUploads);
+      this.opts.onMaxActiveUploadsReached?.();
+    }
 
     try {
       this.uppy.addFiles(descriptors);
@@ -437,7 +450,8 @@ class Dashboard extends UppyDashboard {
       isDraggingOver: pluginState.isDraggingOver,
       handleDragOver: this.handleDragOver,
       handleDragLeave: this.handleDragLeave,
-      handleDrop: this.handleDrop
+      handleDrop: this.handleDrop,
+      externalMessages: this.opts.externalMessages
     });
   };
 

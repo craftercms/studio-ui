@@ -33,6 +33,8 @@ import { useDebouncedInput } from '../../utils/hooks/useDebouncedInput';
 import useStyles from './styles';
 import clsx from 'clsx';
 import Paper from '@mui/material/Paper';
+import { useEnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
+import { useWithPendingChangesCloseRequest } from '../../utils/hooks/useWithPendingChangesCloseRequest';
 
 interface UsersManagementProps {
   passwordRequirementsRegex?: string;
@@ -47,7 +49,6 @@ export default function UsersManagement(props: UsersManagementProps) {
   const [fetching, setFetching] = useState(false);
   const [users, setUsers] = useState<PagedArray<User>>(null);
   const [error, setError] = useState<ApiResponse>();
-  const [openCreateUserDialog, setOpenCreateUserDialog] = useState(false);
   const [viewUser, setViewUser] = useState(null);
   const [showSearchBox, setShowSearchBox] = useState(false);
   const [keyword, setKeyword] = useState('');
@@ -88,12 +89,17 @@ export default function UsersManagement(props: UsersManagementProps) {
     }
   );
 
+  const createUserDialogState = useEnhancedDialogState();
+  const createUserDialogPendingChangesCloseRequest = useWithPendingChangesCloseRequest(createUserDialogState.onClose);
+  const editUserDialogState = useEnhancedDialogState();
+  const editUserDialogPendingChangesCloseRequest = useWithPendingChangesCloseRequest(editUserDialogState.onClose);
+
   const onUserCreated = () => {
-    setOpenCreateUserDialog(false);
+    createUserDialogState.onClose();
     fetchUsers();
   };
 
-  const onUserInfoClose = () => {
+  const editUserDialogClosed = () => {
     setViewUser(null);
   };
 
@@ -102,6 +108,7 @@ export default function UsersManagement(props: UsersManagementProps) {
   };
 
   const onRowClicked = (user: User) => {
+    editUserDialogState.onOpen();
     setViewUser(user);
   };
 
@@ -140,7 +147,7 @@ export default function UsersManagement(props: UsersManagementProps) {
             startIcon={<AddIcon />}
             variant="outlined"
             color="primary"
-            onClick={() => setOpenCreateUserDialog(true)}
+            onClick={() => createUserDialogState.onOpen()}
           >
             <FormattedMessage id="usersGrid.createUser" defaultMessage="Create User" />
           </Button>
@@ -175,17 +182,28 @@ export default function UsersManagement(props: UsersManagementProps) {
       </SuspenseWithEmptyState>
 
       <CreateUserDialog
-        open={openCreateUserDialog}
+        open={createUserDialogState.open}
         onCreateSuccess={onUserCreated}
-        onClose={() => setOpenCreateUserDialog(false)}
+        onClose={createUserDialogState.onClose}
         passwordRequirementsRegex={passwordRequirementsRegex}
+        isSubmitting={createUserDialogState.isSubmitting}
+        isMinimized={createUserDialogState.isMinimized}
+        hasPendingChanges={createUserDialogState.hasPendingChanges}
+        onWithPendingChangesCloseRequest={createUserDialogPendingChangesCloseRequest}
+        onSubmittingAndOrPendingChange={createUserDialogState.onSubmittingAndOrPendingChange}
       />
       <EditUserDialog
-        open={Boolean(viewUser)}
-        onClose={onUserInfoClose}
+        open={editUserDialogState.open}
+        onClose={editUserDialogState.onClose}
+        onClosed={editUserDialogClosed}
         onUserEdited={onUserEdited}
         user={viewUser}
+        isSubmitting={editUserDialogState.isSubmitting}
+        isMinimized={editUserDialogState.isMinimized}
+        hasPendingChanges={editUserDialogState.hasPendingChanges}
         passwordRequirementsRegex={passwordRequirementsRegex}
+        onWithPendingChangesCloseRequest={editUserDialogPendingChangesCloseRequest}
+        onSubmittingAndOrPendingChange={editUserDialogState.onSubmittingAndOrPendingChange}
       />
     </Paper>
   );

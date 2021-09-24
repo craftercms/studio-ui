@@ -20,8 +20,8 @@ import ReactDOM from 'react-dom';
 import CrafterCMSNextBridge from '../components/CrafterCMSNextBridge';
 import * as string from './string';
 import * as object from './object';
-import * as system from './system';
 import { nou } from './object';
+import * as system from './system';
 import * as ajax from './ajax';
 import * as path from './path';
 import * as auth from './auth';
@@ -161,19 +161,19 @@ export function createCodebaseBridge() {
       Preview: lazy(() => import('../pages/Preview')),
       SiteTools: lazy(() => import('../pages/SiteTools')),
       PublishDialog: lazy(() => import('../components/PublishDialog/PublishDialog')),
-      DependenciesDialog: lazy(() => import('../modules/Content/Dependencies/DependenciesDialog')),
+      DependenciesDialog: lazy(() => import('../components/DependenciesDialog')),
       DeleteDialog: lazy(() => import('../components/DeleteDialog/DeleteDialog')),
       LauncherOpenerButton: lazy(() => import('../components/LauncherOpenerButton/LauncherOpenerButton')),
       EncryptTool: lazy(() => import('../components/EncryptTool')),
       SiteEncryptTool: lazy(() => import('../components/SiteEncryptTool')),
       AuthMonitor: lazy(() => import('../components/SystemStatus/AuthMonitor')),
       Login: lazy(() => import('../pages/Login')),
-      BulkUpload: lazy(() => import('../components/Dialogs/UploadDialog')),
-      ConfirmDialog: lazy(() => import('../components/Dialogs/ConfirmDialog')),
+      BulkUpload: lazy(() => import('../components/UploadDialog/UploadDialog')),
+      ConfirmDialog: lazy(() => import('../components/ConfirmDialog')),
       GlobalDialogManager: lazy(() => import('../components/SystemStatus/GlobalDialogManager')),
       PagesWidget: lazy(() => import('../components/PathNavigator/PathNavigator')),
       QuickCreateMenu: lazy(() => import('../pages/QuickCreateMenu')),
-      NewContentDialog: lazy(() => import('../modules/Content/Authoring/NewContentDialog')),
+      NewContentDialog: lazy(() => import('../components/NewContentDialog/NewContentDialog')),
       PreviewCompatDialog: lazy(() => import('../components/Dialogs/PreviewCompatibilityDialog')),
       PathSelectionDialog: lazy(() => import('../components/Dialogs/PathSelectionDialog')),
       SplitButton: lazy(() => import('../components/Controls/SplitButton')),
@@ -184,7 +184,9 @@ export function createCodebaseBridge() {
       ),
       TokenManagement: lazy(() => import('../components/TokenManagement')),
       PluginManagement: lazy(() => import('../components/PluginManagement')),
-      PublishingStatusDialogBody: lazy(() => import('../components/PublishingStatusDialog/PublishingStatusDialogBody')),
+      PublishingStatusDialogBody: lazy(() =>
+        import('../components/PublishingStatusDialog/PublishingStatusDialogContainer')
+      ),
       LogoAndMenuBundleButton: lazy(() => import('../components/LogoAndMenuBundleButton')),
       CrafterIcon: lazy(() => import('../components/Icons/CrafterIcon')),
       LauncherGlobalNav: lazy(() => import('../components/LauncherGlobalNav/LauncherGlobalNav')),

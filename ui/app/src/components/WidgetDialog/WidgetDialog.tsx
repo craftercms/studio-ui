@@ -14,59 +14,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { minimizeDialog } from '../../state/reducers/dialogs/minimizedDialogs';
-import { WidgetDescriptor } from '../Widget';
-import React, { PropsWithChildren } from 'react';
-import StandardAction from '../../models/StandardAction';
-import { useDispatch } from 'react-redux';
+import React from 'react';
 import useStyles from './styles';
-import { Dialog } from '@mui/material';
-import { WidgetDialogUI } from '.';
-import { useMinimizeDialog } from '../../utils/hooks/useMinimizeDialog';
-
-interface WidgetDialogBaseProps {
-  open: boolean;
-  title: string;
-  id: string;
-  widget: WidgetDescriptor;
-}
-
-export type WidgetDialogProps = PropsWithChildren<
-  WidgetDialogBaseProps & {
-    onClose(): void;
-    onClosed?(): void;
-  }
->;
-
-export interface WidgetDialogStateProps extends WidgetDialogBaseProps {
-  onClose?: StandardAction;
-  onClosed?: StandardAction;
-}
+import { WidgetDialogContainer } from '.';
+import { WidgetDialogProps } from './utils';
+import EnhancedDialog from '../EnhancedDialog';
 
 export default function WidgetDialog(props: WidgetDialogProps) {
-  const { open, widget, onClose, title, id } = props;
-  const dispatch = useDispatch();
+  const { title, widget, ...rest } = props;
   const classes = useStyles();
 
-  const minimized = useMinimizeDialog({
-    id,
-    title,
-    minimized: false
-  });
-
-  const onMinimize = () => {
-    dispatch(minimizeDialog({ id }));
-  };
   return (
-    <Dialog
-      open={open && !minimized}
-      keepMounted={minimized}
-      onClose={onClose}
-      fullWidth
-      maxWidth="xl"
-      classes={{ paper: classes.dialog }}
-    >
-      <WidgetDialogUI onClose={onClose} onMinimize={onMinimize} title={title} widget={widget} />
-    </Dialog>
+    <EnhancedDialog title={title} maxWidth="xl" classes={{ paper: classes.dialog }} {...rest}>
+      <WidgetDialogContainer widget={widget} />
+    </EnhancedDialog>
   );
 }

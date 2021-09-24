@@ -28,6 +28,8 @@ import Button from '@mui/material/Button';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import Paper from '@mui/material/Paper';
+import { useEnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
+import { useWithPendingChangesCloseRequest } from '../../utils/hooks/useWithPendingChangesCloseRequest';
 
 export default function GroupsManagement() {
   const [offset, setOffset] = useState(0);
@@ -36,7 +38,6 @@ export default function GroupsManagement() {
   const [groups, setGroups] = useState<PagedArray<Group>>(null);
   const [error, setError] = useState<ApiResponse>();
   const [selectedGroup, setSelectedGroup] = useState<Group>(null);
-  const [openGroupDialog, setOpenGroupDialog] = useState<boolean>(false);
 
   const fetchGroups = useCallback(() => {
     setFetching(true);
@@ -70,8 +71,11 @@ export default function GroupsManagement() {
     }
   );
 
+  const editGroupDialogState = useEnhancedDialogState();
+  const editGroupDialogPendingChangesCloseRequest = useWithPendingChangesCloseRequest(editGroupDialogState.onClose);
+
   const onRowClicked = (group: Group) => {
-    setOpenGroupDialog(true);
+    editGroupDialogState.onOpen();
     setSelectedGroup(group);
   };
 
@@ -89,7 +93,7 @@ export default function GroupsManagement() {
   };
 
   const onGroupDeleted = (group: Group) => {
-    setOpenGroupDialog(false);
+    editGroupDialogState.onClose();
     fetchGroups();
   };
 
@@ -97,16 +101,17 @@ export default function GroupsManagement() {
     setSelectedGroup(null);
   };
 
-  const onCloseGroupDialog = () => {
-    setOpenGroupDialog(false);
-  };
-
   return (
     <Paper elevation={0}>
       <GlobalAppToolbar
         title={<FormattedMessage id="words.groups" defaultMessage="Groups" />}
         leftContent={
-          <Button startIcon={<AddIcon />} variant="outlined" color="primary" onClick={() => setOpenGroupDialog(true)}>
+          <Button
+            startIcon={<AddIcon />}
+            variant="outlined"
+            color="primary"
+            onClick={() => editGroupDialogState.onOpen()}
+          >
             <FormattedMessage id="sites.createGroup" defaultMessage="Create Group" />
           </Button>
         }
@@ -130,12 +135,17 @@ export default function GroupsManagement() {
         />
       </SuspenseWithEmptyState>
       <EditGroupDialog
-        open={openGroupDialog}
+        open={editGroupDialogState.open}
         group={selectedGroup}
+        onClose={editGroupDialogState.onClose}
         onClosed={onGroupDialogClosed}
-        onClose={onCloseGroupDialog}
         onGroupSaved={onGroupSaved}
         onGroupDeleted={onGroupDeleted}
+        isSubmitting={editGroupDialogState.isSubmitting}
+        isMinimized={editGroupDialogState.isMinimized}
+        hasPendingChanges={editGroupDialogState.hasPendingChanges}
+        onWithPendingChangesCloseRequest={editGroupDialogPendingChangesCloseRequest}
+        onSubmittingAndOrPendingChange={editGroupDialogState.onSubmittingAndOrPendingChange}
       />
     </Paper>
   );

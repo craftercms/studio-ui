@@ -16,10 +16,13 @@
 
 import { createReducer } from '@reduxjs/toolkit';
 import { closeNewContentDialog, newContentDialogClosed, showNewContentDialog } from '../../actions/dialogs';
-import { NewContentDialogStateProps } from '../../../modules/Content/Authoring/NewContentDialog';
+import { NewContentDialogStateProps } from '../../../components/NewContentDialog/utils';
 
 const initialState: NewContentDialogStateProps = {
   open: false,
+  isSubmitting: null,
+  isMinimized: null,
+  hasPendingChanges: null,
   compact: false,
   item: null,
   rootPath: '/site/website'
@@ -30,7 +33,6 @@ export default createReducer<NewContentDialogStateProps>(initialState, {
     ...state,
     onClose: closeNewContentDialog(),
     onClosed: newContentDialogClosed(),
-    onDismiss: closeNewContentDialog(),
     ...payload,
     open: true
   }),

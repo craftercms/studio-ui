@@ -20,6 +20,7 @@ import { nanoid as uuid } from 'nanoid';
 import TranslationOrText from '../models/TranslationOrText';
 import { DashboardPreferences } from '../models/Dashboard';
 import ToolsPanelTarget from '../models/ToolsPanelTarget';
+import { EnhancedDialogState } from './hooks/useEnhancedDialogState';
 import { HighlightMode } from '../models/GlobalState';
 
 export function setStoredGlobalMenuSiteViewPreference(value: 'grid' | 'list', user: string) {
@@ -195,4 +196,18 @@ export function setStoredICEToolsPanelWidth(siteIdentifier: string, user: string
 export function getStoredICEToolsPanelWidth(siteIdentifier: string, user: string): number {
   const value = window.localStorage.getItem(`craftercms.${user}.iceToolsPanelWidth.${siteIdentifier}`);
   return value === null ? (value as null) : parseInt(value);
+}
+
+export function setStoredICEToolsPanelWidth(siteIdentifier: string, user: string, value: number) {
+  window.localStorage.setItem(`craftercms.${user}.iceToolsPanelWidth.${siteIdentifier}`, value.toString());
+}
+
+export function commonDialogProps<T>(specificProps: T): EnhancedDialogState & T {
+  return {
+    open: false,
+    isSubmitting: null,
+    isMinimized: null,
+    hasPendingChanges: null,
+    ...specificProps
+  };
 }

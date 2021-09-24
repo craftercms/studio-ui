@@ -23,7 +23,7 @@ import List from '@mui/material/List';
 import Skeleton from '@mui/material/Skeleton';
 import { rand } from '../PathNavigator/utils';
 import Button from '@mui/material/Button';
-import { ContextMenuOption } from '../ContextMenu/ContextMenu';
+import { ContextMenuOption } from '../ContextMenu';
 
 export interface ItemActionsSnackbarProps {
   open: boolean;

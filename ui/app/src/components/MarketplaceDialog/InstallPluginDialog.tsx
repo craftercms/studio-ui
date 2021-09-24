@@ -40,9 +40,9 @@ import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import { useMount } from '../../utils/hooks/useMount';
 import { useSubject } from '../../utils/hooks/useSubject';
 import { useSpreadState } from '../../utils/hooks/useSpreadState';
-import { popDialog, pushDialog } from '../../state/reducers/dialogs/minimizedDialogs';
 import { translations } from './translations';
 import { batchActions } from '../../state/actions/misc';
+import { popTab, pushTab } from '../../state/reducers/dialogs/minimizedTabs';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -145,12 +145,11 @@ function InstallPluginDialogUI(props: InstallPluginDialogProps) {
   const onPluginDetailsSelected = (plugin: MarketplacePlugin) => {
     setInstallingLookup({ [plugin.id]: true });
     dispatch(
-      pushDialog({
+      pushTab({
         minimized: true,
         id: plugin.id,
         status: 'indeterminate',
-        title: formatMessage(translations.installing, { name: plugin.name }),
-        onMaximized: null
+        title: formatMessage(translations.installing, { name: plugin.name })
       })
     );
     installMarketplacePlugin(siteId, plugin.id, plugin.version).subscribe(
@@ -158,7 +157,7 @@ function InstallPluginDialogUI(props: InstallPluginDialogProps) {
         setInstallingLookup({ [plugin.id]: false });
         onInstall(plugin);
         dispatch(
-          popDialog({
+          popTab({
             id: plugin.id
           })
         );
@@ -170,7 +169,7 @@ function InstallPluginDialogUI(props: InstallPluginDialogProps) {
             showErrorDialog({
               error: response.response
             }),
-            popDialog({
+            popTab({
               id: plugin.id
             })
           ])
@@ -189,7 +188,7 @@ function InstallPluginDialogUI(props: InstallPluginDialogProps) {
             <FormattedMessage id="words.search" defaultMessage="Search" />
           )
         }
-        onDismiss={props.onClose}
+        onCloseButtonClick={props.onClose}
         rightActions={[
           {
             icon: SearchIcon,

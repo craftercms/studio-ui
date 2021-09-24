@@ -84,7 +84,6 @@ import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { validateActionPolicy } from '../../services/sites';
 import { defineMessages } from 'react-intl';
 import { CrafterCMSEpic } from '../store';
-import { popDialog, pushDialog } from '../reducers/dialogs/minimizedDialogs';
 import { nanoid as uuid } from 'nanoid';
 import StandardAction from '../../models/StandardAction';
 import { asArray } from '../../utils/array';
@@ -93,6 +92,7 @@ import { AjaxError } from 'rxjs/ajax';
 import { showErrorDialog } from '../reducers/dialogs/error';
 import { dissociateTemplate } from '../actions/preview';
 import { isBlank } from '../../utils/string';
+import { popTab, pushTab } from '../reducers/dialogs/minimizedTabs';
 
 export const sitePolicyMessages = defineMessages({
   itemPastePolicyConfirm: {
@@ -374,12 +374,11 @@ const content: CrafterCMSEpic[] = [
         const id = uuid();
         return merge(
           of(
-            pushDialog({
+            pushTab({
               minimized: true,
               id,
               status: 'indeterminate',
-              title: getIntl().formatMessage(inProgressMessages.pasting),
-              onMaximized: null
+              title: getIntl().formatMessage(inProgressMessages.pasting)
             })
           ),
           paste(state.sites.active, payload.path, state.content.clipboard).pipe(
@@ -388,7 +387,7 @@ const content: CrafterCMSEpic[] = [
                 emitSystemEvent(itemsPasted({ target: payload.path, clipboard: state.content.clipboard })),
                 clearClipboard(),
                 showPasteItemSuccessNotification(),
-                popDialog({ id })
+                popTab({ id })
               ])
             )
           )
@@ -466,12 +465,11 @@ const content: CrafterCMSEpic[] = [
           const id = uuid();
           return merge(
             of(
-              pushDialog({
+              pushTab({
                 minimized: true,
                 id,
                 status: 'indeterminate',
-                title: getIntl().formatMessage(inProgressMessages.processing),
-                onMaximized: null
+                title: getIntl().formatMessage(inProgressMessages.processing)
               })
             ),
             fetchItemByPath(state.sites.active, path).pipe(
@@ -487,10 +485,10 @@ const content: CrafterCMSEpic[] = [
                     ].filter(Boolean)
                   )
                 }),
-                popDialog({ id })
+                popTab({ id })
               ]),
               catchAjaxError((error: AjaxError) => [
-                popDialog({ id }),
+                popTab({ id }),
                 error.status === 404
                   ? showConfirmDialog({
                       body: getIntl().formatMessage(

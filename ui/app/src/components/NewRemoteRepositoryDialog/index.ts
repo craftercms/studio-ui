@@ -21,3 +21,5 @@ export * from './NewRemoteRepositoryDialog';
 export * from './NewRemoteRepositoryDialogContainer';
 
 export * from './NewRemoteRepositoryDialogUI';
+
+export * from './utils';

@@ -15,6 +15,7 @@
  */
 
 import createStyles from '@mui/styles/createStyles';
+
 import makeStyles from '@mui/styles/makeStyles';
 import { useIntl } from 'react-intl';
 import Checkbox from '@mui/material/Checkbox';

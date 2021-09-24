@@ -35,7 +35,7 @@ export default function ConfigurationSamplePreviewDialogContainer(props: Configu
     <>
       <DialogHeader
         title={<FormattedMessage id="configurationSamplePreviewDialog.title" defaultMessage="Sample File" />}
-        onDismiss={onClose}
+        onCloseButtonClick={onClose}
       />
       <DialogBody style={{ height: '60vh', padding: 0 }}>
         <AceEditor

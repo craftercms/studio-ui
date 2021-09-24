@@ -27,7 +27,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import { LookupTable } from '../../models/LookupTable';
 import StandardAction from '../../models/StandardAction';
 import Dialog from '@mui/material/Dialog';
-import DialogHeader from '../DialogHeader/DialogHeader';
+import DialogHeader from './DialogHeader';
 import DialogBody from './DialogBody';
 import DialogFooter from './DialogFooter';
 import PrimaryButton from '../PrimaryButton';
@@ -260,7 +260,7 @@ function CopyDialogUI(props: CopyDialogProps) {
 
   return (
     <>
-      <DialogHeader title={title} subtitle={subtitle} onDismiss={onClose} />
+      <DialogHeader title={title} subtitle={subtitle} onCloseButtonClick={onClose} />
       <DialogBody style={{ minHeight: '30vh' }}>
         <ItemSelectorTree
           item={item}

@@ -66,7 +66,7 @@ export default function CommitResolutionDialogContainer(props: CommitResolutionD
     <form onSubmit={onSubmit}>
       <DialogHeader
         title={<FormattedMessage id="repositories.commitResolution" defaultMessage="Commit Resolution" />}
-        onDismiss={onClose}
+        onCloseButtonClick={onClose}
       />
       <DialogBody>
         <TextField

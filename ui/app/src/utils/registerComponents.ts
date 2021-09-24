@@ -42,9 +42,7 @@ export const registerComponents = () => {
     '@mui/icons-material/SettingsApplicationsOutlined': lazy(
       () => import('@mui/icons-material/SettingsApplicationsOutlined')
     ),
-    '@mui/icons-material/FormatAlignJustifyRounded': lazy(
-      () => import('@mui/icons-material/FormatAlignJustifyRounded')
-    ),
+    '@mui/icons-material/FormatAlignJustifyRounded': lazy(() => import('@mui/icons-material/FormatAlignJustifyRounded')),
     '@mui/icons-material/FormatAlignLeftRounded': lazy(() => import('@mui/icons-material/FormatAlignLeftRounded')),
     '@mui/icons-material/CloudUploadOutlined': lazy(() => import('@mui/icons-material/CloudUploadOutlined')),
     '@mui/icons-material/PollOutlined': lazy(() => import('@mui/icons-material/PollOutlined')),

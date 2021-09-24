@@ -18,7 +18,7 @@ import { combineReducers } from '@reduxjs/toolkit';
 import confirm from './confirm';
 import error from './error';
 import newContent from './newContent';
-import minimizedDialogs from './minimizedDialogs';
+import minimizedTabs from './minimizedTabs';
 import history from './history';
 import viewVersion from './viewVersion';
 import compareVersions from './compareVersions';
@@ -48,7 +48,7 @@ export default combineReducers({
   confirm,
   error,
   newContent,
-  minimizedDialogs,
+  minimizedTabs,
   history,
   viewVersion,
   compareVersions,

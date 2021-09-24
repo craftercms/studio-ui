@@ -37,6 +37,7 @@ export type PublishDialogContentUIProps = Pick<
   | 'mixedPublishingTargets'
   | 'submissionCommentRequired'
   | 'onPublishingArgumentChange'
+  | 'isSubmitting'
 >;
 
 export function PublishDialogContentUI(props: PublishDialogContentUIProps) {
@@ -56,7 +57,8 @@ export function PublishDialogContentUI(props: PublishDialogContentUIProps) {
     mixedPublishingDates,
     mixedPublishingTargets,
     submissionCommentRequired,
-    onPublishingArgumentChange
+    onPublishingArgumentChange,
+    isSubmitting
   } = props;
   // endregion
   const { items, publishingTargets } = resource.read();
@@ -71,7 +73,7 @@ export function PublishDialogContentUI(props: PublishDialogContentUIProps) {
             dependencies={dependencies}
             onSelectAllClicked={onSelectAll}
             onSelectAllSoftClicked={onSelectAllSoftDependencies}
-            disabled={state.submitting}
+            disabled={isSubmitting}
           />
         </Grid>
         <Grid item xs={12} sm={5} md={5} lg={5} xl={5}>
@@ -82,7 +84,7 @@ export function PublishDialogContentUI(props: PublishDialogContentUIProps) {
             publishingChannels={publishingTargets}
             publishingTargetsStatus={publishingTargetsStatus}
             onPublishingChannelsFailRetry={onPublishingChannelsFailRetry}
-            disabled={state.submitting}
+            disabled={isSubmitting}
             mixedPublishingDates={mixedPublishingDates}
             mixedPublishingTargets={mixedPublishingTargets}
             submissionCommentRequired={submissionCommentRequired}

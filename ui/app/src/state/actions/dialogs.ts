@@ -16,34 +16,34 @@
 
 import { createAction } from '@reduxjs/toolkit';
 import StandardAction from '../../models/StandardAction';
-import { HistoryDialogStateProps } from '../../modules/Content/History/HistoryDialog';
-import { ViewVersionDialogStateProps } from '../../modules/Content/History/ViewVersionDialog';
 import { FetchContentVersion } from '../../models/Version';
-import { CompareVersionsDialogStateProps } from '../../modules/Content/History/CompareVersionsDialog';
-import { ConfirmDialogStateProps } from '../../components/Dialogs/ConfirmDialog';
-import { NewContentDialogStateProps } from '../../modules/Content/Authoring/NewContentDialog';
-import { DependenciesDialogStateProps } from '../../modules/Content/Dependencies/DependenciesDialog';
-import { WorkflowCancellationDialogStateProps } from '../../components/Dialogs/WorkflowCancellationDialog';
-import { RejectDialogStateProps } from '../../components/Dialogs/RejectDialog';
-import { LegacyFormDialogStateProps } from '../../components/Dialogs/LegacyFormDialog';
-import { EditSiteDialogStateProps } from '../../modules/System/Sites/Edit/EditSiteDialog';
-import { CreateFolderStateProps } from '../../components/Dialogs/CreateFolderDialog';
-import { CreateFileStateProps } from '../../components/Dialogs/CreateFileDialog';
-import { UploadDialogStateProps } from '../../components/Dialogs/UploadDialog';
-import { PreviewDialogStateProps } from '../../components/Dialogs/PreviewDialog';
+import { NewContentDialogStateProps } from '../../components/NewContentDialog/utils';
 import { PathSelectionDialogStateProps } from '../../components/Dialogs/PathSelectionDialog';
-import { ChangeContentTypeDialogStateProps } from '../../modules/Content/Authoring/ChangeContentTypeDialog';
 import { CopyDialogStateProps } from '../../components/Dialogs/CopyDialog';
 import { ItemMenuStateProps } from '../../components/ItemActionsMenu';
 import { ItemMegaMenuStateProps } from '../../components/ItemMegaMenu';
-import { LauncherStateProps } from '../../components/Launcher/Launcher';
+import { LauncherStateProps } from '../../components/Launcher';
 import { PublishingStatusDialogStateProps } from '../../components/PublishingStatusDialog';
 import { UnlockPublisherDialogStateProps } from '../../components/UnlockPublisherDialog';
-import { WidgetDialogStateProps } from '../../components/WidgetDialog';
+import { WidgetDialogStateProps } from '../../components/WidgetDialog/utils';
 import { CodeEditorDialogStateProps } from '../../components/CodeEditorDialog';
 import { PublishDialogStateProps } from '../../components/PublishDialog/utils';
 import { DeleteDialogStateProps } from '../../components/DeleteDialog/utils';
 import { FetchDeleteDependenciesResponse } from '../../services/dependencies';
+import { CreateFolderStateProps } from '../../components/CreateFolderDialog';
+import { DependenciesDialogStateProps } from '../../components/DependenciesDialog';
+import { HistoryDialogStateProps } from '../../components/HistoryDialog/utils';
+import { ViewVersionDialogStateProps } from '../../components/ViewVersionDialog/utils';
+import { CompareVersionsDialogStateProps } from '../../components/CompareVersionsDialog';
+import { ConfirmDialogStateProps } from '../../components/ConfirmDialog';
+import { ChangeContentTypeDialogStateProps } from '../../components/ChangeContentTypeDialog';
+import { WorkflowCancellationDialogStateProps } from '../../components/WorkflowCancellationDialog/utils';
+import { RejectDialogStateProps } from '../../components/RejectDialog/utils';
+import { CreateFileStateProps } from '../../components/CreateFileDialog';
+import { UploadDialogStateProps } from '../../components/UploadDialog/util';
+import { PreviewDialogStateProps } from '../../components/PreviewDialog/utils';
+import { EditSiteDialogStateProps } from '../../components/EditSiteDialog/utils';
+import { LegacyFormDialogStateProps } from '../../components/LegacyFormDialog/utils';
 
 // region History
 export const showHistoryDialog = /*#__PURE__*/ createAction<Partial<HistoryDialogStateProps>>('SHOW_HISTORY_DIALOG');
@@ -139,6 +139,7 @@ export const workflowCancellationDialogClosed = /*#__PURE__*/ createAction('WORK
 export const showRejectDialog = /*#__PURE__*/ createAction<Partial<RejectDialogStateProps>>('SHOW_REJECT_DIALOG');
 export const closeRejectDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_REJECT_DIALOG');
 export const rejectDialogClosed = /*#__PURE__*/ createAction('REJECT_DIALOG_CLOSED');
+export const updateRejectDialog = /*#__PURE__*/ createAction<Partial<RejectDialogStateProps>>('UPDATE_REJECT_DIALOG');
 // endregion
 
 // region Legacy Form
@@ -162,6 +163,8 @@ export const showCreateFolderDialog =
   /*#__PURE__*/ createAction<Partial<CreateFolderStateProps>>('SHOW_CREATE_FOLDER_DIALOG');
 export const closeCreateFolderDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_CREATE_FOLDER_DIALOG');
 export const createFolderDialogClosed = /*#__PURE__*/ createAction('CREATE_FOLDER_DIALOG_CLOSED');
+export const updateCreateFolderDialog =
+  /*#__PURE__*/ createAction<Partial<CreateFolderStateProps>>('UPDATE_CREATE_FOLDER_DIALOG');
 // endregion
 
 // region Create File Dialog
@@ -169,6 +172,8 @@ export const showCreateFileDialog =
   /*#__PURE__*/ createAction<Partial<CreateFileStateProps>>('SHOW_CREATE_FILE_DIALOG');
 export const closeCreateFileDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_CREATE_FILE_DIALOG');
 export const createFileDialogClosed = /*#__PURE__*/ createAction('CREATE_FILE_DIALOG_CLOSED');
+export const updateCreateFileDialog =
+  /*#__PURE__*/ createAction<Partial<CreateFileStateProps>>('UPDATE_CREATE_FILE_DIALOG');
 // endregion
 
 // region Copy Dialog
@@ -196,6 +201,8 @@ export const showEditSiteDialog =
   /*#__PURE__*/ createAction<Partial<EditSiteDialogStateProps>>('SHOW_EDIT_SITE_DIALOG');
 export const closeEditSiteDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_EDIT_SITE_DIALOG');
 export const editSiteDialogClosed = /*#__PURE__*/ createAction('EDIT_SITE_DIALOG_CLOSED');
+export const updateEditSiteDialog =
+  /*#__PURE__*/ createAction<Partial<EditSiteDialogStateProps>>('UPDATE_EDIT_SITE_DIALOG');
 // endregion
 
 // region Path Selection Dialog

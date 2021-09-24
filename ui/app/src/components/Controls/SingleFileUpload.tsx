@@ -29,7 +29,7 @@ import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import { getGlobalHeaders } from '../../utils/ajax';
 import { validateActionPolicy } from '../../services/sites';
-import ConfirmDialog from '../Dialogs/ConfirmDialog';
+import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
 import { UppyFile } from '@uppy/utils';
 import { emitSystemEvent, itemCreated } from '../../state/actions/system';
 import { useDispatch } from 'react-redux';

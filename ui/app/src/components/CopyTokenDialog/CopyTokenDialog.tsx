@@ -14,28 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useRef } from 'react';
-import Dialog from '@mui/material/Dialog';
-import DialogHeader from '../DialogHeader/DialogHeader';
+import React from 'react';
 import { defineMessages, FormattedMessage } from 'react-intl';
-import DialogBody from '../Dialogs/DialogBody';
-import DialogFooter from '../Dialogs/DialogFooter';
-import { Token } from '../../models/Token';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
-import FormHelperText from '@mui/material/FormHelperText';
-import InputBase from '@mui/material/InputBase';
-import SecondaryButton from '../SecondaryButton';
-import PrimaryButton from '../PrimaryButton';
-import { useUnmount } from '../../utils/hooks/useUnmount';
-
-interface CopyTokenProps {
-  open: boolean;
-  token: Token;
-  onClose?(): void;
-  onClosed?(): void;
-  onCopy?(): void;
-}
+import { CopyTokenProps } from './utils';
+import { CopyTokenContainer } from './CopyTokenContainer';
+import EnhancedDialog from '../EnhancedDialog';
 
 export const translations = defineMessages({
   placeholder: {
@@ -48,7 +33,7 @@ export const translations = defineMessages({
   }
 });
 
-const styles = makeStyles(() =>
+export const styles = makeStyles((theme) =>
   createStyles({
     footer: {
       display: 'flex',
@@ -62,62 +47,17 @@ const styles = makeStyles(() =>
   })
 );
 
-export default function CopyTokenDialog(props: CopyTokenProps) {
-  const { open, onClose } = props;
+export function CopyTokenDialog(props: CopyTokenProps) {
+  const { token, onCopy, ...rest } = props;
   return (
-    <Dialog open={open} fullWidth maxWidth="xs" onClose={onClose}>
-      <CopyTokenUI {...props} />
-    </Dialog>
+    <EnhancedDialog
+      title={<FormattedMessage id="copyTokenDialog.title" defaultMessage="Access Token Created" />}
+      maxWidth="xs"
+      {...rest}
+    >
+      <CopyTokenContainer token={token} onCopy={onCopy} />
+    </EnhancedDialog>
   );
 }
 
-function CopyTokenUI(props: CopyTokenProps) {
-  const { onClosed, onClose, token, onCopy } = props;
-  const classes = styles();
-  const inputRef = useRef<HTMLInputElement>();
-
-  useUnmount(onClosed);
-
-  const copyToken = useCallback(() => {
-    const el = inputRef.current;
-    el.select();
-    document.execCommand('copy');
-  }, []);
-
-  const onCopyToken = useCallback(() => {
-    copyToken();
-    onCopy();
-  }, [copyToken, onCopy]);
-
-  useEffect(() => {
-    if (inputRef.current && token) {
-      copyToken();
-    }
-  }, [copyToken, onCopyToken, token]);
-
-  return (
-    <>
-      <DialogHeader
-        title={<FormattedMessage id="copyTokenDialog.title" defaultMessage="Access Token Created" />}
-        onDismiss={onClose}
-      />
-      <DialogBody>
-        <FormHelperText>
-          <FormattedMessage
-            id="copyTokenDialog.helperText"
-            defaultMessage="Token created successfully. Please copy the token and store it securely as you won’t be able to see it’s value again."
-          />
-        </FormHelperText>
-        <InputBase inputRef={inputRef} autoFocus value={token?.token ?? ''} readOnly className={classes.input} />
-      </DialogBody>
-      <DialogFooter className={classes.footer}>
-        <SecondaryButton onClick={onCopyToken}>
-          <FormattedMessage id="words.copy" defaultMessage="Copy" />
-        </SecondaryButton>
-        <PrimaryButton onClick={onClose}>
-          <FormattedMessage id="words.done" defaultMessage="Done" />
-        </PrimaryButton>
-      </DialogFooter>
-    </>
-  );
-}
+export default CopyTokenDialog;

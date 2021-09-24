@@ -17,7 +17,7 @@
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
 import { closeUploadDialog, showUploadDialog, uploadDialogClosed } from '../../actions/dialogs';
-import { UploadDialogStateProps } from '../../../components/Dialogs/UploadDialog';
+import { UploadDialogStateProps } from '../../../components/UploadDialog/util';
 
 const initialState: UploadDialogStateProps = {
   open: false,

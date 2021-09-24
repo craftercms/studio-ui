@@ -29,7 +29,7 @@ import Table from '@mui/material/Table';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
-import { AsDayMonthDateTime } from '../../modules/Content/History/VersionList';
+import { AsDayMonthDateTime } from '../VersionList/VersionList';
 import EmptyState from '../SystemStatus/EmptyState';
 import InstallPluginDialog from '../MarketplaceDialog';
 import { MarketplacePlugin } from '../../models/MarketplacePlugin';

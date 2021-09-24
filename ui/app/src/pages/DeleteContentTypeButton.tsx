@@ -28,22 +28,20 @@ export interface DeleteContentTypeButtonProps {
 
 function DeleteContentTypeButton({ contentType, onComplete }: DeleteContentTypeButtonProps) {
   const [open, setOpen] = useState(false);
-  return (
-    <>
-      <IconButton onClick={() => setOpen(true)} size="large">
-        <DeleteRounded />
-      </IconButton>
-      <DeleteContentTypeDialog
-        open={open}
-        onClose={() => setOpen(false)}
-        contentType={contentType}
-        onComplete={() => {
-          setOpen(false);
-          onComplete?.();
-        }}
-      />
-    </>
-  );
+  return <>
+    <IconButton onClick={() => setOpen(true)} size="large">
+      <DeleteRounded />
+    </IconButton>
+    <DeleteContentTypeDialog
+      open={open}
+      onClose={() => setOpen(false)}
+      contentType={contentType}
+      onComplete={() => {
+        setOpen(false);
+        onComplete?.();
+      }}
+    />
+  </>;
 }
 
 export default DeleteContentTypeButton;

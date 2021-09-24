@@ -198,8 +198,7 @@ function BlueprintReview(props: BlueprintReviewProps) {
             onClick={() => {
               showPassword(parameter);
             }}
-            size="large"
-          >
+            size="large">
             {passwordFields && passwordFields[parameter.name] ? <VisibilityOff /> : <Visibility />}
           </IconButton>
         </span>
@@ -252,7 +251,11 @@ function BlueprintReview(props: BlueprintReviewProps) {
         <Grid item xs={12}>
           <Typography variant="h6" gutterBottom className={classes.section}>
             {formatMessage(messages.creationStrategy)}
-            <IconButton aria-label="goto" className={classes.edit} onClick={() => onGoTo(0)} size="large">
+            <IconButton
+              aria-label="goto"
+              className={classes.edit}
+              onClick={() => onGoTo(0)}
+              size="large">
               <EditIcon />
             </IconButton>
           </Typography>
@@ -277,7 +280,11 @@ function BlueprintReview(props: BlueprintReviewProps) {
         <Grid item xs={12}>
           <Typography variant="h6" gutterBottom className={classes.section}>
             {formatMessage(messages.siteInfo)}
-            <IconButton aria-label="goto" className={classes.edit} onClick={() => onGoTo(1)} size="large">
+            <IconButton
+              aria-label="goto"
+              className={classes.edit}
+              onClick={() => onGoTo(1)}
+              size="large">
               <EditIcon />
             </IconButton>
           </Typography>
@@ -306,7 +313,11 @@ function BlueprintReview(props: BlueprintReviewProps) {
           <Grid item xs={12}>
             <Typography variant="h6" gutterBottom className={classes.section}>
               {formatMessage(messages.blueprintParameters)}
-              <IconButton aria-label="goto" className={classes.edit} onClick={() => onGoTo(1)} size="large">
+              <IconButton
+                aria-label="goto"
+                className={classes.edit}
+                onClick={() => onGoTo(1)}
+                size="large">
                 <EditIcon />
               </IconButton>
             </Typography>

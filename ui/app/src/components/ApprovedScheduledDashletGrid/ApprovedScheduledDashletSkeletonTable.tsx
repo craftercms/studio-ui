@@ -91,12 +91,7 @@ export default function ApprovedScheduledDashletSkeletonTable(props: ApprovedSch
                         {dashboardItem.children.map((item, i) => (
                           <GlobalAppGridRow key={i}>
                             <GlobalAppGridCell className="checkbox">
-                              <Skeleton
-                                variant="circular"
-                                width={30}
-                                height={30}
-                                className={classes.skeletonCheckbox}
-                              />
+                              <Skeleton variant="circular" width={30} height={30} className={classes.skeletonCheckbox} />
                             </GlobalAppGridCell>
                             <GlobalAppGridCell className="width40 padded0">
                               <Skeleton variant="text" width={`${rand(70, 90)}%`} />
@@ -112,12 +107,7 @@ export default function ApprovedScheduledDashletSkeletonTable(props: ApprovedSch
                               <Skeleton variant="text" width={`${rand(60, 90)}%`} />
                             </GlobalAppGridCell>
                             <GlobalAppGridCell className="checkbox">
-                              <Skeleton
-                                variant="circular"
-                                width={30}
-                                height={30}
-                                className={classes.skeletonCheckbox}
-                              />
+                              <Skeleton variant="circular" width={30} height={30} className={classes.skeletonCheckbox} />
                             </GlobalAppGridCell>
                           </GlobalAppGridRow>
                         ))}

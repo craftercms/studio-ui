@@ -17,12 +17,11 @@
 import useStyles from './styles';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
+import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
 import Avatar from '@mui/material/Avatar';
 import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
-import DatePicker from '@mui/lab/DatePicker';
-import TimePicker from '@mui/lab/TimePicker';
-import AdapterDateFns from '@mui/lab/AdapterDateFns';
-import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Autocomplete from '@mui/material/Autocomplete';
@@ -142,12 +141,12 @@ export default function AuditGridFilterPopoverBody(props: AuditGridFilterPopover
     }
   };
 
-  const onFromDateSelected = (date) => {
+  const onFromDateSelected = (date: MaterialUiPickersDate) => {
     onFilterChange('dateFrom', date ? moment(date).format() : 'all');
     setFromDate(date);
   };
 
-  const onToDateSelected = (date) => {
+  const onToDateSelected = (date: MaterialUiPickersDate) => {
     onFilterChange('dateTo', date ? moment(date).format() : 'all');
     setToDate(date);
   };
@@ -169,25 +168,26 @@ export default function AuditGridFilterPopoverBody(props: AuditGridFilterPopover
         <ClearRoundedIcon fontSize="small" />
       </Avatar>
       {filterId === 'operationTimestamp' && (
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <MuiPickersUtilsProvider utils={DateFnsUtils}>
           <form className={classes.popoverForm} noValidate autoComplete="off">
             <Box display="flex" alignItems="center" marginBottom="20px">
-              <DatePicker
+              <KeyboardDatePicker
                 className={classes.fromDatePicker}
                 clearable
+                margin="none"
                 label={<FormattedMessage id="words.from" defaultMessage="From" />}
-                inputFormat="MM/dd/yyyy"
+                format="MM/dd/yyyy"
                 value={fromDate}
                 onChange={onFromDateSelected}
-                renderInput={(props) => <TextField {...props} />}
               />
-              <TimePicker
+              <KeyboardDatePicker
                 className={classes.toDatePicker}
                 clearable
+                margin="none"
                 label={<FormattedMessage id="words.to" defaultMessage="To" />}
+                format="MM/dd/yyyy"
                 value={toDate}
                 onChange={onToDateSelected}
-                renderInput={(props) => <TextField {...props} />}
               />
               <Button
                 className={classes.clearButton}
@@ -217,7 +217,7 @@ export default function AuditGridFilterPopoverBody(props: AuditGridFilterPopover
               )}
             />
           </form>
-        </LocalizationProvider>
+        </MuiPickersUtilsProvider>
       )}
       {['siteId', 'user', 'origin'].includes(filterId) && (
         <Box display="flex" alignItems="center">

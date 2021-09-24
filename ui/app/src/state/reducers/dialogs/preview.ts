@@ -17,10 +17,13 @@
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
 import { closePreviewDialog, previewDialogClosed, showPreviewDialog, updatePreviewDialog } from '../../actions/dialogs';
-import { PreviewDialogStateProps } from '../../../components/Dialogs/PreviewDialog';
+import { PreviewDialogStateProps } from '../../../components/PreviewDialog/utils';
 
 const initialState: PreviewDialogStateProps = {
   open: false,
+  isSubmitting: null,
+  isMinimized: null,
+  hasPendingChanges: null,
   type: null,
   title: null,
   url: null,

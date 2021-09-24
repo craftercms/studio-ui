@@ -14,50 +14,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from 'react';
-import Dialog from '@mui/material/Dialog';
-import EditGroupDialogContainer, { EditGroupDialogContainerProps } from './EditGroupDialogContainer';
-import { FormattedMessage } from 'react-intl';
-import ConfirmDialog from '../Dialogs/ConfirmDialog';
-
-export interface EditGroupDialogProps extends Omit<EditGroupDialogContainerProps, 'setPendingChanges'> {
-  open: boolean;
-}
+import React from 'react';
+import EditGroupDialogContainer from './EditGroupDialogContainer';
+import { EditGroupDialogProps } from './utils';
+import EnhancedDialog from '../EnhancedDialog';
 
 export default function EditGroupDialog(props: EditGroupDialogProps) {
-  const { open, onClose, ...rest } = props;
-  const [pendingChanges, setPendingChanges] = useState(false);
-  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-
-  const onDialogClose = () => {
-    if (pendingChanges) {
-      setShowConfirmDialog(true);
-    } else {
-      setPendingChanges(false);
-      onClose();
-    }
-  };
+  const { group, onGroupDeleted, onGroupSaved, onSubmittingAndOrPendingChange, ...rest } = props;
 
   return (
-    <>
-      <Dialog open={open} onClose={onDialogClose} fullWidth maxWidth="md">
-        <EditGroupDialogContainer onClose={onDialogClose} setPendingChanges={setPendingChanges} {...rest} />
-      </Dialog>
-      <ConfirmDialog
-        open={showConfirmDialog}
-        title={
-          <FormattedMessage
-            id="editGroupDialog.pendingChangesConfirmation"
-            defaultMessage="Close without saving changes?"
-          />
-        }
-        onOk={() => {
-          setShowConfirmDialog(false);
-          setPendingChanges(false);
-          onClose();
-        }}
-        onCancel={() => setShowConfirmDialog(false)}
+    <EnhancedDialog omitHeader {...rest}>
+      <EditGroupDialogContainer
+        group={group}
+        onGroupSaved={onGroupSaved}
+        onGroupDeleted={onGroupDeleted}
+        onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
       />
-    </>
+    </EnhancedDialog>
   );
 }

@@ -14,26 +14,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import DialogHeader from '../DialogHeader';
 import { FormattedMessage } from 'react-intl';
 import DialogBody from '../Dialogs/DialogBody';
 import NewRemoteRepositoryForm from '../NewRemoteRepositoryForm/NewRemoteRepositoryForm';
 import DialogFooter from '../Dialogs/DialogFooter';
 import React from 'react';
-import { SiteState } from '../../models/Site';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
-
-export interface NewRemoteRepositoryDialogUIProps {
-  open: boolean;
-  inputs: Partial<SiteState>;
-  setInputs(inputs): void;
-  onClose(): void;
-  onCreate(): void;
-}
+import { NewRemoteRepositoryDialogUIProps } from './utils';
 
 export function NewRemoteRepositoryDialogUI(props: NewRemoteRepositoryDialogUIProps) {
-  const { inputs, setInputs, onClose, onCreate } = props;
+  const { inputs, setInputs, isSubmitting, isValid, onCloseButtonClick, onCreate } = props;
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -42,18 +33,14 @@ export function NewRemoteRepositoryDialogUI(props: NewRemoteRepositoryDialogUIPr
 
   return (
     <form onSubmit={onSubmit} noValidate>
-      <DialogHeader
-        title={<FormattedMessage id="repositories.newRemoteDialogTitle" defaultMessage="New Remote Repository" />}
-        onDismiss={onClose}
-      />
       <DialogBody>
         <NewRemoteRepositoryForm inputs={inputs} setInputs={setInputs} />
       </DialogBody>
       <DialogFooter>
-        <SecondaryButton onClick={onClose}>
+        <SecondaryButton onClick={onCloseButtonClick} disabled={isSubmitting}>
           <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
         </SecondaryButton>
-        <PrimaryButton type="submit">
+        <PrimaryButton type="submit" disabled={isSubmitting || !isValid} loading={isSubmitting}>
           <FormattedMessage id="words.create" defaultMessage="Create" />
         </PrimaryButton>
       </DialogFooter>

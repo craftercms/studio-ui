@@ -27,7 +27,7 @@ import Paper from '@mui/material/Paper';
 import clsx from 'clsx';
 import ItemDisplay from '../ItemDisplay';
 import PagesSearchAhead from '../PagesSearchAhead';
-import SingleItemSelector from '../../modules/Content/Authoring/SingleItemSelector';
+import SingleItemSelector from '../SingleItemSelector';
 import { DetailedItem } from '../../models/Item';
 import MoreRounded from '@mui/icons-material/MoreVertRounded';
 // @ts-ignore

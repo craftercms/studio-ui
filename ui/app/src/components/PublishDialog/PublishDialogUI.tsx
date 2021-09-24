@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import DialogHeader from '../DialogHeader/DialogHeader';
 import DialogBody from '../Dialogs/DialogBody';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import { FormattedMessage } from 'react-intl';
@@ -33,12 +32,11 @@ export interface PublishDialogUIProps {
   resource: Resource<PublishDialogResourceBody>;
   publishingTargetsStatus: string;
   onPublishingChannelsFailRetry(): void;
-  onDismiss?(): void;
+  onCloseButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
   handleSubmit: any;
+  isSubmitting: boolean;
   submitDisabled: boolean;
   state: InternalDialogState;
-  title: string;
-  subtitle?: string;
   selectedItems: LookupTable<boolean>;
   onItemClicked: DependencySelectionProps['onItemClicked'];
   dependencies: FetchDependenciesResponse;
@@ -61,12 +59,11 @@ export function PublishDialogUI(props: PublishDialogUIProps) {
     resource,
     publishingTargetsStatus,
     onPublishingChannelsFailRetry,
-    onDismiss,
+    onCloseButtonClick,
     handleSubmit,
+    isSubmitting,
     submitDisabled,
     state,
-    title,
-    subtitle,
     selectedItems,
     onItemClicked,
     dependencies,
@@ -85,7 +82,6 @@ export function PublishDialogUI(props: PublishDialogUIProps) {
   // endregion
   return (
     <>
-      <DialogHeader title={title} subtitle={subtitle} onDismiss={onDismiss} disableDismiss={state.submitting} />
       <DialogBody>
         <SuspenseWithEmptyState
           resource={resource}
@@ -114,6 +110,7 @@ export function PublishDialogUI(props: PublishDialogUIProps) {
             mixedPublishingTargets={mixedPublishingTargets}
             submissionCommentRequired={submissionCommentRequired}
             onPublishingArgumentChange={onPublishingArgumentChange}
+            isSubmitting={isSubmitting}
           />
         </SuspenseWithEmptyState>
       </DialogBody>
@@ -122,15 +119,15 @@ export function PublishDialogUI(props: PublishDialogUIProps) {
           color="primary"
           onClick={onClickShowAllDeps}
           className={classes.leftAlignedAction}
-          disabled={state.submitting || state.fetchingDependencies}
+          disabled={isSubmitting || state.fetchingDependencies}
           loading={state.fetchingDependencies}
         >
           <FormattedMessage id="publishDialog.showAllDependencies" defaultMessage="Show All Dependencies" />
         </SecondaryButton>
-        <SecondaryButton onClick={onDismiss} disabled={state.submitting}>
+        <SecondaryButton onClick={onCloseButtonClick} disabled={isSubmitting}>
           <FormattedMessage id="requestPublishDialog.cancel" defaultMessage="Cancel" />
         </SecondaryButton>
-        <PrimaryButton onClick={handleSubmit} disabled={submitDisabled} loading={state.submitting}>
+        <PrimaryButton onClick={handleSubmit} disabled={submitDisabled} loading={isSubmitting}>
           {submitLabel}
         </PrimaryButton>
       </DialogFooter>

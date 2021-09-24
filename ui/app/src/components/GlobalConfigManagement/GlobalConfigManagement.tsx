@@ -30,7 +30,7 @@ import ConfirmDropdown from '../Controls/ConfirmDropdown';
 import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../state/actions/system';
 import { useHistory } from 'react-router';
-import ConfirmDialog from '../Dialogs/ConfirmDialog';
+import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
 import { useMount } from '../../utils/hooks/useMount';
 import Paper from '@mui/material/Paper';
 

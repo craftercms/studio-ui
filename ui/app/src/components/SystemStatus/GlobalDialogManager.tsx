@@ -14,15 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { lazy, Suspense, useEffect, useLayoutEffect, useMemo } from 'react';
-import ReactDOM from 'react-dom';
+import React, { lazy, Suspense, useEffect } from 'react';
 import StandardAction from '../../models/StandardAction';
 import { Dispatch } from 'redux';
 import { useDispatch } from 'react-redux';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
-import { MinimizedBar } from './MinimizedBar';
-import GlobalState from '../../models/GlobalState';
 import { isPlainObject } from '../../utils/object';
 import PathSelectionDialog from '../Dialogs/PathSelectionDialog';
 import { useSnackbar } from 'notistack';
@@ -34,26 +29,28 @@ import UnlockPublisherDialog from '../UnlockPublisherDialog';
 import WidgetDialog from '../WidgetDialog';
 import { useSelection } from '../../utils/hooks/useSelection';
 import CodeEditorDialog from '../CodeEditorDialog';
+import { useWithPendingChangesCloseRequest } from '../../utils/hooks/useWithPendingChangesCloseRequest';
+import MinimizedBar from '../MinimizedBar';
 
-const ViewVersionDialog = lazy(() => import('../../modules/Content/History/ViewVersionDialog'));
-const CompareVersionsDialog = lazy(() => import('../../modules/Content/History/CompareVersionsDialog'));
-const RejectDialog = lazy(() => import('../Dialogs/RejectDialog'));
-const EditSiteDialog = lazy(() => import('../../modules/System/Sites/Edit/EditSiteDialog'));
-const ConfirmDialog = lazy(() => import('../Dialogs/ConfirmDialog'));
+const ViewVersionDialog = lazy(() => import('../ViewVersionDialog'));
+const CompareVersionsDialog = lazy(() => import('../CompareVersionsDialog'));
+const RejectDialog = lazy(() => import('../RejectDialog'));
+const EditSiteDialog = lazy(() => import('../EditSiteDialog'));
+const ConfirmDialog = lazy(() => import('../ConfirmDialog'));
 const ErrorDialog = lazy(() => import('./ErrorDialog'));
-const NewContentDialog = lazy(() => import('../../modules/Content/Authoring/NewContentDialog'));
-const ChangeContentTypeDialog = lazy(() => import('../../modules/Content/Authoring/ChangeContentTypeDialog'));
-const HistoryDialog = lazy(() => import('../../modules/Content/History/HistoryDialog'));
-const PublishDialog = lazy(() => import('../PublishDialog/PublishDialog'));
-const DependenciesDialog = lazy(() => import('../../modules/Content/Dependencies/DependenciesDialog'));
-const DeleteDialog = lazy(() => import('../DeleteDialog/DeleteDialog'));
-const WorkflowCancellationDialog = lazy(() => import('../Dialogs/WorkflowCancellationDialog'));
-const LegacyFormDialog = lazy(() => import('../Dialogs/LegacyFormDialog'));
-const CreateFolderDialog = lazy(() => import('../Dialogs/CreateFolderDialog'));
+const NewContentDialog = lazy(() => import('../NewContentDialog'));
+const ChangeContentTypeDialog = lazy(() => import('../ChangeContentTypeDialog'));
+const HistoryDialog = lazy(() => import('../HistoryDialog'));
+const PublishDialog = lazy(() => import('../PublishDialog'));
+const DependenciesDialog = lazy(() => import('../DependenciesDialog/DependenciesDialog'));
+const DeleteDialog = lazy(() => import('../DeleteDialog'));
+const WorkflowCancellationDialog = lazy(() => import('../WorkflowCancellationDialog'));
+const LegacyFormDialog = lazy(() => import('../LegacyFormDialog/LegacyFormDialog'));
+const CreateFolderDialog = lazy(() => import('../CreateFolderDialog'));
 const CopyItemsDialog = lazy(() => import('../Dialogs/CopyDialog'));
-const CreateFileDialog = lazy(() => import('../Dialogs/CreateFileDialog'));
-const BulkUploadDialog = lazy(() => import('../Dialogs/UploadDialog'));
-const PreviewDialog = lazy(() => import('../Dialogs/PreviewDialog'));
+const CreateFileDialog = lazy(() => import('../CreateFileDialog'));
+const BulkUploadDialog = lazy(() => import('../UploadDialog'));
+const PreviewDialog = lazy(() => import('../PreviewDialog'));
 const ItemMenu = lazy(() => import('../ItemActionsMenu'));
 const ItemMegaMenu = lazy(() => import('../ItemMegaMenu'));
 const AuthMonitor = lazy(() => import('../SystemStatus/AuthMonitor'));
@@ -96,22 +93,6 @@ function createCallback(action: StandardAction, dispatch: Dispatch): (output?: u
 }
 // @formatter:on
 
-export const useStyles = makeStyles((theme) =>
-  createStyles({
-    wrapper: {
-      right: '0',
-      bottom: '20px',
-      display: 'flex',
-      position: 'fixed',
-      flexDirection: 'row-reverse',
-      width: '100%',
-      overflow: 'auto',
-      padding: '2px 20px',
-      zIndex: theme.zIndex.modal
-    }
-  })
-);
-
 function GlobalDialogManager() {
   const state = useSelection((state) => state.dialogs);
   const contentTypesBranch = useSelection((state) => state.contentTypes);
@@ -135,24 +116,17 @@ function GlobalDialogManager() {
     <Suspense fallback="">
       {/* region Confirm */}
       <ConfirmDialog
-        open={state.confirm.open}
-        title={state.confirm.title}
-        body={state.confirm.body}
-        styles={state.confirm.styles}
-        imageUrl={state.confirm.imageUrl}
-        hideBackdrop={state.confirm.hideBackdrop}
+        {...state.confirm}
         onOk={createCallback(state.confirm.onOk, dispatch)}
         onCancel={createCallback(state.confirm.onCancel, dispatch)}
         onClose={createCallback(state.confirm.onClose, dispatch)}
         onClosed={createCallback(state.confirm.onClosed, dispatch)}
-        onDismiss={createCallback(state.confirm.onDismiss, dispatch)}
       />
       {/* endregion */}
 
       {/* region Error */}
       <ErrorDialog
-        open={state.error.open}
-        error={state.error.error}
+        {...state.error}
         onClose={createCallback(state.error.onClose, dispatch)}
         onClosed={createCallback(state.error.onClosed, dispatch)}
         onDismiss={createCallback(state.error.onDismiss, dispatch)}
@@ -161,140 +135,108 @@ function GlobalDialogManager() {
 
       {/* region Edit (LegacyFormDialog) */}
       <LegacyFormDialog
-        open={state.edit.open}
-        path={state.edit.path}
-        selectedFields={state.edit.selectedFields}
-        site={state.edit.site}
-        authoringBase={state.edit.authoringBase}
-        readonly={state.edit.readonly}
-        isHidden={state.edit.isHidden}
-        modelId={state.edit.modelId}
-        changeTemplate={state.edit.changeTemplate}
-        contentTypeId={state.edit.contentTypeId}
-        isNewContent={state.edit.isNewContent}
-        inProgress={state.edit.inProgress}
-        pendingChanges={state.edit.pendingChanges}
-        iceGroupId={state.edit.iceGroupId}
-        newEmbedded={state.edit.newEmbedded}
+        {...state.edit}
         onClose={createCallback(state.edit.onClose, dispatch)}
+        onMinimize={createCallback(state.edit.onMinimize, dispatch)}
+        onMaximize={createCallback(state.edit.onMaximize, dispatch)}
         onClosed={createCallback(state.edit.onClosed, dispatch)}
-        onDismiss={createCallback(state.edit.onDismiss, dispatch)}
         onSaveSuccess={createCallback(state.edit.onSaveSuccess, dispatch)}
       />
       {/* endregion */}
 
       {/* region Code Editor */}
       <CodeEditorDialog
-        open={state.codeEditor.open}
-        path={state.codeEditor.path}
-        mode={state.codeEditor.mode}
-        readonly={state.codeEditor.readonly}
-        contentType={state.codeEditor.contentType}
-        pendingChanges={state.codeEditor.pendingChanges}
+        {...state.codeEditor}
         onClose={createCallback(state.codeEditor.onClose, dispatch)}
+        onMinimize={createCallback(state.codeEditor.onMinimize, dispatch)}
+        onMaximize={createCallback(state.codeEditor.onMaximize, dispatch)}
         onClosed={createCallback(state.codeEditor.onClosed, dispatch)}
         onSuccess={createCallback(state.codeEditor.onSuccess, dispatch)}
+        onWithPendingChangesCloseRequest={useWithPendingChangesCloseRequest(
+          createCallback(state.codeEditor.onClose, dispatch)
+        )}
       />
       {/* endregion */}
 
       {/* region Publish */}
       <PublishDialog
-        open={state.publish.open}
-        items={state.publish.items}
-        scheduling={state.publish.scheduling}
-        disableQuickDismiss={state.publish.disableQuickDismiss}
+        {...state.publish}
         onClose={createCallback(state.publish.onClose, dispatch)}
         onClosed={createCallback(state.publish.onClosed, dispatch)}
-        onDismiss={createCallback(state.publish.onDismiss, dispatch)}
         onSuccess={createCallback(state.publish.onSuccess, dispatch)}
+        onWithPendingChangesCloseRequest={useWithPendingChangesCloseRequest(
+          createCallback(state.publish.onClose, dispatch)
+        )}
       />
       {/* endregion */}
 
       {/* region Create Content */}
       <NewContentDialog
-        open={state.newContent.open}
-        item={state.newContent.item}
-        rootPath={state.newContent.rootPath}
-        compact={state.newContent.compact}
+        {...state.newContent}
         onContentTypeSelected={createCallback(state.newContent.onContentTypeSelected, dispatch)}
         onClose={createCallback(state.newContent.onClose, dispatch)}
         onClosed={createCallback(state.newContent.onClosed, dispatch)}
-        onDismiss={createCallback(state.newContent.onDismiss, dispatch)}
       />
       {/* endregion */}
 
       {/* region Change ContentType */}
       <ChangeContentTypeDialog
-        open={state.changeContentType.open}
-        item={state.changeContentType.item}
-        rootPath={state.changeContentType.rootPath}
-        compact={state.changeContentType.compact}
-        selectedContentType={state.changeContentType.selectedContentType}
+        {...state.changeContentType}
         onContentTypeSelected={createCallback(state.changeContentType.onContentTypeSelected, dispatch)}
         onClose={createCallback(state.changeContentType.onClose, dispatch)}
         onClosed={createCallback(state.changeContentType.onClosed, dispatch)}
-        onDismiss={createCallback(state.changeContentType.onDismiss, dispatch)}
       />
       {/* endregion */}
 
       {/* region Dependencies */}
       <DependenciesDialog
-        open={state.dependencies.open}
-        item={state.dependencies.item}
-        rootPath={state.dependencies.rootPath}
-        dependenciesShown={state.dependencies.dependenciesShown}
+        {...state.dependencies}
         onClose={createCallback(state.dependencies.onClose, dispatch)}
         onClosed={createCallback(state.dependencies.onClosed, dispatch)}
-        onDismiss={createCallback(state.dependencies.onDismiss, dispatch)}
       />
       {/* endregion */}
 
       {/* region Delete */}
       <DeleteDialog
-        open={state.delete.open}
-        items={state.delete.items}
-        isFetching={state.delete.isFetching}
-        dependentItems={state.delete.dependentItems}
-        childItems={state.delete.childItems}
-        disableQuickDismiss={state.delete.disableQuickDismiss}
+        {...state.delete}
         onClose={createCallback(state.delete.onClose, dispatch)}
         onClosed={createCallback(state.delete.onClosed, dispatch)}
         onSuccess={createCallback(state.delete.onSuccess, dispatch)}
+        onWithPendingChangesCloseRequest={useWithPendingChangesCloseRequest(
+          createCallback(state.delete.onClose, dispatch)
+        )}
       />
       {/* endregion */}
 
       {/* region History */}
       <HistoryDialog
-        open={state.history.open}
+        {...state.history}
         versionsBranch={versionsBranch}
         onClose={createCallback(state.history.onClose, dispatch)}
         onClosed={createCallback(state.history.onClosed, dispatch)}
-        onDismiss={createCallback(state.history.onDismiss, dispatch)}
       />
       {/* endregion */}
 
       {/* region View Versions */}
       <ViewVersionDialog
-        open={state.viewVersion.open}
-        isFetching={state.viewVersion.isFetching}
-        error={state.viewVersion.error}
+        {...state.viewVersion}
         rightActions={state.viewVersion.rightActions?.map((action) => ({
           ...action,
           onClick: createCallback(action.onClick, dispatch)
         }))}
-        version={state.viewVersion.version}
+        leftActions={state.viewVersion.leftActions?.map((action) => ({
+          ...action,
+          onClick: createCallback(action.onClick, dispatch)
+        }))}
         contentTypesBranch={contentTypesBranch}
         onClose={createCallback(state.viewVersion.onClose, dispatch)}
         onClosed={createCallback(state.viewVersion.onClosed, dispatch)}
-        onDismiss={createCallback(state.viewVersion.onDismiss, dispatch)}
       />
       {/* endregion */}
 
       {/* region Compare Versions */}
       <CompareVersionsDialog
-        open={state.compareVersions.open}
-        isFetching={state.compareVersions.isFetching}
-        error={state.compareVersions.error}
+        {...state.compareVersions}
         rightActions={state.compareVersions.rightActions?.map((action) => ({
           ...action,
           onClick: createCallback(action.onClick, dispatch)
@@ -303,15 +245,9 @@ function GlobalDialogManager() {
         selectedA={versionsBranch?.selected[0] ? versionsBranch.byId[versionsBranch.selected[0]] : null}
         selectedB={versionsBranch?.selected[1] ? versionsBranch.byId[versionsBranch.selected[1]] : null}
         versionsBranch={versionsBranch}
-        disableItemSwitching={state.compareVersions.disableItemSwitching}
         onClose={createCallback(state.compareVersions.onClose, dispatch)}
         onClosed={createCallback(state.compareVersions.onClosed, dispatch)}
-        onDismiss={createCallback(state.compareVersions.onDismiss, dispatch)}
       />
-      {/* endregion */}
-
-      {/* region Minimized Dialogs */}
-      <MinimizedDialogManager state={state} dispatch={dispatch} />
       {/* endregion */}
 
       {/* region Auth Monitor */}
@@ -320,49 +256,47 @@ function GlobalDialogManager() {
 
       {/* region Workflow Cancellation */}
       <WorkflowCancellationDialog
-        open={state.workflowCancellation.open}
-        items={state.workflowCancellation.items}
+        {...state.workflowCancellation}
         onClose={createCallback(state.workflowCancellation.onClose, dispatch)}
         onClosed={createCallback(state.workflowCancellation.onClosed, dispatch)}
-        onDismiss={createCallback(state.workflowCancellation.onDismiss, dispatch)}
         onContinue={createCallback(state.workflowCancellation.onContinue, dispatch)}
       />
       {/* endregion */}
 
       {/* region Reject */}
       <RejectDialog
-        open={state.reject.open}
-        items={state.reject.items}
+        {...state.reject}
         onClose={createCallback(state.reject.onClose, dispatch)}
         onClosed={createCallback(state.reject.onClosed, dispatch)}
-        onDismiss={createCallback(state.reject.onDismiss, dispatch)}
         onRejectSuccess={createCallback(state.reject.onRejectSuccess, dispatch)}
+        onWithPendingChangesCloseRequest={useWithPendingChangesCloseRequest(
+          createCallback(state.reject.onClose, dispatch)
+        )}
       />
       {/* endregion */}
 
       {/* region Create Folder */}
       <CreateFolderDialog
-        open={state.createFolder.open}
-        path={state.createFolder.path}
-        rename={state.createFolder.rename}
-        value={state.createFolder.value}
-        allowBraces={state.createFolder.allowBraces}
+        {...state.createFolder}
         onClose={createCallback(state.createFolder.onClose, dispatch)}
         onClosed={createCallback(state.createFolder.onClosed, dispatch)}
         onCreated={createCallback(state.createFolder.onCreated, dispatch)}
         onRenamed={createCallback(state.createFolder.onRenamed, dispatch)}
+        onWithPendingChangesCloseRequest={useWithPendingChangesCloseRequest(
+          createCallback(state.createFolder.onClose, dispatch)
+        )}
       />
       {/* endregion */}
 
       {/* region Create File */}
       <CreateFileDialog
-        open={state.createFile.open}
-        path={state.createFile.path}
-        type={state.createFile.type}
-        allowBraces={state.createFile.allowBraces}
+        {...state.createFile}
         onClose={createCallback(state.createFile.onClose, dispatch)}
         onClosed={createCallback(state.createFile.onClosed, dispatch)}
         onCreated={createCallback(state.createFile.onCreated, dispatch)}
+        onWithPendingChangesCloseRequest={useWithPendingChangesCloseRequest(
+          createCallback(state.createFile.onClose, dispatch)
+        )}
       />
       {/* endregion */}
 
@@ -380,10 +314,7 @@ function GlobalDialogManager() {
 
       {/* region Bulk Upload */}
       <BulkUploadDialog
-        open={state.upload.open}
-        path={state.upload.path}
-        site={state.upload.site}
-        maxSimultaneousUploads={state.upload.maxSimultaneousUploads}
+        {...state.upload}
         onClose={createCallback(state.upload.onClose, dispatch)}
         onClosed={createCallback(state.upload.onClosed, dispatch)}
       />
@@ -391,13 +322,7 @@ function GlobalDialogManager() {
 
       {/* region PreviewDialog */}
       <PreviewDialog
-        open={state.preview.open}
-        url={state.preview.url}
-        type={state.preview.type}
-        mode={state.preview.mode}
-        title={state.preview.title}
-        content={state.preview.content}
-        subtitle={state.preview.subtitle}
+        {...state.preview}
         onClose={createCallback(state.preview.onClose, dispatch)}
         onClosed={createCallback(state.preview.onClosed, dispatch)}
       />
@@ -405,22 +330,19 @@ function GlobalDialogManager() {
 
       {/* region Edit Site */}
       <EditSiteDialog
-        open={state.editSite.open}
-        site={state.editSite.site}
+        {...state.editSite}
         onClose={createCallback(state.editSite.onClose, dispatch)}
         onClosed={createCallback(state.editSite.onClosed, dispatch)}
-        onDismiss={createCallback(state.editSite.onDismiss, dispatch)}
         onSaveSuccess={createCallback(state.editSite.onSaveSuccess, dispatch)}
+        onWithPendingChangesCloseRequest={useWithPendingChangesCloseRequest(
+          createCallback(state.editSite.onClose, dispatch)
+        )}
       />
       {/* endregion */}
 
       {/* region Path Selection */}
       <PathSelectionDialog
-        open={state.pathSelection.open}
-        rootPath={state.pathSelection.rootPath}
-        initialPath={state.pathSelection.initialPath}
-        showCreateFolderOption={state.pathSelection.showCreateFolderOption}
-        title={state.pathSelection.title}
+        {...state.pathSelection}
         onClose={createCallback(state.pathSelection.onClose, dispatch)}
         onClosed={createCallback(state.pathSelection.onClosed, dispatch)}
         onOk={createCallback(state.pathSelection.onOk, dispatch)}
@@ -428,25 +350,11 @@ function GlobalDialogManager() {
       {/* endregion */}
 
       {/* region Item Menu */}
-      <ItemMenu
-        open={state.itemMenu.open}
-        path={state.itemMenu.path}
-        numOfLoaderItems={state.itemMenu.numOfLoaderItems}
-        onClose={createCallback(state.itemMenu.onClose, dispatch)}
-        anchorReference={state.itemMenu.anchorReference}
-        anchorPosition={state.itemMenu.anchorPosition}
-      />
+      <ItemMenu {...state.itemMenu} onClose={createCallback(state.itemMenu.onClose, dispatch)} />
       {/* endregion */}
 
       {/* region Item Mega Menu */}
-      <ItemMegaMenu
-        open={state.itemMegaMenu.open}
-        path={state.itemMegaMenu.path}
-        numOfLoaderItems={state.itemMegaMenu.numOfLoaderItems}
-        onClose={createCallback(state.itemMegaMenu.onClose, dispatch)}
-        anchorReference={state.itemMegaMenu.anchorReference}
-        anchorPosition={state.itemMegaMenu.anchorPosition}
-      />
+      <ItemMegaMenu {...state.itemMegaMenu} onClose={createCallback(state.itemMegaMenu.onClose, dispatch)} />
       {/* endregion */}
 
       {/* region Launcher */}
@@ -455,13 +363,7 @@ function GlobalDialogManager() {
 
       {/* region Publishing Status Dialog */}
       <PublishingStatusDialog
-        open={state.publishingStatus.open}
-        enabled={state.publishingStatus.enabled}
-        status={state.publishingStatus.status}
-        message={state.publishingStatus.message}
-        lockOwner={state.publishingStatus.lockOwner}
-        lockTTL={state.publishingStatus.lockTTL}
-        isFetching={state.publishingStatus.isFetching}
+        {...state.publishingStatus}
         onClose={createCallback(state.publishingStatus.onClose, dispatch)}
         onRefresh={createCallback(state.publishingStatus.onRefresh, dispatch)}
         onUnlock={createCallback(state.publishingStatus.onUnlock, dispatch)}
@@ -479,58 +381,26 @@ function GlobalDialogManager() {
 
       {/* region Widget Dialog */}
       <WidgetDialog
-        id={state.widget.id}
-        open={state.widget.open}
-        title={state.widget.title}
-        widget={state.widget.widget}
+        {...state.widget}
         onClose={createCallback(state.widget.onClose, dispatch)}
         onClosed={createCallback(state.widget.onClosed, dispatch)}
       />
       {/* endregion */}
+
+      {/* region Minimized Tabs */}
+      {Object.values(state.minimizedTabs).map((tab) => (
+        <MinimizedBar
+          key={tab.id}
+          open={tab.minimized}
+          title={tab.title}
+          subtitle={tab.subtitle}
+          status={tab.status}
+          onMaximize={createCallback(tab.onMaximized, dispatch)}
+        />
+      ))}
+      {/* endregion */}
     </Suspense>
   );
 }
-
-// @formatter:off
-function MinimizedDialogManager({ state, dispatch }: { state: GlobalState['dialogs']; dispatch: Dispatch }) {
-  const classes = useStyles({});
-
-  const el = useMemo(() => {
-    return document.createElement('div');
-  }, []);
-
-  useEffect(() => {
-    el.className = classes.wrapper;
-  }, [el, classes.wrapper]);
-
-  const inventory = useMemo(
-    () => Object.values(state.minimizedDialogs).filter((tab) => tab.minimized),
-    [state.minimizedDialogs]
-  );
-  useLayoutEffect(() => {
-    if (inventory.length) {
-      document.body.appendChild(el);
-      return () => {
-        document.body.removeChild(el);
-      };
-    }
-  }, [el, inventory]);
-
-  return inventory.length
-    ? ReactDOM.createPortal(
-        inventory.map(({ id, title, subtitle, status, onMaximized }) => (
-          <MinimizedBar
-            key={id}
-            title={title}
-            subtitle={subtitle}
-            status={status}
-            onMaximized={createCallback(onMaximized, dispatch)}
-          />
-        )),
-        el
-      )
-    : null;
-}
-// @formatter:on
 
 export default React.memo(GlobalDialogManager);

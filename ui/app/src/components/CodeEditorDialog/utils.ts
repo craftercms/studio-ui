@@ -16,6 +16,36 @@
 
 import { LookupTable } from '../../models/LookupTable';
 import { ContentTypeField } from '../../models/ContentType';
+import StandardAction from '../../models/StandardAction';
+import { EnhancedDialogProps } from '../EnhancedDialog';
+import { EnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
+import React from 'react';
+
+export interface CodeEditorDialogBaseProps {
+  path: string;
+  mode: string;
+  contentType?: string;
+  readonly?: boolean;
+}
+
+export interface CodeEditorDialogProps extends CodeEditorDialogBaseProps, EnhancedDialogProps {
+  onSuccess?(response?: any): void;
+}
+
+export interface CodeEditorDialogStateProps extends CodeEditorDialogBaseProps, EnhancedDialogState {
+  onSuccess?: StandardAction;
+  onClose?: StandardAction;
+  onClosed?: StandardAction;
+  onMinimize?: StandardAction;
+  onMaximize?: StandardAction;
+}
+
+export interface CodeEditorDialogContainerProps
+  extends CodeEditorDialogBaseProps,
+    Pick<CodeEditorDialogProps, 'onMinimize' | 'isSubmitting' | 'onSuccess' | 'onClose'> {
+  title: string;
+  onSaveClose?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
+}
 
 export const contentTypePropsMap = {
   fileName: 'file-name',
