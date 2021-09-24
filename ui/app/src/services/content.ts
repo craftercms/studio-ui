@@ -162,9 +162,10 @@ export function fetchContentInstanceDescriptor(
   options?: Partial<GetDescriptorOptions>,
   contentTypeLookup?: LookupTable<ContentType>
 ): Observable<{ model: ContentInstance; modelLookup: LookupTable<ContentInstance> }> {
-  return (contentTypeLookup
-    ? of(contentTypeLookup)
-    : fetchContentTypes(site).pipe(map((contentTypes) => createLookupTable(contentTypes)))
+  return (
+    contentTypeLookup
+      ? of(contentTypeLookup)
+      : fetchContentTypes(site).pipe(map((contentTypes) => createLookupTable(contentTypes)))
   ).pipe(
     switchMap((contentTypeLookup) =>
       fetchDescriptorDOM(site, path, options).pipe(

@@ -14,15 +14,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { Theme } from '@material-ui/core';
-import Paper from '@material-ui/core/Paper';
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import MaximizeIcon from '@material-ui/icons/OpenInBrowserRounded';
+import createStyles from '@mui/styles/createStyles';
+
+import makeStyles from '@mui/styles/makeStyles';
+import { Theme } from '@mui/material';
+import Paper from '@mui/material/Paper';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import MaximizeIcon from '@mui/icons-material/OpenInBrowserRounded';
 import React, { ReactNode } from 'react';
-import LinearProgress from '@material-ui/core/LinearProgress';
+import LinearProgress from '@mui/material/LinearProgress';
 import MinimizedBarPortal from '../MinimizedBarPortal/MinimizedBarPortal';
 
 export interface MinimizedBarProps {
@@ -73,7 +75,11 @@ export function MinimizedBar(props: MinimizedBarProps) {
           <Typography variant="body1" children={title} />
           {subtitle && <Typography variant="body2" className={classes.subtitle} children={subtitle} />}
         </Box>
-        {onMaximize ? <IconButton aria-label="Maximize" onClick={onMaximize} children={<MaximizeIcon />} /> : null}
+        {onMaximize ? <IconButton
+          aria-label="Maximize"
+          onClick={onMaximize}
+          children={<MaximizeIcon />}
+          size="large" /> : null}
         {status && (
           <LinearProgress
             className={classes.indeterminateProgressBar}

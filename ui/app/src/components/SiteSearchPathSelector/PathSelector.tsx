@@ -24,12 +24,12 @@ import {
 } from '../../state/actions/dialogs';
 import { dispatchDOMEvent } from '../../state/actions/misc';
 import clsx from 'clsx';
-import InputBase from '@material-ui/core/InputBase';
-import SearchIcon from '@material-ui/icons/SearchRounded';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
-import { makeStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
+import InputBase from '@mui/material/InputBase';
+import SearchIcon from '@mui/icons-material/SearchRounded';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+import makeStyles from '@mui/styles/makeStyles';
+import Paper from '@mui/material/Paper';
 import palette from '../../styles/palette';
 
 const useStyles = makeStyles((theme) => ({

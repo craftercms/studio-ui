@@ -15,10 +15,10 @@
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import FormGroup from '@material-ui/core/FormGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
+import makeStyles from '@mui/styles/makeStyles';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
 import { defineMessages, useIntl } from 'react-intl';
 import PublishingPackage from './PublishingPackage';
 import { cancelPackage, fetchPackages, fetchPublishingTargets } from '../../../../services/publishing';
@@ -26,14 +26,14 @@ import { CurrentFilters, Package, Selected } from '../../../../models/Publishing
 import ConfirmDropdown from '../../../../components/Controls/ConfirmDropdown';
 import FilterDropdown from '../../Sites/Create/FilterDropdown';
 import { setRequestForgeryToken } from '../../../../utils/auth';
-import TablePagination from '@material-ui/core/TablePagination';
+import TablePagination from '@mui/material/TablePagination';
 import EmptyState from '../../../../components/SystemStatus/EmptyState';
-import Typography from '@material-ui/core/Typography';
-import HighlightOffIcon from '@material-ui/icons/HighlightOffRounded';
+import Typography from '@mui/material/Typography';
+import HighlightOffIcon from '@mui/icons-material/HighlightOffRounded';
 import Spinner from '../../../../components/SystemStatus/Spinner';
-import RefreshIcon from '@material-ui/icons/RefreshRounded';
-import Button from '@material-ui/core/Button';
-import { alpha } from '@material-ui/core/styles';
+import RefreshIcon from '@mui/icons-material/RefreshRounded';
+import Button from '@mui/material/Button';
+import { alpha } from '@mui/material/styles';
 import { BLOCKED, CANCELLED, COMPLETED, PROCESSING, READY_FOR_LIVE } from '../constants';
 import palette from '../../../../styles/palette';
 import ApiResponseErrorState from '../../../../components/ApiResponseErrorState';

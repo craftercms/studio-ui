@@ -15,14 +15,16 @@
  */
 
 import React, { useRef, useState } from 'react';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import IconButton from '@material-ui/core/IconButton';
-import InputBase from '@material-ui/core/InputBase';
-import SearchIcon from '@material-ui/icons/SearchRounded';
-import CloseIcon from '@material-ui/icons/Close';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import IconButton from '@mui/material/IconButton';
+import InputBase from '@mui/material/InputBase';
+import SearchIcon from '@mui/icons-material/SearchRounded';
+import CloseIcon from '@mui/icons-material/Close';
 import clsx from 'clsx';
 import { defineMessages, useIntl } from 'react-intl';
-import { Paper } from '@material-ui/core';
+import { Paper } from '@mui/material';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -132,7 +134,7 @@ export default function SearchBar(props: SearchBarProps) {
       className={clsx(classes.search, focus && 'focus', showActionButton && 'noPadded', props.classes?.root)}
     >
       {showDecoratorIcon && onDecoratorButtonClick ? (
-        <IconButton onClick={onDecoratorButtonClick}>
+        <IconButton onClick={onDecoratorButtonClick} size="large">
           <DecoratorIcon className={classes.searchIcon} />
         </IconButton>
       ) : (
@@ -167,7 +169,7 @@ export default function SearchBar(props: SearchBarProps) {
                 }
           }
           className={classes.icon}
-        >
+          size="large">
           <ActionButtonIcon className={clsx(classes.closeIcon, props.classes?.actionIcon)} />
         </IconButton>
       )}

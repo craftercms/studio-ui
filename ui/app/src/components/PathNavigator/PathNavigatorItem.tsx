@@ -17,14 +17,14 @@
 import { DetailedItem } from '../../models/Item';
 import React, { useState } from 'react';
 import { useStyles } from './styles';
-import ListItem from '@material-ui/core/ListItem';
+import ListItem from '@mui/material/ListItem';
 import clsx from 'clsx';
-import Checkbox from '@material-ui/core/Checkbox';
-import IconButton from '@material-ui/core/IconButton';
-import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
-import ChevronRightRoundedIcon from '@material-ui/icons/ChevronRightRounded';
+import Checkbox from '@mui/material/Checkbox';
+import IconButton from '@mui/material/IconButton';
+import MoreVertIcon from '@mui/icons-material/MoreVertRounded';
+import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
 import { isFolder, isNavigable, isPreviewable } from './utils';
-import Tooltip from '@material-ui/core/Tooltip';
+import Tooltip from '@mui/material/Tooltip';
 import { defineMessages, useIntl } from 'react-intl';
 import ItemDisplay from '../ItemDisplay';
 
@@ -147,7 +147,7 @@ function PathNavigatorItem(props: NavItemProps) {
                   event.stopPropagation();
                   onOpenItemMenu(event.currentTarget, item);
                 }}
-              >
+                size="large">
                 <MoreVertIcon className={classes.icon} />
               </IconButton>
             </Tooltip>
@@ -168,7 +168,7 @@ function PathNavigatorItem(props: NavItemProps) {
                     onPreview?.(item);
                   }
                 }}
-              >
+                size="large">
                 <ChevronRightRoundedIcon className={classes.icon} />
               </IconButton>
             </Tooltip>

@@ -17,12 +17,12 @@
 import React from 'react';
 import { DeleteDependencies } from '../../modules/Content/Dependencies/DependencySelection';
 import { useDeleteDialogUIStyles } from './styles';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 import TextFieldWithMax from '../Controls/TextFieldWithMax';
 import { FormattedMessage } from 'react-intl';
 import { SelectionList } from '../../modules/Content/Dependencies/SelectionList';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import { DeleteDialogContentUIProps } from './utils';
 
 export function DeleteDialogUIBody(props: DeleteDialogContentUIProps) {

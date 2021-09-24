@@ -15,8 +15,10 @@
  */
 
 import React from 'react';
-import MuiDialogContent, { DialogContentProps } from '@material-ui/core/DialogContent';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import MuiDialogContent, { DialogContentProps } from '@mui/material/DialogContent';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 
 export type DialogBodyProps = DialogContentProps & { minHeight?: boolean };

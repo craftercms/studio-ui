@@ -14,13 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import TableContainer from '@material-ui/core/TableContainer';
-import Table from '@material-ui/core/Table';
-import TableHead from '@material-ui/core/TableHead';
-import Typography from '@material-ui/core/Typography';
+import TableContainer from '@mui/material/TableContainer';
+import Table from '@mui/material/Table';
+import TableHead from '@mui/material/TableHead';
+import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
-import TableBody from '@material-ui/core/TableBody';
-import Skeleton from '@material-ui/lab/Skeleton';
+import TableBody from '@mui/material/TableBody';
+import Skeleton from '@mui/material/Skeleton';
 import { rand } from '../PathNavigator/utils';
 import React from 'react';
 import useStyles from './styles';
@@ -64,7 +64,7 @@ export const UsersGridSkeletonTable = React.memo((props: UsersGridSkeletonTableP
           {items?.map((width, index) => (
             <GlobalAppGridRow key={index}>
               <GlobalAppGridCell align="center" className="avatar">
-                <Skeleton className={classes.avatar} variant="circle" width={40} height={40} />
+                <Skeleton className={classes.avatar} variant="circular" width={40} height={40} />
               </GlobalAppGridCell>
               <GlobalAppGridCell component="th" scope="row" className="width20">
                 <Skeleton variant="text" width={`${rand(70, 90)}%`} />

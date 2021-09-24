@@ -18,10 +18,10 @@ import { LookupTable } from '../../models/LookupTable';
 import { Filter as FilterType } from '../../models/Search';
 import { defineMessages, useIntl } from 'react-intl';
 import React, { useEffect, useState } from 'react';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
-import { makeStyles } from '@material-ui/core/styles';
-import { Theme } from '@material-ui/core';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import makeStyles from '@mui/styles/makeStyles';
+import { Theme } from '@mui/material';
 
 const useStyles = makeStyles((theme: Theme) => ({
   rangePicker: {

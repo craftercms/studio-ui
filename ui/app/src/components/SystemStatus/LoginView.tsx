@@ -15,27 +15,28 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
-import Button from '@material-ui/core/Button';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Button from '@mui/material/Button';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import {
   sendPasswordRecovery,
   setPassword as setPasswordService,
   validatePasswordResetToken
 } from '../../services/auth';
 import { isBlank } from '../../utils/string';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import LogInForm from './LoginForm';
-import MenuItem from '@material-ui/core/MenuItem';
+import MenuItem from '@mui/material/MenuItem';
 import { fetchProductLanguages } from '../../services/configuration';
-import WarningRounded from '@material-ui/icons/WarningRounded';
+import WarningRounded from '@mui/icons-material/WarningRounded';
 import { parse } from 'query-string';
-import TextField from '@material-ui/core/TextField';
-import Snackbar from '@material-ui/core/Snackbar';
+import TextField from '@mui/material/TextField';
+import Snackbar from '@mui/material/Snackbar';
 import PasswordTextField from '../Controls/PasswordTextField';
 import { passwordRequirementMessages } from '../../utils/i18n-legacy';
 import clsx from 'clsx';
@@ -43,8 +44,8 @@ import { filter } from 'rxjs/operators';
 import palette from '../../styles/palette';
 import { buildStoredLanguageKey, dispatchLanguageChange, getCurrentLocale, setStoredLanguage } from '../../utils/i18n';
 import CrafterCMSLogo from '../Icons/CrafterCMSLogo';
-import LanguageRounded from '@material-ui/icons/LanguageRounded';
-import Menu from '@material-ui/core/Menu';
+import LanguageRounded from '@mui/icons-material/LanguageRounded';
+import Menu from '@mui/material/Menu';
 import PasswordRequirementsDisplay from '../PasswordRequirementsDisplay';
 import { useMount } from '../../utils/hooks/useMount';
 import { useDebouncedInput } from '../../utils/hooks/useDebouncedInput';
@@ -144,17 +145,17 @@ const useStyles = makeStyles((theme) =>
     dialogPaper: {
       minWidth: 300,
       overflow: 'visible',
-      backgroundColor: theme.palette.type === 'dark' ? 'rgba(0, 0, 0, .8)' : 'rgba(255, 255, 255, .8)'
+      backgroundColor: theme.palette.mode === 'dark' ? 'rgba(0, 0, 0, .8)' : 'rgba(255, 255, 255, .8)'
     },
     logo: {
       maxWidth: 250,
       display: 'block',
-      margin: `${theme.spacing(2)}px auto ${theme.spacing(1)}px`
+      margin: `${theme.spacing(2)} auto ${theme.spacing(1)}`
     },
     recoverInfoMessage: {
       maxWidth: 300,
       textAlign: 'center',
-      margin: `0 auto ${theme.spacing(1.5)}px`
+      margin: `0 auto ${theme.spacing(1.5)}`
     },
     errorMessage: {
       backgroundColor: palette.red.tint,

@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Dialog from '@material-ui/core/Dialog';
+import Dialog from '@mui/material/Dialog';
 import React from 'react';
 import { AuditLogEntryParameter } from '../../models/Audit';
 import AuditLogEntryParametersDialogUI from './AuditLogEntryParametersDialogUI';

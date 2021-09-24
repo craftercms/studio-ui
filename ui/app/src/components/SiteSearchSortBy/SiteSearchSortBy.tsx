@@ -16,12 +16,12 @@
 
 import { ElasticParams, Filter as FilterType } from '../../models/Search';
 import { defineMessages, useIntl } from 'react-intl';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 import { camelize } from '../../utils/string';
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { Theme } from '@material-ui/core';
+import makeStyles from '@mui/styles/makeStyles';
+import { Theme } from '@mui/material';
 
 const useStyles = makeStyles((theme: Theme) => ({
   select: {

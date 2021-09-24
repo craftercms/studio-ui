@@ -32,7 +32,7 @@ import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import { useSubject } from '../../utils/hooks/useSubject';
 import { debounceTime } from 'rxjs/operators';
 import DialogBody from '../Dialogs/DialogBody';
-import { Box, Checkbox, FormControlLabel } from '@material-ui/core';
+import { Box, Checkbox, FormControlLabel } from '@mui/material';
 import SingleItemSelector from '../SingleItemSelector';
 import SearchBar from '../Controls/SearchBar';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';

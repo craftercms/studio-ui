@@ -15,16 +15,16 @@
  */
 
 import { FormattedMessage, useIntl } from 'react-intl';
-import TablePagination from '@material-ui/core/TablePagination';
+import TablePagination from '@mui/material/TablePagination';
 import translations from './translations';
 import React from 'react';
-import List from '@material-ui/core/List';
+import List from '@mui/material/List';
 import ContentInstance from '../../models/ContentInstance';
 import { DraggablePanelListItem } from '../../modules/Preview/Tools/DraggablePanelListItem';
 import EmptyState from '../SystemStatus/EmptyState';
 import { Resource } from '../../models/Resource';
 import { useComponentsPanelUI } from './styles';
-import FormHelperText from '@material-ui/core/FormHelperText';
+import FormHelperText from '@mui/material/FormHelperText';
 
 export interface ComponentResource {
   count: number;

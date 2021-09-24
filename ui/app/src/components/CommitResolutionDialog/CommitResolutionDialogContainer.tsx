@@ -19,7 +19,7 @@ import DialogHeader from '../Dialogs/DialogHeader';
 import DialogBody from '../Dialogs/DialogBody';
 import DialogFooter from '../Dialogs/DialogFooter';
 import { FormattedMessage } from 'react-intl';
-import TextField from '@material-ui/core/TextField';
+import TextField from '@mui/material/TextField';
 import { commitResolution } from '../../services/repositories';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';

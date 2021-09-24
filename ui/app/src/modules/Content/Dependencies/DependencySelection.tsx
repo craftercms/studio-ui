@@ -16,7 +16,8 @@
 
 import React from 'react';
 import { DetailedItem } from '../../../models/Item';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { FormattedMessage } from 'react-intl';
 import LookupTable from '../../../models/LookupTable';
 import clsx from 'clsx';

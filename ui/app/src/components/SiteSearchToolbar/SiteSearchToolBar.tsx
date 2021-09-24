@@ -15,16 +15,18 @@
  */
 
 import React from 'react';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import IconButton from '@material-ui/core/IconButton';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import IconButton from '@mui/material/IconButton';
 import { defineMessages, useIntl } from 'react-intl';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import LauncherOpenerButton from '../LauncherOpenerButton/LauncherOpenerButton';
 import SearchBar from '../../components/Controls/SearchBar';
-import ListViewIcon from '@material-ui/icons/ViewStreamRounded';
-import GridViewIcon from '@material-ui/icons/GridOnRounded';
+import ListViewIcon from '@mui/icons-material/ViewStreamRounded';
+import GridViewIcon from '@mui/icons-material/GridOnRounded';
 import ViewToolbar from '../ViewToolbar';
-import Tooltip from '@material-ui/core/Tooltip';
+import Tooltip from '@mui/material/Tooltip';
 import LogoAndMenuBundleButton from '../LogoAndMenuBundleButton';
 
 const translations = defineMessages({
@@ -99,7 +101,7 @@ export default function SiteSearchToolBar(props: SiteSearchToolBarProps) {
       </section>
       <section>
         <Tooltip title={formatMessage(translations.changeViewButtonTip)}>
-          <IconButton onClick={handleChangeView}>
+          <IconButton onClick={handleChangeView} size="large">
             {currentView === 'grid' ? <ListViewIcon /> : <GridViewIcon />}
           </IconButton>
         </Tooltip>

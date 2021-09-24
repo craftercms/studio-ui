@@ -15,16 +15,16 @@
  */
 
 import React, { ElementType, PropsWithChildren } from 'react';
-import Accordion, { AccordionProps } from '@material-ui/core/Accordion';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMoreRounded';
+import Accordion, { AccordionProps } from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMoreRounded';
 import useStyles from './styles';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
 import { FormattedMessage } from 'react-intl';
-import Tooltip from '@material-ui/core/Tooltip';
-import RefreshRoundedIcon from '@material-ui/icons/RefreshRounded';
+import Tooltip from '@mui/material/Tooltip';
+import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
 import clsx from 'clsx';
 
 export type DashletProps = PropsWithChildren<
@@ -63,7 +63,7 @@ export default function Dashlet(props: DashletProps) {
               onRefresh();
             }}
             className={clsx(!headerRightSection && classes.refresh)}
-          >
+            size="large">
             <Tooltip title={<FormattedMessage id="words.refresh" defaultMessage="Refresh" />}>
               <RefreshRoundedIcon />
             </Tooltip>

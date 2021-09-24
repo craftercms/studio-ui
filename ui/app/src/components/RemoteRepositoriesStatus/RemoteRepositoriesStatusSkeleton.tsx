@@ -14,11 +14,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Typography from '@material-ui/core/Typography';
-import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@mui/material/Typography';
+import Toolbar from '@mui/material/Toolbar';
 import React from 'react';
-import Skeleton from '@material-ui/lab/Skeleton';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import Skeleton from '@mui/material/Skeleton';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 
 const useStyles = makeStyles((theme) =>
   createStyles({

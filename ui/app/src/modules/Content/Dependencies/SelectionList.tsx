@@ -17,23 +17,24 @@
 import React, { ReactNode, useMemo } from 'react';
 import { DetailedItem } from '../../../models/Item';
 import { useLocale } from '../../../utils/hooks/useLocale';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import Checkbox from '@material-ui/core/Checkbox';
-import ListItemText from '@material-ui/core/ListItemText';
-import Typography from '@material-ui/core/Typography';
-import List from '@material-ui/core/List';
-import Box from '@material-ui/core/Box';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import Checkbox from '@mui/material/Checkbox';
+import ListItemText from '@mui/material/ListItemText';
+import Typography from '@mui/material/Typography';
+import List from '@mui/material/List';
+import Box from '@mui/material/Box';
 import ItemStateIcon from '../../../components/ItemStateIcon';
 import { getDateScheduled } from '../../../utils/detailedItem';
 import { FormattedMessage } from 'react-intl';
 import { asLocalizedDateTime } from '../../../utils/datetime';
 import ItemPublishingTargetIcon from '../../../components/ItemPublishingTargetIcon';
 import { getItemStateText } from '../../../components/ItemDisplay/utils';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import Button from '@material-ui/core/Button';
-import InfoIcon from '@material-ui/icons/InfoOutlined';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import Button from '@mui/material/Button';
+import InfoIcon from '@mui/icons-material/InfoOutlined';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import LookupTable from '../../../models/LookupTable';
 
 export interface SelectionListProps {

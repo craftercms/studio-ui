@@ -15,11 +15,12 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { pluckProps } from '../utils/object';
-import { CSSProperties } from '@material-ui/styles';
+import { CSSProperties } from '@mui/styles';
 import { useMount } from '../utils/hooks/useMount';
-import { useTheme } from '@material-ui/core/styles';
+import { useTheme } from '@mui/material/styles';
 import clsx from 'clsx';
 
 // @see https://github.com/ajaxorg/ace/wiki/Configuring-Ace
@@ -195,7 +196,7 @@ export default React.forwardRef(function AceEditor(props: AceEditorProps, ref) {
   const [initialized, setInitialized] = useState(false);
 
   const {
-    palette: { type }
+    palette: { mode }
   } = useTheme();
 
   const options = pluckProps(props as AceOptions, true, ...aceOptions);

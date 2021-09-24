@@ -14,20 +14,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-import Button from '@material-ui/core/Button';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import Button from '@mui/material/Button';
 import React, { useState } from 'react';
-import Popover from '@material-ui/core/Popover';
-import { makeStyles } from '@material-ui/core/styles';
+import Popover from '@mui/material/Popover';
+import makeStyles from '@mui/styles/makeStyles';
 import { defineMessages, useIntl } from 'react-intl';
-import Typography from '@material-ui/core/Typography';
-import TextField from '@material-ui/core/TextField';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Radio from '@material-ui/core/Radio';
+import Typography from '@mui/material/Typography';
+import TextField from '@mui/material/TextField';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Radio from '@mui/material/Radio';
 import { CurrentFilters } from '../../../../models/Publishing';
-import SearchIcon from '@material-ui/icons/SearchRounded';
-import { Checkbox, FormGroup, Theme } from '@material-ui/core';
+import SearchIcon from '@mui/icons-material/SearchRounded';
+import { Checkbox, FormGroup, Theme } from '@mui/material';
 
 const useStyles = makeStyles((theme: Theme) => ({
   paper: {

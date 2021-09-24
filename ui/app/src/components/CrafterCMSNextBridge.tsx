@@ -17,7 +17,9 @@
 import '../styles/index.scss';
 
 import React, { PropsWithChildren, ReactNode, Suspense, useLayoutEffect, useState } from 'react';
-import { createStyles, makeStyles, ThemeOptions } from '@material-ui/core/styles';
+import { DeprecatedThemeOptions } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { setRequestForgeryToken } from '../utils/auth';
 import { CrafterCMSStore, getStore } from '../state/store';
 import GlobalDialogManager from './SystemStatus/GlobalDialogManager';
@@ -46,7 +48,7 @@ function Bridge(
     mountSnackbarProvider?: boolean;
     mountLegacyConcierge?: boolean;
     resource: Resource<CrafterCMSStore>;
-    themeOptions?: ThemeOptions;
+    themeOptions?: DeprecatedThemeOptions;
     generateClassName?: GenerateId;
   }>
 ) {

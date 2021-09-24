@@ -15,15 +15,16 @@
  */
 
 import React, { useMemo, useState } from 'react';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { defineMessages, useIntl } from 'react-intl';
 import moment from 'moment-timezone';
-import AccessTimeIcon from '@material-ui/icons/AccessTimeRounded';
-import PublicRoundedIcon from '@material-ui/icons/PublicRounded';
+import AccessTimeIcon from '@mui/icons-material/AccessTimeRounded';
+import PublicRoundedIcon from '@mui/icons-material/PublicRounded';
 import DateFnsUtils from '@date-io/date-fns';
 import { KeyboardDatePicker, KeyboardTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
-import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import TextField from '@mui/material/TextField';
+import Autocomplete from '@mui/material/Autocomplete';
 import {
   asLocalizedDateTime,
   create8601String,
@@ -31,7 +32,7 @@ import {
   getTimezones,
   TimezoneDescriptor
 } from '../../utils/datetime';
-import FormControl from '@material-ui/core/FormControl';
+import FormControl from '@mui/material/FormControl';
 import { nnou } from '../../utils/object';
 import palette from '../../styles/palette';
 import { UNDEFINED } from '../../utils/constants';

@@ -17,16 +17,17 @@
 import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
-import { createStyles, makeStyles } from '@material-ui/core';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { ContentTypeDropTarget } from '../../models/ContentTypeDropTarget';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import List from '@material-ui/core/List';
-import Avatar from '@material-ui/core/Avatar';
-import MoveToInboxRounded from '@material-ui/icons/MoveToInboxRounded';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import List from '@mui/material/List';
+import Avatar from '@mui/material/Avatar';
+import MoveToInboxRounded from '@mui/icons-material/MoveToInboxRounded';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
 import ContentType from '../../models/ContentType';
 import { useDispatch } from 'react-redux';
 import {

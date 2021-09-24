@@ -17,12 +17,12 @@
 import { RejectDialogUIProps } from './utils';
 import { FormattedMessage } from 'react-intl';
 import DialogBody from '../Dialogs/DialogBody';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 import TextFieldWithMax from '../Controls/TextFieldWithMax';
 import DialogFooter from '../Dialogs/DialogFooter';
 import SecondaryButton from '../SecondaryButton';

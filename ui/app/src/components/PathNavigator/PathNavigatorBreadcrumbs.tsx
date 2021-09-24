@@ -19,13 +19,13 @@ import { useStyles } from './styles';
 import React, { useState } from 'react';
 import clsx from 'clsx';
 import SearchBar from '../Controls/SearchBar';
-import MuiBreadcrumbs from '@material-ui/core/Breadcrumbs';
-import NavigateNextIcon from '@material-ui/icons/NavigateNextRounded';
-import Link from '@material-ui/core/Link';
-import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import SearchRoundedIcon from '@material-ui/icons/SearchRounded';
-import CloseIconRounded from '@material-ui/icons/CloseRounded';
+import MuiBreadcrumbs from '@mui/material/Breadcrumbs';
+import NavigateNextIcon from '@mui/icons-material/NavigateNextRounded';
+import Link from '@mui/material/Link';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
+import CloseIconRounded from '@mui/icons-material/CloseRounded';
 import { defineMessages, useIntl } from 'react-intl';
 
 export type BreadcrumbsClassKey = 'root' | 'searchRoot' | 'searchInput' | 'searchCleanButton' | 'searchCloseButton';
@@ -120,7 +120,11 @@ function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
           </MuiBreadcrumbs>
           <div className={clsx(classes.breadcrumbActionsWrapper)}>
             {onSearch && (
-              <IconButton aria-label="search" className={clsx(classes.iconButton)} onClick={() => setShowSearch(true)}>
+              <IconButton
+                aria-label="search"
+                className={clsx(classes.iconButton)}
+                onClick={() => setShowSearch(true)}
+                size="large">
                 <SearchRoundedIcon />
               </IconButton>
             )}

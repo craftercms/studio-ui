@@ -15,10 +15,10 @@
  */
 
 import React from 'react';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import { Typography } from '@material-ui/core';
+import CircularProgress from '@mui/material/CircularProgress';
+import { Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-import TreeItem from '@material-ui/lab/TreeItem';
+import TreeItem from '@mui/lab/TreeItem';
 import clsx from 'clsx';
 import { useTreeNodeStyles } from './styles';
 import { TreeNode } from './FolderBrowserTreeViewUI';

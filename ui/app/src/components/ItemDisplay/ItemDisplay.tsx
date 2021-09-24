@@ -17,11 +17,12 @@
 import * as React from 'react';
 import { ElementType, forwardRef } from 'react';
 import { DetailedItem, SandboxItem } from '../../models/Item';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { CSSProperties } from '@material-ui/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import { CSSProperties } from '@mui/styles';
 import clsx from 'clsx';
 import palette from '../../styles/palette';
-import Typography, { TypographyProps } from '@material-ui/core/Typography';
+import Typography, { TypographyProps } from '@mui/material/Typography';
 import { isPreviewable } from '../PathNavigator/utils';
 import ItemPublishingTargetIcon from '../ItemPublishingTargetIcon';
 import ItemStateIcon from '../ItemStateIcon';
@@ -59,7 +60,7 @@ export const useStyles = makeStyles((theme) =>
       ...styles.label
     }),
     labelPreviewable: (styles) => ({
-      color: theme.palette.type === 'dark' ? palette.teal.tint : palette.teal.shade,
+      color: theme.palette.mode === 'dark' ? palette.teal.tint : palette.teal.shade,
       ...styles.labelPreviewable
     }),
     icon: (styles) => ({

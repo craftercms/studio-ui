@@ -17,7 +17,7 @@
 import * as React from 'react';
 import { ReactNode } from 'react';
 import { useOnClose } from '../../utils/hooks/useOnClose';
-import MuiDialog, { DialogProps as MuiDialogProps } from '@material-ui/core/Dialog';
+import MuiDialog, { DialogProps as MuiDialogProps } from '@mui/material/Dialog';
 import { useUnmount } from '../../utils/hooks/useUnmount';
 import DialogHeader, { DialogHeaderProps } from '../Dialogs/DialogHeader';
 import MinimizedBar from '../MinimizedBar';

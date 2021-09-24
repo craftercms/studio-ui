@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Box from '@material-ui/core/Box';
+import Box from '@mui/material/Box';
 import React, { useMemo } from 'react';
 import { useStyles } from './styles';
 import { DataGrid, GridCellParams, GridColDef } from '@material-ui/data-grid';
@@ -23,7 +23,7 @@ import { AuditOptions } from '../../services/audit';
 // @ts-ignore
 import { fieldIdMapping, translations } from './AuditGridUI';
 import { rand } from '../PathNavigator/utils';
-import Skeleton from '@material-ui/lab/Skeleton';
+import Skeleton from '@mui/material/Skeleton';
 
 export interface AuditGridSkeletonProps {
   numOfItems?: number;
@@ -157,7 +157,7 @@ export default function AuditGridSkeleton(props: AuditGridSkeletonProps) {
         filterable: false,
         cellClassName: classes.cellRoot,
         renderCell: () => {
-          return <Skeleton variant="circle" width={40} height={40} />;
+          return <Skeleton variant="circular" width={40} height={40} />;
         }
       },
       {
@@ -182,7 +182,7 @@ export default function AuditGridSkeleton(props: AuditGridSkeletonProps) {
         autoHeight
         disableColumnFilter
         components={{
-          ColumnMenuIcon: () => <Skeleton variant="circle" width={20} height={20} />
+          ColumnMenuIcon: () => <Skeleton variant="circular" width={20} height={20} />
         }}
         onCellClick={() => {}}
         className={classes.gridRoot}

@@ -15,13 +15,14 @@
  */
 
 import React, { useRef } from 'react';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { defineMessages, useIntl } from 'react-intl';
 import DialogHeader from '../Dialogs/DialogHeader';
 import { LegacyFormDialogProps } from './utils';
 import { EmbeddedLegacyContainer } from './EmbeddedLegacyContainer';
 import MinimizedBar from '../MinimizedBar';
-import Dialog from '@material-ui/core/Dialog';
+import Dialog from '@mui/material/Dialog';
 
 export const translations = defineMessages({
   title: {

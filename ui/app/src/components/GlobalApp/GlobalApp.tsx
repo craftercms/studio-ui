@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Box from '@material-ui/core/Box';
-import Paper from '@material-ui/core/Paper';
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
 import React, { useState } from 'react';
 import LauncherGlobalNav from '../LauncherGlobalNav';
 import ResizeableDrawer from '../../modules/Preview/ResizeableDrawer';
@@ -37,7 +37,7 @@ import { urlMapping } from '../LauncherSection';
 import EmptyState from '../SystemStatus/EmptyState';
 import { FormattedMessage } from 'react-intl';
 import { useGlobalAppState } from './GlobalAppContext';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import CrafterCMSLogo from '../Icons/CrafterCMSLogo';
 import LoadingState from '../SystemStatus/LoadingState';
 import LauncherOpenerButton from '../LauncherOpenerButton';

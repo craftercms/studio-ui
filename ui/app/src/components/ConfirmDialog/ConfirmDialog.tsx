@@ -15,11 +15,12 @@
  */
 
 import React from 'react';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { useOnClose } from '../../utils/hooks/useOnClose';
 import { ConfirmDialogProps, ConfirmDialogStateClassKey, ConfirmDialogStateStyles } from './utils';
 import ConfirmDialogContainer from './ConfirmDialogContainer';
-import { Dialog } from '@material-ui/core';
+import { Dialog } from '@mui/material';
 
 const useStyles = makeStyles(() =>
   createStyles<ConfirmDialogStateClassKey, ConfirmDialogStateStyles>({

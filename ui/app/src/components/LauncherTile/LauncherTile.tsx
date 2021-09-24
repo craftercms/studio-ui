@@ -14,14 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Link from '@material-ui/core/Link';
+import Link from '@mui/material/Link';
 import clsx from 'clsx';
-import Avatar from '@material-ui/core/Avatar';
+import Avatar from '@mui/material/Avatar';
 import SystemIcon, { SystemIconDescriptor } from '../SystemIcon';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import React from 'react';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { CSSProperties } from '@material-ui/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import { CSSProperties } from '@mui/styles';
 
 export type LauncherTileClassKey = 'tile' | 'tileActive' | 'title' | 'iconAvatar';
 

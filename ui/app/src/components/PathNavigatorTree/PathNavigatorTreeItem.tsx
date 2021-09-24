@@ -14,25 +14,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import TreeItem from '@material-ui/lab/TreeItem';
+import TreeItem from '@mui/lab/TreeItem';
 import React, { useState } from 'react';
 import { DetailedItem } from '../../models/Item';
 import LookupTable from '../../models/LookupTable';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import { Typography } from '@material-ui/core';
+import CircularProgress from '@mui/material/CircularProgress';
+import { Typography } from '@mui/material';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import ItemDisplay from '../ItemDisplay';
-import Tooltip from '@material-ui/core/Tooltip';
-import IconButton from '@material-ui/core/IconButton';
-import MoreVertRoundedIcon from '@material-ui/icons/MoreVertRounded';
-import SearchRoundedIcon from '@material-ui/icons/SearchRounded';
+import Tooltip from '@mui/material/Tooltip';
+import IconButton from '@mui/material/IconButton';
+import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
+import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import { TreeNode } from './PathNavigatorTreeUI';
 import clsx from 'clsx';
 import SearchBar from '../Controls/SearchBar';
-import CloseIconRounded from '@material-ui/icons/CloseRounded';
-import ErrorOutlineRoundedIcon from '@material-ui/icons/ErrorOutlineRounded';
-import Button from '@material-ui/core/Button';
+import CloseIconRounded from '@mui/icons-material/CloseRounded';
+import ErrorOutlineRoundedIcon from '@mui/icons-material/ErrorOutlineRounded';
+import Button from '@mui/material/Button';
 
 interface PathNavigatorTreeItemProps {
   node: TreeNode;

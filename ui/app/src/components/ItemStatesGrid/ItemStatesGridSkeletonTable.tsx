@@ -15,16 +15,16 @@
  */
 
 import React from 'react';
-import TableContainer from '@material-ui/core/TableContainer';
-import Table from '@material-ui/core/Table';
-import TableHead from '@material-ui/core/TableHead';
-import TableBody from '@material-ui/core/TableBody';
-import Skeleton from '@material-ui/lab/Skeleton';
+import TableContainer from '@mui/material/TableContainer';
+import Table from '@mui/material/Table';
+import TableHead from '@mui/material/TableHead';
+import TableBody from '@mui/material/TableBody';
+import Skeleton from '@mui/material/Skeleton';
 import GlobalAppGridRow from '../GlobalAppGridRow';
 import GlobalAppGridCell from '../GlobalAppGridCell';
 import { rand } from '../PathNavigator/utils';
 import { FormattedMessage } from 'react-intl';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 
 export interface WorkflowStatesGridSkeletonTableProps {
   numOfItems?: number;
@@ -40,7 +40,7 @@ export const ItemStatesGridSkeletonTable = React.memo((props: WorkflowStatesGrid
         <TableHead>
           <GlobalAppGridRow className="hoverDisabled">
             <GlobalAppGridCell align="center">
-              <Skeleton variant="circle" width={42} height={42} />
+              <Skeleton variant="circular" width={42} height={42} />
             </GlobalAppGridCell>
             <GlobalAppGridCell className="width60 pl0">
               <Typography variant="subtitle2">
@@ -73,7 +73,7 @@ export const ItemStatesGridSkeletonTable = React.memo((props: WorkflowStatesGrid
           {items.map((item, index) => (
             <GlobalAppGridRow key={index}>
               <GlobalAppGridCell align="center">
-                <Skeleton variant="circle" width={42} height={42} />
+                <Skeleton variant="circular" width={42} height={42} />
               </GlobalAppGridCell>
               <GlobalAppGridCell className="maxWidth300 pl0">
                 <Skeleton variant="text" width={`${rand(80, 100)}%`} />

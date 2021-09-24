@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import { ViewVersionDialogProps } from './utils';
 import ViewVersionDialogContainer from './ViewVersionDialogContainer';
 import EnhancedDialog from '../EnhancedDialog/EnhancedDialog';
@@ -77,13 +77,13 @@ export const getLegacyDialogStyles = makeStyles(() => ({
       <section className={classes.viewVersionContent}>
         {contentTypes &&
           values.map((field) => (
-            <ExpansionPanel key={field.id} classes={{ root: classes.root }}>
-              <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+            <Accordion key={field.id} classes={{ root: classes.root }}>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography>
                   <span className={classes.bold}>{field.name}</span> ({field.id})
                 </Typography>
-              </ExpansionPanelSummary>
-              <ExpansionPanelDetails>
+              </AccordionSummary>
+              <AccordionDetails>
                 <Typography>
                   {field.type === 'html' ? (
                     <span
@@ -97,8 +97,8 @@ export const getLegacyDialogStyles = makeStyles(() => ({
                     version.content[version.id][field.id]
                   )}
                 </Typography>
-              </ExpansionPanelDetails>
-            </ExpansionPanel>
+              </AccordionDetails>
+            </Accordion>
           ))}
       </section>
     </>

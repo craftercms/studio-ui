@@ -30,7 +30,7 @@ import MediaSkeletonCard from './MediaSkeletonCard';
 import EmptyState from '../SystemStatus/EmptyState';
 import Pagination from '../Pagination';
 import FolderBrowserTreeView from '../FolderBrowserTreeView';
-import Box from '@material-ui/core/Box';
+import Box from '@mui/material/Box';
 
 interface BrowseFilesDialogUIProps {
   items: SearchItem[];

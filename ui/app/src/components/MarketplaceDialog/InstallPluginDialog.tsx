@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Dialog from '@material-ui/core/Dialog';
+import Dialog from '@mui/material/Dialog';
 import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { MarketplacePlugin } from '../../models/MarketplacePlugin';
 import DialogHeader from '../Dialogs/DialogHeader';
@@ -25,9 +25,10 @@ import { Resource } from '../../models/Resource';
 import { fetchMarketplacePlugins, installMarketplacePlugin } from '../../services/marketplace';
 import PluginCard from '../PluginCard';
 import { PagedArray } from '../../models/PagedArray';
-import Grid from '@material-ui/core/Grid';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import SearchIcon from '@material-ui/icons/SearchRounded';
+import Grid from '@mui/material/Grid';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import SearchIcon from '@mui/icons-material/SearchRounded';
 import SearchBar from '../Controls/SearchBar';
 import { debounceTime } from 'rxjs/operators';
 import PluginDetailsView from '../PluginDetailsView';

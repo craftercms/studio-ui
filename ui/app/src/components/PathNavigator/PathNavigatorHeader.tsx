@@ -16,11 +16,11 @@
 
 import React from 'react';
 import { useStyles } from './styles';
-import LanguageRounded from '@material-ui/icons/LanguageRounded';
-import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
+import LanguageRounded from '@mui/icons-material/LanguageRounded';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import MoreVertIcon from '@mui/icons-material/MoreVertRounded';
+import AccordionSummary from '@mui/material/AccordionSummary';
 import SystemIcon, { SystemIconDescriptor } from '../SystemIcon';
 
 interface HeaderProps {
@@ -58,7 +58,7 @@ export function PathNavigatorHeader(props: HeaderProps) {
               e.stopPropagation();
               onLanguageMenu(e.currentTarget);
             }}
-          >
+            size="large">
             {currentFlag(locale)}
           </IconButton>
         )}
@@ -70,7 +70,7 @@ export function PathNavigatorHeader(props: HeaderProps) {
               e.stopPropagation();
               onContextMenu(e.currentTarget);
             }}
-          >
+            size="large">
             <MoreVertIcon />
           </IconButton>
         )}

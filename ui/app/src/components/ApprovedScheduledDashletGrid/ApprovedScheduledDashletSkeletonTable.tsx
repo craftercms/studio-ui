@@ -15,17 +15,17 @@
  */
 
 import React, { Fragment } from 'react';
-import TableContainer from '@material-ui/core/TableContainer';
+import TableContainer from '@mui/material/TableContainer';
 import useStyles from './styles';
-import Table from '@material-ui/core/Table';
-import TableHead from '@material-ui/core/TableHead';
+import Table from '@mui/material/Table';
+import TableHead from '@mui/material/TableHead';
 import { FormattedMessage } from 'react-intl';
-import TableBody from '@material-ui/core/TableBody';
-import Collapse from '@material-ui/core/Collapse';
-import Box from '@material-ui/core/Box';
+import TableBody from '@mui/material/TableBody';
+import Collapse from '@mui/material/Collapse';
+import Box from '@mui/material/Box';
 import GlobalAppGridRow from '../GlobalAppGridRow';
 import GlobalAppGridCell from '../GlobalAppGridCell';
-import Skeleton from '@material-ui/lab/Skeleton';
+import Skeleton from '@mui/material/Skeleton';
 import LookupTable from '../../models/LookupTable';
 import { rand } from '../PathNavigator/utils';
 import { DashboardItem } from '../AwaitingApprovalDashlet';
@@ -55,7 +55,7 @@ export default function ApprovedScheduledDashletSkeletonTable(props: ApprovedSch
         <TableHead>
           <GlobalAppGridRow className="hoverDisabled">
             <GlobalAppGridCell className="checkbox">
-              <Skeleton variant="circle" width={30} height={30} className={classes.skeletonCheckbox} />
+              <Skeleton variant="circular" width={30} height={30} className={classes.skeletonCheckbox} />
             </GlobalAppGridCell>
             <GlobalAppGridCell className="width40 padded0">
               <FormattedMessage id="dashboardItemsApproval.item" defaultMessage="Item" />
@@ -78,7 +78,7 @@ export default function ApprovedScheduledDashletSkeletonTable(props: ApprovedSch
               <GlobalAppGridRow>
                 <GlobalAppGridCell colSpan={7} className="padded0">
                   <Box display="flex" alignItems="center">
-                    <Skeleton variant="circle" width={30} height={30} className={classes.skeletonCheckbox} />
+                    <Skeleton variant="circular" width={30} height={30} className={classes.skeletonCheckbox} />
                     <Skeleton variant="text" height="20px" width={`${rand(20, 50)}%`} />
                   </Box>
                 </GlobalAppGridCell>
@@ -91,7 +91,7 @@ export default function ApprovedScheduledDashletSkeletonTable(props: ApprovedSch
                         {dashboardItem.children.map((item, i) => (
                           <GlobalAppGridRow key={i}>
                             <GlobalAppGridCell className="checkbox">
-                              <Skeleton variant="circle" width={30} height={30} className={classes.skeletonCheckbox} />
+                              <Skeleton variant="circular" width={30} height={30} className={classes.skeletonCheckbox} />
                             </GlobalAppGridCell>
                             <GlobalAppGridCell className="width40 padded0">
                               <Skeleton variant="text" width={`${rand(70, 90)}%`} />
@@ -107,7 +107,7 @@ export default function ApprovedScheduledDashletSkeletonTable(props: ApprovedSch
                               <Skeleton variant="text" width={`${rand(60, 90)}%`} />
                             </GlobalAppGridCell>
                             <GlobalAppGridCell className="checkbox">
-                              <Skeleton variant="circle" width={30} height={30} className={classes.skeletonCheckbox} />
+                              <Skeleton variant="circular" width={30} height={30} className={classes.skeletonCheckbox} />
                             </GlobalAppGridCell>
                           </GlobalAppGridRow>
                         ))}

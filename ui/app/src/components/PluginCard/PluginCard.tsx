@@ -15,22 +15,23 @@
  */
 
 import React, { useState } from 'react';
-import Card from '@material-ui/core/Card';
-import CardActionArea from '@material-ui/core/CardActionArea';
-import CardContent from '@material-ui/core/CardContent';
-import CardHeader from '@material-ui/core/CardHeader';
-import Typography from '@material-ui/core/Typography';
-import CardActions from '@material-ui/core/CardActions';
+import Card from '@mui/material/Card';
+import CardActionArea from '@mui/material/CardActionArea';
+import CardContent from '@mui/material/CardContent';
+import CardHeader from '@mui/material/CardHeader';
+import Typography from '@mui/material/Typography';
+import CardActions from '@mui/material/CardActions';
 import SwipeableViews from 'react-swipeable-views';
 // @ts-ignore
 import { autoPlay } from 'react-swipeable-views-utils';
-import { makeStyles, Theme } from '@material-ui/core/styles';
+import { Theme } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import { MarketplacePlugin } from '../../models/MarketplacePlugin';
 import { defineMessages, useIntl } from 'react-intl';
 import MobileStepper from '../MobileStepper';
 import { backgroundColor } from '../../styles/theme';
-import Button from '@material-ui/core/Button';
-import Tooltip from '@material-ui/core/Tooltip';
+import Button from '@mui/material/Button';
+import Tooltip from '@mui/material/Tooltip';
 import clsx from 'clsx';
 import cardTitleStyles from '../../styles/card';
 import SecondaryButton from '../SecondaryButton';

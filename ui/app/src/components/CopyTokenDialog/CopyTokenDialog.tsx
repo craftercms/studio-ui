@@ -16,7 +16,8 @@
 
 import React from 'react';
 import { defineMessages, FormattedMessage } from 'react-intl';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { CopyTokenProps } from './utils';
 import { CopyTokenContainer } from './CopyTokenContainer';
 import EnhancedDialog from '../EnhancedDialog';

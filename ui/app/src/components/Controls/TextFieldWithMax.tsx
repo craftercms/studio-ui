@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import TextField, { TextFieldProps } from '@material-ui/core/TextField';
+import TextField, { TextFieldProps } from '@mui/material/TextField';
 import { useSelector } from 'react-redux';
 import GlobalState from '../../models/GlobalState';
 import CharCountStatus from '../CharCountStatus';

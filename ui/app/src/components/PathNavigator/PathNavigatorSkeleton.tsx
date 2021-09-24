@@ -15,10 +15,11 @@
  */
 
 import * as React from 'react';
-import Skeleton from '@material-ui/lab/Skeleton';
+import Skeleton from '@mui/material/Skeleton';
 import { rand } from './utils';
 import clsx from 'clsx';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 
 // type PathNavigatorSkeletonClassKey = 'skeletonRoot' | 'skeletonHeader' | 'skeletonBody' | 'skeletonBodyItem' | 'childrenRail';
 
@@ -52,7 +53,7 @@ function PathNavigatorSkeleton({ numOfItems = 5 }: PathNavigatorSkeletonProps) {
   return (
     <section className={classes.skeletonRoot}>
       <header className={classes.skeletonHeader}>
-        <Skeleton variant="rect" width="20px" />
+        <Skeleton variant="rectangular" width="20px" />
         <Skeleton variant="text" style={{ margin: '0 10px', width: `${rand(40, 70)}%` }} />
       </header>
       <section className={clsx(classes.skeletonBody)}>
@@ -61,7 +62,7 @@ function PathNavigatorSkeleton({ numOfItems = 5 }: PathNavigatorSkeletonProps) {
         </div>
         {new Array(numOfItems).fill(null).map((_, index) => (
           <div className={classes.skeletonBodyItem} key={index}>
-            <Skeleton variant="circle" width="20px" />
+            <Skeleton variant="circular" width="20px" />
             <Skeleton variant="text" style={{ margin: '0 10px', width: `${rand(60, 95)}%` }} />
           </div>
         ))}

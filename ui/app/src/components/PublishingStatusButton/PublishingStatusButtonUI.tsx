@@ -16,8 +16,8 @@
 
 import React, { forwardRef } from 'react';
 import { PublishingStatusAvatar, PublishingStatusAvatarProps } from '../PublishingStatusAvatar/PublishingStatusAvatar';
-import IconButton, { IconButtonProps } from '@material-ui/core/IconButton';
-import { Badge, CircularProgress, Tooltip } from '@material-ui/core';
+import IconButton, { IconButtonProps } from '@mui/material/IconButton';
+import { Badge, CircularProgress, Tooltip } from '@mui/material';
 import { PublishingStatus } from '../../models/Publishing';
 import { FormattedMessage } from 'react-intl';
 import { publishingStatusTileMessages } from '../PublishingStatusTile';

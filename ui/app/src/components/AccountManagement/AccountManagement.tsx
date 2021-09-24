@@ -14,22 +14,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Box from '@material-ui/core/Box';
+import Box from '@mui/material/Box';
 import React, { useEffect, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import GlobalAppToolbar from '../GlobalAppToolbar';
-import { Typography } from '@material-ui/core';
-import Paper from '@material-ui/core/Paper';
+import { Typography } from '@mui/material';
+import Paper from '@mui/material/Paper';
 import useStyles from './styles';
-import Avatar from '@material-ui/core/Avatar';
-import Container from '@material-ui/core/Container';
+import Avatar from '@mui/material/Avatar';
+import Container from '@mui/material/Container';
 import { dispatchLanguageChange, getCurrentLocale, setStoredLanguage } from '../../utils/i18n';
 import { SystemLang } from '../SystemStatus/LoginView';
 import { fetchProductLanguages } from '../../services/configuration';
-import TextField from '@material-ui/core/TextField';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import Skeleton from '@material-ui/lab/Skeleton';
+import TextField from '@mui/material/TextField';
+import MenuItem from '@mui/material/MenuItem';
+import FormHelperText from '@mui/material/FormHelperText';
+import Skeleton from '@mui/material/Skeleton';
 import PasswordTextField from '../Controls/PasswordTextField';
 import PasswordRequirementsDisplay from '../PasswordRequirementsDisplay';
 import PrimaryButton from '../PrimaryButton';

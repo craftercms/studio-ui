@@ -14,10 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Skeleton from '@material-ui/lab/Skeleton';
+import Skeleton from '@mui/material/Skeleton';
 import { rand } from '../PathNavigator/utils';
 import * as React from 'react';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 
 interface PathNavigatorTreeSkeletonItemProps {
@@ -35,7 +36,7 @@ export default function PathNavigatorTreeSkeletonItem(props: PathNavigatorTreeSk
   const classes = useStyles();
   return (
     <div className={clsx(classes.root, props.classes?.root)}>
-      <Skeleton variant="circle" width="20px" style={{ marginRight: '10px' }} />
+      <Skeleton variant="circular" width="20px" style={{ marginRight: '10px' }} />
       <Skeleton variant="text" style={{ margin: '0 10px', width: props.textWidth ?? `${rand(60, 95)}%` }} />
     </div>
   );

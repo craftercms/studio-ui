@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createSvgIcon } from '@material-ui/core/utils';
+import { createSvgIcon } from '@mui/material/utils';
 import React from 'react';
 
 export default createSvgIcon(

@@ -16,8 +16,9 @@
 
 import React, { useCallback, useEffect, useRef } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import Dialog from '@material-ui/core/Dialog';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import Dialog from '@mui/material/Dialog';
 import { useDispatch } from 'react-redux';
 
 import '@uppy/core/dist/style.css';

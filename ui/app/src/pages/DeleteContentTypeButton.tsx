@@ -16,8 +16,8 @@
 
 import * as React from 'react';
 import { useState } from 'react';
-import IconButton from '@material-ui/core/IconButton';
-import DeleteRounded from '@material-ui/icons/DeleteRounded';
+import IconButton from '@mui/material/IconButton';
+import DeleteRounded from '@mui/icons-material/DeleteRounded';
 import DeleteContentTypeDialog from '../components/DeleteContentTypeDialog';
 import ContentType from '../models/ContentType';
 
@@ -28,22 +28,20 @@ export interface DeleteContentTypeButtonProps {
 
 function DeleteContentTypeButton({ contentType, onComplete }: DeleteContentTypeButtonProps) {
   const [open, setOpen] = useState(false);
-  return (
-    <>
-      <IconButton onClick={() => setOpen(true)}>
-        <DeleteRounded />
-      </IconButton>
-      <DeleteContentTypeDialog
-        open={open}
-        onClose={() => setOpen(false)}
-        contentType={contentType}
-        onComplete={() => {
-          setOpen(false);
-          onComplete?.();
-        }}
-      />
-    </>
-  );
+  return <>
+    <IconButton onClick={() => setOpen(true)} size="large">
+      <DeleteRounded />
+    </IconButton>
+    <DeleteContentTypeDialog
+      open={open}
+      onClose={() => setOpen(false)}
+      contentType={contentType}
+      onComplete={() => {
+        setOpen(false);
+        onComplete?.();
+      }}
+    />
+  </>;
 }
 
 export default DeleteContentTypeButton;

@@ -15,14 +15,15 @@
  */
 
 import React from 'react';
-import SvgIcon, { SvgIconProps } from '@material-ui/core/SvgIcon';
-import { makeStyles, createStyles } from '@material-ui/core/styles';
+import SvgIcon, { SvgIconProps } from '@mui/material/SvgIcon';
+import makeStyles from '@mui/styles/makeStyles';
+import createStyles from '@mui/styles/createStyles';
 import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
     themedFill: {
-      fill: theme.palette.type === 'dark' ? '#fff' : '#000'
+      fill: theme.palette.mode === 'dark' ? '#fff' : '#000'
     },
     gear: {
       fill: '#f00'

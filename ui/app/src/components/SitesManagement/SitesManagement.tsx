@@ -16,13 +16,13 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import AddIcon from '@material-ui/icons/Add';
+import AddIcon from '@mui/icons-material/Add';
 import { SkeletonSitesGrid } from '../SitesGrid';
 import CreateSiteDialog from '../../modules/System/Sites/Create/CreateSiteDialog';
-import ListViewIcon from '@material-ui/icons/ViewStreamRounded';
-import GridViewIcon from '@material-ui/icons/GridOnRounded';
-import Tooltip from '@material-ui/core/Tooltip';
-import IconButton from '@material-ui/core/IconButton';
+import ListViewIcon from '@mui/icons-material/ViewStreamRounded';
+import GridViewIcon from '@mui/icons-material/GridOnRounded';
+import Tooltip from '@mui/material/Tooltip';
+import IconButton from '@mui/material/IconButton';
 import { useDispatch } from 'react-redux';
 import LookupTable from '../../models/LookupTable';
 import { PublishingStatus } from '../../models/Publishing';
@@ -42,7 +42,7 @@ import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import SitesGridUI from '../SitesGrid/SitesGridUI';
 import PublishingStatusDialog from '../PublishingStatusDialog';
 import GlobalAppToolbar from '../GlobalAppToolbar';
-import Button from '@material-ui/core/Button';
+import Button from '@mui/material/Button';
 import { getStoredGlobalMenuSiteViewPreference, setStoredGlobalMenuSiteViewPreference } from '../../utils/state';
 import { hasGlobalPermissions } from '../../services/users';
 import { foo } from '../../utils/object';
@@ -52,7 +52,7 @@ import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import { useMount } from '../../utils/hooks/useMount';
 import { useSpreadState } from '../../utils/hooks/useSpreadState';
 import { useSitesBranch } from '../../utils/hooks/useSitesBranch';
-import Paper from '@material-ui/core/Paper';
+import Paper from '@mui/material/Paper';
 import { getSystemLink } from '../../utils/system';
 import { fetchUseLegacyPreviewPreference } from '../../services/configuration';
 import { useEnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
@@ -185,7 +185,7 @@ export default function SitesManagement() {
         }
         rightContent={
           <Tooltip title={<FormattedMessage id="sites.ChangeView" defaultMessage="Change view" />}>
-            <IconButton onClick={handleChangeView}>
+            <IconButton onClick={handleChangeView} size="large">
               {currentView === 'grid' ? <ListViewIcon /> : <GridViewIcon />}
             </IconButton>
           </Tooltip>

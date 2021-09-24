@@ -15,11 +15,12 @@
  */
 
 import React, { ElementType, PropsWithChildren } from 'react';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import Typography from '@mui/material/Typography';
 import Gears from './Gears';
 import clsx from 'clsx';
-import { CSSProperties } from '@material-ui/styles';
+import { CSSProperties } from '@mui/styles';
 
 type LoadingStateClassKey = 'root' | 'title' | 'subtitle' | 'graphic' | 'graphicRoot';
 
@@ -33,7 +34,7 @@ const useStyles = makeStyles((theme) =>
       alignItems: 'center',
       flexDirection: 'column',
       justifyContent: 'center',
-      margin: `${theme.spacing(2)}px auto`,
+      margin: `${theme.spacing(2)} auto`,
       ...styles.root
     }),
     graphicRoot: (styles) => ({

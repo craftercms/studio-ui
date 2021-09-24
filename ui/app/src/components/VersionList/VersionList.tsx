@@ -14,16 +14,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import createStyles from '@mui/styles/createStyles';
+
+import makeStyles from '@mui/styles/makeStyles';
 import { FormattedDateParts, FormattedMessage, FormattedTime } from 'react-intl';
 import React from 'react';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import Chip from '@material-ui/core/Chip';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import IconButton from '@material-ui/core/IconButton';
-import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import Chip from '@mui/material/Chip';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import IconButton from '@mui/material/IconButton';
+import MoreVertIcon from '@mui/icons-material/MoreVertRounded';
 import { Resource } from '../../models/Resource';
 import { LegacyVersion } from '../../models/Version';
 import clsx from 'clsx';
@@ -144,7 +146,7 @@ export default function VersionList(props: VersionListProps) {
                   onClick={(e) =>
                     onOpenMenu(e.currentTarget, version, current === version.versionNumber, versions.length === i + 1)
                   }
-                >
+                  size="large">
                   <MoreVertIcon />
                 </IconButton>
               </ListItemSecondaryAction>

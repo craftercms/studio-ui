@@ -26,7 +26,7 @@ import { getNumOfMenuOptionsForItem, getSystemTypeFromPath, parseLegacyItemToDet
 import Dashlet from '../Dashlet';
 import ApiResponse from '../../models/ApiResponse';
 import AwaitingApprovalDashletSkeletonTable from '../AwaitingApprovalDashletGrid/AwaitingApprovalDashletSkeletonTable';
-import Button from '@material-ui/core/Button';
+import Button from '@mui/material/Button';
 import { itemsApproved, itemsDeleted, itemsRejected, itemsScheduled } from '../../state/actions/system';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { filter } from 'rxjs/operators';

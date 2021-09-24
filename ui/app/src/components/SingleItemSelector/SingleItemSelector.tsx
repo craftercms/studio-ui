@@ -15,14 +15,15 @@
  */
 
 import React, { ReactNode, useCallback, useReducer, useRef } from 'react';
-import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import { makeStyles, TypographyVariant as Variant } from '@material-ui/core/styles';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import { TypographyVariant as Variant } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import { DetailedItem, SandboxItem } from '../../models/Item';
-import ExpandMoreRoundedIcon from '@material-ui/icons/ExpandMoreRounded';
-import Popover from '@material-ui/core/Popover';
-import Paper from '@material-ui/core/Paper';
+import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
+import Popover from '@mui/material/Popover';
+import Paper from '@mui/material/Paper';
 import StandardAction from '../../models/StandardAction';
 import PaginationOptions from '../../models/PaginationOptions';
 import { LookupTable } from '../../models/LookupTable';
@@ -412,7 +413,7 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
           ref={anchorEl}
           disabled={disabled}
           onClick={disabled ? null : () => handleDropdownClick(selectedItem)}
-        >
+          size="large">
           <SelectIcon className={clsx(classes.selectIcon, propClasses?.selectIcon)} />
         </IconButton>
       )}

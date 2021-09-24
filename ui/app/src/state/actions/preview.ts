@@ -201,9 +201,8 @@ export function setItemBeingDragged(iceId: number): StandardAction {
   };
 }
 
-export const fetchAudiencesPanelModel = /*#__PURE__*/ createAction<{ fields: LookupTable<ContentTypeField> }>(
-  'FETCH_AUDIENCES_PANEL_MODEL'
-);
+export const fetchAudiencesPanelModel =
+  /*#__PURE__*/ createAction<{ fields: LookupTable<ContentTypeField> }>('FETCH_AUDIENCES_PANEL_MODEL');
 
 export const fetchAudiencesPanelModelComplete = /*#__PURE__*/ createAction<ContentInstance>(
   'FETCH_AUDIENCES_PANEL_MODEL_COMPLETE'
@@ -286,15 +285,13 @@ export const initIcePanelConfig = /*#__PURE__*/ createAction<{
   icePanelWidth?: number;
 }>('INIT_ICE_PANEL_CONFIG');
 
-export const initRichTextEditorConfig = /*#__PURE__*/ createAction<{ configXml: string; siteId: string }>(
-  'INIT_RICH_TEXT_EDITOR_CONFIG'
-);
+export const initRichTextEditorConfig =
+  /*#__PURE__*/ createAction<{ configXml: string; siteId: string }>('INIT_RICH_TEXT_EDITOR_CONFIG');
 
 export const dissociateTemplate = /*#__PURE__*/ createAction<{ contentTypeId: string }>('DISSOCIATE_TEMPLATE');
 
-export const dissociateTemplateComplete = /*#__PURE__*/ createAction<{ contentTypeId: string }>(
-  'DISSOCIATE_TEMPLATE_COMPLETE'
-);
+export const dissociateTemplateComplete =
+  /*#__PURE__*/ createAction<{ contentTypeId: string }>('DISSOCIATE_TEMPLATE_COMPLETE');
 
 export const dissociateTemplateFailed = /*#__PURE__*/ createAction('DISSOCIATE_TEMPLATE_FAILED');
 

@@ -15,15 +15,30 @@
  */
 
 import React, { PropsWithChildren, useMemo } from 'react';
-import { createTheme, StylesProvider, ThemeOptions, ThemeProvider } from '@material-ui/core/styles';
+import {
+  createTheme,
+  DeprecatedThemeOptions,
+  ThemeProvider,
+  Theme,
+  StyledEngineProvider,
+  adaptV4Theme,
+} from '@mui/material/styles';
+import StylesProvider from '@mui/styles/StylesProvider';
 import { defaultThemeOptions, generateClassName } from '../../styles/theme';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import palette from '../../styles/palette';
 import { extend } from '../../utils/object';
 import { GenerateId } from 'jss';
 
+
+declare module '@mui/styles/defaultTheme' {
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  interface DefaultTheme extends Theme {}
+}
+
+
 export type CrafterThemeProviderProps = PropsWithChildren<{
-  themeOptions?: ThemeOptions;
+  themeOptions?: DeprecatedThemeOptions;
   generateClassName?: GenerateId;
 }>;
 
@@ -31,11 +46,11 @@ export function CrafterThemeProvider(props: CrafterThemeProviderProps) {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const theme = useMemo(() => {
     const type = prefersDarkMode ? 'dark' : 'light';
-    const auxTheme = createTheme({ palette: { type } });
-    return createTheme({
+    const auxTheme = createTheme(adaptV4Theme({ palette: { mode } }));
+    return createTheme(adaptV4Theme({
       ...(props.themeOptions ?? defaultThemeOptions),
       palette: {
-        type,
+        mode,
         primary: {
           main: prefersDarkMode ? palette.blue.tint : palette.blue.main
         },
@@ -70,12 +85,14 @@ export function CrafterThemeProvider(props: CrafterThemeProviderProps) {
         },
         { deep: true }
       )
-    });
+    }));
   }, [prefersDarkMode, props.themeOptions]);
   return (
-    <ThemeProvider theme={theme}>
-      <StylesProvider generateClassName={props.generateClassName ?? generateClassName} children={props.children} />
-    </ThemeProvider>
+    <StyledEngineProvider injectFirst>
+      <ThemeProvider theme={theme}>
+        <StylesProvider generateClassName={props.generateClassName ?? generateClassName} children={props.children} />
+      </ThemeProvider>
+    </StyledEngineProvider>
   );
 }
 

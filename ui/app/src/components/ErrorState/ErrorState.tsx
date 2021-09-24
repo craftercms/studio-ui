@@ -15,11 +15,13 @@
  */
 
 import React, { ReactNode } from 'react';
-import { CSSProperties } from '@material-ui/styles';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import Fab from '@material-ui/core/Fab';
+import { CSSProperties } from '@mui/styles';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import Typography from '@mui/material/Typography';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import Fab from '@mui/material/Fab';
 import crack from '../../assets/full-crack.svg';
 import clsx from 'clsx';
 import { nnou } from '../../utils/object';

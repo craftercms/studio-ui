@@ -20,7 +20,7 @@ import LauncherOpenerButton from '../../components/LauncherOpenerButton';
 import { closeToolsPanel, initToolbarConfig, openToolsPanel } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 import { defineMessages, useIntl } from 'react-intl';
-import Tooltip from '@material-ui/core/Tooltip';
+import Tooltip from '@mui/material/Tooltip';
 import LogoAndMenuBundleButton from '../../components/LogoAndMenuBundleButton';
 import { renderWidgets } from '../../components/Widget';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';

@@ -15,17 +15,18 @@
  */
 
 import React from 'react';
-import IconButton from '@material-ui/core/IconButton';
-import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import IconButton from '@mui/material/IconButton';
+import MoreVertIcon from '@mui/icons-material/MoreVertRounded';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import Link from '@material-ui/core/Link';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import Box from '@material-ui/core/Box';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Link from '@mui/material/Link';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import Box from '@mui/material/Box';
 
 export interface LauncherSiteCardOption {
   name: string;
@@ -74,44 +75,42 @@ function LauncherSiteCard(props: LauncherSiteCardProps) {
     setAnchorEl(event.currentTarget);
   };
 
-  return (
-    <>
-      <Box
-        // @ts-ignore
-        button
-        selected={selected}
-        boxShadow={1}
-        component={ListItem}
-        onClick={() => onCardClick(value)}
-        className={clsx(classes.card, props.classes?.root)}
-        title={title}
-      >
-        <ListItemText primary={title} primaryTypographyProps={{ className: classes.siteName, noWrap: true }} />
-        {hasOptions && (
-          <ListItemSecondaryAction>
-            <IconButton aria-label="settings" onClick={handleOptions}>
-              <MoreVertIcon />
-            </IconButton>
-          </ListItemSecondaryAction>
-        )}
-      </Box>
-      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
-        {hasOptions &&
-          options.map((action, i) => (
-            <MenuItem
-              key={i}
-              component={Link}
-              color="inherit"
-              underline="none"
-              href={typeof action.href === 'function' ? action.href(value) : action.href}
-              onClick={(e) => handleClose(e, action)}
-            >
-              {action.name}
-            </MenuItem>
-          ))}
-      </Menu>
-    </>
-  );
+  return <>
+    <Box
+      // @ts-ignore
+      button
+      selected={selected}
+      boxShadow={1}
+      component={ListItem}
+      onClick={() => onCardClick(value)}
+      className={clsx(classes.card, props.classes?.root)}
+      title={title}
+    >
+      <ListItemText primary={title} primaryTypographyProps={{ className: classes.siteName, noWrap: true }} />
+      {hasOptions && (
+        <ListItemSecondaryAction>
+          <IconButton aria-label="settings" onClick={handleOptions} size="large">
+            <MoreVertIcon />
+          </IconButton>
+        </ListItemSecondaryAction>
+      )}
+    </Box>
+    <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
+      {hasOptions &&
+        options.map((action, i) => (
+          <MenuItem
+            key={i}
+            component={Link}
+            color="inherit"
+            underline="none"
+            href={typeof action.href === 'function' ? action.href(value) : action.href}
+            onClick={(e) => handleClose(e, action)}
+          >
+            {action.name}
+          </MenuItem>
+        ))}
+    </Menu>
+  </>;
 }
 
 export default LauncherSiteCard;

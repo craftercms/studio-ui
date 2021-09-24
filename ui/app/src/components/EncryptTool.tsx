@@ -17,21 +17,22 @@
 import React, { useRef, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { encrypt as encryptService } from '../services/security';
-import Snackbar from '@material-ui/core/Snackbar';
-import SnackbarContent from '@material-ui/core/SnackbarContent';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
-import { makeStyles, Theme } from '@material-ui/core/styles';
-import CheckCircleIcon from '@material-ui/icons/CheckCircle';
-import ErrorIcon from '@material-ui/icons/Error';
-import { green, red } from '@material-ui/core/colors';
+import Snackbar from '@mui/material/Snackbar';
+import SnackbarContent from '@mui/material/SnackbarContent';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+import { Theme } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ErrorIcon from '@mui/icons-material/Error';
+import { green, red } from '@mui/material/colors';
 import { setRequestForgeryToken } from '../utils/auth';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
 import GlobalAppToolbar from './GlobalAppToolbar';
-import Box from '@material-ui/core/Box';
+import Box from '@mui/material/Box';
 import { useSpreadState } from '../utils/hooks/useSpreadState';
-import Paper from '@material-ui/core/Paper';
+import Paper from '@mui/material/Paper';
 
 interface EncryptToolProps {
   site?: string;
@@ -125,7 +126,12 @@ function SnackbarContentWrapper(props: any) {
         </span>
       }
       action={[
-        <IconButton key="close" aria-label="close" color="inherit" onClick={onClose}>
+        <IconButton
+          key="close"
+          aria-label="close"
+          color="inherit"
+          onClick={onClose}
+          size="large">
           <CloseIcon className={classes.icon} />
         </IconButton>
       ]}
@@ -226,7 +232,7 @@ const EncryptTool = (props: EncryptToolProps) => {
             </div>
           )}
           <div className={classes.formGroup}>
-            <Button type="button" onClick={clear} disabled={fetching} color="default" variant="outlined">
+            <Button type="button" onClick={clear} disabled={fetching} variant="outlined">
               {formatMessage(messages.clearResultButtonText)}
             </Button>{' '}
             <Button type="submit" onClick={encrypt} disabled={fetching} color="primary" variant="contained">

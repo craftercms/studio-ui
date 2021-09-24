@@ -17,25 +17,25 @@
 import React, { useCallback, useMemo } from 'react';
 import { DetailedItem } from '../../models/Item';
 import { Resource } from '../../models/Resource';
-import Table from '@material-ui/core/Table';
-import TableHead from '@material-ui/core/TableHead';
+import Table from '@mui/material/Table';
+import TableHead from '@mui/material/TableHead';
 import GlobalAppGridRow from '../GlobalAppGridRow';
 import GlobalAppGridCell from '../GlobalAppGridCell';
-import TableSortLabel from '@material-ui/core/TableSortLabel';
-import TableBody from '@material-ui/core/TableBody';
-import TableContainer from '@material-ui/core/TableContainer';
+import TableSortLabel from '@mui/material/TableSortLabel';
+import TableBody from '@mui/material/TableBody';
+import TableContainer from '@mui/material/TableContainer';
 import useStyles from './styles';
-import Checkbox from '@material-ui/core/Checkbox';
+import Checkbox from '@mui/material/Checkbox';
 import { FormattedMessage } from 'react-intl';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import ItemDisplay from '../ItemDisplay';
-import IconButton from '@material-ui/core/IconButton';
-import MoreVertRounded from '@material-ui/icons/MoreVertRounded';
+import IconButton from '@mui/material/IconButton';
+import MoreVertRounded from '@mui/icons-material/MoreVertRounded';
 import clsx from 'clsx';
 import LookupTable from '../../models/LookupTable';
 import GlobalState from '../../models/GlobalState';
 import { asLocalizedDateTime } from '../../utils/datetime';
-import Tooltip from '@material-ui/core/Tooltip';
+import Tooltip from '@mui/material/Tooltip';
 import { getDatePublished, getDateScheduled } from '../../utils/detailedItem';
 
 export interface RecentActivityDashletGridUIProps {
@@ -218,7 +218,7 @@ export default function RecentActivityDashletGridUI(props: RecentActivityDashlet
               </GlobalAppGridCell>
               <GlobalAppGridCell className="checkbox">
                 {item.stateMap.deleted ? (
-                  <IconButton disabled={true}>
+                  <IconButton disabled={true} size="large">
                     <MoreVertRounded />
                   </IconButton>
                 ) : (
@@ -228,7 +228,7 @@ export default function RecentActivityDashletGridUI(props: RecentActivityDashlet
                         e.stopPropagation();
                         onOptionsButtonClick(e, item);
                       }}
-                    >
+                      size="large">
                       <MoreVertRounded />
                     </IconButton>
                   </Tooltip>

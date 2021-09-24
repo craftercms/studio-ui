@@ -88,7 +88,7 @@ function registerSharedWorker(): Observable<ObtainAuthTokenResponse & { worker: 
     });
     worker.port.start();
     worker.port.postMessage(sharedWorkerConnect());
-    window.addEventListener('beforeunload', function() {
+    window.addEventListener('beforeunload', function () {
       worker.port.postMessage(sharedWorkerDisconnect());
     });
     return fromEvent<MessageEvent>(worker.port, 'message').pipe(

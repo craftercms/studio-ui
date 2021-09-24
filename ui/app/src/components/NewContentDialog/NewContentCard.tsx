@@ -15,12 +15,12 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import Card from '@material-ui/core/Card';
-import CardHeader from '@material-ui/core/CardHeader';
-import CardMedia from '@material-ui/core/CardMedia';
-import Divider from '@material-ui/core/Divider';
+import Card from '@mui/material/Card';
+import CardHeader from '@mui/material/CardHeader';
+import CardMedia from '@mui/material/CardMedia';
+import Divider from '@mui/material/Divider';
 import clsx from 'clsx';
-import Skeleton from '@material-ui/lab/Skeleton';
+import Skeleton from '@mui/material/Skeleton';
 import { getBinary } from '../../utils/ajax';
 import { useContentCardStyles } from './styles';
 
@@ -105,11 +105,11 @@ export function ContentSkeletonCard(props: { isCompact: boolean }) {
             title={<Skeleton animation="wave" height={10} width="40%" />}
             subheader={<Skeleton animation="wave" height={10} width="80%" />}
           />
-          <Skeleton animation="wave" variant="rect" className={classes.media} />
+          <Skeleton animation="wave" variant="rectangular" className={classes.media} />
         </>
       ) : (
         <>
-          <Skeleton animation="wave" variant="rect" className={classes.compactMedia} />
+          <Skeleton animation="wave" variant="rectangular" className={classes.compactMedia} />
           <CardHeader
             title={<Skeleton animation="wave" height={10} width="40%" />}
             subheader={<Skeleton animation="wave" height={10} width="80%" />}

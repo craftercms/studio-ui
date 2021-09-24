@@ -14,28 +14,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import React, { useCallback, useEffect, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import AddIcon from '@material-ui/icons/Add';
-import { createStyles, makeStyles, Theme, withStyles } from '@material-ui/core/styles';
+import AddIcon from '@mui/icons-material/Add';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import withStyles from '@mui/styles/withStyles';
 import { PluginRecord } from '../../models/Plugin';
 import { ConditionalLoadingState } from '../SystemStatus/LoadingState';
-import TableContainer from '@material-ui/core/TableContainer';
-import Table from '@material-ui/core/Table';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import Table from '@mui/material/Table';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import TableCell from '@mui/material/TableCell';
 import { AsDayMonthDateTime } from '../VersionList/VersionList';
 import EmptyState from '../SystemStatus/EmptyState';
 import InstallPluginDialog from '../MarketplaceDialog';
 import { MarketplacePlugin } from '../../models/MarketplacePlugin';
-import IconButton from '@material-ui/core/IconButton';
-import ExpandMoreRoundedIcon from '@material-ui/icons/ExpandMoreRounded';
-import Popover from '@material-ui/core/Popover';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
+import IconButton from '@mui/material/IconButton';
+import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
+import Popover from '@mui/material/Popover';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
 import { useDispatch } from 'react-redux';
 import { fetchInstalledMarketplacePlugins } from '../../services/marketplace';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
@@ -48,12 +51,12 @@ import { useSelection } from '../../utils/hooks/useSelection';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useMount } from '../../utils/hooks/useMount';
 import { batchActions } from '../../state/actions/misc';
-import Link from '@material-ui/core/Link';
+import Link from '@mui/material/Link';
 import { createPresenceTable } from '../../utils/array';
-import ListSubheader from '@material-ui/core/ListSubheader';
-import Button from '@material-ui/core/Button';
-import Paper from '@material-ui/core/Paper';
-import TableBody from '@material-ui/core/TableBody';
+import ListSubheader from '@mui/material/ListSubheader';
+import Button from '@mui/material/Button';
+import Paper from '@mui/material/Paper';
+import TableBody from '@mui/material/TableBody';
 
 const messages = defineMessages({
   pluginInstalled: {
