@@ -76,8 +76,8 @@ export default function EditGroupDialogContainer(props: EditGroupDialogContainer
     if (props.group) {
       forkJoin([fetchAll(), fetchUsersFromGroup(props.group.id)]).subscribe(([users, members]) => {
         setMembers([...members]);
-        const _users = users.filter(function(user) {
-          return !members.find(function(member) {
+        const _users = users.filter(function (user) {
+          return !members.find(function (member) {
             return member.id === user.id;
           });
         });

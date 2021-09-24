@@ -89,22 +89,24 @@ export function UploadDialogContainer(props: UploadDialogContainerProps) {
     plugin.setOptions({ headers: getGlobalHeaders() });
   }, [expiresAt, uppy]);
 
-  return <>
-    <Button style={{ display: 'none' }}>test</Button>
-    <IconButton style={{ display: 'none' }} size="large">
-      <CloseIconRounded />
-    </IconButton>
-    <DialogBody className={classes.dialogBody}>
-      <UppyDashboard
-        uppy={uppy}
-        site={site}
-        path={path}
-        onMinimized={onMinimized}
-        onPendingChanges={setPendingChanges}
-        onClose={onClose}
-        title={formatMessage(translations.title)}
-        maxActiveUploads={maxActiveUploads}
-      />
-    </DialogBody>
-  </>;
+  return (
+    <>
+      <Button style={{ display: 'none' }}>test</Button>
+      <IconButton style={{ display: 'none' }} size="large">
+        <CloseIconRounded />
+      </IconButton>
+      <DialogBody className={classes.dialogBody}>
+        <UppyDashboard
+          uppy={uppy}
+          site={site}
+          path={path}
+          onMinimized={onMinimized}
+          onPendingChanges={setPendingChanges}
+          onClose={onClose}
+          title={formatMessage(translations.title)}
+          maxActiveUploads={maxActiveUploads}
+        />
+      </DialogBody>
+    </>
+  );
 }

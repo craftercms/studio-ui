@@ -84,7 +84,6 @@ export default function ContentTypesFilter(props: ContentTypesFilterProps) {
         open={Boolean(anchorEl)}
         onClose={onMenuClose}
         classes={{ paper: classes.menu }}
-        getContentAnchorEl={null}
         anchorOrigin={{
           vertical: 'bottom',
           horizontal: 'right'

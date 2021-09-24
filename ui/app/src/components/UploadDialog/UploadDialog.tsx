@@ -54,13 +54,8 @@ export const useStyles = makeStyles(() =>
 export default function UploadDialog(props: UploadDialogProps) {
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
-  const {
-    isMinimized,
-    onMaximize,
-    onMinimize,
-    hasPendingChanges,
-    onSubmittingAndOrPendingChange
-  } = useEnhancedDialogState();
+  const { isMinimized, onMaximize, onMinimize, hasPendingChanges, onSubmittingAndOrPendingChange } =
+    useEnhancedDialogState();
   const pendingChangesRef = useRef(false);
   const { open } = props;
 

@@ -27,12 +27,12 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import { LookupTable } from '../../models/LookupTable';
 import StandardAction from '../../models/StandardAction';
 import Dialog from '@mui/material/Dialog';
-import DialogHeader from './DialogHeader';
 import DialogBody from './DialogBody';
 import DialogFooter from './DialogFooter';
 import PrimaryButton from '../PrimaryButton';
 import SecondaryButton from '../SecondaryButton';
 import { useUnmount } from '../../utils/hooks/useUnmount';
+import DialogHeader from '../DialogHeader';
 
 const messages = defineMessages({
   copy: {

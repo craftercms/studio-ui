@@ -130,70 +130,72 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
     );
   };
 
-  return <>
-    <DialogBody>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          onCreate();
-        }}
-      >
-        <TextField
-          label={<FormattedMessage id="createFileDialog.fileName" defaultMessage="File Name" />}
-          value={name}
-          fullWidth
-          autoFocus
-          required
-          error={!name && isSubmitting !== null}
-          placeholder={formatMessage(translations.placeholder)}
-          helperText={
-            !name && isSubmitting ? (
-              <FormattedMessage id="createFileDialog.fileNameRequired" defaultMessage="File name is required." />
-            ) : (
-              <FormattedMessage
-                id="createFileDialog.helperText"
-                defaultMessage="Consisting of letters, numbers, dot (.), dash (-) and underscore (_)."
-              />
-            )
-          }
-          disabled={isSubmitting}
-          margin="normal"
-          InputLabelProps={{
-            shrink: true
+  return (
+    <>
+      <DialogBody>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            onCreate();
           }}
-          onChange={(event) =>
-            onInputChanges(
-              event.target.value
-                .replace(allowBraces ? /[^a-zA-Z0-9-_{}.]/g : /[^a-zA-Z0-9-_.]/g, '')
-                .replace(/\.{1,}/g, '.')
-            )
+        >
+          <TextField
+            label={<FormattedMessage id="createFileDialog.fileName" defaultMessage="File Name" />}
+            value={name}
+            fullWidth
+            autoFocus
+            required
+            error={!name && isSubmitting !== null}
+            placeholder={formatMessage(translations.placeholder)}
+            helperText={
+              !name && isSubmitting ? (
+                <FormattedMessage id="createFileDialog.fileNameRequired" defaultMessage="File name is required." />
+              ) : (
+                <FormattedMessage
+                  id="createFileDialog.helperText"
+                  defaultMessage="Consisting of letters, numbers, dot (.), dash (-) and underscore (_)."
+                />
+              )
+            }
+            disabled={isSubmitting}
+            margin="normal"
+            InputLabelProps={{
+              shrink: true
+            }}
+            onChange={(event) =>
+              onInputChanges(
+                event.target.value
+                  .replace(allowBraces ? /[^a-zA-Z0-9-_{}.]/g : /[^a-zA-Z0-9-_.]/g, '')
+                  .replace(/\.{1,}/g, '.')
+              )
+            }
+          />
+        </form>
+      </DialogBody>
+      <DialogFooter>
+        <FormControlLabel
+          style={{ marginRight: 'auto' }}
+          label={formatMessage(translations.openOnSuccess)}
+          title={formatMessage(translations.openOnSuccessTitle)}
+          control={
+            <Checkbox checked={openOnSuccess} onChange={(e) => setOpenOnSuccess(e.target.checked)} color="primary" />
           }
         />
-      </form>
-    </DialogBody>
-    <DialogFooter>
-      <FormControlLabel
-        style={{ marginRight: 'auto' }}
-        label={formatMessage(translations.openOnSuccess)}
-        title={formatMessage(translations.openOnSuccessTitle)}
-        control={
-          <Checkbox checked={openOnSuccess} onChange={(e) => setOpenOnSuccess(e.target.checked)} color="primary" />
-        }
+        <SecondaryButton onClick={(e) => onClose(e, null)} disabled={isSubmitting}>
+          <FormattedMessage id="words.close" defaultMessage="Close" />
+        </SecondaryButton>
+        <PrimaryButton onClick={onCreate} disabled={isSubmitting || name === ''} loading={isSubmitting}>
+          <FormattedMessage id="words.create" defaultMessage="Create" />
+        </PrimaryButton>
+      </DialogFooter>
+      <ConfirmDialog
+        open={Boolean(confirm)}
+        body={confirm?.body}
+        onOk={confirm?.error ? onConfirmCancel : onConfirm}
+        onCancel={confirm?.error ? null : onConfirmCancel}
       />
-      <SecondaryButton onClick={(e) => onClose(e, null)} disabled={isSubmitting}>
-        <FormattedMessage id="words.close" defaultMessage="Close" />
-      </SecondaryButton>
-      <PrimaryButton onClick={onCreate} disabled={isSubmitting || name === ''} loading={isSubmitting}>
-        <FormattedMessage id="words.create" defaultMessage="Create" />
-      </PrimaryButton>
-    </DialogFooter>
-    <ConfirmDialog
-      open={Boolean(confirm)}
-      body={confirm?.body}
-      onOk={confirm?.error ? onConfirmCancel : onConfirm}
-      onCancel={confirm?.error ? null : onConfirmCancel}
-    />
-  </>;
+    </>
+  );
 }
 
 export default CreateFileDialogContainer;

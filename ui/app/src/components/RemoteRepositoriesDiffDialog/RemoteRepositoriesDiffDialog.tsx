@@ -16,7 +16,7 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import Dialog from '@mui/material/Dialog';
-import DialogHeader from '../Dialogs/DialogHeader';
+import DialogHeader from '../DialogHeader';
 import DialogBody from '../Dialogs/DialogBody';
 import DialogFooter from '../Dialogs/DialogFooter';
 import { FormattedMessage, useIntl } from 'react-intl';

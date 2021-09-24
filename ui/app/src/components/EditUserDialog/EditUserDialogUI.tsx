@@ -89,195 +89,197 @@ export function EditUserDialogUI(props: EditUserDialogUIProps) {
     onResetPassword
   } = props;
 
-  return <>
-    <header className={classes.header}>
-      <Avatar className={classes.avatar}>
-        {user.firstName.charAt(0)}
-        {user.lastName?.charAt(0) ?? ''}
-      </Avatar>
-      <section className={classes.userInfo}>
-        <Typography variant="h6" component="h2">
-          {user.firstName} {user.lastName}
-        </Typography>
-        <Typography variant="subtitle1">{user.username}</Typography>
-      </section>
-      <section className={classes.actions}>
-        {managedInStudio ? (
-          <>
-            <Tooltip title={<FormattedMessage id="userInfoDialog.resetPassword" defaultMessage="Reset password" />}>
-              <IconButton onClick={() => onResetPassword(true)} size="large">
-                <PasswordRoundedIcon />
-              </IconButton>
-            </Tooltip>
-            <ConfirmDropdown
-              cancelText={formatMessage(translations.confirmCancel)}
-              confirmText={formatMessage(translations.confirmOk)}
-              confirmHelperText={formatMessage(translations.confirmHelperText, {
-                username: user.username
-              })}
-              iconTooltip={<FormattedMessage id="userInfoDialog.deleteUser" defaultMessage="Delete user" />}
-              icon={DeleteRoundedIcon}
-              iconColor="action"
-              onConfirm={() => {
-                onDelete(user.username);
-              }}
-            />
-          </>
-        ) : (
-          <Chip label={formatMessage(translations.externallyManaged)} size="small" className={classes.chip} />
-        )}
-        <Tooltip title={<FormattedMessage id="userInfoDialog.close" defaultMessage="Close" />}>
-          <IconButton edge="end" onClick={onCloseButtonClick} size="large">
-            <CloseRoundedIcon />
-          </IconButton>
-        </Tooltip>
-      </section>
-    </header>
-    <Divider />
-    <DialogBody className={classes.body}>
-      <Grid container>
-        <Grid item sm={6}>
-          <section className={classes.section}>
-            <Typography variant="subtitle1" className={classes.sectionTitle}>
-              <FormattedMessage id="userInfoDialog.userDetails" defaultMessage="User Details" />
-            </Typography>
-            <form>
-              <div className={classes.row}>
-                <Typography color="textSecondary" className={classes.label}>
-                  <FormattedMessage id="words.enabled" defaultMessage="Enabled" />
-                </Typography>
-                <div className={classes.switchWrapper}>
-                  <Switch
-                    disabled={!managedInStudio}
-                    checked={user.enabled}
-                    onChange={(e) => onEnableChange({ enabled: e.target.checked })}
-                    color="primary"
-                    name="enabled"
-                    inputProps={{ 'aria-label': 'enabled checkbox' }}
-                  />
-                </div>
-              </div>
-              <Divider />
-              <div className={classes.row}>
-                <Typography color="textSecondary" className={classes.label}>
-                  <FormattedMessage id="words.username" defaultMessage="Username" />
-                </Typography>
-                <section className={classes.userNameWrapper}>
-                  <Typography>{user.username}</Typography>
-                </section>
-              </div>
-              <div className={classes.row}>
-                <InputLabel htmlFor="firstName" className={classes.label}>
-                  <Typography color="textSecondary">
-                    <FormattedMessage id="words.firstName" defaultMessage="First name" />
-                  </Typography>
-                </InputLabel>
-                {managedInStudio ? (
-                  <OutlinedInput
-                    id="firstName"
-                    onChange={(e) => onInputChange({ firstName: e.currentTarget.value })}
-                    value={user.firstName}
-                    fullWidth
-                  />
-                ) : (
-                  <Typography className={classes.userNameWrapper} children={user.firstName} />
-                )}
-              </div>
-              <div className={classes.row}>
-                <InputLabel htmlFor="lastName" className={classes.label}>
-                  <Typography color="textSecondary">
-                    <FormattedMessage id="words.lastName" defaultMessage="Last name" />
-                  </Typography>
-                </InputLabel>
-                {managedInStudio ? (
-                  <OutlinedInput
-                    id="lastName"
-                    onChange={(e) => onInputChange({ lastName: e.currentTarget.value })}
-                    value={user.lastName}
-                    fullWidth
-                  />
-                ) : (
-                  <Typography className={classes.userNameWrapper} children={user.lastName} />
-                )}
-              </div>
-              <div className={classes.row}>
-                <InputLabel htmlFor="email" className={classes.label}>
-                  <Typography color="textSecondary">
-                    <FormattedMessage id="words.email" defaultMessage="Email" />
-                  </Typography>
-                </InputLabel>
-                {managedInStudio ? (
-                  <OutlinedInput
-                    id="email"
-                    onChange={(e) => onInputChange({ email: e.currentTarget.value })}
-                    value={user.email}
-                    fullWidth
-                  />
-                ) : (
-                  <Typography className={classes.userNameWrapper} children={user.email} />
-                )}
-              </div>
-              {managedInStudio && (
-                <div className={classes.formActions}>
-                  <SecondaryButton disabled={!dirty || inProgress} onClick={onCancelForm}>
-                    <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
-                  </SecondaryButton>
-                  <PrimaryButton disabled={!dirty || inProgress} onClick={onSave} loading={inProgress}>
-                    <FormattedMessage id="words.save" defaultMessage="Save" />
-                  </PrimaryButton>
-                </div>
-              )}
-            </form>
-          </section>
-        </Grid>
-        <Grid item sm={6}>
-          <section className={classes.section}>
-            <UserGroupMembershipEditor username={user.username} />
-          </section>
-        </Grid>
-      </Grid>
+  return (
+    <>
+      <header className={classes.header}>
+        <Avatar className={classes.avatar}>
+          {user.firstName.charAt(0)}
+          {user.lastName?.charAt(0) ?? ''}
+        </Avatar>
+        <section className={classes.userInfo}>
+          <Typography variant="h6" component="h2">
+            {user.firstName} {user.lastName}
+          </Typography>
+          <Typography variant="subtitle1">{user.username}</Typography>
+        </section>
+        <section className={classes.actions}>
+          {managedInStudio ? (
+            <>
+              <Tooltip title={<FormattedMessage id="userInfoDialog.resetPassword" defaultMessage="Reset password" />}>
+                <IconButton onClick={() => onResetPassword(true)} size="large">
+                  <PasswordRoundedIcon />
+                </IconButton>
+              </Tooltip>
+              <ConfirmDropdown
+                cancelText={formatMessage(translations.confirmCancel)}
+                confirmText={formatMessage(translations.confirmOk)}
+                confirmHelperText={formatMessage(translations.confirmHelperText, {
+                  username: user.username
+                })}
+                iconTooltip={<FormattedMessage id="userInfoDialog.deleteUser" defaultMessage="Delete user" />}
+                icon={DeleteRoundedIcon}
+                iconColor="action"
+                onConfirm={() => {
+                  onDelete(user.username);
+                }}
+              />
+            </>
+          ) : (
+            <Chip label={formatMessage(translations.externallyManaged)} size="small" className={classes.chip} />
+          )}
+          <Tooltip title={<FormattedMessage id="userInfoDialog.close" defaultMessage="Close" />}>
+            <IconButton edge="end" onClick={onCloseButtonClick} size="large">
+              <CloseRoundedIcon />
+            </IconButton>
+          </Tooltip>
+        </section>
+      </header>
       <Divider />
-      <section className={classes.section}>
-        <Typography variant="subtitle1" className={classes.sectionTitle}>
-          <FormattedMessage id="userInfoDialog.siteRoles" defaultMessage="Roles per site" />
-        </Typography>
-        <Grid container spacing={2}>
-          <Grid item xs={4}>
-            {sites.map((site) => (
-              <Typography key={site.id} variant="body2" className={classes.siteItem}>
-                {site.name}
+      <DialogBody className={classes.body}>
+        <Grid container>
+          <Grid item sm={6}>
+            <section className={classes.section}>
+              <Typography variant="subtitle1" className={classes.sectionTitle}>
+                <FormattedMessage id="userInfoDialog.userDetails" defaultMessage="User Details" />
               </Typography>
-            ))}
+              <form>
+                <div className={classes.row}>
+                  <Typography color="textSecondary" className={classes.label}>
+                    <FormattedMessage id="words.enabled" defaultMessage="Enabled" />
+                  </Typography>
+                  <div className={classes.switchWrapper}>
+                    <Switch
+                      disabled={!managedInStudio}
+                      checked={user.enabled}
+                      onChange={(e) => onEnableChange({ enabled: e.target.checked })}
+                      color="primary"
+                      name="enabled"
+                      inputProps={{ 'aria-label': 'enabled checkbox' }}
+                    />
+                  </div>
+                </div>
+                <Divider />
+                <div className={classes.row}>
+                  <Typography color="textSecondary" className={classes.label}>
+                    <FormattedMessage id="words.username" defaultMessage="Username" />
+                  </Typography>
+                  <section className={classes.userNameWrapper}>
+                    <Typography>{user.username}</Typography>
+                  </section>
+                </div>
+                <div className={classes.row}>
+                  <InputLabel htmlFor="firstName" className={classes.label}>
+                    <Typography color="textSecondary">
+                      <FormattedMessage id="words.firstName" defaultMessage="First name" />
+                    </Typography>
+                  </InputLabel>
+                  {managedInStudio ? (
+                    <OutlinedInput
+                      id="firstName"
+                      onChange={(e) => onInputChange({ firstName: e.currentTarget.value })}
+                      value={user.firstName}
+                      fullWidth
+                    />
+                  ) : (
+                    <Typography className={classes.userNameWrapper} children={user.firstName} />
+                  )}
+                </div>
+                <div className={classes.row}>
+                  <InputLabel htmlFor="lastName" className={classes.label}>
+                    <Typography color="textSecondary">
+                      <FormattedMessage id="words.lastName" defaultMessage="Last name" />
+                    </Typography>
+                  </InputLabel>
+                  {managedInStudio ? (
+                    <OutlinedInput
+                      id="lastName"
+                      onChange={(e) => onInputChange({ lastName: e.currentTarget.value })}
+                      value={user.lastName}
+                      fullWidth
+                    />
+                  ) : (
+                    <Typography className={classes.userNameWrapper} children={user.lastName} />
+                  )}
+                </div>
+                <div className={classes.row}>
+                  <InputLabel htmlFor="email" className={classes.label}>
+                    <Typography color="textSecondary">
+                      <FormattedMessage id="words.email" defaultMessage="Email" />
+                    </Typography>
+                  </InputLabel>
+                  {managedInStudio ? (
+                    <OutlinedInput
+                      id="email"
+                      onChange={(e) => onInputChange({ email: e.currentTarget.value })}
+                      value={user.email}
+                      fullWidth
+                    />
+                  ) : (
+                    <Typography className={classes.userNameWrapper} children={user.email} />
+                  )}
+                </div>
+                {managedInStudio && (
+                  <div className={classes.formActions}>
+                    <SecondaryButton disabled={!dirty || inProgress} onClick={onCancelForm}>
+                      <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
+                    </SecondaryButton>
+                    <PrimaryButton disabled={!dirty || inProgress} onClick={onSave} loading={inProgress}>
+                      <FormattedMessage id="words.save" defaultMessage="Save" />
+                    </PrimaryButton>
+                  </div>
+                )}
+              </form>
+            </section>
           </Grid>
-          <Grid item xs={8}>
-            {sites.map((site, i) =>
-              rolesBySite[site.id] ? (
-                rolesBySite[site.id].length ? (
-                  <Typography key={site.id} variant="body2" className={classes.siteItem}>
-                    {rolesBySite[site.id].join(', ')}
-                  </Typography>
-                ) : (
-                  <Typography key={site.id} variant="body2" color="textSecondary" className={classes.siteItem}>
-                    (<FormattedMessage id="userInfoDialog.noRoles" defaultMessage="No roles" />)
-                  </Typography>
-                )
-              ) : (
-                <Skeleton key={i} variant="text" className={classes.siteItem} style={{ width: `${rand(50, 90)}%` }} />
-              )
-            )}
+          <Grid item sm={6}>
+            <section className={classes.section}>
+              <UserGroupMembershipEditor username={user.username} />
+            </section>
           </Grid>
         </Grid>
-      </section>
-    </DialogBody>
-    {managedInStudio && (
-      <ResetPasswordDialog
-        open={openResetPassword}
-        passwordRequirementsRegex={passwordRequirementsRegex}
-        user={user}
-        onClose={onCloseResetPasswordDialog}
-      />
-    )}
-  </>;
+        <Divider />
+        <section className={classes.section}>
+          <Typography variant="subtitle1" className={classes.sectionTitle}>
+            <FormattedMessage id="userInfoDialog.siteRoles" defaultMessage="Roles per site" />
+          </Typography>
+          <Grid container spacing={2}>
+            <Grid item xs={4}>
+              {sites.map((site) => (
+                <Typography key={site.id} variant="body2" className={classes.siteItem}>
+                  {site.name}
+                </Typography>
+              ))}
+            </Grid>
+            <Grid item xs={8}>
+              {sites.map((site, i) =>
+                rolesBySite[site.id] ? (
+                  rolesBySite[site.id].length ? (
+                    <Typography key={site.id} variant="body2" className={classes.siteItem}>
+                      {rolesBySite[site.id].join(', ')}
+                    </Typography>
+                  ) : (
+                    <Typography key={site.id} variant="body2" color="textSecondary" className={classes.siteItem}>
+                      (<FormattedMessage id="userInfoDialog.noRoles" defaultMessage="No roles" />)
+                    </Typography>
+                  )
+                ) : (
+                  <Skeleton key={i} variant="text" className={classes.siteItem} style={{ width: `${rand(50, 90)}%` }} />
+                )
+              )}
+            </Grid>
+          </Grid>
+        </section>
+      </DialogBody>
+      {managedInStudio && (
+        <ResetPasswordDialog
+          open={openResetPassword}
+          passwordRequirementsRegex={passwordRequirementsRegex}
+          user={user}
+          onClose={onCloseResetPasswordDialog}
+        />
+      )}
+    </>
+  );
 }
 
 export default EditUserDialogUI;

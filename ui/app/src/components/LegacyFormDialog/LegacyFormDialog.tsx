@@ -18,7 +18,7 @@ import React, { useRef } from 'react';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import { defineMessages, useIntl } from 'react-intl';
-import DialogHeader from '../Dialogs/DialogHeader';
+import DialogHeader from '../DialogHeader';
 import { LegacyFormDialogProps } from './utils';
 import { EmbeddedLegacyContainer } from './EmbeddedLegacyContainer';
 import MinimizedBar from '../MinimizedBar';

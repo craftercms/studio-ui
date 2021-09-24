@@ -75,11 +75,9 @@ export function MinimizedBar(props: MinimizedBarProps) {
           <Typography variant="body1" children={title} />
           {subtitle && <Typography variant="body2" className={classes.subtitle} children={subtitle} />}
         </Box>
-        {onMaximize ? <IconButton
-          aria-label="Maximize"
-          onClick={onMaximize}
-          children={<MaximizeIcon />}
-          size="large" /> : null}
+        {onMaximize ? (
+          <IconButton aria-label="Maximize" onClick={onMaximize} children={<MaximizeIcon />} size="large" />
+        ) : null}
         {status && (
           <LinearProgress
             className={classes.indeterminateProgressBar}

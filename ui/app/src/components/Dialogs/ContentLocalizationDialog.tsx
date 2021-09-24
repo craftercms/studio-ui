@@ -30,7 +30,7 @@ import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';
 import palette from '../../styles/palette';
 import DialogBody from './DialogBody';
-import DialogHeader from './DialogHeader';
+import DialogHeader from '../DialogHeader';
 import SingleItemSelector from '../SingleItemSelector';
 import { DetailedItem } from '../../models/Item';
 import ActionsBar from '../ActionsBar';
@@ -276,81 +276,84 @@ function ContentLocalizationDialogUI(props: ContentLocalizationDialogProps) {
 
   useUnmount(props.onClosed);
 
-  return <>
-    <DialogHeader
-      title={<FormattedMessage id="contentLocalization.title" defaultMessage="Content Localization" />}
-      onCloseButtonClick={onClose}
-    />
-    <DialogBody>
-      <SingleItemSelector
-        label={<FormattedMessage id="words.item" defaultMessage="Item" />}
-        classes={{ root: classes.singleItemSelector }}
-        open={openSelector}
-        onClose={() => setOpenSelector(false)}
-        onDropdownClick={() => setOpenSelector(!openSelector)}
-        rootPath={rootPath}
-        selectedItem={item}
-        onItemClicked={(item) => {
-          onItemChange(item);
-          setOpenSelector(false);
-        }}
+  return (
+    <>
+      <DialogHeader
+        title={<FormattedMessage id="contentLocalization.title" defaultMessage="Content Localization" />}
+        onCloseButtonClick={onClose}
       />
-      <section className={classes.contentLocalizationRoot}>
-        {selected.length > 0 ? (
-          <ActionsBar
-            isIndeterminate={selected.length > 0 && selected.length < locales.length}
-            onOptionClicked={onOptionClicked}
-            options={menuOptions}
-            isChecked={selected.length === locales.length}
-            toggleSelectAll={toggleSelectAll}
-          />
-        ) : (
-          <header className={classes.flex}>
-            <Checkbox color="primary" className={classes.checkbox} onChange={toggleSelectAll} />
-            <>
-              <Typography variant="subtitle2" className={clsx(classes.headerTitle, classes.width30)}>
-                {formatMessage(translations.locales)}
-              </Typography>
-              <Typography variant="subtitle2" className={classes.headerTitle}>
-                {formatMessage(translations.status)}
-              </Typography>
-            </>
-          </header>
-        )}
-        {locales?.map((locale: any) => (
-          <div className={classes.flex} key={locale.id}>
-            <Checkbox
-              color="primary"
-              className={classes.checkbox}
-              checked={selected?.includes(locale.id)}
-              onChange={(event) => handleSelect(event.currentTarget.checked, locale.id)}
+      <DialogBody>
+        <SingleItemSelector
+          label={<FormattedMessage id="words.item" defaultMessage="Item" />}
+          classes={{ root: classes.singleItemSelector }}
+          open={openSelector}
+          onClose={() => setOpenSelector(false)}
+          onDropdownClick={() => setOpenSelector(!openSelector)}
+          rootPath={rootPath}
+          selectedItem={item}
+          onItemClicked={(item) => {
+            onItemChange(item);
+            setOpenSelector(false);
+          }}
+        />
+        <section className={classes.contentLocalizationRoot}>
+          {selected.length > 0 ? (
+            <ActionsBar
+              isIndeterminate={selected.length > 0 && selected.length < locales.length}
+              onOptionClicked={onOptionClicked}
+              options={menuOptions}
+              isChecked={selected.length === locales.length}
+              toggleSelectAll={toggleSelectAll}
             />
-            <Typography variant="subtitle2" className={clsx(classes.locale, classes.width30)}>
-              {localizationMap[locale.localeCode]}
-            </Typography>
-            <Typography variant="subtitle2" className={classes.locale}>
-              {locale.status}
-            </Typography>
-            <IconButton
-              aria-label="options"
-              className={classes.icon}
-              onClick={(e) => onOpenCustomMenu(locale, e.currentTarget)}
-              size="large">
-              <MoreVertIcon />
-            </IconButton>
-          </div>
-        ))}
-      </section>
-    </DialogBody>
-    <ContextMenu
-      anchorEl={menu.anchorEl}
-      open={Boolean(menu.anchorEl)}
-      classes={{
-        paper: classes.menuPaper
-      }}
-      onClose={onCloseCustomMenu}
-      options={[menuSections]}
-      onMenuItemClicked={onMenuItemClicked}
-    />
-  </>;
+          ) : (
+            <header className={classes.flex}>
+              <Checkbox color="primary" className={classes.checkbox} onChange={toggleSelectAll} />
+              <>
+                <Typography variant="subtitle2" className={clsx(classes.headerTitle, classes.width30)}>
+                  {formatMessage(translations.locales)}
+                </Typography>
+                <Typography variant="subtitle2" className={classes.headerTitle}>
+                  {formatMessage(translations.status)}
+                </Typography>
+              </>
+            </header>
+          )}
+          {locales?.map((locale: any) => (
+            <div className={classes.flex} key={locale.id}>
+              <Checkbox
+                color="primary"
+                className={classes.checkbox}
+                checked={selected?.includes(locale.id)}
+                onChange={(event) => handleSelect(event.currentTarget.checked, locale.id)}
+              />
+              <Typography variant="subtitle2" className={clsx(classes.locale, classes.width30)}>
+                {localizationMap[locale.localeCode]}
+              </Typography>
+              <Typography variant="subtitle2" className={classes.locale}>
+                {locale.status}
+              </Typography>
+              <IconButton
+                aria-label="options"
+                className={classes.icon}
+                onClick={(e) => onOpenCustomMenu(locale, e.currentTarget)}
+                size="large"
+              >
+                <MoreVertIcon />
+              </IconButton>
+            </div>
+          ))}
+        </section>
+      </DialogBody>
+      <ContextMenu
+        anchorEl={menu.anchorEl}
+        open={Boolean(menu.anchorEl)}
+        classes={{
+          paper: classes.menuPaper
+        }}
+        onClose={onCloseCustomMenu}
+        options={[menuSections]}
+        onMenuItemClicked={onMenuItemClicked}
+      />
+    </>
+  );
 }

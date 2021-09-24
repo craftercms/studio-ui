@@ -198,10 +198,6 @@ export function getStoredICEToolsPanelWidth(siteIdentifier: string, user: string
   return value === null ? (value as null) : parseInt(value);
 }
 
-export function setStoredICEToolsPanelWidth(siteIdentifier: string, user: string, value: number) {
-  window.localStorage.setItem(`craftercms.${user}.iceToolsPanelWidth.${siteIdentifier}`, value.toString());
-}
-
 export function commonDialogProps<T>(specificProps: T): EnhancedDialogState & T {
   return {
     open: false,

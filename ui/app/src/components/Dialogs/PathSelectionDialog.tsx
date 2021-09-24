@@ -14,24 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import DialogHeader from './DialogHeader';
-import DialogBody from './DialogBody';
-import DialogFooter from './DialogFooter';
 import React, { PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react';
-import { FormattedMessage } from 'react-intl';
 import Dialog from '@mui/material/Dialog';
 import FolderBrowserTreeViewUI, { TreeNode } from '../FolderBrowserTreeView/FolderBrowserTreeViewUI';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
-import CreateFolderDialog from '../CreateFolderDialog/CreateFolderDialog';
-import { get } from '../../utils/ajax';
 import LookupTable from '../../models/LookupTable';
-import Suspencified from '../SystemStatus/Suspencified';
 import { getIndividualPaths } from '../../utils/path';
 import { forkJoin, Observable } from 'rxjs';
 import StandardAction from '../../models/StandardAction';
-import PrimaryButton from '../PrimaryButton';
-import SecondaryButton from '../SecondaryButton';
 import { ApiResponse } from '../../models/ApiResponse';
 import TranslationOrText from '../../models/TranslationOrText';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
@@ -43,6 +34,14 @@ import { useSelection } from '../../utils/hooks/useSelection';
 import { useWithPendingChangesCloseRequest } from '../../utils/hooks/useWithPendingChangesCloseRequest';
 import { fetchLegacyItemsTree } from '../../services/content';
 import { LegacyItem } from '../../models/Item';
+import { FormattedMessage } from 'react-intl';
+import DialogBody from './DialogBody';
+import Suspencified from '../SystemStatus/Suspencified';
+import DialogFooter from './DialogFooter';
+import SecondaryButton from '../SecondaryButton';
+import PrimaryButton from '../PrimaryButton';
+import CreateFolderDialog from '../CreateFolderDialog';
+import DialogHeader from '../DialogHeader';
 
 export interface PathSelectionDialogBaseProps {
   open: boolean;
@@ -298,63 +297,66 @@ export function PathSelectionDialogBodyUI(props: PathSelectionDialogBodyUIProps)
     }
   );
   const onWithPendingChangesCloseRequest = useWithPendingChangesCloseRequest(onCloseCreateFolder);
-  return <>
-    <DialogHeader
-      title={title ?? <FormattedMessage id="pathSelectionDialog.title" defaultMessage="Select Path" />}
-      onCloseButtonClick={onClose}
-    />
-    <DialogBody className={classes.dialogBody}>
-      <Suspencified>
-        <FolderBrowserTreeViewUI
-          classes={{
-            treeViewRoot: classes.treeViewRoot
-          }}
-          invalidPath={isInvalidPath}
-          onNodeToggle={onNodeToggle}
-          onNodeSelected={onNodeSelected}
-          rootPath={rootPath}
-          currentPath={currentPath}
-          expanded={expandedItemPaths}
-          selected={currentPath.replace(/\/$/, '')}
-          resource={resource}
-          onKeyPress={onPathInputKeyPress}
-          onPathChanged={onPathChanged}
-          isFetching={isFetchingPath}
-        />
-      </Suspencified>
-    </DialogBody>
-    <DialogFooter>
-      {showCreateFolderOption && (
-        <SecondaryButton
-          disabled={isInvalidPath || isFetchingPath}
-          onClick={onCreateFolder}
-          className={classes.createFolderBtn}
-        >
-          <FormattedMessage id="pathSelectionDialog.createFolderButtonLabel" defaultMessage="Create Folder" />
+
+  return (
+    <>
+      <DialogHeader
+        title={title ?? <FormattedMessage id="pathSelectionDialog.title" defaultMessage="Select Path" />}
+        onCloseButtonClick={onClose}
+      />
+      <DialogBody className={classes.dialogBody}>
+        <Suspencified>
+          <FolderBrowserTreeViewUI
+            classes={{
+              treeViewRoot: classes.treeViewRoot
+            }}
+            invalidPath={isInvalidPath}
+            onNodeToggle={onNodeToggle}
+            onNodeSelected={onNodeSelected}
+            rootPath={rootPath}
+            currentPath={currentPath}
+            expanded={expandedItemPaths}
+            selected={currentPath.replace(/\/$/, '')}
+            resource={resource}
+            onKeyPress={onPathInputKeyPress}
+            onPathChanged={onPathChanged}
+            isFetching={isFetchingPath}
+          />
+        </Suspencified>
+      </DialogBody>
+      <DialogFooter>
+        {showCreateFolderOption && (
+          <SecondaryButton
+            disabled={isInvalidPath || isFetchingPath}
+            onClick={onCreateFolder}
+            className={classes.createFolderBtn}
+          >
+            <FormattedMessage id="pathSelectionDialog.createFolderButtonLabel" defaultMessage="Create Folder" />
+          </SecondaryButton>
+        )}
+        <SecondaryButton onClick={onClose}>
+          <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
         </SecondaryButton>
-      )}
-      <SecondaryButton onClick={onClose}>
-        <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
-      </SecondaryButton>
-      <PrimaryButton
-        disabled={isInvalidPath || isFetchingPath || uncheckedInputValue}
-        onClick={() => onOk({ path: currentPath })}
-      >
-        <FormattedMessage id="words.accept" defaultMessage="Accept" />
-      </PrimaryButton>
-    </DialogFooter>
-    <CreateFolderDialog
-      title={<FormattedMessage id="newFolder.title" defaultMessage="Create a New Folder" />}
-      path={currentPath}
-      isSubmitting={createFolderState.isSubmitting}
-      hasPendingChanges={createFolderState.hasPendingChanges}
-      isMinimized={createFolderState.isMinimized}
-      onWithPendingChangesCloseRequest={onWithPendingChangesCloseRequest}
-      open={createFolderDialogOpen}
-      onClose={onCloseCreateFolder}
-      onCreated={onFolderCreated}
-    />
-  </>;
+        <PrimaryButton
+          disabled={isInvalidPath || isFetchingPath || uncheckedInputValue}
+          onClick={() => onOk({ path: currentPath })}
+        >
+          <FormattedMessage id="words.accept" defaultMessage="Accept" />
+        </PrimaryButton>
+      </DialogFooter>
+      <CreateFolderDialog
+        title={<FormattedMessage id="newFolder.title" defaultMessage="Create a New Folder" />}
+        path={currentPath}
+        isSubmitting={createFolderState.isSubmitting}
+        hasPendingChanges={createFolderState.hasPendingChanges}
+        isMinimized={createFolderState.isMinimized}
+        onWithPendingChangesCloseRequest={onWithPendingChangesCloseRequest}
+        open={createFolderDialogOpen}
+        onClose={onCloseCreateFolder}
+        onCreated={onFolderCreated}
+      />
+    </>
+  );
 }
 
 export default PathSelectionDialog;

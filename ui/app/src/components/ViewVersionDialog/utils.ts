@@ -16,7 +16,7 @@
 
 import { EntityState } from '../../models/EntityState';
 import ContentType from '../../models/ContentType';
-import { DialogHeaderAction, DialogHeaderStateAction } from '../Dialogs/DialogHeader';
+import { DialogHeaderAction, DialogHeaderStateAction } from '../DialogHeader';
 import { ApiResponse } from '../../models/ApiResponse';
 import StandardAction from '../../models/StandardAction';
 import { LookupTable } from '../../models/LookupTable';

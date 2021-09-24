@@ -20,10 +20,11 @@ import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import CardMedia from '@mui/material/CardMedia';
 import Divider from '@mui/material/Divider';
-import palette from '../../../styles/palette';
+
 import clsx from 'clsx';
 import Skeleton from '@mui/material/Skeleton';
-import { getBinary } from '../../../utils/ajax';
+import palette from '../../styles/palette';
+import { getBinary } from '../../utils/ajax';
 
 const useStyles = makeStyles(() => ({
   defaultCard: {

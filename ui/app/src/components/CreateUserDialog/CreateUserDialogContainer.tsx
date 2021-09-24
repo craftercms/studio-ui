@@ -348,12 +348,15 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
           open={Boolean(anchorEl)}
           className={classes.popper}
           anchorEl={anchorEl}
-          modifiers={{
-            arrow: {
+          modifiers={[
+            {
+              name: 'arrow',
               enabled: true,
-              element: arrowRef.current
+              options: {
+                element: arrowRef.current
+              }
             }
-          }}
+          ]}
         >
           <Paper className={classes.paper}>
             <PasswordRequirementsDisplay

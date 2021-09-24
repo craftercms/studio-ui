@@ -14,20 +14,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
 import Typography, { TypographyProps } from '@mui/material/Typography';
 import IconButton, { IconButtonProps } from '@mui/material/IconButton';
 import MuiDialogTitle from '@mui/material/DialogTitle';
+import makeStyles from '@mui/styles/makeStyles';
+import createStyles from '@mui/styles/createStyles';
 import CloseIconRounded from '@mui/icons-material/CloseRounded';
+import MinimizeIconRounded from '@mui/icons-material/RemoveRounded';
 import ArrowBack from '@mui/icons-material/ArrowBackIosRounded';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import Typography, { TypographyProps } from '@material-ui/core/Typography';
-import IconButton, { IconButtonProps } from '@material-ui/core/IconButton';
-import MuiDialogTitle from '@material-ui/core/DialogTitle/DialogTitle';
-import CloseIconRounded from '@material-ui/icons/CloseRounded';
-import MinimizeIconRounded from '@material-ui/icons/RemoveRounded';
-import ArrowBack from '@material-ui/icons/ArrowBackIosRounded';
 import React, { ElementType, PropsWithChildren, ReactNode } from 'react';
 import clsx from 'clsx';
 import Tooltip from '@mui/material/Tooltip';
@@ -103,7 +97,7 @@ const translations = defineMessages({
   }
 });
 
-export type DialogTitleProps<
+export type DialogHeaderProps<
   PrimaryTypographyComponent extends ElementType = 'h2',
   SecondaryTypographyComponent extends ElementType = 'p'
 > = PropsWithChildren<{
@@ -130,7 +124,7 @@ export type DialogTitleProps<
   onBack?(): void;
 }>;
 
-export function DialogHeader(props: DialogTitleProps) {
+export function DialogHeader(props: DialogHeaderProps) {
   // region
   const classes = dialogTitleStyles({});
   const { formatMessage } = useIntl();

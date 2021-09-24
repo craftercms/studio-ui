@@ -71,149 +71,151 @@ export default function EditGroupDialogUI(props: GroupEditDialogUIProps) {
     isEdit
   } = props;
 
-  return <>
-    <header className={classes.header}>
-      <section>
-        {title}
-        {subtitle}
-      </section>
-      <section className={classes.actions}>
-        {onDeleteGroup && isEdit && (
-          <ConfirmDropdown
-            cancelText={formatMessage(translations.confirmCancel)}
-            confirmText={formatMessage(translations.confirmOk)}
-            confirmHelperText={formatMessage(translations.confirmHelperText, {
-              name: group.name
-            })}
-            iconTooltip={<FormattedMessage id="editGroupDialog.deleteGroup" defaultMessage="Delete group" />}
-            icon={DeleteRoundedIcon}
-            iconColor="action"
-            onConfirm={() => {
-              onDeleteGroup(group);
-            }}
-          />
-        )}
-        <Tooltip title={<FormattedMessage id="editGroupDialog.close" defaultMessage="Close" />}>
-          <IconButton edge="end" onClick={onCloseButtonClick} size="large">
-            <CloseRoundedIcon />
-          </IconButton>
-        </Tooltip>
-      </section>
-    </header>
-    <Divider />
-    <DialogBody className={classes.body}>
-      <section className={clsx(classes.section, 'noPaddingBottom')}>
-        <Typography variant="subtitle1" className={classes.sectionTitle}>
-          <FormattedMessage id="editGroupDialog.groupDetails" defaultMessage="Group Details" />
-        </Typography>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            onSave?.();
-          }}
-        >
-          <Box display="flex" alignItems="center" p="15px 0 0 0">
-            <InputLabel htmlFor="groupName" className={classes.label}>
-              <Typography variant="subtitle2">
-                <FormattedMessage id="words.name" defaultMessage="Name" />
-              </Typography>
-            </InputLabel>
-            {isEdit ? (
-              <Typography className={classes.fullWidth} color="textSecondary">
-                {group.name}
-              </Typography>
-            ) : (
-              <OutlinedInput
-                id="groupName"
-                onChange={(e) => onChangeValue({ key: 'name', value: e.currentTarget.value })}
-                value={group.name}
-                error={isDirty && group.name === ''}
-                fullWidth
-                autoFocus
-              />
-            )}
-          </Box>
-          <Box display="flex" p="0 0 15px">
-            <div className={classes.label} />
-            <FormHelperText
-              error
-              children={
-                isDirty && group.name === '' ? (
-                  <FormattedMessage id="editGroupDialog.requiredGroupName" defaultMessage="Group name is required." />
-                ) : null
-              }
+  return (
+    <>
+      <header className={classes.header}>
+        <section>
+          {title}
+          {subtitle}
+        </section>
+        <section className={classes.actions}>
+          {onDeleteGroup && isEdit && (
+            <ConfirmDropdown
+              cancelText={formatMessage(translations.confirmCancel)}
+              confirmText={formatMessage(translations.confirmOk)}
+              confirmHelperText={formatMessage(translations.confirmHelperText, {
+                name: group.name
+              })}
+              iconTooltip={<FormattedMessage id="editGroupDialog.deleteGroup" defaultMessage="Delete group" />}
+              icon={DeleteRoundedIcon}
+              iconColor="action"
+              onConfirm={() => {
+                onDeleteGroup(group);
+              }}
             />
-          </Box>
-          <Box display="flex" alignItems="center" p="15px  0">
-            <InputLabel htmlFor="groupDescription" className={classes.label}>
-              <Typography variant="subtitle2">
-                <FormattedMessage id="words.description" defaultMessage="Description" />
-              </Typography>
-            </InputLabel>
-            <OutlinedInput
-              id="groupDescription"
-              onChange={(e) => onChangeValue({ key: 'desc', value: e.currentTarget.value })}
-              value={group.desc}
-              fullWidth
-              autoFocus={isEdit}
-            />
-          </Box>
-          <div className={classes.formActions}>
-            {isEdit && (
-              <SecondaryButton disabled={!isDirty} onClick={onCancel}>
-                <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
-              </SecondaryButton>
-            )}
-            <PrimaryButton disabled={!isDirty || group.name === ''} type="submit">
-              <FormattedMessage id="words.save" defaultMessage="Save" />
-            </PrimaryButton>
-          </div>
-        </form>
-      </section>
+          )}
+          <Tooltip title={<FormattedMessage id="editGroupDialog.close" defaultMessage="Close" />}>
+            <IconButton edge="end" onClick={onCloseButtonClick} size="large">
+              <CloseRoundedIcon />
+            </IconButton>
+          </Tooltip>
+        </section>
+      </header>
       <Divider />
-      <section className={classes.section}>
-        {isEdit && users && members ? (
-          <>
-            <Typography variant="subtitle1" className={classes.sectionTitleEdit}>
-              <FormattedMessage id="editGroupDialog.editGroupMembers" defaultMessage="Edit Group Members" />
-            </Typography>
-            <TransferList
-              onTargetListItemsAdded={(items) => onAddMembers(items.map((item) => item.id))}
-              onTargetListItemsRemoved={(items) => onRemoveMembers(items.map((item) => item.id))}
-              inProgressIds={inProgressIds}
-              source={{
-                title: <FormattedMessage id="words.users" defaultMessage="Users" />,
-                items: users.map((user) => ({ id: user.username, title: user.username, subtitle: user.email })),
-                emptyMessage: (
-                  <FormattedMessage
-                    id="transferList.emptyListMessage"
-                    defaultMessage="All users are members of this group"
-                  />
-                )
-              }}
-              target={{
-                title: <FormattedMessage id="words.members" defaultMessage="Members" />,
-                items: members.map((user) => ({ id: user.username, title: user.username, subtitle: user.email })),
-                emptyMessage: (
-                  <FormattedMessage
-                    id="transferList.targetEmptyStateMessage"
-                    defaultMessage="No members on this group"
-                  />
-                )
-              }}
-            />
-          </>
-        ) : (
-          <Box display="flex" justifyContent="center">
-            <Typography variant="subtitle2" color="textSecondary">
-              <FormattedMessage
-                id="editGroupDialog.groupMemberHelperText"
-                defaultMessage="Group members are editable after creation"
+      <DialogBody className={classes.body}>
+        <section className={clsx(classes.section, 'noPaddingBottom')}>
+          <Typography variant="subtitle1" className={classes.sectionTitle}>
+            <FormattedMessage id="editGroupDialog.groupDetails" defaultMessage="Group Details" />
+          </Typography>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              onSave?.();
+            }}
+          >
+            <Box display="flex" alignItems="center" p="15px 0 0 0">
+              <InputLabel htmlFor="groupName" className={classes.label}>
+                <Typography variant="subtitle2">
+                  <FormattedMessage id="words.name" defaultMessage="Name" />
+                </Typography>
+              </InputLabel>
+              {isEdit ? (
+                <Typography className={classes.fullWidth} color="textSecondary">
+                  {group.name}
+                </Typography>
+              ) : (
+                <OutlinedInput
+                  id="groupName"
+                  onChange={(e) => onChangeValue({ key: 'name', value: e.currentTarget.value })}
+                  value={group.name}
+                  error={isDirty && group.name === ''}
+                  fullWidth
+                  autoFocus
+                />
+              )}
+            </Box>
+            <Box display="flex" p="0 0 15px">
+              <div className={classes.label} />
+              <FormHelperText
+                error
+                children={
+                  isDirty && group.name === '' ? (
+                    <FormattedMessage id="editGroupDialog.requiredGroupName" defaultMessage="Group name is required." />
+                  ) : null
+                }
               />
-            </Typography>
-          </Box>
-        )}
-      </section>
-    </DialogBody>
-  </>;
+            </Box>
+            <Box display="flex" alignItems="center" p="15px  0">
+              <InputLabel htmlFor="groupDescription" className={classes.label}>
+                <Typography variant="subtitle2">
+                  <FormattedMessage id="words.description" defaultMessage="Description" />
+                </Typography>
+              </InputLabel>
+              <OutlinedInput
+                id="groupDescription"
+                onChange={(e) => onChangeValue({ key: 'desc', value: e.currentTarget.value })}
+                value={group.desc}
+                fullWidth
+                autoFocus={isEdit}
+              />
+            </Box>
+            <div className={classes.formActions}>
+              {isEdit && (
+                <SecondaryButton disabled={!isDirty} onClick={onCancel}>
+                  <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
+                </SecondaryButton>
+              )}
+              <PrimaryButton disabled={!isDirty || group.name === ''} type="submit">
+                <FormattedMessage id="words.save" defaultMessage="Save" />
+              </PrimaryButton>
+            </div>
+          </form>
+        </section>
+        <Divider />
+        <section className={classes.section}>
+          {isEdit && users && members ? (
+            <>
+              <Typography variant="subtitle1" className={classes.sectionTitleEdit}>
+                <FormattedMessage id="editGroupDialog.editGroupMembers" defaultMessage="Edit Group Members" />
+              </Typography>
+              <TransferList
+                onTargetListItemsAdded={(items) => onAddMembers(items.map((item) => item.id))}
+                onTargetListItemsRemoved={(items) => onRemoveMembers(items.map((item) => item.id))}
+                inProgressIds={inProgressIds}
+                source={{
+                  title: <FormattedMessage id="words.users" defaultMessage="Users" />,
+                  items: users.map((user) => ({ id: user.username, title: user.username, subtitle: user.email })),
+                  emptyMessage: (
+                    <FormattedMessage
+                      id="transferList.emptyListMessage"
+                      defaultMessage="All users are members of this group"
+                    />
+                  )
+                }}
+                target={{
+                  title: <FormattedMessage id="words.members" defaultMessage="Members" />,
+                  items: members.map((user) => ({ id: user.username, title: user.username, subtitle: user.email })),
+                  emptyMessage: (
+                    <FormattedMessage
+                      id="transferList.targetEmptyStateMessage"
+                      defaultMessage="No members on this group"
+                    />
+                  )
+                }}
+              />
+            </>
+          ) : (
+            <Box display="flex" justifyContent="center">
+              <Typography variant="subtitle2" color="textSecondary">
+                <FormattedMessage
+                  id="editGroupDialog.groupMemberHelperText"
+                  defaultMessage="Group members are editable after creation"
+                />
+              </Typography>
+            </Box>
+          )}
+        </section>
+      </DialogBody>
+    </>
+  );
 }

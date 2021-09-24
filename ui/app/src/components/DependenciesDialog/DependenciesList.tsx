@@ -61,7 +61,8 @@ export function DependenciesList(props: DependenciesListProps) {
                 handleContextMenuClick(e, dependency);
               }}
               className={classes.listEllipsis}
-              size="large">
+              size="large"
+            >
               <MoreVertIcon />
             </IconButton>
           </ListItem>

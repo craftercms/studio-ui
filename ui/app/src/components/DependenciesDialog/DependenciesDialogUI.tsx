@@ -19,7 +19,7 @@ import React, { useState } from 'react';
 import DialogBody from '../Dialogs/DialogBody';
 import SingleItemSelector from '../SingleItemSelector';
 import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import DependenciesList from './DependenciesList';
@@ -72,7 +72,7 @@ export function DependenciesDialogUI(props: DependenciesDialogUIProps) {
           <FormControl className={classes.formControl}>
             <Select
               value={dependenciesShown ?? 'depends-on'}
-              onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
+              onChange={(event: SelectChangeEvent) => {
                 setDependenciesShown(event.target.value);
               }}
               inputProps={{
@@ -182,7 +182,7 @@ export function DependenciesDialogUI(props: DependenciesDialogUIProps) {
         <FormControl className={classes.formControl}>
           <Select
             value={showTypes}
-            onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
+            onChange={(event: SelectChangeEvent) => {
               setShowTypes(event.target.value);
             }}
             inputProps={{
@@ -193,8 +193,7 @@ export function DependenciesDialogUI(props: DependenciesDialogUIProps) {
               transformOrigin: {
                 vertical: 'bottom',
                 horizontal: 'left'
-              },
-              getContentAnchorEl: null
+              }
             }}
           >
             {Object.keys(assetsTypes).map((typeId) => (

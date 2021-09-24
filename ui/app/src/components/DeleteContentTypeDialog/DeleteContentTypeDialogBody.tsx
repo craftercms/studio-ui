@@ -22,7 +22,7 @@ import { Resource } from '../../models/Resource';
 import { FetchContentTypeUsageResponse } from '../../services/contentTypes';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
-import DialogHeader from '../Dialogs/DialogHeader';
+import DialogHeader from '../DialogHeader';
 import DialogBody from '../Dialogs/DialogBody';
 import EmptyState from '../SystemStatus/EmptyState';
 import Alert from '@mui/material/Alert';

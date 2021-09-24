@@ -18,7 +18,7 @@ import createStyles from '@mui/styles/createStyles';
 
 import makeStyles from '@mui/styles/makeStyles';
 import { useIntl } from 'react-intl';
-import DialogHeader from '../Dialogs/DialogHeader';
+import DialogHeader from '../DialogHeader';
 import { publishingStatusTileMessages } from '../PublishingStatusTile';
 import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
 import LockOpenRoundedIcon from '@mui/icons-material/LockOpenRounded';

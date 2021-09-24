@@ -170,84 +170,86 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
 
   const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
 
-  return <>
-    <DialogBody>
-      {selectedItem && (
-        <SingleItemSelector
-          label={<FormattedMessage id="words.location" defaultMessage="Location" />}
-          open={openSelector}
-          onClose={() => setOpenSelector(false)}
-          onDropdownClick={() => setOpenSelector(!openSelector)}
-          rootPath={getRootPath(path)}
-          selectedItem={selectedItem}
-          canSelectFolders
-          onItemClicked={(item) => {
-            setOpenSelector(false);
-            setSelectedItem(item);
-          }}
-          filterChildren={itemSelectorFilterChildren}
-        />
-      )}
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          onCreate();
-        }}
-      >
-        <TextField
-          fullWidth
-          label={
-            rename ? (
-              <FormattedMessage id="newFolder.rename" defaultMessage="Provide a new folder name" />
-            ) : (
-              <FormattedMessage id="newFolder.folderName" defaultMessage="Folder Name" />
-            )
-          }
-          value={name}
-          autoFocus
-          required
-          error={!name && isSubmitting !== null}
-          placeholder={formatMessage(translations.placeholder)}
-          helperText={
-            !name && isSubmitting !== null ? (
-              <FormattedMessage id="newFolder.required" defaultMessage="Folder name is required." />
-            ) : (
-              <FormattedMessage
-                id="newFolder.helperText"
-                defaultMessage="Consisting of: letters, numbers, dash (-) and underscore (_)."
-              />
-            )
-          }
-          disabled={isSubmitting}
-          margin="normal"
-          InputLabelProps={{
-            shrink: true
-          }}
-          onChange={(event) =>
-            onInputChanges(event.target.value.replace(allowBraces ? /[^a-zA-Z0-9-_{}]/g : /[^a-zA-Z0-9-_]/g, ''))
-          }
-        />
-      </form>
-    </DialogBody>
-    <DialogFooter>
-      <SecondaryButton onClick={onCloseButtonClick} disabled={isSubmitting}>
-        <FormattedMessage id="words.close" defaultMessage="Close" />
-      </SecondaryButton>
-      <PrimaryButton onClick={onCreate} disabled={isSubmitting || name === ''} loading={isSubmitting}>
-        {rename ? (
-          <FormattedMessage id="words.rename" defaultMessage="Rename" />
-        ) : (
-          <FormattedMessage id="words.create" defaultMessage="Create" />
+  return (
+    <>
+      <DialogBody>
+        {selectedItem && (
+          <SingleItemSelector
+            label={<FormattedMessage id="words.location" defaultMessage="Location" />}
+            open={openSelector}
+            onClose={() => setOpenSelector(false)}
+            onDropdownClick={() => setOpenSelector(!openSelector)}
+            rootPath={getRootPath(path)}
+            selectedItem={selectedItem}
+            canSelectFolders
+            onItemClicked={(item) => {
+              setOpenSelector(false);
+              setSelectedItem(item);
+            }}
+            filterChildren={itemSelectorFilterChildren}
+          />
         )}
-      </PrimaryButton>
-    </DialogFooter>
-    <ConfirmDialog
-      open={Boolean(confirm)}
-      body={confirm?.body}
-      onOk={confirm?.error ? onConfirmCancel : onConfirm}
-      onCancel={confirm?.error ? null : onConfirmCancel}
-    />
-  </>;
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            onCreate();
+          }}
+        >
+          <TextField
+            fullWidth
+            label={
+              rename ? (
+                <FormattedMessage id="newFolder.rename" defaultMessage="Provide a new folder name" />
+              ) : (
+                <FormattedMessage id="newFolder.folderName" defaultMessage="Folder Name" />
+              )
+            }
+            value={name}
+            autoFocus
+            required
+            error={!name && isSubmitting !== null}
+            placeholder={formatMessage(translations.placeholder)}
+            helperText={
+              !name && isSubmitting !== null ? (
+                <FormattedMessage id="newFolder.required" defaultMessage="Folder name is required." />
+              ) : (
+                <FormattedMessage
+                  id="newFolder.helperText"
+                  defaultMessage="Consisting of: letters, numbers, dash (-) and underscore (_)."
+                />
+              )
+            }
+            disabled={isSubmitting}
+            margin="normal"
+            InputLabelProps={{
+              shrink: true
+            }}
+            onChange={(event) =>
+              onInputChanges(event.target.value.replace(allowBraces ? /[^a-zA-Z0-9-_{}]/g : /[^a-zA-Z0-9-_]/g, ''))
+            }
+          />
+        </form>
+      </DialogBody>
+      <DialogFooter>
+        <SecondaryButton onClick={onCloseButtonClick} disabled={isSubmitting}>
+          <FormattedMessage id="words.close" defaultMessage="Close" />
+        </SecondaryButton>
+        <PrimaryButton onClick={onCreate} disabled={isSubmitting || name === ''} loading={isSubmitting}>
+          {rename ? (
+            <FormattedMessage id="words.rename" defaultMessage="Rename" />
+          ) : (
+            <FormattedMessage id="words.create" defaultMessage="Create" />
+          )}
+        </PrimaryButton>
+      </DialogFooter>
+      <ConfirmDialog
+        open={Boolean(confirm)}
+        body={confirm?.body}
+        onOk={confirm?.error ? onConfirmCancel : onConfirm}
+        onCancel={confirm?.error ? null : onConfirmCancel}
+      />
+    </>
+  );
 }
 
 export default CreateFolderContainer;

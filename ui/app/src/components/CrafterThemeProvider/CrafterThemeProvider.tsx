@@ -15,21 +15,13 @@
  */
 
 import React, { PropsWithChildren, useMemo } from 'react';
-import {
-  createTheme,
-  DeprecatedThemeOptions,
-  ThemeProvider,
-  Theme,
-  StyledEngineProvider,
-  adaptV4Theme,
-} from '@mui/material/styles';
+import { createTheme, DeprecatedThemeOptions, StyledEngineProvider, Theme, ThemeProvider } from '@mui/material/styles';
 import StylesProvider from '@mui/styles/StylesProvider';
 import { defaultThemeOptions, generateClassName } from '../../styles/theme';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import palette from '../../styles/palette';
 import { extend } from '../../utils/object';
 import { GenerateId } from 'jss';
-
 
 declare module '@mui/styles/defaultTheme' {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -89,7 +81,7 @@ export function CrafterThemeProvider(props: CrafterThemeProviderProps) {
         },
         { deep: true }
       )
-    }));
+    });
   }, [prefersDarkMode, props.themeOptions]);
   return (
     <StyledEngineProvider injectFirst>

@@ -45,7 +45,7 @@ import gitLogo from '../../../../assets/git-logo.svg';
 import { fadeIn } from 'react-animations';
 import { Subscription } from 'rxjs';
 import SearchBar from '../../../../components/Controls/SearchBar';
-import DialogHeader from '../../../../components/DialogHeader/DialogHeader';
+import DialogHeader from '../../../../components/DialogHeader';
 import DialogBody from '../../../../components/Dialogs/DialogBody';
 import DialogFooter from '../../../../components/Dialogs/DialogFooter';
 import Checkbox from '@mui/material/Checkbox';
