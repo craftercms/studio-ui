@@ -65,7 +65,9 @@ export default [
         fetchSiteConfigService(state.sites.active).pipe(
           tap((config) => {
             try {
-              new Intl.DateTimeFormat(config.locale.localeCode, config.locale.dateTimeFormatOptions);
+              let localeCode = config.locale?.localeCode || state.uiConfig.locale.localeCode;
+              let options = config.locale?.dateTimeFormatOptions || state.uiConfig.locale.dateTimeFormatOptions;
+              new Intl.DateTimeFormat(localeCode, options);
             } catch (e) {
               const hostToHost$ = getHostToHostBus();
               hostToHost$.next(
