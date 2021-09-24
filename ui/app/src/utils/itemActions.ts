@@ -20,6 +20,7 @@ import { ContextMenuOption } from '../components/ContextMenu';
 import { getRootPath, withoutIndex } from './path';
 import {
   closeChangeContentTypeDialog,
+  closeCodeEditorDialog,
   closeConfirmDialog,
   closeCopyDialog,
   closeCreateFileDialog,
@@ -66,6 +67,7 @@ import {
   showRejectItemSuccessNotification
 } from '../state/actions/system';
 import {
+  conditionallyUnlockItem,
   deleteController,
   deleteTemplate,
   duplicateWithPolicyValidation,
@@ -111,8 +113,8 @@ import { previewItem } from '../state/actions/preview';
 import { asArray, createPresenceTable } from './array';
 import { fetchPublishingStatus } from '../state/actions/publishingStatus';
 import { Clipboard } from '../models/GlobalState';
-import { popDialog, pushDialog } from '../state/reducers/dialogs/minimizedDialogs';
 import { nanoid as uuid } from 'nanoid';
+import { popTab, pushTab } from '../state/reducers/dialogs/minimizedTabs';
 
 export type ContextMenuOptionDescriptor<ID extends string = string> = {
   id: ID;
@@ -759,12 +761,11 @@ export const itemActionDispatcher = ({
         const path = item.path;
         const id = uuid();
         dispatch(
-          pushDialog({
+          pushTab({
             minimized: true,
             id,
             status: 'indeterminate',
-            title: formatMessage(translations.verifyingAffectedWorkflows),
-            onMaximized: null
+            title: formatMessage(translations.verifyingAffectedWorkflows)
           })
         );
 
@@ -772,16 +773,27 @@ export const itemActionDispatcher = ({
           if (items?.length > 0) {
             dispatch(
               batchActions([
-                popDialog({ id }),
+                popTab({ id }),
                 showWorkflowCancellationDialog({
                   items,
-                  onContinue: showCodeEditorDialog({ path: item.path, mode: getEditorMode(item) })
+                  onContinue: showCodeEditorDialog({
+                    path: item.path,
+                    mode: getEditorMode(item),
+                    onClose: batchActions([closeCodeEditorDialog(), conditionallyUnlockItem({ path: item.path })])
+                  })
                 })
               ])
             );
           } else {
             dispatch(
-              batchActions([popDialog({ id }), showCodeEditorDialog({ path: item.path, mode: getEditorMode(item) })])
+              batchActions([
+                popTab({ id }),
+                showCodeEditorDialog({
+                  path: item.path,
+                  mode: getEditorMode(item),
+                  onClose: batchActions([closeCodeEditorDialog(), conditionallyUnlockItem({ path: item.path })])
+                })
+              ])
             );
           }
         });

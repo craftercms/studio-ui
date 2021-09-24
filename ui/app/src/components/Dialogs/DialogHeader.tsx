@@ -19,6 +19,7 @@ import Typography, { TypographyProps } from '@material-ui/core/Typography';
 import IconButton, { IconButtonProps } from '@material-ui/core/IconButton';
 import MuiDialogTitle from '@material-ui/core/DialogTitle/DialogTitle';
 import CloseIconRounded from '@material-ui/icons/CloseRounded';
+import MinimizeIconRounded from '@material-ui/icons/RemoveRounded';
 import ArrowBack from '@material-ui/icons/ArrowBackIosRounded';
 import React, { ElementType, PropsWithChildren, ReactNode } from 'react';
 import clsx from 'clsx';
@@ -88,10 +89,14 @@ const translations = defineMessages({
   dismiss: {
     id: 'words.dismiss',
     defaultMessage: 'Dismiss'
+  },
+  minimize: {
+    id: 'words.minimize',
+    defaultMessage: 'Minimize'
   }
 });
 
-export type DialogTitleProps<
+export type DialogHeaderProps<
   PrimaryTypographyComponent extends ElementType = 'h2',
   SecondaryTypographyComponent extends ElementType = 'p'
 > = PropsWithChildren<{
@@ -103,6 +108,7 @@ export type DialogTitleProps<
   leftActions?: DialogHeaderAction[];
   rightActions?: DialogHeaderAction[];
   closeIcon?: ElementType;
+  minimizeIcon?: ElementType;
   backIcon?: ElementType;
   classes?: {
     root?: string;
@@ -111,18 +117,22 @@ export type DialogTitleProps<
   };
   className?: string;
   disableDismiss?: boolean;
-  onDismiss?(): void;
+  disableMinimize?: boolean;
+  onCloseButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
+  onMinimizeButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
   onBack?(): void;
 }>;
 
-export default function DialogHeader(props: DialogTitleProps) {
+export default function DialogHeader(props: DialogHeaderProps) {
   // region
   const classes = dialogTitleStyles({});
   const { formatMessage } = useIntl();
   const {
     id,
-    onDismiss,
+    onCloseButtonClick,
+    onMinimizeButtonClick,
     disableDismiss = false,
+    disableMinimize = false,
     onBack,
     title,
     children,
@@ -130,6 +140,7 @@ export default function DialogHeader(props: DialogTitleProps) {
     leftActions,
     rightActions,
     closeIcon: CloseIcon = CloseIconRounded,
+    minimizeIcon: MinimizeIcon = MinimizeIconRounded,
     backIcon: BackIcon = ArrowBack,
     titleTypographyProps = {
       variant: 'h6',
@@ -167,14 +178,21 @@ export default function DialogHeader(props: DialogTitleProps) {
         <Typography className={classes.title} {...titleTypographyProps}>
           {title}
         </Typography>
-        {(rightActions || onDismiss) && (
+        {(rightActions || onCloseButtonClick || onMinimizeButtonClick) && (
           <div className={classes.rightActions}>
             {rightActions?.map(({ icon, 'aria-label': tooltip, ...rest }: DialogHeaderAction, i: number) => (
               <Action key={i} icon={icon} tooltip={tooltip} {...rest} />
             ))}
-            {onDismiss && (
+            {onMinimizeButtonClick && (
+              <Tooltip title={formatMessage(translations.minimize)}>
+                <IconButton aria-label="close" onClick={onMinimizeButtonClick} disabled={disableMinimize}>
+                  <MinimizeIcon />
+                </IconButton>
+              </Tooltip>
+            )}
+            {onCloseButtonClick && (
               <Tooltip title={formatMessage(translations.dismiss)}>
-                <IconButton aria-label="close" onClick={onDismiss} disabled={disableDismiss}>
+                <IconButton aria-label="close" onClick={onCloseButtonClick} disabled={disableDismiss}>
                   <CloseIcon />
                 </IconButton>
               </Tooltip>

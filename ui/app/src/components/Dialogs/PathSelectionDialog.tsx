@@ -22,7 +22,7 @@ import { FormattedMessage } from 'react-intl';
 import Dialog from '@material-ui/core/Dialog';
 import FolderBrowserTreeViewUI, { TreeNode } from '../FolderBrowserTreeView/FolderBrowserTreeViewUI';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import CreateFolderDialog from './CreateFolderDialog';
+import CreateFolderDialog from '../CreateFolderDialog/CreateFolderDialog';
 import { get } from '../../utils/ajax';
 import LookupTable from '../../models/LookupTable';
 import Suspencified from '../SystemStatus/Suspencified';
@@ -39,6 +39,8 @@ import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import { useUnmount } from '../../utils/hooks/useUnmount';
 import { usePossibleTranslation } from '../../utils/hooks/usePossibleTranslation';
 import { legacyItemsToTreeNodes } from '../FolderBrowserTreeView/utils';
+import { useSelection } from '../../utils/hooks/useSelection';
+import { useWithPendingChangesCloseRequest } from '../../utils/hooks/useWithPendingChangesCloseRequest';
 
 export interface PathSelectionDialogBaseProps {
   open: boolean;
@@ -286,6 +288,7 @@ export function PathSelectionDialogBodyUI(props: PathSelectionDialogBodyUIProps)
   } = props;
   const classes = useStyles({});
   const title = usePossibleTranslation(props.title);
+  const createFolderState = useSelection((state) => state.dialogs.createFolder);
   const resource = useLogicResource<TreeNode, { treeNodes: TreeNode; error?: ApiResponse }>(
     useMemo(() => ({ treeNodes, error }), [treeNodes, error]),
     {
@@ -296,11 +299,12 @@ export function PathSelectionDialogBodyUI(props: PathSelectionDialogBodyUIProps)
       errorSelector: ({ error }) => error
     }
   );
+  const onWithPendingChangesCloseRequest = useWithPendingChangesCloseRequest(onCloseCreateFolder);
   return (
     <>
       <DialogHeader
         title={title ?? <FormattedMessage id="pathSelectionDialog.title" defaultMessage="Select Path" />}
-        onDismiss={onClose}
+        onCloseButtonClick={onClose}
       />
       <DialogBody className={classes.dialogBody}>
         <Suspencified>
@@ -343,7 +347,12 @@ export function PathSelectionDialogBodyUI(props: PathSelectionDialogBodyUIProps)
         </PrimaryButton>
       </DialogFooter>
       <CreateFolderDialog
+        title={<FormattedMessage id="newFolder.title" defaultMessage="Create a New Folder" />}
         path={currentPath}
+        isSubmitting={createFolderState.isSubmitting}
+        hasPendingChanges={createFolderState.hasPendingChanges}
+        isMinimized={createFolderState.isMinimized}
+        onWithPendingChangesCloseRequest={onWithPendingChangesCloseRequest}
         open={createFolderDialogOpen}
         onClose={onCloseCreateFolder}
         onCreated={onFolderCreated}

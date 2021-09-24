@@ -43,7 +43,7 @@ import SecondaryButton from '../SecondaryButton';
 import HelpOutlineRoundedIcon from '@material-ui/icons/HelpOutlineRounded';
 import Button from '@material-ui/core/Button';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
-import ConfirmDialog, { ConfirmDialogProps } from '../Dialogs/ConfirmDialog';
+import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
 import informationGraphicUrl from '../../assets/information.svg';
 import Typography from '@material-ui/core/Typography';
 import clsx from 'clsx';
@@ -68,6 +68,7 @@ import { fetchSiteConfig, fetchSiteUiConfig } from '../../state/actions/configur
 import { useSelection } from '../../utils/hooks/useSelection';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useMount } from '../../utils/hooks/useMount';
+import { ConfirmDialogProps } from '../ConfirmDialog/utils';
 
 interface SiteConfigurationManagementProps {
   embedded?: boolean;

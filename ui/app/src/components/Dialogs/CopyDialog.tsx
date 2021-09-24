@@ -259,7 +259,7 @@ function CopyDialogUI(props: CopyDialogProps) {
 
   return (
     <>
-      <DialogHeader title={title} subtitle={subtitle} onDismiss={onClose} />
+      <DialogHeader title={title} subtitle={subtitle} onCloseButtonClick={onClose} />
       <DialogBody style={{ minHeight: '30vh' }}>
         <ItemSelectorTree
           item={item}

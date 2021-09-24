@@ -120,7 +120,7 @@ function DeleteContentTypeDialogBody(props: DeleteContentTypeDialogBodyProps) {
             values={{ name: contentType.name }}
           />
         }
-        onDismiss={onClose}
+        onCloseButtonClick={onClose}
         disableDismiss={submitting}
       />
       <DialogBody>

@@ -16,7 +16,6 @@
 
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
-import { ViewVersionDialogStateProps } from '../../../modules/Content/History/ViewVersionDialog';
 import {
   closeViewVersionDialog,
   fetchContentVersion,
@@ -26,9 +25,13 @@ import {
   showViewVersionDialog,
   viewVersionDialogClosed
 } from '../../actions/dialogs';
+import { ViewVersionDialogStateProps } from '../../../components/ViewVersionDialog/utils';
 
 const initialState: ViewVersionDialogStateProps = {
   open: false,
+  isSubmitting: null,
+  isMinimized: null,
+  hasPendingChanges: null,
   isFetching: null,
   error: null,
   version: null
@@ -39,7 +42,6 @@ export default createReducer<GlobalState['dialogs']['viewVersion']>(initialState
     ...state,
     onClose: closeViewVersionDialog(),
     onClosed: viewVersionDialogClosed(),
-    onDismiss: closeViewVersionDialog(),
     ...payload,
     open: true
   }),

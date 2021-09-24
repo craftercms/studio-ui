@@ -28,11 +28,13 @@ import { DeleteDialogStateProps } from '../../../components/DeleteDialog/utils';
 
 const initialState: DeleteDialogStateProps = {
   open: false,
+  isSubmitting: null,
+  isMinimized: null,
+  hasPendingChanges: null,
   items: null,
   isFetching: false,
   childItems: null,
-  dependentItems: null,
-  disableQuickDismiss: false
+  dependentItems: null
 };
 
 export default createReducer<GlobalState['dialogs']['delete']>(initialState, {
@@ -47,7 +49,7 @@ export default createReducer<GlobalState['dialogs']['delete']>(initialState, {
     ...state,
     ...payload
   }),
-  [closeDeleteDialog.type]: (state) => ({ ...state, open: false, disableQuickDismiss: false }),
+  [closeDeleteDialog.type]: (state) => ({ ...state, open: false }),
   [deleteDialogClosed.type]: () => initialState,
   [fetchDeleteDependencies.type]: (state) => ({
     ...state,

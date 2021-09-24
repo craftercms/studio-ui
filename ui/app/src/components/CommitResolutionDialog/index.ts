@@ -18,4 +18,4 @@ export { default } from './CommitResolutionDialog';
 
 export * from './CommitResolutionDialog';
 
-export * from  './CommitResolutionDialogContainer';
+export * from './CommitResolutionDialogContainer';

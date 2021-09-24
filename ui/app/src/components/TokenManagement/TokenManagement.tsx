@@ -19,11 +19,11 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { createStyles, darken, lighten, makeStyles, withStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/DeleteOutline';
-import { AsDayMonthDateTime } from '../../modules/Content/History/VersionList';
+import { AsDayMonthDateTime } from '../VersionList';
 import { deleteToken, fetchTokens as fetchTokensService, updateToken } from '../../services/tokens';
 import { useDispatch } from 'react-redux';
 import { Token } from '../../models/Token';
-import CreateTokenDialog from '../CreateTokenDialog/CreateTokenDialog';
+import CreateTokenDialog from '../CreateTokenDialog';
 import clsx from 'clsx';
 import { showSystemNotification } from '../../state/actions/system';
 import ConfirmDropdown from '../Controls/ConfirmDropdown';
@@ -47,6 +47,8 @@ import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
+import { useEnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
+import { useWithPendingChangesCloseRequest } from '../../utils/hooks/useWithPendingChangesCloseRequest';
 
 const styles = makeStyles((theme) =>
   createStyles({
@@ -147,7 +149,6 @@ export default function TokenManagement() {
   const { formatMessage } = useIntl();
   const [tokens, setTokens] = useState<Token[]>(null);
   const [checkedLookup, setCheckedLookup] = useState({});
-  const [openCreateDialog, setOpenCreateDialog] = useState(false);
   const [createdToken, setCreatedToken] = useState<Token>(null);
   const checkedCount = useMemo(() => Object.values(checkedLookup).filter(Boolean).length, [checkedLookup]);
   const options = useMemo(
@@ -174,15 +175,16 @@ export default function TokenManagement() {
     fetchTokens();
   }, []);
 
+  const createTokenDialogState = useEnhancedDialogState();
+  const createTokenDialogPendingChangesCloseRequest = useWithPendingChangesCloseRequest(createTokenDialogState.onClose);
+  const copyTokenDialogState = useEnhancedDialogState();
+  const copyTokenDialogPendingChangesCloseRequest = useWithPendingChangesCloseRequest(copyTokenDialogState.onClose);
+
   const onCreateToken = () => {
-    setOpenCreateDialog(true);
+    createTokenDialogState.onOpen();
   };
 
-  const onCreateTokenDialogClose = () => {
-    setOpenCreateDialog(false);
-  };
-
-  const onCopyTokenDialogClose = () => {
+  const onCopyTokenDialogClosed = () => {
     setCreatedToken(null);
   };
 
@@ -193,7 +195,8 @@ export default function TokenManagement() {
         message: formatMessage(translations.tokenCreated)
       })
     );
-    setOpenCreateDialog(false);
+    createTokenDialogState.onClose();
+    copyTokenDialogState.onOpen();
     setCreatedToken(token);
   };
 
@@ -448,11 +451,25 @@ export default function TokenManagement() {
           <EmptyState title={formatMessage(translations.emptyTokens)} />
         )}
       </ConditionalLoadingState>
-      <CreateTokenDialog open={openCreateDialog} onCreated={onTokenCreated} onClose={onCreateTokenDialogClose} />
+      <CreateTokenDialog
+        open={createTokenDialogState.open}
+        hasPendingChanges={createTokenDialogState.hasPendingChanges}
+        isSubmitting={createTokenDialogState.isSubmitting}
+        isMinimized={createTokenDialogState.isMinimized}
+        onSubmittingAndOrPendingChange={createTokenDialogState.onSubmittingAndOrPendingChange}
+        onWithPendingChangesCloseRequest={createTokenDialogPendingChangesCloseRequest}
+        onCreated={onTokenCreated}
+        onClose={createTokenDialogState.onClose}
+      />
       <CopyTokenDialog
-        open={Boolean(createdToken)}
+        open={copyTokenDialogState.open}
         token={createdToken}
-        onClose={onCopyTokenDialogClose}
+        hasPendingChanges={copyTokenDialogState.hasPendingChanges}
+        isSubmitting={copyTokenDialogState.isSubmitting}
+        isMinimized={copyTokenDialogState.isMinimized}
+        onWithPendingChangesCloseRequest={copyTokenDialogPendingChangesCloseRequest}
+        onClose={copyTokenDialogState.onClose}
+        onClosed={onCopyTokenDialogClosed}
         onCopy={onTokenCopied}
       />
     </Paper>

@@ -30,7 +30,7 @@ import { useDispatch } from 'react-redux';
 import palette from '../../styles/palette';
 import DialogBody from './DialogBody';
 import DialogHeader from './DialogHeader';
-import SingleItemSelector from '../../modules/Content/Authoring/SingleItemSelector';
+import SingleItemSelector from '../SingleItemSelector';
 import { DetailedItem } from '../../models/Item';
 import ActionsBar from '../ActionsBar';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
@@ -279,7 +279,7 @@ function ContentLocalizationDialogUI(props: ContentLocalizationDialogProps) {
     <>
       <DialogHeader
         title={<FormattedMessage id="contentLocalization.title" defaultMessage="Content Localization" />}
-        onDismiss={onClose}
+        onCloseButtonClick={onClose}
       />
       <DialogBody>
         <SingleItemSelector

@@ -16,10 +16,18 @@
 
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
-import { closeEditSiteDialog, editSiteDialogClosed, showEditSiteDialog } from '../../actions/dialogs';
-import { EditSiteDialogStateProps } from '../../../modules/System/Sites/Edit/EditSiteDialog';
+import {
+  closeEditSiteDialog,
+  editSiteDialogClosed,
+  showEditSiteDialog,
+  updateEditSiteDialog
+} from '../../actions/dialogs';
+import { EditSiteDialogStateProps } from '../../../components/EditSiteDialog/utils';
 
 const initialState: EditSiteDialogStateProps = {
+  isSubmitting: null,
+  isMinimized: null,
+  hasPendingChanges: null,
   open: false,
   site: null
 };
@@ -29,11 +37,11 @@ export default createReducer<GlobalState['dialogs']['editSite']>(initialState, {
     ...state,
     onClose: closeEditSiteDialog(),
     onClosed: editSiteDialogClosed(),
-    onDismiss: closeEditSiteDialog(),
     onSaveSuccess: closeEditSiteDialog(),
     ...payload,
     open: true
   }),
+  [updateEditSiteDialog.type]: (state, { payload }) => ({ ...state, ...payload }),
   [closeEditSiteDialog.type]: (state) => ({ ...state, open: false }),
   [editSiteDialogClosed.type]: (state) => initialState
 });

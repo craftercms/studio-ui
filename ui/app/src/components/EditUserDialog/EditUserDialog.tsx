@@ -14,18 +14,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Dialog from '@material-ui/core/Dialog';
 import React from 'react';
-import EditUserDialogContainer, { EditUserDialogContainerProps } from './EditUserDialogContainer';
-
-export interface EditUserDialogProps extends EditUserDialogContainerProps {}
+import { EditUserDialogProps } from './utils';
+import EnhancedDialog from '../EnhancedDialog';
+import EditUserDialogContainer from './EditUserDialogContainer';
 
 export function EditUserDialog(props: EditUserDialogProps) {
-  const { open, onClose } = props;
+  const {
+    open,
+    user,
+    onUserEdited,
+    passwordRequirementsRegex,
+    onSubmittingAndOrPendingChange,
+    isSubmitting,
+    ...rest
+  } = props;
+
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
-      <EditUserDialogContainer {...props} />
-    </Dialog>
+    <EnhancedDialog open={open} omitHeader isSubmitting={isSubmitting} {...rest}>
+      <EditUserDialogContainer
+        open={open}
+        user={user}
+        onUserEdited={onUserEdited}
+        onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
+        passwordRequirementsRegex={passwordRequirementsRegex}
+        isSubmitting={isSubmitting}
+      />
+    </EnhancedDialog>
   );
 }
 

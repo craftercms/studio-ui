@@ -25,7 +25,7 @@ import Paper from '@material-ui/core/Paper';
 import clsx from 'clsx';
 import ItemDisplay from '../ItemDisplay';
 import PagesSearchAhead from '../PagesSearchAhead';
-import SingleItemSelector from '../../modules/Content/Authoring/SingleItemSelector';
+import SingleItemSelector from '../SingleItemSelector';
 import { DetailedItem } from '../../models/Item';
 import MoreRounded from '@material-ui/icons/MoreVertRounded';
 // @ts-ignore
