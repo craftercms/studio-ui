@@ -148,7 +148,6 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
   [fetchSiteConfig.type]: (state) => ({ ...state }),
   [fetchSiteConfigComplete.type]: (state, { payload }) => {
     const { cdataEscapedFieldPatterns, locale, publishing, site, usePreview3 } = payload;
-
     return {
       ...state,
       cdataEscapedFieldPatterns,
