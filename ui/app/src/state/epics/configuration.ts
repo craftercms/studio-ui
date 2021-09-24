@@ -79,7 +79,8 @@ export default [
                   }
                 }),
                 showSystemNotification({
-                  // @ts-ignore
+                  // @ts-ignore - 'message' does not exist on type 'unknown', and catch variable type annotation must
+                  // be 'any' or 'unknown', but setting it to 'any' causes a prettier error.
                   message: getIntl().formatMessage(configurationMessages.localeError, { message: e.message })
                 })
               ];
