@@ -839,7 +839,10 @@ export function PreviewConcierge(props: any) {
         open={guestDetectionSnackbarOpen}
         onClose={() => void 0}
         message={
-          <FormattedMessage id="guestDetectionMessage" defaultMessage="Communication with guest site not detected." />
+          <FormattedMessage
+            id="guestDetectionMessage"
+            defaultMessage="Communication with the preview application was interrupted."
+          />
         }
         anchorOrigin={{
           vertical: 'bottom',
