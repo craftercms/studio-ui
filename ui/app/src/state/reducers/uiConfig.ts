@@ -148,16 +148,6 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
   [fetchSiteConfig.type]: (state) => ({ ...state }),
   [fetchSiteConfigComplete.type]: (state, { payload }) => {
     const { cdataEscapedFieldPatterns, locale, publishing, site, usePreview3 } = payload;
-    let localeCode = locale?.localeCode || initialState.locale.localeCode;
-    let options = locale?.dateTimeFormatOptions || initialState.locale.dateTimeFormatOptions;
-
-    // check for locale and options validity
-    try {
-      new Intl.DateTimeFormat(localeCode, options);
-    } catch (e) {
-      localeCode = initialState.locale.localeCode;
-      options = initialState.locale.dateTimeFormatOptions;
-    }
 
     return {
       ...state,
@@ -165,8 +155,8 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
       locale: {
         ...state.locale,
         // If localization config is not present in the config, use the browser's resolved options.
-        localeCode: localeCode,
-        dateTimeFormatOptions: options
+        localeCode: locale?.localeCode || initialState.locale.localeCode,
+        dateTimeFormatOptions: locale?.dateTimeFormatOptions || initialState.locale.dateTimeFormatOptions
       },
       publishing: {
         ...state.publishing,

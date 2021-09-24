@@ -15,7 +15,7 @@
  */
 
 import { ofType } from 'redux-observable';
-import { exhaustMap, filter, map, tap, withLatestFrom } from 'rxjs/operators';
+import { exhaustMap, filter, map, switchMap, withLatestFrom } from 'rxjs/operators';
 import { catchAjaxError } from '../../utils/ajax';
 import {
   fetchSiteConfig,
@@ -31,7 +31,6 @@ import {
 } from '../../services/configuration';
 import { CrafterCMSEpic } from '../store';
 import { showSystemNotification } from '../actions/system';
-import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { defineMessages } from 'react-intl';
 
 const configurationMessages = defineMessages({
@@ -63,22 +62,29 @@ export default [
       filter(([, state]) => Boolean(state.sites.active)),
       exhaustMap(([, state]) =>
         fetchSiteConfigService(state.sites.active).pipe(
-          tap((config) => {
+          switchMap((config) => {
             try {
               let localeCode = config.locale?.localeCode || state.uiConfig.locale.localeCode;
               let options = config.locale?.dateTimeFormatOptions || state.uiConfig.locale.dateTimeFormatOptions;
               new Intl.DateTimeFormat(localeCode, options);
+              return [fetchSiteConfigComplete(config)];
             } catch (e) {
-              const hostToHost$ = getHostToHostBus();
-              hostToHost$.next(
+              return [
+                fetchSiteConfigComplete({
+                  ...config,
+                  locale: {
+                    ...config.locale,
+                    localeCode: state.uiConfig.locale.localeCode,
+                    dateTimeFormatOptions: state.uiConfig.locale.dateTimeFormatOptions
+                  }
+                }),
                 showSystemNotification({
                   // @ts-ignore
                   message: getIntl().formatMessage(configurationMessages.localeError, { message: e.message })
                 })
-              );
+              ];
             }
           }),
-          map((config) => fetchSiteConfigComplete(config)),
           catchAjaxError(fetchSiteConfigFailed)
         )
       )
