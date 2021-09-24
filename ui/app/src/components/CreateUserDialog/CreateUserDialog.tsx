@@ -14,28 +14,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Dialog from '@mui/material/Dialog';
-import React, { useState } from 'react';
-import { CreateUserDialogUIProps, CreateUserDialogContainer } from './CreateUserDialogContainer';
-import { useOnClose } from '../../utils/hooks/useOnClose';
-
-export interface CreateUserDialogProps extends CreateUserDialogUIProps {
-  open: boolean;
-}
+import React from 'react';
+import { CreateUserDialogContainer } from './CreateUserDialogContainer';
+import { CreateUserDialogProps } from './utils';
+import EnhancedDialog from '../EnhancedDialog';
+import { FormattedMessage } from 'react-intl';
 
 export function CreateUserDialog(props: CreateUserDialogProps) {
-  const { open, onClose } = props;
-  const [disableQuickDismiss, setDisableQuickDismiss] = useState(false);
-  const onCloseHandler = useOnClose({
-    onClose,
-    disableBackdropClick: disableQuickDismiss,
-    disableEscapeKeyDown: disableQuickDismiss
-  });
-
+  const { passwordRequirementsRegex, onSubmittingAndOrPendingChange, isSubmitting, onCreateSuccess, ...rest } = props;
   return (
-    <Dialog open={open} onClose={onCloseHandler} fullWidth maxWidth="md">
-      <CreateUserDialogContainer setDisableBackdropClick={setDisableQuickDismiss} {...props} />
-    </Dialog>
+    <EnhancedDialog
+      title={<FormattedMessage id="CreateUserDialog.title" defaultMessage="Create User" />}
+      isSubmitting={isSubmitting}
+      {...rest}
+    >
+      <CreateUserDialogContainer
+        passwordRequirementsRegex={passwordRequirementsRegex}
+        onCreateSuccess={onCreateSuccess}
+        onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
+        isSubmitting={isSubmitting}
+      />
+    </EnhancedDialog>
   );
 }
 

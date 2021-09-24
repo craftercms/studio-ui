@@ -14,12 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
 import Typography, { TypographyProps } from '@mui/material/Typography';
 import IconButton, { IconButtonProps } from '@mui/material/IconButton';
 import MuiDialogTitle from '@mui/material/DialogTitle';
+import makeStyles from '@mui/styles/makeStyles';
+import createStyles from '@mui/styles/createStyles';
 import CloseIconRounded from '@mui/icons-material/CloseRounded';
+import MinimizeIconRounded from '@mui/icons-material/RemoveRounded';
 import ArrowBack from '@mui/icons-material/ArrowBackIosRounded';
 import React, { ElementType, PropsWithChildren, ReactNode } from 'react';
 import clsx from 'clsx';
@@ -89,10 +90,14 @@ const translations = defineMessages({
   dismiss: {
     id: 'words.dismiss',
     defaultMessage: 'Dismiss'
+  },
+  minimize: {
+    id: 'words.minimize',
+    defaultMessage: 'Minimize'
   }
 });
 
-export type DialogTitleProps<
+export type DialogHeaderProps<
   PrimaryTypographyComponent extends ElementType = 'h2',
   SecondaryTypographyComponent extends ElementType = 'p'
 > = PropsWithChildren<{
@@ -104,6 +109,7 @@ export type DialogTitleProps<
   leftActions?: DialogHeaderAction[];
   rightActions?: DialogHeaderAction[];
   closeIcon?: ElementType;
+  minimizeIcon?: ElementType;
   backIcon?: ElementType;
   classes?: {
     root?: string;
@@ -112,18 +118,22 @@ export type DialogTitleProps<
   };
   className?: string;
   disableDismiss?: boolean;
-  onDismiss?(): void;
+  disableMinimize?: boolean;
+  onCloseButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
+  onMinimizeButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
   onBack?(): void;
 }>;
 
-export function DialogHeader(props: DialogTitleProps) {
+export function DialogHeader(props: DialogHeaderProps) {
   // region
   const classes = dialogTitleStyles({});
   const { formatMessage } = useIntl();
   const {
     id,
-    onDismiss,
+    onCloseButtonClick,
+    onMinimizeButtonClick,
     disableDismiss = false,
+    disableMinimize = false,
     onBack,
     title,
     children,
@@ -131,6 +141,7 @@ export function DialogHeader(props: DialogTitleProps) {
     leftActions,
     rightActions,
     closeIcon: CloseIcon = CloseIconRounded,
+    minimizeIcon: MinimizeIcon = MinimizeIconRounded,
     backIcon: BackIcon = ArrowBack,
     titleTypographyProps = {
       variant: 'h6',
@@ -163,14 +174,21 @@ export function DialogHeader(props: DialogTitleProps) {
         <Typography className={classes.title} {...titleTypographyProps}>
           {title}
         </Typography>
-        {(rightActions || onDismiss) && (
+        {(rightActions || onCloseButtonClick || onMinimizeButtonClick) && (
           <div className={classes.rightActions}>
             {rightActions?.map(({ icon, 'aria-label': tooltip, ...rest }: DialogHeaderAction, i: number) => (
               <Action key={i} icon={icon} tooltip={tooltip} {...rest} />
             ))}
-            {onDismiss && (
+            {onMinimizeButtonClick && (
+              <Tooltip title={formatMessage(translations.minimize)}>
+                <IconButton aria-label="close" onClick={onMinimizeButtonClick} disabled={disableMinimize}>
+                  <MinimizeIcon />
+                </IconButton>
+              </Tooltip>
+            )}
+            {onCloseButtonClick && (
               <Tooltip title={formatMessage(translations.dismiss)}>
-                <IconButton aria-label="close" onClick={onDismiss} disabled={disableDismiss} size="large">
+                <IconButton aria-label="close" onClick={onCloseButtonClick} disabled={disableDismiss} size="large">
                   <CloseIcon />
                 </IconButton>
               </Tooltip>

@@ -14,9 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import User from '../../models/User';
-import { Site } from '../../models/Site';
-import LookupTable from '../../models/LookupTable';
 import useStyles from './styles';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import Avatar from '@mui/material/Avatar';
@@ -41,24 +38,7 @@ import * as React from 'react';
 import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import { UserGroupMembershipEditor } from '../UserGroupMembershipEditor';
-
-export interface EditUserDialogUIProps {
-  user: User;
-  inProgress: boolean;
-  dirty: boolean;
-  openResetPassword: boolean;
-  sites: Site[];
-  passwordRequirementsRegex: string;
-  rolesBySite: LookupTable<string[]>;
-  onInputChange(value: object): void;
-  onEnableChange(value: object): void;
-  onCancelForm(): void;
-  onSave(): void;
-  onClose(): void;
-  onCloseResetPasswordDialog(): void;
-  onDelete(username: string): void;
-  onResetPassword(value: boolean): void;
-}
+import { EditUserDialogUIProps } from './utils';
 
 const translations = defineMessages({
   externallyManaged: {
@@ -100,7 +80,7 @@ export function EditUserDialogUI(props: EditUserDialogUIProps) {
     rolesBySite,
     passwordRequirementsRegex,
     onSave,
-    onClose,
+    onCloseButtonClick,
     onDelete,
     onCloseResetPasswordDialog,
     onInputChange,
@@ -148,7 +128,7 @@ export function EditUserDialogUI(props: EditUserDialogUIProps) {
             <Chip label={formatMessage(translations.externallyManaged)} size="small" className={classes.chip} />
           )}
           <Tooltip title={<FormattedMessage id="userInfoDialog.close" defaultMessage="Close" />}>
-            <IconButton edge="end" onClick={onClose} size="large">
+            <IconButton edge="end" onClick={onCloseButtonClick} size="large">
               <CloseRoundedIcon />
             </IconButton>
           </Tooltip>

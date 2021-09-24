@@ -15,7 +15,7 @@
  */
 
 import React, { PropsWithChildren, useMemo } from 'react';
-import { createTheme, DeprecatedThemeOptions, ThemeProvider, Theme, StyledEngineProvider } from '@mui/material/styles';
+import { createTheme, DeprecatedThemeOptions, StyledEngineProvider, Theme, ThemeProvider } from '@mui/material/styles';
 import StylesProvider from '@mui/styles/StylesProvider';
 import { defaultThemeOptions, generateClassName } from '../../styles/theme';
 import useMediaQuery from '@mui/material/useMediaQuery';

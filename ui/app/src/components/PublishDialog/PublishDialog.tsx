@@ -15,30 +15,29 @@
  */
 
 import React from 'react';
-import Dialog, { DialogProps } from '@mui/material/Dialog';
-import { PublishDialogContainer, PublishDialogContainerProps } from './PublishDialogContainer';
-import { useOnClose } from '../../utils/hooks/useOnClose';
-
-export type PublishDialogProps = DialogProps & PublishDialogContainerProps;
+import EnhancedDialog from '../EnhancedDialog';
+import { PublishDialogContainer } from './PublishDialogContainer';
+import { PublishDialogProps } from './utils';
+import { FormattedMessage } from 'react-intl';
 
 export function PublishDialog(props: PublishDialogProps) {
-  const { items, scheduling, onClosed, onDismiss, onSuccess, onClose, disableQuickDismiss, ...dialogProps } = props;
-  const onCloseInternal = useOnClose({
-    onClose,
-    disableBackdropClick: disableQuickDismiss,
-    disableEscapeKeyDown: disableQuickDismiss
-  });
+  const { items, scheduling, onSuccess, isSubmitting, ...rest } = props;
   return (
-    <Dialog fullWidth maxWidth="md" {...dialogProps} onClose={onCloseInternal}>
-      <PublishDialogContainer
-        items={items}
-        scheduling={scheduling}
-        onClosed={onClosed}
-        onDismiss={onDismiss}
-        onSuccess={onSuccess}
-        disableQuickDismiss={disableQuickDismiss}
-      />
-    </Dialog>
+    <EnhancedDialog
+      title={<FormattedMessage id="publishDialog.title" defaultMessage="Publish" />}
+      dialogHeaderProps={{
+        subtitle: (
+          <FormattedMessage
+            id="publishDialog.subtitle"
+            defaultMessage="Hard dependencies are automatically submitted with the main items. You may choose whether to submit or not soft dependencies"
+          />
+        )
+      }}
+      {...rest}
+      isSubmitting={isSubmitting}
+    >
+      <PublishDialogContainer items={items} scheduling={scheduling} onSuccess={onSuccess} isSubmitting={isSubmitting} />
+    </EnhancedDialog>
   );
 }
 

@@ -21,7 +21,6 @@ import { fetchContentXML, writeContent } from '../../services/content';
 import { ConditionalLoadingState } from '../SystemStatus/LoadingState';
 import AceEditor from '../AceEditor';
 import useStyles from './styles';
-import { CodeEditorDialogProps } from './CodeEditorDialog';
 import { useDispatch } from 'react-redux';
 import { updateCodeEditorDialog } from '../../state/actions/dialogs';
 import { Skeleton } from '@mui/material';
@@ -45,20 +44,13 @@ import { useActiveUser } from '../../utils/hooks/useActiveUser';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useDetailedItem } from '../../utils/hooks/useDetailedItem';
 import { useReferences } from '../../utils/hooks/useReferences';
-import { useUnmount } from '../../utils/hooks/useUnmount';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 import { RELOAD_REQUEST } from '../../state/actions/preview';
-import { getContentModelSnippets } from './utils';
-
-export interface CodeEditorDialogContainerProps extends CodeEditorDialogProps {
-  path: string;
-  title: string;
-  onMinimized(): void;
-  onSaveClose(): void;
-}
+import { CodeEditorDialogContainerProps, getContentModelSnippets } from './utils';
+import { batchActions } from '../../state/actions/misc';
 
 export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps) {
-  const { path, onMinimized, onClose, onSaveClose, onClosed, mode, readonly, contentType } = props;
+  const { path, onMinimize, onClose, onSaveClose, mode, isSubmitting, readonly, contentType } = props;
   const item = useDetailedItem(path);
   const site = useActiveSiteId();
   const user = useActiveUser();
@@ -114,25 +106,33 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
     }
   }, [site, item, setContent, content, dispatch, user.username, readonly]);
 
-  useUnmount(onClosed);
-
   const onEditorChanges = () => {
     dispatch(
       updateCodeEditorDialog({
-        pendingChanges: content !== editorRef.current.getValue()
+        hasPendingChanges: content !== editorRef.current.getValue()
       })
     );
   };
 
   const save = useCallback(
     (callback?: Function) => {
+      dispatch(
+        updateCodeEditorDialog({
+          isSubmitting: true
+        })
+      );
       writeContent(site, path, editorRef.current.getValue(), { unlock: false }).subscribe(
         () => {
           setTimeout(callback);
           dispatch(
-            showSystemNotification({
-              message: formatMessage(translations.saved)
-            })
+            batchActions([
+              showSystemNotification({
+                message: formatMessage(translations.saved)
+              }),
+              updateCodeEditorDialog({
+                isSubmitting: false
+              })
+            ])
           );
           getHostToGuestBus().next({ type: RELOAD_REQUEST });
         },
@@ -144,10 +144,6 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
     [dispatch, formatMessage, path, site]
   );
 
-  const onCancel = () => {
-    onClose();
-  };
-
   const onSave = useCallback(() => {
     save(() => {
       setContent(editorRef.current.getValue());
@@ -157,7 +153,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
   const onSaveAndMinimize = () => {
     save(() => {
       setContent(editorRef.current.getValue());
-      onMinimized?.();
+      onMinimize?.();
     });
   };
 
@@ -190,17 +186,14 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
     }
   }, [readonly, content, disableEdit, onSave]);
 
+  const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
+
   return (
     <>
       <DialogHeader
         title={item ? item.label : <Skeleton width="120px" />}
-        onDismiss={onClose}
-        rightActions={[
-          {
-            icon: 'MinimizeIcon',
-            onClick: onMinimized
-          }
-        ]}
+        onCloseButtonClick={onCloseButtonClick}
+        {...(onMinimize && { rightActions: [] })}
       />
       <DialogBody className={classes.dialogBody}>
         <ConditionalLoadingState isLoading={loading} classes={{ root: classes.loadingState }}>
@@ -221,10 +214,11 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
           <Button onClick={onAddSnippet} endIcon={<ExpandMoreRoundedIcon />} className={classes.addSnippet}>
             <FormattedMessage id="codeEditor.insertCode" defaultMessage="Insert Code" />
           </Button>
-          <SecondaryButton onClick={onCancel}>
+          <SecondaryButton onClick={onCloseButtonClick}>
             <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
           </SecondaryButton>
           <SplitButton
+            loading={isSubmitting}
             disabled={disableEdit}
             options={[
               { label: formatMessage(translations.save), callback: onSave },
@@ -257,3 +251,5 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
     </>
   );
 }
+
+export default CodeEditorDialogContainer;

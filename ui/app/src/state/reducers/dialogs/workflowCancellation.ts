@@ -21,19 +21,24 @@ import {
   showWorkflowCancellationDialog,
   workflowCancellationDialogClosed
 } from '../../actions/dialogs';
+import { WorkflowCancellationDialogStateProps } from '../../../components/WorkflowCancellationDialog/utils';
 
-export default createReducer<GlobalState['dialogs']['workflowCancellation']>(
-  { open: false },
-  {
-    [showWorkflowCancellationDialog.type]: (state, { payload }) => ({
-      ...state,
-      onClose: closeWorkflowCancellationDialog(),
-      onClosed: workflowCancellationDialogClosed(),
-      onDismiss: closeWorkflowCancellationDialog(),
-      ...payload,
-      open: true
-    }),
-    [closeWorkflowCancellationDialog.type]: (state) => ({ ...state, open: false }),
-    [workflowCancellationDialogClosed.type]: () => ({ open: false })
-  }
-);
+const initialState: WorkflowCancellationDialogStateProps = {
+  open: false,
+  isSubmitting: null,
+  isMinimized: null,
+  hasPendingChanges: null
+};
+
+export default createReducer<GlobalState['dialogs']['workflowCancellation']>(initialState, {
+  [showWorkflowCancellationDialog.type]: (state, { payload }) => ({
+    ...state,
+    onClose: closeWorkflowCancellationDialog(),
+    onClosed: workflowCancellationDialogClosed(),
+    onDismiss: closeWorkflowCancellationDialog(),
+    ...payload,
+    open: true
+  }),
+  [closeWorkflowCancellationDialog.type]: (state) => ({ ...state, open: false }),
+  [workflowCancellationDialogClosed.type]: () => initialState
+});

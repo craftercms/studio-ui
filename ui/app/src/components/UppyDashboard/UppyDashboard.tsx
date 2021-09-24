@@ -22,7 +22,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import palette from '../../styles/palette';
 import { validateActionPolicy } from '../../services/sites';
 import { defineMessages, useIntl } from 'react-intl';
-import { emitSystemEvent, itemsUploaded } from '../../state/actions/system';
+import { emitSystemEvent, itemsUploaded, showSystemNotification } from '../../state/actions/system';
 import { useDispatch } from 'react-redux';
 import { useDebouncedInput } from '../../utils/hooks/useDebouncedInput';
 import { DashboardOptions } from '@uppy/dashboard';
@@ -32,6 +32,7 @@ interface UppyDashboardProps {
   site: string;
   path: string;
   title: string;
+  maxActiveUploads: number;
   onMinimized?(): void;
   onPendingChanges?(pending: boolean): void;
   onClose?(): void;
@@ -274,11 +275,19 @@ const translations = defineMessages({
   minimize: {
     id: 'words.minimize',
     defaultMessage: 'Minimize'
+  },
+  maxFiles: {
+    id: 'uppyDashboard.maxFiles',
+    defaultMessage: '{maxFiles} max.'
+  },
+  maxActiveUploadsReached: {
+    id: 'uppyDashboard.maxActiveUploadsReached',
+    defaultMessage: '{maxFiles} maximum active uploads reached. Excess has been discarded.'
   }
 });
 
 export default function UppyDashboard(props: UppyDashboardProps) {
-  const { uppy, site, path, onClose, onMinimized, title, onPendingChanges } = props;
+  const { uppy, site, path, onClose, onMinimized, title, onPendingChanges, maxActiveUploads } = props;
   const options = {
     replaceTargetContent: true,
     width: '100%',
@@ -299,6 +308,14 @@ export default function UppyDashboard(props: UppyDashboardProps) {
     },
     [dispatch, path]
   );
+
+  const onMaxActiveUploadsReached = () => {
+    dispatch(
+      showSystemNotification({
+        message: formatMessage(translations.maxActiveUploadsReached, { maxFiles: maxActiveUploads })
+      })
+    );
+  };
 
   const onItemsUploaded$ = useDebouncedInput(onItemsUploaded, 1000);
 
@@ -336,7 +353,12 @@ export default function UppyDashboard(props: UppyDashboardProps) {
           minimize: formatMessage(translations.minimize),
           close: formatMessage(translations.close)
         }
-      }
+      },
+      maxActiveUploads: maxActiveUploads,
+      externalMessages: {
+        maxFiles: formatMessage(translations.maxFiles, { maxFiles: maxActiveUploads })
+      },
+      onMaxActiveUploadsReached: onMaxActiveUploadsReached
     });
 
     uppy.on('upload-success', (file) => {

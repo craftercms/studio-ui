@@ -15,42 +15,35 @@
  */
 
 import React from 'react';
-import Dialog, { DialogProps } from '@mui/material/Dialog';
-import { DeleteDialogContainer, DeleteDialogContainerProps } from './DeleteDialogContainer';
-import { useOnClose } from '../../utils/hooks/useOnClose';
-
-export type DeleteDialogProps = DialogProps & DeleteDialogContainerProps;
+import { DeleteDialogContainer } from './DeleteDialogContainer';
+import { DeleteDialogProps } from './utils';
+import EnhancedDialog from '../EnhancedDialog';
+import { FormattedMessage } from 'react-intl';
 
 export default function DeleteDialog(props: DeleteDialogProps) {
-  const {
-    items,
-    isFetching,
-    onClose,
-    onClosed,
-    onSuccess,
-    childItems,
-    dependentItems,
-    disableQuickDismiss,
-    ...dialogProps
-  } = props;
-  const containerProps: DeleteDialogContainerProps = {
-    items,
-    onClose: props.onClose,
-    isFetching,
-    onClosed,
-    onSuccess,
-    childItems,
-    dependentItems,
-    disableQuickDismiss
-  };
-  const onCloseInternal = useOnClose({
-    onClose,
-    disableEscapeKeyDown: disableQuickDismiss,
-    disableBackdropClick: disableQuickDismiss
-  });
+  const { items, isSubmitting, onSuccess, isFetching, childItems, dependentItems, ...rest } = props;
   return (
-    <Dialog {...dialogProps} onClose={onCloseInternal} fullWidth maxWidth="md">
-      <DeleteDialogContainer {...containerProps} />
-    </Dialog>
+    <EnhancedDialog
+      title={<FormattedMessage id="deleteDialog.title" defaultMessage="Delete" />}
+      dialogHeaderProps={{
+        subtitle: (
+          <FormattedMessage
+            id="deleteDialog.subtitle"
+            defaultMessage="Selected items will be deleted along with their child items. Please review dependent items before deleting as these will end-up with broken link references."
+          />
+        )
+      }}
+      isSubmitting={isSubmitting}
+      {...rest}
+    >
+      <DeleteDialogContainer
+        items={items}
+        onSuccess={onSuccess}
+        isFetching={isFetching}
+        childItems={childItems}
+        dependentItems={dependentItems}
+        isSubmitting={isSubmitting}
+      />
+    </EnhancedDialog>
   );
 }

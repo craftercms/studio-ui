@@ -16,10 +16,10 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import Dialog from '@mui/material/Dialog';
-import DialogHeader from '../DialogHeader/DialogHeader';
+import DialogHeader from '../DialogHeader';
 import DialogBody from '../Dialogs/DialogBody';
 import DialogFooter from '../Dialogs/DialogFooter';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { diffConflictedFile as diffConflictedFileService } from '../../services/repositories';
 import ApiResponse from '../../models/ApiResponse';
 import { FileDiff } from '../../models/Repository';
@@ -27,7 +27,6 @@ import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import RemoteRepositoriesDiffDialogUI from './RemoteRepositoriesDiffDialogUI';
 import SecondaryButton from '../SecondaryButton';
 import ConfirmDropdown from '../Controls/ConfirmDropdown';
-import { useIntl } from 'react-intl';
 import { messages } from '../RemoteRepositoriesStatus';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
@@ -123,7 +122,7 @@ export default function RemoteRepositoriesDiffDialog(props: RemoteRepositoriesDi
             <FormattedMessage id="words.diff" defaultMessage="Diff" />: {path}
           </>
         }
-        onDismiss={onClose}
+        onCloseButtonClick={onClose}
         classes={{
           root: classes.dialogHeader,
           subtitleWrapper: classes.dialogHeaderChildren

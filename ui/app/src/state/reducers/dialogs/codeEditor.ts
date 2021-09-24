@@ -22,16 +22,15 @@ import {
   showCodeEditorDialog,
   updateCodeEditorDialog
 } from '../../actions/dialogs';
-import { CodeEditorDialogStateProps } from '../../../components/CodeEditorDialog';
+import { CodeEditorDialogStateProps } from '../../../components/CodeEditorDialog/utils';
+import { commonDialogProps } from '../../../utils/state';
 
-const initialState: CodeEditorDialogStateProps = {
-  open: false,
+const initialState: CodeEditorDialogStateProps = commonDialogProps({
   path: null,
   mode: null,
   contentType: null,
-  pendingChanges: null,
   readonly: false
-};
+});
 
 export default createReducer<GlobalState['dialogs']['codeEditor']>(initialState, {
   [showCodeEditorDialog.type]: (state, { payload }) => {
@@ -41,7 +40,8 @@ export default createReducer<GlobalState['dialogs']['codeEditor']>(initialState,
           ...state,
           onClose: closeCodeEditorDialog(),
           onClosed: codeEditorDialogClosed(),
-          onDismiss: closeCodeEditorDialog(),
+          onMinimize: updateCodeEditorDialog({ isMinimized: true }),
+          onMaximize: updateCodeEditorDialog({ isMinimized: false }),
           ...payload,
           open: true
         };

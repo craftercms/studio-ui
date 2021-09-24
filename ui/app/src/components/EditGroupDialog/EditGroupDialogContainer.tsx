@@ -33,17 +33,8 @@ import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../state/actions/system';
 import Typography from '@mui/material/Typography';
-import { useUnmount } from '../../utils/hooks/useUnmount';
 import { useSpreadState } from '../../utils/hooks/useSpreadState';
-
-export interface EditGroupDialogContainerProps {
-  group?: Group;
-  onClose(): void;
-  onClosed?(): void;
-  onGroupSaved(group: Group): void;
-  onGroupDeleted(group: Group): void;
-  setPendingChanges?(disabled: boolean): void;
-}
+import { EditGroupDialogContainerProps } from './utils';
 
 const translations = defineMessages({
   groupCreated: {
@@ -69,7 +60,7 @@ const translations = defineMessages({
 });
 
 export default function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
-  const { onClose, onGroupSaved, onGroupDeleted, onClosed, setPendingChanges = () => void 0 } = props;
+  const { onClose, onGroupSaved, onGroupDeleted, onSubmittingAndOrPendingChange } = props;
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
 
@@ -100,8 +91,6 @@ export default function EditGroupDialogContainer(props: EditGroupDialogContainer
       setGroup(props.group);
     }
   }, [group?.id, props.group, setGroup]);
-
-  useUnmount(onClosed);
 
   const onDeleteGroup = (group: Group) => {
     trash(group.id).subscribe(
@@ -156,11 +145,9 @@ export default function EditGroupDialogContainer(props: EditGroupDialogContainer
   const onChangeValue = (property: { key: string; value: string }) => {
     setIsDirty(true);
     setGroup({ [property.key]: property.value });
-    setPendingChanges(Boolean(group[property.key === 'name' ? 'desc' : 'name'] || property.value));
   };
 
   const onSave = () => {
-    setIsDirty(false);
     if (props.group) {
       update(group).subscribe(
         (group) => {
@@ -169,7 +156,7 @@ export default function EditGroupDialogContainer(props: EditGroupDialogContainer
               message: formatMessage(translations.groupEdited)
             })
           );
-          setPendingChanges(false);
+          setIsDirty(false);
           onGroupSaved(group);
         },
         ({ response: { response } }) => {
@@ -184,7 +171,7 @@ export default function EditGroupDialogContainer(props: EditGroupDialogContainer
               message: formatMessage(translations.groupCreated)
             })
           );
-          setPendingChanges(false);
+          setIsDirty(false);
           onGroupSaved(group);
         },
         ({ response: { response } }) => {
@@ -199,6 +186,12 @@ export default function EditGroupDialogContainer(props: EditGroupDialogContainer
     setIsDirty(false);
   };
 
+  useEffect(() => {
+    onSubmittingAndOrPendingChange({
+      hasPendingChanges: isDirty
+    });
+  }, [isDirty, onSubmittingAndOrPendingChange]);
+
   return (
     <EditGroupDialogUI
       title={
@@ -212,7 +205,7 @@ export default function EditGroupDialogContainer(props: EditGroupDialogContainer
           </Typography>
         )
       }
-      onClose={onClose}
+      onCloseButtonClick={(e) => onClose(e, null)}
       group={group}
       isEdit={isEdit}
       users={users}

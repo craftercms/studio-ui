@@ -85,7 +85,7 @@ function ResetPasswordDialogUI(props: ResetPasswordDialogProps) {
     <form onSubmit={onSubmit}>
       <DialogHeader
         title={<FormattedMessage id="resetPasswordDialog.title" defaultMessage="Reset Password" />}
-        onDismiss={onClose}
+        onCloseButtonClick={onClose}
       />
       <DialogBody>
         <Typography variant="body2">

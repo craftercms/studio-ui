@@ -17,11 +17,12 @@
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
 import { closeEditDialog, editDialogClosed, showEditDialog, updateEditConfig } from '../../actions/dialogs';
-import { LegacyFormDialogStateProps } from '../../../components/Dialogs/LegacyFormDialog';
 import { nnou } from '../../../utils/object';
+import { LegacyFormDialogStateProps } from '../../../components/LegacyFormDialog/utils';
 
 const initialState: LegacyFormDialogStateProps = {
   open: false,
+  isMinimized: null,
   path: null,
   site: null,
   authoringBase: null,
@@ -39,7 +40,8 @@ export default createReducer<GlobalState['dialogs']['edit']>(initialState, {
           ...state,
           onClose: closeEditDialog(),
           onClosed: editDialogClosed(),
-          onDismiss: closeEditDialog(),
+          onMinimize: updateEditConfig({ isMinimized: true }),
+          onMaximize: updateEditConfig({ isMinimized: false }),
           ...payload,
           open: true
         };

@@ -19,7 +19,7 @@ import PublishingQueue, { PublishingQueueProps } from '../../modules/System/Publ
 import Paper from '@mui/material/Paper';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
-import DialogHeader from '../DialogHeader/DialogHeader';
+import DialogHeader from '../DialogHeader';
 import { FormattedMessage } from 'react-intl';
 
 const useStyles = makeStyles((theme) =>

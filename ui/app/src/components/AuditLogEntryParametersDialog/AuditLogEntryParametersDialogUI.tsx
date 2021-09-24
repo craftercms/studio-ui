@@ -35,7 +35,7 @@ export default function AuditLogEntryParametersDialogUI(props: AuditLogEntryPara
     <>
       <DialogHeader
         title={<FormattedMessage id="words.parameters" defaultMessage="Parameters" />}
-        onDismiss={onClose}
+        onCloseButtonClick={onClose}
       />
       <DialogBody>
         <Table>

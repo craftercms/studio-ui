@@ -94,6 +94,7 @@ export interface PathNavigatorTreeStateProps {
   fetchingByPath: LookupTable<boolean>;
   totalByPath: LookupTable<number>;
   offsetByPath: LookupTable<number>;
+  excludes?: string[];
 }
 
 interface Menu {

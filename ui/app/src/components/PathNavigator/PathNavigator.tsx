@@ -123,6 +123,7 @@ export interface PathNavigatorStateProps {
   limit: number;
   offset: number;
   collapsed?: boolean;
+  excludes?: string[];
   isFetching: boolean;
   error: any;
 }

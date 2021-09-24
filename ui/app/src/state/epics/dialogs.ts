@@ -37,7 +37,9 @@ import {
   newContentCreationComplete,
   showCodeEditorDialog,
   showConfirmDialog,
-  showEditDialog
+  showEditDialog,
+  updateCodeEditorDialog,
+  updateEditConfig
 } from '../actions/dialogs';
 import { fetchDeleteDependencies as fetchDeleteDependenciesService } from '../../services/dependencies';
 import { fetchItemVersion } from '../../services/content';
@@ -47,11 +49,8 @@ import StandardAction from '../../models/StandardAction';
 import { asArray } from '../../utils/array';
 import { changeCurrentUrl } from '../actions/preview';
 import { CrafterCMSEpic } from '../store';
-import { minimizedDialogUpdate } from '../reducers/dialogs/minimizedDialogs';
 import { formEngineMessages } from '../../utils/i18n-legacy';
 import infoGraphic from '../../assets/information.svg';
-import { codeEditorId } from '../../components/CodeEditorDialog';
-import { legacyEditorId } from '../../components/Dialogs/LegacyFormDialog';
 import { nou } from '../../utils/object';
 
 function getDialogNameFromType(type: string): string {
@@ -171,14 +170,12 @@ const dialogEpics: CrafterCMSEpic[] = [
           // If showEditDialog action is called while the dialog is already open & minimized, we maximize it.
           // Differences in the showEditDialog payload — to what's on the state — are ignored, except for the path,
           // which is used to check if it's the same form that's getting opened.
-          const id = type === showEditDialog.type ? legacyEditorId : codeEditorId;
-          if (state.dialogs.minimizedDialogs[id]?.minimized === true) {
-            return of(
-              minimizedDialogUpdate({
-                id,
-                minimized: false
-              })
-            );
+          const { isMinimized, updateDialogAction } =
+            type === showEditDialog.type
+              ? { isMinimized: state.dialogs.edit.isMinimized, updateDialogAction: updateEditConfig }
+              : { isMinimized: state.dialogs.codeEditor.isMinimized, updateDialogAction: updateCodeEditorDialog };
+          if (isMinimized === true) {
+            return of(updateDialogAction({ isMinimized: false }));
           } else {
             return NEVER;
           }

@@ -16,20 +16,26 @@
 
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
-import { closeRejectDialog, showRejectDialog, rejectDialogClosed } from '../../actions/dialogs';
+import { closeRejectDialog, rejectDialogClosed, showRejectDialog, updateRejectDialog } from '../../actions/dialogs';
+import { RejectDialogStateProps } from '../../../components/RejectDialog/utils';
 
-export default createReducer<GlobalState['dialogs']['reject']>(
-  { open: false },
-  {
-    [showRejectDialog.type]: (state, { payload }) => ({
-      ...state,
-      onClose: closeRejectDialog(),
-      onClosed: rejectDialogClosed(),
-      onDismiss: closeRejectDialog(),
-      ...payload,
-      open: true
-    }),
-    [closeRejectDialog.type]: (state) => ({ ...state, open: false }),
-    [rejectDialogClosed.type]: () => ({ open: false })
-  }
-);
+const initialState: RejectDialogStateProps = {
+  open: false,
+  isSubmitting: null,
+  isMinimized: null,
+  hasPendingChanges: null
+};
+
+export default createReducer<GlobalState['dialogs']['reject']>(initialState, {
+  [showRejectDialog.type]: (state, { payload }) => ({
+    ...state,
+    onClose: closeRejectDialog(),
+    onClosed: rejectDialogClosed(),
+    onDismiss: closeRejectDialog(),
+    ...payload,
+    open: true
+  }),
+  [updateRejectDialog.type]: (state, { payload }) => ({ ...state, ...payload }),
+  [closeRejectDialog.type]: (state) => ({ ...state, open: false }),
+  [rejectDialogClosed.type]: () => ({ open: false })
+});

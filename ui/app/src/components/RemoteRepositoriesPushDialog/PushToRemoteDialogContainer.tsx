@@ -79,7 +79,7 @@ export default function PushToRemoteDialogContainer(props: PushToRemoteDialogCon
 
   return (
     <form onSubmit={onSubmit}>
-      <DialogHeader title={<FormattedMessage id="words.push" defaultMessage="Push" />} onDismiss={onClose} />
+      <DialogHeader title={<FormattedMessage id="words.push" defaultMessage="Push" />} onCloseButtonClick={onClose} />
       <DialogBody>
         <FormControl variant="outlined" fullWidth className={classes.formControl}>
           <InputLabel id="remoteBranchToPushLabel">

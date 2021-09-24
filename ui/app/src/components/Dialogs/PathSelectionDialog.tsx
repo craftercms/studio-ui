@@ -14,23 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import DialogHeader from '../DialogHeader/DialogHeader';
-import DialogBody from './DialogBody';
-import DialogFooter from './DialogFooter';
 import React, { PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react';
-import { FormattedMessage } from 'react-intl';
 import Dialog from '@mui/material/Dialog';
 import FolderBrowserTreeViewUI, { TreeNode } from '../FolderBrowserTreeView/FolderBrowserTreeViewUI';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
-import CreateFolderDialog from './CreateFolderDialog';
 import LookupTable from '../../models/LookupTable';
-import Suspencified from '../SystemStatus/Suspencified';
 import { getIndividualPaths } from '../../utils/path';
 import { forkJoin, Observable } from 'rxjs';
 import StandardAction from '../../models/StandardAction';
-import PrimaryButton from '../PrimaryButton';
-import SecondaryButton from '../SecondaryButton';
 import { ApiResponse } from '../../models/ApiResponse';
 import TranslationOrText from '../../models/TranslationOrText';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
@@ -38,8 +30,18 @@ import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import { useUnmount } from '../../utils/hooks/useUnmount';
 import { usePossibleTranslation } from '../../utils/hooks/usePossibleTranslation';
 import { legacyItemsToTreeNodes } from '../FolderBrowserTreeView/utils';
+import { useSelection } from '../../utils/hooks/useSelection';
+import { useWithPendingChangesCloseRequest } from '../../utils/hooks/useWithPendingChangesCloseRequest';
 import { fetchLegacyItemsTree } from '../../services/content';
 import { LegacyItem } from '../../models/Item';
+import { FormattedMessage } from 'react-intl';
+import DialogBody from './DialogBody';
+import Suspencified from '../SystemStatus/Suspencified';
+import DialogFooter from './DialogFooter';
+import SecondaryButton from '../SecondaryButton';
+import PrimaryButton from '../PrimaryButton';
+import CreateFolderDialog from '../CreateFolderDialog';
+import DialogHeader from '../DialogHeader';
 
 export interface PathSelectionDialogBaseProps {
   open: boolean;
@@ -283,6 +285,7 @@ export function PathSelectionDialogBodyUI(props: PathSelectionDialogBodyUIProps)
   } = props;
   const classes = useStyles({});
   const title = usePossibleTranslation(props.title);
+  const createFolderState = useSelection((state) => state.dialogs.createFolder);
   const resource = useLogicResource<TreeNode, { treeNodes: TreeNode; error?: ApiResponse }>(
     useMemo(() => ({ treeNodes, error }), [treeNodes, error]),
     {
@@ -293,11 +296,13 @@ export function PathSelectionDialogBodyUI(props: PathSelectionDialogBodyUIProps)
       errorSelector: ({ error }) => error
     }
   );
+  const onWithPendingChangesCloseRequest = useWithPendingChangesCloseRequest(onCloseCreateFolder);
+
   return (
     <>
       <DialogHeader
         title={title ?? <FormattedMessage id="pathSelectionDialog.title" defaultMessage="Select Path" />}
-        onDismiss={onClose}
+        onCloseButtonClick={onClose}
       />
       <DialogBody className={classes.dialogBody}>
         <Suspencified>
@@ -340,7 +345,12 @@ export function PathSelectionDialogBodyUI(props: PathSelectionDialogBodyUIProps)
         </PrimaryButton>
       </DialogFooter>
       <CreateFolderDialog
+        title={<FormattedMessage id="newFolder.title" defaultMessage="Create a New Folder" />}
         path={currentPath}
+        isSubmitting={createFolderState.isSubmitting}
+        hasPendingChanges={createFolderState.hasPendingChanges}
+        isMinimized={createFolderState.isMinimized}
+        onWithPendingChangesCloseRequest={onWithPendingChangesCloseRequest}
         open={createFolderDialogOpen}
         onClose={onCloseCreateFolder}
         onCreated={onFolderCreated}

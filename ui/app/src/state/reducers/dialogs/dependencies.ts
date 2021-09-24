@@ -17,9 +17,12 @@
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
 import { closeDependenciesDialog, dependenciesDialogClosed, showDependenciesDialog } from '../../actions/dialogs';
-import { DependenciesDialogStateProps } from '../../../modules/Content/Dependencies/DependenciesDialog';
+import { DependenciesDialogStateProps } from '../../../components/DependenciesDialog/utils';
 
 const initialState: DependenciesDialogStateProps = {
+  isMinimized: null,
+  isSubmitting: null,
+  hasPendingChanges: null,
   open: false,
   rootPath: '/site/website'
 };
@@ -29,7 +32,6 @@ export default createReducer<GlobalState['dialogs']['dependencies']>(initialStat
     ...state,
     onClose: closeDependenciesDialog(),
     onClosed: dependenciesDialogClosed(),
-    onDismiss: closeDependenciesDialog(),
     ...payload,
     open: true
   }),

@@ -340,7 +340,8 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
               } else if (not(validations?.readOnly?.value)) {
                 const setupId = field.properties?.rteConfiguration?.value ?? 'generic';
                 const setup = state.rteConfig[setupId] ?? Object.values(state.rteConfig)[0] ?? {};
-                return initTinyMCE(record, validations, setup);
+                // Only pass rte setup to html type, text/textarea (plaintext) controls won't show full rich-text-editing.
+                return initTinyMCE(record, validations, type === 'html' ? setup : {});
               }
               return NEVER;
             }

@@ -91,7 +91,7 @@ export default function PullFromRemoteDialogContainer(props: PullFromRemoteDialo
 
   return (
     <form onSubmit={onSubmit}>
-      <DialogHeader title={<FormattedMessage id="words.pull" defaultMessage="Pull" />} onDismiss={onClose} />
+      <DialogHeader title={<FormattedMessage id="words.pull" defaultMessage="Pull" />} onCloseButtonClick={onClose} />
       <DialogBody>
         <FormControl variant="outlined" fullWidth className={classes.formControl}>
           <InputLabel id="remoteBranchToPullLabel">

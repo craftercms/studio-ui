@@ -16,12 +16,10 @@
 
 import React, { useState } from 'react';
 import ToolsPanelListItemButton, { ToolsPanelListItemButtonProps } from '../ToolsPanelListItemButton';
-import { maximizeDialog } from '../../state/reducers/dialogs/minimizedDialogs';
-import { useDispatch } from 'react-redux';
 import WidgetDialog from '../WidgetDialog';
-import { useMinimizeDialog } from '../../utils/hooks/useMinimizeDialog';
 import { usePossibleTranslation } from '../../utils/hooks/usePossibleTranslation';
 import { WidgetDescriptor } from '../Widget';
+import { useEnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
 
 interface ToolsPanelEmbeddedAppViewButtonProps extends Omit<ToolsPanelListItemButtonProps, 'onClick'> {
   widget: WidgetDescriptor;
@@ -29,20 +27,12 @@ interface ToolsPanelEmbeddedAppViewButtonProps extends Omit<ToolsPanelListItemBu
 
 export default function ToolsPanelEmbeddedAppViewButton(props: ToolsPanelEmbeddedAppViewButtonProps) {
   const [open, setOpen] = useState(false);
-  const dispatch = useDispatch();
-
-  const id = props.widget.uiKey as string;
+  const { hasPendingChanges, isSubmitting, isMinimized, onMinimize, onMaximize } = useEnhancedDialogState();
   const title = usePossibleTranslation(props.title);
 
-  const minimized = useMinimizeDialog({
-    id,
-    title,
-    minimized: false
-  });
-
   const openEmbeddedApp = () => {
-    if (minimized) {
-      dispatch(maximizeDialog({ id }));
+    if (isMinimized) {
+      onMaximize();
     }
     setOpen(true);
   };
@@ -50,7 +40,17 @@ export default function ToolsPanelEmbeddedAppViewButton(props: ToolsPanelEmbedde
   return (
     <>
       <ToolsPanelListItemButton {...props} onClick={openEmbeddedApp} />
-      <WidgetDialog title={title} id={id} open={open} onClose={() => setOpen(false)} widget={props.widget} />
+      <WidgetDialog
+        title={title}
+        open={open}
+        onClose={() => setOpen(false)}
+        widget={props.widget}
+        hasPendingChanges={hasPendingChanges}
+        onMaximize={onMaximize}
+        onMinimize={onMinimize}
+        isMinimized={isMinimized}
+        isSubmitting={isSubmitting}
+      />
     </>
   );
 }

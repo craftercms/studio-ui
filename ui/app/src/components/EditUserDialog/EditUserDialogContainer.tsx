@@ -15,7 +15,7 @@
  */
 
 import { useDispatch } from 'react-redux';
-import { useIntl } from 'react-intl';
+import { defineMessages, useIntl } from 'react-intl';
 import User from '../../models/User';
 import React, { useEffect, useMemo, useState } from 'react';
 import LookupTable from '../../models/LookupTable';
@@ -23,17 +23,9 @@ import { disable, enable, fetchRolesBySite, trash, update } from '../../services
 import { showSystemNotification } from '../../state/actions/system';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { EditUserDialogUI } from './EditUserDialogUI';
-import { defineMessages } from 'react-intl';
 import { useSpreadState } from '../../utils/hooks/useSpreadState';
 import { useSitesBranch } from '../../utils/hooks/useSitesBranch';
-
-export interface EditUserDialogContainerProps {
-  open: boolean;
-  user: User;
-  onClose(): void;
-  onUserEdited(): void;
-  passwordRequirementsRegex: string;
-}
+import { EditUserDialogContainerProps } from './utils';
 
 const translations = defineMessages({
   userDeleted: {
@@ -55,7 +47,8 @@ const translations = defineMessages({
 });
 
 export function EditUserDialogContainer(props: EditUserDialogContainerProps) {
-  const { open, onClose, onUserEdited, passwordRequirementsRegex } = props;
+  const { open, onClose, onUserEdited, passwordRequirementsRegex, isSubmitting, onSubmittingAndOrPendingChange } =
+    props;
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const [user, setUser] = useSpreadState<User>({
@@ -71,7 +64,6 @@ export function EditUserDialogContainer(props: EditUserDialogContainerProps) {
   const sitesById = sites.byId;
   const mySites = useMemo(() => Object.values(sitesById), [sitesById]);
   const [lastSavedUser, setLastSavedUser] = useState(null);
-  const [inProgress, setInProgress] = useState(false);
   const [rolesBySite, setRolesBySite] = useState<LookupTable<string[]>>({});
   const [dirty, setDirty] = useState(false);
   const [openResetPassword, setOpenResetPassword] = useState(false);
@@ -141,7 +133,9 @@ export function EditUserDialogContainer(props: EditUserDialogContainerProps) {
     if (!editMode) {
       return;
     }
-    setInProgress(true);
+    onSubmittingAndOrPendingChange({
+      isSubmitting: true
+    });
     update(user).subscribe(
       () => {
         dispatch(
@@ -150,9 +144,11 @@ export function EditUserDialogContainer(props: EditUserDialogContainerProps) {
           })
         );
         setDirty(false);
-        setInProgress(false);
         setLastSavedUser(user);
         onUserEdited();
+        onSubmittingAndOrPendingChange({
+          isSubmitting: false
+        });
       },
       ({ response: { response } }) => {
         dispatch(showErrorDialog({ error: response }));
@@ -163,7 +159,7 @@ export function EditUserDialogContainer(props: EditUserDialogContainerProps) {
   const onDelete = (username: string) => {
     trash(username).subscribe(
       () => {
-        onClose();
+        onClose(null, null);
         dispatch(
           showSystemNotification({
             message: formatMessage(translations.userDeleted)
@@ -185,17 +181,23 @@ export function EditUserDialogContainer(props: EditUserDialogContainerProps) {
     setOpenResetPassword(value);
   };
 
+  useEffect(() => {
+    onSubmittingAndOrPendingChange({
+      hasPendingChanges: dirty
+    });
+  }, [dirty, onSubmittingAndOrPendingChange]);
+
   return (
     <EditUserDialogUI
       user={user}
       openResetPassword={openResetPassword}
-      inProgress={inProgress}
+      inProgress={isSubmitting}
       dirty={dirty}
       sites={mySites}
       rolesBySite={rolesBySite}
       passwordRequirementsRegex={passwordRequirementsRegex}
       onSave={onSave}
-      onClose={onClose}
+      onCloseButtonClick={(e) => onClose(e, null)}
       onDelete={onDelete}
       onCloseResetPasswordDialog={onCloseResetPasswordDialog}
       onInputChange={onInputChange}

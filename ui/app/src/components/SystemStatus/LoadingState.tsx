@@ -15,10 +15,12 @@
  */
 
 import React, { ElementType, PropsWithChildren } from 'react';
-import { createStyles, makeStyles, CSSProperties } from '@mui/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography';
 import Gears from './Gears';
 import clsx from 'clsx';
+import { CSSProperties } from '@mui/styles';
 
 type LoadingStateClassKey = 'root' | 'title' | 'subtitle' | 'graphic' | 'graphicRoot';
 

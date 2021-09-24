@@ -24,14 +24,14 @@ import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import MoreVertIcon from '@mui/icons-material/MoreVertRounded';
 import clsx from 'clsx';
-import ContextMenu from '../ContextMenu/ContextMenu';
+import ContextMenu from '../ContextMenu';
 import { markForTranslation } from '../../services/translation';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';
 import palette from '../../styles/palette';
 import DialogBody from './DialogBody';
-import DialogHeader from '../DialogHeader/DialogHeader';
-import SingleItemSelector from '../../modules/Content/Authoring/SingleItemSelector';
+import DialogHeader from '../DialogHeader';
+import SingleItemSelector from '../SingleItemSelector';
 import { DetailedItem } from '../../models/Item';
 import ActionsBar from '../ActionsBar';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
@@ -280,7 +280,7 @@ function ContentLocalizationDialogUI(props: ContentLocalizationDialogProps) {
     <>
       <DialogHeader
         title={<FormattedMessage id="contentLocalization.title" defaultMessage="Content Localization" />}
-        onDismiss={onClose}
+        onCloseButtonClick={onClose}
       />
       <DialogBody>
         <SingleItemSelector

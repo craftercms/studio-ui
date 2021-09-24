@@ -58,7 +58,7 @@ export function SetItemStateDialogContainer(props: SetItemStateDialogProps) {
 
   return (
     <>
-      <DialogHeader title={title} onDismiss={onClose} />
+      <DialogHeader title={title} onCloseButtonClick={onClose} />
       <DialogBody>
         <FormGroup>
           <FormControlLabel

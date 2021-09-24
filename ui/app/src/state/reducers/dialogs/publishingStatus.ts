@@ -28,8 +28,9 @@ import {
   fetchPublishingStatusFailed,
   updatePublishingStatus
 } from '../../actions/publishingStatus';
+import { commonDialogProps } from '../../../utils/state';
 
-const initialState: PublishingStatusDialogStateProps = {
+const initialState: PublishingStatusDialogStateProps = commonDialogProps({
   open: false,
   enabled: null,
   status: null,
@@ -44,7 +45,7 @@ const initialState: PublishingStatusDialogStateProps = {
   totalItems: null,
   publishingTarget: null,
   submissionId: null
-};
+});
 
 const publishingStatus = createReducer<GlobalState['dialogs']['publishingStatus']>(initialState, {
   [showPublishingStatusDialog.type]: (state, { payload }) => ({

@@ -55,6 +55,7 @@ import { useSitesBranch } from '../../utils/hooks/useSitesBranch';
 import Paper from '@mui/material/Paper';
 import { getSystemLink } from '../../utils/system';
 import { fetchUseLegacyPreviewPreference } from '../../services/configuration';
+import { useEnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
 
 const translations = defineMessages({
   siteDeleted: {
@@ -164,6 +165,8 @@ export default function SitesManagement() {
     }
   };
 
+  const publishingStatusDialogState = useEnhancedDialogState();
+
   return (
     <Paper elevation={0}>
       <GlobalAppToolbar
@@ -212,8 +215,12 @@ export default function SitesManagement() {
         </SuspenseWithEmptyState>
       </ErrorBoundary>
       <PublishingStatusDialog
-        open={Boolean(selectedSiteStatus)}
-        onClose={() => {
+        open={publishingStatusDialogState.open}
+        onClose={publishingStatusDialogState.onClose}
+        isMinimized={publishingStatusDialogState.isMinimized}
+        hasPendingChanges={publishingStatusDialogState.isMinimized}
+        isSubmitting={publishingStatusDialogState.isSubmitting}
+        onClosed={() => {
           setSelectedSiteStatus(null);
         }}
         isFetching={false}

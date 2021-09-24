@@ -14,25 +14,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from 'react';
-import NewRemoteRepositoryDialogContainer, {
-  NewRemoteRepositoryDialogContainerProps
-} from './NewRemoteRepositoryDialogContainer';
-import Dialog from '@mui/material/Dialog';
-import { useOnClose } from '../../utils/hooks/useOnClose';
+import React from 'react';
+import NewRemoteRepositoryDialogContainer from './NewRemoteRepositoryDialogContainer';
+import { NewRemoteRepositoryDialogProps } from './utils';
+import EnhancedDialog from '../EnhancedDialog';
+import { FormattedMessage } from 'react-intl';
 
-export default function NewRemoteRepositoryDialog(props: NewRemoteRepositoryDialogContainerProps) {
-  const { open, onClose } = props;
-  const [disableQuickDismiss, setDisableQuickDismiss] = useState(false);
-  const onCloseHandler = useOnClose({
-    onClose,
-    disableBackdropClick: disableQuickDismiss,
-    disableEscapeKeyDown: disableQuickDismiss
-  });
+export default function NewRemoteRepositoryDialog(props: NewRemoteRepositoryDialogProps) {
+  const { onCreateSuccess, isSubmitting, onCreateError, onSubmittingAndOrPendingChange, ...rest } = props;
 
   return (
-    <Dialog open={open} onClose={onCloseHandler} fullWidth maxWidth="md">
-      <NewRemoteRepositoryDialogContainer {...props} setDisableQuickDismiss={setDisableQuickDismiss} />
-    </Dialog>
+    <EnhancedDialog
+      title={<FormattedMessage id="repositories.newRemoteDialogTitle" defaultMessage="New Remote Repository" />}
+      isSubmitting={isSubmitting}
+      {...rest}
+    >
+      <NewRemoteRepositoryDialogContainer
+        isSubmitting={isSubmitting}
+        onCreateSuccess={onCreateSuccess}
+        onCreateError={onCreateError}
+        onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
+      />
+    </EnhancedDialog>
   );
 }

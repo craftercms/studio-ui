@@ -55,6 +55,7 @@ export default function NewRemoteRepositoryForm(props: NewRemoteRepositoryFormPr
           name="remoteName"
           label={<FormattedMessage id="repositories.remoteName" defaultMessage="Remote Git Repository Name" />}
           InputLabelProps={{ shrink: true }}
+          required
           placeholder="origin"
           autoFocus
           fullWidth

@@ -16,16 +16,19 @@
 
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
-import { CompareVersionsDialogStateProps } from '../../../modules/Content/History/CompareVersionsDialog';
 import {
   closeCompareVersionsDialog,
   compareVersionsDialogClosed,
   showCompareVersionsDialog,
   showHistoryDialog
 } from '../../actions/dialogs';
+import { CompareVersionsDialogStateProps } from '../../../components/CompareVersionsDialog/utils';
 
 const initialState: CompareVersionsDialogStateProps = {
   open: false,
+  isSubmitting: null,
+  isMinimized: null,
+  hasPendingChanges: null,
   isFetching: null,
   error: null
 };
@@ -35,7 +38,6 @@ export default createReducer<GlobalState['dialogs']['compareVersions']>(initialS
     ...state,
     onClose: closeCompareVersionsDialog(),
     onClosed: compareVersionsDialogClosed(),
-    onDismiss: closeCompareVersionsDialog(),
     ...payload,
     open: true,
     isFetching: true

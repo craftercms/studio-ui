@@ -37,6 +37,8 @@ import translations from './translations';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import Paper from '@mui/material/Paper';
+import { useEnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
+import { useWithPendingChangesCloseRequest } from '../../utils/hooks/useWithPendingChangesCloseRequest';
 
 interface RemoteRepositoriesManagementProps {
   embedded?: boolean;
@@ -52,7 +54,6 @@ export default function RemoteRepositoriesManagement(props: RemoteRepositoriesMa
   const [errorStatus, setErrorStatus] = useState<ApiResponse>();
   const [repositoriesStatus, setRepositoriesStatus] = useState<RepositoryStatus>(null);
   const [currentStatusValue, setCurrentStatusValue] = useState(null);
-  const [openNewRemoteDialog, setOpenNewRemoteDialog] = useState(false);
   const siteId = useActiveSiteId();
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
@@ -108,7 +109,7 @@ export default function RemoteRepositoriesManagement(props: RemoteRepositoriesMa
 
   const onCreateSuccess = () => {
     fetchRepositories();
-    setOpenNewRemoteDialog(false);
+    newRemoteRepositoryDialogState.onClose();
     dispatch(
       showSystemNotification({
         message: formatMessage(translations.remoteCreateSuccessMessage)
@@ -167,6 +168,11 @@ export default function RemoteRepositoriesManagement(props: RemoteRepositoriesMa
     }
   );
 
+  const newRemoteRepositoryDialogState = useEnhancedDialogState();
+  const newRemoteRepositoryDialogStatePendingChangesCloseRequest = useWithPendingChangesCloseRequest(
+    newRemoteRepositoryDialogState.onClose
+  );
+
   return (
     <Paper className={classes.root} elevation={0}>
       <GlobalAppToolbar
@@ -176,7 +182,7 @@ export default function RemoteRepositoriesManagement(props: RemoteRepositoriesMa
             startIcon={<AddIcon />}
             variant="outlined"
             color="primary"
-            onClick={() => setOpenNewRemoteDialog(true)}
+            onClick={() => newRemoteRepositoryDialogState.onOpen()}
           >
             <FormattedMessage id="repositories.newRepository" defaultMessage="New Remote" />
           </Button>
@@ -232,8 +238,13 @@ export default function RemoteRepositoriesManagement(props: RemoteRepositoriesMa
         </SuspenseWithEmptyState>
 
         <NewRemoteRepositoryDialog
-          open={openNewRemoteDialog}
-          onClose={() => setOpenNewRemoteDialog(false)}
+          open={newRemoteRepositoryDialogState.open}
+          isMinimized={newRemoteRepositoryDialogState.isMinimized}
+          isSubmitting={newRemoteRepositoryDialogState.isSubmitting}
+          hasPendingChanges={newRemoteRepositoryDialogState.hasPendingChanges}
+          onSubmittingAndOrPendingChange={newRemoteRepositoryDialogState.onSubmittingAndOrPendingChange}
+          onWithPendingChangesCloseRequest={newRemoteRepositoryDialogStatePendingChangesCloseRequest}
+          onClose={newRemoteRepositoryDialogState.onClose}
           onCreateSuccess={onCreateSuccess}
           onCreateError={onCreateError}
         />

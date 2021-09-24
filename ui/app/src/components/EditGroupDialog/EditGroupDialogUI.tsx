@@ -17,7 +17,6 @@
 import React from 'react';
 import { useStyles } from './styles';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
-import Group from '../../models/Group';
 import DialogBody from '../Dialogs/DialogBody';
 import clsx from 'clsx';
 import Typography from '@mui/material/Typography';
@@ -30,29 +29,11 @@ import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import Box from '@mui/material/Box';
-import User from '../../models/User';
 import TransferList from '../TransferList';
 import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import FormHelperText from '@mui/material/FormHelperText';
-
-interface GroupEditDialogUIProps {
-  group?: Group;
-  title: React.ReactNode;
-  subtitle?: React.ReactNode;
-  isEdit: boolean;
-  isDirty: boolean;
-  onClose(): void;
-  onDeleteGroup?(group: Group): void;
-  onSave(): void;
-  onCancel(): void;
-  onChangeValue(value: { key: string; value: string }): void;
-  onAddMembers?(members: (string | number)[]): void;
-  onRemoveMembers?(members: (string | number)[]): void;
-  users?: User[];
-  members?: User[];
-  inProgressIds?: (string | number)[];
-}
+import { GroupEditDialogUIProps } from './utils';
 
 const translations = defineMessages({
   confirmHelperText: {
@@ -82,7 +63,7 @@ export default function EditGroupDialogUI(props: GroupEditDialogUIProps) {
     onChangeValue,
     onAddMembers,
     onRemoveMembers,
-    onClose,
+    onCloseButtonClick,
     users,
     members,
     inProgressIds,
@@ -114,7 +95,7 @@ export default function EditGroupDialogUI(props: GroupEditDialogUIProps) {
             />
           )}
           <Tooltip title={<FormattedMessage id="editGroupDialog.close" defaultMessage="Close" />}>
-            <IconButton edge="end" onClick={onClose} size="large">
+            <IconButton edge="end" onClick={onCloseButtonClick} size="large">
               <CloseRoundedIcon />
             </IconButton>
           </Tooltip>

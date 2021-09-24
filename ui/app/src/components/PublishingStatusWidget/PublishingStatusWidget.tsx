@@ -16,7 +16,7 @@
 
 import * as React from 'react';
 import Paper from '@mui/material/Paper';
-import { PublishingStatusDialogBody } from '../PublishingStatusDialog';
+import { PublishingStatusDialogContainer } from '../PublishingStatusDialog';
 import { clearLock, start, stop } from '../../services/publishing';
 import { fetchPublishingStatus } from '../../state/actions/publishingStatus';
 import { useDispatch } from 'react-redux';
@@ -29,7 +29,8 @@ type PublishingStatusWidgetProps = {
 export default function PublishingStatusWidget(props: PublishingStatusWidgetProps) {
   const { siteId } = props;
   const state = useSelection((state) => state.dialogs.publishingStatus);
-  const { enabled, status, message, lockOwner, lockTTL } = state;
+  const { enabled, status, message, lockOwner, lockTTL, numberOfItems, publishingTarget, submissionId, totalItems } =
+    state;
   const dispatch = useDispatch();
 
   const onStartStop = () => {
@@ -52,7 +53,7 @@ export default function PublishingStatusWidget(props: PublishingStatusWidgetProp
 
   return (
     <Paper elevation={2}>
-      <PublishingStatusDialogBody
+      <PublishingStatusDialogContainer
         enabled={enabled}
         status={status}
         message={message}
@@ -63,6 +64,10 @@ export default function PublishingStatusWidget(props: PublishingStatusWidgetProp
         onRefresh={onRefresh}
         onStartStop={onStartStop}
         onUnlock={lockOwner ? onUnlock : null}
+        numberOfItems={numberOfItems}
+        publishingTarget={publishingTarget}
+        submissionId={submissionId}
+        totalItems={totalItems}
       />
     </Paper>
   );

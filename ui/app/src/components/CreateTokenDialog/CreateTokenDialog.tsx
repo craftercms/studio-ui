@@ -14,54 +14,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from 'react';
-import Dialog from '@mui/material/Dialog';
-import { createToken } from '../../services/tokens';
-import { Token } from '../../models/Token';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
-import { useDispatch } from 'react-redux';
-import CreateTokenDialogUI from './CreateTokenDialogUI';
-import { useOnClose } from '../../utils/hooks/useOnClose';
-
-interface CreateTokenDialogProps {
-  open: boolean;
-  onCreated?(response: Token): void;
-  onClose?(): void;
-  onClosed?(): void;
-}
+import React from 'react';
+import CreateTokenDialogContainer from './CreateTokenDialogContainer';
+import { CreateTokenDialogProps } from './utils';
+import EnhancedDialog from '../EnhancedDialog';
+import { FormattedMessage } from 'react-intl';
 
 export default function CreateTokenDialog(props: CreateTokenDialogProps) {
-  const { open, onClose, onCreated, onClosed } = props;
-  const [inProgress, setInProgress] = useState(false);
-  const dispatch = useDispatch();
-  const onOk = ({ label, expiresAt }) => {
-    setInProgress(true);
-    createToken(label, expiresAt).subscribe(
-      (token) => {
-        setInProgress(false);
-        onCreated?.(token);
-      },
-      (response) => {
-        dispatch(showErrorDialog({ error: response }));
-      }
-    );
-  };
-  const [disableQuickDismiss, setDisableQuickDismiss] = useState(false);
-  const onCloseHandler = useOnClose({
-    onClose,
-    disableEscapeKeyDown: disableQuickDismiss,
-    disableBackdropClick: disableQuickDismiss
-  });
+  const { onCreated, isSubmitting, onSubmittingAndOrPendingChange, ...rest } = props;
 
   return (
-    <Dialog open={open} fullWidth maxWidth="xs" onClose={onCloseHandler}>
-      <CreateTokenDialogUI
-        onOk={onOk}
-        disabled={inProgress}
-        onDismiss={onClose}
-        onClosed={onClosed}
-        setDisableQuickDismiss={setDisableQuickDismiss}
+    <EnhancedDialog
+      title={<FormattedMessage id="createTokenDialog.title" defaultMessage="Create Access Token" />}
+      maxWidth="xs"
+      isSubmitting={isSubmitting}
+      {...rest}
+    >
+      <CreateTokenDialogContainer
+        onCreated={onCreated}
+        isSubmitting={isSubmitting}
+        onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
       />
-    </Dialog>
+    </EnhancedDialog>
   );
 }

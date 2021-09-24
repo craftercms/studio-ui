@@ -29,7 +29,7 @@ import clsx from 'clsx';
 import BlueprintForm from './BlueprintForm';
 import BlueprintReview from './BlueprintReview';
 import LoadingState from '../../../../components/SystemStatus/LoadingState';
-import ConfirmDialog from '../../../../components/Dialogs/ConfirmDialog';
+import ConfirmDialog from '../../../../components/ConfirmDialog/ConfirmDialog';
 import { MarketplacePlugin } from '../../../../models/MarketplacePlugin';
 import { CreateSiteMeta, MarketplaceSite, SiteState, Views } from '../../../../models/Site';
 import { defineMessages, useIntl } from 'react-intl';
@@ -45,7 +45,7 @@ import gitLogo from '../../../../assets/git-logo.svg';
 import { fadeIn } from 'react-animations';
 import { Subscription } from 'rxjs';
 import SearchBar from '../../../../components/Controls/SearchBar';
-import DialogHeader from '../../../../components/DialogHeader/DialogHeader';
+import DialogHeader from '../../../../components/DialogHeader';
 import DialogBody from '../../../../components/Dialogs/DialogBody';
 import DialogFooter from '../../../../components/Dialogs/DialogFooter';
 import Checkbox from '@mui/material/Checkbox';
@@ -816,7 +816,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
             title={views[site.selectedView].title}
             subtitle={views[site.selectedView].subtitle}
             id="create-site-dialog"
-            onDismiss={handleClose}
+            onCloseButtonClick={handleClose}
             classes={{ root: classes.headerRoot, subtitleWrapper: classes.headerRoot }}
             subtitleTypographyProps={{
               classes: {
