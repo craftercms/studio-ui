@@ -35,14 +35,14 @@ export interface LauncherLinkTileProps {
 }
 
 const LauncherLinkTile = (props: LauncherLinkTileProps) => {
-  const { icon, systemLinkId } = props;
+  const { icon, systemLinkId, title: propTitle, ...configuration } = props;
   const { authoringBase } = useEnv();
   const site = useActiveSiteId();
   const useLegacy = useLegacyPreviewPreference();
   const dispatch = useDispatch();
-  const title = usePossibleTranslation(props.title);
+  const title = usePossibleTranslation(propTitle);
 
-  const onClick = ['siteDashboard', 'siteTools'].includes(systemLinkId)
+  const onClick = ['siteDashboard', 'siteTools', 'siteSearch'].includes(systemLinkId)
     ? (e) => {
         e.preventDefault();
         dispatch(
@@ -54,12 +54,24 @@ const LauncherLinkTile = (props: LauncherLinkTileProps) => {
               ...(systemLinkId === 'siteDashboard'
                 ? {
                     widget: {
-                      id: 'craftercms.components.Dashboard'
+                      id: 'craftercms.components.Dashboard',
+                      configuration
+                    }
+                  }
+                : systemLinkId === 'siteSearch'
+                ? {
+                    widget: {
+                      id: 'craftercms.components.LegacyIFrame',
+                      configuration: {
+                        ...configuration,
+                        path: 'search?embedded=true&mode=default'
+                      }
                     }
                   }
                 : {
                     widget: {
-                      id: 'craftercms.components.EmbeddedSiteTools'
+                      id: 'craftercms.components.EmbeddedSiteTools',
+                      configuration
                     }
                   })
             })
@@ -68,7 +80,7 @@ const LauncherLinkTile = (props: LauncherLinkTileProps) => {
       }
     : null;
 
-  const link = ['siteDashboard', 'siteTools'].includes(systemLinkId)
+  const link = ['siteDashboard', 'siteTools', 'siteSearch'].includes(systemLinkId)
     ? null
     : props.link ?? getSystemLink({ systemLinkId, authoringBase, site, useLegacy });
 
