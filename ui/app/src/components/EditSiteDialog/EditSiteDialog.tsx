@@ -25,7 +25,7 @@ export default function EditSiteDialog(props: EditSiteDialogProps) {
   return (
     <EnhancedDialog
       title={<FormattedMessage id="editSiteDialog.title" defaultMessage="Edit Site" />}
-      maxWidth="sm"
+      maxWidth="md"
       isSubmitting={isSubmitting}
       {...rest}
     >
