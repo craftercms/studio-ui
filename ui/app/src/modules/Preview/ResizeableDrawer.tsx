@@ -61,7 +61,7 @@ const useStyles = makeStyles((theme) =>
     drawerPaper: (styles) => ({
       bottom: 0,
       overflow: 'hidden',
-      maxWidth: '90% !important',
+      maxWidth: '95% !important',
       ...styles.drawerPaper
     }),
     drawerPaperBelowToolbar: (styles) => ({
