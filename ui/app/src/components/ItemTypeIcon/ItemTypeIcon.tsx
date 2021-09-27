@@ -44,7 +44,7 @@ export interface ItemTypeIconProps {
 }
 
 export function getItemTypeText(item: DetailedItem | SandboxItem) {
-  return `${capitalize(item.systemType ?? 'Unknown')} - ${item.mimeType}`;
+  return `${capitalize(item.systemType ?? 'Unknown')} ${item.mimeType ? `- ${item.mimeType}` : ''}`;
 }
 
 export default function ItemTypeIcon(props: ItemTypeIconProps) {
