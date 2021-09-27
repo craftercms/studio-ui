@@ -39,6 +39,7 @@ export type ResizeableDrawerStyles = Partial<Record<ResizeableDrawerClassKey, CS
 interface ResizeableDrawerProps extends DrawerProps {
   open: boolean;
   width: number;
+  maxWidth?: number;
   belowToolbar?: boolean;
   classes?: DrawerProps['classes'] & Partial<Record<ResizeableDrawerClassKey, string>>;
   styles?: ResizeableDrawerStyles;
@@ -60,6 +61,7 @@ const useStyles = makeStyles((theme) =>
     drawerPaper: (styles) => ({
       bottom: 0,
       overflow: 'hidden',
+      maxWidth: '90% !important',
       ...styles.drawerPaper
     }),
     drawerPaperBelowToolbar: (styles) => ({
@@ -120,6 +122,7 @@ export default function ResizeableDrawer(props: ResizeableDrawerProps) {
     open,
     children,
     width,
+    maxWidth = 500,
     onWidthChange,
     className,
     classes: propsClasses = {},
@@ -149,10 +152,10 @@ export default function ResizeableDrawer(props: ResizeableDrawerProps) {
           (anchor === 'left'
             ? e.clientX - drawerRef.current.getBoundingClientRect().left
             : window.innerWidth - (e.clientX - drawerRef.current.getBoundingClientRect().left)) + 5;
-        onWidthChange(newWidth);
+        onWidthChange(newWidth <= maxWidth ? newWidth : maxWidth);
       }
     },
-    [anchor, onWidthChange]
+    [anchor, onWidthChange, maxWidth]
   );
 
   const handleMouseDown = onWidthChange
