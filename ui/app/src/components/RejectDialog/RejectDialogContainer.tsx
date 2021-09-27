@@ -32,7 +32,7 @@ import { batchActions } from '../../state/actions/misc';
 export function RejectDialogContainer(props: RejectDialogContainerProps) {
   const { items, onClose, onRejectSuccess, isSubmitting } = props;
   const [checkedItems, setCheckedItems] = useState([]);
-  const [rejectionReason, setRejectionReason] = useState('');
+  const [rejectionReason, setRejectionReason] = useState('custom');
   const [rejectionComment, setRejectionComment] = useState('');
   const [rejectionCommentDirty, setRejectionCommentDirty] = useState(false);
   const siteId = useActiveSiteId();
@@ -67,7 +67,7 @@ export function RejectDialogContainer(props: RejectDialogContainerProps) {
   const onReject = () => {
     dispatch(updateRejectDialog({ isSubmitting: true }));
 
-    reject(siteId, checkedItems, rejectionReason, rejectionComment).subscribe(
+    reject(siteId, checkedItems, rejectionComment).subscribe(
       () => {
         dispatch(
           batchActions([
