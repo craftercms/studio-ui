@@ -205,10 +205,6 @@ const useStyles = makeStyles((theme) => ({
     top: 0,
     height: '100%'
   },
-  paginationCaption: {
-    order: -1,
-    marginRight: '25px'
-  },
   paginationSelectRoot: {
     marginRight: 0
   },
@@ -863,8 +859,6 @@ export default function Search(props: SearchProps) {
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
             classes={{
-              // TODO: replace, adjust or remove `caption`
-              // caption: classes.paginationCaption,
               selectRoot: classes.paginationSelectRoot,
               select: classes.paginationSelect
             }}

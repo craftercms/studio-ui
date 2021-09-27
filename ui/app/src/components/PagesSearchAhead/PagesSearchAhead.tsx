@@ -133,9 +133,8 @@ export default function PagesSearchAhead(props: PagesSearchAheadProps) {
     filterOptions: (options: SearchItem[], state) => options,
     getOptionLabel: (item: SearchItem | string) => {
       return typeof item === 'string' ? item : item.path;
-    }
-    // TODO: replace `getOptionSelected` (possibly with `onChange`?)
-    // getOptionSelected: (option: SearchItem, value) => option.path === value.path
+    },
+    isOptionEqualToValue: (option, value) => option.path === value.path
   });
 
   useEffect(() => {
@@ -178,15 +177,13 @@ export default function PagesSearchAhead(props: PagesSearchAheadProps) {
     <div className={classes.container}>
       <div {...getRootProps()}>
         <InputBase
-          {...inputProps}
           onKeyUp={(e) => {
             if (e.key === 'Enter') {
               if (keyword.startsWith('/')) {
                 onEnter(keyword);
               } else if (groupedOptions.length > 0) {
                 // TODO:
-                //   1. Check groupedOptions[0] still the expected SearchItem type
-                //   2. Fix typing so cast is not required
+                //   1. Fix typing so cast is not required
                 const previewUrl = getPreviewURLFromPath((groupedOptions[0] as SearchItem).path);
                 onEnter(previewUrl);
                 setKeyword(previewUrl);
@@ -218,6 +215,7 @@ export default function PagesSearchAhead(props: PagesSearchAheadProps) {
               </IconButton>
             ) : null
           }
+          inputProps={inputProps}
         />
       </div>
       {popupOpen && dirty && (
@@ -225,9 +223,7 @@ export default function PagesSearchAhead(props: PagesSearchAheadProps) {
           {isFetching && <LoadingState />}
           {!isFetching && groupedOptions.length > 0 && (
             <List dense className={classes.listBox} {...getListboxProps()}>
-              {/* TODO: Fix typings so no ignore is required */}
-              {/* @ts-ignore */}
-              {groupedOptions.map((option: SearchItem, index) => (
+              {(groupedOptions as SearchItem[]).map((option, index) => (
                 <ListItem button dense component="li" {...getOptionProps({ option, index })}>
                   <ListItemIcon className={classes.listItemIcon}>
                     <Page />

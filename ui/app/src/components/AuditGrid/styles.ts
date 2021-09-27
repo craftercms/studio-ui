@@ -38,6 +38,7 @@ export const useStyles = makeStyles((theme) =>
       border: '0 !important',
       minHeight: '300px',
       '& .MuiDataGrid-menuIcon': {
+        width: 'auto !important',
         visibility: 'visible !important'
       },
       '& .MuiDataGrid-colCell:focus': {

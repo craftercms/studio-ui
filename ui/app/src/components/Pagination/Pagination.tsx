@@ -59,10 +59,6 @@ const useStyles = makeStyles(() =>
         padding: 0
       }
     },
-    caption: {
-      order: -1,
-      marginRight: '25px'
-    },
     selectRoot: {
       marginRight: 0
     }
@@ -96,8 +92,6 @@ export default function Pagination(props: PaginationProps) {
     <TablePagination
       classes={{
         root: clsx(classes.pagination, props.classes?.root),
-        // TODO: replace, adjust or remove
-        // caption: rowsPerPageOptions ? classes.caption : '',
         selectRoot: rowsPerPageOptions ? classes.selectRoot : 'hidden',
         toolbar: classes.paginationToolbar
       }}
