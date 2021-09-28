@@ -65,7 +65,7 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
   const dispatch = useDispatch();
   const depsSource = useMemo(
     () => ({ childItems, dependentItems, apiState, isFetching }),
-    [[childItems, dependentItems, apiState, isFetching]]
+    [childItems, dependentItems, apiState, isFetching]
   );
   const [submitDisabled, setSubmitDisabled] = useState(true);
   const [confirmChecked, setConfirmChecked] = useState(false);

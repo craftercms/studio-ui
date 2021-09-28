@@ -394,7 +394,7 @@ function Guest(props: GuestProps) {
       flushRequestedPaths();
       operationsSubscription.unsubscribe();
     };
-  }, [documentDomain, path]);
+  }, [dispatch, documentDomain, path]);
 
   // Listen for desktop asset drag & drop
   const shouldNotBypass = hasHost && editMode;

@@ -27,7 +27,7 @@ import {
 import { dragOk } from '../util';
 import * as iceRegistry from '../../classes/ICERegistry';
 import { collectMoveTargets } from '../../classes/ICERegistry';
-import { createReducer } from '@reduxjs/toolkit';
+import { Reducer } from '@reduxjs/toolkit';
 import { GuestStandardAction } from '../models/GuestStandardAction';
 import { ElementRecord } from '../../models/InContextEditing';
 import { GuestState } from '../models/GuestStore';
@@ -43,7 +43,6 @@ import {
   CONTENT_TREE_SWITCH_FIELD_INSTANCE,
   CONTENT_TYPE_DROP_TARGETS_REQUEST,
   DESKTOP_ASSET_DRAG_STARTED,
-  DESKTOP_ASSET_UPLOAD_COMPLETE,
   DESKTOP_ASSET_UPLOAD_PROGRESS,
   DESKTOP_ASSET_UPLOAD_STARTED,
   EDIT_MODE_CHANGED,
@@ -81,19 +80,32 @@ function prepareMoveMode() {
   return highlighted;
 }
 
-const reducer = createReducer(initialState, (builder) => {
+type CaseReducer<S = GuestState, A extends GuestStandardAction = GuestStandardAction> = Reducer<S, A>;
+
+type CaseReducers<S = GuestState, A extends GuestStandardAction = GuestStandardAction> = Record<
+  string,
+  CaseReducer<S, A>
+>;
+
+function createReducer<S, CR extends CaseReducers<S>>(initialState: S, actionsMap: CR): Reducer<S> {
+  return (state = initialState, action) => {
+    const caseReducer = actionsMap[action.type];
+    return caseReducer?.(state, action) ?? state;
+  };
+}
+
+const reducer = createReducer(initialState, {
   // region computed_dragend
-  builder.addCase<string, GuestStandardAction>('computed_dragend', (state) => ({
+  computed_dragend: (state) => ({
     ...state,
     status: EditingStatus.LISTENING,
     dragContext: null,
     highlighted: {}
-  }));
+  }),
   // endregion
   // region computed_dragover
   // TODO: Not pure.
-
-  builder.addCase<string, GuestStandardAction>('computed_dragover', (state, action) => {
+  computed_dragover: (state, action) => {
     if (state.dragContext.scrolling) {
       return state;
     } else {
@@ -120,10 +132,10 @@ const reducer = createReducer(initialState, (builder) => {
         return state;
       }
     }
-  });
+  },
   // endregion
   // region dblclick
-  builder.addCase<string, GuestStandardAction>('dblclick', (state, action) => {
+  dblclick: (state, action) => {
     const { record } = action.payload;
     return state.status === EditingStatus.LISTENING
       ? {
@@ -134,10 +146,10 @@ const reducer = createReducer(initialState, (builder) => {
           }
         }
       : state;
-  });
+  },
   // endregion
   // region dragleave
-  builder.addCase<string, GuestStandardAction>('dragleave', (state, action) => {
+  dragleave: (state, action) => {
     const leavingDropZone = !state.dragContext?.dropZone?.element.contains(action.payload.event.relatedTarget);
     return dragOk(state.status)
       ? {
@@ -151,11 +163,11 @@ const reducer = createReducer(initialState, (builder) => {
           }
         }
       : state;
-  });
+  },
   // endregion
   // region dragstart
   // TODO: Not pure.
-  builder.addCase<string, GuestStandardAction>('dragstart', (state, action) => {
+  dragstart: (state, action) => {
     const { record } = action.payload;
     // onMouseOver pre-populates the draggable record
     // Items that browser make draggable by default (images, etc)
@@ -188,10 +200,10 @@ const reducer = createReducer(initialState, (builder) => {
     } else {
       return state;
     }
-  });
+  },
   // endregion
   // region set_drop_position
-  builder.addCase<string, GuestStandardAction>('set_drop_position', (state, action) => {
+  set_drop_position: (state, action) => {
     const { targetIndex } = action.payload;
     return {
       ...state,
@@ -200,30 +212,30 @@ const reducer = createReducer(initialState, (builder) => {
         targetIndex
       }
     };
-  });
+  },
   // endregion
   // region edit_component_inline
-  builder.addCase<string, GuestStandardAction>('edit_component_inline', (state, action) => {
+  edit_component_inline: (state, action) => {
     return {
       ...state,
       status: EditingStatus.EDITING_COMPONENT_INLINE,
       draggable: {},
       highlighted: {}
     };
-  });
+  },
   // endregion
   // region exit_component_inline_edit
-  builder.addCase<string, GuestStandardAction>('exit_component_inline_edit', (state) => {
+  exit_component_inline_edit: (state) => {
     return {
       ...state,
       status: EditingStatus.LISTENING,
       highlighted: {}
     };
-  });
+  },
   // endregion
   // region ice_zone_selected
   // TODO: Not pure
-  builder.addCase<string, GuestStandardAction>('ice_zone_selected', (state, action) => {
+  ice_zone_selected: (state, action) => {
     const { record } = action.payload;
     const highlight = getHoverData(record.id);
     return {
@@ -232,10 +244,10 @@ const reducer = createReducer(initialState, (builder) => {
       draggable: {},
       highlighted: { [record.id]: highlight }
     };
-  });
+  },
   // endregion
   // region mouseleave
-  builder.addCase<string, GuestStandardAction>('mouseleave', (state) => {
+  mouseleave: (state) => {
     if (state.status === EditingStatus.LISTENING) {
       return {
         ...state,
@@ -243,11 +255,11 @@ const reducer = createReducer(initialState, (builder) => {
         draggable: {}
       };
     }
-  });
+  },
   // endregion
   // region mouseover
   // TODO: Not pure.
-  builder.addCase<string, GuestStandardAction>('mouseover', (state, action) => {
+  mouseover: (state, action) => {
     const { record } = action.payload;
     if (state.status === EditingStatus.LISTENING) {
       const highlight = getHoverData(record.id);
@@ -268,10 +280,10 @@ const reducer = createReducer(initialState, (builder) => {
       return nextState;
     }
     return state;
-  });
+  },
   // endregion
   // region set_edit_mode
-  builder.addCase<string, GuestStandardAction>('set_edit_mode', (state, { payload }) => {
+  set_edit_mode: (state, { payload }) => {
     const isMoveTargetsMode = payload.highlightMode === HighlightMode.MOVE_TARGETS;
     return {
       ...state,
@@ -279,19 +291,19 @@ const reducer = createReducer(initialState, (builder) => {
       highlighted: isMoveTargetsMode ? prepareMoveMode() : {},
       status: isMoveTargetsMode ? EditingStatus.HIGHLIGHT_MOVE_TARGETS : EditingStatus.LISTENING
     };
-  });
+  },
   // endregion
   // region start_listening
-  builder.addCase<string, GuestStandardAction>('start_listening', (state) => {
+  start_listening: (state) => {
     return {
       ...state,
       status: EditingStatus.LISTENING,
       highlighted: {}
     };
-  });
+  },
   // endregion
   // region scrolling
-  builder.addCase<string, GuestStandardAction>('scrolling', (state) => {
+  scrolling: (state) => {
     return {
       ...state,
       dragContext: {
@@ -299,11 +311,11 @@ const reducer = createReducer(initialState, (builder) => {
         scrolling: true
       }
     };
-  });
+  },
   // endregion
   // region scrolling_end
   // TODO: Not pure
-  builder.addCase<string, GuestStandardAction>('scrolling_stopped', (state) => {
+  scrolling_stopped: (state) => {
     return {
       ...state,
       dragContext: {
@@ -316,11 +328,11 @@ const reducer = createReducer(initialState, (builder) => {
         }))
       }
     };
-  });
+  },
   // endregion
   // region drop_zone_enter
   // TODO: Not pure
-  builder.addCase<string, GuestStandardAction>('drop_zone_enter', (state, action) => {
+  drop_zone_enter: (state, action) => {
     const { elementRecordId } = action.payload;
     const { dropZones: currentDropZones } = state.dragContext;
     const currentDropZone = currentDropZones.find((dropZone) => dropZone.elementRecordId === elementRecordId);
@@ -354,11 +366,11 @@ const reducer = createReducer(initialState, (builder) => {
       },
       highlighted
     };
-  });
+  },
   // endregion
   // region drop_zone_leave
   // TODO: Not pure
-  builder.addCase<string, GuestStandardAction>('drop_zone_leave', (state, action) => {
+  drop_zone_leave: (state, action) => {
     const { elementRecordId } = action.payload;
     if (!state.dragContext) {
       return;
@@ -392,16 +404,16 @@ const reducer = createReducer(initialState, (builder) => {
       },
       highlighted
     };
-  });
+  },
   // endregion
   // region set_edit_mode
-  builder.addCase<string, GuestStandardAction>(EDIT_MODE_CHANGED, (state, action) => ({
+  [EDIT_MODE_CHANGED]: (state, action) => ({
     ...state,
     editMode: action.payload.editMode
-  }));
+  }),
   // endregion
   // region set_edit_mode
-  builder.addCase<string, GuestStandardAction>(HIGHLIGHT_MODE_CHANGED, (state, { payload }) => {
+  [HIGHLIGHT_MODE_CHANGED]: (state, { payload }) => {
     const isMoveTargetsMode = payload.highlightMode === HighlightMode.MOVE_TARGETS;
     return {
       ...state,
@@ -409,11 +421,11 @@ const reducer = createReducer(initialState, (builder) => {
       highlighted: isMoveTargetsMode ? prepareMoveMode() : {},
       status: isMoveTargetsMode ? EditingStatus.HIGHLIGHT_MOVE_TARGETS : EditingStatus.LISTENING
     };
-  });
+  },
   // endregion
   // region content_type_drop_targets_request
   // TODO: Not pure
-  builder.addCase<string, GuestStandardAction>(CONTENT_TYPE_DROP_TARGETS_REQUEST, (state, action) => {
+  [CONTENT_TYPE_DROP_TARGETS_REQUEST]: (state, action) => {
     const { contentTypeId } = action.payload;
     const highlighted = {};
 
@@ -431,20 +443,20 @@ const reducer = createReducer(initialState, (builder) => {
       status: EditingStatus.SHOW_DROP_TARGETS,
       highlighted
     };
-  });
+  },
   // endregion
   // region clear_highlighted_drop_targets
-  builder.addCase<string, GuestStandardAction>(CLEAR_HIGHLIGHTED_DROP_TARGETS, (state, action) => {
+  [CLEAR_HIGHLIGHTED_DROP_TARGETS]: (state, action) => {
     return {
       ...state,
       status: EditingStatus.LISTENING,
       highlighted: {}
     };
-  });
+  },
   // endregion
   // region desktop_asset_upload_started
   // TODO: Not pure
-  builder.addCase<string, GuestStandardAction>(DESKTOP_ASSET_UPLOAD_STARTED, (state, action) => {
+  [DESKTOP_ASSET_UPLOAD_STARTED]: (state, action) => {
     const { record } = action.payload;
     return {
       ...state,
@@ -453,23 +465,20 @@ const reducer = createReducer(initialState, (builder) => {
         [record.id]: getHoverData(record.id)
       }
     };
-  });
+  },
   // endregion
   // region desktop_asset_upload_complete
   // TODO: Carry or retrieve record for these events
-  builder.addCase<string, GuestStandardAction>(
-    DESKTOP_ASSET_UPLOAD_COMPLETE,
-    (state, action: GuestStandardAction<{ record: ElementRecord }>) => {
-      const { record } = action.payload;
-      return {
-        ...state,
-        uploading: reversePluckProps(state.uploading, record.id)
-      };
-    }
-  );
+  DESKTOP_ASSET_UPLOAD_COMPLETE: (state, action: GuestStandardAction<{ record: ElementRecord }>) => {
+    const { record } = action.payload;
+    return {
+      ...state,
+      uploading: reversePluckProps(state.uploading, record.id)
+    };
+  },
   // endregion
   // region desktop_asset_upload_progress
-  builder.addCase<string, GuestStandardAction>(DESKTOP_ASSET_UPLOAD_PROGRESS, (state, action) => {
+  [DESKTOP_ASSET_UPLOAD_PROGRESS]: (state, action) => {
     const { percentage, record } = action.payload;
     return {
       ...state,
@@ -481,11 +490,11 @@ const reducer = createReducer(initialState, (builder) => {
         }
       }
     };
-  });
+  },
   // endregion
   // region host_component_drag_started
   // TODO: Not pure.
-  builder.addCase<string, GuestStandardAction>(COMPONENT_DRAG_STARTED, (state, action) => {
+  [COMPONENT_DRAG_STARTED]: (state, action) => {
     const { contentType } = action.payload;
     if (notNullOrUndefined(contentType)) {
       const dropTargets = iceRegistry.getContentTypeDropTargets(contentType);
@@ -515,11 +524,11 @@ const reducer = createReducer(initialState, (builder) => {
     } else {
       return state;
     }
-  });
+  },
   // endregion
   // region host_instance_drag_started
   // TODO: Not pure.
-  builder.addCase<string, GuestStandardAction>(COMPONENT_INSTANCE_DRAG_STARTED, (state, action) => {
+  [COMPONENT_INSTANCE_DRAG_STARTED]: (state, action) => {
     const { instance, contentType } = action.payload;
 
     if (notNullOrUndefined(instance)) {
@@ -551,11 +560,11 @@ const reducer = createReducer(initialState, (builder) => {
     } else {
       return state;
     }
-  });
+  },
   // endregion
   // region desktop_asset_drag_started
   // TODO: Not pure
-  builder.addCase<string, GuestStandardAction>(DESKTOP_ASSET_DRAG_STARTED, (state, action) => {
+  [DESKTOP_ASSET_DRAG_STARTED]: (state, action) => {
     const { asset } = action.payload;
     if (notNullOrUndefined(asset)) {
       let type;
@@ -586,11 +595,11 @@ const reducer = createReducer(initialState, (builder) => {
     } else {
       return state;
     }
-  });
+  },
   // endregion
   // region asset_drag_started
   // TODO: Not pure
-  builder.addCase<string, GuestStandardAction>(ASSET_DRAG_STARTED, (state, action) => {
+  [ASSET_DRAG_STARTED]: (state, action) => {
     const { asset } = action.payload;
     if (notNullOrUndefined(asset)) {
       let type;
@@ -621,11 +630,11 @@ const reducer = createReducer(initialState, (builder) => {
     } else {
       return state;
     }
-  });
+  },
   // endregion
   // region content_tree_field_selected
   // TODO: Not pure
-  builder.addCase<string, GuestStandardAction>(CONTENT_TREE_FIELD_SELECTED, (state, action) => {
+  [CONTENT_TREE_FIELD_SELECTED]: (state, action) => {
     const { iceProps } = action.payload;
     const iceId = iceRegistry.exists(iceProps);
     if (iceId === -1) return;
@@ -649,11 +658,11 @@ const reducer = createReducer(initialState, (builder) => {
             }
           : null
     };
-  });
+  },
   // endregion
   // region content_tree_switch_field
   // TODO: Not pure
-  builder.addCase<string, GuestStandardAction>(CONTENT_TREE_SWITCH_FIELD_INSTANCE, (state, action) => {
+  [CONTENT_TREE_SWITCH_FIELD_INSTANCE]: (state, action) => {
     const { type } = action.payload;
     let nextElem = type === 'next' ? state.fieldSwitcher.currentElement + 1 : state.fieldSwitcher.currentElement - 1;
     let id = state.fieldSwitcher.registryEntryIds[nextElem];
@@ -667,10 +676,10 @@ const reducer = createReducer(initialState, (builder) => {
         currentElement: nextElem
       }
     };
-  });
+  },
   // endregion
   // region clear_content_tree_field_selected
-  builder.addCase<string, GuestStandardAction>(CLEAR_CONTENT_TREE_FIELD_SELECTED, (state) => {
+  [CLEAR_CONTENT_TREE_FIELD_SELECTED]: (state) => {
     return {
       ...state,
       status: EditingStatus.LISTENING,
@@ -678,10 +687,10 @@ const reducer = createReducer(initialState, (builder) => {
       highlighted: {},
       fieldSwitcher: null
     };
-  });
+  },
   // endregion
   // region HOST_CHECK_IN
-  builder.addCase<string, GuestStandardAction>(HOST_CHECK_IN, (state, action) => {
+  [HOST_CHECK_IN]: (state, action) => {
     const isMoveTargetsMode = action.payload.highlightMode === HighlightMode.MOVE_TARGETS;
     return {
       ...state,
@@ -693,18 +702,17 @@ const reducer = createReducer(initialState, (builder) => {
       highlighted: isMoveTargetsMode ? prepareMoveMode() : {},
       status: isMoveTargetsMode ? EditingStatus.HIGHLIGHT_MOVE_TARGETS : EditingStatus.LISTENING
     };
-  });
+  },
   // endregion
   // region UPDATE_RTE_CONFIG
-  builder.addCase<string, GuestStandardAction>(UPDATE_RTE_CONFIG, (state, action) => ({
+  [UPDATE_RTE_CONFIG]: (state, action) => ({
     ...state,
     rteConfig: action.payload.rteConfig
-  }));
+  }),
   // endregion
   // region contentReady
-  builder.addCase(contentReady, (state) =>
+  [contentReady.type]: (state) =>
     state.highlightMode === HighlightMode.MOVE_TARGETS ? { ...state, highlighted: prepareMoveMode() } : state
-  );
   // endregion
 });
 

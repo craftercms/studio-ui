@@ -88,5 +88,9 @@
       "README.md",
       "CHANGE_LOG.md"
     ]
+  },
+  "resolutions": {
+    "react-is": "^17.0.2",
+    "**/react-is": "^17.0.2"
   }
 }
