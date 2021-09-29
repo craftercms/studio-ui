@@ -36,13 +36,14 @@ export function RejectDialogUI(props: RejectDialogUIProps) {
     checkedItems,
     rejectionReason,
     rejectionComment,
-    setRejectionReason,
-    setRejectionComment,
+    onRejectionReasonChange,
+    onCommentChange,
     onUpdateChecked,
     onCloseButtonClick,
     onReject,
     classes,
-    isSubmitting
+    isSubmitting,
+    isSubmitDisabled
   } = props;
   return (
     <>
@@ -88,9 +89,9 @@ export function RejectDialogUI(props: RejectDialogUIProps) {
                   }
                   autoFocus
                   value={rejectionReason}
-                  onChange={(e) => setRejectionReason(e.target.value as string)}
+                  onChange={(e) => onRejectionReasonChange(e.target.value as string)}
                 >
-                  <MenuItem value="custom">
+                  <MenuItem value="typeCustomReason">
                     <FormattedMessage id="rejectDialog.typeMyOwnComment" defaultMessage="Type my own comment" />
                   </MenuItem>
                   <MenuItem value="NotApproved">
@@ -119,7 +120,7 @@ export function RejectDialogUI(props: RejectDialogUIProps) {
                 multiline
                 rows={8}
                 value={rejectionComment}
-                onChange={(e) => setRejectionComment(e.target.value as string)}
+                onChange={(e) => onCommentChange(e.target.value as string)}
               />
             </form>
           </Grid>
@@ -132,11 +133,7 @@ export function RejectDialogUI(props: RejectDialogUIProps) {
           </SecondaryButton>
         )}
         {onReject && (
-          <PrimaryButton
-            onClick={onReject}
-            loading={isSubmitting}
-            disabled={checkedItems.length === 0 || rejectionComment === '' || isSubmitting}
-          >
+          <PrimaryButton onClick={onReject} loading={isSubmitting} disabled={isSubmitDisabled}>
             <FormattedMessage id="rejectDialog.continue" defaultMessage="Reject" />
           </PrimaryButton>
         )}

@@ -38,9 +38,10 @@ export interface RejectDialogUIProps {
   checkedItems: string[];
   rejectionReason: string;
   rejectionComment: string;
+  isSubmitDisabled: boolean;
   isSubmitting: boolean;
-  setRejectionReason?(value: string): void;
-  setRejectionComment?(value: string): void;
+  onRejectionReasonChange?(value: string): void;
+  onCommentChange?(value: string): void;
   onUpdateChecked?(value?: string): void;
   classes?: any;
   onReject?(): void;
