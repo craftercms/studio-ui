@@ -76,39 +76,6 @@ div.xdsoft_datetimepicker {
   line-height: 12px;
 }
 
-/****** RTE2 *******/
-
-.mce-container {
-  .mce-filepicker button {
-    padding-top: 6px;
-    padding-bottom: 6px;
-  }
-
-  .cstudio-form-control-image-picker-add-container {
-    background: white;
-    color: #595959;
-    border: 1px solid #c5c5c5;
-
-    .cstudio-form-control-image-picker-add-container-item {
-      padding: 8px 15px;
-    }
-  }
-}
-
-.yui-dialog {
-  z-index: 1040 !important;
-}
-
-.tox-tinymce-aux {
-  z-index: 1038 !important;
-}
-
-.tox.tox-tinymce.tox-fullscreen {
-  z-index: 1000 !important;
-}
-
-/*******************/
-
 // RTE (tinymce 5) custom styles
 .tox-dialog.fullscreen {
   width: 100% !important;
