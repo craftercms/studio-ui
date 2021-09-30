@@ -44,6 +44,8 @@ import { showItemMegaMenu } from '../../state/actions/dialogs';
 import { batchActions } from '../../state/actions/misc';
 import { getEmptyStateStyleSet } from '../SystemStatus/EmptyState';
 import { useActiveSite } from '../../utils/hooks/useActiveSite';
+import { asLocalizedDateTime } from '../../utils/datetime';
+import { reversePluckProps } from '../../utils/object';
 
 export interface DashboardItem {
   label: string;
@@ -120,7 +122,11 @@ export default function RecentlyPublishedDashlet() {
         history.documents.forEach((document) => {
           if (document.children.length) {
             parentItems.push({
-              label: document.internalName,
+              label: asLocalizedDateTime(
+                document.internalName,
+                localeBranch.localeCode,
+                reversePluckProps(localeBranch.dateTimeFormatOptions, 'hour', 'minute', 'second')
+              ),
               children: document.children.map((item) => {
                 const key = `${item.uri}:${item.eventDate}`;
                 childrenLookup[key] = parseLegacyItemToDetailedItem(item);

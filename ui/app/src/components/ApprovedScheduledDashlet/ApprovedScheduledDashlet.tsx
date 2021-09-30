@@ -51,6 +51,9 @@ import translations from './translations';
 import { batchActions } from '../../state/actions/misc';
 import { getEmptyStateStyleSet } from '../SystemStatus/EmptyState';
 import { useActiveSite } from '../../utils/hooks/useActiveSite';
+import { asLocalizedDateTime } from '../../utils/datetime';
+import { reversePluckProps } from '../../utils/object';
+import { useLocale } from '../../utils/hooks/useLocale';
 
 const dashletInitialPreferences: DashboardPreferences = {
   filterBy: 'all',
@@ -94,6 +97,7 @@ export default function ApprovedScheduledDashlet() {
     () => Object.keys(state.itemsLookup).some((path) => selectedLookup[path]) && !isAllChecked,
     [isAllChecked, selectedLookup, state.itemsLookup]
   );
+  const locale = useLocale();
 
   const refresh = useCallback(() => {
     setIsFetching(true);
@@ -107,7 +111,11 @@ export default function ApprovedScheduledDashlet() {
           if (item.children.length) {
             expandedLookup[item.uri ?? item.name] = true;
             parentItems.push({
-              label: item.name,
+              label: asLocalizedDateTime(
+                item.name,
+                locale.localeCode,
+                reversePluckProps(locale.dateTimeFormatOptions, 'hour', 'minute', 'second')
+              ),
               path: item.uri ?? item.name,
               children: item.children.map((item) => {
                 targetLookup[item.uri] = { target: item.environment, packageId: item.packageId };
