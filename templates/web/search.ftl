@@ -29,13 +29,21 @@
 </head>
 
 <body>
-  <#if RequestParameters.mode?exists && mode == 'select'>
+  <#assign embedded = false />
+  <#assign mode = 'default' />
+
+  <#if RequestParameters.embedded?exists && RequestParameters.embedded == 'true'>
     <#assign embedded = true />
   </#if>
-  <div id="root" style="height: calc(100vh<#if embedded?exists> - 60px</#if>)"></div>
+
+  <#if RequestParameters.mode?exists && RequestParameters.mode == 'select'>
+    <#assign embedded = true />
+  </#if>
+
+  <div id="root" style="height: calc(100vh<#if embedded> - 60px</#if>)"></div>
 
   <script>
-    <#if embedded?exists>
+    <#if mode == 'select'>
     const opener = window.opener ? window.opener : parent.iframeOpener;
     const searchId = CStudioAuthoring.Utils.getQueryVariable(document.location.search, 'searchId');
     const openerChildSearchMgr = opener.CStudioAuthoring.ChildSearchManager;
@@ -51,14 +59,14 @@
     </#if>
 
     CrafterCMSNext.render('#root', 'Search', {
-      embedded: <#if embedded?exists>true<#else>false</#if>,
-      mode: <#if embedded?exists>'select'<#else>'default'</#if>,
-      <#if embedded?exists>
+      embedded: ${embedded?string},
+      mode: "${mode}",
+      <#if mode == 'select'>
+      onClose: closeSearch,
       onAcceptSelection: (selectedItems) => {
         callback.success('', selectedItems);
         closeSearch();
-      },
-      onClose: closeSearch
+      }
       </#if>
     }, false);
   </script>
