@@ -41,15 +41,15 @@ export function DeleteContentTypeDialogContainer(props: DeleteContentTypeDialogC
     onSubmittingAndOrPendingChange({
       isSubmitting: true
     });
-    deleteContentType(site, contentType.id).subscribe(
-      () => {
+    deleteContentType(site, contentType.id).subscribe({
+      next() {
         onSubmittingAndOrPendingChange({
           isSubmitting: false
         });
         dispatch(showSystemNotification({ message: formatMessage(messages.deleteComplete) }));
         onComplete?.();
       },
-      (e) => {
+      error(e) {
         onSubmittingAndOrPendingChange({
           isSubmitting: false
         });
@@ -61,7 +61,7 @@ export function DeleteContentTypeDialogContainer(props: DeleteContentTypeDialogC
           })
         );
       }
-    );
+    });
   };
 
   const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);

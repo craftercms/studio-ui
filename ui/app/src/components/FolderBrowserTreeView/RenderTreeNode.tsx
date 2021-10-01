@@ -17,7 +17,7 @@
 import React from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Typography } from '@mui/material';
-import { FormattedMessage } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import TreeItem from '@mui/lab/TreeItem';
 import clsx from 'clsx';
 import { useTreeNodeStyles } from './styles';
@@ -32,9 +32,21 @@ export interface RenderTreeNodeProps {
   onLabelClick?(event: React.ChangeEvent<{}>, node: TreeNode): void;
 }
 
+const translations = defineMessages({
+  expand: {
+    id: 'words.expand',
+    defaultMessage: 'Expand'
+  },
+  collapse: {
+    id: 'words.collapse',
+    defaultMessage: 'Collapse'
+  }
+});
+
 export function RenderTreeNode(props: RenderTreeNodeProps) {
   const { node, onIconClick, onLabelClick } = props;
   const classes = useTreeNodeStyles();
+  const { formatMessage } = useIntl();
 
   return node.id === 'loading' ? (
     <div className={classes.loading}>
@@ -58,8 +70,22 @@ export function RenderTreeNode(props: RenderTreeNodeProps) {
         selected: classes.treeItemSelected,
         label: clsx(classes.treeItemLabel, props.classes?.treeItemLabel)
       }}
-      expandIcon={<ExpandMoreIcon role="button" onClick={(e) => onIconClick?.(e, node)} />}
-      collapseIcon={<ChevronRightIcon role="button" onClick={(e) => onIconClick?.(e, node)} />}
+      expandIcon={
+        <ExpandMoreIcon
+          role="button"
+          aria-label={formatMessage(translations.expand)}
+          aria-hidden="false"
+          onClick={(e) => onIconClick?.(e, node)}
+        />
+      }
+      collapseIcon={
+        <ChevronRightIcon
+          role="button"
+          aria-label={formatMessage(translations.collapse)}
+          aria-hidden="false"
+          onClick={(e) => onIconClick?.(e, node)}
+        />
+      }
     >
       {Array.isArray(node.children)
         ? node.children.map((childNode) => (

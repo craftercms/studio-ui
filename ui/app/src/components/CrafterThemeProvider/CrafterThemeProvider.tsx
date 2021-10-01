@@ -15,13 +15,13 @@
  */
 
 import React, { PropsWithChildren, useMemo } from 'react';
-import { createTheme, DeprecatedThemeOptions, StyledEngineProvider, Theme, ThemeProvider } from '@mui/material/styles';
+import { createTheme, StyledEngineProvider, Theme, ThemeOptions, ThemeProvider } from '@mui/material/styles';
 import StylesProvider from '@mui/styles/StylesProvider';
 import { defaultThemeOptions, generateClassName } from '../../styles/theme';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import palette from '../../styles/palette';
-import { extend } from '../../utils/object';
 import { GenerateId } from 'jss';
+import { deepmerge } from '@mui/utils';
 
 declare module '@mui/styles/defaultTheme' {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -29,7 +29,7 @@ declare module '@mui/styles/defaultTheme' {
 }
 
 export type CrafterThemeProviderProps = PropsWithChildren<{
-  themeOptions?: DeprecatedThemeOptions;
+  themeOptions?: ThemeOptions;
   generateClassName?: GenerateId;
 }>;
 
@@ -38,6 +38,7 @@ export function CrafterThemeProvider(props: CrafterThemeProviderProps) {
   const theme = useMemo(() => {
     const mode = prefersDarkMode ? 'dark' : 'light';
     const auxTheme = createTheme({ palette: { mode } });
+
     return createTheme({
       ...(props.themeOptions ?? defaultThemeOptions),
       palette: {
@@ -68,31 +69,27 @@ export function CrafterThemeProvider(props: CrafterThemeProviderProps) {
         },
         ...props.themeOptions?.palette
       },
-      components: extend(
-        (props.themeOptions ?? defaultThemeOptions).overrides ?? {},
-        {
-          MuiLink: {
-            defaultProps: {
-              underline: 'hover'
-            }
-          },
-          MuiOutlinedInput: {
-            styleOverrides: {
-              root: {
-                backgroundColor: auxTheme.palette.background.paper
-              }
-            }
-          },
-          MuiInputBase: {
-            styleOverrides: {
-              root: {
-                backgroundColor: auxTheme.palette.background.paper
-              }
+      components: deepmerge((props.themeOptions ?? defaultThemeOptions).components ?? {}, {
+        MuiLink: {
+          defaultProps: {
+            underline: 'hover'
+          }
+        },
+        MuiOutlinedInput: {
+          styleOverrides: {
+            root: {
+              backgroundColor: auxTheme.palette.background.paper
             }
           }
         },
-        { deep: true }
-      )
+        MuiInputBase: {
+          styleOverrides: {
+            root: {
+              backgroundColor: auxTheme.palette.background.paper
+            }
+          }
+        }
+      })
     });
   }, [prefersDarkMode, props.themeOptions]);
   return (

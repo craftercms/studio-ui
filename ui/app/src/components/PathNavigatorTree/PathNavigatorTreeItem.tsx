@@ -57,6 +57,14 @@ const translations = defineMessages({
   filter: {
     id: 'pathNavigatorTreeItemFilter.placeholder',
     defaultMessage: 'Filter children...'
+  },
+  expand: {
+    id: 'words.expand',
+    defaultMessage: 'Expand'
+  },
+  collapse: {
+    id: 'words.collapse',
+    defaultMessage: 'Collapse'
   }
 });
 
@@ -257,11 +265,26 @@ export default function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps)
         <TreeItem
           key={node.id}
           nodeId={node.id}
-          expandIcon={<ArrowRightRoundedIcon onClick={() => onIconClick(node.id)} />}
-          collapseIcon={<ArrowDropDownRoundedIcon onClick={() => onIconClick(node.id)} />}
+          expandIcon={
+            <ArrowRightRoundedIcon
+              role="button"
+              aria-label={formatMessage(translations.expand)}
+              aria-hidden="false"
+              onClick={() => onIconClick(node.id)}
+            />
+          }
+          collapseIcon={
+            <ArrowDropDownRoundedIcon
+              role="button"
+              aria-label={formatMessage(translations.collapse)}
+              aria-hidden="false"
+              onClick={() => onIconClick(node.id)}
+            />
+          }
           label={
             <>
               <section
+                role="button"
                 onClick={(event) => onLabelClick(event, node.id)}
                 className={classes.itemDisplaySection}
                 onMouseOver={onMouseOver}

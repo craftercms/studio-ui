@@ -18,7 +18,7 @@ import React, { CSSProperties, ReactNode, useEffect, useRef, useState } from 're
 import { getZoneMarkerStyle } from '../utils/dom';
 import { Box, Paper, Popper, Theme, Typography } from '@mui/material';
 import { SxProps } from '@mui/system';
-import { FullSxRecord, PartialClassRecord, PartialSxRecord } from '../models/CustomRecord';
+import { FullSxRecord, PartialClassRecord, PartialSxRecord } from '@craftercms/studio-ui/models/CustomRecord';
 import LevelDescriptorIcon from '@craftercms/studio-ui/build_tsc/components/Icons/LevelDescriptor';
 import FieldIcon from '@craftercms/studio-ui/build_tsc/components/Icons/ContentTypeField';
 

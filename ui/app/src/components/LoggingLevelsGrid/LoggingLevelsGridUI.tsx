@@ -69,10 +69,8 @@ export default function LoggingLevelsGridUI(props: LoggingLevelsGridUIProps) {
                     onChange={(event) => {
                       onChangeLevel(logger, event.target.value as LoggerLevel);
                     }}
+                    size="small"
                     variant="outlined"
-                    classes={{
-                      root: classes.select
-                    }}
                   >
                     {levels.map((level) => (
                       <MenuItem key={level} value={level}>
