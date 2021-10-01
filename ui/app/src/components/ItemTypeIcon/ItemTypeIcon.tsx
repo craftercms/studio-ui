@@ -34,8 +34,47 @@ import TextIcon from '@mui/icons-material/SubjectRounded';
 import FolderIcon from '@mui/icons-material/FolderOpenRounded';
 import TaxonomyIcon from '@mui/icons-material/LocalOfferOutlined';
 import { DetailedItem, SandboxItem } from '../../models/Item';
-import { capitalize } from '../../utils/string';
 import clsx from 'clsx';
+import { defineMessages, IntlFormatters, useIntl } from 'react-intl';
+
+const messages = defineMessages({
+  asset: {
+    id: 'systemType.asset',
+    defaultMessage: 'Asset'
+  },
+  component: {
+    id: 'systemType.component',
+    defaultMessage: 'Component'
+  },
+  page: {
+    id: 'systemType.page',
+    defaultMessage: 'Page'
+  },
+  folder: {
+    id: 'systemType.folder',
+    defaultMessage: 'Folder'
+  },
+  levelDescriptor: {
+    id: 'systemType.levelDescriptor',
+    defaultMessage: 'Level Descriptor'
+  },
+  renderingTemplate: {
+    id: 'systemType.renderingTemplate',
+    defaultMessage: 'Rendering Template'
+  },
+  script: {
+    id: 'systemType.script',
+    defaultMessage: 'Script'
+  },
+  taxonomy: {
+    id: 'systemType.taxonomy',
+    defaultMessage: 'Taxonomy'
+  },
+  unknown: {
+    id: 'words.unknown',
+    defaultMessage: 'Unknown'
+  }
+});
 
 export interface ItemTypeIconProps {
   item: DetailedItem | SandboxItem;
@@ -43,12 +82,17 @@ export interface ItemTypeIconProps {
   className?: string;
 }
 
-export function getItemTypeText(item: DetailedItem | SandboxItem) {
-  return `${capitalize(item.systemType ?? 'Unknown')} - ${item.mimeType}`;
+export function getItemTypeText(item: DetailedItem | SandboxItem, formatMessage: IntlFormatters['formatMessage']) {
+  return messages[item.systemType]
+    ? formatMessage(messages[item.systemType])
+    : item.mimeType
+    ? item.mimeType
+    : formatMessage(messages.unknown);
 }
 
 export default function ItemTypeIcon(props: ItemTypeIconProps) {
   const { item, classes, className } = props;
+  const { formatMessage } = useIntl();
   let TheIcon = UnknownStateIcon;
   switch (item.systemType) {
     case 'asset':
@@ -122,7 +166,7 @@ export default function ItemTypeIcon(props: ItemTypeIconProps) {
       break;
   }
   return (
-    <Tooltip title={getItemTypeText(item)}>
+    <Tooltip title={getItemTypeText(item, formatMessage)}>
       <TheIcon className={clsx(classes?.root, className)} />
     </Tooltip>
   );

@@ -15,7 +15,7 @@
  */
 
 import { ofType } from 'redux-observable';
-import { exhaustMap, filter, map, withLatestFrom } from 'rxjs/operators';
+import { exhaustMap, filter, map, switchMap, withLatestFrom } from 'rxjs/operators';
 import { catchAjaxError } from '../../utils/ajax';
 import {
   fetchSiteConfig,
@@ -30,6 +30,15 @@ import {
   fetchSiteUiConfig as fetchSiteUiConfigService
 } from '../../services/configuration';
 import { CrafterCMSEpic } from '../store';
+import { showSystemNotification } from '../actions/system';
+import { defineMessages } from 'react-intl';
+
+const configurationMessages = defineMessages({
+  localeError: {
+    id: 'configurationMessages.localeError',
+    defaultMessage: 'Incorrect locale configuration: {message}. Using browser locale settings. Check site config xml.'
+  }
+});
 
 export default [
   (action$, state$) =>
@@ -46,14 +55,35 @@ export default [
         )
       )
     ),
-  (action$, state$) =>
+  (action$, state$, { getIntl }) =>
     action$.pipe(
       ofType(fetchSiteConfig.type),
       withLatestFrom(state$),
       filter(([, state]) => Boolean(state.sites.active)),
       exhaustMap(([, state]) =>
         fetchSiteConfigService(state.sites.active).pipe(
-          map((config) => fetchSiteConfigComplete(config)),
+          switchMap((config) => {
+            try {
+              let localeCode = config.locale?.localeCode || state.uiConfig.locale.localeCode;
+              let options = config.locale?.dateTimeFormatOptions || state.uiConfig.locale.dateTimeFormatOptions;
+              new Intl.DateTimeFormat(localeCode, options);
+              return [fetchSiteConfigComplete(config)];
+            } catch (e) {
+              return [
+                fetchSiteConfigComplete({
+                  ...config,
+                  locale: {
+                    ...config.locale,
+                    localeCode: state.uiConfig.locale.localeCode,
+                    dateTimeFormatOptions: state.uiConfig.locale.dateTimeFormatOptions
+                  }
+                }),
+                showSystemNotification({
+                  message: getIntl().formatMessage(configurationMessages.localeError, { message: (e as Error).message })
+                })
+              ];
+            }
+          }),
           catchAjaxError(fetchSiteConfigFailed)
         )
       )
