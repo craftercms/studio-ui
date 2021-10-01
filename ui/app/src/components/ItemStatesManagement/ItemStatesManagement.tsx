@@ -49,7 +49,7 @@ import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import { useDebouncedInput } from '../../utils/hooks/useDebouncedInput';
 import { useSpreadState } from '../../utils/hooks/useSpreadState';
 import ItemActionsSnackbar from '../ItemActionsSnackbar';
-import { UNDEFINED } from '../../utils/constants';
+import SecondaryButton from '../SecondaryButton';
 
 interface ItemStatesManagementProps {
   embedded?: boolean;
@@ -247,15 +247,13 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
       <GlobalAppToolbar
         title={!embedded && <FormattedMessage id="siteTools.itemStates" defaultMessage="Item States" />}
         rightContent={
-          <Button
+          <SecondaryButton
             className={embedded ? '' : classes.filterButton}
             endIcon={<FilterListRoundedIcon />}
-            variant="outlined"
-            color={pathRegex || Object.values(filtersLookup).some(Boolean) ? 'primary' : UNDEFINED}
             onClick={() => setOpenFiltersDrawer(!openFiltersDrawer)}
           >
             <FormattedMessage id="words.filters" defaultMessage="Filters" />
-          </Button>
+          </SecondaryButton>
         }
         showHamburgerMenuButton={!embedded}
         showAppsButton={showAppsButton}

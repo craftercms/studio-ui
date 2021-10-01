@@ -26,8 +26,6 @@ import { StateStylingProps } from '../../models/UiConfig';
 import PathNavigatorTreeItem from './PathNavigatorTreeItem';
 import LookupTable from '../../models/LookupTable';
 import { DetailedItem } from '../../models/Item';
-import ArrowRightRoundedIcon from '@mui/icons-material/ArrowRightRounded';
-import ArrowDropDownRoundedIcon from '@mui/icons-material/ArrowDropDownRounded';
 import { SystemIconDescriptor } from '../SystemIcon';
 
 export interface TreeNode {
@@ -130,13 +128,7 @@ export default function PathNavigatorTreeUI(props: PathNavigatorTreeUIProps) {
         }}
       />
       <AccordionDetails className={clsx(classes.accordionDetails, props.classes?.body)}>
-        <TreeView
-          className={classes.root}
-          expanded={expandedNodes}
-          defaultExpandIcon={<ArrowRightRoundedIcon />}
-          defaultCollapseIcon={<ArrowDropDownRoundedIcon />}
-          disableSelection={true}
-        >
+        <TreeView className={classes.root} expanded={expandedNodes} disableSelection>
           <PathNavigatorTreeItem
             node={rootNode}
             itemsByPath={itemsByPath}

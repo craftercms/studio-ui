@@ -34,6 +34,8 @@ import SearchBar from '../Controls/SearchBar';
 import CloseIconRounded from '@mui/icons-material/CloseRounded';
 import ErrorOutlineRoundedIcon from '@mui/icons-material/ErrorOutlineRounded';
 import Button from '@mui/material/Button';
+import ArrowRightRoundedIcon from '@mui/icons-material/ArrowRightRounded';
+import ArrowDropDownRoundedIcon from '@mui/icons-material/ArrowDropDownRounded';
 
 interface PathNavigatorTreeItemProps {
   node: TreeNode;
@@ -66,7 +68,11 @@ const useStyles = makeStyles((theme) =>
       }
     },
     content: {
-      alignItems: 'flex-start'
+      alignItems: 'flex-start',
+      paddingRight: 0,
+      '&:hover': {
+        background: 'none'
+      }
     },
     labelContainer: {
       display: 'flex',
@@ -84,7 +90,7 @@ const useStyles = makeStyles((theme) =>
       width: '100%',
       display: 'flex',
       alignItems: 'center',
-      height: '26px',
+      minHeight: '23.5px',
       '&:hover': {
         backgroundColor: `${theme.palette.action.hover} !important`
       }
@@ -98,7 +104,7 @@ const useStyles = makeStyles((theme) =>
       color: theme.palette.text.secondary,
       display: 'flex',
       alignItems: 'center',
-      height: '26px',
+      minHeight: '23.5px',
       marginLeft: '10px',
       '& svg': {
         marginRight: '5px',
@@ -109,16 +115,19 @@ const useStyles = makeStyles((theme) =>
       color: theme.palette.text.primary,
       display: 'flex',
       alignItems: 'center',
-      height: '26px',
+      minHeight: '23.5px',
       marginLeft: '10px'
     },
     iconContainer: {
       width: '26px',
       marginRight: 0,
       '& svg': {
-        fontSize: '26px',
+        fontSize: '23.5px !important',
         color: theme.palette.text.secondary
       }
+    },
+    focused: {
+      background: 'none !important'
     },
     optionsWrapper: {
       top: 0,
@@ -127,7 +136,7 @@ const useStyles = makeStyles((theme) =>
       position: 'absolute',
       marginLeft: 'auto',
       display: 'flex',
-      height: '26px',
+      minHeight: '23.5px',
       alignItems: 'center'
     },
     optionsWrapperOver: {
@@ -136,7 +145,7 @@ const useStyles = makeStyles((theme) =>
     loading: {
       display: 'flex',
       alignItems: 'center',
-      height: '26px',
+      minHeight: '23.5px',
       marginLeft: '10px',
       '& span': {
         marginLeft: '10px'
@@ -156,6 +165,9 @@ const useStyles = makeStyles((theme) =>
     },
     searchCloseIcon: {
       fontSize: '12px !important'
+    },
+    iconButton: {
+      padding: '2px 3px'
     }
   })
 );
@@ -245,17 +257,21 @@ export default function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps)
         <TreeItem
           key={node.id}
           nodeId={node.id}
-          // TODO: replace onLabelClick & onIconClick
-          // onLabelClick={(event) => onLabelClick(event, node.id)}
-          // onIconClick={() => onIconClick(node.id)}
+          expandIcon={<ArrowRightRoundedIcon onClick={() => onIconClick(node.id)} />}
+          collapseIcon={<ArrowDropDownRoundedIcon onClick={() => onIconClick(node.id)} />}
           label={
             <>
-              <section className={classes.itemDisplaySection} onMouseOver={onMouseOver} onMouseLeave={onMouseLeave}>
+              <section
+                onClick={(event) => onLabelClick(event, node.id)}
+                className={classes.itemDisplaySection}
+                onMouseOver={onMouseOver}
+                onMouseLeave={onMouseLeave}
+              >
                 <ItemDisplay
                   styles={{
                     root: {
                       width: over ? 'calc(100% - 60px)' : '100%',
-                      height: '26px'
+                      minHeight: '23.5px'
                     }
                   }}
                   item={itemsByPath[node.id]}
@@ -265,6 +281,7 @@ export default function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps)
                   <Tooltip title={<FormattedMessage id="words.options" defaultMessage="Options" />}>
                     <IconButton
                       size="small"
+                      className={classes.iconButton}
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
@@ -278,6 +295,7 @@ export default function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps)
                     <Tooltip title={<FormattedMessage id="words.filter" defaultMessage="Filter" />}>
                       <IconButton
                         size="small"
+                        className={classes.iconButton}
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
@@ -334,7 +352,8 @@ export default function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps)
             root: classes.root,
             content: classes.content,
             label: classes.labelContainer,
-            iconContainer: classes.iconContainer
+            iconContainer: classes.iconContainer,
+            focused: classes.focused
           }}
         >
           {node.children.map((node) => (

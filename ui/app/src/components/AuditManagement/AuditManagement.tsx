@@ -37,6 +37,7 @@ import { useMount } from '../../utils/hooks/useMount';
 import { useSpreadState } from '../../utils/hooks/useSpreadState';
 import { useSiteList } from '../../utils/hooks/useSiteList';
 import Paper from '@mui/material/Paper';
+import { useEnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
 
 interface AuditManagementProps {
   site?: string;
@@ -58,13 +59,7 @@ export default function AuditManagement(props: AuditManagementProps) {
     siteId: site
   });
   const [parametersLookup, setParametersLookup] = useSpreadState<LookupTable<AuditLogEntryParameter[]>>({});
-  const [parametersDialogParams, setParametersDialogParams] = useSpreadState<{
-    open: boolean;
-    parameters: AuditLogEntryParameter[];
-  }>({
-    open: false,
-    parameters: []
-  });
+  const [dialogParams, setDialogParams] = useState<AuditLogEntryParameter[]>([]);
   const { formatMessage } = useIntl();
   const hasActiveFilters = Object.keys(options).some((key) => {
     return (
@@ -73,6 +68,7 @@ export default function AuditManagement(props: AuditManagementProps) {
     );
   });
   const [page, setPage] = useState(0);
+  const auditLogEntryParametersDialogState = useEnhancedDialogState();
 
   const refresh = useCallback(() => {
     setFetching(true);
@@ -148,33 +144,21 @@ export default function AuditManagement(props: AuditManagementProps) {
 
   const onFetchParameters = (id: number) => {
     if (parametersLookup[id]?.length) {
-      setParametersDialogParams({
-        open: true,
-        parameters: parametersLookup[id]
-      });
+      setDialogParams(parametersLookup[id]);
+      auditLogEntryParametersDialogState.onOpen();
     } else {
       fetchAuditLogEntry(id).subscribe((response) => {
         setParametersLookup({ [id]: response.parameters });
         if (response.parameters.length) {
-          setParametersDialogParams({
-            open: true,
-            parameters: response.parameters
-          });
+          setDialogParams(response.parameters);
+          auditLogEntryParametersDialogState.onOpen();
         }
       });
     }
   };
 
-  const onShowParametersDialogClose = () => {
-    setParametersDialogParams({
-      open: false
-    });
-  };
-
   const onShowParametersDialogClosed = () => {
-    setParametersDialogParams({
-      parameters: []
-    });
+    setDialogParams([]);
   };
 
   return (
@@ -220,10 +204,13 @@ export default function AuditManagement(props: AuditManagementProps) {
         />
       </Suspencified>
       <AuditLogEntryParametersDialog
-        open={parametersDialogParams.open}
-        onClose={onShowParametersDialogClose}
+        open={auditLogEntryParametersDialogState.open}
+        onClose={auditLogEntryParametersDialogState.onClose}
         onClosed={onShowParametersDialogClosed}
-        parameters={parametersDialogParams.parameters}
+        parameters={dialogParams}
+        hasPendingChanges={auditLogEntryParametersDialogState.hasPendingChanges}
+        isMinimized={auditLogEntryParametersDialogState.isMinimized}
+        isSubmitting={auditLogEntryParametersDialogState.isSubmitting}
       />
     </Paper>
   );

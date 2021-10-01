@@ -34,7 +34,7 @@ import FormLabel from '@mui/material/FormLabel';
 import { useSelection } from '../../utils/hooks/useSelection';
 import Alert from '@mui/material/Alert';
 import { capitalize } from '../../utils/string';
-import { PublishDialogUIProps } from './PublishDialogUI';
+import { PublishDialogUIProps } from './utils';
 
 const messages = defineMessages({
   emailLabel: {

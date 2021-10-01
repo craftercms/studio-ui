@@ -184,8 +184,8 @@ export function createCodebaseBridge() {
       ),
       TokenManagement: lazy(() => import('../components/TokenManagement')),
       PluginManagement: lazy(() => import('../components/PluginManagement')),
-      PublishingStatusDialogBody: lazy(() =>
-        import('../components/PublishingStatusDialog/PublishingStatusDialogContainer')
+      PublishingStatusDialogBody: lazy(
+        () => import('../components/PublishingStatusDialog/PublishingStatusDialogContainer')
       ),
       LogoAndMenuBundleButton: lazy(() => import('../components/LogoAndMenuBundleButton')),
       CrafterIcon: lazy(() => import('../components/Icons/CrafterIcon')),

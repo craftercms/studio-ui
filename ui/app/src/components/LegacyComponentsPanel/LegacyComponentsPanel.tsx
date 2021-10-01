@@ -48,6 +48,7 @@ import { forEach } from '../../utils/array';
 import { useEnv } from '../../utils/hooks/useEnv';
 import { createCustomDocumentEventListener } from '../../utils/dom';
 import { guestMessages } from '../../assets/guestMessages';
+import { useEnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
 
 export interface LegacyComponentsPanelProps {
   title: string;
@@ -96,6 +97,7 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
   const dispatch = useDispatch();
   const { authoringBase } = useEnv();
   const [legacyContentModel, setLegacyContentModel] = useState(null);
+  const browseFilesDialogState = useEnhancedDialogState();
 
   const startDnD = useCallback(
     (path?: string) => {
@@ -495,6 +497,7 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
         }
         case 'OPEN_BROWSE': {
           setBrowsePath(payload.path);
+          browseFilesDialogState.onOpen();
           break;
         }
         case 'START_DIALOG': {
@@ -553,7 +556,8 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
     onComponentDrop,
     open,
     siteId,
-    user.username
+    user.username,
+    browseFilesDialogState
   ]);
   // endregion
 
@@ -567,12 +571,13 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
     }
   };
 
-  const onCloseBrowseDialog = () => {
+  const onBrowseDialogClosed = () => {
     setBrowsePath(null);
   };
 
   const onBrowseDialogItemSelected = (item: MediaItem) => {
     setBrowsePath(null);
+    browseFilesDialogState.onClose();
     fetchLegacyItem(siteId, item.path).subscribe((legacyItem) => {
       hostToGuest$.next({
         type: 'DND_CREATE_BROWSE_COMP',
@@ -600,10 +605,14 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
         </ListItemSecondaryAction>
       </ListItem>
       <BrowseFilesDialog
-        open={Boolean(browsePath)}
+        open={browseFilesDialogState.open}
         path={browsePath}
-        onClose={onCloseBrowseDialog}
+        onClose={browseFilesDialogState.onClose}
+        onClosed={onBrowseDialogClosed}
         onSuccess={onBrowseDialogItemSelected}
+        hasPendingChanges={browseFilesDialogState.hasPendingChanges}
+        isMinimized={browseFilesDialogState.isMinimized}
+        isSubmitting={browseFilesDialogState.isSubmitting}
       />
     </>
   );

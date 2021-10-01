@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import { defineMessages, useIntl } from 'react-intl';
@@ -28,10 +28,17 @@ import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
-import { create8601String, get8601Pieces, getTimezones, TimezoneDescriptor } from '../../utils/datetime';
+import {
+  asLocalizedDateTime,
+  create8601String,
+  get8601Pieces,
+  getTimezones,
+  TimezoneDescriptor
+} from '../../utils/datetime';
 import FormControl from '@mui/material/FormControl';
 import { nnou } from '../../utils/object';
-import palette from '../../styles/palette';
+import { useSpreadState } from '../../utils/hooks/useSpreadState';
+import { UNDEFINED } from '../../utils/constants';
 
 export interface DateChangeData {
   date: Date;
@@ -77,51 +84,10 @@ const translations = defineMessages({
 
 const useStyles = makeStyles(() =>
   createStyles({
-    root: {
-      width: 'auto'
-    },
-    picker: {
-      width: '100%',
-      marginBottom: 0
-    },
-    pickerInput: {
-      padding: '8px 12px',
-      fontSize: '14px'
-    },
-    pickerButton: {
-      position: 'absolute' as 'absolute',
-      right: 0,
-      '& button': {
-        padding: '2px',
-        marginRight: '10px'
-      }
-    },
-    select: {
-      padding: '8px 12px',
-      borderRadius: '4px',
-      marginTop: '16px',
-      position: 'relative' as 'relative',
-      backgroundColor: palette.white,
-      fontSize: '14px'
-    },
-    selectIcon: {
-      right: '12px',
-      top: '22px'
-    },
-    autocompleteRoot: {
-      marginTop: '16px'
-    },
-    autocompleteInputRoot: {
-      paddingTop: '4px !important',
-      paddingBottom: '4px !important',
-      border: 'none'
-    },
-    autocompleteInput: {
-      border: 'none',
-      fontSize: '14px'
-    },
-    autocompleteEndAdornment: {
-      right: '12px !important'
+    popupIndicator: {
+      padding: ' 8px',
+      marginTop: '-6px',
+      marginRight: '-7px'
     }
   })
 );
@@ -157,6 +123,12 @@ function DateTimePicker(props: DateTimePickerProps) {
   const classes = useStyles();
   const hour12 = dateTimeFormatOptions?.hour12 ?? true;
   const currentTimeZoneDesc = timeZones.find((tz) => tz.name === unescape(timeZone));
+  const [datePickerOpen, setDatePickerOpen] = useState(false);
+  const [pickerState, setPickerState] = useSpreadState({
+    dateValid: true,
+    timeValid: true,
+    timezoneValid: true
+  });
 
   const { formatMessage } = useIntl();
 
@@ -166,6 +138,7 @@ function DateTimePicker(props: DateTimePickerProps) {
     (newDate: unknown, input: string) => {
       console.log(`Check newDate type (${typeof newDate})`, newDate);
       if (newDate === null) {
+        setPickerState({ dateValid: false });
         onError?.();
       }
       let changes: DateChangeData;
@@ -187,6 +160,7 @@ function DateTimePicker(props: DateTimePickerProps) {
           break;
         }
       }
+      setPickerState({ dateValid: true });
       onChange?.(changes);
     };
 
@@ -213,55 +187,71 @@ function DateTimePicker(props: DateTimePickerProps) {
     <FormControl {...formControlProps} fullWidth>
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         {controls.includes('date') && (
-          <DatePicker
-            renderInput={(props) => <TextField {...props} />}
-            value={internalDate}
-            onChange={createOnDateChange('date')}
-            className={classes.picker}
-            InputAdornmentProps={{
-              className: classes.pickerButton
-            }}
-            InputProps={{
-              className: classes.pickerInput,
-              disabled: true,
-              placeholder: formatMessage(translations.datePlaceholder)
-            }}
-            disabled={disabled}
-            disablePast={disablePast}
-            // TODO: Check/Restore error state, helper text
-            // error={!pickerState.dateValid}
-            // helperText={pickerState.dateValid ? '' : formatMessage(translations.dateInvalidMessage)}
-            // labelFunc={(date, invalidLabel) => invalidLabel || asLocalizedDateTime(date, localeCode)}
-            // onClick={
-            //   disabled
-            //     ? null
-            //     : () => {
-            //         setDatePickerOpen(true);
-            //       }
-            // }
-            // onAccept={() => {
-            //   setDatePickerOpen(false);
-            // }}
-            // // Both clicking cancel and outside the calendar trigger onClose
-            // onClose={() => {
-            //   setDatePickerOpen(false);
-            // }}
-          />
+          <>
+            <DatePicker
+              open={datePickerOpen}
+              views={['year', 'month', 'day']}
+              renderInput={(props) => (
+                <TextField
+                  size="small"
+                  margin="normal"
+                  disabled
+                  placeholder={formatMessage(translations.datePlaceholder)}
+                  error={!pickerState.dateValid}
+                  helperText={pickerState.dateValid ? '' : formatMessage(translations.dateInvalidMessage)}
+                  onClick={
+                    disabled
+                      ? null
+                      : () => {
+                          setDatePickerOpen(true);
+                        }
+                  }
+                  {...props}
+                  inputProps={{ ...props.inputProps, value: asLocalizedDateTime(internalDate, localeCode) }}
+                />
+              )}
+              value={internalDate}
+              onChange={createOnDateChange('date')}
+              disabled={disabled}
+              disablePast={disablePast}
+              onAccept={() => {
+                setDatePickerOpen(false);
+              }}
+              // Both clicking cancel and outside the calendar trigger onClose
+              onClose={() => {
+                setDatePickerOpen(false);
+              }}
+            />
+          </>
         )}
         {controls.includes('time') && (
           <TimePicker
             value={internalDate}
             onChange={createOnDateChange('time')}
-            className={classes.picker}
-            InputAdornmentProps={{ className: classes.pickerButton }}
-            InputProps={{ className: classes.pickerInput, placeholder: formatMessage(translations.timePlaceholder) }}
             disabled={disabled}
-            // TODO: re-add helper text
-            // helperText={pickerState.timeValid ? '' : formatMessage(translations.timeInvalidMessage)}
             ampm={hour12}
-            inputFormat="HH:mm"
             mask="__:__"
-            renderInput={(props) => <TextField {...props} />}
+            renderInput={(props) => (
+              <TextField
+                size="small"
+                margin="normal"
+                helperText={pickerState.timeValid ? '' : formatMessage(translations.timeInvalidMessage)}
+                placeholder={formatMessage(translations.timePlaceholder)}
+                {...props}
+                inputProps={{
+                  ...props.inputProps,
+                  value: asLocalizedDateTime(internalDate, localeCode, {
+                    hour12,
+                    hour: dateTimeFormatOptions?.hour || '2-digit',
+                    minute: dateTimeFormatOptions?.minute || '2-digit',
+                    // If the timezone control isn't displayed, the time displayed may
+                    // be misleading/unexpected to the user, so if timezone isn't displayed,
+                    // display timezone here.
+                    timeZoneName: controls.includes('timeZone') ? UNDEFINED : 'short'
+                  })
+                }}
+              />
+            )}
           />
         )}
       </LocalizationProvider>
@@ -273,14 +263,11 @@ function DateTimePicker(props: DateTimePickerProps) {
           onChange={handleTimezoneChange}
           size="small"
           classes={{
-            root: classes.autocompleteRoot,
-            inputRoot: classes.autocompleteInputRoot,
-            input: classes.autocompleteInput,
-            endAdornment: classes.autocompleteEndAdornment
+            popupIndicator: classes.popupIndicator
           }}
           popupIcon={<PublicRoundedIcon />}
           disableClearable={true}
-          renderInput={(params) => <TextField {...params} variant="outlined" fullWidth />}
+          renderInput={(params) => <TextField size="small" margin="normal" {...params} variant="outlined" fullWidth />}
           disabled={disabled}
         />
       )}

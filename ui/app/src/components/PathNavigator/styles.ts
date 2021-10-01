@@ -208,7 +208,7 @@ export const useStyles = makeStyles(
           paddingLeft: 0
         },
         '&:hover': {
-          backgroundColor: 'rgba(0, 0, 0, 0.08)'
+          backgroundColor: theme.palette.action.hover
         }
       },
       currentPathItem: {

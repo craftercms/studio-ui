@@ -14,24 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
-import Card from '@mui/material/Card';
-import CardHeader from '@mui/material/CardHeader';
-import { useCardStyles } from './styles';
-import Skeleton from '@mui/material/Skeleton';
+import { AuditLogEntryParameter } from '../../models/Audit';
+import { EnhancedDialogProps } from '../EnhancedDialog';
 
-export function MediaSkeletonCard() {
-  const classes = useCardStyles();
-  return (
-    <Card className={classes.root}>
-      <CardHeader
-        className={classes.cardHeader}
-        avatar={<Skeleton variant="circular" width={24} height={24} />}
-        title={<Skeleton animation="wave" height={20} width="100%" />}
-      />
-      <Skeleton animation="wave" variant="rectangular" className={classes.media} />
-    </Card>
-  );
+export interface AuditLogEntryParametersBase {
+  parameters: AuditLogEntryParameter[];
 }
 
-export default MediaSkeletonCard;
+export interface AuditLogEntryParametersDialogProps extends AuditLogEntryParametersBase, EnhancedDialogProps {}
+
+export interface AuditLogEntryParametersDialogUIProps extends AuditLogEntryParametersBase {}

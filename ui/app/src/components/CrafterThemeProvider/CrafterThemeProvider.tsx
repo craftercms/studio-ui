@@ -63,6 +63,9 @@ export function CrafterThemeProvider(props: CrafterThemeProviderProps) {
         action: {
           selected: palette.blue.highlight
         },
+        background: {
+          default: prefersDarkMode ? palette.gray.dark7 : palette.gray.light0
+        },
         ...props.themeOptions?.palette
       },
       components: extend(
@@ -73,9 +76,18 @@ export function CrafterThemeProvider(props: CrafterThemeProviderProps) {
               underline: 'hover'
             }
           },
+          MuiOutlinedInput: {
+            styleOverrides: {
+              root: {
+                backgroundColor: auxTheme.palette.background.paper
+              }
+            }
+          },
           MuiInputBase: {
-            root: {
-              backgroundColor: auxTheme.palette.background.paper
+            styleOverrides: {
+              root: {
+                backgroundColor: auxTheme.palette.background.paper
+              }
             }
           }
         },

@@ -15,13 +15,12 @@
  */
 
 import React from 'react';
-import DialogHeader from '../DialogHeader/DialogHeader';
 import DialogBody from '../Dialogs/DialogBody';
 import DialogFooter from '../Dialogs/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import { FormattedMessage } from 'react-intl';
-import { MediaItem, SearchItem } from '../../models/Search';
+import { SearchItem } from '../../models/Search';
 import MediaCard from '../MediaCard';
 import { useStyles } from './styles';
 import SearchBar from '../Controls/SearchBar';
@@ -31,30 +30,7 @@ import EmptyState from '../SystemStatus/EmptyState';
 import Pagination from '../Pagination';
 import FolderBrowserTreeView from '../FolderBrowserTreeView';
 import Box from '@mui/material/Box';
-
-interface BrowseFilesDialogUIProps {
-  items: SearchItem[];
-  guestBase: string;
-  selectedCard: MediaItem;
-  selectedArray: string[];
-  multiSelect?: boolean;
-  path: string;
-  limit: number;
-  offset: number;
-  keyword: string;
-  rowsPerPageOptions?: number[];
-  total: number;
-  numOfLoaderItems?: number;
-  onCardSelected(item: MediaItem): void;
-  onPreviewImage(item: MediaItem): void;
-  onCheckboxChecked(path: string, selected: boolean): void;
-  handleSearchKeyword(keyword: string): void;
-  onPathSelected(path: string): void;
-  onSelectButtonClick(): void;
-  onChangePage(page: number): void;
-  onChangeRowsPerPage(event): void;
-  onClose(): void;
-}
+import { BrowseFilesDialogUIProps } from './utils';
 
 export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
   const {
@@ -78,15 +54,11 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
     onSelectButtonClick,
     onChangePage,
     onChangeRowsPerPage,
-    onClose
+    onCloseButtonClick
   } = props;
   const classes = useStyles();
   return (
     <>
-      <DialogHeader
-        title={<FormattedMessage id="browseFilesDialog.uploadImage" defaultMessage="Select a file" />}
-        onCloseButtonClick={onClose}
-      />
       <DialogBody className={classes.dialogBody}>
         <Box display="flex">
           <section className={classes.leftWrapper}>
@@ -146,7 +118,7 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
             onRowsPerPageChange={onChangeRowsPerPage}
           />
         )}
-        <SecondaryButton onClick={onClose}>
+        <SecondaryButton onClick={onCloseButtonClick}>
           <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
         </SecondaryButton>
         <PrimaryButton disabled={!Boolean(selectedArray.length) && !selectedCard} onClick={onSelectButtonClick}>
@@ -156,3 +128,5 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
     </>
   );
 }
+
+export default BrowseFilesDialogUI;

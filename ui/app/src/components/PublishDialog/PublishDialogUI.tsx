@@ -20,38 +20,9 @@ import { FormattedMessage } from 'react-intl';
 import DialogFooter from '../Dialogs/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
-import React, { ReactNode } from 'react';
-import { Resource } from '../../models/Resource';
-import LookupTable from '../../models/LookupTable';
-import { InternalDialogState, PublishDialogResourceBody } from './utils';
+import React from 'react';
+import { PublishDialogUIProps } from './utils';
 import PublishDialogContentUI from './PublishDialogContentUI';
-import { FetchDependenciesResponse } from '../../services/dependencies';
-import { DependencySelectionProps } from '../../modules/Content/Dependencies/DependencySelection';
-
-export interface PublishDialogUIProps {
-  resource: Resource<PublishDialogResourceBody>;
-  publishingTargetsStatus: string;
-  onPublishingChannelsFailRetry(): void;
-  onCloseButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
-  handleSubmit: any;
-  isSubmitting: boolean;
-  submitDisabled: boolean;
-  state: InternalDialogState;
-  selectedItems: LookupTable<boolean>;
-  onItemClicked: DependencySelectionProps['onItemClicked'];
-  dependencies: FetchDependenciesResponse;
-  onSelectAll(): void;
-  onSelectAllSoftDependencies(): void;
-  onClickShowAllDeps?: any;
-  showEmailCheckbox?: boolean;
-  showRequestApproval: boolean;
-  classes?: any;
-  submitLabel: ReactNode;
-  mixedPublishingDates?: boolean;
-  mixedPublishingTargets?: boolean;
-  submissionCommentRequired: boolean;
-  onPublishingArgumentChange(e: React.ChangeEvent<HTMLInputElement>): void;
-}
 
 export function PublishDialogUI(props: PublishDialogUIProps) {
   // region const { ... } = props

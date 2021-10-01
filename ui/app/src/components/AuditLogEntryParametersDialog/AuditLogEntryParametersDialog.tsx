@@ -14,23 +14,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Dialog from '@mui/material/Dialog';
 import React from 'react';
-import { AuditLogEntryParameter } from '../../models/Audit';
 import AuditLogEntryParametersDialogUI from './AuditLogEntryParametersDialogUI';
+import { AuditLogEntryParametersDialogProps } from './utils';
+import EnhancedDialog from '../EnhancedDialog';
+import { FormattedMessage } from 'react-intl';
 
-export interface AuditLogEntryParametersDialogProps {
-  open: boolean;
-  onClose(): void;
-  onClosed?(): void;
-  parameters: AuditLogEntryParameter[];
-}
-
-export default function AuditLogEntryParametersDialog(props: AuditLogEntryParametersDialogProps) {
-  const { open, onClose } = props;
+export function AuditLogEntryParametersDialog(props: AuditLogEntryParametersDialogProps) {
+  const { parameters, ...rest } = props;
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
-      <AuditLogEntryParametersDialogUI {...props} />
-    </Dialog>
+    <EnhancedDialog title={<FormattedMessage id="words.parameters" defaultMessage="Parameters" />} {...rest}>
+      <AuditLogEntryParametersDialogUI parameters={parameters} />
+    </EnhancedDialog>
   );
 }
+
+export default AuditLogEntryParametersDialog;

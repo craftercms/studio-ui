@@ -29,7 +29,7 @@ const styles = makeStyles((theme: Theme) =>
       display: 'flex',
       flex: '1 1 auto',
       flexDirection: 'column',
-      padding: theme.spacing(2),
+      padding: `${theme.spacing(2)} !important`,
       backgroundColor: theme.palette.background.default
     },
     minHeight: {

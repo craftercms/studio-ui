@@ -16,7 +16,7 @@
 
 import ArrowDown from '@mui/icons-material/ArrowDropDownRounded';
 import Button, { ButtonTypeMap } from '@mui/material/Button';
-import React, { Fragment, ReactNode } from 'react';
+import React, { ReactNode, useMemo } from 'react';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import createStyles from '@mui/styles/createStyles';
@@ -84,12 +84,6 @@ export default function ConfirmDropdown(props: ConfirmDropdownProps) {
     size = 'medium'
   } = props;
 
-  const TooltipComponent = iconTooltip ? Tooltip : Fragment;
-
-  const handleClick = (event: any) => {
-    setAnchorEl(event.currentTarget);
-  };
-
   const handleClose = () => {
     setAnchorEl(null);
   };
@@ -104,19 +98,29 @@ export default function ConfirmDropdown(props: ConfirmDropdownProps) {
     onCancel?.();
   };
 
+  // Not memoizing causes the menu to get misplaced upon opening.
+  const iconButton = useMemo(
+    () => (
+      <IconButton onClick={(e) => setAnchorEl(e.currentTarget)} size={size}>
+        <Icon color={disabled ? 'disabled' : iconColor} />
+      </IconButton>
+    ),
+    [Icon, disabled, iconColor, size]
+  );
+
   return (
     <>
       {Icon ? (
-        <TooltipComponent title={iconTooltip}>
-          <IconButton onClick={handleClick} size={size}>
-            <Icon color={disabled ? 'disabled' : iconColor} />
-          </IconButton>
-        </TooltipComponent>
+        iconTooltip ? (
+          <Tooltip title={iconTooltip}>{iconButton}</Tooltip>
+        ) : (
+          iconButton
+        )
       ) : (
         <Button
           className={props.classes?.button}
           variant={buttonVariant}
-          onClick={handleClick}
+          onClick={(e) => setAnchorEl(e.currentTarget)}
           disabled={disabled}
           endIcon={<ArrowDown />}
         >

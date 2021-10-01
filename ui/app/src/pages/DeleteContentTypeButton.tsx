@@ -15,11 +15,11 @@
  */
 
 import * as React from 'react';
-import { useState } from 'react';
 import IconButton from '@mui/material/IconButton';
 import DeleteRounded from '@mui/icons-material/DeleteRounded';
 import DeleteContentTypeDialog from '../components/DeleteContentTypeDialog';
 import ContentType from '../models/ContentType';
+import { useEnhancedDialogState } from '../utils/hooks/useEnhancedDialogState';
 
 export interface DeleteContentTypeButtonProps {
   contentType: ContentType;
@@ -27,21 +27,27 @@ export interface DeleteContentTypeButtonProps {
 }
 
 function DeleteContentTypeButton({ contentType, onComplete }: DeleteContentTypeButtonProps) {
-  const [open, setOpen] = useState(false);
-  return <>
-    <IconButton onClick={() => setOpen(true)} size="large">
-      <DeleteRounded />
-    </IconButton>
-    <DeleteContentTypeDialog
-      open={open}
-      onClose={() => setOpen(false)}
-      contentType={contentType}
-      onComplete={() => {
-        setOpen(false);
-        onComplete?.();
-      }}
-    />
-  </>;
+  const deleteContentTypeDialogState = useEnhancedDialogState();
+  return (
+    <>
+      <IconButton onClick={() => deleteContentTypeDialogState.onOpen()} size="large">
+        <DeleteRounded />
+      </IconButton>
+      <DeleteContentTypeDialog
+        open={deleteContentTypeDialogState.open}
+        onClose={deleteContentTypeDialogState.onClose}
+        isSubmitting={deleteContentTypeDialogState.isSubmitting}
+        hasPendingChanges={deleteContentTypeDialogState.hasPendingChanges}
+        isMinimized={deleteContentTypeDialogState.isMinimized}
+        onSubmittingAndOrPendingChange={deleteContentTypeDialogState.onSubmittingAndOrPendingChange}
+        contentType={contentType}
+        onComplete={() => {
+          deleteContentTypeDialogState.onClose();
+          onComplete?.();
+        }}
+      />
+    </>
+  );
 }
 
 export default DeleteContentTypeButton;

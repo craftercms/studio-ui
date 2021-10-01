@@ -15,31 +15,12 @@
  */
 
 import * as React from 'react';
-import { useMemo, useState } from 'react';
-import { Dialog } from '@mui/material';
-import { defineMessages, useIntl } from 'react-intl';
-import { deleteContentType, fetchContentTypeUsage } from '../../services/contentTypes';
-import ContentType from '../../models/ContentType';
-import Suspencified from '../SystemStatus/Suspencified';
-import DeleteContentTypeDialogBody from './DeleteContentTypeDialogBody';
-import { useDispatch } from 'react-redux';
-import { showSystemNotification } from '../../state/actions/system';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import { useUnmount } from '../../utils/hooks/useUnmount';
-import { createResource } from '../../utils/resource';
+import { defineMessages, FormattedMessage } from 'react-intl';
+import { DeleteContentTypeDialogProps } from './utils';
+import { DeleteContentTypeDialogContainer } from './DeleteContentTypeDialogContainer';
+import { EnhancedDialog } from '../EnhancedDialog';
 
-export interface DeleteContentTypeDialogProps {
-  open: boolean;
-  contentType: ContentType;
-  onClose?(): void;
-  onClosed?(): void;
-  /**
-   * Callback triggered when submission was successful
-   **/
-  onComplete?();
-}
-
-const messages = defineMessages({
+export const messages = defineMessages({
   deleteComplete: {
     id: 'deleteContentTypeDialog.contentTypeDeletedMessage',
     defaultMessage: 'Content type deleted successfully'
@@ -50,56 +31,30 @@ const messages = defineMessages({
   }
 });
 
-export function DeleteContentTypeDialogContainer(props: DeleteContentTypeDialogProps) {
-  const { onClose, onClosed, contentType, onComplete } = props;
-  const site = useActiveSiteId();
-  const { formatMessage } = useIntl();
-  const dispatch = useDispatch();
-  const [submitting, setSubmitting] = useState(false);
-  const resource = useMemo(
-    () => createResource(() => fetchContentTypeUsage(site, contentType.id).toPromise()),
-    [site, contentType.id]
-  );
-  const onSubmit = () => {
-    setSubmitting(true);
-    deleteContentType(site, contentType.id).subscribe(
-      () => {
-        setSubmitting(false);
-        dispatch(showSystemNotification({ message: formatMessage(messages.deleteComplete) }));
-        onComplete?.();
-      },
-      (e) => {
-        setSubmitting(false);
-        const response = e.response?.response ?? e.response;
-        dispatch(
-          showSystemNotification({
-            message: response?.message ?? formatMessage(messages.deleteFailed),
-            options: { variant: 'error' }
-          })
-        );
-      }
-    );
-  };
-  useUnmount(onClosed);
-  return (
-    <Suspencified loadingStateProps={{ styles: { root: { width: 300, height: 250 } } }}>
-      <DeleteContentTypeDialogBody
-        submitting={submitting}
-        onClose={onClose}
-        resource={resource}
-        contentType={contentType}
-        onSubmit={onSubmit}
-      />
-    </Suspencified>
-  );
-}
-
 function DeleteContentTypeDialog(props: DeleteContentTypeDialogProps) {
-  const { open, onClose } = props;
+  const { contentType, onSubmittingAndOrPendingChange, isSubmitting, onComplete, ...rest } = props;
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md">
-      <DeleteContentTypeDialogContainer {...props} />
-    </Dialog>
+    <EnhancedDialog
+      title={<FormattedMessage id="deleteContentTypeDialog.headerTitle" defaultMessage="Delete Content Type" />}
+      dialogHeaderProps={{
+        subtitle: (
+          <FormattedMessage
+            id="deleteContentTypeDialog.headerSubtitle"
+            defaultMessage={`Please confirm the deletion of "{name}"`}
+            values={{ name: contentType.name }}
+          />
+        )
+      }}
+      isSubmitting={isSubmitting}
+      {...rest}
+    >
+      <DeleteContentTypeDialogContainer
+        contentType={contentType}
+        isSubmitting={isSubmitting}
+        onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
+        onComplete={onComplete}
+      />
+    </EnhancedDialog>
   );
 }
 

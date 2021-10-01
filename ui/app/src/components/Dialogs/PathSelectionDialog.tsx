@@ -148,7 +148,7 @@ export function PathSelectionDialogBody(props: PathSelectionDialogBodyProps) {
             next: (responses) => {
               let rootNode;
               setIsFetching(false);
-              responses.forEach(({ response: { item } }, i) => {
+              responses.forEach((item, i) => {
                 let parent;
 
                 if (i === requests.length - 1) {

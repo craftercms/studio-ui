@@ -15,37 +15,15 @@
  */
 
 import React from 'react';
-import Dialog, { DialogProps } from '@mui/material/Dialog';
 import { BrowseFilesDialogContainer } from './BrowseFilesDialogContainer';
-import StandardAction from '../../models/StandardAction';
-import { MediaItem } from '../../models/Search';
+import { BrowseFilesDialogProps } from './utils';
+import { FormattedMessage } from 'react-intl';
+import EnhancedDialog from '../EnhancedDialog';
 
-export interface BrowseFilesDialogBaseProps {
-  open: boolean;
-  path: string;
-  multiSelect?: boolean;
-  contentTypes?: string[];
-  mimeTypes?: string[];
-  rowsPerPageOptions?: number[];
-  numOfLoaderItems?: number;
-}
-
-export interface BrowseFilesDialogProps extends DialogProps, BrowseFilesDialogBaseProps {
-  onClose(): void;
-  onSuccess?(items: MediaItem | MediaItem[]): void;
-  onClosed?(): void;
-}
-
-export interface BrowseFilesDialogPropsStateProps extends BrowseFilesDialogBaseProps {
-  onClose?: StandardAction;
-  onSuccess?: StandardAction;
-  onClosed?: StandardAction;
-}
-
-export default function BrowseFilesDialog(props: BrowseFilesDialogProps) {
+export function BrowseFilesDialog(props: BrowseFilesDialogProps) {
   const {
     path,
-    onClosed,
+    onClose,
     onSuccess,
     contentTypes,
     multiSelect,
@@ -56,18 +34,23 @@ export default function BrowseFilesDialog(props: BrowseFilesDialogProps) {
   } = props;
 
   return (
-    <Dialog fullWidth maxWidth="md" {...rest}>
+    <EnhancedDialog
+      title={<FormattedMessage id="browseFilesDialog.uploadImage" defaultMessage="Select a file" />}
+      onClose={onClose}
+      {...rest}
+    >
       <BrowseFilesDialogContainer
         path={path}
         contentTypes={contentTypes}
         mimeTypes={mimeTypes}
         multiSelect={multiSelect}
         rowsPerPageOptions={rowsPerPageOptions}
-        onClose={props.onClose}
-        onClosed={onClosed}
+        onClose={onClose}
         onSuccess={onSuccess}
         numOfLoaderItems={numOfLoaderItems}
       />
-    </Dialog>
+    </EnhancedDialog>
   );
 }
+
+export default BrowseFilesDialog;
