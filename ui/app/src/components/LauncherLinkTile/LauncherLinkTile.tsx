@@ -47,29 +47,25 @@ const LauncherLinkTile = (props: LauncherLinkTileProps) => {
     ? (e) => {
         e.preventDefault();
         // prettier-ignore
-        const id =
-          (systemLinkId === 'siteDashboardDialog')
-            ? 'craftercms.components.Dashboard'
-            : (systemLinkId === 'siteToolsDialog'
-              ? 'craftercms.components.EmbeddedSiteTools'
-              : 'craftercms.components.EmbeddedSearchIframe'
-            );
+        const id = systemLinkId === 'siteDashboardDialog' ? 'craftercms.components.Dashboard' : (
+          systemLinkId === 'siteToolsDialog'
+            ? 'craftercms.components.EmbeddedSiteTools'
+            : 'craftercms.components.EmbeddedSearchIframe'
+        );
         dispatch(
           batchActions([
             closeLauncher(),
             showWidgetDialog({
               id: systemLinkId,
               title,
-              { widget: { id } }
+              widget: { id }
             })
           ])
         );
       }
     : null;
 
-  const link = isDialog
-    ? null
-    : props.link ?? getSystemLink({ systemLinkId, authoringBase, site, useLegacy });
+  const link = isDialog ? null : props.link ?? getSystemLink({ systemLinkId, authoringBase, site, useLegacy });
 
   return <LauncherTile icon={icon} onClick={onClick} title={usePossibleTranslation(title)} link={link} />;
 };
