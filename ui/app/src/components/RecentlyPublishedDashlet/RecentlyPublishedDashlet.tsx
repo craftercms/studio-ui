@@ -115,8 +115,8 @@ export default function RecentlyPublishedDashlet() {
 
   const fetchHistory = useCallback(() => {
     setFetchingHistory(true);
-    fetchLegacyDeploymentHistory(siteId, 30, preferences.numItems, preferences.filterBy).subscribe(
-      (history) => {
+    fetchLegacyDeploymentHistory(siteId, 30, preferences.numItems, preferences.filterBy).subscribe({
+      next(history) {
         const parentItems = [];
         const childrenLookup = {};
         history.documents.forEach((document) => {
@@ -144,12 +144,20 @@ export default function RecentlyPublishedDashlet() {
         toggleCollapseAllItems(parentItems, true);
         setFetchingHistory(false);
       },
-      (e) => {
+      error(e) {
         setErrorHistory(e);
         setFetchingHistory(false);
       }
-    );
-  }, [siteId, preferences.numItems, preferences.filterBy, toggleCollapseAllItems, setItemsLookup]);
+    });
+  }, [
+    siteId,
+    preferences.numItems,
+    preferences.filterBy,
+    toggleCollapseAllItems,
+    setItemsLookup,
+    localeBranch.localeCode,
+    localeBranch.dateTimeFormatOptions
+  ]);
 
   useEffect(() => {
     fetchHistory();
