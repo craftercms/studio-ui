@@ -758,6 +758,7 @@ export default function Search(props: SearchProps) {
         currentView={currentView}
         keyword={keyword}
         showActionButton={Boolean(keyword)}
+        showTitle={mode === 'select' || (mode === 'default' && !embedded)}
         embedded={embedded}
       />
       <Drawer

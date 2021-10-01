@@ -65,6 +65,7 @@ const useStyles = makeStyles((theme: Theme) =>
 interface SiteSearchToolBarProps {
   keyword: string[] | string;
   showActionButton?: boolean;
+  showTitle?: boolean;
   currentView: string;
   embedded: boolean;
   handleChangeView(): void;
@@ -73,7 +74,8 @@ interface SiteSearchToolBarProps {
 }
 
 export default function SiteSearchToolBar(props: SiteSearchToolBarProps) {
-  const { onChange, keyword, showActionButton, handleChangeView, currentView, onMenuIconClick, embedded } = props;
+  const { onChange, keyword, showActionButton, showTitle, handleChangeView, currentView, onMenuIconClick, embedded } =
+    props;
   const { formatMessage } = useIntl();
   const classes = useStyles();
   return (
@@ -86,9 +88,11 @@ export default function SiteSearchToolBar(props: SiteSearchToolBarProps) {
             showCrafterIcon={!embedded}
           />
         </Tooltip>
-        <Typography variant="h5" component="h2" color="textPrimary">
-          {formatMessage(translations.search)}
-        </Typography>
+        {showTitle && (
+          <Typography variant="h5" component="h2" color="textPrimary">
+            {formatMessage(translations.search)}
+          </Typography>
+        )}
       </section>
       <section className={classes.searchBarContainer}>
         <SearchBar
