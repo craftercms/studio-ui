@@ -21,7 +21,7 @@ import {
   fetchAudiencesPanelModel,
   fetchAudiencesPanelModelComplete,
   fetchAudiencesPanelModelFailed,
-  RELOAD_REQUEST,
+  reloadRequest,
   SET_ACTIVE_TARGETING_MODEL,
   SET_ACTIVE_TARGETING_MODEL_COMPLETE,
   setActiveTargetingModelComplete as setActiveTargetingModelCompleteAction,
@@ -63,7 +63,7 @@ const setActiveTargetingModel: Epic = (action$, state$: Observable<GlobalState>)
 const setActiveTargetingModelComplete: Epic = (action$) =>
   action$.pipe(
     ofType(SET_ACTIVE_TARGETING_MODEL_COMPLETE),
-    tap(() => getHostToGuestBus().next({ type: RELOAD_REQUEST })),
+    tap(() => getHostToGuestBus().next({ type: reloadRequest.type })),
     ignoreElements()
   );
 

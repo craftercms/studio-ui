@@ -21,6 +21,7 @@ import { SyntheticEvent } from 'react';
 import { GuestStateObservable } from './models/GuestStore';
 import { GuestStandardAction } from './models/GuestStandardAction';
 import { GuestActionTypes } from './models/Actions';
+import { computedDragOver, scrolling, scrollingStopped } from './actions';
 
 export const clearAndListen$ = new Subject<void>();
 
@@ -51,13 +52,13 @@ export function initializeDragSubjects(state$: GuestStateObservable): Observable
   return merge(
     dragover$.pipe(
       throttleTime(100),
-      map((payload) => ({ type: 'computed_dragover' as GuestActionTypes, payload }))
+      map((payload) => ({ type: computedDragOver.type as GuestActionTypes, payload }))
     ),
     scrolling$.pipe(
       throttleTime(200),
       withLatestFrom(state$),
       filter(([, state]) => !state.dragContext?.scrolling),
-      map(() => ({ type: 'scrolling' as GuestActionTypes }))
+      map(() => ({ type: scrolling.type as GuestActionTypes }))
     ),
     // Scrolling ended
     scrolling$.pipe(
@@ -65,7 +66,7 @@ export function initializeDragSubjects(state$: GuestStateObservable): Observable
       // passed without another source emission should give
       // us the end of scrolling.
       debounceTime(200),
-      map(() => ({ type: 'scrolling_stopped' as GuestActionTypes }))
+      map(() => ({ type: scrollingStopped.type as GuestActionTypes }))
     )
   );
 }

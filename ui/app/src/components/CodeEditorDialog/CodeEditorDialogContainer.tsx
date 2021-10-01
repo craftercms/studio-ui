@@ -45,7 +45,7 @@ import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useDetailedItem } from '../../utils/hooks/useDetailedItem';
 import { useReferences } from '../../utils/hooks/useReferences';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
-import { RELOAD_REQUEST } from '../../state/actions/preview';
+import { reloadRequest } from '../../state/actions/preview';
 import { CodeEditorDialogContainerProps, getContentModelSnippets } from './utils';
 import { batchActions } from '../../state/actions/misc';
 
@@ -134,7 +134,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
               })
             ])
           );
-          getHostToGuestBus().next({ type: RELOAD_REQUEST });
+          getHostToGuestBus().next({ type: reloadRequest.type });
         },
         ({ response }) => {
           dispatch(showErrorDialog({ error: response }));

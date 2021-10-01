@@ -25,31 +25,30 @@ import * as contentController from '../../classes/ContentController';
 import { interval, merge, NEVER, Observable, of, Subject } from 'rxjs';
 import { clearAndListen$, destroyDragSubjects, dragover$, escape$, initializeDragSubjects } from '../subjects';
 import { initTinyMCE } from '../../controls/rte';
+import { EditingStatus, HighlightMode } from '../../constants';
 import {
-  ASSET_DRAG_ENDED,
-  ASSET_DRAG_STARTED,
-  CLEAR_CONTENT_TREE_FIELD_SELECTED,
-  CLEAR_SELECTED_ZONES,
-  COMPONENT_DRAG_ENDED,
-  COMPONENT_DRAG_STARTED,
-  COMPONENT_INSTANCE_DRAG_ENDED,
-  COMPONENT_INSTANCE_DRAG_STARTED,
-  CONTENT_TREE_FIELD_SELECTED,
-  CONTENT_TREE_SWITCH_FIELD_INSTANCE,
-  CONTENT_TYPE_DROP_TARGETS_REQUEST,
-  CONTENT_TYPE_DROP_TARGETS_RESPONSE,
-  DESKTOP_ASSET_DRAG_ENDED,
-  DESKTOP_ASSET_DRAG_STARTED,
-  DESKTOP_ASSET_DROP,
-  DESKTOP_ASSET_UPLOAD_COMPLETE,
-  DESKTOP_ASSET_UPLOAD_STARTED,
-  EditingStatus,
-  HighlightMode,
-  ICE_ZONE_SELECTED,
-  INSTANCE_DRAG_BEGUN,
-  INSTANCE_DRAG_ENDED,
-  TRASHED
-} from '../../constants';
+  assetDragEnded,
+  assetDragStarted,
+  clearContentTreeFieldSelected,
+  clearSelectedZones,
+  componentDragEnded,
+  componentDragStarted,
+  componentInstanceDragEnded,
+  componentInstanceDragStarted,
+  contentTreeFieldSelected,
+  contentTypeDropTargetsRequest,
+  contentTypeDropTargetsResponse,
+  desktopAssetDrop,
+  desktopAssetUploadComplete,
+  desktopAssetUploadStarted,
+  iceZoneSelected as iceZoneSelectedAction,
+  instanceDragBegun,
+  instanceDragEnded,
+  trashed,
+  contentTreeSwitchFieldInstance,
+  desktopAssetDragEnded,
+  desktopAssetDragStarted
+} from '@craftercms/studio-ui/build_tsc/state/actions/preview';
 import { GuestActionTypes, MouseEventActionObservable } from '../models/Actions';
 import { GuestState } from '../models/GuestStore';
 import { isNullOrUndefined, notNullOrUndefined, reversePluckProps } from '../../utils/object';
@@ -57,6 +56,12 @@ import { ElementRecord, ICEProps } from '../../models/InContextEditing';
 import * as ElementRegistry from '../../classes/ElementRegistry';
 import { get } from '../../classes/ElementRegistry';
 import { scrollToElement, scrollToIceProps } from '../../utils/dom';
+import {
+  dropzoneEnter,
+  dropzoneLeave,
+  iceZoneSelected as iceZoneSelectedActionGuest,
+  startListening
+} from '../actions';
 
 const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
   // region Multi-event propagation stopper epic
@@ -96,7 +101,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
           console.warn("Element is draggable but wasn't set draggable by craftercms");
         } else {
           event.stopPropagation();
-          post({ type: INSTANCE_DRAG_BEGUN, payload: iceId });
+          post({ type: instanceDragBegun.type, payload: iceId });
           const e = unwrapEvent<DragEvent>(event);
           e.dataTransfer.setData('text/plain', `${record.id}`);
           // noinspection CssInvalidHtmlTagReference
@@ -143,7 +148,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
       filter(([, state]) => state.status === EditingStatus.UPLOAD_ASSET_FROM_DESKTOP),
       switchMap(() =>
         interval(100).pipe(
-          mapTo({ type: DESKTOP_ASSET_DRAG_ENDED as GuestActionTypes }),
+          mapTo({ type: desktopAssetDragEnded.type as GuestActionTypes }),
           takeUntil(action$.pipe(ofType('document:dragover', 'dragover')))
         )
       )
@@ -218,7 +223,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
               const stream$ = new Subject();
               const reader = new FileReader();
               reader.onload = ((aImg: HTMLImageElement) => (event) => {
-                post(DESKTOP_ASSET_DROP, {
+                post(desktopAssetDrop.type, {
                   dataUrl: event.target.result,
                   name: file.name,
                   type: file.type,
@@ -228,8 +233,8 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
                 // Timeout gives the browser a chance to render the image so later rect
                 // calculations are working with the updated paint.
                 setTimeout(() => {
-                  stream$.next({ type: DESKTOP_ASSET_UPLOAD_STARTED, payload: { record } });
-                  stream$.next({ type: DESKTOP_ASSET_DRAG_ENDED });
+                  stream$.next({ type: desktopAssetUploadStarted.type, payload: { record } });
+                  stream$.next({ type: desktopAssetDragEnded.type });
                   stream$.complete();
                   stream$.unsubscribe();
                 });
@@ -237,7 +242,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
               reader.readAsDataURL(file);
               return stream$;
             } else {
-              return of({ type: DESKTOP_ASSET_DRAG_ENDED });
+              return of({ type: desktopAssetDragEnded.type });
             }
           }
         }
@@ -258,7 +263,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
         event.stopPropagation();
         switch (status) {
           case EditingStatus.UPLOAD_ASSET_FROM_DESKTOP:
-            return of({ type: DESKTOP_ASSET_DRAG_ENDED as GuestActionTypes });
+            return of({ type: desktopAssetDragEnded.type as GuestActionTypes });
         }
         return NEVER;
       })
@@ -275,7 +280,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
         const { event } = action.payload;
         event.preventDefault();
         event.stopPropagation();
-        post({ type: INSTANCE_DRAG_ENDED });
+        post({ type: instanceDragEnded.type });
         return of({ type: 'computed_dragend' as GuestActionTypes });
       })
     );
@@ -291,7 +296,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
   // region dragend_listener
   (action$: MouseEventActionObservable) => {
     return action$.pipe(
-      ofType(ASSET_DRAG_ENDED, COMPONENT_DRAG_ENDED, COMPONENT_INSTANCE_DRAG_ENDED, DESKTOP_ASSET_DRAG_ENDED),
+      ofType(assetDragEnded.type, componentDragEnded.type, componentInstanceDragEnded.type, desktopAssetDragEnded.type),
       map(() => ({ type: 'computed_dragend' }))
     );
   },
@@ -310,7 +315,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
         const validations = field?.validations;
         const type = field?.type;
         const iceZoneSelected = () => {
-          post(ICE_ZONE_SELECTED, {
+          post(iceZoneSelectedAction.type, {
             modelId: record.modelId,
             index: record.index,
             fieldId: record.fieldId,
@@ -320,11 +325,11 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
           return merge(
             escape$.pipe(
               takeUntil(clearAndListen$),
-              tap(() => post(CLEAR_SELECTED_ZONES)),
-              map(() => ({ type: 'start_listening' as GuestActionTypes })),
+              tap(() => post(clearSelectedZones.type)),
+              map(() => ({ type: startListening.type as GuestActionTypes })),
               take(1)
             ),
-            of({ type: 'ice_zone_selected' as GuestActionTypes, payload: action.payload })
+            of({ type: iceZoneSelectedActionGuest.type as GuestActionTypes, payload: action.payload })
           );
         };
         if (state.highlightMode === HighlightMode.ALL) {
@@ -375,7 +380,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
   // region Desktop Asset Upload (Complete)
   (action$: Observable<GuestStandardAction<{ path: string; record: ElementRecord }>>) => {
     return action$.pipe(
-      ofType(DESKTOP_ASSET_UPLOAD_COMPLETE),
+      ofType(desktopAssetUploadComplete.type),
       tap((action) => {
         const { record, path } = action.payload;
         contentController.updateField(record.modelId, record.fieldId[0], record.index, path);
@@ -397,7 +402,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
   // region content_type_drop_targets_request
   (action$: Observable<GuestStandardAction<{ contentTypeId: string }>>) => {
     return action$.pipe(
-      ofType(CONTENT_TYPE_DROP_TARGETS_REQUEST),
+      ofType(contentTypeDropTargetsRequest.type),
       tap((action) => {
         const { contentTypeId } = action.payload;
         const dropTargets = iceRegistry.getContentTypeDropTargets(contentTypeId).map((item) => {
@@ -412,7 +417,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
           };
         });
         post({
-          type: CONTENT_TYPE_DROP_TARGETS_RESPONSE,
+          type: contentTypeDropTargetsResponse.type,
           payload: { contentTypeId, dropTargets }
         });
       }),
@@ -424,8 +429,8 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
   // region Start listening
   (action$: MouseEventActionObservable) => {
     return action$.pipe(
-      ofType('start_listening'),
-      tap(() => post(CLEAR_SELECTED_ZONES)),
+      ofType(startListening.type),
+      tap(() => post(clearSelectedZones.type)),
       ignoreElements()
     );
   },
@@ -436,12 +441,12 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
     // onDrop doesn't execute when trashing on host side
     // Consider behaviour when running Host Guest-side
     return action$.pipe(
-      ofType(TRASHED),
+      ofType(trashed.type),
       tap((action) => {
         const { iceId } = action.payload;
         let { modelId, fieldId, index } = iceRegistry.getById(iceId);
         contentController.deleteItem(modelId, fieldId, index);
-        post({ type: INSTANCE_DRAG_ENDED });
+        post({ type: instanceDragEnded.type });
       }),
       // There's a raise condition where sometimes the dragend is
       // fired and sometimes is not upon dropping on the rubbish bin.
@@ -457,7 +462,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
     // onDrop doesn't execute when trashing on host side
     // Consider behaviour when running Host Guest-side
     return action$.pipe(
-      ofType('drop_zone_enter'),
+      ofType(dropzoneEnter.type),
       withLatestFrom(state$),
       tap(([action, state]) => {
         const { elementRecordId } = action.payload;
@@ -476,7 +481,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
   // region drop_zone_leave
   (action$: Observable<GuestStandardAction<{ elementRecordId: number }>>, state$) => {
     return action$.pipe(
-      ofType('drop_zone_leave'),
+      ofType(dropzoneLeave.type),
       withLatestFrom(state$),
       tap(([action, state]) => {
         if (!state.dragContext) {
@@ -487,7 +492,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
           (dropZone) => dropZone.elementRecordId === elementRecordId
         );
         if (validations.minCount) {
-          post({ type: INSTANCE_DRAG_ENDED });
+          post({ type: instanceDragEnded.type });
         }
         Object.values(validations).forEach((validation) => {
           // We dont want to show a validation message for maxCount on Leaving Dropzone
@@ -505,7 +510,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
   // region hostComponentDragStarted
   (action$: MouseEventActionObservable, state$) => {
     return action$.pipe(
-      ofType(COMPONENT_DRAG_STARTED),
+      ofType(componentDragStarted.type),
       withLatestFrom(state$),
       switchMap(([, state]) => {
         const contentType = state.dragContext.contentType;
@@ -533,7 +538,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
   // region host_instance_drag_started
   (action$: MouseEventActionObservable, state$) => {
     return action$.pipe(
-      ofType(COMPONENT_INSTANCE_DRAG_STARTED),
+      ofType(componentInstanceDragStarted.type),
       withLatestFrom(state$),
       switchMap(([, state]) => {
         if (isNullOrUndefined(state.dragContext.instance.craftercms.contentTypeId)) {
@@ -560,7 +565,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
   // region asset_drag_started
   (action$: MouseEventActionObservable, state$) => {
     return action$.pipe(
-      ofType(ASSET_DRAG_STARTED),
+      ofType(assetDragStarted.type),
       withLatestFrom(state$),
       switchMap(([, state]) => {
         if (isNullOrUndefined(state.dragContext.dragged.path)) {
@@ -577,7 +582,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
   // region desktop_asset_drag_started
   (action$: MouseEventActionObservable, state$) => {
     return action$.pipe(
-      ofType(DESKTOP_ASSET_DRAG_STARTED),
+      ofType(desktopAssetDragStarted.type),
       withLatestFrom(state$),
       switchMap(([, state]) => {
         if (isNullOrUndefined(state.dragContext.dragged)) {
@@ -594,14 +599,14 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
   // region content_tree_field_selected
   (action$: Observable<GuestStandardAction<{ iceProps: ICEProps; scrollElement: string; name: string }>>) => {
     return action$.pipe(
-      ofType(CONTENT_TREE_FIELD_SELECTED),
+      ofType(contentTreeFieldSelected.type),
       switchMap((action) => {
         const { iceProps, scrollElement, name } = action.payload;
 
         if (scrollToIceProps(iceProps, scrollElement)) {
           return escape$.pipe(
             takeUntil(clearAndListen$),
-            map(() => ({ type: CLEAR_CONTENT_TREE_FIELD_SELECTED as GuestActionTypes })),
+            map(() => ({ type: clearContentTreeFieldSelected.type as GuestActionTypes })),
             take(1)
           );
         } else {
@@ -617,7 +622,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 
   (action$: Observable<GuestStandardAction<{ type: string; scrollElement: string }>>, state$) => {
     return action$.pipe(
-      ofType(CONTENT_TREE_SWITCH_FIELD_INSTANCE),
+      ofType(contentTreeSwitchFieldInstance.type),
       withLatestFrom(state$),
       tap(([action, state]) => {
         const { scrollElement } = action.payload;

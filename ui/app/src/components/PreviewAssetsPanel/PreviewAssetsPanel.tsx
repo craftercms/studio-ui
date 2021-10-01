@@ -28,8 +28,8 @@ import { fromEvent, interval } from 'rxjs';
 import { filter, mapTo, share, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 import {
-  ASSET_DRAG_ENDED,
-  ASSET_DRAG_STARTED,
+  assetDragEnded,
+  assetDragStarted,
   fetchAssetsPanelItems,
   setPreviewEditMode
 } from '../../state/actions/preview';
@@ -189,14 +189,14 @@ export default function PreviewAssetsPanel() {
       dispatch(setPreviewEditMode({ editMode: true }));
     }
     hostToGuest$.next({
-      type: ASSET_DRAG_STARTED,
+      type: assetDragStarted.type,
       payload: mediaItem
     });
   };
 
   const onDragEnd = () =>
     hostToGuest$.next({
-      type: ASSET_DRAG_ENDED
+      type: assetDragEnded.type
     });
 
   const onDragDrop = useCallback(

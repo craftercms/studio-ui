@@ -16,12 +16,16 @@
 
 import $ from 'jquery';
 import { message$, post } from './utils/communicator';
-import { GUEST_CHECK_IN, GUEST_CHECK_OUT, NAVIGATION_REQUEST } from './constants';
+import {
+  guestCheckIn,
+  guestCheckOut,
+  navigationRequest
+} from '@craftercms/studio-ui/build_tsc/state/actions/preview';
 import { createLocationArgument } from './utils/util';
 
 message$.subscribe(function ({ type, payload }) {
   switch (type) {
-    case NAVIGATION_REQUEST: {
+    case navigationRequest.type: {
       window.location.href = payload.url;
       break;
     }
@@ -30,12 +34,12 @@ message$.subscribe(function ({ type, payload }) {
 
 const location = createLocationArgument();
 
-post(GUEST_CHECK_IN, { location, __CRAFTERCMS_GUEST_LANDING__: true });
+post(guestCheckIn.type, { location, __CRAFTERCMS_GUEST_LANDING__: true });
 
 setTimeout(() => {
   $('img').fadeIn();
 }, 700);
 
 window.onbeforeunload = () => {
-  post(GUEST_CHECK_OUT);
+  post(guestCheckOut.type);
 };

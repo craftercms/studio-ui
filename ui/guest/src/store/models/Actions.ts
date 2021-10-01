@@ -19,30 +19,48 @@ import { SyntheticEvent } from 'react';
 import { ElementRecord } from '../../models/InContextEditing';
 import GuestReducer from './GuestReducer';
 import {
-  ASSET_DRAG_ENDED,
-  ASSET_DRAG_STARTED,
-  CLEAR_CONTENT_TREE_FIELD_SELECTED,
-  CLEAR_HIGHLIGHTED_DROP_TARGETS,
-  COMPONENT_DRAG_ENDED,
-  COMPONENT_DRAG_STARTED,
-  COMPONENT_INSTANCE_DRAG_ENDED,
-  COMPONENT_INSTANCE_DRAG_STARTED,
-  CONTENT_TREE_FIELD_SELECTED,
-  CONTENT_TREE_SWITCH_FIELD_INSTANCE,
-  CONTENT_TYPE_DROP_TARGETS_REQUEST,
-  DESKTOP_ASSET_DRAG_ENDED,
-  DESKTOP_ASSET_DRAG_STARTED,
-  DESKTOP_ASSET_UPLOAD_COMPLETE,
-  DESKTOP_ASSET_UPLOAD_PROGRESS,
-  DESKTOP_ASSET_UPLOAD_STARTED,
-  EDIT_MODE_CHANGED,
-  HIGHLIGHT_MODE_CHANGED,
-  HOST_CHECK_IN,
-  TRASHED,
-  UPDATE_RTE_CONFIG
-} from '../../constants';
+  assetDragEnded,
+  assetDragStarted,
+  clearContentTreeFieldSelected,
+  clearHighlightedDropTargets,
+  componentDragEnded,
+  componentDragStarted,
+  componentInstanceDragEnded,
+  componentInstanceDragStarted,
+  contentTreeFieldSelected,
+  contentTypeDropTargetsRequest,
+  desktopAssetUploadComplete,
+  desktopAssetUploadProgress,
+  desktopAssetUploadStarted,
+  setPreviewEditMode,
+  hostCheckIn,
+  trashed,
+  updateRteConfig,
+  contentTreeSwitchFieldInstance,
+  desktopAssetDragEnded,
+  desktopAssetDragStarted,
+  highlightModeChanged
+} from '@craftercms/studio-ui/build_tsc/state/actions/preview';
 import { Observable } from 'rxjs';
-import { contentReady } from '../actions';
+import {
+  addAssetTypes,
+  computedDragEnd,
+  computedDragOver,
+  contentReady,
+  dropzoneEnter,
+  dropzoneLeave,
+  editComponentInline,
+  exitComponentInlineEdit,
+  iceZoneSelected,
+  insertComponent,
+  insertInstance,
+  moveComponent,
+  scrolling,
+  scrollingStopped,
+  setDropPosition,
+  setEditMode,
+  startListening
+} from '../actions';
 
 export type GuestActionTypes =
   // dom events
@@ -56,43 +74,43 @@ export type GuestActionTypes =
   | 'click'
   | 'dblclick'
   // other
-  | 'set_drop_position'
-  | 'add_asset_types'
-  | 'move_component'
-  | 'insert_component'
-  | 'insert_instance'
-  | 'computed_dragend'
-  | 'computed_dragover'
-  | 'ice_zone_selected'
-  | 'edit_component_inline'
-  | 'exit_component_inline_edit'
-  | 'set_edit_mode'
-  | 'start_listening'
-  | 'scrolling'
-  | 'scrolling_stopped'
-  | 'drop_zone_enter'
-  | 'drop_zone_leave'
-  | typeof COMPONENT_DRAG_STARTED
-  | typeof COMPONENT_DRAG_ENDED
-  | typeof COMPONENT_INSTANCE_DRAG_STARTED
-  | typeof COMPONENT_INSTANCE_DRAG_ENDED
-  | typeof DESKTOP_ASSET_DRAG_STARTED
-  | typeof DESKTOP_ASSET_UPLOAD_STARTED
-  | typeof DESKTOP_ASSET_UPLOAD_PROGRESS
-  | typeof DESKTOP_ASSET_UPLOAD_COMPLETE
-  | typeof DESKTOP_ASSET_DRAG_ENDED
-  | typeof ASSET_DRAG_STARTED
-  | typeof ASSET_DRAG_ENDED
-  | typeof TRASHED
-  | typeof EDIT_MODE_CHANGED
-  | typeof HIGHLIGHT_MODE_CHANGED
-  | typeof CLEAR_HIGHLIGHTED_DROP_TARGETS
-  | typeof CONTENT_TYPE_DROP_TARGETS_REQUEST
-  | typeof HOST_CHECK_IN
-  | typeof CONTENT_TREE_FIELD_SELECTED
-  | typeof CLEAR_CONTENT_TREE_FIELD_SELECTED
-  | typeof CONTENT_TREE_SWITCH_FIELD_INSTANCE
-  | typeof UPDATE_RTE_CONFIG
+  | typeof setDropPosition.type
+  | typeof addAssetTypes.type
+  | typeof moveComponent.type
+  | typeof insertComponent.type
+  | typeof insertInstance.type
+  | typeof computedDragEnd.type
+  | typeof computedDragOver.type
+  | typeof iceZoneSelected.type
+  | typeof editComponentInline.type
+  | typeof exitComponentInlineEdit.type
+  | typeof setEditMode.type
+  | typeof startListening.type
+  | typeof scrolling.type
+  | typeof scrollingStopped.type
+  | typeof dropzoneEnter.type
+  | typeof dropzoneLeave.type
+  | typeof componentDragStarted.type
+  | typeof componentDragEnded.type
+  | typeof componentInstanceDragStarted.type
+  | typeof componentInstanceDragEnded.type
+  | typeof desktopAssetDragStarted.type
+  | typeof desktopAssetUploadStarted.type
+  | typeof desktopAssetUploadProgress.type
+  | typeof desktopAssetUploadComplete.type
+  | typeof desktopAssetDragEnded.type
+  | typeof assetDragStarted.type
+  | typeof assetDragEnded.type
+  | typeof trashed.type
+  | typeof setPreviewEditMode.type
+  | typeof highlightModeChanged.type
+  | typeof clearHighlightedDropTargets.type
+  | typeof contentTypeDropTargetsRequest.type
+  | typeof hostCheckIn.type
+  | typeof contentTreeFieldSelected.type
+  | typeof clearContentTreeFieldSelected.type
+  | typeof contentTreeSwitchFieldInstance.type
+  | typeof updateRteConfig.type
   | 'document:dragover'
   | 'document:dragleave'
   | 'document:drop'

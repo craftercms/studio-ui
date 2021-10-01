@@ -19,46 +19,46 @@ import {
   changeCurrentUrl,
   checkInGuest,
   checkOutGuest,
-  CLEAR_SELECTED_ZONES,
+  clearSelectedZones,
   clearSelectForEdit,
-  CONTENT_TYPE_DROP_TARGETS_RESPONSE,
-  CONTENT_TYPES_RESPONSE,
-  DELETE_ITEM_OPERATION,
-  DELETE_ITEM_OPERATION_COMPLETE,
-  DESKTOP_ASSET_DROP,
-  DESKTOP_ASSET_UPLOAD_COMPLETE,
-  DESKTOP_ASSET_UPLOAD_PROGRESS,
-  DESKTOP_ASSET_UPLOAD_STARTED,
-  EDIT_MODE_TOGGLE_HOTKEY,
-  FETCH_GUEST_MODEL,
+  contentTypeDropTargetsResponse,
+  contentTypesResponse,
+  deleteItemOperation,
+  deleteItemOperationComplete,
+  desktopAssetDrop,
+  desktopAssetUploadComplete,
+  desktopAssetUploadProgress,
+  desktopAssetUploadStarted,
+  editModeToggleHotkey,
+  fetchGuestModel,
   fetchGuestModelComplete,
   fetchPrimaryGuestModelComplete,
-  GUEST_CHECK_IN,
-  GUEST_CHECK_OUT,
-  GUEST_SITE_LOAD,
+  guestCheckIn,
+  guestCheckOut,
+  guestSiteLoad,
   guestModelUpdated,
-  HOST_CHECK_IN,
-  ICE_ZONE_SELECTED,
+  hostCheckIn,
+  iceZoneSelected,
   initRichTextEditorConfig,
-  INSERT_COMPONENT_OPERATION,
-  INSERT_INSTANCE_OPERATION,
-  INSERT_ITEM_OPERATION,
-  INSERT_OPERATION_COMPLETE,
-  INSTANCE_DRAG_BEGUN,
-  INSTANCE_DRAG_ENDED,
-  MOVE_ITEM_OPERATION,
+  insertComponentOperation,
+  insertInstanceOperation,
+  insertItemOperation,
+  insertOperationComplete,
+  instanceDragBegun,
+  instanceDragEnded,
+  moveItemOperation,
   selectForEdit,
   setContentTypeDropTargets,
   setHighlightMode,
   setItemBeingDragged,
   setPreviewEditMode,
-  SHOW_EDIT_DIALOG,
-  SORT_ITEM_OPERATION,
-  SORT_ITEM_OPERATION_COMPLETE,
-  TRASHED,
-  UPDATE_FIELD_VALUE_OPERATION,
-  VALIDATION_MESSAGE,
-  UPDATE_RTE_CONFIG
+  showEditDialog as showEditDialogAction,
+  sortItemOperation,
+  sortItemOperationComplete,
+  trashed,
+  updateFieldValueOperation,
+  validationMessage,
+  updateRteConfig
 } from '../../state/actions/preview';
 import {
   deleteItem,
@@ -139,7 +139,7 @@ const issueDescriptorRequest = (props) => {
     .pipe(
       // If another check in comes while loading, this request should be cancelled.
       // This may happen if navigating rapidly from one page to another (guest-side).
-      takeUntil(guestToHost$.pipe(filter(({ type }) => [GUEST_CHECK_IN, GUEST_CHECK_OUT].includes(type)))),
+      takeUntil(guestToHost$.pipe(filter(({ type }) => [guestCheckIn.type, guestCheckOut.type].includes(type)))),
       switchMap((obj: { model: ContentInstance; modelLookup: LookupTable<ContentInstance> }) => {
         let requests: Array<Observable<ContentInstance>> = [];
         Object.values(obj.model.craftercms.sourceMap).forEach((path) => {
@@ -230,7 +230,7 @@ export function PreviewConcierge(props: any) {
 
   function clearSelectedZonesHandler() {
     dispatch(clearSelectForEdit());
-    getHostToGuestBus().next({ type: CLEAR_SELECTED_ZONES });
+    getHostToGuestBus().next({ type: clearSelectedZones.type });
   }
 
   // region Legacy Guest pencil repaint
@@ -283,7 +283,7 @@ export function PreviewConcierge(props: any) {
 
   // region Update rte config
   useEffect(() => {
-    if (rteConfig) getHostToGuestBus().next({ type: UPDATE_RTE_CONFIG, payload: { rteConfig } });
+    if (rteConfig) getHostToGuestBus().next({ type: updateRteConfig.type, payload: { rteConfig } });
   }, [rteConfig]);
   // endregion
 
@@ -341,15 +341,15 @@ export function PreviewConcierge(props: any) {
     const guestToHostSubscription = guestToHost$.subscribe((action) => {
       const { type, payload } = action;
       switch (type) {
-        case GUEST_SITE_LOAD:
-        case GUEST_CHECK_IN:
+        case guestSiteLoad.type:
+        case guestCheckIn.type:
           clearTimeout(guestDetectionTimeoutRef.current);
           setGuestDetectionSnackbarOpen(false);
           break;
       }
       switch (type) {
         // region Legacy preview sites messages
-        case GUEST_SITE_LOAD: {
+        case guestSiteLoad.type: {
           const { url, location } = payload;
           const path = getPathFromPreviewURL(url);
           dispatch(checkInGuest({ location, site: siteId, path }));
@@ -377,11 +377,11 @@ export function PreviewConcierge(props: any) {
           break;
         }
         // endregion
-        case GUEST_CHECK_IN:
-        case FETCH_GUEST_MODEL: {
-          if (type === GUEST_CHECK_IN) {
+        case guestCheckIn.type:
+        case fetchGuestModel.type: {
+          if (type === guestCheckIn.type) {
             getHostToGuestBus().next({
-              type: HOST_CHECK_IN,
+              type: hostCheckIn.type,
               payload: { editMode: false, highlightMode, rteConfig: rteConfig ?? {} }
             });
             dispatch(checkInGuest(payload));
@@ -403,7 +403,7 @@ export function PreviewConcierge(props: any) {
               // If the content types have already been loaded, contentTypes$ subject will emit
               // immediately. If not, it will emit when the content type fetch payload does arrive.
               contentTypes$.pipe(take(1)).subscribe((payload) => {
-                hostToGuest$.next({ type: CONTENT_TYPES_RESPONSE, payload });
+                hostToGuest$.next({ type: contentTypesResponse.type, payload });
               });
 
               issueDescriptorRequest({
@@ -431,13 +431,13 @@ export function PreviewConcierge(props: any) {
           }
           break;
         }
-        case GUEST_CHECK_OUT: {
+        case guestCheckOut.type: {
           requestedSourceMapPaths.current = {};
           dispatch(checkOutGuest());
           startGuestDetectionTimeout(guestDetectionTimeoutRef, setGuestDetectionSnackbarOpen);
           break;
         }
-        case SORT_ITEM_OPERATION: {
+        case sortItemOperation.type: {
           const { fieldId, currentIndex, targetIndex } = payload;
           let { modelId, parentModelId } = payload;
           const path = models[modelId ?? parentModelId].craftercms.path;
@@ -473,7 +473,7 @@ export function PreviewConcierge(props: any) {
                 completeAction: fetchGuestModelComplete
               });
               hostToHost$.next({
-                type: SORT_ITEM_OPERATION_COMPLETE,
+                type: sortItemOperationComplete.type,
                 payload
               });
               enqueueSnackbar(formatMessage(guestMessages.sortOperationComplete));
@@ -485,7 +485,7 @@ export function PreviewConcierge(props: any) {
           );
           break;
         }
-        case INSERT_COMPONENT_OPERATION: {
+        case insertComponentOperation.type: {
           const { fieldId, targetIndex, instance, shared } = payload;
           let { modelId, parentModelId } = payload;
           const path = models[modelId ?? parentModelId].craftercms.path;
@@ -516,7 +516,7 @@ export function PreviewConcierge(props: any) {
               });
 
               hostToGuest$.next({
-                type: INSERT_OPERATION_COMPLETE,
+                type: insertOperationComplete.type,
                 payload: { ...payload, currentFullUrl: `${guestBase}${currentUrlPath}` }
               });
               enqueueSnackbar(formatMessage(guestMessages.insertOperationComplete));
@@ -528,7 +528,7 @@ export function PreviewConcierge(props: any) {
           );
           break;
         }
-        case INSERT_INSTANCE_OPERATION: {
+        case insertInstanceOperation.type: {
           const { fieldId, targetIndex, instance } = payload;
           let { modelId, parentModelId } = payload;
           const path = models[modelId ?? parentModelId].craftercms.path;
@@ -557,7 +557,7 @@ export function PreviewConcierge(props: any) {
               });
 
               hostToGuest$.next({
-                type: INSERT_OPERATION_COMPLETE,
+                type: insertOperationComplete.type,
                 payload: { ...payload, currentFullUrl: `${guestBase}${currentUrlPath}` }
               });
               enqueueSnackbar(formatMessage(guestMessages.insertOperationComplete));
@@ -569,11 +569,11 @@ export function PreviewConcierge(props: any) {
           );
           break;
         }
-        case INSERT_ITEM_OPERATION: {
+        case insertItemOperation.type: {
           enqueueSnackbar(formatMessage(guestMessages.insertItemOperation));
           break;
         }
-        case MOVE_ITEM_OPERATION: {
+        case moveItemOperation.type: {
           const { originalFieldId, originalIndex, targetFieldId, targetIndex } = payload;
           let { originalModelId, originalParentModelId, targetModelId, targetParentModelId } = payload;
 
@@ -608,7 +608,7 @@ export function PreviewConcierge(props: any) {
           );
           break;
         }
-        case DELETE_ITEM_OPERATION: {
+        case deleteItemOperation.type: {
           const { fieldId, index } = payload;
           let { modelId, parentModelId } = payload;
           const path = models[modelId ?? parentModelId].craftercms.path;
@@ -636,7 +636,7 @@ export function PreviewConcierge(props: any) {
               });
 
               hostToHost$.next({
-                type: DELETE_ITEM_OPERATION_COMPLETE,
+                type: deleteItemOperationComplete.type,
                 payload
               });
               enqueueSnackbar(formatMessage(guestMessages.deleteOperationComplete));
@@ -648,7 +648,7 @@ export function PreviewConcierge(props: any) {
           );
           break;
         }
-        case UPDATE_FIELD_VALUE_OPERATION: {
+        case updateFieldValueOperation.type: {
           const { fieldId, index, value } = payload;
           let { modelId, parentModelId } = payload;
 
@@ -675,22 +675,22 @@ export function PreviewConcierge(props: any) {
           );
           break;
         }
-        case ICE_ZONE_SELECTED: {
+        case iceZoneSelected.type: {
           dispatch(selectForEdit(payload));
           break;
         }
-        case CLEAR_SELECTED_ZONES: {
+        case clearSelectedZones.type: {
           dispatch(clearSelectForEdit());
           break;
         }
-        case INSTANCE_DRAG_BEGUN:
-        case INSTANCE_DRAG_ENDED: {
-          dispatch(setItemBeingDragged(type === INSTANCE_DRAG_BEGUN ? payload : null));
+        case instanceDragBegun.type:
+        case instanceDragEnded.type: {
+          dispatch(setItemBeingDragged(type === instanceDragBegun.type ? payload : null));
           break;
         }
-        case DESKTOP_ASSET_DROP: {
+        case desktopAssetDrop.type: {
           enqueueSnackbar(formatMessage(guestMessages.assetUploadStarted));
-          hostToHost$.next({ type: DESKTOP_ASSET_UPLOAD_STARTED, payload });
+          hostToHost$.next({ type: desktopAssetUploadStarted.type, payload });
           const uppySubscription = uploadDataUrl(
             siteId,
             pluckProps(payload, 'name', 'type', 'dataUrl'),
@@ -707,7 +707,7 @@ export function PreviewConcierge(props: any) {
                   parseInt(((progress.bytesUploaded / progress.bytesTotal) * 100).toFixed(2))
                 );
                 hostToGuest$.next({
-                  type: DESKTOP_ASSET_UPLOAD_PROGRESS,
+                  type: desktopAssetUploadProgress.type,
                   payload: {
                     record: payload.record,
                     percentage
@@ -720,7 +720,7 @@ export function PreviewConcierge(props: any) {
               },
               () => {
                 hostToGuest$.next({
-                  type: DESKTOP_ASSET_UPLOAD_COMPLETE,
+                  type: desktopAssetUploadComplete.type,
                   payload: {
                     record: payload.record,
                     path: `/static-assets/images/${payload.record.modelId}/${payload.name}`
@@ -730,28 +730,28 @@ export function PreviewConcierge(props: any) {
             );
           const sub = hostToHost$.subscribe((action) => {
             const { type, payload: uploadFile } = action;
-            if (type === DESKTOP_ASSET_UPLOAD_STARTED && uploadFile.record.id === payload.record.id) {
+            if (type === desktopAssetUploadStarted.type && uploadFile.record.id === payload.record.id) {
               sub.unsubscribe();
               uppySubscription.unsubscribe();
             }
           });
           break;
         }
-        case CONTENT_TYPE_DROP_TARGETS_RESPONSE: {
+        case contentTypeDropTargetsResponse.type: {
           dispatch(setContentTypeDropTargets(payload));
           break;
         }
-        case VALIDATION_MESSAGE: {
+        case validationMessage.type: {
           enqueueSnackbar(formatMessage(guestMessages[payload.id], payload.values ?? {}), {
             variant: payload.level === 'required' ? 'error' : payload.level === 'suggestion' ? 'warning' : 'info'
           });
           break;
         }
-        case EDIT_MODE_TOGGLE_HOTKEY: {
+        case editModeToggleHotkey.type: {
           conditionallyToggleEditMode(payload.mode);
           break;
         }
-        case SHOW_EDIT_DIALOG: {
+        case showEditDialogAction.type: {
           dispatch(
             showEditDialog({
               authoringBase,
@@ -762,9 +762,9 @@ export function PreviewConcierge(props: any) {
           );
           break;
         }
-        case UPDATE_RTE_CONFIG: {
+        case updateRteConfig.type: {
           getHostToGuestBus().next({
-            type: UPDATE_RTE_CONFIG,
+            type: updateRteConfig.type,
             payload: { rteConfig: rteConfig ?? {} }
           });
         }
@@ -824,7 +824,7 @@ export function PreviewConcierge(props: any) {
       {props.children}
       <RubbishBin
         open={nnou(guest?.itemBeingDragged)}
-        onTrash={() => getHostToGuestBus().next({ type: TRASHED, payload: guest.itemBeingDragged })}
+        onTrash={() => getHostToGuestBus().next({ type: trashed.type, payload: guest.itemBeingDragged })}
       />
       <EditFormPanel open={nnou(guest?.selected)} onDismiss={clearSelectedZonesHandler} />
       <Snackbar

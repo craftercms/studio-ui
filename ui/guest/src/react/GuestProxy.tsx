@@ -34,13 +34,13 @@ import * as ContentType from '../utils/contentType';
 import { message$ } from '../utils/communicator';
 import { Operation } from '../models/Operations';
 import {
-  DELETE_ITEM_OPERATION,
-  INSERT_COMPONENT_OPERATION,
-  INSERT_INSTANCE_OPERATION,
-  MOVE_ITEM_OPERATION,
-  SORT_ITEM_OPERATION,
-  UPDATE_FIELD_VALUE_OPERATION
-} from '../constants';
+  deleteItemOperation,
+  insertComponentOperation,
+  insertInstanceOperation,
+  moveItemOperation,
+  sortItemOperation,
+  updateFieldValueOperation
+} from '@craftercms/studio-ui/build_tsc/state/actions/preview';
 import { GuestState } from '../store/models/GuestStore';
 import { notNullOrUndefined } from '../utils/object';
 import { forEach } from '../utils/array';
@@ -171,7 +171,7 @@ export function GuestProxy() {
 
     const sub = operations$.subscribe((op: Operation) => {
       switch (op.type) {
-        case SORT_ITEM_OPERATION: {
+        case sortItemOperation.type: {
           let [modelId, fieldId, index, newIndex] = op.args;
           const currentIndexParsed = typeof index === 'number' ? index : parseInt(popPiece(index));
           const targetIndexParsed = typeof newIndex === 'number' ? newIndex : parseInt(popPiece(newIndex));
@@ -200,7 +200,7 @@ export function GuestProxy() {
           updateElementRegistrations(Array.from($el.parent().children()), 'sort', index, newIndex);
           break;
         }
-        case MOVE_ITEM_OPERATION: {
+        case moveItemOperation.type: {
           const [
             modelId /* : string */,
             fieldId /* : string */,
@@ -263,7 +263,7 @@ export function GuestProxy() {
 
           break;
         }
-        case DELETE_ITEM_OPERATION: {
+        case deleteItemOperation.type: {
           const [modelId, fieldId, index] = op.args;
 
           const iceId = iceRegistry.exists({ modelId, fieldId, index });
@@ -281,8 +281,8 @@ export function GuestProxy() {
 
           break;
         }
-        case INSERT_COMPONENT_OPERATION:
-        case INSERT_INSTANCE_OPERATION: {
+        case insertComponentOperation.type:
+        case insertInstanceOperation.type: {
           const { modelId, fieldId, targetIndex, instance } = op.args;
 
           const $spinner = $(`
@@ -326,7 +326,7 @@ export function GuestProxy() {
 
           break;
         }
-        case UPDATE_FIELD_VALUE_OPERATION:
+        case updateFieldValueOperation.type:
           const { modelId, fieldId, index = 0, value } = op.args;
           const updatedField: JQuery<any> = $(
             `[data-craftercms-model-id="${modelId}"][data-craftercms-field-id="${fieldId}"]`

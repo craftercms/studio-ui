@@ -22,8 +22,8 @@ import { ErrorBoundary } from '../SystemStatus/ErrorBoundary';
 import LoadingState from '../SystemStatus/LoadingState';
 import ContentInstance from '../../models/ContentInstance';
 import {
-  COMPONENT_INSTANCE_DRAG_ENDED,
-  COMPONENT_INSTANCE_DRAG_STARTED,
+  componentInstanceDragEnded,
+  componentInstanceDragStarted,
   fetchComponentsByContentType,
   setContentTypeFilter,
   setPreviewEditMode
@@ -101,7 +101,7 @@ export default function PreviewBrowseComponentsPanel() {
       dispatch(setPreviewEditMode({ editMode: true }));
     }
     hostToGuest$.next({
-      type: COMPONENT_INSTANCE_DRAG_STARTED,
+      type: componentInstanceDragStarted.type,
       payload: {
         instance: item,
         contentType: contentTypesBranch.byId[item.craftercms.contentTypeId]
@@ -109,7 +109,7 @@ export default function PreviewBrowseComponentsPanel() {
     });
   };
 
-  const onDragEnd = () => hostToGuest$.next({ type: COMPONENT_INSTANCE_DRAG_ENDED });
+  const onDragEnd = () => hostToGuest$.next({ type: componentInstanceDragEnded.type });
 
   const onSearch = useCallback(
     (keywords: string) => dispatch(fetchComponentsByContentType({ keywords, offset: 0 })),

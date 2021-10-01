@@ -25,10 +25,10 @@ import { DraggablePanelListItem } from '../../modules/Preview/Tools/DraggablePan
 import TablePagination from '@mui/material/TablePagination';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 import {
-  ASSET_DRAG_ENDED,
-  ASSET_DRAG_STARTED,
-  COMPONENT_INSTANCE_DRAG_ENDED,
-  COMPONENT_INSTANCE_DRAG_STARTED,
+  assetDragEnded,
+  assetDragStarted,
+  componentInstanceDragEnded,
+  componentInstanceDragStarted,
   setPreviewEditMode
 } from '../../state/actions/preview';
 import ContentInstance from '../../models/ContentInstance';
@@ -251,12 +251,12 @@ export default function PreviewSearchPanel() {
     if (item.type === 'Component') {
       const instance: ContentInstance = state.contentInstanceLookup[item.path];
       hostToGuest$.next({
-        type: COMPONENT_INSTANCE_DRAG_STARTED,
+        type: componentInstanceDragStarted.type,
         payload: { instance, contentType: contentTypesLookup[instance.craftercms.contentTypeId] }
       });
     } else {
       hostToGuest$.next({
-        type: ASSET_DRAG_STARTED,
+        type: assetDragStarted.type,
         payload: item
       });
     }
@@ -264,7 +264,7 @@ export default function PreviewSearchPanel() {
 
   const onDragEnd = (item: SearchItem) => {
     hostToGuest$.next({
-      type: item.type === 'Component' ? COMPONENT_INSTANCE_DRAG_ENDED : ASSET_DRAG_ENDED
+      type: item.type === 'Component' ? componentInstanceDragEnded.type : assetDragEnded.type
     });
   };
 

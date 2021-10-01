@@ -19,7 +19,7 @@ import { defineMessages, useIntl } from 'react-intl';
 import MenuItem from '@mui/material/MenuItem';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
-import { CONTENT_TREE_FIELD_SELECTED, setContentTypeFilter, setPreviewEditMode } from '../../state/actions/preview';
+import { contentTreeFieldSelected, setContentTypeFilter, setPreviewEditMode } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 import Suspencified from '../SystemStatus/Suspencified';
 import ContentInstance from '../../models/ContentInstance';
@@ -163,7 +163,7 @@ export default function PreviewInPageInstancesPanel() {
       dispatch(setPreviewEditMode({ editMode: true }));
     }
     hostToGuest$.next({
-      type: CONTENT_TREE_FIELD_SELECTED,
+      type: contentTreeFieldSelected.type,
       payload: {
         name: instance.craftercms.label,
         modelId: instance.craftercms.id,

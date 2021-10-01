@@ -20,7 +20,7 @@ import {
   CLEAR_DROP_TARGETS,
   CLEAR_SELECT_FOR_EDIT,
   closeToolsPanel,
-  CONTENT_TYPE_DROP_TARGETS_RESPONSE,
+  contentTypeDropTargetsResponse,
   FETCH_ASSETS_PANEL_ITEMS,
   FETCH_ASSETS_PANEL_ITEMS_COMPLETE,
   FETCH_ASSETS_PANEL_ITEMS_FAILED,
@@ -33,8 +33,8 @@ import {
   fetchComponentsByContentTypeFailed,
   fetchGuestModelComplete,
   fetchPrimaryGuestModelComplete,
-  GUEST_CHECK_IN,
-  GUEST_CHECK_OUT,
+  guestCheckIn,
+  guestCheckOut,
   guestModelUpdated,
   guestPathUpdated,
   initIcePanelConfig,
@@ -245,7 +245,7 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
       currentModels: payload
     };
   },
-  [GUEST_CHECK_IN]: (state, { payload }) => {
+  [guestCheckIn.type]: (state, { payload }) => {
     const { location, modelId, path } = payload;
     const href = location.href;
     const origin = location.origin;
@@ -265,7 +265,7 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
       }
     };
   },
-  [GUEST_CHECK_OUT]: (state) => {
+  [guestCheckOut.type]: (state) => {
     let nextState = state;
     if (state.guest) {
       nextState = {
@@ -448,7 +448,7 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
     ...state,
     components: { ...state.components, error: payload.response, isFetching: false }
   }),
-  [CONTENT_TYPE_DROP_TARGETS_RESPONSE]: (state, { payload }) => ({
+  [contentTypeDropTargetsResponse.type]: (state, { payload }) => ({
     ...state,
     dropTargets: {
       ...state.dropTargets,

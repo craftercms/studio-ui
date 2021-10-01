@@ -38,7 +38,7 @@ import { completeDetailedItem } from '../../state/actions/content';
 import { showItemMegaMenu } from '../../state/actions/dialogs';
 import { getNumOfMenuOptionsForItem } from '../../utils/content';
 import Tooltip from '@mui/material/Tooltip';
-import { changeCurrentUrl, RELOAD_REQUEST } from '../../state/actions/preview';
+import { changeCurrentUrl, reloadRequest } from '../../state/actions/preview';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 import PreviewBackButton from '../PreviewBackButton';
 import PreviewForwardButton from '../PreviewForwardButton';
@@ -152,7 +152,7 @@ export function PreviewAddressBar(props: AddressBarProps) {
   };
 
   const onRefresh = () => {
-    getHostToGuestBus().next({ type: RELOAD_REQUEST });
+    getHostToGuestBus().next({ type: reloadRequest.type });
   };
 
   return (

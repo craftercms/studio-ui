@@ -26,52 +26,66 @@ import LookupTable from '../../models/LookupTable';
 import { DetailedItem } from '../../models/Item';
 import { HighlightMode } from '../../models/GlobalState';
 
-// region Accommodation Actions
-// To be moved to a common file for sharing across apps
+// region Accommodation Action Creators
 
-export const HOST_CHECK_IN = 'HOST_CHECK_IN';
-export const GUEST_CHECK_IN = 'GUEST_CHECK_IN';
-export const GUEST_CHECK_OUT = 'GUEST_CHECK_OUT';
-export const FETCH_GUEST_MODEL = 'FETCH_GUEST_MODEL';
-export const GUEST_SITE_LOAD = 'GUEST_SITE_LOAD'; // Legacy guest check in
-export const SORT_ITEM_OPERATION = 'SORT_ITEM_OPERATION';
-export const SORT_ITEM_OPERATION_COMPLETE = 'SORT_ITEM_OPERATION_COMPLETE';
-export const INSERT_COMPONENT_OPERATION = 'INSERT_COMPONENT_OPERATION';
-export const INSERT_OPERATION_COMPLETE = 'INSERT_OPERATION_COMPLETE';
-export const INSERT_INSTANCE_OPERATION = 'INSERT_INSTANCE_OPERATION';
-export const INSERT_ITEM_OPERATION = 'INSERT_ITEM_OPERATION';
-export const MOVE_ITEM_OPERATION = 'MOVE_ITEM_OPERATION';
-export const DELETE_ITEM_OPERATION = 'DELETE_ITEM_OPERATION';
-export const DELETE_ITEM_OPERATION_COMPLETE = 'DELETE_ITEM_OPERATION_COMPLETE';
-export const UPDATE_FIELD_VALUE_OPERATION = 'UPDATE_FIELD_VALUE_OPERATION';
-export const ICE_ZONE_SELECTED = 'ICE_ZONE_SELECTED';
-export const CLEAR_SELECTED_ZONES = 'CLEAR_SELECTED_ZONES';
-export const ASSET_DRAG_STARTED = 'ASSET_DRAG_STARTED';
-export const ASSET_DRAG_ENDED = 'ASSET_DRAG_ENDED';
-export const COMPONENT_DRAG_STARTED = 'COMPONENT_DRAG_STARTED';
-export const COMPONENT_DRAG_ENDED = 'COMPONENT_DRAG_ENDED';
-export const TRASHED = 'TRASHED';
-export const CONTENT_TYPES_RESPONSE = 'CONTENT_TYPES_RESPONSE';
-export const INSTANCE_DRAG_BEGUN = 'INSTANCE_DRAG_BEGUN';
-export const INSTANCE_DRAG_ENDED = 'INSTANCE_DRAG_ENDED';
-export const NAVIGATION_REQUEST = 'NAVIGATION_REQUEST';
-export const RELOAD_REQUEST = 'RELOAD_REQUEST';
-export const DESKTOP_ASSET_DROP = 'DESKTOP_ASSET_DROP';
-export const DESKTOP_ASSET_UPLOAD_COMPLETE = 'DESKTOP_ASSET_UPLOAD_COMPLETE';
-export const DESKTOP_ASSET_UPLOAD_PROGRESS = 'DESKTOP_ASSET_UPLOAD_PROGRESS';
-export const DESKTOP_ASSET_UPLOAD_STARTED = 'DESKTOP_ASSET_UPLOAD_STARTED';
-export const COMPONENT_INSTANCE_DRAG_STARTED = 'COMPONENT_INSTANCE_DRAG_STARTED';
-export const COMPONENT_INSTANCE_DRAG_ENDED = 'COMPONENT_INSTANCE_DRAG_ENDED';
-export const CONTENT_TYPE_DROP_TARGETS_REQUEST = 'CONTENT_TYPE_DROP_TARGETS_REQUEST';
-export const CONTENT_TYPE_DROP_TARGETS_RESPONSE = 'CONTENT_TYPE_DROP_TARGETS_RESPONSE';
-export const SCROLL_TO_DROP_TARGET = 'SCROLL_TO_DROP_TARGET';
-export const CLEAR_HIGHLIGHTED_DROP_TARGETS = 'CLEAR_HIGHLIGHTED_DROP_TARGETS';
-export const CONTENT_TREE_FIELD_SELECTED = 'CONTENT_TREE_FIELD_SELECTED';
-export const CLEAR_CONTENT_TREE_FIELD_SELECTED = 'CLEAR_CONTENT_TREE_FIELD_SELECTED';
-export const VALIDATION_MESSAGE = 'VALIDATION_MESSAGE';
-export const EDIT_MODE_TOGGLE_HOTKEY = 'EDIT_MODE_TOGGLE_HOTKEY';
-export const SHOW_EDIT_DIALOG = 'SHOW_EDIT_DIALOG';
-export const UPDATE_RTE_CONFIG = 'UPDATE_RTE_CONFIG';
+export const hostCheckIn = /*#__PURE__*/ createAction('HOST_CHECK_IN');
+export const guestCheckIn = /*#__PURE__*/ createAction('GUEST_CHECK_IN');
+export const guestCheckOut = /*#__PURE__*/ createAction('GUEST_CHECK_OUT');
+export const fetchGuestModel = /*#__PURE__*/ createAction('FETCH_GUEST_MODEL');
+export const guestSiteLoad = /*#__PURE__*/ createAction('GUEST_SITE_LOAD'); // Legacy guest check in
+export const sortItemOperation = /*#__PURE__*/ createAction('SORT_ITEM_OPERATION');
+export const sortItemOperationComplete = /*#__PURE__*/ createAction('SORT_ITEM_OPERATION_COMPLETE');
+export const insertComponentOperation = /*#__PURE__*/ createAction('INSERT_COMPONENT_OPERATION');
+export const insertOperationComplete = /*#__PURE__*/ createAction('INSERT_OPERATION_COMPLETE');
+export const insertInstanceOperation = /*#__PURE__*/ createAction('INSERT_INSTANCE_OPERATION');
+export const insertItemOperation = /*#__PURE__*/ createAction('INSERT_ITEM_OPERATION');
+export const moveItemOperation = /*#__PURE__*/ createAction('MOVE_ITEM_OPERATION');
+export const deleteItemOperation = /*#__PURE__*/ createAction('DELETE_ITEM_OPERATION');
+export const deleteItemOperationComplete = /*#__PURE__*/ createAction('DELETE_ITEM_OPERATION_COMPLETE');
+export const updateFieldValueOperation = /*#__PURE__*/ createAction('UPDATE_FIELD_VALUE_OPERATION');
+export const iceZoneSelected = /*#__PURE__*/ createAction('ICE_ZONE_SELECTED');
+export const clearSelectedZones = /*#__PURE__*/ createAction('CLEAR_SELECTED_ZONES');
+export const assetDragStarted = /*#__PURE__*/ createAction('ASSET_DRAG_STARTED');
+export const assetDragEnded = /*#__PURE__*/ createAction('ASSET_DRAG_ENDED');
+export const componentDragStarted = /*#__PURE__*/ createAction('COMPONENT_DRAG_STARTED');
+export const componentDragEnded = /*#__PURE__*/ createAction('COMPONENT_DRAG_ENDED');
+export const trashed = /*#__PURE__*/ createAction<{ iceId: number }>('TRASHED');
+export const contentTypesResponse = /*#__PURE__*/ createAction('CONTENT_TYPES_RESPONSE');
+export const instanceDragBegun = /*#__PURE__*/ createAction('INSTANCE_DRAG_BEGUN');
+export const instanceDragEnded = /*#__PURE__*/ createAction('INSTANCE_DRAG_ENDED');
+export const navigationRequest = /*#__PURE__*/ createAction('NAVIGATION_REQUEST');
+export const reloadRequest = /*#__PURE__*/ createAction('RELOAD_REQUEST');
+export const desktopAssetDrop = /*#__PURE__*/ createAction('DESKTOP_ASSET_DROP');
+export const desktopAssetUploadComplete = /*#__PURE__*/ createAction<{ record; path: string }>(
+  'DESKTOP_ASSET_UPLOAD_COMPLETE'
+);
+export const desktopAssetUploadProgress = /*#__PURE__*/ createAction('DESKTOP_ASSET_UPLOAD_PROGRESS');
+export const desktopAssetUploadStarted = /*#__PURE__*/ createAction('DESKTOP_ASSET_UPLOAD_STARTED');
+export const componentInstanceDragStarted = /*#__PURE__*/ createAction('COMPONENT_INSTANCE_DRAG_STARTED');
+export const componentInstanceDragEnded = /*#__PURE__*/ createAction('COMPONENT_INSTANCE_DRAG_ENDED');
+export const contentTypeDropTargetsRequest = /*#__PURE__*/ createAction<{ contentTypeId: string }>(
+  'CONTENT_TYPE_DROP_TARGETS_REQUEST'
+);
+export const contentTypeDropTargetsResponse = /*#__PURE__*/ createAction('CONTENT_TYPE_DROP_TARGETS_RESPONSE');
+export const scrollToDropTarget = /*#__PURE__*/ createAction('SCROLL_TO_DROP_TARGET');
+export const clearHighlightedDropTargets = /*#__PURE__*/ createAction('CLEAR_HIGHLIGHTED_DROP_TARGETS');
+export const contentTreeFieldSelected =
+  /*#__PURE__*/ createAction<{ iceProps; scrollElement: string; name: string }>('CONTENT_TREE_FIELD_SELECTED');
+export const clearContentTreeFieldSelected = /*#__PURE__*/ createAction('CLEAR_CONTENT_TREE_FIELD_SELECTED');
+export const validationMessage = /*#__PURE__*/ createAction('VALIDATION_MESSAGE');
+export const editModeToggleHotkey = /*#__PURE__*/ createAction('EDIT_MODE_TOGGLE_HOTKEY');
+export const showEditDialog = /*#__PURE__*/ createAction('SHOW_EDIT_DIALOG');
+export const updateRteConfig = /*#__PURE__*/ createAction('UPDATE_RTE_CONFIG');
+export const highlightModeChanged = /*#__PURE__*/ createAction('HIGHLIGHT_MODE_CHANGED');
+export const contentTypesRequest = /*#__PURE__*/ createAction('CONTENT_TYPES_REQUEST');
+export const guestModelsReceived = /*#__PURE__*/ createAction('GUEST_MODELS_RECEIVED');
+export const desktopAssetDragStarted = /*#__PURE__*/ createAction('DESKTOP_ASSET_DRAG_STARTED');
+export const desktopAssetDragEnded = /*#__PURE__*/ createAction('DESKTOP_ASSET_DRAG_ENDED');
+export const childrenMapUpdate = /*#__PURE__*/ createAction('CHILDREN_MAP_UPDATE');
+export const contentTreeSwitchFieldInstance = /*#__PURE__*/ createAction<{ type: string; scrollElement: string }>(
+  'CONTENT_TREE_SWITCH_FIELD_INSTANCE'
+);
+
 // endregion
 
 // region Actions
@@ -165,11 +179,11 @@ export const checkInGuest = /*#__PURE__*/ createAction<{
   path: string;
   site: string;
   documentDomain?: string;
-}>(GUEST_CHECK_IN);
+}>(guestCheckIn.type);
 
 export function checkOutGuest(): StandardAction {
   return {
-    type: GUEST_CHECK_OUT
+    type: guestCheckOut.type
   };
 }
 
@@ -260,7 +274,7 @@ export const clearDropTargets = /*#__PURE__*/ createAction(CLEAR_DROP_TARGETS);
 export const setContentTypeDropTargets = /*#__PURE__*/ createAction<{
   contentType: string;
   dropTarget: ContentTypeDropTarget;
-}>(CONTENT_TYPE_DROP_TARGETS_RESPONSE);
+}>(contentTypeDropTargetsResponse.type);
 
 export const setContentTypeFilter = /*#__PURE__*/ createAction<string>(SET_CONTENT_TYPE_FILTER);
 

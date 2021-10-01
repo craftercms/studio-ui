@@ -39,10 +39,10 @@ import ContentInstance from '../../models/ContentInstance';
 import RepeatGroup from '../Icons/RepeatGroup';
 import { hierarchicalToLookupTable } from '../../utils/object';
 import {
-  CLEAR_CONTENT_TREE_FIELD_SELECTED,
-  CONTENT_TREE_FIELD_SELECTED,
-  DELETE_ITEM_OPERATION_COMPLETE,
-  SORT_ITEM_OPERATION_COMPLETE
+  clearContentTreeFieldSelected,
+  contentTreeFieldSelected,
+  deleteItemOperationComplete,
+  sortItemOperationComplete
 } from '../../state/actions/preview';
 import { getHostToGuestBus, getHostToHostBus } from '../../modules/Preview/previewContext';
 import Suspencified from '../SystemStatus/Suspencified';
@@ -563,14 +563,14 @@ export default function PreviewPageExplorerPanel() {
   useEffect(() => {
     const sub = hostToHost$.subscribe((action) => {
       switch (action.type) {
-        case DELETE_ITEM_OPERATION_COMPLETE:
-        case SORT_ITEM_OPERATION_COMPLETE: {
+        case deleteItemOperationComplete.type:
+        case sortItemOperationComplete.type: {
           const { modelId, fieldId, index } = action.payload;
           if (state.expanded.includes(`${modelId}_${fieldId}`)) {
             updateNode(modelId, fieldId, `${modelId}_${fieldId}`);
           } else if (state.selected.includes(modelId)) {
             updateNode(modelId, fieldId, `${rootPrefix}${modelId}`);
-          } else if (state.selected === 'root' && action.type === DELETE_ITEM_OPERATION_COMPLETE) {
+          } else if (state.selected === 'root' && action.type === deleteItemOperationComplete.type) {
             updateRoot(modelId, fieldId, index, () => setState({ ...state }));
           }
         }
@@ -623,7 +623,7 @@ export default function PreviewPageExplorerPanel() {
   useEffect(() => {
     const handler = (e) => {
       if (e.keyCode === 27) {
-        hostToGuest$.next({ type: CLEAR_CONTENT_TREE_FIELD_SELECTED });
+        hostToGuest$.next({ type: clearContentTreeFieldSelected.type });
       }
     };
     document.addEventListener('keydown', handler, false);
@@ -657,7 +657,7 @@ export default function PreviewPageExplorerPanel() {
 
   const handleScroll = (node: RenderTree) => {
     hostToGuest$.next({
-      type: CONTENT_TREE_FIELD_SELECTED,
+      type: contentTreeFieldSelected.type,
       payload: {
         name: node.name,
         modelId: node.parentId || node.modelId,
