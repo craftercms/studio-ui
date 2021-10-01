@@ -36,9 +36,7 @@ export function RejectDialogContainer(props: RejectDialogContainerProps) {
   const [rejectionReason, setRejectionReason] = useState(typeCustomReason);
   const [rejectionComment, setRejectionComment] = useState('');
   const [rejectionCommentDirty, setRejectionCommentDirty] = useState(false);
-  const isSubmitDisabled = useMemo(() => {
-    return checkedItems.length === 0 || rejectionComment.trim() === '' || isSubmitting;
-  }, [checkedItems, rejectionComment, isSubmitting]);
+  const isSubmitDisabled = checkedItems.length === 0 || rejectionComment.trim() === '' || isSubmitting;
   const siteId = useActiveSiteId();
   const currentLocale = getCurrentLocale();
   const dispatch = useDispatch();
