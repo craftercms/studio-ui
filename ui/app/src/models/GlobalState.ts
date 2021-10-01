@@ -62,6 +62,7 @@ import { UploadDialogStateProps } from '../components/UploadDialog/util';
 import { PreviewDialogStateProps } from '../components/PreviewDialog/utils';
 import { EditSiteDialogStateProps } from '../components/EditSiteDialog/utils';
 import { LegacyFormDialogStateProps } from '../components/LegacyFormDialog/utils';
+import { SingleFileUploadDialogStateProps } from '../components/SingleFileUploadDialog';
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
   page: any;
@@ -210,6 +211,7 @@ export interface GlobalState {
     createFile: CreateFileStateProps;
     copy: CopyDialogStateProps;
     upload: UploadDialogStateProps;
+    singleFileUpload: SingleFileUploadDialogStateProps;
     preview: PreviewDialogStateProps;
     editSite: EditSiteDialogStateProps;
     pathSelection: PathSelectionDialogStateProps;

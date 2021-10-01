@@ -22,7 +22,11 @@ import { isBlank } from '../../utils/string';
 import { update } from '../../services/sites';
 import { fetchSites } from '../../state/reducers/sites';
 import { EditSiteDialogContainerProps } from './utils';
-import { updateEditSiteDialog } from '../../state/actions/dialogs';
+import {
+  closeSingleFileUploadDialog,
+  showSingleFileUploadDialog,
+  updateEditSiteDialog
+} from '../../state/actions/dialogs';
 import { batchActions } from '../../state/actions/misc';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { ConditionalLoadingState } from '../SystemStatus/LoadingState';
@@ -112,6 +116,16 @@ export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
     );
   };
 
+  const onEditSiteImage = () => {
+    dispatch(
+      showSingleFileUploadDialog({
+        // path: item.path,
+        site,
+        onClose: closeSingleFileUploadDialog()
+      })
+    );
+  };
+
   return (
     <ConditionalLoadingState isLoading={!site}>
       <EditSiteDialogUI
@@ -125,6 +139,7 @@ export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
         onKeyPress={onKeyPress}
         onSubmit={() => handleSubmit(site.id, name, description)}
         onCloseButtonClick={onCloseButtonClick}
+        onEditSiteImage={onEditSiteImage}
       />
     </ConditionalLoadingState>
   );

@@ -34,6 +34,7 @@ export interface EditSiteDialogUIProps {
   onSiteDescriptionChange(value: string): void;
   onSubmit(): void;
   onCloseButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
+  onEditSiteImage?(): void;
 }
 
 export interface EditSiteDialogBaseProps {

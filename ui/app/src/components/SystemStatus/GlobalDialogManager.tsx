@@ -50,6 +50,7 @@ const CreateFolderDialog = lazy(() => import('../CreateFolderDialog'));
 const CopyItemsDialog = lazy(() => import('../Dialogs/CopyDialog'));
 const CreateFileDialog = lazy(() => import('../CreateFileDialog'));
 const BulkUploadDialog = lazy(() => import('../UploadDialog'));
+const SingleFileUploadDialog = lazy(() => import('../SingleFileUploadDialog'));
 const PreviewDialog = lazy(() => import('../PreviewDialog'));
 const ItemMenu = lazy(() => import('../ItemActionsMenu'));
 const ItemMegaMenu = lazy(() => import('../ItemMegaMenu'));
@@ -317,6 +318,14 @@ function GlobalDialogManager() {
         {...state.upload}
         onClose={createCallback(state.upload.onClose, dispatch)}
         onClosed={createCallback(state.upload.onClosed, dispatch)}
+      />
+      {/* endregion */}
+
+      {/* region Single File Upload */}
+      <SingleFileUploadDialog
+        {...state.singleFileUpload}
+        onClose={createCallback(state.singleFileUpload.onClose, dispatch)}
+        onClosed={createCallback(state.singleFileUpload.onClosed, dispatch)}
       />
       {/* endregion */}
 

@@ -43,7 +43,8 @@ export function EditSiteDialogUI(props: EditSiteDialogUIProps) {
     submitDisabled,
     onKeyPress,
     onSubmit,
-    onCloseButtonClick
+    onCloseButtonClick,
+    onEditSiteImage
   } = props;
   const { formatMessage } = useIntl();
   const classes = useSiteDialogStyles();
@@ -118,7 +119,7 @@ export function EditSiteDialogUI(props: EditSiteDialogUIProps) {
               />
               <CardActions className={classes.cardActions} disableSpacing>
                 <Tooltip title={<FormattedMessage id="words.edit" defaultMessage="Edit" />}>
-                  <IconButton onClick={() => null}>
+                  <IconButton onClick={onEditSiteImage}>
                     <EditRoundedIcon />
                   </IconButton>
                 </Tooltip>
