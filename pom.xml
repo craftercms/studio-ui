@@ -42,7 +42,7 @@
 		<!-- Overrides are listed here -->
 		<frontend.maven.version>1.7.6</frontend.maven.version>
 		<studio.ui.node.version>v16.9.1</studio.ui.node.version>
-		<studio.ui.yarn.version>v1.22.10</studio.ui.yarn.version>
+		<studio.ui.yarn.version>v1.22.15</studio.ui.yarn.version>
 	</properties>
 	<build>
 		<!-- Overrides are listed here -->
