@@ -36,13 +36,14 @@ export function RejectDialogUI(props: RejectDialogUIProps) {
     checkedItems,
     rejectionReason,
     rejectionComment,
-    setRejectionReason,
-    setRejectionComment,
+    onRejectionReasonChange,
+    onCommentChange,
     onUpdateChecked,
     onCloseButtonClick,
     onReject,
     classes,
-    isSubmitting
+    isSubmitting,
+    isSubmitDisabled
   } = props;
   return (
     <>
@@ -72,16 +73,27 @@ export function RejectDialogUI(props: RejectDialogUIProps) {
           <Grid item xs={12} sm={5} md={5} lg={5} xl={5}>
             <form>
               <FormControl fullWidth variant="outlined">
-                <InputLabel>
-                  <FormattedMessage id="rejectDialog.rejectionReason" defaultMessage="Rejection Reason" />
+                <InputLabel shrink>
+                  <FormattedMessage
+                    id="rejectDialog.predefinedRejectionComments"
+                    defaultMessage="Predefined Rejection Comments"
+                  />
                 </InputLabel>
                 <Select
                   fullWidth
-                  label={<FormattedMessage id="rejectDialog.rejectionReason" defaultMessage="Rejection Reason" />}
+                  label={
+                    <FormattedMessage
+                      id="rejectDialog.predefinedRejectionComments"
+                      defaultMessage="Predefined Rejection Comments"
+                    />
+                  }
                   autoFocus
                   value={rejectionReason}
-                  onChange={(e) => setRejectionReason(e.target.value as string)}
+                  onChange={(e) => onRejectionReasonChange(e.target.value as string)}
                 >
+                  <MenuItem value="typeCustomReason">
+                    <FormattedMessage id="rejectDialog.typeMyOwnComment" defaultMessage="Type my own comment" />
+                  </MenuItem>
                   <MenuItem value="NotApproved">
                     <FormattedMessage id="rejectDialog.notApproved" defaultMessage="Not Approved" />
                   </MenuItem>
@@ -101,13 +113,14 @@ export function RejectDialogUI(props: RejectDialogUIProps) {
               </FormControl>
 
               <TextFieldWithMax
+                required
                 className={classes.submissionTextField}
                 label={<FormattedMessage id="rejectDialog.rejectCommentLabel" defaultMessage="Rejection Comment" />}
                 fullWidth
                 multiline
                 rows={8}
                 value={rejectionComment}
-                onChange={(e) => setRejectionComment(e.target.value as string)}
+                onChange={(e) => onCommentChange(e.target.value as string)}
               />
             </form>
           </Grid>
@@ -120,11 +133,7 @@ export function RejectDialogUI(props: RejectDialogUIProps) {
           </SecondaryButton>
         )}
         {onReject && (
-          <PrimaryButton
-            onClick={onReject}
-            loading={isSubmitting}
-            disabled={checkedItems.length === 0 || rejectionComment === '' || rejectionReason === '' || isSubmitting}
-          >
+          <PrimaryButton onClick={onReject} loading={isSubmitting} disabled={isSubmitDisabled}>
             <FormattedMessage id="rejectDialog.continue" defaultMessage="Reject" />
           </PrimaryButton>
         )}
