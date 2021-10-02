@@ -45,9 +45,7 @@ import {
   instanceDragBegun,
   instanceDragEnded,
   trashed,
-  contentTreeSwitchFieldInstance,
-  desktopAssetDragEnded,
-  desktopAssetDragStarted
+  contentTreeSwitchFieldInstance
 } from '@craftercms/studio-ui/build_tsc/state/actions/preview';
 import { GuestActionTypes, MouseEventActionObservable } from '../models/Actions';
 import { GuestState } from '../models/GuestStore';
@@ -57,11 +55,19 @@ import * as ElementRegistry from '../../classes/ElementRegistry';
 import { get } from '../../classes/ElementRegistry';
 import { scrollToElement, scrollToIceProps } from '../../utils/dom';
 import {
+  computedDragEnd,
+  documentDragEnd,
+  documentDragLeave,
+  documentDragOver,
+  documentDrop,
   dropzoneEnter,
   dropzoneLeave,
   iceZoneSelected as iceZoneSelectedActionGuest,
-  startListening
+  startListening,
+  desktopAssetDragEnded,
+  desktopAssetDragStarted
 } from '../actions';
+import { validationMessage } from '@craftercms/studio-ui/build_tsc/state/actions/preview';
 
 const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
   // region Multi-event propagation stopper epic
@@ -101,7 +107,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
           console.warn("Element is draggable but wasn't set draggable by craftercms");
         } else {
           event.stopPropagation();
-          post({ type: instanceDragBegun.type, payload: iceId });
+          post(instanceDragBegun(iceId));
           const e = unwrapEvent<DragEvent>(event);
           e.dataTransfer.setData('text/plain', `${record.id}`);
           // noinspection CssInvalidHtmlTagReference
@@ -134,7 +140,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
     ),
   (action$) =>
     action$.pipe(
-      ofType('document:dragover'),
+      ofType(documentDragOver.type),
       tap(({ payload: { event } }) => event.preventDefault()),
       ignoreElements()
     ),
@@ -143,13 +149,13 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
   // region dragleave
   (action$, state$) =>
     action$.pipe(
-      ofType('dragleave', 'document:dragleave'),
+      ofType('dragleave', documentDragLeave.type),
       withLatestFrom(state$),
       filter(([, state]) => state.status === EditingStatus.UPLOAD_ASSET_FROM_DESKTOP),
       switchMap(() =>
         interval(100).pipe(
-          mapTo({ type: desktopAssetDragEnded.type as GuestActionTypes }),
-          takeUntil(action$.pipe(ofType('document:dragover', 'dragover')))
+          mapTo(desktopAssetDragEnded()),
+          takeUntil(action$.pipe(ofType(documentDragOver.type, 'dragover')))
         )
       )
     ),
@@ -242,7 +248,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
               reader.readAsDataURL(file);
               return stream$;
             } else {
-              return of({ type: desktopAssetDragEnded.type });
+              return of(desktopAssetDragEnded());
             }
           }
         }
@@ -252,7 +258,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
   },
   (action$, state$) =>
     action$.pipe(
-      ofType('document:drop'),
+      ofType(documentDrop.type),
       withLatestFrom(state$),
       switchMap(([action, state]) => {
         const {
@@ -263,7 +269,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
         event.stopPropagation();
         switch (status) {
           case EditingStatus.UPLOAD_ASSET_FROM_DESKTOP:
-            return of({ type: desktopAssetDragEnded.type as GuestActionTypes });
+            return of(desktopAssetDragEnded());
         }
         return NEVER;
       })
@@ -281,13 +287,13 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
         event.preventDefault();
         event.stopPropagation();
         post({ type: instanceDragEnded.type });
-        return of({ type: 'computed_dragend' as GuestActionTypes });
+        return of(computedDragEnd());
       })
     );
   },
   (action$) =>
     action$.pipe(
-      ofType('document:dragend'),
+      ofType(documentDragEnd.type),
       tap(({ payload }) => payload.event.preventDefault()),
       ignoreElements()
     ),
@@ -297,7 +303,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
   (action$: MouseEventActionObservable) => {
     return action$.pipe(
       ofType(assetDragEnded.type, componentDragEnded.type, componentInstanceDragEnded.type, desktopAssetDragEnded.type),
-      map(() => ({ type: 'computed_dragend' }))
+      map(() => computedDragEnd())
     );
   },
   // endregion
@@ -315,21 +321,23 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
         const validations = field?.validations;
         const type = field?.type;
         const iceZoneSelected = () => {
-          post(iceZoneSelectedAction.type, {
-            modelId: record.modelId,
-            index: record.index,
-            fieldId: record.fieldId,
-            // @ts-ignore - clientX & clientY not being found in typings.
-            coordinates: { x: event.clientX, y: event.clientY }
-          });
+          post(
+            iceZoneSelectedAction({
+              modelId: record.modelId,
+              index: record.index,
+              fieldId: record.fieldId,
+              // @ts-ignore - clientX & clientY not being found in typings.
+              coordinates: { x: event.clientX, y: event.clientY }
+            })
+          );
           return merge(
             escape$.pipe(
               takeUntil(clearAndListen$),
               tap(() => post(clearSelectedZones.type)),
-              map(() => ({ type: startListening.type as GuestActionTypes })),
+              map(() => startListening()),
               take(1)
             ),
-            of({ type: iceZoneSelectedActionGuest.type as GuestActionTypes, payload: action.payload })
+            of(iceZoneSelectedActionGuest(action.payload))
           );
         };
         if (state.highlightMode === HighlightMode.ALL) {
@@ -370,7 +378,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
   // region computed_dragend
   (action$: MouseEventActionObservable) => {
     return action$.pipe(
-      ofType('computed_dragend'),
+      ofType(computedDragEnd.type),
       tap(() => destroyDragSubjects()),
       ignoreElements()
     );
@@ -416,10 +424,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
             contentTypeId
           };
         });
-        post({
-          type: contentTypeDropTargetsResponse.type,
-          payload: { contentTypeId, dropTargets }
-        });
+        post(contentTypeDropTargetsResponse({ contentTypeId, dropTargets }));
       }),
       ignoreElements()
     );
@@ -446,13 +451,13 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
         const { iceId } = action.payload;
         let { modelId, fieldId, index } = iceRegistry.getById(iceId);
         contentController.deleteItem(modelId, fieldId, index);
-        post({ type: instanceDragEnded.type });
+        post(instanceDragEnded());
       }),
       // There's a raise condition where sometimes the dragend is
       // fired and sometimes is not upon dropping on the rubbish bin.
       // Manually firing here may incur in double firing of computed_dragend
       // in those occasions.
-      mapTo({ type: 'computed_dragend' })
+      mapTo(computedDragEnd())
     );
   },
   // endregion
@@ -470,7 +475,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
           (dropZone) => dropZone.elementRecordId === elementRecordId
         );
         Object.values(validations).forEach((validation) => {
-          post({ type: 'VALIDATION_MESSAGE', payload: validation });
+          post(validationMessage(validation));
         });
       }),
       ignoreElements()
@@ -499,7 +504,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
           if (validations.maxCount) {
             return;
           }
-          post({ type: 'VALIDATION_MESSAGE', payload: validation });
+          post(validationMessage(validation));
         });
       }),
       ignoreElements()
@@ -518,14 +523,13 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
           console.error('No contentTypeId found for this drag instance.');
         } else {
           if (state.dragContext.dropZones.length === 0) {
-            post({
-              type: 'VALIDATION_MESSAGE',
-              payload: {
+            post(
+              validationMessage({
                 id: 'dropTargetsNotFound',
                 level: 'info',
                 values: { contentType: state.dragContext.contentType.name }
-              }
-            });
+              })
+            );
           }
           return initializeDragSubjects(state$);
         }
@@ -545,14 +549,13 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
           console.error('No contentTypeId found for this drag instance.');
         } else {
           if (state.dragContext.dropZones.length === 0) {
-            post({
-              type: 'VALIDATION_MESSAGE',
-              payload: {
+            post(
+              validationMessage({
                 id: 'dropTargetsNotFound',
                 level: 'info',
                 values: { contentType: state.dragContext.contentType.name }
-              }
-            });
+              })
+            );
           }
           return initializeDragSubjects(state$);
         }
@@ -610,10 +613,13 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
             take(1)
           );
         } else {
-          post({
-            type: 'VALIDATION_MESSAGE',
-            payload: { id: 'registerNotFound', level: 'suggestion', values: { name } }
-          });
+          post(
+            validationMessage({
+              id: 'registerNotFound',
+              level: 'suggestion',
+              values: { name }
+            })
+          );
           return NEVER;
         }
       })

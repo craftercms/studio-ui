@@ -48,7 +48,6 @@ import {
   hostCheckIn,
   updateRteConfig,
   contentTreeSwitchFieldInstance,
-  desktopAssetDragStarted,
   highlightModeChanged
 } from '@craftercms/studio-ui/build_tsc/state/actions/preview';
 import {
@@ -63,7 +62,8 @@ import {
   scrollingStopped,
   setDropPosition,
   setEditMode,
-  startListening
+  startListening,
+  desktopAssetDragStarted
 } from '../actions';
 
 const initialState: GuestState = {

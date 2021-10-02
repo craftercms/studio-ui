@@ -32,9 +32,9 @@ import {
   ElementRecord,
   ElementRecordRegistration,
   HighlightData,
-  ICERecord,
-  ValidationResult
+  ICERecord
 } from '../models/InContextEditing';
+import { ValidationResult } from '@craftercms/studio-ui/models/ContentType';
 import { RegistryEntry } from '../models/Registry';
 import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
 import { isNullOrUndefined, notNullOrUndefined } from '../utils/object';

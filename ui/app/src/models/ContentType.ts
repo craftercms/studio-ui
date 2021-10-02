@@ -44,11 +44,19 @@ export type ValidationKeys =
   | 'maxWidth'
   | 'maxHeight'
   | 'minValue'
-  | 'maxValue';
+  | 'maxValue'
+  | 'dropTargetsNotFound'
+  | 'registerNotFound';
 
 export type ContentTypeFieldValidations = {
   [key in ValidationKeys]: ContentTypeFieldValidation;
 };
+
+export interface ValidationResult {
+  id: ValidationKeys;
+  level: 'required' | 'suggestion' | 'info';
+  values: object;
+}
 
 export interface ContentTypeField {
   id: string;

@@ -15,11 +15,17 @@
  */
 
 import { StandardAction } from '../../models/StandardAction';
-import ContentType, { ContentTypeField } from '../../models/ContentType';
+import ContentType, { ContentTypeField, ValidationResult } from '../../models/ContentType';
 import ContentInstance from '../../models/ContentInstance';
 import { WidthAndHeight } from '../../models/WidthAndHeight';
 import { createAction } from '@reduxjs/toolkit';
-import { ComponentsContentTypeParams, ContentInstancePage, ElasticParams, SearchResult } from '../../models/Search';
+import {
+  ComponentsContentTypeParams,
+  ContentInstancePage,
+  ElasticParams,
+  SearchItem,
+  SearchResult
+} from '../../models/Search';
 import { ContentTypeDropTarget } from '../../models/ContentTypeDropTarget';
 import { WidgetDescriptor } from '../../components/Widget';
 import LookupTable from '../../models/LookupTable';
@@ -43,15 +49,23 @@ export const moveItemOperation = /*#__PURE__*/ createAction('MOVE_ITEM_OPERATION
 export const deleteItemOperation = /*#__PURE__*/ createAction('DELETE_ITEM_OPERATION');
 export const deleteItemOperationComplete = /*#__PURE__*/ createAction('DELETE_ITEM_OPERATION_COMPLETE');
 export const updateFieldValueOperation = /*#__PURE__*/ createAction('UPDATE_FIELD_VALUE_OPERATION');
-export const iceZoneSelected = /*#__PURE__*/ createAction('ICE_ZONE_SELECTED');
+export const iceZoneSelected = /*#__PURE__*/ createAction<{
+  modelId: string;
+  index: number;
+  fieldId: string;
+  coordinates: {
+    x: number;
+    y: number;
+  };
+}>('ICE_ZONE_SELECTED');
 export const clearSelectedZones = /*#__PURE__*/ createAction('CLEAR_SELECTED_ZONES');
-export const assetDragStarted = /*#__PURE__*/ createAction('ASSET_DRAG_STARTED');
+export const assetDragStarted = /*#__PURE__*/ createAction<{ asset: SearchItem }>('ASSET_DRAG_STARTED');
 export const assetDragEnded = /*#__PURE__*/ createAction('ASSET_DRAG_ENDED');
-export const componentDragStarted = /*#__PURE__*/ createAction('COMPONENT_DRAG_STARTED');
+export const componentDragStarted = /*#__PURE__*/ createAction<{ contentType: ContentType }>('COMPONENT_DRAG_STARTED');
 export const componentDragEnded = /*#__PURE__*/ createAction('COMPONENT_DRAG_ENDED');
 export const trashed = /*#__PURE__*/ createAction<{ iceId: number }>('TRASHED');
 export const contentTypesResponse = /*#__PURE__*/ createAction('CONTENT_TYPES_RESPONSE');
-export const instanceDragBegun = /*#__PURE__*/ createAction('INSTANCE_DRAG_BEGUN');
+export const instanceDragBegun = /*#__PURE__*/ createAction<number>('INSTANCE_DRAG_BEGUN');
 export const instanceDragEnded = /*#__PURE__*/ createAction('INSTANCE_DRAG_ENDED');
 export const navigationRequest = /*#__PURE__*/ createAction('NAVIGATION_REQUEST');
 export const reloadRequest = /*#__PURE__*/ createAction('RELOAD_REQUEST');
@@ -61,26 +75,30 @@ export const desktopAssetUploadComplete = /*#__PURE__*/ createAction<{ record; p
 );
 export const desktopAssetUploadProgress = /*#__PURE__*/ createAction('DESKTOP_ASSET_UPLOAD_PROGRESS');
 export const desktopAssetUploadStarted = /*#__PURE__*/ createAction('DESKTOP_ASSET_UPLOAD_STARTED');
-export const componentInstanceDragStarted = /*#__PURE__*/ createAction('COMPONENT_INSTANCE_DRAG_STARTED');
+export const componentInstanceDragStarted = /*#__PURE__*/ createAction<{
+  instance: ContentInstance;
+  contentType: ContentType;
+}>('COMPONENT_INSTANCE_DRAG_STARTED');
 export const componentInstanceDragEnded = /*#__PURE__*/ createAction('COMPONENT_INSTANCE_DRAG_ENDED');
 export const contentTypeDropTargetsRequest = /*#__PURE__*/ createAction<{ contentTypeId: string }>(
   'CONTENT_TYPE_DROP_TARGETS_REQUEST'
 );
-export const contentTypeDropTargetsResponse = /*#__PURE__*/ createAction('CONTENT_TYPE_DROP_TARGETS_RESPONSE');
+export const contentTypeDropTargetsResponse = /*#__PURE__*/ createAction<{
+  contentTypeId: string;
+  dropTargets: ContentTypeDropTarget[];
+}>('CONTENT_TYPE_DROP_TARGETS_RESPONSE');
 export const scrollToDropTarget = /*#__PURE__*/ createAction('SCROLL_TO_DROP_TARGET');
 export const clearHighlightedDropTargets = /*#__PURE__*/ createAction('CLEAR_HIGHLIGHTED_DROP_TARGETS');
 export const contentTreeFieldSelected =
   /*#__PURE__*/ createAction<{ iceProps; scrollElement: string; name: string }>('CONTENT_TREE_FIELD_SELECTED');
 export const clearContentTreeFieldSelected = /*#__PURE__*/ createAction('CLEAR_CONTENT_TREE_FIELD_SELECTED');
-export const validationMessage = /*#__PURE__*/ createAction('VALIDATION_MESSAGE');
-export const editModeToggleHotkey = /*#__PURE__*/ createAction('EDIT_MODE_TOGGLE_HOTKEY');
+export const validationMessage = /*#__PURE__*/ createAction<ValidationResult>('VALIDATION_MESSAGE');
+export const editModeToggleHotkey = /*#__PURE__*/ createAction<{ mode: string }>('EDIT_MODE_TOGGLE_HOTKEY');
 export const showEditDialog = /*#__PURE__*/ createAction('SHOW_EDIT_DIALOG');
 export const updateRteConfig = /*#__PURE__*/ createAction('UPDATE_RTE_CONFIG');
 export const highlightModeChanged = /*#__PURE__*/ createAction('HIGHLIGHT_MODE_CHANGED');
 export const contentTypesRequest = /*#__PURE__*/ createAction('CONTENT_TYPES_REQUEST');
 export const guestModelsReceived = /*#__PURE__*/ createAction('GUEST_MODELS_RECEIVED');
-export const desktopAssetDragStarted = /*#__PURE__*/ createAction('DESKTOP_ASSET_DRAG_STARTED');
-export const desktopAssetDragEnded = /*#__PURE__*/ createAction('DESKTOP_ASSET_DRAG_ENDED');
 export const childrenMapUpdate = /*#__PURE__*/ createAction('CHILDREN_MAP_UPDATE');
 export const contentTreeSwitchFieldInstance = /*#__PURE__*/ createAction<{ type: string; scrollElement: string }>(
   'CONTENT_TREE_SWITCH_FIELD_INSTANCE'

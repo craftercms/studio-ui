@@ -37,8 +37,6 @@ import {
   trashed,
   updateRteConfig,
   contentTreeSwitchFieldInstance,
-  desktopAssetDragEnded,
-  desktopAssetDragStarted,
   highlightModeChanged
 } from '@craftercms/studio-ui/build_tsc/state/actions/preview';
 import { Observable } from 'rxjs';
@@ -47,6 +45,10 @@ import {
   computedDragEnd,
   computedDragOver,
   contentReady,
+  documentDragEnd,
+  documentDragLeave,
+  documentDragOver,
+  documentDrop,
   dropzoneEnter,
   dropzoneLeave,
   editComponentInline,
@@ -59,7 +61,9 @@ import {
   scrollingStopped,
   setDropPosition,
   setEditMode,
-  startListening
+  startListening,
+  desktopAssetDragEnded,
+  desktopAssetDragStarted
 } from '../actions';
 
 export type GuestActionTypes =
@@ -111,10 +115,10 @@ export type GuestActionTypes =
   | typeof clearContentTreeFieldSelected.type
   | typeof contentTreeSwitchFieldInstance.type
   | typeof updateRteConfig.type
-  | 'document:dragover'
-  | 'document:dragleave'
-  | 'document:drop'
-  | 'document:dragend'
+  | typeof documentDragOver.type
+  | typeof documentDragLeave.type
+  | typeof documentDrop.type
+  | typeof documentDragEnd.type
   | typeof contentReady.type;
 
 export type MouseEventAction = GuestStandardAction<{

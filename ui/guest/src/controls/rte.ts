@@ -28,6 +28,7 @@ import { reversePluckProps } from '../utils/object';
 import { showEditDialog } from '@craftercms/studio-ui/build_tsc/state/actions/preview';
 import { RteSetup } from '../models/Rte';
 import { editComponentInline, exitComponentInlineEdit } from '../store/actions';
+import { validationMessage } from '@craftercms/studio-ui/build_tsc/state/actions/preview';
 
 export function initTinyMCE(
   record: ElementRecord,
@@ -98,14 +99,13 @@ export function initTinyMCE(
         editor.on('focusout', (e) => {
           if (!e.relatedTarget) {
             if (validations?.required && !getContent().trim()) {
-              post({
-                type: 'VALIDATION_MESSAGE',
-                payload: {
+              post(
+                validationMessage({
                   id: 'required',
                   level: 'required',
                   values: { field: record.label }
-                }
-              });
+                })
+              );
               editor.setContent(originalContent);
             } else {
               save();
@@ -132,14 +132,13 @@ export function initTinyMCE(
             /[a-zA-Z0-9-_ ]/.test(String.fromCharCode(e.keyCode)) &&
             getContent().length + 1 > parseInt(validations.maxLength.value)
           ) {
-            post({
-              type: 'VALIDATION_MESSAGE',
-              payload: {
+            post(
+              validationMessage({
                 id: 'maxLength',
                 level: 'required',
                 values: { maxLength: validations.maxLength.value }
-              }
-            });
+              })
+            );
             e.stopPropagation();
             return false;
           }

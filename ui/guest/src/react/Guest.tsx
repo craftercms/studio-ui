@@ -56,7 +56,6 @@ import {
   trashed,
   updateRteConfig,
   contentTreeSwitchFieldInstance,
-  desktopAssetDragStarted,
   highlightModeChanged
 } from '@craftercms/studio-ui/build_tsc/state/actions/preview';
 import { createGuestStore } from '../store/store';
@@ -75,7 +74,18 @@ import { ThemeOptions, ThemeProvider } from '@mui/material';
 import { deepmerge } from '@mui/utils';
 import { DeepPartial } from 'redux';
 import MoveModeZoneMenu from './MoveModeZoneMenu';
-import { contentReady, dropzoneEnter, dropzoneLeave, setDropPosition, startListening } from '../store/actions';
+import {
+  contentReady,
+  documentDragEnd,
+  documentDragLeave,
+  documentDragOver,
+  documentDrop,
+  dropzoneEnter,
+  dropzoneLeave,
+  setDropPosition,
+  startListening,
+  desktopAssetDragStarted,
+} from '../store/actions';
 // TinyMCE makes the build quite large. Temporarily, importing this externally via
 // the site's ftl. Need to evaluate whether to include the core as part of guest build or not
 // import tinymce from 'tinymce';
@@ -162,8 +172,8 @@ function Guest(props: GuestProps) {
   }, [sxOverrides]);
 
   // Hotkeys propagation to preview
-  useHotkeys('e', () => post(editModeToggleHotkey.type, { mode: HighlightMode.ALL }));
-  useHotkeys('m', () => post(editModeToggleHotkey.type, { mode: HighlightMode.MOVE_TARGETS }));
+  useHotkeys('e', () => post(editModeToggleHotkey({ mode: HighlightMode.ALL })));
+  useHotkeys('m', () => post(editModeToggleHotkey({ mode: HighlightMode.MOVE_TARGETS })));
 
   // Key press/hold keeper events
   useEffect(() => {
@@ -230,43 +240,40 @@ function Guest(props: GuestProps) {
           dispatch(action);
           break;
         case assetDragStarted.type:
-          dispatch({ type, payload: { asset: payload } });
+          dispatch(assetDragStarted({ asset: payload }));
           break;
         case assetDragEnded.type:
           dragOk(status) && dispatch(action);
           break;
         case componentDragStarted.type:
-          dispatch({ type, payload: { contentType: payload } });
+          dispatch(componentDragStarted({ contentType: payload }));
           break;
         case componentDragEnded.type:
           dragOk(status) && dispatch(action);
           break;
         case componentInstanceDragStarted.type:
-          dispatch({ type, payload });
+          dispatch(componentInstanceDragStarted(payload));
           break;
         case componentInstanceDragEnded.type:
           dragOk(status) && dispatch(action);
           break;
         case trashed.type:
-          dispatch({ type, payload: { iceId: payload } });
+          dispatch(trashed({ iceId: payload }));
           break;
         case clearSelectedZones.type:
           clearAndListen$.next();
-          dispatch({ type: startListening.type });
+          dispatch(startListening());
           break;
         case reloadRequest.type: {
-          post({ type: guestCheckOut.type });
+          post(guestCheckOut());
           return window.location.reload();
         }
         case navigationRequest.type: {
-          post({ type: guestCheckOut.type });
+          post(guestCheckOut());
           return (window.location.href = payload.url);
         }
         case contentTypeDropTargetsRequest.type: {
-          dispatch({
-            type,
-            payload: { contentTypeId: payload }
-          });
+          dispatch(contentTypeDropTargetsRequest({ contentTypeId: payload }));
           break;
         }
         case scrollToDropTarget.type:
@@ -276,9 +283,8 @@ function Guest(props: GuestProps) {
           dispatch(action);
           break;
         case contentTreeFieldSelected.type: {
-          dispatch({
-            type,
-            payload: {
+          dispatch(
+            contentTreeFieldSelected({
               iceProps: {
                 modelId: payload.parentId || payload.modelId,
                 fieldId: payload.fieldId,
@@ -286,8 +292,8 @@ function Guest(props: GuestProps) {
               },
               scrollElement,
               name: payload.name
-            }
-          });
+            })
+          );
           break;
         }
         case clearContentTreeFieldSelected.type:
@@ -353,7 +359,7 @@ function Guest(props: GuestProps) {
   useEffect(() => {
     // Notice this is not executed when the iFrame url is changed abruptly.
     // This only triggers when navigation occurs from within the guest page.
-    const handler = () => post({ type: guestCheckOut.type });
+    const handler = () => post(guestCheckOut());
     window.addEventListener('beforeunload', handler, false);
     return () => {
       post(guestCheckOut.type);
@@ -404,10 +410,7 @@ function Guest(props: GuestProps) {
         .subscribe((e) => {
           e.preventDefault();
           e.stopPropagation();
-          dispatch({
-            type: desktopAssetDragStarted.type,
-            payload: { asset: e.dataTransfer.items[0] }
-          });
+          dispatch(desktopAssetDragStarted({ asset: e.dataTransfer.items[0] }));
         });
       return () => subscription.unsubscribe();
     }
@@ -424,17 +427,15 @@ function Guest(props: GuestProps) {
         EditingStatus.PLACING_DETACHED_ASSET
       ].includes(status)
     ) {
-      const dropSubscription = fromEvent(document, 'drop').subscribe((event) =>
-        dispatch({ type: 'document:drop', payload: { event } })
-      );
+      const dropSubscription = fromEvent(document, 'drop').subscribe((event) => dispatch(documentDrop({ event })));
       const dragendSubscription = fromEvent(document, 'dragend').subscribe((event) =>
-        dispatch({ type: 'document:dragend', payload: { event } })
+        dispatch(documentDragEnd({ event }))
       );
       const dragoverSubscription = fromEvent(document, 'dragover').subscribe((event) =>
-        dispatch({ type: 'document:dragover', payload: { event } })
+        dispatch(documentDragOver({ event }))
       );
       const dragleaveSubscription = fromEvent(document, 'dragleave').subscribe((event) =>
-        dispatch({ type: 'document:dragleave', payload: { event } })
+        dispatch(documentDragLeave({ event }))
       );
       return () => {
         dropSubscription.unsubscribe();
@@ -450,15 +451,9 @@ function Guest(props: GuestProps) {
   const dragContextDropZoneElementRecordId = state.dragContext?.dropZone?.elementRecordId;
   useEffect(() => {
     if (nnou(dragContextDropZoneIceId)) {
-      dispatch({
-        type: dropzoneEnter.type,
-        payload: { elementRecordId: dragContextDropZoneElementRecordId }
-      });
+      dispatch(dropzoneEnter({ elementRecordId: dragContextDropZoneElementRecordId }));
       return () => {
-        dispatch({
-          type: dropzoneLeave.type,
-          payload: { elementRecordId: dragContextDropZoneElementRecordId }
-        });
+        dispatch(dropzoneLeave({ elementRecordId: dragContextDropZoneElementRecordId }));
       };
     }
   }, [dispatch, dragContextDropZoneElementRecordId, dragContextDropZoneIceId]);
@@ -483,18 +478,8 @@ function Guest(props: GuestProps) {
 
             {state.fieldSwitcher && (
               <FieldInstanceSwitcher
-                onNext={() =>
-                  dispatch({
-                    type: contentTreeSwitchFieldInstance.type,
-                    payload: { type: 'next', scrollElement }
-                  })
-                }
-                onPrev={() =>
-                  dispatch({
-                    type: contentTreeSwitchFieldInstance.type,
-                    payload: { type: 'prev', scrollElement }
-                  })
-                }
+                onNext={() => dispatch(contentTreeSwitchFieldInstance({ type: 'next', scrollElement }))}
+                onPrev={() => dispatch(contentTreeSwitchFieldInstance({ type: 'prev', scrollElement }))}
                 registryEntryIds={state.fieldSwitcher.registryEntryIds}
                 currentElement={state.fieldSwitcher.currentElement}
               />
@@ -539,7 +524,7 @@ function Guest(props: GuestProps) {
               state.dragContext.inZone &&
               !state.dragContext.invalidDrop && (
                 <DropMarker
-                  onDropPosition={(payload) => dispatch({ type: [setDropPosition.type], payload })}
+                  onDropPosition={(payload) => dispatch(setDropPosition(payload))}
                   dropZone={state.dragContext.dropZone}
                   over={state.dragContext.over}
                   prev={state.dragContext.prev}

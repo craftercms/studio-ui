@@ -21,16 +21,11 @@ import * as Model from '../utils/model';
 import { ContentInstance } from '@craftercms/studio-ui/models/ContentInstance';
 import { ContentType, ContentTypeField, ValidationKeys } from '@craftercms/studio-ui/models/ContentType';
 import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
-import {
-  ICEProps,
-  ICERecord,
-  ICERecordRegistration,
-  ReferentialEntries,
-  ValidationResult
-} from '../models/InContextEditing';
+import { ICEProps, ICERecord, ICERecordRegistration, ReferentialEntries } from '../models/InContextEditing';
 import { isNullOrUndefined, notNullOrUndefined, nou, pluckProps } from '../utils/object';
 import { forEach } from '../utils/array';
 import { findComponentContainerFields } from '../utils/ice';
+import { ValidationResult } from '@craftercms/studio-ui/models/ContentType';
 
 const validationChecks: { [key in ValidationKeys]: Function } = {
   // TODO: implement max/min value.
@@ -68,7 +63,9 @@ const validationChecks: { [key in ValidationKeys]: Function } = {
   minWidth() {},
   minHeight() {},
   maxWidth() {},
-  maxHeight() {}
+  maxHeight() {},
+  dropTargetsNotFound() {},
+  registerNotFound() {}
 };
 
 let rid = 0;
