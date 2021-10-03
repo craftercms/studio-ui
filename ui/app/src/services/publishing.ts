@@ -15,11 +15,10 @@
  */
 
 import { errorSelectorApi1, get, post, postJSON } from '../utils/ajax';
-import { forkJoin, Observable } from 'rxjs';
-import { catchError, map, mapTo, pluck, switchMap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { catchError, map, mapTo, pluck } from 'rxjs/operators';
 import { LegacyItem } from '../models/Item';
-import { fetchDependencies } from './dependencies';
-import { pluckProps, toQueryString } from '../utils/object';
+import { toQueryString } from '../utils/object';
 import { PublishingStatus, PublishingTarget } from '../models/Publishing';
 import { Api2BulkResponseFormat, Api2ResponseFormat } from '../models/ApiResponse';
 import { PagedArray } from '../models/PagedArray';
@@ -101,33 +100,12 @@ export function goLive(siteId: string, user: string, data): Observable<GoLiveRes
   ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
 
-export function reject(
-  siteId: string,
-  items: string[],
-  reason: string,
-  submissionComment: string
-): Observable<{
-  commitId: string;
-  invalidateCache: boolean;
-  item: LegacyItem;
-  message: string;
-  status: number;
-  success: boolean;
-}> {
-  return forkJoin({
-    dependencies: fetchDependencies(siteId, items)
-  }).pipe(
-    switchMap(({ dependencies }) =>
-      postJSON(`/studio/api/1/services/api/1/workflow/reject.json?site=${siteId}`, {
-        // api being used in legacy (/studio/api/1/services/api/1/dependency/get-dependencies.json)
-        // returns only hardDependencies
-        dependencies: dependencies.hardDependencies,
-        items,
-        reason,
-        submissionComment
-      }).pipe(pluck('response'), catchError(errorSelectorApi1))
-    )
-  );
+export function reject(siteId: string, items: string[], comment: string): Observable<boolean> {
+  return postJSON(`/studio/api/2/workflow/reject`, {
+    siteId,
+    items,
+    comment
+  }).pipe(mapTo(true));
 }
 
 export function fetchStatus(siteId: string): Observable<PublishingStatus> {

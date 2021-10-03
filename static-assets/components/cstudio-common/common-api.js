@@ -8069,7 +8069,7 @@ function getTopLegacyWindow(nextWindow) {
   }
 }
 
-if (!window.location.pathname.includes('/studio/search')) {
+if (!window.location.pathname.includes('/studio/search') && !window.location.pathname.includes('/studio/legacy/form')) {
   document.addEventListener('DOMContentLoaded', function () {
     CrafterCMSNext.renderBackgroundUI({ mountLegacyConcierge: true });
   });
