@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { getCurrentLocale } from '../../utils/i18n';
 import { useDispatch } from 'react-redux';
@@ -29,8 +29,8 @@ import { updateRejectDialog } from '../../state/actions/dialogs';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { batchActions } from '../../state/actions/misc';
 
-const typeCustomReason = 'typeCustomReason';
 export function RejectDialogContainer(props: RejectDialogContainerProps) {
+  const typeCustomReason = 'typeCustomReason';
   const { items, onClose, onRejectSuccess, isSubmitting } = props;
   const [checkedItems, setCheckedItems] = useState([]);
   const [rejectionReason, setRejectionReason] = useState(typeCustomReason);
