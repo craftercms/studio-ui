@@ -45,11 +45,10 @@ export interface CurrentFilters {
 export interface PublishingStatus {
   enabled: boolean;
   status: 'ready' | 'processing' | 'publishing' | 'queued' | 'stopped' | 'error';
-  message: string;
   lockOwner: string;
   lockTTL: string;
-  submissionId: string;
   publishingTarget: string;
+  submissionId: string;
   numberOfItems: number;
   totalItems: number;
 }

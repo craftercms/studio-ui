@@ -19,12 +19,11 @@ import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import { useIntl } from 'react-intl';
 import DialogHeader from '../DialogHeader';
-import { publishingStatusTileMessages } from '../PublishingStatusTile';
 import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
 import LockOpenRoundedIcon from '@mui/icons-material/LockOpenRounded';
 import DialogBody from '../Dialogs/DialogBody';
 import * as React from 'react';
-import PublishingStatusDisplay from '../PublishingStatusDisplay';
+import PublishingStatusDisplay, { publishingStatusMessages } from '../PublishingStatusDisplay';
 import PauseCircleOutlineOutlinedIcon from '@mui/icons-material/PauseCircleOutlineOutlined';
 import PlayCircleOutlineOutlinedIcon from '@mui/icons-material/PlayCircleOutlineOutlined';
 import { PublishingStatusDialogContainerProps } from './utils';
@@ -39,31 +38,43 @@ const useStyles = makeStyles(() =>
 );
 
 export function PublishingStatusDialogContainer(props: PublishingStatusDialogContainerProps) {
-  const { status, message, enabled, lockOwner, lockTTL, onClose, onRefresh, onUnlock, onStartStop, isFetching } = props;
+  const {
+    status,
+    enabled,
+    lockOwner,
+    lockTTL,
+    numberOfItems,
+    totalItems,
+    publishingTarget,
+    submissionId,
+    onClose,
+    onRefresh,
+    onUnlock,
+    onStartStop,
+    isFetching
+  } = props;
   const classes = useStyles();
   const { formatMessage } = useIntl();
   return (
     <>
       <DialogHeader
-        title={formatMessage(publishingStatusTileMessages.publishingStatus)}
+        title={formatMessage(publishingStatusMessages.publishingStatus)}
         onCloseButtonClick={(e) => onClose(e, null)}
         rightActions={[
           onUnlock && {
             icon: LockOpenRoundedIcon,
             onClick: onUnlock,
-            tooltip: formatMessage(publishingStatusTileMessages.unlock)
+            tooltip: formatMessage(publishingStatusMessages.unlock)
           },
           onStartStop && {
             icon: status === 'ready' ? PauseCircleOutlineOutlinedIcon : PlayCircleOutlineOutlinedIcon,
             onClick: onStartStop,
-            tooltip: formatMessage(
-              status === 'ready' ? publishingStatusTileMessages.stop : publishingStatusTileMessages.start
-            )
+            tooltip: formatMessage(status === 'ready' ? publishingStatusMessages.stop : publishingStatusMessages.start)
           },
           onRefresh && {
             icon: RefreshRoundedIcon,
             onClick: onRefresh,
-            tooltip: formatMessage(publishingStatusTileMessages.refresh)
+            tooltip: formatMessage(publishingStatusMessages.refresh)
           }
         ].filter(Boolean)}
       />
@@ -72,9 +83,12 @@ export function PublishingStatusDialogContainer(props: PublishingStatusDialogCon
           enabled={enabled}
           isFetching={isFetching}
           status={status}
-          message={message}
           lockOwner={lockOwner}
           lockTTL={lockTTL}
+          numberOfItems={numberOfItems}
+          totalItems={totalItems}
+          publishingTarget={publishingTarget}
+          submissionId={submissionId}
         />
       </DialogBody>
     </>

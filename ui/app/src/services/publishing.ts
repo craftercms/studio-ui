@@ -135,22 +135,18 @@ export function fetchStatus(siteId: string): Observable<PublishingStatus> {
     `/studio/api/2/publish/status?siteId=${siteId}`
   ).pipe(
     pluck('response', 'publishingStatus'),
-    map((status) => ({
-      ...status,
-      // Address backend sending status as null.
-      status: status.status ?? ('' as PublishingStatus['status']),
-      // @ts-ignore - The environment property will be renamed to publishingTarget on the backend too.
-      publishingTarget: status.environment,
-      // Parse and express the formatted date if present.
-      message:
-        status.message?.replace(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z/, (match) =>
-          new Intl.DateTimeFormat(window?.navigator?.language ?? 'en-US', {
-            // @ts-ignore - dateStyle & timeStyle props not typed yet.
-            dateStyle: 'full',
-            timeStyle: 'long'
-          }).format(new Date(match))
-        ) ?? ''
-    }))
+    map((status) => {
+      if (status.status) {
+        return status;
+      } else {
+        console.error(`[/api/2/publish/status?siteId=${siteId}] Status property value was ${status.status}`);
+        return {
+          ...status,
+          // Address backend sending status as null.
+          status: status.status ?? ('' as PublishingStatus['status'])
+        };
+      }
+    })
   );
 }
 

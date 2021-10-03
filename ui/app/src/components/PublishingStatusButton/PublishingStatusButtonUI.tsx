@@ -19,8 +19,8 @@ import { PublishingStatusAvatar, PublishingStatusAvatarProps } from '../Publishi
 import IconButton, { IconButtonProps } from '@mui/material/IconButton';
 import { Badge, CircularProgress, Tooltip } from '@mui/material';
 import { PublishingStatus } from '../../models/Publishing';
-import { FormattedMessage } from 'react-intl';
-import { publishingStatusTileMessages } from '../PublishingStatusTile';
+import { useIntl } from 'react-intl';
+import { getPublishingStatusText, publishingStatusMessages } from '../PublishingStatusDisplay';
 
 export interface PublishingStatusButtonUIProps extends IconButtonProps {
   isFetching: boolean;
@@ -34,24 +34,13 @@ export interface PublishingStatusButtonUIProps extends IconButtonProps {
 export const PublishingStatusButtonUI = forwardRef<HTMLButtonElement, PublishingStatusButtonUIProps>((props, ref) => {
   const isInProgressPublishingStatus = ['publishing', 'processing'].includes(props.status);
   const { enabled, numberOfItems, totalItems, status, isFetching, style, onClick, variant, ...rest } = props;
-
+  const { formatMessage } = useIntl();
   return (
     <Tooltip
-      title={
-        <>
-          <FormattedMessage id="publishingStatusButton.tooltipMessage" defaultMessage="Publishing status" />
-          {status &&
-            (publishingStatusTileMessages[status] ? (
-              <>
-                {' '}
-                (<FormattedMessage id={publishingStatusTileMessages[status].id} />)
-              </>
-            ) : (
-              ` (${status})`
-            ))}
-        </>
-      }
-      ref={ref}
+      title={`${formatMessage(publishingStatusMessages.publishingStatus)}: ${getPublishingStatusText(
+        status,
+        formatMessage
+      )}`}
     >
       <Badge
         badgeContent={status === 'error' || enabled === false ? '!' : null}

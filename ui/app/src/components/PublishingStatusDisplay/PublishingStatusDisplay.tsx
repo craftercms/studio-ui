@@ -14,8 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Alert from '@mui/material/Alert';
-import { publishingStatusTileMessages } from '../PublishingStatusTile';
 import ListItem from '@mui/material/ListItem';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import PublishingStatusAvatar from '../PublishingStatusAvatar';
@@ -24,57 +22,35 @@ import Skeleton from '@mui/material/Skeleton';
 import * as React from 'react';
 import { useIntl } from 'react-intl';
 import { PublishingStatus } from '../../models/Publishing';
+import { getPublishingStatusMessage, publishingStatusMessages } from './utils';
 
-export type PublishingStatusDisplayProps = Pick<
-  PublishingStatus,
-  'enabled' | 'status' | 'message' | 'lockOwner' | 'lockTTL'
-> & {
+export type PublishingStatusDisplayProps = PublishingStatus & {
   isFetching: boolean;
 };
 
 export default function PublishingStatusDisplay(props: PublishingStatusDisplayProps) {
-  const { enabled, isFetching, status, message, lockOwner, lockTTL } = props;
+  const { isFetching, status, lockOwner, lockTTL } = props;
   const { formatMessage } = useIntl();
-
   return (
     <>
-      {!enabled && (
-        <Alert severity="warning" style={{ marginBottom: '1em' }}>
-          {formatMessage(publishingStatusTileMessages.disabled)}
-        </Alert>
-      )}
       <ListItem component="div">
         <ListItemAvatar>
           <PublishingStatusAvatar status={isFetching ? null : status} />
         </ListItemAvatar>
         <ListItemText
-          primary={
-            isFetching ? (
-              <Skeleton />
-            ) : publishingStatusTileMessages[status] ? (
-              formatMessage(publishingStatusTileMessages[status])
-            ) : (
-              status
-            )
-          }
+          primary={isFetching ? <Skeleton /> : getPublishingStatusMessage(props, formatMessage)}
           secondary={
             isFetching ? (
               <Skeleton />
             ) : (
               <>
-                {message && (
-                  <>
-                    {message}
-                    <br />
-                  </>
-                )}
                 {lockOwner && (
                   <>
-                    {formatMessage(publishingStatusTileMessages.lockOwner, { lockOwner })}
+                    {formatMessage(publishingStatusMessages.lockOwner, { lockOwner })}
                     <br />
                   </>
                 )}
-                {lockTTL && formatMessage(publishingStatusTileMessages.lockTTL, { lockTTL })}
+                {lockTTL && formatMessage(publishingStatusMessages.lockTTL, { lockTTL })}
               </>
             )
           }

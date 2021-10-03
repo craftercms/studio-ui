@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { defineMessages, useIntl } from 'react-intl';
+import { useIntl } from 'react-intl';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import { CSSProperties } from '@mui/styles';
@@ -25,6 +25,8 @@ import { ElementType } from 'react';
 import Skeleton from '@mui/material/Skeleton';
 import { PublishingStatus } from '../../models/Publishing';
 import PublishingStatusAvatar from '../PublishingStatusAvatar/PublishingStatusAvatar';
+import { publishingStatusMessages } from '../PublishingStatusDisplay';
+import { capitalize } from '@mui/material';
 
 type PublishingStatusTileClassKey = 'root' | 'avatar' | 'text';
 
@@ -73,61 +75,6 @@ const usePublishingStatusTileStyles = makeStyles((theme) =>
   })
 );
 
-export const publishingStatusTileMessages = defineMessages({
-  ready: {
-    id: 'words.ready',
-    defaultMessage: 'Ready'
-  },
-  publishing: {
-    id: 'words.publishing',
-    defaultMessage: 'Publishing'
-  },
-  queued: {
-    id: 'words.queued',
-    defaultMessage: 'Queued'
-  },
-  stopped: {
-    id: 'words.stopped',
-    defaultMessage: 'Stopped'
-  },
-  error: {
-    id: 'words.error',
-    defaultMessage: 'Error'
-  },
-  refresh: {
-    id: 'words.refresh',
-    defaultMessage: 'Refresh'
-  },
-  unlock: {
-    id: 'words.unlock',
-    defaultMessage: 'Unlock'
-  },
-  start: {
-    id: 'words.start',
-    defaultMessage: 'Start'
-  },
-  stop: {
-    id: 'words.stop',
-    defaultMessage: 'Stop'
-  },
-  publishingStatus: {
-    id: 'publishingStatusTile.publishingStatus',
-    defaultMessage: 'Publishing Status'
-  },
-  lockOwner: {
-    id: 'publishingStatusTile.lockOwnerDisplayMessage',
-    defaultMessage: 'Locked by {lockOwner}'
-  },
-  lockTTL: {
-    id: 'publishingStatusTile.lockTTLMessage',
-    defaultMessage: 'TTL {lockTTL}'
-  },
-  disabled: {
-    id: 'publishingStatusTile.isDisabledMessage',
-    defaultMessage: 'The publisher is disabled.'
-  }
-});
-
 const PublishingStatusTile = React.forwardRef<HTMLDivElement | HTMLButtonElement, PublishingStatusTileProps>(function (
   props,
   ref
@@ -136,9 +83,9 @@ const PublishingStatusTile = React.forwardRef<HTMLDivElement | HTMLButtonElement
   const { formatMessage } = useIntl();
   const { status, onClick, isFetching, classes: propClasses, ...rest } = props;
   const Component = onClick ? ('button' as ElementType) : ('div' as ElementType);
-  const statusText = publishingStatusTileMessages[status]
-    ? formatMessage(publishingStatusTileMessages[status])
-    : status;
+  const statusText = publishingStatusMessages[status]
+    ? formatMessage(publishingStatusMessages[status])
+    : capitalize(status);
   return (
     <Component
       ref={ref}

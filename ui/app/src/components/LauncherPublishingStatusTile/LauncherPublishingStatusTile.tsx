@@ -15,24 +15,21 @@
  */
 
 import React from 'react';
-import PublishingStatusTile, { publishingStatusTileMessages } from '../PublishingStatusTile';
+import PublishingStatusTile from '../PublishingStatusTile';
 import { closeLauncher, showPublishingStatusDialog } from '../../state/actions/dialogs';
 import { useDispatch } from 'react-redux';
 import { batchActions } from '../../state/actions/misc';
 import { Tooltip } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { useSelection } from '../../utils/hooks/useSelection';
+import { publishingStatusMessages } from '../PublishingStatusDisplay';
 
 function LauncherPublishingStatusTile() {
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const state = useSelection((state) => state.dialogs.publishingStatus);
   return (
-    <Tooltip
-      title={formatMessage(publishingStatusTileMessages.publishingStatus)}
-      disableFocusListener
-      disableTouchListener
-    >
+    <Tooltip title={formatMessage(publishingStatusMessages.publishingStatus)} disableFocusListener disableTouchListener>
       <PublishingStatusTile
         status={state.status}
         isFetching={state.isFetching}

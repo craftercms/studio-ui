@@ -29,8 +29,7 @@ type PublishingStatusWidgetProps = {
 export default function PublishingStatusWidget(props: PublishingStatusWidgetProps) {
   const { siteId } = props;
   const state = useSelection((state) => state.dialogs.publishingStatus);
-  const { enabled, status, message, lockOwner, lockTTL, numberOfItems, publishingTarget, submissionId, totalItems } =
-    state;
+  const { enabled, status, lockOwner, lockTTL, numberOfItems, publishingTarget, submissionId, totalItems } = state;
   const dispatch = useDispatch();
 
   const onStartStop = () => {
@@ -56,7 +55,6 @@ export default function PublishingStatusWidget(props: PublishingStatusWidgetProp
       <PublishingStatusDialogContainer
         enabled={enabled}
         status={status}
-        message={message}
         lockOwner={lockOwner}
         lockTTL={lockTTL}
         isFetching={!state}
