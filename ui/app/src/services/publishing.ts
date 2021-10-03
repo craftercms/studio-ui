@@ -18,7 +18,7 @@ import { errorSelectorApi1, get, post, postJSON } from '../utils/ajax';
 import { Observable } from 'rxjs';
 import { catchError, map, mapTo, pluck } from 'rxjs/operators';
 import { LegacyItem } from '../models/Item';
-import { toQueryString } from '../utils/object';
+import { pluckProps, toQueryString } from '../utils/object';
 import { PublishingStatus, PublishingTarget } from '../models/Publishing';
 import { Api2BulkResponseFormat, Api2ResponseFormat } from '../models/ApiResponse';
 import { PagedArray } from '../models/PagedArray';
