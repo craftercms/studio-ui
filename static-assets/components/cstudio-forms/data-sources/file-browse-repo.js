@@ -119,10 +119,10 @@ YAHOO.extend(CStudioForms.Datasources.FileBrowseRepo, CStudioForms.CStudioFormDa
         label: CMgs.format(langBundle, 'repositoryPath'),
         name: 'repoPath',
         type: 'content-path-input',
-        defaultValue: '/static-assets/',
-        rootPath: '/static-assets',
+        defaultValue: '/site/',
+        rootPath: '/site',
         validations: {
-          regex: /^\/static-assets(\/.*)?$/
+          regex: /^\/site(\/.*)?$/
         }
       }
     ];
