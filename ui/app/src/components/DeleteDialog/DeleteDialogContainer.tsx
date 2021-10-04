@@ -63,12 +63,10 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
   const isCommentRequired = useSelection((state) => state.uiConfig.publishing.deleteCommentRequired);
   const [selectedItems, setSelectedItems] = useState<LookupTable<boolean>>({});
   const dispatch = useDispatch();
-  const depsSource = useMemo(() => ({ childItems, dependentItems, apiState, isFetching }), [
-    childItems,
-    dependentItems,
-    apiState,
-    isFetching
-  ]);
+  const depsSource = useMemo(
+    () => ({ childItems, dependentItems, apiState, isFetching }),
+    [childItems, dependentItems, apiState, isFetching]
+  );
   const [submitDisabled, setSubmitDisabled] = useState(true);
   const [confirmChecked, setConfirmChecked] = useState(false);
   const authoringBase = useSelection((state) => state.env.authoringBase);

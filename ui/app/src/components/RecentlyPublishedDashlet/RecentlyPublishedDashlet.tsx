@@ -21,15 +21,15 @@ import { DashboardPreferences } from '../../models/Dashboard';
 import { fetchLegacyDeploymentHistory } from '../../services/dashboard';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import { FormattedMessage } from 'react-intl';
-import Button from '@material-ui/core/Button';
-import MenuItem from '@material-ui/core/MenuItem';
+import Button from '@mui/material/Button';
+import MenuItem from '@mui/material/MenuItem';
 import { DetailedItem } from '../../models/Item';
 import { getNumOfMenuOptionsForItem, getSystemTypeFromPath, parseLegacyItemToDetailedItem } from '../../utils/content';
 import LookupTable from '../../models/LookupTable';
 import Dashlet from '../Dashlet';
 import useStyles from './styles';
 import RecentlyPublishedDashletUISkeletonTable from './RecentlyPublishedDashletUISkeletonTable';
-import TextField from '@material-ui/core/TextField';
+import TextField from '@mui/material/TextField';
 import { itemsApproved, itemsDeleted, itemsRejected, itemsScheduled } from '../../state/actions/system';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { filter } from 'rxjs/operators';
@@ -44,6 +44,8 @@ import { showItemMegaMenu } from '../../state/actions/dialogs';
 import { batchActions } from '../../state/actions/misc';
 import { getEmptyStateStyleSet } from '../SystemStatus/EmptyState';
 import { useActiveSite } from '../../utils/hooks/useActiveSite';
+import { asLocalizedDateTime } from '../../utils/datetime';
+import { reversePluckProps } from '../../utils/object';
 
 export interface DashboardItem {
   label: string;
@@ -72,9 +74,10 @@ export default function RecentlyPublishedDashlet() {
   const classes = useStyles();
   const dispatch = useDispatch();
 
-  const allCollapsed = useMemo(() => Object.keys(expandedItems).every((key) => !Boolean(expandedItems[key])), [
-    expandedItems
-  ]);
+  const allCollapsed = useMemo(
+    () => Object.keys(expandedItems).every((key) => !Boolean(expandedItems[key])),
+    [expandedItems]
+  );
 
   const toggleCollapseAllItems = useCallback(
     (documents, expanded) => {
@@ -112,14 +115,18 @@ export default function RecentlyPublishedDashlet() {
 
   const fetchHistory = useCallback(() => {
     setFetchingHistory(true);
-    fetchLegacyDeploymentHistory(siteId, 30, preferences.numItems, preferences.filterBy).subscribe(
-      (history) => {
+    fetchLegacyDeploymentHistory(siteId, 30, preferences.numItems, preferences.filterBy).subscribe({
+      next(history) {
         const parentItems = [];
         const childrenLookup = {};
         history.documents.forEach((document) => {
           if (document.children.length) {
             parentItems.push({
-              label: document.internalName,
+              label: asLocalizedDateTime(
+                document.internalName,
+                localeBranch.localeCode,
+                reversePluckProps(localeBranch.dateTimeFormatOptions, 'hour', 'minute', 'second')
+              ),
               children: document.children.map((item) => {
                 const key = `${item.uri}:${item.eventDate}`;
                 childrenLookup[key] = parseLegacyItemToDetailedItem(item);
@@ -137,12 +144,20 @@ export default function RecentlyPublishedDashlet() {
         toggleCollapseAllItems(parentItems, true);
         setFetchingHistory(false);
       },
-      (e) => {
+      error(e) {
         setErrorHistory(e);
         setFetchingHistory(false);
       }
-    );
-  }, [siteId, preferences.numItems, preferences.filterBy, toggleCollapseAllItems, setItemsLookup]);
+    });
+  }, [
+    siteId,
+    preferences.numItems,
+    preferences.filterBy,
+    toggleCollapseAllItems,
+    setItemsLookup,
+    localeBranch.localeCode,
+    localeBranch.dateTimeFormatOptions
+  ]);
 
   useEffect(() => {
     fetchHistory();
@@ -172,11 +187,10 @@ export default function RecentlyPublishedDashlet() {
   // endregion
 
   const resource = useLogicResource<DashboardItem[], { items: DashboardItem[]; error: ApiResponse; fetching: boolean }>(
-    useMemo(() => ({ items: parentItems, error: errorHistory, fetching: fetchingHistory }), [
-      parentItems,
-      errorHistory,
-      fetchingHistory
-    ]),
+    useMemo(
+      () => ({ items: parentItems, error: errorHistory, fetching: fetchingHistory }),
+      [parentItems, errorHistory, fetchingHistory]
+    ),
     {
       shouldResolve: (source) => Boolean(source.items) && !fetchingHistory,
       shouldReject: ({ error }) => Boolean(error),

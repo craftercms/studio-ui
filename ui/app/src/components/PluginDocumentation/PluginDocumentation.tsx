@@ -18,8 +18,8 @@ import { MarketplacePlugin } from '../../models/MarketplacePlugin';
 import React, { useEffect, useState } from 'react';
 import Marked from 'marked';
 import hljs from '../../utils/hljs';
-import Typography from '@material-ui/core/Typography';
-import Link from '@material-ui/core/Link';
+import Typography from '@mui/material/Typography';
+import Link from '@mui/material/Link';
 import { FormattedMessage } from 'react-intl';
 
 export interface PluginDocumentationProps {
@@ -34,7 +34,7 @@ export default function PluginDocumentation(props: PluginDocumentationProps) {
   useEffect(() => {
     if (plugin.documentation) {
       Marked.setOptions({
-        highlight: function(code, lang) {
+        highlight: function (code, lang) {
           return hljs.highlightAuto(code).value;
         },
         langPrefix: 'hljs language-'

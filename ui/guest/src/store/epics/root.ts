@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ActionsObservable, combineEpics, Epic, ofType } from 'redux-observable';
+import { combineEpics, ofType } from 'redux-observable';
 import { GuestStandardAction } from '../models/GuestStandardAction';
 import { filter, ignoreElements, map, mapTo, switchMap, take, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 import { not } from '../../utils/util';
@@ -22,45 +22,56 @@ import { post } from '../../utils/communicator';
 import * as iceRegistry from '../../classes/ICERegistry';
 import { dragOk, unwrapEvent } from '../util';
 import * as contentController from '../../classes/ContentController';
-import { interval, merge, NEVER, of, Subject } from 'rxjs';
+import { interval, merge, NEVER, Observable, of, Subject } from 'rxjs';
 import { clearAndListen$, destroyDragSubjects, dragover$, escape$, initializeDragSubjects } from '../subjects';
 import { initTinyMCE } from '../../controls/rte';
+import { EditingStatus, HighlightMode } from '../../constants';
 import {
-  ASSET_DRAG_ENDED,
-  ASSET_DRAG_STARTED,
-  CLEAR_CONTENT_TREE_FIELD_SELECTED,
-  CLEAR_SELECTED_ZONES,
-  COMPONENT_DRAG_ENDED,
-  COMPONENT_DRAG_STARTED,
-  COMPONENT_INSTANCE_DRAG_ENDED,
-  COMPONENT_INSTANCE_DRAG_STARTED,
-  CONTENT_TREE_FIELD_SELECTED,
-  CONTENT_TREE_SWITCH_FIELD_INSTANCE,
-  CONTENT_TYPE_DROP_TARGETS_REQUEST,
-  CONTENT_TYPE_DROP_TARGETS_RESPONSE,
-  DESKTOP_ASSET_DRAG_ENDED,
-  DESKTOP_ASSET_DRAG_STARTED,
-  DESKTOP_ASSET_DROP,
-  DESKTOP_ASSET_UPLOAD_COMPLETE,
-  DESKTOP_ASSET_UPLOAD_STARTED,
-  EditingStatus,
-  HighlightMode,
-  ICE_ZONE_SELECTED,
-  INSTANCE_DRAG_BEGUN,
-  INSTANCE_DRAG_ENDED,
-  TRASHED
-} from '../../constants';
-import { MouseEventActionObservable } from '../models/Actions';
-import { GuestState, GuestStateObservable } from '../models/GuestStore';
+  assetDragEnded,
+  assetDragStarted,
+  clearContentTreeFieldSelected,
+  clearSelectedZones,
+  componentDragEnded,
+  componentDragStarted,
+  componentInstanceDragEnded,
+  componentInstanceDragStarted,
+  contentTreeFieldSelected,
+  contentTypeDropTargetsRequest,
+  contentTypeDropTargetsResponse,
+  desktopAssetDrop,
+  desktopAssetUploadComplete,
+  desktopAssetUploadStarted,
+  iceZoneSelected as iceZoneSelectedAction,
+  instanceDragBegun,
+  instanceDragEnded,
+  trashed,
+  contentTreeSwitchFieldInstance
+} from '@craftercms/studio-ui/build_tsc/state/actions/preview';
+import { GuestActionTypes, MouseEventActionObservable } from '../models/Actions';
+import { GuestState } from '../models/GuestStore';
 import { isNullOrUndefined, notNullOrUndefined, reversePluckProps } from '../../utils/object';
 import { ElementRecord, ICEProps } from '../../models/InContextEditing';
 import * as ElementRegistry from '../../classes/ElementRegistry';
 import { get } from '../../classes/ElementRegistry';
 import { scrollToElement, scrollToIceProps } from '../../utils/dom';
+import {
+  computedDragEnd,
+  documentDragEnd,
+  documentDragLeave,
+  documentDragOver,
+  documentDrop,
+  dropzoneEnter,
+  dropzoneLeave,
+  iceZoneSelected as iceZoneSelectedActionGuest,
+  startListening,
+  desktopAssetDragEnded,
+  desktopAssetDragStarted
+} from '../actions';
+import { validationMessage } from '@craftercms/studio-ui/build_tsc/state/actions/preview';
 
-const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combineEpics.apply(this, [
+const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
   // region Multi-event propagation stopper epic
-  (action$: MouseEventActionObservable, state$: GuestStateObservable) =>
+  (action$, state$) =>
     action$.pipe(
       ofType('mouseover', 'mouseleave'),
       withLatestFrom(state$),
@@ -80,8 +91,8 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
   // endregion
 
   // region dragstart
-  (action$: MouseEventActionObservable, state$: GuestStateObservable) => {
-    return action$.pipe(
+  (action$: MouseEventActionObservable, state$) =>
+    action$.pipe(
       ofType('dragstart'),
       withLatestFrom(state$),
       switchMap(([action, state]) => {
@@ -96,7 +107,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
           console.warn("Element is draggable but wasn't set draggable by craftercms");
         } else {
           event.stopPropagation();
-          post({ type: INSTANCE_DRAG_BEGUN, payload: iceId });
+          post(instanceDragBegun(iceId));
           const e = unwrapEvent<DragEvent>(event);
           e.dataTransfer.setData('text/plain', `${record.id}`);
           // noinspection CssInvalidHtmlTagReference
@@ -106,13 +117,12 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
         }
         return NEVER;
       })
-    );
-  },
+    ),
   // endregion
 
   // region dragover
-  (action$: MouseEventActionObservable, state$: GuestStateObservable) => {
-    return action$.pipe(
+  (action$: MouseEventActionObservable, state$) =>
+    action$.pipe(
       ofType('dragover'),
       withLatestFrom(state$),
       tap(([action, state]) => {
@@ -127,11 +137,10 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
         }
       }),
       ignoreElements()
-    );
-  },
+    ),
   (action$) =>
     action$.pipe(
-      ofType('document:dragover'),
+      ofType(documentDragOver.type),
       tap(({ payload: { event } }) => event.preventDefault()),
       ignoreElements()
     ),
@@ -140,25 +149,25 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
   // region dragleave
   (action$, state$) =>
     action$.pipe(
-      ofType('dragleave', 'document:dragleave'),
+      ofType('dragleave', documentDragLeave.type),
       withLatestFrom(state$),
       filter(([, state]) => state.status === EditingStatus.UPLOAD_ASSET_FROM_DESKTOP),
-      switchMap(([{ event }]) =>
+      switchMap(() =>
         interval(100).pipe(
-          mapTo({ type: DESKTOP_ASSET_DRAG_ENDED }),
-          takeUntil(action$.pipe(ofType('document:dragover', 'dragover')))
+          mapTo(desktopAssetDragEnded()),
+          takeUntil(action$.pipe(ofType(documentDragOver.type, 'dragover')))
         )
       )
     ),
   // endregion
 
   // region drop
-  (action$: MouseEventActionObservable, state$: GuestStateObservable) => {
+  (action$: MouseEventActionObservable, state$) => {
     return action$.pipe(
       ofType('drop'),
       withLatestFrom(state$),
       filter(([, state]) => dragOk(state.status) && !state.dragContext.invalidDrop),
-      switchMap(([action, state]) => {
+      switchMap((([action, state]) => {
         const {
           payload: { event, record }
         } = action;
@@ -220,7 +229,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
               const stream$ = new Subject();
               const reader = new FileReader();
               reader.onload = ((aImg: HTMLImageElement) => (event) => {
-                post(DESKTOP_ASSET_DROP, {
+                post(desktopAssetDrop.type, {
                   dataUrl: event.target.result,
                   name: file.name,
                   type: file.type,
@@ -230,8 +239,8 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
                 // Timeout gives the browser a chance to render the image so later rect
                 // calculations are working with the updated paint.
                 setTimeout(() => {
-                  stream$.next({ type: DESKTOP_ASSET_UPLOAD_STARTED, payload: { record } });
-                  stream$.next({ type: DESKTOP_ASSET_DRAG_ENDED });
+                  stream$.next({ type: desktopAssetUploadStarted.type, payload: { record } });
+                  stream$.next({ type: desktopAssetDragEnded.type });
                   stream$.complete();
                   stream$.unsubscribe();
                 });
@@ -239,17 +248,17 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
               reader.readAsDataURL(file);
               return stream$;
             } else {
-              return of({ type: DESKTOP_ASSET_DRAG_ENDED });
+              return of(desktopAssetDragEnded());
             }
           }
         }
         return NEVER;
-      })
+      }) as () => Observable<GuestStandardAction>)
     );
   },
   (action$, state$) =>
     action$.pipe(
-      ofType('document:drop'),
+      ofType(documentDrop.type),
       withLatestFrom(state$),
       switchMap(([action, state]) => {
         const {
@@ -260,7 +269,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
         event.stopPropagation();
         switch (status) {
           case EditingStatus.UPLOAD_ASSET_FROM_DESKTOP:
-            return of({ type: DESKTOP_ASSET_DRAG_ENDED });
+            return of(desktopAssetDragEnded());
         }
         return NEVER;
       })
@@ -268,7 +277,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
   // endregion
 
   // region dragend
-  (action$: MouseEventActionObservable, state$: GuestStateObservable) => {
+  (action$: MouseEventActionObservable, state$) => {
     return action$.pipe(
       ofType('dragend'),
       withLatestFrom(state$),
@@ -277,14 +286,14 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
         const { event } = action.payload;
         event.preventDefault();
         event.stopPropagation();
-        post({ type: INSTANCE_DRAG_ENDED });
-        return of({ type: 'computed_dragend' });
+        post({ type: instanceDragEnded.type });
+        return of(computedDragEnd());
       })
     );
   },
   (action$) =>
     action$.pipe(
-      ofType('document:dragend'),
+      ofType(documentDragEnd.type),
       tap(({ payload }) => payload.event.preventDefault()),
       ignoreElements()
     ),
@@ -293,15 +302,15 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
   // region dragend_listener
   (action$: MouseEventActionObservable) => {
     return action$.pipe(
-      ofType(ASSET_DRAG_ENDED, COMPONENT_DRAG_ENDED, COMPONENT_INSTANCE_DRAG_ENDED, DESKTOP_ASSET_DRAG_ENDED),
-      map(() => ({ type: 'computed_dragend' }))
+      ofType(assetDragEnded.type, componentDragEnded.type, componentInstanceDragEnded.type, desktopAssetDragEnded.type),
+      map(() => computedDragEnd())
     );
   },
   // endregion
 
   // region click
-  (action$: MouseEventActionObservable, state$: GuestStateObservable) => {
-    return action$.pipe(
+  (action$: MouseEventActionObservable, state$) =>
+    action$.pipe(
       ofType('click'),
       withLatestFrom(state$),
       filter(([, state]) => state.status === EditingStatus.LISTENING),
@@ -312,21 +321,23 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
         const validations = field?.validations;
         const type = field?.type;
         const iceZoneSelected = () => {
-          post(ICE_ZONE_SELECTED, {
-            modelId: record.modelId,
-            index: record.index,
-            fieldId: record.fieldId,
-            // @ts-ignore - clientX & clientY not being found in typings.
-            coordinates: { x: event.clientX, y: event.clientY }
-          });
+          post(
+            iceZoneSelectedAction({
+              modelId: record.modelId,
+              index: record.index,
+              fieldId: record.fieldId,
+              // @ts-ignore - clientX & clientY not being found in typings.
+              coordinates: { x: event.clientX, y: event.clientY }
+            })
+          );
           return merge(
             escape$.pipe(
               takeUntil(clearAndListen$),
-              tap(() => post(CLEAR_SELECTED_ZONES)),
-              map(() => ({ type: 'start_listening' })),
+              tap(() => post(clearSelectedZones.type)),
+              map(() => startListening()),
               take(1)
             ),
-            of({ type: 'ice_zone_selected', payload: action.payload })
+            of(iceZoneSelectedActionGuest(action.payload))
           );
         };
         if (state.highlightMode === HighlightMode.ALL) {
@@ -357,8 +368,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
           return NEVER;
         }
       })
-    );
-  },
+    ),
   // endregion
 
   // region dblclick
@@ -368,7 +378,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
   // region computed_dragend
   (action$: MouseEventActionObservable) => {
     return action$.pipe(
-      ofType('computed_dragend'),
+      ofType(computedDragEnd.type),
       tap(() => destroyDragSubjects()),
       ignoreElements()
     );
@@ -376,9 +386,9 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
   // endregion
 
   // region Desktop Asset Upload (Complete)
-  (action$: ActionsObservable<GuestStandardAction<{ path: string; record: ElementRecord }>>) => {
+  (action$: Observable<GuestStandardAction<{ path: string; record: ElementRecord }>>) => {
     return action$.pipe(
-      ofType(DESKTOP_ASSET_UPLOAD_COMPLETE),
+      ofType(desktopAssetUploadComplete.type),
       tap((action) => {
         const { record, path } = action.payload;
         contentController.updateField(record.modelId, record.fieldId[0], record.index, path);
@@ -398,9 +408,9 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
   // endregion
 
   // region content_type_drop_targets_request
-  (action$: ActionsObservable<GuestStandardAction<{ contentTypeId: string }>>) => {
+  (action$: Observable<GuestStandardAction<{ contentTypeId: string }>>) => {
     return action$.pipe(
-      ofType(CONTENT_TYPE_DROP_TARGETS_REQUEST),
+      ofType(contentTypeDropTargetsRequest.type),
       tap((action) => {
         const { contentTypeId } = action.payload;
         const dropTargets = iceRegistry.getContentTypeDropTargets(contentTypeId).map((item) => {
@@ -414,10 +424,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
             contentTypeId
           };
         });
-        post({
-          type: CONTENT_TYPE_DROP_TARGETS_RESPONSE,
-          payload: { contentTypeId, dropTargets }
-        });
+        post(contentTypeDropTargetsResponse({ contentTypeId, dropTargets }));
       }),
       ignoreElements()
     );
@@ -427,40 +434,40 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
   // region Start listening
   (action$: MouseEventActionObservable) => {
     return action$.pipe(
-      ofType('start_listening'),
-      tap(() => post(CLEAR_SELECTED_ZONES)),
+      ofType(startListening.type),
+      tap(() => post(clearSelectedZones.type)),
       ignoreElements()
     );
   },
   // endregion
 
   // region TRASHED
-  (action$: ActionsObservable<GuestStandardAction<{ iceId: number }>>) => {
+  (action$: Observable<GuestStandardAction<{ iceId: number }>>) => {
     // onDrop doesn't execute when trashing on host side
     // Consider behaviour when running Host Guest-side
     return action$.pipe(
-      ofType(TRASHED),
+      ofType(trashed.type),
       tap((action) => {
         const { iceId } = action.payload;
         let { modelId, fieldId, index } = iceRegistry.getById(iceId);
         contentController.deleteItem(modelId, fieldId, index);
-        post({ type: INSTANCE_DRAG_ENDED });
+        post(instanceDragEnded());
       }),
       // There's a raise condition where sometimes the dragend is
       // fired and sometimes is not upon dropping on the rubbish bin.
       // Manually firing here may incur in double firing of computed_dragend
       // in those occasions.
-      mapTo({ type: 'computed_dragend' })
+      mapTo(computedDragEnd())
     );
   },
   // endregion
 
   // region drop_zone_enter
-  (action$: ActionsObservable<GuestStandardAction<{ elementRecordId: number }>>, state$: GuestStateObservable) => {
+  (action$: Observable<GuestStandardAction<{ elementRecordId: number }>>, state$) => {
     // onDrop doesn't execute when trashing on host side
     // Consider behaviour when running Host Guest-side
     return action$.pipe(
-      ofType('drop_zone_enter'),
+      ofType(dropzoneEnter.type),
       withLatestFrom(state$),
       tap(([action, state]) => {
         const { elementRecordId } = action.payload;
@@ -468,7 +475,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
           (dropZone) => dropZone.elementRecordId === elementRecordId
         );
         Object.values(validations).forEach((validation) => {
-          post({ type: 'VALIDATION_MESSAGE', payload: validation });
+          post(validationMessage(validation));
         });
       }),
       ignoreElements()
@@ -477,9 +484,9 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
   // endregion
 
   // region drop_zone_leave
-  (action$: ActionsObservable<GuestStandardAction<{ elementRecordId: number }>>, state$: GuestStateObservable) => {
+  (action$: Observable<GuestStandardAction<{ elementRecordId: number }>>, state$) => {
     return action$.pipe(
-      ofType('drop_zone_leave'),
+      ofType(dropzoneLeave.type),
       withLatestFrom(state$),
       tap(([action, state]) => {
         if (!state.dragContext) {
@@ -490,14 +497,14 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
           (dropZone) => dropZone.elementRecordId === elementRecordId
         );
         if (validations.minCount) {
-          post({ type: INSTANCE_DRAG_ENDED });
+          post({ type: instanceDragEnded.type });
         }
         Object.values(validations).forEach((validation) => {
           // We dont want to show a validation message for maxCount on Leaving Dropzone
           if (validations.maxCount) {
             return;
           }
-          post({ type: 'VALIDATION_MESSAGE', payload: validation });
+          post(validationMessage(validation));
         });
       }),
       ignoreElements()
@@ -506,9 +513,9 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
   // endregion
 
   // region hostComponentDragStarted
-  (action$: MouseEventActionObservable, state$: GuestStateObservable) => {
+  (action$: MouseEventActionObservable, state$) => {
     return action$.pipe(
-      ofType(COMPONENT_DRAG_STARTED),
+      ofType(componentDragStarted.type),
       withLatestFrom(state$),
       switchMap(([, state]) => {
         const contentType = state.dragContext.contentType;
@@ -516,14 +523,13 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
           console.error('No contentTypeId found for this drag instance.');
         } else {
           if (state.dragContext.dropZones.length === 0) {
-            post({
-              type: 'VALIDATION_MESSAGE',
-              payload: {
+            post(
+              validationMessage({
                 id: 'dropTargetsNotFound',
                 level: 'info',
                 values: { contentType: state.dragContext.contentType.name }
-              }
-            });
+              })
+            );
           }
           return initializeDragSubjects(state$);
         }
@@ -534,23 +540,22 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
   // endregion
 
   // region host_instance_drag_started
-  (action$: MouseEventActionObservable, state$: GuestStateObservable) => {
+  (action$: MouseEventActionObservable, state$) => {
     return action$.pipe(
-      ofType(COMPONENT_INSTANCE_DRAG_STARTED),
+      ofType(componentInstanceDragStarted.type),
       withLatestFrom(state$),
       switchMap(([, state]) => {
         if (isNullOrUndefined(state.dragContext.instance.craftercms.contentTypeId)) {
           console.error('No contentTypeId found for this drag instance.');
         } else {
           if (state.dragContext.dropZones.length === 0) {
-            post({
-              type: 'VALIDATION_MESSAGE',
-              payload: {
+            post(
+              validationMessage({
                 id: 'dropTargetsNotFound',
                 level: 'info',
                 values: { contentType: state.dragContext.contentType.name }
-              }
-            });
+              })
+            );
           }
           return initializeDragSubjects(state$);
         }
@@ -561,9 +566,9 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
   // endregion
 
   // region asset_drag_started
-  (action$: MouseEventActionObservable, state$: GuestStateObservable) => {
+  (action$: MouseEventActionObservable, state$) => {
     return action$.pipe(
-      ofType(ASSET_DRAG_STARTED),
+      ofType(assetDragStarted.type),
       withLatestFrom(state$),
       switchMap(([, state]) => {
         if (isNullOrUndefined(state.dragContext.dragged.path)) {
@@ -578,9 +583,9 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
   // endregion
 
   // region desktop_asset_drag_started
-  (action$: MouseEventActionObservable, state$: GuestStateObservable) => {
+  (action$: MouseEventActionObservable, state$) => {
     return action$.pipe(
-      ofType(DESKTOP_ASSET_DRAG_STARTED),
+      ofType(desktopAssetDragStarted.type),
       withLatestFrom(state$),
       switchMap(([, state]) => {
         if (isNullOrUndefined(state.dragContext.dragged)) {
@@ -595,35 +600,35 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
   // endregion
 
   // region content_tree_field_selected
-  (action$: ActionsObservable<GuestStandardAction<{ iceProps: ICEProps; scrollElement: string; name: string }>>) => {
+  (action$: Observable<GuestStandardAction<{ iceProps: ICEProps; scrollElement: string; name: string }>>) => {
     return action$.pipe(
-      ofType(CONTENT_TREE_FIELD_SELECTED),
+      ofType(contentTreeFieldSelected.type),
       switchMap((action) => {
         const { iceProps, scrollElement, name } = action.payload;
 
         if (scrollToIceProps(iceProps, scrollElement)) {
           return escape$.pipe(
             takeUntil(clearAndListen$),
-            map(() => ({ type: CLEAR_CONTENT_TREE_FIELD_SELECTED })),
+            map(() => ({ type: clearContentTreeFieldSelected.type as GuestActionTypes })),
             take(1)
           );
         } else {
-          post({
-            type: 'VALIDATION_MESSAGE',
-            payload: { id: 'registerNotFound', level: 'suggestion', values: { name } }
-          });
+          post(
+            validationMessage({
+              id: 'registerNotFound',
+              level: 'suggestion',
+              values: { name }
+            })
+          );
           return NEVER;
         }
       })
     );
   },
 
-  (
-    action$: ActionsObservable<GuestStandardAction<{ type: string; scrollElement: string }>>,
-    state$: GuestStateObservable
-  ) => {
+  (action$: Observable<GuestStandardAction<{ type: string; scrollElement: string }>>, state$) => {
     return action$.pipe(
-      ofType(CONTENT_TREE_SWITCH_FIELD_INSTANCE),
+      ofType(contentTreeSwitchFieldInstance.type),
       withLatestFrom(state$),
       tap(([action, state]) => {
         const { scrollElement } = action.payload;
@@ -638,9 +643,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
   // region ice_zone_selected
 
   // endregion
-]);
-
-export default epic;
+);
 
 const moveComponent = (dragContext) => {
   let { dragged, dropZone, dropZones, targetIndex } = dragContext,
@@ -701,3 +704,5 @@ const moveComponent = (dragContext) => {
     }, 20);
   }
 };
+
+export default epic;

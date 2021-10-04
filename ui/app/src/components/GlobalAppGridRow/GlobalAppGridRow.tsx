@@ -14,8 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createStyles, Theme, withStyles } from '@material-ui/core/styles';
-import TableRow from '@material-ui/core/TableRow';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import withStyles from '@mui/styles/withStyles';
+import TableRow from '@mui/material/TableRow';
 
 const GlobalAppGridRow = withStyles((theme: Theme) =>
   createStyles({

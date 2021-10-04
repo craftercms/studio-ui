@@ -15,12 +15,12 @@
  */
 
 import React, { Suspense } from 'react';
-import CoreIcon, { IconProps } from '@material-ui/core/Icon';
-import ErrorRounded from '@material-ui/icons/ErrorRounded';
+import CoreIcon, { IconProps } from '@mui/material/Icon';
+import ErrorRounded from '@mui/icons-material/ErrorRounded';
 import { components } from '../../services/plugin';
-import { SvgIconProps, Tooltip } from '@material-ui/core';
+import { SvgIconProps, Tooltip } from '@mui/material';
 import clsx from 'clsx';
-import { Skeleton } from '@material-ui/lab';
+import { Skeleton } from '@mui/material';
 
 export type SystemIconDescriptor = { id?: string; class?: string; style?: object; content?: string };
 
@@ -40,7 +40,7 @@ export default function SystemIcon(props: SystemIconProps) {
     const iconClassName = clsx(icon.class, className, props.svgIconProps?.className);
 
     return IconComponent ? (
-      <Suspense fallback={<Skeleton variant="rect" width="20px" />}>
+      <Suspense fallback={<Skeleton variant="rectangular" width="20px" />}>
         <IconComponent {...props.svgIconProps} style={iconStyle} className={iconClassName} />
       </Suspense>
     ) : (

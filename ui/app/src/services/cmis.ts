@@ -20,6 +20,8 @@ import { mapTo, pluck } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { CMISItem } from '../models/CMIS';
 
+type ReturnType = { items: CMISItem[] };
+
 export function list(
   siteId: string,
   cmisRepoId: string,
@@ -30,8 +32,7 @@ export function list(
     cmisRepoId,
     ...options
   });
-
-  return get(`/studio/api/2/cmis/list${qs}`).pipe(pluck('response', 'items'));
+  return get<ReturnType>(`/studio/api/2/cmis/list${qs}`).pipe(pluck('response', 'items'));
 }
 
 export function search(
@@ -46,8 +47,7 @@ export function search(
     searchTerm,
     ...options
   });
-
-  return get(`/studio/api/2/cmis/search${qs}`).pipe(pluck('response', 'items'));
+  return get<ReturnType>(`/studio/api/2/cmis/search${qs}`).pipe(pluck('response', 'items'));
 }
 
 export function clone(siteId: string, cmisRepoId: string, cmisPath: string, studioPath: string): Observable<true> {

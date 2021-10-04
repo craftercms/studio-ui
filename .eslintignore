@@ -33,3 +33,4 @@ node_modules
 
 /ui/legacy/babel.config.js
 /ui/scss/scripts/*
+/ui/uppy/types/*

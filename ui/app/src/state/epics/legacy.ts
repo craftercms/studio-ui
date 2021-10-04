@@ -16,11 +16,12 @@
 
 import { Epic, ofType } from 'redux-observable';
 import { ignoreElements, tap } from 'rxjs/operators';
+import { dispatchDOMEvent } from '../actions/misc';
 
 export default [
   (action$) =>
     action$.pipe(
-      ofType('DISPATCH_DOM_EVENT'),
+      ofType(dispatchDOMEvent.type),
       tap(({ payload }) => {
         let event = new CustomEvent(payload.id, { detail: payload });
         document.dispatchEvent(event);

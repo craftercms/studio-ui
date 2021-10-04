@@ -14,15 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import { DetailedItem } from '../../models/Item';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
 import clsx from 'clsx';
 import { isImage } from '../../utils/content';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import Avatar from '@material-ui/core/Avatar';
-import ListItemText from '@material-ui/core/ListItemText';
-import IconButton from '@material-ui/core/IconButton';
-import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import Avatar from '@mui/material/Avatar';
+import ListItemText from '@mui/material/ListItemText';
+import IconButton from '@mui/material/IconButton';
+import MoreVertIcon from '@mui/icons-material/MoreVertRounded';
 import React from 'react';
 import { dependenciesDialogStyles } from './DependenciesDialog';
 import { assetsTypes, DependenciesListProps } from './utils';
@@ -61,6 +61,7 @@ export function DependenciesList(props: DependenciesListProps) {
                 handleContextMenuClick(e, dependency);
               }}
               className={classes.listEllipsis}
+              size="large"
             >
               <MoreVertIcon />
             </IconButton>

@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import List from '@material-ui/core/List';
+import List from '@mui/material/List';
 import { DetailedItem } from '../../models/Item';
 import NavItem from './PathNavigatorItem';
 import React, { useMemo } from 'react';

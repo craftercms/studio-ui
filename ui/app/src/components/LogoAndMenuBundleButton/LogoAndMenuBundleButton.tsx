@@ -14,12 +14,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import createStyles from '@mui/styles/createStyles';
+
+import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
-import { Button } from '@material-ui/core';
+import { Button } from '@mui/material';
 import CrafterIcon from '../Icons/CrafterIcon';
-import MenuRounded from '@material-ui/icons/MenuRounded';
-import { ButtonProps } from '@material-ui/core/Button';
+import MenuRounded from '@mui/icons-material/MenuRounded';
+import { ButtonProps } from '@mui/material/Button';
 import clsx from 'clsx';
 
 const useStyles = makeStyles(() =>
@@ -38,7 +40,10 @@ export type LogoAndMenuBundleButtonProps = ButtonProps & {
   showCrafterIcon?: boolean;
 };
 
-const LogoAndMenuBundleButton = React.forwardRef<HTMLButtonElement, LogoAndMenuBundleButtonProps>(function(props, ref) {
+const LogoAndMenuBundleButton = React.forwardRef<HTMLButtonElement, LogoAndMenuBundleButtonProps>(function (
+  props,
+  ref
+) {
   const classes = useStyles();
   const { showCrafterIcon = true, ...buttonProps } = props;
   return (

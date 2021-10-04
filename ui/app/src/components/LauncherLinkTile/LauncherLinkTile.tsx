@@ -35,42 +35,37 @@ export interface LauncherLinkTileProps {
 }
 
 const LauncherLinkTile = (props: LauncherLinkTileProps) => {
-  const { icon, systemLinkId } = props;
+  const { icon, systemLinkId, title: propTitle } = props;
   const { authoringBase } = useEnv();
   const site = useActiveSiteId();
   const useLegacy = useLegacyPreviewPreference();
   const dispatch = useDispatch();
-  const title = usePossibleTranslation(props.title);
+  const title = usePossibleTranslation(propTitle);
+  const isDialog = ['siteDashboardDialog', 'siteToolsDialog', 'siteSearchDialog'].includes(systemLinkId);
 
-  const onClick = ['siteDashboard', 'siteTools'].includes(systemLinkId)
+  const onClick = isDialog
     ? (e) => {
         e.preventDefault();
+        // prettier-ignore
+        const id = systemLinkId === 'siteDashboardDialog' ? 'craftercms.components.Dashboard' : (
+          systemLinkId === 'siteToolsDialog'
+            ? 'craftercms.components.EmbeddedSiteTools'
+            : 'craftercms.components.EmbeddedSearchIframe'
+        );
         dispatch(
           batchActions([
             closeLauncher(),
             showWidgetDialog({
               id: systemLinkId,
               title,
-              ...(systemLinkId === 'siteDashboard'
-                ? {
-                    widget: {
-                      id: 'craftercms.components.Dashboard'
-                    }
-                  }
-                : {
-                    widget: {
-                      id: 'craftercms.components.EmbeddedSiteTools'
-                    }
-                  })
+              widget: { id }
             })
           ])
         );
       }
     : null;
 
-  const link = ['siteDashboard', 'siteTools'].includes(systemLinkId)
-    ? null
-    : props.link ?? getSystemLink({ systemLinkId, authoringBase, site, useLegacy });
+  const link = isDialog ? null : props.link ?? getSystemLink({ systemLinkId, authoringBase, site, useLegacy });
 
   return <LauncherTile icon={icon} onClick={onClick} title={usePossibleTranslation(title)} link={link} />;
 };

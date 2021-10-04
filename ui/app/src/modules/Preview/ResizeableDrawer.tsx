@@ -14,13 +14,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { DrawerProps } from '@material-ui/core';
-import Drawer from '@material-ui/core/Drawer';
+import { DrawerProps } from '@mui/material';
+import Drawer from '@mui/material/Drawer';
 import React, { useCallback, useRef, useState } from 'react';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import palette from '../../styles/palette';
-import { CSSProperties } from '@material-ui/styles';
+import { CSSProperties } from '@mui/styles';
 
 export type ResizeableDrawerClassKey =
   | 'root'
@@ -116,7 +117,7 @@ export default function ResizeableDrawer(props: ResizeableDrawerProps) {
   const classes = useStyles(props.styles);
   const [resizeActive, setResizeActive] = useState(false);
 
-  const drawerRef = useRef<HTMLElement>();
+  const drawerRef = useRef<HTMLDivElement>();
 
   const {
     open,

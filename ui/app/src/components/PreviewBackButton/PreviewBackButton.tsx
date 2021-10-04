@@ -15,12 +15,12 @@
  */
 
 import React from 'react';
-import { IconButton, IconButtonProps } from '@material-ui/core';
-import ArrowBackRoundedIcon from '@material-ui/icons/ArrowBackRounded';
+import { IconButton, IconButtonProps } from '@mui/material';
+import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
 import { useDispatch } from 'react-redux';
 import { useHistoryBackStack } from '../../utils/hooks/useHistoryBackStack';
 import { FormattedMessage } from 'react-intl';
-import Tooltip from '@material-ui/core/Tooltip';
+import Tooltip from '@mui/material/Tooltip';
 import { goToLastPage } from '../../state/actions/preview';
 
 export interface PreviewBackButtonProps extends IconButtonProps {}
@@ -35,7 +35,7 @@ export default function PreviewBackButton(props: PreviewBackButtonProps) {
   return (
     <Tooltip title={<FormattedMessage id="words.back" defaultMessage="Back" />}>
       <span>
-        <IconButton disabled={stack.length <= 1} onClick={onClick} {...props}>
+        <IconButton disabled={stack.length <= 1} onClick={onClick} {...props} size="large">
           <ArrowBackRoundedIcon />
         </IconButton>
       </span>

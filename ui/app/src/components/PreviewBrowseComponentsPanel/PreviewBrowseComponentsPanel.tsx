@@ -22,8 +22,8 @@ import { ErrorBoundary } from '../SystemStatus/ErrorBoundary';
 import LoadingState from '../SystemStatus/LoadingState';
 import ContentInstance from '../../models/ContentInstance';
 import {
-  COMPONENT_INSTANCE_DRAG_ENDED,
-  COMPONENT_INSTANCE_DRAG_STARTED,
+  componentInstanceDragEnded,
+  componentInstanceDragStarted,
   fetchComponentsByContentType,
   setContentTypeFilter,
   setPreviewEditMode
@@ -31,8 +31,8 @@ import {
 import { useDispatch } from 'react-redux';
 import SearchBar from '../Controls/SearchBar';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 import ContentType from '../../models/ContentType';
 import { useSelection } from '../../utils/hooks/useSelection';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
@@ -101,7 +101,7 @@ export default function PreviewBrowseComponentsPanel() {
       dispatch(setPreviewEditMode({ editMode: true }));
     }
     hostToGuest$.next({
-      type: COMPONENT_INSTANCE_DRAG_STARTED,
+      type: componentInstanceDragStarted.type,
       payload: {
         instance: item,
         contentType: contentTypesBranch.byId[item.craftercms.contentTypeId]
@@ -109,11 +109,12 @@ export default function PreviewBrowseComponentsPanel() {
     });
   };
 
-  const onDragEnd = () => hostToGuest$.next({ type: COMPONENT_INSTANCE_DRAG_ENDED });
+  const onDragEnd = () => hostToGuest$.next({ type: componentInstanceDragEnded.type });
 
-  const onSearch = useCallback((keywords: string) => dispatch(fetchComponentsByContentType({ keywords, offset: 0 })), [
-    dispatch
-  ]);
+  const onSearch = useCallback(
+    (keywords: string) => dispatch(fetchComponentsByContentType({ keywords, offset: 0 })),
+    [dispatch]
+  );
 
   const onSearch$ = useDebouncedInput(onSearch, 600);
 

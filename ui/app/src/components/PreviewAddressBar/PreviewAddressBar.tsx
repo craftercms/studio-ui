@@ -17,26 +17,28 @@
 import { FormattedMessage } from 'react-intl';
 import { isBlank } from '../../utils/string';
 import React, { useEffect, useState } from 'react';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { useDispatch } from 'react-redux';
-import IconButton from '@material-ui/core/IconButton';
-import RefreshRounded from '@material-ui/icons/RefreshRounded';
-import Paper from '@material-ui/core/Paper';
+import IconButton from '@mui/material/IconButton';
+import RefreshRounded from '@mui/icons-material/RefreshRounded';
+import Paper from '@mui/material/Paper';
 import clsx from 'clsx';
 import ItemDisplay from '../ItemDisplay';
 import PagesSearchAhead from '../PagesSearchAhead';
 import SingleItemSelector from '../SingleItemSelector';
 import { DetailedItem } from '../../models/Item';
-import MoreRounded from '@material-ui/icons/MoreVertRounded';
+import MoreRounded from '@mui/icons-material/MoreVertRounded';
 // @ts-ignore
-import { getOffsetLeft, getOffsetTop } from '@material-ui/core/Popover/Popover';
+import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover/Popover';
 import { withIndex } from '../../utils/path';
 import { batchActions } from '../../state/actions/misc';
 import { completeDetailedItem } from '../../state/actions/content';
 import { showItemMegaMenu } from '../../state/actions/dialogs';
 import { getNumOfMenuOptionsForItem } from '../../utils/content';
-import Tooltip from '@material-ui/core/Tooltip';
-import { changeCurrentUrl, RELOAD_REQUEST } from '../../state/actions/preview';
+import Tooltip from '@mui/material/Tooltip';
+import { changeCurrentUrl, reloadRequest } from '../../state/actions/preview';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 import PreviewBackButton from '../PreviewBackButton';
 import PreviewForwardButton from '../PreviewForwardButton';
@@ -150,7 +152,7 @@ export function PreviewAddressBar(props: AddressBarProps) {
   };
 
   const onRefresh = () => {
-    getHostToGuestBus().next({ type: RELOAD_REQUEST });
+    getHostToGuestBus().next({ type: reloadRequest.type });
   };
 
   return (
@@ -158,7 +160,7 @@ export function PreviewAddressBar(props: AddressBarProps) {
       <PreviewBackButton />
       <PreviewForwardButton />
       <Tooltip title={<FormattedMessage id="previewAddressBar.reloadButtonLabel" defaultMessage="Reload this page" />}>
-        <IconButton onClick={onRefresh}>
+        <IconButton onClick={onRefresh} size="large">
           <RefreshRounded />
         </IconButton>
       </Tooltip>
@@ -202,7 +204,7 @@ export function PreviewAddressBar(props: AddressBarProps) {
         />
       </Paper>
       <Tooltip title={Boolean(item) ? <FormattedMessage id="words.options" defaultMessage="Options" /> : ''}>
-        <IconButton onClick={onOptions} disabled={!item}>
+        <IconButton onClick={onOptions} disabled={!item} size="large">
           <MoreRounded />
         </IconButton>
       </Tooltip>

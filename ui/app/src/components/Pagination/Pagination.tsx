@@ -14,9 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import TablePagination from '@material-ui/core/TablePagination';
+import TablePagination from '@mui/material/TablePagination';
 import React from 'react';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { defineMessages, useIntl } from 'react-intl';
 import clsx from 'clsx';
 
@@ -58,10 +59,6 @@ const useStyles = makeStyles(() =>
         padding: 0
       }
     },
-    caption: {
-      order: -1,
-      marginRight: '25px'
-    },
     selectRoot: {
       marginRight: 0
     }
@@ -95,7 +92,6 @@ export default function Pagination(props: PaginationProps) {
     <TablePagination
       classes={{
         root: clsx(classes.pagination, props.classes?.root),
-        caption: rowsPerPageOptions ? classes.caption : '',
         selectRoot: rowsPerPageOptions ? classes.selectRoot : 'hidden',
         toolbar: classes.paginationToolbar
       }}

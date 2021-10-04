@@ -1,7 +1,8 @@
 import clsx from 'clsx';
 import React from 'react';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { Theme } from '@material-ui/core';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import { Theme } from '@mui/material';
 import palette from '../../styles/palette';
 
 const progressBarStyles = makeStyles((theme: Theme) =>

@@ -14,23 +14,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import NewStateIcon from '@material-ui/icons/NewReleasesOutlined';
-import EditedStateIcon from '@material-ui/icons/EditOutlined';
-import DeletedStateIcon from '@material-ui/icons/DeleteOutlineRounded';
+import NewStateIcon from '@mui/icons-material/NewReleasesOutlined';
+import EditedStateIcon from '@mui/icons-material/EditOutlined';
+import DeletedStateIcon from '@mui/icons-material/DeleteOutlineRounded';
 import LockedStateIcon from '../Icons/LockOutline';
-import SystemProcessingStateIcon from '@material-ui/icons/HourglassEmptyRounded';
+import SystemProcessingStateIcon from '@mui/icons-material/HourglassEmptyRounded';
 import SubmittedStateIcon from '../Icons/PlanePaperOutline';
-import ScheduledStateIcon from '@material-ui/icons/AccessTimeRounded';
-import CloudUploadOutlinedIcon from '@material-ui/icons/CloudUploadOutlined';
-import BlockRoundedIcon from '@material-ui/icons/BlockRounded';
-import Tooltip from '@material-ui/core/Tooltip/Tooltip';
+import ScheduledStateIcon from '@mui/icons-material/AccessTimeRounded';
+import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined';
+import BlockRoundedIcon from '@mui/icons-material/BlockRounded';
+import Tooltip from '@mui/material/Tooltip';
 import clsx from 'clsx';
 import * as React from 'react';
 import { useMemo } from 'react';
 import { getItemStateId, getItemStateText } from '../ItemDisplay/utils';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import palette from '../../styles/palette';
-import { CSSProperties } from '@material-ui/styles';
+import { CSSProperties } from '@mui/styles';
 import { DetailedItem, ItemStates, SandboxItem } from '../../models/Item';
 
 export type ItemStateIconClassKey =

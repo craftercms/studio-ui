@@ -16,7 +16,14 @@
 
 import { LEGACY_PREVIEW_URL_PATH, PREVIEW_URL_PATH } from './constants';
 
-export type SystemLinkId = 'preview' | 'siteTools' | 'siteSearch' | 'siteDashboard';
+export type SystemLinkId =
+  | 'preview'
+  | 'siteTools'
+  | 'siteSearch'
+  | 'siteDashboard'
+  | 'siteToolsDialog'
+  | 'siteSearchDialog'
+  | 'siteDashboardDialog';
 
 export function getSystemLink({
   systemLinkId,

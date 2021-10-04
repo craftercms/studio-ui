@@ -25,7 +25,7 @@ import GraphiQLExplorer from 'graphiql-explorer';
 import { buildClientSchema, getIntrospectionQuery, GraphQLSchema } from 'graphql';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import { FormattedMessage } from 'react-intl';
-import Box from '@material-ui/core/Box';
+import Box from '@mui/material/Box';
 import { useStyles } from './styles';
 import clsx from 'clsx';
 
@@ -76,7 +76,7 @@ function getGraphQLFetcher(url: string, method = 'post') {
       method,
       headers: { 'Content-Type': 'application/json' },
       ...(method === 'post' ? { body: JSON.stringify(graphQLParams) } : {})
-    }).then(function(responseBody: any) {
+    }).then(function (responseBody: any) {
       try {
         return responseBody.json();
       } catch (error) {

@@ -15,16 +15,16 @@
  */
 
 import React from 'react';
-import TableContainer from '@material-ui/core/TableContainer';
-import Table from '@material-ui/core/Table';
-import TableHead from '@material-ui/core/TableHead';
+import TableContainer from '@mui/material/TableContainer';
+import Table from '@mui/material/Table';
+import TableHead from '@mui/material/TableHead';
 import { FormattedMessage } from 'react-intl';
-import TableBody from '@material-ui/core/TableBody';
+import TableBody from '@mui/material/TableBody';
 import GlobalAppGridRow from '../GlobalAppGridRow';
 import GlobalAppGridCell from '../GlobalAppGridCell';
-import Skeleton from '@material-ui/lab/Skeleton';
+import Skeleton from '@mui/material/Skeleton';
 import { rand } from '../PathNavigator/utils';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import useStyles from './styles';
 
 export interface RecentActivityDashletUiSkeletonProps {
@@ -42,7 +42,7 @@ export default function RecentActivityDashletUiSkeleton(props: RecentActivityDas
         <TableHead>
           <GlobalAppGridRow className="hoverDisabled">
             <GlobalAppGridCell className="checkbox">
-              <Skeleton variant="circle" width={30} height={30} className={classes.skeletonCheckbox} />
+              <Skeleton variant="circular" width={30} height={30} className={classes.skeletonCheckbox} />
             </GlobalAppGridCell>
             <GlobalAppGridCell className="width40 pl0">
               <Typography variant="subtitle2">
@@ -71,7 +71,7 @@ export default function RecentActivityDashletUiSkeleton(props: RecentActivityDas
           {items.map((item, i) => (
             <GlobalAppGridRow key={i}>
               <GlobalAppGridCell className="checkbox">
-                <Skeleton variant="circle" width={30} height={30} className={classes.skeletonCheckbox} />
+                <Skeleton variant="circular" width={30} height={30} className={classes.skeletonCheckbox} />
               </GlobalAppGridCell>
               <GlobalAppGridCell className="width40 pl0">
                 <Skeleton variant="text" width={`${rand(70, 90)}%`} />
@@ -87,7 +87,7 @@ export default function RecentActivityDashletUiSkeleton(props: RecentActivityDas
                 <Skeleton variant="text" width={`${rand(60, 90)}%`} />
               </GlobalAppGridCell>
               <GlobalAppGridCell className="checkbox">
-                <Skeleton variant="circle" width={30} height={30} className={classes.skeletonCheckbox} />
+                <Skeleton variant="circular" width={30} height={30} className={classes.skeletonCheckbox} />
               </GlobalAppGridCell>
             </GlobalAppGridRow>
           ))}

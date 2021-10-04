@@ -15,7 +15,7 @@
  */
 
 import React, { forwardRef } from 'react';
-import { IconButtonProps } from '@material-ui/core/IconButton';
+import { IconButtonProps } from '@mui/material/IconButton';
 import { useDispatch } from 'react-redux';
 import PublishingStatusButtonUI, { PublishingStatusButtonUIProps } from './PublishingStatusButtonUI';
 import { showPublishingStatusDialog } from '../../state/actions/dialogs';

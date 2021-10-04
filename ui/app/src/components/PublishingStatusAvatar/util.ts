@@ -14,28 +14,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Theme } from '@material-ui/core/styles';
-import palette from '../../styles/palette';
+import { Theme } from '@mui/material/styles';
 import { PublishingStatusTileProps } from '../PublishingStatusTile';
 
 export const getPublishingStatusCodeColor = (code: PublishingStatusTileProps['status'], theme: Theme) => {
   switch (code) {
-    case 'ready': {
+    case 'ready':
+    case 'queued':
+    case 'processing':
+    case 'publishing': {
       return theme.palette.success.main;
     }
-    case 'processing': {
-      return theme.palette.info.dark;
-    }
-    case 'publishing': {
-      return theme.palette.info.main;
-    }
-    case 'queued': {
-      return palette.indigo.main;
-    }
+    case 'error':
     case 'stopped': {
-      return theme.palette.warning.main;
-    }
-    case 'error': {
       return theme.palette.error.main;
     }
   }

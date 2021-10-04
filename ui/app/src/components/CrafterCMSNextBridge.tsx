@@ -17,7 +17,9 @@
 import '../styles/index.scss';
 
 import React, { PropsWithChildren, ReactNode, Suspense, useLayoutEffect, useState } from 'react';
-import { createStyles, makeStyles, ThemeOptions } from '@material-ui/core/styles';
+import { DeprecatedThemeOptions } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { setRequestForgeryToken } from '../utils/auth';
 import { CrafterCMSStore, getStore } from '../state/store';
 import GlobalDialogManager from './SystemStatus/GlobalDialogManager';
@@ -31,8 +33,9 @@ import SnackbarCloseButton from './SnackbarCloseButton';
 import LegacyConcierge from './LegacyConcierge';
 import { GenerateId } from 'jss';
 import { createResource } from '../utils/resource';
+import { lastValueFrom } from 'rxjs';
 
-const useStyles = makeStyles(() =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     topSnackbar: {
       top: '80px'
@@ -46,7 +49,7 @@ function Bridge(
     mountSnackbarProvider?: boolean;
     mountLegacyConcierge?: boolean;
     resource: Resource<CrafterCMSStore>;
-    themeOptions?: ThemeOptions;
+    themeOptions?: DeprecatedThemeOptions;
     generateClassName?: GenerateId;
   }>
 ) {
@@ -65,28 +68,24 @@ function Bridge(
   );
   return (
     <StoreProvider resource={props.resource}>
-      <I18nProvider>
-        <CrafterThemeProvider themeOptions={props.themeOptions} generateClassName={props.generateClassName}>
-          {mountSnackbarProvider ? (
-            <SnackbarProvider
-              maxSnack={5}
-              autoHideDuration={5000}
-              anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-              action={(id) => <SnackbarCloseButton id={id} />}
-              children={body}
-              classes={{
-                // TODO: For some reason, these classes are not getting applied by notistack.
-                // containerAnchorOriginTopRight: classes.topSnackbar,
-                // containerAnchorOriginTopLeft: classes.topSnackbar,
-                // containerAnchorOriginTopCenter: classes.topSnackbar,
-                containerRoot: classes.topSnackbar
-              }}
-            />
-          ) : (
-            body
-          )}
-        </CrafterThemeProvider>
-      </I18nProvider>
+      {mountSnackbarProvider ? (
+        <SnackbarProvider
+          maxSnack={5}
+          autoHideDuration={5000}
+          anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+          action={(id) => <SnackbarCloseButton id={id} />}
+          children={body}
+          classes={{
+            // TODO: For some reason, these classes are not getting applied by notistack.
+            // containerAnchorOriginTopRight: classes.topSnackbar,
+            // containerAnchorOriginTopLeft: classes.topSnackbar,
+            // containerAnchorOriginTopCenter: classes.topSnackbar,
+            containerRoot: classes.topSnackbar
+          }}
+        />
+      ) : (
+        body
+      )}
     </StoreProvider>
   );
 }
@@ -98,27 +97,32 @@ export default function CrafterCMSNextBridge(
     mountLegacyConcierge?: boolean;
     generateClassName?: GenerateId;
     suspenseFallback?: ReactNode;
+    themeOptions?: DeprecatedThemeOptions;
   }>
 ) {
-  const [storeResource] = useState(() => createResource(() => getStore().toPromise()));
+  const [storeResource] = useState(() => createResource(() => lastValueFrom(getStore())));
   return (
-    <Suspencified
-      suspenseProps={
-        props.suspenseFallback === void 0
-          ? void 0
-          : {
-              fallback: props.suspenseFallback
-            }
-      }
-    >
-      <Bridge
-        generateClassName={props.generateClassName}
-        mountGlobalDialogManager={props.mountGlobalDialogManager}
-        mountSnackbarProvider={props.mountSnackbarProvider}
-        mountLegacyConcierge={props.mountLegacyConcierge}
-        resource={storeResource}
-        children={props.children}
-      />
-    </Suspencified>
+    <CrafterThemeProvider themeOptions={props.themeOptions} generateClassName={props.generateClassName}>
+      <I18nProvider>
+        <Suspencified
+          suspenseProps={
+            props.suspenseFallback === void 0
+              ? void 0
+              : {
+                  fallback: props.suspenseFallback
+                }
+          }
+        >
+          <Bridge
+            generateClassName={props.generateClassName}
+            mountGlobalDialogManager={props.mountGlobalDialogManager}
+            mountSnackbarProvider={props.mountSnackbarProvider}
+            mountLegacyConcierge={props.mountLegacyConcierge}
+            resource={storeResource}
+            children={props.children}
+          />
+        </Suspencified>
+      </I18nProvider>
+    </CrafterThemeProvider>
   );
 }

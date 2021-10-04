@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -15,17 +15,18 @@
  */
 
 import React, { ElementType, ReactNode } from 'react';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import Typography from '@material-ui/core/Typography';
+import Menu, { MenuProps } from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import ErrorOutlineOutlinedIcon from '@material-ui/icons/ErrorOutlineOutlined';
-import { rand } from './PathNavigator/utils';
-import Skeleton from '@material-ui/lab/Skeleton';
-import { MenuProps } from '@material-ui/core/Menu/Menu';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
+import { rand } from '../PathNavigator/utils';
+import Skeleton from '@mui/material/Skeleton';
+
 import clsx from 'clsx';
-import { SystemIconDescriptor } from './SystemIcon';
+import { SystemIconDescriptor } from '../SystemIcon';
 
 export interface ContextMenuOption {
   id: string;

@@ -32,7 +32,7 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../state/actions/system';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import { useSpreadState } from '../../utils/hooks/useSpreadState';
 import { EditGroupDialogContainerProps } from './utils';
 
@@ -76,8 +76,8 @@ export default function EditGroupDialogContainer(props: EditGroupDialogContainer
     if (props.group) {
       forkJoin([fetchAll(), fetchUsersFromGroup(props.group.id)]).subscribe(([users, members]) => {
         setMembers([...members]);
-        const _users = users.filter(function(user) {
-          return !members.find(function(member) {
+        const _users = users.filter(function (user) {
+          return !members.find(function (member) {
             return member.id === user.id;
           });
         });

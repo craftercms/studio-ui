@@ -15,20 +15,22 @@
  */
 
 import ContentInstance from '../../models/ContentInstance';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 import { AudiencesFormSection } from './AudiencesFormSection';
 import SecondaryButton from '../SecondaryButton';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import PrimaryButton from '../PrimaryButton';
 import React from 'react';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { ContentTypeField } from '../../models/ContentType';
 import Input from '../Controls/FormEngine/Input';
 import Dropdown from '../Controls/FormEngine/Dropdown';
 import CheckboxGroup from '../Controls/FormEngine/CheckboxGroup';
 import DateTime from '../Controls/FormEngine/DateTime';
 import LookupTable from '../../models/LookupTable';
-import { Alert } from '@material-ui/lab';
+import { Alert } from '@mui/material';
 
 interface AudiencesPanelUIProps {
   model: ContentInstance;
@@ -42,7 +44,7 @@ interface AudiencesPanelUIProps {
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     panelMargin: {
-      margin: `${theme.spacing(1)}px`
+      margin: theme.spacing(1)
     },
     actionButtons: {
       margin: '10px 0',

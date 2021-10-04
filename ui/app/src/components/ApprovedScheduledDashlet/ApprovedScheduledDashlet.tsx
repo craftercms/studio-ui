@@ -29,9 +29,9 @@ import useStyles from './styles';
 // prettier-ignore
 import ApprovedScheduledDashletSkeletonTable
   from '../ApprovedScheduledDashletGrid/ApprovedScheduledDashletSkeletonTable';
-import MenuItem from '@material-ui/core/MenuItem';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
+import MenuItem from '@mui/material/MenuItem';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
 import { itemsApproved, itemsDeleted, itemsRejected, itemsScheduled } from '../../state/actions/system';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { filter } from 'rxjs/operators';
@@ -51,6 +51,9 @@ import translations from './translations';
 import { batchActions } from '../../state/actions/misc';
 import { getEmptyStateStyleSet } from '../SystemStatus/EmptyState';
 import { useActiveSite } from '../../utils/hooks/useActiveSite';
+import { asLocalizedDateTime } from '../../utils/datetime';
+import { reversePluckProps } from '../../utils/object';
+import { useLocale } from '../../utils/hooks/useLocale';
 
 const dashletInitialPreferences: DashboardPreferences = {
   filterBy: 'all',
@@ -85,20 +88,21 @@ export default function ApprovedScheduledDashlet() {
   const { authoringBase } = useEnv();
 
   const showExpanded = useMemo(() => Object.values(expandedLookup).some((value) => !value), [expandedLookup]);
-  const isAllChecked = useMemo(() => !Object.keys(state.itemsLookup).some((path) => !selectedLookup[path]), [
-    selectedLookup,
-    state.itemsLookup
-  ]);
+  const isAllChecked = useMemo(
+    () => !Object.keys(state.itemsLookup).some((path) => !selectedLookup[path]),
+    [selectedLookup, state.itemsLookup]
+  );
   const selectedItemsLength = useMemo(() => Object.values(selectedLookup).filter(Boolean).length, [selectedLookup]);
   const isIndeterminate = useMemo(
     () => Object.keys(state.itemsLookup).some((path) => selectedLookup[path]) && !isAllChecked,
     [isAllChecked, selectedLookup, state.itemsLookup]
   );
+  const locale = useLocale();
 
   const refresh = useCallback(() => {
     setIsFetching(true);
-    fetchLegacyScheduledItems(siteId, 'eventDate', false, preferences.filterBy).subscribe(
-      (response) => {
+    fetchLegacyScheduledItems(siteId, 'eventDate', false, preferences.filterBy).subscribe({
+      next(response) {
         const parentItems: DashboardItem[] = [];
         const itemsLookup: LookupTable<DetailedItem> = {};
         const targetLookup: LookupTable<{ target: string; packageId: string }> = {};
@@ -107,7 +111,11 @@ export default function ApprovedScheduledDashlet() {
           if (item.children.length) {
             expandedLookup[item.uri ?? item.name] = true;
             parentItems.push({
-              label: item.name,
+              label: asLocalizedDateTime(
+                item.name,
+                locale.localeCode,
+                reversePluckProps(locale.dateTimeFormatOptions, 'hour', 'minute', 'second')
+              ),
               path: item.uri ?? item.name,
               children: item.children.map((item) => {
                 targetLookup[item.uri] = { target: item.environment, packageId: item.packageId };
@@ -130,11 +138,11 @@ export default function ApprovedScheduledDashlet() {
         });
         setIsFetching(false);
       },
-      ({ response }) => {
+      error({ response }) {
         setError(response);
       }
-    );
-  }, [setExpandedLookup, siteId, preferences.filterBy]);
+    });
+  }, [siteId, preferences.filterBy, setExpandedLookup, locale.localeCode, locale.dateTimeFormatOptions]);
 
   useEffect(() => {
     refresh();

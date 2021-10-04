@@ -16,8 +16,8 @@
 
 import React from 'react';
 import DateTimePicker from '../DateTimePicker';
-import InputLabel from '@material-ui/core/InputLabel';
-import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
 import { DateTimeControl } from '../../../models/FormsEngine';
 import GlobalState from '../../../models/GlobalState';
 import useStyles from './styles';

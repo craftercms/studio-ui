@@ -15,9 +15,9 @@
  */
 
 import React from 'react';
-import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
+import Grid from '@mui/material/Grid';
+import makeStyles from '@mui/styles/makeStyles';
+import TextField from '@mui/material/TextField';
 import { SiteState } from '../../../../models/Site';
 import { defineMessages, useIntl } from 'react-intl';
 import GitAuthForm from '../../../../components/GitAuthForm';

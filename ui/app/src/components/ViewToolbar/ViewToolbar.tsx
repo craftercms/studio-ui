@@ -14,11 +14,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
 import React, { PropsWithChildren } from 'react';
-import { CSSProperties } from '@material-ui/styles';
+import { CSSProperties } from '@mui/styles';
 import clsx from 'clsx';
 
 export type ViewToolbarClassKey = 'appBar' | 'toolbar';
@@ -52,7 +53,7 @@ const useStyles = makeStyles((theme) =>
   })
 );
 
-export const ViewToolbar = React.memo<ViewToolbarProps>(function(props) {
+export const ViewToolbar = React.memo<ViewToolbarProps>(function (props) {
   const classes = useStyles(props.styles);
   const { children, elevation = 0 } = props;
   return (

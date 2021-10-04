@@ -15,20 +15,21 @@
  */
 
 import React, { useState } from 'react';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Radio from '@material-ui/core/Radio';
-import Collapse from '@material-ui/core/Collapse';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Radio from '@mui/material/Radio';
+import Collapse from '@mui/material/Collapse';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import TextField from '@material-ui/core/TextField/TextField';
+import TextField from '@mui/material/TextField';
 import clsx from 'clsx';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import IconButton from '@material-ui/core/IconButton';
-import Visibility from '@material-ui/icons/Visibility';
-import VisibilityOff from '@material-ui/icons/VisibilityOff';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import InputAdornment from '@mui/material/InputAdornment';
+import IconButton from '@mui/material/IconButton';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { SiteState } from '../../models/Site';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 
 export interface GitAuthFormProps {
   inputs: Partial<SiteState>;
@@ -144,7 +145,12 @@ function AuthFields(props: AuthFieldsProps) {
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
-                <IconButton edge="end" aria-label="toggle password visibility" onClick={handleClickShowPassword}>
+                <IconButton
+                  edge="end"
+                  aria-label="toggle password visibility"
+                  onClick={handleClickShowPassword}
+                  size="large"
+                >
                   {showPassword ? <VisibilityOff /> : <Visibility />}
                 </IconButton>
               </InputAdornment>
@@ -168,7 +174,12 @@ function AuthFields(props: AuthFieldsProps) {
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
-                <IconButton edge="end" aria-label="toggle password visibility" onClick={handleClickShowPassword}>
+                <IconButton
+                  edge="end"
+                  aria-label="toggle password visibility"
+                  onClick={handleClickShowPassword}
+                  size="large"
+                >
                   {showPassword ? <VisibilityOff /> : <Visibility />}
                 </IconButton>
               </InputAdornment>

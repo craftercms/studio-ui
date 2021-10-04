@@ -25,41 +25,39 @@ import { GuestContextProvider, GuestReduxContext, useDispatch, useSelector } fro
 import CrafterCMSPortal from './CrafterCMSPortal';
 import ZoneMarker from './ZoneMarker';
 import DropMarker from './DropMarker';
-import { appendStyleSheet, GuestStyleConfig } from '../styles/styles';
+import { appendStyleSheet, GuestStyleConfig, useGuestTheme, styleSxDefaults, GuestStylesSx } from '../styles/styles';
 import { fromTopic, message$, post } from '../utils/communicator';
 import Cookies from 'js-cookie';
 import { HighlightData } from '../models/InContextEditing';
 import AssetUploaderMask from './AssetUploaderMask';
+import { EditingStatus, HighlightMode } from '../constants';
 import {
-  ASSET_DRAG_ENDED,
-  ASSET_DRAG_STARTED,
-  CLEAR_CONTENT_TREE_FIELD_SELECTED,
-  CLEAR_HIGHLIGHTED_DROP_TARGETS,
-  CLEAR_SELECTED_ZONES,
-  COMPONENT_DRAG_ENDED,
-  COMPONENT_DRAG_STARTED,
-  COMPONENT_INSTANCE_DRAG_ENDED,
-  COMPONENT_INSTANCE_DRAG_STARTED,
-  CONTENT_TREE_FIELD_SELECTED,
-  CONTENT_TREE_SWITCH_FIELD_INSTANCE,
-  CONTENT_TYPE_DROP_TARGETS_REQUEST,
-  DESKTOP_ASSET_DRAG_STARTED,
-  DESKTOP_ASSET_UPLOAD_COMPLETE,
-  DESKTOP_ASSET_UPLOAD_PROGRESS,
-  EDIT_MODE_CHANGED,
-  EDIT_MODE_TOGGLE_HOTKEY,
-  EditingStatus,
-  GUEST_CHECK_IN,
-  GUEST_CHECK_OUT,
-  HIGHLIGHT_MODE_CHANGED,
-  HighlightMode,
-  HOST_CHECK_IN,
-  NAVIGATION_REQUEST,
-  RELOAD_REQUEST,
-  SCROLL_TO_DROP_TARGET,
-  TRASHED,
-  UPDATE_RTE_CONFIG
-} from '../constants';
+  assetDragEnded,
+  assetDragStarted,
+  clearContentTreeFieldSelected,
+  clearHighlightedDropTargets,
+  clearSelectedZones,
+  componentDragEnded,
+  componentDragStarted,
+  componentInstanceDragEnded,
+  componentInstanceDragStarted,
+  contentTreeFieldSelected,
+  contentTypeDropTargetsRequest,
+  desktopAssetUploadComplete,
+  desktopAssetUploadProgress,
+  setPreviewEditMode,
+  editModeToggleHotkey,
+  guestCheckIn,
+  guestCheckOut,
+  hostCheckIn,
+  navigationRequest,
+  reloadRequest,
+  scrollToDropTarget,
+  trashed,
+  updateRteConfig,
+  contentTreeSwitchFieldInstance,
+  highlightModeChanged
+} from '@craftercms/studio-ui/build_tsc/state/actions/preview';
 import { createGuestStore } from '../store/store';
 import { Provider } from 'react-redux';
 import { clearAndListen$ } from '../store/subjects';
@@ -72,6 +70,22 @@ import { createLocationArgument } from '../utils/util';
 import FieldInstanceSwitcher from './FieldInstanceSwitcher';
 import LookupTable from '@craftercms/studio-ui/models/LookupTable';
 import { useHotkeys } from 'react-hotkeys-hook';
+import { ThemeOptions, ThemeProvider } from '@mui/material';
+import { deepmerge } from '@mui/utils';
+import { DeepPartial } from 'redux';
+import MoveModeZoneMenu from './MoveModeZoneMenu';
+import {
+  contentReady,
+  documentDragEnd,
+  documentDragLeave,
+  documentDragOver,
+  documentDrop,
+  dropzoneEnter,
+  dropzoneLeave,
+  setDropPosition,
+  startListening,
+  desktopAssetDragStarted,
+} from '../store/actions';
 // TinyMCE makes the build quite large. Temporarily, importing this externally via
 // the site's ftl. Need to evaluate whether to include the core as part of guest build or not
 // import tinymce from 'tinymce';
@@ -79,7 +93,10 @@ import { useHotkeys } from 'react-hotkeys-hook';
 export type GuestProps = PropsWithChildren<{
   documentDomain?: string;
   path?: string;
+  themeOptions?: ThemeOptions;
+  // TODO: remove styleConfig in favour of themeOptions & sxOverrides.
   styleConfig?: GuestStyleConfig;
+  sxOverrides?: DeepPartial<GuestStylesSx>;
   isAuthoring?: boolean; // boolean | Promise<boolean> | () => boolean | Promise<boolean>
   scrollElement?: string;
 }>;
@@ -94,16 +111,21 @@ export function getEditModeClass() {
 function Guest(props: GuestProps) {
   // TODO: support path driven Guest.
   // TODO: consider supporting developer to provide the data source (promise/observable?)
-  const { path, styleConfig, children, documentDomain, scrollElement = 'html, body' } = props;
+  const {
+    path,
+    themeOptions,
+    sxOverrides,
+    styleConfig,
+    children,
+    documentDomain,
+    scrollElement = 'html, body'
+  } = props;
 
+  const theme = useGuestTheme(themeOptions);
   const [snack, setSnack] = useState<Partial<Snack>>();
   const dispatch = useDispatch();
   const state = useSelector<GuestState>((state) => state);
-  const editMode = state.editMode;
-  const highlightMode = state.highlightMode;
-  const status = state.status;
-  const hasHost = state.hostCheckedIn;
-  const draggable = state.draggable;
+  const { editMode, highlightMode, status, hostCheckedIn: hasHost, draggable } = state;
   const refs = useRef({
     contentReady: false,
     firstRender: true,
@@ -130,7 +152,7 @@ function Guest(props: GuestProps) {
             // HighlightMode validations helps to dont stop the event propagation
             if (
               ['click', 'dblclick'].includes(type) &&
-              (highlightMode === HighlightMode.ALL || (highlightMode === HighlightMode.MOVABLE && !draggable))
+              (highlightMode === HighlightMode.ALL || (highlightMode === HighlightMode.MOVE_TARGETS && !draggable))
             ) {
               event.preventDefault();
               event.stopPropagation();
@@ -145,10 +167,13 @@ function Guest(props: GuestProps) {
     [dispatch, hasHost, draggable, editMode, highlightMode]
   );
 
+  const sxStylesConfig = useMemo(() => {
+    return deepmerge(styleSxDefaults, sxOverrides);
+  }, [sxOverrides]);
+
   // Hotkeys propagation to preview
-  useHotkeys('e', () => {
-    post(EDIT_MODE_TOGGLE_HOTKEY);
-  });
+  useHotkeys('e', () => post(editModeToggleHotkey({ mode: HighlightMode.ALL })));
+  useHotkeys('m', () => post(editModeToggleHotkey({ mode: HighlightMode.MOVE_TARGETS })));
 
   // Key press/hold keeper events
   useEffect(() => {
@@ -207,63 +232,59 @@ function Guest(props: GuestProps) {
 
   // Subscribes to host messages and routes them.
   useEffect(() => {
-    const sub = message$.subscribe(function(action) {
+    const sub = message$.subscribe(function (action) {
       const { type, payload } = action;
       switch (type) {
-        case HIGHLIGHT_MODE_CHANGED:
-        case EDIT_MODE_CHANGED:
+        case highlightModeChanged.type:
+        case setPreviewEditMode.type:
           dispatch(action);
           break;
-        case ASSET_DRAG_STARTED:
-          dispatch({ type, payload: { asset: payload } });
+        case assetDragStarted.type:
+          dispatch(assetDragStarted({ asset: payload }));
           break;
-        case ASSET_DRAG_ENDED:
+        case assetDragEnded.type:
           dragOk(status) && dispatch(action);
           break;
-        case COMPONENT_DRAG_STARTED:
-          dispatch({ type, payload: { contentType: payload } });
+        case componentDragStarted.type:
+          dispatch(componentDragStarted({ contentType: payload }));
           break;
-        case COMPONENT_DRAG_ENDED:
+        case componentDragEnded.type:
           dragOk(status) && dispatch(action);
           break;
-        case COMPONENT_INSTANCE_DRAG_STARTED:
-          dispatch({ type, payload });
+        case componentInstanceDragStarted.type:
+          dispatch(componentInstanceDragStarted(payload));
           break;
-        case COMPONENT_INSTANCE_DRAG_ENDED:
+        case componentInstanceDragEnded.type:
           dragOk(status) && dispatch(action);
           break;
-        case TRASHED:
-          dispatch({ type, payload: { iceId: payload } });
+        case trashed.type:
+          dispatch(trashed({ iceId: payload }));
           break;
-        case CLEAR_SELECTED_ZONES:
+        case clearSelectedZones.type:
           clearAndListen$.next();
-          dispatch({ type: 'start_listening' });
+          dispatch(startListening());
           break;
-        case RELOAD_REQUEST: {
-          post({ type: GUEST_CHECK_OUT });
+        case reloadRequest.type: {
+          post(guestCheckOut());
           return window.location.reload();
         }
-        case NAVIGATION_REQUEST: {
-          post({ type: GUEST_CHECK_OUT });
+        case navigationRequest.type: {
+          post(guestCheckOut());
           return (window.location.href = payload.url);
         }
-        case CONTENT_TYPE_DROP_TARGETS_REQUEST: {
-          dispatch({
-            type,
-            payload: { contentTypeId: payload }
-          });
+        case contentTypeDropTargetsRequest.type: {
+          dispatch(contentTypeDropTargetsRequest({ contentTypeId: payload }));
           break;
         }
-        case SCROLL_TO_DROP_TARGET:
+        case scrollToDropTarget.type:
           scrollToDropTargets([payload], scrollElement, (id: number) => elementRegistry.fromICEId(id).element);
           break;
-        case CLEAR_HIGHLIGHTED_DROP_TARGETS:
+        case clearHighlightedDropTargets.type:
           dispatch(action);
           break;
-        case CONTENT_TREE_FIELD_SELECTED: {
-          dispatch({
-            type,
-            payload: {
+        case contentTreeFieldSelected.type: {
+          dispatch(
+            contentTreeFieldSelected({
               iceProps: {
                 modelId: payload.parentId || payload.modelId,
                 fieldId: payload.fieldId,
@@ -271,21 +292,21 @@ function Guest(props: GuestProps) {
               },
               scrollElement,
               name: payload.name
-            }
-          });
+            })
+          );
           break;
         }
-        case CLEAR_CONTENT_TREE_FIELD_SELECTED:
+        case clearContentTreeFieldSelected.type:
           clearAndListen$.next();
           dispatch({ type });
           break;
-        case DESKTOP_ASSET_UPLOAD_PROGRESS:
+        case desktopAssetUploadProgress.type:
           dispatch(action);
           break;
-        case DESKTOP_ASSET_UPLOAD_COMPLETE:
+        case desktopAssetUploadComplete.type:
           dispatch(action);
           break;
-        case UPDATE_RTE_CONFIG:
+        case updateRteConfig.type:
           dispatch(action);
           break;
       }
@@ -301,7 +322,7 @@ function Guest(props: GuestProps) {
       // prettier-ignore
       interval(1000).pipe(
         takeUntil(
-          merge(fromTopic(HOST_CHECK_IN), fromTopic('LEGACY_CHECK_IN')).pipe(
+          merge(fromTopic(hostCheckIn.type), fromTopic('LEGACY_CHECK_IN')).pipe(
             tap(dispatch),
             take(1)
           )
@@ -314,7 +335,7 @@ function Guest(props: GuestProps) {
     }
   }, [dispatch, hasHost]);
 
-  // Load dependencies (tinymce)
+  // Load dependencies (tinymce, ace)
   useEffect(() => {
     if (hasHost && !window.tinymce) {
       const script = document.createElement('script');
@@ -338,16 +359,15 @@ function Guest(props: GuestProps) {
   useEffect(() => {
     // Notice this is not executed when the iFrame url is changed abruptly.
     // This only triggers when navigation occurs from within the guest page.
-    const handler = () => post({ type: GUEST_CHECK_OUT });
+    const handler = () => post(guestCheckOut());
     window.addEventListener('beforeunload', handler, false);
-
     return () => {
-      post(GUEST_CHECK_OUT);
+      post(guestCheckOut.type);
       window.removeEventListener('beforeunload', handler);
     };
   }, []);
 
-  // Registers parent zone, check in, checkout (when model is changed)
+  // Registers parent zone, check in, checkout (when model is changed), content ready subscription
   useEffect(() => {
     let iceId;
     const location = createLocationArgument();
@@ -366,19 +386,20 @@ function Guest(props: GuestProps) {
       .subscribe(([model]) => {
         iceId = iceRegistry.register({ modelId: model.craftercms.id });
         refs.current.contentReady = true;
+        dispatch(contentReady());
       });
 
-    post(GUEST_CHECK_IN, { location, path, site, documentDomain });
+    post(guestCheckIn.type, { location, path, site, documentDomain });
 
     return () => {
-      post(GUEST_CHECK_OUT);
+      post(guestCheckOut.type);
       nnou(iceId) && iceRegistry.deregister(iceId);
       // eslint-disable-next-line react-hooks/exhaustive-deps
       refs.current.contentReady = false;
       flushRequestedPaths();
       operationsSubscription.unsubscribe();
     };
-  }, [documentDomain, path]);
+  }, [dispatch, documentDomain, path]);
 
   // Listen for desktop asset drag & drop
   const shouldNotBypass = hasHost && editMode;
@@ -389,10 +410,7 @@ function Guest(props: GuestProps) {
         .subscribe((e) => {
           e.preventDefault();
           e.stopPropagation();
-          dispatch({
-            type: DESKTOP_ASSET_DRAG_STARTED,
-            payload: { asset: e.dataTransfer.items[0] }
-          });
+          dispatch(desktopAssetDragStarted({ asset: e.dataTransfer.items[0] }));
         });
       return () => subscription.unsubscribe();
     }
@@ -409,17 +427,15 @@ function Guest(props: GuestProps) {
         EditingStatus.PLACING_DETACHED_ASSET
       ].includes(status)
     ) {
-      const dropSubscription = fromEvent(document, 'drop').subscribe((event) =>
-        dispatch({ type: 'document:drop', payload: { event } })
-      );
+      const dropSubscription = fromEvent(document, 'drop').subscribe((event) => dispatch(documentDrop({ event })));
       const dragendSubscription = fromEvent(document, 'dragend').subscribe((event) =>
-        dispatch({ type: 'document:dragend', payload: { event } })
+        dispatch(documentDragEnd({ event }))
       );
       const dragoverSubscription = fromEvent(document, 'dragover').subscribe((event) =>
-        dispatch({ type: 'document:dragover', payload: { event } })
+        dispatch(documentDragOver({ event }))
       );
       const dragleaveSubscription = fromEvent(document, 'dragleave').subscribe((event) =>
-        dispatch({ type: 'document:dragleave', payload: { event } })
+        dispatch(documentDragLeave({ event }))
       );
       return () => {
         dropSubscription.unsubscribe();
@@ -435,15 +451,9 @@ function Guest(props: GuestProps) {
   const dragContextDropZoneElementRecordId = state.dragContext?.dropZone?.elementRecordId;
   useEffect(() => {
     if (nnou(dragContextDropZoneIceId)) {
-      dispatch({
-        type: 'drop_zone_enter',
-        payload: { elementRecordId: dragContextDropZoneElementRecordId }
-      });
+      dispatch(dropzoneEnter({ elementRecordId: dragContextDropZoneElementRecordId }));
       return () => {
-        dispatch({
-          type: 'drop_zone_leave',
-          payload: { elementRecordId: dragContextDropZoneElementRecordId }
-        });
+        dispatch(dropzoneLeave({ elementRecordId: dragContextDropZoneElementRecordId }));
       };
     }
   }, [dispatch, dragContextDropZoneElementRecordId, dragContextDropZoneIceId]);
@@ -453,72 +463,83 @@ function Guest(props: GuestProps) {
   return (
     <GuestContextProvider value={context}>
       {children}
-      {editMode && (
-        <CrafterCMSPortal>
-          {draggableItemElemRecId && (
-            <craftercms-dragged-element>
-              {elementRegistry.get(parseInt(draggableItemElemRecId))?.label}
-            </craftercms-dragged-element>
-          )}
-          {Object.values(state.uploading).map((highlight: HighlightData) => (
-            <AssetUploaderMask key={highlight.id} {...highlight} />
-          ))}
-          {state.fieldSwitcher && (
-            <FieldInstanceSwitcher
-              onNext={() =>
-                dispatch({
-                  type: CONTENT_TREE_SWITCH_FIELD_INSTANCE,
-                  payload: { type: 'next', scrollElement }
-                })
-              }
-              onPrev={() =>
-                dispatch({
-                  type: CONTENT_TREE_SWITCH_FIELD_INSTANCE,
-                  payload: { type: 'prev', scrollElement }
-                })
-              }
-              registryEntryIds={state.fieldSwitcher.registryEntryIds}
-              currentElement={state.fieldSwitcher.currentElement}
-            />
-          )}
+      <ThemeProvider theme={theme}>
+        {editMode && (
+          <CrafterCMSPortal>
+            {draggableItemElemRecId && (
+              <craftercms-dragged-element>
+                {elementRegistry.get(parseInt(draggableItemElemRecId))?.label}
+              </craftercms-dragged-element>
+            )}
 
-          {Object.values(state.highlighted).map((highlight: HighlightData, index, array) => (
-            <ZoneMarker
-              key={highlight.id}
-              {...highlight}
-              classes={{
-                label: array.length > 1 && 'craftercms-zone-marker-label__multi-mode',
-                marker: Object.values(highlight.validations).length
-                  ? Object.values(highlight.validations).some(({ level }) => level === 'required')
-                    ? 'craftercms-required-validation-failed'
-                    : 'craftercms-suggestion-validation-failed'
-                  : null
-              }}
-            />
-          ))}
-          {[
-            EditingStatus.SORTING_COMPONENT,
-            EditingStatus.PLACING_NEW_COMPONENT,
-            EditingStatus.PLACING_DETACHED_COMPONENT
-          ].includes(status) &&
-            state.dragContext.inZone &&
-            !state.dragContext.invalidDrop && (
-              <DropMarker
-                onDropPosition={(payload) => dispatch({ type: 'set_drop_position', payload })}
-                dropZone={state.dragContext.dropZone}
-                over={state.dragContext.over}
-                prev={state.dragContext.prev}
-                next={state.dragContext.next}
-                coordinates={state.dragContext.coordinates}
+            {Object.values(state.uploading).map((highlight: HighlightData) => (
+              <AssetUploaderMask key={highlight.id} {...highlight} />
+            ))}
+
+            {state.fieldSwitcher && (
+              <FieldInstanceSwitcher
+                onNext={() => dispatch(contentTreeSwitchFieldInstance({ type: 'next', scrollElement }))}
+                onPrev={() => dispatch(contentTreeSwitchFieldInstance({ type: 'prev', scrollElement }))}
+                registryEntryIds={state.fieldSwitcher.registryEntryIds}
+                currentElement={state.fieldSwitcher.currentElement}
               />
             )}
-        </CrafterCMSPortal>
-      )}
-      {snack && (
-        <SnackBar open={true} onClose={() => setSnack(null)} {...snack}>
-          {snack.message}
-        </SnackBar>
-      )}
+
+            {Object.values(state.highlighted).map((highlight: HighlightData) => {
+              const isMove = HighlightMode.MOVE_TARGETS === highlightMode;
+              const validations = Object.values(highlight.validations);
+              const hasValidations = Boolean(validations.length);
+              const hasFailedRequired = validations.some(({ level }) => level === 'required');
+              // TODO: allow customizing zone marker theming.
+              return (
+                <ZoneMarker
+                  key={highlight.id}
+                  label={highlight.label}
+                  rect={highlight.rect}
+                  inherited={highlight.inherited}
+                  menuItems={isMove ? <MoveModeZoneMenu /> : null}
+                  showZoneTooltip={!isMove}
+                  sx={deepmerge(
+                    deepmerge(
+                      { ...sxStylesConfig.zoneMarker.base },
+                      isMove
+                        ? styleSxDefaults.zoneMarker.moveModeHighlight
+                        : styleSxDefaults.zoneMarker.selectModeHighlight
+                    ),
+                    hasValidations
+                      ? hasFailedRequired
+                        ? styleSxDefaults.zoneMarker.errorHighlight
+                        : styleSxDefaults.zoneMarker.warnHighlight
+                      : null
+                  )}
+                />
+              );
+            })}
+
+            {[
+              EditingStatus.SORTING_COMPONENT,
+              EditingStatus.PLACING_NEW_COMPONENT,
+              EditingStatus.PLACING_DETACHED_COMPONENT
+            ].includes(status) &&
+              state.dragContext.inZone &&
+              !state.dragContext.invalidDrop && (
+                <DropMarker
+                  onDropPosition={(payload) => dispatch(setDropPosition(payload))}
+                  dropZone={state.dragContext.dropZone}
+                  over={state.dragContext.over}
+                  prev={state.dragContext.prev}
+                  next={state.dragContext.next}
+                  coordinates={state.dragContext.coordinates}
+                />
+              )}
+          </CrafterCMSPortal>
+        )}
+        {snack && (
+          <SnackBar open={true} onClose={() => setSnack(null)} {...snack}>
+            {snack.message}
+          </SnackBar>
+        )}
+      </ThemeProvider>
     </GuestContextProvider>
   );
 }

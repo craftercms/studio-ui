@@ -15,16 +15,26 @@
  */
 
 import { get, postJSON } from '../utils/ajax';
-import { Action, ContentValidationResult, CreateSiteMeta, Site } from '../models/Site';
+import { Action, BackendSite, ContentValidationResult, CreateSiteMeta, Site } from '../models/Site';
 import { map, mapTo, pluck } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { PagedArray } from '../models/PagedArray';
 import { PaginationOptions } from '../models/PaginationOptions';
 import { MarketplacePlugin } from '../models/MarketplacePlugin';
 import { underscore } from '../utils/string';
+import { Api2BulkResponseFormat, Api2ResponseFormat } from '../models/ApiResponse';
 
-export function fetchBlueprints(): Observable<MarketplacePlugin[]> {
-  return get('/studio/api/2/sites/available_blueprints').pipe(pluck('response', 'blueprints'));
+interface BuiltInBlueprint {
+  descriptorVersion: string;
+  plugin: MarketplacePlugin;
+}
+
+export function fetchBlueprints(): Observable<BuiltInBlueprint[]> {
+  return get<
+    Api2ResponseFormat<{
+      blueprints: BuiltInBlueprint[];
+    }>
+  >('/studio/api/2/sites/available_blueprints').pipe(pluck('response', 'blueprints'));
 }
 
 export function fetchAll(paginationOptions?: PaginationOptions): Observable<PagedArray<Site>> {
@@ -35,7 +45,11 @@ export function fetchAll(paginationOptions?: PaginationOptions): Observable<Page
     },
     paginationOptions || {}
   );
-  return get(`/studio/api/2/users/me/sites?limit=${options.limit}&offset=${options.offset}`).pipe(
+  return get<
+    Api2BulkResponseFormat<{
+      sites: BackendSite[];
+    }>
+  >(`/studio/api/2/users/me/sites?limit=${options.limit}&offset=${options.offset}`).pipe(
     map(({ response }) =>
       Object.assign(
         response.sites.map((site) => ({
@@ -76,14 +90,17 @@ export function trash(id: string): Observable<boolean> {
   );
 }
 
-export function update(site: Omit<Site, 'uuid'>): Observable<Site> {
-  return postJSON(`/studio/api/2/sites/${site.id}`, { name: site.name, description: site.description }).pipe(
-    pluck('response')
-  );
+export function update(site: Omit<Site, 'uuid'>): Observable<Api2ResponseFormat<{}>> {
+  return postJSON<Api2ResponseFormat<{}>>(`/studio/api/2/sites/${site.id}`, {
+    name: site.name,
+    description: site.description
+  }).pipe(pluck('response'));
 }
 
 export function exists(siteId: string): Observable<boolean> {
-  return get(`/studio/api/1/services/api/1/site/exists.json?site=${siteId}`).pipe(pluck('response', 'exists'));
+  return get<{ exists: boolean }>(`/studio/api/1/services/api/1/site/exists.json?site=${siteId}`).pipe(
+    pluck('response', 'exists')
+  );
 }
 
 export function validateActionPolicy(site: string, action: Action): Observable<ContentValidationResult>;
@@ -94,8 +111,11 @@ export function validateActionPolicy(
 ): Observable<ContentValidationResult | ContentValidationResult[]> {
   const multi = Array.isArray(action);
   const actions = multi ? action : [action];
-  const toPluck = ['response', 'results', !multi && '0'].filter(Boolean);
-  return postJSON(`/studio/api/2/sites/${site}/policy/validate`, {
-    actions
-  }).pipe(pluck(...toPluck));
+  const toPluck = ['response', 'results', !multi && 0].filter(Boolean) as ['response', 'results', 0?];
+  return postJSON<Api2ResponseFormat<{ results: ContentValidationResult[] }>>(
+    `/studio/api/2/sites/${site}/policy/validate`,
+    {
+      actions
+    }
+  ).pipe(pluck(...toPluck));
 }

@@ -17,30 +17,20 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import ContentType from '../../models/ContentType';
-import { Resource } from '../../models/Resource';
 import { FetchContentTypeUsageResponse } from '../../services/contentTypes';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import DialogHeader from '../Dialogs/DialogHeader';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import DialogBody from '../Dialogs/DialogBody';
 import EmptyState from '../SystemStatus/EmptyState';
-import Alert from '@material-ui/lab/Alert';
-import { TextField } from '@material-ui/core';
+import Alert from '@mui/material/Alert';
+import { TextField } from '@mui/material';
 import DialogFooter from '../Dialogs/DialogFooter';
 import SecondaryButton from '../SecondaryButton/SecondaryButton';
 import PrimaryButton from '../PrimaryButton/PrimaryButton';
 import LoadingState from '../SystemStatus/LoadingState';
 import ContentTypeUsageReport from './ContentTypeUsageReport';
 import { SandboxItem } from '../../models/Item';
-
-export interface DeleteContentTypeDialogBodyProps {
-  submitting: boolean;
-  contentType: ContentType;
-  resource: Resource<FetchContentTypeUsageResponse>;
-  password?: string;
-  onClose?(): void;
-  onSubmit(): void;
-}
+import { DeleteContentTypeDialogBodyProps } from './utils';
 
 const messages = defineMessages({
   content: {
@@ -91,7 +81,7 @@ const useStyles = makeStyles(() =>
 
 function DeleteContentTypeDialogBody(props: DeleteContentTypeDialogBodyProps) {
   const classes = useStyles();
-  const { onClose, resource, contentType, onSubmit: onSubmitProp, password = 'delete', submitting } = props;
+  const { onCloseButtonClick, resource, contentType, onSubmit: onSubmitProp, password = 'delete', submitting } = props;
   const data = resource.read();
   const { formatMessage } = useIntl();
   const dataEntries = Object.entries(data) as Array<[keyof FetchContentTypeUsageResponse, SandboxItem[]]>;
@@ -111,18 +101,6 @@ function DeleteContentTypeDialogBody(props: DeleteContentTypeDialogBodyProps) {
   };
   return (
     <>
-      <DialogHeader
-        title={<FormattedMessage id="deleteContentTypeDialog.headerTitle" defaultMessage="Delete Content Type" />}
-        subtitle={
-          <FormattedMessage
-            id="deleteContentTypeDialog.headerSubtitle"
-            defaultMessage={`Please confirm the deletion of "{name}"`}
-            values={{ name: contentType.name }}
-          />
-        }
-        onCloseButtonClick={onClose}
-        disableDismiss={submitting}
-      />
       <DialogBody>
         {noUsages ? (
           <div className={classes.content}>
@@ -170,7 +148,7 @@ function DeleteContentTypeDialogBody(props: DeleteContentTypeDialogBodyProps) {
         )}
       </DialogBody>
       <DialogFooter>
-        <SecondaryButton onClick={onClose} autoFocus disabled={submitting}>
+        <SecondaryButton onClick={onCloseButtonClick} autoFocus disabled={submitting}>
           <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
         </SecondaryButton>
         <PrimaryButton disabled={(hasUsages && !confirmPasswordPassed) || submitting} onClick={onSubmit}>

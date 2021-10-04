@@ -18,32 +18,63 @@ import { errorSelectorApi1, get, post, postJSON } from '../utils/ajax';
 import { Observable } from 'rxjs';
 import { catchError, map, mapTo, pluck } from 'rxjs/operators';
 import { LegacyItem } from '../models/Item';
-import { toQueryString } from '../utils/object';
+import { pluckProps, toQueryString } from '../utils/object';
 import { PublishingStatus, PublishingTarget } from '../models/Publishing';
+import { Api2BulkResponseFormat, Api2ResponseFormat } from '../models/ApiResponse';
+import { PagedArray } from '../models/PagedArray';
+
+interface FetchPackagesResponse extends Omit<PublishingPackage, 'items'> {}
 
 export function fetchPackages(
   siteId: string,
   filters: Partial<{ environment: string; path: string; states: string; offset: number; limit: number }>
-) {
+): Observable<PagedArray<FetchPackagesResponse>> {
   let qs = toQueryString({
     siteId,
     ...filters
   });
-  return get(`/studio/api/2/publish/packages${qs}`);
+  return get<Api2BulkResponseFormat<{ packages: FetchPackagesResponse[] }>>(`/studio/api/2/publish/packages${qs}`).pipe(
+    map(({ response }) => Object.assign(response.packages, pluckProps(response, 'limit', 'offset', 'total')))
+  );
 }
 
-export function fetchPackage(siteId: string, packageId: string) {
-  return get(`/studio/api/2/publish/package?siteId=${siteId}&packageId=${packageId}`);
+export interface PublishingPackage {
+  approver: string;
+  comment: string;
+  environment: 'live' | 'staging';
+  id: string;
+  items: Array<{
+    contentTypeClass: string;
+    mimeType: string;
+    path: string;
+  }>;
+  schedule: string;
+  siteId: string;
+  state: string;
+}
+
+export function fetchPackage(siteId: string, packageId: string): Observable<PublishingPackage> {
+  return get<
+    Api2ResponseFormat<{
+      package: PublishingPackage;
+    }>
+  >(`/studio/api/2/publish/package?siteId=${siteId}&packageId=${packageId}`).pipe(pluck('response', 'package'));
 }
 
 export function cancelPackage(siteId: string, packageIds: any) {
   return postJSON('/studio/api/2/publish/cancel', { siteId, packageIds });
 }
 
-export function fetchPublishingTargets(site: string): Observable<Array<PublishingTarget>> {
-  return get(`/studio/api/1/services/api/1/deployment/get-available-publishing-channels.json?site_id=${site}`).pipe(
-    pluck('response', 'availablePublishChannels')
-  );
+export type FetchPublishingTargetsResponse = Api2ResponseFormat<{
+  availablePublishChannels: Array<PublishingTarget>;
+}>;
+
+export function fetchPublishingTargets(
+  site: string
+): Observable<FetchPublishingTargetsResponse['availablePublishChannels']> {
+  return get<FetchPublishingTargetsResponse>(
+    `/studio/api/1/services/api/1/deployment/get-available-publishing-channels.json?site_id=${site}`
+  ).pipe(pluck('response', 'availablePublishChannels'));
 }
 
 export interface GoLiveResponse {
@@ -56,17 +87,17 @@ export interface GoLiveResponse {
 }
 
 export function submitToGoLive(siteId: string, user: string, data): Observable<GoLiveResponse> {
-  return postJSON(
+  return postJSON<GoLiveResponse>(
     `/studio/api/1/services/api/1/workflow/submit-to-go-live.json?site=${siteId}&user=${user}`,
     data
   ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
 
 export function goLive(siteId: string, user: string, data): Observable<GoLiveResponse> {
-  return postJSON(`/studio/api/1/services/api/1/workflow/go-live.json?site=${siteId}&user=${user}`, data).pipe(
-    pluck('response'),
-    catchError(errorSelectorApi1)
-  );
+  return postJSON<GoLiveResponse>(
+    `/studio/api/1/services/api/1/workflow/go-live.json?site=${siteId}&user=${user}`,
+    data
+  ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
 
 export function reject(siteId: string, items: string[], comment: string): Observable<boolean> {
@@ -78,23 +109,22 @@ export function reject(siteId: string, items: string[], comment: string): Observ
 }
 
 export function fetchStatus(siteId: string): Observable<PublishingStatus> {
-  return get(`/studio/api/2/publish/status?siteId=${siteId}`).pipe(
+  return get<Api2ResponseFormat<{ publishingStatus: PublishingStatus }>>(
+    `/studio/api/2/publish/status?siteId=${siteId}`
+  ).pipe(
     pluck('response', 'publishingStatus'),
-    map((status) => ({
-      ...status,
-      // Address backend sending status as null.
-      status: status.status ?? '',
-      publishingTarget: status.environment,
-      // Parse and express the formatted date if present.
-      message:
-        status.message?.replace(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z/, (match) =>
-          new Intl.DateTimeFormat(window?.navigator?.language ?? 'en-US', {
-            // @ts-ignore - dateStyle & timeStyle props not typed yet.
-            dateStyle: 'full',
-            timeStyle: 'long'
-          }).format(new Date(match))
-        ) ?? ''
-    }))
+    map((status) => {
+      if (status.status) {
+        return status;
+      } else {
+        console.error(`[/api/2/publish/status?siteId=${siteId}] Status property value was ${status.status}`);
+        return {
+          ...status,
+          // Address backend sending status as null.
+          status: status.status ?? ('' as PublishingStatus['status'])
+        };
+      }
+    })
   );
 }
 

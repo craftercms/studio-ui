@@ -57,7 +57,7 @@ function isComponent(record): record is React.ComponentType<any> {
   return ReactIs.isValidElementType(record);
 }
 
-const Widget = memo(function(props: WidgetProps) {
+const Widget = memo(function (props: WidgetProps) {
   const { id, plugin, configuration } = props;
   const record = components.get(id);
   const { formatMessage } = useIntl();
@@ -80,7 +80,7 @@ const Widget = memo(function(props: WidgetProps) {
     const Component = React.lazy<ComponentType<WidgetProps>>(() =>
       importPlugin(plugin).then(
         () => ({
-          default: function(props) {
+          default: function (props) {
             if (components.has(id)) {
               return <Widget {...props} />;
             } else {
@@ -95,7 +95,7 @@ const Widget = memo(function(props: WidgetProps) {
           }
         }),
         () => ({
-          default: function({ id, plugin }) {
+          default: function ({ id, plugin }) {
             return (
               <ErrorState
                 styles={{ image: { width: 100 } }}

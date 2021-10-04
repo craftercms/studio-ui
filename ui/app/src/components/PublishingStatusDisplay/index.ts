@@ -17,3 +17,5 @@
 export { default } from './PublishingStatusDisplay';
 
 export * from './PublishingStatusDisplay';
+
+export * from './utils';

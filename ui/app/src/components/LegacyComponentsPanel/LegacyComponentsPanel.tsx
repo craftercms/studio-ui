@@ -14,14 +14,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
 import SystemIcon, { SystemIconDescriptor } from '../SystemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
+import ListItemText from '@mui/material/ListItemText';
 import { usePossibleTranslation } from '../../utils/hooks/usePossibleTranslation';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import React, { useCallback, useEffect, useState } from 'react';
-import Switch from '@material-ui/core/Switch';
+import Switch from '@mui/material/Switch';
 import { fetchConfigurationJSON } from '../../services/configuration';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { usePreviewState } from '../../utils/hooks/usePreviewState';
@@ -48,6 +48,7 @@ import { forEach } from '../../utils/array';
 import { useEnv } from '../../utils/hooks/useEnv';
 import { createCustomDocumentEventListener } from '../../utils/dom';
 import { guestMessages } from '../../assets/guestMessages';
+import { useEnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
 
 export interface LegacyComponentsPanelProps {
   title: string;
@@ -96,6 +97,7 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
   const dispatch = useDispatch();
   const { authoringBase } = useEnv();
   const [legacyContentModel, setLegacyContentModel] = useState(null);
+  const browseFilesDialogState = useEnhancedDialogState();
 
   const startDnD = useCallback(
     (path?: string) => {
@@ -495,6 +497,7 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
         }
         case 'OPEN_BROWSE': {
           setBrowsePath(payload.path);
+          browseFilesDialogState.onOpen();
           break;
         }
         case 'START_DIALOG': {
@@ -553,7 +556,8 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
     onComponentDrop,
     open,
     siteId,
-    user.username
+    user.username,
+    browseFilesDialogState
   ]);
   // endregion
 
@@ -567,12 +571,13 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
     }
   };
 
-  const onCloseBrowseDialog = () => {
+  const onBrowseDialogClosed = () => {
     setBrowsePath(null);
   };
 
   const onBrowseDialogItemSelected = (item: MediaItem) => {
     setBrowsePath(null);
+    browseFilesDialogState.onClose();
     fetchLegacyItem(siteId, item.path).subscribe((legacyItem) => {
       hostToGuest$.next({
         type: 'DND_CREATE_BROWSE_COMP',
@@ -600,10 +605,14 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
         </ListItemSecondaryAction>
       </ListItem>
       <BrowseFilesDialog
-        open={Boolean(browsePath)}
+        open={browseFilesDialogState.open}
         path={browsePath}
-        onClose={onCloseBrowseDialog}
+        onClose={browseFilesDialogState.onClose}
+        onClosed={onBrowseDialogClosed}
         onSuccess={onBrowseDialogItemSelected}
+        hasPendingChanges={browseFilesDialogState.hasPendingChanges}
+        isMinimized={browseFilesDialogState.isMinimized}
+        isSubmitting={browseFilesDialogState.isSubmitting}
       />
     </>
   );

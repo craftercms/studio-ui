@@ -15,9 +15,9 @@
  */
 
 import * as React from 'react';
-import MenuItem from '@material-ui/core/MenuItem';
+import MenuItem from '@mui/material/MenuItem';
 import { FormattedMessage } from 'react-intl';
-import Select, { SelectProps } from '@material-ui/core/Select';
+import Select, { SelectProps } from '@mui/material/Select';
 import useStyles from './styles';
 import { isBlank } from '../../utils/string';
 import { changeSite } from '../../state/reducers/sites';
@@ -69,8 +69,7 @@ function SiteSwitcherSelect(props: SiteSwitcherSelectProps) {
       className={clsx(classes.menuRoot, props.className)}
       classes={{
         ...props.classes,
-        select: clsx(classes.input, props.classes?.select),
-        selectMenu: clsx(classes.menu, props.classes?.selectMenu)
+        select: clsx(classes.input, props.classes?.select, classes.menu)
       }}
       value={site}
       onChange={onSiteChange}

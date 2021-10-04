@@ -15,11 +15,12 @@
  */
 
 import React, { PropsWithChildren } from 'react';
-import TextField from '@material-ui/core/TextField';
+import TextField from '@mui/material/TextField';
 import { FormattedMessage } from 'react-intl';
 import PasswordTextField from '../Controls/PasswordTextField';
-import Button from '@material-ui/core/Button';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import Button from '@mui/material/Button';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 
 export type LogInFormProps = PropsWithChildren<{

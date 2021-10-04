@@ -15,13 +15,14 @@
  */
 
 import React, { useState } from 'react';
-import Dialog from '@material-ui/core/Dialog';
+import Dialog from '@mui/material/Dialog';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import Checkbox from '@material-ui/core/Checkbox';
-import IconButton from '@material-ui/core/IconButton';
-import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import Typography from '@mui/material/Typography';
+import Checkbox from '@mui/material/Checkbox';
+import IconButton from '@mui/material/IconButton';
+import MoreVertIcon from '@mui/icons-material/MoreVertRounded';
 import clsx from 'clsx';
 import ContextMenu from '../ContextMenu';
 import { markForTranslation } from '../../services/translation';
@@ -29,7 +30,7 @@ import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';
 import palette from '../../styles/palette';
 import DialogBody from './DialogBody';
-import DialogHeader from './DialogHeader';
+import DialogHeader from '../DialogHeader';
 import SingleItemSelector from '../SingleItemSelector';
 import { DetailedItem } from '../../models/Item';
 import ActionsBar from '../ActionsBar';
@@ -335,6 +336,7 @@ function ContentLocalizationDialogUI(props: ContentLocalizationDialogProps) {
                 aria-label="options"
                 className={classes.icon}
                 onClick={(e) => onOpenCustomMenu(locale, e.currentTarget)}
+                size="large"
               >
                 <MoreVertIcon />
               </IconButton>

@@ -16,22 +16,23 @@
 
 import React, { PropsWithChildren, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
-import { makeStyles, Theme } from '@material-ui/core/styles';
-import Link from '@material-ui/core/Link';
+import { Theme } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
+import Link from '@mui/material/Link';
 import { LegacyItem } from '../../models/Item';
-import TreeItem from '@material-ui/lab/TreeItem';
-import TreeView from '@material-ui/lab/TreeView';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+import TreeItem from '@mui/lab/TreeItem';
+import TreeView from '@mui/lab/TreeView';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import { LookupTable } from '../../models/LookupTable';
 import StandardAction from '../../models/StandardAction';
-import Dialog from '@material-ui/core/Dialog';
-import DialogHeader from './DialogHeader';
+import Dialog from '@mui/material/Dialog';
 import DialogBody from './DialogBody';
 import DialogFooter from './DialogFooter';
 import PrimaryButton from '../PrimaryButton';
 import SecondaryButton from '../SecondaryButton';
 import { useUnmount } from '../../utils/hooks/useUnmount';
+import DialogHeader from '../DialogHeader';
 
 const messages = defineMessages({
   copy: {

@@ -16,9 +16,9 @@
 
 import React, { useEffect, useState } from 'react';
 import clsx from 'clsx';
-import { FormHelperText, InputBase, Typography } from '@material-ui/core';
+import { FormHelperText, InputBase, Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import CircularProgress from '@mui/material/CircularProgress';
 import { usePathSelectedStyles } from './styles';
 
 export interface PathSelectedProps {

@@ -15,25 +15,26 @@
  */
 
 import React from 'react';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
-import Typography from '@material-ui/core/Typography';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import Collapse from '@material-ui/core/Collapse';
-import FormControl from '@material-ui/core/FormControl';
-import Link from '@material-ui/core/Link';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+import Typography from '@mui/material/Typography';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import Collapse from '@mui/material/Collapse';
+import FormControl from '@mui/material/FormControl';
+import Link from '@mui/material/Link';
 import DateTimePicker from '../Controls/DateTimePicker';
 import palette from '../../styles/palette';
 import TextFieldWithMax from '../Controls/TextFieldWithMax';
 import GlobalState from '../../models/GlobalState';
-import FormLabel from '@material-ui/core/FormLabel';
+import FormLabel from '@mui/material/FormLabel';
 import { useSelection } from '../../utils/hooks/useSelection';
-import Alert from '@material-ui/lab/Alert';
+import Alert from '@mui/material/Alert';
 import { capitalize } from '../../utils/string';
-import { PublishDialogUIProps } from './PublishDialogUI';
+import { PublishDialogUIProps } from './utils';
 
 const messages = defineMessages({
   emailLabel: {
@@ -135,7 +136,7 @@ const useStyles = makeStyles((theme) =>
         height: '100%',
         top: '0',
         left: '7px',
-        backgroundColor: theme.palette.type === 'dark' ? theme.palette.background.paper : palette.gray.light2,
+        backgroundColor: theme.palette.mode === 'dark' ? theme.palette.background.paper : palette.gray.light2,
         borderRadius: '5px'
       }
     },

@@ -17,30 +17,22 @@
 import { Resource } from '../../models/Resource';
 import { AuditLogEntry, AuditLogEntryParameter } from '../../models/Audit';
 import { PagedArray } from '../../models/PagedArray';
-import Box from '@material-ui/core/Box';
+import Box from '@mui/material/Box';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useStyles } from './styles';
-import {
-  DataGrid,
-  GridCellParams,
-  GridColDef,
-  GridOverlay,
-  GridPageChangeParams,
-  GridSortModel,
-  GridSortModelParams
-} from '@material-ui/data-grid';
+import { DataGrid, GridCellParams, GridColDef, GridComponentProps, GridOverlay, GridSortModel } from '@mui/x-data-grid';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { AuditOptions } from '../../services/audit';
 import { Site } from '../../models/Site';
 import User from '../../models/User';
-import Tooltip from '@material-ui/core/Tooltip';
-import IconButton from '@material-ui/core/IconButton';
-import VisibilityRoundedIcon from '@material-ui/icons/VisibilityRounded';
+import Tooltip from '@mui/material/Tooltip';
+import IconButton from '@mui/material/IconButton';
+import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
 // @ts-ignore
-import { getOffsetLeft, getOffsetTop } from '@material-ui/core/Popover/Popover';
+import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover/Popover';
 import moment from 'moment-timezone';
 import LookupTable from '../../models/LookupTable';
-import { Button, Typography } from '@material-ui/core';
+import { Button, Typography } from '@mui/material';
 import EmptyState from '../SystemStatus/EmptyState';
 import AuditGridFilterPopover from '../AuditGridFilterPopover';
 import { useLocale } from '../../utils/hooks/useLocale';
@@ -57,11 +49,11 @@ export interface AuditGridUIProps {
   hasActiveFilters: boolean;
   timezones: string[];
   siteMode?: boolean;
-  onPageChange(param: GridPageChangeParams): void;
+  onPageChange: GridComponentProps['onPageChange'];
   onResetFilters(): void;
   onResetFilter(id: string | string[]): void;
   onFetchParameters(id: number): void;
-  onPageSizeChange(param: GridPageChangeParams): void;
+  onPageSizeChange: GridComponentProps['onPageSizeChange'];
   onFilterChange(filter: { id: string; value: string | string[] }): void;
 }
 
@@ -158,7 +150,6 @@ export default function AuditGridUI(props: AuditGridUIProps) {
   const onFilterSelected = (props: GridColumnMenuProps) => {
     if (props.open && anchorPosition === null) {
       setTimeout(() => {
-        props.hideMenu();
         setOpenedFilter(props.currentColumn.field);
         const element = document.querySelector(`#${props.labelledby}`);
         const anchorRect = element.getBoundingClientRect();
@@ -177,10 +168,12 @@ export default function AuditGridUI(props: AuditGridUIProps) {
     [onFetchParameters]
   );
 
-  const onTimestampSortChanges = ({ sortModel: nextSortModel }: GridSortModelParams) => {
-    if (nextSortModel !== sortModel) {
-      const sort = nextSortModel.find((model) => model.field === 'operationTimestamp').sort;
-      setSortModel(nextSortModel);
+  const onTimestampSortChanges = (model: GridSortModel) => {
+    const newSort = model.find((m) => m.field === 'operationTimestamp').sort;
+    const sort = sortModel.find((m) => m.field === 'operationTimestamp').sort;
+
+    if (newSort !== sort) {
+      setSortModel(model);
       if (sort === 'asc') {
         onFilterChange({ id: 'order', value: sort.toUpperCase() });
       } else {
@@ -331,7 +324,7 @@ export default function AuditGridUI(props: AuditGridUIProps) {
         renderCell: (params: GridCellParams) => {
           return parametersLookup[params.id] === undefined || parametersLookup[params.id]?.length ? (
             <Tooltip title={<FormattedMessage id="auditGrid.showParameters" defaultMessage="Show parameters" />}>
-              <IconButton onClick={() => onGetParameters(params)}>
+              <IconButton onClick={() => onGetParameters(params)} size="large">
                 <VisibilityRoundedIcon />
               </IconButton>
             </Tooltip>

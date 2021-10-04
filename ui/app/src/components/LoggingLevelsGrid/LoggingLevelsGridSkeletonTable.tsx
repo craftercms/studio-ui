@@ -15,13 +15,13 @@
  */
 
 import React from 'react';
-import TableContainer from '@material-ui/core/TableContainer';
-import Table from '@material-ui/core/Table';
-import TableHead from '@material-ui/core/TableHead';
-import Typography from '@material-ui/core/Typography';
+import TableContainer from '@mui/material/TableContainer';
+import Table from '@mui/material/Table';
+import TableHead from '@mui/material/TableHead';
+import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
-import TableBody from '@material-ui/core/TableBody';
-import Skeleton from '@material-ui/lab/Skeleton';
+import TableBody from '@mui/material/TableBody';
+import Skeleton from '@mui/material/Skeleton';
 import useStyles from './styles';
 import GlobalAppGridRow from '../GlobalAppGridRow';
 import GlobalAppGridCell from '../GlobalAppGridCell';

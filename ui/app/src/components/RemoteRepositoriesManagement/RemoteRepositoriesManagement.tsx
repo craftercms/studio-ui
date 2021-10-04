@@ -17,8 +17,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import { FormattedMessage, useIntl } from 'react-intl';
-import Button from '@material-ui/core/Button';
-import AddIcon from '@material-ui/icons/Add';
+import Button from '@mui/material/Button';
+import AddIcon from '@mui/icons-material/Add';
 import { Repository, RepositoryStatus } from '../../models/Repository';
 import ApiResponse from '../../models/ApiResponse';
 import { fetchRepositories as fetchRepositoriesService, fetchStatus } from '../../services/repositories';
@@ -30,13 +30,13 @@ import RemoteRepositoriesStatusSkeleton from '../RemoteRepositoriesStatus/Remote
 import NewRemoteRepositoryDialog from '../NewRemoteRepositoryDialog';
 import { showSystemNotification } from '../../state/actions/system';
 import { useDispatch } from 'react-redux';
-import Alert from '@material-ui/lab/Alert';
-import Typography from '@material-ui/core/Typography';
+import Alert from '@mui/material/Alert';
+import Typography from '@mui/material/Typography';
 import useStyles from './styles';
 import translations from './translations';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
-import Paper from '@material-ui/core/Paper';
+import Paper from '@mui/material/Paper';
 import { useEnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
 import { useWithPendingChangesCloseRequest } from '../../utils/hooks/useWithPendingChangesCloseRequest';
 
@@ -75,16 +75,16 @@ export default function RemoteRepositoriesManagement(props: RemoteRepositoriesMa
 
   const fetchRepositories = useCallback(() => {
     setFetchingRepositories(true);
-    fetchRepositoriesService(siteId).subscribe(
-      (repositories) => {
+    fetchRepositoriesService(siteId).subscribe({
+      next: (repositories) => {
         setRepositories(repositories);
         setFetchingRepositories(false);
       },
-      ({ response }) => {
+      error: ({ response }) => {
         setErrorRepositories(response);
         setFetchingRepositories(false);
       }
-    );
+    });
   }, [siteId]);
 
   const fetchRepositoriesStatus = useCallback(() => {
@@ -138,11 +138,10 @@ export default function RemoteRepositoriesManagement(props: RemoteRepositoriesMa
     Array<Repository>,
     { repositories: Array<Repository>; error: ApiResponse; fetching: boolean }
   >(
-    useMemo(() => ({ repositories, error: errorRepositories, fetching: fetchingRepositories }), [
-      repositories,
-      errorRepositories,
-      fetchingRepositories
-    ]),
+    useMemo(
+      () => ({ repositories, error: errorRepositories, fetching: fetchingRepositories }),
+      [repositories, errorRepositories, fetchingRepositories]
+    ),
     {
       shouldResolve: (source) => Boolean(source.repositories) && !fetchingRepositories,
       shouldReject: ({ error }) => Boolean(error),
@@ -156,11 +155,10 @@ export default function RemoteRepositoriesManagement(props: RemoteRepositoriesMa
     RepositoryStatus,
     { status: RepositoryStatus; error: ApiResponse; fetching: boolean }
   >(
-    useMemo(() => ({ status: repositoriesStatus, error: errorStatus, fetching: fetchingStatus }), [
-      repositoriesStatus,
-      errorStatus,
-      fetchingStatus
-    ]),
+    useMemo(
+      () => ({ status: repositoriesStatus, error: errorStatus, fetching: fetchingStatus }),
+      [repositoriesStatus, errorStatus, fetchingStatus]
+    ),
     {
       shouldResolve: (source) => Boolean(source.status) && !fetchingStatus,
       shouldReject: ({ error }) => Boolean(error),

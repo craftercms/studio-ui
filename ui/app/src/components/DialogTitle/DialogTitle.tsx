@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -14,11 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { makeStyles } from '@material-ui/core/styles';
-import MuiDialogTitle from '@material-ui/core/DialogTitle/DialogTitle';
-import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
+import makeStyles from '@mui/styles/makeStyles';
+import MuiDialogTitle from '@mui/material/DialogTitle';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
 import React from 'react';
 import palette from '../../styles/palette';
 
@@ -44,19 +44,18 @@ const dialogTitleStyles = makeStyles(() => ({
 export interface DialogTitleProps {
   title: string;
   subtitle?: string;
-
   onClose?(): void;
 }
 
-export default function DialogTitle(props: DialogTitleProps) {
+export function DialogTitle(props: DialogTitleProps) {
   const classes = dialogTitleStyles({});
   const { onClose, title, subtitle } = props;
   return (
-    <MuiDialogTitle disableTypography className={classes.titleRoot}>
+    <MuiDialogTitle className={classes.titleRoot}>
       <div className={classes.title}>
         <Typography variant="h6">{title}</Typography>
         {onClose ? (
-          <IconButton aria-label="close" onClick={onClose} className={classes.closeIcon}>
+          <IconButton aria-label="close" onClick={onClose} className={classes.closeIcon} size="large">
             <CloseIcon />
           </IconButton>
         ) : null}
@@ -69,3 +68,5 @@ export default function DialogTitle(props: DialogTitleProps) {
     </MuiDialogTitle>
   );
 }
+
+export default DialogTitle;

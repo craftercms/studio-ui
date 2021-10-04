@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { DialogHeaderAction, DialogHeaderStateAction } from '../Dialogs/DialogHeader';
+import { DialogHeaderAction, DialogHeaderStateAction } from '../DialogHeader';
 import StandardAction from '../../models/StandardAction';
 import ApiResponse from '../../models/ApiResponse';
 import { LegacyVersion, VersionsStateProps } from '../../models/Version';

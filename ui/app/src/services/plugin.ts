@@ -18,7 +18,7 @@ import * as React from 'react';
 import LookupTable from '../models/LookupTable';
 import { augmentTranslations } from '../utils/i18n';
 import { CrafterCMSGlobal } from '../utils/craftercms';
-import { ThemeOptions } from '@material-ui/core/styles';
+import { DeprecatedThemeOptions } from '@mui/material/styles';
 
 export interface PluginFileBuilder {
   site: string;
@@ -40,7 +40,7 @@ export interface PluginDescriptor {
   widgets: LookupTable<ComponentRecord>;
   scripts: Array<string | object>;
   stylesheets: Array<string | object>;
-  themes: Array<{ id: string; name: string; themeOptions: ThemeOptions[] }>;
+  themes: Array<{ id: string; name: string; themeOptions: DeprecatedThemeOptions[] }>;
 }
 
 export interface ExtendedPluginDescriptor extends PluginDescriptor {

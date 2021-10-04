@@ -14,9 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import { ReactNode } from 'react';
-import { CSSProperties } from '@material-ui/styles';
+import { CSSProperties } from '@mui/styles';
 import StandardAction from '../../models/StandardAction';
-import { DialogProps } from '@material-ui/core/Dialog';
+import { DialogProps } from '@mui/material/Dialog';
 
 export type ConfirmDialogStateClassKey = 'dialog' | 'dialogImage' | 'dialogBody' | 'dialogTitle' | 'dialogFooter';
 export type ConfirmDialogStateStyles = Partial<Record<ConfirmDialogStateClassKey, CSSProperties>>;

@@ -15,8 +15,9 @@
  */
 
 import React from 'react';
-import MuiDialogActions, { DialogActionsProps } from '@material-ui/core/DialogActions';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import MuiDialogActions, { DialogActionsProps } from '@mui/material/DialogActions';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 
 const styles = makeStyles((theme) =>
@@ -25,7 +26,7 @@ const styles = makeStyles((theme) =>
       minHeight: '50px',
       backgroundColor: theme.palette.background.paper,
       borderTop: '1px solid rgba(0, 0, 0, 0.12)',
-      padding: `${theme.spacing(1)}px ${theme.spacing(1.8)}px`
+      padding: `${theme.spacing(1)} ${theme.spacing(1.8)}`
     }
   })
 );

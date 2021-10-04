@@ -35,9 +35,8 @@ export const itemCut = /*#__PURE__*/ createAction<{ target: string }>('ITEM_CUT'
 
 export const folderCreated = /*#__PURE__*/ createAction<{ target: string; name: string }>('FOLDER_CREATED');
 
-export const folderRenamed = /*#__PURE__*/ createAction<{ target: string; oldName: string; newName: string }>(
-  'FOLDER_RENAMED'
-);
+export const folderRenamed =
+  /*#__PURE__*/ createAction<{ target: string; oldName: string; newName: string }>('FOLDER_RENAMED');
 
 export const itemsUploaded = /*#__PURE__*/ createAction<{ target: string; targets: string[] }>('ITEM_UPLOADED');
 
@@ -111,15 +110,13 @@ export const messageSharedWorker = /*#__PURE__*/ createAction<StandardAction>('M
 
 export const fetchGlobalMenu = /*#__PURE__*/ createAction('FETCH_GLOBAL_MENU');
 
-export const fetchGlobalMenuComplete = /*#__PURE__*/ createAction<GlobalState['globalNavigation']['items']>(
-  'FETCH_GLOBAL_MENU_COMPLETE'
-);
+export const fetchGlobalMenuComplete =
+  /*#__PURE__*/ createAction<GlobalState['globalNavigation']['items']>('FETCH_GLOBAL_MENU_COMPLETE');
 
 export const fetchGlobalMenuFailed = /*#__PURE__*/ createAction('FETCH_GLOBAL_MENU_FAILED');
 
-export const fetchUseLegacyPreviewPreference = /*#__PURE__*/ createAction<Partial<{ site: string }>>(
-  'FETCH_USE_PREVIEW_3'
-);
+export const fetchUseLegacyPreviewPreference =
+  /*#__PURE__*/ createAction<Partial<{ site: string }>>('FETCH_USE_PREVIEW_3');
 export const fetchUseLegacyPreviewPreferenceComplete = /*#__PURE__*/ createAction<{
   site: string;
   useLegacyPreview: boolean;

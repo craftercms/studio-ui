@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import UnknownStateIcon from '@material-ui/icons/HelpOutlineRounded';
+import UnknownStateIcon from '@mui/icons-material/HelpOutlineRounded';
 import Js from '../Icons/Js';
 import JsonIcon from '../Icons/Json';
 import Groovy from '../Icons/Groovy';
@@ -24,15 +24,15 @@ import Css from '../Icons/Css';
 import ComponentIcon from '../Icons/Component';
 import PageIcon from '../Icons/Page';
 import LevelDescriptorIcon from '../Icons/LevelDescriptor';
-import Tooltip from '@material-ui/core/Tooltip/Tooltip';
+import Tooltip from '@mui/material/Tooltip';
 import * as React from 'react';
 import { ItemDisplayProps } from '../ItemDisplay';
-import ImageIcon from '@material-ui/icons/ImageOutlined';
-import CodeRounded from '@material-ui/icons/CodeRounded';
-import FontIcon from '@material-ui/icons/FontDownloadOutlined';
-import TextIcon from '@material-ui/icons/SubjectRounded';
-import FolderIcon from '@material-ui/icons/FolderOpenRounded';
-import TaxonomyIcon from '@material-ui/icons/LocalOfferOutlined';
+import ImageIcon from '@mui/icons-material/ImageOutlined';
+import CodeRounded from '@mui/icons-material/CodeRounded';
+import FontIcon from '@mui/icons-material/FontDownloadOutlined';
+import TextIcon from '@mui/icons-material/SubjectRounded';
+import FolderIcon from '@mui/icons-material/FolderOpenRounded';
+import TaxonomyIcon from '@mui/icons-material/LocalOfferOutlined';
 import { DetailedItem, SandboxItem } from '../../models/Item';
 import clsx from 'clsx';
 import { defineMessages, IntlFormatters, useIntl } from 'react-intl';

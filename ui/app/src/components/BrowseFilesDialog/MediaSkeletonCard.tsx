@@ -15,21 +15,23 @@
  */
 
 import React from 'react';
-import Card from '@material-ui/core/Card';
-import CardHeader from '@material-ui/core/CardHeader';
+import Card from '@mui/material/Card';
+import CardHeader from '@mui/material/CardHeader';
 import { useCardStyles } from './styles';
-import Skeleton from '@material-ui/lab/Skeleton';
+import Skeleton from '@mui/material/Skeleton';
 
-export default function MediaSkeletonCard() {
+export function MediaSkeletonCard() {
   const classes = useCardStyles();
   return (
     <Card className={classes.root}>
       <CardHeader
         className={classes.cardHeader}
-        avatar={<Skeleton variant="circle" width={24} height={24} />}
+        avatar={<Skeleton variant="circular" width={24} height={24} />}
         title={<Skeleton animation="wave" height={20} width="100%" />}
       />
-      <Skeleton animation="wave" variant="rect" className={classes.media} />
+      <Skeleton animation="wave" variant="rectangular" className={classes.media} />
     </Card>
   );
 }
+
+export default MediaSkeletonCard;

@@ -14,15 +14,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import createStyles from '@mui/styles/createStyles';
+
+import makeStyles from '@mui/styles/makeStyles';
 import { useIntl } from 'react-intl';
-import Checkbox from '@material-ui/core/Checkbox';
+import Checkbox from '@mui/material/Checkbox';
 import React from 'react';
 import { getPossibleTranslation } from '../../utils/i18n';
 import clsx from 'clsx';
-import Button from '@material-ui/core/Button';
+import Button from '@mui/material/Button';
 import TranslationOrText from '../../models/TranslationOrText';
-import Skeleton from '@material-ui/lab/Skeleton';
+import Skeleton from '@mui/material/Skeleton';
 import { rand } from '../PathNavigator/utils';
 
 const styles = makeStyles((theme) =>

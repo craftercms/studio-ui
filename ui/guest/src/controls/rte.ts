@@ -25,9 +25,10 @@ import { Observable, Subject } from 'rxjs';
 import { startWith } from 'rxjs/operators';
 import $ from 'jquery';
 import { reversePluckProps } from '../utils/object';
-// TODO: this needs to be imported from studio-ui
-import { SHOW_EDIT_DIALOG } from '../constants';
+import { showEditDialog } from '@craftercms/studio-ui/build_tsc/state/actions/preview';
 import { RteSetup } from '../models/Rte';
+import { editComponentInline, exitComponentInlineEdit } from '../store/actions';
+import { validationMessage } from '@craftercms/studio-ui/build_tsc/state/actions/preview';
 
 export function initTinyMCE(
   record: ElementRecord,
@@ -45,7 +46,7 @@ export function initTinyMCE(
 
   const openEditForm = () => {
     post({
-      type: SHOW_EDIT_DIALOG,
+      type: showEditDialog.type,
       payload: {
         selectedFields: [field.id]
       }
@@ -85,7 +86,7 @@ export function initTinyMCE(
     suffix: '.min',
     external_plugins: external,
     setup(editor: Editor) {
-      editor.on('init', function() {
+      editor.on('init', function () {
         let changed = false;
         let originalContent = getContent();
 
@@ -98,14 +99,13 @@ export function initTinyMCE(
         editor.on('focusout', (e) => {
           if (!e.relatedTarget) {
             if (validations?.required && !getContent().trim()) {
-              post({
-                type: 'VALIDATION_MESSAGE',
-                payload: {
+              post(
+                validationMessage({
                   id: 'required',
                   level: 'required',
                   values: { field: record.label }
-                }
-              });
+                })
+              );
               editor.setContent(originalContent);
             } else {
               save();
@@ -132,14 +132,13 @@ export function initTinyMCE(
             /[a-zA-Z0-9-_ ]/.test(String.fromCharCode(e.keyCode)) &&
             getContent().length + 1 > parseInt(validations.maxLength.value)
           ) {
-            post({
-              type: 'VALIDATION_MESSAGE',
-              payload: {
+            post(
+              validationMessage({
                 id: 'maxLength',
                 level: 'required',
                 values: { maxLength: validations.maxLength.value }
-              }
-            });
+              })
+            );
             e.stopPropagation();
             return false;
           }
@@ -173,7 +172,7 @@ export function initTinyMCE(
             $(record.element).css('display', '');
           }
 
-          dispatch$.next({ type: 'exit_component_inline_edit' });
+          dispatch$.next({ type: exitComponentInlineEdit.type });
           dispatch$.complete();
           dispatch$.unsubscribe();
         }
@@ -183,7 +182,7 @@ export function initTinyMCE(
           e.preventDefault();
         }
       });
-      editor.on('DblClick', function(e) {
+      editor.on('DblClick', function (e) {
         if (e.target.nodeName === 'IMG') {
           window.tinymce.activeEditor.execCommand('mceImage');
         }
@@ -215,5 +214,5 @@ export function initTinyMCE(
     openEditForm
   });
 
-  return dispatch$.pipe(startWith({ type: 'edit_component_inline' }));
+  return dispatch$.pipe(startWith({ type: editComponentInline.type }));
 }

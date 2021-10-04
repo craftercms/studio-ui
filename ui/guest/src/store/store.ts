@@ -15,7 +15,7 @@
  */
 
 import { createEpicMiddleware } from 'redux-observable';
-import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
+import { configureStore } from '@reduxjs/toolkit';
 import { GuestStandardAction } from './models/GuestStandardAction';
 import epic from './epics/root';
 import reducer from './reducers/root';
@@ -31,21 +31,18 @@ export function createGuestStore(): GuestStore {
     return store;
   }
   const epicMiddleware = createEpicMiddleware<GuestStandardAction, GuestStandardAction, GuestState>();
-  const middleware = [
-    ...getDefaultMiddleware<GuestState, any>({
-      thunk: false,
-      // serializable is not good companion while we have
-      // non-serializable values on the state (elements).
-      serializableCheck: false,
-      // immutable is causing max stack issues, probably also due
-      // to the non-serializable values on the state.
-      immutableCheck: false
-    }),
-    epicMiddleware
-  ];
   store = configureStore<GuestState, GuestStandardAction, Middleware[]>({
     reducer,
-    middleware,
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware({
+        thunk: false,
+        // serializable is not good companion while we have
+        // non-serializable values on the state (elements).
+        serializableCheck: false,
+        // immutable is causing max stack issues, probably also due
+        // to the non-serializable values on the state.
+        immutableCheck: false
+      }).concat(epicMiddleware as Middleware),
     devTools: { name: 'Guest Store' }
     // devTools: process.env.NODE_ENV === 'production' ? false : { name: 'Guest Store' }
   });

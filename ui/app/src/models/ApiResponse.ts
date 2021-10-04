@@ -21,4 +21,15 @@ export interface ApiResponse {
   documentationUrl?: string;
 }
 
+export type Api2ResponseFormat<T> = {
+  response: ApiResponse;
+} & T;
+
+export type Api2BulkResponseFormat<T> = {
+  limit: number;
+  offset: number;
+  total: number;
+  response: ApiResponse;
+} & T;
+
 export default ApiResponse;

@@ -15,13 +15,15 @@
  */
 
 import React from 'react';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import { Typography } from '@material-ui/core';
-import { FormattedMessage } from 'react-intl';
-import TreeItem from '@material-ui/lab/TreeItem';
+import CircularProgress from '@mui/material/CircularProgress';
+import { Typography } from '@mui/material';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import TreeItem from '@mui/lab/TreeItem';
 import clsx from 'clsx';
 import { useTreeNodeStyles } from './styles';
 import { TreeNode } from './FolderBrowserTreeViewUI';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 
 export interface RenderTreeNodeProps {
   node: TreeNode;
@@ -30,9 +32,22 @@ export interface RenderTreeNodeProps {
   onLabelClick?(event: React.ChangeEvent<{}>, node: TreeNode): void;
 }
 
+const translations = defineMessages({
+  expand: {
+    id: 'words.expand',
+    defaultMessage: 'Expand'
+  },
+  collapse: {
+    id: 'words.collapse',
+    defaultMessage: 'Collapse'
+  }
+});
+
 export function RenderTreeNode(props: RenderTreeNodeProps) {
   const { node, onIconClick, onLabelClick } = props;
   const classes = useTreeNodeStyles();
+  const { formatMessage } = useIntl();
+
   return node.id === 'loading' ? (
     <div className={classes.loading}>
       <CircularProgress size={16} />
@@ -44,15 +59,33 @@ export function RenderTreeNode(props: RenderTreeNodeProps) {
     <TreeItem
       key={node.id}
       nodeId={node.id}
-      label={node.name}
+      label={
+        <div role="button" onClick={(e) => onLabelClick?.(e, node)}>
+          {node.name}
+        </div>
+      }
       classes={{
         root: classes.treeItemRoot,
         content: classes.treeItemContent,
         selected: classes.treeItemSelected,
         label: clsx(classes.treeItemLabel, props.classes?.treeItemLabel)
       }}
-      onIconClick={(e) => onIconClick?.(e, node)}
-      onLabelClick={(e) => onLabelClick?.(e, node)}
+      expandIcon={
+        <ExpandMoreIcon
+          role="button"
+          aria-label={formatMessage(translations.expand)}
+          aria-hidden="false"
+          onClick={(e) => onIconClick?.(e, node)}
+        />
+      }
+      collapseIcon={
+        <ChevronRightIcon
+          role="button"
+          aria-label={formatMessage(translations.collapse)}
+          aria-hidden="false"
+          onClick={(e) => onIconClick?.(e, node)}
+        />
+      }
     >
       {Array.isArray(node.children)
         ? node.children.map((childNode) => (

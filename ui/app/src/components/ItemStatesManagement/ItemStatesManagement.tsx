@@ -22,23 +22,23 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import ItemStatesGridUI, { drawerWidth, ItemStatesGridSkeletonTable, states } from '../ItemStatesGrid';
 import SetItemStateDialog from '../SetWorkflowStateDialog';
-import Button from '@material-ui/core/Button';
-import FilterListRoundedIcon from '@material-ui/icons/FilterListRounded';
+import Button from '@mui/material/Button';
+import FilterListRoundedIcon from '@mui/icons-material/FilterListRounded';
 import { useStyles } from './styles';
 import LookupTable from '../../models/LookupTable';
 import { createPresenceTable } from '../../utils/array';
 import { getStateBitmap } from './utils';
 import { ItemStateMap, SandboxItem } from '../../models/Item';
 import { PagedArray } from '../../models/PagedArray';
-import Box from '@material-ui/core/Box';
-import CloseIcon from '@material-ui/icons/Close';
-import TextField from '@material-ui/core/TextField';
-import FormControl from '@material-ui/core/FormControl';
-import FormLabel from '@material-ui/core/FormLabel';
-import FormGroup from '@material-ui/core/FormGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
-import { Divider } from '@material-ui/core';
+import Box from '@mui/material/Box';
+import CloseIcon from '@mui/icons-material/Close';
+import TextField from '@mui/material/TextField';
+import FormControl from '@mui/material/FormControl';
+import FormLabel from '@mui/material/FormLabel';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+import { Divider } from '@mui/material';
 import ItemPublishingTargetIcon from '../ItemPublishingTargetIcon';
 import { getItemPublishingTargetText, getItemStateText } from '../ItemDisplay/utils';
 import ItemStateIcon from '../ItemStateIcon';
@@ -49,6 +49,7 @@ import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import { useDebouncedInput } from '../../utils/hooks/useDebouncedInput';
 import { useSpreadState } from '../../utils/hooks/useSpreadState';
 import ItemActionsSnackbar from '../ItemActionsSnackbar';
+import SecondaryButton from '../SecondaryButton';
 
 interface ItemStatesManagementProps {
   embedded?: boolean;
@@ -76,14 +77,14 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
 
   const hasSelectedItems = useMemo(() => Object.values(selectedItems).some(Boolean), [selectedItems]);
   const selectedItemsLength = useMemo(() => Object.values(selectedItems).filter(Boolean).length, [selectedItems]);
-  const isThisPageIndeterminate = useMemo(() => items?.some((item) => !selectedItems[item.path]), [
-    items,
-    selectedItems
-  ]);
-  const hasThisPageItemsChecked = useMemo(() => items?.some((item) => selectedItems[item.path]), [
-    items,
-    selectedItems
-  ]);
+  const isThisPageIndeterminate = useMemo(
+    () => items?.some((item) => !selectedItems[item.path]),
+    [items, selectedItems]
+  );
+  const hasThisPageItemsChecked = useMemo(
+    () => items?.some((item) => selectedItems[item.path]),
+    [items, selectedItems]
+  );
 
   const rootRef = useRef<HTMLDivElement>();
 
@@ -246,15 +247,13 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
       <GlobalAppToolbar
         title={!embedded && <FormattedMessage id="siteTools.itemStates" defaultMessage="Item States" />}
         rightContent={
-          <Button
+          <SecondaryButton
             className={embedded ? '' : classes.filterButton}
             endIcon={<FilterListRoundedIcon />}
-            variant="outlined"
-            color={pathRegex || Object.values(filtersLookup).some(Boolean) ? 'primary' : 'default'}
             onClick={() => setOpenFiltersDrawer(!openFiltersDrawer)}
           >
             <FormattedMessage id="words.filters" defaultMessage="Filters" />
-          </Button>
+          </SecondaryButton>
         }
         showHamburgerMenuButton={!embedded}
         showAppsButton={showAppsButton}

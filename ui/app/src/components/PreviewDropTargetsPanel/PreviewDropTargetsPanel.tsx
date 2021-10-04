@@ -17,23 +17,24 @@
 import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
-import { createStyles, makeStyles } from '@material-ui/core';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { ContentTypeDropTarget } from '../../models/ContentTypeDropTarget';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import List from '@material-ui/core/List';
-import Avatar from '@material-ui/core/Avatar';
-import MoveToInboxRounded from '@material-ui/icons/MoveToInboxRounded';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import List from '@mui/material/List';
+import Avatar from '@mui/material/Avatar';
+import MoveToInboxRounded from '@mui/icons-material/MoveToInboxRounded';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
 import ContentType from '../../models/ContentType';
 import { useDispatch } from 'react-redux';
 import {
-  CLEAR_HIGHLIGHTED_DROP_TARGETS,
+  clearHighlightedDropTargets,
   clearDropTargets,
-  CONTENT_TYPE_DROP_TARGETS_REQUEST,
-  SCROLL_TO_DROP_TARGET,
+  contentTypeDropTargetsRequest,
+  scrollToDropTarget,
   setPreviewEditMode
 } from '../../state/actions/preview';
 import { Resource } from '../../models/Resource';
@@ -90,7 +91,7 @@ export default function PreviewDropTargetsPanel() {
     return () => {
       dispatch(clearDropTargets());
       hostToGuest$.next({
-        type: CLEAR_HIGHLIGHTED_DROP_TARGETS
+        type: clearHighlightedDropTargets.type
       });
     };
   });
@@ -100,14 +101,14 @@ export default function PreviewDropTargetsPanel() {
       dispatch(setPreviewEditMode({ editMode: true }));
     }
     hostToGuest$.next({
-      type: SCROLL_TO_DROP_TARGET,
+      type: scrollToDropTarget.type,
       payload: dropTarget
     });
   };
 
   function handleSelectChange(contentTypeId: string) {
     hostToGuest$.next({
-      type: CONTENT_TYPE_DROP_TARGETS_REQUEST,
+      type: contentTypeDropTargetsRequest.type,
       payload: contentTypeId
     });
   }

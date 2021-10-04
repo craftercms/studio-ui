@@ -14,11 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 import DependencySelection from '../../modules/Content/Dependencies/DependencySelection';
 import PublishDialogForm from './PublishDialogForm';
 import React from 'react';
-import { PublishDialogUIProps } from './PublishDialogUI';
+import { PublishDialogUIProps } from './utils';
 
 export type PublishDialogContentUIProps = Pick<
   PublishDialogUIProps,

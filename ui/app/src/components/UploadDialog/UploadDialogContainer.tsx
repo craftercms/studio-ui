@@ -24,8 +24,8 @@ import { XHRUpload } from '@craftercms/uppy';
 import { getBulkUploadUrl } from '../../services/content';
 import { getGlobalHeaders } from '../../utils/ajax';
 import { useUnmount } from '../../utils/hooks/useUnmount';
-import { Button, IconButton } from '@material-ui/core';
-import CloseIconRounded from '@material-ui/icons/CloseRounded';
+import { Button, IconButton } from '@mui/material';
+import CloseIconRounded from '@mui/icons-material/CloseRounded';
 import DialogBody from '../Dialogs/DialogBody';
 import UppyDashboard from '../UppyDashboard';
 import { useStyles } from './UploadDialog';
@@ -92,7 +92,7 @@ export function UploadDialogContainer(props: UploadDialogContainerProps) {
   return (
     <>
       <Button style={{ display: 'none' }}>test</Button>
-      <IconButton style={{ display: 'none' }}>
+      <IconButton style={{ display: 'none' }} size="large">
         <CloseIconRounded />
       </IconButton>
       <DialogBody className={classes.dialogBody}>

@@ -26,7 +26,7 @@ import { getNumOfMenuOptionsForItem, getSystemTypeFromPath, parseLegacyItemToDet
 import Dashlet from '../Dashlet';
 import ApiResponse from '../../models/ApiResponse';
 import AwaitingApprovalDashletSkeletonTable from '../AwaitingApprovalDashletGrid/AwaitingApprovalDashletSkeletonTable';
-import Button from '@material-ui/core/Button';
+import Button from '@mui/material/Button';
 import { itemsApproved, itemsDeleted, itemsRejected, itemsScheduled } from '../../state/actions/system';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { filter } from 'rxjs/operators';
@@ -86,10 +86,10 @@ export default function AwaitingApprovalDashlet() {
   const { authoringBase } = useEnv();
 
   const showExpanded = useMemo(() => Object.values(expandedLookup).some((value) => !value), [expandedLookup]);
-  const isAllChecked = useMemo(() => !Object.keys(state.itemsLookup).some((path) => !selectedLookup[path]), [
-    selectedLookup,
-    state.itemsLookup
-  ]);
+  const isAllChecked = useMemo(
+    () => !Object.keys(state.itemsLookup).some((path) => !selectedLookup[path]),
+    [selectedLookup, state.itemsLookup]
+  );
   const selectedItemsLength = useMemo(() => Object.values(selectedLookup).filter(Boolean).length, [selectedLookup]);
   const isIndeterminate = useMemo(
     () => Object.keys(state.itemsLookup).some((path) => selectedLookup[path]) && !isAllChecked,

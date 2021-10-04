@@ -17,8 +17,8 @@
 import { EditSiteDialogUIProps } from './utils';
 import { FormattedMessage, useIntl } from 'react-intl';
 import DialogBody from '../Dialogs/DialogBody';
-import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
+import Grid from '@mui/material/Grid';
+import TextField from '@mui/material/TextField';
 import DialogFooter from '../Dialogs/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';

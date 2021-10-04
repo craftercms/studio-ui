@@ -36,6 +36,7 @@ import { SandboxItem } from '../models/Item';
 import { fetchConfigurationDOM, fetchConfigurationJSON, writeConfiguration } from './configuration';
 import { beautify, serialize } from '../utils/xml';
 import { stripDuplicateSlashes } from '../utils/path';
+import { Api2ResponseFormat } from '../models/ApiResponse';
 
 const typeMap = {
   input: 'text',
@@ -355,11 +356,11 @@ export function fetchContentTypes(site: string, query?: any): Observable<Content
     switchMap((contentTypes) =>
       zip(
         of(contentTypes),
-        forkJoin<LookupTable<Observable<Partial<ContentType>>>, 'id'>(
+        forkJoin(
           contentTypes.reduce((hash, contentType) => {
             hash[contentType.id] = fetchFormDefinition(site, contentType.id);
             return hash;
-          }, {})
+          }, {} as LookupTable<Observable<Partial<ContentType>>>)
         )
       )
     ),
@@ -373,14 +374,14 @@ export function fetchContentTypes(site: string, query?: any): Observable<Content
 }
 
 export function fetchLegacyContentType(site: string, contentTypeId: string): Observable<LegacyContentType> {
-  return get(`/studio/api/1/services/api/1/content/get-content-type.json?site_id=${site}&type=${contentTypeId}`).pipe(
-    pluck('response')
-  );
+  return get<LegacyContentType>(
+    `/studio/api/1/services/api/1/content/get-content-type.json?site_id=${site}&type=${contentTypeId}`
+  ).pipe(pluck('response'));
 }
 
 export function fetchLegacyContentTypes(site: string, path?: string): Observable<LegacyContentType[]> {
   const qs = toQueryString({ site, path });
-  return get(`/studio/api/1/services/api/1/content/get-content-types.json${qs}`).pipe(
+  return get<LegacyContentType[]>(`/studio/api/1/services/api/1/content/get-content-types.json${qs}`).pipe(
     pluck('response'),
     catchError(errorSelectorApi1)
   );
@@ -394,7 +395,9 @@ export interface FetchContentTypeUsageResponse<T = SandboxItem> {
 
 export function fetchContentTypeUsage(site: string, contentTypeId: string): Observable<FetchContentTypeUsageResponse> {
   const qs = toQueryString({ siteId: site, contentType: contentTypeId });
-  return get(`/studio/api/2/configuration/content-type/usage${qs}`).pipe(
+  return get<Api2ResponseFormat<{ usage: FetchContentTypeUsageResponse<string> }>>(
+    `/studio/api/2/configuration/content-type/usage${qs}`
+  ).pipe(
     pluck('response', 'usage'),
     switchMap((usage: FetchContentTypeUsageResponse<string>) =>
       usage.templates.length + usage.scripts.length + usage.content.length === 0

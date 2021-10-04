@@ -15,10 +15,11 @@
  */
 
 import React, { PropsWithChildren } from 'react';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/CloseRounded';
-import Dialog from '@material-ui/core/Dialog';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/CloseRounded';
+import Dialog from '@mui/material/Dialog';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import StandardAction from '../../models/StandardAction';
 import { ApiResponse } from '../../models/ApiResponse';
 import ApiResponseErrorState from '../ApiResponseErrorState';
@@ -62,7 +63,7 @@ function ErrorDialogBody(props: ErrorDialogProps) {
   useUnmount(props.onClosed);
   return (
     <div className={classes.body}>
-      <IconButton aria-label="close" className={classes.closeButton} onClick={() => onDismiss()}>
+      <IconButton aria-label="close" className={classes.closeButton} onClick={() => onDismiss()} size="large">
         <CloseIcon />
       </IconButton>
       {error && <ApiResponseErrorState error={error} />}

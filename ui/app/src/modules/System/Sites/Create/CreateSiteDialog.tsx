@@ -15,12 +15,14 @@
  */
 
 import React, { ChangeEvent, MouseEvent, useEffect, useRef, useState } from 'react';
-import { createStyles, makeStyles, withStyles } from '@material-ui/core/styles';
-import Dialog from '@material-ui/core/Dialog';
-import SearchIcon from '@material-ui/icons/Search';
-import Grid from '@material-ui/core/Grid';
-import Tab from '@material-ui/core/Tab';
-import Tabs from '@material-ui/core/Tabs';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import withStyles from '@mui/styles/withStyles';
+import Dialog from '@mui/material/Dialog';
+import SearchIcon from '@mui/icons-material/Search';
+import Grid from '@mui/material/Grid';
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
 import PluginCard from '../../../../components/PluginCard/PluginCard';
 import Spinner from '../../../../components/SystemStatus/Spinner';
 import clsx from 'clsx';
@@ -43,15 +45,15 @@ import gitLogo from '../../../../assets/git-logo.svg';
 import { fadeIn } from 'react-animations';
 import { Subscription } from 'rxjs';
 import SearchBar from '../../../../components/Controls/SearchBar';
-import DialogHeader from '../../../../components/Dialogs/DialogHeader';
+import DialogHeader from '../../../../components/DialogHeader';
 import DialogBody from '../../../../components/Dialogs/DialogBody';
 import DialogFooter from '../../../../components/Dialogs/DialogFooter';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Typography from '@material-ui/core/Typography';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Typography from '@mui/material/Typography';
 import ApiResponseErrorState from '../../../../components/ApiResponseErrorState';
 import PrimaryButton from '../../../../components/PrimaryButton';
-import Button from '@material-ui/core/Button';
+import Button from '@mui/material/Button';
 import { nnou } from '../../../../utils/object';
 import { useEnv } from '../../../../utils/hooks/useEnv';
 import { useSpreadState } from '../../../../utils/hooks/useSpreadState';
@@ -361,7 +363,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
   setRequestForgeryToken();
 
   useEffect(() => {
-    const loginListener = function(event: any) {
+    const loginListener = function (event: any) {
       if (event.detail.state === 'logged') {
         setDisableEnforceFocus(false);
       } else if (event.detail.state === 'reLogin') {
@@ -378,9 +380,9 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
     let subscriptions: Subscription[] = [];
     if (tab === 0 && blueprints === null && !apiState.error) {
       subscriptions.push(
-        fetchBuiltInBlueprints().subscribe(
-          (blueprints) => {
-            const _blueprints: [MarketplacePlugin] = [
+        fetchBuiltInBlueprints().subscribe({
+          next: (blueprints) => {
+            setBlueprints([
               {
                 id: 'GIT',
                 name: formatMessage(messages.gitBlueprintName),
@@ -396,35 +398,32 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
                   ],
                   videos: []
                 }
-              }
-            ];
-            blueprints.forEach((bp: any) => {
-              _blueprints.push(bp.plugin);
-            });
-            setBlueprints(_blueprints);
+              },
+              ...blueprints.map((bp) => bp.plugin)
+            ]);
           },
-          ({ response }) => {
+          error: ({ response }) => {
             if (response) {
               setApiState({ creatingSite: false, error: true, errorResponse: response.response });
             }
           }
-        )
+        })
       );
     }
     if (tab === 1 && marketplace === null && !apiState.error) {
       subscriptions.push(
         fetchMarketplaceBlueprints({
           showIncompatible: site.showIncompatible
-        }).subscribe(
-          ({ response }) => {
-            setMarketplace(response.plugins);
+        }).subscribe({
+          next: (plugins) => {
+            setMarketplace(plugins);
           },
-          ({ response }) => {
+          error: ({ response }) => {
             if (response) {
               setApiState({ creatingSite: false, error: true, errorResponse: response.response });
             }
           }
-        )
+        })
       );
     }
     if (finishRef && finishRef.current && site.selectedView === 2) {

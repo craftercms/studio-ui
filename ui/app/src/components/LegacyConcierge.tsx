@@ -16,7 +16,7 @@
 
 import { useDispatch } from 'react-redux';
 import { useEffect } from 'react';
-import { fetchContentTypes, guestPathUpdated, RELOAD_REQUEST } from '../state/actions/preview';
+import { fetchContentTypes, guestPathUpdated, reloadRequest } from '../state/actions/preview';
 import { filter } from 'rxjs/operators';
 import { getHostToGuestBus } from '../modules/Preview/previewContext';
 import { LegacyItem } from '../models/Item';
@@ -37,7 +37,7 @@ export default function LegacyConcierge() {
     // @ts-ignore
     if (window.amplify) {
       const hostToGuest$ = getHostToGuestBus();
-      const subscription = hostToGuest$.pipe(filter((action) => action.type === RELOAD_REQUEST)).subscribe(() => {
+      const subscription = hostToGuest$.pipe(filter((action) => action.type === reloadRequest.type)).subscribe(() => {
         // @ts-ignore
         CStudioAuthoring.Operations.refreshPreview();
       });
