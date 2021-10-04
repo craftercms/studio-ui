@@ -1,22 +1,46 @@
 {
   "presets": [
-    ["@babel/preset-env", {
-      "modules": false,
-      "loose": true
-    }],
+    [
+      "@babel/preset-env",
+      {
+        "modules": false,
+        "loose": true
+      }
+    ],
     "@babel/preset-react"
   ],
   "plugins": [
-    "@babel/plugin-proposal-class-properties",
-    "@babel/plugin-transform-object-assign",
-    "@babel/plugin-proposal-object-rest-spread",
+    [
+      "@babel/plugin-proposal-class-properties",
+      {
+        "loose": true
+      }
+    ],
+    [
+      "@babel/plugin-transform-object-assign",
+      {
+        "loose": true
+      }
+    ],
+    [
+      "@babel/plugin-proposal-object-rest-spread",
+      {
+        "loose": true
+      }
+    ],
     [
       "@babel/plugin-transform-react-jsx",
       {
+        "loose": true,
         "pragma": "h",
         "pragmaFrag": "Fragment"
       }
     ],
-    "babel-plugin-inline-package-json"
+    [
+      "babel-plugin-inline-package-json",
+      {
+        "loose": true
+      }
+    ]
   ]
 }
