@@ -111,7 +111,7 @@ export function validateActionPolicy(
 ): Observable<ContentValidationResult | ContentValidationResult[]> {
   const multi = Array.isArray(action);
   const actions = multi ? action : [action];
-  const toPluck = ['response', 'results', !multi && 0].filter(Boolean) as ['response', 'results', 0?];
+  const toPluck = ['response', 'results', !multi && '0'].filter(Boolean) as ['response', 'results', 0?];
   return postJSON<Api2ResponseFormat<{ results: ContentValidationResult[] }>>(
     `/studio/api/2/sites/${site}/policy/validate`,
     {
