@@ -21,12 +21,12 @@ import { ApiResponse } from '../../models/ApiResponse';
 import { useDispatch } from 'react-redux';
 import { LogEvent } from '../../models/monitoring/LogEvent';
 import { fetchLog, fetchPreviewLog } from '../../services/monitoring';
-import PauseRoundedIcon from '@material-ui/icons/PauseRounded';
-import PlayArrowRoundedIcon from '@material-ui/icons/PlayArrowRounded';
+import PauseRoundedIcon from '@mui/icons-material/PauseRounded';
+import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded';
 import moment from 'moment-timezone';
 import LogConsoleGridUI from '../LogConsoleGrid';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import { ConditionalLoadingState } from '../SystemStatus/LoadingState';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import LogConsoleDetailsDialog from '../LogConsoleDetailsDialog';
@@ -52,11 +52,7 @@ export default function LogConsole(props: LogConsoleManagementProps) {
 
   const refresh = useCallback(
     (since?: number) => {
-      since =
-        since ??
-        moment()
-          .subtract(1, 'hour')
-          .valueOf();
+      since = since ?? moment().subtract(1, 'hour').valueOf();
 
       (logType === 'studio' ? fetchLog(since) : fetchPreviewLog(site, since)).subscribe(
         (newLogEvents) => {
@@ -79,9 +75,7 @@ export default function LogConsole(props: LogConsoleManagementProps) {
   useEffect(() => {
     if (!paused && !error) {
       const timer = setTimeout(() => {
-        const since = moment()
-          .subtract(5, 'seconds')
-          .valueOf();
+        const since = moment().subtract(5, 'seconds').valueOf();
         refresh(since);
       }, 5000);
       return () => clearTimeout(timer);

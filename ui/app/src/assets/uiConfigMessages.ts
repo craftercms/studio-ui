@@ -16,7 +16,7 @@
 
 import { defineMessages } from 'react-intl';
 
-const messages = defineMessages({
+defineMessages({
   siteTools: {
     id: 'siteTools.title',
     defaultMessage: 'Site Tools'

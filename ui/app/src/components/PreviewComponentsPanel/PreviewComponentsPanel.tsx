@@ -16,15 +16,15 @@
 
 import React, { useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import List from '@material-ui/core/List';
+import List from '@mui/material/List';
 import ContentType from '../../models/ContentType';
-import MenuItem from '@material-ui/core/MenuItem';
-import Menu from '@material-ui/core/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Menu from '@mui/material/Menu';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 import {
-  COMPONENT_DRAG_ENDED,
-  COMPONENT_DRAG_STARTED,
-  CONTENT_TYPE_DROP_TARGETS_REQUEST,
+  componentDragEnded,
+  componentDragStarted,
+  contentTypeDropTargetsRequest,
   pushIcePanelPage,
   setContentTypeFilter,
   setPreviewEditMode
@@ -111,10 +111,10 @@ export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
     if (!editMode) {
       dispatch(setPreviewEditMode({ editMode: true }));
     }
-    hostToGuest$.next({ type: COMPONENT_DRAG_STARTED, payload: contentType });
+    hostToGuest$.next({ type: componentDragStarted.type, payload: contentType });
   };
 
-  const onDragEnd = () => hostToGuest$.next({ type: COMPONENT_DRAG_ENDED });
+  const onDragEnd = () => hostToGuest$.next({ type: componentDragEnded.type });
 
   const onMenuClose = () => setMenuContext(null);
 
@@ -159,7 +159,7 @@ export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
       )
     );
     hostToGuest$.next({
-      type: CONTENT_TYPE_DROP_TARGETS_REQUEST,
+      type: contentTypeDropTargetsRequest.type,
       payload: menuContext.contentType.id
     });
   };

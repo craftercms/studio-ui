@@ -15,10 +15,10 @@
  */
 
 import { useSiteCardStyles } from './styles';
-import Card from '@material-ui/core/Card';
-import CardHeader from '@material-ui/core/CardHeader';
-import Skeleton from '@material-ui/lab/Skeleton';
-import CardActions from '@material-ui/core/CardActions';
+import Card from '@mui/material/Card';
+import CardHeader from '@mui/material/CardHeader';
+import Skeleton from '@mui/material/Skeleton';
+import CardActions from '@mui/material/CardActions';
 import React from 'react';
 import clsx from 'clsx';
 
@@ -31,15 +31,15 @@ export function SiteCardSkeleton(props: SiteCardSkeletonProps) {
   return (
     <Card className={clsx(classes.card, props.compact && 'compact')}>
       <CardHeader
-        avatar={<Skeleton variant="circle" width={40} height={40} />}
+        avatar={<Skeleton variant="circular" width={40} height={40} />}
         title={<Skeleton animation="wave" height={20} width="40%" />}
         className={classes.cardHeader}
         subheader={<Skeleton animation="wave" height={20} width="80%" />}
       />
-      {!props.compact && <Skeleton animation="wave" variant="rect" className={classes.media} />}
+      {!props.compact && <Skeleton animation="wave" variant="rectangular" className={classes.media} />}
       <CardActions disableSpacing>
-        <Skeleton variant="circle" width={40} height={40} style={{ marginRight: '10px' }} />
-        <Skeleton variant="circle" width={40} height={40} />
+        <Skeleton variant="circular" width={40} height={40} style={{ marginRight: '10px' }} />
+        <Skeleton variant="circular" width={40} height={40} />
       </CardActions>
     </Card>
   );

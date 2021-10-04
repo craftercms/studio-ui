@@ -17,11 +17,12 @@
 import { Resource } from '../../models/Resource';
 import { FileDiff } from '../../models/Repository';
 import React from 'react';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import AceEditor from '../AceEditor';
 import RemoteRepositoriesDiffDialogSplitView from './RemoteRepositoriesDiffDialogSplitView';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 
 const tabsHeight = 450;

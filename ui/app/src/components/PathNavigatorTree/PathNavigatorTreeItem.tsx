@@ -14,25 +14,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import TreeItem from '@material-ui/lab/TreeItem';
+import TreeItem from '@mui/lab/TreeItem';
 import React, { useState } from 'react';
 import { DetailedItem } from '../../models/Item';
 import LookupTable from '../../models/LookupTable';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import { Typography } from '@material-ui/core';
+import CircularProgress from '@mui/material/CircularProgress';
+import { Typography } from '@mui/material';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import ItemDisplay from '../ItemDisplay';
-import Tooltip from '@material-ui/core/Tooltip';
-import IconButton from '@material-ui/core/IconButton';
-import MoreVertRoundedIcon from '@material-ui/icons/MoreVertRounded';
-import SearchRoundedIcon from '@material-ui/icons/SearchRounded';
+import Tooltip from '@mui/material/Tooltip';
+import IconButton from '@mui/material/IconButton';
+import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
+import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import { TreeNode } from './PathNavigatorTreeUI';
 import clsx from 'clsx';
 import SearchBar from '../Controls/SearchBar';
-import CloseIconRounded from '@material-ui/icons/CloseRounded';
-import ErrorOutlineRoundedIcon from '@material-ui/icons/ErrorOutlineRounded';
-import Button from '@material-ui/core/Button';
+import CloseIconRounded from '@mui/icons-material/CloseRounded';
+import ErrorOutlineRoundedIcon from '@mui/icons-material/ErrorOutlineRounded';
+import Button from '@mui/material/Button';
+import ArrowRightRoundedIcon from '@mui/icons-material/ArrowRightRounded';
+import ArrowDropDownRoundedIcon from '@mui/icons-material/ArrowDropDownRounded';
 
 interface PathNavigatorTreeItemProps {
   node: TreeNode;
@@ -54,6 +57,14 @@ const translations = defineMessages({
   filter: {
     id: 'pathNavigatorTreeItemFilter.placeholder',
     defaultMessage: 'Filter children...'
+  },
+  expand: {
+    id: 'words.expand',
+    defaultMessage: 'Expand'
+  },
+  collapse: {
+    id: 'words.collapse',
+    defaultMessage: 'Collapse'
   }
 });
 
@@ -65,7 +76,11 @@ const useStyles = makeStyles((theme) =>
       }
     },
     content: {
-      alignItems: 'flex-start'
+      alignItems: 'flex-start',
+      paddingRight: 0,
+      '&:hover': {
+        background: 'none'
+      }
     },
     labelContainer: {
       display: 'flex',
@@ -83,7 +98,7 @@ const useStyles = makeStyles((theme) =>
       width: '100%',
       display: 'flex',
       alignItems: 'center',
-      height: '26px',
+      minHeight: '23.5px',
       '&:hover': {
         backgroundColor: `${theme.palette.action.hover} !important`
       }
@@ -97,7 +112,7 @@ const useStyles = makeStyles((theme) =>
       color: theme.palette.text.secondary,
       display: 'flex',
       alignItems: 'center',
-      height: '26px',
+      minHeight: '23.5px',
       marginLeft: '10px',
       '& svg': {
         marginRight: '5px',
@@ -108,16 +123,19 @@ const useStyles = makeStyles((theme) =>
       color: theme.palette.text.primary,
       display: 'flex',
       alignItems: 'center',
-      height: '26px',
+      minHeight: '23.5px',
       marginLeft: '10px'
     },
     iconContainer: {
       width: '26px',
       marginRight: 0,
       '& svg': {
-        fontSize: '26px',
+        fontSize: '23.5px !important',
         color: theme.palette.text.secondary
       }
+    },
+    focused: {
+      background: 'none !important'
     },
     optionsWrapper: {
       top: 0,
@@ -126,7 +144,7 @@ const useStyles = makeStyles((theme) =>
       position: 'absolute',
       marginLeft: 'auto',
       display: 'flex',
-      height: '26px',
+      minHeight: '23.5px',
       alignItems: 'center'
     },
     optionsWrapperOver: {
@@ -135,7 +153,7 @@ const useStyles = makeStyles((theme) =>
     loading: {
       display: 'flex',
       alignItems: 'center',
-      height: '26px',
+      minHeight: '23.5px',
       marginLeft: '10px',
       '& span': {
         marginLeft: '10px'
@@ -155,6 +173,9 @@ const useStyles = makeStyles((theme) =>
     },
     searchCloseIcon: {
       fontSize: '12px !important'
+    },
+    iconButton: {
+      padding: '2px 3px'
     }
   })
 );
@@ -244,16 +265,36 @@ export default function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps)
         <TreeItem
           key={node.id}
           nodeId={node.id}
-          onLabelClick={(event) => onLabelClick(event, node.id)}
-          onIconClick={() => onIconClick(node.id)}
+          expandIcon={
+            <ArrowRightRoundedIcon
+              role="button"
+              aria-label={formatMessage(translations.expand)}
+              aria-hidden="false"
+              onClick={() => onIconClick(node.id)}
+            />
+          }
+          collapseIcon={
+            <ArrowDropDownRoundedIcon
+              role="button"
+              aria-label={formatMessage(translations.collapse)}
+              aria-hidden="false"
+              onClick={() => onIconClick(node.id)}
+            />
+          }
           label={
             <>
-              <section className={classes.itemDisplaySection} onMouseOver={onMouseOver} onMouseLeave={onMouseLeave}>
+              <section
+                role="button"
+                onClick={(event) => onLabelClick(event, node.id)}
+                className={classes.itemDisplaySection}
+                onMouseOver={onMouseOver}
+                onMouseLeave={onMouseLeave}
+              >
                 <ItemDisplay
                   styles={{
                     root: {
                       width: over ? 'calc(100% - 60px)' : '100%',
-                      height: '26px'
+                      minHeight: '23.5px'
                     }
                   }}
                   item={itemsByPath[node.id]}
@@ -263,6 +304,7 @@ export default function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps)
                   <Tooltip title={<FormattedMessage id="words.options" defaultMessage="Options" />}>
                     <IconButton
                       size="small"
+                      className={classes.iconButton}
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
@@ -276,6 +318,7 @@ export default function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps)
                     <Tooltip title={<FormattedMessage id="words.filter" defaultMessage="Filter" />}>
                       <IconButton
                         size="small"
+                        className={classes.iconButton}
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
@@ -332,7 +375,8 @@ export default function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps)
             root: classes.root,
             content: classes.content,
             label: classes.labelContainer,
-            iconContainer: classes.iconContainer
+            iconContainer: classes.iconContainer,
+            focused: classes.focused
           }}
         >
           {node.children.map((node) => (

@@ -55,7 +55,7 @@ export const revertContent = /*#__PURE__*/ createAction<FetchContentVersion>('RE
 
 export const revertContentComplete = /*#__PURE__*/ createAction<{ path: string }>('REVERT_CONTENT_COMPLETE');
 
-export const revertContentFailed = /*#__PURE__*/ createAction<AjaxResponse>('REVERT_CONTENT_FAILED');
+export const revertContentFailed = /*#__PURE__*/ createAction<AjaxResponse<unknown>>('REVERT_CONTENT_FAILED');
 
 export const revertToPreviousVersion = /*#__PURE__*/ createAction<{ id: string }>('REVERT_TO_PREVIOUS_VERSION');
 

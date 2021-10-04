@@ -19,15 +19,21 @@
 const palette = {
   white: '#fff',
   black: '#000',
-  blue: { tint: '#409CFF', main: '#007AFF', shade: '#0040DD', highlight: '#E6F2FF' },
-  green: { tint: '#30DB5B', main: '#34C759', shade: '#248A3D' },
+  blue: {
+    tint: '#409CFF',
+    main: '#007AFF',
+    shade: '#0040DD',
+    highlight: 'rgba(0, 122, 255, .1)',
+    highlightHex: '#E6F2FF'
+  },
+  green: { tint: '#30DB5B', main: '#34C759', shade: '#248A3D', highlight: '#EBFAEF' },
   indigo: { tint: '#7D7AFF', main: '#5856D6', shade: '#3634A3' },
   orange: { tint: '#FFB340', main: '#FF9500', shade: '#C93400' },
   pink: { tint: '#FF6482', main: '#FF2D55', shade: '#D30F45' },
   purple: { tint: '#DA8FFF', main: '#AF52DE', shade: '#8944AB' },
   red: { tint: '#FF6961', main: '#FF3B30', shade: '#D70015', highlight: '#FFEBEA' },
   teal: { tint: '#70D7FF', main: '#5AC8FA', shade: '#0071A4' },
-  yellow: { tint: '#FFD426', main: '#FFCC00', shade: '#A05A00' },
+  yellow: { tint: '#FFD426', main: '#FFCC00', shade: '#A05A00', highlight: '#FFFAE6' },
   gray: {
     light0: '#FAFAFA',
     light1: '#F3F3F3',

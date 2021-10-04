@@ -26,14 +26,14 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import RecentActivityDashletGridUI from '../RecentActivityDashletGrid/RecentActivityDashletGridUI';
 import { useDispatch, useSelector } from 'react-redux';
-import MenuItem from '@material-ui/core/MenuItem';
-import Button from '@material-ui/core/Button';
+import MenuItem from '@mui/material/MenuItem';
+import Button from '@mui/material/Button';
 import RecentActivityDashletUiSkeleton from '../RecentActivityDashletGrid/RecentActivityDashletUISkeleton';
 import GlobalState from '../../models/GlobalState';
 import { itemsApproved, itemsDeleted, itemsRejected, itemsScheduled } from '../../state/actions/system';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { filter } from 'rxjs/operators';
-import TextField from '@material-ui/core/TextField';
+import TextField from '@mui/material/TextField';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import { useLocale } from '../../utils/hooks/useLocale';
 import { DashboardPreferences } from '../../models/Dashboard';
@@ -90,15 +90,14 @@ export default function RecentActivityDashlet() {
   const { authoringBase } = useEnv();
   const { itemsByPath, isFetching } = useDetailedItems(Object.keys(selectedLookup));
 
-  const isAllChecked = useMemo(() => !items.some((item) => !item.stateMap.deleted && !selectedLookup[item.path]), [
-    items,
-    selectedLookup
-  ]);
-  const isIndeterminate = useMemo(() => items.some((item) => selectedLookup[item.path] && !isAllChecked), [
-    items,
-    selectedLookup,
-    isAllChecked
-  ]);
+  const isAllChecked = useMemo(
+    () => !items.some((item) => !item.stateMap.deleted && !selectedLookup[item.path]),
+    [items, selectedLookup]
+  );
+  const isIndeterminate = useMemo(
+    () => items.some((item) => selectedLookup[item.path] && !isAllChecked),
+    [items, selectedLookup, isAllChecked]
+  );
   const selectedItemsLength = useMemo(() => Object.values(selectedLookup).filter(Boolean).length, [selectedLookup]);
 
   const onFilterChange = (e) => {
@@ -181,11 +180,10 @@ export default function RecentActivityDashlet() {
   // endregion
 
   const resource = useLogicResource<DetailedItem[], { items: DetailedItem[]; error: ApiResponse; fetching: boolean }>(
-    useMemo(() => ({ items, error: errorActivity, fetching: fetchingActivity }), [
-      items,
-      errorActivity,
-      fetchingActivity
-    ]),
+    useMemo(
+      () => ({ items, error: errorActivity, fetching: fetchingActivity }),
+      [items, errorActivity, fetchingActivity]
+    ),
     {
       shouldResolve: (source) => Boolean(source.items) && !fetchingActivity,
       shouldReject: ({ error }) => Boolean(error),

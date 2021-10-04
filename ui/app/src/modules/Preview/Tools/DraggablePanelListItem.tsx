@@ -15,16 +15,17 @@
  */
 
 import React, { useState } from 'react';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import Avatar from '@material-ui/core/Avatar';
-import DragIndicatorRounded from '@material-ui/icons/DragIndicatorRounded';
+import ListItem from '@mui/material/ListItem';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import Avatar from '@mui/material/Avatar';
+import DragIndicatorRounded from '@mui/icons-material/DragIndicatorRounded';
 import { getInitials } from '../../../utils/string';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import IconButton from '@material-ui/core/IconButton';
-import MoreVertRounded from '@material-ui/icons/MoreVertRounded';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import ListItemText from '@mui/material/ListItemText';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import IconButton from '@mui/material/IconButton';
+import MoreVertRounded from '@mui/icons-material/MoreVertRounded';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -81,7 +82,7 @@ export function DraggablePanelListItem(props: PanelListItemProps) {
         />
         {onMenu && (
           <ListItemSecondaryAction>
-            <IconButton edge="end" aria-label="delete" onClick={(e) => onMenu(e.currentTarget)}>
+            <IconButton edge="end" aria-label="delete" onClick={(e) => onMenu(e.currentTarget)} size="large">
               <MoreVertRounded />
             </IconButton>
           </ListItemSecondaryAction>

@@ -14,14 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import { renderWidgets, WidgetDescriptor } from '../Widget';
 import React, { PropsWithChildren, ReactElement } from 'react';
 import TranslationOrText from '../../models/TranslationOrText';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { EnhancedUser } from '../../models/User';
 import { FormatXMLElementFn, PrimitiveType } from 'intl-messageformat';
-import { CSSProperties } from '@material-ui/styles';
+import { CSSProperties } from '@mui/styles';
 import clsx from 'clsx';
 import { usePossibleTranslation } from '../../utils/hooks/usePossibleTranslation';
 

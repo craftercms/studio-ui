@@ -15,16 +15,18 @@
  */
 
 import React from 'react';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import IconButton from '@material-ui/core/IconButton';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import IconButton from '@mui/material/IconButton';
 import { defineMessages, useIntl } from 'react-intl';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import LauncherOpenerButton from '../LauncherOpenerButton/LauncherOpenerButton';
 import SearchBar from '../../components/Controls/SearchBar';
-import ListViewIcon from '@material-ui/icons/ViewStreamRounded';
-import GridViewIcon from '@material-ui/icons/GridOnRounded';
+import ListViewIcon from '@mui/icons-material/ViewStreamRounded';
+import GridViewIcon from '@mui/icons-material/GridOnRounded';
 import ViewToolbar from '../ViewToolbar';
-import Tooltip from '@material-ui/core/Tooltip';
+import Tooltip from '@mui/material/Tooltip';
 import LogoAndMenuBundleButton from '../LogoAndMenuBundleButton';
 
 const translations = defineMessages({
@@ -63,6 +65,7 @@ const useStyles = makeStyles((theme: Theme) =>
 interface SiteSearchToolBarProps {
   keyword: string[] | string;
   showActionButton?: boolean;
+  showTitle?: boolean;
   currentView: string;
   embedded: boolean;
   handleChangeView(): void;
@@ -71,7 +74,8 @@ interface SiteSearchToolBarProps {
 }
 
 export default function SiteSearchToolBar(props: SiteSearchToolBarProps) {
-  const { onChange, keyword, showActionButton, handleChangeView, currentView, onMenuIconClick, embedded } = props;
+  const { onChange, keyword, showActionButton, showTitle, handleChangeView, currentView, onMenuIconClick, embedded } =
+    props;
   const { formatMessage } = useIntl();
   const classes = useStyles();
   return (
@@ -84,9 +88,11 @@ export default function SiteSearchToolBar(props: SiteSearchToolBarProps) {
             showCrafterIcon={!embedded}
           />
         </Tooltip>
-        <Typography variant="h5" component="h2" color="textPrimary">
-          {formatMessage(translations.search)}
-        </Typography>
+        {showTitle && (
+          <Typography variant="h5" component="h2" color="textPrimary">
+            {formatMessage(translations.search)}
+          </Typography>
+        )}
       </section>
       <section className={classes.searchBarContainer}>
         <SearchBar
@@ -99,7 +105,7 @@ export default function SiteSearchToolBar(props: SiteSearchToolBarProps) {
       </section>
       <section>
         <Tooltip title={formatMessage(translations.changeViewButtonTip)}>
-          <IconButton onClick={handleChangeView}>
+          <IconButton onClick={handleChangeView} size="large">
             {currentView === 'grid' ? <ListViewIcon /> : <GridViewIcon />}
           </IconButton>
         </Tooltip>

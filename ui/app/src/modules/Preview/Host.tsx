@@ -15,7 +15,8 @@
  */
 
 import React, { useEffect, useMemo, useRef } from 'react';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { fromEvent, NEVER, Observable } from 'rxjs';
 import clsx from 'clsx';
 import { getGuestToHostBus, getHostToGuestBus } from './previewContext';

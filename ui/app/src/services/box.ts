@@ -24,8 +24,9 @@ export function fetchToken(site: string, profileId: string): Observable<string> 
     site,
     profileId
   });
-
-  return get(`/studio/api/1/services/api/1/box/token.json${qs}`).pipe(pluck('response', 'accessToken'));
+  return get<{ accessToken: string }>(`/studio/api/1/services/api/1/box/token.json${qs}`).pipe(
+    pluck('response', 'accessToken')
+  );
 }
 
 export function fetchBoxUrl(site: string, profileId: string, fileId: string, filename: string): Observable<string> {
@@ -35,6 +36,5 @@ export function fetchBoxUrl(site: string, profileId: string, fileId: string, fil
     fileId,
     filename
   });
-
-  return get(`/api/1/services/api/1/box/url.json${qs}`).pipe(pluck('response', 'url'));
+  return get<{ url: string }>(`/api/1/services/api/1/box/url.json${qs}`).pipe(pluck('response', 'url'));
 }

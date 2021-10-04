@@ -18,7 +18,7 @@ import GlobalAppToolbar from '../GlobalAppToolbar';
 import { FormattedMessage } from 'react-intl';
 import React, { useState } from 'react';
 import LegacyIFrame from '../LegacyIFrame';
-import Box from '@material-ui/core/Box';
+import Box from '@mui/material/Box';
 import LoadingState from '../SystemStatus/LoadingState';
 
 interface ContentTypeManagementProps {

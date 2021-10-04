@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { PropsWithChildren, useLayoutEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
+import React, { PropsWithChildren, useLayoutEffect, useRef } from 'react';
 
 export type CrafterCMSPortalProps = PropsWithChildren<{}>;
 

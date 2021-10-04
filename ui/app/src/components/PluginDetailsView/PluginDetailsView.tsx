@@ -15,19 +15,19 @@
  */
 
 import React, { useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+import makeStyles from '@mui/styles/makeStyles';
+import Typography from '@mui/material/Typography';
 import SwipeableViews from 'react-swipeable-views';
 // @ts-ignore
 import { autoPlay } from 'react-swipeable-views-utils';
 import MobileStepper from '../MobileStepper';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { MarketplacePlugin } from '../../models/MarketplacePlugin';
-import Fab from '@material-ui/core/Fab';
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import Grid from '@material-ui/core/Grid';
-import OpenInNewIcon from '@material-ui/icons/OpenInNew';
-import Alert from '@material-ui/lab/Alert';
+import Fab from '@mui/material/Fab';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import Grid from '@mui/material/Grid';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import Alert from '@mui/material/Alert';
 import { backgroundColor } from '../../styles/theme';
 import clsx from 'clsx';
 // @ts-ignore
@@ -301,7 +301,7 @@ export default function PluginDetailsView(props: PluginDetailsViewProps) {
           steps={steps}
           onDotClick={onDotClick}
           className={classes.dots}
-          position={'static'}
+          position="static"
           activeStep={index}
         />
       )}

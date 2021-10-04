@@ -16,7 +16,7 @@
 
 import React from 'react';
 import NewContentCard, { ContentSkeletonCard } from './NewContentCard';
-import { Grid } from '@material-ui/core';
+import { Grid } from '@mui/material';
 import useStyles from './styles';
 import { ContentTypesGridProps, NewContentDialogProps } from './utils';
 import { NewContentDialogContainer } from './NewContentDialogContainer';

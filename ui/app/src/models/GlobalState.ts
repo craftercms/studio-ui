@@ -63,6 +63,8 @@ import { PreviewDialogStateProps } from '../components/PreviewDialog/utils';
 import { EditSiteDialogStateProps } from '../components/EditSiteDialog/utils';
 import { LegacyFormDialogStateProps } from '../components/LegacyFormDialog/utils';
 
+export type HighlightMode = 'all' | 'move';
+
 export interface PagedEntityState<T = any> extends EntityState<T> {
   page: any;
   pageNumber: number;
@@ -143,7 +145,7 @@ export interface GlobalState {
   };
   preview: {
     editMode: boolean;
-    highlightMode: string;
+    highlightMode: HighlightMode;
     showToolsPanel: boolean;
     toolsPanelPageStack: WidgetDescriptor[];
     toolsPanelWidth: number;

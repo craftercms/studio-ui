@@ -15,7 +15,7 @@
  */
 
 import { FormattedMessage } from 'react-intl';
-import AddIcon from '@material-ui/icons/Add';
+import AddIcon from '@mui/icons-material/Add';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import UsersGridUI, { UsersGridSkeletonTable } from '../UsersGrid';
 import CreateUserDialog from '../CreateUserDialog';
@@ -26,13 +26,13 @@ import User from '../../models/User';
 import { ApiResponse } from '../../models/ApiResponse';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import GlobalAppToolbar from '../GlobalAppToolbar';
-import Button from '@material-ui/core/Button';
+import Button from '@mui/material/Button';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import SearchBar from '../Controls/SearchBar';
 import { useDebouncedInput } from '../../utils/hooks/useDebouncedInput';
 import useStyles from './styles';
 import clsx from 'clsx';
-import Paper from '@material-ui/core/Paper';
+import Paper from '@mui/material/Paper';
 import { useEnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
 import { useWithPendingChangesCloseRequest } from '../../utils/hooks/useWithPendingChangesCloseRequest';
 

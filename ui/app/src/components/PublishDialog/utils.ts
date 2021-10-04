@@ -20,6 +20,11 @@ import StandardAction from '../../models/StandardAction';
 import { GoLiveResponse } from '../../services/publishing';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
+import { Resource } from '../../models/Resource';
+import React, { ReactNode } from 'react';
+import LookupTable from '../../models/LookupTable';
+import { DependencySelectionProps } from '../../modules/Content/Dependencies/DependencySelection';
+import { FetchDependenciesResponse } from '../../services/dependencies';
 
 export interface PublishDialogResourceInput {
   items: DetailedItem[];
@@ -68,6 +73,31 @@ export interface InternalDialogState {
   scheduledTimeZone: string;
   error: ApiResponse;
   fetchingDependencies: boolean;
+}
+
+export interface PublishDialogUIProps {
+  resource: Resource<PublishDialogResourceBody>;
+  publishingTargetsStatus: string;
+  onPublishingChannelsFailRetry(): void;
+  onCloseButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
+  handleSubmit: any;
+  isSubmitting: boolean;
+  submitDisabled: boolean;
+  state: InternalDialogState;
+  selectedItems: LookupTable<boolean>;
+  onItemClicked: DependencySelectionProps['onItemClicked'];
+  dependencies: FetchDependenciesResponse;
+  onSelectAll(): void;
+  onSelectAllSoftDependencies(): void;
+  onClickShowAllDeps?: any;
+  showEmailCheckbox?: boolean;
+  showRequestApproval: boolean;
+  classes?: any;
+  submitLabel: ReactNode;
+  mixedPublishingDates?: boolean;
+  mixedPublishingTargets?: boolean;
+  submissionCommentRequired: boolean;
+  onPublishingArgumentChange(e: React.ChangeEvent<HTMLInputElement>): void;
 }
 
 export const updateCheckedList = (path: string[], isChecked: boolean, checked: any) => {

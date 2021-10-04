@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ContentType, ContentTypeField, ValidationKeys } from '@craftercms/studio-ui/models/ContentType';
+import { ContentType, ContentTypeField, ValidationResult } from '@craftercms/studio-ui/models/ContentType';
 import { ContentInstance } from '@craftercms/studio-ui/models/ContentInstance';
 import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
 
@@ -28,12 +28,6 @@ export interface DropZone {
   childrenRects: DOMRect[];
   origin?: any;
   validations: LookupTable<ValidationResult>;
-}
-
-export interface ValidationResult {
-  id: ValidationKeys;
-  level: 'required' | 'suggestion';
-  values: object;
 }
 
 export interface ICEProps {

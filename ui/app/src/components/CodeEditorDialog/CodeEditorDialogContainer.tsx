@@ -15,7 +15,7 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import DialogHeader from '../Dialogs/DialogHeader';
+import DialogHeader from '../DialogHeader/DialogHeader';
 import DialogBody from '../Dialogs/DialogBody';
 import { fetchContentXML, writeContent } from '../../services/content';
 import { ConditionalLoadingState } from '../SystemStatus/LoadingState';
@@ -23,7 +23,7 @@ import AceEditor from '../AceEditor';
 import useStyles from './styles';
 import { useDispatch } from 'react-redux';
 import { updateCodeEditorDialog } from '../../state/actions/dialogs';
-import { Skeleton } from '@material-ui/lab';
+import { Skeleton } from '@mui/material';
 import DialogFooter from '../Dialogs/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -31,11 +31,11 @@ import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { showSystemNotification } from '../../state/actions/system';
 import translations from './translations';
 import SplitButton from '../Controls/SplitButton';
-import MenuItem from '@material-ui/core/MenuItem';
-import Button from '@material-ui/core/Button';
-import Menu from '@material-ui/core/Menu';
-import ExpandMoreRoundedIcon from '@material-ui/icons/ExpandMoreRounded';
-import { ListSubheader } from '@material-ui/core';
+import MenuItem from '@mui/material/MenuItem';
+import Button from '@mui/material/Button';
+import Menu from '@mui/material/Menu';
+import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
+import { ListSubheader } from '@mui/material';
 import LookupTable from '../../models/LookupTable';
 import { hasEditAction, isItemLockedForMe } from '../../utils/content';
 import { localItemLock } from '../../state/actions/content';
@@ -45,7 +45,7 @@ import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useDetailedItem } from '../../utils/hooks/useDetailedItem';
 import { useReferences } from '../../utils/hooks/useReferences';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
-import { RELOAD_REQUEST } from '../../state/actions/preview';
+import { reloadRequest } from '../../state/actions/preview';
 import { CodeEditorDialogContainerProps, getContentModelSnippets } from './utils';
 import { batchActions } from '../../state/actions/misc';
 
@@ -134,7 +134,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
               })
             ])
           );
-          getHostToGuestBus().next({ type: RELOAD_REQUEST });
+          getHostToGuestBus().next({ type: reloadRequest.type });
         },
         ({ response }) => {
           dispatch(showErrorDialog({ error: response }));

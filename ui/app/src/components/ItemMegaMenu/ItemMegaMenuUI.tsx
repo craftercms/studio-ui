@@ -14,26 +14,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import MenuItem from '@material-ui/core/MenuItem';
-import MenuList from '@material-ui/core/MenuList';
+import MenuItem from '@mui/material/MenuItem';
+import MenuList from '@mui/material/MenuList';
 import EmptyState from '../SystemStatus/EmptyState';
 import { FormattedMessage } from 'react-intl';
 import clsx from 'clsx';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import ItemDisplay from '../ItemDisplay';
 import ItemPublishingTargetIcon from '../ItemPublishingTargetIcon';
 import ItemStateIcon from '../ItemStateIcon';
 import { getItemPublishingTargetText, getItemStateText } from '../ItemDisplay/utils';
 import React, { ReactNode } from 'react';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import Popover, { PopoverOrigin, PopoverPosition, PopoverProps, PopoverReference } from '@material-ui/core/Popover';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import Popover, { PopoverOrigin, PopoverPosition, PopoverProps, PopoverReference } from '@mui/material/Popover';
 import palette from '../../styles/palette';
 import { SystemIconDescriptor } from '../SystemIcon';
 import { DetailedItem } from '../../models/Item';
-import { ContextMenuOption } from '../ContextMenu';
+import { ContextMenuOption } from '../ContextMenu/ContextMenu';
 import GlobalState from '../../models/GlobalState';
-import Skeleton from '@material-ui/lab/Skeleton';
-import { CSSProperties } from '@material-ui/styles';
+import Skeleton from '@mui/material/Skeleton';
+import { CSSProperties } from '@mui/styles';
 
 export type ItemMegaMenuUIClassKey =
   | 'root'

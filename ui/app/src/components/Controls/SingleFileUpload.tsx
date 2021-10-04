@@ -25,7 +25,8 @@ import { defineMessages, useIntl } from 'react-intl';
 import '@uppy/core/src/style.scss';
 import '@uppy/progress-bar/src/style.scss';
 import '@uppy/file-input/src/style.scss';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { getGlobalHeaders } from '../../utils/ajax';
 import { validateActionPolicy } from '../../services/sites';
 import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
@@ -101,7 +102,7 @@ export default function SingleFileUpload(props: UppyProps) {
   const classes = singleFileUploadStyles();
   const uppy = useMemo(
     () =>
-      Core({
+      new Core({
         autoProceed: false,
         ...(fileTypes ? { restrictions: { allowedFileTypes: fileTypes } } : {})
       }),
@@ -114,7 +115,8 @@ export default function SingleFileUpload(props: UppyProps) {
     const instance = uppy
       .use(FileInput, {
         target: '.uppy-file-input-container',
-        replaceTargetContent: false,
+        // TODO: check removing this option doesn't break anything
+        // replaceTargetContent: false,
         locale: {
           strings: {
             chooseFiles: formatMessage(messages.chooseFile)

@@ -16,9 +16,12 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import { createStyles, darken, lighten, makeStyles, withStyles } from '@material-ui/core/styles';
-import AddIcon from '@material-ui/icons/Add';
-import DeleteIcon from '@material-ui/icons/DeleteOutline';
+import { darken, lighten } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import withStyles from '@mui/styles/withStyles';
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/DeleteOutline';
 import { AsDayMonthDateTime } from '../VersionList';
 import { deleteToken, fetchTokens as fetchTokensService, updateToken } from '../../services/tokens';
 import { useDispatch } from 'react-redux';
@@ -33,20 +36,20 @@ import EmptyState from '../SystemStatus/EmptyState';
 import CopyTokenDialog from '../CopyTokenDialog/CopyTokenDialog';
 import moment from 'moment-timezone';
 import { forkJoin } from 'rxjs';
-import Typography from '@material-ui/core/Typography';
-import TableContainer from '@material-ui/core/TableContainer';
-import Table from '@material-ui/core/Table';
-import TableRow from '@material-ui/core/TableRow';
-import Checkbox from '@material-ui/core/Checkbox';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableBody from '@material-ui/core/TableBody';
-import Chip from '@material-ui/core/Chip';
-import Switch from '@material-ui/core/Switch';
+import Typography from '@mui/material/Typography';
+import TableContainer from '@mui/material/TableContainer';
+import Table from '@mui/material/Table';
+import TableRow from '@mui/material/TableRow';
+import Checkbox from '@mui/material/Checkbox';
+import TableCell from '@mui/material/TableCell';
+import TableHead from '@mui/material/TableHead';
+import TableBody from '@mui/material/TableBody';
+import Chip from '@mui/material/Chip';
+import Switch from '@mui/material/Switch';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import GlobalAppToolbar from '../GlobalAppToolbar';
-import Button from '@material-ui/core/Button';
-import Paper from '@material-ui/core/Paper';
+import Button from '@mui/material/Button';
+import Paper from '@mui/material/Paper';
 import { useEnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
 import { useWithPendingChangesCloseRequest } from '../../utils/hooks/useWithPendingChangesCloseRequest';
 
@@ -67,20 +70,20 @@ const styles = makeStyles((theme) =>
     },
     chip: {
       backgroundColor:
-        theme.palette.type === 'light'
+        theme.palette.mode === 'light'
           ? lighten(theme.palette.success.main, 0.9)
           : darken(theme.palette.success.main, 0.9),
       height: 'auto',
       padding: '4px 6.5px',
       '&.disabled': {
         backgroundColor:
-          theme.palette.type === 'light'
+          theme.palette.mode === 'light'
             ? lighten(theme.palette.warning.main, 0.9)
             : darken(theme.palette.warning.main, 0.9)
       },
       '&.expired': {
         backgroundColor:
-          theme.palette.type === 'light'
+          theme.palette.mode === 'light'
             ? lighten(theme.palette.error.main, 0.9)
             : darken(theme.palette.error.main, 0.9)
       }

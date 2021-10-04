@@ -20,7 +20,7 @@
  * would be converted to 'fooBar'.
  **/
 export function camelize(str: string) {
-  return str.replace(/-+(.)?/g, function(match, chr) {
+  return str.replace(/-+(.)?/g, function (match, chr) {
     return chr ? chr.toUpperCase() : '';
   });
 }
@@ -98,10 +98,7 @@ export function dataUriToBlob(dataURI: string) {
   const byteString = atob(dataURI.split(',')[1]);
 
   // separate out the mime component
-  const mimeString = dataURI
-    .split(',')[0]
-    .split(':')[1]
-    .split(';')[0];
+  const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
 
   // write the bytes of the string to an ArrayBuffer
   const ab = new ArrayBuffer(byteString.length);

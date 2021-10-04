@@ -19,6 +19,7 @@ import { pluck } from 'rxjs/operators';
 import { toQueryString } from '../utils/object';
 import { Observable } from 'rxjs';
 import { AwsItem } from '../models/Aws';
+import { Api2ResponseFormat } from '../models/ApiResponse';
 
 export function list(
   siteId: string,
@@ -30,6 +31,7 @@ export function list(
     profileId,
     ...options
   });
-
-  return get(`/studio/api/2/aws/s3/list${qs}`).pipe(pluck('response', 'items'));
+  return get<Api2ResponseFormat<{ items: AwsItem[] }>>(`/studio/api/2/aws/s3/list${qs}`).pipe(
+    pluck('response', 'items')
+  );
 }

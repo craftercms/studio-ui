@@ -19,15 +19,23 @@ import copy from 'rollup-plugin-copy';
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import replace from '@rollup/plugin-replace';
-
+import * as jsxRuntime from 'react/jsx-runtime';
+import * as reactIs from 'react-is';
+import * as reactDom from 'react-dom';
+import * as react from 'react';
 import pkg from './package.json';
+
+const keysWithoutDefault = (object) => {
+  const array = Object.keys(object);
+  return array.slice(0, array.length - 1);
+};
 
 const input = 'src/index.tsx';
 
 const extensions = ['.js', '.jsx', '.ts', '.tsx'];
 
 const plugins = [
-  replace({ 'process.env.NODE_ENV': '"production"' }),
+  replace({ 'process.env.NODE_ENV': JSON.stringify('production') }),
   babel({
     exclude: 'node_modules/**',
     // TODO: @babel/preset-env breaks the build of AMD-style third party libs (e.g. jQuery, js-cookie)
@@ -42,51 +50,17 @@ const plugins = [
   }),
   resolve({
     extensions,
+    dedupe: ['react', 'react-dom', 'react-is'],
     mainFields: ['module', 'main', 'browser']
   }),
   commonjs({
     include: /node_modules/,
     namedExports: {
-      'react-dom': [
-        'createPortal',
-        'findDOMNode',
-        'hydrate',
-        'render',
-        'unmountComponentAtNode',
-        'flushSync',
-        'unstable_batchedUpdates'
-      ],
-      'react-is': ['isValidElementType', 'ForwardRef', 'isContextConsumer'],
+      'react-dom': keysWithoutDefault(reactDom),
+      'react-is': keysWithoutDefault(reactIs),
+      'react/jsx-runtime': keysWithoutDefault(jsxRuntime),
       'prop-types': ['elementType'],
-      react: [
-        'Children',
-        'createRef',
-        'Component',
-        'PureComponent',
-        'createContext',
-        'forwardRef',
-        'lazy',
-        'memo',
-        'useCallback',
-        'useContext',
-        'useEffect',
-        'useImperativeHandle',
-        'useDebugValue',
-        'useLayoutEffect',
-        'useMemo',
-        'useReducer',
-        'useRef',
-        'useState',
-        'Fragment',
-        'Profiler',
-        'StrictMode',
-        'Suspense',
-        'createElement',
-        'cloneElement',
-        'createFactory',
-        'isValidElement',
-        'version'
-      ],
+      react: keysWithoutDefault(react),
       'lorem-ipsum': ['LoremIpsum']
     }
   }),

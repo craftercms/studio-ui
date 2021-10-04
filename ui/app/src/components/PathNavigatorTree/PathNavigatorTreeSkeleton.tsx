@@ -15,8 +15,9 @@
  */
 
 import * as React from 'react';
-import Skeleton from '@material-ui/lab/Skeleton';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import Skeleton from '@mui/material/Skeleton';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import PathNavigatorTreeSkeletonItem from './PathNavigatorTreeSkeletonItem';
 
 // type PathNavigatorSkeletonClassKey = 'skeletonRoot' | 'skeletonHeader' | 'skeletonBody' | 'skeletonBodyItem' | 'childrenRail';
@@ -47,9 +48,9 @@ function PathNavigatorSkeletonTree({ numOfItems = 5 }: PathNavigatorSkeletonProp
   return (
     <section className={classes.skeletonRoot}>
       <header className={classes.skeletonHeader}>
-        <Skeleton variant="rect" width="20px" />
+        <Skeleton variant="rectangular" width="20px" />
         <Skeleton variant="text" style={{ margin: '0 10px', width: '100%' }} />
-        <Skeleton variant="circle" width="20px" />
+        <Skeleton variant="circular" width="20px" />
       </header>
       <section className={classes.skeletonBody}>
         {new Array(numOfItems).fill(null).map((_, index) => (

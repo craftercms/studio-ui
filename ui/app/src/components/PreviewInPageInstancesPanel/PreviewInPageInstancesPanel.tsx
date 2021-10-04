@@ -16,21 +16,22 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
-import MenuItem from '@material-ui/core/MenuItem';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { CONTENT_TREE_FIELD_SELECTED, setContentTypeFilter, setPreviewEditMode } from '../../state/actions/preview';
+import MenuItem from '@mui/material/MenuItem';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import { contentTreeFieldSelected, setContentTypeFilter, setPreviewEditMode } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 import Suspencified from '../SystemStatus/Suspencified';
 import ContentInstance from '../../models/ContentInstance';
 import LookupTable from '../../models/LookupTable';
 import SearchBar from '../Controls/SearchBar';
-import Select from '@material-ui/core/Select';
-import ListItem from '@material-ui/core/ListItem';
-import Avatar from '@material-ui/core/Avatar';
+import Select from '@mui/material/Select';
+import ListItem from '@mui/material/ListItem';
+import Avatar from '@mui/material/Avatar';
 import { getInitials } from '../../utils/string';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import ListItemText from '@material-ui/core/ListItemText';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import ListItemText from '@mui/material/ListItemText';
+import CircularProgress from '@mui/material/CircularProgress';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 import EmptyState from '../SystemStatus/EmptyState';
 import { Resource } from '../../models/Resource';
@@ -162,7 +163,7 @@ export default function PreviewInPageInstancesPanel() {
       dispatch(setPreviewEditMode({ editMode: true }));
     }
     hostToGuest$.next({
-      type: CONTENT_TREE_FIELD_SELECTED,
+      type: contentTreeFieldSelected.type,
       payload: {
         name: instance.craftercms.label,
         modelId: instance.craftercms.id,

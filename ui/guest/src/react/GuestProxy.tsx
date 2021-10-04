@@ -34,13 +34,13 @@ import * as ContentType from '../utils/contentType';
 import { message$ } from '../utils/communicator';
 import { Operation } from '../models/Operations';
 import {
-  DELETE_ITEM_OPERATION,
-  INSERT_COMPONENT_OPERATION,
-  INSERT_INSTANCE_OPERATION,
-  MOVE_ITEM_OPERATION,
-  SORT_ITEM_OPERATION,
-  UPDATE_FIELD_VALUE_OPERATION
-} from '../constants';
+  deleteItemOperation,
+  insertComponentOperation,
+  insertInstanceOperation,
+  moveItemOperation,
+  sortItemOperation,
+  updateFieldValueOperation
+} from '@craftercms/studio-ui/build_tsc/state/actions/preview';
 import { GuestState } from '../store/models/GuestStore';
 import { notNullOrUndefined } from '../utils/object';
 import { forEach } from '../utils/array';
@@ -171,7 +171,7 @@ export function GuestProxy() {
 
     const sub = operations$.subscribe((op: Operation) => {
       switch (op.type) {
-        case SORT_ITEM_OPERATION: {
+        case sortItemOperation.type: {
           let [modelId, fieldId, index, newIndex] = op.args;
           const currentIndexParsed = typeof index === 'number' ? index : parseInt(popPiece(index));
           const targetIndexParsed = typeof newIndex === 'number' ? newIndex : parseInt(popPiece(newIndex));
@@ -188,10 +188,7 @@ export function GuestProxy() {
 
           const phyRecord = ElementRegistry.fromICEId(iceId);
           const $el = $(phyRecord.element);
-          const $targetSibling = $el
-            .parent()
-            .children()
-            .eq(targetIndexParsed);
+          const $targetSibling = $el.parent().children().eq(targetIndexParsed);
 
           // Move...
           if (currentIndexParsed < targetIndexParsed) {
@@ -203,7 +200,7 @@ export function GuestProxy() {
           updateElementRegistrations(Array.from($el.parent().children()), 'sort', index, newIndex);
           break;
         }
-        case MOVE_ITEM_OPERATION: {
+        case moveItemOperation.type: {
           const [
             modelId /* : string */,
             fieldId /* : string */,
@@ -266,7 +263,7 @@ export function GuestProxy() {
 
           break;
         }
-        case DELETE_ITEM_OPERATION: {
+        case deleteItemOperation.type: {
           const [modelId, fieldId, index] = op.args;
 
           const iceId = iceRegistry.exists({ modelId, fieldId, index });
@@ -284,8 +281,8 @@ export function GuestProxy() {
 
           break;
         }
-        case INSERT_COMPONENT_OPERATION:
-        case INSERT_INSTANCE_OPERATION: {
+        case insertComponentOperation.type:
+        case insertInstanceOperation.type: {
           const { modelId, fieldId, targetIndex, instance } = op.args;
 
           const $spinner = $(`
@@ -306,7 +303,7 @@ export function GuestProxy() {
               ),
               take(1)
             )
-            .subscribe(function({ payload }) {
+            .subscribe(function ({ payload }) {
               const { modelId, fieldId, targetIndex, currentFullUrl } = payload;
               let ifrm = document.createElement('iframe');
               ifrm.setAttribute('src', currentFullUrl);
@@ -314,7 +311,7 @@ export function GuestProxy() {
               ifrm.style.height = '0';
               document.body.appendChild(ifrm);
 
-              ifrm.onload = function() {
+              ifrm.onload = function () {
                 $spinner.remove();
                 const itemElement = ifrm.contentWindow.document.documentElement.querySelector(
                   `[data-craftercms-model-id="${modelId}"][data-craftercms-field-id="${fieldId}"][data-craftercms-index="${targetIndex}"]`
@@ -329,7 +326,7 @@ export function GuestProxy() {
 
           break;
         }
-        case UPDATE_FIELD_VALUE_OPERATION:
+        case updateFieldValueOperation.type:
           const { modelId, fieldId, index = 0, value } = op.args;
           const updatedField: JQuery<any> = $(
             `[data-craftercms-model-id="${modelId}"][data-craftercms-field-id="${fieldId}"]`
@@ -339,20 +336,14 @@ export function GuestProxy() {
           const fieldType = ContentType.getField(contentType, fieldId).type;
 
           if (fieldType === 'image') {
-            const tagName = updatedField
-              .eq(index)
-              .prop('tagName')
-              .toLowerCase();
+            const tagName = updatedField.eq(index).prop('tagName').toLowerCase();
             if (tagName === 'img') {
               updatedField.eq(index).attr('src', value);
             } else {
               updatedField.eq(index).css('background-image', `url(${value})`);
             }
           } else if (fieldType === 'video-picker') {
-            updatedField
-              .eq(index)
-              .find('source')
-              .attr('src', value);
+            updatedField.eq(index).find('source').attr('src', value);
             updatedField.eq(index)[0].load();
           }
 
@@ -379,9 +370,7 @@ export function GuestProxy() {
   useEffect(() => {
     const persistence = persistenceRef.current;
     if (notNullOrUndefined(persistence.draggableElement)) {
-      $(persistence.draggableElement)
-        .attr('draggable', 'false')
-        .removeAttr('draggable');
+      $(persistence.draggableElement).attr('draggable', 'false').removeAttr('draggable');
     }
     forEach(Object.entries(draggable), ([elemId, iceId]) => {
       if (iceId !== false) {

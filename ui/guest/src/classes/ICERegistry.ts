@@ -21,18 +21,16 @@ import * as Model from '../utils/model';
 import { ContentInstance } from '@craftercms/studio-ui/models/ContentInstance';
 import { ContentType, ContentTypeField, ValidationKeys } from '@craftercms/studio-ui/models/ContentType';
 import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
-import {
-  ICEProps,
-  ICERecord,
-  ICERecordRegistration,
-  ReferentialEntries,
-  ValidationResult
-} from '../models/InContextEditing';
+import { ICEProps, ICERecord, ICERecordRegistration, ReferentialEntries } from '../models/InContextEditing';
 import { isNullOrUndefined, notNullOrUndefined, nou, pluckProps } from '../utils/object';
 import { forEach } from '../utils/array';
 import { findComponentContainerFields } from '../utils/ice';
+import { ValidationResult } from '@craftercms/studio-ui/models/ContentType';
 
 const validationChecks: { [key in ValidationKeys]: Function } = {
+  // TODO: implement max/min value.
+  maxValue(p0) {},
+  minValue(p0) {},
   minCount(id, minCount, level, length) {
     if (length < minCount) {
       return {
@@ -65,7 +63,9 @@ const validationChecks: { [key in ValidationKeys]: Function } = {
   minWidth() {},
   minHeight() {},
   maxWidth() {},
-  maxHeight() {}
+  maxHeight() {},
+  dropTargetsNotFound() {},
+  registerNotFound() {}
 };
 
 let rid = 0;
@@ -366,6 +366,20 @@ export function isMovable(recordId: number): boolean {
     // group or component itself
     notNullOrUndefined(index)
   );
+}
+
+export function collectMoveTargets(): ICERecord[] {
+  const movableRecords = [];
+  registry.forEach((a) => {
+    const entries = getReferentialEntries(a);
+    if (entries.field && ['repeat', 'node-selector'].includes(entries.field.type)) {
+      if (entries.index !== null) {
+        // Component or repeat group item record
+        movableRecords.push(a);
+      }
+    }
+  });
+  return movableRecords;
 }
 
 /* private */

@@ -15,30 +15,30 @@
  */
 
 import React, { Fragment } from 'react';
-import Table from '@material-ui/core/Table';
-import TableHead from '@material-ui/core/TableHead';
+import Table from '@mui/material/Table';
+import TableHead from '@mui/material/TableHead';
 import GlobalAppGridRow from '../GlobalAppGridRow';
 import GlobalAppGridCell from '../GlobalAppGridCell';
-import TableBody from '@material-ui/core/TableBody';
-import TableContainer from '@material-ui/core/TableContainer';
+import TableBody from '@mui/material/TableBody';
+import TableContainer from '@mui/material/TableContainer';
 import { FormattedMessage } from 'react-intl';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import { Resource } from '../../models/Resource';
-import IconButton from '@material-ui/core/IconButton';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import ExpandLessIcon from '@material-ui/icons/ExpandLess';
+import IconButton from '@mui/material/IconButton';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import GlobalState from '../../models/GlobalState';
 import LookupTable from '../../models/LookupTable';
-import Collapse from '@material-ui/core/Collapse';
+import Collapse from '@mui/material/Collapse';
 import { DashboardItem } from './RecentlyPublishedDashlet';
 import { DetailedItem } from '../../models/Item';
 import ItemDisplay from '../ItemDisplay';
-import MoreVertRounded from '@material-ui/icons/MoreVertRounded';
-import Box from '@material-ui/core/Box';
+import MoreVertRounded from '@mui/icons-material/MoreVertRounded';
+import Box from '@mui/material/Box';
 import clsx from 'clsx';
 import useStyles from './styles';
 import { asLocalizedDateTime } from '../../utils/datetime';
-import Tooltip from '@material-ui/core/Tooltip';
+import Tooltip from '@mui/material/Tooltip';
 import { getDatePublished } from '../../utils/detailedItem';
 
 export interface RecentlyPublishedWidgetUIProps {

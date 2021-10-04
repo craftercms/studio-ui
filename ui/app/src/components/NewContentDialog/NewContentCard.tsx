@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -15,14 +15,36 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import Card from '@material-ui/core/Card';
-import CardHeader from '@material-ui/core/CardHeader';
-import CardMedia from '@material-ui/core/CardMedia';
-import Divider from '@material-ui/core/Divider';
+import makeStyles from '@mui/styles/makeStyles';
+import Card from '@mui/material/Card';
+import CardHeader from '@mui/material/CardHeader';
+import CardMedia from '@mui/material/CardMedia';
+import Divider from '@mui/material/Divider';
+
 import clsx from 'clsx';
-import Skeleton from '@material-ui/lab/Skeleton';
+import Skeleton from '@mui/material/Skeleton';
+import palette from '../../styles/palette';
 import { getBinary } from '../../utils/ajax';
-import { useContentCardStyles } from './styles';
+
+const useStyles = makeStyles(() => ({
+  defaultCard: {
+    maxWidth: 345,
+    cursor: 'pointer'
+  },
+  compactCard: {
+    display: 'flex',
+    cursor: 'pointer'
+  },
+  media: {
+    paddingTop: '75%'
+  },
+  compactMedia: {
+    width: 151
+  },
+  selected: {
+    border: `1px solid ${palette.blue.tint}`
+  }
+}));
 
 interface NewContentCardProps {
   headerTitle: string;
@@ -73,7 +95,7 @@ const CompactCardContent = (props) => {
 
 export default function NewContentCard(props: NewContentCardProps) {
   const { onClick, isCompact, isSelected } = props;
-  const classes = useContentCardStyles();
+  const classes = useStyles();
   const rootClass = !isCompact ? classes.defaultCard : classes.compactCard;
   const [hover, setHover] = useState(false);
 
@@ -95,7 +117,7 @@ export default function NewContentCard(props: NewContentCardProps) {
 }
 
 export function ContentSkeletonCard(props: { isCompact: boolean }) {
-  const classes = useContentCardStyles();
+  const classes = useStyles();
   const rootClass = !props.isCompact ? classes.defaultCard : classes.compactCard;
   return (
     <Card className={rootClass}>
@@ -105,11 +127,11 @@ export function ContentSkeletonCard(props: { isCompact: boolean }) {
             title={<Skeleton animation="wave" height={10} width="40%" />}
             subheader={<Skeleton animation="wave" height={10} width="80%" />}
           />
-          <Skeleton animation="wave" variant="rect" className={classes.media} />
+          <Skeleton animation="wave" variant="rectangular" className={classes.media} />
         </>
       ) : (
         <>
-          <Skeleton animation="wave" variant="rect" className={classes.compactMedia} />
+          <Skeleton animation="wave" variant="rectangular" className={classes.compactMedia} />
           <CardHeader
             title={<Skeleton animation="wave" height={10} width="40%" />}
             subheader={<Skeleton animation="wave" height={10} width="80%" />}

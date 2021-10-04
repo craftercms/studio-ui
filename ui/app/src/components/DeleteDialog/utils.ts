@@ -4,7 +4,7 @@ import React from 'react';
 import { Resource } from '../../models/Resource';
 import { DeleteDependencies } from '../../modules/Content/Dependencies/DependencySelection';
 import LookupTable from '../../models/LookupTable';
-import { InputProps } from '@material-ui/core/Input';
+import { InputProps } from '@mui/material/Input';
 import { SelectionListProps } from '../../modules/Content/Dependencies/SelectionList';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';

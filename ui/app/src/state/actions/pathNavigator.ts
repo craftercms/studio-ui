@@ -22,21 +22,20 @@ import { AjaxError } from 'rxjs/ajax';
 
 type PayloadWithId<P> = P & { id: string };
 
-export const pathNavigatorInit = /*#__PURE__*/ createAction<
-  PayloadWithId<{ path: string; locale: string; collapsed?: boolean; excludes?: string[]; limit: number }>
->('PATH_NAVIGATOR_INIT');
+export const pathNavigatorInit =
+  /*#__PURE__*/ createAction<
+    PayloadWithId<{ path: string; locale: string; collapsed?: boolean; excludes?: string[]; limit: number }>
+  >('PATH_NAVIGATOR_INIT');
 
 export const pathNavigatorSetLocaleCode = /*#__PURE__*/ createAction<PayloadWithId<{ locale: string }>>(
   'PATH_NAVIGATOR_SET_LOCALE_CODE'
 );
 
-export const pathNavigatorUpdate = /*#__PURE__*/ createAction<PayloadWithId<Partial<PathNavigatorStateProps>>>(
-  'PATH_NAVIGATOR_UPDATE'
-);
+export const pathNavigatorUpdate =
+  /*#__PURE__*/ createAction<PayloadWithId<Partial<PathNavigatorStateProps>>>('PATH_NAVIGATOR_UPDATE');
 
-export const pathNavigatorSetCollapsed = /*#__PURE__*/ createAction<PayloadWithId<{ collapsed: boolean }>>(
-  'PATH_NAVIGATOR_SET_COLLAPSED'
-);
+export const pathNavigatorSetCollapsed =
+  /*#__PURE__*/ createAction<PayloadWithId<{ collapsed: boolean }>>('PATH_NAVIGATOR_SET_COLLAPSED');
 
 export const pathNavigatorSetCurrentPath = /*#__PURE__*/ createAction<PayloadWithId<{ path: string }>>(
   'PATH_NAVIGATOR_SET_CURRENT_PATH'
@@ -61,9 +60,8 @@ export const pathNavigatorBackgroundRefresh = /*#__PURE__*/ createAction<{ id: s
   'PATH_NAVIGATOR_BACKGROUND_REFRESH'
 );
 
-export const pathNavigatorItemChecked = /*#__PURE__*/ createAction<PayloadWithId<{ item: DetailedItem }>>(
-  'PATH_NAVIGATOR_ITEM_CHECKED'
-);
+export const pathNavigatorItemChecked =
+  /*#__PURE__*/ createAction<PayloadWithId<{ item: DetailedItem }>>('PATH_NAVIGATOR_ITEM_CHECKED');
 
 export const pathNavigatorItemUnchecked = /*#__PURE__*/ createAction<PayloadWithId<{ item: DetailedItem }>>(
   'PATH_NAVIGATOR_ITEM_UNCHECKED'
@@ -88,10 +86,8 @@ export const pathNavigatorFetchPathFailed = /*#__PURE__*/ createAction<{
   error: Omit<AjaxError, 'request' | 'xhr'>;
 }>('PATH_NAVIGATOR_FETCH_PATH_FAILED');
 
-export const pathNavigatorSetKeyword = /*#__PURE__*/ createAction<PayloadWithId<{ keyword: string }>>(
-  'PATH_NAVIGATOR_SET_KEYWORD'
-);
+export const pathNavigatorSetKeyword =
+  /*#__PURE__*/ createAction<PayloadWithId<{ keyword: string }>>('PATH_NAVIGATOR_SET_KEYWORD');
 
-export const pathNavigatorChangePage = /*#__PURE__*/ createAction<PayloadWithId<{ offset: number }>>(
-  'PATH_NAVIGATOR_CHANGE_PAGE'
-);
+export const pathNavigatorChangePage =
+  /*#__PURE__*/ createAction<PayloadWithId<{ offset: number }>>('PATH_NAVIGATOR_CHANGE_PAGE');

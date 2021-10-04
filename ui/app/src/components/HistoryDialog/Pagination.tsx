@@ -15,7 +15,7 @@
  */
 
 import { useIntl } from 'react-intl';
-import TablePagination from '@material-ui/core/TablePagination';
+import TablePagination from '@mui/material/TablePagination';
 import translations from './translations';
 import React from 'react';
 import { paginationStyles } from './HistoryDialog';

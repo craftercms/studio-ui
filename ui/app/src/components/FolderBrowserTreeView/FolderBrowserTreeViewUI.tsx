@@ -15,9 +15,9 @@
  */
 
 import React from 'react';
-import TreeView from '@material-ui/lab/TreeView';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import TreeView from '@mui/lab/TreeView';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import LoadingState from '../SystemStatus/LoadingState';
 import { Resource } from '../../models/Resource';
 import clsx from 'clsx';

@@ -35,7 +35,7 @@ import clsx from 'clsx';
 import SingleItemSelector from '../SingleItemSelector';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import EmptyState from '../SystemStatus/EmptyState';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import DialogFooter from '../Dialogs/DialogFooter';
 import { Pagination } from '../HistoryDialog';
 import { useStyles } from './CompareVersionsDialog';

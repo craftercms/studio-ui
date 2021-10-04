@@ -17,3 +17,7 @@
 export { default } from './AuditLogEntryParametersDialog';
 
 export * from './AuditLogEntryParametersDialog';
+
+export * from './AuditLogEntryParametersDialogUI';
+
+export * from './utils';

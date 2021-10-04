@@ -32,9 +32,9 @@ import {
   ElementRecord,
   ElementRecordRegistration,
   HighlightData,
-  ICERecord,
-  ValidationResult
+  ICERecord
 } from '../models/InContextEditing';
+import { ValidationResult } from '@craftercms/studio-ui/models/ContentType';
 import { RegistryEntry } from '../models/Registry';
 import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
 import { isNullOrUndefined, notNullOrUndefined } from '../utils/object';
@@ -207,7 +207,7 @@ export function getDraggable(id: number): number | boolean {
   const record = get(id);
   return forEach(
     record.iceIds,
-    function(iceId): boolean | number {
+    function (iceId): boolean | number {
       if (iceRegistry.isMovable(iceId)) {
         return iceId;
       }

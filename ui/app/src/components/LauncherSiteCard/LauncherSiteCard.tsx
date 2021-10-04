@@ -15,17 +15,18 @@
  */
 
 import React from 'react';
-import IconButton from '@material-ui/core/IconButton';
-import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import IconButton from '@mui/material/IconButton';
+import MoreVertIcon from '@mui/icons-material/MoreVertRounded';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import Link from '@material-ui/core/Link';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import Box from '@material-ui/core/Box';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Link from '@mui/material/Link';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import Box from '@mui/material/Box';
 
 export interface LauncherSiteCardOption {
   name: string;
@@ -89,7 +90,7 @@ function LauncherSiteCard(props: LauncherSiteCardProps) {
         <ListItemText primary={title} primaryTypographyProps={{ className: classes.siteName, noWrap: true }} />
         {hasOptions && (
           <ListItemSecondaryAction>
-            <IconButton aria-label="settings" onClick={handleOptions}>
+            <IconButton aria-label="settings" onClick={handleOptions} size="large">
               <MoreVertIcon />
             </IconButton>
           </ListItemSecondaryAction>

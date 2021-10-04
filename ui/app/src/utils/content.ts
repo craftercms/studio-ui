@@ -384,8 +384,9 @@ export function parseContentXML(
         const field = contentTypesLookup[sourceContentTypeId ?? contentTypeId].fields[tagName];
         if (!field) {
           console.error(
-            `[parseContentXML] Field "${tagName}" was not found on "${sourceContentTypeId ??
-              contentTypeId}" content type. "${source ?? path}" may have stale/outdated content properties.`
+            `[parseContentXML] Field "${tagName}" was not found on "${
+              sourceContentTypeId ?? contentTypeId
+            }" content type. "${source ?? path}" may have stale/outdated content properties.`
           );
         }
         current[tagName] = parseElementByContentType(element, field, contentTypesLookup, instanceLookup);

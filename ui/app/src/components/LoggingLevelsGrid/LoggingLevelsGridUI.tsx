@@ -18,16 +18,16 @@ import React from 'react';
 import { Resource } from '../../models/Resource';
 import { Logger, LoggerLevel } from '../../models/Logger';
 import useStyles from './styles';
-import TableContainer from '@material-ui/core/TableContainer';
-import Table from '@material-ui/core/Table';
-import TableHead from '@material-ui/core/TableHead';
-import TableBody from '@material-ui/core/TableBody';
+import TableContainer from '@mui/material/TableContainer';
+import Table from '@mui/material/Table';
+import TableHead from '@mui/material/TableHead';
+import TableBody from '@mui/material/TableBody';
 import GlobalAppGridRow from '../GlobalAppGridRow';
 import GlobalAppGridCell from '../GlobalAppGridCell';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 
 export interface LoggingLevelsGridUIProps {
   resource: Resource<Array<Logger>>;
@@ -69,10 +69,8 @@ export default function LoggingLevelsGridUI(props: LoggingLevelsGridUIProps) {
                     onChange={(event) => {
                       onChangeLevel(logger, event.target.value as LoggerLevel);
                     }}
+                    size="small"
                     variant="outlined"
-                    classes={{
-                      root: classes.select
-                    }}
                   >
                     {levels.map((level) => (
                       <MenuItem key={level} value={level}>

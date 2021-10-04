@@ -14,9 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import TextField from '@material-ui/core/TextField';
+import TextField from '@mui/material/TextField';
 import React from 'react';
-import FormControl from '@material-ui/core/FormControl';
+import FormControl from '@mui/material/FormControl';
 import { Control } from '../../../models/FormsEngine';
 import useStyles from './styles';
 

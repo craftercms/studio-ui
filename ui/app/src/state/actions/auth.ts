@@ -37,9 +37,8 @@ export const logoutFailed = /*#__PURE__*/ createAction('LOGOUT_FAILED');
 // region User Session control
 
 export const refreshAuthToken = /*#__PURE__*/ createAction('REFRESH_AUTH_TOKEN');
-export const refreshAuthTokenComplete = /*#__PURE__*/ createAction<ObtainAuthTokenResponse>(
-  'REFRESH_AUTH_TOKEN_COMPLETE'
-);
+export const refreshAuthTokenComplete =
+  /*#__PURE__*/ createAction<ObtainAuthTokenResponse>('REFRESH_AUTH_TOKEN_COMPLETE');
 export const refreshAuthTokenFailed = /*#__PURE__*/ createAction('REFRESH_AUTH_TOKEN_FAILED');
 
 // Worker => Tabs

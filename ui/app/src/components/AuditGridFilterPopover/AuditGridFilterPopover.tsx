@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import Popover from '@material-ui/core/Popover';
+import Popover from '@mui/material/Popover';
 import useStyles from './styles';
 import { Site } from '../../models/Site';
 import { PagedArray } from '../../models/PagedArray';

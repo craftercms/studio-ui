@@ -14,7 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createStyles, makeStyles } from '@material-ui/core';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 
 export const useStyles = makeStyles((theme) =>
   createStyles({
@@ -66,7 +67,7 @@ export const useStyles = makeStyles((theme) =>
       marginTop: '15px'
     },
     emptyState: {
-      margin: `${theme.spacing(4)}px ${theme.spacing(1)}px`
+      margin: `${theme.spacing(4)} ${theme.spacing(1)}`
     },
     emptyStateImage: {
       width: '50%',
@@ -121,7 +122,7 @@ export const useComponentsPanelUI = makeStyles((theme) =>
       marginTop: '10px'
     },
     emptyState: {
-      margin: `${theme.spacing(4)}px ${theme.spacing(1)}px`
+      margin: `${theme.spacing(4)} ${theme.spacing(1)}`
     },
     emptyStateImage: {
       width: '50%',

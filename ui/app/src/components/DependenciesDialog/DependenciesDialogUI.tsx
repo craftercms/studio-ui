@@ -18,17 +18,17 @@ import { FormattedMessage } from 'react-intl';
 import React, { useState } from 'react';
 import DialogBody from '../Dialogs/DialogBody';
 import SingleItemSelector from '../SingleItemSelector';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import DependenciesList from './DependenciesList';
-import Menu from '@material-ui/core/Menu';
+import Menu from '@mui/material/Menu';
 import DialogFooter from '../Dialogs/DialogFooter';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
 import { assetsTypes, DependenciesDialogUIProps } from './utils';
-import Radio from '@material-ui/core/Radio';
+import Radio from '@mui/material/Radio';
 import { dependenciesDialogStyles } from './DependenciesDialog';
 
 export function DependenciesDialogUI(props: DependenciesDialogUIProps) {
@@ -72,7 +72,7 @@ export function DependenciesDialogUI(props: DependenciesDialogUIProps) {
           <FormControl className={classes.formControl}>
             <Select
               value={dependenciesShown ?? 'depends-on'}
-              onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
+              onChange={(event: SelectChangeEvent) => {
                 setDependenciesShown(event.target.value);
               }}
               inputProps={{
@@ -182,7 +182,7 @@ export function DependenciesDialogUI(props: DependenciesDialogUIProps) {
         <FormControl className={classes.formControl}>
           <Select
             value={showTypes}
-            onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
+            onChange={(event: SelectChangeEvent) => {
               setShowTypes(event.target.value);
             }}
             inputProps={{
@@ -193,8 +193,7 @@ export function DependenciesDialogUI(props: DependenciesDialogUIProps) {
               transformOrigin: {
                 vertical: 'bottom',
                 horizontal: 'left'
-              },
-              getContentAnchorEl: null
+              }
             }}
           >
             {Object.keys(assetsTypes).map((typeId) => (

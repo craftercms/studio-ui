@@ -15,7 +15,8 @@
  */
 
 import React from 'react';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 
 interface CrafterCMSLogoProps {
@@ -39,7 +40,7 @@ const useStyles = makeStyles((theme) =>
       userSelect: 'none'
     },
     crafter: {
-      fill: theme.palette.type === 'dark' ? '#fff' : '#000'
+      fill: theme.palette.mode === 'dark' ? '#fff' : '#000'
     },
     redStuff: {
       fill: '#f00'

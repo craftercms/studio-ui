@@ -35,9 +35,15 @@ export const message$: Observable<StandardAction> = fromEvent<MessageEvent>(
 );
 
 const meta = { craftercms: true, source: 'guest' };
-const prepareAction = (type, payload) => (typeof type === 'object' ? { ...type, meta } : { type, payload, meta });
+const prepareAction = (type: string | StandardAction, payload?: any) =>
+  typeof type === 'object' ? { ...type, meta } : { type, payload, meta };
 
-export const post = useBroadcastChannel
+interface PostFunction {
+  (action: StandardAction): void;
+  (type: string, payload?: any): void;
+}
+
+export const post: PostFunction = useBroadcastChannel
   ? (type, payload?) => broadcastChannel.postMessage(prepareAction(type, payload))
   : (type, payload?) => window.parent.postMessage(prepareAction(type, payload), '*');
 

@@ -17,13 +17,13 @@
 import { LookupTable } from '../../models/LookupTable';
 import { Filter as FilterType } from '../../models/Search';
 import { defineMessages, useIntl } from 'react-intl';
-import Button from '@material-ui/core/Button';
+import Button from '@mui/material/Button';
 import SiteSearchFilterCheckboxes from '../SiteSearchFilterCheckboxes';
 import SiteSearchFilterRadios from '../SiteSearchFilterRadios';
 import SiteSearchRangeSelector from '../SiteSearchRangeSelector';
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { Theme } from '@material-ui/core';
+import makeStyles from '@mui/styles/makeStyles';
+import { Theme } from '@mui/material';
 
 const useStyles = makeStyles((theme: Theme) => ({
   filterActions: {

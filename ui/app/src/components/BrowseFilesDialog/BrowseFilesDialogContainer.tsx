@@ -16,44 +16,21 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { search } from '../../services/search';
-import { ElasticParams, MediaItem, SearchItem } from '../../models/Search';
+import { MediaItem, SearchItem } from '../../models/Search';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useEnv } from '../../utils/hooks/useEnv';
-import { useUnmount } from '../../utils/hooks/useUnmount';
 import { useDebouncedInput } from '../../utils/hooks/useDebouncedInput';
 import { useSpreadState } from '../../utils/hooks/useSpreadState';
 import { showPreviewDialog } from '../../state/actions/dialogs';
 import { useDispatch } from 'react-redux';
 import LookupTable from '../../models/LookupTable';
 import { BrowseFilesDialogUI } from '.';
+import { BrowseFilesDialogContainerProps, initialParameters } from './utils';
 
-export interface BrowseFilesDialogUIProps {
-  path: string;
-  contentTypes?: string[];
-  mimeTypes?: string[];
-  multiSelect?: boolean;
-  rowsPerPageOptions?: number[];
-  numOfLoaderItems?: number;
-  onClose(): void;
-  onSuccess?(items: MediaItem | MediaItem[]): void;
-  onClosed?(): void;
-}
-
-const initialParameters: ElasticParams = {
-  query: '',
-  keywords: '',
-  offset: 0,
-  limit: 20,
-  sortBy: '_score',
-  sortOrder: 'desc',
-  filters: {}
-};
-
-export function BrowseFilesDialogContainer(props: BrowseFilesDialogUIProps) {
+export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProps) {
   const {
     path,
     onClose,
-    onClosed,
     onSuccess,
     rowsPerPageOptions,
     multiSelect = false,
@@ -79,8 +56,6 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogUIProps) {
   const [selectedLookup, setSelectedLookup] = useSpreadState<LookupTable<MediaItem>>({});
   const selectedArray = Object.keys(selectedLookup).filter((key) => selectedLookup[key]);
   const [currentPath, setCurrentPath] = useState(path);
-
-  useUnmount(onClosed);
 
   const fetchItems = useCallback(() => {
     search(site, { ...searchParameters, path: `${currentPath}/[^/]+` }).subscribe((response) => {
@@ -145,6 +120,8 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogUIProps) {
     setCurrentPath(path);
   };
 
+  const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
+
   return (
     <BrowseFilesDialogUI
       items={items}
@@ -162,7 +139,7 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogUIProps) {
       onChangeRowsPerPage={onChangeRowsPerPage}
       onCheckboxChecked={onCheckboxChecked}
       handleSearchKeyword={handleSearchKeyword}
-      onClose={onClose}
+      onCloseButtonClick={onCloseButtonClick}
       onPathSelected={onPathSelected}
       onPreviewImage={onPreviewImage}
       onSelectButtonClick={onSelectButtonClick}
@@ -171,3 +148,5 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogUIProps) {
     />
   );
 }
+
+export default BrowseFilesDialogContainer;

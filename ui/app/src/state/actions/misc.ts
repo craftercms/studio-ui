@@ -22,7 +22,9 @@ export const batchActions = /*#__PURE__*/ createAction<StandardAction[]>('BATCH_
 // endregion
 
 // region dispatch DOM Event
-export const dispatchDOMEvent = /*#__PURE__*/ createAction<{ id: string; type?: string }>('DISPATCH_DOM_EVENT');
+export const dispatchDOMEvent = /*#__PURE__*/ createAction<{ id: string } & { [key: string | number]: any }>(
+  'DISPATCH_DOM_EVENT'
+);
 // endregion
 
 // region TemplateActions
@@ -33,9 +35,8 @@ export const changeContentType = /*#__PURE__*/ createAction<{
   newContentTypeId?: string;
 }>('CHANGE_CONTENT_TYPE');
 
-export const editContentTypeTemplate = /*#__PURE__*/ createAction<{ contentTypeId: string }>(
-  'EDIT_CONTENT_TYPE_TEMPLATE'
-);
+export const editContentTypeTemplate =
+  /*#__PURE__*/ createAction<{ contentTypeId: string }>('EDIT_CONTENT_TYPE_TEMPLATE');
 
 interface EditFilePayload {
   path: string;

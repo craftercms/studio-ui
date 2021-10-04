@@ -16,7 +16,7 @@
 
 import React, { useMemo } from 'react';
 import { useIntl } from 'react-intl';
-import TablePagination from '@material-ui/core/TablePagination';
+import TablePagination from '@mui/material/TablePagination';
 import { DetailedItem } from '../../models/Item';
 import clsx from 'clsx';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
@@ -28,9 +28,9 @@ import NavItem from './PathNavigatorItem';
 import ItemList from './PathNavigatorList';
 import LookupTable from '../../models/LookupTable';
 import { StateStylingProps } from '../../models/UiConfig';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import List from '@material-ui/core/List';
+import Accordion from '@mui/material/Accordion';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import List from '@mui/material/List';
 import PathNavigatorSkeletonItem from './PathNavigatorSkeletonItem';
 import GlobalState from '../../models/GlobalState';
 import { PathNavigatorStateProps } from './PathNavigator';

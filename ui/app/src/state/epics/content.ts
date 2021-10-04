@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ActionsObservable, ofType } from 'redux-observable';
+import { ofType } from 'redux-observable';
 import { filter, map, mergeMap, switchMap, withLatestFrom } from 'rxjs/operators';
 import {
   clearClipboard,
@@ -50,7 +50,7 @@ import {
   paste,
   unlock
 } from '../../services/content';
-import { merge, of } from 'rxjs';
+import { merge, Observable, of } from 'rxjs';
 import {
   closeConfirmDialog,
   closeDeleteDialog,
@@ -138,8 +138,17 @@ const content: CrafterCMSEpic[] = [
     action$.pipe(
       ofType(fetchQuickCreateListAction.type),
       withLatestFrom($state),
-      switchMap(([, { sites: { active } }]) =>
-        fetchQuickCreateList(active).pipe(map(fetchQuickCreateListComplete), catchAjaxError(fetchQuickCreateListFailed))
+      switchMap(
+        ([
+          ,
+          {
+            sites: { active }
+          }
+        ]) =>
+          fetchQuickCreateList(active).pipe(
+            map(fetchQuickCreateListComplete),
+            catchAjaxError(fetchQuickCreateListFailed)
+          )
       )
     ),
   // endregion
@@ -176,7 +185,7 @@ const content: CrafterCMSEpic[] = [
     ),
   // endregion
   // region fetchSandboxItem
-  (action$: ActionsObservable<StandardAction<FetchSandboxItemPayload>>, state$) =>
+  (action$: Observable<StandardAction<FetchSandboxItemPayload>>, state$) =>
     action$.pipe(
       ofType(fetchSandboxItem.type),
       withLatestFrom(state$),
@@ -392,9 +401,7 @@ const content: CrafterCMSEpic[] = [
       ofType(pasteItemWithPolicyValidation.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
-        let fileName = withoutIndex(state.content.clipboard.sourcePath)
-          .split('/')
-          .pop();
+        let fileName = withoutIndex(state.content.clipboard.sourcePath).split('/').pop();
         if (
           state.content.clipboard.sourcePath.startsWith('/site/website') &&
           state.content.clipboard.sourcePath.endsWith('index.xml')

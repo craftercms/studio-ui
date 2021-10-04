@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { configureStore, DeepPartial, EnhancedStore, getDefaultMiddleware } from '@reduxjs/toolkit';
+import { configureStore, EnhancedStore, Middleware } from '@reduxjs/toolkit';
 import reducer from './reducers/root';
 import GlobalState from '../models/GlobalState';
 import { createEpicMiddleware, Epic } from 'redux-observable';
@@ -25,7 +25,6 @@ import { filter, map, pluck, switchMap, take, tap } from 'rxjs/operators';
 import { fetchGlobalProperties, me } from '../services/users';
 import { exists, fetchAll } from '../services/sites';
 import LookupTable from '../models/LookupTable';
-import { Middleware } from 'redux';
 import { getCurrentIntl } from '../utils/i18n';
 import { IntlShape } from 'react-intl';
 import { ObtainAuthTokenResponse } from '../services/auth';
@@ -88,7 +87,7 @@ function registerSharedWorker(): Observable<ObtainAuthTokenResponse & { worker: 
     });
     worker.port.start();
     worker.port.postMessage(sharedWorkerConnect());
-    window.addEventListener('beforeunload', function() {
+    window.addEventListener('beforeunload', function () {
       worker.port.postMessage(sharedWorkerDisconnect());
     });
     return fromEvent<MessageEvent>(worker.port, 'message').pipe(
@@ -118,17 +117,14 @@ export function getStoreSync(): CrafterCMSStore {
   return store$?.value;
 }
 
-export function createStoreSync(
-  args: { preloadedState?: DeepPartial<GlobalState>; dependencies?: any } = {}
-): CrafterCMSStore {
+export function createStoreSync(args: { preloadedState?: any; dependencies?: any } = {}): CrafterCMSStore {
   const { preloadedState, dependencies } = args;
   const epicMiddleware = createEpicMiddleware<StandardAction, StandardAction, GlobalState, EpicMiddlewareDependencies>({
     dependencies: { getIntl: getCurrentIntl, ...dependencies }
   });
-  const middleware = [...getDefaultMiddleware<GlobalState, { thunk: boolean }>({ thunk: false }), epicMiddleware];
-  const store = configureStore<GlobalState, StandardAction, Middleware[]>({
+  const store = configureStore({
     reducer,
-    middleware,
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware({ thunk: false }).concat(epicMiddleware as Middleware),
     preloadedState,
     devTools: { name: 'Studio Store' }
     // devTools: process.env.NODE_ENV === 'production' ? false : { name: 'Studio Store' }

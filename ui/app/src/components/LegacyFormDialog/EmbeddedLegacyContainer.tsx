@@ -32,7 +32,7 @@ import {
   EMBEDDED_LEGACY_FORM_SAVE,
   EMBEDDED_LEGACY_FORM_SUCCESS,
   EMBEDDED_LEGACY_MINIMIZE_REQUEST,
-  RELOAD_REQUEST
+  reloadRequest
 } from '../../state/actions/preview';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 import { updateEditConfig } from '../../state/actions/dialogs';
@@ -129,7 +129,7 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
       switch (e.data.type) {
         case EMBEDDED_LEGACY_FORM_SUCCESS: {
           onSave(e.data);
-          getHostToGuestBus().next({ type: RELOAD_REQUEST });
+          getHostToGuestBus().next({ type: reloadRequest.type });
           dispatch(updateEditConfig({ pendingChanges: false }));
           switch (e.data.action) {
             case 'save': {
@@ -152,7 +152,7 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
             onClose();
           }
           if (e.data.refresh) {
-            getHostToGuestBus().next({ type: RELOAD_REQUEST });
+            getHostToGuestBus().next({ type: reloadRequest.type });
           }
           break;
         }
@@ -171,7 +171,7 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
           onSave(e.data);
           dispatch(updateEditConfig({ pendingChanges: false }));
           if (e.data.refresh) {
-            getHostToGuestBus().next({ type: RELOAD_REQUEST });
+            getHostToGuestBus().next({ type: reloadRequest.type });
           }
           switch (e.data.action) {
             case 'save': {

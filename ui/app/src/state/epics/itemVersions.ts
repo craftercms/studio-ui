@@ -41,7 +41,7 @@ import { reloadDetailedItem } from '../actions/content';
 import { emitSystemEvent, itemReverted, showRevertItemSuccessNotification } from '../actions/system';
 import { batchActions } from '../actions/misc';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
-import { RELOAD_REQUEST } from '../actions/preview';
+import { reloadRequest } from '../actions/preview';
 
 export default [
   (action$, state$: StateObservable<GlobalState>) =>
@@ -94,7 +94,7 @@ export default [
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
         if (payload.path === state.preview.guest?.path) {
-          getHostToGuestBus().next({ type: RELOAD_REQUEST });
+          getHostToGuestBus().next({ type: reloadRequest.type });
         }
         return of(
           batchActions([

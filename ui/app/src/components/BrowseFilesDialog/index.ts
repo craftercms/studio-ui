@@ -19,3 +19,5 @@ export { default } from './BrowseFilesDialog';
 export * from './BrowseFilesDialogContainer';
 
 export * from './BrowseFilesDialogUI';
+
+export * from './utils';

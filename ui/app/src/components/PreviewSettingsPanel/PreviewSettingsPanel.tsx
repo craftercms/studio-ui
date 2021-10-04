@@ -16,13 +16,14 @@
 
 import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
-import { makeStyles } from '@material-ui/core/styles';
-import { FormControl, FormControlLabel, FormHelperText, FormLabel, Radio, RadioGroup } from '@material-ui/core';
+import makeStyles from '@mui/styles/makeStyles';
+import { FormControl, FormControlLabel, FormHelperText, FormLabel, Radio, RadioGroup } from '@mui/material';
 import { setHighlightMode } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 import EditModeSwitch from '../EditModeSwitch';
 import { usePreviewState } from '../../utils/hooks/usePreviewState';
 import { useCurrentPreviewItem } from '../../utils/hooks/useCurrentPreviewItem';
+import { HighlightMode } from '../../models/GlobalState';
 
 const translations = defineMessages({
   editMode: {
@@ -98,20 +99,20 @@ export default function PreviewSettingsPanel() {
           onChange={(e) => {
             dispatch(
               setHighlightMode({
-                highlightMode: e.target.value
+                highlightMode: e.target.value as HighlightMode
               })
             );
           }}
         >
           <FormControlLabel
-            value="ALL"
+            value="all"
             classes={{ root: classes.labelRoot }}
             control={<Radio color="primary" edge="end" />}
             label={formatMessage(translations.highlightAllZones)}
             labelPlacement="start"
           />
           <FormControlLabel
-            value="MOVABLE"
+            value="move"
             classes={{ root: classes.labelRoot }}
             control={<Radio color="primary" edge="end" />}
             label={formatMessage(translations.highlightMovable)}

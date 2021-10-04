@@ -14,13 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import IconButton, { IconButtonProps } from '@material-ui/core/IconButton';
+import IconButton, { IconButtonProps } from '@mui/material/IconButton';
 import React, { ElementType } from 'react';
-import Tooltip from '@material-ui/core/Tooltip';
-import HistoryIcon from '@material-ui/icons/HistoryRounded';
-import BackIcon from '@material-ui/icons/ArrowBackIosRounded';
-import CloseIcon from '@material-ui/icons/CloseRounded';
-import MinimizeIcon from '@material-ui/icons/RemoveRounded';
+import Tooltip from '@mui/material/Tooltip';
+import HistoryIcon from '@mui/icons-material/HistoryRounded';
+import BackIcon from '@mui/icons-material/ArrowBackIosRounded';
+import CloseIcon from '@mui/icons-material/CloseRounded';
+import MinimizeIcon from '@mui/icons-material/RemoveRounded';
 
 export type ActionIcon = 'HistoryIcon' | 'CloseIcon' | 'BackIcon' | 'MinimizeIcon';
 
@@ -41,12 +41,12 @@ export default function DialogHeaderAction(props: ActionProps) {
   const Icon = typeof icon === 'string' ? ActionsIconMap[icon] : icon;
   return tooltip ? (
     <Tooltip title={tooltip}>
-      <IconButton {...rest}>
+      <IconButton {...rest} size="large">
         <Icon />
       </IconButton>
     </Tooltip>
   ) : (
-    <IconButton {...rest}>
+    <IconButton {...rest} size="large">
       <Icon />
     </IconButton>
   );

@@ -15,18 +15,19 @@
  */
 
 import * as React from 'react';
-import { createStyles, makeStyles } from '@material-ui/core';
-import FormControl from '@material-ui/core/FormControl';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import FormControl from '@mui/material/FormControl';
 import { FormattedMessage } from 'react-intl';
-import TextField from '@material-ui/core/TextField/TextField';
-import Select from '@material-ui/core/Select/Select';
-import MenuItem from '@material-ui/core/MenuItem';
+import TextField from '@mui/material/TextField';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 import TextFieldWithMax from '../Controls/TextFieldWithMax';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 import { PublishFormData, PublishingTarget, PublishOnDemandMode } from '../../models/Publishing';
 import ApiResponse from '../../models/ApiResponse';
-import Typography from '@material-ui/core/Typography';
-import InputLabel from '@material-ui/core/InputLabel';
+import Typography from '@mui/material/Typography';
+import InputLabel from '@mui/material/InputLabel';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -66,7 +67,7 @@ export default function PublishOnDemandForm(props: PublishOnDemandFormProps) {
     publishByCommitCommentRequired
   } = props;
   const classes = useStyles();
-  const handleFormChange = (name: string) => (event: React.ChangeEvent<{ value: unknown }>) => {
+  const handleFormChange = (name: string) => (event: React.ChangeEvent<{ value: unknown }> | SelectChangeEvent) => {
     setFormData({ [name]: event.target.value });
   };
   return (

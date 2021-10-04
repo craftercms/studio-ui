@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-const cuid = require('cuid');
+const { nanoid: cuid } = require('nanoid');
 const EventTracker = require('@uppy/utils/lib/EventTracker');
 const ProgressTimeout = require('@uppy/utils/lib/ProgressTimeout');
 const UppyXHRUpload = require('@uppy/xhr-upload');

@@ -14,24 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import DialogHeader from './DialogHeader';
-import DialogBody from './DialogBody';
-import DialogFooter from './DialogFooter';
 import React, { PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react';
-import { FormattedMessage } from 'react-intl';
-import Dialog from '@material-ui/core/Dialog';
+import Dialog from '@mui/material/Dialog';
 import FolderBrowserTreeViewUI, { TreeNode } from '../FolderBrowserTreeView/FolderBrowserTreeViewUI';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import CreateFolderDialog from '../CreateFolderDialog/CreateFolderDialog';
-import { get } from '../../utils/ajax';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import LookupTable from '../../models/LookupTable';
-import Suspencified from '../SystemStatus/Suspencified';
 import { getIndividualPaths } from '../../utils/path';
 import { forkJoin, Observable } from 'rxjs';
-import { AjaxResponse } from 'rxjs/ajax';
 import StandardAction from '../../models/StandardAction';
-import PrimaryButton from '../PrimaryButton';
-import SecondaryButton from '../SecondaryButton';
 import { ApiResponse } from '../../models/ApiResponse';
 import TranslationOrText from '../../models/TranslationOrText';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
@@ -41,6 +32,16 @@ import { usePossibleTranslation } from '../../utils/hooks/usePossibleTranslation
 import { legacyItemsToTreeNodes } from '../FolderBrowserTreeView/utils';
 import { useSelection } from '../../utils/hooks/useSelection';
 import { useWithPendingChangesCloseRequest } from '../../utils/hooks/useWithPendingChangesCloseRequest';
+import { fetchLegacyItemsTree } from '../../services/content';
+import { LegacyItem } from '../../models/Item';
+import { FormattedMessage } from 'react-intl';
+import DialogBody from './DialogBody';
+import Suspencified from '../SystemStatus/Suspencified';
+import DialogFooter from './DialogFooter';
+import SecondaryButton from '../SecondaryButton';
+import PrimaryButton from '../PrimaryButton';
+import CreateFolderDialog from '../CreateFolderDialog';
+import DialogHeader from '../DialogHeader';
 
 export interface PathSelectionDialogBaseProps {
   open: boolean;
@@ -136,22 +137,18 @@ export function PathSelectionDialogBody(props: PathSelectionDialogBodyProps) {
         const allPaths = getIndividualPaths(currentPath, rootPath).filter(
           (path) => !nodesLookup[path] || !nodesLookup[path].fetched
         );
-        const requests: Observable<AjaxResponse>[] = [];
+        const requests: Observable<LegacyItem>[] = [];
         allPaths.forEach((nextPath) => {
-          requests.push(
-            get(
-              `/studio/api/1/services/api/1/content/get-items-tree.json?site=${site}&path=${nextPath}&depth=1&order=default`
-            )
-          );
+          requests.push(fetchLegacyItemsTree(site, nextPath, { depth: 1, order: 'default' }));
         });
 
         if (requests.length) {
           setIsFetching(true);
-          forkJoin(requests).subscribe(
-            (responses) => {
+          forkJoin(requests).subscribe({
+            next: (responses) => {
               let rootNode;
               setIsFetching(false);
-              responses.forEach(({ response: { item } }, i) => {
+              responses.forEach((item, i) => {
                 let parent;
 
                 if (i === requests.length - 1) {
@@ -185,10 +182,10 @@ export function PathSelectionDialogBody(props: PathSelectionDialogBodyProps) {
               });
               rootNode && setTreeNodes({ ...rootNode });
             },
-            (response) => {
+            error: (response) => {
               setError(response);
             }
-          );
+          });
         }
       }
     }
@@ -300,6 +297,7 @@ export function PathSelectionDialogBodyUI(props: PathSelectionDialogBodyUIProps)
     }
   );
   const onWithPendingChangesCloseRequest = useWithPendingChangesCloseRequest(onCloseCreateFolder);
+
   return (
     <>
       <DialogHeader

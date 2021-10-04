@@ -20,8 +20,7 @@ import {
   CLEAR_DROP_TARGETS,
   CLEAR_SELECT_FOR_EDIT,
   closeToolsPanel,
-  CONTENT_TYPE_DROP_TARGETS_RESPONSE,
-  EDIT_MODE_CHANGED,
+  contentTypeDropTargetsResponse,
   FETCH_ASSETS_PANEL_ITEMS,
   FETCH_ASSETS_PANEL_ITEMS_COMPLETE,
   FETCH_ASSETS_PANEL_ITEMS_FAILED,
@@ -34,8 +33,8 @@ import {
   fetchComponentsByContentTypeFailed,
   fetchGuestModelComplete,
   fetchPrimaryGuestModelComplete,
-  GUEST_CHECK_IN,
-  GUEST_CHECK_OUT,
+  guestCheckIn,
+  guestCheckOut,
   guestModelUpdated,
   guestPathUpdated,
   initIcePanelConfig,
@@ -57,6 +56,7 @@ import {
   SET_HOST_WIDTH,
   SET_ITEM_BEING_DRAGGED,
   setHighlightMode,
+  setPreviewEditMode,
   UPDATE_AUDIENCES_PANEL_MODEL,
   updateIcePanelWidth,
   updateToolsPanelWidth
@@ -130,7 +130,7 @@ const componentsInitialState = createEntityState({
 
 const initialState: GlobalState['preview'] = {
   editMode: true,
-  highlightMode: 'ALL',
+  highlightMode: 'all',
   hostSize: { width: null, height: null },
   toolsPanelPageStack: [],
   showToolsPanel: process.env.REACT_APP_SHOW_TOOLS_PANEL ? process.env.REACT_APP_SHOW_TOOLS_PANEL === 'true' : true,
@@ -245,7 +245,7 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
       currentModels: payload
     };
   },
-  [GUEST_CHECK_IN]: (state, { payload }) => {
+  [guestCheckIn.type]: (state, { payload }) => {
     const { location, modelId, path } = payload;
     const href = location.href;
     const origin = location.origin;
@@ -265,7 +265,7 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
       }
     };
   },
-  [GUEST_CHECK_OUT]: (state) => {
+  [guestCheckOut.type]: (state) => {
     let nextState = state;
     if (state.guest) {
       nextState = {
@@ -448,7 +448,7 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
     ...state,
     components: { ...state.components, error: payload.response, isFetching: false }
   }),
-  [CONTENT_TYPE_DROP_TARGETS_RESPONSE]: (state, { payload }) => ({
+  [contentTypeDropTargetsResponse.type]: (state, { payload }) => ({
     ...state,
     dropTargets: {
       ...state.dropTargets,
@@ -472,14 +472,14 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
       contentTypeFilter: payload,
       query: {
         ...state.components.query,
-        offset: 0,
-        keywords: ''
+        offset: 0
       }
     }
   }),
-  [EDIT_MODE_CHANGED]: (state, { payload }) => ({
+  [setPreviewEditMode.type]: (state, { payload }) => ({
     ...state,
-    editMode: payload.editMode
+    editMode: payload.editMode,
+    highlightMode: payload.highlightMode ?? state.highlightMode
   }),
   [updateToolsPanelWidth.type]: (state, { payload }) => {
     if (payload.width < minDrawerWidth || payload.width > maxDrawerWidth) {

@@ -14,35 +14,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
-import MuiDialogContent, { DialogContentProps } from '@material-ui/core/DialogContent';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import clsx from 'clsx';
+import MuiDialogContent, { DialogContentProps } from '@mui/material/DialogContent';
+import { styled } from '@mui/material/styles';
+import { UNDEFINED } from '../../utils/constants';
 
 export type DialogBodyProps = DialogContentProps & { minHeight?: boolean };
 
-const styles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      display: 'flex',
-      flex: '1 1 auto',
-      flexDirection: 'column',
-      padding: theme.spacing(2),
-      backgroundColor: theme.palette.background.default
-    },
-    minHeight: {
-      minHeight: '50vh'
-    }
-  })
-);
+export const DialogBody = styled(MuiDialogContent, {
+  shouldForwardProp: (prop) => prop !== 'minHeight'
+})<DialogBodyProps>(({ theme, minHeight = false }) => ({
+  display: 'flex',
+  flex: '1 1 auto',
+  flexDirection: 'column',
+  padding: theme.spacing(2),
+  backgroundColor: theme.palette.background.default,
+  minHeight: minHeight ? '50vh' : UNDEFINED,
+  '.MuiDialogTitle-root + &': {
+    paddingTop: theme.spacing(2)
+  }
+}));
 
-export default function DialogBody(props: DialogBodyProps) {
-  const classes = styles();
-  const { minHeight, ...dialogContentProps } = props;
-  return (
-    <MuiDialogContent
-      {...dialogContentProps}
-      className={clsx(classes.root, props.className, props.minHeight && classes.minHeight)}
-    />
-  );
-}
+export default DialogBody;

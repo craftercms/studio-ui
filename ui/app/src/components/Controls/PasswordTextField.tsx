@@ -14,12 +14,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import TextField, { TextFieldProps } from '@material-ui/core/TextField';
+import TextField, { TextFieldProps } from '@mui/material/TextField';
 import React, { useState } from 'react';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import IconButton from '@material-ui/core/IconButton';
-import Visibility from '@material-ui/icons/Visibility';
-import VisibilityOff from '@material-ui/icons/VisibilityOff';
+import InputAdornment from '@mui/material/InputAdornment';
+import IconButton from '@mui/material/IconButton';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { defineMessages, useIntl } from 'react-intl';
 
 type PasswordTextFieldProps = TextFieldProps & {
@@ -55,6 +55,7 @@ const PasswordTextField = React.forwardRef<HTMLDivElement, PasswordTextFieldProp
                     edge="end"
                     aria-label={formatMessage(translations.toggleVisibilityButtonText)}
                     onClick={handleClickShowPassword}
+                    size="large"
                   >
                     {showPassword ? <VisibilityOff /> : <Visibility />}
                   </IconButton>

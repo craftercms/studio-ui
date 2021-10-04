@@ -15,15 +15,16 @@
  */
 
 import React, { useMemo } from 'react';
-import IconButton from '@material-ui/core/IconButton';
+import IconButton from '@mui/material/IconButton';
 import CrafterIcon from '../Icons/CrafterIcon';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { defineMessages, useIntl } from 'react-intl';
-import Tooltip from '@material-ui/core/Tooltip';
+import Tooltip from '@mui/material/Tooltip';
 import { useDispatch } from 'react-redux';
 import { showLauncher } from '../../state/actions/dialogs';
 import { LauncherStateProps } from '../Launcher/Launcher';
-import AppsRounded from '@material-ui/icons/AppsRounded';
+import AppsRounded from '@mui/icons-material/AppsRounded';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -69,6 +70,7 @@ export default function LauncherOpenerButton(props: LauncherOpenerButtonProps) {
         aria-label={formatMessage(messages.openDrawer)}
         onClick={onMenuClick}
         className={icon === 'logo' ? classes.logoIconButton : void 0}
+        size="large"
       >
         {icon === 'logo' ? <CrafterIcon className={classes.crafterIcon} /> : <AppsRounded />}
       </IconButton>

@@ -16,19 +16,19 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
-import { makeStyles } from '@material-ui/core/styles';
-import List from '@material-ui/core/List';
+import makeStyles from '@mui/styles/makeStyles';
+import List from '@mui/material/List';
 import SearchBar from '../Controls/SearchBar';
 import { ComponentsContentTypeParams, ElasticParams, SearchItem } from '../../models/Search';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import { DraggablePanelListItem } from '../../modules/Preview/Tools/DraggablePanelListItem';
-import TablePagination from '@material-ui/core/TablePagination';
+import TablePagination from '@mui/material/TablePagination';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 import {
-  ASSET_DRAG_ENDED,
-  ASSET_DRAG_STARTED,
-  COMPONENT_INSTANCE_DRAG_ENDED,
-  COMPONENT_INSTANCE_DRAG_STARTED,
+  assetDragEnded,
+  assetDragStarted,
+  componentInstanceDragEnded,
+  componentInstanceDragStarted,
   setPreviewEditMode
 } from '../../state/actions/preview';
 import ContentInstance from '../../models/ContentInstance';
@@ -156,11 +156,12 @@ export default function PreviewSearchPanel() {
   const contentTypes = useContentTypeList(
     (contentType) => contentType.id !== '/component/level-descriptor' && contentType.type === 'component'
   );
-  const contentTypesLookup = useMemo(() => (contentTypes ? createLookupTable(contentTypes, 'id') : null), [
-    contentTypes
-  ]);
+  const contentTypesLookup = useMemo(
+    () => (contentTypes ? createLookupTable(contentTypes, 'id') : null),
+    [contentTypes]
+  );
 
-  const unMount$ = useSubject();
+  const unMount$ = useSubject<void>();
   const [pageNumber, setPageNumber] = useState(0);
 
   const resource = useLogicResource<SearchItem[], { isFetching: Boolean; items: Array<SearchItem> }>(state, {
@@ -194,8 +195,8 @@ export default function PreviewSearchPanel() {
               : of({ result, contentInstances: null });
           })
         )
-        .subscribe(
-          (response) => {
+        .subscribe({
+          next: (response) => {
             setPageNumber(options ? options.offset / options.limit : 0);
             if (response.contentInstances) {
               setState({
@@ -208,10 +209,10 @@ export default function PreviewSearchPanel() {
               setState({ isFetching: false, items: response.result.items, count: response.result.total });
             }
           },
-          ({ response }) => {
+          error: ({ response }) => {
             setError(response);
           }
-        );
+        });
     },
     [setState, site, contentTypes, unMount$, contentTypesLookup]
   );
@@ -250,12 +251,12 @@ export default function PreviewSearchPanel() {
     if (item.type === 'Component') {
       const instance: ContentInstance = state.contentInstanceLookup[item.path];
       hostToGuest$.next({
-        type: COMPONENT_INSTANCE_DRAG_STARTED,
+        type: componentInstanceDragStarted.type,
         payload: { instance, contentType: contentTypesLookup[instance.craftercms.contentTypeId] }
       });
     } else {
       hostToGuest$.next({
-        type: ASSET_DRAG_STARTED,
+        type: assetDragStarted.type,
         payload: item
       });
     }
@@ -263,7 +264,7 @@ export default function PreviewSearchPanel() {
 
   const onDragEnd = (item: SearchItem) => {
     hostToGuest$.next({
-      type: item.type === 'Component' ? COMPONENT_INSTANCE_DRAG_ENDED : ASSET_DRAG_ENDED
+      type: item.type === 'Component' ? componentInstanceDragEnded.type : assetDragEnded.type
     });
   };
 

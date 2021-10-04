@@ -19,8 +19,11 @@ import { debounceTime, filter, map, share, takeUntil, throttleTime, withLatestFr
 import { ElementRecord } from '../models/InContextEditing';
 import { SyntheticEvent } from 'react';
 import { GuestStateObservable } from './models/GuestStore';
+import { GuestStandardAction } from './models/GuestStandardAction';
+import { GuestActionTypes } from './models/Actions';
+import { computedDragOver, scrolling, scrollingStopped } from './actions';
 
-export const clearAndListen$ = new Subject();
+export const clearAndListen$ = new Subject<void>();
 
 export const escape$ = fromEvent<KeyboardEvent>(document, 'keydown').pipe(filter((e) => e.key === 'Escape'));
 
@@ -38,7 +41,7 @@ const getScrolling = () => scrolling$;
 
 export { getDragOver as dragover$, getScrolling as scrolling$ };
 
-export function initializeDragSubjects(state$: GuestStateObservable) {
+export function initializeDragSubjects(state$: GuestStateObservable): Observable<GuestStandardAction> {
   if (!active) {
     active = true;
 
@@ -49,13 +52,13 @@ export function initializeDragSubjects(state$: GuestStateObservable) {
   return merge(
     dragover$.pipe(
       throttleTime(100),
-      map((payload) => ({ type: 'computed_dragover', payload }))
+      map((payload) => ({ type: computedDragOver.type as GuestActionTypes, payload }))
     ),
     scrolling$.pipe(
       throttleTime(200),
       withLatestFrom(state$),
       filter(([, state]) => !state.dragContext?.scrolling),
-      map(() => ({ type: 'scrolling' }))
+      map(() => ({ type: scrolling.type as GuestActionTypes }))
     ),
     // Scrolling ended
     scrolling$.pipe(
@@ -63,7 +66,7 @@ export function initializeDragSubjects(state$: GuestStateObservable) {
       // passed without another source emission should give
       // us the end of scrolling.
       debounceTime(200),
-      map(() => ({ type: 'scrolling_stopped' }))
+      map(() => ({ type: scrollingStopped.type as GuestActionTypes }))
     )
   );
 }

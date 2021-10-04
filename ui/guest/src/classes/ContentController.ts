@@ -25,15 +25,15 @@ import { ContentType, ContentTypeField } from '@craftercms/studio-ui/models/Cont
 import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
 import { Operation } from '../models/Operations';
 import {
-  CONTENT_TYPES_RESPONSE,
-  DELETE_ITEM_OPERATION,
-  INSERT_COMPONENT_OPERATION,
-  INSERT_INSTANCE_OPERATION,
-  INSERT_ITEM_OPERATION,
-  MOVE_ITEM_OPERATION,
-  SORT_ITEM_OPERATION,
-  UPDATE_FIELD_VALUE_OPERATION
-} from '../constants';
+  contentTypesResponse,
+  deleteItemOperation,
+  insertComponentOperation,
+  insertInstanceOperation,
+  insertItemOperation,
+  moveItemOperation,
+  sortItemOperation,
+  updateFieldValueOperation
+} from '@craftercms/studio-ui/build_tsc/state/actions/preview';
 import { createLookupTable, nnou, nou } from '../utils/object';
 import { popPiece, removeLastPiece } from '../utils/string';
 import { getCollection, getCollectionWithoutItemAtIndex, getParentModelId, setCollection } from '../utils/ice';
@@ -108,6 +108,7 @@ export function getCachedModels(): LookupTable<ContentInstance> {
 }
 
 export function fetchById(id: string): Observable<LookupTable<ContentInstance>> {
+  // @ts-ignore - TODO: Upgrade SDK to rxjs@7
   return search(
     createQuery('elasticsearch', {
       query: {
@@ -130,6 +131,7 @@ export function fetchById(id: string): Observable<LookupTable<ContentInstance>> 
     // TODO: Remove hardcoded url
     crafterConf.getConfig()
   ).pipe(
+    // @ts-ignore - TODO: Upgrade SDK to rxjs@7
     tap(({ total }) => total === 0 && console.log(`[ContentController/fetchById] Model with id ${id} not found.`)),
     map<any, ContentInstance[]>(({ hits }) =>
       hits.map(({ _source }) => parseDescriptor(preParseSearchResults(_source)))
@@ -267,7 +269,7 @@ export function updateField(modelId: string, fieldId: string, index: string | nu
   });
 
   // Post the update to studio to persist it
-  post(UPDATE_FIELD_VALUE_OPERATION, {
+  post(updateFieldValueOperation.type, {
     modelId,
     fieldId,
     index,
@@ -276,7 +278,7 @@ export function updateField(modelId: string, fieldId: string, index: string | nu
   });
 
   operations$.next({
-    type: UPDATE_FIELD_VALUE_OPERATION,
+    type: updateFieldValueOperation.type,
     args: { modelId: getModelIdFromInheritedField(modelId, fieldId), fieldId, index, value }
   });
 }
@@ -301,7 +303,7 @@ export function insertItem(modelId: string, fieldId: string, index: number | str
     [modelId]: model
   });
 
-  post(INSERT_ITEM_OPERATION, { modelId, fieldId, index, item });
+  post(insertItemOperation.type, { modelId, fieldId, index, item });
 
   operations$.next({
     type: 'insert',
@@ -378,7 +380,7 @@ export function insertComponent(
 
   children[modelId]?.push(instance.craftercms.id);
 
-  post(INSERT_COMPONENT_OPERATION, {
+  post(insertComponentOperation.type, {
     modelId,
     fieldId,
     targetIndex,
@@ -389,7 +391,7 @@ export function insertComponent(
   });
 
   operations$.next({
-    type: INSERT_COMPONENT_OPERATION,
+    type: insertComponentOperation.type,
     args: { modelId, fieldId, targetIndex, contentType, shared, instance }
   });
 }
@@ -422,7 +424,7 @@ export function insertInstance(
     [modelId]: model
   });
 
-  post(INSERT_INSTANCE_OPERATION, {
+  post(insertInstanceOperation.type, {
     modelId,
     fieldId,
     targetIndex,
@@ -431,7 +433,7 @@ export function insertInstance(
   });
 
   operations$.next({
-    type: INSERT_INSTANCE_OPERATION,
+    type: insertInstanceOperation.type,
     args: { modelId, fieldId, targetIndex, instance }
   });
 }
@@ -465,7 +467,7 @@ export function sortItem(
     [modelId]: model
   });
 
-  post(SORT_ITEM_OPERATION, {
+  post(sortItemOperation.type, {
     modelId,
     fieldId,
     currentIndex,
@@ -474,7 +476,7 @@ export function sortItem(
   });
 
   operations$.next({
-    type: SORT_ITEM_OPERATION,
+    type: sortItemOperation.type,
     args: arguments
   });
 }
@@ -563,7 +565,7 @@ export function moveItem(
         }
   );
 
-  post(MOVE_ITEM_OPERATION, {
+  post(moveItemOperation.type, {
     originalModelId,
     originalFieldId,
     originalIndex,
@@ -575,7 +577,7 @@ export function moveItem(
   });
 
   operations$.next({
-    type: MOVE_ITEM_OPERATION,
+    type: moveItemOperation.type,
     args: arguments
   });
 }
@@ -603,7 +605,7 @@ export function deleteItem(modelId: string, fieldId: string, index: number | str
     [modelId]: model
   });
 
-  post(DELETE_ITEM_OPERATION, {
+  post(deleteItemOperation.type, {
     modelId,
     fieldId,
     index,
@@ -611,7 +613,7 @@ export function deleteItem(modelId: string, fieldId: string, index: number | str
   });
 
   operations$.next({
-    type: DELETE_ITEM_OPERATION,
+    type: deleteItemOperation.type,
     args: arguments,
     state: { item: collection[parsedIndex] }
   });
@@ -620,7 +622,7 @@ export function deleteItem(modelId: string, fieldId: string, index: number | str
 // endregion
 
 // Host sends over all content types upon Guest check in.
-fromTopic(CONTENT_TYPES_RESPONSE)
+fromTopic(contentTypesResponse.type)
   .pipe(pluck('payload'))
   .subscribe((contentTypes) => {
     contentTypes$.next(Array.isArray(contentTypes) ? createLookupTable(contentTypes) : contentTypes);

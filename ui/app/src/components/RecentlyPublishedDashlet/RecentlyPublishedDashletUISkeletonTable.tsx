@@ -15,20 +15,20 @@
  */
 
 import React, { Fragment } from 'react';
-import TableContainer from '@material-ui/core/TableContainer';
+import TableContainer from '@mui/material/TableContainer';
 import useStyles from './styles';
-import Table from '@material-ui/core/Table';
-import TableHead from '@material-ui/core/TableHead';
+import Table from '@mui/material/Table';
+import TableHead from '@mui/material/TableHead';
 import { FormattedMessage } from 'react-intl';
-import TableBody from '@material-ui/core/TableBody';
-import Collapse from '@material-ui/core/Collapse';
-import Box from '@material-ui/core/Box';
+import TableBody from '@mui/material/TableBody';
+import Collapse from '@mui/material/Collapse';
+import Box from '@mui/material/Box';
 import GlobalAppGridRow from '../GlobalAppGridRow';
 import GlobalAppGridCell from '../GlobalAppGridCell';
-import Skeleton from '@material-ui/lab/Skeleton';
+import Skeleton from '@mui/material/Skeleton';
 import LookupTable from '../../models/LookupTable';
 import { rand } from '../PathNavigator/utils';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import { DashboardItem } from './RecentlyPublishedDashlet';
 
 export interface RecentlyPublishedWidgetUiSkeletonTableProps {
@@ -83,7 +83,7 @@ export default function RecentlyPublishedDashletUISkeletonTable(props: RecentlyP
               <GlobalAppGridRow>
                 <GlobalAppGridCell colSpan={5} className="padded0">
                   <Box display="flex" alignItems="center">
-                    <Skeleton variant="circle" width={30} height={30} className={classes.skeletonCheckbox} />
+                    <Skeleton variant="circular" width={30} height={30} className={classes.skeletonCheckbox} />
                     <Skeleton variant="text" height="20px" width={`${rand(20, 50)}%`} />
                   </Box>
                 </GlobalAppGridCell>
@@ -109,7 +109,12 @@ export default function RecentlyPublishedDashletUISkeletonTable(props: RecentlyP
                               <Skeleton variant="text" width={`${rand(50, 60)}%`} />
                             </GlobalAppGridCell>
                             <GlobalAppGridCell className="checkbox">
-                              <Skeleton variant="circle" width={30} height={30} className={classes.skeletonCheckbox} />
+                              <Skeleton
+                                variant="circular"
+                                width={30}
+                                height={30}
+                                className={classes.skeletonCheckbox}
+                              />
                             </GlobalAppGridCell>
                           </GlobalAppGridRow>
                         ))}

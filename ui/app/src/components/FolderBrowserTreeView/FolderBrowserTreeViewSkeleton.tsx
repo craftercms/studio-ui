@@ -15,9 +15,9 @@
  */
 
 import React from 'react';
-import TreeView from '@material-ui/lab/TreeView';
-import TreeItem from '@material-ui/lab/TreeItem';
-import { Skeleton } from '@material-ui/lab';
+import TreeView from '@mui/lab/TreeView';
+import TreeItem from '@mui/lab/TreeItem';
+import { Skeleton } from '@mui/material';
 import { useSkeletonStyles } from './styles';
 import { rand } from '../PathNavigator/utils';
 

@@ -55,8 +55,8 @@ import { debounceTime, filter, map, pluck, switchMap, take, tap } from 'rxjs/ope
 import { IntlShape } from 'react-intl/src/types';
 import * as messages from './i18n-legacy';
 import { translateElements } from './i18n-legacy';
-import { ThemeOptions } from '@material-ui/core/styles';
-import * as mui from '@material-ui/core';
+import { DeprecatedThemeOptions as ThemeOptions } from '@mui/material/styles';
+import * as mui from '@mui/material';
 import { defaultThemeOptions, generateClassName } from '../styles/theme';
 import getStore, { CrafterCMSStore } from '../state/store';
 import { useDispatch, useSelector, useStore } from 'react-redux';
@@ -184,8 +184,8 @@ export function createCodebaseBridge() {
       ),
       TokenManagement: lazy(() => import('../components/TokenManagement')),
       PluginManagement: lazy(() => import('../components/PluginManagement')),
-      PublishingStatusDialogBody: lazy(() =>
-        import('../components/PublishingStatusDialog/PublishingStatusDialogContainer')
+      PublishingStatusDialogBody: lazy(
+        () => import('../components/PublishingStatusDialog/PublishingStatusDialogContainer')
       ),
       LogoAndMenuBundleButton: lazy(() => import('../components/LogoAndMenuBundleButton')),
       CrafterIcon: lazy(() => import('../components/Icons/CrafterIcon')),
@@ -295,7 +295,7 @@ export function createCodebaseBridge() {
         typeof component === 'string' ? Bridge.components[component] : component;
 
       if (nou(Component)) {
-        Component = function() {
+        Component = function () {
           return (
             <ErrorState
               imageUrl="/studio/static-assets/images/warning_state.svg"

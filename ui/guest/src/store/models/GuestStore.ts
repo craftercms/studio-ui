@@ -50,7 +50,6 @@ export interface GuestState {
     instance: ContentInstance;
   };
   hostCheckedIn: boolean;
-  ICE_GUEST_INIT: boolean;
   status: EditingStatus;
   editMode: boolean;
   highlightMode: string;
@@ -70,4 +69,5 @@ export interface GuestState {
 }
 
 export type GuestStateObservable = StateObservable<GuestState>;
+
 export type GuestStore = EnhancedStore<GuestState, GuestStandardAction>;

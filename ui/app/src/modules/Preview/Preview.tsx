@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import ToolsPanel from './ToolsPanel';
 import Host from './Host';
 import ToolBar from './ToolBar';

@@ -30,7 +30,7 @@ import { validateActionPolicy } from '../../services/sites';
 import { translations } from './translations';
 import DialogBody from '../Dialogs/DialogBody';
 import SingleItemSelector from '../SingleItemSelector';
-import TextField from '@material-ui/core/TextField';
+import TextField from '@mui/material/TextField';
 import DialogFooter from '../Dialogs/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
