@@ -53,8 +53,9 @@ tbody {
 
 .content-type-selector--label {
   margin: 5px 0;
-  display: block;
+  display: flex;
   font-weight: normal;
+  color: #333;
 }
 
 input[type='checkbox'].content-type-selector--checkbox {
