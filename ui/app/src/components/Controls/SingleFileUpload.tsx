@@ -33,6 +33,8 @@ import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
 import { UppyFile } from '@uppy/utils';
 import { emitSystemEvent, itemCreated } from '../../state/actions/system';
 import { useDispatch } from 'react-redux';
+import Typography from '@mui/material/Typography';
+import clsx from 'clsx';
 
 const messages = defineMessages({
   chooseFile: {
@@ -72,23 +74,27 @@ const singleFileUploadStyles = makeStyles((theme) =>
       overflow: 'hidden',
       textOverflow: 'ellipsis',
       whiteSpace: 'nowrap'
+    },
+    description: {
+      margin: '10px 0'
     }
   })
 );
 
-interface UppyProps {
+interface SingleFileUploadProps {
   formTarget: string;
   url: string;
   site: string;
   path?: string;
+  customFileName?: string;
   fileTypes?: [string];
   onUploadStart?(): void;
   onComplete?(result: any): void;
   onError?(file: any, error: any, response: any): void;
 }
 
-export default function SingleFileUpload(props: UppyProps) {
-  const { url, formTarget, onUploadStart, onComplete, onError, fileTypes, path, site } = props;
+export default function SingleFileUpload(props: SingleFileUploadProps) {
+  const { url, formTarget, onUploadStart, onComplete, onError, customFileName, fileTypes, path, site } = props;
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
   const [description, setDescription] = useState<string>(formatMessage(messages.selectFileMessage));
@@ -104,9 +110,19 @@ export default function SingleFileUpload(props: UppyProps) {
     () =>
       new Core({
         autoProceed: false,
-        ...(fileTypes ? { restrictions: { allowedFileTypes: fileTypes } } : {})
+        ...(fileTypes ? { restrictions: { allowedFileTypes: fileTypes } } : {}),
+        ...(customFileName
+          ? {
+              onBeforeFileAdded: (currentFile) => {
+                return {
+                  ...currentFile,
+                  name: customFileName
+                };
+              }
+            }
+          : {})
       }),
-    [fileTypes]
+    [fileTypes, customFileName]
   );
 
   useEffect(() => {
@@ -151,7 +167,8 @@ export default function SingleFileUpload(props: UppyProps) {
       validateActionPolicy(site, {
         type: 'CREATE',
         target: path + file.name
-      }).subscribe(({ allowed, modifiedValue, target }) => {
+      }).subscribe((response) => {
+        const { allowed, modifiedValue } = response[0];
         if (allowed) {
           if (modifiedValue) {
             setConfirm({
@@ -212,16 +229,18 @@ export default function SingleFileUpload(props: UppyProps) {
     <>
       <div className="uppy-progress-bar" />
       <div className="uploaded-files">
-        <h5 className="single-file-upload--description">{description}</h5>
+        <Typography variant="subtitle1" component="h2" className={classes.description}>
+          {description}
+          {file && (
+            <em
+              className={clsx('single-file-upload--filename', fileNameErrorClass, classes.fileNameTrimmed)}
+              title={file.name}
+            >
+              {file.name}
+            </em>
+          )}
+        </Typography>
         <div className="uppy-file-input-container" />
-        {file && (
-          <em
-            className={`single-file-upload--filename ${fileNameErrorClass} ${classes.fileNameTrimmed}`}
-            title={file.name}
-          >
-            {file.name}
-          </em>
-        )}
       </div>
       <ConfirmDialog
         open={Boolean(confirm)}

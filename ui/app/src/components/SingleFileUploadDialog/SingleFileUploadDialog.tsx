@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import Dialog from '@material-ui/core/Dialog';
+import Dialog from '@mui/material/Dialog';
 import { SingleFileUploadDialogProps } from './utils';
 import SingleFileUploadDialogContainer from './SingleFileUploadDialogContainer';
 
@@ -24,7 +24,7 @@ export default function SingleFileUploadDialog(props: SingleFileUploadDialogProp
 
   return (
     <>
-      <Dialog open={open} onClose={onClose} maxWidth="sm">
+      <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
         <SingleFileUploadDialogContainer {...props} />
       </Dialog>
     </>

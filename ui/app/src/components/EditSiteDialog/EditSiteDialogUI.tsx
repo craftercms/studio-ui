@@ -25,12 +25,12 @@ import PrimaryButton from '../PrimaryButton';
 import React from 'react';
 import { translations } from './translations';
 import { useSiteDialogStyles } from './styles';
-import Card from '@material-ui/core/Card';
-import CardMedia from '@material-ui/core/CardMedia';
-import CardActions from '@material-ui/core/CardActions';
-import IconButton from '@material-ui/core/IconButton';
-import EditRoundedIcon from '@material-ui/icons/EditRounded';
-import Tooltip from '@material-ui/core/Tooltip/Tooltip';
+import Card from '@mui/material/Card';
+import CardMedia from '@mui/material/CardMedia';
+import CardActions from '@mui/material/CardActions';
+import IconButton from '@mui/material/IconButton';
+import EditRoundedIcon from '@mui/icons-material/EditRounded';
+import Tooltip from '@mui/material/Tooltip';
 
 export function EditSiteDialogUI(props: EditSiteDialogUIProps) {
   const {

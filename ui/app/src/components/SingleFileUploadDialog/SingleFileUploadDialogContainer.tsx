@@ -16,10 +16,38 @@
 
 import React from 'react';
 import { SingleFileUploadDialogContainerProps } from './utils';
+import DialogBody from '../Dialogs/DialogBody';
+import SingleFileUpload from '../Controls/SingleFileUpload';
+import DialogHeader from '../DialogHeader';
+import { FormattedMessage } from 'react-intl';
 
 export default function SingleFileUploadDialogContainer(props: SingleFileUploadDialogContainerProps) {
-  const { site, onClosed /* , path */ } = props;
-  const path = '/.crafter/screenshots';
+  const { site, onClose, path, customFileName, fileTypes, onComplete, onUploadStart, onError } = props;
+  const url = `/studio/asset-upload`;
 
-  return <></>;
+  return (
+    <>
+      <DialogHeader
+        title={<FormattedMessage id="words.upload" defaultMessage="Upload" />}
+        onCloseButtonClick={onClose}
+      />
+      <DialogBody>
+        <form id="asset_upload_form">
+          <input type="hidden" name="path" value={path} />
+          <input type="hidden" name="site" value={site} />
+        </form>
+        <SingleFileUpload
+          formTarget="#asset_upload_form"
+          url={url}
+          site={site}
+          path={path}
+          customFileName={customFileName}
+          fileTypes={fileTypes}
+          onComplete={onComplete}
+          onUploadStart={onUploadStart}
+          onError={onError}
+        />
+      </DialogBody>
+    </>
+  );
 }

@@ -119,9 +119,12 @@ export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
   const onEditSiteImage = () => {
     dispatch(
       showSingleFileUploadDialog({
-        // path: item.path,
-        site,
-        onClose: closeSingleFileUploadDialog()
+        path: '/.crafter/screenshots',
+        site: site.id,
+        customFileName: 'default.png',
+        fileTypes: ['image/png'],
+        onClose: closeSingleFileUploadDialog(),
+        onUploadComplete: closeSingleFileUploadDialog()
       })
     );
   };

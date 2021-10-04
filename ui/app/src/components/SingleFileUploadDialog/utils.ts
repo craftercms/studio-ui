@@ -21,18 +21,26 @@ export interface SingleFileUploadDialogBaseProps {
   open: boolean;
   site: string;
   path: string;
+  customFileName?: string;
+  fileTypes?: [string];
 }
 
 export type SingleFileUploadDialogProps = PropsWithChildren<
   SingleFileUploadDialogBaseProps & {
     onClose(): void;
     onClosed?(): void;
+    onUploadStart?(): void;
+    onComplete?(result: any): void;
+    onError?(file: any, error: any, response: any): void;
   }
 >;
 
 export interface SingleFileUploadDialogStateProps extends SingleFileUploadDialogBaseProps {
   onClose?: StandardAction;
   onClosed?: StandardAction;
+  onUploadStart?: StandardAction;
+  onComplete?: StandardAction;
+  onError?: StandardAction;
 }
 
 export interface SingleFileUploadDialogContainerProps extends SingleFileUploadDialogProps {}
