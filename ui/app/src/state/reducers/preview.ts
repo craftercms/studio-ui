@@ -472,8 +472,7 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
       contentTypeFilter: payload,
       query: {
         ...state.components.query,
-        offset: 0,
-        keywords: ''
+        offset: 0
       }
     }
   }),
