@@ -13,11 +13,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+import ApiResponse from '../../models/ApiResponse';
+import { EnhancedDialogProps } from '../EnhancedDialog';
 
-export { default } from './PullFromRemoteDialog';
+export interface PushToRemoteBaseProps {
+  branches: string[];
+  remoteName: string;
+}
 
-export * from './PullFromRemoteDialog';
+export interface PushToRemoteDialogProps extends PushToRemoteBaseProps, EnhancedDialogProps {
+  onPushSuccess?(): void;
+  onPushError?(response: ApiResponse): void;
+}
 
-export * from './PullFromRemoteDialogContainer';
-
-export * from './utils';
+export interface PushToRemoteDialogContainerProps
+  extends PushToRemoteBaseProps,
+    Pick<PushToRemoteDialogProps, 'onClose' | 'onPushSuccess' | 'onPushError'> {}

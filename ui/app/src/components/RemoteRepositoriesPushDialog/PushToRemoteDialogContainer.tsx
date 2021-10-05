@@ -15,7 +15,6 @@
  */
 
 import React, { useState } from 'react';
-import DialogHeader from '../DialogHeader/DialogHeader';
 import DialogBody from '../Dialogs/DialogBody';
 import DialogFooter from '../Dialogs/DialogFooter';
 import { FormattedMessage } from 'react-intl';
@@ -26,21 +25,11 @@ import FormControl from '@mui/material/FormControl';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import { push } from '../../services/repositories';
-import ApiResponse from '../../models/ApiResponse';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import { isBlank } from '../../utils/string';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-
-export interface PushToRemoteDialogContainerProps {
-  open: boolean;
-  branches: string[];
-  remoteName: string;
-  setDisableQuickDismiss?(disable: boolean): void;
-  onClose(): void;
-  onPushSuccess?(): void;
-  onPushError?(response: ApiResponse): void;
-}
+import { PushToRemoteDialogContainerProps } from './utils';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -50,20 +39,20 @@ const useStyles = makeStyles(() =>
   })
 );
 
-export default function PushToRemoteDialogContainer(props: PushToRemoteDialogContainerProps) {
-  const { branches, remoteName, onClose, onPushSuccess, onPushError, setDisableQuickDismiss } = props;
-  const [selectedBranch, setSelectedBranch] = useState('');
+export function PushToRemoteDialogContainer(props: PushToRemoteDialogContainerProps) {
+  const { branches, remoteName, onClose, onPushSuccess, onPushError } = props;
+  const [selectedBranch, setSelectedBranch] = useState(branches ? branches[0] : '');
   const classes = useStyles();
   const siteId = useActiveSiteId();
 
   const onChange = (e: any) => {
     setSelectedBranch(e.target.value);
-    setDisableQuickDismiss(true);
   };
+
+  const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
 
   const onSubmit = (e) => {
     e.preventDefault();
-
     if (!isBlank(selectedBranch)) {
       push(siteId, remoteName, selectedBranch, true).subscribe(
         () => {
@@ -73,13 +62,11 @@ export default function PushToRemoteDialogContainer(props: PushToRemoteDialogCon
           onPushError?.(response.response);
         }
       );
-      onClose();
     }
   };
 
   return (
     <form onSubmit={onSubmit}>
-      <DialogHeader title={<FormattedMessage id="words.push" defaultMessage="Push" />} onCloseButtonClick={onClose} />
       <DialogBody>
         <FormControl variant="outlined" fullWidth className={classes.formControl}>
           <InputLabel id="remoteBranchToPushLabel">
@@ -102,7 +89,7 @@ export default function PushToRemoteDialogContainer(props: PushToRemoteDialogCon
         </FormControl>
       </DialogBody>
       <DialogFooter>
-        <SecondaryButton onClick={onClose}>
+        <SecondaryButton onClick={onCloseButtonClick}>
           <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
         </SecondaryButton>
         <PrimaryButton type="submit" disabled={isBlank(selectedBranch)}>
@@ -112,3 +99,5 @@ export default function PushToRemoteDialogContainer(props: PushToRemoteDialogCon
     </form>
   );
 }
+
+export default PushToRemoteDialogContainer;

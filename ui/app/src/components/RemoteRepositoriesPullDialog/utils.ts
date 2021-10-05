@@ -14,10 +14,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './PullFromRemoteDialog';
+import { EnhancedDialogProps } from '../EnhancedDialog';
+import { MergeStrategy } from '../../models/Repository';
+import ApiResponse from '../../models/ApiResponse';
 
-export * from './PullFromRemoteDialog';
+export interface PullFromRemoteBaseProps {
+  branches: string[];
+  remoteName: string;
+  mergeStrategies: MergeStrategy[];
+}
 
-export * from './PullFromRemoteDialogContainer';
+export interface PullFromRemoteDialogProps extends PullFromRemoteBaseProps, EnhancedDialogProps {
+  onPullSuccess?(): void;
+  onPullError?(response: ApiResponse): void;
+}
 
-export * from './utils';
+export interface PullFromRemoteDialogContainerProps
+  extends PullFromRemoteBaseProps,
+    Pick<PullFromRemoteDialogProps, 'onClose' | 'onPullSuccess' | 'onPullError'> {}
