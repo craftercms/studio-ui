@@ -70,11 +70,7 @@ const plugins = [
   copy({
     targets: [
       { src: 'build/*.umd.js', dest: '../app/public' },
-      { src: 'build/*.umd.js', dest: '../../static-assets/scripts' },
-      {
-        src: 'build/*.umd.js',
-        dest: '/Users/rart/Workspace/craftercms/develop/crafter-authoring/bin/apache-tomcat/webapps/studio/default-site/static-assets/scripts'
-      }
+      { src: 'build/*.umd.js', dest: '../../static-assets/scripts' }
     ],
     hook: 'writeBundle'
   })
@@ -108,21 +104,21 @@ export default [
       globals
     },
     ...baseConfig
-  } // ,
+  },
 
   /* UMD build for preview landing controller */
-  // {
-  //   input: 'src/preview.ts',
-  //   external,
-  //   plugins,
-  //   output: {
-  //     sourcemap: 'inline',
-  //     name: 'craftercms.previewLanding',
-  //     file: 'build/preview-landing.umd.js',
-  //     format: 'umd',
-  //     amd: { id: 'craftercms.previewLanding' },
-  //     globals
-  //   },
-  //   ...baseConfig
-  // }
+  {
+    input: 'src/preview.ts',
+    external,
+    plugins,
+    output: {
+      sourcemap: 'inline',
+      name: 'craftercms.previewLanding',
+      file: 'build/preview-landing.umd.js',
+      format: 'umd',
+      amd: { id: 'craftercms.previewLanding' },
+      globals
+    },
+    ...baseConfig
+  }
 ];
