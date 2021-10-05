@@ -364,7 +364,7 @@ export default function Search(props: SearchProps) {
     error: false,
     errorResponse: null
   });
-  const [drawerOpen, setDrawerOpen] = useState(!embedded && window.innerWidth > 960);
+  const [drawerOpen, setDrawerOpen] = useState(window.innerWidth > 960);
   const [checkedFilters, setCheckedFilters] = useState({});
   const theme = useTheme();
   const desktopScreen = useMediaQuery(theme.breakpoints.up('md'));
@@ -762,7 +762,7 @@ export default function Search(props: SearchProps) {
         embedded={embedded}
       />
       <Drawer
-        variant={desktopScreen && !embedded ? 'persistent' : 'temporary'}
+        variant={desktopScreen ? 'persistent' : 'temporary'}
         anchor="left"
         open={drawerOpen}
         className={classes.drawer}
@@ -771,12 +771,9 @@ export default function Search(props: SearchProps) {
           modal: classes.drawerModal
         }}
         ModalProps={{
-          ...(desktopScreen && !embedded
-            ? {}
-            : {
-                onBackdropClick: toggleDrawer,
-                onEscapeKeyDown: toggleDrawer
-              })
+          ...(!desktopScreen && {
+            onClose: () => toggleDrawer()
+          })
         }}
       >
         {searchResults && searchResults.facets && (
@@ -802,7 +799,7 @@ export default function Search(props: SearchProps) {
           [classes.wrapperSelectMode]: mode === 'select'
         })}
         style={
-          drawerOpen && desktopScreen && !embedded
+          drawerOpen && desktopScreen
             ? { width: `calc(100% - ${drawerWidth}px`, marginLeft: drawerWidth }
             : { marginLeft: 0 }
         }
