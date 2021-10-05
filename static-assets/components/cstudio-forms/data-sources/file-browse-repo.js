@@ -16,7 +16,7 @@
 
 CStudioForms.Datasources.FileBrowseRepo =
   CStudioForms.Datasources.FileBrowseRepo ||
-  function(id, form, properties, constraints) {
+  function (id, form, properties, constraints) {
     this.id = id;
     this.form = form;
     this.properties = properties;
@@ -32,7 +32,7 @@ CStudioForms.Datasources.FileBrowseRepo =
   };
 
 YAHOO.extend(CStudioForms.Datasources.FileBrowseRepo, CStudioForms.CStudioFormDatasource, {
-  add: function(control, multiple) {
+  add: function (control, multiple) {
     var _self = this;
     var CMgs = CStudioAuthoring.Messages;
     var langBundle = CMgs.getBundle('contentTypes', CStudioAuthoringContext.lang);
@@ -54,9 +54,9 @@ YAHOO.extend(CStudioForms.Datasources.FileBrowseRepo, CStudioForms.CStudioFormDa
       </li>`
     );
 
-    create.find('a').on('click', function() {
+    create.find('a').on('click', function () {
       CStudioAuthoring.Operations.openBrowse('', _self.processPathsForMacros(_self.repoPath), '-1', 'select', true, {
-        success: function(searchId, selectedTOs) {
+        success: function (searchId, selectedTOs) {
           for (var i = 0; i < selectedTOs.length; i++) {
             var item = selectedTOs[i];
             var fileName = item.name;
@@ -68,21 +68,21 @@ YAHOO.extend(CStudioForms.Datasources.FileBrowseRepo, CStudioForms.CStudioFormDa
             }
           }
         },
-        failure: function() {}
+        failure: function () {}
       });
     });
 
     control.$dropdownMenu.append(create);
   },
 
-  edit: function(key) {
+  edit: function (key) {
     var getContentItemCb = {
-      success: function(contentTO) {
+      success: function (contentTO) {
         var editCallback = {
-          success: function() {
+          success: function () {
             // update label?
           },
-          failure: function() {}
+          failure: function () {}
         };
 
         CStudioAuthoring.Operations.editContent(
@@ -95,40 +95,37 @@ YAHOO.extend(CStudioForms.Datasources.FileBrowseRepo, CStudioForms.CStudioFormDa
           editCallback
         );
       },
-      failure: function() {}
+      failure: function () {}
     };
 
     CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, key, getContentItemCb);
   },
 
-  getLabel: function() {
+  getLabel: function () {
     return CMgs.format(langBundle, 'fileBrowse');
   },
 
-  getInterface: function() {
+  getInterface: function () {
     return 'item';
   },
 
-  getName: function() {
+  getName: function () {
     return 'file-browse-repo';
   },
 
-  getSupportedProperties: function() {
+  getSupportedProperties: function () {
     return [
       {
         label: CMgs.format(langBundle, 'repositoryPath'),
         name: 'repoPath',
         type: 'content-path-input',
-        defaultValue: '/static-assets/',
-        rootPath: '/static-assets',
-        validations: {
-          regex: /^\/static-assets(\/.*)?$/
-        }
+        defaultValue: '/',
+        rootPath: '/'
       }
     ];
   },
 
-  getSupportedConstraints: function() {
+  getSupportedConstraints: function () {
     return [];
   }
 });

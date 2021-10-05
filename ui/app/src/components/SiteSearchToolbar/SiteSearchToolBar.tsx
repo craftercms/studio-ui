@@ -43,8 +43,8 @@ const translations = defineMessages({
     defaultMessage: 'Change view'
   },
   toggleSidebarTooltip: {
-    id: 'common.toggleSidebarTooltip',
-    defaultMessage: 'Toggle sidebar'
+    id: 'words.filters',
+    defaultMessage: 'Filters'
   }
 });
 

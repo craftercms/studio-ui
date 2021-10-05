@@ -69,7 +69,8 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
   [fetchSiteUiConfig.type]: (state, { payload: { site } }) => ({
     ...state,
     isFetching: true,
-    currentSite: site
+    currentSite: site,
+    xml: null
   }),
   [fetchSiteUiConfigComplete.type]: (state, { payload }) => {
     let config = payload.config;
