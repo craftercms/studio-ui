@@ -15,18 +15,26 @@
  */
 
 import React from 'react';
-import Dialog from '@mui/material/Dialog';
 import { SingleFileUploadDialogProps } from './utils';
-import SingleFileUploadDialogContainer from './SingleFileUploadDialogContainer';
+import SingleFileUploadDialogUI from './SingleFileUploadDialogUI';
+import EnhancedDialog from '../EnhancedDialog';
+import { FormattedMessage } from 'react-intl';
 
 export default function SingleFileUploadDialog(props: SingleFileUploadDialogProps) {
-  const { open, onClose } = props;
+  const { open, onClose, isSubmitting, ...rest } = props;
 
   return (
     <>
-      <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
-        <SingleFileUploadDialogContainer {...props} />
-      </Dialog>
+      <EnhancedDialog
+        title={<FormattedMessage id="words.upload" defaultMessage="Upload" />}
+        maxWidth="xs"
+        open={open}
+        isSubmitting={isSubmitting}
+        onClose={onClose}
+        {...rest}
+      >
+        <SingleFileUploadDialogUI {...props} />
+      </EnhancedDialog>
     </>
   );
 }

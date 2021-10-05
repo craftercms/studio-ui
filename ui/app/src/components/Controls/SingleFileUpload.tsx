@@ -83,8 +83,8 @@ const singleFileUploadStyles = makeStyles((theme) =>
 
 interface SingleFileUploadProps {
   formTarget: string;
-  url: string;
   site: string;
+  url?: string;
   path?: string;
   customFileName?: string;
   fileTypes?: [string];
@@ -94,7 +94,17 @@ interface SingleFileUploadProps {
 }
 
 export default function SingleFileUpload(props: SingleFileUploadProps) {
-  const { url, formTarget, onUploadStart, onComplete, onError, customFileName, fileTypes, path, site } = props;
+  const {
+    url = '/studio/asset-upload',
+    formTarget,
+    onUploadStart,
+    onComplete,
+    onError,
+    customFileName,
+    fileTypes,
+    path,
+    site
+  } = props;
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
   const [description, setDescription] = useState<string>(formatMessage(messages.selectFileMessage));
@@ -116,7 +126,11 @@ export default function SingleFileUpload(props: SingleFileUploadProps) {
               onBeforeFileAdded: (currentFile) => {
                 return {
                   ...currentFile,
-                  name: customFileName
+                  name: customFileName,
+                  meta: {
+                    ...currentFile.meta,
+                    name: customFileName
+                  }
                 };
               }
             }
@@ -155,7 +169,8 @@ export default function SingleFileUpload(props: SingleFileUploadProps) {
         formData: true,
         fieldName: 'file',
         timeout: 0,
-        headers: getGlobalHeaders()
+        headers: getGlobalHeaders(),
+        getResponseData: (responseText, response) => response
       });
 
     uppy.on('file-added', (file: UppyFile) => {
@@ -167,8 +182,7 @@ export default function SingleFileUpload(props: SingleFileUploadProps) {
       validateActionPolicy(site, {
         type: 'CREATE',
         target: path + file.name
-      }).subscribe((response) => {
-        const { allowed, modifiedValue } = response[0];
+      }).subscribe(({ allowed, modifiedValue }) => {
         if (allowed) {
           if (modifiedValue) {
             setConfirm({
@@ -194,7 +208,9 @@ export default function SingleFileUpload(props: SingleFileUploadProps) {
       uploadBtn.disabled = false;
     });
 
-    uppy.on('complete', onComplete);
+    uppy.on('complete', (result) => {
+      onComplete?.(result);
+    });
 
     uppy.on('upload-error', (file, error, response) => {
       uppy.cancelAll();

@@ -14,8 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { PropsWithChildren } from 'react';
 import StandardAction from '../../models/StandardAction';
+import { EnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
+import { EnhancedDialogProps } from '../EnhancedDialog';
 
 export interface SingleFileUploadDialogBaseProps {
   open: boolean;
@@ -25,22 +26,18 @@ export interface SingleFileUploadDialogBaseProps {
   fileTypes?: [string];
 }
 
-export type SingleFileUploadDialogProps = PropsWithChildren<
-  SingleFileUploadDialogBaseProps & {
-    onClose(): void;
-    onClosed?(): void;
-    onUploadStart?(): void;
-    onComplete?(result: any): void;
-    onError?(file: any, error: any, response: any): void;
-  }
->;
+export interface SingleFileUploadDialogProps extends SingleFileUploadDialogBaseProps, EnhancedDialogProps {
+  onClose(): void;
+  onClosed?(): void;
+  onUploadStart?(): void;
+  onUploadComplete?(result: any): void;
+}
 
-export interface SingleFileUploadDialogStateProps extends SingleFileUploadDialogBaseProps {
+export interface SingleFileUploadDialogStateProps extends SingleFileUploadDialogBaseProps, EnhancedDialogState {
   onClose?: StandardAction;
   onClosed?: StandardAction;
   onUploadStart?: StandardAction;
-  onComplete?: StandardAction;
-  onError?: StandardAction;
+  onUploadComplete?: StandardAction;
 }
 
-export interface SingleFileUploadDialogContainerProps extends SingleFileUploadDialogProps {}
+export interface SingleFileUploadDialogUIProps extends SingleFileUploadDialogProps {}

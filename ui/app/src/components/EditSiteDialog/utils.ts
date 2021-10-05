@@ -27,6 +27,7 @@ export interface EditSiteDialogUIProps {
   siteId: string;
   siteName: string;
   siteDescription: string;
+  siteImage: string;
   submitting: boolean;
   submitDisabled: boolean;
   onKeyPress: (e: React.KeyboardEvent) => void;

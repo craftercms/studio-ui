@@ -19,17 +19,21 @@ import GlobalState from '../../../models/GlobalState';
 import {
   closeSingleFileUploadDialog,
   showSingleFileUploadDialog,
-  singleFileUploadDialogClosed
+  singleFileUploadDialogClosed,
+  updateSingleFileUploadDialog
 } from '../../actions/dialogs';
 import { SingleFileUploadDialogStateProps } from '../../../components/SingleFileUploadDialog';
 
 const initialState: SingleFileUploadDialogStateProps = {
   open: false,
   path: null,
-  site: null
+  site: null,
+  isSubmitting: null,
+  isMinimized: null,
+  hasPendingChanges: null
 };
 
-export default createReducer<GlobalState['dialogs']['upload']>(initialState, {
+export default createReducer<GlobalState['dialogs']['singleFileUpload']>(initialState, {
   [showSingleFileUploadDialog.type]: (state, { payload }) => ({
     ...state,
     onClose: closeSingleFileUploadDialog(),
@@ -41,6 +45,10 @@ export default createReducer<GlobalState['dialogs']['upload']>(initialState, {
   [closeSingleFileUploadDialog.type]: (state) => ({
     ...state,
     open: false
+  }),
+  [updateSingleFileUploadDialog.type]: (state, { payload }) => ({
+    ...state,
+    ...payload
   }),
   [singleFileUploadDialogClosed.type]: () => initialState
 });

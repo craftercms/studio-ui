@@ -197,6 +197,8 @@ export const closeSingleFileUploadDialog = /*#__PURE__*/ createAction<StandardAc
   'CLOSE_SINGLE_FILE_UPLOAD_DIALOG'
 );
 export const singleFileUploadDialogClosed = /*#__PURE__*/ createAction('SINGLE_FILE_UPLOAD_DIALOG_CLOSED');
+export const updateSingleFileUploadDialog =
+  /*#__PURE__*/ createAction<Partial<CreateFileStateProps>>('UPDATE_CREATE_FILE_DIALOG');
 // endregion
 
 // region Preview Dialog

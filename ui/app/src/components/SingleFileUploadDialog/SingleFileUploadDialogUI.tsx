@@ -15,37 +15,30 @@
  */
 
 import React from 'react';
-import { SingleFileUploadDialogContainerProps } from './utils';
+import { SingleFileUploadDialogUIProps } from './utils';
 import DialogBody from '../Dialogs/DialogBody';
 import SingleFileUpload from '../Controls/SingleFileUpload';
-import DialogHeader from '../DialogHeader';
-import { FormattedMessage } from 'react-intl';
 
-export default function SingleFileUploadDialogContainer(props: SingleFileUploadDialogContainerProps) {
-  const { site, onClose, path, customFileName, fileTypes, onComplete, onUploadStart, onError } = props;
-  const url = `/studio/asset-upload`;
+export default function SingleFileUploadDialogUI(props: SingleFileUploadDialogUIProps) {
+  const { site, path, customFileName, fileTypes, onUploadComplete, onUploadStart } = props;
 
   return (
     <>
-      <DialogHeader
-        title={<FormattedMessage id="words.upload" defaultMessage="Upload" />}
-        onCloseButtonClick={onClose}
-      />
       <DialogBody>
+        {/* TODO: move the form to SingleFileUpload */}
         <form id="asset_upload_form">
           <input type="hidden" name="path" value={path} />
           <input type="hidden" name="site" value={site} />
         </form>
         <SingleFileUpload
           formTarget="#asset_upload_form"
-          url={url}
           site={site}
           path={path}
           customFileName={customFileName}
           fileTypes={fileTypes}
-          onComplete={onComplete}
+          onComplete={onUploadComplete}
           onUploadStart={onUploadStart}
-          onError={onError}
+          onError={null}
         />
       </DialogBody>
     </>

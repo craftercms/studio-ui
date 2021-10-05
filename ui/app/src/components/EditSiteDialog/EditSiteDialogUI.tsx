@@ -37,6 +37,7 @@ export function EditSiteDialogUI(props: EditSiteDialogUIProps) {
     siteId,
     siteName,
     siteDescription,
+    siteImage,
     onSiteNameChange,
     onSiteDescriptionChange,
     submitting,
@@ -52,7 +53,7 @@ export function EditSiteDialogUI(props: EditSiteDialogUIProps) {
     <>
       <DialogBody>
         <Grid container spacing={2}>
-          <Grid item sm={6}>
+          <Grid item sm={7}>
             <Grid container spacing={1} component="form">
               <Grid item xs={12}>
                 <TextField
@@ -110,13 +111,9 @@ export function EditSiteDialogUI(props: EditSiteDialogUIProps) {
               </Grid>
             </Grid>
           </Grid>
-          <Grid item sm={6}>
+          <Grid item sm={5}>
             <Card>
-              <CardMedia
-                component="img"
-                image={`/.crafter/screenshots/default.png?crafterSite=${siteId}`}
-                title={siteName}
-              />
+              <CardMedia component="img" image={siteImage} title={siteName} className={classes.media} />
               <CardActions className={classes.cardActions} disableSpacing>
                 <Tooltip title={<FormattedMessage id="words.edit" defaultMessage="Edit" />}>
                   <IconButton onClick={onEditSiteImage}>

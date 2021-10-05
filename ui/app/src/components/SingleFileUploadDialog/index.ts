@@ -18,6 +18,6 @@ export { default } from './SingleFileUploadDialog';
 
 export * from './SingleFileUploadDialog';
 
-export * from './SingleFileUploadDialogContainer';
+export * from './SingleFileUploadDialogUI';
 
 export * from './utils';

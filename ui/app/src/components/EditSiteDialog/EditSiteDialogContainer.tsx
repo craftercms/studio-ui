@@ -27,11 +27,12 @@ import {
   showSingleFileUploadDialog,
   updateEditSiteDialog
 } from '../../state/actions/dialogs';
-import { batchActions } from '../../state/actions/misc';
+import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { ConditionalLoadingState } from '../SystemStatus/LoadingState';
 import { EditSiteDialogUI } from './EditSiteDialogUI';
 
+const siteImagePath = `/.crafter/screenshots/default.png?crafterSite=`;
 export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
   const { site, onClose, onSaveSuccess, isSubmitting } = props;
   const [submitDisabled, setSubmitDisabled] = useState(false);
@@ -39,6 +40,9 @@ export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
   const dispatch = useDispatch();
   const [name, setName] = useState(site.name);
   const [description, setDescription] = useState(site.description);
+  const [siteImageCounter, setSiteImageCounter] = useState(0);
+  const [siteImage, setSiteImage] = useState(`${siteImagePath}${site.id}`);
+  const idEditSiteImageComplete = 'editSiteImageComplete';
 
   function checkSiteName(event: React.ChangeEvent<HTMLInputElement>, currentSiteName: string) {
     if (
@@ -124,10 +128,22 @@ export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
         customFileName: 'default.png',
         fileTypes: ['image/png'],
         onClose: closeSingleFileUploadDialog(),
-        onUploadComplete: closeSingleFileUploadDialog()
+        onUploadComplete: batchActions([
+          closeSingleFileUploadDialog(),
+          dispatchDOMEvent({ id: idEditSiteImageComplete }),
+          fetchSites()
+        ])
       })
     );
   };
+
+  const editSiteImageCompleteCallback = () => {
+    setSiteImage(`${siteImagePath}${site.id}&v=${siteImageCounter + 1}`);
+    setSiteImageCounter(siteImageCounter + 1);
+    document.removeEventListener(idEditSiteImageComplete, editSiteImageCompleteCallback, false);
+  };
+
+  document.addEventListener(idEditSiteImageComplete, editSiteImageCompleteCallback, false);
 
   return (
     <ConditionalLoadingState isLoading={!site}>
@@ -135,6 +151,7 @@ export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
         siteId={site.id}
         siteName={name}
         siteDescription={description}
+        siteImage={siteImage}
         onSiteNameChange={onSiteNameChange}
         onSiteDescriptionChange={onSiteDescriptionChange}
         submitting={isSubmitting}

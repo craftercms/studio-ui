@@ -21,6 +21,9 @@ export const useSiteDialogStyles = makeStyles(() =>
   createStyles({
     cardActions: {
       placeContent: 'center'
+    },
+    media: {
+      height: '234px'
     }
   })
 );
