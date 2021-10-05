@@ -73,10 +73,10 @@ const drawerWidth = 300;
 
 const useStyles = makeStyles((theme) => ({
   wrapper: {
+    height: '100%',
     margin: 'auto',
     display: 'flex',
     flexDirection: 'column',
-    height: 'calc(100% - 65px)',
     background: theme.palette.background.default,
     transition: theme.transitions.create('margin', {
       easing: theme.transitions.easing.sharp,
@@ -85,12 +85,10 @@ const useStyles = makeStyles((theme) => ({
     '&.hasContent': {
       height: 'inherit'
     },
-    '&.select': {
-      paddingBottom: '60px'
-    }
+    '&.select': {}
   },
   wrapperSelectMode: {
-    height: 'calc(100% - 130px)'
+    height: 'calc(100% - 71px)'
   },
   shift: {
     transition: theme.transitions.create('margin', {
@@ -196,14 +194,13 @@ const useStyles = makeStyles((theme) => ({
   },
   drawerPaper: {
     top: 65,
-    height: 'calc(100% - 65px)',
     bottom: 0,
     width: drawerWidth,
-    zIndex: theme.zIndex.appBar - 1
+    zIndex: theme.zIndex.appBar - 1,
+    height: 'auto'
   },
   drawerPaperSelect: {
-    top: 0,
-    height: '100%'
+    bottom: '71px'
   },
   paginationSelectRoot: {
     marginRight: 0
@@ -794,7 +791,6 @@ export default function Search(props: SearchProps) {
       </Drawer>
       <section
         className={clsx(classes.wrapper, {
-          select: mode === 'select',
           [classes.shift]: drawerOpen,
           [classes.wrapperSelectMode]: mode === 'select'
         })}
