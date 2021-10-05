@@ -20,21 +20,21 @@ import { initLauncherConfig } from '../actions/launcher';
 import { deserialize, fromString } from '../../utils/xml';
 import { applyDeserializedXMLTransforms } from '../../utils/object';
 import { changeSite } from './sites';
+import { fetchSiteUiConfig } from '../actions/configuration';
 
 const reducer = createReducer<GlobalState['launcher']>(null, {
   [changeSite.type]: () => null,
+  [fetchSiteUiConfig.type]: () => null,
   [initLauncherConfig.type]: (state, { payload }) => {
     let launcherConfig = null;
     const arrays = ['widgets', 'permittedRoles', 'siteCardMenuLinks'];
     const configDOM = fromString(payload.configXml);
-
     const launcher = configDOM.querySelector('[id="craftercms.components.Launcher"] > configuration');
     if (launcher) {
       launcherConfig = applyDeserializedXMLTransforms(deserialize(launcher), {
         arrays
       }).configuration;
     }
-
     return {
       ...state,
       ...launcherConfig

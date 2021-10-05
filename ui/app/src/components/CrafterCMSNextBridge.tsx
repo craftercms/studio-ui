@@ -72,7 +72,7 @@ function Bridge(
         <SnackbarProvider
           maxSnack={5}
           autoHideDuration={5000}
-          anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
           action={(id) => <SnackbarCloseButton id={id} />}
           children={body}
           classes={{
