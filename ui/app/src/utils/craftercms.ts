@@ -14,12 +14,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import jss from 'jss';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as MaterialUI from '@mui/material';
 import * as ReactRedux from 'react-redux';
 import * as ReactIntl from 'react-intl';
+import * as EmotionCSS from '@emotion/css';
 import { IntlShape } from 'react-intl';
 import { CrafterCMSStore, getStoreSync } from '../state/store';
 import { getCurrentIntl } from './i18n';
@@ -33,12 +33,12 @@ declare global {
 
 export interface CrafterCMSGlobal {
   libs: {
-    jss: typeof jss;
     React: typeof React;
     ReactDOM: typeof ReactDOM;
     MaterialUI: typeof MaterialUI;
     ReactRedux: typeof ReactRedux;
     ReactIntl: typeof ReactIntl;
+    EmotionCSS: typeof EmotionCSS;
     // Include also package name aliases for builds that might use those
     // when invoking require('...') or define([...], factory).
     react: typeof React;
@@ -46,6 +46,7 @@ export interface CrafterCMSGlobal {
     'react-redux': typeof ReactRedux;
     'react-intl': typeof ReactIntl;
     '@mui/material': typeof MaterialUI;
+    '@emotion/css': typeof EmotionCSS;
   };
   plugins: Map<string, PluginDescriptor>;
   components: Map<string, ComponentRecord>;
@@ -62,17 +63,18 @@ export interface CrafterCMSGlobal {
 let UND;
 
 export const libs: CrafterCMSGlobal['libs'] = {
-  jss,
   React,
   ReactDOM,
   ReactIntl,
   MaterialUI,
   ReactRedux,
+  EmotionCSS,
   react: React,
   'react-dom': ReactDOM,
   'react-redux': ReactRedux,
   'react-intl': ReactIntl,
-  '@mui/material': MaterialUI
+  '@mui/material': MaterialUI,
+  '@emotion/css': EmotionCSS
 };
 
 // UMD builds wouldn't give the chance to track the file builder the plugin loads from
