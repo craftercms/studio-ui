@@ -90,7 +90,7 @@ const useStyles = makeStyles((theme) => ({
     }
   },
   wrapperSelectMode: {
-    height: 'calc(100% - 130px)'
+    height: 'calc(100% - 71px)'
   },
   shift: {
     transition: theme.transitions.create('margin', {
@@ -196,7 +196,6 @@ const useStyles = makeStyles((theme) => ({
   },
   drawerPaper: {
     top: 65,
-    height: 'calc(100% - 65px)',
     bottom: 0,
     width: drawerWidth,
     zIndex: theme.zIndex.appBar - 1
