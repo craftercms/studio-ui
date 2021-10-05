@@ -31,6 +31,7 @@ export interface SingleFileUploadDialogProps extends SingleFileUploadDialogBaseP
   onClosed?(): void;
   onUploadStart?(): void;
   onUploadComplete?(result: any): void;
+  onUploadError?({ file, error, response }): void;
 }
 
 export interface SingleFileUploadDialogStateProps extends SingleFileUploadDialogBaseProps, EnhancedDialogState {
@@ -38,6 +39,9 @@ export interface SingleFileUploadDialogStateProps extends SingleFileUploadDialog
   onClosed?: StandardAction;
   onUploadStart?: StandardAction;
   onUploadComplete?: StandardAction;
+  onUploadError?: StandardAction<{ error: any; file: any; response: any }>;
 }
+
+export interface SingleFileUploadDialogContainerProps extends SingleFileUploadDialogProps {}
 
 export interface SingleFileUploadDialogUIProps extends SingleFileUploadDialogProps {}

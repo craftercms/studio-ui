@@ -82,21 +82,21 @@ const singleFileUploadStyles = makeStyles((theme) =>
 );
 
 interface SingleFileUploadProps {
-  formTarget: string;
   site: string;
+  formTarget?: string;
   url?: string;
   path?: string;
   customFileName?: string;
   fileTypes?: [string];
   onUploadStart?(): void;
   onComplete?(result: any): void;
-  onError?(file: any, error: any, response: any): void;
+  onError?({ file, error, response }): void;
 }
 
 export default function SingleFileUpload(props: SingleFileUploadProps) {
   const {
     url = '/studio/asset-upload',
-    formTarget,
+    formTarget = '#asset_upload_form',
     onUploadStart,
     onComplete,
     onError,
@@ -216,7 +216,7 @@ export default function SingleFileUpload(props: SingleFileUploadProps) {
       uppy.cancelAll();
       uploadBtn.disabled = false;
       setFileNameErrorClass('text-danger');
-      onError && onError(file, error, response);
+      onError?.({ file, error, response });
     });
 
     return () => {
@@ -243,6 +243,10 @@ export default function SingleFileUpload(props: SingleFileUploadProps) {
 
   return (
     <>
+      <form id="asset_upload_form">
+        <input type="hidden" name="path" value={path} />
+        <input type="hidden" name="site" value={site} />
+      </form>
       <div className="uppy-progress-bar" />
       <div className="uploaded-files">
         <Typography variant="subtitle1" component="h2" className={classes.description}>

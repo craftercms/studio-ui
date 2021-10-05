@@ -328,6 +328,7 @@ function GlobalDialogManager() {
         onClosed={createCallback(state.singleFileUpload.onClosed, dispatch)}
         onUploadStart={createCallback(state.singleFileUpload.onUploadStart, dispatch)}
         onUploadComplete={createCallback(state.singleFileUpload.onUploadComplete, dispatch)}
+        onUploadError={createCallback(state.singleFileUpload.onUploadError, dispatch)}
       />
       {/* endregion */}
 

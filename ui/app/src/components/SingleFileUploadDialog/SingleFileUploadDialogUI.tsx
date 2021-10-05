@@ -20,25 +20,19 @@ import DialogBody from '../Dialogs/DialogBody';
 import SingleFileUpload from '../Controls/SingleFileUpload';
 
 export default function SingleFileUploadDialogUI(props: SingleFileUploadDialogUIProps) {
-  const { site, path, customFileName, fileTypes, onUploadComplete, onUploadStart } = props;
+  const { site, path, customFileName, fileTypes, onUploadComplete, onUploadStart, onUploadError } = props;
 
   return (
     <>
       <DialogBody>
-        {/* TODO: move the form to SingleFileUpload */}
-        <form id="asset_upload_form">
-          <input type="hidden" name="path" value={path} />
-          <input type="hidden" name="site" value={site} />
-        </form>
         <SingleFileUpload
-          formTarget="#asset_upload_form"
           site={site}
           path={path}
           customFileName={customFileName}
           fileTypes={fileTypes}
           onComplete={onUploadComplete}
           onUploadStart={onUploadStart}
-          onError={null}
+          onError={onUploadError}
         />
       </DialogBody>
     </>

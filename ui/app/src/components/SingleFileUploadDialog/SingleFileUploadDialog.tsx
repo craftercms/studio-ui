@@ -16,9 +16,9 @@
 
 import React from 'react';
 import { SingleFileUploadDialogProps } from './utils';
-import SingleFileUploadDialogUI from './SingleFileUploadDialogUI';
 import EnhancedDialog from '../EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
+import SingleFileUploadDialogContainer from './SingleFileUploadDialogContainer';
 
 export default function SingleFileUploadDialog(props: SingleFileUploadDialogProps) {
   const { open, onClose, isSubmitting, ...rest } = props;
@@ -33,7 +33,7 @@ export default function SingleFileUploadDialog(props: SingleFileUploadDialogProp
         onClose={onClose}
         {...rest}
       >
-        <SingleFileUploadDialogUI {...props} />
+        <SingleFileUploadDialogContainer {...props} />
       </EnhancedDialog>
     </>
   );
