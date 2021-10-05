@@ -20,6 +20,7 @@ import * as MaterialUI from '@mui/material';
 import * as ReactRedux from 'react-redux';
 import * as ReactIntl from 'react-intl';
 import * as EmotionCSS from '@emotion/css';
+import createEmotion from '@emotion/css/create-instance';
 import { IntlShape } from 'react-intl';
 import { CrafterCMSStore, getStoreSync } from '../state/store';
 import { getCurrentIntl } from './i18n';
@@ -39,6 +40,7 @@ export interface CrafterCMSGlobal {
     ReactRedux: typeof ReactRedux;
     ReactIntl: typeof ReactIntl;
     EmotionCSS: typeof EmotionCSS;
+    createEmotion: typeof createEmotion;
     // Include also package name aliases for builds that might use those
     // when invoking require('...') or define([...], factory).
     react: typeof React;
@@ -47,6 +49,7 @@ export interface CrafterCMSGlobal {
     'react-intl': typeof ReactIntl;
     '@mui/material': typeof MaterialUI;
     '@emotion/css': typeof EmotionCSS;
+    '@emotion/css/create-instance': typeof createEmotion;
   };
   plugins: Map<string, PluginDescriptor>;
   components: Map<string, ComponentRecord>;
@@ -69,12 +72,14 @@ export const libs: CrafterCMSGlobal['libs'] = {
   MaterialUI,
   ReactRedux,
   EmotionCSS,
+  createEmotion,
   react: React,
   'react-dom': ReactDOM,
   'react-redux': ReactRedux,
   'react-intl': ReactIntl,
   '@mui/material': MaterialUI,
-  '@emotion/css': EmotionCSS
+  '@emotion/css': EmotionCSS,
+  '@emotion/css/create-instance': createEmotion
 };
 
 // UMD builds wouldn't give the chance to track the file builder the plugin loads from
