@@ -41,7 +41,7 @@ const useStyles = makeStyles(() =>
 
 export function PullFromRemoteDialogContainer(props: PullFromRemoteDialogContainerProps) {
   const { branches, remoteName, mergeStrategies, onClose, onPullSuccess, onPullError } = props;
-  const [selectedBranch, setSelectedBranch] = useState(branches ? branches[0] : '');
+  const [selectedBranch, setSelectedBranch] = useState(branches?.[0] ?? '');
   const [selectedMergeStrategy, setSelectedMergeStrategy] = useState(mergeStrategies[0].key);
   const classes = useStyles();
   const siteId = useActiveSiteId();

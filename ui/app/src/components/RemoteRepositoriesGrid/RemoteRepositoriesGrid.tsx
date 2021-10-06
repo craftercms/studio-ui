@@ -85,6 +85,8 @@ export function RemoteRepositoriesGrid(props: RemoteRepositoriesGridProps) {
   ];
   const siteId = useActiveSiteId();
   const dispatch = useDispatch();
+  const pushToRemoteDialogState = useEnhancedDialogState();
+  const pullFromRemoteDialogState = useEnhancedDialogState();
 
   const onClickPull = (remoteName: string, branches: string[]) => {
     setRepositoriesPullDialogBranches(branches);
@@ -148,10 +150,6 @@ export function RemoteRepositoriesGrid(props: RemoteRepositoriesGridProps) {
       }
     );
   };
-
-  const pushToRemoteDialogState = useEnhancedDialogState();
-
-  const pullFromRemoteDialogState = useEnhancedDialogState();
 
   return (
     <>

@@ -41,7 +41,7 @@ const useStyles = makeStyles(() =>
 
 export function PushToRemoteDialogContainer(props: PushToRemoteDialogContainerProps) {
   const { branches, remoteName, onClose, onPushSuccess, onPushError } = props;
-  const [selectedBranch, setSelectedBranch] = useState(branches ? branches[0] : '');
+  const [selectedBranch, setSelectedBranch] = useState(branches?.[0] ?? '');
   const classes = useStyles();
   const siteId = useActiveSiteId();
 
