@@ -272,7 +272,7 @@ export default function SingleFileUpload(props: SingleFileUploadProps) {
         </Typography>
         <div className={classes.inputContainer}>
           <input
-            accept={fileTypes.join(',')}
+            accept={fileTypes?.join(',')}
             className={classes.input}
             id="contained-button-file"
             type="file"
