@@ -57,8 +57,8 @@ export default function SingleFileUploadDialogContainer(props: SingleFileUploadD
   return (
     <DialogBody>
       <SingleFileUploadDialogUI
-        onUploadComplete={onUploadComplete}
-        onUploadStart={onUploadStart}
+        onUploadComplete={onComplete}
+        onUploadStart={onStart}
         onUploadError={onError}
         {...rest}
       />

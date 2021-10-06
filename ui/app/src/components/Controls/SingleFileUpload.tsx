@@ -18,7 +18,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 import Core from '@uppy/core';
 import XHRUpload from '@uppy/xhr-upload';
 import ProgressBar from '@uppy/progress-bar';
-import FileInput from '@uppy/file-input';
 import Form from '@uppy/form';
 import { defineMessages, useIntl } from 'react-intl';
 
@@ -80,7 +79,7 @@ const singleFileUploadStyles = makeStyles((theme) =>
       margin: '10px 0'
     },
     input: {
-      display: 'none'
+      display: 'none !important'
     },
     inputContainer: {
       marginBottom: '10px'
@@ -147,6 +146,51 @@ export default function SingleFileUpload(props: SingleFileUploadProps) {
     [fileTypes, customFileName]
   );
 
+  uppy.on('file-added', (file: UppyFile) => {
+    setDescription(`${formatMessage(messages.validatingFile)}:`);
+    setFile(file);
+    setFileNameErrorClass('');
+    validateActionPolicy(site, {
+      type: 'CREATE',
+      target: path + file.name
+    }).subscribe(({ allowed, modifiedValue }) => {
+      if (allowed) {
+        if (modifiedValue) {
+          setConfirm({
+            body: formatMessage(messages.createPolicy, { name: modifiedValue.replace(`${path}`, '') })
+          });
+        } else {
+          setDisableInput(true);
+          uppy.upload();
+          setDescription(`${formatMessage(messages.uploadingFile)}:`);
+          onUploadStart?.();
+        }
+      } else {
+        setConfirm({
+          error: true,
+          body: formatMessage(messages.policyError)
+        });
+      }
+    });
+  });
+
+  uppy.on('upload-success', (file, response) => {
+    dispatch(emitSystemEvent(itemCreated({ target: path + file.name })));
+    setDescription(`${formatMessage(messages.uploadedFile)}:`);
+  });
+
+  uppy.on('complete', (result) => {
+    onComplete?.(result);
+    setDisableInput(false);
+  });
+
+  uppy.on('upload-error', (file, error, response) => {
+    uppy.cancelAll();
+    setFileNameErrorClass('text-danger');
+    onError?.({ file, error, response });
+    setDisableInput(false);
+  });
+
   useEffect(() => {
     const instance = uppy
       .use(Form, {
@@ -169,57 +213,12 @@ export default function SingleFileUpload(props: SingleFileUploadProps) {
         getResponseData: (responseText, response) => response
       });
 
-    uppy.on('file-added', (file: UppyFile) => {
-      setDescription(`${formatMessage(messages.validatingFile)}:`);
-      setFile(file);
-      setFileNameErrorClass('');
-      validateActionPolicy(site, {
-        type: 'CREATE',
-        target: path + file.name
-      }).subscribe(({ allowed, modifiedValue }) => {
-        if (allowed) {
-          if (modifiedValue) {
-            setConfirm({
-              body: formatMessage(messages.createPolicy, { name: modifiedValue.replace(`${path}`, '') })
-            });
-          } else {
-            setDisableInput(true);
-            uppy.upload();
-            setDescription(`${formatMessage(messages.uploadingFile)}:`);
-            onUploadStart?.();
-          }
-        } else {
-          setConfirm({
-            error: true,
-            body: formatMessage(messages.policyError)
-          });
-        }
-      });
-    });
-
-    uppy.on('upload-success', (file, response) => {
-      dispatch(emitSystemEvent(itemCreated({ target: path + file.name })));
-      setDescription(`${formatMessage(messages.uploadedFile)}:`);
-    });
-
-    uppy.on('complete', (result) => {
-      onComplete?.(result);
-      setDisableInput(false);
-    });
-
-    uppy.on('upload-error', (file, error, response) => {
-      uppy.cancelAll();
-      setFileNameErrorClass('text-danger');
-      onError?.({ file, error, response });
-      setDisableInput(false);
-    });
-
     return () => {
       // https://uppy.io/docs/uppy/#uppy-close
       instance.reset();
       instance.close();
     };
-  }, [uppy, fileTypes, formTarget, formatMessage, onComplete, onError, onUploadStart, path, site, url, dispatch]);
+  }, [uppy, formTarget, url]);
 
   const onConfirm = () => {
     uppy.upload().then(() => {});
