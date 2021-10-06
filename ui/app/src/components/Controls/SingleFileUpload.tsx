@@ -35,6 +35,7 @@ import { emitSystemEvent, itemCreated } from '../../state/actions/system';
 import { useDispatch } from 'react-redux';
 import Typography from '@mui/material/Typography';
 import clsx from 'clsx';
+import Button from '@mui/material/Button';
 
 const messages = defineMessages({
   chooseFile: {
@@ -77,6 +78,12 @@ const singleFileUploadStyles = makeStyles((theme) =>
     },
     description: {
       margin: '10px 0'
+    },
+    input: {
+      display: 'none'
+    },
+    inputContainer: {
+      marginBottom: '10px'
     }
   })
 );
@@ -110,6 +117,7 @@ export default function SingleFileUpload(props: SingleFileUploadProps) {
   const [description, setDescription] = useState<string>(formatMessage(messages.selectFileMessage));
   const [file, setFile] = useState<UppyFile>(null);
   const [fileNameErrorClass, setFileNameErrorClass] = useState<string>();
+  const [disableInput, setDisableInput] = useState(false);
   const [confirm, setConfirm] = useState<{
     body: string;
     error?: boolean;
@@ -140,19 +148,7 @@ export default function SingleFileUpload(props: SingleFileUploadProps) {
   );
 
   useEffect(() => {
-    let uploadBtn: HTMLInputElement;
-
     const instance = uppy
-      .use(FileInput, {
-        target: '.uppy-file-input-container',
-        // TODO: check removing this option doesn't break anything
-        // replaceTargetContent: false,
-        locale: {
-          strings: {
-            chooseFiles: formatMessage(messages.chooseFile)
-          }
-        }
-      })
       .use(Form, {
         target: formTarget,
         getMetaFromForm: true,
@@ -174,11 +170,9 @@ export default function SingleFileUpload(props: SingleFileUploadProps) {
       });
 
     uppy.on('file-added', (file: UppyFile) => {
-      uploadBtn = document.querySelector('.uppy-FileInput-btn');
       setDescription(`${formatMessage(messages.validatingFile)}:`);
       setFile(file);
       setFileNameErrorClass('');
-      uploadBtn.disabled = true;
       validateActionPolicy(site, {
         type: 'CREATE',
         target: path + file.name
@@ -189,6 +183,7 @@ export default function SingleFileUpload(props: SingleFileUploadProps) {
               body: formatMessage(messages.createPolicy, { name: modifiedValue.replace(`${path}`, '') })
             });
           } else {
+            setDisableInput(true);
             uppy.upload();
             setDescription(`${formatMessage(messages.uploadingFile)}:`);
             onUploadStart?.();
@@ -205,18 +200,18 @@ export default function SingleFileUpload(props: SingleFileUploadProps) {
     uppy.on('upload-success', (file, response) => {
       dispatch(emitSystemEvent(itemCreated({ target: path + file.name })));
       setDescription(`${formatMessage(messages.uploadedFile)}:`);
-      uploadBtn.disabled = false;
     });
 
     uppy.on('complete', (result) => {
       onComplete?.(result);
+      setDisableInput(false);
     });
 
     uppy.on('upload-error', (file, error, response) => {
       uppy.cancelAll();
-      uploadBtn.disabled = false;
       setFileNameErrorClass('text-danger');
       onError?.({ file, error, response });
+      setDisableInput(false);
     });
 
     return () => {
@@ -241,6 +236,22 @@ export default function SingleFileUpload(props: SingleFileUploadProps) {
     setDescription(formatMessage(messages.selectFileMessage));
   };
 
+  const onChange = ({ nativeEvent: event }) => {
+    const files: File[] = Array.from(event.target.files);
+    files.forEach((file) => {
+      try {
+        uppy.addFile({
+          source: 'file input',
+          name: file.name,
+          type: file.type,
+          data: file
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    });
+  };
+
   return (
     <>
       <form id="asset_upload_form">
@@ -260,7 +271,20 @@ export default function SingleFileUpload(props: SingleFileUploadProps) {
             </em>
           )}
         </Typography>
-        <div className="uppy-file-input-container" />
+        <div className={classes.inputContainer}>
+          <input
+            accept={fileTypes.join(',')}
+            className={classes.input}
+            id="contained-button-file"
+            type="file"
+            onChange={onChange}
+          />
+          <label htmlFor="contained-button-file">
+            <Button variant="outlined" component="span" disabled={disableInput}>
+              {formatMessage(messages.chooseFile)}
+            </Button>
+          </label>
+        </div>
       </div>
       <ConfirmDialog
         open={Boolean(confirm)}
