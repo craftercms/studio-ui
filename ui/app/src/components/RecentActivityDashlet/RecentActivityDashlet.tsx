@@ -91,24 +91,29 @@ export default function RecentActivityDashlet() {
   const { itemsByPath, isFetching } = useDetailedItems(Object.keys(selectedLookup));
 
   const isAllChecked = useMemo(
-    () => !items.some((item) => !item.stateMap.deleted && !selectedLookup[item.path]),
+    () =>
+      items.length > 1
+        ? !items.some((item) => !item.stateMap.deleted && !selectedLookup[item.path])
+        : items[0]
+        ? selectedLookup[items[0].path]
+        : false,
     [items, selectedLookup]
   );
+
   const isIndeterminate = useMemo(
     () => items.some((item) => selectedLookup[item.path] && !isAllChecked),
     [items, selectedLookup, isAllChecked]
   );
+
   const selectedItemsLength = useMemo(() => Object.values(selectedLookup).filter(Boolean).length, [selectedLookup]);
 
   const onFilterChange = (e) => {
-    e.stopPropagation();
     setPreferences({
       filterBy: e.target.value
     });
   };
 
   const onNumItemsChange = (e) => {
-    e.stopPropagation();
     setPreferences({
       numItems: e.target.value
     });
@@ -295,6 +300,7 @@ export default function RecentActivityDashlet() {
             value={preferences.numItems}
             disabled={fetchingActivity}
             onChange={onNumItemsChange}
+            onClick={(e) => e.stopPropagation()}
             className={classes.rightAction}
           >
             <MenuItem value={10}>10</MenuItem>
@@ -313,6 +319,7 @@ export default function RecentActivityDashlet() {
             value={preferences.filterBy}
             disabled={fetchingActivity}
             onChange={onFilterChange}
+            onClick={(e) => e.stopPropagation()}
           >
             <MenuItem value="page">
               <FormattedMessage id="words.pages" defaultMessage="Pages" />
