@@ -608,8 +608,7 @@ CStudioAuthoring.Module.requireModule(
               {
                 returnProp: 'browserUri', // to return proper item link (browserUri)
                 insertItem: function (fileData) {
-                  var cleanUrl = fileData;
-                  cb(cleanUrl);
+                  cb(fileData, {});
                 },
                 failure: function (message) {
                   CStudioAuthoring.Operations.showSimpleDialog(
