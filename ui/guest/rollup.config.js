@@ -35,7 +35,10 @@ const input = 'src/index.tsx';
 const extensions = ['.js', '.jsx', '.ts', '.tsx'];
 
 const plugins = [
-  replace({ 'process.env.NODE_ENV': JSON.stringify('production') }),
+  replace({
+    preventAssignment: true,
+    'process.env.NODE_ENV': JSON.stringify('production')
+  }),
   babel({
     exclude: 'node_modules/**',
     // TODO: @babel/preset-env breaks the build of AMD-style third party libs (e.g. jQuery, js-cookie)

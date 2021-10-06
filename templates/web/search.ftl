@@ -38,9 +38,10 @@
 
   <#if RequestParameters.mode?exists && RequestParameters.mode == 'select'>
     <#assign embedded = true />
+    <#assign mode = 'select' />
   </#if>
 
-  <div id="root" style="height: calc(100vh<#if embedded> - 60px</#if>)"></div>
+  <div id="root" style="height: calc(100vh<#if embedded> - 65px</#if>)"></div>
 
   <script>
     <#if mode == 'select'>
