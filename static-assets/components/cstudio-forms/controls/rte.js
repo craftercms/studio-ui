@@ -16,7 +16,7 @@
 
 CStudioForms.Controls.RTE =
   CStudioForms.Controls.RTE ||
-  function (id, form, owner, properties, constraints, readonly, pencilMode) {
+  function(id, form, owner, properties, constraints, readonly, pencilMode) {
     this.owner = owner;
     this.owner.registerField(this);
     this.errors = [];
@@ -48,17 +48,17 @@ CStudioAuthoring.Module.requireModule(
   '/static-assets/components/cstudio-forms/controls/rte-config-manager.js',
   {},
   {
-    moduleLoaded: function () {
+    moduleLoaded: function() {
       const YDom = YAHOO.util.Dom;
       YAHOO.extend(CStudioForms.Controls.RTE, CStudioForms.CStudioFormField, {
-        getLabel: function () {
+        getLabel: function() {
           return CMgs.format(langBundle, 'rte');
         },
 
         /**
          * render the RTE
          */
-        render: function (config, containerEl) {
+        render: function(config, containerEl) {
           var _thisControl = this,
             configuration = 'generic';
 
@@ -78,10 +78,10 @@ CStudioAuthoring.Module.requireModule(
             configuration,
             'no-role-support',
             {
-              success: function (rteConfig) {
+              success: function(rteConfig) {
                 _thisControl._initializeRte(config, rteConfig, containerEl);
               },
-              failure: function () {}
+              failure: function() {}
             },
             '/form-control-config/rte/rte-config.xml'
           );
@@ -90,7 +90,7 @@ CStudioAuthoring.Module.requireModule(
         /**
          * get the value of this control
          */
-        getValue: function () {
+        getValue: function() {
           if (this.editor) {
             this.editor.save();
             value = this.inputEl.value;
@@ -103,7 +103,7 @@ CStudioAuthoring.Module.requireModule(
         /**
          * set the value for the control
          */
-        setValue: function (value) {
+        setValue: function(value) {
           this.value = value;
 
           try {
@@ -114,7 +114,7 @@ CStudioAuthoring.Module.requireModule(
           this.edited = false;
         },
 
-        updateModel: function (value) {
+        updateModel: function(value) {
           const newValue = this.escapeScripts ? value : CStudioForms.Util.unEscapeXml(value);
 
           this.form.updateModel(this.id, newValue);
@@ -123,14 +123,14 @@ CStudioAuthoring.Module.requireModule(
         /**
          * get the widget name
          */
-        getName: function () {
+        getName: function() {
           return 'rte';
         },
 
         /**
          * get supported properties
          */
-        getSupportedProperties: function () {
+        getSupportedProperties: function() {
           return [
             {
               label: this.formatMessage(this.contentTypesMessages.width),
@@ -198,18 +198,18 @@ CStudioAuthoring.Module.requireModule(
         /**
          * get the supported constraints
          */
-        getSupportedConstraints: function () {
+        getSupportedConstraints: function() {
           return [{ label: CMgs.format(langBundle, 'required'), name: 'required', type: 'boolean' }];
         },
 
-        getSupportedPostFixes: function () {
+        getSupportedPostFixes: function() {
           return this.supportedPostFixes;
         },
 
         /**
          * render and initialization of editor
          */
-        _initializeRte: function (config, rteConfig, containerEl) {
+        _initializeRte: function(config, rteConfig, containerEl) {
           var _thisControl = this,
             editor,
             callback,
@@ -378,13 +378,13 @@ CStudioAuthoring.Module.requireModule(
 
             automatic_uploads: true,
             file_picker_types: 'image media file',
-            file_picker_callback: function (cb, value, meta) {
+            file_picker_callback: function(cb, value, meta) {
               // meta contains info about type (image, media, etc). Used to properly add DS to dialogs.
               _thisControl.createControl(cb, meta);
             },
 
             paste_data_images: true,
-            paste_postprocess: function (plugin, args) {
+            paste_postprocess: function(plugin, args) {
               // If no text, and external it means that is dragged
               // text validation is because it can be text copied from outside the editor
               if (args.node.outerText === '' && !args.internal && !_thisControl.editorImageDatasources.length) {
@@ -396,7 +396,7 @@ CStudioAuthoring.Module.requireModule(
                 });
               }
             },
-            images_upload_handler: function (blobInfo, success, failure) {
+            images_upload_handler: function(blobInfo, success, failure) {
               _thisControl.addDndImage(blobInfo, success, failure);
             },
 
@@ -408,28 +408,28 @@ CStudioAuthoring.Module.requireModule(
 
             external_plugins: external,
 
-            setup: function (editor) {
-              editor.on('init', function (e) {
+            setup: function(editor) {
+              editor.on('init', function(e) {
                 amplify.publish('/field/init/completed');
                 _thisControl.editorId = editor.id;
                 _thisControl.editor = editor;
                 _thisControl._onChange(null, _thisControl);
               });
 
-              editor.on('keyup paste undo redo', function (e) {
+              editor.on('keyup paste undo redo', function(e) {
                 _thisControl.save();
                 _thisControl._onChangeVal(null, _thisControl);
               });
 
               // Save model when setting content into editor (images, tables, etc).
-              editor.on('SetContent', function (e) {
+              editor.on('SetContent', function(e) {
                 // Don't save model on initial setting of content (initializing editor)
                 if (!e.initial) {
                   _thisControl.save();
                 }
               });
 
-              editor.on('Change', function (e) {
+              editor.on('Change', function(e) {
                 const id = _thisControl.editorId,
                   windowHeight = $(window).height(),
                   $editorIframe = $('#' + id + '_ifr'),
@@ -449,7 +449,7 @@ CStudioAuthoring.Module.requireModule(
                 }
               });
 
-              editor.on('DblClick', function (e) {
+              editor.on('DblClick', function(e) {
                 if (e.target.nodeName == 'IMG') {
                   tinyMCE.activeEditor.execCommand('mceImage');
                 }
@@ -460,13 +460,13 @@ CStudioAuthoring.Module.requireModule(
 
           // Update all content before saving the form (all content is automatically updated on focusOut)
           callback = {};
-          callback.beforeSave = function () {
+          callback.beforeSave = function() {
             _thisControl.save();
           };
           _thisControl.form.registerBeforeSaveCallback(callback);
         },
 
-        createControl: function (cb, meta) {
+        createControl: function(cb, meta) {
           var datasourcesNames = '',
             imageManagerNames = this.imageManagerName, // List of image datasource IDs, could be an array or a string
             videoManagerNames = this.videoManagerName,
@@ -537,7 +537,7 @@ CStudioAuthoring.Module.requireModule(
                 addFunction = _self.addManagedFile;
             }
 
-            var addMenuOption = function (el) {
+            var addMenuOption = function(el) {
               // We want to avoid possible substring conflicts by using a reg exp (a simple indexOf
               // would fail if a datasource id string is a substring of another datasource id)
               var regexpr = new RegExp('(' + el.id + ')[\\s,]|(' + el.id + ')$'),
@@ -554,7 +554,7 @@ CStudioAuthoring.Module.requireModule(
                 YAHOO.util.Event.on(
                   itemEl,
                   'click',
-                  function () {
+                  function() {
                     _self.addContainerEl = null;
                     $('.cstudio-form-control-image-picker-add-container').remove();
 
@@ -592,7 +592,7 @@ CStudioAuthoring.Module.requireModule(
           if (datasource && datasource.insertImageAction) {
             datasource.insertImageAction(
               {
-                success: function (imageData) {
+                success: function(imageData) {
                   var cleanUrl = imageData.relativeUrl.replace(/^(.+?\.(png|jpe?g)).*$/i, '$1'); //remove timestamp
 
                   if (cb.success) {
@@ -601,7 +601,7 @@ CStudioAuthoring.Module.requireModule(
                     cb(cleanUrl, { title: imageData.fileName });
                   }
                 },
-                failure: function (message) {
+                failure: function(message) {
                   if (cb.failure) {
                     cb.failure(message);
                   } else {
@@ -625,12 +625,12 @@ CStudioAuthoring.Module.requireModule(
         addManagedVideo(datasource, cb) {
           if (datasource && datasource.insertVideoAction) {
             datasource.insertVideoAction({
-              success: function (videoData) {
+              success: function(videoData) {
                 cb(videoData.relativeUrl, { title: videoData.fileName });
 
                 // var cleanUrl = imageData.previewUrl.replace(/^(.+?\.(png|jpe?g)).*$/i, '$1');   //remove timestamp
               },
-              failure: function (message) {
+              failure: function(message) {
                 CStudioAuthoring.Operations.showSimpleDialog(
                   'message-dialog',
                   CStudioAuthoring.Operations.simpleDialogTypeINFO,
@@ -650,10 +650,11 @@ CStudioAuthoring.Module.requireModule(
             datasource.add(
               {
                 returnProp: 'browserUri', // to return proper item link (browserUri)
-                insertItem: function (fileData) {
-                  cb(fileData, {});
+                insertItem: function(fileData) {
+                  var cleanUrl = fileData;
+                  cb(cleanUrl);
                 },
-                failure: function (message) {
+                failure: function(message) {
                   CStudioAuthoring.Operations.showSimpleDialog(
                     'message-dialog',
                     CStudioAuthoring.Operations.simpleDialogTypeINFO,
@@ -696,7 +697,7 @@ CStudioAuthoring.Module.requireModule(
                   }
                 ]
               },
-              onSubmit: function (api) {
+              onSubmit: function(api) {
                 const ds = datasourceMap[api.getData().datasource];
 
                 const file = blobInfo.blob();
@@ -705,7 +706,7 @@ CStudioAuthoring.Module.requireModule(
                 _self.addManagedImage(
                   ds,
                   {
-                    success: function (url, data) {
+                    success: function(url, data) {
                       _self.editor.notificationManager.open({
                         text: _self.formatMessage(_self.messages.dropImageUploaded, { title: data.title }),
                         timeout: 3000,
@@ -715,7 +716,7 @@ CStudioAuthoring.Module.requireModule(
                       $imageToAdd.css('opacity', '');
                       success(url);
                     },
-                    failure: function (error) {
+                    failure: function(error) {
                       _self.editor.notificationManager.open({
                         text: error.message,
                         timeout: 3000,
@@ -729,7 +730,7 @@ CStudioAuthoring.Module.requireModule(
                 );
                 api.close();
               },
-              onCancel: function () {
+              onCancel: function() {
                 if ($imageToAdd.length > 0) {
                   $imageToAdd.remove();
                   failure(null, { remove: true });
@@ -757,7 +758,7 @@ CStudioAuthoring.Module.requireModule(
         /**
          * render of control markup
          */
-        _renderInputMarkup: function (config, rteId) {
+        _renderInputMarkup: function(config, rteId) {
           var titleEl, controlWidgetContainerEl, validEl, inputEl, descriptionEl;
 
           YDom.addClass(this.containerEl, 'rte-inactive');
@@ -805,7 +806,7 @@ CStudioAuthoring.Module.requireModule(
         /**
          * on change
          */
-        _onChange: function (evt, obj) {
+        _onChange: function(evt, obj) {
           obj.value = this.editor ? this.editor.getContent() : obj.value;
 
           if (obj.required) {
@@ -823,7 +824,7 @@ CStudioAuthoring.Module.requireModule(
           obj.owner.notifyValidation();
         },
 
-        _onChangeVal: function (evt, obj) {
+        _onChangeVal: function(evt, obj) {
           obj.edited = true;
           this._onChange(evt, obj);
         },
@@ -831,7 +832,7 @@ CStudioAuthoring.Module.requireModule(
         /**
          * call this instead of calling editor.save()
          */
-        save: function (a) {
+        save: function(a) {
           this.updateModel(CStudioForms.Util.escapeXml(this.editor.getContent()));
         }
       });

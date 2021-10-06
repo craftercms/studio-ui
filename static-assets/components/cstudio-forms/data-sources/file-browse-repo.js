@@ -32,7 +32,7 @@ CStudioForms.Datasources.FileBrowseRepo =
   };
 
 YAHOO.extend(CStudioForms.Datasources.FileBrowseRepo, CStudioForms.CStudioFormDatasource, {
-  add: function (control, onlyAppend) {
+  add: function (control, multiple) {
     var _self = this;
     var CMgs = CStudioAuthoring.Messages;
     var langBundle = CMgs.getBundle('contentTypes', CStudioAuthoringContext.lang);
@@ -46,7 +46,15 @@ YAHOO.extend(CStudioForms.Datasources.FileBrowseRepo, CStudioForms.CStudioFormDa
       }
     }
 
-    const openBrowse = () =>
+    const create = $(
+      `<li class="cstudio-form-controls-create-element">
+        <a class="cstudio-form-control-node-selector-add-container-item">
+          ${CMgs.format(langBundle, 'browseExisting')} - ${CrafterCMSNext.util.string.escapeHTML(newElTitle)}
+        </a>
+      </li>`
+    );
+
+    create.find('a').on('click', function () {
       CStudioAuthoring.Operations.openBrowse('', _self.processPathsForMacros(_self.repoPath), '-1', 'select', true, {
         success: function (searchId, selectedTOs) {
           for (var i = 0; i < selectedTOs.length; i++) {
@@ -62,24 +70,9 @@ YAHOO.extend(CStudioForms.Datasources.FileBrowseRepo, CStudioForms.CStudioFormDa
         },
         failure: function () {}
       });
+    });
 
-    if (onlyAppend) {
-      const create = $(
-        `<li class="cstudio-form-controls-create-element">
-        <a class="cstudio-form-control-node-selector-add-container-item">
-          ${CMgs.format(langBundle, 'browseExisting')} - ${CrafterCMSNext.util.string.escapeHTML(newElTitle)}
-        </a>
-      </li>`
-      );
-
-      create.find('a').on('click', function () {
-        openBrowse();
-      });
-
-      control.$dropdownMenu.append(create);
-    } else {
-      openBrowse();
-    }
+    control.$dropdownMenu.append(create);
   },
 
   edit: function (key) {
