@@ -28,7 +28,7 @@ export interface RemoteRepositoriesGridSkeletonTableProps {
   numOfItems?: number;
 }
 
-export default function RemoteRepositoriesGridSkeletonTable(props: RemoteRepositoriesGridSkeletonTableProps) {
+export function RemoteRepositoriesGridSkeletonTable(props: RemoteRepositoriesGridSkeletonTableProps) {
   const { numOfItems = 2 } = props;
   const items = new Array(numOfItems).fill(null);
 
@@ -58,3 +58,5 @@ export default function RemoteRepositoriesGridSkeletonTable(props: RemoteReposit
     </TableContainer>
   );
 }
+
+export default RemoteRepositoriesGridSkeletonTable;

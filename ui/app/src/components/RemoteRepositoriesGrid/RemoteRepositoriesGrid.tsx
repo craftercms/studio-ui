@@ -26,6 +26,7 @@ import { showSystemNotification } from '../../state/actions/system';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { useEnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
 
 export interface RemoteRepositoriesGridProps {
   resource: Resource<Array<Repository>>;
@@ -61,10 +62,8 @@ const messages = defineMessages({
   }
 });
 
-export default function RemoteRepositoriesGrid(props: RemoteRepositoriesGridProps) {
+export function RemoteRepositoriesGrid(props: RemoteRepositoriesGridProps) {
   const { resource, disableActions, fetchStatus, fetchRepositories } = props;
-  const [openRepositoriesPullDialog, setOpenRepositoriesPullDialog] = useState(false);
-  const [openRepositoriesPushDialog, setOpenRepositoriesPushDialog] = useState(false);
   const [repositoriesPullDialogBranches, setRepositoriesPullDialogBranches] = useState([]);
   const [repositoriesPushDialogBranches, setRepositoriesPushDialogBranches] = useState([]);
   const [pullRemoteName, setPullRemoteName] = useState(null);
@@ -86,22 +85,24 @@ export default function RemoteRepositoriesGrid(props: RemoteRepositoriesGridProp
   ];
   const siteId = useActiveSiteId();
   const dispatch = useDispatch();
+  const pushToRemoteDialogState = useEnhancedDialogState();
+  const pullFromRemoteDialogState = useEnhancedDialogState();
 
   const onClickPull = (remoteName: string, branches: string[]) => {
     setRepositoriesPullDialogBranches(branches);
     setPullRemoteName(remoteName);
-    setOpenRepositoriesPullDialog(true);
+    pullFromRemoteDialogState.onOpen();
   };
 
   const onClickPush = (remoteName: string, branches: string[]) => {
     setRepositoriesPushDialogBranches(branches);
     setPushRemoteName(remoteName);
-    setOpenRepositoriesPushDialog(true);
+    pushToRemoteDialogState.onOpen();
   };
 
   const onPullSuccess = () => {
     fetchStatus();
-    setOpenRepositoriesPullDialog(false);
+    pullFromRemoteDialogState.onClose();
     dispatch(
       showSystemNotification({
         message: formatMessage(messages.pullSuccessMessage)
@@ -111,7 +112,7 @@ export default function RemoteRepositoriesGrid(props: RemoteRepositoriesGridProp
 
   const onPullError = (response) => {
     fetchStatus();
-    setOpenRepositoriesPullDialog(false);
+    pullFromRemoteDialogState.onClose();
     dispatch(
       showSystemNotification({
         message: response.message,
@@ -121,7 +122,7 @@ export default function RemoteRepositoriesGrid(props: RemoteRepositoriesGridProp
   };
 
   const onPushSuccess = () => {
-    setOpenRepositoriesPushDialog(false);
+    pushToRemoteDialogState.onClose();
     dispatch(
       showSystemNotification({
         message: formatMessage(messages.pushSuccessMessage)
@@ -130,7 +131,7 @@ export default function RemoteRepositoriesGrid(props: RemoteRepositoriesGridProp
   };
 
   const onPushError = (response) => {
-    setOpenRepositoriesPushDialog(false);
+    pushToRemoteDialogState.onClose();
     dispatch(showErrorDialog({ error: response }));
   };
 
@@ -160,22 +161,30 @@ export default function RemoteRepositoriesGrid(props: RemoteRepositoriesGridProp
         onDeleteRemote={deleteRemote}
       />
       <PullFromRemoteDialog
-        open={openRepositoriesPullDialog}
-        onClose={() => setOpenRepositoriesPullDialog(false)}
+        open={pullFromRemoteDialogState.open}
+        onClose={pullFromRemoteDialogState.onClose}
         branches={repositoriesPullDialogBranches}
         remoteName={pullRemoteName}
         mergeStrategies={mergeStrategies}
         onPullSuccess={onPullSuccess}
         onPullError={onPullError}
+        isMinimized={pullFromRemoteDialogState.isMinimized}
+        isSubmitting={pullFromRemoteDialogState.isSubmitting}
+        hasPendingChanges={pullFromRemoteDialogState.hasPendingChanges}
       />
       <PushToRemoteDialog
-        open={openRepositoriesPushDialog}
+        open={pushToRemoteDialogState.open}
         branches={repositoriesPushDialogBranches}
         remoteName={pushRemoteName}
-        onClose={() => setOpenRepositoriesPushDialog(false)}
+        onClose={pushToRemoteDialogState.onClose}
         onPushSuccess={onPushSuccess}
         onPushError={onPushError}
+        isMinimized={pushToRemoteDialogState.isMinimized}
+        isSubmitting={pushToRemoteDialogState.isSubmitting}
+        hasPendingChanges={pushToRemoteDialogState.hasPendingChanges}
       />
     </>
   );
 }
+
+export default RemoteRepositoriesGrid;

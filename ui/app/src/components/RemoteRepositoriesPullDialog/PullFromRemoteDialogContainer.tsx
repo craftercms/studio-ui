@@ -15,7 +15,6 @@
  */
 
 import React, { useState } from 'react';
-import DialogHeader from '../DialogHeader/DialogHeader';
 import DialogBody from '../Dialogs/DialogBody';
 import DialogFooter from '../Dialogs/DialogFooter';
 import { FormattedMessage } from 'react-intl';
@@ -25,24 +24,12 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
-import { MergeStrategy } from '../../models/Repository';
 import { pull } from '../../services/repositories';
-import ApiResponse from '../../models/ApiResponse';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import { isBlank } from '../../utils/string';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-
-export interface PullFromRemoteDialogContainerProps {
-  open: boolean;
-  branches: string[];
-  remoteName: string;
-  mergeStrategies: MergeStrategy[];
-  setDisableQuickDismiss?(disable: boolean): void;
-  onClose(): void;
-  onPullSuccess?(): void;
-  onPullError?(response: ApiResponse): void;
-}
+import { PullFromRemoteDialogContainerProps } from './utils';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -52,26 +39,25 @@ const useStyles = makeStyles(() =>
   })
 );
 
-export default function PullFromRemoteDialogContainer(props: PullFromRemoteDialogContainerProps) {
-  const { branches, remoteName, mergeStrategies, onClose, onPullSuccess, onPullError, setDisableQuickDismiss } = props;
-  const [selectedBranch, setSelectedBranch] = useState('');
+export function PullFromRemoteDialogContainer(props: PullFromRemoteDialogContainerProps) {
+  const { branches, remoteName, mergeStrategies, onClose, onPullSuccess, onPullError } = props;
+  const [selectedBranch, setSelectedBranch] = useState(branches?.[0] ?? '');
   const [selectedMergeStrategy, setSelectedMergeStrategy] = useState(mergeStrategies[0].key);
   const classes = useStyles();
   const siteId = useActiveSiteId();
 
   const onChange = (e: any) => {
-    e.persist();
     if (e.target.name === 'branch') {
       setSelectedBranch(e.target.value);
-      setDisableQuickDismiss(true);
     } else if (e.target.name === 'mergeStrategy') {
       setSelectedMergeStrategy(e.target.value);
     }
   };
 
+  const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
+
   const onSubmit = (e) => {
     e.preventDefault();
-
     if (!isBlank(selectedBranch)) {
       pull({
         siteId,
@@ -91,7 +77,6 @@ export default function PullFromRemoteDialogContainer(props: PullFromRemoteDialo
 
   return (
     <form onSubmit={onSubmit}>
-      <DialogHeader title={<FormattedMessage id="words.pull" defaultMessage="Pull" />} onCloseButtonClick={onClose} />
       <DialogBody>
         <FormControl variant="outlined" fullWidth className={classes.formControl}>
           <InputLabel id="remoteBranchToPullLabel">
@@ -133,7 +118,7 @@ export default function PullFromRemoteDialogContainer(props: PullFromRemoteDialo
         </FormControl>
       </DialogBody>
       <DialogFooter>
-        <SecondaryButton onClick={onClose}>
+        <SecondaryButton onClick={onCloseButtonClick}>
           <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
         </SecondaryButton>
         <PrimaryButton type="submit" disabled={isBlank(selectedBranch)}>
@@ -143,3 +128,5 @@ export default function PullFromRemoteDialogContainer(props: PullFromRemoteDialo
     </form>
   );
 }
+
+export default PullFromRemoteDialogContainer;
