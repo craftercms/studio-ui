@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import IconButton from '@mui/material/IconButton';
@@ -42,6 +42,7 @@ interface SiteCardProps {
   fallbackImageSrc?: string;
   compact?: boolean;
   publishingStatus: PublishingStatus;
+  siteImageCount?: number;
 }
 
 const translations = defineMessages({
@@ -68,10 +69,15 @@ export default function SiteCard(props: SiteCardProps) {
     fallbackImageSrc = '/studio/static-assets/themes/cstudioTheme/images/default-contentType.jpg',
     compact = false,
     publishingStatus,
-    onPublishButtonClick
+    onPublishButtonClick,
+    siteImageCount
   } = props;
   const classes = useSiteCardStyles();
   const { formatMessage } = useIntl();
+  const siteImage = useMemo(
+    () => `/.crafter/screenshots/default.png?crafterSite=${site.id}&v=${siteImageCount}`,
+    [siteImageCount, site.id]
+  );
 
   return (
     <Card className={clsx(classes.card, compact && 'compact')}>
@@ -102,7 +108,7 @@ export default function SiteCard(props: SiteCardProps) {
           <CardMedia
             component="img"
             className={classes.media}
-            image={`/.crafter/screenshots/default.png?crafterSite=${site.id}&v=${Date.now()}`}
+            image={siteImage}
             title={site.name}
             onError={(event) => (event.target.src = fallbackImageSrc)}
           />

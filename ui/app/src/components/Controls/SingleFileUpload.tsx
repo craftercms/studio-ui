@@ -146,51 +146,6 @@ export default function SingleFileUpload(props: SingleFileUploadProps) {
     [fileTypes, customFileName]
   );
 
-  uppy.on('file-added', (file: UppyFile) => {
-    setDescription(`${formatMessage(messages.validatingFile)}:`);
-    setFile(file);
-    setFileNameErrorClass('');
-    validateActionPolicy(site, {
-      type: 'CREATE',
-      target: path + file.name
-    }).subscribe(({ allowed, modifiedValue }) => {
-      if (allowed) {
-        if (modifiedValue) {
-          setConfirm({
-            body: formatMessage(messages.createPolicy, { name: modifiedValue.replace(`${path}`, '') })
-          });
-        } else {
-          setDisableInput(true);
-          uppy.upload();
-          setDescription(`${formatMessage(messages.uploadingFile)}:`);
-          onUploadStart?.();
-        }
-      } else {
-        setConfirm({
-          error: true,
-          body: formatMessage(messages.policyError)
-        });
-      }
-    });
-  });
-
-  uppy.on('upload-success', (file, response) => {
-    dispatch(emitSystemEvent(itemCreated({ target: path + file.name })));
-    setDescription(`${formatMessage(messages.uploadedFile)}:`);
-  });
-
-  uppy.on('complete', (result) => {
-    onComplete?.(result);
-    setDisableInput(false);
-  });
-
-  uppy.on('upload-error', (file, error, response) => {
-    uppy.cancelAll();
-    setFileNameErrorClass('text-danger');
-    onError?.({ file, error, response });
-    setDisableInput(false);
-  });
-
   useEffect(() => {
     const instance = uppy
       .use(Form, {
@@ -219,6 +174,57 @@ export default function SingleFileUpload(props: SingleFileUploadProps) {
       instance.close();
     };
   }, [uppy, formTarget, url]);
+
+  useEffect(() => {
+    uppy.on('upload-success', (file, response) => {
+      dispatch(emitSystemEvent(itemCreated({ target: path + file.name })));
+      setDescription(`${formatMessage(messages.uploadedFile)}:`);
+    });
+
+    uppy.on('complete', (result) => {
+      onComplete?.(result);
+      setDisableInput(false);
+    });
+  }, [onComplete, dispatch, formatMessage, path, uppy]);
+
+  useEffect(() => {
+    uppy.on('upload-error', (file, error, response) => {
+      uppy.cancelAll();
+      setFileNameErrorClass('text-danger');
+      onError?.({ file, error, response });
+      setDisableInput(false);
+    });
+  }, [onError, uppy]);
+
+  useEffect(() => {
+    uppy.on('file-added', (file: UppyFile) => {
+      setDescription(`${formatMessage(messages.validatingFile)}:`);
+      setFile(file);
+      setFileNameErrorClass('');
+      validateActionPolicy(site, {
+        type: 'CREATE',
+        target: path + file.name
+      }).subscribe(({ allowed, modifiedValue }) => {
+        if (allowed) {
+          if (modifiedValue) {
+            setConfirm({
+              body: formatMessage(messages.createPolicy, { name: modifiedValue.replace(`${path}`, '') })
+            });
+          } else {
+            setDisableInput(true);
+            uppy.upload();
+            setDescription(`${formatMessage(messages.uploadingFile)}:`);
+            onUploadStart?.();
+          }
+        } else {
+          setConfirm({
+            error: true,
+            body: formatMessage(messages.policyError)
+          });
+        }
+      });
+    });
+  }, [onUploadStart, formatMessage, path, site, uppy]);
 
   const onConfirm = () => {
     uppy.upload().then(() => {});

@@ -32,7 +32,7 @@ import { map } from 'rxjs/operators';
 import { Site } from '../../models/Site';
 import { setSiteCookie } from '../../utils/auth';
 import { trash } from '../../services/sites';
-import { batchActions } from '../../state/actions/misc';
+import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
 import { showSystemNotification } from '../../state/actions/system';
 import { fetchSites, popSite } from '../../state/reducers/sites';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
@@ -56,6 +56,7 @@ import Paper from '@mui/material/Paper';
 import { getSystemLink } from '../../utils/system';
 import { fetchUseLegacyPreviewPreference } from '../../services/configuration';
 import { useEnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
+import { createCustomDocumentEventListener } from '../../utils/dom';
 
 const translations = defineMessages({
   siteDeleted: {
@@ -79,6 +80,7 @@ export default function SitesManagement() {
   const [publishingStatusLookup, setPublishingStatusLookup] = useSpreadState<LookupTable<PublishingStatus>>({});
   const [selectedSiteStatus, setSelectedSiteStatus] = useState<PublishingStatus>(null);
   const [permissionsLookup, setPermissionsLookup] = useState<LookupTable<boolean>>(foo);
+  const [sitesRefreshCount, setSitesRefreshCount] = useState(0);
 
   useEffect(() => {
     merge(
@@ -142,9 +144,18 @@ export default function SitesManagement() {
   };
 
   const onEditSiteClick = (site: Site) => {
+    const eventId = 'editSiteImageUploadComplete';
+    createCustomDocumentEventListener(eventId, () => {
+      setSitesRefreshCount(sitesRefreshCount + 1);
+    });
+
     dispatch(
       showEditSiteDialog({
-        site
+        site,
+        onUploadComplete: dispatchDOMEvent({
+          id: eventId,
+          type: 'uploadComplete'
+        })
       })
     );
   };
@@ -211,6 +222,7 @@ export default function SitesManagement() {
             onEditSiteClick={permissionsLookup['edit_site'] && onEditSiteClick}
             currentView={currentView}
             onPublishButtonClick={onPublishButtonClick}
+            sitesRefreshCount={sitesRefreshCount}
           />
         </SuspenseWithEmptyState>
       </ErrorBoundary>

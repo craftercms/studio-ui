@@ -45,17 +45,19 @@ export interface EditSiteDialogBaseProps {
 
 export interface EditSiteDialogProps extends EditSiteDialogBaseProps, EnhancedDialogProps {
   onSaveSuccess?(response?: any): any;
+  onUploadComplete?(): void;
 }
 
 export interface EditSiteDialogStateProps extends EditSiteDialogBaseProps, EnhancedDialogState {
   onSaveSuccess?: StandardAction;
+  onUploadComplete?: StandardAction;
   onClose?: StandardAction;
   onClosed?: StandardAction;
 }
 
 export interface EditSiteDialogContainerProps
   extends EditSiteDialogBaseProps,
-    Pick<EditSiteDialogProps, 'isSubmitting' | 'onSaveSuccess' | 'onClose'> {}
+    Pick<EditSiteDialogProps, 'isSubmitting' | 'onSaveSuccess' | 'onUploadComplete' | 'onClose'> {}
 
 export interface EditSiteDialogUIContainerProps {
   site: Site;

@@ -346,6 +346,7 @@ function GlobalDialogManager() {
         onClose={createCallback(state.editSite.onClose, dispatch)}
         onClosed={createCallback(state.editSite.onClosed, dispatch)}
         onSaveSuccess={createCallback(state.editSite.onSaveSuccess, dispatch)}
+        onUploadComplete={createCallback(state.editSite.onUploadComplete, dispatch)}
         onWithPendingChangesCloseRequest={useWithPendingChangesCloseRequest(
           createCallback(state.editSite.onClose, dispatch)
         )}

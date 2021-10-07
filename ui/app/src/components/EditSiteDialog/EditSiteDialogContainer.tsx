@@ -35,7 +35,7 @@ import { createCustomDocumentEventListener } from '../../utils/dom';
 
 export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
   const siteImagePath = `/.crafter/screenshots/default.png?crafterSite=`;
-  const { site, onClose, onSaveSuccess, isSubmitting } = props;
+  const { site, onClose, onSaveSuccess, onUploadComplete, isSubmitting } = props;
   const [submitDisabled, setSubmitDisabled] = useState(false);
   const sites = useSelector<GlobalState, LookupTable>((state) => state.sites.byId);
   const dispatch = useDispatch();
@@ -132,14 +132,14 @@ export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
         onClose: closeSingleFileUploadDialog(),
         onUploadComplete: batchActions([
           closeSingleFileUploadDialog(),
-          dispatchDOMEvent({ id: idEditSiteImageComplete }),
-          fetchSites()
+          dispatchDOMEvent({ id: idEditSiteImageComplete })
         ])
       })
     );
   };
 
   createCustomDocumentEventListener(idEditSiteImageComplete, () => {
+    onUploadComplete?.();
     setSiteImage(`${siteImagePath}${site.id}&v=${siteImageCounter + 1}`);
     setSiteImageCounter(siteImageCounter + 1);
   });
