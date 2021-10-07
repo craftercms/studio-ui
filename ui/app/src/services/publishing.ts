@@ -14,9 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { errorSelectorApi1, get, post, postJSON } from '../utils/ajax';
+import { get, post, postJSON } from '../utils/ajax';
 import { Observable } from 'rxjs';
-import { catchError, map, mapTo, pluck } from 'rxjs/operators';
+import { map, mapTo, pluck } from 'rxjs/operators';
 import { LegacyItem } from '../models/Item';
 import { pluckProps, toQueryString } from '../utils/object';
 import { PublishingStatus, PublishingTarget } from '../models/Publishing';
@@ -86,24 +86,45 @@ export interface GoLiveResponse {
   message: string;
 }
 
-export function submitToGoLive(siteId: string, user: string, data): Observable<GoLiveResponse> {
-  return postJSON<GoLiveResponse>(
-    `/studio/api/1/services/api/1/workflow/submit-to-go-live.json?site=${siteId}&user=${user}`,
-    data
-  ).pipe(pluck('response'), catchError(errorSelectorApi1));
+export function publish(siteId: string, data): Observable<boolean> {
+  return postJSON('/studio/api/2/workflow/publish', {
+    siteId,
+    ...data
+  }).pipe(mapTo(true));
 }
 
-export function goLive(siteId: string, user: string, data): Observable<GoLiveResponse> {
-  return postJSON<GoLiveResponse>(
-    `/studio/api/1/services/api/1/workflow/go-live.json?site=${siteId}&user=${user}`,
-    data
-  ).pipe(pluck('response'), catchError(errorSelectorApi1));
+export function requestPublish(siteId: string, data): Observable<boolean> {
+  return postJSON('/studio/api/2/workflow/request_publish', {
+    siteId,
+    ...data
+  }).pipe(mapTo(true));
+}
+
+export function approve(siteId: string, data): Observable<boolean> {
+  return postJSON('/studio/api/2/workflow/approve', {
+    siteId,
+    ...data
+  }).pipe(mapTo(true));
 }
 
 export function reject(siteId: string, items: string[], comment: string): Observable<boolean> {
-  return postJSON(`/studio/api/2/workflow/reject`, {
+  return postJSON('/studio/api/2/workflow/reject', {
     siteId,
     items,
+    comment
+  }).pipe(mapTo(true));
+}
+
+export function deleteItems(
+  siteId: string,
+  items: string[],
+  optionalDependencies: string[],
+  comment: string
+): Observable<boolean> {
+  return postJSON('/studio/api/2/workflow/delete', {
+    siteId,
+    items,
+    optionalDependencies,
     comment
   }).pipe(mapTo(true));
 }

@@ -28,7 +28,7 @@ import {
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { usePermissionsBySite } from '../../utils/hooks/usePermissionsBySite';
 import { useDispatch } from 'react-redux';
-import { fetchPublishingTargets, goLive, submitToGoLive } from '../../services/publishing';
+import { fetchPublishingTargets, publish, requestPublish } from '../../services/publishing';
 import { emitSystemEvent, itemsApproved, itemsScheduled } from '../../state/actions/system';
 import { getComputedPublishingTarget, getDateScheduled } from '../../utils/detailedItem';
 import { FormattedMessage } from 'react-intl';
@@ -37,7 +37,6 @@ import { createPresenceTable } from '../../utils/array';
 import { fetchDependencies, FetchDependenciesResponse } from '../../services/dependencies';
 import { PublishDialogUI } from './PublishDialogUI';
 import useStyles from './styles';
-import { useActiveUser } from '../../utils/hooks/useActiveUser';
 import { useSelection } from '../../utils/hooks/useSelection';
 import { isBlank } from '../../utils/string';
 import { useLocale } from '../../utils/hooks/useLocale';
@@ -81,8 +80,8 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
   const dispatch = useDispatch();
   const submissionCommentRequired = useSelection((state) => state.uiConfig.publishing.publishCommentRequired);
 
-  const user = useActiveUser();
-  const submit = !hasPublishPermission || state.requestApproval ? submitToGoLive : goLive;
+  // TODO: there's a separate API for approve, we need to handle it
+  const submit = !hasPublishPermission || state.requestApproval ? requestPublish : publish;
   const propagateAction = !hasPublishPermission || state.requestApproval ? itemsScheduled : itemsApproved;
   const { mixedPublishingTargets, mixedPublishingDates, dateScheduled, publishingTarget } = useMemo(() => {
     const state = {
@@ -256,20 +255,17 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
       .map(([path]) => path);
 
     const data = {
-      ...(!hasPublishPermission || state.requestApproval
-        ? { environment: publishingTarget }
-        : { publishChannel: publishingTarget }),
+      publishingTarget,
       items,
-      schedule,
-      sendEmail,
-      submissionComment,
-      ...(schedule === 'custom' ? { scheduledDate } : {})
+      sendEmailNotifications: sendEmail,
+      comment: submissionComment,
+      ...(schedule === 'custom' ? { schedule: scheduledDate } : {})
     };
 
     dispatch(updatePublishDialog({ isSubmitting: true }));
 
-    submit(siteId, user.username, data).subscribe(
-      (response) => {
+    submit(siteId, data).subscribe(
+      () => {
         dispatch(
           batchActions([
             updatePublishDialog({ isSubmitting: false, hasPendingChanges: false }),
@@ -277,7 +273,6 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
           ])
         );
         onSuccess?.({
-          ...response,
           schedule: schedule,
           publishingTarget,
           // @ts-ignore - TODO: Not quite sure if users of this dialog are making use of the `environment` prop name. Should use `publishingTarget` instead.
