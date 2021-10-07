@@ -19,7 +19,6 @@ import { EnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 
 export interface SingleFileUploadDialogBaseProps {
-  open: boolean;
   site: string;
   path: string;
   customFileName?: string;
@@ -42,6 +41,11 @@ export interface SingleFileUploadDialogStateProps extends SingleFileUploadDialog
   onUploadError?: StandardAction<{ error: any; file: any; response: any }>;
 }
 
-export interface SingleFileUploadDialogContainerProps extends SingleFileUploadDialogProps {}
+export interface SingleFileUploadDialogContainerProps
+  extends SingleFileUploadDialogBaseProps,
+    Pick<
+      SingleFileUploadDialogProps,
+      'site' | 'customFileName' | 'fileTypes' | 'onUploadStart' | 'onUploadComplete' | 'onUploadError'
+    > {}
 
-export interface SingleFileUploadDialogUIProps extends SingleFileUploadDialogProps {}
+export interface SingleFileUploadDialogUIProps extends SingleFileUploadDialogContainerProps {}

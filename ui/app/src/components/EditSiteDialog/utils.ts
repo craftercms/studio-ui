@@ -31,6 +31,7 @@ export interface EditSiteDialogUIProps {
   submitting: boolean;
   submitDisabled: boolean;
   onKeyPress: (e: React.KeyboardEvent) => void;
+  fallbackImageSrc: string;
   onSiteNameChange(event: React.ChangeEvent): void;
   onSiteDescriptionChange(value: string): void;
   onSubmit(): void;

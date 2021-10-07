@@ -42,6 +42,7 @@ export function EditSiteDialogUI(props: EditSiteDialogUIProps) {
     onSiteDescriptionChange,
     submitting,
     submitDisabled,
+    fallbackImageSrc,
     onKeyPress,
     onSubmit,
     onCloseButtonClick,
@@ -113,7 +114,13 @@ export function EditSiteDialogUI(props: EditSiteDialogUIProps) {
           </Grid>
           <Grid item sm={5}>
             <Card>
-              <CardMedia component="img" image={siteImage} title={siteName} className={classes.media} />
+              <CardMedia
+                component="img"
+                image={siteImage}
+                title={siteName}
+                className={classes.media}
+                onError={(event) => (event.target.src = fallbackImageSrc)}
+              />
               <CardActions className={classes.cardActions} disableSpacing>
                 <Tooltip title={<FormattedMessage id="words.edit" defaultMessage="Edit" />}>
                   <IconButton onClick={onEditSiteImage}>

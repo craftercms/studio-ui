@@ -31,9 +31,10 @@ import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { ConditionalLoadingState } from '../SystemStatus/LoadingState';
 import { EditSiteDialogUI } from './EditSiteDialogUI';
+import { createCustomDocumentEventListener } from '../../utils/dom';
 
-const siteImagePath = `/.crafter/screenshots/default.png?crafterSite=`;
 export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
+  const siteImagePath = `/.crafter/screenshots/default.png?crafterSite=`;
   const { site, onClose, onSaveSuccess, isSubmitting } = props;
   const [submitDisabled, setSubmitDisabled] = useState(false);
   const sites = useSelector<GlobalState, LookupTable>((state) => state.sites.byId);
@@ -43,6 +44,7 @@ export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
   const [siteImageCounter, setSiteImageCounter] = useState(0);
   const [siteImage, setSiteImage] = useState(`${siteImagePath}${site.id}`);
   const idEditSiteImageComplete = 'editSiteImageComplete';
+  const fallbackImageSrc = '/studio/static-assets/themes/cstudioTheme/images/default-contentType.jpg';
 
   function checkSiteName(event: React.ChangeEvent<HTMLInputElement>, currentSiteName: string) {
     if (
@@ -137,13 +139,10 @@ export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
     );
   };
 
-  const editSiteImageCompleteCallback = () => {
+  createCustomDocumentEventListener(idEditSiteImageComplete, () => {
     setSiteImage(`${siteImagePath}${site.id}&v=${siteImageCounter + 1}`);
     setSiteImageCounter(siteImageCounter + 1);
-    document.removeEventListener(idEditSiteImageComplete, editSiteImageCompleteCallback, false);
-  };
-
-  document.addEventListener(idEditSiteImageComplete, editSiteImageCompleteCallback, false);
+  });
 
   return (
     <ConditionalLoadingState isLoading={!site}>
@@ -156,6 +155,7 @@ export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
         onSiteDescriptionChange={onSiteDescriptionChange}
         submitting={isSubmitting}
         submitDisabled={submitDisabled}
+        fallbackImageSrc={fallbackImageSrc}
         onKeyPress={onKeyPress}
         onSubmit={() => handleSubmit(site.id, name, description)}
         onCloseButtonClick={onCloseButtonClick}
