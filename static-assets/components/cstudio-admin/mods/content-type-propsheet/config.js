@@ -16,7 +16,7 @@
 
 CStudioAdminConsole.Tool.ContentTypes.PropertyType.Config =
   CStudioAdminConsole.Tool.ContentTypes.PropertyType.Config ||
-  function(fieldName, containerEl) {
+  function (fieldName, containerEl) {
     this.fieldName = fieldName;
     this.containerEl = containerEl;
     return this;
@@ -26,7 +26,7 @@ YAHOO.extend(
   CStudioAdminConsole.Tool.ContentTypes.PropertyType.Config,
   CStudioAdminConsole.Tool.ContentTypes.PropertyType,
   {
-    render: function(value, updateFn, fName, itemId, contentType) {
+    render: function (value, updateFn, fName, itemId, contentType) {
       var _self = this;
       var containerEl = this.containerEl;
       var valueEl = document.createElement('input');
@@ -47,7 +47,7 @@ YAHOO.extend(
       YAHOO.util.Event.on(
         valueEl,
         'keydown',
-        function(evt) {
+        function (evt) {
           YAHOO.util.Event.stopEvent(evt);
         },
         valueEl
@@ -56,14 +56,14 @@ YAHOO.extend(
       YAHOO.util.Event.on(
         valueEl,
         'focus',
-        function(evt) {
+        function (evt) {
           _self.showTemplateEdit();
         },
         valueEl
       );
 
       if (updateFn) {
-        var updateFieldFn = function(event, el) {};
+        var updateFieldFn = function (event, el) {};
 
         YAHOO.util.Event.on(valueEl, 'change', updateFieldFn, valueEl);
       }
@@ -72,11 +72,11 @@ YAHOO.extend(
       this.contentType = contentType;
     },
 
-    getValue: function() {
+    getValue: function () {
       return this.valueEl.value;
     },
 
-    showTemplateEdit: function() {
+    showTemplateEdit: function () {
       var _self = this;
       if (this.controlsContainerEl) {
         this.controlsContainerEl.style.display = 'inline';
@@ -93,17 +93,18 @@ YAHOO.extend(
 
         this.controlsContainerEl = controlsContainerEl;
 
-        editEl.onclick = function() {
+        editEl.onclick = function () {
           var contentType = _self.contentType,
             path = '/config/studio/content-types' + contentType + '/config.xml';
 
-          CStudioAuthoring.Operations.openTemplateEditor(
-            path,
-            'default',
-            { success: function() {}, failure: function() {} },
-            null,
-            null
-          );
+          CrafterCMSNext.system.store.dispatch({
+            type: 'SHOW_CODE_EDITOR_DIALOG',
+            payload: {
+              path,
+              contentType,
+              mode: 'xml'
+            }
+          });
         };
       }
     }
