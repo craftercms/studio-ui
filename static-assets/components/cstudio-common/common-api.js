@@ -2551,8 +2551,7 @@ var nodeOpen = false,
       },
 
       uploadAsset: function (site, path, isUploadOverwrite, uploadCb, fileTypes) {
-        const eventIdUploadComplete = 'fileUploadComplete';
-        const eventIdClosed = 'eventIdClosed';
+        const eventId = 'uploadAsset.event.singleFileUploadDialog';
         CrafterCMSNext.system.store.dispatch({
           type: 'SHOW_SINGLE_FILE_UPLOAD_DIALOG',
           payload: {
@@ -2565,7 +2564,7 @@ var nodeOpen = false,
               payload: [
                 {
                   type: 'DISPATCH_DOM_EVENT',
-                  payload: { id: eventIdUploadComplete }
+                  payload: { id: eventId, type: 'uploadComplete' }
                 },
                 {
                   type: 'CLOSE_SINGLE_FILE_UPLOAD_DIALOG'
@@ -2577,7 +2576,7 @@ var nodeOpen = false,
               payload: [
                 {
                   type: 'DISPATCH_DOM_EVENT',
-                  payload: { id: eventIdClosed }
+                  payload: { id: eventId, type: 'uploadComplete' }
                 },
                 { type: 'SINGLE_FILE_UPLOAD_DIALOG_CLOSED' }
               ]
@@ -2585,22 +2584,17 @@ var nodeOpen = false,
           }
         });
 
-        let unsubscribeUploadComplete, cancelUnsubscribe;
-        unsubscribeUploadComplete = CrafterCMSNext.createLegacyCallbackListener(eventIdUploadComplete, (result) => {
-          let uploaded = result.successful[0];
-          if (!uploaded.fileExtension) {
-            uploaded.fileExtension = uploaded.extension;
+        CrafterCMSNext.createLegacyCallbackListener(eventId, (result) => {
+          if (result.type === 'uploadComplete') {
+            let uploaded = result.successful[0];
+            if (!uploaded.fileExtension) {
+              uploaded.fileExtension = uploaded.extension;
+            }
+            if (!uploaded.fileName) {
+              uploaded.fileName = uploaded.name;
+            }
+            uploadCb.success(uploaded);
           }
-          if (!uploaded.fileName) {
-            uploaded.fileName = uploaded.name;
-          }
-
-          uploadCb.success(uploaded);
-          cancelUnsubscribe();
-        });
-
-        cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdClosed, () => {
-          unsubscribeUploadComplete();
         });
       },
 
