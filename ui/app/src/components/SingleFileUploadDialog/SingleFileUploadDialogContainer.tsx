@@ -14,45 +14,57 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import { SingleFileUploadDialogContainerProps } from './utils';
 import { useDispatch } from 'react-redux';
 import DialogBody from '../Dialogs/DialogBody';
 import SingleFileUploadDialogUI from './SingleFileUploadDialogUI';
 import { updateSingleFileUploadDialog } from '../../state/actions/dialogs';
 import { showSystemNotification } from '../../state/actions/system';
+import { batchActions } from '../../state/actions/misc';
 
 export default function SingleFileUploadDialogContainer(props: SingleFileUploadDialogContainerProps) {
   const { onUploadComplete, onUploadStart, onUploadError, ...rest } = props;
   const dispatch = useDispatch();
 
-  const onStart = () => {
+  const onStart = useCallback(() => {
     onUploadStart?.();
     dispatch(
       updateSingleFileUploadDialog({
         isSubmitting: true
       })
     );
-  };
+  }, [dispatch, onUploadStart]);
 
-  const onComplete = (result) => {
-    dispatch(
-      updateSingleFileUploadDialog({
-        isSubmitting: false
-      })
-    );
-    onUploadComplete?.(result);
-  };
+  const onComplete = useCallback(
+    (result) => {
+      dispatch(
+        updateSingleFileUploadDialog({
+          isSubmitting: false
+        })
+      );
+      onUploadComplete?.(result);
+    },
+    [dispatch, onUploadComplete]
+  );
 
-  const onError = ({ file, error, response }) => {
-    dispatch(
-      showSystemNotification({
-        message: error.message
-      })
-    );
+  const onError = useCallback(
+    ({ file, error, response }) => {
+      dispatch(
+        batchActions([
+          showSystemNotification({
+            message: error.message
+          }),
+          updateSingleFileUploadDialog({
+            isSubmitting: false
+          })
+        ])
+      );
 
-    onUploadError?.({ file, error, response });
-  };
+      onUploadError?.({ file, error, response });
+    },
+    [dispatch, onUploadError]
+  );
 
   return (
     <DialogBody>
