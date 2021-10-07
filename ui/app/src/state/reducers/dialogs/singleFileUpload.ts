@@ -38,7 +38,6 @@ export default createReducer<GlobalState['dialogs']['singleFileUpload']>(initial
     ...state,
     onClose: closeSingleFileUploadDialog(),
     onClosed: singleFileUploadDialogClosed(),
-    onCreate: closeSingleFileUploadDialog(),
     ...payload,
     open: true
   }),
