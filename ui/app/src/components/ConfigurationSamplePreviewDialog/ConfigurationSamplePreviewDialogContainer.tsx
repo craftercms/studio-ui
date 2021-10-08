@@ -21,7 +21,7 @@ import DialogBody from '../Dialogs/DialogBody';
 import DialogHeader from '../DialogHeader/DialogHeader';
 import { FormattedMessage } from 'react-intl';
 import DialogFooter from '../Dialogs/DialogFooter';
-import ConfirmDropdown from '../Controls/ConfirmDropdown';
+import ConfirmDropdown from '../ConfirmDropdown';
 import useStyles from './styles';
 import { useUnmount } from '../../utils/hooks/useUnmount';
 

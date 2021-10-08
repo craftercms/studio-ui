@@ -38,6 +38,7 @@ import { BLOCKED, CANCELLED, COMPLETED, PROCESSING, READY_FOR_LIVE } from '../co
 import palette from '../../../../styles/palette';
 import ApiResponseErrorState from '../../../../components/ApiResponseErrorState';
 import { useSpreadState } from '../../../../utils/hooks/useSpreadState';
+import ConfirmDropdown from '../../../../components/ConfirmDropdown';
 
 const messages = defineMessages({
   selectAll: {

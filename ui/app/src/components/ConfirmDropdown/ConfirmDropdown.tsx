@@ -66,7 +66,7 @@ interface ConfirmDropdownProps {
   onCancel?(): any;
 }
 
-export default function ConfirmDropdown(props: ConfirmDropdownProps) {
+export function ConfirmDropdown(props: ConfirmDropdownProps) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const classes = useStyles({});
   const {
@@ -152,3 +152,5 @@ export default function ConfirmDropdown(props: ConfirmDropdownProps) {
     </>
   );
 }
+
+export default ConfirmDropdown;

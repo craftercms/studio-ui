@@ -29,7 +29,7 @@ import { Token } from '../../models/Token';
 import CreateTokenDialog from '../CreateTokenDialog';
 import clsx from 'clsx';
 import { showSystemNotification } from '../../state/actions/system';
-import ConfirmDropdown from '../Controls/ConfirmDropdown';
+import ConfirmDropdown from '../ConfirmDropdown';
 import ActionsBar from '../ActionsBar';
 import { ConditionalLoadingState } from '../SystemStatus/LoadingState';
 import EmptyState from '../SystemStatus/EmptyState';

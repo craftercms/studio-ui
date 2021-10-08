@@ -30,7 +30,7 @@ import ArrowUpwardRoundedIcon from '@mui/icons-material/ArrowUpwardRounded';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
-import ConfirmDropdown from '../Controls/ConfirmDropdown';
+import ConfirmDropdown from '../ConfirmDropdown';
 
 export interface RemoteRepositoriesGridUIProps {
   resource: Resource<Array<Repository>>;

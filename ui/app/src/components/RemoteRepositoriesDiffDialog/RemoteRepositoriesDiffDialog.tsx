@@ -26,7 +26,7 @@ import { FileDiff } from '../../models/Repository';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import RemoteRepositoriesDiffDialogUI from './RemoteRepositoriesDiffDialogUI';
 import SecondaryButton from '../SecondaryButton';
-import ConfirmDropdown from '../Controls/ConfirmDropdown';
+import ConfirmDropdown from '../ConfirmDropdown';
 import { messages } from '../RemoteRepositoriesStatus';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
