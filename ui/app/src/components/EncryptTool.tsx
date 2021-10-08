@@ -107,34 +107,6 @@ function copyToClipboard(input: HTMLInputElement) {
   document.execCommand('copy');
 }
 
-function SnackbarContentWrapper(props: any) {
-  const classes = useStyles({});
-  const { className, message, onClose, variant, ...other } = props;
-
-  return (
-    <SnackbarContent
-      className={`${className} ${classes.iconVariant}`}
-      aria-describedby="encryptToolSnackbar"
-      message={
-        <span id="encryptToolSnackbar" className={classes.message}>
-          {variant === 'success' ? (
-            <CheckCircleIcon className={`${classes.icon} ${classes.iconVariant}`} />
-          ) : (
-            <ErrorIcon className={`${classes.icon} ${classes.iconVariant}`} />
-          )}
-          {message}
-        </span>
-      }
-      action={[
-        <IconButton key="close" aria-label="close" color="inherit" onClick={onClose} size="large">
-          <CloseIcon className={classes.icon} />
-        </IconButton>
-      ]}
-      {...other}
-    />
-  );
-}
-
 const EncryptTool = (props: EncryptToolProps) => {
   const { site, embedded = false, showAppsButton } = props;
   const classes = useStyles({});
@@ -245,13 +217,34 @@ const EncryptTool = (props: EncryptToolProps) => {
               setNotificationSettings({ open: false });
             }}
           >
-            <SnackbarContentWrapper
-              onClose={() => setNotificationSettings({ open: false })}
-              variant={notificationSettings.variant}
-              className={notificationSettings.variant === 'success' ? classes.success : classes.error}
-              message={formatMessage(
-                notificationSettings.variant === 'success' ? messages.successMessage : messages.errorMessage
-              )}
+            <SnackbarContent
+              className={`${notificationSettings.variant === 'success' ? classes.success : classes.error} ${
+                classes.iconVariant
+              }`}
+              aria-describedby="encryptToolSnackbar"
+              message={
+                <span id="encryptToolSnackbar" className={classes.message}>
+                  {notificationSettings.variant === 'success' ? (
+                    <CheckCircleIcon className={`${classes.icon} ${classes.iconVariant}`} />
+                  ) : (
+                    <ErrorIcon className={`${classes.icon} ${classes.iconVariant}`} />
+                  )}
+                  {formatMessage(
+                    notificationSettings.variant === 'success' ? messages.successMessage : messages.errorMessage
+                  )}
+                </span>
+              }
+              action={[
+                <IconButton
+                  key="close"
+                  aria-label="close"
+                  color="inherit"
+                  onClick={() => setNotificationSettings({ open: false })}
+                  size="large"
+                >
+                  <CloseIcon className={classes.icon} />
+                </IconButton>
+              ]}
             />
           </Snackbar>
         </form>
