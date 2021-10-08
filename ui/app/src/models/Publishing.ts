@@ -68,3 +68,12 @@ export interface PublishingTarget {
   publish: boolean;
   updateStatus: boolean;
 }
+
+export interface PublishingParams {
+  items: string[];
+  publishingTarget: string;
+  optionalDependencies?: string[];
+  schedule?: string;
+  comment?: string;
+  sendEmailNotifications?: boolean;
+}

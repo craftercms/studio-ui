@@ -28,7 +28,7 @@ import {
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { usePermissionsBySite } from '../../utils/hooks/usePermissionsBySite';
 import { useDispatch } from 'react-redux';
-import { fetchPublishingTargets, publish, requestPublish } from '../../services/publishing';
+import { approve, fetchPublishingTargets, publish, requestPublish } from '../../services/publishing';
 import { emitSystemEvent, itemsApproved, itemsScheduled } from '../../state/actions/system';
 import { getComputedPublishingTarget, getDateScheduled } from '../../utils/detailedItem';
 import { FormattedMessage } from 'react-intl';
@@ -79,9 +79,8 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
   const hasPublishPermission = myPermissions.includes('publish');
   const dispatch = useDispatch();
   const submissionCommentRequired = useSelection((state) => state.uiConfig.publishing.publishCommentRequired);
-
-  // TODO: there's a separate API for approve, we need to handle it
-  const submit = !hasPublishPermission || state.requestApproval ? requestPublish : publish;
+  const isApprove = hasPublishPermission && items.every((item) => item.stateMap.submitted);
+  const submit = !hasPublishPermission || state.requestApproval ? requestPublish : isApprove ? approve : publish;
   const propagateAction = !hasPublishPermission || state.requestApproval ? itemsScheduled : itemsApproved;
   const { mixedPublishingTargets, mixedPublishingDates, dateScheduled, publishingTarget } = useMemo(() => {
     const state = {

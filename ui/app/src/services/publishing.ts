@@ -19,7 +19,7 @@ import { Observable } from 'rxjs';
 import { map, mapTo, pluck } from 'rxjs/operators';
 import { LegacyItem } from '../models/Item';
 import { pluckProps, toQueryString } from '../utils/object';
-import { PublishingStatus, PublishingTarget } from '../models/Publishing';
+import { PublishingParams, PublishingStatus, PublishingTarget } from '../models/Publishing';
 import { Api2BulkResponseFormat, Api2ResponseFormat } from '../models/ApiResponse';
 import { PagedArray } from '../models/PagedArray';
 
@@ -86,21 +86,21 @@ export interface GoLiveResponse {
   message: string;
 }
 
-export function publish(siteId: string, data): Observable<boolean> {
+export function publish(siteId: string, data: PublishingParams): Observable<boolean> {
   return postJSON('/studio/api/2/workflow/publish', {
     siteId,
     ...data
   }).pipe(mapTo(true));
 }
 
-export function requestPublish(siteId: string, data): Observable<boolean> {
+export function requestPublish(siteId: string, data: PublishingParams): Observable<boolean> {
   return postJSON('/studio/api/2/workflow/request_publish', {
     siteId,
     ...data
   }).pipe(mapTo(true));
 }
 
-export function approve(siteId: string, data): Observable<boolean> {
+export function approve(siteId: string, data: PublishingParams): Observable<boolean> {
   return postJSON('/studio/api/2/workflow/approve', {
     siteId,
     ...data
@@ -111,20 +111,6 @@ export function reject(siteId: string, items: string[], comment: string): Observ
   return postJSON('/studio/api/2/workflow/reject', {
     siteId,
     items,
-    comment
-  }).pipe(mapTo(true));
-}
-
-export function deleteItems(
-  siteId: string,
-  items: string[],
-  optionalDependencies: string[],
-  comment: string
-): Observable<boolean> {
-  return postJSON('/studio/api/2/workflow/delete', {
-    siteId,
-    items,
-    optionalDependencies,
     comment
   }).pipe(mapTo(true));
 }
