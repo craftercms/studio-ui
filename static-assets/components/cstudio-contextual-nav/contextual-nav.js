@@ -155,9 +155,13 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
         };
 
         CStudioAuthoring.Module.requireModule(
-          module.moduleName,
-          '/static-assets/components/cstudio-contextual-nav/' + module.moduleName + '.js',
-          0,
+          module.plugin ? module.plugin.name : module.moduleName,
+          module.plugin
+            ? `/1/plugin/file?siteId=${CStudioAuthoringContext.site}&type=${module.plugin.type}&name=${
+              module.plugin.name
+            }&filename=${module.plugin.file}${module.plugin.pluginId ? `&pluginId=${module.plugin.pluginId}` : ''}`
+            : `/static-assets/components/cstudio-contextual-nav/${module.moduleName}.js`,
+          module,
           cb
         );
       }
