@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -16,7 +16,7 @@
 
 import React, { useRef, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import { encrypt as encryptService } from '../services/security';
+import { encrypt as encryptService } from '../../services/security';
 import Snackbar from '@mui/material/Snackbar';
 import SnackbarContent from '@mui/material/SnackbarContent';
 import IconButton from '@mui/material/IconButton';
@@ -26,12 +26,12 @@ import makeStyles from '@mui/styles/makeStyles';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ErrorIcon from '@mui/icons-material/Error';
 import { green, red } from '@mui/material/colors';
-import { setRequestForgeryToken } from '../utils/auth';
+import { setRequestForgeryToken } from '../../utils/auth';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import GlobalAppToolbar from './GlobalAppToolbar';
+import GlobalAppToolbar from '../GlobalAppToolbar';
 import Box from '@mui/material/Box';
-import { useSpreadState } from '../utils/hooks/useSpreadState';
+import { useSpreadState } from '../../utils/hooks/useSpreadState';
 import Paper from '@mui/material/Paper';
 
 interface EncryptToolProps {
@@ -107,7 +107,7 @@ function copyToClipboard(input: HTMLInputElement) {
   document.execCommand('copy');
 }
 
-const EncryptTool = (props: EncryptToolProps) => {
+export const EncryptTool = (props: EncryptToolProps) => {
   const { site, embedded = false, showAppsButton } = props;
   const classes = useStyles({});
   const inputRef = useRef();
