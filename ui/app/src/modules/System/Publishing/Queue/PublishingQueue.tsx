@@ -23,7 +23,6 @@ import { defineMessages, useIntl } from 'react-intl';
 import PublishingPackage from './PublishingPackage';
 import { cancelPackage, fetchPackages, fetchPublishingTargets } from '../../../../services/publishing';
 import { CurrentFilters, Package, Selected } from '../../../../models/Publishing';
-import ConfirmDropdown from '../../../../components/Controls/ConfirmDropdown';
 import FilterDropdown from '../../Sites/Create/FilterDropdown';
 import { setRequestForgeryToken } from '../../../../utils/auth';
 import TablePagination from '@mui/material/TablePagination';
