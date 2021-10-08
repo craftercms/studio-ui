@@ -1033,12 +1033,18 @@ export function duplicate(siteId: string, path: string): Observable<any> {
   }).pipe(pluck('response'));
 }
 
-export function deleteItems(site: string, paths: string[], submissionComment = ''): Observable<ApiResponse> {
+export function deleteItems(
+  siteId: string,
+  items: string[],
+  comment: string,
+  optionalDependencies?: string[]
+): Observable<boolean> {
   return postJSON('/studio/api/2/content/delete', {
-    siteId: site,
-    submissionComment,
-    paths
-  }).pipe(pluck('response', 'response'));
+    siteId,
+    items,
+    optionalDependencies,
+    comment
+  }).pipe(mapTo(true));
 }
 
 export function lock(site: string, path: string): Observable<boolean> {

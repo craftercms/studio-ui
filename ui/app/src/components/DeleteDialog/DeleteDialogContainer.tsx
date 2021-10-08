@@ -75,7 +75,7 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
     const paths = createCheckedList(selectedItems);
     dispatch(updateDeleteDialog({ isSubmitting: true }));
     deleteItems(site, paths, comment).subscribe(
-      (response) => {
+      () => {
         dispatch(
           batchActions([
             updateDeleteDialog({ isSubmitting: false, hasPendingChanges: false }),
@@ -83,7 +83,6 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
           ])
         );
         onSuccess?.({
-          ...response,
           items: paths.map((path) => items.find((item) => item.path === path))
         });
       },
