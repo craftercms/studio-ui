@@ -27,7 +27,7 @@ import TableContainer from '@mui/material/TableContainer';
 import React from 'react';
 import useStyles from './styles';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
-import ConfirmDropdown from '../Controls/ConfirmDropdown';
+import ConfirmDropdown from '../ConfirmDropdown';
 import FiberManualRecordRoundedIcon from '@mui/icons-material/FiberManualRecordRounded';
 
 export interface ClusterGridProps {
