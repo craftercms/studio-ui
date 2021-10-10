@@ -26,7 +26,7 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import Button from '@mui/material/Button';
-import ConfirmDropdown from '../Controls/ConfirmDropdown';
+import ConfirmDropdown from '../ConfirmDropdown';
 import clsx from 'clsx';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 

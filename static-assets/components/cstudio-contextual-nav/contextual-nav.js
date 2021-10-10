@@ -29,7 +29,7 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
    * call out to the authoring environment for the nav content and overlay it
    * on success.
    */
-  hookNavOverlayFromAuthoring: function() {
+  hookNavOverlayFromAuthoring: function () {
     if (!this.initialized) {
       this.initialized = true;
       this.updateContextualNavOverlay();
@@ -41,16 +41,16 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
    * top of the existing page
    * @param content to overlay
    */
-  updateContextualNavOverlay: function(context) {
+  updateContextualNavOverlay: function (context) {
     var me = this;
 
     context = context ? context : CStudioAuthoringContext.navContext;
     CStudioAuthoring.Service.retrieveContextualNavContent(context, {
-      success: function(navContent) {
+      success: function (navContent) {
         CStudioAuthoring.ContextualNav.addNavContent(navContent);
         YAHOO.util.Event.onAvailable(
           'authoringContextNavHeader',
-          function() {
+          function () {
             document.domain = CStudioAuthoringContext.cookieDomain;
             CStudioAuthoring.Events.contextNavReady.fire();
             CrafterCMSNext.render('#appsIconLauncher', 'LauncherOpenerButton', {
@@ -62,7 +62,7 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
           this
         );
       },
-      failure: function() {
+      failure: function () {
         YAHOO.log('Failed to hook context nav', 'error', 'authoring nav callback');
       }
     });
@@ -71,7 +71,7 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
   /**
    * add the contextual nav to the page - first time call
    */
-  addNavContent: function(navHtmlContent) {
+  addNavContent: function (navHtmlContent) {
     var bar = document.createElement('div'),
       self = this;
 
@@ -80,18 +80,18 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
 
     CrafterCMSNext.system.getStore().subscribe(() => {
       CStudioAuthoring.Service.retrieveContextNavConfiguration('default', {
-        success: function(config) {
+        success: function (config) {
           var me = this;
           var $ =
             jQuery ||
-            function(fn) {
+            function (fn) {
               fn();
             };
-          $(function() {
+          $(function () {
             document.body.appendChild(bar);
 
             CStudioAuthoring.Service.getUserPermissions(CStudioAuthoringContext.site, '/', {
-              success: function(data) {
+              success: function (data) {
                 var globalAdmin = false;
                 for (var i = 0; i < data.permissions.length; i++) {
                   if (data.permissions[i] === 'create-site') {
@@ -107,7 +107,7 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
             me.context.buildModules(config, bar);
           });
         },
-        failure: function() {},
+        failure: function () {},
         context: this
       });
     });
@@ -115,7 +115,7 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
   /**
    * given a dropdown configuration, build the nav
    */
-  buildModules: function(navConfig, barEl) {
+  buildModules: function (navConfig, barEl) {
     var c = navConfig;
     if (c.left && c.left.menuItem && c.left.menuItem.item) {
       this.showLeftModules(c.left.menuItem.item, barEl);
@@ -129,7 +129,7 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
         var module = navConfig.modules.module[i];
 
         var cb = {
-          moduleLoaded: function(moduleName, moduleClass, moduleConfig) {
+          moduleLoaded: function (moduleName, moduleClass, moduleConfig) {
             try {
               moduleClass.initialize(moduleConfig);
             } catch (e) {
@@ -140,9 +140,13 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
         };
 
         CStudioAuthoring.Module.requireModule(
-          module.moduleName,
-          '/static-assets/components/cstudio-contextual-nav/' + module.moduleName + '.js',
-          0,
+          module.plugin ? module.plugin.name : module.moduleName,
+          module.plugin
+            ? `/1/plugin/file?siteId=${CStudioAuthoringContext.site}&type=${module.plugin.type}&name=${
+                module.plugin.name
+              }&filename=${module.plugin.file}${module.plugin.pluginId ? `&pluginId=${module.plugin.pluginId}` : ''}`
+            : `/static-assets/components/cstudio-contextual-nav/${module.moduleName}.js`,
+          module,
           cb
         );
       }
@@ -153,7 +157,7 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
    * Hides/Disables first all the modules, so then when looping configuration, they are shown again
    *
    */
-  preProcessModules: function(modulesMap, $barEl, onItem) {
+  preProcessModules: function (modulesMap, $barEl, onItem) {
     for (var key in modulesMap) {
       if (modulesMap.hasOwnProperty(key)) {
         $barEl.find(modulesMap[key]).addClass('hidden');
@@ -165,7 +169,7 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
   /**
    * Shown left context nav modules based on configuration
    */
-  showLeftModules: function(modules, barEl) {
+  showLeftModules: function (modules, barEl) {
     var modulesMap = CStudioAuthoring.ContextualNav.LeftModulesMap;
     this.showModules(modulesMap, modules, barEl);
   },
@@ -173,7 +177,7 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
   /**
    * Shown right context nav modules based on configuration
    */
-  showRightModules: function(modules, barEl) {
+  showRightModules: function (modules, barEl) {
     var modulesMap = CStudioAuthoring.ContextualNav.RightModulesMap;
     this.showModules(modulesMap, modules, barEl);
     this.showTooltipModules();
@@ -182,12 +186,12 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
   /**
    * Shown right context nav labels
    */
-  showTooltipModules: function() {
+  showTooltipModules: function () {
     var self = this;
     $('#studioBar').tooltip({
       selector: '.nav-icon',
       placement: 'bottom',
-      title: function() {
+      title: function () {
         var text = $(this).attr('data-title'),
           textTranslated = self.CMgs.format(self.contextNavLangBundle, text);
         $(this).attr('title', textTranslated);
@@ -195,7 +199,7 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
         return textTranslated;
       }
     });
-    $('#studioBar').delegate('.nav-icon', 'click', function(event) {
+    $('#studioBar').delegate('.nav-icon', 'click', function (event) {
       $(this).tooltip('hide');
     });
   },
@@ -203,13 +207,13 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
   /**
    * Generic show modules stuff
    */
-  showModules: function(modulesMap, modules, barEl) {
+  showModules: function (modulesMap, modules, barEl) {
     var PREVIEW_CONTAINERS = '.studio-preview, .site-dashboard';
     var DISABLED = 'disabled-wcm-dropdown';
 
     var $barEl = $(barEl);
 
-    this.preProcessModules(modulesMap, $barEl, function(key) {
+    this.preProcessModules(modulesMap, $barEl, function (key) {
       if (key === 'wcm_dropdown') {
         $(PREVIEW_CONTAINERS).addClass(DISABLED);
       }
@@ -225,8 +229,8 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
     }
   },
 
-  addResizeEventToNavbar: function() {
-    new ResizeSensor($('.navbar-default'), function() {
+  addResizeEventToNavbar: function () {
+    new ResizeSensor($('.navbar-default'), function () {
       var studioBarHeight = $('#studioBar .navbar').height(),
         // There will be only .studio-preview, .site-dashboard or #admin-console,
         // not more than 1, so this selector won't fail

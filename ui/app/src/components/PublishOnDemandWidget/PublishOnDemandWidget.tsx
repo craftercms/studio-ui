@@ -15,6 +15,7 @@
  */
 
 import * as React from 'react';
+import { useEffect, useState } from 'react';
 import Paper from '@mui/material/Paper';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import DialogHeader from '../DialogHeader/DialogHeader';
@@ -37,8 +38,6 @@ import { showSystemNotification } from '../../state/actions/system';
 import { useDispatch } from 'react-redux';
 import { closeConfirmDialog, showConfirmDialog } from '../../state/actions/dialogs';
 import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
-import { useState } from 'react';
-import { useEffect } from 'react';
 import Link from '@mui/material/Link';
 import { useSpreadState } from '../../utils/hooks/useSpreadState';
 import { useSelection } from '../../utils/hooks/useSelection';
@@ -197,10 +196,7 @@ export default function PublishOnDemandWidget(props: PublishOnDemandWidgetProps)
   };
 
   const bulkPublishConfirmation = () => {
-    const studioNote = formatMessage(messages.publishStudioNote, {
-      a: (msg) => msg
-      // @ts-ignore
-    }).join(' ');
+    const studioNote = formatMessage(messages.publishStudioNote).replace(/<\/?.*?>/g, '');
 
     dispatch(
       showConfirmDialog({
