@@ -18,6 +18,8 @@ import { ContentType, ContentTypeField, ValidationResult } from '@craftercms/stu
 import { ContentInstance } from '@craftercms/studio-ui/models/ContentInstance';
 import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
 
+export type RecordTypes = 'page' | 'component' | 'field' | 'repeat-item' | 'node-selector-item';
+
 export interface DropZone {
   element: Element;
   children: Element[];
@@ -41,7 +43,9 @@ export interface BaseICERecord extends ICEProps {
   id: number;
 }
 
-export interface ICERecord extends BaseICERecord {}
+export interface ICERecord extends BaseICERecord {
+  recordType: RecordTypes;
+}
 
 export interface ICERecordRegistration {
   modelId: string;
@@ -71,7 +75,7 @@ export interface HighlightData {
   validations: LookupTable<ValidationResult>;
 }
 
-export interface ReferentialEntries extends BaseICERecord {
+export interface ReferentialEntries extends ICERecord {
   field: ContentTypeField;
   model: ContentInstance;
   contentType: ContentType;

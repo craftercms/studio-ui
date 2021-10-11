@@ -210,14 +210,14 @@ export function checkOutGuest(): StandardAction {
 export const fetchPrimaryGuestModelComplete = /*#__PURE__*/ createAction<{
   model: ContentInstance;
   modelLookup: LookupTable<ContentInstance>;
-  childrenMap: LookupTable<string[]>;
+  hierarchyMap: LookupTable<string[]>;
 }>('FETCH_PRIMARY_GUEST_MODEL_COMPLETE');
 
 // This action is meant for the other Guest models that aren't the main.
 // The reducer will shouldn't set the guest.modelId.
 export const fetchGuestModelComplete = /*#__PURE__*/ createAction<{
   modelLookup: LookupTable<ContentInstance>;
-  childrenMap: LookupTable<string[]>;
+  hierarchyMap: LookupTable<string[]>;
 }>('FETCH_GUEST_MODELS_COMPLETE');
 
 export const guestModelUpdated = /*#__PURE__*/ createAction<{ model: ContentInstance }>('GUEST_MODEL_UPDATED');

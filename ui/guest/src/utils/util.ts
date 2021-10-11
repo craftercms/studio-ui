@@ -28,7 +28,8 @@ export const //
     id: null,
     modelId: null,
     fieldId: null,
-    index: null
+    index: null,
+    recordType: null
   };
 
 export function not(condition: boolean): boolean {
