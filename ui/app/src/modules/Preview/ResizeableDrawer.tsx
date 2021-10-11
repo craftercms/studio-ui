@@ -154,19 +154,30 @@ export default function ResizeableDrawer(props: ResizeableDrawerProps) {
             ? e.clientX - drawerRef.current.getBoundingClientRect().left
             : window.innerWidth - (e.clientX - drawerRef.current.getBoundingClientRect().left)) + 5;
         onWidthChange(newWidth <= maxWidth ? newWidth : maxWidth);
+
+        if (newWidth > maxWidth + 5) {
+          handleMouseUp();
+        }
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [anchor, onWidthChange, maxWidth]
   );
+
+  const handleMouseUp = useCallback(() => {
+    setResizeActive(false);
+    document.removeEventListener('mouseup', handleMouseUp, true);
+    document.removeEventListener('mousemove', handleMouseMove, true);
+  }, [handleMouseMove]);
 
   const handleMouseDown = onWidthChange
     ? () => {
         setResizeActive(true);
-        const handleMouseUp = () => {
-          setResizeActive(false);
-          document.removeEventListener('mouseup', handleMouseUp, true);
-          document.removeEventListener('mousemove', handleMouseMove, true);
-        };
+        // const handleMouseUp = () => {
+        //   setResizeActive(false);
+        //   document.removeEventListener('mouseup', handleMouseUp, true);
+        //   document.removeEventListener('mousemove', handleMouseMove, true);
+        // };
         document.addEventListener('mouseup', handleMouseUp, true);
         document.addEventListener('mousemove', handleMouseMove, true);
       }
