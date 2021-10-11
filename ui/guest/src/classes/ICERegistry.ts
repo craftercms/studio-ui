@@ -146,11 +146,7 @@ export function exists(data: Partial<ICEProps>): number {
     if (
       record.modelId === data.modelId &&
       record.fieldId === data.fieldId &&
-      (nou(data.index) || nou(record.index)
-        ? record.index === data.index
-        : // Use double equals since `index` can be string or number
-          // eslint-disable-next-line eqeqeq
-          String(record.index) === String(data.index))
+      (nou(data.index) || nou(record.index) ? record.index === data.index : String(record.index) === String(data.index))
     ) {
       return record.id;
     }
