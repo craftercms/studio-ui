@@ -94,8 +94,7 @@ YAHOO.extend(
         editEl.onclick = function () {
           const path = _self.valueEl.value;
           const contentType = _self.currentContenType.contentType;
-          const onCreatedId = 'createFileDialogOnCreated';
-          const onCloseId = 'createFileDialogOnClosed';
+          const customEventId = 'createFileDialogEventId';
           let unsubscribe, cancelUnsubscribe;
 
           const showCodeEditor = (path, contentType) => {
@@ -120,7 +119,7 @@ YAHOO.extend(
                   payload: [
                     {
                       type: 'DISPATCH_DOM_EVENT',
-                      payload: { id: onCreatedId }
+                      payload: { id: customEventId, type: 'onCreated' }
                     },
                     { type: 'CLOSE_CREATE_FILE_DIALOG' }
                   ]
@@ -130,7 +129,7 @@ YAHOO.extend(
                   payload: [
                     {
                       type: 'DISPATCH_DOM_EVENT',
-                      payload: { id: onCloseId }
+                      payload: { id: customEventId, type: 'onClosed' }
                     },
                     { type: 'CREATE_FILE_DIALOG_CLOSED' }
                   ]
@@ -138,20 +137,17 @@ YAHOO.extend(
               }
             });
 
-            unsubscribe = CrafterCMSNext.createLegacyCallbackListener(onCreatedId, (response) => {
-              const { openOnSuccess, fileName, path } = response;
-              const templatePath = `${path}/${fileName}`;
-              _self.valueEl.value = templatePath;
-              _self.value = templatePath;
-              _self.updateFn(null, _self.valueEl);
-              if (openOnSuccess) {
-                showCodeEditor(templatePath, contentType);
+            unsubscribe = CrafterCMSNext.createLegacyCallbackListener(customEventId, (response) => {
+              const { openOnSuccess, fileName, path, type } = response;
+              if (type === 'onCreated') {
+                const templatePath = `${path}/${fileName}`;
+                _self.valueEl.value = templatePath;
+                _self.value = templatePath;
+                _self.updateFn(null, _self.valueEl);
+                if (openOnSuccess) {
+                  showCodeEditor(templatePath, contentType);
+                }
               }
-              cancelUnsubscribe();
-            });
-
-            cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(onCloseId, () => {
-              unsubscribe();
             });
           } else {
             showCodeEditor(path, contentType);
