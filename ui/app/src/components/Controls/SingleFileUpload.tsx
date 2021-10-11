@@ -176,28 +176,42 @@ export default function SingleFileUpload(props: SingleFileUploadProps) {
   }, [uppy, formTarget, url]);
 
   useEffect(() => {
-    uppy.on('upload-success', (file, response) => {
+    const onUploadSuccess = (file) => {
       dispatch(emitSystemEvent(itemCreated({ target: path + file.name })));
       setDescription(`${formatMessage(messages.uploadedFile)}:`);
-    });
+    };
 
-    uppy.on('complete', (result) => {
+    const onCompleteUpload = (result) => {
       onComplete?.(result);
       setDisableInput(false);
-    });
+    };
+
+    uppy.on('upload-success', onUploadSuccess);
+    uppy.on('complete', onCompleteUpload);
+
+    return () => {
+      uppy.off('upload-success', onUploadSuccess);
+      uppy.off('complete', onCompleteUpload);
+    };
   }, [onComplete, dispatch, formatMessage, path, uppy]);
 
   useEffect(() => {
-    uppy.on('upload-error', (file, error, response) => {
+    const onUploadError = (file, error, response) => {
       uppy.cancelAll();
       setFileNameErrorClass('text-danger');
       onError?.({ file, error, response });
       setDisableInput(false);
-    });
+    };
+
+    uppy.on('upload-error', onUploadError);
+
+    return () => {
+      uppy.off('upload-error', onUploadError);
+    };
   }, [onError, uppy]);
 
   useEffect(() => {
-    uppy.on('file-added', (file: UppyFile) => {
+    const onFileAdded = (file: UppyFile) => {
       setDescription(`${formatMessage(messages.validatingFile)}:`);
       setFile(file);
       setFileNameErrorClass('');
@@ -223,7 +237,13 @@ export default function SingleFileUpload(props: SingleFileUploadProps) {
           });
         }
       });
-    });
+    };
+
+    uppy.on('file-added', onFileAdded);
+
+    return () => {
+      uppy.off('file-added', onFileAdded);
+    };
   }, [onUploadStart, formatMessage, path, site, uppy]);
 
   const onConfirm = () => {
