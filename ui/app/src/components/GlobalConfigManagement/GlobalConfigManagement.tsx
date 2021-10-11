@@ -26,7 +26,7 @@ import PrimaryButton from '../PrimaryButton';
 import { forkJoin } from 'rxjs';
 import { ConditionalLoadingState } from '../SystemStatus/LoadingState';
 import ConfigurationSamplePreviewDialog from '../ConfigurationSamplePreviewDialog';
-import ConfirmDropdown from '../Controls/ConfirmDropdown';
+import ConfirmDropdown from '../ConfirmDropdown';
 import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../state/actions/system';
 import { useHistory } from 'react-router';

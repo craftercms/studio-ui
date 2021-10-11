@@ -16,7 +16,7 @@
 
 import React, { ElementType, PropsWithChildren } from 'react';
 import Accordion, { AccordionProps } from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionSummary, { accordionSummaryClasses } from '@mui/material/AccordionSummary';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMoreRounded';
 import useStyles from './styles';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -26,6 +26,7 @@ import { FormattedMessage } from 'react-intl';
 import Tooltip from '@mui/material/Tooltip';
 import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
 import clsx from 'clsx';
+import { styled } from '@mui/material/styles';
 
 export type DashletProps = PropsWithChildren<
   Omit<AccordionProps, 'title'> & {
@@ -37,6 +38,17 @@ export type DashletProps = PropsWithChildren<
     onToggleExpanded(): void;
   }
 >;
+
+const Summary = styled(AccordionSummary)(() => {
+  return {
+    [`& .${accordionSummaryClasses['content']}`]: {
+      alignItems: 'center'
+    },
+    [`&.${accordionSummaryClasses['focusVisible']}`]: {
+      backgroundColor: 'inherit'
+    }
+  };
+});
 
 export default function Dashlet(props: DashletProps) {
   const {
@@ -52,7 +64,7 @@ export default function Dashlet(props: DashletProps) {
   const classes = useStyles();
   return (
     <Accordion {...rest}>
-      <AccordionSummary expandIcon={<Icon />} classes={{ content: classes.summary }} onClick={onToggleExpanded}>
+      <Summary expandIcon={<Icon />} onClick={onToggleExpanded}>
         <Typography>{title}</Typography>
         {headerRightSection && <section className={classes.rightSection}>{headerRightSection}</section>}
         {onRefresh && (
@@ -70,7 +82,7 @@ export default function Dashlet(props: DashletProps) {
             </Tooltip>
           </IconButton>
         )}
-      </AccordionSummary>
+      </Summary>
       <AccordionDetails className={classes.details}>{children}</AccordionDetails>
     </Accordion>
   );

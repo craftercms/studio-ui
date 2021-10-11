@@ -90,7 +90,7 @@ import {
 import { fetchSandboxItem, restoreClipboard } from '../../state/actions/content';
 import EditFormPanel from './Tools/EditFormPanel';
 import {
-  createChildModelLookup,
+  createModelHierarchyDescriptorMap,
   getComputedEditMode,
   hasEditAction,
   isItemLockedForMe,
@@ -170,8 +170,8 @@ const issueDescriptorRequest = (props) => {
       })
     )
     .subscribe(({ model, modelLookup }) => {
-      const childrenMap = createChildModelLookup(modelLookup, contentTypes);
       const normalizedModels = normalizeModelsLookup(modelLookup);
+      const hierarchyMap = createModelHierarchyDescriptorMap(normalizedModels, contentTypes);
       const normalizedModel = normalizedModels[model.craftercms.id];
       const modelIdByPath = {};
       Object.values(modelLookup).forEach((model) => {
@@ -185,7 +185,7 @@ const issueDescriptorRequest = (props) => {
           model: normalizedModel,
           modelLookup: normalizedModels,
           modelIdByPath: modelIdByPath,
-          childrenMap
+          hierarchyMap
         })
       );
       hostToGuest$.next({
@@ -194,7 +194,7 @@ const issueDescriptorRequest = (props) => {
           path,
           model: normalizedModel,
           modelLookup: normalizedModels,
-          childrenMap,
+          hierarchyMap,
           modelIdByPath: modelIdByPath
         }
       });

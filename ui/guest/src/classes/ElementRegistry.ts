@@ -54,8 +54,8 @@ export function get(id: number): ElementRecord {
   return record;
 }
 
-// TODO: Unknown field names go by ignored. Trace the registration point to warn...
-// developers about field names that aren't found in the content type
+// TODO: Unknown field names go by ignored. Trace the registration point to warn
+//  developers about field names that aren't found in the content type
 export function setLabel(record: ElementRecord): void {
   const labels = [];
   const models = getCachedModels();
@@ -384,7 +384,7 @@ export function getElementFromICEProps(modelId: string, fieldId: string, index: 
     index: index
   });
 
-  if (recordId !== -1) {
+  if (recordId !== null) {
     const registryEntry = fromICEId(recordId);
     if (registryEntry) {
       return registryEntry.element;
@@ -406,7 +406,7 @@ export function getParentElementFromICEProps(
     index: fieldId.includes('.') ? parseInt(removeLastPiece(index as string)) : null
   });
 
-  return recordId === -1 ? null : $(fromICEId(recordId).element);
+  return recordId === null ? null : $(fromICEId(recordId).element);
 }
 export function getParentsElementFromICEProps(
   modelId: string,
@@ -419,5 +419,5 @@ export function getParentsElementFromICEProps(
     index: fieldId.includes('.') ? parseInt(removeLastPiece(index as string)) : null
   });
 
-  return recordId === -1 ? null : getRecordsFromIceId(recordId).map((registryEntry) => $(registryEntry.element));
+  return recordId === null ? null : getRecordsFromIceId(recordId).map((registryEntry) => $(registryEntry.element));
 }

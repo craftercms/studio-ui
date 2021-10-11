@@ -17,10 +17,12 @@
 import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
 import { ContentTypeField } from '@craftercms/studio-ui/models/ContentType';
 import { ContentInstance } from '@craftercms/studio-ui/models/ContentInstance';
-import { isNullOrUndefined, notNullOrUndefined } from './object';
+import { isNullOrUndefined, notNullOrUndefined, nou } from './object';
 import * as Model from './model';
 import { forEach, mergeArraysAlternatively } from './array';
 import { popPiece } from './string';
+import { ModelHierarchyMap } from '@craftercms/studio-ui/utils/content';
+import { RecordTypes, ReferentialEntries } from '../models/InContextEditing';
 
 export function findComponentContainerFields(
   fields: LookupTable<ContentTypeField> | ContentTypeField[]
@@ -43,20 +45,20 @@ export function findComponentContainerFields(
 export function getParentModelId(
   modelId: string,
   models: LookupTable<ContentInstance>,
-  children: LookupTable<ContentInstance>
+  children: ModelHierarchyMap
 ): string {
   return isNullOrUndefined(Model.prop(models[modelId], 'path')) ? findParentModelId(modelId, children, models) : null;
 }
 
 function findParentModelId(
   modelId: string,
-  childrenMap: LookupTable<ContentInstance>,
+  hierarchyDescriptorLookup: ModelHierarchyMap,
   models: LookupTable<ContentInstance>
 ): string {
   const parentId = forEach(
-    Object.entries(childrenMap),
+    Object.entries(hierarchyDescriptorLookup),
     ([id, children]) => {
-      if (notNullOrUndefined(children) && id !== modelId && children.includes(modelId)) {
+      if (notNullOrUndefined(children) && id !== modelId && children.children.includes(modelId)) {
         return id;
       }
     },
@@ -67,7 +69,7 @@ function findParentModelId(
       // Otherwise, need to keep looking.
       notNullOrUndefined(Model.prop(models[parentId], 'path'))
       ? parentId
-      : findParentModelId(parentId, childrenMap, models)
+      : findParentModelId(parentId, hierarchyDescriptorLookup, models)
     : // No parent found for this model
       null;
 }
@@ -100,4 +102,33 @@ export function setCollection(model: ContentInstance, fieldId: string, index: nu
   } else {
     return { ...model, [fieldId]: collection };
   }
+}
+
+export function determineRecordType(
+  entities: Pick<ReferentialEntries, 'fieldId' | 'contentType' | 'index' | 'field'>
+): RecordTypes {
+  let recordType: RecordTypes;
+  const isSimple = (str: string | number, separator = '.') => String(str).split(separator).length === 1;
+  const isSymmetricCombination = (string1: string | number, string2: string | number, separator = '.') =>
+    String(string1).split(separator).length === String(string2).split(separator).length;
+  if (nou(entities.fieldId)) {
+    // It's a model
+    recordType = entities.contentType.type as RecordTypes;
+  } else if (nou(entities.index)) {
+    // It's a ${entities.field.type} field
+    recordType = 'field';
+  } else {
+    if (
+      isSimple(entities.fieldId) ||
+      // By this point, it's been determined that it is a compound field
+      isSymmetricCombination(entities.fieldId, entities.index)
+    ) {
+      // It's an item of a ${entities.field.type}
+      recordType = entities.field.type === 'node-selector' ? 'node-selector-item' : 'repeat-item';
+    } else {
+      // It's a ${entities.field.type} field of a repeat group item
+      recordType = 'field';
+    }
+  }
+  return recordType;
 }

@@ -45,27 +45,36 @@ const LauncherLinkTile = (props: LauncherLinkTileProps) => {
 
   const onClick = isDialog
     ? (e) => {
-        e.preventDefault();
-        // prettier-ignore
-        const id = systemLinkId === 'siteDashboardDialog' ? 'craftercms.components.Dashboard' : (
-          systemLinkId === 'siteToolsDialog'
-            ? 'craftercms.components.EmbeddedSiteTools'
-            : 'craftercms.components.EmbeddedSearchIframe'
-        );
-        dispatch(
-          batchActions([
-            closeLauncher(),
-            showWidgetDialog({
-              id: systemLinkId,
-              title,
-              widget: { id }
-            })
-          ])
-        );
+        if (!e.metaKey) {
+          e.preventDefault();
+          // prettier-ignore
+          const id = systemLinkId === 'siteDashboardDialog' ? 'craftercms.components.Dashboard' : (
+            systemLinkId === 'siteToolsDialog'
+              ? 'craftercms.components.EmbeddedSiteTools'
+              : 'craftercms.components.EmbeddedSearchIframe'
+          );
+          dispatch(
+            batchActions([
+              closeLauncher(),
+              showWidgetDialog({
+                id: systemLinkId,
+                title,
+                widget: { id }
+              })
+            ])
+          );
+        }
       }
     : null;
 
-  const link = isDialog ? null : props.link ?? getSystemLink({ systemLinkId, authoringBase, site, useLegacy });
+  const link = isDialog
+    ? getSystemLink({
+        systemLinkId: systemLinkId.replace(/Dialog$/, '') as SystemLinkId,
+        authoringBase,
+        site,
+        useLegacy
+      })
+    : props.link ?? getSystemLink({ systemLinkId, authoringBase, site, useLegacy });
 
   return <LauncherTile icon={icon} onClick={onClick} title={usePossibleTranslation(title)} link={link} />;
 };

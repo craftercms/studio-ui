@@ -88,7 +88,7 @@ export default function ActionsBar(props: ActionsBarProps) {
                 <Skeleton animation="pulse" height="12px" width={`${rand(40, 60)}px`} />
               </Button>
             ))
-          : options.map((option: Action) => (
+          : options?.map((option: Action) => (
               <Button color="primary" variant="text" key={option.id} onClick={() => onOptionClicked(option.id)}>
                 {getPossibleTranslation(option.label, formatMessage)}
               </Button>

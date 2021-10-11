@@ -20,7 +20,7 @@ import Checkbox from '@mui/material/Checkbox';
 import React, { ChangeEvent, useRef, useState } from 'react';
 import makeStyles from '@mui/styles/makeStyles';
 import { defineMessages, useIntl } from 'react-intl';
-import SelectButton from '../../../../components/Controls/ConfirmDropdown';
+import SelectButton from '../../../../components/ConfirmDropdown';
 import Typography from '@mui/material/Typography';
 import { cancelPackage, fetchPackage } from '../../../../services/publishing';
 import List from '@mui/material/List';

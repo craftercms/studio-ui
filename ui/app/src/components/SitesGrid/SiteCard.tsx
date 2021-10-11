@@ -27,7 +27,7 @@ import Tooltip from '@mui/material/Tooltip';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import CardActionArea from '@mui/material/CardActionArea';
 import { Typography } from '@mui/material';
-import ConfirmDropdown from '../Controls/ConfirmDropdown';
+import ConfirmDropdown from '../ConfirmDropdown';
 import clsx from 'clsx';
 import { useSiteCardStyles } from './styles';
 import { PublishingStatus } from '../../models/Publishing';

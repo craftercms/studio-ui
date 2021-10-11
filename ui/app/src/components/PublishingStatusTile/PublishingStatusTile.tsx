@@ -85,7 +85,7 @@ const PublishingStatusTile = React.forwardRef<HTMLDivElement | HTMLButtonElement
   const Component = onClick ? ('button' as ElementType) : ('div' as ElementType);
   const statusText = publishingStatusMessages[status]
     ? formatMessage(publishingStatusMessages[status])
-    : capitalize(status);
+    : capitalize(status ?? '');
   return (
     <Component
       ref={ref}

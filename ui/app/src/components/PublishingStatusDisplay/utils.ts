@@ -102,7 +102,9 @@ export function getPublishingStatusText(
   status: PublishingStatus['status'],
   formatMessage: IntlShape['formatMessage']
 ): string {
-  return publishingStatusMessages[status] ? formatMessage(publishingStatusMessages[status]) : capitalize(status);
+  return publishingStatusMessages[status]
+    ? formatMessage(publishingStatusMessages[status])
+    : capitalize(status ?? 'Unknown');
 }
 
 export function getPublishingStatusMessage(

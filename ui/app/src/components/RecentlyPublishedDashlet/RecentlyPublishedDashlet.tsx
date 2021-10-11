@@ -251,6 +251,7 @@ export default function RecentlyPublishedDashlet() {
             disabled={fetchingHistory}
             onChange={onNumItemsChange}
             className={classes.rightAction}
+            onClick={(e) => e.stopPropagation()}
           >
             <MenuItem value={10}>10</MenuItem>
             <MenuItem value={20}>20</MenuItem>
@@ -274,6 +275,7 @@ export default function RecentlyPublishedDashlet() {
             value={preferences.filterBy}
             disabled={fetchingHistory}
             onChange={onFilterChange}
+            onClick={(e) => e.stopPropagation()}
           >
             <MenuItem value="page">
               <FormattedMessage id="words.pages" defaultMessage="Pages" />
