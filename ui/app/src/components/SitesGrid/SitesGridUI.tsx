@@ -31,7 +31,6 @@ interface SitesGridUIProps {
   onPublishButtonClick(event: React.MouseEvent<HTMLButtonElement, MouseEvent>, site: Site): void;
   currentView: 'grid' | 'list';
   publishingStatusLookup: LookupTable<PublishingStatus>;
-  sitesRefreshCount?: number;
 }
 
 export default function SitesGridUI(props: SitesGridUIProps) {
@@ -42,8 +41,7 @@ export default function SitesGridUI(props: SitesGridUIProps) {
     onEditSiteClick,
     currentView,
     publishingStatusLookup,
-    onPublishButtonClick,
-    sitesRefreshCount
+    onPublishButtonClick
   } = props;
   const sites = resource.read();
   const classes = useSitesGridStyles();
@@ -60,7 +58,6 @@ export default function SitesGridUI(props: SitesGridUIProps) {
               onEditSiteClick={onEditSiteClick}
               onPublishButtonClick={onPublishButtonClick}
               compact={currentView === 'list'}
-              siteImageCount={sitesRefreshCount}
             />
           </Grid>
         ))}

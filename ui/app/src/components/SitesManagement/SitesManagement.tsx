@@ -36,7 +36,7 @@ import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
 import { showSystemNotification } from '../../state/actions/system';
 import { fetchSites, popSite } from '../../state/reducers/sites';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
-import { showEditSiteDialog } from '../../state/actions/dialogs';
+import { closeEditSiteDialog, showEditSiteDialog } from '../../state/actions/dialogs';
 import { ErrorBoundary } from '../SystemStatus/ErrorBoundary';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import SitesGridUI from '../SitesGrid/SitesGridUI';
@@ -45,7 +45,7 @@ import GlobalAppToolbar from '../GlobalAppToolbar';
 import Button from '@mui/material/Button';
 import { getStoredGlobalMenuSiteViewPreference, setStoredGlobalMenuSiteViewPreference } from '../../utils/state';
 import { hasGlobalPermissions } from '../../services/users';
-import { foo } from '../../utils/object';
+import { foo, nnou } from '../../utils/object';
 import { useEnv } from '../../utils/hooks/useEnv';
 import { useActiveUser } from '../../utils/hooks/useActiveUser';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
@@ -80,7 +80,7 @@ export default function SitesManagement() {
   const [publishingStatusLookup, setPublishingStatusLookup] = useSpreadState<LookupTable<PublishingStatus>>({});
   const [selectedSiteStatus, setSelectedSiteStatus] = useState<PublishingStatus>(null);
   const [permissionsLookup, setPermissionsLookup] = useState<LookupTable<boolean>>(foo);
-  const [sitesRefreshCount, setSitesRefreshCount] = useState(0);
+  const [sitesRefreshCountLookup, setSitesRefreshCountLookup] = useSpreadState<LookupTable<number>>({});
 
   useEffect(() => {
     merge(
@@ -102,12 +102,24 @@ export default function SitesManagement() {
   });
 
   const resource = useLogicResource<Site[], { sitesById: LookupTable<Site>; isFetching: boolean }>(
-    useMemo(() => ({ sitesById, isFetching, permissionsLookup }), [sitesById, isFetching, permissionsLookup]),
+    useMemo(
+      () => ({ sitesById, isFetching, permissionsLookup, sitesRefreshCountLookup }),
+      [sitesById, isFetching, permissionsLookup, sitesRefreshCountLookup]
+    ),
     {
       shouldResolve: (source) => Boolean(source.sitesById) && permissionsLookup !== foo && !isFetching,
       shouldReject: () => false,
-      shouldRenew: (source, resource) => isFetching && resource.complete,
-      resultSelector: () => Object.values(sitesById),
+      shouldRenew: (source, resource) => resource.complete,
+      resultSelector: () =>
+        Object.values(sitesById).map((site) => {
+          if (nnou(sitesRefreshCountLookup[site.id])) {
+            return {
+              ...site,
+              imageUrl: `${site.imageUrl}&v=${sitesRefreshCountLookup[site.id]}`
+            };
+          }
+          return site;
+        }),
       errorSelector: () => null
     }
   );
@@ -145,17 +157,34 @@ export default function SitesManagement() {
 
   const onEditSiteClick = (site: Site) => {
     const eventId = 'editSiteImageUploadComplete';
-    createCustomDocumentEventListener(eventId, () => {
-      setSitesRefreshCount(sitesRefreshCount + 1);
+    const unsubscribe = createCustomDocumentEventListener(eventId, ({ type }) => {
+      if (type === 'uploadComplete') {
+        let count = 0;
+        if (sitesRefreshCountLookup[site.id]) {
+          count++;
+        }
+        setSitesRefreshCountLookup({
+          [site.id]: count
+        });
+      } else if (type === 'close') {
+        unsubscribe();
+      }
     });
 
     dispatch(
       showEditSiteDialog({
         site,
-        onUploadComplete: dispatchDOMEvent({
+        onSiteImageChange: dispatchDOMEvent({
           id: eventId,
           type: 'uploadComplete'
-        })
+        }),
+        onClose: batchActions([
+          closeEditSiteDialog(),
+          dispatchDOMEvent({
+            id: eventId,
+            type: 'close'
+          })
+        ])
       })
     );
   };
@@ -222,7 +251,6 @@ export default function SitesManagement() {
             onEditSiteClick={permissionsLookup['edit_site'] && onEditSiteClick}
             currentView={currentView}
             onPublishButtonClick={onPublishButtonClick}
-            sitesRefreshCount={sitesRefreshCount}
           />
         </SuspenseWithEmptyState>
       </ErrorBoundary>
