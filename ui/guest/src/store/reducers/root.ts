@@ -18,7 +18,6 @@ import {
   compileDropZone,
   fromICEId,
   getDragContextFromDropTargets,
-  getDraggable,
   getHighlighted,
   getHoverData,
   getRecordsFromIceId,
@@ -26,7 +25,6 @@ import {
 } from '../../classes/ElementRegistry';
 import { dragOk } from '../util';
 import * as iceRegistry from '../../classes/ICERegistry';
-import { collectMoveTargets } from '../../classes/ICERegistry';
 import { Reducer } from '@reduxjs/toolkit';
 import { GuestStandardAction } from '../models/GuestStandardAction';
 import { ElementRecord } from '../../models/InContextEditing';
@@ -41,18 +39,19 @@ import {
   componentDragStarted,
   componentInstanceDragStarted,
   contentTreeFieldSelected,
+  contentTreeSwitchFieldInstance,
   contentTypeDropTargetsRequest,
   desktopAssetUploadProgress,
   desktopAssetUploadStarted,
-  setPreviewEditMode,
+  highlightModeChanged,
   hostCheckIn,
-  updateRteConfig,
-  contentTreeSwitchFieldInstance,
-  highlightModeChanged
+  setPreviewEditMode,
+  updateRteConfig
 } from '@craftercms/studio-ui/build_tsc/state/actions/preview';
 import {
+  computedDragEnd,
   computedDragOver,
-  contentReady,
+  desktopAssetDragStarted,
   dropzoneEnter,
   dropzoneLeave,
   editComponentInline,
@@ -60,10 +59,10 @@ import {
   iceZoneSelected,
   scrolling,
   scrollingStopped,
+  selectField,
   setDropPosition,
   setEditMode,
-  startListening,
-  desktopAssetDragStarted
+  startListening
 } from '../actions';
 
 const initialState: GuestState = {
@@ -82,16 +81,6 @@ const initialState: GuestState = {
   activeSite: ''
 };
 
-function prepareMoveMode() {
-  const highlighted = {};
-  const movableIceRecords = collectMoveTargets();
-  const movableElementRecords = movableIceRecords.map(({ id }) => fromICEId(id));
-  movableElementRecords.forEach((er) => {
-    highlighted[er.id] = getHoverData(er.id);
-  });
-  return highlighted;
-}
-
 type CaseReducer<S = GuestState, A extends GuestStandardAction = GuestStandardAction> = Reducer<S, A>;
 
 type CaseReducers<S = GuestState, A extends GuestStandardAction = GuestStandardAction> = Record<
@@ -107,45 +96,6 @@ function createReducer<S, CR extends CaseReducers<S>>(initialState: S, actionsMa
 }
 
 const reducer = createReducer(initialState, {
-  // region computed_dragend
-  computed_dragend: (state) => ({
-    ...state,
-    status: EditingStatus.LISTENING,
-    dragContext: null,
-    highlighted: {}
-  }),
-  // endregion
-  // region computed_dragover
-  // TODO: Not pure.
-  [computedDragOver.type]: (state, action) => {
-    if (state.dragContext.scrolling) {
-      return state;
-    } else {
-      const dragContext = state.dragContext;
-      const { record, event } = action.payload;
-      const element = record.element;
-      if (dragContext.players.includes(element)) {
-        let { next, prev } =
-          // No point finding siblings for the drop zone element
-          dragContext.containers.includes(element) ? { next: null, prev: null } : getSiblingRects(record.id);
-        return {
-          ...state,
-          dragContext: {
-            ...dragContext,
-            next,
-            prev,
-            inZone: true,
-            over: record,
-            coordinates: { x: event.clientX, y: event.clientY },
-            dropZone: dragContext.dropZones.find((dz) => dz.element === element || dz.children.includes(element))
-          }
-        };
-      } else {
-        return state;
-      }
-    }
-  },
-  // endregion
   // region dblclick
   dblclick: (state, action) => {
     const { record } = action.payload;
@@ -160,21 +110,40 @@ const reducer = createReducer(initialState, {
       : state;
   },
   // endregion
-  // region dragleave
-  dragleave: (state, action) => {
-    const leavingDropZone = !state.dragContext?.dropZone?.element.contains(action.payload.event.relatedTarget);
-    return dragOk(state.status)
-      ? {
-          ...state,
-          dragContext: {
-            ...state.dragContext,
-            over: null,
-            inZone: false,
-            targetIndex: null,
-            dropZone: leavingDropZone ? null : state.dragContext.dropZone
-          }
+  // region mouseover
+  // TODO: Not pure.
+  mouseover: (state, action) => {
+    const { record } = action.payload as { record: ElementRecord };
+    if (state.status === EditingStatus.LISTENING) {
+      const { highlightMode } = state;
+      if (highlightMode === HighlightMode.ALL) {
+        const highlight = getHoverData(record.id);
+        return { ...state, highlighted: { [record.id]: highlight } };
+      } else if (highlightMode === HighlightMode.MOVE_TARGETS) {
+        const iceId = record.iceIds[0];
+        const movableRecordId = iceRegistry.getMovableParentRecord(iceId);
+        if (notNullOrUndefined(movableRecordId)) {
+          const highlight = getHoverData(
+            // If (iceId == movableRecordId) the current record is already
+            // the one to show the highlight on.
+            iceId === movableRecordId ? record.id : fromICEId(movableRecordId).id
+          );
+          return { ...state, highlighted: { [record.id]: highlight } };
         }
-      : state;
+      }
+    }
+    return state;
+  },
+  // endregion
+  // region mouseleave
+  mouseleave: (state) => {
+    if (state.status === EditingStatus.LISTENING) {
+      return {
+        ...state,
+        highlighted: {},
+        draggable: {}
+      };
+    }
   },
   // endregion
   // region dragstart
@@ -214,7 +183,63 @@ const reducer = createReducer(initialState, {
     }
   },
   // endregion
-  // region set_drop_position
+  // region dragleave
+  dragleave: (state, action) => {
+    const leavingDropZone = !state.dragContext?.dropZone?.element.contains(action.payload.event.relatedTarget);
+    return dragOk(state.status)
+      ? {
+          ...state,
+          dragContext: {
+            ...state.dragContext,
+            over: null,
+            inZone: false,
+            targetIndex: null,
+            dropZone: leavingDropZone ? null : state.dragContext.dropZone
+          }
+        }
+      : state;
+  },
+  // endregion
+  // region computedDragOver
+  // TODO: Not pure.
+  [computedDragOver.type]: (state, action) => {
+    if (state.dragContext.scrolling) {
+      return state;
+    } else {
+      const dragContext = state.dragContext;
+      const { record, event } = action.payload;
+      const element = record.element;
+      if (dragContext.players.includes(element)) {
+        let { next, prev } =
+          // No point finding siblings for the drop zone element
+          dragContext.containers.includes(element) ? { next: null, prev: null } : getSiblingRects(record.id);
+        return {
+          ...state,
+          dragContext: {
+            ...dragContext,
+            next,
+            prev,
+            inZone: true,
+            over: record,
+            coordinates: { x: event.clientX, y: event.clientY },
+            dropZone: dragContext.dropZones.find((dz) => dz.element === element || dz.children.includes(element))
+          }
+        };
+      } else {
+        return state;
+      }
+    }
+  },
+  // endregion
+  // region computedDragEnd
+  [computedDragEnd.type]: (state) => ({
+    ...state,
+    status: EditingStatus.LISTENING,
+    dragContext: null,
+    highlighted: {}
+  }),
+  // endregion
+  // region setDropPosition
   [setDropPosition.type]: (state, action) => {
     const { targetIndex } = action.payload;
     return {
@@ -226,7 +251,7 @@ const reducer = createReducer(initialState, {
     };
   },
   // endregion
-  // region edit_component_inline
+  // region editComponentInline
   [editComponentInline.type]: (state) => {
     return {
       ...state,
@@ -236,7 +261,7 @@ const reducer = createReducer(initialState, {
     };
   },
   // endregion
-  // region exit_component_inline_edit
+  // region exitComponentInlineEdit
   [exitComponentInlineEdit.type]: (state) => {
     return {
       ...state,
@@ -245,7 +270,7 @@ const reducer = createReducer(initialState, {
     };
   },
   // endregion
-  // region ice_zone_selected
+  // region iceZoneSelected
   // TODO: Not pure
   [iceZoneSelected.type]: (state, action) => {
     const { record } = action.payload;
@@ -258,54 +283,7 @@ const reducer = createReducer(initialState, {
     };
   },
   // endregion
-  // region mouseleave
-  mouseleave: (state) => {
-    if (state.status === EditingStatus.LISTENING) {
-      return {
-        ...state,
-        highlighted: {},
-        draggable: {}
-      };
-    }
-  },
-  // endregion
-  // region mouseover
-  // TODO: Not pure.
-  mouseover: (state, action) => {
-    const { record } = action.payload;
-    if (state.status === EditingStatus.LISTENING) {
-      const highlight = getHoverData(record.id);
-      const draggable = getDraggable(record.id);
-      const nextState = { ...state };
-
-      if (
-        (state.highlightMode === HighlightMode.MOVE_TARGETS && draggable !== false) ||
-        state.highlightMode === HighlightMode.ALL
-      ) {
-        nextState.highlighted = { [record.id]: highlight };
-      }
-      if (draggable !== false) {
-        nextState.draggable = { [record.id]: draggable };
-      } else if (record.id in state.draggable) {
-        nextState.draggable = reversePluckProps(state.draggable, record.id);
-      }
-      return nextState;
-    }
-    return state;
-  },
-  // endregion
-  // region set_edit_mode
-  [setEditMode.type]: (state, { payload }) => {
-    const isMoveTargetsMode = payload.highlightMode === HighlightMode.MOVE_TARGETS;
-    return {
-      ...state,
-      highlightMode: payload.highlightMode,
-      highlighted: isMoveTargetsMode ? prepareMoveMode() : {},
-      status: isMoveTargetsMode ? EditingStatus.HIGHLIGHT_MOVE_TARGETS : EditingStatus.LISTENING
-    };
-  },
-  // endregion
-  // region start_listening
+  // region startListening
   [startListening.type]: (state) => {
     return {
       ...state,
@@ -325,7 +303,7 @@ const reducer = createReducer(initialState, {
     };
   },
   // endregion
-  // region scrolling_end
+  // region scrollingStopped
   // TODO: Not pure
   [scrollingStopped.type]: (state) => {
     return {
@@ -342,7 +320,7 @@ const reducer = createReducer(initialState, {
     };
   },
   // endregion
-  // region drop_zone_enter
+  // region dropzoneEnter
   // TODO: Not pure
   [dropzoneEnter.type]: (state, action) => {
     const { elementRecordId } = action.payload;
@@ -380,7 +358,7 @@ const reducer = createReducer(initialState, {
     };
   },
   // endregion
-  // region drop_zone_leave
+  // region dropzoneLeave
   // TODO: Not pure
   [dropzoneLeave.type]: (state, action) => {
     const { elementRecordId } = action.payload;
@@ -418,24 +396,28 @@ const reducer = createReducer(initialState, {
     };
   },
   // endregion
-  // region set_edit_mode
+  // region setEditMode
+  [setEditMode.type]: (state, { payload }) => ({
+    ...state,
+    highlighted: {},
+    highlightMode: payload.highlightMode
+  }),
+  // endregion
+  // region setPreviewEditMode
   [setPreviewEditMode.type]: (state, action) => ({
     ...state,
+    highlighted: {},
     editMode: action.payload.editMode
   }),
   // endregion
-  // region set_edit_mode
-  [highlightModeChanged.type]: (state, { payload }) => {
-    const isMoveTargetsMode = payload.highlightMode === HighlightMode.MOVE_TARGETS;
-    return {
-      ...state,
-      highlightMode: payload.highlightMode,
-      highlighted: isMoveTargetsMode ? prepareMoveMode() : {},
-      status: isMoveTargetsMode ? EditingStatus.HIGHLIGHT_MOVE_TARGETS : EditingStatus.LISTENING
-    };
-  },
+  // region highlightModeChanged
+  [highlightModeChanged.type]: (state, { payload }) => ({
+    ...state,
+    highlighted: {},
+    highlightMode: payload.highlightMode
+  }),
   // endregion
-  // region content_type_drop_targets_request
+  // region contentTypeDropTargetsRequest
   // TODO: Not pure
   [contentTypeDropTargetsRequest.type]: (state, action) => {
     const { contentTypeId } = action.payload;
@@ -457,7 +439,7 @@ const reducer = createReducer(initialState, {
     };
   },
   // endregion
-  // region clear_highlighted_drop_targets
+  // region clearHighlightedDropTargets
   [clearHighlightedDropTargets.type]: (state) => {
     return {
       ...state,
@@ -466,7 +448,7 @@ const reducer = createReducer(initialState, {
     };
   },
   // endregion
-  // region desktop_asset_upload_started
+  // region desktopAssetUploadStarted
   // TODO: Not pure
   [desktopAssetUploadStarted.type]: (state, action) => {
     const { record } = action.payload;
@@ -479,7 +461,7 @@ const reducer = createReducer(initialState, {
     };
   },
   // endregion
-  // region desktop_asset_upload_complete
+  // region DESKTOP_ASSET_UPLOAD_COMPLETE
   // TODO: Carry or retrieve record for these events
   DESKTOP_ASSET_UPLOAD_COMPLETE: (state, action: GuestStandardAction<{ record: ElementRecord }>) => {
     const { record } = action.payload;
@@ -489,7 +471,7 @@ const reducer = createReducer(initialState, {
     };
   },
   // endregion
-  // region desktop_asset_upload_progress
+  // region desktopAssetUploadProgress
   [desktopAssetUploadProgress.type]: (state, action) => {
     const { percentage, record } = action.payload;
     return {
@@ -504,7 +486,7 @@ const reducer = createReducer(initialState, {
     };
   },
   // endregion
-  // region host_component_drag_started
+  // region componentDragStarted
   // TODO: Not pure.
   [componentDragStarted.type]: (state, action) => {
     const { contentType } = action.payload;
@@ -538,7 +520,7 @@ const reducer = createReducer(initialState, {
     }
   },
   // endregion
-  // region host_instance_drag_started
+  // region componentInstanceDragStarted
   // TODO: Not pure.
   [componentInstanceDragStarted.type]: (state, action) => {
     const { instance, contentType } = action.payload;
@@ -574,7 +556,7 @@ const reducer = createReducer(initialState, {
     }
   },
   // endregion
-  // region desktop_asset_drag_started
+  // region desktopAssetDragStarted
   // TODO: Not pure
   [desktopAssetDragStarted.type]: (state, action) => {
     const { asset } = action.payload;
@@ -609,7 +591,7 @@ const reducer = createReducer(initialState, {
     }
   },
   // endregion
-  // region asset_drag_started
+  // region assetDragStarted
   // TODO: Not pure
   [assetDragStarted.type]: (state, action) => {
     const { asset } = action.payload;
@@ -644,12 +626,20 @@ const reducer = createReducer(initialState, {
     }
   },
   // endregion
-  // region content_tree_field_selected
+  // region selectField
+  [selectField.type]: (state) => {
+    return {
+      ...state,
+      status: EditingStatus.FIELD_SELECTED
+    };
+  },
+  // endregion
+  // region contentTreeFieldSelected
   // TODO: Not pure
   [contentTreeFieldSelected.type]: (state, action) => {
     const { iceProps } = action.payload;
     const iceId = iceRegistry.exists(iceProps);
-    if (iceId === -1) return;
+    if (iceId === null) return;
     const registryEntries = getRecordsFromIceId(iceId);
     if (!registryEntries) {
       return;
@@ -658,7 +648,7 @@ const reducer = createReducer(initialState, {
     const highlight = getHoverData(registryEntries[0].id);
     return {
       ...state,
-      status: EditingStatus.SELECT_FIELD,
+      status: EditingStatus.FIELD_SELECTED,
       draggable: iceRegistry.isMovable(iceId) ? { [registryEntries[0].id]: iceId } : {},
       highlighted: { [registryEntries[0].id]: highlight },
       fieldSwitcher:
@@ -672,7 +662,7 @@ const reducer = createReducer(initialState, {
     };
   },
   // endregion
-  // region content_tree_switch_field
+  // region contentTreeSwitchFieldInstance
   // TODO: Not pure
   [contentTreeSwitchFieldInstance.type]: (state, action) => {
     const { type } = action.payload;
@@ -690,7 +680,7 @@ const reducer = createReducer(initialState, {
     };
   },
   // endregion
-  // region clear_content_tree_field_selected
+  // region clearContentTreeFieldSelected
   [clearContentTreeFieldSelected.type]: (state) => {
     return {
       ...state,
@@ -701,30 +691,21 @@ const reducer = createReducer(initialState, {
     };
   },
   // endregion
-  // region HOST_CHECK_IN
-  [hostCheckIn.type]: (state, action) => {
-    const isMoveTargetsMode = action.payload.highlightMode === HighlightMode.MOVE_TARGETS;
-    return {
-      ...state,
-      hostCheckedIn: true,
-      highlightMode: action.payload.highlightMode,
-      editMode: action.payload.editMode,
-      rteConfig: action.payload.rteConfig,
-      activeSite: action.payload.site,
-      highlighted: isMoveTargetsMode ? prepareMoveMode() : {},
-      status: isMoveTargetsMode ? EditingStatus.HIGHLIGHT_MOVE_TARGETS : EditingStatus.LISTENING
-    };
-  },
+  // region hostCheckIn
+  [hostCheckIn.type]: (state, action) => ({
+    ...state,
+    hostCheckedIn: true,
+    highlightMode: action.payload.highlightMode,
+    editMode: action.payload.editMode,
+    rteConfig: action.payload.rteConfig,
+    activeSite: action.payload.site
+  }),
   // endregion
-  // region UPDATE_RTE_CONFIG
+  // region updateRteConfig
   [updateRteConfig.type]: (state, action) => ({
     ...state,
     rteConfig: action.payload.rteConfig
-  }),
-  // endregion
-  // region contentReady
-  [contentReady.type]: (state) =>
-    state.highlightMode === HighlightMode.MOVE_TARGETS ? { ...state, highlighted: prepareMoveMode() } : state
+  })
   // endregion
 });
 

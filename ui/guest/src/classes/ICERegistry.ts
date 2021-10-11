@@ -24,7 +24,7 @@ import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
 import { ICEProps, ICERecord, ICERecordRegistration, ReferentialEntries } from '../models/InContextEditing';
 import { isNullOrUndefined, notNullOrUndefined, nou, pluckProps } from '../utils/object';
 import { forEach } from '../utils/array';
-import { findComponentContainerFields } from '../utils/ice';
+import { determineRecordType, findComponentContainerFields } from '../utils/ice';
 import { ValidationResult } from '@craftercms/studio-ui/models/ContentType';
 
 const validationChecks: { [key in ValidationKeys]: Function } = {
@@ -96,7 +96,7 @@ export function register(registration: ICERecordRegistration): number {
   }
 
   const id = exists(data);
-  if (id !== -1) {
+  if (id !== null) {
     // TODO: Risk
     // Though more efficient to just keep a refCount
     // clients mistakenly calling deregister multiple
@@ -119,6 +119,8 @@ export function register(registration: ICERecordRegistration): number {
           `(${Object.keys(entities.contentType.fields).join(', ')})`
       );
     }
+
+    record.recordType = determineRecordType(entities);
 
     registry.set(record.id, record);
     refCount[record.id] = 1;
@@ -143,13 +145,17 @@ export function exists(data: Partial<ICEProps>): number {
   for (const [, record] of registry) {
     if (
       record.modelId === data.modelId &&
-      ((nou(record.fieldId) && nou(data.fieldId)) || record.fieldId === data.fieldId) &&
-      ((nou(record.index) && nou(data.index)) || record.index === data.index)
+      record.fieldId === data.fieldId &&
+      (nou(data.index) || nou(record.index)
+        ? record.index === data.index
+        : // Use double equals since `index` can be string or number
+          // eslint-disable-next-line eqeqeq
+          String(record.index) === String(data.index))
     ) {
       return record.id;
     }
   }
-  return -1;
+  return null;
 }
 
 export function getById(id: number | string): ICERecord {
@@ -157,27 +163,14 @@ export function getById(id: number | string): ICERecord {
   return registry.get(id);
 }
 
-export function isRepeatGroup(id): boolean {
-  const { field, index } = getReferentialEntries(id);
-  return notNullOrUndefined(field) && isNullOrUndefined(index) && field.type === 'repeat';
+export function isRepeatGroup(id: number): boolean {
+  const { field, recordType } = getReferentialEntries(id);
+  return recordType === 'repeat-item' && field.type === 'repeat';
 }
 
 export function isRepeatGroupItem(id: number): boolean {
-  const { field, index } = getReferentialEntries(id);
-  return (
-    // If there's no field, it's a root item (component, page)
-    notNullOrUndefined(field) &&
-    // The field must be of type repeat
-    field.type === 'repeat' &&
-    // Collection items - i.e. repeat groups & node-selectors - must specify their
-    // index withing their collection. The absence of an index would mean the tested
-    // record refers to the group itself instead of an item of a group
-    notNullOrUndefined(index) // &&
-    // TODO: Determine nested items
-    // If the index contains dot notation, the record is for a nested
-    // collection. This logic is currently not handled.
-    // `${index}`.includes('.')
-  );
+  const record = getById(id);
+  return record.recordType === 'repeat-item';
 }
 
 export function getMediaDropTargets(type: string): ICERecord[] {
@@ -339,11 +332,11 @@ export function getReferentialEntries(record: number | ICERecord): ReferentialEn
   }
 
   return {
+    ...record,
     model,
     field,
     contentType,
-    contentTypeId,
-    ...record
+    contentTypeId
   };
 }
 
@@ -351,38 +344,46 @@ export function getRecordField(record: ICERecord): ContentTypeField {
   return getReferentialEntries(record).field;
 }
 
-export function isMovable(recordId: number): boolean {
-  // modeId -> the main/parent model id or a sub model id
-  // fieldId -> repeatGroup or array
-  const entries = getReferentialEntries(recordId);
-  const { field, index } = entries;
+export function isMovable(id: number): boolean {
+  const { field, recordType } = getReferentialEntries(id);
+  return isMovableType(id) && field.sortable;
+}
 
-  return (
-    field != null &&
-    (field.type === 'repeat' || field.type === 'node-selector') &&
-    field.sortable &&
-    // `index` must be a valid number. nullish value
-    // may mean it's not an item but rather the repeat
-    // group or component itself
-    notNullOrUndefined(index)
-  );
+export function isMovableType(id: number): boolean {
+  const { recordType } = getById(id);
+  return recordType === 'node-selector-item' || recordType === 'repeat-item';
+}
+
+export function getMovableParentRecord(id: number): number {
+  const { recordType, modelId } = getReferentialEntries(id);
+  const modelHierarchyMap = contentController.modelHierarchyMap;
+  if (isMovableType(id)) {
+    return id;
+  } else if (recordType === 'field' || recordType === 'component') {
+    // Can be...
+    // - Field of a component (possible move target)
+    // - Field of a repeat (certain move target)
+    // - Field of a page
+    return exists({
+      modelId: modelHierarchyMap[modelId].parentId,
+      fieldId: modelHierarchyMap[modelId].parentContainerFieldPath,
+      index: modelHierarchyMap[modelId].parentContainerFieldIndex
+    });
+  }
+  return null;
 }
 
 export function collectMoveTargets(): ICERecord[] {
   const movableRecords = [];
-  registry.forEach((a) => {
-    const entries = getReferentialEntries(a);
-    if (entries.field && ['repeat', 'node-selector'].includes(entries.field.type)) {
-      if (entries.index !== null) {
-        // Component or repeat group item record
-        movableRecords.push(a);
-      }
+  registry.forEach((record) => {
+    const recordType = record.recordType;
+    if (recordType === 'node-selector-item' || recordType === 'repeat-item') {
+      movableRecords.push(record);
     }
   });
   return movableRecords;
 }
 
-/* private */
 export function checkComponentMovability(entries): boolean {
   // Can't move if
   // - no other zones
@@ -412,8 +413,8 @@ export function checkComponentMovability(entries): boolean {
         // Is a component...
         // - get model fields
         // - check if one of the fields has this value
-        const children = contentController.children[record.modelId];
-        if (children && children.includes(entries.modelId)) {
+        const children = contentController.modelHierarchyMap[record.modelId]?.children;
+        if (children?.includes(entries.modelId)) {
           parentModelId = record.modelId;
           const containers = findComponentContainerFields(record.contentType.fields),
             field = findContainerField(record.model, containers, entries.modelId);
@@ -490,7 +491,6 @@ export function checkComponentMovability(entries): boolean {
   }
 }
 
-/* private */
 export function checkRepeatGroupMovability(entries): boolean {
   const { model, field, index } = entries;
   return (

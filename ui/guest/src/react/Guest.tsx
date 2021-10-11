@@ -25,7 +25,7 @@ import { GuestContextProvider, GuestReduxContext, useDispatch, useSelector } fro
 import CrafterCMSPortal from './CrafterCMSPortal';
 import ZoneMarker from './ZoneMarker';
 import DropMarker from './DropMarker';
-import { appendStyleSheet, GuestStyleConfig, useGuestTheme, styleSxDefaults, GuestStylesSx } from '../styles/styles';
+import { appendStyleSheet, GuestStyleConfig, GuestStylesSx, styleSxDefaults, useGuestTheme } from '../styles/styles';
 import { fromTopic, message$, post } from '../utils/communicator';
 import Cookies from 'js-cookie';
 import { HighlightData } from '../models/InContextEditing';
@@ -42,21 +42,21 @@ import {
   componentInstanceDragEnded,
   componentInstanceDragStarted,
   contentTreeFieldSelected,
+  contentTreeSwitchFieldInstance,
   contentTypeDropTargetsRequest,
   desktopAssetUploadComplete,
   desktopAssetUploadProgress,
-  setPreviewEditMode,
   editModeToggleHotkey,
   guestCheckIn,
   guestCheckOut,
+  highlightModeChanged,
   hostCheckIn,
   navigationRequest,
   reloadRequest,
   scrollToDropTarget,
+  setPreviewEditMode,
   trashed,
-  updateRteConfig,
-  contentTreeSwitchFieldInstance,
-  highlightModeChanged
+  updateRteConfig
 } from '@craftercms/studio-ui/build_tsc/state/actions/preview';
 import { createGuestStore } from '../store/store';
 import { Provider } from 'react-redux';
@@ -76,6 +76,7 @@ import { DeepPartial } from 'redux';
 import MoveModeZoneMenu from './MoveModeZoneMenu';
 import {
   contentReady,
+  desktopAssetDragStarted,
   documentDragEnd,
   documentDragLeave,
   documentDragOver,
@@ -83,8 +84,7 @@ import {
   dropzoneEnter,
   dropzoneLeave,
   setDropPosition,
-  startListening,
-  desktopAssetDragStarted,
+  startListening
 } from '../store/actions';
 // TinyMCE makes the build quite large. Temporarily, importing this externally via
 // the site's ftl. Need to evaluate whether to include the core as part of guest build or not
@@ -144,19 +144,13 @@ function Guest(props: GuestProps) {
           const { type } = event;
           const record = elementRegistry.get(dispatcherElementRecordId);
           if (isNullOrUndefined(record)) {
-            console.error('No record found for dispatcher element');
+            console.error('[Guest] No record found for dispatcher element');
           } else {
             if (refs.current.keysPressed.z && type === 'click') {
               return false;
             }
-            // HighlightMode validations helps to dont stop the event propagation
-            if (
-              ['click', 'dblclick'].includes(type) &&
-              (highlightMode === HighlightMode.ALL || (highlightMode === HighlightMode.MOVE_TARGETS && !draggable))
-            ) {
-              event.preventDefault();
-              event.stopPropagation();
-            }
+            event.preventDefault();
+            event.stopPropagation();
             dispatch({ type: type, payload: { event, record } });
             return true;
           }
@@ -487,6 +481,7 @@ function Guest(props: GuestProps) {
 
             {Object.values(state.highlighted).map((highlight: HighlightData) => {
               const isMove = HighlightMode.MOVE_TARGETS === highlightMode;
+              const isFieldSelectedMode = status === EditingStatus.FIELD_SELECTED;
               const validations = Object.values(highlight.validations);
               const hasValidations = Boolean(validations.length);
               const hasFailedRequired = validations.some(({ level }) => level === 'required');
@@ -497,8 +492,7 @@ function Guest(props: GuestProps) {
                   label={highlight.label}
                   rect={highlight.rect}
                   inherited={highlight.inherited}
-                  menuItems={isMove ? <MoveModeZoneMenu /> : null}
-                  showZoneTooltip={!isMove}
+                  menuItems={isMove && isFieldSelectedMode ? <MoveModeZoneMenu /> : void 0}
                   sx={deepmerge(
                     deepmerge(
                       { ...sxStylesConfig.zoneMarker.base },

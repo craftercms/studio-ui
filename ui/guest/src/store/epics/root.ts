@@ -52,7 +52,7 @@ import { GuestState } from '../models/GuestStore';
 import { isNullOrUndefined, notNullOrUndefined, reversePluckProps } from '../../utils/object';
 import { ElementRecord, ICEProps } from '../../models/InContextEditing';
 import * as ElementRegistry from '../../classes/ElementRegistry';
-import { get } from '../../classes/ElementRegistry';
+import { fromICEId, get } from '../../classes/ElementRegistry';
 import { scrollToElement, scrollToIceProps } from '../../utils/dom';
 import {
   computedDragEnd,
@@ -65,31 +65,12 @@ import {
   iceZoneSelected as iceZoneSelectedActionGuest,
   startListening,
   desktopAssetDragEnded,
-  desktopAssetDragStarted
+  desktopAssetDragStarted,
+  selectField
 } from '../actions';
 import { validationMessage } from '@craftercms/studio-ui/build_tsc/state/actions/preview';
 
 const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
-  // region Multi-event propagation stopper epic
-  (action$, state$) =>
-    action$.pipe(
-      ofType('mouseover', 'mouseleave'),
-      withLatestFrom(state$),
-      filter((args) => args[1].status === EditingStatus.LISTENING),
-      tap(([action]) => action.payload.event.stopPropagation()),
-      ignoreElements()
-    ),
-  // endregion
-
-  // region mouseover
-  // Propagation stopped by multiEventPropagationStopperEpic
-  // (action$: Action$, state$: State$) => {},
-  // endregion
-
-  // region mouseleave
-  // (action$: Action$, state$: State$) => {},
-  // endregion
-
   // region dragstart
   (action$: MouseEventActionObservable, state$) =>
     action$.pipe(
@@ -119,7 +100,6 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
       })
     ),
   // endregion
-
   // region dragover
   (action$: MouseEventActionObservable, state$) =>
     action$.pipe(
@@ -145,7 +125,6 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
       ignoreElements()
     ),
   // endregion
-
   // region dragleave
   (action$, state$) =>
     action$.pipe(
@@ -160,8 +139,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
       )
     ),
   // endregion
-
-  // region drop
+  // region drop, documentDrop
   (action$: MouseEventActionObservable, state$) => {
     return action$.pipe(
       ofType('drop'),
@@ -275,8 +253,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
       })
     ),
   // endregion
-
-  // region dragend
+  // region dragend, documentDragEnd
   (action$: MouseEventActionObservable, state$) => {
     return action$.pipe(
       ofType('dragend'),
@@ -298,8 +275,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
       ignoreElements()
     ),
   // endregion
-
-  // region dragend_listener
+  // region assetDragEnded, componentDragEnded, componentInstanceDragEnded, desktopAssetDragEnded
   (action$: MouseEventActionObservable) => {
     return action$.pipe(
       ofType(assetDragEnded.type, componentDragEnded.type, componentInstanceDragEnded.type, desktopAssetDragEnded.type),
@@ -307,7 +283,6 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
     );
   },
   // endregion
-
   // region click
   (action$: MouseEventActionObservable, state$) =>
     action$.pipe(
@@ -316,31 +291,30 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
       filter(([, state]) => state.status === EditingStatus.LISTENING),
       switchMap(([action, state]) => {
         const { record, event } = action.payload;
-        const { field } = iceRegistry.getReferentialEntries(record.iceIds[0]);
-        const draggable = ElementRegistry.getDraggable(record.id);
-        const validations = field?.validations;
-        const type = field?.type;
-        const iceZoneSelected = () => {
-          post(
-            iceZoneSelectedAction({
-              modelId: record.modelId,
-              index: record.index,
-              fieldId: record.fieldId,
-              // @ts-ignore - clientX & clientY not being found in typings.
-              coordinates: { x: event.clientX, y: event.clientY }
-            })
-          );
-          return merge(
-            escape$.pipe(
-              takeUntil(clearAndListen$),
-              tap(() => post(clearSelectedZones.type)),
-              map(() => startListening()),
-              take(1)
-            ),
-            of(iceZoneSelectedActionGuest(action.payload))
-          );
-        };
         if (state.highlightMode === HighlightMode.ALL) {
+          const iceZoneSelected = () => {
+            post(
+              iceZoneSelectedAction({
+                modelId: record.modelId,
+                index: record.index,
+                fieldId: record.fieldId,
+                // @ts-ignore - clientX & clientY not being found in typings.
+                coordinates: { x: event.clientX, y: event.clientY }
+              })
+            );
+            return merge(
+              escape$.pipe(
+                takeUntil(clearAndListen$),
+                tap(() => post(clearSelectedZones.type)),
+                map(() => startListening()),
+                take(1)
+              ),
+              of(iceZoneSelectedActionGuest(action.payload))
+            );
+          };
+          const { field } = iceRegistry.getReferentialEntries(record.iceIds[0]);
+          const validations = field?.validations;
+          const type = field?.type;
           switch (type) {
             case 'html':
             case 'text':
@@ -362,20 +336,18 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
               return iceZoneSelected();
             }
           }
-        } else if (draggable) {
-          return iceZoneSelected();
-        } else {
-          return NEVER;
+        } else if (state.highlightMode === HighlightMode.MOVE_TARGETS) {
+          const iceId = record.iceIds[0];
+          const movableRecordId = iceRegistry.getMovableParentRecord(iceId);
+          if (notNullOrUndefined(movableRecordId)) {
+            return of(selectField({ record: iceId === movableRecordId ? record : fromICEId(movableRecordId) }));
+          }
         }
+        return NEVER;
       })
     ),
   // endregion
-
-  // region dblclick
-  // (action$: Action$, state$: State$) => {},
-  // endregion
-
-  // region computed_dragend
+  // region computedDragEnd
   (action$: MouseEventActionObservable) => {
     return action$.pipe(
       ofType(computedDragEnd.type),
@@ -384,8 +356,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
     );
   },
   // endregion
-
-  // region Desktop Asset Upload (Complete)
+  // region desktopAssetUploadComplete
   (action$: Observable<GuestStandardAction<{ path: string; record: ElementRecord }>>) => {
     return action$.pipe(
       ofType(desktopAssetUploadComplete.type),
@@ -397,17 +368,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
     );
   },
   // endregion
-
-  // region Desktop Asset Upload (Progress)
-  // (action$: Action$, state$: State$) => {},
-  // endregion
-
-  // region Desktop Asset Upload (Started)
-  // dropEpic does what these would
-  // (action$: Action$, state$: State$) => {},
-  // endregion
-
-  // region content_type_drop_targets_request
+  // region contentTypeDropTargetsRequest
   (action$: Observable<GuestStandardAction<{ contentTypeId: string }>>) => {
     return action$.pipe(
       ofType(contentTypeDropTargetsRequest.type),
@@ -430,8 +391,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
     );
   },
   // endregion
-
-  // region Start listening
+  // region startListening
   (action$: MouseEventActionObservable) => {
     return action$.pipe(
       ofType(startListening.type),
@@ -440,8 +400,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
     );
   },
   // endregion
-
-  // region TRASHED
+  // region trashed
   (action$: Observable<GuestStandardAction<{ iceId: number }>>) => {
     // onDrop doesn't execute when trashing on host side
     // Consider behaviour when running Host Guest-side
@@ -461,8 +420,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
     );
   },
   // endregion
-
-  // region drop_zone_enter
+  // region dropzoneEnter
   (action$: Observable<GuestStandardAction<{ elementRecordId: number }>>, state$) => {
     // onDrop doesn't execute when trashing on host side
     // Consider behaviour when running Host Guest-side
@@ -482,8 +440,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
     );
   },
   // endregion
-
-  // region drop_zone_leave
+  // region dropzoneLeave
   (action$: Observable<GuestStandardAction<{ elementRecordId: number }>>, state$) => {
     return action$.pipe(
       ofType(dropzoneLeave.type),
@@ -511,8 +468,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
     );
   },
   // endregion
-
-  // region hostComponentDragStarted
+  // region componentDragStarted
   (action$: MouseEventActionObservable, state$) => {
     return action$.pipe(
       ofType(componentDragStarted.type),
@@ -538,8 +494,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
     );
   },
   // endregion
-
-  // region host_instance_drag_started
+  // region componentInstanceDragStarted
   (action$: MouseEventActionObservable, state$) => {
     return action$.pipe(
       ofType(componentInstanceDragStarted.type),
@@ -564,8 +519,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
     );
   },
   // endregion
-
-  // region asset_drag_started
+  // region assetDragStarted
   (action$: MouseEventActionObservable, state$) => {
     return action$.pipe(
       ofType(assetDragStarted.type),
@@ -581,8 +535,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
     );
   },
   // endregion
-
-  // region desktop_asset_drag_started
+  // region desktopAssetDragStarted
   (action$: MouseEventActionObservable, state$) => {
     return action$.pipe(
       ofType(desktopAssetDragStarted.type),
@@ -598,8 +551,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
     );
   },
   // endregion
-
-  // region content_tree_field_selected
+  // region contentTreeFieldSelected
   (action$: Observable<GuestStandardAction<{ iceProps: ICEProps; scrollElement: string; name: string }>>) => {
     return action$.pipe(
       ofType(contentTreeFieldSelected.type),
@@ -625,7 +577,8 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
       })
     );
   },
-
+  // endregion
+  // region contentTreeSwitchFieldInstance
   (action$: Observable<GuestStandardAction<{ type: string; scrollElement: string }>>, state$) => {
     return action$.pipe(
       ofType(contentTreeSwitchFieldInstance.type),
@@ -638,10 +591,6 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
       ignoreElements()
     );
   }
-  // endregion
-
-  // region ice_zone_selected
-
   // endregion
 );
 

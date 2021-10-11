@@ -98,7 +98,9 @@ export function ZoneMarker(props: ZoneMarkerProps) {
         >
           <Paper className={classes?.paper} sx={sx.paper}>
             {inherited ? <LevelDescriptorIcon sx={sx.icon} /> : <FieldIcon sx={sx.icon} />}
-            <Typography noWrap>{label}</Typography>
+            <Typography title={label} noWrap>
+              {label}
+            </Typography>
             {menuItems && (
               <Box sx={{ ml: 1, pointerEvents: 'all', alignItems: 'center', display: 'flex' }}>{menuItems}</Box>
             )}

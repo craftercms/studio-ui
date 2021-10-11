@@ -38,5 +38,7 @@ export const documentDragOver = /*#__PURE__*/ createAction<{ event: Event }>('do
 export const documentDragLeave = /*#__PURE__*/ createAction<{ event: Event }>('document:dragleave');
 export const documentDrop = /*#__PURE__*/ createAction<{ event: Event }>('document:drop');
 export const documentDragEnd = /*#__PURE__*/ createAction<{ event: Event }>('document:dragend');
-export const desktopAssetDragStarted = /*#__PURE__*/ createAction<{ asset: DataTransferItem }>('DESKTOP_ASSET_DRAG_STARTED');
-export const desktopAssetDragEnded = /*#__PURE__*/ createAction('DESKTOP_ASSET_DRAG_ENDED');
+export const desktopAssetDragStarted =
+  /*#__PURE__*/ createAction<{ asset: DataTransferItem }>('desktop_asset_drag_started');
+export const desktopAssetDragEnded = /*#__PURE__*/ createAction('desktop_asset_drag_ended');
+export const selectField = /*#__PURE__*/ createAction<{ record: ElementRecord }>('select_field');
