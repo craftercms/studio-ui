@@ -36,6 +36,7 @@ import {
   componentInstanceDragEnded,
   componentInstanceDragStarted,
   contentTreeFieldSelected,
+  contentTreeSwitchFieldInstance,
   contentTypeDropTargetsRequest,
   contentTypeDropTargetsResponse,
   desktopAssetDrop,
@@ -45,17 +46,19 @@ import {
   instanceDragBegun,
   instanceDragEnded,
   trashed,
-  contentTreeSwitchFieldInstance
+  validationMessage
 } from '@craftercms/studio-ui/build_tsc/state/actions/preview';
-import { GuestActionTypes, MouseEventActionObservable } from '../models/Actions';
+import { MouseEventActionObservable } from '../models/Actions';
 import { GuestState } from '../models/GuestStore';
 import { isNullOrUndefined, notNullOrUndefined, reversePluckProps } from '../../utils/object';
 import { ElementRecord, ICEProps } from '../../models/InContextEditing';
 import * as ElementRegistry from '../../classes/ElementRegistry';
-import { fromICEId, get } from '../../classes/ElementRegistry';
+import { get } from '../../classes/ElementRegistry';
 import { scrollToElement, scrollToIceProps } from '../../utils/dom';
 import {
   computedDragEnd,
+  desktopAssetDragEnded,
+  desktopAssetDragStarted,
   documentDragEnd,
   documentDragLeave,
   documentDragOver,
@@ -63,12 +66,9 @@ import {
   dropzoneEnter,
   dropzoneLeave,
   iceZoneSelected as iceZoneSelectedActionGuest,
-  startListening,
-  desktopAssetDragEnded,
-  desktopAssetDragStarted,
-  selectField
+  setEditingStatus,
+  startListening
 } from '../actions';
-import { validationMessage } from '@craftercms/studio-ui/build_tsc/state/actions/preview';
 
 const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
   // region dragstart
@@ -337,10 +337,21 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
             }
           }
         } else if (state.highlightMode === HighlightMode.MOVE_TARGETS) {
-          const iceId = record.iceIds[0];
-          const movableRecordId = iceRegistry.getMovableParentRecord(iceId);
+          const movableRecordId = iceRegistry.getMovableParentRecord(record.iceIds[0]);
           if (notNullOrUndefined(movableRecordId)) {
-            return of(selectField({ record: iceId === movableRecordId ? record : fromICEId(movableRecordId) }));
+            // By this point element is already highlighted. We just need to freeze
+            // and change mode to reveal the move/sort options.
+            return merge(
+              escape$.pipe(
+                takeUntil(clearAndListen$),
+                // TODO: stop & map to startListening when any pivoting action occurs
+                // takeUntil(action$.pipe(ofType(componentInstanceDragStarted.type))),
+                tap(() => post(clearSelectedZones.type)),
+                map(() => startListening()),
+                take(1)
+              ),
+              of(setEditingStatus({ status: EditingStatus.FIELD_SELECTED }))
+            );
           }
         }
         return NEVER;
@@ -557,11 +568,10 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
       ofType(contentTreeFieldSelected.type),
       switchMap((action) => {
         const { iceProps, scrollElement, name } = action.payload;
-
         if (scrollToIceProps(iceProps, scrollElement)) {
           return escape$.pipe(
             takeUntil(clearAndListen$),
-            map(() => ({ type: clearContentTreeFieldSelected.type as GuestActionTypes })),
+            map(() => clearContentTreeFieldSelected()),
             take(1)
           );
         } else {

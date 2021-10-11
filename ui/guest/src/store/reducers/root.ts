@@ -59,8 +59,8 @@ import {
   iceZoneSelected,
   scrolling,
   scrollingStopped,
-  selectField,
   setDropPosition,
+  setEditingStatus,
   setEditMode,
   startListening
 } from '../actions';
@@ -97,9 +97,8 @@ function createReducer<S, CR extends CaseReducers<S>>(initialState: S, actionsMa
 
 const reducer = createReducer(initialState, {
   // region dblclick
-  dblclick: (state, action) => {
-    const { record } = action.payload;
-    return state.status === EditingStatus.LISTENING
+  dblclick: (state, { payload: { record } }) =>
+    state.status === EditingStatus.LISTENING
       ? {
           ...state,
           status: EditingStatus.EDITING_COMPONENT_INLINE,
@@ -107,8 +106,7 @@ const reducer = createReducer(initialState, {
             [record.id]: record
           }
         }
-      : state;
-  },
+      : state,
   // endregion
   // region mouseover
   // TODO: Not pure.
@@ -136,15 +134,14 @@ const reducer = createReducer(initialState, {
   },
   // endregion
   // region mouseleave
-  mouseleave: (state) => {
-    if (state.status === EditingStatus.LISTENING) {
-      return {
-        ...state,
-        highlighted: {},
-        draggable: {}
-      };
-    }
-  },
+  mouseleave: (state) =>
+    state.status === EditingStatus.LISTENING
+      ? {
+          ...state,
+          highlighted: {},
+          draggable: {}
+        }
+      : state,
   // endregion
   // region dragstart
   // TODO: Not pure.
@@ -240,85 +237,68 @@ const reducer = createReducer(initialState, {
   }),
   // endregion
   // region setDropPosition
-  [setDropPosition.type]: (state, action) => {
-    const { targetIndex } = action.payload;
-    return {
-      ...state,
-      dragContext: {
-        ...state.dragContext,
-        targetIndex
-      }
-    };
-  },
+  [setDropPosition.type]: (state, { payload: { targetIndex } }) => ({
+    ...state,
+    dragContext: {
+      ...state.dragContext,
+      targetIndex
+    }
+  }),
   // endregion
   // region editComponentInline
-  [editComponentInline.type]: (state) => {
-    return {
-      ...state,
-      status: EditingStatus.EDITING_COMPONENT_INLINE,
-      draggable: {},
-      highlighted: {}
-    };
-  },
+  [editComponentInline.type]: (state) => ({
+    ...state,
+    status: EditingStatus.EDITING_COMPONENT_INLINE,
+    draggable: {},
+    highlighted: {}
+  }),
   // endregion
   // region exitComponentInlineEdit
-  [exitComponentInlineEdit.type]: (state) => {
-    return {
-      ...state,
-      status: EditingStatus.LISTENING,
-      highlighted: {}
-    };
-  },
+  [exitComponentInlineEdit.type]: (state) => ({
+    ...state,
+    status: EditingStatus.LISTENING,
+    highlighted: {}
+  }),
   // endregion
   // region iceZoneSelected
   // TODO: Not pure
-  [iceZoneSelected.type]: (state, action) => {
-    const { record } = action.payload;
-    const highlight = getHoverData(record.id);
-    return {
-      ...state,
-      status: EditingStatus.EDITING_COMPONENT,
-      draggable: {},
-      highlighted: { [record.id]: highlight }
-    };
-  },
+  [iceZoneSelected.type]: (state, { payload: { record } }) => ({
+    ...state,
+    status: EditingStatus.EDITING_COMPONENT,
+    draggable: {},
+    highlighted: { [record.id]: getHoverData(record.id) }
+  }),
   // endregion
   // region startListening
-  [startListening.type]: (state) => {
-    return {
-      ...state,
-      status: EditingStatus.LISTENING,
-      highlighted: {}
-    };
-  },
+  [startListening.type]: (state) => ({
+    ...state,
+    status: EditingStatus.LISTENING,
+    highlighted: {}
+  }),
   // endregion
   // region scrolling
-  [scrolling.type]: (state) => {
-    return {
-      ...state,
-      dragContext: {
-        ...state.dragContext,
-        scrolling: true
-      }
-    };
-  },
+  [scrolling.type]: (state) => ({
+    ...state,
+    dragContext: {
+      ...state.dragContext,
+      scrolling: true
+    }
+  }),
   // endregion
   // region scrollingStopped
   // TODO: Not pure
-  [scrollingStopped.type]: (state) => {
-    return {
-      ...state,
-      dragContext: {
-        ...state.dragContext,
-        scrolling: false,
-        dropZones: state.dragContext?.dropZones?.map((dropZone) => ({
-          ...dropZone,
-          rect: dropZone.element.getBoundingClientRect(),
-          childrenRects: dropZone.children.map((child) => child.getBoundingClientRect())
-        }))
-      }
-    };
-  },
+  [scrollingStopped.type]: (state) => ({
+    ...state,
+    dragContext: {
+      ...state.dragContext,
+      scrolling: false,
+      dropZones: state.dragContext?.dropZones?.map((dropZone) => ({
+        ...dropZone,
+        rect: dropZone.element.getBoundingClientRect(),
+        childrenRects: dropZone.children.map((child) => child.getBoundingClientRect())
+      }))
+    }
+  }),
   // endregion
   // region dropzoneEnter
   // TODO: Not pure
@@ -440,51 +420,40 @@ const reducer = createReducer(initialState, {
   },
   // endregion
   // region clearHighlightedDropTargets
-  [clearHighlightedDropTargets.type]: (state) => {
-    return {
-      ...state,
-      status: EditingStatus.LISTENING,
-      highlighted: {}
-    };
-  },
+  [clearHighlightedDropTargets.type]: (state) => ({
+    ...state,
+    status: EditingStatus.LISTENING,
+    highlighted: {}
+  }),
   // endregion
   // region desktopAssetUploadStarted
   // TODO: Not pure
-  [desktopAssetUploadStarted.type]: (state, action) => {
-    const { record } = action.payload;
-    return {
-      ...state,
-      uploading: {
-        ...state.uploading,
-        [record.id]: getHoverData(record.id)
-      }
-    };
-  },
+  [desktopAssetUploadStarted.type]: (state, { payload: { record } }) => ({
+    ...state,
+    uploading: {
+      ...state.uploading,
+      [record.id]: getHoverData(record.id)
+    }
+  }),
   // endregion
   // region DESKTOP_ASSET_UPLOAD_COMPLETE
   // TODO: Carry or retrieve record for these events
-  DESKTOP_ASSET_UPLOAD_COMPLETE: (state, action: GuestStandardAction<{ record: ElementRecord }>) => {
-    const { record } = action.payload;
-    return {
-      ...state,
-      uploading: reversePluckProps(state.uploading, record.id)
-    };
-  },
+  DESKTOP_ASSET_UPLOAD_COMPLETE: (state, { payload: { record } }: GuestStandardAction<{ record: ElementRecord }>) => ({
+    ...state,
+    uploading: reversePluckProps(state.uploading, record.id)
+  }),
   // endregion
   // region desktopAssetUploadProgress
-  [desktopAssetUploadProgress.type]: (state, action) => {
-    const { percentage, record } = action.payload;
-    return {
-      ...state,
-      uploading: {
-        ...state.uploading,
-        [record.id]: {
-          ...state.uploading[record.id],
-          progress: percentage
-        }
+  [desktopAssetUploadProgress.type]: (state, { payload: { percentage, record } }) => ({
+    ...state,
+    uploading: {
+      ...state.uploading,
+      [record.id]: {
+        ...state.uploading[record.id],
+        progress: percentage
       }
-    };
-  },
+    }
+  }),
   // endregion
   // region componentDragStarted
   // TODO: Not pure.
@@ -627,12 +596,10 @@ const reducer = createReducer(initialState, {
   },
   // endregion
   // region selectField
-  [selectField.type]: (state) => {
-    return {
-      ...state,
-      status: EditingStatus.FIELD_SELECTED
-    };
-  },
+  [setEditingStatus.type]: (state, { payload }) => ({
+    ...state,
+    status: payload.status
+  }),
   // endregion
   // region contentTreeFieldSelected
   // TODO: Not pure
@@ -642,9 +609,8 @@ const reducer = createReducer(initialState, {
     if (iceId === null) return;
     const registryEntries = getRecordsFromIceId(iceId);
     if (!registryEntries) {
-      return;
+      return state;
     }
-
     const highlight = getHoverData(registryEntries[0].id);
     return {
       ...state,
@@ -681,15 +647,13 @@ const reducer = createReducer(initialState, {
   },
   // endregion
   // region clearContentTreeFieldSelected
-  [clearContentTreeFieldSelected.type]: (state) => {
-    return {
-      ...state,
-      status: EditingStatus.LISTENING,
-      draggable: {},
-      highlighted: {},
-      fieldSwitcher: null
-    };
-  },
+  [clearContentTreeFieldSelected.type]: (state) => ({
+    ...state,
+    status: EditingStatus.LISTENING,
+    draggable: {},
+    highlighted: {},
+    fieldSwitcher: null
+  }),
   // endregion
   // region hostCheckIn
   [hostCheckIn.type]: (state, action) => ({

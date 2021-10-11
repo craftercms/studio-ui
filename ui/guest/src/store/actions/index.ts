@@ -16,6 +16,7 @@
 
 import { createAction } from '@reduxjs/toolkit';
 import { ElementRecord } from '../../models/InContextEditing';
+import { EditingStatus } from '../../constants';
 
 export const contentReady = /*#__PURE__*/ createAction('content_ready');
 export const setDropPosition = /*#__PURE__*/ createAction<{ targetIndex: number }>('set_drop_position');
@@ -41,4 +42,4 @@ export const documentDragEnd = /*#__PURE__*/ createAction<{ event: Event }>('doc
 export const desktopAssetDragStarted =
   /*#__PURE__*/ createAction<{ asset: DataTransferItem }>('desktop_asset_drag_started');
 export const desktopAssetDragEnded = /*#__PURE__*/ createAction('desktop_asset_drag_ended');
-export const selectField = /*#__PURE__*/ createAction<{ record: ElementRecord }>('select_field');
+export const setEditingStatus = /*#__PURE__*/ createAction<{ status: EditingStatus }>('set_editing_status');
