@@ -161,7 +161,7 @@ export function getById(id: number | string): ICERecord {
 
 export function isRepeatGroup(id: number): boolean {
   const { field, recordType } = getReferentialEntries(id);
-  return recordType === 'repeat-item' && field.type === 'repeat';
+  return recordType === 'field' && field.type === 'repeat';
 }
 
 export function isRepeatGroupItem(id: number): boolean {
