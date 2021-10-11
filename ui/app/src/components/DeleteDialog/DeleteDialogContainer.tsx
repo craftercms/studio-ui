@@ -74,8 +74,8 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
   const onSubmit = () => {
     const paths = createCheckedList(selectedItems);
     dispatch(updateDeleteDialog({ isSubmitting: true }));
-    deleteItems(site, paths, comment).subscribe(
-      () => {
+    deleteItems(site, paths, comment).subscribe({
+      next() {
         dispatch(
           batchActions([
             updateDeleteDialog({ isSubmitting: false, hasPendingChanges: false }),
@@ -86,11 +86,11 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
           items: paths.map((path) => items.find((item) => item.path === path))
         });
       },
-      (error) => {
+      error(error) {
         dispatch(updateDeleteDialog({ isSubmitting: false }));
         setApiState({ error });
       }
-    );
+    });
   };
 
   const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);

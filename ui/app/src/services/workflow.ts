@@ -22,6 +22,7 @@ import { SandboxItem } from '../models/Item';
 import { PagedArray } from '../models/PagedArray';
 import { createItemActionMap, createItemStateMap } from '../utils/content';
 import PaginationOptions from '../models/PaginationOptions';
+import { PublishingParams } from '../models/Publishing';
 
 export function fetchItemStates(
   siteId: string,
@@ -72,5 +73,34 @@ export function setItemStatesByQuery(siteId: string, states: number, update: Sta
       states
     },
     update
+  }).pipe(mapTo(true));
+}
+
+export function publish(siteId: string, data: PublishingParams): Observable<boolean> {
+  return postJSON('/studio/api/2/workflow/publish', {
+    siteId,
+    ...data
+  }).pipe(mapTo(true));
+}
+
+export function requestPublish(siteId: string, data: PublishingParams): Observable<boolean> {
+  return postJSON('/studio/api/2/workflow/request_publish', {
+    siteId,
+    ...data
+  }).pipe(mapTo(true));
+}
+
+export function approve(siteId: string, data: PublishingParams): Observable<boolean> {
+  return postJSON('/studio/api/2/workflow/approve', {
+    siteId,
+    ...data
+  }).pipe(mapTo(true));
+}
+
+export function reject(siteId: string, items: string[], comment: string): Observable<boolean> {
+  return postJSON('/studio/api/2/workflow/reject', {
+    siteId,
+    items,
+    comment
   }).pipe(mapTo(true));
 }

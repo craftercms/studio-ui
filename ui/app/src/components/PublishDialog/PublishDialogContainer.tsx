@@ -28,7 +28,7 @@ import {
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { usePermissionsBySite } from '../../utils/hooks/usePermissionsBySite';
 import { useDispatch } from 'react-redux';
-import { approve, fetchPublishingTargets, publish, requestPublish } from '../../services/publishing';
+import { fetchPublishingTargets } from '../../services/publishing';
 import { emitSystemEvent, itemsApproved, itemsScheduled } from '../../state/actions/system';
 import { getComputedPublishingTarget, getDateScheduled } from '../../utils/detailedItem';
 import { FormattedMessage } from 'react-intl';
@@ -46,6 +46,7 @@ import { pluckProps } from '../../utils/object';
 import moment from 'moment-timezone';
 import { updatePublishDialog } from '../../state/actions/dialogs';
 import { batchActions } from '../../state/actions/misc';
+import { approve, publish, requestPublish } from '../../services/workflow';
 
 export function PublishDialogContainer(props: PublishDialogContainerProps) {
   const { items, scheduling = 'now', onSuccess, onClose, isSubmitting } = props;
@@ -156,17 +157,17 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
   const getPublishingChannels = useCallback(
     (success?: (channels) => any, error?: (error) => any) => {
       setPublishingTargetsStatus('Loading');
-      fetchPublishingTargets(siteId).subscribe(
-        (targets) => {
+      fetchPublishingTargets(siteId).subscribe({
+        next(targets) {
           setPublishingTargets(targets);
           setPublishingTargetsStatus('Success');
           success?.(targets);
         },
-        (e) => {
+        error(e) {
           setPublishingTargetsStatus('Error');
           error?.(e);
         }
-      );
+      });
     },
     [siteId]
   );

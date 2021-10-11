@@ -18,7 +18,6 @@ import React, { useEffect, useState } from 'react';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { getCurrentLocale } from '../../utils/i18n';
 import { useDispatch } from 'react-redux';
-import { reject } from '../../services/publishing';
 import { emitSystemEvent, itemsRejected } from '../../state/actions/system';
 import { fetchCannedMessage } from '../../services/configuration';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
@@ -28,6 +27,7 @@ import { RejectDialogUI } from './RejectDialogUI';
 import { updateRejectDialog } from '../../state/actions/dialogs';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { batchActions } from '../../state/actions/misc';
+import { reject } from '../../services/workflow';
 
 export function RejectDialogContainer(props: RejectDialogContainerProps) {
   const typeCustomReason = 'typeCustomReason';
