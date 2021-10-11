@@ -24,7 +24,7 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import Divider from '@mui/material/Divider';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
-import ConfirmDropdown from '../Controls/ConfirmDropdown';
+import ConfirmDropdown from '../ConfirmDropdown';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';

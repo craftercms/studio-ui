@@ -14,23 +14,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from 'react';
-import Dialog from '@mui/material/Dialog';
-import PushToRemoteDialogContainer, { PushToRemoteDialogContainerProps } from './PushToRemoteDialogContainer';
-import { useOnClose } from '../../utils/hooks/useOnClose';
+import React from 'react';
+import PushToRemoteDialogContainer from './PushToRemoteDialogContainer';
+import { PushToRemoteDialogProps } from './utils';
+import { EnhancedDialog } from '../EnhancedDialog';
+import { FormattedMessage } from 'react-intl';
 
-export default function PushToRemoteDialog(props: PushToRemoteDialogContainerProps) {
-  const { open, onClose } = props;
-  const [disableQuickDismiss, setDisableQuickDismiss] = useState(false);
-  const onCloseHandler = useOnClose({
-    onClose,
-    disableBackdropClick: disableQuickDismiss,
-    disableEscapeKeyDown: disableQuickDismiss
-  });
+export function PushToRemoteDialog(props: PushToRemoteDialogProps) {
+  const { branches, remoteName, onPushSuccess, onPushError, ...rest } = props;
 
   return (
-    <Dialog open={open} onClose={onCloseHandler} fullWidth maxWidth="xs">
-      <PushToRemoteDialogContainer {...props} setDisableQuickDismiss={setDisableQuickDismiss} />
-    </Dialog>
+    <EnhancedDialog title={<FormattedMessage id="words.push" defaultMessage="Push" />} maxWidth="xs" {...rest}>
+      <PushToRemoteDialogContainer
+        branches={branches}
+        remoteName={remoteName}
+        onPushSuccess={onPushSuccess}
+        onPushError={onPushError}
+      />
+    </EnhancedDialog>
   );
 }
+
+export default PushToRemoteDialog;

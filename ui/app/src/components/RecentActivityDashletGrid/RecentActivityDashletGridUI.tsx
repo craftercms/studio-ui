@@ -114,7 +114,12 @@ export default function RecentActivityDashletGridUI(props: RecentActivityDashlet
         <TableHead>
           <GlobalAppGridRow className="hoverDisabled">
             <GlobalAppGridCell className="checkbox">
-              <Checkbox indeterminate={isIndeterminate} checked={isAllChecked} onChange={() => onClickSelectAll()} />
+              <Checkbox
+                disabled={sortedItems?.length === 1 && sortedItems[0].stateMap.deleted}
+                indeterminate={isIndeterminate}
+                checked={isAllChecked}
+                onChange={() => onClickSelectAll()}
+              />
             </GlobalAppGridCell>
             <GlobalAppGridCell className="width40 pl0">
               <TableSortLabel
@@ -214,7 +219,8 @@ export default function RecentActivityDashletGridUI(props: RecentActivityDashlet
               </GlobalAppGridCell>
               <GlobalAppGridCell className="width15">{item.sandbox.modifier}</GlobalAppGridCell>
               <GlobalAppGridCell className="width20">
-                {asLocalizedDateTime(item.sandbox.dateModified, locale.localeCode, locale.dateTimeFormatOptions)}
+                {item.sandbox.dateModified &&
+                  asLocalizedDateTime(item.sandbox.dateModified, locale.localeCode, locale.dateTimeFormatOptions)}
               </GlobalAppGridCell>
               <GlobalAppGridCell className="checkbox">
                 {item.stateMap.deleted ? (

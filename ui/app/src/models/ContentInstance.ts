@@ -29,4 +29,10 @@ export interface ContentInstance {
   [fieldId: string]: any;
 }
 
+// TODO: ContentInstance typing is too loose.
+//  Something like this may be more suitable. Some compilation issues would arise, though.
+//  export type ContentInstance = { craftercms: ContentInstanceSystemProps } & {
+//    [fieldId: string]: number | string | boolean | object | Array<object | string>;
+//  };
+
 export default ContentInstance;

@@ -290,6 +290,7 @@ export default function ApprovedScheduledDashlet() {
             value={preferences.filterBy}
             disabled={isFetching}
             onChange={onFilterChange}
+            onClick={(e) => e.stopPropagation()}
           >
             <MenuItem value="page">
               <FormattedMessage id="words.pages" defaultMessage="Pages" />
