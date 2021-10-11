@@ -42,6 +42,7 @@ import { parseDescriptor, preParseSearchResults } from '@craftercms/content';
 import { modelsToLookup } from '../utils/content';
 import { crafterConf } from '@craftercms/classes';
 import { getDefaultValue } from '../utils/contentType';
+import { ModelHierarchyMap } from '@craftercms/studio-ui/utils/content';
 
 // if (process.env.NODE_ENV === 'development') {
 // TODO: Notice
@@ -58,7 +59,7 @@ const operations$ = new Subject<Operation>();
 
 const operationsObs$ = operations$.asObservable();
 
-export const children = {
+export const modelHierarchyMap: ModelHierarchyMap = {
   /* [id]: [id, id, id] */
 };
 
@@ -218,10 +219,10 @@ function collectReferrers(modelId) {
   const models = getCachedModels();
   const parentModels = [];
   const modelsToUpdate = {};
-  let currentID = getParentModelId(modelId, models, children);
+  let currentID = getParentModelId(modelId, models, modelHierarchyMap);
   while (currentID) {
     parentModels.push(currentID);
-    currentID = getParentModelId(currentID, models, children);
+    currentID = getParentModelId(currentID, models, modelHierarchyMap);
   }
   parentModels.forEach((id) => (modelsToUpdate[id] = { ...models[id] }));
   return modelsToUpdate;
@@ -230,7 +231,7 @@ function collectReferrers(modelId) {
 export function updateField(modelId: string, fieldId: string, index: string | number, value: unknown): void {
   const models = getCachedModels();
   const model = { ...models[modelId] };
-  const parentModelId = getParentModelId(modelId, models, children);
+  const parentModelId = getParentModelId(modelId, models, modelHierarchyMap);
   const modelsToUpdate = collectReferrers(modelId);
 
   // Using `index` being present as the factor to determine how to treat this update.
@@ -378,7 +379,7 @@ export function insertComponent(
     [modelId]: model
   });
 
-  children[modelId]?.push(instance.craftercms.id);
+  modelHierarchyMap[modelId]?.children.push(instance.craftercms.id);
 
   post(insertComponentOperation.type, {
     modelId,
@@ -386,7 +387,7 @@ export function insertComponent(
     targetIndex,
     contentType,
     instance,
-    parentModelId: getParentModelId(modelId, models, children),
+    parentModelId: getParentModelId(modelId, models, modelHierarchyMap),
     shared
   });
 
@@ -429,7 +430,7 @@ export function insertInstance(
     fieldId,
     targetIndex,
     instance,
-    parentModelId: getParentModelId(modelId, models, children)
+    parentModelId: getParentModelId(modelId, models, modelHierarchyMap)
   });
 
   operations$.next({
@@ -472,7 +473,7 @@ export function sortItem(
     fieldId,
     currentIndex,
     targetIndex,
-    parentModelId: getParentModelId(modelId, models, children)
+    parentModelId: getParentModelId(modelId, models, modelHierarchyMap)
   });
 
   operations$.next({
@@ -572,8 +573,8 @@ export function moveItem(
     targetModelId,
     targetFieldId,
     targetIndex,
-    originalParentModelId: getParentModelId(originalModelId, models, children),
-    targetParentModelId: getParentModelId(targetModelId, models, children)
+    originalParentModelId: getParentModelId(originalModelId, models, modelHierarchyMap),
+    targetParentModelId: getParentModelId(targetModelId, models, modelHierarchyMap)
   });
 
   operations$.next({
@@ -609,7 +610,7 @@ export function deleteItem(modelId: string, fieldId: string, index: number | str
     modelId,
     fieldId,
     index,
-    parentModelId: getParentModelId(modelId, models, children)
+    parentModelId: getParentModelId(modelId, models, modelHierarchyMap)
   });
 
   operations$.next({
@@ -633,16 +634,16 @@ interface FetchGuestModelCompletePayload {
   model: ContentInstance;
   modelLookup: LookupTable<ContentInstance>;
   modelIdByPath: LookupTable<string>;
-  childrenMap: LookupTable<string[]>;
+  hierarchyMap: ModelHierarchyMap;
 }
 
 fromTopic('FETCH_GUEST_MODEL_COMPLETE')
   .pipe(pluck('payload'))
-  .subscribe(({ modelLookup, childrenMap, modelIdByPath }: FetchGuestModelCompletePayload) => {
+  .subscribe(({ modelLookup, hierarchyMap, modelIdByPath }: FetchGuestModelCompletePayload) => {
     Object.keys(modelIdByPath).forEach((path) => {
       requestedPaths[path] = true;
     });
-    Object.assign(children, childrenMap);
+    Object.assign(modelHierarchyMap, hierarchyMap);
     models$.next({ ...models$.value, ...modelLookup });
     paths$.next({ ...paths$.value, ...modelIdByPath });
   });

@@ -178,7 +178,7 @@ export function GuestProxy() {
           // This works only for repeat groups
           let iceId = iceRegistry.exists({ modelId, fieldId, index });
           // This would work for both repeat groups and node-selectors. Just use this?
-          if (iceId === -1) {
+          if (iceId === null) {
             const model = getCachedModel(modelId);
             // By this point - on the operations subscriber - the operation has already gone through.
             // Hence, need to use the "newIndex" to retrieve the model in question. The registration

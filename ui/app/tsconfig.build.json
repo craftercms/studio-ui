@@ -31,6 +31,7 @@
     "src/translations/whitelists",
     "src/state/themeContext.tsx",
     "src/**/*.ignore.*",
+    "src/**/*.test.ts",
     "src/utils/amd.ts"
   ]
 }

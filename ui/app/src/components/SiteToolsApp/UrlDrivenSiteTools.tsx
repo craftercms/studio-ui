@@ -67,7 +67,7 @@ export default function UrlDrivenSiteTools(props: UrlDrivenSiteToolsProps) {
       onBackClick={onBackClick}
       activeToolId={activeToolId}
       footerHtml={footerHtml}
-      openSidebar={openSidebar}
+      openSidebar={openSidebar || !activeToolId}
       tools={tools}
       imageUrl={`${baseUrl}/static-assets/images/choose_option.svg`}
     />

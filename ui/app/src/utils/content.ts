@@ -570,6 +570,124 @@ function parseContentXMLWithoutContentTypes_processFields(
   });
 } */
 
+export interface ModelHierarchyDescriptor {
+  modelId: string;
+  parentId: string;
+  parentContainerFieldPath: string;
+  parentContainerFieldIndex: string | number;
+  children: Array<string>;
+}
+
+export type ModelHierarchyMap = LookupTable<ModelHierarchyDescriptor>;
+
+// region export function createModelHierarchyDescriptor() { ... }
+export const createModelHierarchyDescriptor: (
+  modelId?: ModelHierarchyDescriptor['modelId'],
+  parentId?: ModelHierarchyDescriptor['parentId'],
+  parentContainerFieldPath?: ModelHierarchyDescriptor['parentContainerFieldPath'],
+  parentContainerFieldIndex?: ModelHierarchyDescriptor['parentContainerFieldIndex'],
+  children?: ModelHierarchyDescriptor['children']
+) => ModelHierarchyDescriptor = (
+  modelId = null,
+  parentId = null,
+  parentContainerFieldPath = null,
+  parentContainerFieldIndex = null,
+  children = []
+) => ({
+  modelId,
+  parentId,
+  parentContainerFieldPath,
+  parentContainerFieldIndex,
+  children
+});
+// endregion
+
+export function createModelHierarchyDescriptorMap(
+  normalizedModels: LookupTable<ContentInstance>,
+  contentTypes: LookupTable<ContentType>
+): ModelHierarchyMap {
+  const lookup: ModelHierarchyMap = {};
+  // region Internal utils
+  const getFields = (contentTypeId) =>
+    contentTypes[contentTypeId]?.fields ? Object.values(contentTypes[contentTypeId]?.fields) : null;
+  const cleanCarryOver = (carryOver: string) => carryOver.replace(/(^\.+)|(\.+$)/g, '').replace(/\.{2,}/g, '.');
+  const contentTypeMissingWarning = (model: ContentInstance) => {
+    if (!contentTypes[model.craftercms.contentTypeId]) {
+      console.error(
+        `[createModelMap] Content type with id ${model.craftercms.contentTypeId} was not found. ` +
+          `Unable to fully process model at '${model.craftercms.path}' with id ${model.craftercms.id}`
+      );
+    }
+  };
+  // endregion
+  // region Process function
+  function process(
+    model: ContentInstance,
+    source: ContentInstance,
+    fields: ContentTypeField[],
+    fieldCarryOver = '',
+    indexCarryOver = ''
+  ) {
+    const currentModelId = model.craftercms.id;
+    if (!lookup[currentModelId]) {
+      lookup[currentModelId] = createModelHierarchyDescriptor(currentModelId);
+    }
+    fields?.forEach((field) => {
+      if (
+        // Check the field in the model isn't null in case the field isn't required and isn't present on current model.
+        source[field.id] &&
+        // Only care for these field types: those that can hold components.
+        (field.type === 'node-selector' || field.type === 'repeat')
+      ) {
+        if (field.type === 'node-selector') {
+          source[field.id].forEach((component, index) => {
+            lookup[currentModelId].children.push(component);
+            if (lookup[component]) {
+              if (lookup[component].parentId !== null && lookup[component].parentId !== model.craftercms.id) {
+                console.error(
+                  `Model ${component} was found in multiple parents (${lookup[component].parentId} and ${model.craftercms.id}). ` +
+                    `Same model twice on a single page may have unexpected behaviours for in-context editing.`
+                );
+              }
+            } else {
+              // This assignment it's to avoid having to optionally chain multiple times
+              // the access to `lookup[component]` below.
+              lookup[component] = lookup[component] ?? ({} as any);
+            }
+            // Because there's no real warranty that the parent of a model will be processed first
+            lookup[component] = createModelHierarchyDescriptor(
+              component,
+              model.craftercms.id,
+              lookup[component].parentContainerFieldPath ?? cleanCarryOver(`${fieldCarryOver}.${field.id}`),
+              lookup[component].parentContainerFieldIndex ?? cleanCarryOver(`${indexCarryOver}.${index}`),
+              lookup[component].children
+            );
+          });
+        } else if (field.type === 'repeat') {
+          source[field.id].forEach((repeatItem: ContentInstance, index) => {
+            process(
+              model,
+              repeatItem,
+              Object.values(field.fields),
+              cleanCarryOver(`${fieldCarryOver}.${field.id}`),
+              cleanCarryOver(`${indexCarryOver}.${index}`)
+            );
+          });
+        }
+      }
+    });
+  }
+  // endregion
+  Object.values(normalizedModels).forEach((model) => {
+    process(model, model, getFields(model.craftercms.contentTypeId));
+    contentTypeMissingWarning(model);
+  });
+  return lookup;
+}
+
+/**
+ * Returns an array with the ids of the direct descendants of a given model
+ */
 export function createChildModelIdList(model: ContentInstance, contentTypes: LookupTable<ContentType>): string[] {
   const children = [];
   const processFields = (model: ContentInstance, fields: ContentTypeField[], children: string[]) =>
@@ -591,6 +709,9 @@ export function createChildModelIdList(model: ContentInstance, contentTypes: Loo
   return children;
 }
 
+/**
+ * Returns a lookup table as `{ [modelId]: [childModelId1, childModelId2, ...], ... }`
+ */
 export function createChildModelLookup(
   models: LookupTable<ContentInstance>,
   contentTypes: LookupTable<ContentType>
