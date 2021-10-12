@@ -14,9 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { errorSelectorApi1, get, post, postJSON } from '../utils/ajax';
+import { get, post, postJSON } from '../utils/ajax';
 import { Observable } from 'rxjs';
-import { catchError, map, mapTo, pluck } from 'rxjs/operators';
+import { map, mapTo, pluck } from 'rxjs/operators';
 import { LegacyItem } from '../models/Item';
 import { pluckProps, toQueryString } from '../utils/object';
 import { PublishingStatus, PublishingTarget } from '../models/Publishing';
@@ -84,28 +84,6 @@ export interface GoLiveResponse {
   invalidateCache: boolean;
   success: boolean;
   message: string;
-}
-
-export function submitToGoLive(siteId: string, user: string, data): Observable<GoLiveResponse> {
-  return postJSON<GoLiveResponse>(
-    `/studio/api/1/services/api/1/workflow/submit-to-go-live.json?site=${siteId}&user=${user}`,
-    data
-  ).pipe(pluck('response'), catchError(errorSelectorApi1));
-}
-
-export function goLive(siteId: string, user: string, data): Observable<GoLiveResponse> {
-  return postJSON<GoLiveResponse>(
-    `/studio/api/1/services/api/1/workflow/go-live.json?site=${siteId}&user=${user}`,
-    data
-  ).pipe(pluck('response'), catchError(errorSelectorApi1));
-}
-
-export function reject(siteId: string, items: string[], comment: string): Observable<boolean> {
-  return postJSON(`/studio/api/2/workflow/reject`, {
-    siteId,
-    items,
-    comment
-  }).pipe(mapTo(true));
 }
 
 export function fetchStatus(siteId: string): Observable<PublishingStatus> {
