@@ -23,7 +23,8 @@ import AceEditor from '../AceEditor';
 import useStyles from './styles';
 import { useDispatch } from 'react-redux';
 import { updateCodeEditorDialog } from '../../state/actions/dialogs';
-import { Skeleton } from '@mui/material';
+import Skeleton from '@mui/material/Skeleton';
+import ListSubheader from '@mui/material/ListSubheader';
 import DialogFooter from '../Dialogs/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -35,9 +36,8 @@ import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
-import { ListSubheader } from '@mui/material';
 import LookupTable from '../../models/LookupTable';
-import { hasEditAction, isItemLockedForMe } from '../../utils/content';
+import { isItemLockedForMe } from '../../utils/content';
 import { localItemLock } from '../../state/actions/content';
 import { useContentTypes } from '../../utils/hooks/useContentTypes';
 import { useActiveUser } from '../../utils/hooks/useActiveUser';
@@ -91,7 +91,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
     }
   }, [contentTypes, contentType, mode, item, freemarkerCodeSnippets, groovyCodeSnippets]);
 
-  const disableEdit = isItemLockedForMe(item, user.username) || !hasEditAction(item.availableActions);
+  const disableEdit = isItemLockedForMe(item, user.username);
 
   useEffect(() => {
     if (item && content === null) {
@@ -214,7 +214,12 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
           <Button onClick={onAddSnippet} endIcon={<ExpandMoreRoundedIcon />} className={classes.addSnippet}>
             <FormattedMessage id="codeEditor.insertCode" defaultMessage="Insert Code" />
           </Button>
-          <SecondaryButton onClick={onCloseButtonClick}>
+          <SecondaryButton
+            onClick={onCloseButtonClick}
+            sx={{
+              mr: '8px'
+            }}
+          >
             <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
           </SecondaryButton>
           <SplitButton

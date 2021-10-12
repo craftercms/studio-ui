@@ -16,7 +16,7 @@
 
 CStudioAdminConsole.Tool.ContentTypes.PropertyType.Template =
   CStudioAdminConsole.Tool.ContentTypes.PropertyType.Template ||
-  function(fieldName, containerEl, currentContenType) {
+  function (fieldName, containerEl, currentContenType) {
     this.fieldName = fieldName;
     this.containerEl = containerEl;
     this.currentContenType = currentContenType;
@@ -27,7 +27,7 @@ YAHOO.extend(
   CStudioAdminConsole.Tool.ContentTypes.PropertyType.Template,
   CStudioAdminConsole.Tool.ContentTypes.PropertyType,
   {
-    render: function(value, updateFn) {
+    render: function (value, updateFn) {
       var _self = this;
       var containerEl = this.containerEl;
       var valueEl = document.createElement('input');
@@ -41,7 +41,7 @@ YAHOO.extend(
       YAHOO.util.Event.on(
         valueEl,
         'keydown',
-        function(evt) {
+        function (evt) {
           YAHOO.util.Event.stopEvent(evt);
         },
         valueEl
@@ -50,14 +50,14 @@ YAHOO.extend(
       YAHOO.util.Event.on(
         valueEl,
         'focus',
-        function(evt) {
+        function (evt) {
           _self.showTemplateEdit();
         },
         valueEl
       );
 
       if (updateFn) {
-        var updateFieldFn = function(event, el) {};
+        var updateFieldFn = function (event, el) {};
 
         YAHOO.util.Event.on(valueEl, 'change', updateFieldFn, valueEl);
       }
@@ -65,11 +65,11 @@ YAHOO.extend(
       this.valueEl = valueEl;
     },
 
-    getValue: function() {
+    getValue: function () {
       return this.valueEl.value;
     },
 
-    showTemplateEdit: function() {
+    showTemplateEdit: function () {
       var _self = this;
       if (this.controlsContainerEl) {
         this.controlsContainerEl.style.display = 'inline';
@@ -91,41 +91,83 @@ YAHOO.extend(
 
         this.controlsContainerEl = controlsContainerEl;
 
-        editEl.onclick = function() {
-          var contentType = _self.valueEl.value;
+        editEl.onclick = function () {
+          const path = _self.valueEl.value;
+          const contentType = _self.currentContenType.contentType;
+          const customEventId = 'createFileDialogEventId';
 
-          if (contentType == '') {
-            CStudioAuthoring.Operations.createNewTemplate(null, function(templatePath) {
-              _self.valueEl.value = templatePath;
-              _self.value = templatePath;
-              _self.updateFn(null, _self.valueEl);
+          const showCodeEditor = (path, contentType) => {
+            CrafterCMSNext.system.store.dispatch({
+              type: 'SHOW_CODE_EDITOR_DIALOG',
+              payload: {
+                path,
+                contentType,
+                mode: 'ftl'
+              }
+            });
+          };
+
+          if (path === '') {
+            CrafterCMSNext.system.store.dispatch({
+              type: 'SHOW_CREATE_FILE_DIALOG',
+              payload: {
+                path: '/templates/web',
+                type: 'template',
+                onCreated: {
+                  type: 'BATCH_ACTIONS',
+                  payload: [
+                    {
+                      type: 'DISPATCH_DOM_EVENT',
+                      payload: { id: customEventId, type: 'onCreated' }
+                    },
+                    { type: 'CLOSE_CREATE_FILE_DIALOG' }
+                  ]
+                },
+                onClosed: {
+                  type: 'BATCH_ACTIONS',
+                  payload: [
+                    {
+                      type: 'DISPATCH_DOM_EVENT',
+                      payload: { id: customEventId, type: 'onClosed' }
+                    },
+                    { type: 'CREATE_FILE_DIALOG_CLOSED' }
+                  ]
+                }
+              }
+            });
+
+            CrafterCMSNext.createLegacyCallbackListener(customEventId, (response) => {
+              const { openOnSuccess, fileName, path, type } = response;
+              if (type === 'onCreated') {
+                const templatePath = `${path}/${fileName}`;
+                _self.valueEl.value = templatePath;
+                _self.value = templatePath;
+                _self.updateFn(null, _self.valueEl);
+                if (openOnSuccess) {
+                  showCodeEditor(templatePath, contentType);
+                }
+              }
             });
           } else {
-            CStudioAuthoring.Operations.openTemplateEditor(
-              contentType,
-              'default',
-              { success: function() {}, failure: function() {} },
-              _self.currentContenType.contentType,
-              null
-            );
+            showCodeEditor(path, contentType);
           }
         };
 
-        pickEl.onclick = function() {
+        pickEl.onclick = function () {
           CStudioAuthoring.Operations.openBrowse('', '/templates/web', '1', 'select', true, {
-            success: function(searchId, selectedTOs) {
+            success: function (searchId, selectedTOs) {
               var item = selectedTOs[0];
               _self.valueEl.value = item.uri;
               _self.value = item.uri;
               _self.updateFn(null, _self.valueEl);
             },
-            failure: function() {}
+            failure: function () {}
           });
         };
       }
     },
 
-    hideTemplateEdit: function() {
+    hideTemplateEdit: function () {
       if (this.controlsContainerEl) {
         this.controlsContainerEl.style.display = 'none';
       }
