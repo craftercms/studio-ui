@@ -95,7 +95,6 @@ YAHOO.extend(
           const path = _self.valueEl.value;
           const contentType = _self.currentContenType.contentType;
           const customEventId = 'createFileDialogEventId';
-          let unsubscribe, cancelUnsubscribe;
 
           const showCodeEditor = (path, contentType) => {
             CrafterCMSNext.system.store.dispatch({
@@ -137,7 +136,7 @@ YAHOO.extend(
               }
             });
 
-            unsubscribe = CrafterCMSNext.createLegacyCallbackListener(customEventId, (response) => {
+            CrafterCMSNext.createLegacyCallbackListener(customEventId, (response) => {
               const { openOnSuccess, fileName, path, type } = response;
               if (type === 'onCreated') {
                 const templatePath = `${path}/${fileName}`;
