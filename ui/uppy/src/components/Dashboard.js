@@ -42,23 +42,39 @@ module.exports = function Dashboard(props) {
 
   const showFileList = props.showSelectedFiles && !noFiles;
 
+  const numberOfFilesForRecovery = props.recoveredState ? Object.keys(props.recoveredState.files).length : null;
+  const numberOfGhosts = props.files
+    ? Object.keys(props.files).filter((fileID) => props.files[fileID].isGhost).length
+    : null;
+
+  const renderRestoredText = () => {
+    if (numberOfGhosts > 0) {
+      return props.i18n('recoveredXFiles', {
+        smart_count: numberOfGhosts
+      });
+    }
+
+    return props.i18n('recoveredAllFiles');
+  };
+
   const dashboard = (
     <div
-      class={dashboardClassName}
+      className={dashboardClassName}
       data-uppy-theme={props.theme}
       data-uppy-num-acquirers={props.acquirers.length}
-      data-uppy-drag-drop-supported={isDragDropSupported()}
+      data-uppy-drag-drop-supported={!props.disableLocalFiles && isDragDropSupported()}
       aria-hidden={props.inline ? 'false' : props.isHidden}
+      aria-disabled={props.disabled}
       aria-label={!props.inline ? props.i18n('dashboardWindowTitle') : props.i18n('dashboardTitle')}
-      onpaste={props.handlePaste}
+      onPaste={props.handlePaste}
       onDragOver={props.handleDragOver}
       onDragLeave={props.handleDragLeave}
       onDrop={props.handleDrop}
     >
-      <div class="uppy-Dashboard-overlay" tabindex={-1} onclick={props.handleClickOutside} />
+      <div aria-hidden="true" className="uppy-Dashboard-overlay" tabIndex={-1} onClick={props.handleClickOutside} />
 
       <div
-        class="uppy-Dashboard-inner"
+        className="uppy-Dashboard-inner"
         aria-modal={!props.inline && 'true'}
         role={!props.inline && 'dialog'}
         style={{
@@ -68,18 +84,43 @@ module.exports = function Dashboard(props) {
       >
         {!props.inline ? (
           <button
-            class="uppy-u-reset uppy-Dashboard-close"
+            className="uppy-u-reset uppy-Dashboard-close"
             type="button"
             aria-label={props.i18n('closeModal')}
             title={props.i18n('closeModal')}
-            onclick={props.closeModal}
+            onClick={props.closeModal}
           >
             <span aria-hidden="true">&times;</span>
           </button>
         ) : null}
 
-        <div class="uppy-Dashboard-innerWrap">
-          <div class="uppy-Dashboard-dropFilesHereHint">{props.i18n('dropHint')}</div>
+        <div className="uppy-Dashboard-innerWrap">
+          <div className="uppy-Dashboard-dropFilesHereHint">{props.i18n('dropHint')}</div>
+
+          {numberOfFilesForRecovery && (
+            <div className="uppy-Dashboard-serviceMsg">
+              <svg
+                className="uppy-Dashboard-serviceMsg-icon"
+                aria-hidden="true"
+                focusable="false"
+                width="21"
+                height="16"
+                viewBox="0 0 24 19"
+              >
+                <g transform="translate(0 -1)" fill="none" fillRule="evenodd">
+                  <path
+                    d="M12.857 1.43l10.234 17.056A1 1 0 0122.234 20H1.766a1 1 0 01-.857-1.514L11.143 1.429a1 1 0 011.714 0z"
+                    fill="#FFD300"
+                  />
+                  <path fill="#000" d="M11 6h2l-.3 8h-1.4z" />
+                  <circle fill="#000" cx="12" cy="17" r="1" />
+                </g>
+              </svg>
+              <strong className="uppy-Dashboard-serviceMsg-title">{props.i18n('sessionRestored')}</strong>
+              <div className="uppy-Dashboard-serviceMsg-text">{renderRestoredText()}</div>
+            </div>
+          )}
+
           {showFileList ? (
             <FileList {...props} itemsPerRow={itemsPerRow} />
           ) : (
@@ -114,13 +155,19 @@ module.exports = function Dashboard(props) {
             {props.showAddFilesPanel ? <AddFilesPanel key="AddFiles" {...props} isSizeMD={isSizeMD} /> : null}
           </Slide>
 
-          <div className="uppy-Dashboard-progressindicators">
-            {props.progressindicators.map((target) => {
-              return props.getPlugin(target.id).render(props.state);
-            })}
-          </div>
+          <Slide>{props.fileCardFor ? <FileCard key="FileCard" {...props} /> : null}</Slide>
+
+          <Slide>{props.activePickerPanel ? <PickerPanelContent key="Picker" {...props} /> : null}</Slide>
+
+          <Slide>{props.showFileEditor ? <EditorPanel key="Editor" {...props} /> : null}</Slide>
 
           {showFileList && <PanelTopBar {...props} />}
+
+          <div className="uppy-Dashboard-progressindicators">
+            {props.progressindicators.map((target) => {
+              return props.uppy.getPlugin(target.id).render(props.state);
+            })}
+          </div>
         </div>
       </div>
     </div>

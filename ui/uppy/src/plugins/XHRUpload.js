@@ -47,7 +47,7 @@ class XHRUpload extends UppyXHRUpload {
     return new Promise((resolve, reject) => {
       this.uppy.emit('upload-started', file);
 
-      const data = opts.formData ? this.createFormDataUpload(file, opts) : this.createBareUpload(file, opts);
+      const data = opts.formData ? this.createFormDataUpload(file, opts) : file.data;
 
       const xhr = new XMLHttpRequest();
       this.uploaderEvents[file.id] = new EventTracker(this.uppy);
@@ -107,18 +107,17 @@ class XHRUpload extends UppyXHRUpload {
           }
 
           return resolve(file);
-        } else {
-          const body = opts.getResponseData(xhr.responseText, xhr);
-          const error = buildResponseError(xhr, opts.getResponseError(xhr.responseText, xhr));
-
-          const response = {
-            status: ev.target.status,
-            body
-          };
-
-          this.uppy.emit('upload-error', file, error, response);
-          return reject(error);
         }
+        const body = opts.getResponseData(xhr.responseText, xhr);
+        const error = buildResponseError(xhr, opts.getResponseError(xhr.responseText, xhr));
+
+        const response = {
+          status: ev.target.status,
+          body
+        };
+
+        this.uppy.emit('upload-error', file, error, response);
+        return reject(error);
       });
 
       xhr.addEventListener('error', (ev) => {
