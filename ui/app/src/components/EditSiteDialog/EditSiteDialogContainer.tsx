@@ -34,7 +34,6 @@ import { EditSiteDialogUI } from './EditSiteDialogUI';
 import { createCustomDocumentEventListener } from '../../utils/dom';
 
 export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
-  const siteImagePath = `/.crafter/screenshots/default.png?crafterSite=`;
   const { site, onClose, onSaveSuccess, onSiteImageChange, isSubmitting } = props;
   const [submitDisabled, setSubmitDisabled] = useState(false);
   const sites = useSelector<GlobalState, LookupTable>((state) => state.sites.byId);
@@ -42,7 +41,6 @@ export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
   const [name, setName] = useState(site.name);
   const [description, setDescription] = useState(site.description);
   const [siteImageCounter, setSiteImageCounter] = useState(0);
-  const [siteImage, setSiteImage] = useState(`${siteImagePath}${site.id}`);
   const idEditSiteImageComplete = 'editSiteImageComplete';
   const fallbackImageSrc = '/studio/static-assets/themes/cstudioTheme/images/default-contentType.jpg';
 
@@ -140,7 +138,6 @@ export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
 
   createCustomDocumentEventListener(idEditSiteImageComplete, () => {
     onSiteImageChange?.();
-    setSiteImage(`${siteImagePath}${site.id}&v=${siteImageCounter + 1}`);
     setSiteImageCounter(siteImageCounter + 1);
   });
 
@@ -150,7 +147,7 @@ export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
         siteId={site.id}
         siteName={name}
         siteDescription={description}
-        siteImage={siteImage}
+        siteImage={`${site.imageUrl}&v=${siteImageCounter}`}
         onSiteNameChange={onSiteNameChange}
         onSiteDescriptionChange={onSiteDescriptionChange}
         submitting={isSubmitting}

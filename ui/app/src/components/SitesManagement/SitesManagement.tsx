@@ -157,17 +157,11 @@ export default function SitesManagement() {
 
   const onEditSiteClick = (site: Site) => {
     const eventId = 'editSiteImageUploadComplete';
-    const unsubscribe = createCustomDocumentEventListener(eventId, ({ type }) => {
+    createCustomDocumentEventListener(eventId, ({ type }) => {
       if (type === 'uploadComplete') {
-        let count = 0;
-        if (sitesRefreshCountLookup[site.id]) {
-          count++;
-        }
         setSitesRefreshCountLookup({
-          [site.id]: count
+          [site.id]: (sitesRefreshCountLookup[site.id] ?? 0) + 1
         });
-      } else if (type === 'close') {
-        unsubscribe();
       }
     });
 
