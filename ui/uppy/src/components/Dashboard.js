@@ -6,6 +6,7 @@ const Slide = require('@uppy/dashboard/lib/components/Slide');
 const classNames = require('classnames');
 const isDragDropSupported = require('@uppy/utils/lib/isDragDropSupported');
 const { h } = require('preact');
+const React = require('react');
 
 // http://dev.edenspiekermann.com/2016/02/11/introducing-accessible-modal-dialog
 // https://github.com/ghosh/micromodal
@@ -14,6 +15,10 @@ const WIDTH_XL = 900;
 const WIDTH_LG = 700;
 const WIDTH_MD = 576;
 const HEIGHT_MD = 400;
+
+function RemoveButton({ i18n, onClick }) {
+  return <button className="uppy-dashboard-button-base uppy-dashboard-icon-button" tabIndex="0" type="button"></button>;
+}
 
 module.exports = function Dashboard(props) {
   const noFiles = props.totalFileCount === 0;
@@ -181,34 +186,42 @@ module.exports = function Dashboard(props) {
           {props.title} {Boolean(props.totalFileCount) && `(${props.completeFiles.length}/${props.totalFileCount})`}
         </h2>
         <div class="uppy-dashboard-header-actions">
+          <RemoveButton />
           <button
             title={props.i18n('minimize')}
             onClick={props.onMinimized}
-            className="MuiButtonBase-root MuiIconButton-root"
             tabIndex="0"
             type="button"
+            aria-label="minimize"
+            className="uppy-dashboard-button-base uppy-dashboard-icon-button"
           >
-            <span className="MuiIconButton-label">
-              <svg className="MuiSvgIcon-root" focusable="false" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M18 13H6c-.55 0-1-.45-1-1s.45-1 1-1h12c.55 0 1 .45 1 1s-.45 1-1 1z"></path>
-              </svg>
-            </span>
-            <span className="MuiTouchRipple-root" />
+            <svg
+              className="uppy-dashboard-svg-icon"
+              focusable="false"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              data-testid="RemoveRoundedIcon"
+            >
+              <path d="M18 13H6c-.55 0-1-.45-1-1s.45-1 1-1h12c.55 0 1 .45 1 1s-.45 1-1 1z"></path>
+            </svg>
           </button>
           <button
             title={props.i18n('close')}
             onClick={props.onClose}
-            className="MuiButtonBase-root MuiIconButton-root"
             tabIndex="0"
             type="button"
             aria-label="close"
+            className="uppy-dashboard-button-base uppy-dashboard-icon-button"
           >
-            <span className="MuiIconButton-label">
-              <svg className="MuiSvgIcon-root" focusable="false" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M18.3 5.71a.9959.9959 0 00-1.41 0L12 10.59 7.11 5.7a.9959.9959 0 00-1.41 0c-.39.39-.39 1.02 0 1.41L10.59 12 5.7 16.89c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0L12 13.41l4.89 4.89c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L13.41 12l4.89-4.89c.38-.38.38-1.02 0-1.4z"></path>
-              </svg>
-            </span>
-            <span className="MuiTouchRipple-root" />
+            <svg
+              className="uppy-dashboard-svg-icon"
+              focusable="false"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              data-testid="CloseRoundedIcon"
+            >
+              <path d="M18.3 5.71a.9959.9959 0 0 0-1.41 0L12 10.59 7.11 5.7a.9959.9959 0 0 0-1.41 0c-.39.39-.39 1.02 0 1.41L10.59 12 5.7 16.89c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0L12 13.41l4.89 4.89c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L13.41 12l4.89-4.89c.38-.38.38-1.02 0-1.4z"></path>
+            </svg>
           </button>
         </div>
       </div>

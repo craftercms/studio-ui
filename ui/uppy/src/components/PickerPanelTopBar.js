@@ -84,13 +84,7 @@ function PanelTopBar(props) {
       </div>
 
       <button
-        className={classNames({
-          'MuiButtonBase-root': true,
-          'MuiButton-root': true,
-          'MuiButton-text': true,
-          'MuiButton-textPrimary': true,
-          'Mui-disabled': props.isAllComplete && props.state.totalProgress === 100
-        })}
+        className="uppy-dashboard-button-base uppy-dashboard-text-button"
         type="button"
         aria-label={props.i18n('cancelPending')}
         title={props.i18n('cancelPending')}
@@ -103,7 +97,7 @@ function PanelTopBar(props) {
       {props.hasInvalidFiles && (
         <div className="uppy-dashboard-validation-buttons">
           <button
-            className="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary"
+            className="uppy-dashboard-button-base uppy-dashboard-text-button"
             type="button"
             aria-label={props.i18n('rejectAll')}
             title={props.i18n('rejectAll')}
@@ -113,7 +107,7 @@ function PanelTopBar(props) {
           </button>
 
           <button
-            className="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary"
+            className="uppy-dashboard-button-base uppy-dashboard-text-button"
             type="button"
             aria-label={props.i18n('acceptAll')}
             title={props.i18n('acceptAll')}
@@ -131,7 +125,7 @@ function PanelTopBar(props) {
       <div className="uppy-dashboard-right-buttons">
         {allowNewUpload && (
           <button
-            class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary"
+            className="uppy-dashboard-button-base uppy-dashboard-text-button"
             type="button"
             aria-label={props.i18n('addMoreFiles')}
             title={props.i18n('addMoreFiles')}
@@ -141,13 +135,7 @@ function PanelTopBar(props) {
           </button>
         )}
         <button
-          className={classNames({
-            'MuiButtonBase-root': true,
-            'MuiButton-root': true,
-            'MuiButton-text': true,
-            'MuiButton-textPrimary': true,
-            'Mui-disabled': props.completeFiles.length === 0
-          })}
+          className="uppy-dashboard-button-base uppy-dashboard-text-button"
           type="button"
           aria-label={props.i18n('clearCompleted')}
           title={props.i18n('clearCompleted')}
