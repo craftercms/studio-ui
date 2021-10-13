@@ -27,6 +27,7 @@ import {
   closeHistoryDialog,
   closeNewContentDialog,
   closePublishDialog,
+  closeSingleFileUploadDialog,
   closeViewVersionDialog,
   fetchContentVersion,
   fetchContentVersionComplete,
@@ -83,7 +84,8 @@ const dialogEpics: CrafterCMSEpic[] = [
         closeHistoryDialog.type,
         closeViewVersionDialog.type,
         closeCompareVersionsDialog.type,
-        closeDependenciesDialog.type
+        closeDependenciesDialog.type,
+        closeSingleFileUploadDialog.type
       ),
       withLatestFrom(state$),
       map(([{ type, payload }, state]) => {

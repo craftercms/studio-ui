@@ -50,6 +50,7 @@ const CreateFolderDialog = lazy(() => import('../CreateFolderDialog'));
 const CopyItemsDialog = lazy(() => import('../Dialogs/CopyDialog'));
 const CreateFileDialog = lazy(() => import('../CreateFileDialog'));
 const BulkUploadDialog = lazy(() => import('../UploadDialog'));
+const SingleFileUploadDialog = lazy(() => import('../SingleFileUploadDialog'));
 const PreviewDialog = lazy(() => import('../PreviewDialog'));
 const ItemMenu = lazy(() => import('../ItemActionsMenu'));
 const ItemMegaMenu = lazy(() => import('../ItemMegaMenu'));
@@ -320,6 +321,17 @@ function GlobalDialogManager() {
       />
       {/* endregion */}
 
+      {/* region Single File Upload */}
+      <SingleFileUploadDialog
+        {...state.singleFileUpload}
+        onClose={createCallback(state.singleFileUpload.onClose, dispatch)}
+        onClosed={createCallback(state.singleFileUpload.onClosed, dispatch)}
+        onUploadStart={createCallback(state.singleFileUpload.onUploadStart, dispatch)}
+        onUploadComplete={createCallback(state.singleFileUpload.onUploadComplete, dispatch)}
+        onUploadError={createCallback(state.singleFileUpload.onUploadError, dispatch)}
+      />
+      {/* endregion */}
+
       {/* region PreviewDialog */}
       <PreviewDialog
         {...state.preview}
@@ -334,6 +346,7 @@ function GlobalDialogManager() {
         onClose={createCallback(state.editSite.onClose, dispatch)}
         onClosed={createCallback(state.editSite.onClosed, dispatch)}
         onSaveSuccess={createCallback(state.editSite.onSaveSuccess, dispatch)}
+        onSiteImageChange={createCallback(state.editSite.onSiteImageChange, dispatch)}
         onWithPendingChangesCloseRequest={useWithPendingChangesCloseRequest(
           createCallback(state.editSite.onClose, dispatch)
         )}

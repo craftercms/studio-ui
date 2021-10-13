@@ -15,25 +15,24 @@
  */
 
 import React from 'react';
-import { EditSiteDialogContainer } from './EditSiteDialogContainer';
-import { EditSiteDialogProps } from './utils';
+import { SingleFileUploadDialogProps } from './utils';
 import EnhancedDialog from '../EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
+import SingleFileUploadDialogContainer from './SingleFileUploadDialogContainer';
 
-export default function EditSiteDialog(props: EditSiteDialogProps) {
-  const { site, onSaveSuccess, onSiteImageChange, isSubmitting, ...rest } = props;
+export default function SingleFileUploadDialog(props: SingleFileUploadDialogProps) {
+  const { site, path, customFileName, fileTypes, onUploadStart, onUploadComplete, onUploadError, ...rest } = props;
+
   return (
-    <EnhancedDialog
-      title={<FormattedMessage id="editSiteDialog.title" defaultMessage="Edit Site" />}
-      maxWidth="md"
-      isSubmitting={isSubmitting}
-      {...rest}
-    >
-      <EditSiteDialogContainer
+    <EnhancedDialog title={<FormattedMessage id="words.upload" defaultMessage="Upload" />} maxWidth="xs" {...rest}>
+      <SingleFileUploadDialogContainer
         site={site}
-        onSaveSuccess={onSaveSuccess}
-        onSiteImageChange={onSiteImageChange}
-        isSubmitting={isSubmitting}
+        path={path}
+        customFileName={customFileName}
+        fileTypes={fileTypes}
+        onUploadStart={onUploadStart}
+        onUploadComplete={onUploadComplete}
+        onUploadError={onUploadError}
       />
     </EnhancedDialog>
   );

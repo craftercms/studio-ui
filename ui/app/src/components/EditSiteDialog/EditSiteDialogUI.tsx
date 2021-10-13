@@ -24,78 +24,111 @@ import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import React from 'react';
 import { translations } from './translations';
+import { useSiteDialogStyles } from './styles';
+import Card from '@mui/material/Card';
+import CardMedia from '@mui/material/CardMedia';
+import CardActions from '@mui/material/CardActions';
+import IconButton from '@mui/material/IconButton';
+import EditRoundedIcon from '@mui/icons-material/EditRounded';
+import Tooltip from '@mui/material/Tooltip';
 
 export function EditSiteDialogUI(props: EditSiteDialogUIProps) {
   const {
     siteId,
     siteName,
     siteDescription,
+    siteImage,
     onSiteNameChange,
     onSiteDescriptionChange,
     submitting,
     submitDisabled,
+    fallbackImageSrc,
     onKeyPress,
     onSubmit,
-    onCloseButtonClick
+    onCloseButtonClick,
+    onEditSiteImage
   } = props;
   const { formatMessage } = useIntl();
+  const classes = useSiteDialogStyles();
   return (
     <>
       <DialogBody>
-        <Grid container spacing={1} component="form">
-          <Grid item xs={12}>
-            <TextField
-              autoFocus
-              fullWidth
-              id="name"
-              name="name"
-              label={<FormattedMessage id="editSiteDialog.siteName" defaultMessage="Site Name" />}
-              onChange={(event) => onSiteNameChange(event)}
-              onKeyPress={onKeyPress}
-              value={siteName}
-              inputProps={{ maxLength: 255 }}
-              error={submitDisabled}
-              helperText={
-                // prettier-ignore
-                !siteName.trim()
-                  ? formatMessage(translations.siteNameRequired)
-                  : submitDisabled
-                  ? formatMessage(translations.siteNameExists)
-                  : ''
-              }
-            />
+        <Grid container spacing={2}>
+          <Grid item sm={7}>
+            <Grid container spacing={1} component="form">
+              <Grid item xs={12}>
+                <TextField
+                  autoFocus
+                  fullWidth
+                  id="name"
+                  name="name"
+                  label={<FormattedMessage id="editSiteDialog.siteName" defaultMessage="Site Name" />}
+                  onChange={(event) => onSiteNameChange(event)}
+                  onKeyPress={onKeyPress}
+                  value={siteName}
+                  inputProps={{ maxLength: 255 }}
+                  error={submitDisabled}
+                  helperText={
+                    // prettier-ignore
+                    !siteName.trim()
+                      ? formatMessage(translations.siteNameRequired)
+                      : submitDisabled
+                      ? formatMessage(translations.siteNameExists)
+                      : ''
+                  }
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  id="siteId"
+                  name="id"
+                  label={<FormattedMessage id="editSiteDialog.siteId" defaultMessage="Site ID" />}
+                  fullWidth
+                  value={siteId}
+                  disabled
+                  helperText={
+                    <FormattedMessage id="editSiteDialog.notEditable" defaultMessage="The site id is not editable" />
+                  }
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  id="description"
+                  name="description"
+                  label={<FormattedMessage id="editSiteDialog.siteDescription" defaultMessage="Site Description" />}
+                  fullWidth
+                  multiline
+                  onChange={(event) => onSiteDescriptionChange(event.target.value)}
+                  onKeyPress={(e) => {
+                    // This behaviour is kind of backwards from how it's usually seen in text editors.
+                    // Perhaps we should flip it to shift/ctrl + enter creating new lines and only enter submitting?
+                    if (e.key !== 'Enter' || e.ctrlKey || e.shiftKey) {
+                      onKeyPress?.(e);
+                    }
+                  }}
+                  value={siteDescription ?? ''}
+                  inputProps={{ maxLength: 4000 }}
+                />
+              </Grid>
+            </Grid>
           </Grid>
-          <Grid item xs={12}>
-            <TextField
-              id="siteId"
-              name="id"
-              label={<FormattedMessage id="editSiteDialog.siteId" defaultMessage="Site ID" />}
-              fullWidth
-              value={siteId}
-              disabled
-              helperText={
-                <FormattedMessage id="editSiteDialog.notEditable" defaultMessage="The site id is not editable" />
-              }
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              id="description"
-              name="description"
-              label={<FormattedMessage id="editSiteDialog.siteDescription" defaultMessage="Site Description" />}
-              fullWidth
-              multiline
-              onChange={(event) => onSiteDescriptionChange(event.target.value)}
-              onKeyPress={(e) => {
-                // This behaviour is kind of backwards from how it's usually seen in text editors.
-                // Perhaps we should flip it to shift/ctrl + enter creating new lines and only enter submitting?
-                if (e.key !== 'Enter' || e.ctrlKey || e.shiftKey) {
-                  onKeyPress?.(e);
-                }
-              }}
-              value={siteDescription ?? ''}
-              inputProps={{ maxLength: 4000 }}
-            />
+          <Grid item sm={5}>
+            <Card>
+              <CardMedia
+                component="img"
+                image={siteImage}
+                title={siteName}
+                className={classes.media}
+                onError={(event) => (event.target.src = fallbackImageSrc)}
+              />
+              <CardActions className={classes.cardActions} disableSpacing>
+                <Tooltip title={<FormattedMessage id="words.edit" defaultMessage="Edit" />}>
+                  <IconButton onClick={onEditSiteImage}>
+                    <EditRoundedIcon />
+                  </IconButton>
+                </Tooltip>
+              </CardActions>
+            </Card>
           </Grid>
         </Grid>
       </DialogBody>

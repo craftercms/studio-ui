@@ -106,6 +106,7 @@ export interface Site {
   uuid: string;
   name: string;
   description: string;
+  imageUrl: string;
 }
 
 export interface BackendSite {

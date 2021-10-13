@@ -18,7 +18,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 import Core from '@uppy/core';
 import XHRUpload from '@uppy/xhr-upload';
 import ProgressBar from '@uppy/progress-bar';
-import FileInput from '@uppy/file-input';
 import Form from '@uppy/form';
 import { defineMessages, useIntl } from 'react-intl';
 
@@ -33,6 +32,9 @@ import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
 import { UppyFile } from '@uppy/utils';
 import { emitSystemEvent, itemCreated } from '../../state/actions/system';
 import { useDispatch } from 'react-redux';
+import Typography from '@mui/material/Typography';
+import clsx from 'clsx';
+import Button from '@mui/material/Button';
 
 const messages = defineMessages({
   chooseFile: {
@@ -72,28 +74,49 @@ const singleFileUploadStyles = makeStyles((theme) =>
       overflow: 'hidden',
       textOverflow: 'ellipsis',
       whiteSpace: 'nowrap'
+    },
+    description: {
+      margin: '10px 0'
+    },
+    input: {
+      display: 'none !important'
+    },
+    inputContainer: {
+      marginBottom: '10px'
     }
   })
 );
 
-interface UppyProps {
-  formTarget: string;
-  url: string;
+interface SingleFileUploadProps {
   site: string;
+  formTarget?: string;
+  url?: string;
   path?: string;
+  customFileName?: string;
   fileTypes?: [string];
   onUploadStart?(): void;
   onComplete?(result: any): void;
-  onError?(file: any, error: any, response: any): void;
+  onError?({ file, error, response }): void;
 }
 
-export default function SingleFileUpload(props: UppyProps) {
-  const { url, formTarget, onUploadStart, onComplete, onError, fileTypes, path, site } = props;
+export default function SingleFileUpload(props: SingleFileUploadProps) {
+  const {
+    url = '/studio/asset-upload',
+    formTarget = '#asset_upload_form',
+    onUploadStart,
+    onComplete,
+    onError,
+    customFileName,
+    fileTypes,
+    path,
+    site
+  } = props;
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
   const [description, setDescription] = useState<string>(formatMessage(messages.selectFileMessage));
   const [file, setFile] = useState<UppyFile>(null);
   const [fileNameErrorClass, setFileNameErrorClass] = useState<string>();
+  const [disableInput, setDisableInput] = useState(false);
   const [confirm, setConfirm] = useState<{
     body: string;
     error?: boolean;
@@ -104,25 +127,27 @@ export default function SingleFileUpload(props: UppyProps) {
     () =>
       new Core({
         autoProceed: false,
-        ...(fileTypes ? { restrictions: { allowedFileTypes: fileTypes } } : {})
+        ...(fileTypes ? { restrictions: { allowedFileTypes: fileTypes } } : {}),
+        ...(customFileName
+          ? {
+              onBeforeFileAdded: (currentFile) => {
+                return {
+                  ...currentFile,
+                  name: customFileName,
+                  meta: {
+                    ...currentFile.meta,
+                    name: customFileName
+                  }
+                };
+              }
+            }
+          : {})
       }),
-    [fileTypes]
+    [fileTypes, customFileName]
   );
 
   useEffect(() => {
-    let uploadBtn: HTMLInputElement;
-
     const instance = uppy
-      .use(FileInput, {
-        target: '.uppy-file-input-container',
-        // TODO: check removing this option doesn't break anything
-        // replaceTargetContent: false,
-        locale: {
-          strings: {
-            chooseFiles: formatMessage(messages.chooseFile)
-          }
-        }
-      })
       .use(Form, {
         target: formTarget,
         getMetaFromForm: true,
@@ -139,25 +164,68 @@ export default function SingleFileUpload(props: UppyProps) {
         formData: true,
         fieldName: 'file',
         timeout: 0,
-        headers: getGlobalHeaders()
+        headers: getGlobalHeaders(),
+        getResponseData: (responseText, response) => response
       });
 
-    uppy.on('file-added', (file: UppyFile) => {
-      uploadBtn = document.querySelector('.uppy-FileInput-btn');
+    return () => {
+      // https://uppy.io/docs/uppy/#uppy-close
+      instance.reset();
+      instance.close();
+    };
+  }, [uppy, formTarget, url]);
+
+  useEffect(() => {
+    const onUploadSuccess = (file) => {
+      dispatch(emitSystemEvent(itemCreated({ target: path + file.name })));
+      setDescription(`${formatMessage(messages.uploadedFile)}:`);
+    };
+
+    const onCompleteUpload = (result) => {
+      onComplete?.(result);
+      setDisableInput(false);
+    };
+
+    uppy.on('upload-success', onUploadSuccess);
+    uppy.on('complete', onCompleteUpload);
+
+    return () => {
+      uppy.off('upload-success', onUploadSuccess);
+      uppy.off('complete', onCompleteUpload);
+    };
+  }, [onComplete, dispatch, formatMessage, path, uppy]);
+
+  useEffect(() => {
+    const onUploadError = (file, error, response) => {
+      uppy.cancelAll();
+      setFileNameErrorClass('text-danger');
+      onError?.({ file, error, response });
+      setDisableInput(false);
+    };
+
+    uppy.on('upload-error', onUploadError);
+
+    return () => {
+      uppy.off('upload-error', onUploadError);
+    };
+  }, [onError, uppy]);
+
+  useEffect(() => {
+    const onFileAdded = (file: UppyFile) => {
       setDescription(`${formatMessage(messages.validatingFile)}:`);
       setFile(file);
       setFileNameErrorClass('');
-      uploadBtn.disabled = true;
       validateActionPolicy(site, {
         type: 'CREATE',
         target: path + file.name
-      }).subscribe(({ allowed, modifiedValue, target }) => {
+      }).subscribe(({ allowed, modifiedValue }) => {
         if (allowed) {
           if (modifiedValue) {
             setConfirm({
               body: formatMessage(messages.createPolicy, { name: modifiedValue.replace(`${path}`, '') })
             });
           } else {
+            setDisableInput(true);
             uppy.upload();
             setDescription(`${formatMessage(messages.uploadingFile)}:`);
             onUploadStart?.();
@@ -169,29 +237,14 @@ export default function SingleFileUpload(props: UppyProps) {
           });
         }
       });
-    });
+    };
 
-    uppy.on('upload-success', (file, response) => {
-      dispatch(emitSystemEvent(itemCreated({ target: path + file.name })));
-      setDescription(`${formatMessage(messages.uploadedFile)}:`);
-      uploadBtn.disabled = false;
-    });
-
-    uppy.on('complete', onComplete);
-
-    uppy.on('upload-error', (file, error, response) => {
-      uppy.cancelAll();
-      uploadBtn.disabled = false;
-      setFileNameErrorClass('text-danger');
-      onError && onError(file, error, response);
-    });
+    uppy.on('file-added', onFileAdded);
 
     return () => {
-      // https://uppy.io/docs/uppy/#uppy-close
-      instance.reset();
-      instance.close();
+      uppy.off('file-added', onFileAdded);
     };
-  }, [uppy, fileTypes, formTarget, formatMessage, onComplete, onError, onUploadStart, path, site, url, dispatch]);
+  }, [onUploadStart, formatMessage, path, site, uppy]);
 
   const onConfirm = () => {
     uppy.upload().then(() => {});
@@ -208,20 +261,55 @@ export default function SingleFileUpload(props: UppyProps) {
     setDescription(formatMessage(messages.selectFileMessage));
   };
 
+  const onChange = ({ nativeEvent: event }) => {
+    const files: File[] = Array.from(event.target.files);
+    files.forEach((file) => {
+      try {
+        uppy.addFile({
+          source: 'file input',
+          name: file.name,
+          type: file.type,
+          data: file
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    });
+  };
+
   return (
     <>
+      <form id="asset_upload_form">
+        <input type="hidden" name="path" value={path} />
+        <input type="hidden" name="site" value={site} />
+      </form>
       <div className="uppy-progress-bar" />
       <div className="uploaded-files">
-        <h5 className="single-file-upload--description">{description}</h5>
-        <div className="uppy-file-input-container" />
-        {file && (
-          <em
-            className={`single-file-upload--filename ${fileNameErrorClass} ${classes.fileNameTrimmed}`}
-            title={file.name}
-          >
-            {file.name}
-          </em>
-        )}
+        <Typography variant="subtitle1" component="h2" className={classes.description}>
+          {description}
+          {file && (
+            <em
+              className={clsx('single-file-upload--filename', fileNameErrorClass, classes.fileNameTrimmed)}
+              title={file.name}
+            >
+              {file.name}
+            </em>
+          )}
+        </Typography>
+        <div className={classes.inputContainer}>
+          <input
+            accept={fileTypes?.join(',')}
+            className={classes.input}
+            id="contained-button-file"
+            type="file"
+            onChange={onChange}
+          />
+          <label htmlFor="contained-button-file">
+            <Button variant="outlined" component="span" disabled={disableInput}>
+              {formatMessage(messages.chooseFile)}
+            </Button>
+          </label>
+        </div>
       </div>
       <ConfirmDialog
         open={Boolean(confirm)}
