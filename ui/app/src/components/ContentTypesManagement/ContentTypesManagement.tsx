@@ -40,7 +40,7 @@ export default function ContentTypeManagement(props: ContentTypeManagementProps)
 
   useEffect(() => {
     const messagesSubscription = messages.subscribe((e: any) => {
-      onSubmittingAndOrPendingChange(e.data.payload);
+      onSubmittingAndOrPendingChange?.(e.data.payload);
     });
     return () => {
       messagesSubscription.unsubscribe();
