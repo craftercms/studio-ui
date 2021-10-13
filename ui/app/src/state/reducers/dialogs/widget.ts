@@ -16,7 +16,7 @@
 
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
-import { closeWidgetDialog, showWidgetDialog, widgetDialogClosed } from '../../actions/dialogs';
+import { closeWidgetDialog, showWidgetDialog, updateWidgetDialog, widgetDialogClosed } from '../../actions/dialogs';
 import { WidgetDialogStateProps } from '../../../components/WidgetDialog/utils';
 
 const initialState: WidgetDialogStateProps = {
@@ -36,6 +36,7 @@ export default createReducer<GlobalState['dialogs']['widget']>(initialState, {
     ...payload,
     open: true
   }),
+  [updateWidgetDialog.type]: (state, { payload }) => ({ ...state, ...payload }),
   [closeWidgetDialog.type]: (state) => ({
     ...state,
     open: false

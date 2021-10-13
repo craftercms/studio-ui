@@ -259,4 +259,5 @@ export const closeUnlockPublisherDialog = /*#__PURE__*/ createAction('CLOSE_UNLO
 export const showWidgetDialog = /*#__PURE__*/ createAction<Partial<WidgetDialogStateProps>>('SHOW_WIDGET_DIALOG');
 export const closeWidgetDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_WIDGET_DIALOG');
 export const widgetDialogClosed = /*#__PURE__*/ createAction('WIDGET_DIALOG_CLOSED');
+export const updateWidgetDialog = /*#__PURE__*/ createAction<Partial<WidgetDialogStateProps>>('UPDATE_WIDGET_DIALOG');
 // endregion

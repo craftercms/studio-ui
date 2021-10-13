@@ -289,7 +289,7 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
     if (!disabledSaveButton) {
       setDisabledSaveButton(true);
     }
-    onSubmittingAndOrPendingChange({ hasPendingChanges: false, isSubmitting: false });
+    onSubmittingAndOrPendingChange?.({ hasPendingChanges: false, isSubmitting: false });
   };
 
   const onListItemClick = (file: SiteConfigurationFileWithId) => {

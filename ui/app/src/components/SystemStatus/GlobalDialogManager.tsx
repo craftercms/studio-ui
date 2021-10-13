@@ -397,6 +397,9 @@ function GlobalDialogManager() {
         {...state.widget}
         onClose={createCallback(state.widget.onClose, dispatch)}
         onClosed={createCallback(state.widget.onClosed, dispatch)}
+        onWithPendingChangesCloseRequest={useWithPendingChangesCloseRequest(
+          createCallback(state.widget.onClose, dispatch)
+        )}
       />
       {/* endregion */}
 

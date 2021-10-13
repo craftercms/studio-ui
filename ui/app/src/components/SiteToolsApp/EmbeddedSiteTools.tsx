@@ -21,6 +21,9 @@ import { useReference } from '../../utils/hooks/useReference';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import SiteToolsApp, { Tool } from './SiteToolsApp';
 import { embeddedStyles } from './styles';
+import { onSubmittingAndOrPendingChangeProps } from '../../utils/hooks/useEnhancedDialogState';
+import { useDispatch } from 'react-redux';
+import { updateWidgetDialog } from '../../state/actions/dialogs';
 
 export const EmbeddedSiteToolsContainer = () => {
   const [width, setWidth] = useState(240);
@@ -31,9 +34,14 @@ export const EmbeddedSiteToolsContainer = () => {
   const tools: Tool[] = siteTools?.tools;
   const site = useActiveSiteId();
   const classes = embeddedStyles();
+  const dispatch = useDispatch();
 
   const onNavItemClick = (id: string) => {
     setActiveToolId(id);
+  };
+
+  const onSubmittingAndOrPendingChange = (value: onSubmittingAndOrPendingChangeProps) => {
+    dispatch(updateWidgetDialog(value));
   };
 
   return (
@@ -53,6 +61,7 @@ export const EmbeddedSiteToolsContainer = () => {
       classes={{
         root: classes.root
       }}
+      onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
     />
   );
 };

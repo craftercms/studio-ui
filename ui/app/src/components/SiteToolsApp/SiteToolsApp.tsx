@@ -36,6 +36,7 @@ import TranslationOrText from '../../models/TranslationOrText';
 import clsx from 'clsx';
 import Suspencified from '../SystemStatus/Suspencified';
 import LauncherOpenerButton from '../LauncherOpenerButton';
+import { onSubmittingAndOrPendingChangeProps } from '../../utils/hooks/useEnhancedDialogState';
 
 export interface Tool {
   title: TranslationOrText;
@@ -60,6 +61,7 @@ export interface SiteToolsAppProps {
   onBackClick?(): void;
   onWidthChange(width: number): void;
   onNavItemClick(url: string): void;
+  onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 export default function SiteToolsApp(props: SiteToolsAppProps) {
@@ -77,7 +79,8 @@ export default function SiteToolsApp(props: SiteToolsAppProps) {
     onWidthChange,
     tools,
     onNavItemClick,
-    showAppsButton
+    showAppsButton,
+    onSubmittingAndOrPendingChange
   } = props;
   const classes = useStyles();
   const { formatMessage } = useIntl();
@@ -154,7 +157,7 @@ export default function SiteToolsApp(props: SiteToolsAppProps) {
         {activeToolId ? (
           tool ? (
             <Suspencified>
-              <Widget {...tool} extraProps={{ embedded: false, showAppsButton }} />
+              <Widget {...tool} extraProps={{ embedded: false, showAppsButton, onSubmittingAndOrPendingChange }} />
             </Suspencified>
           ) : (
             <Box display="flex" flexDirection="column" height="100%">
