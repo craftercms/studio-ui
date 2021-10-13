@@ -16,10 +16,6 @@ const WIDTH_LG = 700;
 const WIDTH_MD = 576;
 const HEIGHT_MD = 400;
 
-function RemoveButton({ i18n, onClick }) {
-  return <button className="uppy-dashboard-button-base uppy-dashboard-icon-button" tabIndex="0" type="button"></button>;
-}
-
 module.exports = function Dashboard(props) {
   const noFiles = props.totalFileCount === 0;
   const isSizeMD = props.containerWidth > WIDTH_MD;
@@ -186,7 +182,6 @@ module.exports = function Dashboard(props) {
           {props.title} {Boolean(props.totalFileCount) && `(${props.completeFiles.length}/${props.totalFileCount})`}
         </h2>
         <div class="uppy-dashboard-header-actions">
-          <RemoveButton />
           <button
             title={props.i18n('minimize')}
             onClick={props.onMinimized}

@@ -24,9 +24,11 @@ import { validateActionPolicy } from '../../services/sites';
 import { defineMessages, useIntl } from 'react-intl';
 import { emitSystemEvent, itemsUploaded, showSystemNotification } from '../../state/actions/system';
 import { useDispatch } from 'react-redux';
-import { useDebouncedInput } from '../../utils/hooks/useDebouncedInput';
 import { DashboardOptions } from '@uppy/dashboard';
 import { alpha } from '@mui/material';
+import { Subject } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
+import { UppyFile } from '@uppy/utils';
 
 interface UppyDashboardProps {
   uppy: Uppy;
@@ -390,25 +392,26 @@ export default function UppyDashboard(props: UppyDashboardProps) {
   const dispatch = useDispatch();
   const targetsRef = useRef<string[]>([]);
 
-  const onItemsUploaded = useCallback(
-    (id: string) => {
-      dispatch(emitSystemEvent(itemsUploaded({ target: path, targets: targetsRef.current })));
-      targetsRef.current = [];
-    },
-    [dispatch, path]
-  );
+  // onItemsUploaded will be called every 1000ms and it will use the targetsRef.current list to dispatch itemsUploaded system event
+  // then next time onItemsUploaded will be called with a new list of targetsRef.current
+  const onItemsUploaded = useCallback(() => {
+    dispatch(emitSystemEvent(itemsUploaded({ target: path, targets: targetsRef.current })));
+    targetsRef.current = [];
+  }, [dispatch, path]);
 
-  const onMaxActiveUploadsReached = () => {
-    dispatch(
-      showSystemNotification({
-        message: formatMessage(translations.maxActiveUploadsReached, { maxFiles: maxActiveUploads })
-      })
-    );
-  };
-
-  const onItemsUploaded$ = useDebouncedInput(onItemsUploaded, 1000);
+  const functionsRef = useRef({ onItemsUploaded: null, onPendingChanges: null, onMinimized: null, onClose: null });
+  functionsRef.current.onItemsUploaded = onItemsUploaded;
+  functionsRef.current.onPendingChanges = onPendingChanges;
+  functionsRef.current.onMinimized = onMinimized;
+  functionsRef.current.onClose = onClose;
 
   useEffect(() => {
+    const onItemsUploaded$ = new Subject();
+
+    const subscription = onItemsUploaded$.pipe(debounceTime(1000)).subscribe(() => {
+      functionsRef.current.onItemsUploaded();
+    });
+
     if (uppy.getPlugin('craftercms:Dashboard')) {
       uppy.removePlugin(uppy.getPlugin('craftercms:Dashboard'));
     }
@@ -417,9 +420,15 @@ export default function UppyDashboard(props: UppyDashboardProps) {
       inline: true,
       target: ref.current,
       validateActionPolicy,
-      onPendingChanges,
-      onClose,
-      onMinimized,
+      onPendingChanges: function () {
+        functionsRef.current.onPendingChanges.apply(null, arguments);
+      },
+      onClose: function () {
+        functionsRef.current.onClose.apply(null, arguments);
+      },
+      onMinimized: function () {
+        functionsRef.current.onMinimized.apply(null, arguments);
+      },
       title,
       id: 'craftercms:Dashboard',
       site,
@@ -443,27 +452,37 @@ export default function UppyDashboard(props: UppyDashboardProps) {
           close: formatMessage(translations.close)
         }
       },
-      maxActiveUploads: maxActiveUploads,
+      maxActiveUploads,
       externalMessages: {
         maxFiles: formatMessage(translations.maxFiles, { maxFiles: maxActiveUploads })
       },
-      onMaxActiveUploadsReached: onMaxActiveUploadsReached
+      onMaxActiveUploadsReached: () => {
+        dispatch(
+          showSystemNotification({
+            message: formatMessage(translations.maxActiveUploadsReached, { maxFiles: maxActiveUploads })
+          })
+        );
+      }
     });
 
-    uppy.on('upload-success', (file) => {
+    const onUploadSuccess = (file: UppyFile<Record<string, unknown>>) => {
       onItemsUploaded$.next(file.id);
       targetsRef.current.push(file.id);
-    });
+    };
+
+    uppy.on('upload-success', onUploadSuccess);
 
     return () => {
+      subscription.unsubscribe();
       const plugin = uppy.getPlugin('craftercms:Dashboard');
       if (plugin) {
         uppy.removePlugin(plugin);
+        uppy.off('upload-success', onUploadSuccess);
       }
     };
     // options is removed from dependencies to avoid re-render a new dashboard
     /* eslint-disable react-hooks/exhaustive-deps */
-  }, [uppy]);
+  }, [dispatch, formatMessage, maxActiveUploads, path, site, title, uppy]);
 
   return <section ref={ref} className={classes.dashboard} />;
 }
