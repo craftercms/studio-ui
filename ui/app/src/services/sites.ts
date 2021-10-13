@@ -97,7 +97,7 @@ export function trash(id: string): Observable<boolean> {
   );
 }
 
-export function update(site: Omit<Site, 'uuid'>): Observable<Api2ResponseFormat<{}>> {
+export function update(site: Omit<Site, 'uuid' | 'imageUrl'>): Observable<Api2ResponseFormat<{}>> {
   return postJSON<Api2ResponseFormat<{}>>(`/studio/api/2/sites/${site.id}`, {
     name: site.name,
     description: site.description
