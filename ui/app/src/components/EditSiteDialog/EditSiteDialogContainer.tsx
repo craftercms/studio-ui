@@ -64,7 +64,7 @@ export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
           isSubmitting: true
         })
       );
-      update({ id, name, description, imageUrl: site.imageUrl }).subscribe(
+      update({ id, name, description }).subscribe(
         (response) => {
           dispatch(
             batchActions([
