@@ -17,7 +17,7 @@
 import { WidgetDescriptor } from '../Widget';
 import StandardAction from '../../models/StandardAction';
 import { EnhancedDialogProps } from '../EnhancedDialog';
-import { EnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
+import { EnhancedDialogState, onSubmittingAndOrPendingChangeProps } from '../../utils/hooks/useEnhancedDialogState';
 
 interface WidgetDialogBaseProps {
   title: string;
@@ -26,11 +26,10 @@ interface WidgetDialogBaseProps {
 
 export interface WidgetDialogProps extends WidgetDialogBaseProps, Omit<EnhancedDialogProps, 'title'> {
   title: string;
+  onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 export interface WidgetDialogStateProps extends WidgetDialogBaseProps, EnhancedDialogState {
   onClose?: StandardAction;
   onClosed?: StandardAction;
 }
-
-export interface WidgetDialogContainerProps extends Omit<WidgetDialogBaseProps, 'title'> {}

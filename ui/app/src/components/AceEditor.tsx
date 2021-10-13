@@ -215,16 +215,11 @@ export default React.forwardRef(function AceEditor(props: AceEditorProps, ref) {
         refs.current.pre = pre;
         refs.current.elem.appendChild(pre);
         aceEditor = window.ace.edit(pre, options);
-        aceEditor.setValue(value, -1);
         autoFocus && aceEditor.focus();
         refs.current.ace = aceEditor;
         if (ref) {
           typeof ref === 'function' ? ref(aceEditor) : (ref.current = aceEditor);
         }
-
-        aceEditor.getSession().on('change', function (e) {
-          refs.current.onChange?.(e);
-        });
         setInitialized((initialized = true));
       }
     };
@@ -260,6 +255,15 @@ export default React.forwardRef(function AceEditor(props: AceEditorProps, ref) {
     if (initialized) {
       refs.current.ace.setValue(value, -1);
       refs.current.ace.session.getUndoManager().reset();
+
+      const onChange = (e) => {
+        refs.current.onChange?.(e);
+      };
+
+      refs.current.ace.getSession().on('change', onChange);
+      return () => {
+        refs.current.ace.getSession().off('change', onChange);
+      };
     }
   }, [initialized, value]);
   useEffect(() => {

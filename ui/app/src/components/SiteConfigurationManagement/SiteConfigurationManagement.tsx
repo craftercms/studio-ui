@@ -68,15 +68,18 @@ import { fetchSiteConfig, fetchSiteUiConfig } from '../../state/actions/configur
 import { useSelection } from '../../utils/hooks/useSelection';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useMount } from '../../utils/hooks/useMount';
-import { ConfirmDialogProps } from '../ConfirmDialog/utils';
+import { ConfirmDialogProps } from '../ConfirmDialog';
+import { onSubmittingAndOrPendingChangeProps } from '../../utils/hooks/useEnhancedDialogState';
 
 interface SiteConfigurationManagementProps {
   embedded?: boolean;
   showAppsButton?: boolean;
+  isSubmitting?: boolean;
+  onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 export default function SiteConfigurationManagement(props: SiteConfigurationManagementProps) {
-  const { embedded, showAppsButton } = props;
+  const { embedded, showAppsButton, onSubmittingAndOrPendingChange, isSubmitting } = props;
   const site = useActiveSiteId();
   const baseUrl = useSelection<string>((state) => state.env.authoringBase);
   const classes = useStyles();
@@ -286,6 +289,7 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
     if (!disabledSaveButton) {
       setDisabledSaveButton(true);
     }
+    onSubmittingAndOrPendingChange({ hasPendingChanges: false, isSubmitting: false });
   };
 
   const onListItemClick = (file: SiteConfigurationFileWithId) => {
@@ -318,8 +322,10 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
   const onEditorChanges = () => {
     if (selectedConfigFileXml !== editorRef.current.getValue()) {
       setDisabledSaveButton(false);
+      onSubmittingAndOrPendingChange({ hasPendingChanges: true });
     } else {
       setDisabledSaveButton(true);
+      onSubmittingAndOrPendingChange({ hasPendingChanges: false });
     }
   };
 
@@ -382,8 +388,10 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
       );
     } else {
       if (unencryptedItems.length === 0) {
+        onSubmittingAndOrPendingChange({ isSubmitting: true });
         writeConfiguration(site, selectedConfigFile.path, selectedConfigFile.module, content, environment).subscribe(
           () => {
+            onSubmittingAndOrPendingChange({ isSubmitting: false, hasPendingChanges: false });
             dispatch(
               showSystemNotification({
                 message: formatMessage(translations.configSaved)
@@ -645,7 +653,7 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
               <SecondaryButton disabled={encrypting} onClick={onCancel}>
                 <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
               </SecondaryButton>
-              <PrimaryButton disabled={disabledSaveButton || encrypting} onClick={onSave}>
+              <PrimaryButton disabled={disabledSaveButton || encrypting || isSubmitting} onClick={onSave}>
                 <FormattedMessage id="words.save" defaultMessage="Save" />
               </PrimaryButton>
             </DialogFooter>

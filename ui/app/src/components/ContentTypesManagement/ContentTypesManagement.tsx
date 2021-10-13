@@ -16,19 +16,37 @@
 
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import { FormattedMessage } from 'react-intl';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import LegacyIFrame from '../LegacyIFrame';
 import Box from '@mui/material/Box';
 import LoadingState from '../SystemStatus/LoadingState';
+import { fromEvent } from 'rxjs';
+import { filter } from 'rxjs/operators';
+import { onSubmittingAndOrPendingChangeProps } from '../../utils/hooks/useEnhancedDialogState';
 
 interface ContentTypeManagementProps {
   embedded?: boolean;
   showAppsButton?: boolean;
+  onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 export default function ContentTypeManagement(props: ContentTypeManagementProps) {
-  const { embedded = false, showAppsButton } = props;
+  const { embedded = false, showAppsButton, onSubmittingAndOrPendingChange } = props;
   const [loading, setLoading] = useState(true);
+
+  const messages = fromEvent(window, 'message').pipe(
+    filter((e: any) => e.data && e.data.type === 'CONTENT_TYPES_ON_SUBMITTING_OR_PENDING_CHANGES_MESSAGE')
+  );
+
+  useEffect(() => {
+    const messagesSubscription = messages.subscribe((e: any) => {
+      onSubmittingAndOrPendingChange(e.data.payload);
+    });
+    return () => {
+      messagesSubscription.unsubscribe();
+    };
+  }, [messages, onSubmittingAndOrPendingChange]);
+
   return (
     <Box height="100%" display="flex" flexDirection="column">
       {!embedded && (
