@@ -176,6 +176,15 @@ export function initTinyMCE(
           dispatch$.complete();
           dispatch$.unsubscribe();
         }
+
+        if (type !== 'html') {
+          // For plain text fields, remove keyboard shortcuts for formatting text
+          // meta is used in tinymce for Ctrl (PC) and Command (macOS)
+          // https://www.tiny.cloud/docs/advanced/keyboard-shortcuts/#editorkeyboardshortcuts
+          editor.addShortcut('meta+b', '', '');
+          editor.addShortcut('meta+i', '', '');
+          editor.addShortcut('meta+u', '', '');
+        }
       });
       editor.on('keydown', (e) => {
         if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {

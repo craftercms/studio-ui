@@ -56,7 +56,8 @@ export function fetchAll(paginationOptions?: PaginationOptions): Observable<Page
           id: site.siteId,
           uuid: site.uuid,
           name: site.name ?? site.siteId,
-          description: site.desc
+          description: site.desc,
+          imageUrl: `/.crafter/screenshots/default.png?crafterSite=${site.siteId}`
         })),
         {
           limit: response.limit,
@@ -79,7 +80,13 @@ export function create(site: CreateSiteMeta): Observable<Site> {
   });
   return postJSON('/studio/api/1/services/api/1/site/create.json', api1Params).pipe(
     pluck('response'),
-    mapTo({ id: site.siteId, name: site.siteName, description: site.description ?? '', uuid: null })
+    mapTo({
+      id: site.siteId,
+      name: site.siteName,
+      description: site.description ?? '',
+      uuid: null,
+      imageUrl: `/.crafter/screenshots/default.png?crafterSite=${site.siteId}`
+    })
   );
 }
 
@@ -90,7 +97,7 @@ export function trash(id: string): Observable<boolean> {
   );
 }
 
-export function update(site: Omit<Site, 'uuid'>): Observable<Api2ResponseFormat<{}>> {
+export function update(site: Omit<Site, 'uuid' | 'imageUrl'>): Observable<Api2ResponseFormat<{}>> {
   return postJSON<Api2ResponseFormat<{}>>(`/studio/api/2/sites/${site.id}`, {
     name: site.name,
     description: site.description

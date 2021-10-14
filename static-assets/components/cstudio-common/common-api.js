@@ -2551,7 +2551,51 @@ var nodeOpen = false,
       },
 
       uploadAsset: function (site, path, isUploadOverwrite, uploadCb, fileTypes) {
-        CStudioAuthoring.Operations.openUploadDialog(site, path, isUploadOverwrite, uploadCb, fileTypes);
+        const eventId = 'uploadAsset.event.singleFileUploadDialog';
+        CrafterCMSNext.system.store.dispatch({
+          type: 'SHOW_SINGLE_FILE_UPLOAD_DIALOG',
+          payload: {
+            open: true,
+            site: site,
+            path: path,
+            fileTypes: fileTypes,
+            onUploadComplete: {
+              type: 'BATCH_ACTIONS',
+              payload: [
+                {
+                  type: 'DISPATCH_DOM_EVENT',
+                  payload: { id: eventId, type: 'uploadComplete' }
+                },
+                {
+                  type: 'CLOSE_SINGLE_FILE_UPLOAD_DIALOG'
+                }
+              ]
+            },
+            onClosed: {
+              type: 'BATCH_ACTIONS',
+              payload: [
+                {
+                  type: 'DISPATCH_DOM_EVENT',
+                  payload: { id: eventId, type: 'uploadComplete' }
+                },
+                { type: 'SINGLE_FILE_UPLOAD_DIALOG_CLOSED' }
+              ]
+            }
+          }
+        });
+
+        CrafterCMSNext.createLegacyCallbackListener(eventId, (result) => {
+          if (result.type === 'uploadComplete') {
+            let uploaded = result.successful[0];
+            if (!uploaded.fileExtension) {
+              uploaded.fileExtension = uploaded.extension;
+            }
+            if (!uploaded.fileName) {
+              uploaded.fileName = uploaded.name;
+            }
+            uploadCb.success(uploaded);
+          }
+        });
       },
 
       /**

@@ -22,19 +22,27 @@ import { isBlank } from '../../utils/string';
 import { update } from '../../services/sites';
 import { fetchSites } from '../../state/reducers/sites';
 import { EditSiteDialogContainerProps } from './utils';
-import { updateEditSiteDialog } from '../../state/actions/dialogs';
-import { batchActions } from '../../state/actions/misc';
+import {
+  closeSingleFileUploadDialog,
+  showSingleFileUploadDialog,
+  updateEditSiteDialog
+} from '../../state/actions/dialogs';
+import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { ConditionalLoadingState } from '../SystemStatus/LoadingState';
 import { EditSiteDialogUI } from './EditSiteDialogUI';
+import { createCustomDocumentEventListener } from '../../utils/dom';
 
 export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
-  const { site, onClose, onSaveSuccess, isSubmitting } = props;
+  const { site, onClose, onSaveSuccess, onSiteImageChange, isSubmitting } = props;
   const [submitDisabled, setSubmitDisabled] = useState(false);
   const sites = useSelector<GlobalState, LookupTable>((state) => state.sites.byId);
   const dispatch = useDispatch();
   const [name, setName] = useState(site.name);
   const [description, setDescription] = useState(site.description);
+  const [siteImageCounter, setSiteImageCounter] = useState(0);
+  const idEditSiteImageComplete = 'editSiteImageComplete';
+  const fallbackImageSrc = '/studio/static-assets/themes/cstudioTheme/images/default-contentType.jpg';
 
   function checkSiteName(event: React.ChangeEvent<HTMLInputElement>, currentSiteName: string) {
     if (
@@ -112,19 +120,43 @@ export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
     );
   };
 
+  const onEditSiteImage = () => {
+    dispatch(
+      showSingleFileUploadDialog({
+        path: '/.crafter/screenshots',
+        site: site.id,
+        customFileName: 'default.png',
+        fileTypes: ['image/png'],
+        onClose: closeSingleFileUploadDialog(),
+        onUploadComplete: batchActions([
+          closeSingleFileUploadDialog(),
+          dispatchDOMEvent({ id: idEditSiteImageComplete })
+        ])
+      })
+    );
+  };
+
+  createCustomDocumentEventListener(idEditSiteImageComplete, () => {
+    onSiteImageChange?.();
+    setSiteImageCounter(siteImageCounter + 1);
+  });
+
   return (
     <ConditionalLoadingState isLoading={!site}>
       <EditSiteDialogUI
         siteId={site.id}
         siteName={name}
         siteDescription={description}
+        siteImage={`${site.imageUrl}&v=${siteImageCounter}`}
         onSiteNameChange={onSiteNameChange}
         onSiteDescriptionChange={onSiteDescriptionChange}
         submitting={isSubmitting}
         submitDisabled={submitDisabled}
+        fallbackImageSrc={fallbackImageSrc}
         onKeyPress={onKeyPress}
         onSubmit={() => handleSubmit(site.id, name, description)}
         onCloseButtonClick={onCloseButtonClick}
+        onEditSiteImage={onEditSiteImage}
       />
     </ConditionalLoadingState>
   );

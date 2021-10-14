@@ -44,6 +44,7 @@ import { UploadDialogStateProps } from '../../components/UploadDialog/util';
 import { PreviewDialogStateProps } from '../../components/PreviewDialog/utils';
 import { EditSiteDialogStateProps } from '../../components/EditSiteDialog/utils';
 import { LegacyFormDialogStateProps } from '../../components/LegacyFormDialog/utils';
+import { SingleFileUploadDialogStateProps } from '../../components/SingleFileUploadDialog';
 
 // region History
 export const showHistoryDialog = /*#__PURE__*/ createAction<Partial<HistoryDialogStateProps>>('SHOW_HISTORY_DIALOG');
@@ -186,6 +187,18 @@ export const copyDialogClosed = /*#__PURE__*/ createAction('COPY_DIALOG_CLOSED')
 export const showUploadDialog = /*#__PURE__*/ createAction<Partial<UploadDialogStateProps>>('SHOW_UPLOAD_DIALOG');
 export const closeUploadDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_UPLOAD_DIALOG');
 export const uploadDialogClosed = /*#__PURE__*/ createAction('UPLOAD_DIALOG_CLOSED');
+// endregion
+
+// region Single File Upload Dialog
+export const showSingleFileUploadDialog = /*#__PURE__*/ createAction<Partial<SingleFileUploadDialogStateProps>>(
+  'SHOW_SINGLE_FILE_UPLOAD_DIALOG'
+);
+export const closeSingleFileUploadDialog = /*#__PURE__*/ createAction<StandardAction>(
+  'CLOSE_SINGLE_FILE_UPLOAD_DIALOG'
+);
+export const singleFileUploadDialogClosed = /*#__PURE__*/ createAction('SINGLE_FILE_UPLOAD_DIALOG_CLOSED');
+export const updateSingleFileUploadDialog =
+  /*#__PURE__*/ createAction<Partial<CreateFileStateProps>>('UPDATE_CREATE_FILE_DIALOG');
 // endregion
 
 // region Preview Dialog

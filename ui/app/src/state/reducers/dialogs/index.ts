@@ -33,6 +33,7 @@ import createFolder from './createFolder';
 import createFile from './createFile';
 import copy from './copy';
 import upload from './upload';
+import singleFileUpload from './singleFileUpload';
 import preview from './preview';
 import editSite from './editSite';
 import pathSelection from './pathSelection';
@@ -64,6 +65,7 @@ export default combineReducers({
   createFile,
   copy,
   upload,
+  singleFileUpload,
   preview,
   pathSelection,
   changeContentType,
