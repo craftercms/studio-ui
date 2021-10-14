@@ -71,6 +71,16 @@ import {
 } from '../actions';
 
 const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
+  // region mouseover, mouseleave
+  (action$, state$) =>
+    action$.pipe(
+      ofType('mouseover', 'mouseleave'),
+      withLatestFrom(state$),
+      filter((args) => args[1].status === EditingStatus.LISTENING),
+      tap(([action]) => action.payload.event.stopPropagation()),
+      ignoreElements()
+    ),
+  // endregion
   // region dragstart
   (action$: MouseEventActionObservable, state$) =>
     action$.pipe(
@@ -276,12 +286,11 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
     ),
   // endregion
   // region assetDragEnded, componentDragEnded, componentInstanceDragEnded, desktopAssetDragEnded
-  (action$: MouseEventActionObservable) => {
-    return action$.pipe(
+  (action$: MouseEventActionObservable) =>
+    action$.pipe(
       ofType(assetDragEnded.type, componentDragEnded.type, componentInstanceDragEnded.type, desktopAssetDragEnded.type),
       map(() => computedDragEnd())
-    );
-  },
+    ),
   // endregion
   // region click
   (action$: MouseEventActionObservable, state$) =>
@@ -339,6 +348,8 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
         } else if (state.highlightMode === HighlightMode.MOVE_TARGETS) {
           const movableRecordId = iceRegistry.getMovableParentRecord(record.iceIds[0]);
           if (notNullOrUndefined(movableRecordId)) {
+            // Inform host of the field selection
+            // post();
             // By this point element is already highlighted. We just need to freeze
             // and change mode to reveal the move/sort options.
             return merge(
@@ -480,8 +491,8 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
   },
   // endregion
   // region componentDragStarted
-  (action$: MouseEventActionObservable, state$) => {
-    return action$.pipe(
+  (action$: MouseEventActionObservable, state$) =>
+    action$.pipe(
       ofType(componentDragStarted.type),
       withLatestFrom(state$),
       switchMap(([, state]) => {
@@ -502,8 +513,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
         }
         return NEVER;
       })
-    );
-  },
+    ),
   // endregion
   // region componentInstanceDragStarted
   (action$: MouseEventActionObservable, state$) => {

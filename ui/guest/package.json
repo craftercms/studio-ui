@@ -22,6 +22,7 @@
     "build": "run-s build:install build:app",
     "build:install": "yarn",
     "build:app": "rollup -c",
+    "start": "rollup -c -w",
     "watch": "rollup -c -w",
     "rollup": "rollup -c",
     "rollup:watch": "rollup -c -w",

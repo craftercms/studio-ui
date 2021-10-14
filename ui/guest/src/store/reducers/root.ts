@@ -41,6 +41,7 @@ import {
   contentTreeFieldSelected,
   contentTreeSwitchFieldInstance,
   contentTypeDropTargetsRequest,
+  desktopAssetUploadComplete,
   desktopAssetUploadProgress,
   desktopAssetUploadStarted,
   highlightModeChanged,
@@ -436,9 +437,12 @@ const reducer = createReducer(initialState, {
     }
   }),
   // endregion
-  // region DESKTOP_ASSET_UPLOAD_COMPLETE
+  // region desktopAssetUploadComplete
   // TODO: Carry or retrieve record for these events
-  DESKTOP_ASSET_UPLOAD_COMPLETE: (state, { payload: { record } }: GuestStandardAction<{ record: ElementRecord }>) => ({
+  [desktopAssetUploadComplete.type]: (
+    state,
+    { payload: { record } }: GuestStandardAction<{ record: ElementRecord }>
+  ) => ({
     ...state,
     uploading: reversePluckProps(state.uploading, record.id)
   }),

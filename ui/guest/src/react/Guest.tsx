@@ -149,8 +149,12 @@ function Guest(props: GuestProps) {
             if (refs.current.keysPressed.z && type === 'click') {
               return false;
             }
-            event.preventDefault();
-            event.stopPropagation();
+            // Click & dblclick require stopping as early as possible to avoid
+            // navigation or other click defaults.
+            if (type === 'click' || 'dblclick' === type) {
+              event.preventDefault();
+              event.stopPropagation();
+            }
             dispatch({ type: type, payload: { event, record } });
             return true;
           }
@@ -454,6 +458,15 @@ function Guest(props: GuestProps) {
 
   const draggableItemElemRecId = Object.entries(state.draggable ?? {}).find(([, ice]) => ice !== false)?.[0];
 
+  const hasZoneMarker =
+    [
+      EditingStatus.SORTING_COMPONENT,
+      EditingStatus.PLACING_NEW_COMPONENT,
+      EditingStatus.PLACING_DETACHED_COMPONENT
+    ].includes(status) &&
+    state.dragContext.inZone &&
+    !state.dragContext.invalidDrop;
+
   return (
     <GuestContextProvider value={context}>
       {children}
@@ -510,22 +523,16 @@ function Guest(props: GuestProps) {
               );
             })}
 
-            {[
-              EditingStatus.SORTING_COMPONENT,
-              EditingStatus.PLACING_NEW_COMPONENT,
-              EditingStatus.PLACING_DETACHED_COMPONENT
-            ].includes(status) &&
-              state.dragContext.inZone &&
-              !state.dragContext.invalidDrop && (
-                <DropMarker
-                  onDropPosition={(payload) => dispatch(setDropPosition(payload))}
-                  dropZone={state.dragContext.dropZone}
-                  over={state.dragContext.over}
-                  prev={state.dragContext.prev}
-                  next={state.dragContext.next}
-                  coordinates={state.dragContext.coordinates}
-                />
-              )}
+            {hasZoneMarker && (
+              <DropMarker
+                onDropPosition={(payload) => dispatch(setDropPosition(payload))}
+                dropZone={state.dragContext.dropZone}
+                over={state.dragContext.over}
+                prev={state.dragContext.prev}
+                next={state.dragContext.next}
+                coordinates={state.dragContext.coordinates}
+              />
+            )}
           </CrafterCMSPortal>
         )}
         {snack && (

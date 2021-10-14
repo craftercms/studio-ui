@@ -21,6 +21,14 @@ import { DropZone, ElementRecord } from '../models/InContextEditing';
 import { notNullOrUndefined } from '../utils/object';
 import { forEach } from '../utils/array';
 import { findClosestRect, getDropMarkerPosition, getInRectStats, splitRect } from '../utils/dom';
+import { FullSxRecord, PartialSxRecord } from '@craftercms/studio-ui/models/CustomRecord';
+import { Box } from '@mui/material';
+
+export type DropMarkerClassKey = 'root' | 'tips' | 'horizontal' | 'vertical';
+
+export type DropMarkerFullSx = FullSxRecord<DropMarkerClassKey>;
+
+export type DropMarkerPartialSx = PartialSxRecord<DropMarkerClassKey>;
 
 export interface DropMarkerProps {
   over: ElementRecord;
@@ -29,27 +37,76 @@ export interface DropMarkerProps {
   dropZone: DropZone;
   coordinates: Coordinates;
   onDropPosition: Function;
+  sx?: DropMarkerPartialSx;
+}
+
+function getSx(sx: DropMarkerPartialSx): DropMarkerFullSx {
+  return {
+    root: {
+      zIndex: 'tooltip',
+      position: 'fixed',
+      pointerEvents: 'none',
+      ...sx?.root
+    },
+    tips: {
+      content: '""',
+      width: '8px',
+      height: '8px',
+      backgroundColor: 'primary.main',
+      borderRadius: 1,
+      marginTop: '-3px',
+      marginLeft: '-4.5px',
+      position: 'absolute',
+      ...sx?.tips
+    },
+    horizontal: {
+      height: 2,
+      visibility: 'visible',
+      backgroundColor: 'primary.main',
+      boxShadow: 1,
+      '&::before': {
+        left: 0
+      },
+      '&::after': {
+        right: 0
+      },
+      ...sx?.horizontal
+    },
+    vertical: {
+      width: 2,
+      minHeight: '5px',
+      marginLeft: '3px',
+      border: 1,
+      borderColor: 'primary.main',
+      boxShadow: 1,
+      '&::before': {
+        top: 0
+      },
+      '&::after': {
+        bottom: -4
+      },
+      ...sx?.vertical
+    }
+  };
 }
 
 export function DropMarker(props: DropMarkerProps) {
-  const //
-    { over, prev, next, dropZone, coordinates, onDropPosition } = props,
-    { current: r } = useRef({ targetIndex: null }),
-    [style, setStyle] = useState({}),
-    { element } = over;
+  const {
+    over: { element },
+    prev,
+    next,
+    dropZone,
+    coordinates,
+    onDropPosition
+  } = props;
+  const refs = useRef({ targetIndex: null });
+  const [style, setStyle] = useState({});
+  const sx = getSx(props.sx);
+  const arrangement = dropZone.arrangement;
 
-  // TODO: Check missing reason for missing dependencies
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(dragOver, [prev, next, coordinates.x, coordinates.y]);
-
-  return (
-    // @ts-ignore
-    <craftercms-drop-marker style={style} class={`${dropZone.arrangement === HORIZONTAL ? VERTICAL : HORIZONTAL}`} />
-  );
-
-  function dragOver(): void {
-    let nextStyle = null,
-      targetIndex;
+  useEffect(() => {
+    let nextStyle = null;
+    let targetIndex;
 
     if (element === dropZone.element) {
       if (element.children.length > 0) {
@@ -95,19 +152,18 @@ export function DropMarker(props: DropMarkerProps) {
         targetIndex = 0;
       }
     } else {
-      let //
-        prevRect = prev,
-        nextRect = next,
-        rect = element.getBoundingClientRect(),
-        rectStats = getInRectStats(rect, coordinates);
+      let prevRect = prev;
+      let nextRect = next;
+      let rect = element.getBoundingClientRect();
+      let rectStats = getInRectStats(rect, coordinates);
 
       if (rectStats.inRect) {
         const insertPosition =
-            (dropZone.arrangement === HORIZONTAL && rectStats.percents.x >= 50) ||
-            (dropZone.arrangement === VERTICAL && rectStats.percents.y >= 50)
-              ? 'after'
-              : 'before',
-          before = insertPosition === 'before';
+          (dropZone.arrangement === HORIZONTAL && rectStats.percents.x >= 50) ||
+          (dropZone.arrangement === VERTICAL && rectStats.percents.y >= 50)
+            ? 'after'
+            : 'before';
+        let before = insertPosition === 'before';
 
         nextStyle = getDropMarkerPosition({
           insertPosition,
@@ -135,11 +191,36 @@ export function DropMarker(props: DropMarkerProps) {
       });
     }
 
-    if (r.targetIndex !== targetIndex) {
-      r.targetIndex = targetIndex;
+    if (refs.current.targetIndex !== targetIndex) {
+      refs.current.targetIndex = targetIndex;
       onDropPosition({ targetIndex });
     }
-  }
+  }, [
+    prev,
+    next,
+    coordinates.x,
+    coordinates.y,
+    element,
+    dropZone.element,
+    dropZone.rect,
+    dropZone.childrenRects,
+    dropZone.children,
+    dropZone.arrangement,
+    coordinates,
+    style,
+    onDropPosition
+  ]);
+
+  return (
+    <Box
+      sx={{
+        ...sx.root,
+        ...style,
+        '&::before, &::after': sx.tips,
+        ...(arrangement === HORIZONTAL ? sx.horizontal : sx.vertical)
+      }}
+    />
+  );
 }
 
 DropMarker.defaultProps = {
