@@ -57,18 +57,18 @@ export function getField(
   fieldId: string,
   contentTypes?: LookupTable<ContentType>
 ): ContentTypeField {
-  if (!contentTypes) {
-    throw new Error(
-      `Content types not provided to content type helper \`getField\` method. ` +
-        `Unable to retrieve the field \`${fieldId}\` without full list of content types.`
-    );
-  }
   const fields = fieldId.split('.');
   let accumulator = Array.isArray(type.fields) ? createLookupTable(type.fields) : type.fields;
   let parsedFieldId = [];
   fields.forEach((field) => {
     parsedFieldId.push(field);
     if (accumulator.type === 'node-selector') {
+      if (!contentTypes) {
+        throw new Error(
+          `Content types not provided to content type helper \`getField\` method. ` +
+            `Unable to retrieve the field \`${fieldId}\` without full list of content types.`
+        );
+      }
       const contentTypeWithTargetFieldId = accumulator.validations.allowedContentTypes.value.find((ct) =>
         Boolean(contentTypes[ct].fields[field])
       );

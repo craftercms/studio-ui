@@ -44,9 +44,8 @@ import { removeLastPiece } from '../utils/string';
 import $ from 'jquery';
 
 let seq = 0;
-
-const db: LookupTable<ElementRecord> = {};
-const registry = {};
+let db: LookupTable<ElementRecord> = {};
+let registry = {};
 
 export function get(id: number): ElementRecord {
   const record = db[id];
@@ -420,4 +419,10 @@ export function getParentsElementFromICEProps(
   });
 
   return recordId === null ? null : getRecordsFromIceId(recordId).map((registryEntry) => $(registryEntry.element));
+}
+
+export function flush(): void {
+  db = {};
+  registry = {};
+  iceRegistry.flush();
 }
