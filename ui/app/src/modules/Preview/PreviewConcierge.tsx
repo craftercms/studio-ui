@@ -250,6 +250,7 @@ export function PreviewConcierge(props: any) {
   // region Permissions and fetch of DetailedItem
 
   useEffect(() => {
+    // FYI. Path navigator refresh triggers this effect too due to item changing.
     if (item) {
       getHostToGuestBus().next({
         type: setPreviewEditMode.type,

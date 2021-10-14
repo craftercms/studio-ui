@@ -86,6 +86,7 @@ import {
   setDropPosition,
   startListening
 } from '../store/actions';
+import DragGhostElement from './DragGhostElement';
 // TinyMCE makes the build quite large. Temporarily, importing this externally via
 // the site's ftl. Need to evaluate whether to include the core as part of guest build or not
 // import tinymce from 'tinymce';
@@ -155,7 +156,7 @@ function Guest(props: GuestProps) {
               event.preventDefault();
               event.stopPropagation();
             }
-            dispatch({ type: type, payload: { event, record } });
+            dispatch({ type, payload: { event, record } });
             return true;
           }
         }
@@ -425,10 +426,12 @@ function Guest(props: GuestProps) {
         EditingStatus.PLACING_DETACHED_ASSET
       ].includes(status)
     ) {
-      const dropSubscription = fromEvent(document, 'drop').subscribe((event) => dispatch(documentDrop({ event })));
-      const dragendSubscription = fromEvent(document, 'dragend').subscribe((event) =>
-        dispatch(documentDragEnd({ event }))
-      );
+      const dropSubscription = fromEvent(document, 'drop').subscribe((event) => {
+        dispatch(documentDrop({ event }));
+      });
+      const dragendSubscription = fromEvent(document, 'dragend').subscribe((event) => {
+        dispatch(documentDragEnd({ event }));
+      });
       const dragoverSubscription = fromEvent(document, 'dragover').subscribe((event) =>
         dispatch(documentDragOver({ event }))
       );
@@ -456,7 +459,8 @@ function Guest(props: GuestProps) {
     }
   }, [dispatch, dragContextDropZoneElementRecordId, dragContextDropZoneIceId]);
 
-  const draggableItemElemRecId = Object.entries(state.draggable ?? {}).find(([, ice]) => ice !== false)?.[0];
+  const draggableItemElemRecId =
+    state.draggable && Object.entries(state.draggable).find(([, ice]) => ice !== false)?.[0];
 
   const hasZoneMarker =
     [
@@ -473,16 +477,17 @@ function Guest(props: GuestProps) {
       <ThemeProvider theme={theme}>
         {editMode && (
           <CrafterCMSPortal>
+            {/* region DraggedElementGhost */}
             {draggableItemElemRecId && (
-              <craftercms-dragged-element>
-                {elementRegistry.get(parseInt(draggableItemElemRecId))?.label}
-              </craftercms-dragged-element>
+              <DragGhostElement label={elementRegistry.get(parseInt(draggableItemElemRecId))?.label} />
             )}
-
+            {/* endregion */}
+            {/* region AssetUploaderMask */}
             {Object.values(state.uploading).map((highlight: HighlightData) => (
               <AssetUploaderMask key={highlight.id} {...highlight} />
             ))}
-
+            {/* endregion */}
+            {/* region fieldSwitcher */}
             {state.fieldSwitcher && (
               <FieldInstanceSwitcher
                 onNext={() => dispatch(contentTreeSwitchFieldInstance({ type: 'next', scrollElement }))}
@@ -491,21 +496,28 @@ function Guest(props: GuestProps) {
                 currentElement={state.fieldSwitcher.currentElement}
               />
             )}
-
+            {/* endregion */}
+            {/* region ZoneMarker */}
             {Object.values(state.highlighted).map((highlight: HighlightData) => {
               const isMove = HighlightMode.MOVE_TARGETS === highlightMode;
               const isFieldSelectedMode = status === EditingStatus.FIELD_SELECTED;
               const validations = Object.values(highlight.validations);
               const hasValidations = Boolean(validations.length);
               const hasFailedRequired = validations.some(({ level }) => level === 'required');
-              // TODO: allow customizing zone marker theming.
+              const elementRecord = elementRegistry.get(highlight.id);
               return (
                 <ZoneMarker
                   key={highlight.id}
                   label={highlight.label}
                   rect={highlight.rect}
                   inherited={highlight.inherited}
-                  menuItems={isMove && isFieldSelectedMode ? <MoveModeZoneMenu /> : void 0}
+                  menuItems={
+                    isMove && isFieldSelectedMode ? (
+                      <MoveModeZoneMenu record={elementRecord} dispatch={dispatch} />
+                    ) : (
+                      void 0
+                    )
+                  }
                   sx={deepmerge(
                     deepmerge(
                       { ...sxStylesConfig.zoneMarker.base },
@@ -522,7 +534,8 @@ function Guest(props: GuestProps) {
                 />
               );
             })}
-
+            {/* endregion */}
+            {/* region DropMarker */}
             {hasZoneMarker && (
               <DropMarker
                 onDropPosition={(payload) => dispatch(setDropPosition(payload))}
@@ -533,6 +546,7 @@ function Guest(props: GuestProps) {
                 coordinates={state.dragContext.coordinates}
               />
             )}
+            {/* endregion */}
           </CrafterCMSPortal>
         )}
         {snack && (

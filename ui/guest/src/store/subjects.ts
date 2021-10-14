@@ -20,7 +20,6 @@ import { ElementRecord } from '../models/InContextEditing';
 import { SyntheticEvent } from 'react';
 import { GuestStateObservable } from './models/GuestStore';
 import { GuestStandardAction } from './models/GuestStandardAction';
-import { GuestActionTypes } from './models/Actions';
 import { computedDragOver, scrolling, scrollingStopped } from './actions';
 
 export const clearAndListen$ = new Subject<void>();
@@ -44,21 +43,17 @@ export { getDragOver as dragover$, getScrolling as scrolling$ };
 export function initializeDragSubjects(state$: GuestStateObservable): Observable<GuestStandardAction> {
   if (!active) {
     active = true;
-
     killSignal$ = new Subject();
     dragover$ = new Subject();
     scrolling$ = fromEvent(document, 'scroll').pipe(takeUntil(killSignal$), share());
   }
   return merge(
-    dragover$.pipe(
-      throttleTime(100),
-      map((payload) => ({ type: computedDragOver.type as GuestActionTypes, payload }))
-    ),
+    dragover$.pipe(throttleTime(100), map(computedDragOver)),
     scrolling$.pipe(
       throttleTime(200),
       withLatestFrom(state$),
       filter(([, state]) => !state.dragContext?.scrolling),
-      map(() => ({ type: scrolling.type as GuestActionTypes }))
+      map(() => scrolling())
     ),
     // Scrolling ended
     scrolling$.pipe(
@@ -66,7 +61,7 @@ export function initializeDragSubjects(state$: GuestStateObservable): Observable
       // passed without another source emission should give
       // us the end of scrolling.
       debounceTime(200),
-      map(() => ({ type: scrollingStopped.type as GuestActionTypes }))
+      map(() => scrollingStopped())
     )
   );
 }

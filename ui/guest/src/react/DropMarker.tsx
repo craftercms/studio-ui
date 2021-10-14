@@ -59,7 +59,7 @@ function getSx(sx: DropMarkerPartialSx): DropMarkerFullSx {
       position: 'absolute',
       ...sx?.tips
     },
-    horizontal: {
+    vertical: {
       height: 2,
       visibility: 'visible',
       backgroundColor: 'primary.main',
@@ -72,7 +72,7 @@ function getSx(sx: DropMarkerPartialSx): DropMarkerFullSx {
       },
       ...sx?.horizontal
     },
-    vertical: {
+    horizontal: {
       width: 2,
       minHeight: '5px',
       marginLeft: '3px',

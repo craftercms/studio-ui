@@ -21,7 +21,8 @@ import {
   getHighlighted,
   getHoverData,
   getRecordsFromIceId,
-  getSiblingRects
+  getSiblingRects,
+  getDraggable
 } from '../../classes/ElementRegistry';
 import { dragOk } from '../util';
 import * as iceRegistry from '../../classes/ICERegistry';
@@ -122,12 +123,17 @@ const reducer = createReducer(initialState, {
         const iceId = record.iceIds[0];
         const movableRecordId = iceRegistry.getMovableParentRecord(iceId);
         if (notNullOrUndefined(movableRecordId)) {
+          const draggable = getDraggable(movableRecordId);
           const highlight = getHoverData(
             // If (iceId == movableRecordId) the current record is already
             // the one to show the highlight on.
             iceId === movableRecordId ? record.id : fromICEId(movableRecordId).id
           );
-          return { ...state, highlighted: { [record.id]: highlight } };
+          return {
+            ...state,
+            highlighted: { [movableRecordId]: highlight },
+            draggable: draggable ? { [movableRecordId]: draggable } : state.draggable
+          };
         }
       }
     }
@@ -149,8 +155,8 @@ const reducer = createReducer(initialState, {
   dragstart: (state, action) => {
     const { record } = action.payload;
     // onMouseOver pre-populates the draggable record
-    // Items that browser make draggable by default (images, etc)
     const iceId = state.draggable?.[record.id];
+    // Items that browser make draggable by default (images, etc) may not have an ice id
     if (notNullOrUndefined(iceId)) {
       const dropTargets = iceRegistry.getRecordDropTargets(iceId);
       const validationsLookup = iceRegistry.runDropTargetsValidations(dropTargets);
@@ -160,7 +166,6 @@ const reducer = createReducer(initialState, {
         record
       );
       const highlighted = getHighlighted(dropZones);
-
       return {
         ...state,
         highlighted,
@@ -385,18 +390,24 @@ const reducer = createReducer(initialState, {
   }),
   // endregion
   // region setPreviewEditMode
-  [setPreviewEditMode.type]: (state, action) => ({
-    ...state,
-    highlighted: {},
-    editMode: action.payload.editMode
-  }),
+  [setPreviewEditMode.type]: (state, action) =>
+    action.payload.editMode !== state.editMode
+      ? {
+          ...state,
+          highlighted: {},
+          editMode: action.payload.editMode
+        }
+      : state,
   // endregion
   // region highlightModeChanged
-  [highlightModeChanged.type]: (state, { payload }) => ({
-    ...state,
-    highlighted: {},
-    highlightMode: payload.highlightMode
-  }),
+  [highlightModeChanged.type]: (state, { payload }) =>
+    state.highlightMode !== payload.highlightMode
+      ? {
+          ...state,
+          highlighted: {},
+          highlightMode: payload.highlightMode
+        }
+      : state,
   // endregion
   // region contentTypeDropTargetsRequest
   // TODO: Not pure
