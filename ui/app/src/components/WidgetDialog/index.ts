@@ -17,5 +17,3 @@
 export { default } from './WidgetDialog';
 
 export * from './WidgetDialog';
-
-export * from './WidgetDialogContainer';

@@ -17,11 +17,12 @@
 import { WidgetDescriptor } from '../Widget';
 import { usePossibleTranslation } from '../../utils/hooks/usePossibleTranslation';
 import WidgetDialog from '../WidgetDialog';
-import React, { useState } from 'react';
+import React from 'react';
 import TranslationOrText from '../../models/TranslationOrText';
 import SystemIcon, { SystemIconDescriptor } from '../SystemIcon';
 import { useEnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
 import { IconButton, Tooltip } from '@mui/material';
+import { useWithPendingChangesCloseRequest } from '../../utils/hooks/useWithPendingChangesCloseRequest';
 
 interface WidgetDialogIconButtonProps {
   title: TranslationOrText;
@@ -30,15 +31,25 @@ interface WidgetDialogIconButtonProps {
 }
 
 export function WidgetDialogIconButton(props: WidgetDialogIconButtonProps) {
-  const [open, setOpen] = useState(false);
   const title = usePossibleTranslation(props.title);
-  const { hasPendingChanges, isSubmitting, isMinimized, onMinimize, onMaximize } = useEnhancedDialogState();
+  const {
+    open,
+    onOpen,
+    onClose,
+    hasPendingChanges,
+    isSubmitting,
+    isMinimized,
+    onMinimize,
+    onMaximize,
+    onSubmittingAndOrPendingChange
+  } = useEnhancedDialogState();
+  const widgetDialogPendingChangesCloseRequest = useWithPendingChangesCloseRequest(onClose);
 
   const openEmbeddedApp = () => {
     if (isMinimized) {
       onMaximize();
     }
-    setOpen(true);
+    onOpen();
   };
 
   return (
@@ -51,9 +62,11 @@ export function WidgetDialogIconButton(props: WidgetDialogIconButtonProps) {
       <WidgetDialog
         title={title}
         open={open}
-        onClose={() => setOpen(false)}
+        onClose={() => onClose()}
         widget={props.widget}
         hasPendingChanges={hasPendingChanges}
+        onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
+        onWithPendingChangesCloseRequest={widgetDialogPendingChangesCloseRequest}
         onMaximize={onMaximize}
         onMinimize={onMinimize}
         isMinimized={isMinimized}

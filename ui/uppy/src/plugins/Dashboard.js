@@ -21,6 +21,7 @@ const StatusBar = require('@uppy/status-bar');
 const Informer = require('@uppy/informer');
 const ThumbnailGenerator = require('@uppy/thumbnail-generator');
 const findAllDOMElements = require('@uppy/utils/lib/findAllDOMElements');
+const memoize = require('memoize-one').default || require('memoize-one');
 
 class Dashboard extends UppyDashboard {
   constructor(uppy, opts) {
@@ -225,6 +226,13 @@ class Dashboard extends UppyDashboard {
     this.setPluginState({ invalidFiles });
   };
 
+  #openFileEditorWhenFilesAdded = (files) => {
+    const firstFile = files[0];
+    if (this.canEditFile(firstFile)) {
+      this.openFileEditor(firstFile);
+    }
+  };
+
   initEvents = () => {
     // Modal open button
     if (this.opts.trigger && !this.opts.inline) {
@@ -257,7 +265,11 @@ class Dashboard extends UppyDashboard {
       this.el.addEventListener('keydown', this.handleKeyDownInInline);
     }
 
-    this.uppy.on('files-added', this.validateFilesPolicy);
+    if (this.opts.autoOpenFileEditor) {
+      this.uppy.on('files-added', this.#openFileEditorWhenFilesAdded);
+    } else {
+      this.uppy.on('files-added', this.validateFilesPolicy);
+    }
   };
 
   removeEvents = () => {
@@ -282,61 +294,67 @@ class Dashboard extends UppyDashboard {
       this.el.removeEventListener('keydown', this.handleKeyDownInInline);
     }
 
-    this.uppy.off('files-added', this.validateFilesPolicy);
+    if (this.opts.autoOpenFileEditor) {
+      this.uppy.off('files-added', this.#openFileEditorWhenFilesAdded);
+    } else {
+      this.uppy.off('files-added', this.validateFilesPolicy);
+    }
   };
+
+  #attachRenderFunctionToTarget = (target) => {
+    const plugin = this.uppy.getPlugin(target.id);
+    return {
+      ...target,
+      icon: plugin.icon || this.opts.defaultPickerIcon,
+      render: plugin.render
+    };
+  };
+
+  #isTargetSupported = (target) => {
+    const plugin = this.uppy.getPlugin(target.id);
+    // If the plugin does not provide a `supported` check, assume the plugin works everywhere.
+    if (typeof plugin.isSupported !== 'function') {
+      return true;
+    }
+    return plugin.isSupported();
+  };
+
+  #getAcquirers = memoize((targets) => {
+    return targets
+      .filter((target) => target.type === 'acquirer' && this.#isTargetSupported(target))
+      .map(this.#attachRenderFunctionToTarget);
+  });
+
+  #getProgressIndicators = memoize((targets) => {
+    return targets.filter((target) => target.type === 'progressindicator').map(this.#attachRenderFunctionToTarget);
+  });
+
+  #getEditors = memoize((targets) => {
+    return targets.filter((target) => target.type === 'editor').map(this.#attachRenderFunctionToTarget);
+  });
 
   render = (state) => {
     const pluginState = this.getPluginState();
     const { files, capabilities, allowNewUpload } = state;
-
-    // TODO: move this to Core, to share between Status Bar and Dashboard
-    // (and any other plugin that might need it, too)
-    const newFiles = Object.keys(files).filter((file) => {
-      return !files[file].progress.uploadStarted;
-    });
-
-    const uploadStartedFiles = Object.keys(files).filter((file) => {
-      return files[file].progress.uploadStarted;
-    });
-
-    const pausedFiles = Object.keys(files).filter((file) => {
-      return files[file].isPaused;
-    });
-
-    const completeFiles = Object.keys(files).filter((file) => {
-      return files[file].progress.uploadComplete;
-    });
-
-    const erroredFiles = Object.keys(files).filter((file) => {
-      return files[file].error;
-    });
-
-    const inProgressFiles = Object.keys(files).filter((file) => {
-      return !files[file].progress.uploadComplete && files[file].progress.uploadStarted;
-    });
-
-    const inProgressNotPausedFiles = inProgressFiles.filter((file) => {
-      return !files[file].isPaused;
-    });
-
-    const processingFiles = Object.keys(files).filter((file) => {
-      return files[file].progress.preprocess || files[file].progress.postprocess;
-    });
-
-    const isUploadStarted = uploadStartedFiles.length > 0;
-
-    const isAllComplete =
-      state.totalProgress === 100 && completeFiles.length === Object.keys(files).length && processingFiles.length === 0;
-
-    const isAllErrored = isUploadStarted && erroredFiles.length === uploadStartedFiles.length;
-
-    const isAllPaused = inProgressFiles.length !== 0 && pausedFiles.length === inProgressFiles.length;
+    const {
+      newFiles,
+      uploadStartedFiles,
+      completeFiles,
+      erroredFiles,
+      inProgressFiles,
+      inProgressNotPausedFiles,
+      processingFiles,
+      isUploadStarted,
+      isAllComplete,
+      isAllErrored,
+      isAllPaused
+    } = this.uppy.getObjectOfFilesPerState();
 
     const hasInvalidFiles = Object.values(pluginState.invalidFiles).some((value) => value);
 
-    const acquirers = this._getAcquirers(pluginState.targets);
-    const progressindicators = this._getProgressIndicators(pluginState.targets);
-    const editors = this._getEditors(pluginState.targets);
+    const acquirers = this.#getAcquirers(pluginState.targets);
+    const progressindicators = this.#getProgressIndicators(pluginState.targets);
+    const editors = this.#getEditors(pluginState.targets);
 
     let theme;
     if (this.opts.theme === 'auto') {
@@ -376,9 +394,11 @@ class Dashboard extends UppyDashboard {
       direction: this.opts.direction,
       activePickerPanel: pluginState.activePickerPanel,
       showFileEditor: pluginState.showFileEditor,
+      saveFileEditor: this.saveFileEditor,
+      disableAllFocusableElements: this.disableAllFocusableElements,
       animateOpenClose: this.opts.animateOpenClose,
       isClosing: pluginState.isClosing,
-      getPlugin: this.uppy.getPlugin,
+      // getPlugin: this.uppy.getPlugin,
       progressindicators: progressindicators,
       editors: editors,
       autoProceed: this.uppy.opts.autoProceed,
@@ -390,19 +410,20 @@ class Dashboard extends UppyDashboard {
       inline: this.opts.inline,
       showPanel: this.showPanel,
       hideAllPanels: this.hideAllPanels,
-      log: this.uppy.log,
+      // log: this.uppy.log,
       i18n: this.i18n,
       i18nArray: this.i18nArray,
       removeFile: this.validateAndRemove,
       uppy: this.uppy,
       info: this.uppy.info,
       note: this.opts.note,
+      recoveredState: state.recoveredState,
       metaFields: pluginState.metaFields,
       resumableUploads: capabilities.resumableUploads || false,
       individualCancellation: capabilities.individualCancellation,
       isMobileDevice: capabilities.isMobileDevice,
-      pauseUpload: this.uppy.pauseResume,
-      retryUpload: this.uppy.retryUpload,
+      // pauseUpload: this.uppy.pauseResume,
+      // retryUpload: this.uppy.retryUpload,
       // region header
       onMinimized: this.opts.onMinimized,
       onClose: this.opts.onClose,
@@ -415,8 +436,8 @@ class Dashboard extends UppyDashboard {
       rejectAll: this.rejectAll,
       confirmAll: this.confirmAll,
       // endregion
-      cancelUpload: this.cancelUpload,
-      cancelAll: this.uppy.cancelAll,
+      // cancelUpload: this.cancelUpload,
+      // cancelAll: this.uppy.cancelAll,
       fileCardFor: pluginState.fileCardFor,
       toggleFileCard: this.toggleFileCard,
       toggleAddFilesPanel: this.toggleAddFilesPanel,
@@ -440,10 +461,11 @@ class Dashboard extends UppyDashboard {
       parentElement: this.el,
       allowedFileTypes: this.uppy.opts.restrictions.allowedFileTypes,
       maxNumberOfFiles: this.uppy.opts.restrictions.maxNumberOfFiles,
+      requiredMetaFields: this.uppy.opts.restrictions.requiredMetaFields,
       showSelectedFiles: this.opts.showSelectedFiles,
       handleRequestThumbnail: this.handleRequestThumbnail,
       handleCancelThumbnail: this.handleCancelThumbnail,
-      doneButtonHandler: this.opts.doneButtonHandler,
+      // doneButtonHandler: this.opts.doneButtonHandler,
       // site policy props
       invalidFiles: pluginState.invalidFiles ?? {},
       // drag props
@@ -480,10 +502,10 @@ class Dashboard extends UppyDashboard {
       );
     }
 
-    const { allowMultipleUploads } = this.uppy.opts;
-    if (allowMultipleUploads && closeAfterFinish) {
+    const { allowMultipleUploads, allowMultipleUploadBatches } = this.uppy.opts;
+    if ((allowMultipleUploads || allowMultipleUploadBatches) && closeAfterFinish) {
       this.uppy.log(
-        '[Dashboard] When using `closeAfterFinish`, we recommended setting the `allowMultipleUploads` option to `false` in the Uppy constructor. See https://uppy.io/docs/uppy/#allowMultipleUploads-true',
+        '[Dashboard] When using `closeAfterFinish`, we recommended setting the `allowMultipleUploadBatches` option to `false` in the Uppy constructor. See https://uppy.io/docs/uppy/#allowMultipleUploads-true',
         'warning'
       );
     }
