@@ -45,7 +45,7 @@ const PublishDialog = lazy(() => import('../PublishDialog'));
 const DependenciesDialog = lazy(() => import('../DependenciesDialog/DependenciesDialog'));
 const DeleteDialog = lazy(() => import('../DeleteDialog'));
 const WorkflowCancellationDialog = lazy(() => import('../WorkflowCancellationDialog'));
-const LegacyFormDialog = lazy(() => import('../LegacyFormDialog/LegacyFormDialog'));
+const LegacyFormDialog = lazy(() => import('../LegacyFormDialog'));
 const CreateFolderDialog = lazy(() => import('../CreateFolderDialog'));
 const CopyItemsDialog = lazy(() => import('../Dialogs/CopyDialog'));
 const CreateFileDialog = lazy(() => import('../CreateFileDialog'));
@@ -397,6 +397,9 @@ function GlobalDialogManager() {
         {...state.widget}
         onClose={createCallback(state.widget.onClose, dispatch)}
         onClosed={createCallback(state.widget.onClosed, dispatch)}
+        onWithPendingChangesCloseRequest={useWithPendingChangesCloseRequest(
+          createCallback(state.widget.onClose, dispatch)
+        )}
       />
       {/* endregion */}
 

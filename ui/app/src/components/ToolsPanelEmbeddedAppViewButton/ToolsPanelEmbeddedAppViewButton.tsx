@@ -14,27 +14,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 import ToolsPanelListItemButton, { ToolsPanelListItemButtonProps } from '../ToolsPanelListItemButton';
 import WidgetDialog from '../WidgetDialog';
 import { usePossibleTranslation } from '../../utils/hooks/usePossibleTranslation';
 import { WidgetDescriptor } from '../Widget';
 import { useEnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
+import { useWithPendingChangesCloseRequest } from '../../utils/hooks/useWithPendingChangesCloseRequest';
 
 interface ToolsPanelEmbeddedAppViewButtonProps extends Omit<ToolsPanelListItemButtonProps, 'onClick'> {
   widget: WidgetDescriptor;
 }
 
 export default function ToolsPanelEmbeddedAppViewButton(props: ToolsPanelEmbeddedAppViewButtonProps) {
-  const [open, setOpen] = useState(false);
-  const { hasPendingChanges, isSubmitting, isMinimized, onMinimize, onMaximize } = useEnhancedDialogState();
+  const {
+    open,
+    onOpen,
+    onClose,
+    hasPendingChanges,
+    isSubmitting,
+    isMinimized,
+    onMinimize,
+    onMaximize,
+    onSubmittingAndOrPendingChange
+  } = useEnhancedDialogState();
   const title = usePossibleTranslation(props.title);
+  const widgetDialogPendingChangesCloseRequest = useWithPendingChangesCloseRequest(onClose);
 
   const openEmbeddedApp = () => {
     if (isMinimized) {
       onMaximize();
     }
-    setOpen(true);
+    onOpen();
   };
 
   return (
@@ -43,9 +54,11 @@ export default function ToolsPanelEmbeddedAppViewButton(props: ToolsPanelEmbedde
       <WidgetDialog
         title={title}
         open={open}
-        onClose={() => setOpen(false)}
+        onClose={onClose}
         widget={props.widget}
         hasPendingChanges={hasPendingChanges}
+        onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
+        onWithPendingChangesCloseRequest={widgetDialogPendingChangesCloseRequest}
         onMaximize={onMaximize}
         onMinimize={onMinimize}
         isMinimized={isMinimized}

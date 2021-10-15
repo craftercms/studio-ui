@@ -31,7 +31,7 @@ export default createReducer<GlobalState['dialogs']['reject']>(initialState, {
     ...state,
     onClose: closeRejectDialog(),
     onClosed: rejectDialogClosed(),
-    onDismiss: closeRejectDialog(),
+    onRejectSuccess: closeRejectDialog(),
     ...payload,
     open: true
   }),
