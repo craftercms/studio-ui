@@ -35,7 +35,7 @@ export default function ContentTypeManagement(props: ContentTypeManagementProps)
   const [loading, setLoading] = useState(true);
 
   const messages = fromEvent(window, 'message').pipe(
-    filter((e: any) => e.data && e.data.type === 'CONTENT_TYPES_ON_SUBMITTING_OR_PENDING_CHANGES_MESSAGE')
+    filter((e: any) => e.data?.type === 'CONTENT_TYPES_ON_SUBMITTING_OR_PENDING_CHANGES_MESSAGE')
   );
 
   useEffect(() => {
