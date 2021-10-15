@@ -467,7 +467,7 @@ export function PreviewConcierge(props: any) {
 
               issueDescriptorRequest({
                 site: siteId,
-                path,
+                path: path ?? models[parentModelId].craftercms.path,
                 contentTypes,
                 requestedSourceMapPaths,
                 dispatch,
@@ -509,7 +509,7 @@ export function PreviewConcierge(props: any) {
             () => {
               issueDescriptorRequest({
                 site: siteId,
-                path,
+                path: path ?? models[parentModelId].craftercms.path,
                 contentTypes,
                 requestedSourceMapPaths,
                 dispatch,
@@ -550,7 +550,7 @@ export function PreviewConcierge(props: any) {
             () => {
               issueDescriptorRequest({
                 site: siteId,
-                path,
+                path: path ?? models[parentModelId].craftercms.path,
                 contentTypes,
                 requestedSourceMapPaths,
                 dispatch,

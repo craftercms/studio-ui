@@ -15,7 +15,7 @@
  */
 
 import * as React from 'react';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import DragIndicatorRounded from '@mui/icons-material/DragIndicatorRounded';
 import ArrowDownwardRoundedIcon from '@mui/icons-material/ArrowDownwardRounded';
 import ArrowUpwardRoundedIcon from '@mui/icons-material/ArrowUpwardRounded';
@@ -23,7 +23,6 @@ import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
 import UltraStyledIconButton from './UltraStyledIconButton';
 import HighlightOffRoundedIcon from '@mui/icons-material/HighlightOffRounded';
 import { Tooltip } from '@mui/material';
-import DragGhostElement from './DragGhostElement';
 import * as contentController from '../classes/ContentController';
 import { clearAndListen$ } from '../store/subjects';
 import { startListening } from '../store/actions';
@@ -109,6 +108,36 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
     });
   };
   // endregion
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      switch (e.key) {
+        case 'ArrowUp': {
+          if (!isFirstItem) {
+            e.preventDefault();
+            onMoveUp();
+          }
+          break;
+        }
+        case 'ArrowDown': {
+          if (!isLastItem) {
+            e.preventDefault();
+            onMoveDown();
+          }
+          break;
+        }
+        case 'Backspace': {
+          e.preventDefault();
+          onTrash();
+          break;
+        }
+      }
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, [isFirstItem, isLastItem, onMoveDown, onMoveUp, onTrash]);
 
   return (
     <>
