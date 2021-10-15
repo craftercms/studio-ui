@@ -340,6 +340,24 @@ CStudioAuthoring.Module.requireModule(
             });
           }
 
+          const removeDataSet = (node) => {
+            if (node.dataset)
+              Object.keys(node.dataset).forEach((dataKey) => {
+                delete node.dataset[dataKey];
+              });
+          };
+
+          const postProcessNodes = (parentNode) => {
+            removeDataSet(parentNode);
+
+            $(parentNode)
+              .find('*')
+              .each((index, node) => {
+                removeDataSet(node);
+                node.className = '';
+              });
+          };
+
           editor = tinymce.init({
             selector: '#' + rteId,
             width: _thisControl.rteWidth,
@@ -394,6 +412,10 @@ CStudioAuthoring.Module.requireModule(
                   timeout: 3000,
                   type: 'error'
                 });
+              } else {
+                const node = args.node;
+                postProcessNodes(node, true);
+                args.node = node;
               }
             },
             images_upload_handler: function (blobInfo, success, failure) {
