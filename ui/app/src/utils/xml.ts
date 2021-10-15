@@ -122,7 +122,7 @@ export function createElements(doc: XMLDocument, element: Element, data: object)
       if (typeof content === 'string' || typeof content === 'number' || typeof content === 'boolean') {
         elem.innerHTML = `${content}`;
       } else if (Array.isArray(content)) {
-        console.error('[createElements] Path not implemented.');
+        console.error('[utils/xml/createElements] Path not implemented.', content);
       } else if (content instanceof Element) {
         elem.appendChild(content);
       } else if (content !== null && content !== void 0) {

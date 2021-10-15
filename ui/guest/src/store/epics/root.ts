@@ -97,13 +97,13 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
           // Items that browser make draggable by default (images, etc)
           console.warn("Element is draggable but wasn't set draggable by craftercms");
         } else {
-          event.stopPropagation();
           post(instanceDragBegun(iceId));
-          const e = unwrapEvent<DragEvent>(event);
-          e.dataTransfer.setData('text/plain', `${record.id}`);
-          // noinspection CssInvalidHtmlTagReference
-          const image = document.querySelector('craftercms-dragged-element');
-          e.dataTransfer.setDragImage(image, 20, 20);
+          if (event) {
+            const e = unwrapEvent<DragEvent>(event);
+            e.stopPropagation();
+            e.dataTransfer.setData('text/plain', `${record.id}`);
+            e.dataTransfer.setDragImage(document.querySelector('.craftercms-dragged-element'), 20, 20);
+          }
           return initializeDragSubjects(state$);
         }
         return NEVER;
@@ -258,8 +258,16 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
         switch (status) {
           case EditingStatus.UPLOAD_ASSET_FROM_DESKTOP:
             return of(desktopAssetDragEnded());
+          case EditingStatus.SORTING_COMPONENT:
+          case EditingStatus.PLACING_NEW_COMPONENT: {
+            if (status === EditingStatus.SORTING_COMPONENT) {
+              post(instanceDragEnded());
+            }
+            return [computedDragEnd(), startListening()];
+          }
+          default:
+            return NEVER;
         }
-        return NEVER;
       })
     ),
   // endregion
@@ -273,7 +281,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
         const { event } = action.payload;
         event.preventDefault();
         event.stopPropagation();
-        post({ type: instanceDragEnded.type });
+        post(instanceDragEnded());
         return of(computedDragEnd());
       })
     );
@@ -370,13 +378,12 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
     ),
   // endregion
   // region computedDragEnd
-  (action$: MouseEventActionObservable) => {
-    return action$.pipe(
+  (action$: MouseEventActionObservable) =>
+    action$.pipe(
       ofType(computedDragEnd.type),
       tap(() => destroyDragSubjects()),
       ignoreElements()
-    );
-  },
+    ),
   // endregion
   // region desktopAssetUploadComplete
   (action$: Observable<GuestStandardAction<{ path: string; record: ElementRecord }>>) => {

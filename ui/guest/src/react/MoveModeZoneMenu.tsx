@@ -44,13 +44,12 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
     e.dataTransfer.setData('text/plain', `${record.id}`);
     e.dataTransfer.setDragImage(image, 20, 20);
     setTimeout(() => {
-      dispatch({ type: 'dragstart', payload: { event: e, record } });
+      dispatch({ type: 'dragstart', payload: { event: null, record } });
     });
   };
   // endregion
   return (
     <>
-      <DragGhostElement label="Test Test Test" />
       <Tooltip title="Cancel (Esc)">
         <UltraStyledIconButton size="small" onClick={onCancel}>
           <HighlightOffRoundedIcon />

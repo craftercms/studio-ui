@@ -435,9 +435,9 @@ function Guest(props: GuestProps) {
       const dragoverSubscription = fromEvent(document, 'dragover').subscribe((event) =>
         dispatch(documentDragOver({ event }))
       );
-      const dragleaveSubscription = fromEvent(document, 'dragleave').subscribe((event) =>
-        dispatch(documentDragLeave({ event }))
-      );
+      const dragleaveSubscription = fromEvent(document, 'dragleave').subscribe((event) => {
+        dispatch(documentDragLeave({ event }));
+      });
       return () => {
         dropSubscription.unsubscribe();
         dragendSubscription.unsubscribe();
