@@ -139,6 +139,8 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
   const dispatch = useDispatch();
   const arrowRef = useRef();
   const selectedGroupsRef = useRef([]);
+  const callbacksRef = useRef({ onSubmittingAndOrPendingChange });
+  callbacksRef.current.onSubmittingAndOrPendingChange = onSubmittingAndOrPendingChange;
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
@@ -161,12 +163,12 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
           .subscribe(
             () => {
               onCreateSuccess?.();
-              onSubmittingAndOrPendingChange({
+              callbacksRef.current.onSubmittingAndOrPendingChange({
                 isSubmitting: false
               });
             },
             ({ response: { response } }) => {
-              onSubmittingAndOrPendingChange({
+              callbacksRef.current.onSubmittingAndOrPendingChange({
                 isSubmitting: false
               });
               dispatch(showErrorDialog({ error: response }));
