@@ -52,7 +52,7 @@ function getSx(sx: DropMarkerPartialSx): DropMarkerFullSx {
       content: '""',
       width: '8px',
       height: '8px',
-      backgroundColor: 'primary.main',
+      backgroundColor: 'error.main',
       borderRadius: 1,
       marginTop: '-3px',
       marginLeft: '-4.5px',
@@ -62,7 +62,7 @@ function getSx(sx: DropMarkerPartialSx): DropMarkerFullSx {
     vertical: {
       height: 2,
       visibility: 'visible',
-      backgroundColor: 'primary.main',
+      backgroundColor: 'error.main',
       boxShadow: 1,
       '&::before': {
         left: 0
@@ -77,7 +77,7 @@ function getSx(sx: DropMarkerPartialSx): DropMarkerFullSx {
       minHeight: '5px',
       marginLeft: '3px',
       border: 1,
-      borderColor: 'primary.main',
+      borderColor: 'error.main',
       boxShadow: 1,
       '&::before': {
         top: 0

@@ -18,17 +18,7 @@ import { fromEvent, Observable } from 'rxjs';
 import { filter, map, share } from 'rxjs/operators';
 import StandardAction from '@craftercms/studio-ui/models/StandardAction';
 
-const useBroadcastChannel = window.parent === window && window.BroadcastChannel !== undefined;
-if (window.parent === window && window.BroadcastChannel === undefined) {
-  console.warn(`Browser does not support BroadcastChannel API. Communication with host will be impaired.`);
-}
-
-const broadcastChannel = useBroadcastChannel ? new BroadcastChannel('org.craftercms.accommodationChannel') : null;
-
-export const message$: Observable<StandardAction> = fromEvent<MessageEvent>(
-  useBroadcastChannel ? broadcastChannel : window,
-  'message'
-).pipe(
+export const message$: Observable<StandardAction> = fromEvent<MessageEvent>(window, 'message').pipe(
   filter((e) => Boolean(e.data?.type)),
   map((e) => e.data),
   share()
@@ -43,9 +33,7 @@ interface PostFunction {
   (type: string, payload?: any): void;
 }
 
-export const post: PostFunction = useBroadcastChannel
-  ? (type, payload?) => broadcastChannel.postMessage(prepareAction(type, payload))
-  : (type, payload?) => window.parent.postMessage(prepareAction(type, payload), '*');
+export const post: PostFunction = (type, payload?) => window.parent.postMessage(prepareAction(type, payload), '*');
 
 export function fromTopic(type: string): Observable<StandardAction> {
   return message$.pipe(filter((e) => e.type === type));

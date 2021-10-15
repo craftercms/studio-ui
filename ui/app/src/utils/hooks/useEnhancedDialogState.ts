@@ -43,6 +43,8 @@ export function useEnhancedDialogState(initialState?: Partial<EnhancedDialogStat
     const onClose = () => setState({ open: false });
     const onMaximize = () => setState({ isMinimized: false });
     const onMinimize = () => setState({ isMinimized: true });
+    const onSubmittingChange = (isSubmitting: boolean) => setState({ isSubmitting });
+    const onHasPendingChange = (hasPendingChanges: boolean) => setState({ hasPendingChanges });
     const onSubmittingAndOrPendingChange = ({
       isSubmitting,
       hasPendingChanges
@@ -63,6 +65,8 @@ export function useEnhancedDialogState(initialState?: Partial<EnhancedDialogStat
       onClose,
       onMaximize,
       onMinimize,
+      onSubmittingChange,
+      onHasPendingChange,
       onSubmittingAndOrPendingChange
     };
   }, [setState, state]);

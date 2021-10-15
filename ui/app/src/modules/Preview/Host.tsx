@@ -113,17 +113,6 @@ export function HostUI(props: HostPropsUI) {
   });
 
   useEffect(() => {
-    const broadcastChannel =
-      window.BroadcastChannel !== undefined ? new BroadcastChannel('org.craftercms.accommodationChannel') : null;
-
-    broadcastChannel?.addEventListener(
-      'message',
-      (e) => {
-        onMessage(e.data);
-      },
-      false
-    );
-
     const guestToHostSubscription = message$
       .pipe(
         filter((e) => Boolean(e.data?.meta?.craftercms)),
@@ -142,13 +131,11 @@ export function HostUI(props: HostPropsUI) {
     const hostToGuestSubscription = postMessage$.pipe(map((action) => ({ ...action, meta }))).subscribe((action) => {
       const contentWindow = iframeRef.current.contentWindow;
       contentWindow.postMessage(action, '*');
-      broadcastChannel?.postMessage(action);
     });
 
     return () => {
       guestToHostSubscription.unsubscribe();
       hostToGuestSubscription.unsubscribe();
-      broadcastChannel && broadcastChannel.close();
     };
   }, [origin, onMessage, postMessage$]);
 

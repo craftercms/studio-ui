@@ -67,6 +67,13 @@ import {
   startListening
 } from '../actions';
 
+type CaseReducer<S = GuestState, A extends GuestStandardAction = GuestStandardAction> = Reducer<S, A>;
+
+type CaseReducers<S = GuestState, A extends GuestStandardAction = GuestStandardAction> = Record<
+  string,
+  CaseReducer<S, A>
+>;
+
 const initialState: GuestState = {
   dragContext: null,
   draggable: {},
@@ -83,19 +90,20 @@ const initialState: GuestState = {
   activeSite: ''
 };
 
-type CaseReducer<S = GuestState, A extends GuestStandardAction = GuestStandardAction> = Reducer<S, A>;
-
-type CaseReducers<S = GuestState, A extends GuestStandardAction = GuestStandardAction> = Record<
-  string,
-  CaseReducer<S, A>
->;
-
 function createReducer<S, CR extends CaseReducers<S>>(initialState: S, actionsMap: CR): Reducer<S> {
   return (state = initialState, action) => {
     const caseReducer = actionsMap[action.type];
     return caseReducer?.(state, action) ?? state;
   };
 }
+
+const resetState: (state: GuestState) => GuestState = (state: GuestState) => ({
+  ...state,
+  status: EditingStatus.LISTENING,
+  draggable: {},
+  highlighted: {},
+  dragContext: null
+});
 
 const reducer = createReducer(initialState, {
   // region dblclick
@@ -277,11 +285,7 @@ const reducer = createReducer(initialState, {
   }),
   // endregion
   // region startListening
-  [startListening.type]: (state) => ({
-    ...state,
-    status: EditingStatus.LISTENING,
-    highlighted: {}
-  }),
+  [startListening.type]: resetState,
   // endregion
   // region scrolling
   [scrolling.type]: (state) => ({
