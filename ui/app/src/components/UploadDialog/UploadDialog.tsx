@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useRef } from 'react';
+import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
@@ -56,7 +56,6 @@ export default function UploadDialog(props: UploadDialogProps) {
   const dispatch = useDispatch();
   const { isMinimized, onMaximize, onMinimize, hasPendingChanges, onSubmittingAndOrPendingChange } =
     useEnhancedDialogState();
-  const pendingChangesRef = useRef(false);
   const { open } = props;
 
   const preventWrongDrop = (e: React.DragEvent) => {
@@ -70,12 +69,8 @@ export default function UploadDialog(props: UploadDialogProps) {
     });
   };
 
-  useEffect(() => {
-    pendingChangesRef.current = hasPendingChanges;
-  }, [hasPendingChanges]);
-
-  const onClose = useCallback(() => {
-    if (pendingChangesRef.current) {
+  const onClose = () => {
+    if (hasPendingChanges) {
       dispatch(
         showConfirmDialog({
           body: formatMessage(translations.uploadInProgressConfirmation),
@@ -86,7 +81,7 @@ export default function UploadDialog(props: UploadDialogProps) {
     } else {
       props.onClose();
     }
-  }, [dispatch, formatMessage, props]);
+  };
 
   return (
     <>
