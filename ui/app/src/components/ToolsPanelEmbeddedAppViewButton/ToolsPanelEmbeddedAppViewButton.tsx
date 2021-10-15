@@ -54,7 +54,7 @@ export default function ToolsPanelEmbeddedAppViewButton(props: ToolsPanelEmbedde
       <WidgetDialog
         title={title}
         open={open}
-        onClose={() => onClose()}
+        onClose={onClose}
         widget={props.widget}
         hasPendingChanges={hasPendingChanges}
         onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
