@@ -35,8 +35,8 @@ import {
   fetchPrimaryGuestModelComplete,
   guestCheckIn,
   guestCheckOut,
-  guestSiteLoad,
   guestModelUpdated,
+  guestSiteLoad,
   hostCheckIn,
   iceZoneSelected,
   initRichTextEditorConfig,
@@ -57,8 +57,8 @@ import {
   sortItemOperationComplete,
   trashed,
   updateFieldValueOperation,
-  validationMessage,
-  updateRteConfig
+  updateRteConfig,
+  validationMessage
 } from '../../state/actions/preview';
 import {
   deleteItem,
@@ -625,11 +625,11 @@ export function PreviewConcierge(props: any) {
             fieldId,
             index,
             parentModelId ? models[parentModelId].craftercms.path : null
-          ).subscribe(
-            () => {
+          ).subscribe({
+            next: () => {
               issueDescriptorRequest({
                 site: siteId,
-                path,
+                path: path ?? models[parentModelId].craftercms.path,
                 contentTypes,
                 requestedSourceMapPaths,
                 dispatch,
@@ -642,11 +642,11 @@ export function PreviewConcierge(props: any) {
               });
               enqueueSnackbar(formatMessage(guestMessages.deleteOperationComplete));
             },
-            (error) => {
+            error: (error) => {
               console.error(`${type} failed`, error);
               enqueueSnackbar(formatMessage(guestMessages.deleteOperationFailed));
             }
-          );
+          });
           break;
         }
         case updateFieldValueOperation.type: {

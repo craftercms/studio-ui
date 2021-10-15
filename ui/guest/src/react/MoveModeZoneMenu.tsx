@@ -57,8 +57,12 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
 
   const dropzoneChildrenLength = useMemo(
     () => compileDropZone(dropzoneRecord.iceIds[0]).children.length,
-    [dropzoneRecord.iceIds]
+    [dropzoneRecord.iceIds[0]]
   );
+
+  const isFirstItem = elementIndex === 0;
+  const isLastItem = elementIndex === dropzoneChildrenLength - 1;
+  const isOnlyItem = isFirstItem && isLastItem;
 
   // region callbacks
   const clearAndStartListening = () => {
@@ -67,17 +71,27 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
   };
 
   const onMoveUp = () => {
-    contentController.sortItem(modelId, fieldId, index, elementIndex - 1);
+    contentController.sortItem(
+      dropzoneRecord.modelId,
+      dropzoneRecord.fieldId[0],
+      dropzoneRecord.fieldId[0].includes('.') ? `${dropzoneRecord.index}.${elementIndex}` : elementIndex,
+      dropzoneRecord.fieldId[0].includes('.') ? `${dropzoneRecord.index}.${elementIndex - 1}` : elementIndex - 1
+    );
     clearAndStartListening();
   };
 
   const onMoveDown = () => {
-    contentController.sortItem(modelId, fieldId, index, elementIndex + 1);
+    contentController.sortItem(
+      dropzoneRecord.modelId,
+      dropzoneRecord.fieldId[0],
+      dropzoneRecord.fieldId[0].includes('.') ? `${dropzoneRecord.index}.${elementIndex}` : elementIndex,
+      dropzoneRecord.fieldId[0].includes('.') ? `${dropzoneRecord.index}.${elementIndex + 1}` : elementIndex + 1
+    );
     clearAndStartListening();
   };
 
   const onTrash = () => {
-    contentController.deleteItem(modelId, fieldId[0], index);
+    contentController.deleteItem(modelId, fieldId, index);
     clearAndStartListening();
   };
 
@@ -104,14 +118,14 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
           <HighlightOffRoundedIcon />
         </UltraStyledIconButton>
       </Tooltip>
-      {index !== 0 && (
+      {!isFirstItem && !isOnlyItem && (
         <Tooltip title="Move up/left (← or ↑)">
           <UltraStyledIconButton size="small" onClick={onMoveUp}>
             <ArrowUpwardRoundedIcon />
           </UltraStyledIconButton>
         </Tooltip>
       )}
-      {index < dropzoneChildrenLength - 1 && (
+      {!isLastItem && !isOnlyItem && (
         <Tooltip title="Move down/right (→ or ↓)">
           <UltraStyledIconButton size="small" onClick={onMoveDown}>
             <ArrowDownwardRoundedIcon />
