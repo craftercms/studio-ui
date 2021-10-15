@@ -4,7 +4,10 @@
       "@babel/preset-env",
       {
         "modules": false,
-        "loose": true
+        "loose": true,
+        "targets": {
+          "esmodules": true
+        }
       }
     ],
     "@babel/preset-react"

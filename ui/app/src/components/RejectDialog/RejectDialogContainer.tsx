@@ -78,7 +78,6 @@ export function RejectDialogContainer(props: RejectDialogContainerProps) {
           ])
         );
         onRejectSuccess?.();
-        onClose(null, null);
       },
       (error) => {
         dispatch(showErrorDialog({ error }));

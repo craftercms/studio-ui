@@ -16,17 +16,28 @@
 
 import React from 'react';
 import useStyles from './styles';
-import { WidgetDialogContainer } from '.';
 import { WidgetDialogProps } from './utils';
 import EnhancedDialog from '../EnhancedDialog';
+import Suspencified from '../SystemStatus/Suspencified';
+import { Widget } from '../Widget/Widget';
 
 export default function WidgetDialog(props: WidgetDialogProps) {
-  const { title, widget, ...rest } = props;
+  const { title, widget, onSubmittingAndOrPendingChange, isSubmitting, ...rest } = props;
   const classes = useStyles();
 
   return (
-    <EnhancedDialog title={title} maxWidth="xl" classes={{ paper: classes.dialog }} {...rest}>
-      <WidgetDialogContainer widget={widget} />
+    <EnhancedDialog
+      title={title}
+      maxWidth="xl"
+      classes={{ paper: classes.dialog }}
+      isSubmitting={isSubmitting}
+      {...rest}
+    >
+      <section className={classes.toolPanelBody}>
+        <Suspencified>
+          <Widget {...widget} extraProps={{ onSubmittingAndOrPendingChange, isSubmitting }} />
+        </Suspencified>
+      </section>
     </EnhancedDialog>
   );
 }
