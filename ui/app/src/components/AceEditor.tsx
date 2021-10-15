@@ -238,6 +238,7 @@ export default React.forwardRef(function AceEditor(props: AceEditorProps, ref) {
       }
     };
   });
+
   useEffect(
     () => {
       if (initialized) {
@@ -251,21 +252,22 @@ export default React.forwardRef(function AceEditor(props: AceEditorProps, ref) {
       ...aceOptions.map((o) => options[o])
     ]
   );
+
   useEffect(() => {
     if (initialized) {
-      refs.current.ace.setValue(value, -1);
-      refs.current.ace.session.getUndoManager().reset();
-
+      const ace = refs.current.ace;
       const onChange = (e) => {
         refs.current.onChange?.(e);
       };
-
-      refs.current.ace.getSession().on('change', onChange);
+      ace.setValue(value, -1);
+      ace.session.getUndoManager().reset();
+      ace.getSession().on('change', onChange);
       return () => {
-        refs.current.ace.getSession().off('change', onChange);
+        ace.getSession().off('change', onChange);
       };
     }
   }, [initialized, value]);
+
   useEffect(() => {
     if (refs.current.pre) {
       refs.current.pre.className = `${[...refs.current.pre.classList]
