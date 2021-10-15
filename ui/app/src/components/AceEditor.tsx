@@ -168,7 +168,7 @@ const aceOptions: Array<keyof AceOptions> = [
 // const aceModes = [];
 // const aceThemes = [];
 
-const useStyles = makeStyles((theme) =>
+const useStyles = makeStyles(() =>
   createStyles<AceEditorClassKey, AceEditorStyles>({
     root: (styles) => ({
       display: 'contents',
