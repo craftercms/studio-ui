@@ -15,6 +15,7 @@
  */
 
 import * as React from 'react';
+import { useMemo } from 'react';
 import DragIndicatorRounded from '@mui/icons-material/DragIndicatorRounded';
 import ArrowDownwardRoundedIcon from '@mui/icons-material/ArrowDownwardRounded';
 import ArrowUpwardRoundedIcon from '@mui/icons-material/ArrowUpwardRounded';
@@ -22,22 +23,68 @@ import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
 import UltraStyledIconButton from './UltraStyledIconButton';
 import HighlightOffRoundedIcon from '@mui/icons-material/HighlightOffRounded';
 import { Tooltip } from '@mui/material';
-import { useDispatch } from './GuestContext';
-import * as elementRegistry from '../classes/ElementRegistry';
 import DragGhostElement from './DragGhostElement';
+import * as contentController from '../classes/ContentController';
+import { clearAndListen$ } from '../store/subjects';
+import { startListening } from '../store/actions';
+import { compileDropZone, fromElement, getParentElementFromICEProps } from '../classes/ElementRegistry';
+import { ElementRecord } from '../models/InContextEditing';
 
 export interface MoveModeZoneMenuProps {
   [key: string]: any;
+  record: ElementRecord;
 }
 
 export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
   const { record, dispatch } = props;
-  // const dispatch = useDispatch();
+  const {
+    modelId,
+    fieldId: [fieldId],
+    index
+  } = record;
+
+  const elementIndex = useMemo(() => {
+    if (typeof index === 'string') {
+      return parseInt(index.substr(index.lastIndexOf('.') + 1), 10);
+    }
+    return index;
+  }, [index]);
+
+  const dropzoneRecord = useMemo(
+    () => fromElement(getParentElementFromICEProps(modelId, fieldId, index)[0] as Element),
+    [fieldId, index, modelId]
+  );
+
+  const dropzoneChildrenLength = useMemo(
+    () => compileDropZone(dropzoneRecord.iceIds[0]).children.length,
+    [dropzoneRecord.iceIds]
+  );
+
   // region callbacks
-  const onMoveUp = () => void 0;
-  const onMoveDown = () => void 0;
-  const onTrash = () => void 0;
-  const onCancel = () => void 0;
+  const clearAndStartListening = () => {
+    clearAndListen$.next();
+    dispatch(startListening());
+  };
+
+  const onMoveUp = () => {
+    contentController.sortItem(modelId, fieldId, index, elementIndex - 1);
+    clearAndStartListening();
+  };
+
+  const onMoveDown = () => {
+    contentController.sortItem(modelId, fieldId, index, elementIndex + 1);
+    clearAndStartListening();
+  };
+
+  const onTrash = () => {
+    contentController.deleteItem(modelId, fieldId[0], index);
+    clearAndStartListening();
+  };
+
+  const onCancel = () => {
+    clearAndStartListening();
+  };
+
   const onDragStart = (e) => {
     e.stopPropagation();
     const image = document.querySelector('.craftercms-dragged-element');
@@ -48,6 +95,7 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
     });
   };
   // endregion
+
   return (
     <>
       <DragGhostElement label="Test Test Test" />
@@ -56,16 +104,20 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
           <HighlightOffRoundedIcon />
         </UltraStyledIconButton>
       </Tooltip>
-      <Tooltip title="Move up/left (← or ↑)">
-        <UltraStyledIconButton size="small" onClick={onMoveUp}>
-          <ArrowUpwardRoundedIcon />
-        </UltraStyledIconButton>
-      </Tooltip>
-      <Tooltip title="Move down/right (→ or ↓)">
-        <UltraStyledIconButton size="small" onClick={onMoveDown}>
-          <ArrowDownwardRoundedIcon />
-        </UltraStyledIconButton>
-      </Tooltip>
+      {index !== 0 && (
+        <Tooltip title="Move up/left (← or ↑)">
+          <UltraStyledIconButton size="small" onClick={onMoveUp}>
+            <ArrowUpwardRoundedIcon />
+          </UltraStyledIconButton>
+        </Tooltip>
+      )}
+      {index < dropzoneChildrenLength - 1 && (
+        <Tooltip title="Move down/right (→ or ↓)">
+          <UltraStyledIconButton size="small" onClick={onMoveDown}>
+            <ArrowDownwardRoundedIcon />
+          </UltraStyledIconButton>
+        </Tooltip>
+      )}
       <Tooltip title="Trash (⌫)">
         <UltraStyledIconButton size="small" onClick={onTrash}>
           <DeleteOutlineRoundedIcon />
