@@ -153,7 +153,7 @@ function Guest(props: GuestProps) {
             // Click & dblclick require stopping as early as possible to avoid
             // navigation or other click defaults.
             if (type === 'click' || 'dblclick' === type) {
-              click$.next({ type, event });
+              click$.next({ type, event, record });
               event.preventDefault();
               event.stopPropagation();
             }

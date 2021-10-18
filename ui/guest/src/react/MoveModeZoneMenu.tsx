@@ -32,7 +32,7 @@ import { extractCollection } from '@craftercms/studio-ui/build_tsc/utils/model';
 import { isSimple, popPiece, removeLastPiece } from '@craftercms/studio-ui/build_tsc/utils/string';
 import { AnyAction } from '@reduxjs/toolkit';
 import useUpdateRefs from '@craftercms/studio-ui/build_tsc/utils/hooks/useUpdateRefs';
-import { findContainerRecord, runValidation } from '../classes/ICERegistry';
+import { findContainerRecord, getMovableParentRecord, runValidation } from '../classes/ICERegistry';
 import { post } from '../utils/communicator';
 import { validationMessage } from '@craftercms/studio-ui/build_tsc/state/actions/preview';
 
@@ -46,7 +46,8 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
   const {
     modelId,
     fieldId: [fieldId],
-    index
+    index,
+    iceIds: [iceId]
   } = record;
 
   const elementIndex = useMemo(() => (typeof index === 'string' ? parseInt(popPiece(index), 10) : index), [index]);
@@ -110,7 +111,7 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
 
   // endregion
 
-  const refs = useUpdateRefs({ onMoveUp, onMoveDown, onTrash, isFirstItem, isLastItem });
+  const refs = useUpdateRefs({ onMoveUp, onMoveDown, onTrash, onCancel, isFirstItem, isLastItem });
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -145,12 +146,15 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
   }, [isFirstItem, isLastItem]);
 
   useEffect(() => {
-    const subscription = click$.subscribe(({ event }) => {
-      console.log(event);
+    const subscription = click$.subscribe(({ record: { iceIds } }) => {
+      if (iceId !== getMovableParentRecord(iceIds[0])) {
+        // TODO: this is not working
+        // refs.current.onCancel();
+      }
     });
 
     const onClickingOutsideOfSelectedZone = (e: MouseEvent) => {
-      console.log(e);
+      refs.current.onCancel();
     };
 
     window.addEventListener('click', onClickingOutsideOfSelectedZone);
@@ -158,7 +162,9 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
       subscription.unsubscribe();
       window.removeEventListener('click', onClickingOutsideOfSelectedZone);
     };
-  }, []);
+    // Linter doesn't realise that refs is a ref and needn't be on the effect
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [iceId]);
 
   return (
     <>
