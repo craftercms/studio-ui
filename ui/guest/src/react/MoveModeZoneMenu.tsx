@@ -134,7 +134,7 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
     };
     // Linter doesn't realise that refs is a ref and needn't be on the effect
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOnlyItem, isFirstItem, isLastItem]);
+  }, [isFirstItem, isLastItem]);
 
   useEffect(() => {
     const onClickingOutsideOfSelectedZone = (e: MouseEvent) => {
