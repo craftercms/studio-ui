@@ -15,6 +15,7 @@
  */
 
 import * as React from 'react';
+import { useEffect, useMemo } from 'react';
 import DragIndicatorRounded from '@mui/icons-material/DragIndicatorRounded';
 import ArrowDownwardRoundedIcon from '@mui/icons-material/ArrowDownwardRounded';
 import ArrowUpwardRoundedIcon from '@mui/icons-material/ArrowUpwardRounded';
@@ -22,18 +23,81 @@ import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
 import UltraStyledIconButton from './UltraStyledIconButton';
 import HighlightOffRoundedIcon from '@mui/icons-material/HighlightOffRounded';
 import { Tooltip } from '@mui/material';
+import * as contentController from '../classes/ContentController';
+import { clearAndListen$ } from '../store/subjects';
+import { startListening } from '../store/actions';
+import { compileDropZone, fromElement, getParentElementFromICEProps } from '../classes/ElementRegistry';
+import { ElementRecord } from '../models/InContextEditing';
 
 export interface MoveModeZoneMenuProps {
   [key: string]: any;
+  record: ElementRecord;
 }
 
 export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
   const { record, dispatch } = props;
+  const {
+    modelId,
+    fieldId: [fieldId],
+    index
+  } = record;
+
+  const elementIndex = useMemo(() => {
+    if (typeof index === 'string') {
+      return parseInt(index.substr(index.lastIndexOf('.') + 1), 10);
+    }
+    return index;
+  }, [index]);
+
+  const dropzoneRecord = useMemo(
+    () => fromElement(getParentElementFromICEProps(modelId, fieldId, index)[0] as Element),
+    [fieldId, index, modelId]
+  );
+
+  const dropzoneChildrenLength = useMemo(
+    () => compileDropZone(dropzoneRecord.iceIds[0]).children.length,
+    [dropzoneRecord.iceIds[0]]
+  );
+
+  const isFirstItem = elementIndex === 0;
+  const isLastItem = elementIndex === dropzoneChildrenLength - 1;
+  const isOnlyItem = isFirstItem && isLastItem;
+
   // region callbacks
-  const onMoveUp = () => void 0;
-  const onMoveDown = () => void 0;
-  const onTrash = () => void 0;
-  const onCancel = () => void 0;
+  const clearAndStartListening = () => {
+    clearAndListen$.next();
+    dispatch(startListening());
+  };
+
+  const onMoveUp = () => {
+    contentController.sortItem(
+      dropzoneRecord.modelId,
+      dropzoneRecord.fieldId[0],
+      dropzoneRecord.fieldId[0].includes('.') ? `${dropzoneRecord.index}.${elementIndex}` : elementIndex,
+      dropzoneRecord.fieldId[0].includes('.') ? `${dropzoneRecord.index}.${elementIndex - 1}` : elementIndex - 1
+    );
+    clearAndStartListening();
+  };
+
+  const onMoveDown = () => {
+    contentController.sortItem(
+      dropzoneRecord.modelId,
+      dropzoneRecord.fieldId[0],
+      dropzoneRecord.fieldId[0].includes('.') ? `${dropzoneRecord.index}.${elementIndex}` : elementIndex,
+      dropzoneRecord.fieldId[0].includes('.') ? `${dropzoneRecord.index}.${elementIndex + 1}` : elementIndex + 1
+    );
+    clearAndStartListening();
+  };
+
+  const onTrash = () => {
+    contentController.deleteItem(modelId, fieldId, index);
+    clearAndStartListening();
+  };
+
+  const onCancel = () => {
+    clearAndStartListening();
+  };
+
   const onDragStart = (e) => {
     e.stopPropagation();
     e.dataTransfer.setData('text/plain', `${record.id}`);
@@ -43,6 +107,37 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
     });
   };
   // endregion
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      switch (e.key) {
+        case 'ArrowUp': {
+          if (!isFirstItem) {
+            e.preventDefault();
+            onMoveUp();
+          }
+          break;
+        }
+        case 'ArrowDown': {
+          if (!isLastItem) {
+            e.preventDefault();
+            onMoveDown();
+          }
+          break;
+        }
+        case 'Backspace': {
+          e.preventDefault();
+          onTrash();
+          break;
+        }
+      }
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, [isFirstItem, isLastItem, onMoveDown, onMoveUp, onTrash]);
+
   return (
     <>
       <Tooltip title="Cancel (Esc)">
@@ -50,16 +145,20 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
           <HighlightOffRoundedIcon />
         </UltraStyledIconButton>
       </Tooltip>
-      <Tooltip title="Move up/left (← or ↑)">
-        <UltraStyledIconButton size="small" onClick={onMoveUp}>
-          <ArrowUpwardRoundedIcon />
-        </UltraStyledIconButton>
-      </Tooltip>
-      <Tooltip title="Move down/right (→ or ↓)">
-        <UltraStyledIconButton size="small" onClick={onMoveDown}>
-          <ArrowDownwardRoundedIcon />
-        </UltraStyledIconButton>
-      </Tooltip>
+      {!isFirstItem && !isOnlyItem && (
+        <Tooltip title="Move up/left (← or ↑)">
+          <UltraStyledIconButton size="small" onClick={onMoveUp}>
+            <ArrowUpwardRoundedIcon />
+          </UltraStyledIconButton>
+        </Tooltip>
+      )}
+      {!isLastItem && !isOnlyItem && (
+        <Tooltip title="Move down/right (→ or ↓)">
+          <UltraStyledIconButton size="small" onClick={onMoveDown}>
+            <ArrowDownwardRoundedIcon />
+          </UltraStyledIconButton>
+        </Tooltip>
+      )}
       <Tooltip title="Trash (⌫)">
         <UltraStyledIconButton size="small" onClick={onTrash}>
           <DeleteOutlineRoundedIcon />
