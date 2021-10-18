@@ -22,9 +22,6 @@ import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
 import UltraStyledIconButton from './UltraStyledIconButton';
 import HighlightOffRoundedIcon from '@mui/icons-material/HighlightOffRounded';
 import { Tooltip } from '@mui/material';
-import { useDispatch } from './GuestContext';
-import * as elementRegistry from '../classes/ElementRegistry';
-import DragGhostElement from './DragGhostElement';
 
 export interface MoveModeZoneMenuProps {
   [key: string]: any;
@@ -32,7 +29,6 @@ export interface MoveModeZoneMenuProps {
 
 export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
   const { record, dispatch } = props;
-  // const dispatch = useDispatch();
   // region callbacks
   const onMoveUp = () => void 0;
   const onMoveDown = () => void 0;
@@ -40,9 +36,8 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
   const onCancel = () => void 0;
   const onDragStart = (e) => {
     e.stopPropagation();
-    const image = document.querySelector('.craftercms-dragged-element');
     e.dataTransfer.setData('text/plain', `${record.id}`);
-    e.dataTransfer.setDragImage(image, 20, 20);
+    e.dataTransfer.setDragImage(document.querySelector('.craftercms-dragged-element'), 20, 20);
     setTimeout(() => {
       dispatch({ type: 'dragstart', payload: { event: null, record } });
     });
