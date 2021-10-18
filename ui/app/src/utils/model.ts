@@ -21,7 +21,7 @@ import LookupTable from '../models/LookupTable';
 
 const systemPropList = ['id', 'path', 'contentTypeId', 'dateCreated', 'dateModified', 'label'];
 
-export function prop(model, propName) {
+export function prop(model: ContentInstance, propName: string) {
   if (model == null) {
     return null;
   } else if (systemPropList.includes(propName)) {
@@ -30,7 +30,7 @@ export function prop(model, propName) {
   return retrieveProperty(model, propName);
 }
 
-export function value(model, fieldId, newValue?) {
+export function value(model: ContentInstance, fieldId: string, newValue?: any) {
   // TODO: GraphQL transforms names as left-rail_o to left__rail_o.
   // This transform is potentially unreliable. We should discuss approach.
   const cleanFieldId = fieldId.replace(/-/g, '__');
@@ -43,11 +43,11 @@ export function value(model, fieldId, newValue?) {
   return retrieveProperty(model, fieldId);
 }
 
-export function extractCollection(model, fieldId: string, index: string | number) {
+export function extractCollection(model: ContentInstance, fieldId: string, index: string | number) {
   return extractCollectionPiece(model, fieldId, removeLastPiece(`${index}`));
 }
 
-export function extractCollectionItem(model, fieldId: string, index: string | number) {
+export function extractCollectionItem(model: ContentInstance, fieldId: string, index: string | number) {
   const indexes = index === '' || nou(index) ? [] : `${index}`.split('.').map((i) => parseInt(i));
   const fields = fieldId.split('.');
   if (indexes.length > fields.length) {
@@ -72,11 +72,11 @@ export function getContentTypeId(model) {
   return model?.craftercms?.contentTypeId;
 }
 
-export function isEmbedded(model) {
+export function isEmbedded(model: ContentInstance) {
   return nou(prop(model, 'path'));
 }
 
-function extractCollectionPiece(model, fieldId, index) {
+function extractCollectionPiece(model: ContentInstance, fieldId: string, index: string | number) {
   const indexes = index === '' || nou(index) ? [] : `${index}`.split('.').map((i) => parseInt(i, 10));
   if (indexes.length === 0) {
     return retrieveProperty(model, fieldId);
@@ -105,7 +105,7 @@ function extractCollectionPiece(model, fieldId, index) {
   }
 }
 
-export function isInheritedField(model, fieldId) {
+export function isInheritedField(model: ContentInstance, fieldId: string) {
   return Boolean(model.craftercms.sourceMap?.[fieldId]);
 }
 

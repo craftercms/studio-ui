@@ -35,7 +35,7 @@ import {
   updateFieldValueOperation
 } from '@craftercms/studio-ui/build_tsc/state/actions/preview';
 import { createLookupTable, nnou, nou } from '../utils/object';
-import { popPiece, removeLastPiece } from '../utils/string';
+import { popPiece, removeLastPiece } from '@craftercms/studio-ui/build_tsc/utils/string';
 import { getCollection, getCollectionWithoutItemAtIndex, getParentModelId, setCollection } from '../utils/ice';
 import { createQuery, search } from '@craftercms/search';
 import { parseDescriptor, preParseSearchResults } from '@craftercms/content';

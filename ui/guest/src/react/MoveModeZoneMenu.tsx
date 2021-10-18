@@ -15,7 +15,7 @@
  */
 
 import * as React from 'react';
-import { useEffect, useMemo } from 'react';
+import { Dispatch, useEffect, useMemo } from 'react';
 import DragIndicatorRounded from '@mui/icons-material/DragIndicatorRounded';
 import ArrowDownwardRoundedIcon from '@mui/icons-material/ArrowDownwardRounded';
 import ArrowUpwardRoundedIcon from '@mui/icons-material/ArrowUpwardRounded';
@@ -26,12 +26,16 @@ import { Tooltip } from '@mui/material';
 import * as contentController from '../classes/ContentController';
 import { clearAndListen$ } from '../store/subjects';
 import { startListening } from '../store/actions';
-import { compileDropZone, fromElement, getParentElementFromICEProps } from '../classes/ElementRegistry';
 import { ElementRecord } from '../models/InContextEditing';
+import { extractCollection } from '@craftercms/studio-ui/build_tsc/utils/model';
+import { getCachedModel } from '../classes/ContentController';
+import { popPiece, removeLastPiece, isSimple } from '@craftercms/studio-ui/build_tsc/utils/string';
+import { AnyAction } from '@reduxjs/toolkit';
+import useUpdateRefs from '@craftercms/studio-ui/utils/hooks/useUpdateRefs';
 
 export interface MoveModeZoneMenuProps {
-  [key: string]: any;
   record: ElementRecord;
+  dispatch: Dispatch<AnyAction>;
 }
 
 export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
@@ -42,60 +46,49 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
     index
   } = record;
 
-  const elementIndex = useMemo(() => {
-    if (typeof index === 'string') {
-      return parseInt(index.substr(index.lastIndexOf('.') + 1), 10);
-    }
-    return index;
-  }, [index]);
+  const elementIndex = useMemo(() => (typeof index === 'string' ? parseInt(popPiece(index), 10) : index), [index]);
 
-  const dropzoneRecord = useMemo(
-    () => fromElement(getParentElementFromICEProps(modelId, fieldId, index)[0] as Element),
-    [fieldId, index, modelId]
-  );
-
-  const dropzoneChildrenLength = useMemo(
-    () => compileDropZone(dropzoneRecord.iceIds[0]).children.length,
-    [dropzoneRecord.iceIds[0]]
+  const numOfItemsInContainerCollection = useMemo(
+    () => extractCollection(getCachedModel(modelId), fieldId, index).length,
+    [modelId, fieldId, index]
   );
 
   const isFirstItem = elementIndex === 0;
-  const isLastItem = elementIndex === dropzoneChildrenLength - 1;
+  const isLastItem = elementIndex === numOfItemsInContainerCollection - 1;
   const isOnlyItem = isFirstItem && isLastItem;
 
   // region callbacks
-  const clearAndStartListening = () => {
+
+  const onCancel = () => {
     clearAndListen$.next();
     dispatch(startListening());
   };
 
   const onMoveUp = () => {
+    const targetIndex = elementIndex - 1;
     contentController.sortItem(
-      dropzoneRecord.modelId,
-      dropzoneRecord.fieldId[0],
-      dropzoneRecord.fieldId[0].includes('.') ? `${dropzoneRecord.index}.${elementIndex}` : elementIndex,
-      dropzoneRecord.fieldId[0].includes('.') ? `${dropzoneRecord.index}.${elementIndex - 1}` : elementIndex - 1
+      modelId,
+      fieldId,
+      index,
+      isSimple(index) ? targetIndex : `${removeLastPiece(index as string)}.${targetIndex}`
     );
-    clearAndStartListening();
+    onCancel();
   };
 
   const onMoveDown = () => {
+    const targetIndex = elementIndex + 1;
     contentController.sortItem(
-      dropzoneRecord.modelId,
-      dropzoneRecord.fieldId[0],
-      dropzoneRecord.fieldId[0].includes('.') ? `${dropzoneRecord.index}.${elementIndex}` : elementIndex,
-      dropzoneRecord.fieldId[0].includes('.') ? `${dropzoneRecord.index}.${elementIndex + 1}` : elementIndex + 1
+      modelId,
+      fieldId,
+      index,
+      isSimple(index) ? targetIndex : `${removeLastPiece(index as string)}.${targetIndex}`
     );
-    clearAndStartListening();
+    onCancel();
   };
 
   const onTrash = () => {
     contentController.deleteItem(modelId, fieldId, index);
-    clearAndStartListening();
-  };
-
-  const onCancel = () => {
-    clearAndStartListening();
+    onCancel();
   };
 
   const onDragStart = (e) => {
@@ -106,28 +99,31 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
       dispatch({ type: 'dragstart', payload: { event: null, record } });
     });
   };
+
   // endregion
+
+  const refs = useUpdateRefs({ onMoveUp, onMoveDown, onTrash, isFirstItem, isLastItem });
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       switch (e.key) {
         case 'ArrowUp': {
-          if (!isFirstItem) {
+          if (!refs.current.isFirstItem) {
             e.preventDefault();
-            onMoveUp();
+            refs.current.onMoveUp();
           }
           break;
         }
         case 'ArrowDown': {
-          if (!isLastItem) {
+          if (!refs.current.isLastItem) {
             e.preventDefault();
-            onMoveDown();
+            refs.current.onMoveDown();
           }
           break;
         }
         case 'Backspace': {
           e.preventDefault();
-          onTrash();
+          refs.current.onTrash();
           break;
         }
       }
@@ -136,7 +132,9 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
     return () => {
       document.removeEventListener('keydown', onKeyDown);
     };
-  }, [isFirstItem, isLastItem, onMoveDown, onMoveUp, onTrash]);
+    // Linter doesn't realise that refs is a ref and needn't be on the effect
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOnlyItem, isFirstItem, isLastItem]);
 
   return (
     <>
