@@ -15,7 +15,7 @@
  */
 
 import * as React from 'react';
-import { useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import DragIndicatorRounded from '@mui/icons-material/DragIndicatorRounded';
 import ArrowDownwardRoundedIcon from '@mui/icons-material/ArrowDownwardRounded';
 import ArrowUpwardRoundedIcon from '@mui/icons-material/ArrowUpwardRounded';
@@ -24,10 +24,12 @@ import UltraStyledIconButton from './UltraStyledIconButton';
 import HighlightOffRoundedIcon from '@mui/icons-material/HighlightOffRounded';
 import { Tooltip } from '@mui/material';
 import * as contentController from '../classes/ContentController';
+import { getCachedModel } from '../classes/ContentController';
 import { clearAndListen$ } from '../store/subjects';
 import { startListening } from '../store/actions';
 import { compileDropZone, fromElement, getParentElementFromICEProps } from '../classes/ElementRegistry';
 import { ElementRecord } from '../models/InContextEditing';
+import { extractCollection } from '../utils/model';
 
 export interface MoveModeZoneMenuProps {
   [key: string]: any;
@@ -41,6 +43,10 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
     fieldId: [fieldId],
     index
   } = record;
+
+  const collection = extractCollection(getCachedModel(modelId), fieldId, index);
+
+  console.log(collection);
 
   const elementIndex = useMemo(() => {
     if (typeof index === 'string') {
@@ -64,12 +70,12 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
   const isOnlyItem = isFirstItem && isLastItem;
 
   // region callbacks
-  const clearAndStartListening = () => {
+  const clearAndStartListening = useCallback(() => {
     clearAndListen$.next();
     dispatch(startListening());
-  };
+  }, [dispatch]);
 
-  const onMoveUp = () => {
+  const onMoveUp = useCallback(() => {
     contentController.sortItem(
       dropzoneRecord.modelId,
       dropzoneRecord.fieldId[0],
@@ -77,9 +83,9 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
       dropzoneRecord.fieldId[0].includes('.') ? `${dropzoneRecord.index}.${elementIndex - 1}` : elementIndex - 1
     );
     clearAndStartListening();
-  };
+  }, [clearAndStartListening, dropzoneRecord.fieldId, dropzoneRecord.index, dropzoneRecord.modelId, elementIndex]);
 
-  const onMoveDown = () => {
+  const onMoveDown = useCallback(() => {
     contentController.sortItem(
       dropzoneRecord.modelId,
       dropzoneRecord.fieldId[0],
@@ -87,12 +93,12 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
       dropzoneRecord.fieldId[0].includes('.') ? `${dropzoneRecord.index}.${elementIndex + 1}` : elementIndex + 1
     );
     clearAndStartListening();
-  };
+  }, [clearAndStartListening, dropzoneRecord.fieldId, dropzoneRecord.index, dropzoneRecord.modelId, elementIndex]);
 
-  const onTrash = () => {
+  const onTrash = useCallback(() => {
     contentController.deleteItem(modelId, fieldId, index);
     clearAndStartListening();
-  };
+  }, [clearAndStartListening, fieldId, index, modelId]);
 
   const onCancel = () => {
     clearAndStartListening();
@@ -138,6 +144,16 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
       document.removeEventListener('keydown', onKeyDown);
     };
   }, [isFirstItem, isLastItem, onMoveDown, onMoveUp, onTrash]);
+
+  useEffect(() => {
+    const onClickingOutsideOfSelectedZone = (e: MouseEvent) => {
+      console.log('click');
+    };
+    window.addEventListener('click', onClickingOutsideOfSelectedZone);
+    return () => {
+      window.removeEventListener('click', onClickingOutsideOfSelectedZone);
+    };
+  }, []);
 
   return (
     <>
