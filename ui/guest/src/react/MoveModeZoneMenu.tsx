@@ -136,6 +136,16 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOnlyItem, isFirstItem, isLastItem]);
 
+  useEffect(() => {
+    const onClickingOutsideOfSelectedZone = (e: MouseEvent) => {
+      console.log('click');
+    };
+    window.addEventListener('click', onClickingOutsideOfSelectedZone);
+    return () => {
+      window.removeEventListener('click', onClickingOutsideOfSelectedZone);
+    };
+  }, []);
+
   return (
     <>
       <Tooltip title="Cancel (Esc)">
