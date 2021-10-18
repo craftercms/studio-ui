@@ -24,14 +24,17 @@ import UltraStyledIconButton from './UltraStyledIconButton';
 import HighlightOffRoundedIcon from '@mui/icons-material/HighlightOffRounded';
 import { Tooltip } from '@mui/material';
 import * as contentController from '../classes/ContentController';
+import { getCachedModel } from '../classes/ContentController';
 import { clearAndListen$ } from '../store/subjects';
 import { startListening } from '../store/actions';
 import { ElementRecord } from '../models/InContextEditing';
 import { extractCollection } from '@craftercms/studio-ui/build_tsc/utils/model';
-import { getCachedModel } from '../classes/ContentController';
-import { popPiece, removeLastPiece, isSimple } from '@craftercms/studio-ui/build_tsc/utils/string';
+import { isSimple, popPiece, removeLastPiece } from '@craftercms/studio-ui/build_tsc/utils/string';
 import { AnyAction } from '@reduxjs/toolkit';
-import useUpdateRefs from '@craftercms/studio-ui/utils/hooks/useUpdateRefs';
+import useUpdateRefs from '@craftercms/studio-ui/build_tsc/utils/hooks/useUpdateRefs';
+import { findContainerRecord, runValidation } from '../classes/ICERegistry';
+import { post } from '../utils/communicator';
+import { validationMessage } from '@craftercms/studio-ui/build_tsc/state/actions/preview';
 
 export interface MoveModeZoneMenuProps {
   record: ElementRecord;
@@ -87,8 +90,13 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
   };
 
   const onTrash = () => {
-    contentController.deleteItem(modelId, fieldId, index);
-    onCancel();
+    const minCount = runValidation(findContainerRecord(modelId, fieldId, index).id, 'minCount', [elementIndex - 1]);
+    if (minCount) {
+      post(validationMessage(minCount));
+    } else {
+      contentController.deleteItem(modelId, fieldId, index);
+      onCancel();
+    }
   };
 
   const onDragStart = (e) => {
