@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   changeCurrentUrl,
   checkInGuest,
@@ -202,7 +202,7 @@ const issueDescriptorRequest = (props) => {
 };
 // endregion
 
-export function PreviewConcierge(props: any) {
+export function PreviewConcierge(props: PropsWithChildren<{}>) {
   const dispatch = useDispatch();
   const { id: siteId, uuid } = useActiveSite();
   const user = useActiveUser();
@@ -220,50 +220,12 @@ export function PreviewConcierge(props: any) {
   const childrenMap = guest?.childrenMap;
   const contentTypes$ = useMemo(() => new ReplaySubject<ContentType[]>(1), []);
   const requestedSourceMapPaths = useRef({});
-  // guestDetectionSnackbarOpen, guestDetectionTimeout
   const guestDetectionTimeoutRef = useRef<number>();
   const [guestDetectionSnackbarOpen, setGuestDetectionSnackbarOpen] = useState(false);
   const currentItemPath = guest?.path;
   const uiConfig = useSiteUIConfig();
   const { cdataEscapedFieldPatterns } = uiConfig;
   const rteConfig = useRTEConfig();
-
-  function clearSelectedZonesHandler() {
-    dispatch(clearSelectForEdit());
-    getHostToGuestBus().next({ type: clearSelectedZones.type });
-  }
-
-  // region Legacy Guest pencil repaint
-  // When the guest screen size changes, pencils need to be repainted.
-  useEffect(() => {
-    if (editMode) {
-      let timeout = setTimeout(() => {
-        getHostToGuestBus().next({ type: 'REPAINT_PENCILS' });
-      }, 500);
-      return () => {
-        clearTimeout(timeout);
-      };
-    }
-  }, [icePanelWidth, toolsPanelWidth, hostSize, editMode, showToolsPanel]);
-  // endregion
-
-  // region Permissions and fetch of DetailedItem
-
-  useEffect(() => {
-    // FYI. Path navigator refresh triggers this effect too due to item changing.
-    if (item) {
-      getHostToGuestBus().next({
-        type: setPreviewEditMode.type,
-        payload: { editMode: getComputedEditMode({ item, username: user.username, editMode }) }
-      });
-    }
-  }, [item, editMode, user.username]);
-
-  useEffect(() => {
-    if (currentItemPath && siteId) {
-      dispatch(fetchSandboxItem({ path: currentItemPath, force: true }));
-    }
-  }, [dispatch, currentItemPath, siteId]);
 
   const conditionallyToggleEditMode = useCallback(
     (nextHighlightMode?: HighlightMode) => {
@@ -280,13 +242,45 @@ export function PreviewConcierge(props: any) {
     [dispatch, item, editMode, user.username, highlightMode]
   );
 
-  // endregion
+  function clearSelectedZonesHandler() {
+    dispatch(clearSelectForEdit());
+    getHostToGuestBus().next({ type: clearSelectedZones.type });
+  }
 
-  // region Update rte config
+  // Legacy Guest pencil repaint - When the guest screen size changes, pencils need to be repainted.
+  useEffect(() => {
+    if (editMode) {
+      let timeout = setTimeout(() => {
+        getHostToGuestBus().next({ type: 'REPAINT_PENCILS' });
+      }, 500);
+      return () => {
+        clearTimeout(timeout);
+      };
+    }
+  }, [icePanelWidth, toolsPanelWidth, hostSize, editMode, showToolsPanel]);
+
+  // Send editMode changes to guest
+  useEffect(() => {
+    // FYI. Path navigator refresh triggers this effect too due to item changing.
+    if (item) {
+      getHostToGuestBus().next({
+        type: setPreviewEditMode.type,
+        payload: { editMode: getComputedEditMode({ item, username: user.username, editMode }) }
+      });
+    }
+  }, [item, editMode, user.username]);
+
+  // Fetch active item
+  useEffect(() => {
+    if (currentItemPath && siteId) {
+      dispatch(fetchSandboxItem({ path: currentItemPath, force: true }));
+    }
+  }, [dispatch, currentItemPath, siteId]);
+
+  // Update rte config
   useEffect(() => {
     if (rteConfig) getHostToGuestBus().next({ type: updateRteConfig.type, payload: { rteConfig } });
   }, [rteConfig]);
-  // endregion
 
   // Guest detection, document domain restoring, editMode/highlightMode preference retrieval, clipboard retrieval
   // and contentType subject cleanup.
@@ -334,7 +328,7 @@ export function PreviewConcierge(props: any) {
     contentTypes && contentTypes$.next(Object.values(contentTypes));
   }, [contentTypes, contentTypes$]);
 
-  // guestToHost$ subscription
+  // region guestToHost$ subscription
   useEffect(() => {
     const hostToGuest$ = getHostToGuestBus();
     const guestToHost$ = getGuestToHostBus();
@@ -702,8 +696,8 @@ export function PreviewConcierge(props: any) {
               filter(({ type }) => type === 'progress'),
               pluck('payload')
             )
-            .subscribe(
-              ({ progress }) => {
+            .subscribe({
+              next({ progress }) {
                 const percentage = Math.floor(
                   parseInt(((progress.bytesUploaded / progress.bytesTotal) * 100).toFixed(2))
                 );
@@ -715,11 +709,11 @@ export function PreviewConcierge(props: any) {
                   }
                 });
               },
-              (error) => {
+              error(error) {
                 console.log(error);
                 enqueueSnackbar(formatMessage(guestMessages.assetUploadFailed));
               },
-              () => {
+              complete() {
                 hostToGuest$.next({
                   type: desktopAssetUploadComplete.type,
                   payload: {
@@ -728,7 +722,7 @@ export function PreviewConcierge(props: any) {
                   }
                 });
               }
-            );
+            });
           const sub = hostToHost$.subscribe((action) => {
             const { type, payload: uploadFile } = action;
             if (type === desktopAssetUploadStarted.type && uploadFile.record.id === payload.record.id) {
@@ -809,16 +803,16 @@ export function PreviewConcierge(props: any) {
     }
   }, [siteId, guest, dispatch]);
 
+  // Initialize RTE config
   useEffect(() => {
     if (nnou(uiConfig.xml) && !rteConfig) {
       dispatch(initRichTextEditorConfig({ configXml: uiConfig.xml, siteId }));
     }
   }, [uiConfig.xml, siteId, rteConfig, dispatch]);
 
-  // region Hotkeys
+  // Hotkeys
   useHotkeys('e', () => conditionallyToggleEditMode('all'), [conditionallyToggleEditMode]);
   useHotkeys('m', () => conditionallyToggleEditMode('move'), [conditionallyToggleEditMode]);
-  // endregion
 
   return (
     <>

@@ -40,12 +40,14 @@ import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
 import { isNullOrUndefined, notNullOrUndefined } from '../utils/object';
 import { forEach } from '../utils/array';
 import { getChildArrangement, sibling } from '../utils/dom';
-import { removeLastPiece } from '../utils/string';
+import { removeLastPiece } from '@craftercms/studio-ui/build_tsc/utils/string';
 import $ from 'jquery';
 
 let seq = 0;
+// Element record registry
 let db: LookupTable<ElementRecord> = {};
-let registry = {};
+// Lookup table of element record id arrays, indexed by iceId
+let registry: LookupTable<number[]> = {};
 
 export function get(id: number): ElementRecord {
   const record = db[id];
@@ -394,6 +396,10 @@ export function getElementFromICEProps(modelId: string, fieldId: string, index: 
     return null;
   }
 }
+
+/**
+ * Retrieves the parent node (drop target/zone) of an item
+ */
 export function getParentElementFromICEProps(
   modelId: string,
   fieldId: string,
@@ -407,6 +413,10 @@ export function getParentElementFromICEProps(
 
   return recordId === null ? null : $(fromICEId(recordId).element);
 }
+
+/**
+ * Retrieves all the drop targets elements that host a give ice record
+ */
 export function getParentsElementFromICEProps(
   modelId: string,
   fieldId: string,

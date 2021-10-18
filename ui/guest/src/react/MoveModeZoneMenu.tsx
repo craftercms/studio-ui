@@ -15,7 +15,7 @@
  */
 
 import * as React from 'react';
-import { useCallback, useEffect, useMemo } from 'react';
+import { Dispatch, useEffect, useMemo } from 'react';
 import DragIndicatorRounded from '@mui/icons-material/DragIndicatorRounded';
 import ArrowDownwardRoundedIcon from '@mui/icons-material/ArrowDownwardRounded';
 import ArrowUpwardRoundedIcon from '@mui/icons-material/ArrowUpwardRounded';
@@ -24,16 +24,18 @@ import UltraStyledIconButton from './UltraStyledIconButton';
 import HighlightOffRoundedIcon from '@mui/icons-material/HighlightOffRounded';
 import { Tooltip } from '@mui/material';
 import * as contentController from '../classes/ContentController';
-import { getCachedModel } from '../classes/ContentController';
 import { clearAndListen$ } from '../store/subjects';
 import { startListening } from '../store/actions';
 import { ElementRecord } from '../models/InContextEditing';
-import { extractCollection } from '../utils/model';
-import { popPiece, removeLastPiece } from '../utils/string';
+import { extractCollection } from '@craftercms/studio-ui/build_tsc/utils/model';
+import { getCachedModel } from '../classes/ContentController';
+import { popPiece, removeLastPiece, isSimple } from '@craftercms/studio-ui/build_tsc/utils/string';
+import { AnyAction } from '@reduxjs/toolkit';
+import useUpdateRefs from '@craftercms/studio-ui/utils/hooks/useUpdateRefs';
 
 export interface MoveModeZoneMenuProps {
-  [key: string]: any;
   record: ElementRecord;
+  dispatch: Dispatch<AnyAction>;
 }
 
 export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
@@ -44,86 +46,84 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
     index
   } = record;
 
-  const { parentIndex, elementIndex } = useMemo(() => {
-    return {
-      parentIndex: typeof index === 'string' ? removeLastPiece(index) : null,
-      elementIndex: typeof index === 'string' ? parseInt(popPiece(index)) : index
-    };
-  }, [index]);
-  
+  const elementIndex = useMemo(() => (typeof index === 'string' ? parseInt(popPiece(index), 10) : index), [index]);
 
-  const collectionLength = useMemo(() => extractCollection(getCachedModel(modelId), fieldId, index).length, []);
+  const numOfItemsInContainerCollection = useMemo(
+    () => extractCollection(getCachedModel(modelId), fieldId, index).length,
+    [modelId, fieldId, index]
+  );
 
   const isFirstItem = elementIndex === 0;
-  const isLastItem = elementIndex === collectionLength - 1;
+  const isLastItem = elementIndex === numOfItemsInContainerCollection - 1;
   const isOnlyItem = isFirstItem && isLastItem;
 
   // region callbacks
-  const clearAndStartListening = useCallback(() => {
-    clearAndListen$.next();
-    dispatch(startListening());
-  }, [dispatch]);
-
-  const onMoveUp = useCallback(() => {
-    contentController.sortItem(
-      modelId,
-      fieldId,
-      fieldId.includes('.') ? `${parentIndex}.${elementIndex}` : elementIndex,
-      fieldId.includes('.') ? `${parentIndex}.${elementIndex - 1}` : elementIndex - 1
-    );
-    clearAndStartListening();
-  }, [modelId, fieldId, parentIndex, elementIndex, clearAndStartListening]);
-
-  const onMoveDown = useCallback(() => {
-    contentController.sortItem(
-      modelId,
-      fieldId,
-      fieldId.includes('.') ? `${parentIndex}.${elementIndex}` : elementIndex,
-      fieldId.includes('.') ? `${parentIndex}.${elementIndex + 1}` : elementIndex + 1
-    );
-    clearAndStartListening();
-  }, [clearAndStartListening, fieldId, modelId, parentIndex, elementIndex]);
-
-  const onTrash = useCallback(() => {
-    contentController.deleteItem(modelId, fieldId, index);
-    clearAndStartListening();
-  }, [clearAndStartListening, fieldId, index, modelId]);
 
   const onCancel = () => {
-    clearAndStartListening();
+    clearAndListen$.next();
+    dispatch(startListening());
+  };
+
+  const onMoveUp = () => {
+    const targetIndex = elementIndex - 1;
+    contentController.sortItem(
+      modelId,
+      fieldId,
+      index,
+      isSimple(index) ? targetIndex : `${removeLastPiece(index as string)}.${targetIndex}`
+    );
+    onCancel();
+  };
+
+  const onMoveDown = () => {
+    const targetIndex = elementIndex + 1;
+    contentController.sortItem(
+      modelId,
+      fieldId,
+      index,
+      isSimple(index) ? targetIndex : `${removeLastPiece(index as string)}.${targetIndex}`
+    );
+    onCancel();
+  };
+
+  const onTrash = () => {
+    contentController.deleteItem(modelId, fieldId, index);
+    onCancel();
   };
 
   const onDragStart = (e) => {
     e.stopPropagation();
-    const image = document.querySelector('.craftercms-dragged-element');
     e.dataTransfer.setData('text/plain', `${record.id}`);
-    e.dataTransfer.setDragImage(image, 20, 20);
+    e.dataTransfer.setDragImage(document.querySelector('.craftercms-dragged-element'), 20, 20);
     setTimeout(() => {
       dispatch({ type: 'dragstart', payload: { event: null, record } });
     });
   };
+
   // endregion
+
+  const refs = useUpdateRefs({ onMoveUp, onMoveDown, onTrash, isFirstItem, isLastItem });
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       switch (e.key) {
         case 'ArrowUp': {
-          if (!isFirstItem) {
+          if (!refs.current.isFirstItem) {
             e.preventDefault();
-            onMoveUp();
+            refs.current.onMoveUp();
           }
           break;
         }
         case 'ArrowDown': {
-          if (!isLastItem) {
+          if (!refs.current.isLastItem) {
             e.preventDefault();
-            onMoveDown();
+            refs.current.onMoveDown();
           }
           break;
         }
         case 'Backspace': {
           e.preventDefault();
-          onTrash();
+          refs.current.onTrash();
           break;
         }
       }
@@ -132,7 +132,9 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
     return () => {
       document.removeEventListener('keydown', onKeyDown);
     };
-  }, [isFirstItem, isLastItem, onMoveDown, onMoveUp, onTrash]);
+    // Linter doesn't realise that refs is a ref and needn't be on the effect
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isFirstItem, isLastItem]);
 
   useEffect(() => {
     const onClickingOutsideOfSelectedZone = (e: MouseEvent) => {

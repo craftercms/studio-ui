@@ -92,15 +92,16 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
         } = action;
         const iceId = state.draggable?.[record.id];
         if (isNullOrUndefined(iceId)) {
-          console.error('No ice id found for this drag instance.');
+          // When the drag starts on a child element of the item, it passes through here.
+          console.error('No ice id found for this drag instance.', record, state.draggable);
         } else if (not(iceId)) {
-          // Items that browser make draggable by default (images, etc)
+          // Items that browser make draggable by default (images, etc).
           console.warn("Element is draggable but wasn't set draggable by craftercms");
         } else {
           post(instanceDragBegun(iceId));
           if (event) {
+            event.stopPropagation();
             const e = unwrapEvent<DragEvent>(event);
-            e.stopPropagation();
             e.dataTransfer.setData('text/plain', `${record.id}`);
             e.dataTransfer.setDragImage(document.querySelector('.craftercms-dragged-element'), 20, 20);
           }

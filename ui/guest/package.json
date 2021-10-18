@@ -51,7 +51,24 @@
             ]
           },
           "block": {
-            "balanced": true
+            "markers": [
+              "!",
+              "*",
+              "#",
+              "function",
+              "const",
+              "if",
+              "export",
+              "interface",
+              "#__PURE__",
+              "@__PURE__"
+            ],
+            "exceptions": [
+              "!",
+              "*",
+              "#"
+            ],
+            "balanced": false
           }
         }
       ]

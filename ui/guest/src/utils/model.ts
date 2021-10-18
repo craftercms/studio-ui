@@ -16,7 +16,7 @@
 
 import { ContentInstance } from '@craftercms/studio-ui/models/ContentInstance';
 import { isNullOrUndefined, retrieveProperty, setProperty } from './object';
-import { removeLastPiece } from './string';
+import { removeLastPiece } from '@craftercms/studio-ui/build_tsc/utils/string';
 
 const systemPropList = ['id', 'path', 'contentTypeId', 'dateCreated', 'dateModified', 'label'];
 
