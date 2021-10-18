@@ -25,7 +25,7 @@ import HighlightOffRoundedIcon from '@mui/icons-material/HighlightOffRounded';
 import { Tooltip } from '@mui/material';
 import * as contentController from '../classes/ContentController';
 import { getCachedModel } from '../classes/ContentController';
-import { clearAndListen$ } from '../store/subjects';
+import { clearAndListen$, click$ } from '../store/subjects';
 import { startListening } from '../store/actions';
 import { ElementRecord } from '../models/InContextEditing';
 import { extractCollection } from '@craftercms/studio-ui/build_tsc/utils/model';
@@ -145,11 +145,17 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
   }, [isFirstItem, isLastItem]);
 
   useEffect(() => {
+    const subscription = click$.subscribe(({ event }) => {
+      console.log(event);
+    });
+
     const onClickingOutsideOfSelectedZone = (e: MouseEvent) => {
-      console.log('click');
+      console.log(e);
     };
+
     window.addEventListener('click', onClickingOutsideOfSelectedZone);
     return () => {
+      subscription.unsubscribe();
       window.removeEventListener('click', onClickingOutsideOfSelectedZone);
     };
   }, []);
