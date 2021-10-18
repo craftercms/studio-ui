@@ -27,9 +27,9 @@ import * as contentController from '../classes/ContentController';
 import { getCachedModel } from '../classes/ContentController';
 import { clearAndListen$ } from '../store/subjects';
 import { startListening } from '../store/actions';
-import { compileDropZone, fromElement, getParentElementFromICEProps } from '../classes/ElementRegistry';
 import { ElementRecord } from '../models/InContextEditing';
 import { extractCollection } from '../utils/model';
+import { popPiece, removeLastPiece } from '../utils/string';
 
 export interface MoveModeZoneMenuProps {
   [key: string]: any;
@@ -44,29 +44,18 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
     index
   } = record;
 
-  const collection = extractCollection(getCachedModel(modelId), fieldId, index);
-
-  console.log(collection);
-
-  const elementIndex = useMemo(() => {
-    if (typeof index === 'string') {
-      return parseInt(index.substr(index.lastIndexOf('.') + 1), 10);
-    }
-    return index;
+  const { parentIndex, elementIndex } = useMemo(() => {
+    return {
+      parentIndex: typeof index === 'string' ? removeLastPiece(index) : null,
+      elementIndex: typeof index === 'string' ? parseInt(popPiece(index)) : index
+    };
   }, [index]);
+  
 
-  const dropzoneRecord = useMemo(
-    () => fromElement(getParentElementFromICEProps(modelId, fieldId, index)[0] as Element),
-    [fieldId, index, modelId]
-  );
-
-  const dropzoneChildrenLength = useMemo(
-    () => compileDropZone(dropzoneRecord.iceIds[0]).children.length,
-    [dropzoneRecord.iceIds[0]]
-  );
+  const collectionLength = useMemo(() => extractCollection(getCachedModel(modelId), fieldId, index).length, []);
 
   const isFirstItem = elementIndex === 0;
-  const isLastItem = elementIndex === dropzoneChildrenLength - 1;
+  const isLastItem = elementIndex === collectionLength - 1;
   const isOnlyItem = isFirstItem && isLastItem;
 
   // region callbacks
@@ -77,23 +66,23 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
 
   const onMoveUp = useCallback(() => {
     contentController.sortItem(
-      dropzoneRecord.modelId,
-      dropzoneRecord.fieldId[0],
-      dropzoneRecord.fieldId[0].includes('.') ? `${dropzoneRecord.index}.${elementIndex}` : elementIndex,
-      dropzoneRecord.fieldId[0].includes('.') ? `${dropzoneRecord.index}.${elementIndex - 1}` : elementIndex - 1
+      modelId,
+      fieldId,
+      fieldId.includes('.') ? `${parentIndex}.${elementIndex}` : elementIndex,
+      fieldId.includes('.') ? `${parentIndex}.${elementIndex - 1}` : elementIndex - 1
     );
     clearAndStartListening();
-  }, [clearAndStartListening, dropzoneRecord.fieldId, dropzoneRecord.index, dropzoneRecord.modelId, elementIndex]);
+  }, [modelId, fieldId, parentIndex, elementIndex, clearAndStartListening]);
 
   const onMoveDown = useCallback(() => {
     contentController.sortItem(
-      dropzoneRecord.modelId,
-      dropzoneRecord.fieldId[0],
-      dropzoneRecord.fieldId[0].includes('.') ? `${dropzoneRecord.index}.${elementIndex}` : elementIndex,
-      dropzoneRecord.fieldId[0].includes('.') ? `${dropzoneRecord.index}.${elementIndex + 1}` : elementIndex + 1
+      modelId,
+      fieldId,
+      fieldId.includes('.') ? `${parentIndex}.${elementIndex}` : elementIndex,
+      fieldId.includes('.') ? `${parentIndex}.${elementIndex + 1}` : elementIndex + 1
     );
     clearAndStartListening();
-  }, [clearAndStartListening, dropzoneRecord.fieldId, dropzoneRecord.index, dropzoneRecord.modelId, elementIndex]);
+  }, [clearAndStartListening, fieldId, modelId, parentIndex, elementIndex]);
 
   const onTrash = useCallback(() => {
     contentController.deleteItem(modelId, fieldId, index);
