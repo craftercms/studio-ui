@@ -24,12 +24,6 @@ import { computedDragOver, scrolling, scrollingStopped } from './actions';
 
 export const clearAndListen$ = new Subject<void>();
 
-export const click$ = new Subject<{
-  type: string;
-  event: Event;
-  record: ElementRecord;
-}>();
-
 export const escape$ = fromEvent<KeyboardEvent>(document, 'keydown').pipe(filter((e) => e.key === 'Escape'));
 
 let active = false;

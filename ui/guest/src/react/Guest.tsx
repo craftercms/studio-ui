@@ -60,7 +60,7 @@ import {
 } from '@craftercms/studio-ui/build_tsc/state/actions/preview';
 import { createGuestStore } from '../store/store';
 import { Provider } from 'react-redux';
-import { clearAndListen$, click$ } from '../store/subjects';
+import { clearAndListen$ } from '../store/subjects';
 import { GuestState } from '../store/models/GuestStore';
 import { isNullOrUndefined, nnou } from '../utils/object';
 import { scrollToDropTargets } from '../utils/dom';
@@ -153,7 +153,6 @@ function Guest(props: GuestProps) {
             // Click & dblclick require stopping as early as possible to avoid
             // navigation or other click defaults.
             if (type === 'click' || 'dblclick' === type) {
-              click$.next({ type, event, record });
               event.preventDefault();
               event.stopPropagation();
             }

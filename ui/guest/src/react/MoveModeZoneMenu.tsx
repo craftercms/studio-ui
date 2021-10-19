@@ -25,14 +25,14 @@ import HighlightOffRoundedIcon from '@mui/icons-material/HighlightOffRounded';
 import { Tooltip } from '@mui/material';
 import * as contentController from '../classes/ContentController';
 import { getCachedModel } from '../classes/ContentController';
-import { clearAndListen$, click$ } from '../store/subjects';
+import { clearAndListen$ } from '../store/subjects';
 import { startListening } from '../store/actions';
 import { ElementRecord } from '../models/InContextEditing';
 import { extractCollection } from '@craftercms/studio-ui/build_tsc/utils/model';
 import { isSimple, popPiece, removeLastPiece } from '@craftercms/studio-ui/build_tsc/utils/string';
 import { AnyAction } from '@reduxjs/toolkit';
 import useRef from '@craftercms/studio-ui/build_tsc/utils/hooks/useUpdateRefs';
-import { findContainerRecord, getMovableParentRecord, runValidation } from '../classes/ICERegistry';
+import { findContainerRecord, runValidation } from '../classes/ICERegistry';
 import { post } from '../utils/communicator';
 import { validationMessage } from '@craftercms/studio-ui/build_tsc/state/actions/preview';
 
@@ -68,7 +68,9 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
     dispatch(startListening());
   };
 
-  const onMoveUp = () => {
+  const onMoveUp = (e: React.MouseEvent<HTMLButtonElement, MouseEvent> | KeyboardEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     const targetIndex = elementIndex - 1;
     contentController.sortItem(
       modelId,
@@ -79,7 +81,9 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
     onCancel();
   };
 
-  const onMoveDown = () => {
+  const onMoveDown = (e: React.MouseEvent<HTMLButtonElement, MouseEvent> | KeyboardEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     const targetIndex = elementIndex + 1;
     contentController.sortItem(
       modelId,
@@ -90,8 +94,12 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
     onCancel();
   };
 
-  const onTrash = () => {
-    const minCount = runValidation(findContainerRecord(modelId, fieldId, index).id, 'minCount', [elementIndex - 1]);
+  const onTrash = (e: React.MouseEvent<HTMLButtonElement, MouseEvent> | KeyboardEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const minCount = runValidation(findContainerRecord(modelId, fieldId, index).id, 'minCount', [
+      numOfItemsInContainerCollection - 1
+    ]);
     if (minCount) {
       post(validationMessage(minCount));
     } else {
@@ -116,23 +124,23 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       switch (e.key) {
+        case 'ArrowLeft':
         case 'ArrowUp': {
           if (!refs.current.isFirstItem) {
-            e.preventDefault();
-            refs.current.onMoveUp();
+            refs.current.onMoveUp(e);
           }
           break;
         }
+        case 'ArrowRight':
         case 'ArrowDown': {
           if (!refs.current.isLastItem) {
-            e.preventDefault();
-            refs.current.onMoveDown();
+            refs.current.onMoveDown(e);
           }
           break;
         }
         case 'Backspace': {
           e.preventDefault();
-          refs.current.onTrash();
+          refs.current.onTrash(e);
           break;
         }
       }
@@ -144,20 +152,12 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
   }, [isFirstItem, isLastItem]);
 
   useEffect(() => {
-    const subscription = click$.subscribe(({ record: { iceIds } }) => {
-      if (iceId !== getMovableParentRecord(iceIds[0])) {
-        // TODO: this is not working
-        // refs.current.onCancel();
-      }
-    });
-
     const onClickingOutsideOfSelectedZone = (e: MouseEvent) => {
       refs.current.onCancel();
     };
 
     window.addEventListener('click', onClickingOutsideOfSelectedZone);
     return () => {
-      subscription.unsubscribe();
       window.removeEventListener('click', onClickingOutsideOfSelectedZone);
     };
   }, [iceId]);

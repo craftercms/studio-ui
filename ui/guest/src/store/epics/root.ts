@@ -306,10 +306,9 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
     action$.pipe(
       ofType('click'),
       withLatestFrom(state$),
-      filter(([, state]) => state.status === EditingStatus.LISTENING),
       switchMap(([action, state]) => {
         const { record, event } = action.payload;
-        if (state.highlightMode === HighlightMode.ALL) {
+        if (state.highlightMode === HighlightMode.ALL && state.status === EditingStatus.LISTENING) {
           const iceZoneSelected = () => {
             post(
               iceZoneSelectedAction({
@@ -354,7 +353,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
               return iceZoneSelected();
             }
           }
-        } else if (state.highlightMode === HighlightMode.MOVE_TARGETS) {
+        } else if (state.highlightMode === HighlightMode.MOVE_TARGETS && state.status === EditingStatus.LISTENING) {
           const movableRecordId = iceRegistry.getMovableParentRecord(record.iceIds[0]);
           if (notNullOrUndefined(movableRecordId)) {
             // Inform host of the field selection
@@ -372,6 +371,15 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
               ),
               of(setEditingStatus({ status: EditingStatus.FIELD_SELECTED }))
             );
+          }
+        } else if (
+          state.status === EditingStatus.FIELD_SELECTED &&
+          state.highlightMode === HighlightMode.MOVE_TARGETS
+        ) {
+          const movableRecordId = iceRegistry.getMovableParentRecord(record.iceIds[0]);
+          if (movableRecordId !== Number(Object.keys(state.highlighted)[0])) {
+            post(clearSelectedZones.type);
+            return of(startListening());
           }
         }
         return NEVER;
