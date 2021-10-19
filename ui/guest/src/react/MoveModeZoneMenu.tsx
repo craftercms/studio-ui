@@ -31,7 +31,7 @@ import { ElementRecord } from '../models/InContextEditing';
 import { extractCollection } from '@craftercms/studio-ui/build_tsc/utils/model';
 import { isSimple, popPiece, removeLastPiece } from '@craftercms/studio-ui/build_tsc/utils/string';
 import { AnyAction } from '@reduxjs/toolkit';
-import useUpdateRefs from '@craftercms/studio-ui/build_tsc/utils/hooks/useUpdateRefs';
+import useRef from '@craftercms/studio-ui/build_tsc/utils/hooks/useUpdateRefs';
 import { findContainerRecord, getMovableParentRecord, runValidation } from '../classes/ICERegistry';
 import { post } from '../utils/communicator';
 import { validationMessage } from '@craftercms/studio-ui/build_tsc/state/actions/preview';
@@ -111,7 +111,7 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
 
   // endregion
 
-  const refs = useUpdateRefs({ onMoveUp, onMoveDown, onTrash, onCancel, isFirstItem, isLastItem });
+  const refs = useRef({ onMoveUp, onMoveDown, onTrash, onCancel, isFirstItem, isLastItem });
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -141,8 +141,6 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
     return () => {
       document.removeEventListener('keydown', onKeyDown);
     };
-    // Linter doesn't realise that refs is a ref and needn't be on the effect
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFirstItem, isLastItem]);
 
   useEffect(() => {
@@ -162,8 +160,6 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
       subscription.unsubscribe();
       window.removeEventListener('click', onClickingOutsideOfSelectedZone);
     };
-    // Linter doesn't realise that refs is a ref and needn't be on the effect
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [iceId]);
 
   return (
