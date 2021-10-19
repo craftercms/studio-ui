@@ -130,12 +130,13 @@ const reducer = createReducer(initialState, {
       } else if (highlightMode === HighlightMode.MOVE_TARGETS) {
         const iceId = record.iceIds[0];
         const movableRecordId = iceRegistry.getMovableParentRecord(iceId);
-        if (notNullOrUndefined(movableRecordId)) {
+        const movableRecord = fromICEId(movableRecordId);
+        if (notNullOrUndefined(movableRecord)) {
           const draggable = getDraggable(movableRecordId);
           const highlight = getHoverData(
             // If (iceId == movableRecordId) the current record is already
             // the one to show the highlight on.
-            iceId === movableRecordId ? record.id : fromICEId(movableRecordId).id
+            iceId === movableRecordId ? record.id : movableRecord.id
           );
           return {
             ...state,

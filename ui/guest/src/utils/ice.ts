@@ -20,9 +20,10 @@ import { ContentInstance } from '@craftercms/studio-ui/models/ContentInstance';
 import { isNullOrUndefined, notNullOrUndefined, nou } from './object';
 import * as Model from './model';
 import { forEach, mergeArraysAlternatively } from './array';
-import { popPiece } from './string';
+import { popPiece } from '@craftercms/studio-ui/build_tsc/utils/string';
 import { ModelHierarchyMap } from '@craftercms/studio-ui/utils/content';
 import { RecordTypes, ReferentialEntries } from '../models/InContextEditing';
+import { isSimple, isSymmetricCombination } from '@craftercms/studio-ui/build_tsc/utils/string';
 
 export function findComponentContainerFields(
   fields: LookupTable<ContentTypeField> | ContentTypeField[]
@@ -108,9 +109,6 @@ export function determineRecordType(
   entities: Pick<ReferentialEntries, 'fieldId' | 'contentType' | 'index' | 'field'>
 ): RecordTypes {
   let recordType: RecordTypes;
-  const isSimple = (str: string | number, separator = '.') => String(str).split(separator).length === 1;
-  const isSymmetricCombination = (string1: string | number, string2: string | number, separator = '.') =>
-    String(string1).split(separator).length === String(string2).split(separator).length;
   if (nou(entities.fieldId)) {
     // It's a model
     recordType = entities.contentType.type as RecordTypes;

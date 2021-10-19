@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import * as React from 'react';
 import createStyles from '@mui/styles/createStyles';
-
 import makeStyles from '@mui/styles/makeStyles';
 import { PropsWithChildren, useEffect } from 'react';
 import { createPortal } from 'react-dom';
@@ -50,13 +50,14 @@ export const useStyles = makeStyles((theme) =>
     }
   })
 );
+
 export function MinimizedBarPortal(props: PropsWithChildren<{}>) {
   const classes = useStyles();
   const el = createPortalEl();
   useEffect(() => {
     el.setAttribute('class', classes.wrapper);
   }, [el, classes.wrapper]);
-  return createPortal(props.children, el);
+  return createPortal(props.children, el) as JSX.Element;
 }
 
 export default MinimizedBarPortal;

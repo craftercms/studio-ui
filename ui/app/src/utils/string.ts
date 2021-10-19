@@ -28,8 +28,8 @@ export function camelize(str: string) {
 /**
  * Capitalizes the first letter of a string and down-cases all the others.
  **/
-export function capitalize(str: string) {
-  return str.charAt(0).toUpperCase() + str.substring(1).toLowerCase();
+export function capitalize(str: string): string {
+  return `${str.charAt(0).toUpperCase()}${str.substr(1)}`;
 }
 
 /**
@@ -55,12 +55,12 @@ export function removeSpaces(str: string) {
   return str.replace(/\s+/g, '');
 }
 
-export function removeLastPiece(str: string, splitChar = '.') {
-  return str.substr(0, str.lastIndexOf(splitChar));
+export function removeLastPiece(str: string, splitChar: string = '.'): string {
+  return (str = `${str}`).substr(0, str.lastIndexOf(splitChar));
 }
 
-export function popPiece(str: string, splitChar = '.') {
-  return str.substr(str.lastIndexOf(splitChar) + 1);
+export function popPiece(str: string, splitChar: string = '.'): string {
+  return (str = `${str}`).substr(str.lastIndexOf(splitChar) + 1);
 }
 
 export function isJSON(str: string): boolean {
@@ -168,3 +168,8 @@ export function postFill(str: string | number, minLength: number = 2, char: stri
   str = `${str}`;
   return str.length >= minLength ? str : `${str}${new Array(minLength - str.length).fill(char).join('')}`;
 }
+
+export const isSimple = (str: string | number, separator = '.') => String(str).split(separator).length === 1;
+
+export const isSymmetricCombination = (string1: string | number, string2: string | number, separator = '.') =>
+  String(string1).split(separator).length === String(string2).split(separator).length;

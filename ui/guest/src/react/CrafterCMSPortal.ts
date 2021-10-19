@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import ReactDOM from 'react-dom';
-import React, { PropsWithChildren, useLayoutEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
+import { PropsWithChildren, useLayoutEffect, useRef } from 'react';
 
 export type CrafterCMSPortalProps = PropsWithChildren<{}>;
 
@@ -34,7 +34,7 @@ export function CrafterCMSPortal(props: CrafterCMSPortalProps) {
     };
   }, []);
 
-  return ReactDOM.createPortal(props.children, portalRef.current);
+  return createPortal(props.children, portalRef.current) as JSX.Element;
 }
 
 export default CrafterCMSPortal;
