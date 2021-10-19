@@ -29,7 +29,7 @@ import { clearAndListen$ } from '../store/subjects';
 import { startListening } from '../store/actions';
 import { ElementRecord } from '../models/InContextEditing';
 import { extractCollection } from '@craftercms/studio-ui/build_tsc/utils/model';
-import { isSimple, popPiece, removeLastPiece } from '@craftercms/studio-ui/build_tsc/utils/string';
+import { popPiece } from '@craftercms/studio-ui/build_tsc/utils/string';
 import { AnyAction } from '@reduxjs/toolkit';
 import useRef from '@craftercms/studio-ui/build_tsc/utils/hooks/useUpdateRefs';
 import { findContainerRecord, runValidation } from '../classes/ICERegistry';
@@ -71,26 +71,14 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
   const onMoveUp = (e: React.MouseEvent<HTMLButtonElement, MouseEvent> | KeyboardEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    const targetIndex = elementIndex - 1;
-    contentController.sortItem(
-      modelId,
-      fieldId,
-      index,
-      isSimple(index) ? targetIndex : `${removeLastPiece(index as string)}.${targetIndex}`
-    );
+    contentController.moveItemUp(modelId, fieldId, index);
     onCancel();
   };
 
   const onMoveDown = (e: React.MouseEvent<HTMLButtonElement, MouseEvent> | KeyboardEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    const targetIndex = elementIndex + 1;
-    contentController.sortItem(
-      modelId,
-      fieldId,
-      index,
-      isSimple(index) ? targetIndex : `${removeLastPiece(index as string)}.${targetIndex}`
-    );
+    contentController.moveItemDown(modelId, fieldId, index);
     onCancel();
   };
 
