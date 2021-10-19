@@ -21,19 +21,25 @@ tinymce.PluginManager.add('paste_cleanup', function (editor, url) {
     });
   };
 
-  // There's an issue in tinymce when pasting lists where it wraps each of the 'li' elements in its own 'ol' or 'ul'.
-  // This function joins all of the ol elements with the issue (groups of 'ol')
-  const fixOrderedLists = (element) => {
-    const orderedLists = Array.from(element.getElementsByTagName('OL')).filter((ol) => {
-      return ol.childElementCount === 1;
+  // There's an issue in tinymce when pasting lists where it doesn't wrap the 'li' elements property in their own 'ol' or 'ul'.
+  // This function joins all of the ol|ul elements with the issue (groups of 'ol' or 'ul')
+  // @listType: 'UL' | 'OL'
+  const fixLists = (element, listType) => {
+    const lists = Array.from(element.getElementsByTagName(listType)).filter((list) => {
+      // First item of lists will always be in a separate ul|ol.
+      return list.childElementCount === 1;
     });
-    orderedLists.forEach((ol) => {
-      let haveOlSiblings = ol.nextElementSibling?.tagName === 'OL' && ol.nextElementSibling.children.length === 1;
-      while (haveOlSiblings) {
-        ol.appendChild(ol.nextElementSibling.children.item(0));
-        ol.nextElementSibling.remove();
+    lists.forEach((list) => {
+      let haveListSiblings = list.nextElementSibling?.tagName === listType;
+      while (haveListSiblings) {
+        if (list.nextElementSibling.children) {
+          Array.from(list.nextElementSibling.children).forEach((item) => {
+            list.appendChild(item);
+          });
+          list.nextElementSibling.remove();
+        }
         // getting next ol sibling (may not exists) so it can continue checking/joining the lists.
-        haveOlSiblings = ol.nextElementSibling?.tagName === 'OL';
+        haveListSiblings = list.nextElementSibling?.tagName === listType;
       }
     });
   };
@@ -41,7 +47,8 @@ tinymce.PluginManager.add('paste_cleanup', function (editor, url) {
   return {
     cleanup: function (parentNode) {
       removeElAttributes(parentNode);
-      fixOrderedLists(parentNode, 'OL');
+      fixLists(parentNode, 'OL');
+      fixLists(parentNode, 'UL');
 
       parentNode.querySelectorAll('*').forEach((node) => {
         removeElAttributes(node);
