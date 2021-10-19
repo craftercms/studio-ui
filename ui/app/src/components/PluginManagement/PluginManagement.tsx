@@ -40,7 +40,7 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import { useDispatch } from 'react-redux';
-import { fetchInstalledMarketplacePlugins } from '../../services/marketplace';
+import { deleteMarketplacePlugin, fetchInstalledMarketplacePlugins } from '../../services/marketplace';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { getUserPermissions } from '../../services/security';
 import { emitSystemEvent, pluginInstalled, showSystemNotification } from '../../state/actions/system';
@@ -57,11 +57,29 @@ import ListSubheader from '@mui/material/ListSubheader';
 import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import TableBody from '@mui/material/TableBody';
+import ConfirmDropdown from '../ConfirmDropdown';
+import DeleteIcon from '@mui/icons-material/DeleteOutline';
 
 const messages = defineMessages({
   pluginInstalled: {
     id: 'PluginManagement.pluginInstalled',
     defaultMessage: 'Plugin installed successfully'
+  },
+  pluginDeleted: {
+    id: 'pluginManagement.pluginDeleted',
+    defaultMessage: 'Plugin deleted'
+  },
+  confirmHelperText: {
+    id: 'pluginManagement.helperText',
+    defaultMessage: 'Delete plugin?'
+  },
+  confirmOk: {
+    id: 'words.yes',
+    defaultMessage: 'Yes'
+  },
+  confirmCancel: {
+    id: 'words.no',
+    defaultMessage: 'No'
   }
 });
 
@@ -173,6 +191,22 @@ export const PluginManagement = (props: PluginManagementProps) => {
     setAnchorEl(null);
   };
 
+  const onDeletePlugin = (id: string) => {
+    deleteMarketplacePlugin(siteId, id, true).subscribe({
+      next: () => {
+        refresh();
+        dispatch(
+          showSystemNotification({
+            message: formatMessage(messages.pluginDeleted)
+          })
+        );
+      },
+      error: (response) => {
+        dispatch(showErrorDialog({ error: response }));
+      }
+    });
+  };
+
   return (
     <Paper elevation={0}>
       <GlobalAppToolbar
@@ -272,7 +306,15 @@ export const PluginManagement = (props: PluginManagementProps) => {
                     <StyledTableCell align="left">
                       <AsDayMonthDateTime date={plugin.installationDate} locale={locale} />
                     </StyledTableCell>
-                    <TableCell align="right" className={classes.actions} />
+                    <TableCell align="right" className={classes.actions}>
+                      <ConfirmDropdown
+                        cancelText={formatMessage(messages.confirmCancel)}
+                        confirmText={formatMessage(messages.confirmOk)}
+                        confirmHelperText={formatMessage(messages.confirmHelperText)}
+                        icon={DeleteIcon}
+                        onConfirm={() => onDeletePlugin(plugin.id)}
+                      />
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>

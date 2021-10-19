@@ -67,6 +67,14 @@ export function installMarketplacePlugin(
   return postJSON('/studio/api/2/marketplace/install', { siteId, pluginId, pluginVersion }).pipe(mapTo(true));
 }
 
+export function deleteMarketplacePlugin(siteId: string, pluginId: string, force: boolean = false): Observable<boolean> {
+  return postJSON('/studio/api/2/marketplace/remove', {
+    siteId,
+    pluginId,
+    force
+  }).pipe(mapTo(true));
+}
+
 export function fetchInstalledMarketplacePlugins(siteId: string): Observable<PluginRecord[]> {
   return get<Api2ResponseFormat<{ plugins: PluginRecord[] }>>(
     `/studio/api/2/marketplace/installed?siteId=${siteId}`
