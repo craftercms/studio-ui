@@ -111,16 +111,17 @@ const useStyles = makeStyles((theme) =>
       backgroundColor: palette.blue.tint,
       ...styles.resizeHandleActive
     }),
-    resizingOverlay: {
+    resizingOverlay: (styles) => ({
       '&::before': {
         content: '""',
         position: 'fixed',
         top: 0,
         bottom: 0,
         left: 0,
-        right: 0
+        right: 0,
+        ...styles.resizingOverlay
       }
-    }
+    })
   })
 );
 
