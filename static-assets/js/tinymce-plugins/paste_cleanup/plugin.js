@@ -43,11 +43,9 @@ tinymce.PluginManager.add('paste_cleanup', function (editor, url) {
       removeElAttributes(parentNode);
       fixOrderedLists(parentNode, 'OL');
 
-      $(parentNode)
-        .find('*')
-        .each((index, node) => {
-          removeElAttributes(node);
-        });
+      parentNode.querySelectorAll('*').forEach((node) => {
+        removeElAttributes(node);
+      });
     },
   };
 });
