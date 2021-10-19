@@ -33,7 +33,8 @@ export type ResizeableDrawerClassKey =
   | 'resizeHandle'
   | 'resizeHandleActive'
   | 'resizeHandleLeft'
-  | 'resizeHandleRight';
+  | 'resizeHandleRight'
+  | 'resizingOverlay';
 
 export type ResizeableDrawerStyles = Partial<Record<ResizeableDrawerClassKey, CSSProperties>>;
 
@@ -109,7 +110,17 @@ const useStyles = makeStyles((theme) =>
       visibility: 'visible',
       backgroundColor: palette.blue.tint,
       ...styles.resizeHandleActive
-    })
+    }),
+    resizingOverlay: {
+      '&::before': {
+        content: '""',
+        position: 'fixed',
+        top: 0,
+        bottom: 0,
+        left: 0,
+        right: 0
+      }
+    }
   })
 );
 
@@ -186,7 +197,8 @@ export default function ResizeableDrawer(props: ResizeableDrawerProps) {
           belowToolbar && classes.drawerPaperBelowToolbar,
           drawerPaper,
           belowToolbar && drawerPaperBelowToolbar,
-          onWidthChange && (anchor === 'left' ? classes.drawerPaperLeft : classes.drawerPaperRight)
+          onWidthChange && (anchor === 'left' ? classes.drawerPaperLeft : classes.drawerPaperRight),
+          resizeActive && classes.resizingOverlay
         )
       }}
       PaperProps={{ ...PaperProps, style: { width } }}
