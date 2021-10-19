@@ -16,6 +16,7 @@
 
 import {
   compileDropZone,
+  fromICEId,
   getDragContextFromDropTargets,
   getDraggable,
   getHighlighted,
@@ -134,7 +135,7 @@ const reducer = createReducer(initialState, {
           const highlight = getHoverData(
             // If (iceId == movableRecordId) the current record is already
             // the one to show the highlight on.
-            iceId === movableRecordId ? record.id : movableRecordId
+            iceId === movableRecordId ? record.id : fromICEId(movableRecordId).id
           );
           return {
             ...state,

@@ -15,7 +15,7 @@
  */
 
 import * as React from 'react';
-import { Dispatch, useEffect, useMemo } from 'react';
+import { Dispatch, useEffect, useMemo, useState } from 'react';
 import DragIndicatorRounded from '@mui/icons-material/DragIndicatorRounded';
 import ArrowDownwardRoundedIcon from '@mui/icons-material/ArrowDownwardRounded';
 import ArrowUpwardRoundedIcon from '@mui/icons-material/ArrowUpwardRounded';
@@ -35,6 +35,9 @@ import useRef from '@craftercms/studio-ui/build_tsc/utils/hooks/useUpdateRefs';
 import { findContainerRecord, runValidation } from '../classes/ICERegistry';
 import { post } from '../utils/communicator';
 import { validationMessage } from '@craftercms/studio-ui/build_tsc/state/actions/preview';
+import Menu from '@mui/material/Menu';
+import Typography from '@mui/material/Typography';
+import MenuItem from '@mui/material/MenuItem';
 
 export interface MoveModeZoneMenuProps {
   record: ElementRecord;
@@ -51,6 +54,8 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
   } = record;
 
   const elementIndex = useMemo(() => (typeof index === 'string' ? parseInt(popPiece(index), 10) : index), [index]);
+  const trashButtonRef = React.useRef();
+  const [showTrashConfirmation, setShowTrashConfirmation] = useState<boolean>(false);
 
   const numOfItemsInContainerCollection = useMemo(
     () => extractCollection(getCachedModel(modelId), fieldId, index).length,
@@ -82,7 +87,9 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
     onCancel();
   };
 
-  const onTrash = (e: React.MouseEvent<HTMLButtonElement, MouseEvent> | KeyboardEvent) => {
+  const onTrash = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent> | MouseEvent<HTMLLIElement, MouseEvent> | KeyboardEvent
+  ) => {
     e.preventDefault();
     e.stopPropagation();
     const minCount = runValidation(findContainerRecord(modelId, fieldId, index).id, 'minCount', [
@@ -128,7 +135,7 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
         }
         case 'Backspace': {
           e.preventDefault();
-          refs.current.onTrash(e);
+          setShowTrashConfirmation(true);
           break;
         }
       }
@@ -172,7 +179,7 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
         </Tooltip>
       )}
       <Tooltip title="Trash (⌫)">
-        <UltraStyledIconButton size="small" onClick={onTrash}>
+        <UltraStyledIconButton size="small" onClick={onTrash} ref={trashButtonRef}>
           <DeleteOutlineRoundedIcon />
         </UltraStyledIconButton>
       </Tooltip>
@@ -181,6 +188,40 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
           <DragIndicatorRounded />
         </UltraStyledIconButton>
       </Tooltip>
+      <Menu
+        anchorEl={trashButtonRef.current}
+        open={showTrashConfirmation}
+        onClose={() => setShowTrashConfirmation(false)}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right'
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right'
+        }}
+        sx={{ zIndex: 1501 }}
+      >
+        <Typography variant="body1" sx={{ padding: '10px 16px 10px 16px' }}>
+          Delete this component?
+        </Typography>
+        <MenuItem
+          onClick={(e) => {
+            e.preventDefault();
+            setShowTrashConfirmation(false);
+          }}
+        >
+          No
+        </MenuItem>
+        <MenuItem
+          onClick={(e) => {
+            setShowTrashConfirmation(false);
+            refs.current.onTrash(e);
+          }}
+        >
+          Yes
+        </MenuItem>
+      </Menu>
     </>
   );
 }
