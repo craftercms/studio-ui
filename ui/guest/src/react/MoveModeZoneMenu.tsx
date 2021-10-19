@@ -31,7 +31,7 @@ import { extractCollection } from '@craftercms/studio-ui/build_tsc/utils/model';
 import { getCachedModel } from '../classes/ContentController';
 import { popPiece, removeLastPiece, isSimple } from '@craftercms/studio-ui/build_tsc/utils/string';
 import { AnyAction } from '@reduxjs/toolkit';
-import useRef from '@craftercms/studio-ui/utils/hooks/useUpdateRefs';
+import useRef from '@craftercms/studio-ui/build_tsc/utils/hooks/useUpdateRefs';
 
 export interface MoveModeZoneMenuProps {
   record: ElementRecord;
