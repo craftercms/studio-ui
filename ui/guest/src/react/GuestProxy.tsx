@@ -52,20 +52,17 @@ export function GuestProxy() {
   const { onEvent } = useGuestContext();
   const persistenceRef = useRef({ draggableElement: null, onEvent });
 
-  // onEvent ref updated (persistenceRef.current.onEvent).
-  useEffect(() => {
-    persistenceRef.current.onEvent = onEvent;
-  }, [onEvent]);
+  persistenceRef.current.onEvent = onEvent;
 
   // Initial registration of elements.
   useEffect(() => {
+    // Registers a single element
     const registerElement = (element: Element): void => {
-      let //
-        path = element.getAttribute('data-craftercms-model-path'),
-        modelId = element.getAttribute('data-craftercms-model-id'),
-        fieldId = element.getAttribute('data-craftercms-field-id'),
-        index: string | number = element.getAttribute('data-craftercms-index'),
-        label = element.getAttribute('data-craftercms-label');
+      let path = element.getAttribute('data-craftercms-model-path');
+      let modelId = element.getAttribute('data-craftercms-model-id');
+      let fieldId = element.getAttribute('data-craftercms-field-id');
+      let index: string | number = element.getAttribute('data-craftercms-index');
+      let label = element.getAttribute('data-craftercms-label');
 
       if (notNullOrUndefined(index) && !index.includes('.')) {
         // TODO: Need to assess the impact of index being a string with dot notation
@@ -78,6 +75,8 @@ export function GuestProxy() {
       ElementRegistry.register({ element, modelId, fieldId, index, label, path });
     };
 
+    // Used to assign new indexes to a given collection when one of it's items has moved up/down.
+    // Inspects the supplied index, if it has dot notation it process it accordingly.
     const appendIndex = (index: string | number, value: number): string | number => {
       return typeof index === 'string'
         ? `${removeLastPiece(index)}.${parseInt(popPiece(index)) + value}`
@@ -128,8 +127,8 @@ export function GuestProxy() {
           if (originalOldIndex === elementNewIndex) {
             addAnimation($(el), 'craftercms-content-tree-locate');
           }
-          const pr = ElementRegistry.fromElement(el);
-          pr && ElementRegistry.deregister(pr.id);
+          const elementRecord = ElementRegistry.fromElement(el);
+          elementRecord && ElementRegistry.deregister(elementRecord.id);
           registerElement(el);
         });
       }

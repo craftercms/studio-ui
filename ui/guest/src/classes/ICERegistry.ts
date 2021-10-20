@@ -19,13 +19,17 @@ import { DEFAULT_RECORD_DATA } from '../utils/util';
 import * as contentTypeUtils from '../utils/contentType';
 import * as Model from '../utils/model';
 import { ContentInstance } from '@craftercms/studio-ui/models/ContentInstance';
-import { ContentType, ContentTypeField, ValidationKeys } from '@craftercms/studio-ui/models/ContentType';
+import {
+  ContentType,
+  ContentTypeField,
+  ValidationKeys,
+  ValidationResult
+} from '@craftercms/studio-ui/models/ContentType';
 import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
 import { ICEProps, ICERecord, ICERecordRegistration, ReferentialEntries } from '../models/InContextEditing';
 import { isNullOrUndefined, notNullOrUndefined, nou, pluckProps } from '../utils/object';
 import { forEach } from '../utils/array';
 import { determineRecordType, findComponentContainerFields } from '../utils/ice';
-import { ValidationResult } from '@craftercms/studio-ui/models/ContentType';
 
 const validationChecks: { [key in ValidationKeys]: Function } = {
   // TODO: implement max/min value.
