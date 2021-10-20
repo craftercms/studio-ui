@@ -49,8 +49,7 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
   const {
     modelId,
     fieldId: [fieldId],
-    index,
-    iceIds: [iceId]
+    index
   } = record;
 
   const elementIndex = useMemo(() => (typeof index === 'string' ? parseInt(popPiece(index), 10) : index), [index]);
@@ -76,14 +75,14 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
   const onMoveUp = (e: React.MouseEvent<HTMLButtonElement, MouseEvent> | KeyboardEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    contentController.moveItemUp(modelId, fieldId, index);
+    contentController.sortUpItem(modelId, fieldId, index);
     onCancel();
   };
 
   const onMoveDown = (e: React.MouseEvent<HTMLButtonElement, MouseEvent> | KeyboardEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    contentController.moveItemDown(modelId, fieldId, index);
+    contentController.sortDownItem(modelId, fieldId, index);
     onCancel();
   };
 
@@ -116,6 +115,7 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
 
   const refs = useRef({ onMoveUp, onMoveDown, onTrash, onCancel, isFirstItem, isLastItem });
 
+  // Listen for key input to sort/delete and for clicking outside the zone to dismiss selection.
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       switch (e.key) {
@@ -140,22 +140,18 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
         }
       }
     };
-    document.addEventListener('keydown', onKeyDown);
-    return () => {
-      document.removeEventListener('keydown', onKeyDown);
-    };
-  }, [isFirstItem, isLastItem]);
-
-  useEffect(() => {
-    const onClickingOutsideOfSelectedZone = (e: MouseEvent) => {
+    const onClickOut = (e: MouseEvent) => {
+      e.stopPropagation();
+      e.preventDefault();
       refs.current.onCancel();
     };
-
-    window.addEventListener('click', onClickingOutsideOfSelectedZone);
+    document.addEventListener('keydown', onKeyDown, false);
+    document.addEventListener('click', onClickOut, false);
     return () => {
-      window.removeEventListener('click', onClickingOutsideOfSelectedZone);
+      document.removeEventListener('keydown', onKeyDown, false);
+      document.removeEventListener('click', onClickOut, false);
     };
-  }, [iceId]);
+  }, []);
 
   return (
     <>

@@ -441,7 +441,7 @@ export function insertInstance(
 
 export function insertGroup(modelId, fieldId, data): void {}
 
-export function moveItemUp(modelId: string, fieldId: string, index: number | string) {
+export function sortUpItem(modelId: string, fieldId: string, index: number | string) {
   const currentIndexParsed = typeof index === 'number' ? index : parseInt(popPiece(index));
   if (currentIndexParsed !== 0) {
     const targetIndex = currentIndexParsed - 1;
@@ -454,7 +454,7 @@ export function moveItemUp(modelId: string, fieldId: string, index: number | str
   }
 }
 
-export function moveItemDown(modelId: string, fieldId: string, index: number | string) {
+export function sortDownItem(modelId: string, fieldId: string, index: number | string) {
   const models = getCachedModels();
   const currentIndexParsed = typeof index === 'number' ? index : parseInt(popPiece(index));
   const collection = getCollection(models[modelId], fieldId, index);
@@ -481,13 +481,29 @@ export function sortItem(
   const collection = getCollection(models[modelId], fieldId, currentIndex);
   const result = getCollectionWithoutItemAtIndex(collection, currentIndexParsed);
 
-  // TODO: modelHierarchyMap is not being uploaded after models update
-  // modelHierarchyMap is used on getMovableParentRecord, the one who helps to highlight the zone
-  modelHierarchyMap[collection[currentIndexParsed]].parentContainerFieldIndex = targetIndex;
-  modelHierarchyMap[collection[targetIndex]].parentContainerFieldIndex = currentIndex;
-
   // Insert in desired position
   result.splice(targetIndexParsed, 0, collection[currentIndexParsed]);
+
+  // If it is a node selector, the hierarchy map must be updated.
+  // Determine if it is a node selector or a repeat group. Node selectors are kept normalized so
+  // a node selector collections will have strings on them (ids of the components they hold) vs
+  // repeating groups that will have objects (the items per se).
+  if (typeof result[0] === 'string') {
+    const isSimpleIndex = isSimple(modelHierarchyMap[result[0]].parentContainerFieldIndex);
+    // 1. Update item being sorted and items getting displaced because of that sort
+    result.forEach(
+      isSimpleIndex
+        ? (id, index) => {
+            modelHierarchyMap[id].parentContainerFieldIndex = String(index);
+          }
+        : (id, index) => {
+            const current = modelHierarchyMap[id].parentContainerFieldIndex as string;
+            modelHierarchyMap[id].parentContainerFieldIndex = `${removeLastPiece(current)}.${index}`;
+          }
+    );
+  } else {
+    // All sub items/indexes of the repeat need updating
+  }
 
   const model = setCollection(
     models[modelId],

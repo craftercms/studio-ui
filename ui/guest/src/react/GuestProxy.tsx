@@ -75,7 +75,7 @@ export function GuestProxy() {
       ElementRegistry.register({ element, modelId, fieldId, index, label, path });
     };
 
-    // Used to assign new indexes to a given collection when one of it's items has moved up/down.
+    // Used to assign new indexes to a given collection when one items get shifted (move up/down, insert, delete).
     // Inspects the supplied index, if it has dot notation it process it accordingly.
     const appendIndex = (index: string | number, value: number): string | number => {
       return typeof index === 'string'
@@ -97,17 +97,22 @@ export function GuestProxy() {
       let originalOldIndex = oldIndex;
       newIndex = typeof newIndex === 'string' ? parseInt(popPiece(newIndex)) : newIndex;
       oldIndex = typeof oldIndex === 'string' ? parseInt(popPiece(oldIndex)) : oldIndex;
+      // Note for the loops below:
+      // Because more than one item may change their index, we need to deregister all items before
+      // proceeding to registering again. Registering immediately after de-registering on the same
+      // loop causes misjudging ICE records refCounts due to displaced collection items.
       if (type === 'insert' || type === 'delete') {
-        collection.slice(newIndex).forEach((el, i) => {
+        const itemsToReRegister = collection.slice(newIndex);
+        itemsToReRegister.forEach((el, i) => {
           const elementNewIndex = appendIndex(originalNewIndex, i);
-          if (originalNewIndex === elementNewIndex && type === 'insert') {
+          if (type === 'insert' && String(originalNewIndex) === String(elementNewIndex)) {
             addAnimation($(el), 'craftercms-content-tree-locate');
           }
           $(el).attr('data-craftercms-index', elementNewIndex);
-          const pr = ElementRegistry.fromElement(el);
-          pr && ElementRegistry.deregister(pr.id);
-          registerElement(el);
+          const elementRecord = ElementRegistry.fromElement(el);
+          ElementRegistry.deregister(elementRecord.id);
         });
+        itemsToReRegister.forEach((el) => registerElement(el));
       } else if (type === 'sort') {
         let from;
         let to;
@@ -121,16 +126,17 @@ export function GuestProxy() {
           to = oldIndex + 1;
           index = originalNewIndex;
         }
-        collection.slice(from, to).forEach((el, i) => {
+        const itemsToReRegister = collection.slice(from, to);
+        itemsToReRegister.forEach((el, i) => {
           const elementNewIndex = appendIndex(index, i);
           $(el).attr('data-craftercms-index', elementNewIndex);
           if (originalOldIndex === elementNewIndex) {
             addAnimation($(el), 'craftercms-content-tree-locate');
           }
           const elementRecord = ElementRegistry.fromElement(el);
-          elementRecord && ElementRegistry.deregister(elementRecord.id);
-          registerElement(el);
+          ElementRegistry.deregister(elementRecord.id);
         });
+        itemsToReRegister.forEach((el) => registerElement(el));
       }
     };
 
