@@ -171,8 +171,6 @@ CStudioAuthoring.Dialogs.NewTemplate = CStudioAuthoring.Dialogs.NewTemplate || {
       templatePath +
       '&fileName=' +
       encodeURI(name) +
-      '&user=' +
-      CStudioAuthoringContext.user +
       '&unlock=true';
 
     var saveSvcCb = {
