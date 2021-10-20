@@ -19,13 +19,18 @@ import { DEFAULT_RECORD_DATA } from '../utils/util';
 import * as contentTypeUtils from '../utils/contentType';
 import * as Model from '../utils/model';
 import { ContentInstance } from '@craftercms/studio-ui/models/ContentInstance';
-import { ContentType, ContentTypeField, ValidationKeys } from '@craftercms/studio-ui/models/ContentType';
+import {
+  ContentType,
+  ContentTypeField,
+  ValidationKeys,
+  ValidationResult
+} from '@craftercms/studio-ui/models/ContentType';
 import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
 import { ICEProps, ICERecord, ICERecordRegistration, ReferentialEntries } from '../models/InContextEditing';
 import { isNullOrUndefined, notNullOrUndefined, nou, pluckProps } from '../utils/object';
 import { forEach } from '../utils/array';
 import { determineRecordType, findComponentContainerFields } from '../utils/ice';
-import { ValidationResult } from '@craftercms/studio-ui/models/ContentType';
+import { removeLastPiece } from '@craftercms/studio-ui/utils/string';
 
 const validationChecks: { [key in ValidationKeys]: Function } = {
   // TODO: implement max/min value.
@@ -522,4 +527,13 @@ export function findContainerField(
 export function flush(): void {
   registry.clear();
   refCount = {};
+}
+
+export function findContainerRecord(modelId: string, fieldId: string, index: string | number): ICERecord {
+  const recordId = exists({
+    modelId: modelId,
+    fieldId: fieldId,
+    index: fieldId.includes('.') ? parseInt(removeLastPiece(index as string)) : null
+  });
+  return recordId ? getById(recordId) : null;
 }

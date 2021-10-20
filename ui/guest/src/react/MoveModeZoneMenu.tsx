@@ -15,7 +15,7 @@
  */
 
 import * as React from 'react';
-import { Dispatch, useEffect, useMemo } from 'react';
+import { Dispatch, useEffect, useMemo, useState } from 'react';
 import DragIndicatorRounded from '@mui/icons-material/DragIndicatorRounded';
 import ArrowDownwardRoundedIcon from '@mui/icons-material/ArrowDownwardRounded';
 import ArrowUpwardRoundedIcon from '@mui/icons-material/ArrowUpwardRounded';
@@ -24,14 +24,20 @@ import UltraStyledIconButton from './UltraStyledIconButton';
 import HighlightOffRoundedIcon from '@mui/icons-material/HighlightOffRounded';
 import { Tooltip } from '@mui/material';
 import * as contentController from '../classes/ContentController';
+import { getCachedModel } from '../classes/ContentController';
 import { clearAndListen$ } from '../store/subjects';
 import { startListening } from '../store/actions';
 import { ElementRecord } from '../models/InContextEditing';
-import { extractCollection } from '@craftercms/studio-ui/build_tsc/utils/model';
-import { getCachedModel } from '../classes/ContentController';
-import { popPiece, removeLastPiece, isSimple } from '@craftercms/studio-ui/build_tsc/utils/string';
+import { extractCollection } from '@craftercms/studio-ui/utils/model';
+import { popPiece } from '@craftercms/studio-ui/utils/string';
 import { AnyAction } from '@reduxjs/toolkit';
-import useRef from '@craftercms/studio-ui/build_tsc/utils/hooks/useUpdateRefs';
+import useRef from '@craftercms/studio-ui/utils/hooks/useUpdateRefs';
+import { findContainerRecord, runValidation } from '../classes/ICERegistry';
+import { post } from '../utils/communicator';
+import { validationMessage } from '@craftercms/studio-ui/state/actions/preview';
+import Menu from '@mui/material/Menu';
+import Typography from '@mui/material/Typography';
+import MenuItem from '@mui/material/MenuItem';
 
 export interface MoveModeZoneMenuProps {
   record: ElementRecord;
@@ -47,6 +53,8 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
   } = record;
 
   const elementIndex = useMemo(() => (typeof index === 'string' ? parseInt(popPiece(index), 10) : index), [index]);
+  const trashButtonRef = React.useRef();
+  const [showTrashConfirmation, setShowTrashConfirmation] = useState<boolean>(false);
 
   const numOfItemsInContainerCollection = useMemo(
     () => extractCollection(getCachedModel(modelId), fieldId, index).length,
@@ -64,31 +72,34 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
     dispatch(startListening());
   };
 
-  const onMoveUp = () => {
-    const targetIndex = elementIndex - 1;
-    contentController.sortItem(
-      modelId,
-      fieldId,
-      index,
-      isSimple(index) ? targetIndex : `${removeLastPiece(index as string)}.${targetIndex}`
-    );
+  const onMoveUp = (e: React.MouseEvent<HTMLButtonElement, MouseEvent> | KeyboardEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    contentController.sortUpItem(modelId, fieldId, index);
     onCancel();
   };
 
-  const onMoveDown = () => {
-    const targetIndex = elementIndex + 1;
-    contentController.sortItem(
-      modelId,
-      fieldId,
-      index,
-      isSimple(index) ? targetIndex : `${removeLastPiece(index as string)}.${targetIndex}`
-    );
+  const onMoveDown = (e: React.MouseEvent<HTMLButtonElement, MouseEvent> | KeyboardEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    contentController.sortDownItem(modelId, fieldId, index);
     onCancel();
   };
 
-  const onTrash = () => {
-    contentController.deleteItem(modelId, fieldId, index);
-    onCancel();
+  const onTrash = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent> | React.MouseEvent<HTMLLIElement, MouseEvent> | KeyboardEvent
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const minCount = runValidation(findContainerRecord(modelId, fieldId, index).id, 'minCount', [
+      numOfItemsInContainerCollection - 1
+    ]);
+    if (minCount) {
+      post(validationMessage(minCount));
+    } else {
+      contentController.deleteItem(modelId, fieldId, index);
+      onCancel();
+    }
   };
 
   const onDragStart = (e) => {
@@ -102,45 +113,43 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
 
   // endregion
 
-  const refs = useRef({ onMoveUp, onMoveDown, onTrash, isFirstItem, isLastItem });
+  const refs = useRef({ onMoveUp, onMoveDown, onTrash, onCancel, isFirstItem, isLastItem });
 
+  // Listen for key input to sort/delete and for clicking outside the zone to dismiss selection.
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       switch (e.key) {
+        case 'ArrowLeft':
         case 'ArrowUp': {
           if (!refs.current.isFirstItem) {
-            e.preventDefault();
-            refs.current.onMoveUp();
+            refs.current.onMoveUp(e);
           }
           break;
         }
+        case 'ArrowRight':
         case 'ArrowDown': {
           if (!refs.current.isLastItem) {
-            e.preventDefault();
-            refs.current.onMoveDown();
+            refs.current.onMoveDown(e);
           }
           break;
         }
         case 'Backspace': {
           e.preventDefault();
-          refs.current.onTrash();
+          setShowTrashConfirmation(true);
           break;
         }
       }
     };
-    document.addEventListener('keydown', onKeyDown);
-    return () => {
-      document.removeEventListener('keydown', onKeyDown);
+    const onClickOut = (e: MouseEvent) => {
+      e.stopPropagation();
+      e.preventDefault();
+      refs.current.onCancel();
     };
-  }, [isFirstItem, isLastItem]);
-
-  useEffect(() => {
-    const onClickingOutsideOfSelectedZone = (e: MouseEvent) => {
-      console.log('click');
-    };
-    window.addEventListener('click', onClickingOutsideOfSelectedZone);
+    document.addEventListener('keydown', onKeyDown, false);
+    document.addEventListener('click', onClickOut, false);
     return () => {
-      window.removeEventListener('click', onClickingOutsideOfSelectedZone);
+      document.removeEventListener('keydown', onKeyDown, false);
+      document.removeEventListener('click', onClickOut, false);
     };
   }, []);
 
@@ -166,7 +175,7 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
         </Tooltip>
       )}
       <Tooltip title="Trash (⌫)">
-        <UltraStyledIconButton size="small" onClick={onTrash}>
+        <UltraStyledIconButton size="small" onClick={onTrash} ref={trashButtonRef}>
           <DeleteOutlineRoundedIcon />
         </UltraStyledIconButton>
       </Tooltip>
@@ -175,6 +184,40 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
           <DragIndicatorRounded />
         </UltraStyledIconButton>
       </Tooltip>
+      <Menu
+        anchorEl={trashButtonRef.current}
+        open={showTrashConfirmation}
+        onClose={() => setShowTrashConfirmation(false)}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right'
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right'
+        }}
+        sx={{ zIndex: 1501 }}
+      >
+        <Typography variant="body1" sx={{ padding: '10px 16px 10px 16px' }}>
+          Delete this component?
+        </Typography>
+        <MenuItem
+          onClick={(e) => {
+            e.preventDefault();
+            setShowTrashConfirmation(false);
+          }}
+        >
+          No
+        </MenuItem>
+        <MenuItem
+          onClick={(e) => {
+            setShowTrashConfirmation(false);
+            refs.current.onTrash(e);
+          }}
+        >
+          Yes
+        </MenuItem>
+      </Menu>
     </>
   );
 }

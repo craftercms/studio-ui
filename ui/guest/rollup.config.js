@@ -73,7 +73,22 @@ const plugins = [
       { src: 'build/*.umd.js', dest: '../../static-assets/scripts' }
     ],
     hook: 'writeBundle'
-  })
+  }),
+  {
+    name: 'rollup-plugin-adjust-studio-ui-imports',
+    transform(code, id) {
+      if (id.includes('ui/guest')) {
+        const regEx = /import\s+[\w$*\s{},]*\s+from\s+['"](@craftercms\/studio-ui(?!\/models).*?)['"]/g;
+        const match = code.match(regEx);
+        if (match) {
+          return code.replace(regEx, (match) =>
+            match.replace('@craftercms/studio-ui', '@craftercms/studio-ui/build_tsc')
+          );
+        }
+      }
+      return null;
+    }
+  }
 ];
 
 const globals = {
@@ -96,7 +111,6 @@ export default [
     external,
     plugins,
     output: {
-      sourcemap: 'inline',
       name: 'craftercms.guest',
       file: 'build/craftercms-guest.umd.js',
       format: 'umd',
@@ -112,7 +126,6 @@ export default [
     external,
     plugins,
     output: {
-      sourcemap: 'inline',
       name: 'craftercms.previewLanding',
       file: 'build/preview-landing.umd.js',
       format: 'umd',

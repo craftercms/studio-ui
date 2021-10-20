@@ -16,11 +16,7 @@
 
 import $ from 'jquery';
 import { message$, post } from './utils/communicator';
-import {
-  guestCheckIn,
-  guestCheckOut,
-  navigationRequest
-} from '@craftercms/studio-ui/build_tsc/state/actions/preview';
+import { guestCheckIn, guestCheckOut, navigationRequest } from '@craftercms/studio-ui/state/actions/preview';
 import { createLocationArgument } from './utils/util';
 
 message$.subscribe(function ({ type, payload }) {

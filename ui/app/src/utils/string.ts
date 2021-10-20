@@ -60,7 +60,7 @@ export function removeLastPiece(str: string, splitChar: string = '.'): string {
 }
 
 export function popPiece(str: string, splitChar: string = '.'): string {
-  return (str = `${str}`).substr(str.lastIndexOf(splitChar) + 1);
+  return String(str).split(splitChar).pop();
 }
 
 export function isJSON(str: string): boolean {
