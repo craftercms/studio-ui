@@ -481,6 +481,11 @@ export function sortItem(
   const collection = getCollection(models[modelId], fieldId, currentIndex);
   const result = getCollectionWithoutItemAtIndex(collection, currentIndexParsed);
 
+  // TODO: modelHierarchyMap is not being uploaded after models update
+  // modelHierarchyMap is used on getMovableParentRecord, the one who helps to highlight the zone
+  modelHierarchyMap[collection[currentIndexParsed]].parentContainerFieldIndex = targetIndex;
+  modelHierarchyMap[collection[targetIndex]].parentContainerFieldIndex = currentIndex;
+
   // Insert in desired position
   result.splice(targetIndexParsed, 0, collection[currentIndexParsed]);
 

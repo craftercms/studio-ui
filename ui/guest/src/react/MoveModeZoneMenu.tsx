@@ -88,7 +88,7 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
   };
 
   const onTrash = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent> | MouseEvent<HTMLLIElement, MouseEvent> | KeyboardEvent
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent> | React.MouseEvent<HTMLLIElement, MouseEvent> | KeyboardEvent
   ) => {
     e.preventDefault();
     e.stopPropagation();
