@@ -65,22 +65,6 @@ const messages = defineMessages({
   pluginInstalled: {
     id: 'PluginManagement.pluginInstalled',
     defaultMessage: 'Plugin installed successfully'
-  },
-  pluginDeleted: {
-    id: 'pluginManagement.pluginDeleted',
-    defaultMessage: 'Plugin deleted'
-  },
-  confirmHelperText: {
-    id: 'pluginManagement.deleteConfirmMessage',
-    defaultMessage: 'Delete plugin?'
-  },
-  confirmOk: {
-    id: 'words.yes',
-    defaultMessage: 'Yes'
-  },
-  confirmCancel: {
-    id: 'words.no',
-    defaultMessage: 'No'
   }
 });
 
