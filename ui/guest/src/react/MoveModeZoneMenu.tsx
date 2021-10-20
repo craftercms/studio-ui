@@ -63,7 +63,7 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
 
   const isEmbedded = useMemo(() => {
     return !Boolean(
-      getCachedModel(extractCollection(getCachedModel(modelId), fieldId, index)[elementIndex]).craftercms.path
+      getCachedModel(extractCollection(getCachedModel(modelId), fieldId, index)[elementIndex])?.craftercms.path
     );
   }, [elementIndex, fieldId, index, modelId]);
 

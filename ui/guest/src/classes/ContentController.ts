@@ -42,7 +42,7 @@ import { parseDescriptor, preParseSearchResults } from '@craftercms/content';
 import { modelsToLookup } from '../utils/content';
 import { crafterConf } from '@craftercms/classes';
 import { getDefaultValue } from '../utils/contentType';
-import { ModelHierarchyMap } from '@craftercms/studio-ui/utils/content';
+import { ModelHierarchyDescriptor, ModelHierarchyMap } from '@craftercms/studio-ui/utils/content';
 
 // if (process.env.NODE_ENV === 'development') {
 // TODO: Notice
@@ -484,6 +484,21 @@ export function sortItem(
   // Insert in desired position
   result.splice(targetIndexParsed, 0, collection[currentIndexParsed]);
 
+  function updateModel(fieldId: string, model: ModelHierarchyDescriptor, currentTarget: number, targetIndex: number) {
+    const position = model.parentContainerFieldPath.split('.').indexOf(fieldId);
+    const index = model.parentContainerFieldIndex as string;
+    const splitIndex = index.split('.');
+    const numericIndex = Number(splitIndex[position]);
+
+    if (numericIndex === currentTarget) {
+      splitIndex[position] = targetIndex.toString();
+      model.parentContainerFieldIndex = splitIndex.join('.');
+    } else if (numericIndex === targetIndex) {
+      splitIndex[position] = currentTarget.toString();
+      model.parentContainerFieldIndex = splitIndex.join('.');
+    }
+  }
+
   // If it is a node selector, the hierarchy map must be updated.
   // Determine if it is a node selector or a repeat group. Node selectors are kept normalized so
   // a node selector collections will have strings on them (ids of the components they hold) vs
@@ -502,7 +517,14 @@ export function sortItem(
           }
     );
   } else {
-    // All sub items/indexes of the repeat need updating
+    modelHierarchyMap[modelId].children.forEach((_modelId) => {
+      updateModel(fieldId, modelHierarchyMap[_modelId], currentIndexParsed, targetIndexParsed);
+    });
+    modelHierarchyMap[modelId].children = modelHierarchyMap[modelId].children.splice(
+      targetIndexParsed,
+      0,
+      modelHierarchyMap[modelId].children[currentIndexParsed]
+    );
   }
 
   const model = setCollection(
