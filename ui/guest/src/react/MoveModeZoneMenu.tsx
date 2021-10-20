@@ -61,6 +61,12 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
     [modelId, fieldId, index]
   );
 
+  const isEmbedded = useMemo(() => {
+    return !Boolean(
+      getCachedModel(extractCollection(getCachedModel(modelId), fieldId, index)[elementIndex]).craftercms.path
+    );
+  }, [elementIndex, fieldId, index, modelId]);
+
   const isFirstItem = elementIndex === 0;
   const isLastItem = elementIndex === numOfItemsInContainerCollection - 1;
   const isOnlyItem = isFirstItem && isLastItem;
@@ -199,7 +205,7 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
         sx={{ zIndex: 1501 }}
       >
         <Typography variant="body1" sx={{ padding: '10px 16px 10px 16px' }}>
-          Delete this component?
+          {isEmbedded ? 'Disassociate' : 'Delete'} this component?
         </Typography>
         <MenuItem
           onClick={(e) => {
