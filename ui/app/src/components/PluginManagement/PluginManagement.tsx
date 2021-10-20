@@ -40,7 +40,7 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import { useDispatch } from 'react-redux';
-import { deleteMarketplacePlugin, fetchInstalledMarketplacePlugins } from '../../services/marketplace';
+import { fetchInstalledMarketplacePlugins } from '../../services/marketplace';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { getUserPermissions } from '../../services/security';
 import { emitSystemEvent, pluginInstalled, showSystemNotification } from '../../state/actions/system';
@@ -57,8 +57,9 @@ import ListSubheader from '@mui/material/ListSubheader';
 import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import TableBody from '@mui/material/TableBody';
-import ConfirmDropdown from '../ConfirmDropdown';
 import DeleteIcon from '@mui/icons-material/DeleteOutline';
+import { useEnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
+import DeletePluginDialog from '../DeletePluginDialog';
 
 const messages = defineMessages({
   pluginInstalled: {
@@ -70,7 +71,7 @@ const messages = defineMessages({
     defaultMessage: 'Plugin deleted'
   },
   confirmHelperText: {
-    id: 'pluginManagement.helperText',
+    id: 'pluginManagement.deleteConfirmMessage',
     defaultMessage: 'Delete plugin?'
   },
   confirmOk: {
@@ -123,6 +124,8 @@ export const PluginManagement = (props: PluginManagementProps) => {
   const [pluginFiles, setPluginFiles] = React.useState<PluginRecord>(null);
   const [installedPluginsLookup, setInstalledPluginsLookup] = useState<LookupTable<boolean>>();
   const locale = useSelection<GlobalState['uiConfig']['locale']>((state) => state.uiConfig.locale);
+  const deletePluginDialogState = useEnhancedDialogState();
+  const [pluginToDelete, setPluginToDelete] = useState(null);
 
   useMount(() => {
     getUserPermissions(siteId, '/').subscribe((permissions) => {
@@ -191,20 +194,9 @@ export const PluginManagement = (props: PluginManagementProps) => {
     setAnchorEl(null);
   };
 
-  const onDeletePlugin = (id: string) => {
-    deleteMarketplacePlugin(siteId, id, true).subscribe({
-      next: () => {
-        refresh();
-        dispatch(
-          showSystemNotification({
-            message: formatMessage(messages.pluginDeleted)
-          })
-        );
-      },
-      error: (response) => {
-        dispatch(showErrorDialog({ error: response }));
-      }
-    });
+  const onDeletePlugin = () => {
+    deletePluginDialogState.onClose();
+    refresh();
   };
 
   return (
@@ -307,13 +299,15 @@ export const PluginManagement = (props: PluginManagementProps) => {
                       <AsDayMonthDateTime date={plugin.installationDate} locale={locale} />
                     </StyledTableCell>
                     <TableCell align="right" className={classes.actions}>
-                      <ConfirmDropdown
-                        cancelText={formatMessage(messages.confirmCancel)}
-                        confirmText={formatMessage(messages.confirmOk)}
-                        confirmHelperText={formatMessage(messages.confirmHelperText)}
-                        icon={DeleteIcon}
-                        onConfirm={() => onDeletePlugin(plugin.id)}
-                      />
+                      <IconButton
+                        onClick={() => {
+                          setPluginToDelete(plugin.id);
+                          deletePluginDialogState.onOpen();
+                        }}
+                        color="primary"
+                      >
+                        <DeleteIcon />
+                      </IconButton>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -335,6 +329,16 @@ export const PluginManagement = (props: PluginManagementProps) => {
         onInstall={onInstallMarketplacePlugin}
         installedPlugins={installedPluginsLookup}
         installPermission={openMarketPlaceDialog?.installPermission}
+      />
+      <DeletePluginDialog
+        open={deletePluginDialogState.open}
+        onClose={deletePluginDialogState.onClose}
+        isSubmitting={deletePluginDialogState.isSubmitting}
+        hasPendingChanges={deletePluginDialogState.hasPendingChanges}
+        isMinimized={deletePluginDialogState.isMinimized}
+        onSubmittingAndOrPendingChange={deletePluginDialogState.onSubmittingAndOrPendingChange}
+        pluginId={pluginToDelete}
+        onComplete={onDeletePlugin}
       />
       <Popover
         open={Boolean(anchorEl)}

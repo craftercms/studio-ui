@@ -16,13 +16,15 @@
 
 import { get, postJSON } from '../utils/ajax';
 import { MarketplaceSite } from '../models/Site';
-import { map, mapTo, pluck } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { map, mapTo, pluck, switchMap } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
 import { MarketplacePlugin, MarketplacePluginVersion } from '../models/MarketplacePlugin';
 import { pluckProps, toQueryString } from '../utils/object';
 import { PagedArray } from '../models/PagedArray';
 import { PluginRecord } from '../models/Plugin';
 import { Api2BulkResponseFormat, Api2ResponseFormat } from '../models/ApiResponse';
+import { fetchItemsByPath } from './content';
+import { SandboxItem } from '../models/Item';
 
 export function fetchBlueprints(options?: {
   type?: string;
@@ -73,6 +75,14 @@ export function deleteMarketplacePlugin(siteId: string, pluginId: string, force:
     pluginId,
     force
   }).pipe(mapTo(true));
+}
+
+export function fetchMarketplacePluginUsage(siteId: string, pluginId: string): Observable<SandboxItem[]> {
+  const qs = toQueryString({ siteId, pluginId });
+  return get(`/studio/api/2/marketplace/usage${qs}`).pipe(
+    pluck('response', 'items'),
+    switchMap((items) => (items.length === 0 ? of(items) : fetchItemsByPath(siteId, items)))
+  );
 }
 
 export function fetchInstalledMarketplacePlugins(siteId: string): Observable<PluginRecord[]> {
