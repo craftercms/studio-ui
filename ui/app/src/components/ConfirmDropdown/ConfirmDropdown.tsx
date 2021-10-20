@@ -19,17 +19,43 @@ import Button, { ButtonTypeMap } from '@mui/material/Button';
 import React, { ReactNode, useMemo } from 'react';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography';
-import clsx from 'clsx';
 import IconButton, { IconButtonProps } from '@mui/material/IconButton';
 import { SvgIconTypeMap } from '@mui/material/SvgIcon';
 import { OverridableComponent } from '@mui/material/OverridableComponent';
 import Tooltip from '@mui/material/Tooltip';
+import { FullSxRecord, PartialSxRecord } from '../../models/CustomRecord';
+import { SxProps } from '@mui/system';
+import { Theme } from '@mui/material';
 
-const useStyles = makeStyles(() =>
-  createStyles({
+export type ConfirmDropdownClassKey = 'button' | 'menuPaper' | 'helperText';
+
+export type ConfirmDropdownFullSx = FullSxRecord<ConfirmDropdownClassKey>;
+
+export type ConfirmDropdownPartialSx = PartialSxRecord<ConfirmDropdownClassKey>;
+
+interface ConfirmDropdownProps {
+  text?: ReactNode;
+  cancelText: ReactNode;
+  confirmText: ReactNode;
+  confirmHelperText?: ReactNode;
+  disabled?: boolean;
+  buttonVariant?: ButtonTypeMap['props']['variant'];
+  classes?: Partial<Record<ConfirmDropdownClassKey, string>>;
+  sx?: ConfirmDropdownPartialSx;
+  size?: IconButtonProps['size'];
+  icon?: OverridableComponent<SvgIconTypeMap>;
+  iconColor?: 'inherit' | 'primary' | 'secondary' | 'action' | 'disabled' | 'error';
+  iconTooltip?: React.ReactNode;
+  onConfirm(): any;
+  onCancel?(): any;
+}
+
+function getStyles(sx: ConfirmDropdownPartialSx): ConfirmDropdownFullSx {
+  return {
+    button: {
+      ...sx?.button
+    },
     menuPaper: {
       maxWidth: '250px',
       '& ul': {
@@ -39,36 +65,19 @@ const useStyles = makeStyles(() =>
         borderTop: '1px solid #dedede',
         paddingTop: '10px',
         paddingBottom: '10px'
-      }
+      },
+      ...sx?.menuPaper
     },
     helperText: {
-      padding: '10px 16px 10px 16px'
+      padding: '10px 16px 10px 16px',
+      ...sx?.helperText
     }
-  })
-);
-
-interface ConfirmDropdownProps {
-  text?: ReactNode;
-  cancelText: ReactNode;
-  confirmText: ReactNode;
-  confirmHelperText?: ReactNode;
-  disabled?: boolean;
-  buttonVariant?: ButtonTypeMap['props']['variant'];
-  classes?: {
-    button?: string;
-    menuPaper?: string;
-  };
-  size?: IconButtonProps['size'];
-  icon?: OverridableComponent<SvgIconTypeMap>;
-  iconColor?: 'inherit' | 'primary' | 'secondary' | 'action' | 'disabled' | 'error';
-  iconTooltip?: React.ReactNode;
-  onConfirm(): any;
-  onCancel?(): any;
+  } as Record<ConfirmDropdownClassKey, SxProps<Theme>>;
 }
 
 export function ConfirmDropdown(props: ConfirmDropdownProps) {
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const classes = useStyles({});
+  const sx = getStyles(props.sx);
   const {
     onConfirm,
     onCancel,
@@ -119,6 +128,7 @@ export function ConfirmDropdown(props: ConfirmDropdownProps) {
       ) : (
         <Button
           className={props.classes?.button}
+          sx={sx.button}
           variant={buttonVariant}
           onClick={(e) => setAnchorEl(e.currentTarget)}
           disabled={disabled}
@@ -129,7 +139,8 @@ export function ConfirmDropdown(props: ConfirmDropdownProps) {
       )}
       <Menu
         anchorEl={anchorEl}
-        classes={{ paper: clsx(classes.menuPaper, props.classes?.menuPaper) }}
+        classes={{ paper: props.classes?.menuPaper }}
+        sx={{ paper: sx.menuPaper }}
         open={Boolean(anchorEl)}
         onClose={handleClose}
         anchorOrigin={{
@@ -142,7 +153,7 @@ export function ConfirmDropdown(props: ConfirmDropdownProps) {
         }}
       >
         {confirmHelperText && (
-          <Typography variant="body1" className={classes.helperText}>
+          <Typography variant="body1" sx={sx.helperText} className={props.classes?.helperText}>
             {confirmHelperText}
           </Typography>
         )}

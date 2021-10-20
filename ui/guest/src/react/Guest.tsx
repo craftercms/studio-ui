@@ -511,6 +511,14 @@ function Guest(props: GuestProps) {
                   label={highlight.label}
                   rect={highlight.rect}
                   inherited={highlight.inherited}
+                  onPopperClick={
+                    isMove && isFieldSelectedMode
+                      ? (e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                        }
+                      : null
+                  }
                   menuItems={
                     isMove && isFieldSelectedMode ? (
                       <MoveModeZoneMenu record={elementRecord} dispatch={dispatch} />

@@ -35,7 +35,7 @@ import {
   updateFieldValueOperation
 } from '@craftercms/studio-ui/build_tsc/state/actions/preview';
 import { createLookupTable, nnou, nou } from '../utils/object';
-import { popPiece, removeLastPiece } from '@craftercms/studio-ui/build_tsc/utils/string';
+import { isSimple, popPiece, removeLastPiece } from '@craftercms/studio-ui/build_tsc/utils/string';
 import { getCollection, getCollectionWithoutItemAtIndex, getParentModelId, setCollection } from '../utils/ice';
 import { createQuery, search } from '@craftercms/search';
 import { parseDescriptor, preParseSearchResults } from '@craftercms/content';
@@ -441,6 +441,34 @@ export function insertInstance(
 
 export function insertGroup(modelId, fieldId, data): void {}
 
+export function moveItemUp(modelId: string, fieldId: string, index: number | string) {
+  const currentIndexParsed = typeof index === 'number' ? index : parseInt(popPiece(index));
+  if (currentIndexParsed !== 0) {
+    const targetIndex = currentIndexParsed - 1;
+    sortItem(
+      modelId,
+      fieldId,
+      index,
+      isSimple(index) ? targetIndex : `${removeLastPiece(index as string)}.${targetIndex}`
+    );
+  }
+}
+
+export function moveItemDown(modelId: string, fieldId: string, index: number | string) {
+  const models = getCachedModels();
+  const currentIndexParsed = typeof index === 'number' ? index : parseInt(popPiece(index));
+  const collection = getCollection(models[modelId], fieldId, index);
+  if (currentIndexParsed < collection.length - 1) {
+    const targetIndex = currentIndexParsed + 1;
+    sortItem(
+      modelId,
+      fieldId,
+      index,
+      isSimple(index) ? targetIndex : `${removeLastPiece(index as string)}.${targetIndex}`
+    );
+  }
+}
+
 export function sortItem(
   modelId: string,
   fieldId: string,
@@ -452,6 +480,11 @@ export function sortItem(
   const targetIndexParsed = typeof targetIndex === 'number' ? targetIndex : parseInt(popPiece(targetIndex));
   const collection = getCollection(models[modelId], fieldId, currentIndex);
   const result = getCollectionWithoutItemAtIndex(collection, currentIndexParsed);
+
+  // TODO: modelHierarchyMap is not being uploaded after models update
+  // modelHierarchyMap is used on getMovableParentRecord, the one who helps to highlight the zone
+  modelHierarchyMap[collection[currentIndexParsed]].parentContainerFieldIndex = targetIndex;
+  modelHierarchyMap[collection[targetIndex]].parentContainerFieldIndex = currentIndex;
 
   // Insert in desired position
   result.splice(targetIndexParsed, 0, collection[currentIndexParsed]);

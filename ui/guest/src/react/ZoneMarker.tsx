@@ -34,6 +34,7 @@ export interface ZoneMarkerProps {
   inherited: boolean;
   showZoneTooltip?: boolean;
   menuItems?: ReactNode;
+  onPopperClick?(e: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
   // TODO: Receive zoneType and abstract icon display here?
   // zoneType: 'component' | 'page' | 'field';
   sx?: ZoneMarkerPartialSx;
@@ -72,7 +73,7 @@ function getStyles(sx: ZoneMarkerPartialSx): ZoneMarkerFullSx {
 }
 
 export function ZoneMarker(props: ZoneMarkerProps) {
-  const { rect, label, classes, inherited, menuItems, showZoneTooltip = true } = props;
+  const { rect, label, classes, inherited, menuItems, showZoneTooltip = true, onPopperClick } = props;
   const [zoneStyle, setZoneStyle] = useState<CSSProperties>();
   const sx = getStyles(props.sx);
   const elRef = useRef();
@@ -87,6 +88,7 @@ export function ZoneMarker(props: ZoneMarkerProps) {
           open
           anchorEl={elRef.current}
           placement="top-start"
+          onClick={onPopperClick}
           modifiers={[
             {
               name: 'offset',

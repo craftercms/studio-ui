@@ -30,6 +30,7 @@ import { ICEProps, ICERecord, ICERecordRegistration, ReferentialEntries } from '
 import { isNullOrUndefined, notNullOrUndefined, nou, pluckProps } from '../utils/object';
 import { forEach } from '../utils/array';
 import { determineRecordType, findComponentContainerFields } from '../utils/ice';
+import { removeLastPiece } from '@craftercms/studio-ui/build_tsc/utils/string';
 
 const validationChecks: { [key in ValidationKeys]: Function } = {
   // TODO: implement max/min value.
@@ -526,4 +527,13 @@ export function findContainerField(
 export function flush(): void {
   registry.clear();
   refCount = {};
+}
+
+export function findContainerRecord(modelId: string, fieldId: string, index: string | number): ICERecord {
+  const recordId = exists({
+    modelId: modelId,
+    fieldId: fieldId,
+    index: fieldId.includes('.') ? parseInt(removeLastPiece(index as string)) : null
+  });
+  return recordId ? getById(recordId) : null;
 }
