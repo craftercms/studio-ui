@@ -377,7 +377,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
           state.highlightMode === HighlightMode.MOVE_TARGETS
         ) {
           const movableRecordId = iceRegistry.getMovableParentRecord(record.iceIds[0]);
-          if (movableRecordId !== Number(Object.keys(state.highlighted)[0])) {
+          if (state.highlighted[movableRecordId] === void 0) {
             post(clearSelectedZones.type);
             return of(startListening());
           }
