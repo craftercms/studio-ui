@@ -33,9 +33,9 @@ import {
   moveItemOperation,
   sortItemOperation,
   updateFieldValueOperation
-} from '@craftercms/studio-ui/build_tsc/state/actions/preview';
+} from '@craftercms/studio-ui/state/actions/preview';
 import { createLookupTable, nnou, nou } from '../utils/object';
-import { isSimple, popPiece, removeLastPiece } from '@craftercms/studio-ui/build_tsc/utils/string';
+import { isSimple, popPiece, removeLastPiece } from '@craftercms/studio-ui/utils/string';
 import { getCollection, getCollectionWithoutItemAtIndex, getParentModelId, setCollection } from '../utils/ice';
 import { createQuery, search } from '@craftercms/search';
 import { parseDescriptor, preParseSearchResults } from '@craftercms/content';

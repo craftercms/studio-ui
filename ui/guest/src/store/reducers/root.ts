@@ -49,7 +49,7 @@ import {
   hostCheckIn,
   setPreviewEditMode,
   updateRteConfig
-} from '@craftercms/studio-ui/build_tsc/state/actions/preview';
+} from '@craftercms/studio-ui/state/actions/preview';
 import {
   computedDragEnd,
   computedDragOver,

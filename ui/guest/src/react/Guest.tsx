@@ -57,7 +57,7 @@ import {
   setPreviewEditMode,
   trashed,
   updateRteConfig
-} from '@craftercms/studio-ui/build_tsc/state/actions/preview';
+} from '@craftercms/studio-ui/state/actions/preview';
 import { createGuestStore } from '../store/store';
 import { Provider } from 'react-redux';
 import { clearAndListen$ } from '../store/subjects';

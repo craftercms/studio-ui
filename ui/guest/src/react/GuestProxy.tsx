@@ -40,11 +40,11 @@ import {
   moveItemOperation,
   sortItemOperation,
   updateFieldValueOperation
-} from '@craftercms/studio-ui/build_tsc/state/actions/preview';
+} from '@craftercms/studio-ui/state/actions/preview';
 import { GuestState } from '../store/models/GuestStore';
 import { notNullOrUndefined } from '../utils/object';
 import { forEach } from '../utils/array';
-import { popPiece, removeLastPiece } from '@craftercms/studio-ui/build_tsc/utils/string';
+import { popPiece, removeLastPiece } from '@craftercms/studio-ui/utils/string';
 import { addAnimation } from '../utils/dom';
 
 export function GuestProxy() {

@@ -47,7 +47,7 @@ import {
   instanceDragEnded,
   trashed,
   validationMessage
-} from '@craftercms/studio-ui/build_tsc/state/actions/preview';
+} from '@craftercms/studio-ui/state/actions/preview';
 import { MouseEventActionObservable } from '../models/Actions';
 import { GuestState } from '../models/GuestStore';
 import { isNullOrUndefined, notNullOrUndefined, reversePluckProps } from '../../utils/object';
