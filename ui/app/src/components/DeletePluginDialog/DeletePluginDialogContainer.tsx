@@ -17,7 +17,7 @@
 import * as React from 'react';
 import { DeletePluginDialogContainerProps } from './utils';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 import { createResource } from '../../utils/resource';
 import { deleteMarketplacePlugin, fetchMarketplacePluginUsage } from '../../services/marketplace';
 import Suspencified from '../SystemStatus/Suspencified';
@@ -39,6 +39,8 @@ export function DeletePluginDialogContainer(props: DeletePluginDialogContainerPr
   const site = useActiveSiteId();
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
+  const callbacksRef = useRef({ onSubmittingAndOrPendingChange });
+  callbacksRef.current.onSubmittingAndOrPendingChange = onSubmittingAndOrPendingChange;
 
   const resource = useMemo(() => {
     return createResource(() => fetchMarketplacePluginUsage(site, pluginId).toPromise());
@@ -51,7 +53,7 @@ export function DeletePluginDialogContainer(props: DeletePluginDialogContainerPr
 
     deleteMarketplacePlugin(site, id, true).subscribe({
       next: () => {
-        onSubmittingAndOrPendingChange({
+        callbacksRef.current.onSubmittingAndOrPendingChange({
           isSubmitting: false
         });
         dispatch(
