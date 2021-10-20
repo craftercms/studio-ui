@@ -1355,8 +1355,6 @@ var CStudioForms =
               entityId +
               '&fileName=' +
               entityFile +
-              '&user=' +
-              CStudioAuthoringContext.user +
               '&contentType=' +
               contentType;
 
