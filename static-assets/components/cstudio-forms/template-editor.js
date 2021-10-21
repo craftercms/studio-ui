@@ -866,7 +866,7 @@ CStudioAuthoring.Module.requireModule(
                 }
 
                 // prettier-ignore
-                const writeServiceUrl = `/api/1/services/api/1/content/write-content.json?site=${CStudioAuthoringContext.site}&phase=onSave&path=${encodeURI(path)}&fileName=${encodeURI(filename)}&user=${CStudioAuthoringContext.user}&unlock=${unlock}`;
+                const writeServiceUrl = `/api/1/services/api/1/content/write-content.json?site=${CStudioAuthoringContext.site}&phase=onSave&path=${encodeURI(path)}&fileName=${encodeURI(filename)}&unlock=${unlock}`;
 
                 CrafterCMSNext.util.ajax
                   .post(CStudioAuthoring.Service.createServiceUri(writeServiceUrl), value)

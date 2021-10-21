@@ -15,7 +15,7 @@
  */
 
 import * as iceRegistry from './ICERegistry';
-import { getById } from './ICERegistry';
+import { findContainerRecord, getById } from './ICERegistry';
 import {
   byPathFetchIfNotLoaded,
   getCachedContentType,
@@ -40,7 +40,6 @@ import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
 import { isNullOrUndefined, notNullOrUndefined } from '../utils/object';
 import { forEach } from '../utils/array';
 import { getChildArrangement, sibling } from '../utils/dom';
-import { removeLastPiece } from '@craftercms/studio-ui/build_tsc/utils/string';
 import $ from 'jquery';
 
 let seq = 0;
@@ -405,12 +404,7 @@ export function getParentElementFromICEProps(
   fieldId: string,
   index: string | number
 ): JQuery<Element> {
-  const recordId = iceRegistry.exists({
-    modelId: modelId,
-    fieldId: fieldId,
-    index: fieldId.includes('.') ? parseInt(removeLastPiece(index as string)) : null
-  });
-
+  const recordId = findContainerRecord(modelId, fieldId, index)?.id ?? null;
   return recordId === null ? null : $(fromICEId(recordId).element);
 }
 
@@ -422,12 +416,7 @@ export function getParentsElementFromICEProps(
   fieldId: string,
   index: string | number
 ): JQuery<Element>[] {
-  const recordId = iceRegistry.exists({
-    modelId: modelId,
-    fieldId: fieldId,
-    index: fieldId.includes('.') ? parseInt(removeLastPiece(index as string)) : null
-  });
-
+  const recordId = findContainerRecord(modelId, fieldId, index)?.id ?? null;
   return recordId === null ? null : getRecordsFromIceId(recordId).map((registryEntry) => $(registryEntry.element));
 }
 

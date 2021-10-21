@@ -33,9 +33,9 @@ import {
   moveItemOperation,
   sortItemOperation,
   updateFieldValueOperation
-} from '@craftercms/studio-ui/build_tsc/state/actions/preview';
+} from '@craftercms/studio-ui/state/actions/preview';
 import { createLookupTable, nnou, nou } from '../utils/object';
-import { popPiece, removeLastPiece } from '@craftercms/studio-ui/build_tsc/utils/string';
+import { isSimple, popPiece, removeLastPiece } from '@craftercms/studio-ui/utils/string';
 import { getCollection, getCollectionWithoutItemAtIndex, getParentModelId, setCollection } from '../utils/ice';
 import { createQuery, search } from '@craftercms/search';
 import { parseDescriptor, preParseSearchResults } from '@craftercms/content';
@@ -441,6 +441,34 @@ export function insertInstance(
 
 export function insertGroup(modelId, fieldId, data): void {}
 
+export function sortUpItem(modelId: string, fieldId: string, index: number | string) {
+  const currentIndexParsed = typeof index === 'number' ? index : parseInt(popPiece(index));
+  if (currentIndexParsed !== 0) {
+    const targetIndex = currentIndexParsed - 1;
+    sortItem(
+      modelId,
+      fieldId,
+      index,
+      isSimple(index) ? targetIndex : `${removeLastPiece(index as string)}.${targetIndex}`
+    );
+  }
+}
+
+export function sortDownItem(modelId: string, fieldId: string, index: number | string) {
+  const models = getCachedModels();
+  const currentIndexParsed = typeof index === 'number' ? index : parseInt(popPiece(index));
+  const collection = getCollection(models[modelId], fieldId, index);
+  if (currentIndexParsed < collection.length - 1) {
+    const targetIndex = currentIndexParsed + 1;
+    sortItem(
+      modelId,
+      fieldId,
+      index,
+      isSimple(index) ? targetIndex : `${removeLastPiece(index as string)}.${targetIndex}`
+    );
+  }
+}
+
 export function sortItem(
   modelId: string,
   fieldId: string,
@@ -455,6 +483,27 @@ export function sortItem(
 
   // Insert in desired position
   result.splice(targetIndexParsed, 0, collection[currentIndexParsed]);
+
+  // If it is a node selector, the hierarchy map must be updated.
+  // Determine if it is a node selector or a repeat group. Node selectors are kept normalized so
+  // a node selector collections will have strings on them (ids of the components they hold) vs
+  // repeating groups that will have objects (the items per se).
+  if (typeof result[0] === 'string') {
+    const isSimpleIndex = isSimple(modelHierarchyMap[result[0]].parentContainerFieldIndex);
+    // 1. Update item being sorted and items getting displaced because of that sort
+    result.forEach(
+      isSimpleIndex
+        ? (id, index) => {
+            modelHierarchyMap[id].parentContainerFieldIndex = String(index);
+          }
+        : (id, index) => {
+            const current = modelHierarchyMap[id].parentContainerFieldIndex as string;
+            modelHierarchyMap[id].parentContainerFieldIndex = `${removeLastPiece(current)}.${index}`;
+          }
+    );
+  } else {
+    // All sub items/indexes of the repeat need updating
+  }
 
   const model = setCollection(
     models[modelId],

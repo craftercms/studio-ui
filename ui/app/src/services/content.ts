@@ -1074,7 +1074,7 @@ export function createFile(site: string, path: string, fileName: string): Observ
   return post(
     `/studio/api/1/services/api/1/content/write-content.json?site=${site}&phase=onSave&path=${encodeURIComponent(
       path
-    )}&fileName=${fileName}&user=admin&unlock=true`
+    )}&fileName=${fileName}&unlock=true`
   ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
 
