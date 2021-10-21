@@ -15,32 +15,32 @@
  */
 
 import * as React from 'react';
-import { DeletePluginDialogContainerProps } from './utils';
+import { UninstallPluginDialogContainerProps } from './utils';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import { useMemo, useRef } from 'react';
+import { useMemo } from 'react';
 import { createResource } from '../../utils/resource';
-import { deleteMarketplacePlugin, fetchMarketplacePluginUsage } from '../../services/marketplace';
+import { uninstallMarketplacePlugin, fetchMarketplacePluginUsage } from '../../services/marketplace';
 import Suspencified from '../SystemStatus/Suspencified';
-import { DeletePluginDialogBody } from './DeletePluginDialogBody';
+import { UninstallPluginDialogBody } from './UninstallPluginDialogBody';
 import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../state/actions/system';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { defineMessages, useIntl } from 'react-intl';
+import { useUpdateRefs } from '../../utils/hooks/useUpdateRefs';
 
 const messages = defineMessages({
-  pluginDeleted: {
-    id: 'pluginManagement.pluginDeleted',
-    defaultMessage: 'Plugin deleted'
+  pluginUninstalled: {
+    id: 'pluginManagement.pluginUninstalled',
+    defaultMessage: 'Plugin uninstalled'
   }
 });
 
-export function DeletePluginDialogContainer(props: DeletePluginDialogContainerProps) {
+export function UninstallPluginDialogContainer(props: UninstallPluginDialogContainerProps) {
   const { onClose, pluginId, onComplete, isSubmitting, onSubmittingAndOrPendingChange } = props;
   const site = useActiveSiteId();
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
-  const callbacksRef = useRef({ onSubmittingAndOrPendingChange });
-  callbacksRef.current.onSubmittingAndOrPendingChange = onSubmittingAndOrPendingChange;
+  const callbacksRef = useUpdateRefs({ onSubmittingAndOrPendingChange });
 
   const resource = useMemo(() => {
     return createResource(() => fetchMarketplacePluginUsage(site, pluginId).toPromise());
@@ -51,14 +51,14 @@ export function DeletePluginDialogContainer(props: DeletePluginDialogContainerPr
       isSubmitting: true
     });
 
-    deleteMarketplacePlugin(site, id, true).subscribe({
+    uninstallMarketplacePlugin(site, id, true).subscribe({
       next: () => {
         callbacksRef.current.onSubmittingAndOrPendingChange({
           isSubmitting: false
         });
         dispatch(
           showSystemNotification({
-            message: formatMessage(messages.pluginDeleted)
+            message: formatMessage(messages.pluginUninstalled)
           })
         );
         onComplete?.();
@@ -73,7 +73,7 @@ export function DeletePluginDialogContainer(props: DeletePluginDialogContainerPr
 
   return (
     <Suspencified loadingStateProps={{ styles: { root: { width: 300, height: 250 } } }}>
-      <DeletePluginDialogBody
+      <UninstallPluginDialogBody
         submitting={isSubmitting}
         onCloseButtonClick={onCloseButtonClick}
         pluginId={pluginId}

@@ -15,23 +15,21 @@
  */
 
 import * as React from 'react';
-import { defineMessages, FormattedMessage } from 'react-intl';
-import { DeletePluginDialogProps } from './utils';
+import { FormattedMessage } from 'react-intl';
+import { UninstallPluginDialogProps } from './utils';
 import EnhancedDialog from '../EnhancedDialog';
-import { DeletePluginDialogContainer } from './DeletePluginDialogContainer';
+import { UninstallPluginDialogContainer } from './UninstallPluginDialogContainer';
 
-export const messages = defineMessages({});
-
-function DeletePluginDialog(props: DeletePluginDialogProps) {
+function UninstallPluginDialog(props: UninstallPluginDialogProps) {
   const { pluginId, onSubmittingAndOrPendingChange, isSubmitting, onComplete, ...rest } = props;
   return (
     <EnhancedDialog
-      title={<FormattedMessage id="deletePluginDialog.headerTitle" defaultMessage="Delete Plugin" />}
+      title={<FormattedMessage id="uninstallPluginDialog.headerTitle" defaultMessage="Uninstall Plugin" />}
       dialogHeaderProps={{
         subtitle: (
           <FormattedMessage
-            id="deletePluginDialog.headerSubtitle"
-            defaultMessage={`Please confirm the deletion of "{pluginId}"`}
+            id="uninstallPluginDialog.headerSubtitle"
+            defaultMessage={`Please confirm the uninstalling of "{pluginId}"`}
             values={{ pluginId: pluginId }}
           />
         )
@@ -39,7 +37,7 @@ function DeletePluginDialog(props: DeletePluginDialogProps) {
       isSubmitting={isSubmitting}
       {...rest}
     >
-      <DeletePluginDialogContainer
+      <UninstallPluginDialogContainer
         pluginId={pluginId}
         isSubmitting={isSubmitting}
         onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
@@ -49,4 +47,4 @@ function DeletePluginDialog(props: DeletePluginDialogProps) {
   );
 }
 
-export default DeletePluginDialog;
+export default UninstallPluginDialog;

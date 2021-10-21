@@ -15,8 +15,13 @@
  */
 
 import * as React from 'react';
-import { DeletePluginDialogBodyProps } from './utils';
 import { useEffect, useState } from 'react';
+import {
+  UninstallPluginDialogBodyClassKey,
+  UninstallPluginDialogBodyFullSx,
+  UninstallPluginDialogBodyPartialSx,
+  UninstallPluginDialogBodyProps
+} from './utils';
 import DialogBody from '../Dialogs/DialogBody';
 import EmptyState from '../SystemStatus/EmptyState';
 import { FormattedMessage } from 'react-intl';
@@ -25,20 +30,23 @@ import DialogFooter from '../Dialogs/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import LoadingState from '../SystemStatus/LoadingState';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
-import { ListItem, ListItemText, TextField } from '@mui/material';
+import { Box, ListItem, ListItemText, styled, TextField, Theme } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import List from '@mui/material/List';
 import ItemDisplay from '../ItemDisplay';
+import { SxProps } from '@mui/system';
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
+const Strong = styled('strong')``;
+
+function getStyles(sx: UninstallPluginDialogBodyPartialSx): UninstallPluginDialogBodyFullSx {
+  return {
     content: {
-      background: theme.palette.background.paper
+      background: (theme) => theme.palette.background.paper,
+      ...sx?.content
     },
     semiBold: {
-      fontWeight: 600
+      fontWeight: 600,
+      ...sx?.semiBold
     },
     loadingStateWrapper: {
       position: 'absolute',
@@ -47,18 +55,19 @@ const useStyles = makeStyles((theme) =>
       right: 0,
       bottom: 0,
       display: 'flex',
-      background: 'rgba(255,255,255,0.7)'
+      background: 'rgba(255,255,255,0.7)',
+      ...sx?.loadingStateWrapper
     }
-  })
-);
+  } as Record<UninstallPluginDialogBodyClassKey, SxProps<Theme>>;
+}
 
-export function DeletePluginDialogBody(props: DeletePluginDialogBodyProps) {
-  const { onCloseButtonClick, resource, pluginId, onSubmit: onSubmitProp, password = 'delete', submitting } = props;
+export function UninstallPluginDialogBody(props: UninstallPluginDialogBodyProps) {
+  const { onCloseButtonClick, resource, pluginId, onSubmit: onSubmitProp, password = 'uninstall', submitting } = props;
   const data = resource.read();
   const hasUsages = data.length > 0;
   const [confirmPasswordPassed, setConfirmPasswordPassed] = useState(false);
   const [passwordFieldValue, setPasswordFieldValue] = useState('');
-  const classes = useStyles();
+  const sx = getStyles(props.sx);
   useEffect(() => {
     setConfirmPasswordPassed(passwordFieldValue.toLowerCase() === password.toLowerCase());
   }, [password, passwordFieldValue]);
@@ -76,7 +85,7 @@ export function DeletePluginDialogBody(props: DeletePluginDialogBodyProps) {
           <>
             <Alert variant="outlined" severity="warning" icon={false}>
               <FormattedMessage
-                id="deletePluginDialog.reviewDependenciesMessage"
+                id="uninstallPluginDialog.reviewDependenciesMessage"
                 defaultMessage={'Please review the dependant items of "{pluginId}"'}
                 values={{
                   pluginId
@@ -85,7 +94,7 @@ export function DeletePluginDialogBody(props: DeletePluginDialogBodyProps) {
             </Alert>
             <List>
               {data.map((item) => (
-                <ListItem key={item.id} divider className={classes.content}>
+                <ListItem key={item.id} divider sx={sx.content}>
                   <ListItemText
                     primary={<ItemDisplay item={item} showNavigableAsLinks={false} />}
                     secondary={<Typography variant="body2" color="textSecondary" children={item.path} />}
@@ -95,12 +104,12 @@ export function DeletePluginDialogBody(props: DeletePluginDialogBodyProps) {
             </List>
             <Alert severity="warning">
               <FormattedMessage
-                id="deletePluginDialog.typePassword"
+                id="uninstallPluginDialog.typePassword"
                 defaultMessage={'Type the word "<b>{password}</b>" to confirm the deletion of the plugin.'}
                 values={{
                   password,
                   b: (message) => {
-                    return <strong className={classes.semiBold}>{message}</strong>;
+                    return <Strong sx={sx.semiBold}>{message}</Strong>;
                   }
                 }}
               />
@@ -115,7 +124,7 @@ export function DeletePluginDialogBody(props: DeletePluginDialogBodyProps) {
           </>
         ) : (
           <div>
-            <EmptyState title="No usages found" subtitle="The plugin can be safely deleted." />
+            <EmptyState title="No usages found" subtitle="The plugin can be safely uninstalled." />
           </div>
         )}
       </DialogBody>
@@ -124,16 +133,16 @@ export function DeletePluginDialogBody(props: DeletePluginDialogBodyProps) {
           <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
         </SecondaryButton>
         <PrimaryButton disabled={(hasUsages && !confirmPasswordPassed) || submitting} onClick={onSubmit}>
-          <FormattedMessage id="deletePluginDialog.submitButton" defaultMessage="Delete" />
+          <FormattedMessage id="uninstallPluginDialog.submitButton" defaultMessage="Uninstall" />
         </PrimaryButton>
       </DialogFooter>
       {submitting && (
-        <div className={classes.loadingStateWrapper}>
+        <Box sx={sx.loadingStateWrapper}>
           <LoadingState />
-        </div>
+        </Box>
       )}
     </>
   );
 }
 
-export default DeletePluginDialogBody;
+export default UninstallPluginDialogBody;

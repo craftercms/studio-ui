@@ -18,25 +18,33 @@ import { EnhancedDialogProps } from '../EnhancedDialog';
 import { onSubmittingAndOrPendingChangeProps } from '../../utils/hooks/useEnhancedDialogState';
 import { Resource } from '../../models/Resource';
 import { SandboxItem } from '../../models/Item';
+import { FullSxRecord, PartialSxRecord } from '../../models/CustomRecord';
 
-export interface DeletePluginDialogBaseProps {
+export interface UninstallPluginDialogBaseProps {
   pluginId: string;
 }
 
-export interface DeletePluginDialogProps extends DeletePluginDialogBaseProps, EnhancedDialogProps {
+export interface UninstallPluginDialogProps extends UninstallPluginDialogBaseProps, EnhancedDialogProps {
   onSubmittingAndOrPendingChange(value: onSubmittingAndOrPendingChangeProps): void;
   onComplete?();
 }
 
-export interface DeletePluginDialogContainerProps
-  extends DeletePluginDialogBaseProps,
-    Pick<DeletePluginDialogProps, 'onComplete' | 'onClose' | 'isSubmitting' | 'onSubmittingAndOrPendingChange'> {}
+export interface UninstallPluginDialogContainerProps
+  extends UninstallPluginDialogBaseProps,
+    Pick<UninstallPluginDialogProps, 'onComplete' | 'onClose' | 'isSubmitting' | 'onSubmittingAndOrPendingChange'> {}
 
-export interface DeletePluginDialogBodyProps {
+export interface UninstallPluginDialogBodyProps {
   submitting: boolean;
   pluginId: string;
   resource: Resource<SandboxItem[]>;
   password?: string;
+  sx?: UninstallPluginDialogBodyPartialSx;
   onCloseButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
   onSubmit(): void;
 }
+
+export type UninstallPluginDialogBodyClassKey = 'content' | 'semiBold' | 'loadingStateWrapper';
+
+export type UninstallPluginDialogBodyFullSx = FullSxRecord<UninstallPluginDialogBodyClassKey>;
+
+export type UninstallPluginDialogBodyPartialSx = PartialSxRecord<UninstallPluginDialogBodyClassKey>;

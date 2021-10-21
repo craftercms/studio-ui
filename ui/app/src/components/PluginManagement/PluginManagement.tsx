@@ -59,7 +59,7 @@ import Paper from '@mui/material/Paper';
 import TableBody from '@mui/material/TableBody';
 import DeleteIcon from '@mui/icons-material/DeleteOutline';
 import { useEnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
-import DeletePluginDialog from '../DeletePluginDialog';
+import UninstallPluginDialog from '../DeletePluginDialog';
 
 const messages = defineMessages({
   pluginInstalled: {
@@ -314,7 +314,7 @@ export const PluginManagement = (props: PluginManagementProps) => {
         installedPlugins={installedPluginsLookup}
         installPermission={openMarketPlaceDialog?.installPermission}
       />
-      <DeletePluginDialog
+      <UninstallPluginDialog
         open={deletePluginDialogState.open}
         onClose={deletePluginDialogState.onClose}
         isSubmitting={deletePluginDialogState.isSubmitting}
