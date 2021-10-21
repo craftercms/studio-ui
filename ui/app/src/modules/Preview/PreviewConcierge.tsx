@@ -121,6 +121,8 @@ import { useSiteUIConfig } from '../../utils/hooks/useSiteUIConfig';
 import { useRTEConfig } from '../../utils/hooks/useRTEConfig';
 import { guestMessages } from '../../assets/guestMessages';
 import { HighlightMode } from '../../models/GlobalState';
+import { useEnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
+import KeyboardShortcutHelpDialog from '../../components/KeyboardShortcutHelpDialog';
 
 const originalDocDomain = document.domain;
 
@@ -226,6 +228,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   const uiConfig = useSiteUIConfig();
   const { cdataEscapedFieldPatterns } = uiConfig;
   const rteConfig = useRTEConfig();
+  const keyboardShortcutHelpDialogState = useEnhancedDialogState();
 
   const conditionallyToggleEditMode = useCallback(
     (nextHighlightMode?: HighlightMode) => {
@@ -813,6 +816,11 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   // Hotkeys
   useHotkeys('e', () => conditionallyToggleEditMode('all'), [conditionallyToggleEditMode]);
   useHotkeys('m', () => conditionallyToggleEditMode('move'), [conditionallyToggleEditMode]);
+  useHotkeys(
+    'shift+/', // 'shift+/' = '?'
+    () => keyboardShortcutHelpDialogState.onOpen(),
+    []
+  );
 
   return (
     <>
@@ -845,6 +853,12 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
             </IconButton>
           </>
         }
+      />
+      <KeyboardShortcutHelpDialog
+        open={keyboardShortcutHelpDialogState.open}
+        isMinimized={keyboardShortcutHelpDialogState.isMinimized}
+        hasPendingChanges={keyboardShortcutHelpDialogState.hasPendingChanges}
+        isSubmitting={keyboardShortcutHelpDialogState.isSubmitting}
       />
     </>
   );
