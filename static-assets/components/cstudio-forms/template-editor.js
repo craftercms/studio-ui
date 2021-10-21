@@ -686,8 +686,6 @@ CStudioAuthoring.Module.requireModule(
                           encodeURIComponent(path) +
                           '&fileName=' +
                           encodeURI(filename) +
-                          '&user=' +
-                          CStudioAuthoringContext.user +
                           '&unlock=true';
 
                         fetch(CStudioAuthoring.Service.createServiceUri(writeServiceUrl), {
