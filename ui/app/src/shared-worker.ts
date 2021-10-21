@@ -76,8 +76,8 @@ function onmessage(event) {
 
 function retrieve() {
   clearTimeout(timeout);
-  return obtainAuthToken().subscribe(
-    (response) => {
+  return obtainAuthToken().subscribe({
+    next(response) {
       if (response) {
         log('New token received');
         status = 'active';
@@ -98,7 +98,7 @@ function retrieve() {
       }
       return current;
     },
-    (e: AjaxError) => {
+    error(e: AjaxError) {
       clearTimeout(timeout);
       log('Error retrieving token', e);
       if (e.status === 401) {
@@ -113,7 +113,7 @@ function retrieve() {
         }
       }
     }
-  );
+  });
 }
 
 function broadcast(message: StandardAction, excludedClient?: MessagePort) {
