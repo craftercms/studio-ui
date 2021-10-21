@@ -496,6 +496,12 @@ export function sortItem(
     } else if (numericIndex === targetIndex) {
       splitIndex[position] = currentTarget.toString();
       model.parentContainerFieldIndex = splitIndex.join('.');
+    } else if (targetIndex < currentTarget) {
+      splitIndex[position] = (numericIndex + 1).toString();
+      model.parentContainerFieldIndex = splitIndex.join('.');
+    } else if (targetIndex > currentTarget) {
+      splitIndex[position] = (numericIndex + -1).toString();
+      model.parentContainerFieldIndex = splitIndex.join('.');
     }
   }
 
@@ -518,7 +524,9 @@ export function sortItem(
     );
   } else {
     modelHierarchyMap[modelId].children.forEach((_modelId) => {
-      updateModel(fieldId, modelHierarchyMap[_modelId], currentIndexParsed, targetIndexParsed);
+      if (modelHierarchyMap[_modelId].parentContainerFieldPath.startsWith(fieldId)) {
+        updateModel(fieldId, modelHierarchyMap[_modelId], currentIndexParsed, targetIndexParsed);
+      }
     });
     modelHierarchyMap[modelId].children = modelHierarchyMap[modelId].children.splice(
       targetIndexParsed,

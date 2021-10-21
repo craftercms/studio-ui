@@ -91,7 +91,8 @@ export function GuestProxy() {
       collection: Element[],
       type: string,
       newIndex: string | number,
-      oldIndex?: string | number
+      oldIndex?: string | number,
+      fieldId?: string
     ): void => {
       let originalNewIndex = newIndex;
       let originalOldIndex = oldIndex;
@@ -127,16 +128,36 @@ export function GuestProxy() {
           index = originalNewIndex;
         }
         const itemsToReRegister = collection.slice(from, to);
+        const childrenToRegister = [];
         itemsToReRegister.forEach((el, i) => {
+          const currentElementIndex = $(el).attr('data-craftercms-index');
           const elementNewIndex = appendIndex(index, i);
+
           $(el).attr('data-craftercms-index', elementNewIndex);
+
+          el.querySelectorAll(
+            `[data-craftercms-field-id^="${fieldId}."][data-craftercms-index^="${currentElementIndex}"]`
+          ).forEach((element) => {
+            const position = $(element).attr('data-craftercms-field-id').split('.').indexOf(fieldId);
+            const elementIndex = $(element).attr('data-craftercms-index');
+            const splitIndex = elementIndex.split('.');
+            splitIndex[position] = elementNewIndex.toString();
+
+            $(element).attr('data-craftercms-index', splitIndex.join('.'));
+
+            childrenToRegister.push(element);
+
+            const elementRecord = ElementRegistry.fromElement(element);
+            ElementRegistry.deregister(elementRecord.id);
+          });
+
           if (originalOldIndex === elementNewIndex) {
             addAnimation($(el), 'craftercms-content-tree-locate');
           }
           const elementRecord = ElementRegistry.fromElement(el);
           ElementRegistry.deregister(elementRecord.id);
         });
-        itemsToReRegister.forEach((el) => registerElement(el));
+        itemsToReRegister.concat(childrenToRegister).forEach((el) => registerElement(el));
       }
     };
 
@@ -202,7 +223,7 @@ export function GuestProxy() {
             $el.insertBefore($targetSibling);
           }
 
-          updateElementRegistrations(Array.from($el.parent().children()), 'sort', index, newIndex);
+          updateElementRegistrations(Array.from($el.parent().children()), 'sort', index, newIndex, fieldId);
           break;
         }
         case moveItemOperation.type: {
