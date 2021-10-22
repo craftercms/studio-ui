@@ -122,7 +122,7 @@ import { useRTEConfig } from '../../utils/hooks/useRTEConfig';
 import { guestMessages } from '../../assets/guestMessages';
 import { HighlightMode } from '../../models/GlobalState';
 import { useEnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
-import KeyboardShortcutHelpDialog from '../../components/KeyboardShortcutHelpDialog';
+import KeyboardShortcutsDialog from '../../components/KeyboardShortcutsDialog';
 
 const originalDocDomain = document.domain;
 
@@ -228,7 +228,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   const uiConfig = useSiteUIConfig();
   const { cdataEscapedFieldPatterns } = uiConfig;
   const rteConfig = useRTEConfig();
-  const keyboardShortcutHelpDialogState = useEnhancedDialogState();
+  const keyboardShortcutsDialogState = useEnhancedDialogState();
 
   const conditionallyToggleEditMode = useCallback(
     (nextHighlightMode?: HighlightMode) => {
@@ -818,7 +818,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   useHotkeys('m', () => conditionallyToggleEditMode('move'), [conditionallyToggleEditMode]);
   useHotkeys(
     'shift+/', // 'shift+/' = '?'
-    () => keyboardShortcutHelpDialogState.onOpen(),
+    () => keyboardShortcutsDialogState.onOpen(),
     []
   );
 
@@ -854,11 +854,12 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           </>
         }
       />
-      <KeyboardShortcutHelpDialog
-        open={keyboardShortcutHelpDialogState.open}
-        isMinimized={keyboardShortcutHelpDialogState.isMinimized}
-        hasPendingChanges={keyboardShortcutHelpDialogState.hasPendingChanges}
-        isSubmitting={keyboardShortcutHelpDialogState.isSubmitting}
+      <KeyboardShortcutsDialog
+        open={keyboardShortcutsDialogState.open}
+        onClose={keyboardShortcutsDialogState.onClose}
+        isMinimized={keyboardShortcutsDialogState.isMinimized}
+        hasPendingChanges={keyboardShortcutsDialogState.hasPendingChanges}
+        isSubmitting={keyboardShortcutsDialogState.isSubmitting}
       />
     </>
   );

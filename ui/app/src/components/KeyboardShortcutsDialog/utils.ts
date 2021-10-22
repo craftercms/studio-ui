@@ -15,5 +15,12 @@
  */
 
 import { EnhancedDialogProps } from '../EnhancedDialog';
+import { FullSxRecord, PartialSxRecord } from '../../models/CustomRecord';
 
-export interface KeyboardShortcutHelpDialogProps extends EnhancedDialogProps {}
+export interface KeyboardShortcutsDialogProps extends EnhancedDialogProps {
+  sx?: KeyboardShortcutsDialogPartialSx;
+}
+
+export type KeyboardShortcutsDialogClassKey = 'categoryTitle' | 'shortcutChip' | 'shortcutsList';
+export type KeyboardShortcutsDialogPartialSx = PartialSxRecord<KeyboardShortcutsDialogClassKey>;
+export type KeyboardShortcutsDialogFullSx = FullSxRecord<KeyboardShortcutsDialogClassKey>;

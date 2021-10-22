@@ -14,21 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
-import { KeyboardShortcutHelpDialogProps } from './utils';
-import EnhancedDialog from '../EnhancedDialog';
-import { FormattedMessage } from 'react-intl';
+export { default } from './KeyboardShortcutsDialog';
 
-export default function KeyboardShortcutHelpDialog(props: KeyboardShortcutHelpDialogProps) {
-  const { ...rest } = props;
-
-  return (
-    <EnhancedDialog
-      title={<FormattedMessage id="keyboardShortcutHelpDialog.title" defaultMessage="Keyboard Shortcuts" />}
-      maxWidth="sm"
-      {...rest}
-    >
-      <></>
-    </EnhancedDialog>
-  );
-}
+export * from './KeyboardShortcutsDialog';
