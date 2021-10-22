@@ -17,7 +17,6 @@
     "lorem-ipsum": "^2.0.3",
     "uuid": "^3.3.3"
   },
-  "peerDependencies": {},
   "scripts": {
     "build": "run-s build:install build:app",
     "build:install": "yarn",
@@ -102,7 +101,6 @@
     ]
   },
   "resolutions": {
-    "react-is": "^17.0.2",
-    "**/react-is": "^17.0.2"
+    "react-is": "^17.0.2"
   }
 }

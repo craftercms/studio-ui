@@ -25,7 +25,6 @@
     "type": "git",
     "url": "git+https://github.com/craftercms/studio-ui.git"
   },
-  "dependencies": {},
   "peerDependencies": {
     "uppy": "^2.0.0"
   },

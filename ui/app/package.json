@@ -151,7 +151,6 @@
     ]
   },
   "resolutions": {
-    "react-is": "^17.0.2",
-    "**/react-is": "^17.0.2"
+    "react-is": "^17.0.2"
   }
 }
