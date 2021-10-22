@@ -143,3 +143,12 @@ ui/app/.env.development
 # Ignore irrelevant generated translation system files
 ui/app/src/translations/src
 ui/app/src/translations/whitelists
+
+# Yarn
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
