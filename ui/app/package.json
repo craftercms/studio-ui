@@ -149,8 +149,5 @@
       "CHANGE_LOG.md",
       ".babelrc"
     ]
-  },
-  "resolutions": {
-    "react-is": "^17.0.2"
   }
 }

@@ -9,9 +9,9 @@
     "id": "craftercms.guest"
   },
   "dependencies": {
-    "@craftercms/classes": "1.2.4",
-    "@craftercms/content": "1.2.4",
-    "@craftercms/search": "1.2.4",
+    "@craftercms/classes": "^2.0.0",
+    "@craftercms/content": "^2.0.0",
+    "@craftercms/search": "^2.0.0",
     "jss": "^10.0.3",
     "jss-preset-default": "^10.0.0",
     "lorem-ipsum": "^2.0.3",
@@ -99,8 +99,5 @@
       "README.md",
       "CHANGE_LOG.md"
     ]
-  },
-  "resolutions": {
-    "react-is": "^17.0.2"
   }
 }

@@ -109,9 +109,8 @@ export function getCachedModels(): LookupTable<ContentInstance> {
 }
 
 export function fetchById(id: string): Observable<LookupTable<ContentInstance>> {
-  // @ts-ignore - TODO: Upgrade SDK to rxjs@7
   return search(
-    createQuery('elasticsearch', {
+    createQuery({
       query: {
         bool: {
           filter: [

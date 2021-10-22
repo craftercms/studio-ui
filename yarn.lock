@@ -2193,33 +2193,33 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@craftercms/classes@npm:1.2.4":
-  version: 1.2.4
-  resolution: "@craftercms/classes@npm:1.2.4"
+"@craftercms/classes@npm:2.0.0, @craftercms/classes@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@craftercms/classes@npm:2.0.0"
   dependencies:
-    "@craftercms/models": 1.2.4
-    "@craftercms/utils": 1.2.4
+    "@craftercms/models": 2.0.0
+    "@craftercms/utils": 2.0.0
     url-search-params-polyfill: ^5.0.0
-  checksum: 1385466a90ced30ddd70fc077b1ad8e1778b0509004f52fa9978e3bb2d521961188feae0dd0c5fe4330950bef6d70a8a50c9e1d63fc893fbc8dbe4e383283517
+  checksum: 6612febf0c494fa8f3ba91411e8a552754806cce53e33596b19d242273eec7b8aa4e50257fd0241cf618c4f5e365939cab206d9678e39170b71a56b6cfbf3390
   languageName: node
   linkType: hard
 
-"@craftercms/content@npm:1.2.4":
-  version: 1.2.4
-  resolution: "@craftercms/content@npm:1.2.4"
+"@craftercms/content@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@craftercms/content@npm:2.0.0"
   dependencies:
-    "@craftercms/classes": 1.2.4
-    "@craftercms/models": 1.2.4
-    "@craftercms/utils": 1.2.4
-    rxjs: ^6.5.4
-  checksum: c0f786e5dfc6d4306915e689cb74c558df5d78085161a58434cb57a283b10ca9cfba820fa737a9da510c8fd7536362b6f7c924ae444c6517673c5772b636f77d
+    "@craftercms/classes": 2.0.0
+    "@craftercms/models": 2.0.0
+    "@craftercms/utils": 2.0.0
+    rxjs: ^7.0.0
+  checksum: e8c8a08f8efadbf87f29cc4eddbf44f3ea02b93e5f92a16b988ebe1a41bb5915800dee82d26fda025e170c08a2d41f894de9b45311f439853ffa97417201063d
   languageName: node
   linkType: hard
 
-"@craftercms/models@npm:1.2.4":
-  version: 1.2.4
-  resolution: "@craftercms/models@npm:1.2.4"
-  checksum: 2c4ad4e95595e9bf3149f239a50cbe56ce65c863777b4e02f0dd4a695ab06acde568a817dd3e019d5178ac9e922df7676874b5ac72c7d51abcb76579fdec33b2
+"@craftercms/models@npm:2.0.0":
+  version: 2.0.0
+  resolution: "@craftercms/models@npm:2.0.0"
+  checksum: 716285ba81753b810bb9d72a19c02e0ad1d43b84dc551e68e2d4780db2ff81716c93e5273f83a7a3762516cc0100407a9c8cdd2cfb1fbba11abac6238eb9fbb9
   languageName: node
   linkType: hard
 
@@ -2234,17 +2234,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@craftercms/search@npm:1.2.4":
-  version: 1.2.4
-  resolution: "@craftercms/search@npm:1.2.4"
+"@craftercms/search@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@craftercms/search@npm:2.0.0"
   dependencies:
-    "@craftercms/classes": 1.2.4
-    "@craftercms/models": 1.2.4
-    "@craftercms/utils": 1.2.4
-    rxjs: ^6.5.4
+    "@craftercms/classes": 2.0.0
+    "@craftercms/models": 2.0.0
+    "@craftercms/utils": 2.0.0
+    rxjs: ^7.0.0
     url-search-params-polyfill: ^5.0.0
     uuid: ^3.4.0
-  checksum: 2c1dcf289ccf1598a7645e6e1a6beed229fde2b23e4477d84aaa116a3859c9d4ceab5cac66abfd28cd124c265bf264a88e2a2cd54dd69615708cae88f0f689b5
+  checksum: e455d7039185e71743d58f6ff29c883d129e522a328c6b93dd0e52a28aa4a60cc0456f7cac0b1284ef10df5c49a1a6477f2929f8cbc115a9d5b4cebffcc33dfa
   languageName: node
   linkType: hard
 
@@ -2255,9 +2255,9 @@ __metadata:
     "@babel/cli": ^7.8.4
     "@babel/core": ^7.9.0
     "@babel/preset-typescript": ^7.7.4
-    "@craftercms/classes": 1.2.4
-    "@craftercms/content": 1.2.4
-    "@craftercms/search": 1.2.4
+    "@craftercms/classes": ^2.0.0
+    "@craftercms/content": ^2.0.0
+    "@craftercms/search": ^2.0.0
     "@types/tinymce": ^4.5.24
     jss: ^10.0.3
     jss-preset-default: ^10.0.0
@@ -2358,10 +2358,10 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@craftercms/utils@npm:1.2.4":
-  version: 1.2.4
-  resolution: "@craftercms/utils@npm:1.2.4"
-  checksum: 09fde569bc44d08839c915fb7ae117818bb7202114d4a67d5ef662f5619ea6501f3d5641f8014d9ae2e834eeb5146004b0adff52afa26c56b2a1a9eff0f4509e
+"@craftercms/utils@npm:2.0.0":
+  version: 2.0.0
+  resolution: "@craftercms/utils@npm:2.0.0"
+  checksum: fbb8ea70526e68bb4b36f9114edf8d65775e3a0e6d5c22965088cbfd684c7da43538929b919448696d6125c26952c5d89b94d0f8c0489883a2db6105092ab9aa
   languageName: node
   linkType: hard
 
@@ -17003,6 +17003,7 @@ resolve@^2.0.0-next.3:
     rollup-plugin-terser: ^7.0.2
     rollup-plugin-ts-treeshaking: ^1.0.2
     rollup-plugin-typescript2: ^0.30.0
+    run-s: ^0.0.0
     rxjs: ^7.0.0
     typescript: ^4.0.0
     uppy: ^2.0.0
@@ -17035,21 +17036,19 @@ resolve@^2.0.0-next.3:
   languageName: node
   linkType: hard
 
+"run-s@npm:^0.0.0":
+  version: 0.0.0
+  resolution: "run-s@npm:0.0.0"
+  checksum: b4c1c977748e80a30ce8ed49c0159734067caad41c267204d2a1446e799097c8299a9c26c0c91c340b1ff0a50e0e01eee6a6e6ca6eef9b450b6d245045f308cf
+  languageName: node
+  linkType: hard
+
 "rust-result@npm:^1.0.0":
   version: 1.0.0
   resolution: "rust-result@npm:1.0.0"
   dependencies:
     individual: ^2.0.0
   checksum: ccad2bdf79d3ff29e9f163db3121342b31e6d3008714851900c59da20489175f389dc3309cb92bfa5fa4d8f8842f0287567021912d37afbe5d379880af4bb95b
-  languageName: node
-  linkType: hard
-
-"rxjs@npm:^6.5.4":
-  version: 6.6.7
-  resolution: "rxjs@npm:6.6.7"
-  dependencies:
-    tslib: ^1.9.0
-  checksum: bc334edef1bb8bbf56590b0b25734ba0deaf8825b703256a93714308ea36dff8a11d25533671adf8e104e5e8f256aa6fdfe39b2e248cdbd7a5f90c260acbbd1b
   languageName: node
   linkType: hard
 
@@ -18701,7 +18700,7 @@ resolve@^2.0.0-next.3:
   languageName: node
   linkType: hard
 
-"tslib@npm:^1.8.1, tslib@npm:^1.9.0, tslib@npm:^1.9.3":
+"tslib@npm:^1.8.1, tslib@npm:^1.9.3":
   version: 1.14.1
   resolution: "tslib@npm:1.14.1"
   checksum: dbe628ef87f66691d5d2959b3e41b9ca0045c3ee3c7c7b906cc1e328b39f199bb1ad9e671c39025bd56122ac57dfbf7385a94843b1cc07c60a4db74795829acd
