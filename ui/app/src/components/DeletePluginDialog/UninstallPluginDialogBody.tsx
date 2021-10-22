@@ -140,7 +140,7 @@ export function UninstallPluginDialogBody(props: UninstallPluginDialogBodyProps)
           <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
         </SecondaryButton>
         <PrimaryButton disabled={(hasUsages && !confirmPasswordPassed) || isSubmitting} onClick={onSubmit}>
-          <FormattedMessage id="uninstallPluginDialog.submitButton" defaultMessage="Uninstall" />
+          <FormattedMessage id="words.uninstall" defaultMessage="Uninstall" />
         </PrimaryButton>
       </DialogFooter>
       {isSubmitting && (
