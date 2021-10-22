@@ -135,6 +135,7 @@ export function GuestProxy() {
 
           $(el).attr('data-craftercms-index', elementNewIndex);
 
+          // TODO: Pending to check if fieldId may have dotted notation. (repeat inside repeat)
           el.querySelectorAll(
             `[data-craftercms-field-id^="${fieldId}."][data-craftercms-index^="${currentElementIndex}"]`
           ).forEach((element) => {
