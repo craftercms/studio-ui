@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -13,63 +13,43 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { defineMessages, useIntl } from 'react-intl';
-import { useTheme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
-import Grid from '@mui/material/Grid';
-import MediaCard from '../../components/MediaCard';
-import { search } from '../../services/search';
-import { ElasticParams, Filter, MediaItem } from '../../models/Search';
-import Spinner from '../../components/SystemStatus/Spinner';
-import { Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
-import EmptyState from '../../components/SystemStatus/EmptyState';
 import queryString from 'query-string';
-import TablePagination from '@mui/material/TablePagination';
-import Typography from '@mui/material/Typography';
-import FormGroup from '@mui/material/FormGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import clsx from 'clsx';
-import { History, Location } from 'history';
-import { fetchContentXML } from '../../services/content';
-import { showEditDialog, showItemMegaMenu, showPreviewDialog, updatePreviewDialog } from '../../state/actions/dialogs';
-import { useDispatch } from 'react-redux';
-import { completeDetailedItem } from '../../state/actions/content';
-import { getPreviewURLFromPath } from '../../utils/path';
-import ApiResponseErrorState from '../../components/ApiResponseErrorState';
-import SiteSearchToolBar from '../../components/SiteSearchToolbar';
-import Drawer from '@mui/material/Drawer';
-import ListItemText from '@mui/material/ListItemText';
-import SiteSearchFilters from '../../components/SiteSearchFilters';
-import ItemActionsSnackbar from '../../components/ItemActionsSnackbar';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import { AllItemActions, DetailedItem } from '../../models/Item';
-import palette from '../../styles/palette';
-import Button from '@mui/material/Button';
-import { itemCreated, itemDuplicated, itemsDeleted, itemsPasted, itemUpdated } from '../../state/actions/system';
-import { getHostToHostBus } from '../Preview/previewContext';
-import { generateMultipleItemOptions, generateSingleItemOptions, itemActionDispatcher } from '../../utils/itemActions';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
-import { getNumOfMenuOptionsForItem, getSystemTypeFromPath } from '../../utils/content';
-import { useSelection } from '../../utils/hooks/useSelection';
+import { Subject } from 'rxjs';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useEnv } from '../../utils/hooks/useEnv';
-import { batchActions } from '../../state/actions/misc';
+import { useSelection } from '../../utils/hooks/useSelection';
+import { useDispatch } from 'react-redux';
+import { useIntl } from 'react-intl';
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import { useDetailedItems } from '../../utils/hooks/useDetailedItems';
-
-interface SearchProps {
-  history: History;
-  location: Location;
-  mode?: 'default' | 'select';
-  embedded?: boolean;
-  onClose?(): void;
-  onSelect?(path: string, selected: boolean): any;
-  onAcceptSelection?(items: DetailedItem[]): any;
-}
-
-const drawerWidth = 300;
+import { generateMultipleItemOptions, generateSingleItemOptions, itemActionDispatcher } from '../../utils/itemActions';
+import { search } from '../../services/search';
+import { showErrorDialog } from '../../state/reducers/dialogs/error';
+import { translations } from './translations';
+import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
+import { itemCreated, itemDuplicated, itemsDeleted, itemsPasted, itemUpdated } from '../../state/actions/system';
+import { getHostToHostBus } from '../../modules/Preview/previewContext';
+import { ElasticParams, Filter, MediaItem } from '../../models/Search';
+import { batchActions } from '../../state/actions/misc';
+import { completeDetailedItem } from '../../state/actions/content';
+import { showEditDialog, showItemMegaMenu, showPreviewDialog, updatePreviewDialog } from '../../state/actions/dialogs';
+import { getNumOfMenuOptionsForItem, getSystemTypeFromPath } from '../../utils/content';
+import { AllItemActions, DetailedItem } from '../../models/Item';
+import { getPreviewURLFromPath } from '../../utils/path';
+import { fetchContentXML } from '../../services/content';
+import makeStyles from '@mui/styles/makeStyles';
+import palette from '../../styles/palette';
+import {
+  actionsToBeShown,
+  drawerWidth,
+  initialSearchParameters,
+  SearchProps,
+  setCheckedParameterFromURL
+} from './utils';
+import SearchUI from './SearchUI';
 
 const useStyles = makeStyles((theme) => ({
   wrapper: {
@@ -240,107 +220,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const initialSearchParameters: ElasticParams = {
-  query: '',
-  keywords: '',
-  offset: 0,
-  limit: 21,
-  sortBy: '_score',
-  sortOrder: 'desc',
-  filters: {}
-};
-
-const messages = defineMessages({
-  noResults: {
-    id: 'search.noResults',
-    defaultMessage: 'No Results Were Found.'
-  },
-  changeQuery: {
-    id: 'search.changeQuery',
-    defaultMessage: 'Try changing your query.'
-  },
-  videoProcessed: {
-    id: 'search.videoProcessed',
-    defaultMessage: 'Video is being processed, preview will be available when processing is complete'
-  },
-  selectAll: {
-    id: 'search.selectAll',
-    defaultMessage: 'Select all on this page'
-  },
-  resultsSelected: {
-    id: 'search.resultsSelected',
-    defaultMessage: '{count, plural, one {{count} item selected} other {{count} items selected}}'
-  },
-  itemsPerPage: {
-    id: 'search.itemsPerPage',
-    defaultMessage: 'Items per page:'
-  },
-  noPermissions: {
-    id: 'search.noPermissions',
-    defaultMessage: 'No permissions available.'
-  },
-  edit: {
-    id: 'words.edit',
-    defaultMessage: 'Edit'
-  },
-  delete: {
-    id: 'words.delete',
-    defaultMessage: 'Delete'
-  },
-  preview: {
-    id: 'search.goToPreview',
-    defaultMessage: 'Go to page'
-  },
-  resultsCaption: {
-    id: 'search.resultsCaption',
-    defaultMessage: '{from}-{to} of {count} results {keywordLength, plural, =0 {}other{ for <b>“{keyword}”</b>}} '
-  },
-  filtersActive: {
-    id: 'search.filtersActive',
-    defaultMessage: ' • <span>Filters Active</span>'
-  },
-  search: {
-    id: 'words.search',
-    defaultMessage: 'Search'
-  },
-  cancel: {
-    id: 'words.cancel',
-    defaultMessage: 'Cancel'
-  },
-  acceptSelection: {
-    id: 'search.acceptSelection',
-    defaultMessage: 'Accept Selection'
-  },
-  clearSelected: {
-    id: 'search.clearSelected',
-    defaultMessage: 'Clear {count} selected'
-  },
-  nextPage: {
-    id: 'pagination.nextPage',
-    defaultMessage: 'Next page'
-  },
-  previousPage: {
-    id: 'pagination.previousPage',
-    defaultMessage: 'Previous page'
-  },
-  unknownError: {
-    id: 'siteSearch.unknownErrorSearching',
-    defaultMessage: 'An error occurred with the search service.'
-  }
-});
-
-const actionsToBeShown: AllItemActions[] = [
-  'edit',
-  'delete',
-  'publish',
-  'rejectPublish',
-  'duplicate',
-  'duplicateAsset',
-  'dependencies',
-  'history'
-];
-
-export default function Search(props: SearchProps) {
+export function URLDrivenSearch(props: SearchProps) {
   const classes = useStyles();
   const refs = useRef({ unsubscribeOnActionSuccess: null, createQueryString: null });
   const { history, location, mode = 'default', onSelect, embedded = false, onAcceptSelection, onClose } = props;
@@ -409,7 +289,7 @@ export default function Search(props: SearchProps) {
           dispatch(
             showErrorDialog({
               error: {
-                message: formatMessage(messages.unknownError)
+                message: formatMessage(translations.unknownError)
               }
             })
           );
@@ -459,6 +339,11 @@ export default function Search(props: SearchProps) {
       subscription.unsubscribe();
     };
   }, [handleClearSelected, refreshSearch]);
+
+  useEffect(() => {
+    console.log('setCheckedFilters queryparams');
+    setCheckedFilters(setCheckedParameterFromURL(queryParams));
+  }, [queryParams, setCheckedFilters]);
 
   function handleSearchKeyword(keyword: string) {
     setKeyword(keyword);
@@ -746,188 +631,77 @@ export default function Search(props: SearchProps) {
     }
   };
 
+  const onSelectedPathChanges = (path: string) => {
+    setSelectedPath(path);
+  };
+
+  // TODO: Review
+  const onCheckedFiltersChanges = useCallback((checkedFilters: object) => {
+    console.log('setCheckedFilters onCheckedFiltersChanges');
+    setCheckedFilters(checkedFilters);
+  }, []);
+
+  console.log({
+    queryParams,
+    mode,
+    currentView,
+    desktopScreen,
+    embedded,
+    keyword,
+    handleSearchKeyword,
+    checkedFilters,
+    drawerOpen,
+    searchResults,
+    toggleDrawer,
+    handleChangeView,
+    handleFilterChange,
+    clearFilter,
+    clearFilters,
+    selectedPath,
+    onSelectedPathChanges,
+    onCheckedFiltersChanges
+  });
+
   return (
-    <>
-      <SiteSearchToolBar
-        onChange={handleSearchKeyword}
-        onMenuIconClick={toggleDrawer}
-        handleChangeView={handleChangeView}
-        currentView={currentView}
-        keyword={keyword}
-        showActionButton={Boolean(keyword)}
-        showTitle={mode === 'select' || (mode === 'default' && !embedded)}
-        embedded={embedded}
-      />
-      <Drawer
-        variant={desktopScreen ? 'persistent' : 'temporary'}
-        anchor="left"
-        open={drawerOpen}
-        className={classes.drawer}
-        classes={{
-          paper: clsx(classes.drawerPaper, { [classes.drawerPaperSelect]: mode === 'select' }),
-          modal: classes.drawerModal
-        }}
-        ModalProps={{
-          ...(!desktopScreen && {
-            onClose: () => toggleDrawer()
-          })
-        }}
-      >
-        {searchResults && searchResults.facets && (
-          <SiteSearchFilters
-            mode={mode}
-            className={classes.searchDropdown}
-            facets={searchResults.facets}
-            handleFilterChange={handleFilterChange}
-            queryParams={queryParams}
-            checkedFilters={checkedFilters}
-            setCheckedFilters={setCheckedFilters}
-            clearFilters={clearFilters}
-            handleClearClick={clearFilter}
-            selectedPath={selectedPath}
-            setSelectedPath={setSelectedPath}
-          />
-        )}
-      </Drawer>
-      <section
-        className={clsx(classes.wrapper, {
-          [classes.shift]: drawerOpen,
-          [classes.wrapperSelectMode]: mode === 'select'
-        })}
-        style={
-          drawerOpen && desktopScreen
-            ? { width: `calc(100% - ${drawerWidth}px`, marginLeft: drawerWidth }
-            : { marginLeft: 0 }
-        }
-      >
-        <div className={classes.searchHelperBar}>
-          <FormGroup>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  color="primary"
-                  checked={areAllSelected()}
-                  onClick={(e: any) => handleSelectAll(e.target.checked)}
-                />
-              }
-              label={<Typography color="textPrimary">{formatMessage(messages.selectAll)}</Typography>}
-            />
-          </FormGroup>
-          <TablePagination
-            rowsPerPageOptions={[9, 15, 21]}
-            className={classes.pagination}
-            component="div"
-            labelRowsPerPage={null}
-            labelDisplayedRows={({ from, to, count }) => (
-              <>
-                {formatMessage(messages.resultsCaption, {
-                  from,
-                  to,
-                  count,
-                  keyword: Array.isArray(keyword) ? keyword.join(' ') : keyword,
-                  keywordLength: keyword.length,
-                  b: (content) => <strong key={content}>{content}</strong>
-                })}
-                {(Object.keys(checkedFilters).length > 0 || Boolean(selectedPath)) && (
-                  <strong>
-                    {formatMessage(messages.filtersActive, {
-                      span: (content) => (
-                        <span key={content} className={classes.filtersActive}>
-                          {content}
-                        </span>
-                      )
-                    })}
-                  </strong>
-                )}
-              </>
-            )}
-            count={searchResults?.total ?? 0}
-            rowsPerPage={searchParameters.limit}
-            page={Math.ceil(searchParameters.offset / searchParameters.limit)}
-            backIconButtonProps={{
-              'aria-label': formatMessage(messages.previousPage)
-            }}
-            nextIconButtonProps={{
-              'aria-label': formatMessage(messages.nextPage)
-            }}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-            classes={{
-              selectRoot: classes.paginationSelectRoot,
-              select: classes.paginationSelect
-            }}
-          />
-        </div>
-        <section className={classes.content}>
-          {apiState.error ? (
-            <ApiResponseErrorState error={apiState.errorResponse} />
-          ) : (
-            <Grid container spacing={3} className={searchResults?.items.length === 0 ? classes.empty : ''}>
-              {searchResults === null ? (
-                <Spinner background="inherit" />
-              ) : searchResults.items.length > 0 ? (
-                searchResults.items.map((item: MediaItem, i) => (
-                  <Grid key={i} item xs={12} {...(currentView === 'grid' ? { sm: 6, md: 4, lg: 4, xl: 3 } : {})}>
-                    <MediaCard
-                      isList={currentView === 'list'}
-                      classes={
-                        currentView === 'list'
-                          ? {
-                              root: classes.mediaCardListRoot,
-                              checkbox: classes.mediaCardListCheckbox,
-                              header: classes.mediaCardListHeader,
-                              media: classes.mediaCardListMedia,
-                              mediaIcon: classes.mediaCardListMediaIcon
-                            }
-                          : void 0
-                      }
-                      item={item}
-                      onPreview={onPreview}
-                      onSelect={handleSelect}
-                      selected={selected}
-                      previewAppBaseUri={guestBase}
-                      onHeaderButtonClick={onHeaderButtonClick}
-                    />
-                  </Grid>
-                ))
-              ) : (
-                <EmptyState title={formatMessage(messages.noResults)} subtitle={formatMessage(messages.changeQuery)} />
-              )}
-            </Grid>
-          )}
-        </section>
-      </section>
-      {mode === 'default' && (
-        <ItemActionsSnackbar
-          open={selected.length > 0}
-          options={selectionOptions}
-          onActionClicked={onActionClicked}
-          append={
-            <Button size="small" color="primary" variant="text" onClick={handleClearSelected}>
-              <ListItemText
-                primary={formatMessage(messages.clearSelected, {
-                  count: selected.length
-                })}
-              />
-            </Button>
-          }
-        />
-      )}
-      {mode === 'select' && (
-        <section className={classes.actionsMenu}>
-          <Button variant="outlined" onClick={onClose}>
-            {formatMessage(messages.cancel)}
-          </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            disabled={selected.length === 0}
-            onClick={() => onAcceptSelection?.(selected.map((path) => itemsByPath?.[path]))}
-          >
-            {formatMessage(messages.acceptSelection)}
-          </Button>
-        </section>
-      )}
-    </>
+    <SearchUI
+      sortBy={queryParams['sortBy'] as string}
+      sortOrder={queryParams['sortOrder'] as string}
+      currentView={currentView}
+      embedded={embedded}
+      keyword={keyword}
+      mode={mode}
+      checkedFilters={checkedFilters}
+      desktopScreen={desktopScreen}
+      drawerOpen={drawerOpen}
+      searchResults={searchResults}
+      selectedPath={selectedPath}
+      clearFilter={clearFilter}
+      toggleDrawer={toggleDrawer}
+      clearFilters={clearFilters}
+      handleChangeView={handleChangeView}
+      handleFilterChange={handleFilterChange}
+      handleSearchKeyword={handleSearchKeyword}
+      onSelectedPathChanges={onSelectedPathChanges}
+      onCheckedFiltersChanges={onCheckedFiltersChanges}
+      apiState={apiState}
+      areAllSelected={areAllSelected()}
+      guestBase={guestBase}
+      handleChangePage={handleChangePage}
+      handleChangeRowsPerPage={handleChangeRowsPerPage}
+      handleClearSelected={handleClearSelected}
+      handleSelect={handleSelect}
+      handleSelectAll={handleSelectAll}
+      itemsByPath={itemsByPath}
+      onAcceptSelection={onAcceptSelection}
+      onActionClicked={onActionClicked}
+      onClose={onClose}
+      onHeaderButtonClick={onHeaderButtonClick}
+      onPreview={onPreview}
+      searchParameters={searchParameters}
+      selected={selected}
+      selectionOptions={selectionOptions}
+    />
   );
 }
+
+export default URLDrivenSearch;

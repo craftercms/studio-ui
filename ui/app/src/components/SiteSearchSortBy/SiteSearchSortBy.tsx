@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ElasticParams, Filter as FilterType } from '../../models/Search';
+import { Filter as FilterType } from '../../models/Search';
 import { defineMessages, useIntl } from 'react-intl';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
@@ -68,20 +68,19 @@ const messages = defineMessages({
 });
 
 interface SortByProps {
-  queryParams: Partial<ElasticParams>;
+  sortBy?: string;
   filterKeys: string[];
-
   handleFilterChange(filter: FilterType, isFilter?: boolean): any;
 }
 
 export default function SiteSearchSortBy(props: SortByProps) {
   const classes = useStyles({});
   const { formatMessage } = useIntl();
-  const { queryParams, handleFilterChange, filterKeys } = props;
+  const { handleFilterChange, filterKeys, sortBy = '_score' } = props;
 
   return (
     <Select
-      value={queryParams['sortBy'] ?? '_score'}
+      value={sortBy}
       className={classes.select}
       onChange={(event) => handleFilterChange({ name: 'sortBy', value: event.target.value })}
     >
