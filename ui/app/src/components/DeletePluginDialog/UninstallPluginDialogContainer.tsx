@@ -26,7 +26,7 @@ import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../state/actions/system';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { defineMessages, useIntl } from 'react-intl';
-import { useUpdateRefs } from '../../utils/hooks/useUpdateRefs';
+import useUpdateRefs from '../../utils/hooks/useUpdateRefs';
 
 const messages = defineMessages({
   pluginUninstalled: {
