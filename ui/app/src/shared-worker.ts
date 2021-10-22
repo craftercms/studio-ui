@@ -74,46 +74,59 @@ function onmessage(event) {
   }
 }
 
+function isExpired(time = Date.now()) {
+  return current.expiresAt !== null && time >= current.expiresAt;
+}
+
+function unauthenticated() {
+  log(`Auth has expired`);
+  status = 'expired';
+  broadcast(sharedWorkerUnauthenticated());
+}
+
 function retrieve() {
   clearTimeout(timeout);
-  return obtainAuthToken().subscribe(
-    (response) => {
-      if (response) {
-        log('New token received');
-        status = 'active';
-        current = response;
-        broadcast(sharedWorkerToken(current));
-        refreshInterval = Math.floor((current.expiresAt - Date.now()) * refreshAtFactor);
-        if (clients.length) {
-          // If there are clients connected, keep the token refresh going
-          timeout = self.setTimeout(retrieve, refreshInterval);
+  if (isExpired()) {
+    log(`Skipping token retrieval: local expiration check determined auth is expired.`);
+    unauthenticated();
+    return null;
+  } else {
+    return obtainAuthToken().subscribe({
+      next(response) {
+        if (response) {
+          log('New token received');
+          status = 'active';
+          current = response;
+          broadcast(sharedWorkerToken(current));
+          refreshInterval = Math.floor((current.expiresAt - Date.now()) * refreshAtFactor);
+          if (clients.length) {
+            // If there are clients connected, keep the token refresh going
+            timeout = self.setTimeout(retrieve, refreshInterval);
+          } else {
+            // Do SharedWorkers stop as soon as all their tabs are terminated?
+            clearTimeout(timeout);
+          }
         } else {
-          // Do SharedWorkers stop as soon as all their tabs are terminated?
-          clearTimeout(timeout);
+          unauthenticated();
         }
-      } else {
-        log(`Auth has expired`);
-        status = 'expired';
-        broadcast(sharedWorkerUnauthenticated());
-      }
-      return current;
-    },
-    (e: AjaxError) => {
-      clearTimeout(timeout);
-      log('Error retrieving token', e);
-      if (e.status === 401) {
-        status = 'expired';
-        broadcast(sharedWorkerUnauthenticated());
-      } else {
-        status = 'error';
-        broadcast(sharedWorkerError({ status: e.status, message: e.message }));
-        // If there are clients connected try again.
-        if (clients.length) {
-          timeout = self.setTimeout(retrieve, Math.floor(refreshInterval * 0.9));
+        return current;
+      },
+      error(e: AjaxError) {
+        clearTimeout(timeout);
+        log('Error retrieving token', e);
+        if (e.status === 401) {
+          unauthenticated();
+        } else {
+          status = 'error';
+          broadcast(sharedWorkerError({ status: e.status, message: e.message }));
+          // If there are clients connected try again.
+          if (clients.length) {
+            timeout = self.setTimeout(retrieve, Math.floor(refreshInterval * 0.9));
+          }
         }
       }
-    }
-  );
+    });
+  }
 }
 
 function broadcast(message: StandardAction, excludedClient?: MessagePort) {
