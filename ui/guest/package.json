@@ -12,10 +12,17 @@
     "@craftercms/classes": "^2.0.0",
     "@craftercms/content": "^2.0.0",
     "@craftercms/search": "^2.0.0",
-    "jss": "^10.0.3",
-    "jss-preset-default": "^10.0.0",
-    "lorem-ipsum": "^2.0.3",
-    "uuid": "^3.3.3"
+    "lorem-ipsum": "^2.0.4",
+    "uuid": "^8.3.2"
+  },
+  "peerDependencies": {
+    "@emotion/react": "*",
+    "@emotion/styled": "*",
+    "@mui/material": "*",
+    "@mui/styles": "*",
+    "react": "*",
+    "react-dom": "*",
+    "typescript": "*"
   },
   "scripts": {
     "build": "run-s build:install build:app",
@@ -89,7 +96,7 @@
     "@babel/cli": "^7.8.4",
     "@babel/core": "^7.9.0",
     "@babel/preset-typescript": "^7.7.4",
-    "@types/tinymce": "^4.5.24",
+    "@types/tinymce": "^4.6.4",
     "yargs": "^15.3.1"
   },
   "bic": {

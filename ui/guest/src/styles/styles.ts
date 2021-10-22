@@ -14,9 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import jss, { StyleSheet } from 'jss';
-import preset from 'jss-preset-default';
-import stylesheet, { GuestStyleSheetConfig } from './stylesheet';
+import { GuestStyleSheetConfig } from './stylesheet';
 import { createTheme, Theme, ThemeOptions } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import palette from './palette';
@@ -24,16 +22,6 @@ import { useMemo } from 'react';
 import { ZoneMarkerFullSx } from '../react';
 
 export interface GuestStyleConfig extends GuestStyleSheetConfig {}
-
-export function appendStyleSheet(config?: GuestStyleConfig): StyleSheet {
-  jss.setup(preset());
-
-  const sheet: StyleSheet = jss.createStyleSheet(stylesheet(config));
-
-  sheet.attach();
-
-  return sheet;
-}
 
 export function useGuestTheme(styleConfig: ThemeOptions): Theme {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
