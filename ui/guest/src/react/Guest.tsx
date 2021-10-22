@@ -55,6 +55,7 @@ import {
   reloadRequest,
   scrollToDropTarget,
   setPreviewEditMode,
+  showKeyboardShortcutsDialog,
   trashed,
   updateRteConfig
 } from '@craftercms/studio-ui/state/actions/preview';
@@ -173,6 +174,7 @@ function Guest(props: GuestProps) {
   // Hotkeys propagation to preview
   useHotkeys('e', () => post(editModeToggleHotkey({ mode: HighlightMode.ALL })));
   useHotkeys('m', () => post(editModeToggleHotkey({ mode: HighlightMode.MOVE_TARGETS })));
+  useHotkeys('shift+/', () => post(showKeyboardShortcutsDialog()));
 
   // Key press/hold keeper events
   useEffect(() => {

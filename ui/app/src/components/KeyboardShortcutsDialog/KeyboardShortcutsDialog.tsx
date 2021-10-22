@@ -22,7 +22,7 @@ import {
   KeyboardShortcutsDialogProps
 } from './utils';
 import EnhancedDialog from '../EnhancedDialog';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import DialogBody from '../Dialogs/DialogBody';
 import keyboardShortcuts from '../../assets/keyboardShortcuts';
 import Card from '@mui/material/Card';
@@ -55,6 +55,7 @@ function getStyles(sx: KeyboardShortcutsDialogPartialSx): KeyboardShortcutsDialo
 export default function KeyboardShortcutsDialog(props: KeyboardShortcutsDialogProps) {
   const { ...rest } = props;
   const sx = getStyles(props.sx);
+  const { formatMessage } = useIntl();
 
   return (
     <EnhancedDialog
@@ -67,13 +68,13 @@ export default function KeyboardShortcutsDialog(props: KeyboardShortcutsDialogPr
           <Card key={index}>
             <CardContent>
               <Typography variant="subtitle1" gutterBottom sx={sx.categoryTitle}>
-                {category.label}
+                {formatMessage(category.label)}
               </Typography>
 
               <List sx={sx.shortcutsList}>
                 {category.shortcuts.map(({ label, shortcut }, index) => (
                   <ListItem key={index} secondaryAction={<Chip label={shortcut} sx={sx.shortcutChip} />} divider>
-                    <ListItemText primary={label} />
+                    <ListItemText primary={formatMessage(label)} />
                   </ListItem>
                 ))}
               </List>

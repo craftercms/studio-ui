@@ -53,6 +53,7 @@ import {
   setItemBeingDragged,
   setPreviewEditMode,
   showEditDialog as showEditDialogAction,
+  showKeyboardShortcutsDialog,
   sortItemOperation,
   sortItemOperationComplete,
   trashed,
@@ -765,6 +766,10 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
             type: updateRteConfig.type,
             payload: { rteConfig: rteConfig ?? {} }
           });
+          break;
+        }
+        case showKeyboardShortcutsDialog.type: {
+          keyboardShortcutsDialogState.onOpen();
         }
       }
     });
@@ -789,7 +794,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
     conditionallyToggleEditMode,
     cdataEscapedFieldPatterns,
     rteConfig,
-    guest
+    guest,
+    keyboardShortcutsDialogState
   ]);
 
   // Guest detection
