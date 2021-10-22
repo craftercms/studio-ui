@@ -30,13 +30,11 @@ import DialogFooter from '../Dialogs/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import LoadingState from '../SystemStatus/LoadingState';
-import { Box, ListItem, ListItemText, styled, TextField, Theme } from '@mui/material';
+import { Box, ListItem, ListItemText, TextField, Theme } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import List from '@mui/material/List';
 import ItemDisplay from '../ItemDisplay';
 import { SxProps } from '@mui/system';
-
-const Strong = styled('strong')``;
 
 function getStyles(sx: UninstallPluginDialogBodyPartialSx): UninstallPluginDialogBodyFullSx {
   return {
@@ -44,9 +42,9 @@ function getStyles(sx: UninstallPluginDialogBodyPartialSx): UninstallPluginDialo
       background: (theme) => theme.palette.background.paper,
       ...sx?.content
     },
-    semiBold: {
+    emphasisedText: {
       fontWeight: 600,
-      ...sx?.semiBold
+      ...sx?.emphasisedText
     },
     loadingStateWrapper: {
       position: 'absolute',
@@ -62,7 +60,14 @@ function getStyles(sx: UninstallPluginDialogBodyPartialSx): UninstallPluginDialo
 }
 
 export function UninstallPluginDialogBody(props: UninstallPluginDialogBodyProps) {
-  const { onCloseButtonClick, resource, pluginId, onSubmit: onSubmitProp, password = 'uninstall', submitting } = props;
+  const {
+    onCloseButtonClick,
+    resource,
+    pluginId,
+    onSubmit: onSubmitProp,
+    password = 'uninstall',
+    isSubmitting
+  } = props;
   const data = resource.read();
   const hasUsages = data.length > 0;
   const [confirmPasswordPassed, setConfirmPasswordPassed] = useState(false);
@@ -108,14 +113,16 @@ export function UninstallPluginDialogBody(props: UninstallPluginDialogBodyProps)
                 defaultMessage={'Type the word "<b>{password}</b>" to confirm the deletion of the plugin.'}
                 values={{
                   password,
-                  b: (message) => {
-                    return <Strong sx={sx.semiBold}>{message}</Strong>;
-                  }
+                  b: (message) => (
+                    <Box component="strong" sx={sx.emphasisedText}>
+                      {message}
+                    </Box>
+                  )
                 }}
               />
               <TextField
                 fullWidth
-                disabled={submitting}
+                disabled={isSubmitting}
                 value={passwordFieldValue}
                 onChange={(e) => setPasswordFieldValue(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && onSubmit(e)}
@@ -129,14 +136,14 @@ export function UninstallPluginDialogBody(props: UninstallPluginDialogBodyProps)
         )}
       </DialogBody>
       <DialogFooter>
-        <SecondaryButton onClick={onCloseButtonClick} autoFocus disabled={submitting}>
+        <SecondaryButton onClick={onCloseButtonClick} autoFocus disabled={isSubmitting}>
           <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
         </SecondaryButton>
-        <PrimaryButton disabled={(hasUsages && !confirmPasswordPassed) || submitting} onClick={onSubmit}>
+        <PrimaryButton disabled={(hasUsages && !confirmPasswordPassed) || isSubmitting} onClick={onSubmit}>
           <FormattedMessage id="uninstallPluginDialog.submitButton" defaultMessage="Uninstall" />
         </PrimaryButton>
       </DialogFooter>
-      {submitting && (
+      {isSubmitting && (
         <Box sx={sx.loadingStateWrapper}>
           <LoadingState />
         </Box>

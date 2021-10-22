@@ -74,7 +74,7 @@ export function UninstallPluginDialogContainer(props: UninstallPluginDialogConta
   return (
     <Suspencified loadingStateProps={{ styles: { root: { width: 300, height: 250 } } }}>
       <UninstallPluginDialogBody
-        submitting={isSubmitting}
+        isSubmitting={isSubmitting}
         onCloseButtonClick={onCloseButtonClick}
         pluginId={pluginId}
         resource={resource}

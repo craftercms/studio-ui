@@ -34,7 +34,7 @@ export interface UninstallPluginDialogContainerProps
     Pick<UninstallPluginDialogProps, 'onComplete' | 'onClose' | 'isSubmitting' | 'onSubmittingAndOrPendingChange'> {}
 
 export interface UninstallPluginDialogBodyProps {
-  submitting: boolean;
+  isSubmitting: boolean;
   pluginId: string;
   resource: Resource<SandboxItem[]>;
   password?: string;
@@ -43,7 +43,7 @@ export interface UninstallPluginDialogBodyProps {
   onSubmit(): void;
 }
 
-export type UninstallPluginDialogBodyClassKey = 'content' | 'semiBold' | 'loadingStateWrapper';
+export type UninstallPluginDialogBodyClassKey = 'content' | 'emphasisedText' | 'loadingStateWrapper';
 
 export type UninstallPluginDialogBodyFullSx = FullSxRecord<UninstallPluginDialogBodyClassKey>;
 
