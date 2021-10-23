@@ -72,6 +72,7 @@
     "prettier:certify": "node scripts/prettier.js check",
     "prettier:sass": "prettier --config prettier.config.js --write 'ui/scss/**/*.scss'",
     "prettier:css": "prettier --config prettier.config.js --write 'static-assets/css/**/*.css' 'static-assets/themes/cstudioTheme/**/*.css'",
+    "format-pom": "prettier --use-tabs --write pom.xml",
     "lint:ci": "eslint --ext .ts,.tsx ."
   },
   "dependencies": {
