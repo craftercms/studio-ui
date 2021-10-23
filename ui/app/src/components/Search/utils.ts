@@ -41,9 +41,17 @@ export const actionsToBeShown: AllItemActions[] = [
   'history'
 ];
 
-export interface SearchProps {
+export interface URLDrivenSearchProps {
   history: History;
   location: Location;
+  mode?: 'default' | 'select';
+  embedded?: boolean;
+  onClose?(): void;
+  onSelect?(path: string, selected: boolean): any;
+  onAcceptSelection?(items: DetailedItem[]): any;
+}
+
+export interface SearchProps {
   mode?: 'default' | 'select';
   embedded?: boolean;
   onClose?(): void;

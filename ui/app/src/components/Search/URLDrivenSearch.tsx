@@ -40,189 +40,11 @@ import { getNumOfMenuOptionsForItem, getSystemTypeFromPath } from '../../utils/c
 import { AllItemActions, DetailedItem } from '../../models/Item';
 import { getPreviewURLFromPath } from '../../utils/path';
 import { fetchContentXML } from '../../services/content';
-import makeStyles from '@mui/styles/makeStyles';
-import palette from '../../styles/palette';
-import {
-  actionsToBeShown,
-  drawerWidth,
-  initialSearchParameters,
-  SearchProps,
-  setCheckedParameterFromURL
-} from './utils';
+import { actionsToBeShown, initialSearchParameters, setCheckedParameterFromURL, URLDrivenSearchProps } from './utils';
 import SearchUI from './SearchUI';
 
-const useStyles = makeStyles((theme) => ({
-  wrapper: {
-    height: '100%',
-    margin: 'auto',
-    display: 'flex',
-    flexDirection: 'column',
-    background: theme.palette.background.default,
-    transition: theme.transitions.create('margin', {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen
-    }),
-    '&.hasContent': {
-      height: 'inherit'
-    },
-    '&.select': {}
-  },
-  wrapperSelectMode: {
-    height: 'calc(100% - 71px)'
-  },
-  shift: {
-    transition: theme.transitions.create('margin', {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen
-    })
-  },
-  searchHeader: {
-    padding: '15px 20px',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    background: theme.palette.background.default,
-    borderBottom: `1px solid ${theme.palette.divider}`
-  },
-  searchDropdown: {
-    marginRight: '7px'
-  },
-  search: {
-    width: '500px'
-  },
-  searchHelperBar: {
-    display: 'flex',
-    padding: '0 6px 0 20px',
-    alignItems: 'center',
-    background: theme.palette.background.paper,
-    borderBottom: `1px solid ${theme.palette.divider}`
-  },
-  clearSelected: {
-    marginLeft: '5px',
-    cursor: 'pointer'
-  },
-  helperContainer: {
-    display: 'flex',
-    marginLeft: 'auto',
-    alignItems: 'center'
-  },
-  content: {
-    flexGrow: 1,
-    padding: '25px 30px',
-    overflowY: 'scroll'
-  },
-  empty: {
-    height: '100%',
-    justifyContent: 'center'
-  },
-  pagination: {
-    marginLeft: 'auto',
-    '& p': {
-      padding: 0
-    },
-    '& svg': {
-      top: 'inherit'
-    }
-  },
-  dialogTitle: {
-    display: 'flex',
-    alignItems: 'center',
-    marginLeft: '10px',
-    padding: '10px 0'
-  },
-  dialogCloseButton: {
-    marginLeft: 'auto'
-  },
-  mediaPreview: {
-    maxWidth: '700px',
-    minWidth: '400px',
-    minHeight: '200px',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    '& img': {
-      maxWidth: '100%'
-    }
-  },
-  videoPreview: {},
-  mediaCardListRoot: {
-    display: 'flex'
-  },
-  mediaCardListCheckbox: {
-    justifyContent: 'center',
-    order: -2,
-    marginRight: '5px',
-    marginLeft: '16px'
-  },
-  mediaCardListHeader: {
-    marginLeft: '15px'
-  },
-  mediaCardListMedia: {
-    paddingTop: 0,
-    height: '80px',
-    width: '80px',
-    order: -1
-  },
-  mediaCardListMediaIcon: {
-    height: '80px',
-    width: '80px',
-    paddingTop: '0',
-    order: -1
-  },
-  drawer: {
-    flexShrink: 0
-  },
-  drawerPaper: {
-    top: 65,
-    bottom: 0,
-    width: drawerWidth,
-    zIndex: theme.zIndex.appBar - 1,
-    height: 'auto'
-  },
-  drawerPaperSelect: {
-    bottom: '71px'
-  },
-  paginationSelectRoot: {
-    marginRight: 0
-  },
-  paginationSelect: {
-    border: 'none'
-  },
-  filtersActive: {
-    color: '#FFB400',
-    marginLeft: '2px'
-  },
-  selectAppbar: {
-    boxShadow: 'none',
-    borderBottom: `1px solid ${palette.gray.light3}`
-  },
-  selectToolbar: {
-    placeContent: 'center space-between',
-    backgroundColor: theme.palette.mode === 'dark' ? theme.palette.background.default : palette.white
-  },
-  selectToolbarTitle: {
-    flexGrow: 1
-  },
-  drawerModal: {
-    '& .MuiBackdrop-root': {
-      background: 'transparent'
-    }
-  },
-  actionsMenu: {
-    flex: '0 0 auto',
-    display: 'flex',
-    padding: '14px 20px',
-    justifyContent: 'flex-end',
-    borderTop: `1px solid ${palette.gray.light3}`,
-    '& > :not(:first-child)': {
-      marginLeft: '12px'
-    }
-  }
-}));
-
-export function URLDrivenSearch(props: SearchProps) {
-  const classes = useStyles();
-  const refs = useRef({ unsubscribeOnActionSuccess: null, createQueryString: null });
+export function URLDrivenSearch(props: URLDrivenSearchProps) {
+  const refs = useRef({ createQueryString: null });
   const { history, location, mode = 'default', onSelect, embedded = false, onAcceptSelection, onClose } = props;
   const queryParams = useMemo(() => queryString.parse(location.search), [location.search]);
   const searchParameters = useMemo(() => setSearchParameters(initialSearchParameters, queryParams), [queryParams]);
@@ -232,10 +54,9 @@ export function URLDrivenSearch(props: SearchProps) {
   const [selected, setSelected] = useState([]);
   const onSearch$ = useMemo(() => new Subject<string>(), []);
   const site = useActiveSiteId();
-  const { authoringBase } = useEnv();
-  const clipboard = useSelection((state) => state.content.clipboard);
-  const guestBase = useSelection<string>((state) => state.env.guestBase);
+  const { authoringBase, guestBase } = useEnv();
   const dispatch = useDispatch();
+  const clipboard = useSelection((state) => state.content.clipboard);
   const { formatMessage } = useIntl();
   const [apiState, setApiState] = useState({
     error: false,
@@ -341,7 +162,6 @@ export function URLDrivenSearch(props: SearchProps) {
   }, [handleClearSelected, refreshSearch]);
 
   useEffect(() => {
-    console.log('setCheckedFilters queryparams');
     setCheckedFilters(setCheckedParameterFromURL(queryParams));
   }, [queryParams, setCheckedFilters]);
 

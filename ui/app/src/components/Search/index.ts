@@ -18,4 +18,6 @@ export { default } from './URLDrivenSearch';
 
 export * from './URLDrivenSearch';
 
+export * from './Search';
+
 export * from './utils';
