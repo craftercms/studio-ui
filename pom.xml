@@ -103,21 +103,24 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <id>UI build: install</id>
+                        <id>UI build: Node and Yarn installation</id>
                         <goals>
                             <goal>install-node-and-yarn</goal>
                         </goals>
                         <phase>prepare-package</phase>
                     </execution>
                     <execution>
-                        <id>UI build: prep</id>
+                        <id>UI build: Yarn install</id>
                         <goals>
                             <goal>yarn</goal>
                         </goals>
                         <phase>prepare-package</phase>
+                        <configuration>
+                            <arguments>install</arguments>
+                        </configuration>
                     </execution>
                     <execution>
-                        <id>UI styles: build sass</id>
+                        <id>UI styles: Build sass styles</id>
                         <goals>
                             <goal>yarn</goal>
                         </goals>
@@ -194,16 +197,6 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>Monaco editor: dependencies</id>
-                        <goals>
-                            <goal>yarn</goal>
-                        </goals>
-                        <phase>prepare-package</phase>
-                        <configuration>
-                            <workingDirectory>ui/monaco</workingDirectory>
-                        </configuration>
-                    </execution>
-                    <execution>
                         <id>Monaco editor: build</id>
                         <goals>
                             <goal>yarn</goal>
@@ -211,7 +204,7 @@
                         <phase>prepare-package</phase>
                         <configuration>
                             <workingDirectory>ui/monaco</workingDirectory>
-                            <arguments>build</arguments>
+                            <arguments>build-if-changed</arguments>
                         </configuration>
                     </execution>
                 </executions>

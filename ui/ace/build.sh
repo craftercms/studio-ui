@@ -27,3 +27,5 @@ cp src/mode-yaml/* "$libsDirectory/ace"
 rm -rf "$libsDirectory/js-yaml"
 mkdir "$libsDirectory/js-yaml"
 cp ../../node_modules/js-yaml/dist/js-yaml.min.js "$libsDirectory/js-yaml/js-yaml-4.0.0.min.js"
+
+echo "Ace build complete"
