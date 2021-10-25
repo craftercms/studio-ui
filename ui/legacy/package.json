@@ -1,17 +1,22 @@
 {
-  "name": "@craftercms/studio-ui-intermediate",
+  "private": true,
+  "name": "@craftercms/studio-ui-legacy",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "bic": {
+    "skip": [
+      "README.md",
+      "CHANGE_LOG.md"
+    ]
+  },
   "scripts": {
-    "build": "run-s build:install build:app",
-    "build:install": "yarn",
-    "build:app": "babel ./src -d ../../static-assets",
+    "build": "babel ./src -d ../../static-assets",
     "watch": "babel -w ./src -d ../../static-assets"
   },
   "devDependencies": {
-    "@babel/cli": "^7.8.4",
-    "@babel/core": "^7.9.0",
+    "@babel/cli": "*",
+    "@babel/core": "*",
     "@babel/plugin-proposal-class-properties": "7.7.4",
     "@babel/plugin-proposal-decorators": "7.7.4",
     "@babel/plugin-proposal-nullish-coalescing-operator": "7.7.4",
@@ -26,16 +31,11 @@
     "@babel/preset-env": "7.7.4",
     "@babel/preset-react": "7.7.4",
     "@babel/preset-typescript": "7.7.4",
-    "@babel/runtime": "7.7.4",
+    "@babel/runtime": "*",
     "babel-plugin-dynamic-import-node": "2.3.0",
     "babel-plugin-macros": "2.7.1",
     "babel-plugin-transform-react-remove-prop-types": "0.4.24",
-    "babel-preset-react-app": "^9.1.0"
-  },
-  "bic": {
-    "skip": [
-      "README.md",
-      "CHANGE_LOG.md"
-    ]
+    "babel-preset-react-app": "^10.0.0",
+    "build-if-changed": "*"
   }
 }
