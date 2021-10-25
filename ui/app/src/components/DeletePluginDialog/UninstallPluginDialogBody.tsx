@@ -131,7 +131,15 @@ export function UninstallPluginDialogBody(props: UninstallPluginDialogBodyProps)
           </>
         ) : (
           <div>
-            <EmptyState title="No usages found" subtitle="The plugin can be safely uninstalled." />
+            <EmptyState
+              title={<FormattedMessage id="uninstallPluginDialog.noUsagesFound" defaultMessage="No usages found" />}
+              subtitle={
+                <FormattedMessage
+                  id="uninstallPluginDialog.pluginSafeToUninstall"
+                  defaultMessage="The plugin can be safely uninstalled."
+                />
+              }
+            />
           </div>
         )}
       </DialogBody>
