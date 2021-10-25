@@ -33,6 +33,7 @@ import Chip from '@mui/material/Chip';
 import Typography from '@mui/material/Typography';
 import { SxProps } from '@mui/system';
 import { Theme } from '@mui/material';
+import { getPossibleTranslation } from '../../utils/i18n';
 
 function getStyles(sx: KeyboardShortcutsDialogPartialSx): KeyboardShortcutsDialogFullSx {
   return {
@@ -67,13 +68,13 @@ export function KeyboardShortcutsDialog(props: KeyboardShortcutsDialogProps) {
           <Card key={index}>
             <CardContent>
               <Typography variant="subtitle1" gutterBottom sx={sx.categoryTitle}>
-                {typeof category.label === 'object' ? formatMessage(category.label) : category.label}
+                {getPossibleTranslation(category.label, formatMessage)}
               </Typography>
 
               <List sx={sx.shortcutsList}>
                 {category.shortcuts.map(({ label, shortcut }, index) => (
                   <ListItem key={index} secondaryAction={<Chip label={shortcut} sx={sx.shortcutChip} />} divider>
-                    <ListItemText primary={typeof label === 'object' ? formatMessage(label) : label} />
+                    <ListItemText primary={getPossibleTranslation(label, formatMessage)} />
                   </ListItem>
                 ))}
               </List>

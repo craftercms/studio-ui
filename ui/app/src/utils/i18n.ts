@@ -80,7 +80,10 @@ export function getTranslation(key: string, table: any, formatMessage = (descrip
   );
 }
 
-export function getPossibleTranslation(titleOrDescriptor: TranslationOrText, formatMessage): string {
+export function getPossibleTranslation(
+  titleOrDescriptor: TranslationOrText,
+  formatMessage: IntlShape['formatMessage']
+): string {
   return typeof titleOrDescriptor === 'object' ? formatMessage(titleOrDescriptor) : titleOrDescriptor;
 }
 

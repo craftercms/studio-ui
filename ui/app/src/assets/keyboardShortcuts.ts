@@ -15,40 +15,49 @@
  */
 
 import { KeyboardShortcutsCategory } from '../components/KeyboardShortcutsDialog';
+import { defineMessages } from 'react-intl';
+
+const messages = defineMessages({
+  shortcuts: {
+    id: 'words.shortcuts',
+    defaultMessage: 'Shortcuts'
+  },
+  toggleEditMode: {
+    id: 'shortcuts.toggleEditMode',
+    defaultMessage: 'Edit Mode ON/OFF'
+  },
+  toggleMoveMode: {
+    id: 'shortcuts.toggleMoveMode',
+    defaultMessage: 'Move Mode ON/OFF'
+  },
+  disableICE: {
+    id: 'shortcuts.disableICE',
+    defaultMessage: 'Disable ICE while held down (to click through)'
+  },
+  showShortcuts: {
+    id: 'shortcuts.showShortcuts',
+    defaultMessage: 'Show keyboard shortcuts'
+  }
+});
 
 export const previewKeyboardShortcuts: KeyboardShortcutsCategory[] = [
   {
-    label: {
-      id: 'words.shortcuts',
-      defaultMessage: 'Shortcuts'
-    },
+    label: messages.shortcuts,
     shortcuts: [
       {
-        label: {
-          id: 'shortcuts.toggleEditMode',
-          defaultMessage: 'Edit Mode ON/OFF'
-        },
+        label: messages.toggleEditMode,
         shortcut: 'e'
       },
       {
-        label: {
-          id: 'shortcuts.toggleModeMode',
-          defaultMessage: 'Move Mode ON/OFF'
-        },
+        label: messages.toggleMoveMode,
         shortcut: 'm'
       },
       {
-        label: {
-          id: 'shortcuts.disableICE',
-          defaultMessage: 'Disable ICE while held down (to click through)'
-        },
+        label: messages.disableICE,
         shortcut: 'z'
       },
       {
-        label: {
-          id: 'shortcuts.showShortcuts',
-          defaultMessage: 'Show keyboard shortcuts'
-        },
+        label: messages.showShortcuts,
         shortcut: '?'
       }
     ]
