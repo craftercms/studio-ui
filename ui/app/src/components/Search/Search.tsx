@@ -79,13 +79,14 @@ export function Search(props: SearchProps) {
   const clearFilters = () => {
     setCheckedFilters({});
     clearPath();
+    setSearchParameters({ ...initialSearchParameters });
   };
 
   const handleFilterChange = (filter: Filter, isFilter: boolean) => {
-    console.log(filter);
     switch (filter.name) {
-      case 'sortOrder':
-      case 'sortBy': {
+      case 'path':
+      case 'sortBy':
+      case 'sortOrder': {
         setFilters({ [filter.name]: filter.value });
         setSearchParameters({ [filter.name]: filter.value });
         break;
