@@ -28,7 +28,7 @@ import { generateMultipleItemOptions, generateSingleItemOptions, itemActionDispa
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useEnv } from '../../utils/hooks/useEnv';
 import { useDispatch } from 'react-redux';
-import { MediaItem } from '../../models/Search';
+import { Filter, MediaItem } from '../../models/Search';
 import { batchActions } from '../../state/actions/misc';
 import { completeDetailedItem } from '../../state/actions/content';
 import { showEditDialog, showItemMegaMenu, showPreviewDialog, updatePreviewDialog } from '../../state/actions/dialogs';
@@ -42,13 +42,16 @@ import { translations } from './translations';
 import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
 import { itemCreated, itemDuplicated, itemsDeleted, itemsPasted, itemUpdated } from '../../state/actions/system';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
+import { reversePluckProps } from '../../utils/object';
 
 export function Search(props: SearchProps) {
   const { mode = 'default', onSelect, embedded = false, onAcceptSelection, onClose } = props;
 
   // region State
-  const [sortBy, setSortBy] = useState<string>();
-  const [sortOrder, setTortOrder] = useState<string>();
+  const [filters, setFilters] = useSpreadState({
+    sortBy: undefined,
+    sortOrder: undefined
+  });
   const [currentView, setCurrentView] = useState<'grid' | 'list'>('grid');
   const [keyword, setKeyword] = useState('');
   const [checkedFilters, setCheckedFilters] = useState({});
@@ -110,21 +113,12 @@ export function Search(props: SearchProps) {
   };
 
   const clearFilter = (facet: string) => {
-    if (checkedFilters[facet]) {
-      if (typeof checkedFilters[facet] === 'string') {
-        setCheckedFilters({ ...checkedFilters, [facet]: '' });
-      } else {
-        let emptyFilter = { ...checkedFilters[facet] };
-        Object.keys(emptyFilter).forEach((name) => {
-          emptyFilter[name] = false;
-        });
-        setCheckedFilters({ ...checkedFilters, [facet]: emptyFilter });
-      }
-    }
+    setSearchParameters({ filters: { ...searchParameters.filters, [facet]: undefined } });
+    setCheckedFilters({ ...reversePluckProps(checkedFilters, facet) });
   };
 
   const clearFilters = () => {
-    Object.keys(checkedFilters).map((filter) => clearFilter(filter));
+    setCheckedFilters({});
     clearPath();
   };
 
@@ -140,7 +134,43 @@ export function Search(props: SearchProps) {
     }
   };
 
-  const handleFilterChange = () => {};
+  const handleFilterChange = (filter: Filter, isFilter: boolean) => {
+    console.log(filter);
+    switch (filter.name) {
+      case 'sortOrder':
+      case 'sortBy': {
+        setFilters({ [filter.name]: filter.value });
+        setSearchParameters({ [filter.name]: filter.value });
+        break;
+      }
+      default: {
+        const filters = { ...searchParameters.filters };
+        if (filter.value.includes('TODATE')) {
+          let id = filter.value.split('ID');
+          let range = id[0].split('TODATE');
+          filters[filter.name] = {
+            date: true,
+            id: id[1],
+            min: range[0] !== 'null' ? range[0] : null,
+            max: range[1] !== 'null' ? range[1] : null
+          };
+          setCheckedFilters({ ...checkedFilters, [filter.name]: filter.value });
+        } else if (filter.value.includes('TO')) {
+          let range = filter.value.split('TO');
+          filters[filter.name] = {
+            min: range[0] !== '-Infinity' && range[0] !== '' ? range[0] : null,
+            max: range[1] !== 'Infinity' && range[1] !== '' ? range[1] : null
+          };
+          setCheckedFilters({ ...checkedFilters, [filter.name]: filter.value });
+        } else {
+          // for this filters checkedFilters is already handle on onCheckedFiltersChanges
+          filters[filter.name] = filter.value;
+        }
+        setSearchParameters({ filters });
+        break;
+      }
+    }
+  };
 
   const handleSearchKeyword = (keyword: string) => {
     setKeyword(keyword);
@@ -307,10 +337,9 @@ export function Search(props: SearchProps) {
     setSelected([]);
   }, [onSelect, selected]);
 
-  const onCheckedFiltersChanges = useCallback((checkedFilters: object) => {
-    console.log('setCheckedFilters onCheckedFiltersChanges');
+  const onCheckedFiltersChanges = (checkedFilters: object) => {
     setCheckedFilters(checkedFilters);
-  }, []);
+  };
 
   const refreshSearch = useCallback(() => {
     search(site, searchParameters).subscribe(
@@ -370,8 +399,8 @@ export function Search(props: SearchProps) {
 
   return (
     <SearchUI
-      sortBy={sortBy}
-      sortOrder={sortOrder}
+      sortBy={filters.sortBy}
+      sortOrder={filters.sortOrder}
       currentView={currentView}
       embedded={embedded}
       keyword={keyword}

@@ -455,32 +455,9 @@ export function URLDrivenSearch(props: URLDrivenSearchProps) {
     setSelectedPath(path);
   };
 
-  // TODO: Review
-  const onCheckedFiltersChanges = useCallback((checkedFilters: object) => {
-    console.log('setCheckedFilters onCheckedFiltersChanges');
+  const onCheckedFiltersChanges = (checkedFilters: object) => {
     setCheckedFilters(checkedFilters);
-  }, []);
-
-  console.log({
-    queryParams,
-    mode,
-    currentView,
-    desktopScreen,
-    embedded,
-    keyword,
-    handleSearchKeyword,
-    checkedFilters,
-    drawerOpen,
-    searchResults,
-    toggleDrawer,
-    handleChangeView,
-    handleFilterChange,
-    clearFilter,
-    clearFilters,
-    selectedPath,
-    onSelectedPathChanges,
-    onCheckedFiltersChanges
-  });
+  };
 
   return (
     <SearchUI
