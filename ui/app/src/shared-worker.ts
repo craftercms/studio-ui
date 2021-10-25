@@ -41,8 +41,9 @@ function onmessage(event) {
   }
   const type = event.data?.type;
   switch (type) {
+    // A new app window has connected to the worker.
     case sharedWorkerConnect.type:
-      log(`Status: "${status}"`);
+      log(`A client has connected. Status is "${status}"`);
       if (status === 'active') {
         event.target.postMessage(sharedWorkerToken(current));
       } /* else if (status === 'error' || status === 'expired' || status === '') */ else {
@@ -52,18 +53,27 @@ function onmessage(event) {
         retrieve();
       }
       break;
+    // After login, the app sends this event for the worker to
+    // get a fresh token and continue session.
     case refreshAuthToken.type:
+      log('App requested token refresh');
+      clearCurrent();
       retrieve();
       break;
-    case sharedWorkerTimeout.type:
-      clearTimeout(timeout);
-      status = 'expired';
-      break;
+    // The user logged out.
     case logout.type:
-      clearTimeout(timeout);
-      status = 'expired';
-      broadcast(sharedWorkerUnauthenticated(), event.target);
+    // The app received a 401 and it's reporting the session timeout.
+    // eslint-disable-next-line no-fallthrough
+    case sharedWorkerTimeout.type:
+      if (type === logout.type) {
+        log('User has logged out');
+      } else {
+        log('App reported session timeout');
+      }
+      clearCurrent();
+      unauthenticated(event.target);
       break;
+    // An app window disconnected from the worker.
     case sharedWorkerDisconnect.type:
       log('Client disconnected');
       clients = clients.filter((client) => client !== event.target);
@@ -74,20 +84,27 @@ function onmessage(event) {
   }
 }
 
+function clearCurrent() {
+  status = '';
+  current.token = null;
+  current.expiresAt = null;
+}
+
 function isExpired(time = Date.now()) {
   return current.expiresAt !== null && time >= current.expiresAt;
 }
 
-function unauthenticated() {
-  log(`Auth has expired`);
+function unauthenticated(excludeClient?: MessagePort) {
+  log(`Auth has expired.`);
+  clearTimeout(timeout);
   status = 'expired';
-  broadcast(sharedWorkerUnauthenticated());
+  broadcast(sharedWorkerUnauthenticated(), excludeClient);
 }
 
 function retrieve() {
   clearTimeout(timeout);
   if (isExpired()) {
-    log(`Skipping token retrieval: local expiration check determined auth is expired.`);
+    log(`Skipping token retrieval: local expiration check determined auth is expired`);
     unauthenticated();
     return null;
   } else {
