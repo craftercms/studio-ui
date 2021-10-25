@@ -14,9 +14,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ElasticParams } from '../../models/Search';
+import { ElasticParams, MediaItem, SearchResult } from '../../models/Search';
 import { AllItemActions, DetailedItem } from '../../models/Item';
 import { History, Location } from 'history';
+import { generateMultipleItemOptions, generateSingleItemOptions, itemActionDispatcher } from '../../utils/itemActions';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useIntl } from 'react-intl';
+import { useDispatch } from 'react-redux';
+import { useSelection } from '../../utils/hooks/useSelection';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { useEnv } from '../../utils/hooks/useEnv';
+import { useDetailedItems } from '../../utils/hooks/useDetailedItems';
+import { ContextMenuOption } from '../ContextMenu';
+import { batchActions } from '../../state/actions/misc';
+import { completeDetailedItem } from '../../state/actions/content';
+import { showEditDialog, showItemMegaMenu, showPreviewDialog, updatePreviewDialog } from '../../state/actions/dialogs';
+import { getNumOfMenuOptionsForItem, getSystemTypeFromPath } from '../../utils/content';
+import LookupTable from '../../models/LookupTable';
+import { search } from '../../services/search';
+import { showErrorDialog } from '../../state/reducers/dialogs/error';
+import { translations } from './translations';
+import { ApiResponse } from '../../models/ApiResponse';
+import { itemCreated, itemDuplicated, itemsDeleted, itemsPasted, itemUpdated } from '../../state/actions/system';
+import { getHostToHostBus } from '../../modules/Preview/previewContext';
+import { filter } from 'rxjs/operators';
+import { getPreviewURLFromPath } from '../../utils/path';
+import { fetchContentXML } from '../../services/content';
 
 export const drawerWidth = 300;
 
@@ -59,6 +82,11 @@ export interface SearchProps {
   onAcceptSelection?(items: DetailedItem[]): any;
 }
 
+export interface SearchApiState {
+  error: boolean;
+  errorResponse: ApiResponse;
+}
+
 export const setCheckedParameterFromURL = (queryParams: Partial<ElasticParams>) => {
   if (queryParams['filters']) {
     let checked: any = {};
@@ -77,4 +105,321 @@ export const setCheckedParameterFromURL = (queryParams: Partial<ElasticParams>) 
   } else {
     return {};
   }
+};
+
+interface useSearchStateProps {
+  searchParameters: ElasticParams;
+  onSelect?(path: string, selected: boolean): any;
+}
+
+interface useSearchStateReturn {
+  selected: string[];
+  areAllSelected: boolean;
+  selectionOptions: ContextMenuOption[];
+  itemsByPath: LookupTable<DetailedItem>;
+  guestBase: string;
+  searchResults: SearchResult;
+  selectedPath: string;
+  apiState: SearchApiState;
+  drawerOpen: boolean;
+  currentView: 'grid' | 'list';
+  onActionClicked(option: AllItemActions, event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
+  onHeaderButtonClick(event: any, item: MediaItem): void;
+  handleClearSelected(): void;
+  handleSelect(path: string, isSelected: boolean): void;
+  handleSelectAll(checked: boolean): void;
+  onPreview(item: MediaItem): void;
+  clearPath(): void;
+  onSelectedPathChanges(path: string): void;
+  toggleDrawer(): void;
+  handleChangeView(): void;
+}
+
+export const useSearchState = ({ searchParameters, onSelect }: useSearchStateProps): useSearchStateReturn => {
+  const { formatMessage } = useIntl();
+  const dispatch = useDispatch();
+  const clipboard = useSelection((state) => state.content.clipboard);
+  const site = useActiveSiteId();
+  const { authoringBase, guestBase } = useEnv();
+  const [selected, setSelected] = useState<string[]>([]);
+  const [searchResults, setSearchResults] = useState<SearchResult>(null);
+  const [selectedPath, setSelectedPath] = useState<string>('');
+  const { itemsByPath, isFetching } = useDetailedItems(selected);
+  const [drawerOpen, setDrawerOpen] = useState(window.innerWidth > 960);
+  const [currentView, setCurrentView] = useState<'grid' | 'list'>('grid');
+  const [apiState, setApiState] = useState<SearchApiState>({
+    error: false,
+    errorResponse: null
+  });
+
+  const selectionOptions = useMemo(() => {
+    if (selected.length === 0) {
+      return null;
+    } else if (selected.length) {
+      if (selected.length === 1) {
+        const path = selected[0];
+        const item = itemsByPath[path];
+        if (item) {
+          return generateSingleItemOptions(item, formatMessage, { includeOnly: actionsToBeShown }).flat();
+        }
+      } else {
+        let items = [];
+        selected.forEach((itemPath) => {
+          const item = itemsByPath[itemPath];
+          if (item) {
+            items.push(item);
+          }
+        });
+        if (items.length && !isFetching) {
+          return generateMultipleItemOptions(items, formatMessage, { includeOnly: actionsToBeShown });
+        }
+      }
+    }
+  }, [formatMessage, isFetching, itemsByPath, selected]);
+
+  const areAllSelected = useMemo(() => {
+    if (!searchResults || searchResults.items.length === 0) return false;
+    return !searchResults.items.some((item: any) => !selected.includes(item.path));
+  }, [searchResults, selected]);
+
+  const onActionClicked = (option: AllItemActions, event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    if (selected.length > 1) {
+      const detailedItems = [];
+      selected.forEach((path) => {
+        itemsByPath?.[path] && detailedItems.push(itemsByPath[path]);
+      });
+      itemActionDispatcher({
+        site,
+        item: detailedItems,
+        option,
+        authoringBase,
+        dispatch,
+        formatMessage,
+        clipboard,
+        event
+      });
+    } else {
+      const path = selected[0];
+      const item = itemsByPath?.[path];
+      itemActionDispatcher({
+        site,
+        item,
+        option,
+        authoringBase,
+        dispatch,
+        formatMessage,
+        clipboard,
+        event
+      });
+    }
+  };
+
+  const onHeaderButtonClick = (event: any, item: MediaItem) => {
+    const path = item.path;
+    dispatch(
+      batchActions([
+        completeDetailedItem({ path }),
+        showItemMegaMenu({
+          path,
+          anchorReference: 'anchorPosition',
+          anchorPosition: { top: event.clientY, left: event.clientX },
+          numOfLoaderItems: getNumOfMenuOptionsForItem({
+            path: item.path,
+            systemType: getSystemTypeFromPath(item.path)
+          } as DetailedItem)
+        })
+      ])
+    );
+  };
+
+  const refreshSearch = useCallback(() => {
+    search(site, searchParameters).subscribe(
+      (result) => {
+        setSearchResults(result);
+      },
+      (error) => {
+        const { response } = error;
+        if (response && response.response) {
+          setApiState({ error: true, errorResponse: response.response });
+        } else {
+          console.error(error);
+          dispatch(
+            showErrorDialog({
+              error: {
+                message: formatMessage(translations.unknownError)
+              }
+            })
+          );
+        }
+      }
+    );
+  }, [dispatch, formatMessage, searchParameters, site]);
+
+  const handleClearSelected = useCallback(() => {
+    selected.forEach((path) => {
+      onSelect?.(path, false);
+    });
+    setSelected([]);
+  }, [onSelect, selected]);
+
+  const handleSelect = (path: string, isSelected: boolean) => {
+    if (isSelected) {
+      setSelected([...selected, path]);
+    } else {
+      let selectedItems = [...selected];
+      let index = selectedItems.indexOf(path);
+      selectedItems.splice(index, 1);
+      setSelected(selectedItems);
+    }
+    onSelect?.(path, isSelected);
+  };
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      let selectedItems: any[] = [];
+      searchResults.items.forEach((item: any) => {
+        if (selected.indexOf(item.path) === -1) {
+          selectedItems.push(item.path);
+          onSelect?.(item.path, true);
+        }
+      });
+      setSelected([...selected, ...selectedItems]);
+    } else {
+      let newSelectedItems = [...selected];
+      searchResults.items.forEach((item: any) => {
+        let index = newSelectedItems.indexOf(item.path);
+        if (index >= 0) {
+          newSelectedItems.splice(index, 1);
+          onSelect?.(item.path, false);
+        }
+      });
+      setSelected(newSelectedItems);
+    }
+  };
+
+  const onPreview = (item: MediaItem) => {
+    const { type, name: title, path: url } = item;
+    switch (type) {
+      case 'Image': {
+        dispatch(
+          showPreviewDialog({
+            type: 'image',
+            title,
+            url
+          })
+        );
+        break;
+      }
+      case 'Page': {
+        dispatch(
+          showPreviewDialog({
+            type: 'page',
+            title,
+            url: `${guestBase}${getPreviewURLFromPath(item.path)}`
+          })
+        );
+        break;
+      }
+      case 'Component':
+      case 'Taxonomy': {
+        dispatch(showEditDialog({ site, path: item.path, authoringBase, readonly: true }));
+        break;
+      }
+      default: {
+        let mode = 'txt';
+        if (type === 'Template') {
+          mode = 'ftl';
+        } else if (type === 'Groovy') {
+          mode = 'groovy';
+        } else if (type === 'JavaScript') {
+          mode = 'javascript';
+        } else if (type === 'CSS') {
+          mode = 'css';
+        }
+        dispatch(
+          showPreviewDialog({
+            type: 'editor',
+            title,
+            url,
+            mode
+          })
+        );
+
+        fetchContentXML(site, url).subscribe((content) => {
+          dispatch(
+            updatePreviewDialog({
+              content
+            })
+          );
+        });
+        break;
+      }
+    }
+  };
+
+  const clearPath = () => {
+    setSelectedPath(undefined);
+  };
+
+  const onSelectedPathChanges = (path: string) => {
+    setSelectedPath(path);
+  };
+
+  const toggleDrawer = () => {
+    setDrawerOpen(!drawerOpen);
+  };
+
+  const handleChangeView = () => {
+    if (currentView === 'grid') {
+      setCurrentView('list');
+    } else {
+      setCurrentView('grid');
+    }
+  };
+
+  useEffect(() => {
+    const eventsThatNeedReaction = [
+      itemDuplicated.type,
+      itemsDeleted.type,
+      itemCreated.type,
+      itemUpdated.type,
+      itemsPasted.type
+    ];
+    const hostToHost$ = getHostToHostBus();
+    const subscription = hostToHost$.pipe(filter((e) => eventsThatNeedReaction.includes(e.type))).subscribe(() => {
+      handleClearSelected();
+      refreshSearch();
+    });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [handleClearSelected, refreshSearch]);
+
+  useEffect(() => {
+    refreshSearch();
+    return () => setApiState({ error: false, errorResponse: null });
+  }, [refreshSearch]);
+
+  return {
+    apiState,
+    selected,
+    guestBase,
+    drawerOpen,
+    currentView,
+    itemsByPath,
+    selectedPath,
+    searchResults,
+    areAllSelected,
+    selectionOptions,
+    handleClearSelected,
+    clearPath,
+    onPreview,
+    toggleDrawer,
+    handleSelect,
+    handleSelectAll,
+    onActionClicked,
+    handleChangeView,
+    onHeaderButtonClick,
+    onSelectedPathChanges
+  };
 };

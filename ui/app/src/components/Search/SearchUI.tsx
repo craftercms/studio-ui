@@ -21,8 +21,8 @@ import clsx from 'clsx';
 import SiteSearchFilters from '../SiteSearchFilters';
 import makeStyles from '@mui/styles/makeStyles';
 import palette from '../../styles/palette';
-import { Filter, MediaItem, SearchResult } from '../../models/Search';
-import { drawerWidth } from './utils';
+import { ElasticParams, Filter, MediaItem, SearchResult } from '../../models/Search';
+import { drawerWidth, SearchApiState } from './utils';
 import LookupTable from '../../models/LookupTable';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -40,11 +40,12 @@ import Button from '@mui/material/Button';
 import ListItemText from '@mui/material/ListItemText';
 import { useIntl } from 'react-intl';
 import { AllItemActions, DetailedItem } from '../../models/Item';
+import { ContextMenuOption } from '../ContextMenu';
 
 interface SearchUIProps {
   selectedPath: string;
-  selected: any;
-  selectionOptions: any;
+  selected: string[];
+  selectionOptions: ContextMenuOption[];
   guestBase: string;
   sortBy?: string;
   sortOrder?: string;
@@ -57,9 +58,9 @@ interface SearchUIProps {
   searchResults: SearchResult;
   areAllSelected: boolean;
   checkedFilters: LookupTable<string>;
-  searchParameters: any;
-  apiState: any;
-  itemsByPath: any;
+  searchParameters: ElasticParams;
+  apiState: SearchApiState;
+  itemsByPath: LookupTable<DetailedItem>;
   onActionClicked(option: AllItemActions, event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
   handleSelectAll(checked: any): void;
   onSelectedPathChanges(path: string): void;
