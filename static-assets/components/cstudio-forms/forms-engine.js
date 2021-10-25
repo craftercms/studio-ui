@@ -571,7 +571,9 @@ var CStudioForms =
 
     CStudioForm.prototype = {
       registerDynamicField: function(name) {
-        this.dynamicFields.push(name);
+        if (!this.dynamicFields.includes(name)) {
+          this.dynamicFields.push(name);
+        }
       },
 
       registerBeforeSaveCallback: function(callback) {
