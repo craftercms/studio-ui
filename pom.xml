@@ -41,8 +41,8 @@
     </parent>
     <properties>
         <!-- Overrides are listed here -->
-        <frontend.maven.version>1.7.6</frontend.maven.version>
-        <studio.ui.node.version>v16.9.1</studio.ui.node.version>
+        <frontend.maven.version>1.12.0</frontend.maven.version>
+        <studio.ui.node.version>v16.12.0</studio.ui.node.version>
         <studio.ui.yarn.version>v1.22.17</studio.ui.yarn.version>
     </properties>
     <build>
