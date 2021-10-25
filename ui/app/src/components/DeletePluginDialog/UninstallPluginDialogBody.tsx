@@ -84,7 +84,7 @@ export function UninstallPluginDialogBody(props: UninstallPluginDialogBodyProps)
   };
 
   return (
-    <>
+    <form onSubmit={onSubmit}>
       <DialogBody>
         {hasUsages ? (
           <>
@@ -139,7 +139,7 @@ export function UninstallPluginDialogBody(props: UninstallPluginDialogBodyProps)
         <SecondaryButton onClick={onCloseButtonClick} autoFocus disabled={isSubmitting}>
           <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
         </SecondaryButton>
-        <PrimaryButton disabled={(hasUsages && !confirmPasswordPassed) || isSubmitting} onClick={onSubmit}>
+        <PrimaryButton disabled={(hasUsages && !confirmPasswordPassed) || isSubmitting} type="submit">
           <FormattedMessage id="words.uninstall" defaultMessage="Uninstall" />
         </PrimaryButton>
       </DialogFooter>
@@ -148,7 +148,7 @@ export function UninstallPluginDialogBody(props: UninstallPluginDialogBodyProps)
           <LoadingState />
         </Box>
       )}
-    </>
+    </form>
   );
 }
 
