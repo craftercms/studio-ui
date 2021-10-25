@@ -17,3 +17,5 @@
 export { default } from './KeyboardShortcutsDialog';
 
 export * from './KeyboardShortcutsDialog';
+
+export * from './utils';

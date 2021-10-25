@@ -103,7 +103,6 @@ export const childrenMapUpdate = /*#__PURE__*/ createAction('CHILDREN_MAP_UPDATE
 export const contentTreeSwitchFieldInstance = /*#__PURE__*/ createAction<{ type: string; scrollElement: string }>(
   'CONTENT_TREE_SWITCH_FIELD_INSTANCE'
 );
-export const showKeyboardShortcutsDialog = /*#__PURE__*/ createAction('SHOW_KEYBOARD_SHORTCUTS_DIALOG');
 
 // endregion
 

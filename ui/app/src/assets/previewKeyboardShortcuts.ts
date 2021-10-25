@@ -14,9 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { KeyboardShortcuts } from '../models/KeyboardShortcuts';
+import { KeyboardShortcutsCategory } from '../components/KeyboardShortcutsDialog';
 
-const keyboardShortcuts: KeyboardShortcuts[] = [
+const previewKeyboardShortcuts: KeyboardShortcutsCategory[] = [
   {
     label: {
       id: 'words.shortcuts',
@@ -55,4 +55,4 @@ const keyboardShortcuts: KeyboardShortcuts[] = [
   }
 ];
 
-export default keyboardShortcuts;
+export default previewKeyboardShortcuts;

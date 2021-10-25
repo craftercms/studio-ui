@@ -53,7 +53,6 @@ import {
   setItemBeingDragged,
   setPreviewEditMode,
   showEditDialog as showEditDialogAction,
-  showKeyboardShortcutsDialog,
   sortItemOperation,
   sortItemOperationComplete,
   trashed,
@@ -115,7 +114,7 @@ import { useMount } from '../../utils/hooks/useMount';
 import { usePreviewNavigation } from '../../utils/hooks/usePreviewNavigation';
 import { useActiveSite } from '../../utils/hooks/useActiveSite';
 import { getPathFromPreviewURL } from '../../utils/path';
-import { showEditDialog } from '../../state/actions/dialogs';
+import { showEditDialog, showKeyboardShortcutsDialog } from '../../state/actions/dialogs';
 import { UNDEFINED } from '../../utils/constants';
 import { useCurrentPreviewItem } from '../../utils/hooks/useCurrentPreviewItem';
 import { useSiteUIConfig } from '../../utils/hooks/useSiteUIConfig';
@@ -124,6 +123,7 @@ import { guestMessages } from '../../assets/guestMessages';
 import { HighlightMode } from '../../models/GlobalState';
 import { useEnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
 import KeyboardShortcutsDialog from '../../components/KeyboardShortcutsDialog';
+import previewKeyboardShortcuts from '../../assets/previewKeyboardShortcuts';
 
 const originalDocDomain = document.domain;
 
@@ -865,6 +865,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         onClose={keyboardShortcutsDialogState.onClose}
         isMinimized={keyboardShortcutsDialogState.isMinimized}
         hasPendingChanges={keyboardShortcutsDialogState.hasPendingChanges}
+        shortcuts={previewKeyboardShortcuts}
         isSubmitting={keyboardShortcutsDialogState.isSubmitting}
       />
     </>

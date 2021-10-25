@@ -24,7 +24,6 @@ import {
 import EnhancedDialog from '../EnhancedDialog';
 import { FormattedMessage, useIntl } from 'react-intl';
 import DialogBody from '../Dialogs/DialogBody';
-import keyboardShortcuts from '../../assets/keyboardShortcuts';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import List from '@mui/material/List';
@@ -52,8 +51,8 @@ function getStyles(sx: KeyboardShortcutsDialogPartialSx): KeyboardShortcutsDialo
   } as Record<KeyboardShortcutsDialogClassKey, SxProps<Theme>>;
 }
 
-export default function KeyboardShortcutsDialog(props: KeyboardShortcutsDialogProps) {
-  const { ...rest } = props;
+export function KeyboardShortcutsDialog(props: KeyboardShortcutsDialogProps) {
+  const { shortcuts, ...rest } = props;
   const sx = getStyles(props.sx);
   const { formatMessage } = useIntl();
 
@@ -64,17 +63,17 @@ export default function KeyboardShortcutsDialog(props: KeyboardShortcutsDialogPr
       {...rest}
     >
       <DialogBody>
-        {keyboardShortcuts.map((category, index) => (
+        {shortcuts.map((category, index) => (
           <Card key={index}>
             <CardContent>
               <Typography variant="subtitle1" gutterBottom sx={sx.categoryTitle}>
-                {formatMessage(category.label)}
+                {typeof category.label === 'object' ? formatMessage(category.label) : category.label}
               </Typography>
 
               <List sx={sx.shortcutsList}>
                 {category.shortcuts.map(({ label, shortcut }, index) => (
                   <ListItem key={index} secondaryAction={<Chip label={shortcut} sx={sx.shortcutChip} />} divider>
-                    <ListItemText primary={formatMessage(label)} />
+                    <ListItemText primary={typeof label === 'object' ? formatMessage(label) : label} />
                   </ListItem>
                 ))}
               </List>
@@ -85,3 +84,5 @@ export default function KeyboardShortcutsDialog(props: KeyboardShortcutsDialogPr
     </EnhancedDialog>
   );
 }
+
+export default KeyboardShortcutsDialog;

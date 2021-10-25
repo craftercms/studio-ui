@@ -55,7 +55,6 @@ import {
   reloadRequest,
   scrollToDropTarget,
   setPreviewEditMode,
-  showKeyboardShortcutsDialog,
   trashed,
   updateRteConfig
 } from '@craftercms/studio-ui/state/actions/preview';
@@ -88,6 +87,7 @@ import {
   startListening
 } from '../store/actions';
 import DragGhostElement from './DragGhostElement';
+import { showKeyboardShortcutsDialog } from '@craftercms/studio-ui/state/actions/dialogs';
 // TinyMCE makes the build quite large. Temporarily, importing this externally via
 // the site's ftl. Need to evaluate whether to include the core as part of guest build or not
 // import tinymce from 'tinymce';
