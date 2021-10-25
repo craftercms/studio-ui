@@ -61,7 +61,7 @@
   "resolutions": {
     "react-is": "^17.0.2"
   },
-  "packageManager": "yarn@3.0.2",
+  "packageManager": "yarn@3.1.0",
   "scripts": {
     "prettier:raw": "node scripts/prettier.js",
     "prettier:all": "node scripts/prettier.js write",
@@ -73,7 +73,8 @@
     "prettier:sass": "prettier --config prettier.config.js --write 'ui/scss/**/*.scss'",
     "prettier:css": "prettier --config prettier.config.js --write 'static-assets/css/**/*.css' 'static-assets/themes/cstudioTheme/**/*.css'",
     "format-pom": "prettier --use-tabs --write pom.xml",
-    "lint:ci": "eslint --ext .ts,.tsx ."
+    "lint:ci": "eslint --ext .ts,.tsx .",
+    "upgrade-yarn": "yarn set version latest"
   },
   "dependencies": {
     "@babel/cli": "^7.8.4",

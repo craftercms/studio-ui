@@ -17,7 +17,6 @@
       <excludeFolder url="file://$MODULE_DIR$/ui/guest/build" />
       <excludeFolder url="file://$MODULE_DIR$/ui/guest/build_tsc" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
-      <excludeFolder url="file://$MODULE_DIR$/.yarn" />
     </content>
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/static-assets/components/cstudio-common/ace" />
@@ -33,6 +32,7 @@
       <excludeFolder url="file://$MODULE_DIR$/ui/guest/build" />
       <excludeFolder url="file://$MODULE_DIR$/ui/guest/build_tsc" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
+      <excludeFolder url="file://$MODULE_DIR$/.yarn" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
