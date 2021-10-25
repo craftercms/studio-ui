@@ -123,7 +123,7 @@ import { guestMessages } from '../../assets/guestMessages';
 import { HighlightMode } from '../../models/GlobalState';
 import { useEnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
 import KeyboardShortcutsDialog from '../../components/KeyboardShortcutsDialog';
-import previewKeyboardShortcuts from '../../assets/previewKeyboardShortcuts';
+import { previewKeyboardShortcuts } from '../../assets/keyboardShortcuts';
 
 const originalDocDomain = document.domain;
 

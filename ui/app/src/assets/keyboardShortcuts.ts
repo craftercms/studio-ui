@@ -16,7 +16,7 @@
 
 import { KeyboardShortcutsCategory } from '../components/KeyboardShortcutsDialog';
 
-const previewKeyboardShortcuts: KeyboardShortcutsCategory[] = [
+export const previewKeyboardShortcuts: KeyboardShortcutsCategory[] = [
   {
     label: {
       id: 'words.shortcuts',
@@ -54,5 +54,3 @@ const previewKeyboardShortcuts: KeyboardShortcutsCategory[] = [
     ]
   }
 ];
-
-export default previewKeyboardShortcuts;
