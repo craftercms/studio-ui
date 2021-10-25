@@ -29,6 +29,8 @@ import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import React from 'react';
 import { RejectDialogContentUI } from './RejectDialogContentUI';
+import Typography from '@mui/material/Typography';
+import { CannedMessage } from '../../services/configuration';
 
 export function RejectDialogUI(props: RejectDialogUIProps) {
   const {
@@ -45,6 +47,7 @@ export function RejectDialogUI(props: RejectDialogUIProps) {
     isSubmitting,
     isSubmitDisabled
   } = props;
+  const { items, cannedMessages } = resource.read();
   return (
     <>
       <DialogBody id="confirmDialogBody">
@@ -58,11 +61,11 @@ export function RejectDialogUI(props: RejectDialogUIProps) {
                     <FormattedMessage id="publishDialog.noItemsSelected" defaultMessage="There are no affected files" />
                   )
                 },
-                isEmpty: (value) => value.length === 0
+                isEmpty: ({ items }) => items.length === 0
               }}
             >
               <RejectDialogContentUI
-                resource={resource}
+                items={items}
                 checkedItems={checkedItems}
                 onUpdateChecked={onUpdateChecked}
                 classes={classes}
@@ -94,21 +97,11 @@ export function RejectDialogUI(props: RejectDialogUIProps) {
                   <MenuItem value="typeCustomReason">
                     <FormattedMessage id="rejectDialog.typeMyOwnComment" defaultMessage="Type my own comment" />
                   </MenuItem>
-                  <MenuItem value="NotApproved">
-                    <FormattedMessage id="rejectDialog.notApproved" defaultMessage="Not Approved" />
-                  </MenuItem>
-                  <MenuItem value="IB">
-                    <FormattedMessage id="rejectDialog.incorrectBranding" defaultMessage="Incorrect Branding" />
-                  </MenuItem>
-                  <MenuItem value="Typos">
-                    <FormattedMessage id="rejectDialog.typos" defaultMessage="Typos" />
-                  </MenuItem>
-                  <MenuItem value="BrokenLinks">
-                    <FormattedMessage id="rejectDialog.brokenLinks" defaultMessage="Broken Links" />
-                  </MenuItem>
-                  <MenuItem value="NSOA">
-                    <FormattedMessage id="rejectDialog.nsoa" defaultMessage="Needs Section Owner's Approval" />
-                  </MenuItem>
+                  {Object.entries(cannedMessages).map(([key, value]: [key: string, value: CannedMessage]) => (
+                    <MenuItem value={key} key={key}>
+                      <Typography>{value.title}</Typography>
+                    </MenuItem>
+                  ))}
                 </Select>
               </FormControl>
 

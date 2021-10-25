@@ -285,3 +285,30 @@ export function fetchSiteConfig(site: string): Observable<StudioSiteConfig> {
 function fetchSiteConfigDOM(site: string): Observable<XMLDocument> {
   return fetchConfigurationDOM(site, '/site-config.xml', 'studio');
 }
+
+export interface CannedMessage {
+  title: string;
+  message: string;
+}
+
+export function fetchCannedMessages(site: string): Observable<LookupTable<CannedMessage>> {
+  return fetchNotificationConfigDOM(site).pipe(
+    map((dom) => {
+      const cannedMessages = {};
+
+      dom.querySelectorAll('lang > cannedMessages > content').forEach((tag) => {
+        const message = deserialize(tag).content;
+        cannedMessages[tag.getAttribute('key')] = {
+          title: message.title,
+          message: message['#text']
+        };
+      });
+
+      return cannedMessages;
+    })
+  );
+}
+
+function fetchNotificationConfigDOM(site: string): Observable<XMLDocument> {
+  return fetchConfigurationDOM(site, '/workflow/notification-config.xml', 'studio');
+}

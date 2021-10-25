@@ -21,13 +21,15 @@ import { ApiResponse } from '../../models/ApiResponse';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
 import React from 'react';
+import { CannedMessage } from '../../services/configuration';
+import LookupTable from '../../models/LookupTable';
 
 export type ApiState = { error: ApiResponse };
-export type Source = SandboxItem[];
-export type Return = Source;
+export type Source = { items: SandboxItem[]; cannedMessages: LookupTable<CannedMessage>; error: ApiResponse };
+export type Return = Partial<Source>;
 
 export interface RejectDialogContentUIProps {
-  resource: Resource<Return>;
+  items: SandboxItem[];
   checkedItems: string[];
   onUpdateChecked?(value?: string): void;
   classes?: any;
