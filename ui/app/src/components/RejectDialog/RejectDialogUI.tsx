@@ -30,7 +30,6 @@ import PrimaryButton from '../PrimaryButton';
 import React from 'react';
 import { RejectDialogContentUI } from './RejectDialogContentUI';
 import Typography from '@mui/material/Typography';
-import { CannedMessage } from '../../services/configuration';
 
 export function RejectDialogUI(props: RejectDialogUIProps) {
   const {
@@ -102,11 +101,6 @@ export function RejectDialogUI(props: RejectDialogUIProps) {
                       <Typography>{message.title}</Typography>
                     </MenuItem>
                   ))}
-                  {/* {Object.entries(cannedMessages).map(([key, value]: [key: string, value: CannedMessage]) => (
-                    <MenuItem value={key} key={key}>
-                      <Typography>{value.title}</Typography>
-                    </MenuItem>
-                  ))} */}
                 </Select>
               </FormControl>
 
