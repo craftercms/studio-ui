@@ -21,6 +21,7 @@ import ko from '../translations/locales/ko.json';
 import { createIntl, createIntlCache, IntlShape } from 'react-intl';
 import { Subject } from 'rxjs';
 import TranslationOrText from '../models/TranslationOrText';
+import { nou } from './object';
 
 export type BundledTranslationsLocaleCodes = 'en' | 'es' | 'de' | 'ko';
 
@@ -84,6 +85,9 @@ export function getPossibleTranslation(
   titleOrDescriptor: TranslationOrText,
   formatMessage: IntlShape['formatMessage']
 ): string {
+  if (nou(titleOrDescriptor)) {
+    return null;
+  }
   return typeof titleOrDescriptor === 'object' ? formatMessage(titleOrDescriptor) : titleOrDescriptor;
 }
 
