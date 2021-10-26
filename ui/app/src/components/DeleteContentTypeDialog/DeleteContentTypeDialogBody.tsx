@@ -108,7 +108,7 @@ function DeleteContentTypeDialogBody(props: DeleteContentTypeDialogBodyProps) {
               title={<FormattedMessage id="deleteContentTypeDialog.noUsagesFound" defaultMessage="No usages found" />}
               subtitle={
                 <FormattedMessage
-                  id="deleteContentTypeDialog..pluginSafeToUninstall"
+                  id="deleteContentTypeDialog.safeToDelete"
                   defaultMessage="The content type can be safely deleted."
                 />
               }
