@@ -88,6 +88,7 @@ import {
 } from '../store/actions';
 import DragGhostElement from './DragGhostElement';
 import GuestGlobalStyles from './GuestGlobalStyles';
+import { showKeyboardShortcutsDialog } from '@craftercms/studio-ui/state/actions/dialogs';
 
 // TODO: add themeOptions and global styles customising
 export type GuestProps = PropsWithChildren<{
@@ -162,6 +163,7 @@ function Guest(props: GuestProps) {
   // Hotkeys propagation to preview
   useHotkeys('e', () => post(editModeToggleHotkey({ mode: HighlightMode.ALL })));
   useHotkeys('m', () => post(editModeToggleHotkey({ mode: HighlightMode.MOVE_TARGETS })));
+  useHotkeys('shift+/', () => post(showKeyboardShortcutsDialog()));
 
   // Key press/hold keeper events
   useEffect(() => {
