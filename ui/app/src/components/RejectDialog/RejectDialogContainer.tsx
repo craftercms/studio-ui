@@ -18,7 +18,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useDispatch } from 'react-redux';
 import { emitSystemEvent, itemsRejected } from '../../state/actions/system';
-import { fetchCannedMessages } from '../../services/configuration';
+import { CannedMessage, fetchCannedMessages } from '../../services/configuration';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import { useStyles } from './RejectDialog';
 import { RejectDialogContainerProps, Return, Source } from './utils';
@@ -36,7 +36,7 @@ export function RejectDialogContainer(props: RejectDialogContainerProps) {
   const [checkedItems, setCheckedItems] = useState([]);
   const [rejectionReason, setRejectionReason] = useState(typeCustomReason);
   const [rejectionComment, setRejectionComment] = useState('');
-  const [cannedMessages, setCannedMessages] = useState(null);
+  const [cannedMessages, setCannedMessages] = useState<CannedMessage[]>(null);
   const [apiState, setApiState] = useSpreadState({
     error: false,
     errorResponse: null
@@ -105,9 +105,10 @@ export function RejectDialogContainer(props: RejectDialogContainerProps) {
     dispatch(updateRejectDialog({ hasPendingChanges: value !== '' }));
   };
 
-  const onRejectionReasonChange = (value: string) => {
-    setRejectionComment(cannedMessages[value]?.message ?? '');
-    setRejectionReason(value);
+  const onRejectionReasonChange = (key: string) => {
+    const message = cannedMessages.filter((message) => message.key === key)[0]?.message ?? '';
+    setRejectionComment(message);
+    setRejectionReason(key);
   };
 
   const rejectSource = useMemo(

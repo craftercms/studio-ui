@@ -287,28 +287,25 @@ function fetchSiteConfigDOM(site: string): Observable<XMLDocument> {
 }
 
 export interface CannedMessage {
+  key: string;
   title: string;
   message: string;
 }
 
-export function fetchCannedMessages(site: string): Observable<LookupTable<CannedMessage>> {
-  return fetchNotificationConfigDOM(site).pipe(
+export function fetchCannedMessages(site: string): Observable<CannedMessage[]> {
+  return fetchConfigurationDOM(site, '/workflow/notification-config.xml', 'studio').pipe(
     map((dom) => {
-      const cannedMessages = {};
+      const cannedMessages = [];
 
       dom.querySelectorAll('lang > cannedMessages > content').forEach((tag) => {
-        const message = deserialize(tag).content;
-        cannedMessages[tag.getAttribute('key')] = {
-          title: message.title,
-          message: message['#text']
-        };
+        cannedMessages.push({
+          key: tag.getAttribute('key'),
+          title: tag.getAttribute('title'),
+          message: getInnerHtml(tag)
+        });
       });
 
       return cannedMessages;
     })
   );
-}
-
-function fetchNotificationConfigDOM(site: string): Observable<XMLDocument> {
-  return fetchConfigurationDOM(site, '/workflow/notification-config.xml', 'studio');
 }

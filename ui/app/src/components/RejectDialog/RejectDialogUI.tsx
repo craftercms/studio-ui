@@ -97,11 +97,16 @@ export function RejectDialogUI(props: RejectDialogUIProps) {
                   <MenuItem value="typeCustomReason">
                     <FormattedMessage id="rejectDialog.typeMyOwnComment" defaultMessage="Type my own comment" />
                   </MenuItem>
-                  {Object.entries(cannedMessages).map(([key, value]: [key: string, value: CannedMessage]) => (
+                  {cannedMessages.map((message) => (
+                    <MenuItem value={message.key} key={message.key}>
+                      <Typography>{message.title}</Typography>
+                    </MenuItem>
+                  ))}
+                  {/* {Object.entries(cannedMessages).map(([key, value]: [key: string, value: CannedMessage]) => (
                     <MenuItem value={key} key={key}>
                       <Typography>{value.title}</Typography>
                     </MenuItem>
-                  ))}
+                  ))} */}
                 </Select>
               </FormControl>
 

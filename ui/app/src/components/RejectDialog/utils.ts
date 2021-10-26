@@ -22,10 +22,9 @@ import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
 import React from 'react';
 import { CannedMessage } from '../../services/configuration';
-import LookupTable from '../../models/LookupTable';
 
 export type ApiState = { error: ApiResponse };
-export type Source = { items: SandboxItem[]; cannedMessages: LookupTable<CannedMessage>; error: ApiResponse };
+export type Source = { items: SandboxItem[]; cannedMessages: CannedMessage[]; error: ApiResponse };
 export type Return = Partial<Source>;
 
 export interface RejectDialogContentUIProps {
