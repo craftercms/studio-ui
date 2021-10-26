@@ -16,8 +16,10 @@
 
 import { createLookupTable, retrieveProperty } from './object';
 import ContentType, { ContentTypeField } from '../models/ContentType';
+import { LoremIpsum } from 'lorem-ipsum';
+import LookupTable from '../models/LookupTable';
 
-export function getRelatedContentTypeIds(contentType: ContentType) {
+export function getRelatedContentTypeIds(contentType: ContentType): string[] {
   return Object.values(contentType.fields).reduce((accumulator, field) => {
     if (
       field.type === 'array' &&
@@ -37,11 +39,11 @@ export function isGroupItem(contentType: ContentType, fieldId: string): boolean 
   return fieldId.includes('.');
 }
 
-export function isComponentHolder(contentType, fieldId) {
+export function isComponentHolder(contentType: ContentType, fieldId: string): boolean {
   return getField(contentType, fieldId).type === 'node-selector';
 }
 
-export function isGroup(contentType, fieldId) {
+export function isGroup(contentType: ContentType, fieldId: string): boolean {
   return getField(contentType, fieldId).type === 'repeat';
 }
 
@@ -50,12 +52,39 @@ export function doesFieldAccept(contentType: ContentType, fieldId: string) {
   throw new Error('[doesFieldAccept] Not implemented');
 }
 
-export function getField(type: ContentType, fieldId: string): ContentTypeField {
-  // For repeat groups, the field inside the repeat group field will be
-  // under {repeatName}.fields.{fieldName}. To abstract this complexity from devs
-  // we parse it here.
-  const parsedFieldId = fieldId.replace(/\./g, '.fields.');
-  return retrieveProperty(Array.isArray(type.fields) ? createLookupTable(type.fields) : type.fields, parsedFieldId);
+export function getField(
+  type: ContentType,
+  fieldId: string,
+  contentTypes?: LookupTable<ContentType>
+): ContentTypeField {
+  const fields = fieldId.split('.');
+  let accumulator = Array.isArray(type.fields) ? createLookupTable(type.fields) : type.fields;
+  let parsedFieldId = [];
+  fields.forEach((field) => {
+    parsedFieldId.push(field);
+    if (accumulator.type === 'node-selector') {
+      if (!contentTypes) {
+        throw new Error(
+          `Content types not provided to content type helper \`getField\` method. ` +
+            `Unable to retrieve the field \`${fieldId}\` without full list of content types.`
+        );
+      }
+      const contentTypeWithTargetFieldId = accumulator.validations.allowedContentTypes.value.find((ct) =>
+        Boolean(contentTypes[ct].fields[field])
+      );
+      accumulator = contentTypes[contentTypeWithTargetFieldId].fields[field];
+    } else {
+      if (accumulator.type === 'repeat') {
+        // For repeat groups, the field inside the repeat group field will be
+        // under {repeatName}.fields.{fieldName}. To abstract this complexity from devs
+        // we parse it here.
+        accumulator = accumulator.fields[field];
+      } else {
+        accumulator = accumulator[field];
+      }
+    }
+  });
+  return accumulator as ContentTypeField;
 }
 
 export function getFields(type: ContentType, ...ids: string[]): ContentTypeField[] {
@@ -64,4 +93,40 @@ export function getFields(type: ContentType, ...ids: string[]): ContentTypeField
 
 export function getFieldsByType(contentType: ContentType, fieldType): ContentTypeField[] {
   return Object.values(contentType.fields).filter((field) => field.type === fieldType);
+}
+
+export function getDefaultValue(field: ContentTypeField): string | number {
+  if (field.defaultValue) {
+    return field.defaultValue;
+  } else if (field.validations.required) {
+    switch (field.type) {
+      case 'image':
+        const width = field.validations.width?.value ?? field.validations.minWidth?.value ?? 150;
+        const height = field.validations.height?.value ?? field.validations.minHeight?.value ?? width;
+        return `https://via.placeholder.com/${width}x${height}`;
+      case 'textarea':
+      case 'text': {
+        let maxLength = parseInt(field.validations.maxLength?.value);
+        let lorem = new LoremIpsum({
+          wordsPerSentence: {
+            max: 4,
+            min: 4
+          }
+        });
+        return maxLength ? lorem.generateSentences(1).substring(0, maxLength / 2) : lorem.generateWords(1);
+      }
+      case 'html':
+        let lorem = new LoremIpsum();
+        return lorem.generateParagraphs(1);
+      case 'numeric-input': {
+        return field.validations.minValue?.value ?? 1;
+      }
+      case 'boolean':
+        return 'false';
+      case 'date-time':
+        return new Date().toISOString();
+    }
+  } else {
+    return null;
+  }
 }

@@ -30,7 +30,7 @@ import { Reducer } from '@reduxjs/toolkit';
 import { GuestStandardAction } from '../models/GuestStandardAction';
 import { ElementRecord } from '../../models/InContextEditing';
 import { GuestState } from '../models/GuestStore';
-import { notNullOrUndefined, reversePluckProps } from '../../utils/object';
+import { notNullOrUndefined, reversePluckProps } from '@craftercms/studio-ui/utils/object';
 import { updateDropZoneValidations } from '../../utils/dom';
 import { EditingStatus, HighlightMode } from '../../constants';
 import {

@@ -68,6 +68,7 @@ import {
 } from './constants';
 import { SystemType } from '../models/SystemType';
 import { getStateBitmap } from '../components/ItemStatesManagement/utils';
+import { forEach } from '@craftercms/studio-guest/build_tsc/utils/array';
 
 export function isEditableAsset(path: string) {
   return (
@@ -690,22 +691,55 @@ export function createModelHierarchyDescriptorMap(
  */
 export function createChildModelIdList(model: ContentInstance, contentTypes: LookupTable<ContentType>): string[] {
   const children = [];
-  const processFields = (model: ContentInstance, fields: ContentTypeField[], children: string[]) =>
-    fields.forEach((field) => {
-      // Check the field in the model isn't null in case the field isn't required and isn't present on current model.
-      if (model[field.id]) {
-        if (field.type === 'node-selector') {
-          model[field.id].forEach((mdl: ContentInstance) => children.push(mdl.craftercms.id));
-        } else if (field.type === 'repeat') {
-          model[field.id].forEach((mdl: ContentInstance) => {
-            processFields(mdl, Object.values(field.fields), children);
-          });
+
+  if (contentTypes) {
+    const processFields = (model: ContentInstance, fields: ContentTypeField[], children: string[]) =>
+      fields.forEach((field) => {
+        // Check the field in the model isn't null in case the field isn't required and isn't present on current model.
+        if (model[field.id]) {
+          if (field.type === 'node-selector') {
+            model[field.id].forEach((mdl: ContentInstance) => children.push(mdl.craftercms.id));
+          } else if (field.type === 'repeat') {
+            model[field.id].forEach((mdl: ContentInstance) => {
+              processFields(mdl, Object.values(field.fields), children);
+            });
+          }
         }
+      });
+    if (contentTypes[model.craftercms.contentTypeId]) {
+      processFields(model, Object.values(contentTypes[model.craftercms.contentTypeId].fields), children);
+    }
+  } else {
+    Object.entries(model).forEach(([prop, value]) => {
+      if (prop.endsWith('_o') && Array.isArray(value)) {
+        const collection: ContentInstance[] = value;
+        forEach(collection, (item) => {
+          if ('craftercms' in item && item.craftercms.id !== null) {
+            // Node selector
+            children.push(item.craftercms.id);
+          } else {
+            // Repeating group item
+            forEach(Object.entries(item), ([_prop, _value]) => {
+              if (_prop.endsWith('_o') && Array.isArray(_value)) {
+                const _collection: ContentInstance[] = _value;
+                forEach(_collection, (_item) => {
+                  if ('craftercms' in _item && _item.craftercms.id !== null) {
+                    children.push(_item.craftercms.id);
+                  } else {
+                    // Not a node selector, no point to continue iterating
+                    // Subsequent levels are calculated by calling this function
+                    // with that model as the argument
+                    return 'break';
+                  }
+                });
+              }
+            });
+          }
+        });
       }
     });
-  if (contentTypes[model.craftercms.contentTypeId]) {
-    processFields(model, Object.values(contentTypes[model.craftercms.contentTypeId].fields), children);
   }
+
   return children;
 }
 
@@ -886,4 +920,56 @@ export const createItemActionMap: (availableActions: number) => ItemActionsMap =
 
 export function lookupItemByPath<T = DetailedItem>(path: string, lookupTable: LookupTable<T>): T {
   return lookupTable[withoutIndex(path)] ?? lookupTable[withIndex(path)];
+}
+
+export function modelsToLookup(models: ContentInstance[]): LookupTable<ContentInstance> {
+  const lookup = {};
+  models.forEach((model) => {
+    modelsToLookupModelParser(model, lookup);
+  });
+  return lookup;
+}
+
+function modelsToLookupModelParser(model: ContentInstance, lookup: LookupTable<ContentInstance>) {
+  if ('craftercms' in model) {
+    if (model.craftercms.id === null) {
+      // e.g. In editorial, related-articles-widget (some
+      // items can use key/value without being "includes")
+      // it may simply be a key/value pair. This is an issue
+      // of the parseDescriptor function of the @craftercms/content package
+      //   <scripts_o item-list="true">
+      //     <item>
+      //       <key>/scripts/components/related-articles.groovy</key>
+      //       <value>related-articles.groovy</value>
+      //     </item>
+      //   </scripts_o>
+      return;
+    }
+    lookup[model.craftercms.id] = model;
+  }
+  Object.entries(model).forEach(([prop, value]) => {
+    if (prop.endsWith('_o')) {
+      const collection: ContentInstance[] = value;
+      forEach(collection, (item) => {
+        if ('craftercms' in item) {
+          if (item.craftercms.id === null) {
+            return 'continue';
+          }
+          // Add model to lookup table
+          lookup[item.craftercms.id] = item;
+        }
+        modelsToLookupModelParser(item, lookup);
+      });
+    }
+  });
+}
+
+export function createPathIdMap(models: LookupTable<ContentInstance>): LookupTable<string> {
+  const map = {};
+  Object.entries(models).forEach(([id, model]) => {
+    if (model.craftercms.path) {
+      map[model.craftercms.path] = id;
+    }
+  });
+  return map;
 }

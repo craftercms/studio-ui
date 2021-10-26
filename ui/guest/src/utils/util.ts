@@ -15,7 +15,7 @@
  */
 
 import { ICERecord } from '../models/InContextEditing';
-import { pluckProps } from './object';
+import { pluckProps } from '@craftercms/studio-ui/utils/object';
 
 export const foo = (...args: any[]) => void null;
 export const //

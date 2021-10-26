@@ -42,8 +42,8 @@ import {
   updateFieldValueOperation
 } from '@craftercms/studio-ui/state/actions/preview';
 import { GuestState } from '../store/models/GuestStore';
-import { notNullOrUndefined } from '../utils/object';
-import { forEach } from '../utils/array';
+import { notNullOrUndefined } from '@craftercms/studio-ui/utils/object';
+import { forEach } from '@craftercms/studio-ui/utils/array';
 import { popPiece, removeLastPiece } from '@craftercms/studio-ui/utils/string';
 import { addAnimation } from '../utils/dom';
 

@@ -15,7 +15,7 @@
  */
 
 import { ContentInstance } from '@craftercms/studio-ui/models/ContentInstance';
-import { isNullOrUndefined, retrieveProperty, setProperty } from './object';
+import { nullOrUndefined, retrieveProperty, setProperty } from '@craftercms/studio-ui/utils/object';
 import { removeLastPiece } from '@craftercms/studio-ui/utils/string';
 
 const systemPropList = ['id', 'path', 'contentTypeId', 'dateCreated', 'dateModified', 'label'];
@@ -47,7 +47,7 @@ export function extractCollection(model: ContentInstance, fieldId: string, index
 }
 
 export function extractCollectionItem(model: ContentInstance, fieldId: string, index: number | string): string[] {
-  const indexes = index === '' || isNullOrUndefined(index) ? [] : `${index}`.split('.').map((i) => parseInt(i));
+  const indexes = index === '' || nullOrUndefined(index) ? [] : `${index}`.split('.').map((i) => parseInt(i));
   const fields = fieldId.split('.');
   if (indexes.length > fields.length) {
     throw new Error(
@@ -72,11 +72,11 @@ export function getContentTypeId(model: ContentInstance): string {
 }
 
 export function isEmbedded(model: ContentInstance): boolean {
-  return isNullOrUndefined(prop(model, 'path'));
+  return nullOrUndefined(prop(model, 'path'));
 }
 
 function extractCollectionPiece(model: ContentInstance, fieldId: string, index: number | string): string[] {
-  const indexes = index === '' || isNullOrUndefined(index) ? [] : `${index}`.split('.').map((i) => parseInt(i, 10));
+  const indexes = index === '' || nullOrUndefined(index) ? [] : `${index}`.split('.').map((i) => parseInt(i, 10));
   if (indexes.length === 0) {
     return retrieveProperty(model, fieldId);
   }
