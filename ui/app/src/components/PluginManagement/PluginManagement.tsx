@@ -57,6 +57,9 @@ import ListSubheader from '@mui/material/ListSubheader';
 import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import TableBody from '@mui/material/TableBody';
+import DeleteIcon from '@mui/icons-material/DeleteOutline';
+import { useEnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
+import UninstallPluginDialog from '../DeletePluginDialog';
 
 const messages = defineMessages({
   pluginInstalled: {
@@ -105,6 +108,8 @@ export const PluginManagement = (props: PluginManagementProps) => {
   const [pluginFiles, setPluginFiles] = React.useState<PluginRecord>(null);
   const [installedPluginsLookup, setInstalledPluginsLookup] = useState<LookupTable<boolean>>();
   const locale = useSelection<GlobalState['uiConfig']['locale']>((state) => state.uiConfig.locale);
+  const deletePluginDialogState = useEnhancedDialogState();
+  const [pluginToDelete, setPluginToDelete] = useState(null);
 
   useMount(() => {
     getUserPermissions(siteId, '/').subscribe((permissions) => {
@@ -171,6 +176,11 @@ export const PluginManagement = (props: PluginManagementProps) => {
 
   const closePluginFilesPopover = () => {
     setAnchorEl(null);
+  };
+
+  const onDeletePlugin = () => {
+    deletePluginDialogState.onClose();
+    refresh();
   };
 
   return (
@@ -272,7 +282,17 @@ export const PluginManagement = (props: PluginManagementProps) => {
                     <StyledTableCell align="left">
                       <AsDayMonthDateTime date={plugin.installationDate} locale={locale} />
                     </StyledTableCell>
-                    <TableCell align="right" className={classes.actions} />
+                    <TableCell align="right" className={classes.actions}>
+                      <IconButton
+                        onClick={() => {
+                          setPluginToDelete(plugin.id);
+                          deletePluginDialogState.onOpen();
+                        }}
+                        color="primary"
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -293,6 +313,16 @@ export const PluginManagement = (props: PluginManagementProps) => {
         onInstall={onInstallMarketplacePlugin}
         installedPlugins={installedPluginsLookup}
         installPermission={openMarketPlaceDialog?.installPermission}
+      />
+      <UninstallPluginDialog
+        open={deletePluginDialogState.open}
+        onClose={deletePluginDialogState.onClose}
+        isSubmitting={deletePluginDialogState.isSubmitting}
+        hasPendingChanges={deletePluginDialogState.hasPendingChanges}
+        isMinimized={deletePluginDialogState.isMinimized}
+        onSubmittingAndOrPendingChange={deletePluginDialogState.onSubmittingAndOrPendingChange}
+        pluginId={pluginToDelete}
+        onComplete={onDeletePlugin}
       />
       <Popover
         open={Boolean(anchorEl)}

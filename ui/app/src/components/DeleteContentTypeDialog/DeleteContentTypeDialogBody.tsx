@@ -104,7 +104,15 @@ function DeleteContentTypeDialogBody(props: DeleteContentTypeDialogBodyProps) {
       <DialogBody>
         {noUsages ? (
           <div className={classes.content}>
-            <EmptyState title="No usages found" subtitle="The content type can be safely deleted." />
+            <EmptyState
+              title={<FormattedMessage id="deleteContentTypeDialog.noUsagesFound" defaultMessage="No usages found" />}
+              subtitle={
+                <FormattedMessage
+                  id="deleteContentTypeDialog.safeToDelete"
+                  defaultMessage="The content type can be safely deleted."
+                />
+              }
+            />
           </div>
         ) : (
           <>
