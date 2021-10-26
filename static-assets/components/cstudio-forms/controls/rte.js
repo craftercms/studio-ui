@@ -330,7 +330,8 @@ CStudioAuthoring.Module.requireModule(
           const codeEditorWrap = rteConfig.codeEditorWrap ? rteConfig.codeEditorWrap === 'true' : false;
 
           const external = {
-            acecode: '/studio/static-assets/js/tinymce-plugins/ace/plugin.min.js'
+            acecode: '/studio/static-assets/js/tinymce-plugins/ace/plugin.min.js',
+            paste_cleanup: '/studio/static-assets/js/tinymce-plugins/paste_cleanup/plugin.js'
           };
           if (rteConfig.external_plugins) {
             Object.entries(rteConfig.external_plugins).forEach((entry) => {
@@ -339,7 +340,6 @@ CStudioAuthoring.Module.requireModule(
               });
             });
           }
-
           editor = tinymce.init({
             selector: '#' + rteId,
             width: _thisControl.rteWidth,
@@ -394,6 +394,8 @@ CStudioAuthoring.Module.requireModule(
                   timeout: 3000,
                   type: 'error'
                 });
+              } else {
+                _thisControl.editor.plugins.paste_cleanup.cleanup(args.node);
               }
             },
             images_upload_handler: function (blobInfo, success, failure) {

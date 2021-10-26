@@ -93,7 +93,6 @@ function registerSharedWorker(): Observable<ObtainAuthTokenResponse & { worker: 
     return fromEvent<MessageEvent>(worker.port, 'message').pipe(
       tap((e) => {
         if (e.data?.type === sharedWorkerUnauthenticated.type) {
-          window.location.reload();
           throw new Error('User not authenticated.');
         }
       }),

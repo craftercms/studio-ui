@@ -261,3 +261,7 @@ export const closeWidgetDialog = /*#__PURE__*/ createAction<StandardAction>('CLO
 export const widgetDialogClosed = /*#__PURE__*/ createAction('WIDGET_DIALOG_CLOSED');
 export const updateWidgetDialog = /*#__PURE__*/ createAction<Partial<WidgetDialogStateProps>>('UPDATE_WIDGET_DIALOG');
 // endregion
+
+// region Show Keyboard Shortcuts Dialog
+export const showKeyboardShortcutsDialog = /*#__PURE__*/ createAction('SHOW_KEYBOARD_SHORTCUTS_DIALOG');
+// endregion

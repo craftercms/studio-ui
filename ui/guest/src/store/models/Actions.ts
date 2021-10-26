@@ -28,23 +28,25 @@ import {
   componentInstanceDragEnded,
   componentInstanceDragStarted,
   contentTreeFieldSelected,
+  contentTreeSwitchFieldInstance,
   contentTypeDropTargetsRequest,
   desktopAssetUploadComplete,
   desktopAssetUploadProgress,
   desktopAssetUploadStarted,
-  setPreviewEditMode,
+  highlightModeChanged,
   hostCheckIn,
+  setPreviewEditMode,
   trashed,
-  updateRteConfig,
-  contentTreeSwitchFieldInstance,
-  highlightModeChanged
-} from '@craftercms/studio-ui/build_tsc/state/actions/preview';
+  updateRteConfig
+} from '@craftercms/studio-ui/state/actions/preview';
 import { Observable } from 'rxjs';
 import {
   addAssetTypes,
   computedDragEnd,
   computedDragOver,
   contentReady,
+  desktopAssetDragEnded,
+  desktopAssetDragStarted,
   documentDragEnd,
   documentDragLeave,
   documentDragOver,
@@ -61,9 +63,7 @@ import {
   scrollingStopped,
   setDropPosition,
   setEditMode,
-  startListening,
-  desktopAssetDragEnded,
-  desktopAssetDragStarted
+  startListening
 } from '../actions';
 
 export type GuestActionTypes =

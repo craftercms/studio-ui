@@ -25,10 +25,9 @@ import { Observable, Subject } from 'rxjs';
 import { startWith } from 'rxjs/operators';
 import $ from 'jquery';
 import { reversePluckProps } from '../utils/object';
-import { showEditDialog } from '@craftercms/studio-ui/build_tsc/state/actions/preview';
+import { showEditDialog, validationMessage } from '@craftercms/studio-ui/state/actions/preview';
 import { RteSetup } from '../models/Rte';
 import { editComponentInline, exitComponentInlineEdit } from '../store/actions';
-import { validationMessage } from '@craftercms/studio-ui/build_tsc/state/actions/preview';
 
 export function initTinyMCE(
   record: ElementRecord,
@@ -68,7 +67,8 @@ export function initTinyMCE(
   const external = {
     ...rteSetup?.tinymceOptions?.external_plugins,
     acecode: '/studio/static-assets/js/tinymce-plugins/ace/plugin.min.js',
-    editform: '/studio/static-assets/js/tinymce-plugins/editform/plugin.js'
+    editform: '/studio/static-assets/js/tinymce-plugins/editform/plugin.js',
+    paste_cleanup: '/studio/static-assets/js/tinymce-plugins/paste_cleanup/plugin.js'
   };
 
   window.tinymce.init({
@@ -77,8 +77,11 @@ export function initTinyMCE(
     // For some reason this is not working.
     // body_class: 'craftercms-rich-text-editor',
     plugins: plugins + ' editform', // edit form will always be loaded
-    paste_as_text: true,
+    paste_as_text: type !== 'html',
     paste_data_images: type === 'html',
+    paste_postprocess: function (plugin, args) {
+      window.tinymce.activeEditor.plugins.paste_cleanup.cleanup(args.node);
+    },
     toolbar: type === 'html',
     menubar: false,
     inline: true,

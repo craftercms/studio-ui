@@ -18,7 +18,7 @@ import TranslationOrText from '../../models/TranslationOrText';
 import { MessageDescriptor, useIntl } from 'react-intl';
 import { FormatXMLElementFn, PrimitiveType } from 'intl-messageformat';
 import { ReactElement, ReactNodeArray } from 'react';
-import { nou } from '../object';
+import { getPossibleTranslation } from '../i18n';
 
 export function usePossibleTranslation(title: string): string;
 export function usePossibleTranslation(title: string, values: Record<string, PrimitiveType>): string;
@@ -46,8 +46,5 @@ export function usePossibleTranslation(
   values?: Record<string, PrimitiveType | ReactElement | FormatXMLElementFn>
 ): string | ReactNodeArray {
   const { formatMessage } = useIntl();
-  if (nou(titleOrDescriptor)) {
-    return null;
-  }
-  return typeof titleOrDescriptor === 'object' ? formatMessage(titleOrDescriptor, values) : titleOrDescriptor;
+  return getPossibleTranslation(titleOrDescriptor, formatMessage);
 }

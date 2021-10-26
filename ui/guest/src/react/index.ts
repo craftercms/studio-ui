@@ -26,3 +26,4 @@ export * from './ContentType';
 export * from './Field';
 export * from './hooks';
 export * from './UltraStyledIconButton';
+export * from './GuestGlobalStyles';
