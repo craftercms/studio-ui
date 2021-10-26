@@ -189,3 +189,5 @@ export function Search(props: SearchProps) {
     />
   );
 }
+
+export default Search;

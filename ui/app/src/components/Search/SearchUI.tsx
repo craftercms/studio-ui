@@ -15,7 +15,7 @@
  */
 
 import SiteSearchToolBar from '../SiteSearchToolbar';
-import React from 'react';
+import React, { useRef } from 'react';
 import Drawer from '@mui/material/Drawer';
 import clsx from 'clsx';
 import SiteSearchFilters from '../SiteSearchFilters';
@@ -98,7 +98,7 @@ const useStyles = makeStyles((theme) => ({
     '&.select': {}
   },
   wrapperSelectMode: {
-    height: 'calc(100% - 71px)'
+    height: 'calc(100% - 136px)'
   },
   shift: {
     transition: theme.transitions.create('margin', {
@@ -207,7 +207,11 @@ const useStyles = makeStyles((theme) => ({
     bottom: 0,
     width: drawerWidth,
     zIndex: theme.zIndex.appBar - 1,
-    height: 'auto'
+    height: 'auto',
+    position: 'absolute',
+    '&.embedded': {
+      top: '130px'
+    }
   },
   drawerPaperSelect: {
     bottom: '71px'
@@ -234,6 +238,7 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1
   },
   drawerModal: {
+    position: 'absolute',
     '& .MuiBackdrop-root': {
       background: 'transparent'
     }
@@ -247,6 +252,9 @@ const useStyles = makeStyles((theme) => ({
     '& > :not(:first-child)': {
       marginLeft: '12px'
     }
+  },
+  container: {
+    height: '100%'
   }
 }));
 
@@ -293,8 +301,10 @@ export function SearchUI(props: SearchUIProps) {
 
   const { formatMessage } = useIntl();
 
+  const container = useRef();
+
   return (
-    <>
+    <section ref={container} className={classes.container}>
       <SiteSearchToolBar
         onChange={handleSearchKeyword}
         onMenuIconClick={toggleDrawer}
@@ -307,11 +317,12 @@ export function SearchUI(props: SearchUIProps) {
       />
       <Drawer
         variant={desktopScreen ? 'persistent' : 'temporary'}
+        container={container.current}
         anchor="left"
         open={drawerOpen}
         className={classes.drawer}
         classes={{
-          paper: clsx(classes.drawerPaper, { [classes.drawerPaperSelect]: mode === 'select' }),
+          paper: clsx(classes.drawerPaper, mode === 'select' && classes.drawerPaperSelect, embedded && 'embedded'),
           modal: classes.drawerModal
         }}
         ModalProps={{
@@ -434,7 +445,7 @@ export function SearchUI(props: SearchUIProps) {
                       onSelect={handleSelect}
                       selected={selected}
                       previewAppBaseUri={guestBase}
-                      onHeaderButtonClick={onHeaderButtonClick}
+                      onHeaderButtonClick={mode === 'default' ? onHeaderButtonClick : null}
                     />
                   </Grid>
                 ))
@@ -479,7 +490,7 @@ export function SearchUI(props: SearchUIProps) {
           </Button>
         </section>
       )}
-    </>
+    </section>
   );
 }
 

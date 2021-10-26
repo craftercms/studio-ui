@@ -132,7 +132,8 @@ export const registerComponents = () => {
     'craftercms.components.LegacyComponentsPanel': lazy(() => import('../components/LegacyComponentsPanel')),
     'craftercms.components.EditModesSwitcher': lazy(() => import('../components/EditModesSwitcher')),
     'craftercms.components.EmbeddedSearchIframe': lazy(() => import('../components/EmbeddedSearchIframe')),
-    'craftercms.components.WidgetDialogIconButton': lazy(() => import('../components/WidgetDialogIconButton'))
+    'craftercms.components.WidgetDialogIconButton': lazy(() => import('../components/WidgetDialogIconButton')),
+    'craftercms.components.Search': lazy(() => import('../components/Search/Search'))
   }).forEach(([id, component]) => {
     components.set(id, component);
   });
