@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createLookupTable, retrieveProperty } from './object';
+import { createLookupTable } from './object';
 import ContentType, { ContentTypeField } from '../models/ContentType';
 import { LoremIpsum } from 'lorem-ipsum';
 import LookupTable from '../models/LookupTable';
