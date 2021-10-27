@@ -445,7 +445,7 @@ export function SearchUI(props: SearchUIProps) {
                           : void 0
                       }
                       item={item}
-                      onPreview={onPreview}
+                      onPreview={mode === 'default' ? onPreview : null}
                       onSelect={handleSelect}
                       selected={selected}
                       previewAppBaseUri={guestBase}
