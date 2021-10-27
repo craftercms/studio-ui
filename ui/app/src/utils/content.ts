@@ -68,7 +68,7 @@ import {
 } from './constants';
 import { SystemType } from '../models/SystemType';
 import { getStateBitmap } from '../components/ItemStatesManagement/utils';
-import { forEach } from '@craftercms/studio-guest/build_tsc/utils/array';
+import { forEach } from './array';
 
 export function isEditableAsset(path: string) {
   return (

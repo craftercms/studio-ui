@@ -30,7 +30,7 @@ import {
 } from '../classes/ContentController';
 import { zip } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
-import * as ContentType from '../utils/contentType';
+import * as ContentType from '@craftercms/studio-ui/utils/contentType';
 import { message$ } from '../utils/communicator';
 import { Operation } from '../models/Operations';
 import {
