@@ -59,7 +59,7 @@
     }
     </#if>
 
-    CrafterCMSNext.render('#root', 'Search', {
+    CrafterCMSNext.render('#root', 'SearchPage', {
       embedded: ${embedded?string},
       mode: "${mode}",
       <#if mode == 'select'>

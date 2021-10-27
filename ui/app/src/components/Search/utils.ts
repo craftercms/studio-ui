@@ -315,7 +315,7 @@ export const useSearchState = ({ searchParameters, onSelect }: useSearchStatePro
           showPreviewDialog({
             type: 'page',
             title,
-            url: `${guestBase}${getPreviewURLFromPath(item.path)}`
+            url: `${guestBase}${getPreviewURLFromPath(item.path)}?crafterCMSGuestDisabled=true`
           })
         );
         break;

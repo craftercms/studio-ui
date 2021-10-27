@@ -89,6 +89,7 @@ import {
 import DragGhostElement from './DragGhostElement';
 import GuestGlobalStyles from './GuestGlobalStyles';
 import { showKeyboardShortcutsDialog } from '@craftercms/studio-ui/state/actions/dialogs';
+import queryString from 'query-string';
 
 // TODO: add themeOptions and global styles customising
 export type GuestProps = PropsWithChildren<{
@@ -554,7 +555,8 @@ function Guest(props: GuestProps) {
 function CrafterCMSGuest(props: GuestProps) {
   const { isAuthoring, children } = props;
   const store = useMemo(() => isAuthoring && createGuestStore(), [isAuthoring]);
-  return isAuthoring ? (
+  const { crafterCMSGuestDisabled } = queryString.parse(window.location.search);
+  return isAuthoring && crafterCMSGuestDisabled !== 'true' ? (
     <Provider store={store} context={GuestReduxContext}>
       <Guest {...props} />
     </Provider>
