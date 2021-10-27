@@ -19,7 +19,7 @@ import { filter, map, pluck, switchMap, take, tap } from 'rxjs/operators';
 import * as Model from '../utils/model';
 import Cookies from 'js-cookie';
 import { fromTopic, post } from '../utils/communicator';
-import uuid from 'uuid/v4';
+import { v4 as uuid } from 'uuid';
 import { ContentInstance } from '@craftercms/studio-ui/models/ContentInstance';
 import { ContentType, ContentTypeField } from '@craftercms/studio-ui/models/ContentType';
 import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
