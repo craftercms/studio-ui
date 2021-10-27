@@ -322,7 +322,11 @@ export function SearchUI(props: SearchUIProps) {
         open={drawerOpen}
         className={classes.drawer}
         classes={{
-          paper: clsx(classes.drawerPaper, mode === 'select' && classes.drawerPaperSelect, embedded && 'embedded'),
+          paper: clsx(
+            classes.drawerPaper,
+            mode === 'select' && classes.drawerPaperSelect,
+            embedded && mode === 'default' && 'embedded'
+          ),
           modal: classes.drawerModal
         }}
         ModalProps={{
