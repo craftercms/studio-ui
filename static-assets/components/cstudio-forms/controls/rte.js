@@ -285,7 +285,7 @@ CStudioAuthoring.Module.requireModule(
 
           toolbarConfig1 =
             rteConfig.toolbarItems1 && rteConfig.toolbarItems1.length != 0
-              ? rteConfig.toolbarItems1
+              ? `${rteConfig.toolbarItems1} | inline_code_view`
               : 'bold italic | bullist numlist';
           toolbarConfig2 =
             rteConfig.toolbarItems2 && rteConfig.toolbarItems2.length != 0 ? rteConfig.toolbarItems2 : '';
@@ -331,6 +331,7 @@ CStudioAuthoring.Module.requireModule(
 
           const external = {
             acecode: '/studio/static-assets/js/tinymce-plugins/ace/plugin.min.js',
+            inline_code_view: '/studio/static-assets/js/tinymce-plugins/inline_code_view/plugin.js',
             paste_cleanup: '/studio/static-assets/js/tinymce-plugins/paste_cleanup/plugin.js'
           };
           if (rteConfig.external_plugins) {
@@ -373,7 +374,7 @@ CStudioAuthoring.Module.requireModule(
             image_uploadtab: this.editorImageDatasources.length > 0,
 
             menu: {
-              tools: { title: 'Tools', items: 'tinymcespellchecker code acecode wordcount' }
+              tools: { title: 'Tools', items: 'tinymcespellchecker code acecode inline_code_view wordcount' }
             },
 
             automatic_uploads: true,
