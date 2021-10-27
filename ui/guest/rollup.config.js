@@ -122,21 +122,20 @@ export default [
       globals
     },
     ...baseConfig
-  }
+  },
 
-  // TODO: do not commit
   /* UMD build for preview landing controller */
-  // {
-  //   input: 'src/preview.ts',
-  //   external,
-  //   plugins,
-  //   output: {
-  //     name: 'craftercms.previewLanding',
-  //     file: 'build/preview-landing.umd.js',
-  //     format: 'umd',
-  //     amd: { id: 'craftercms.previewLanding' },
-  //     globals
-  //   },
-  //   ...baseConfig
-  // }
+  {
+    input: 'src/preview.ts',
+    external,
+    plugins,
+    output: {
+      name: 'craftercms.previewLanding',
+      file: 'build/preview-landing.umd.js',
+      format: 'umd',
+      amd: { id: 'craftercms.previewLanding' },
+      globals
+    },
+    ...baseConfig
+  }
 ];
