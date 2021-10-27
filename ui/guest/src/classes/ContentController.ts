@@ -42,7 +42,7 @@ import { parseDescriptor, preParseSearchResults } from '@craftercms/content';
 import { modelsToLookup } from '../utils/content';
 import { crafterConf } from '@craftercms/classes';
 import { getDefaultValue } from '../utils/contentType';
-import { ModelHierarchyMap } from '@craftercms/studio-ui/utils/content';
+import { ModelHierarchyDescriptor, ModelHierarchyMap } from '@craftercms/studio-ui/utils/content';
 
 // if (process.env.NODE_ENV === 'development') {
 // TODO: Notice
@@ -424,6 +424,8 @@ export function insertInstance(
     [modelId]: model
   });
 
+  modelHierarchyMap[modelId]?.children.push(instance.craftercms.id);
+
   post(insertInstanceOperation.type, {
     modelId,
     fieldId,
@@ -483,6 +485,25 @@ export function sortItem(
   // Insert in desired position
   result.splice(targetIndexParsed, 0, collection[currentIndexParsed]);
 
+  // TODO: Pending to check if fieldId may have dotted notation. (repeat inside repeat)
+  function updateModel(fieldId: string, model: ModelHierarchyDescriptor, currentIndex: number, targetIndex: number) {
+    const position = model.parentContainerFieldPath.split('.').indexOf(fieldId);
+    const index = model.parentContainerFieldIndex as string;
+    const splitIndex = index.split('.');
+    const numericIndex = Number(splitIndex[position]);
+
+    if (numericIndex === currentIndex) {
+      splitIndex[position] = targetIndex.toString();
+    } else if (numericIndex === targetIndex) {
+      splitIndex[position] = currentIndex.toString();
+    } else if (targetIndex < currentIndex) {
+      splitIndex[position] = (numericIndex + 1).toString();
+    } else if (targetIndex > currentIndex) {
+      splitIndex[position] = (numericIndex - 1).toString();
+    }
+    model.parentContainerFieldIndex = splitIndex.join('.');
+  }
+
   // If it is a node selector, the hierarchy map must be updated.
   // Determine if it is a node selector or a repeat group. Node selectors are kept normalized so
   // a node selector collections will have strings on them (ids of the components they hold) vs
@@ -501,7 +522,11 @@ export function sortItem(
           }
     );
   } else {
-    // All sub items/indexes of the repeat need updating
+    modelHierarchyMap[modelId].children.forEach((_modelId) => {
+      if (modelHierarchyMap[_modelId].parentContainerFieldPath.startsWith(fieldId)) {
+        updateModel(fieldId, modelHierarchyMap[_modelId], currentIndexParsed, targetIndexParsed);
+      }
+    });
   }
 
   const model = setCollection(
@@ -562,12 +587,16 @@ export function moveItem(
     .slice(0, originalIndexParsed)
     .concat(currentCollection.slice(originalIndexParsed + 1));
 
+  // TODO: Remove modelId from modelHierarchyMap[modelId].children
+
   const targetModel = models[targetModelId];
   const targetCollection = symmetricTarget
     ? Model.extractCollection(targetModel, targetFieldId, targetIndex)
     : Model.extractCollectionItem(targetModel, targetFieldId, targetIndex);
   // Insert item in target collection @ the desired position
   const targetResult = targetCollection.slice(0);
+
+  // TODO: insert newItem modelId from modelHierarchyMap[modelId].children
 
   targetResult.splice(targetIndexParsed, 0, currentCollection[originalIndexParsed]);
 
@@ -639,8 +668,16 @@ export function deleteItem(modelId: string, fieldId: string, index: number | str
   const collection = isStringIndex
     ? Model.extractCollection(models[modelId], fieldId, index)
     : Model.value(models[modelId], fieldId);
+  const item = collection[parsedIndex];
 
   const result = collection.slice(0, parsedIndex).concat(collection.slice(parsedIndex + 1));
+
+  // Deleting item from modelHierarchyMap
+  if (typeof result[0] === 'string') {
+    delete modelHierarchyMap[item];
+  } else {
+    // TODO: check modelHierarchyMap[item].children
+  }
 
   const model = setCollection(
     models[modelId],
