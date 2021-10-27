@@ -94,6 +94,10 @@ const plugins = [
 const globals = {
   // '@craftercms/content': 'craftercms.content',
   // '@craftercms/search': 'craftercms.search'
+  prettier: 'prettier',
+  'regexp-to-ast': 'RegExpParser',
+  '@prettier/plugin-xml': 'prettierPluginXml',
+  'prettier/standalone': 'prettierStandalone'
 };
 
 const external = Object.keys(globals);
@@ -118,20 +122,21 @@ export default [
       globals
     },
     ...baseConfig
-  },
-
-  /* UMD build for preview landing controller */
-  {
-    input: 'src/preview.ts',
-    external,
-    plugins,
-    output: {
-      name: 'craftercms.previewLanding',
-      file: 'build/preview-landing.umd.js',
-      format: 'umd',
-      amd: { id: 'craftercms.previewLanding' },
-      globals
-    },
-    ...baseConfig
   }
+
+  // TODO: do not commit
+  /* UMD build for preview landing controller */
+  // {
+  //   input: 'src/preview.ts',
+  //   external,
+  //   plugins,
+  //   output: {
+  //     name: 'craftercms.previewLanding',
+  //     file: 'build/preview-landing.umd.js',
+  //     format: 'umd',
+  //     amd: { id: 'craftercms.previewLanding' },
+  //     globals
+  //   },
+  //   ...baseConfig
+  // }
 ];
