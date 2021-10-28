@@ -34,15 +34,14 @@ import {
   sortItemOperation,
   updateFieldValueOperation
 } from '@craftercms/studio-ui/state/actions/preview';
-import { createLookupTable, nnou, nou } from '../utils/object';
+import { createLookupTable, nnou, nou } from '@craftercms/studio-ui/utils/object';
 import { isSimple, popPiece, removeLastPiece } from '@craftercms/studio-ui/utils/string';
 import { getCollection, getCollectionWithoutItemAtIndex, getParentModelId, setCollection } from '../utils/ice';
 import { createQuery, search } from '@craftercms/search';
 import { parseDescriptor, preParseSearchResults } from '@craftercms/content';
-import { modelsToLookup } from '../utils/content';
 import { crafterConf } from '@craftercms/classes';
-import { getDefaultValue } from '../utils/contentType';
-import { ModelHierarchyDescriptor, ModelHierarchyMap } from '@craftercms/studio-ui/utils/content';
+import { getDefaultValue } from '@craftercms/studio-ui/utils/contentType';
+import { ModelHierarchyDescriptor, ModelHierarchyMap, modelsToLookup } from '@craftercms/studio-ui/utils/content';
 
 // if (process.env.NODE_ENV === 'development') {
 // TODO: Notice

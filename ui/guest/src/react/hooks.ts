@@ -18,11 +18,11 @@ import { EventHandler, MutableRefObject, SyntheticEvent, useEffect, useRef, useS
 import { ContentInstance } from '@craftercms/studio-ui/models/ContentInstance';
 import { useGuestContext } from './GuestContext';
 import { deregister, register } from '../classes/ElementRegistry';
-import { nnou, nou, pluckProps } from '../utils/object';
+import { nnou, nou, pluckProps } from '@craftercms/studio-ui/utils/object';
 import { ICEProps } from '../models/InContextEditing';
 import { byPathFetchIfNotLoaded, model$, models$ } from '../classes/ContentController';
 import { distinctUntilChanged, map, withLatestFrom } from 'rxjs/operators';
-import { denormalizeModel } from '../utils/content';
+import { denormalizeModel } from '@craftercms/studio-ui/utils/content';
 import * as Model from '../utils/model';
 
 // region Typings

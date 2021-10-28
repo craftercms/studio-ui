@@ -545,7 +545,6 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
         initialState,
         'editMode',
         'highlightMode',
-        'previewChoice',
         'showToolsPanel',
         'toolsPanelWidth',
         'icePanelWidth'

@@ -48,8 +48,8 @@ export function pluckProps<T extends object, K extends keyof T>(source: T, ...pr
   return object;
 }
 
-export function reversePluckProps<T, K extends string>(source: T, ...props: K[]): Omit<T, K>;
-export function reversePluckProps(source: object, ...props: string[]): object {
+export function reversePluckProps<T, K extends keyof T = any>(source: T, ...props: K[]): Omit<T, K>;
+export function reversePluckProps(source: object, ...props: any[]): object {
   const object = {};
   if (!source) {
     return object;
@@ -96,7 +96,7 @@ export function normalizeProp<T>(list: T[], idProp = 'id', normalizeTargetProp =
 }
 
 export function retrieveProperty(object: object, prop: string): any {
-  return object == null ? null : prop.split('.').reduce((value, prop) => value[prop], object);
+  return object == null ? null : !prop ? object : prop.split('.').reduce((value, prop) => value[prop], object);
 }
 
 export function deleteProperty<T, P extends keyof T>(object: T, prop: P): Omit<T, P> {
@@ -104,7 +104,11 @@ export function deleteProperty<T, P extends keyof T>(object: T, prop: P): Omit<T
   return object;
 }
 
-export function setProperty(object: object, prop: string, value: any) {
+export function setProperty<T extends object = {}, K extends string = string, V extends any = any>(
+  object: T,
+  prop: K,
+  value: V
+): T {
   if (object) {
     const props = prop.split('.');
     const propToSet = props.pop();
