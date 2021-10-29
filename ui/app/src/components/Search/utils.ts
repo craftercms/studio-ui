@@ -87,6 +87,11 @@ export interface SearchApiState {
   errorResponse: ApiResponse;
 }
 
+export interface CheckedFilter {
+  key: string;
+  value: string;
+}
+
 export const setCheckedParameterFromURL = (queryParams: Partial<ElasticParams>) => {
   if (queryParams['filters']) {
     let checked: any = {};

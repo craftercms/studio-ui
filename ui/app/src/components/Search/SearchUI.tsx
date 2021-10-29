@@ -22,7 +22,7 @@ import SiteSearchFilters from '../SiteSearchFilters';
 import makeStyles from '@mui/styles/makeStyles';
 import palette from '../../styles/palette';
 import { ElasticParams, Filter, MediaItem, SearchResult } from '../../models/Search';
-import { drawerWidth, SearchApiState } from './utils';
+import { CheckedFilter, drawerWidth, SearchApiState } from './utils';
 import LookupTable from '../../models/LookupTable';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -57,14 +57,14 @@ interface SearchUIProps {
   currentView: 'grid' | 'list';
   searchResults: SearchResult;
   areAllSelected: boolean;
-  checkedFilters: LookupTable<string>;
+  checkedFilters: LookupTable<CheckedFilter>;
   searchParameters: ElasticParams;
   apiState: SearchApiState;
   itemsByPath: LookupTable<DetailedItem>;
   onActionClicked(option: AllItemActions, event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
   handleSelectAll(checked: any): void;
   onSelectedPathChanges(path: string): void;
-  onCheckedFiltersChanges(checkedFilters: object): any;
+  onCheckedFiltersChanges(checkedFilters: LookupTable<CheckedFilter>): any;
   clearFilter(facet: string): void;
   clearFilters(): void;
   handleSearchKeyword(keyword: string): void;
@@ -208,10 +208,7 @@ const useStyles = makeStyles((theme) => ({
     width: drawerWidth,
     zIndex: theme.zIndex.appBar - 1,
     height: 'auto',
-    position: 'absolute',
-    '&.embedded': {
-      top: '130px'
-    }
+    position: 'absolute'
   },
   drawerPaperSelect: {
     bottom: '71px'
@@ -322,11 +319,7 @@ export function SearchUI(props: SearchUIProps) {
         open={drawerOpen}
         className={classes.drawer}
         classes={{
-          paper: clsx(
-            classes.drawerPaper,
-            mode === 'select' && classes.drawerPaperSelect,
-            embedded && mode === 'default' && 'embedded'
-          ),
+          paper: clsx(classes.drawerPaper, mode === 'select' && classes.drawerPaperSelect),
           modal: classes.drawerModal
         }}
         ModalProps={{

@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { initialSearchParameters, SearchProps, useSearchState } from './utils';
+import { CheckedFilter, initialSearchParameters, SearchProps, useSearchState } from './utils';
 import SearchUI from './SearchUI';
 import React, { useEffect, useMemo, useState } from 'react';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -24,6 +24,7 @@ import { useSpreadState } from '../../utils/hooks/useSpreadState';
 import { Filter } from '../../models/Search';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { reversePluckProps } from '../../utils/object';
+import LookupTable from '../../models/LookupTable';
 
 export function Search(props: SearchProps) {
   const { mode = 'default', onSelect, embedded = false, onAcceptSelection, onClose } = props;
@@ -34,7 +35,7 @@ export function Search(props: SearchProps) {
     sortOrder: undefined
   });
   const [keyword, setKeyword] = useState('');
-  const [checkedFilters, setCheckedFilters] = useState({});
+  const [checkedFilters, setCheckedFilters] = useState<LookupTable<CheckedFilter>>({});
   const [searchParameters, setSearchParameters] = useSpreadState({ ...initialSearchParameters });
   // endregion
 
@@ -133,7 +134,7 @@ export function Search(props: SearchProps) {
     setSearchParameters({ limit: parseInt(event.target.value, 10) });
   };
 
-  const onCheckedFiltersChanges = (checkedFilters: object) => {
+  const onCheckedFiltersChanges = (checkedFilters: LookupTable<CheckedFilter>) => {
     setCheckedFilters(checkedFilters);
   };
 
