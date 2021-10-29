@@ -114,7 +114,7 @@
     "@emotion/css": "^11.5.0",
     "@emotion/react": "*",
     "@emotion/styled": "*",
-    "@mui/lab": "^5.0.0-alpha.52",
+    "@mui/lab": "^5.0.0-alpha.53",
     "@mui/material": "*",
     "@mui/styles": "^5.0.2",
     "@mui/x-data-grid": "^5.0.0-beta.5",

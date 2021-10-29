@@ -81,9 +81,9 @@
     "compile": "tsc --build tsconfig.json"
   },
   "dependencies": {
-    "@craftercms/classes": "^2.0.0",
-    "@craftercms/content": "^2.0.0",
-    "@craftercms/search": "^2.0.0",
+    "@craftercms/classes": "^2.0.1",
+    "@craftercms/content": "^2.0.1",
+    "@craftercms/search": "^2.0.1",
     "@emotion/react": "*",
     "@emotion/styled": "*",
     "@mui/material": "*",

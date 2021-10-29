@@ -2024,33 +2024,33 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@craftercms/classes@npm:2.0.0, @craftercms/classes@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "@craftercms/classes@npm:2.0.0"
+"@craftercms/classes@npm:2.0.1, @craftercms/classes@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "@craftercms/classes@npm:2.0.1"
   dependencies:
-    "@craftercms/models": 2.0.0
-    "@craftercms/utils": 2.0.0
+    "@craftercms/models": 2.0.1
+    "@craftercms/utils": 2.0.1
     url-search-params-polyfill: ^5.0.0
-  checksum: 6612febf0c494fa8f3ba91411e8a552754806cce53e33596b19d242273eec7b8aa4e50257fd0241cf618c4f5e365939cab206d9678e39170b71a56b6cfbf3390
+  checksum: 1fa37a22cdac65f9c53686d89d8762c4935b2a0803f745ae8b51648ca6ece94628c61c7308ac3b84b57732c9c2350dcb3231fb666b6d24008d92832ab3c316dd
   languageName: node
   linkType: hard
 
-"@craftercms/content@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "@craftercms/content@npm:2.0.0"
+"@craftercms/content@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "@craftercms/content@npm:2.0.1"
   dependencies:
-    "@craftercms/classes": 2.0.0
-    "@craftercms/models": 2.0.0
-    "@craftercms/utils": 2.0.0
+    "@craftercms/classes": 2.0.1
+    "@craftercms/models": 2.0.1
+    "@craftercms/utils": 2.0.1
     rxjs: ^7.0.0
-  checksum: e8c8a08f8efadbf87f29cc4eddbf44f3ea02b93e5f92a16b988ebe1a41bb5915800dee82d26fda025e170c08a2d41f894de9b45311f439853ffa97417201063d
+  checksum: 1ed4ce5cd306f95ee5d975ce1b02e40c6cd432c5f67687902ed76e45361782259a690f21b6fa8e600e35d213b8bbdc9bdb4712ae96979b5b67d24bc3d7ab9901
   languageName: node
   linkType: hard
 
-"@craftercms/models@npm:2.0.0":
-  version: 2.0.0
-  resolution: "@craftercms/models@npm:2.0.0"
-  checksum: 716285ba81753b810bb9d72a19c02e0ad1d43b84dc551e68e2d4780db2ff81716c93e5273f83a7a3762516cc0100407a9c8cdd2cfb1fbba11abac6238eb9fbb9
+"@craftercms/models@npm:2.0.1":
+  version: 2.0.1
+  resolution: "@craftercms/models@npm:2.0.1"
+  checksum: 69c2ab8e1d22d0392dc29cfb7651684b9271e9456873f42dd6c35e760f7e0954603ef07ea49d2bc45b1b031141c603257ccc2a719a4142f5721994f70c6d907b
   languageName: node
   linkType: hard
 
@@ -2066,17 +2066,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@craftercms/search@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "@craftercms/search@npm:2.0.0"
+"@craftercms/search@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "@craftercms/search@npm:2.0.1"
   dependencies:
-    "@craftercms/classes": 2.0.0
-    "@craftercms/models": 2.0.0
-    "@craftercms/utils": 2.0.0
+    "@craftercms/classes": 2.0.1
+    "@craftercms/models": 2.0.1
+    "@craftercms/utils": 2.0.1
     rxjs: ^7.0.0
     url-search-params-polyfill: ^5.0.0
     uuid: ^3.4.0
-  checksum: e455d7039185e71743d58f6ff29c883d129e522a328c6b93dd0e52a28aa4a60cc0456f7cac0b1284ef10df5c49a1a6477f2929f8cbc115a9d5b4cebffcc33dfa
+  checksum: 16617861aec55cb6adf901dbc932f9bb90102943f6c7aea827e8c4b8245d1ae04ef4672d59c88296820801e26243950500750be3e36a426cb103d10a1d04c43a
   languageName: node
   linkType: hard
 
@@ -2087,9 +2087,9 @@ __metadata:
     "@babel/cli": "*"
     "@babel/core": "*"
     "@babel/preset-typescript": ^7.7.4
-    "@craftercms/classes": ^2.0.0
-    "@craftercms/content": ^2.0.0
-    "@craftercms/search": ^2.0.0
+    "@craftercms/classes": ^2.0.1
+    "@craftercms/content": ^2.0.1
+    "@craftercms/search": ^2.0.1
     "@emotion/react": "*"
     "@emotion/styled": "*"
     "@mui/material": "*"
@@ -2156,7 +2156,7 @@ __metadata:
     "@emotion/css": ^11.5.0
     "@emotion/react": "*"
     "@emotion/styled": "*"
-    "@mui/lab": ^5.0.0-alpha.52
+    "@mui/lab": ^5.0.0-alpha.53
     "@mui/material": "*"
     "@mui/styles": ^5.0.2
     "@mui/x-data-grid": ^5.0.0-beta.5
@@ -2211,7 +2211,7 @@ __metadata:
     "@emotion/react": ^11.5.0
     "@emotion/styled": ^11.3.0
     "@mui/icons-material": ^5.0.5
-    "@mui/material": ^5.0.5
+    "@mui/material": ^5.0.6
     "@reduxjs/toolkit": ^1.6.2
     "@rollup/plugin-commonjs": 11.0.2
     "@rollup/plugin-node-resolve": ^7.1.1
@@ -2276,10 +2276,10 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@craftercms/utils@npm:2.0.0":
-  version: 2.0.0
-  resolution: "@craftercms/utils@npm:2.0.0"
-  checksum: fbb8ea70526e68bb4b36f9114edf8d65775e3a0e6d5c22965088cbfd684c7da43538929b919448696d6125c26952c5d89b94d0f8c0489883a2db6105092ab9aa
+"@craftercms/utils@npm:2.0.1":
+  version: 2.0.1
+  resolution: "@craftercms/utils@npm:2.0.1"
+  checksum: 11cc077345fdad5add60efb6b3f7b5d3e2e5bbedd5cb02cc2051e7431fdcb18b6185204325cb8e8dea749152969fcd68ba38c59e2cadf40046531d1af548a31b
   languageName: node
   linkType: hard
 
@@ -2407,19 +2407,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@emotion/cache@npm:^11.4.0":
-  version: 11.4.0
-  resolution: "@emotion/cache@npm:11.4.0"
-  dependencies:
-    "@emotion/memoize": ^0.7.4
-    "@emotion/sheet": ^1.0.0
-    "@emotion/utils": ^1.0.0
-    "@emotion/weak-memoize": ^0.2.5
-    stylis: ^4.0.3
-  checksum: bdef4c0ccc9bb87e99e4d48ff4855afe684035e9233a54bb339eb6aeafef35bd34fbed8ddb0d5ee440abd42c598043a87ebb0a324f2a1d732edf9c6b1709f9ed
-  languageName: node
-  linkType: hard
-
 "@emotion/cache@npm:^11.5.0":
   version: 11.5.0
   resolution: "@emotion/cache@npm:11.5.0"
@@ -2507,13 +2494,6 @@ __metadata:
     "@emotion/utils": ^1.0.0
     csstype: ^3.0.2
   checksum: ff84fbe09ec06e7ad3deaef5c5b5ea6af6a522e8efe49c2b398b875d06872626284a83b6b18b7f777750c94264a61e7924157d869d9bca2f675731bbb91a6055
-  languageName: node
-  linkType: hard
-
-"@emotion/sheet@npm:^1.0.0":
-  version: 1.0.2
-  resolution: "@emotion/sheet@npm:1.0.2"
-  checksum: 836b413c6657cd6a3de93c53eebd80ea9a6656123f1b78f539b2eaba145fb8566e3aa005b301f807632964f29f7c3cd85322dafb5634abdc1760794e0c7f76dd
   languageName: node
   linkType: hard
 
@@ -2967,9 +2947,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/core@npm:5.0.0-alpha.52":
-  version: 5.0.0-alpha.52
-  resolution: "@mui/core@npm:5.0.0-alpha.52"
+"@mui/core@npm:5.0.0-alpha.53":
+  version: 5.0.0-alpha.53
+  resolution: "@mui/core@npm:5.0.0-alpha.53"
   dependencies:
     "@babel/runtime": ^7.15.4
     "@emotion/is-prop-valid": ^1.1.0
@@ -2985,7 +2965,7 @@ __metadata:
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: dca6710fe85dee0273b8826c7e439225bd651b4a0161bf23b3fe33286f20b1d782275caa8b9a84e25bdf07238a5c6a52c4c7a45e822690c06feac7e291ff67b0
+  checksum: 7c5ef0e1a34736ff91a76bf39f9075d25f49b88a059b78e56cefc6843bf15bca3a7b027291fe166dc45e0c68962c4a86baf688020a0e52d6eef4bacb445e6892
   languageName: node
   linkType: hard
 
@@ -3005,17 +2985,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/lab@npm:^5.0.0-alpha.52":
-  version: 5.0.0-alpha.52
-  resolution: "@mui/lab@npm:5.0.0-alpha.52"
+"@mui/lab@npm:^5.0.0-alpha.53":
+  version: 5.0.0-alpha.53
+  resolution: "@mui/lab@npm:5.0.0-alpha.53"
   dependencies:
     "@babel/runtime": ^7.15.4
     "@date-io/date-fns": ^2.11.0
     "@date-io/dayjs": ^2.11.0
     "@date-io/luxon": ^2.11.1
     "@date-io/moment": ^2.11.0
-    "@mui/core": 5.0.0-alpha.52
-    "@mui/system": ^5.0.5
+    "@mui/core": 5.0.0-alpha.53
+    "@mui/system": ^5.0.6
     "@mui/utils": ^5.0.1
     clsx: ^1.1.1
     prop-types: ^15.7.2
@@ -3042,17 +3022,17 @@ __metadata:
       optional: true
     moment:
       optional: true
-  checksum: 57399951fcb9efc95229c3fc64c601e4f2a76a09856e4af9914334fee340f383b7fb98d60b4b7835d13a4ec98857bfe8c734a1accd33aefa2657760e3f5b7e66
+  checksum: f77569e3c7fd517f7a45ceb9d1397b9904ed74ea40f10c0d8cb9b7fcb167af9b1603a21c7e993e565cfeeb46895a6fb2bcc3d6ccdfdac086d9da4b5b98122308
   languageName: node
   linkType: hard
 
-"@mui/material@npm:^5.0.5":
-  version: 5.0.5
-  resolution: "@mui/material@npm:5.0.5"
+"@mui/material@npm:^5.0.6":
+  version: 5.0.6
+  resolution: "@mui/material@npm:5.0.6"
   dependencies:
     "@babel/runtime": ^7.15.4
-    "@mui/core": 5.0.0-alpha.52
-    "@mui/system": ^5.0.5
+    "@mui/core": 5.0.0-alpha.53
+    "@mui/system": ^5.0.6
     "@mui/types": ^7.0.0
     "@mui/utils": ^5.0.1
     "@types/react-transition-group": ^4.4.4
@@ -3075,7 +3055,7 @@ __metadata:
       optional: true
     "@types/react":
       optional: true
-  checksum: 253e55c32082239288559291c1ea94d1034f2f6a96d05e982735955c4307c18af496c6e3e4400ffc6e6b5af366744ab2b67b0361e9258543562e520c6efc84ce
+  checksum: 79385beadfb13903f7c46a31bf014be69b85c5acceec3d682d8b772576b057dab37d0f56d41396576b58ffadabaace2cbf1daaab2203e0fc721e056bd63dd654
   languageName: node
   linkType: hard
 
@@ -3096,12 +3076,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/styled-engine@npm:^5.0.1":
-  version: 5.0.1
-  resolution: "@mui/styled-engine@npm:5.0.1"
+"@mui/styled-engine@npm:^5.0.2":
+  version: 5.0.2
+  resolution: "@mui/styled-engine@npm:5.0.2"
   dependencies:
     "@babel/runtime": ^7.15.4
-    "@emotion/cache": ^11.4.0
+    "@emotion/cache": ^11.5.0
     prop-types: ^15.7.2
   peerDependencies:
     "@emotion/react": ^11.4.1
@@ -3112,7 +3092,7 @@ __metadata:
       optional: true
     "@emotion/styled":
       optional: true
-  checksum: 5dec3b49e9be14681a2ac8fce1e3beba21603c63ea3274502f51550ce492c1cebb02df0de72f6c1c204658ac402cbbbe15b9fe29af5e0621b6918db489d9d97c
+  checksum: 3d64edbcc9e0dbcdf70da4c71e1a517599987b53025b4f3b795e8ea0d907037055c8cfcb9cf06176c3b96cb8d888e7a74ceff80279ad3ec4fdfa0bcf38591195
   languageName: node
   linkType: hard
 
@@ -3147,13 +3127,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/system@npm:^5.0.5":
-  version: 5.0.5
-  resolution: "@mui/system@npm:5.0.5"
+"@mui/system@npm:^5.0.6":
+  version: 5.0.6
+  resolution: "@mui/system@npm:5.0.6"
   dependencies:
     "@babel/runtime": ^7.15.4
     "@mui/private-theming": ^5.0.1
-    "@mui/styled-engine": ^5.0.1
+    "@mui/styled-engine": ^5.0.2
     "@mui/types": ^7.0.0
     "@mui/utils": ^5.0.1
     clsx: ^1.1.1
@@ -3171,7 +3151,7 @@ __metadata:
       optional: true
     "@types/react":
       optional: true
-  checksum: a294fc254b75231bb08f3419780cc3e6cf63b374da5be1ba595821d85816d95ee2911da678fb78babda99cc2ed725fbb8159110a4ada36a4a5ab4593854b1da7
+  checksum: 8d0df5c0f0a6f0fcc86085d1adc32144d6723f398a52ae62df6bda73a1bee2c8a208ed5edf0a52ddd8199c2859e32e6cab173fe3145c27f8e28ea5f7327dae80
   languageName: node
   linkType: hard
 
