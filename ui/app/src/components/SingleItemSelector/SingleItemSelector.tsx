@@ -346,7 +346,11 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
 
   const handleDropdownClick = (item: DetailedItem) => {
     onDropdownClick();
-    let nextPath = withoutIndex(item.path) === withoutIndex(rootPath) ? item.path : getParentPath(item.path);
+    let nextPath = item
+      ? withoutIndex(item.path) === withoutIndex(rootPath)
+        ? item.path
+        : getParentPath(item.path)
+      : rootPath;
     exec(fetchParentsItems(nextPath));
   };
 
