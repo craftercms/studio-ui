@@ -4,10 +4,12 @@
   "description": "SASS for studio",
   "private": true,
   "scripts": {
-    "build": "run-s build:install build:app",
-    "build:install": "yarn",
-    "build:app": "node scripts/index.js",
-    "build:dev": "node scripts/withSourceMaps.js",
-    "watch": "node scripts/watch.js"
+    "start": "node scripts/watch.js",
+    "build": "node scripts/index.js",
+    "dev-build": "node scripts/withSourceMaps.js"
+  },
+  "devDependencies": {
+    "build-if-changed": "*",
+    "npm-run-all": "*"
   }
 }

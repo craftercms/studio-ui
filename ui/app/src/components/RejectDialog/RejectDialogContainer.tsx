@@ -14,12 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import { getCurrentLocale } from '../../utils/i18n';
 import { useDispatch } from 'react-redux';
 import { emitSystemEvent, itemsRejected } from '../../state/actions/system';
-import { fetchCannedMessage } from '../../services/configuration';
+import { CannedMessage, fetchCannedMessages } from '../../services/configuration';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
 import { useStyles } from './RejectDialog';
 import { RejectDialogContainerProps, Return, Source } from './utils';
@@ -28,6 +27,8 @@ import { updateRejectDialog } from '../../state/actions/dialogs';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { batchActions } from '../../state/actions/misc';
 import { reject } from '../../services/workflow';
+import { useSpreadState } from '../../utils/hooks/useSpreadState';
+import { pluckProps } from '../../utils/object';
 
 export function RejectDialogContainer(props: RejectDialogContainerProps) {
   const typeCustomReason = 'typeCustomReason';
@@ -35,10 +36,13 @@ export function RejectDialogContainer(props: RejectDialogContainerProps) {
   const [checkedItems, setCheckedItems] = useState([]);
   const [rejectionReason, setRejectionReason] = useState(typeCustomReason);
   const [rejectionComment, setRejectionComment] = useState('');
-  const [rejectionCommentDirty, setRejectionCommentDirty] = useState(false);
+  const [cannedMessages, setCannedMessages] = useState<CannedMessage[]>(null);
+  const [apiState, setApiState] = useSpreadState({
+    error: false,
+    errorResponse: null
+  });
   const isSubmitDisabled = checkedItems.length === 0 || rejectionComment.trim() === '' || isSubmitting;
   const siteId = useActiveSiteId();
-  const currentLocale = getCurrentLocale();
   const dispatch = useDispatch();
 
   // check all items as default
@@ -52,6 +56,17 @@ export function RejectDialogContainer(props: RejectDialogContainerProps) {
 
     setCheckedItems(newChecked);
   }, [items]);
+
+  useEffect(() => {
+    fetchCannedMessages(siteId).subscribe({
+      next: (cannedMessages) => {
+        setCannedMessages(cannedMessages);
+      },
+      error: ({ response }) => {
+        setApiState({ error: true, errorResponse: response });
+      }
+    });
+  }, [siteId, setApiState]);
 
   const updateChecked = (value) => {
     const itemExist = checkedItems.includes(value);
@@ -69,8 +84,8 @@ export function RejectDialogContainer(props: RejectDialogContainerProps) {
   const onReject = () => {
     dispatch(updateRejectDialog({ isSubmitting: true }));
 
-    reject(siteId, checkedItems, rejectionComment).subscribe(
-      () => {
+    reject(siteId, checkedItems, rejectionComment).subscribe({
+      next: () => {
         dispatch(
           batchActions([
             updateRejectDialog({ hasPendingChanges: false, isSubmitting: false }),
@@ -79,33 +94,38 @@ export function RejectDialogContainer(props: RejectDialogContainerProps) {
         );
         onRejectSuccess?.();
       },
-      (error) => {
+      error: (error) => {
         dispatch(showErrorDialog({ error }));
       }
-    );
+    });
   };
 
   const onRejectionCommentChanges = (value: string) => {
-    setRejectionCommentDirty(value !== '');
     setRejectionComment(value);
     dispatch(updateRejectDialog({ hasPendingChanges: value !== '' }));
   };
 
-  const onRejectionReasonChange = (value: string) => {
-    if (value && !rejectionCommentDirty && value !== typeCustomReason) {
-      fetchCannedMessage(siteId, currentLocale, value).subscribe(setRejectionComment);
-    } else if (value === typeCustomReason) {
-      setRejectionComment('');
-    }
-    setRejectionReason(value);
+  const onRejectionReasonChange = (key: string) => {
+    const message = cannedMessages.filter((message) => message.key === key)[0]?.message ?? '';
+    setRejectionComment(message);
+    setRejectionReason(key);
   };
 
-  const resource = useLogicResource<Return, Source>(items, {
-    shouldResolve: (source) => Boolean(source),
+  const rejectSource = useMemo(
+    () => ({
+      items,
+      cannedMessages,
+      error: apiState.errorResponse
+    }),
+    [items, cannedMessages, apiState]
+  );
+
+  const resource = useLogicResource<Return, Source>(rejectSource, {
+    shouldResolve: (source) => Boolean(source.items && source.cannedMessages),
     shouldReject: (source) => false,
     shouldRenew: (source, resource) => resource.complete,
-    resultSelector: (source) => source,
-    errorSelector: (source) => null
+    resultSelector: (source) => pluckProps(source, 'items', 'cannedMessages'),
+    errorSelector: (source) => source.error
   });
 
   const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);

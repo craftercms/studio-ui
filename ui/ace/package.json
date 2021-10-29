@@ -5,13 +5,14 @@
   "author": "Roy Art",
   "license": "LGPL-3.0-only",
   "private": true,
+  "scripts": {
+    "build": "chmod +x build.sh; ./build.sh"
+  },
   "dependencies": {
-    "ace-builds": "^1.4.12",
+    "ace-builds": "^1.4.13",
     "js-yaml": "^4.0.0"
   },
-  "scripts": {
-    "build": "run-s build:install build:app",
-    "build:install": "yarn",
-    "build:app": "chmod +x build.sh; ./build.sh"
+  "devDependencies": {
+    "build-if-changed": "*"
   }
 }

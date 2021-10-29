@@ -19,7 +19,7 @@ import { filter, map, pluck, switchMap, take, tap } from 'rxjs/operators';
 import * as Model from '../utils/model';
 import Cookies from 'js-cookie';
 import { fromTopic, post } from '../utils/communicator';
-import uuid from 'uuid/v4';
+import { v4 as uuid } from 'uuid';
 import { ContentInstance } from '@craftercms/studio-ui/models/ContentInstance';
 import { ContentType, ContentTypeField } from '@craftercms/studio-ui/models/ContentType';
 import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
@@ -34,15 +34,14 @@ import {
   sortItemOperation,
   updateFieldValueOperation
 } from '@craftercms/studio-ui/state/actions/preview';
-import { createLookupTable, nnou, nou } from '../utils/object';
+import { createLookupTable, nnou, nou } from '@craftercms/studio-ui/utils/object';
 import { isSimple, popPiece, removeLastPiece } from '@craftercms/studio-ui/utils/string';
 import { getCollection, getCollectionWithoutItemAtIndex, getParentModelId, setCollection } from '../utils/ice';
 import { createQuery, search } from '@craftercms/search';
 import { parseDescriptor, preParseSearchResults } from '@craftercms/content';
-import { modelsToLookup } from '../utils/content';
 import { crafterConf } from '@craftercms/classes';
-import { getDefaultValue } from '../utils/contentType';
-import { ModelHierarchyDescriptor, ModelHierarchyMap } from '@craftercms/studio-ui/utils/content';
+import { getDefaultValue } from '@craftercms/studio-ui/utils/contentType';
+import { ModelHierarchyDescriptor, ModelHierarchyMap, modelsToLookup } from '@craftercms/studio-ui/utils/content';
 
 // if (process.env.NODE_ENV === 'development') {
 // TODO: Notice
@@ -109,9 +108,8 @@ export function getCachedModels(): LookupTable<ContentInstance> {
 }
 
 export function fetchById(id: string): Observable<LookupTable<ContentInstance>> {
-  // @ts-ignore - TODO: Upgrade SDK to rxjs@7
   return search(
-    createQuery('elasticsearch', {
+    createQuery({
       query: {
         bool: {
           filter: [

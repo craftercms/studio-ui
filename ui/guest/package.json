@@ -8,26 +8,6 @@
   "craftercms": {
     "id": "craftercms.guest"
   },
-  "dependencies": {
-    "@craftercms/classes": "1.2.4",
-    "@craftercms/content": "1.2.4",
-    "@craftercms/search": "1.2.4",
-    "jss": "^10.0.3",
-    "jss-preset-default": "^10.0.0",
-    "lorem-ipsum": "^2.0.3",
-    "uuid": "^3.3.3"
-  },
-  "peerDependencies": {},
-  "scripts": {
-    "build": "run-s build:install build:app",
-    "build:install": "yarn",
-    "build:app": "rollup -c",
-    "start": "rollup -c -w",
-    "watch": "rollup -c -w",
-    "rollup": "rollup -c",
-    "rollup:watch": "rollup -c -w",
-    "compile": "tsc --build tsconfig.json"
-  },
   "eslintConfig": {
     "extends": [
       "react-app",
@@ -86,13 +66,6 @@
       "last 1 safari version"
     ]
   },
-  "devDependencies": {
-    "@babel/cli": "^7.8.4",
-    "@babel/core": "^7.9.0",
-    "@babel/preset-typescript": "^7.7.4",
-    "@types/tinymce": "^4.5.24",
-    "yargs": "^15.3.1"
-  },
   "bic": {
     "skip": [
       "build",
@@ -101,8 +74,33 @@
       "CHANGE_LOG.md"
     ]
   },
-  "resolutions": {
-    "react-is": "^17.0.2",
-    "**/react-is": "^17.0.2"
+  "scripts": {
+    "build": "rollup -c",
+    "start": "rollup -c -w",
+    "watch": "rollup -c -w",
+    "compile": "tsc --build tsconfig.json"
+  },
+  "dependencies": {
+    "@craftercms/classes": "^2.0.1",
+    "@craftercms/content": "^2.0.1",
+    "@craftercms/search": "^2.0.1",
+    "@emotion/react": "*",
+    "@emotion/styled": "*",
+    "@mui/material": "*",
+    "lorem-ipsum": "^2.0.4",
+    "react": "*",
+    "react-dom": "*",
+    "typescript": "*",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "@babel/cli": "*",
+    "@babel/core": "*",
+    "@babel/preset-typescript": "^7.7.4",
+    "@types/tinymce": "^4.6.4",
+    "build-if-changed": "*",
+    "npm-run-all": "*",
+    "rollup": "*",
+    "yargs": "^15.3.1"
   }
 }

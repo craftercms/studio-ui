@@ -25,7 +25,7 @@ import { GuestContextProvider, GuestReduxContext, useDispatch, useSelector } fro
 import CrafterCMSPortal from './CrafterCMSPortal';
 import ZoneMarker from './ZoneMarker';
 import DropMarker from './DropMarker';
-import { appendStyleSheet, GuestStyleConfig, GuestStylesSx, styleSxDefaults, useGuestTheme } from '../styles/styles';
+import { GuestStylesSx, styleSxDefaults, useGuestTheme } from '../styles/styles';
 import { fromTopic, message$, post } from '../utils/communicator';
 import Cookies from 'js-cookie';
 import { HighlightData } from '../models/InContextEditing';
@@ -62,7 +62,7 @@ import { createGuestStore } from '../store/store';
 import { Provider } from 'react-redux';
 import { clearAndListen$ } from '../store/subjects';
 import { GuestState } from '../store/models/GuestStore';
-import { isNullOrUndefined, nnou } from '../utils/object';
+import { nullOrUndefined, nnou } from '@craftercms/studio-ui/utils/object';
 import { scrollToDropTargets } from '../utils/dom';
 import { dragOk } from '../store/util';
 import SnackBar, { Snack } from './SnackBar';
@@ -87,16 +87,14 @@ import {
   startListening
 } from '../store/actions';
 import DragGhostElement from './DragGhostElement';
-// TinyMCE makes the build quite large. Temporarily, importing this externally via
-// the site's ftl. Need to evaluate whether to include the core as part of guest build or not
-// import tinymce from 'tinymce';
+import GuestGlobalStyles from './GuestGlobalStyles';
+import { showKeyboardShortcutsDialog } from '@craftercms/studio-ui/state/actions/dialogs';
 
+// TODO: add themeOptions and global styles customising
 export type GuestProps = PropsWithChildren<{
   documentDomain?: string;
   path?: string;
   themeOptions?: ThemeOptions;
-  // TODO: remove styleConfig in favour of themeOptions & sxOverrides.
-  styleConfig?: GuestStyleConfig;
   sxOverrides?: DeepPartial<GuestStylesSx>;
   isAuthoring?: boolean; // boolean | Promise<boolean> | () => boolean | Promise<boolean>
   scrollElement?: string;
@@ -112,15 +110,7 @@ export function getEditModeClass() {
 function Guest(props: GuestProps) {
   // TODO: support path driven Guest.
   // TODO: consider supporting developer to provide the data source (promise/observable?)
-  const {
-    path,
-    themeOptions,
-    sxOverrides,
-    styleConfig,
-    children,
-    documentDomain,
-    scrollElement = 'html, body'
-  } = props;
+  const { path, themeOptions, sxOverrides, children, documentDomain, scrollElement = 'html, body' } = props;
 
   const theme = useGuestTheme(themeOptions);
   const [snack, setSnack] = useState<Partial<Snack>>();
@@ -144,7 +134,7 @@ function Guest(props: GuestProps) {
         if (hasHost && editMode && refs.current.contentReady) {
           const { type } = event;
           const record = elementRegistry.get(dispatcherElementRecordId);
-          if (isNullOrUndefined(record)) {
+          if (nullOrUndefined(record)) {
             console.error('[Guest] No record found for dispatcher element');
           } else {
             if (refs.current.keysPressed.z && type === 'click') {
@@ -173,6 +163,7 @@ function Guest(props: GuestProps) {
   // Hotkeys propagation to preview
   useHotkeys('e', () => post(editModeToggleHotkey({ mode: HighlightMode.ALL })));
   useHotkeys('m', () => post(editModeToggleHotkey({ mode: HighlightMode.MOVE_TARGETS })));
+  useHotkeys('shift+/', () => post(showKeyboardShortcutsDialog()));
 
   // Key press/hold keeper events
   useEffect(() => {
@@ -220,14 +211,6 @@ function Guest(props: GuestProps) {
       refs.current.firstRender = false;
     }
   }, [editMode]);
-
-  // Appends the Guest stylesheet
-  useEffect(() => {
-    const stylesheet = appendStyleSheet(styleConfig);
-    return () => {
-      stylesheet.detach();
-    };
-  }, [styleConfig]);
 
   // Subscribes to host messages and routes them.
   useEffect(() => {
@@ -558,10 +541,11 @@ function Guest(props: GuestProps) {
           </CrafterCMSPortal>
         )}
         {snack && (
-          <SnackBar open={true} onClose={() => setSnack(null)} {...snack}>
+          <SnackBar open onClose={() => setSnack(null)} {...snack}>
             {snack.message}
           </SnackBar>
         )}
+        <GuestGlobalStyles />
       </ThemeProvider>
     </GuestContextProvider>
   );

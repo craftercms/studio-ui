@@ -19,7 +19,7 @@ import { ICEProps } from '../models/InContextEditing';
 import ContentInstance from '@craftercms/studio-ui/models/ContentInstance';
 import { useICE } from './hooks';
 import { extractCollectionItem, value as getModelValue } from '../utils/model';
-import { nnou, setProperty } from '../utils/object';
+import { nnou, setProperty } from '@craftercms/studio-ui/utils/object';
 
 export type FieldProps<P = {}> = PropsWithChildren<
   P & {
