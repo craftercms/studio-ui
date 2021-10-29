@@ -62,6 +62,7 @@ export default function GlobalConfigManagement() {
   const { formatMessage } = useIntl();
 
   useEffect(() => {
+    const historyBlock = history.block;
     history.block((props) => {
       if (hasChanges) {
         history.goBack();
@@ -70,6 +71,9 @@ export default function GlobalConfigManagement() {
         return false;
       }
     });
+    return () => {
+      history.block = historyBlock;
+    };
   }, [hasChanges, history]);
 
   useMount(() => {
@@ -153,7 +157,10 @@ export default function GlobalConfigManagement() {
   const onConfirmOk = () => {
     setHasChanges(false);
     setShowConfirmDialog(false);
-    history.push(nextRoute);
+    // timeout need to avoid running the useEffect on linea:64 with hasChanges on true
+    setTimeout(() => {
+      history.push(nextRoute);
+    });
   };
 
   return (
