@@ -306,6 +306,12 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
     action$.pipe(
       ofType('click'),
       withLatestFrom(state$),
+      filter(
+        ([, state]) =>
+          (state.highlightMode === HighlightMode.ALL && state.status === EditingStatus.LISTENING) ||
+          (state.highlightMode === HighlightMode.MOVE_TARGETS && state.status === EditingStatus.LISTENING) ||
+          (state.highlightMode === HighlightMode.MOVE_TARGETS && state.status === EditingStatus.FIELD_SELECTED)
+      ),
       switchMap(([action, state]) => {
         const { record, event } = action.payload;
         if (state.highlightMode === HighlightMode.ALL && state.status === EditingStatus.LISTENING) {
@@ -347,7 +353,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
                 // Only pass rte setup to html type, text/textarea (plaintext) controls won't show full rich-text-editing.
                 return initTinyMCE(record, validations, type === 'html' ? setup : {});
               }
-              return NEVER;
+              break;
             }
             default: {
               return iceZoneSelected();
@@ -382,6 +388,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
             return of(startListening());
           }
         }
+        // Note: Returning NEVER will unsubscribe from any previous stream returned on a prior click.
         return NEVER;
       })
     ),
