@@ -194,10 +194,14 @@ export function initTinyMCE(
           e.preventDefault();
         }
       });
-      editor.on('DblClick', function (e) {
+      editor.on('DblClick', (e) => {
+        e.stopPropagation();
         if (e.target.nodeName === 'IMG') {
           window.tinymce.activeEditor.execCommand('mceImage');
         }
+      });
+      editor.on('click', (e) => {
+        e.stopPropagation();
       });
     },
     ...(rteSetup?.tinymceOptions

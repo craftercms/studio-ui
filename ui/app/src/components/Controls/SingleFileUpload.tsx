@@ -101,7 +101,7 @@ interface SingleFileUploadProps {
 
 export default function SingleFileUpload(props: SingleFileUploadProps) {
   const {
-    url = '/studio/asset-upload',
+    url = '/studio/api/1/services/api/1/content/write-content.json',
     formTarget = '#asset_upload_form',
     onUploadStart,
     onComplete,

@@ -850,14 +850,9 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           horizontal: 'center'
         }}
         action={
-          <>
-            <Button key="learnMore" color="secondary" size="small">
-              Learn More
-            </Button>
-            <IconButton color="secondary" size="small" onClick={() => setGuestDetectionSnackbarOpen(false)}>
-              <CloseRounded />
-            </IconButton>
-          </>
+          <IconButton color="secondary" size="small" onClick={() => setGuestDetectionSnackbarOpen(false)}>
+            <CloseRounded />
+          </IconButton>
         }
       />
       <KeyboardShortcutsDialog
