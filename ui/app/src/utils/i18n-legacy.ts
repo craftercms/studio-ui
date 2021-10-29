@@ -625,6 +625,10 @@ export const formEngineMessages = defineMessages({
   saveDraftCompleted: {
     id: 'formEngine.saveDraftCompleted',
     defaultMessage: 'Draft Save Completed'
+  },
+  formNotReadyForSaving: {
+    id: 'formEngine.formNotReadyForSaving',
+    defaultMessage: 'Form is not ready for saving. Please try again momentarily or use the cancel button.'
   }
 });
 

@@ -1324,7 +1324,17 @@ var CStudioForms =
             try {
               form.onBeforeSave({ preview: preview });
             } catch (e) {
-              cfe.engine.cancelForm();
+              setButtonsEnabled(true);
+              CStudioAuthoring.Operations.showSimpleDialog(
+                'saveFormError',
+                CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                formatMessage(words.notification),
+                formatMessage(formEngineMessages.formNotReadyForSaving),
+                null,
+                YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                'studioDialog'
+              );
+
               return;
             }
 
