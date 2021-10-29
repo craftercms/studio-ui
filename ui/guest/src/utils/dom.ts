@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { forEach } from './array';
+import { forEach } from '@craftercms/studio-ui/utils/array';
 import { Coordinates, DropMarkerPosition, DropMarkerPositionArgs, InRectStats } from '../models/Positioning';
 import $ from 'jquery';
 import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';

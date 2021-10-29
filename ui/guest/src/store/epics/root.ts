@@ -50,7 +50,7 @@ import {
 } from '@craftercms/studio-ui/state/actions/preview';
 import { MouseEventActionObservable } from '../models/Actions';
 import { GuestState } from '../models/GuestStore';
-import { isNullOrUndefined, notNullOrUndefined, reversePluckProps } from '../../utils/object';
+import { nullOrUndefined, notNullOrUndefined, reversePluckProps } from '@craftercms/studio-ui/utils/object';
 import { ElementRecord, ICEProps } from '../../models/InContextEditing';
 import * as ElementRegistry from '../../classes/ElementRegistry';
 import { get } from '../../classes/ElementRegistry';
@@ -91,7 +91,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
           payload: { event, record }
         } = action;
         const iceId = state.draggable?.[record.id];
-        if (isNullOrUndefined(iceId)) {
+        if (nullOrUndefined(iceId)) {
           // When the drag starts on a child element of the item, it passes through here.
           console.error('No ice id found for this drag instance.', record, state.draggable);
         } else if (not(iceId)) {
@@ -306,6 +306,12 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
     action$.pipe(
       ofType('click'),
       withLatestFrom(state$),
+      filter(
+        ([, state]) =>
+          (state.highlightMode === HighlightMode.ALL && state.status === EditingStatus.LISTENING) ||
+          (state.highlightMode === HighlightMode.MOVE_TARGETS && state.status === EditingStatus.LISTENING) ||
+          (state.highlightMode === HighlightMode.MOVE_TARGETS && state.status === EditingStatus.FIELD_SELECTED)
+      ),
       switchMap(([action, state]) => {
         const { record, event } = action.payload;
         if (state.highlightMode === HighlightMode.ALL && state.status === EditingStatus.LISTENING) {
@@ -347,7 +353,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
                 // Only pass rte setup to html type, text/textarea (plaintext) controls won't show full rich-text-editing.
                 return initTinyMCE(record, validations, type === 'html' ? setup : {});
               }
-              return NEVER;
+              break;
             }
             default: {
               return iceZoneSelected();
@@ -382,6 +388,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
             return of(startListening());
           }
         }
+        // Note: Returning NEVER will unsubscribe from any previous stream returned on a prior click.
         return NEVER;
       })
     ),
@@ -513,7 +520,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
       withLatestFrom(state$),
       switchMap(([, state]) => {
         const contentType = state.dragContext.contentType;
-        if (isNullOrUndefined(contentType.id)) {
+        if (nullOrUndefined(contentType.id)) {
           console.error('No contentTypeId found for this drag instance.');
         } else {
           if (state.dragContext.dropZones.length === 0) {
@@ -537,7 +544,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
       ofType(componentInstanceDragStarted.type),
       withLatestFrom(state$),
       switchMap(([, state]) => {
-        if (isNullOrUndefined(state.dragContext.instance.craftercms.contentTypeId)) {
+        if (nullOrUndefined(state.dragContext.instance.craftercms.contentTypeId)) {
           console.error('No contentTypeId found for this drag instance.');
         } else {
           if (state.dragContext.dropZones.length === 0) {
@@ -562,7 +569,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
       ofType(assetDragStarted.type),
       withLatestFrom(state$),
       switchMap(([, state]) => {
-        if (isNullOrUndefined(state.dragContext.dragged.path)) {
+        if (nullOrUndefined(state.dragContext.dragged.path)) {
           console.error('No path found for this drag asset.');
         } else {
           return initializeDragSubjects(state$);
@@ -578,7 +585,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
       ofType(desktopAssetDragStarted.type),
       withLatestFrom(state$),
       switchMap(([, state]) => {
-        if (isNullOrUndefined(state.dragContext.dragged)) {
+        if (nullOrUndefined(state.dragContext.dragged)) {
           console.error('No file found for this drag asset.');
         } else {
           return initializeDragSubjects(state$);

@@ -62,7 +62,7 @@ import { createGuestStore } from '../store/store';
 import { Provider } from 'react-redux';
 import { clearAndListen$ } from '../store/subjects';
 import { GuestState } from '../store/models/GuestStore';
-import { isNullOrUndefined, nnou } from '../utils/object';
+import { nullOrUndefined, nnou } from '@craftercms/studio-ui/utils/object';
 import { scrollToDropTargets } from '../utils/dom';
 import { dragOk } from '../store/util';
 import SnackBar, { Snack } from './SnackBar';
@@ -135,7 +135,7 @@ function Guest(props: GuestProps) {
         if (hasHost && editMode && refs.current.contentReady) {
           const { type } = event;
           const record = elementRegistry.get(dispatcherElementRecordId);
-          if (isNullOrUndefined(record)) {
+          if (nullOrUndefined(record)) {
             console.error('[Guest] No record found for dispatcher element');
           } else {
             if (refs.current.keysPressed.z && type === 'click') {

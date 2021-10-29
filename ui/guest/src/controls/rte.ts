@@ -24,7 +24,7 @@ import { GuestStandardAction } from '../store/models/GuestStandardAction';
 import { Observable, Subject } from 'rxjs';
 import { startWith } from 'rxjs/operators';
 import $ from 'jquery';
-import { reversePluckProps } from '../utils/object';
+import { reversePluckProps } from '@craftercms/studio-ui/utils/object';
 import { showEditDialog, validationMessage } from '@craftercms/studio-ui/state/actions/preview';
 import { RteSetup } from '../models/Rte';
 import { editComponentInline, exitComponentInlineEdit } from '../store/actions';
@@ -194,10 +194,14 @@ export function initTinyMCE(
           e.preventDefault();
         }
       });
-      editor.on('DblClick', function (e) {
+      editor.on('DblClick', (e) => {
+        e.stopPropagation();
         if (e.target.nodeName === 'IMG') {
           window.tinymce.activeEditor.execCommand('mceImage');
         }
+      });
+      editor.on('click', (e) => {
+        e.stopPropagation();
       });
     },
     ...(rteSetup?.tinymceOptions

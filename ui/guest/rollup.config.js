@@ -94,6 +94,10 @@ const plugins = [
 const globals = {
   // '@craftercms/content': 'craftercms.content',
   // '@craftercms/search': 'craftercms.search'
+  prettier: 'prettier',
+  'regexp-to-ast': 'RegExpParser',
+  '@prettier/plugin-xml': 'prettierPluginXml',
+  'prettier/standalone': 'prettierStandalone'
 };
 
 const external = Object.keys(globals);

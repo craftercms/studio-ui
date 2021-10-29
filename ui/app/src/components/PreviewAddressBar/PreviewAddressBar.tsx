@@ -160,7 +160,7 @@ export function PreviewAddressBar(props: AddressBarProps) {
       <PreviewBackButton />
       <PreviewForwardButton />
       <Tooltip title={<FormattedMessage id="previewAddressBar.reloadButtonLabel" defaultMessage="Reload this page" />}>
-        <IconButton onClick={onRefresh} size="large">
+        <IconButton onClick={onRefresh} size="large" disabled={disabled}>
           <RefreshRounded />
         </IconButton>
       </Tooltip>
@@ -186,7 +186,6 @@ export function PreviewAddressBar(props: AddressBarProps) {
           />
         )}
         <SingleItemSelector
-          disabled={disabled}
           rootPath="/site/website/index.xml"
           selectedItem={item as DetailedItem}
           open={openSelector}
