@@ -17,9 +17,9 @@
 import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
 import { ContentTypeField } from '@craftercms/studio-ui/models/ContentType';
 import { ContentInstance } from '@craftercms/studio-ui/models/ContentInstance';
-import { isNullOrUndefined, notNullOrUndefined, nou } from './object';
+import { nullOrUndefined, notNullOrUndefined, nou } from '@craftercms/studio-ui/utils/object';
 import * as Model from './model';
-import { forEach, mergeArraysAlternatively } from './array';
+import { forEach, mergeArraysAlternatively } from '@craftercms/studio-ui/utils/array';
 import { isSimple, isSymmetricCombination, popPiece } from '@craftercms/studio-ui/utils/string';
 import { ModelHierarchyMap } from '@craftercms/studio-ui/utils/content';
 import { RecordTypes, ReferentialEntries } from '../models/InContextEditing';
@@ -47,7 +47,7 @@ export function getParentModelId(
   models: LookupTable<ContentInstance>,
   children: ModelHierarchyMap
 ): string {
-  return isNullOrUndefined(Model.prop(models[modelId], 'path')) ? findParentModelId(modelId, children, models) : null;
+  return nullOrUndefined(Model.prop(models[modelId], 'path')) ? findParentModelId(modelId, children, models) : null;
 }
 
 function findParentModelId(

@@ -26,10 +26,7 @@ import Typography from '@mui/material/Typography';
 import React from 'react';
 
 export function RejectDialogContentUI(props: RejectDialogContentUIProps) {
-  const { resource, checkedItems, onUpdateChecked, classes } = props;
-
-  const rejectItems = resource.read();
-
+  const { items: rejectItems, checkedItems, onUpdateChecked, classes } = props;
   return (
     <List
       subheader={

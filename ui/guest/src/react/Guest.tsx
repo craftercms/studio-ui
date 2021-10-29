@@ -62,7 +62,7 @@ import { createGuestStore } from '../store/store';
 import { Provider } from 'react-redux';
 import { clearAndListen$ } from '../store/subjects';
 import { GuestState } from '../store/models/GuestStore';
-import { isNullOrUndefined, nnou } from '../utils/object';
+import { nullOrUndefined, nnou } from '@craftercms/studio-ui/utils/object';
 import { scrollToDropTargets } from '../utils/dom';
 import { dragOk } from '../store/util';
 import SnackBar, { Snack } from './SnackBar';
@@ -88,6 +88,7 @@ import {
 } from '../store/actions';
 import DragGhostElement from './DragGhostElement';
 import GuestGlobalStyles from './GuestGlobalStyles';
+import { showKeyboardShortcutsDialog } from '@craftercms/studio-ui/state/actions/dialogs';
 
 // TODO: add themeOptions and global styles customising
 export type GuestProps = PropsWithChildren<{
@@ -133,7 +134,7 @@ function Guest(props: GuestProps) {
         if (hasHost && editMode && refs.current.contentReady) {
           const { type } = event;
           const record = elementRegistry.get(dispatcherElementRecordId);
-          if (isNullOrUndefined(record)) {
+          if (nullOrUndefined(record)) {
             console.error('[Guest] No record found for dispatcher element');
           } else {
             if (refs.current.keysPressed.z && type === 'click') {
@@ -162,6 +163,7 @@ function Guest(props: GuestProps) {
   // Hotkeys propagation to preview
   useHotkeys('e', () => post(editModeToggleHotkey({ mode: HighlightMode.ALL })));
   useHotkeys('m', () => post(editModeToggleHotkey({ mode: HighlightMode.MOVE_TARGETS })));
+  useHotkeys('shift+/', () => post(showKeyboardShortcutsDialog()));
 
   // Key press/hold keeper events
   useEffect(() => {

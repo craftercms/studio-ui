@@ -25,7 +25,7 @@ import {
   model$
 } from './ContentController';
 import { take } from 'rxjs/operators';
-import * as ContentType from '../utils/contentType';
+import * as ContentType from '@craftercms/studio-ui/utils/contentType';
 import * as Model from '../utils/model';
 import {
   DropZone,
@@ -37,8 +37,8 @@ import {
 import { ValidationResult } from '@craftercms/studio-ui/models/ContentType';
 import { RegistryEntry } from '../models/Registry';
 import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
-import { isNullOrUndefined, notNullOrUndefined } from '../utils/object';
-import { forEach } from '../utils/array';
+import { nullOrUndefined, notNullOrUndefined } from '@craftercms/studio-ui/utils/object';
+import { forEach } from '@craftercms/studio-ui/utils/array';
 import { getChildArrangement, sibling } from '../utils/dom';
 import $ from 'jquery';
 
@@ -50,7 +50,7 @@ let registry: LookupTable<number[]> = {};
 
 export function get(id: number): ElementRecord {
   const record = db[id];
-  record && isNullOrUndefined(record.label) && setLabel(record);
+  record && nullOrUndefined(record.label) && setLabel(record);
   return record;
 }
 

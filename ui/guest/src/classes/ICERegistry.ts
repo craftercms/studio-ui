@@ -16,7 +16,7 @@
 
 import * as contentController from './ContentController';
 import { DEFAULT_RECORD_DATA } from '../utils/util';
-import * as contentTypeUtils from '../utils/contentType';
+import * as contentTypeUtils from '@craftercms/studio-ui/utils/contentType';
 import * as Model from '../utils/model';
 import { ContentInstance } from '@craftercms/studio-ui/models/ContentInstance';
 import {
@@ -27,8 +27,8 @@ import {
 } from '@craftercms/studio-ui/models/ContentType';
 import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
 import { ICEProps, ICERecord, ICERecordRegistration, ReferentialEntries } from '../models/InContextEditing';
-import { isNullOrUndefined, notNullOrUndefined, nou, pluckProps } from '../utils/object';
-import { forEach } from '../utils/array';
+import { nullOrUndefined, notNullOrUndefined, nou, pluckProps } from '@craftercms/studio-ui/utils/object';
+import { forEach } from '@craftercms/studio-ui/utils/array';
 import { determineRecordType, findComponentContainerFields } from '../utils/ice';
 import { removeLastPiece } from '@craftercms/studio-ui/utils/string';
 
@@ -85,13 +85,13 @@ export function register(registration: ICERecordRegistration): number {
   // to null for records that don't include those values
   const data = Object.assign({}, DEFAULT_RECORD_DATA, pluckProps(registration, 'modelId', 'fieldId', 'index'));
 
-  if (isNullOrUndefined(data.modelId)) {
+  if (nullOrUndefined(data.modelId)) {
     throw new Error(
       `ICE component registration requires a model ID to be supplied. Supplied model id was ${data.modelId}.`
     );
   } else if (
     notNullOrUndefined(data.fieldId) &&
-    isNullOrUndefined(data.index) &&
+    nullOrUndefined(data.index) &&
     contentTypeUtils.isGroupItem(getReferentialEntries(data).contentType, data.fieldId)
   ) {
     throw new Error(
@@ -117,7 +117,7 @@ export function register(registration: ICERecordRegistration): number {
     const entities = getReferentialEntries(record);
 
     // Record coherence validation
-    if (notNullOrUndefined(entities.fieldId) && isNullOrUndefined(entities.field)) {
+    if (notNullOrUndefined(entities.fieldId) && nullOrUndefined(entities.field)) {
       console.error(
         `[ICERegistry] Field "${entities.fieldId}" was not found on the "${entities.contentType.name}" content type. ` +
           `Please check the field name matches one of the content type field names ` +
@@ -188,7 +188,7 @@ export function getMediaDropTargets(type: string): ICERecord[] {
 export function getRecordDropTargets(id: number): ICERecord[] {
   const record = getById(id);
   const { index, field, fieldId, model } = getReferentialEntries(record);
-  if (isNullOrUndefined(index)) {
+  if (nullOrUndefined(index)) {
     // Can't move something that's not part of a collection.
     // Collection items will always have an index.
     return [];
@@ -214,7 +214,7 @@ export function getRepeatGroupItemDropTargets(record: ICERecord): ICERecord[] {
   const dropTargets = [];
   const records = registry.values();
   for (const item of records) {
-    if (isNullOrUndefined(item.index) && item.fieldId === record.fieldId) {
+    if (nullOrUndefined(item.index) && item.fieldId === record.fieldId) {
       const es = getReferentialEntries(item);
       if (es.contentTypeId === entries.contentTypeId) {
         dropTargets.push(item);
@@ -239,7 +239,7 @@ export function getContentTypeDropTargets(contentType: string | ContentType): IC
       const accepts = acceptedTypes && (acceptedTypes.includes(contentTypeId) || acceptedTypes.includes('*'));
       if (!accepts) {
         return false;
-      } else if (isNullOrUndefined(index)) {
+      } else if (nullOrUndefined(index)) {
         return true;
       } else {
         // At this point, this field has been identified as accepting the content type
@@ -407,7 +407,7 @@ export function checkComponentMovability(entries): boolean {
       continue;
     }
     const record = getReferentialEntries(records[i]);
-    if (isNullOrUndefined(record.field)) {
+    if (nullOrUndefined(record.field)) {
       if (notNullOrUndefined(record.index)) {
         // Collection item record. Cannot be the container.
       } else {
