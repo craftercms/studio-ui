@@ -1414,7 +1414,7 @@ var CStudioForms =
             try {
               form.onBeforeSave({ preview: preview });
             } catch (e) {
-              cfe.engine.cancelForm();
+              CStudioAuthoring.Utils.showConfirmDialog(null, formatMessage(formEngineMessages.formNotReadyForSaving));
               return;
             }
 
