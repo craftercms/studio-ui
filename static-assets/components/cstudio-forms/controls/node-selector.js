@@ -438,7 +438,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
         var item = items[i];
         if (item.key == key) {
           validation.successful = false;
-          message = `The item "${CrafterCMSNext.util.string.escapeHTML(value)}" already exists.`;
+          validation.message = `The item "${CrafterCMSNext.util.string.escapeHTML(value)}" already exists.`;
           break;
         }
       }

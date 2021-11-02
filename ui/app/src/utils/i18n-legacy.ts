@@ -715,6 +715,10 @@ export const formEngineMessages = defineMessages({
   policyError: {
     id: 'formEngine.policyError',
     defaultMessage: 'The {path} path goes against site policies.'
+  },
+  formNotReadyForSaving: {
+    id: 'formEngine.formNotReadyForSaving',
+    defaultMessage: 'Form is not ready for saving. Please try again momentarily or use the cancel button.'
   }
 });
 

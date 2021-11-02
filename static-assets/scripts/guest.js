@@ -20,6 +20,10 @@ crafterDefine(
   function (crafter, $, Communicator, ICEOverlay) {
     'use strict';
 
+    if (window.location.search.includes('crafterCMSGuestDisabled=true')) {
+      return;
+    }
+
     $.noConflict(true);
 
     if (!window.location.origin) {

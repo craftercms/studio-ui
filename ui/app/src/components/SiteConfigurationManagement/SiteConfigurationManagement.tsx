@@ -322,10 +322,10 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
   const onEditorChanges = () => {
     if (selectedConfigFileXml !== editorRef.current.getValue()) {
       setDisabledSaveButton(false);
-      onSubmittingAndOrPendingChange({ hasPendingChanges: true });
+      onSubmittingAndOrPendingChange?.({ hasPendingChanges: true });
     } else {
       setDisabledSaveButton(true);
-      onSubmittingAndOrPendingChange({ hasPendingChanges: false });
+      onSubmittingAndOrPendingChange?.({ hasPendingChanges: false });
     }
   };
 

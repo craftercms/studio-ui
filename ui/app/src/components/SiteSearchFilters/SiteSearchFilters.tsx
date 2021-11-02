@@ -13,13 +13,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import React, { useEffect } from 'react';
+import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/KeyboardArrowDown';
 import { camelize } from '../../utils/string';
 import makeStyles from '@mui/styles/makeStyles';
-import { ElasticParams, Facet, Filter as FilterType } from '../../models/Search';
+import { Filter as FilterType, SearchFacet } from '../../models/Search';
 import CheckIcon from '@mui/icons-material/Check';
 import { LookupTable } from '../../models/LookupTable';
 import SiteSearchSortBy from '../SiteSearchSortBy';
@@ -36,8 +36,9 @@ import { useSpreadState } from '../../utils/hooks/useSpreadState';
 
 interface SiteSearchFiltersProps {
   className: any;
-  facets: [Facet];
-  queryParams: Partial<ElasticParams>;
+  facets: SearchFacet[];
+  sortBy?: string;
+  sortOrder?: string;
   mode: string;
   checkedFilters: object;
   selectedPath: string;
@@ -169,9 +170,10 @@ const filterToFacet = (filterKey, filterValue) => {
 export default function SiteSearchFilters(props: SiteSearchFiltersProps) {
   const classes = useStyles();
   const {
+    sortBy,
+    sortOrder,
     facets,
     handleFilterChange,
-    queryParams,
     mode,
     checkedFilters,
     setCheckedFilters,
@@ -185,33 +187,6 @@ export default function SiteSearchFilters(props: SiteSearchFiltersProps) {
     sortBy: false,
     path: false
   });
-
-  useEffect(
-    function () {
-      setCheckedFilters(setCheckedParameterFromURL(queryParams));
-    },
-    [queryParams, setCheckedFilters]
-  );
-
-  const setCheckedParameterFromURL = (queryParams: Partial<ElasticParams>) => {
-    if (queryParams['filters']) {
-      let checked: any = {};
-      let parseQP = JSON.parse(queryParams['filters']);
-      Object.keys(parseQP).forEach((facet) => {
-        if (Array.isArray(parseQP[facet])) {
-          checked[facet] = {};
-          parseQP[facet].forEach((name: string) => {
-            checked[facet][name] = true;
-          });
-        } else {
-          checked[facet] = parseQP[facet];
-        }
-      });
-      return checked;
-    } else {
-      return {};
-    }
-  };
 
   let filterKeys: string[] = [];
   let facetsLookupTable: LookupTable = {};
@@ -259,17 +234,13 @@ export default function SiteSearchFilters(props: SiteSearchFiltersProps) {
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography className={classes.accordionTitle}>
             {formatMessage(messages.sortBy)}
-            {queryParams['sortBy'] && <CheckIcon />}
+            {sortBy && <CheckIcon />}
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
           <>
-            <SiteSearchSortBy
-              queryParams={queryParams}
-              filterKeys={filterKeys}
-              handleFilterChange={handleFilterChange}
-            />
-            <SiteSearchSortOrder queryParams={queryParams} handleFilterChange={handleFilterChange} />
+            <SiteSearchSortBy sortBy={sortBy} filterKeys={filterKeys} handleFilterChange={handleFilterChange} />
+            <SiteSearchSortOrder sortOrder={sortOrder} sortBy={sortBy} handleFilterChange={handleFilterChange} />
           </>
         </AccordionDetails>
       </Accordion>
@@ -288,7 +259,7 @@ export default function SiteSearchFilters(props: SiteSearchFiltersProps) {
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography className={classes.accordionTitle}>
             {formatMessage(messages.path)}
-            {queryParams['path'] && <CheckIcon />}
+            {selectedPath && <CheckIcon />}
           </Typography>
         </AccordionSummary>
         <AccordionDetails>

@@ -130,7 +130,8 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
                 message: formatMessage(translations.saved)
               }),
               updateCodeEditorDialog({
-                isSubmitting: false
+                isSubmitting: false,
+                hasPendingChanges: false
               })
             ])
           );
@@ -193,7 +194,14 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
       <DialogHeader
         title={item ? item.label : <Skeleton width="120px" />}
         onCloseButtonClick={onCloseButtonClick}
-        {...(onMinimize && { rightActions: [] })}
+        {...(onMinimize && {
+          rightActions: [
+            {
+              icon: 'MinimizeIcon',
+              onClick: onMinimize
+            }
+          ]
+        })}
       />
       <DialogBody className={classes.dialogBody}>
         <ConditionalLoadingState isLoading={loading} classes={{ root: classes.loadingState }}>
