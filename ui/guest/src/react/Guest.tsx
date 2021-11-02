@@ -555,8 +555,7 @@ function Guest(props: GuestProps) {
 function CrafterCMSGuest(props: GuestProps) {
   const { isAuthoring, children } = props;
   const store = useMemo(() => isAuthoring && createGuestStore(), [isAuthoring]);
-  const { crafterCMSGuestDisabled } = queryString.parse(window.location.search);
-  return isAuthoring && crafterCMSGuestDisabled !== 'true' ? (
+  return isAuthoring ? (
     <Provider store={store} context={GuestReduxContext}>
       <Guest {...props} />
     </Provider>
