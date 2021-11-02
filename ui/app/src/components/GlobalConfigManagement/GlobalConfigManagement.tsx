@@ -157,7 +157,7 @@ export default function GlobalConfigManagement() {
   const onConfirmOk = () => {
     setHasChanges(false);
     setShowConfirmDialog(false);
-    // timeout need to avoid running the useEffect on linea:64 with hasChanges on true
+    // timeout needed to avoid running the useEffect on line:64 with hasChanges on true
     setTimeout(() => {
       history.push(nextRoute);
     });
