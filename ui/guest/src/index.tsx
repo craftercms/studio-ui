@@ -79,7 +79,7 @@ export function initInContextEditing(props: GuestProps) {
   const { crafterCMSGuestDisabled } = queryString.parse(window.location.search);
   ReactDOM.render(
     <Guest isAuthoring={crafterCMSGuestDisabled !== 'true'} {...props}>
-      {crafterCMSGuestDisabled !== 'true' && <GuestProxy />}
+      <GuestProxy />
     </Guest>,
     guestProxyElement
   );
