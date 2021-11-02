@@ -89,7 +89,6 @@ import {
 import DragGhostElement from './DragGhostElement';
 import GuestGlobalStyles from './GuestGlobalStyles';
 import { showKeyboardShortcutsDialog } from '@craftercms/studio-ui/state/actions/dialogs';
-import queryString from 'query-string';
 
 // TODO: add themeOptions and global styles customising
 export type GuestProps = PropsWithChildren<{
