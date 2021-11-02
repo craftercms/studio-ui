@@ -3,10 +3,7 @@ git:
   depth: 1
   quiet: true
 language:
-- node_js
 - java
-node_js:
-- 16.13.0
 jdk:
 - openjdk11
 branches:
