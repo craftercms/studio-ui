@@ -27,13 +27,13 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
   /**
    * initialize module
    */
-  initialize: function(config) {
+  initialize: function (config) {
     if (this.initialized == false) {
       this.initialized = true;
     }
   },
 
-  render: function(containerEl, config) {
+  render: function (containerEl, config) {
     var container = document.createElement('div'),
       wrapper;
 
@@ -42,7 +42,7 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
 
     var buttonEl, pencilIcon, labelEl, iceOn;
 
-    var callback = function(isRev) {
+    var callback = function (isRev) {
       if (!isRev) {
         wrapper = document.createElement('div');
         buttonEl = document.createElement('button');
@@ -69,7 +69,7 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
         wrapper.appendChild(buttonEl);
         container.appendChild(wrapper);
 
-        buttonEl.onclick = function() {
+        buttonEl.onclick = function () {
           var iceOn = !!sessionStorage.getItem('ice-on'); // cast string value to a boolean
           if (!iceOn) {
             CStudioAuthoring.IceTools.turnEditOn();
@@ -87,7 +87,7 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
         wrapper.appendChild(regionSelectEl);
         container.appendChild(wrapper);
 
-        initRegCookie = function() {
+        initRegCookie = function () {
           try {
             var regions = JSON.parse(sessionStorage.getItem('ice-tools-content')) || [];
 
@@ -102,7 +102,7 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
                 regionSelectEl.options[i + 1] = new Option(label, '' + (i + 1), false, false);
               }
 
-              regionSelectEl.onchange = function() {
+              regionSelectEl.onchange = function () {
                 var selectedIndex = this.selectedIndex;
                 if (selectedIndex != 0) {
                   var region = regions[selectedIndex - 1];
@@ -127,7 +127,7 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
         };
       }
 
-      var checkRenderingTemplates = function(renderingTemplates) {
+      var checkRenderingTemplates = function (renderingTemplates) {
         var noTemplate = true;
         for (var x = 0; x < renderingTemplates.length; x++) {
           if (renderingTemplates[x].uri != '') {
@@ -176,7 +176,7 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
 
       container.appendChild(wrapper);
 
-      templateButtonEl.onclick = function() {
+      templateButtonEl.onclick = function () {
         if (!checkRenderingTemplates(CStudioAuthoring.SelectedContent.getSelectedContent()[0].renderingTemplates)) {
           var selectedContent = CStudioAuthoring.SelectedContent.getSelectedContent()[0],
             renderingTemplate = selectedContent.renderingTemplates[0].uri,
@@ -191,10 +191,10 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
             renderingTemplate,
             'default',
             {
-              success: function() {
+              success: function () {
                 CStudioAuthoring.Operations.refreshPreview();
               },
-              failure: function() {}
+              failure: function () {}
             },
             contentType,
             null
@@ -218,7 +218,7 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
               buttons: [
                 {
                   text: CMgs.format(formsLangBundle, 'ok'),
-                  handler: function() {
+                  handler: function () {
                     this.hide();
                   },
                   isDefault: false
@@ -235,14 +235,14 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
         }
       };
 
-      controllerButtonEl.onclick = function() {
+      controllerButtonEl.onclick = function () {
         if (CStudioAuthoring.SelectedContent.getSelectedContent()[0].contentType) {
           var contentType = CStudioAuthoring.SelectedContent.getSelectedContent()[0].contentType.split('/');
           var path = '/scripts/pages/' + contentType[contentType.length - 1] + '.groovy';
 
-          (function(controllerName) {
+          (function (controllerName) {
             var getContentItemCb = {
-              success: function(contentTO) {
+              success: function (contentTO) {
                 var flag = true;
                 for (var i = 0; i < contentTO.item.children.length; i++) {
                   if (contentTO.item.children[i].name == controllerName) {
@@ -250,21 +250,21 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
                   }
                 }
 
-                (function(flag) {
+                (function (flag) {
                   CStudioAuthoring.Operations.openTemplateEditor(path, 'default', {
-                    success: function() {
+                    success: function () {
                       if (CStudioAuthoringContext.isPreview) {
                         CStudioAuthoring.Operations.refreshPreview();
                       }
                       if (flag) {
                         var callback = {
-                          success: function(contentTOItem) {
+                          success: function (contentTOItem) {
                             eventYS.parent = false;
                             eventYS.data = contentTOItem.item;
                             eventYS.typeAction = '';
                             document.dispatchEvent(eventYS);
                           },
-                          failure: function() {}
+                          failure: function () {}
                         };
 
                         CStudioAuthoring.Service.lookupContentItem(
@@ -276,11 +276,11 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
                         );
                       }
                     },
-                    failure: function() {}
+                    failure: function () {}
                   });
                 })(flag);
               },
-              failure: function() {}
+              failure: function () {}
             };
 
             CStudioAuthoring.Service.lookupSiteContent(
@@ -313,7 +313,7 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
         '/static-assets/components/cstudio-preview-tools/ice-tools.js',
         {},
         {
-          moduleLoaded: function() {
+          moduleLoaded: function () {
             CStudioAuthoring.IceTools.IceToolsOffEvent.subscribe(function onIceToolsOffEvent() {
               YDom.removeClass(pencilIcon, 'icon-yellow');
               YDom.addClass(pencilIcon, 'icon-default');

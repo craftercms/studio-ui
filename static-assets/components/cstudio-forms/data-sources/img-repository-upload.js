@@ -16,7 +16,7 @@
 
 CStudioForms.Datasources.ImgRepoUpload =
   CStudioForms.Datasources.ImgRepoUpload ||
-  function(id, form, properties, constraints) {
+  function (id, form, properties, constraints) {
     this.id = id;
     this.form = form;
     this.properties = properties;
@@ -24,7 +24,7 @@ CStudioForms.Datasources.ImgRepoUpload =
     this.useSearch = false;
 
     var _self = this;
-    properties.forEach(function(property) {
+    properties.forEach(function (property) {
       if (property.name === 'repoPath') {
         _self.repoPath = property.value;
       } else if (property.name === 'useSearch') {

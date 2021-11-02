@@ -20,11 +20,11 @@
  * @author: Russ Danner
  * @date: 4.27.2011
  **/
-(function() {
+(function () {
   var InContextEdit,
     Dom = YAHOO.util.Dom;
 
-  CStudioAuthoring.register('ViewController.InContextEdit', function() {
+  CStudioAuthoring.register('ViewController.InContextEdit', function () {
     CStudioAuthoring.ViewController.InContextEdit.superclass.constructor.apply(this, arguments);
   });
 
@@ -33,11 +33,11 @@
     events: ['updateContent'],
     actions: ['.update-content', '.cancel'],
 
-    initialise: function(usrCfg) {
+    initialise: function (usrCfg) {
       Dom.setStyle(this.cfg.getProperty('context'), 'overflow', 'visible');
     },
 
-    close: function() {
+    close: function () {
       var editorId = this.editorId;
       var iframeEl = getTopLegacyWindow().document.getElementById('in-context-edit-editor-' + editorId);
       iframeEl.parentNode.parentNode.style.display = 'none';
@@ -49,7 +49,7 @@
      *
      * on error, display the issue and then close the dialog
      */
-    initializeContent: function(item, field, site, isEdit, callback, $modal, aux, editorId, isFlattenedInclude) {
+    initializeContent: function (item, field, site, isEdit, callback, $modal, aux, editorId, isFlattenedInclude) {
       var iframeEl = getTopLegacyWindow().document.getElementById('in-context-edit-editor-' + editorId);
       var dialogEl = document.getElementById('viewcontroller-in-context-edit-' + editorId + '_0_c');
       var dialogBodyEl = document.getElementById('viewcontroller-in-context-edit-' + editorId + '_0');
@@ -61,7 +61,7 @@
         dialogEl: dialogEl,
         failure: crafter.noop,
         dialogBodyEl: dialogBodyEl,
-        success: function(contentType) {
+        success: function (contentType) {
           var windowUrl = this.context.constructUrlWebFormSimpleEngine(
             contentType,
             item,
@@ -77,11 +77,9 @@
           this.context.editorId = editorId;
           CStudioAuthoring.InContextEdit.registerDialog(editorId, this.context);
 
-          this.iframeEl.onload = function() {
+          this.iframeEl.onload = function () {
             var body = this.contentDocument.body,
-              html = $(body)
-                .parents('html')
-                .get(0),
+              html = $(body).parents('html').get(0),
               max;
 
             function resizeProcess() {
@@ -105,7 +103,7 @@
 
             var interval = setInterval(resizeProcess, 250);
 
-            setTimeout(function() {
+            setTimeout(function () {
               clearInterval(interval);
             }, 2500);
           };
@@ -116,21 +114,21 @@
     /**
      * get the content from the input and send it back to the server
      */
-    updateContentActionClicked: function(buttonEl, evt) {
+    updateContentActionClicked: function (buttonEl, evt) {
       // not used
     },
 
     /**
      * cancel the dialog
      */
-    cancelActionClicked: function(buttonEl, evt) {
+    cancelActionClicked: function (buttonEl, evt) {
       // not used
     },
 
     /**
      * construct URL for simple form server
      */
-    constructUrlWebFormSimpleEngine: function(
+    constructUrlWebFormSimpleEngine: function (
       contentType,
       item,
       field,
@@ -203,7 +201,7 @@
     /**
      * provide support for legacy form server
      */
-    constructUrlWebFormLegacyFormServer: function(item, field, site) {
+    constructUrlWebFormLegacyFormServer: function (item, field, site) {
       var CMgs = CStudioAuthoring.Messages;
       var langBundle = CMgs.getBundle('forms', CStudioAuthoringContext.lang);
       CStudioAuthoring.Operations.showSimpleDialog(

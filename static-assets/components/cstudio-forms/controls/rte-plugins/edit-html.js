@@ -21,7 +21,7 @@ CStudioAuthoring.Module.requireModule(
   '/static-assets/libs/ace/ace.js',
   {},
   {
-    moduleLoaded: function() {
+    moduleLoaded: function () {
       CStudioAuthoring.Utils.addJavascript('/static-assets/libs/ace/ext-language_tools.js');
       CStudioAuthoring.Utils.addCss('/static-assets/themes/cstudioTheme/css/template-editor.css');
 
@@ -30,7 +30,7 @@ CStudioAuthoring.Module.requireModule(
         buttonStateArr;
 
       CStudioForms.Controls.RTE.EditHTML = CStudioForms.Controls.RTE.EditHTML || {
-        init: function(ed, url) {
+        init: function (ed, url) {
           var t = this;
 
           ed.addButton('edithtml', {
@@ -38,7 +38,7 @@ CStudioAuthoring.Module.requireModule(
             image:
               CStudioAuthoringContext.authoringAppBaseUri +
               '/static-assets/themes/cstudioTheme/images/icons/code-edit.gif',
-            onclick: function(e) {
+            onclick: function (e) {
               if (!this.controlManager.get('edithtml').active) {
                 // Enable code view
                 this.controlManager.setActive('edithtml', true);
@@ -52,12 +52,12 @@ CStudioAuthoring.Module.requireModule(
           });
         },
 
-        resizeCodeView: function(editor, defaults) {
+        resizeCodeView: function (editor, defaults) {
           var rteControl = editor.contextControl,
             cmWidth = rteControl.containerEl.clientWidth - rteControl.codeModeXreduction;
 
           // Reset the inline styles
-          defaults.forEach(function(el) {
+          defaults.forEach(function (el) {
             for (var style in el.styles) {
               el.element.style[style] = el.styles[style];
             }
@@ -84,7 +84,7 @@ CStudioAuthoring.Module.requireModule(
 
           editor['data-components'] = {};
 
-          componentsArr.forEach(function(component) {
+          componentsArr.forEach(function (component) {
             editor['data-components'][component.id] = Array.prototype.slice.call(component.childNodes); // Copy children and store them in an attribute
             component.innerHTML = 'DYNAMIC COMPONENT';
           });
@@ -93,11 +93,11 @@ CStudioAuthoring.Module.requireModule(
         extendComponents: function extendComponents(editor, componentSelector) {
           var componentsArr = YAHOO.util.Selector.query(componentSelector, editor.getBody());
 
-          componentsArr.forEach(function(component) {
+          componentsArr.forEach(function (component) {
             component.innerHTML = ''; // Replace any existing content with the original component content
             // The user may have changed the component id so test to see if the component ID exists
             if (editor['data-components'][component.id]) {
-              editor['data-components'][component.id].forEach(function(child) {
+              editor['data-components'][component.id].forEach(function (child) {
                 component.appendChild(child); // restore component children
               });
             }
@@ -124,7 +124,7 @@ CStudioAuthoring.Module.requireModule(
 
         disableTextControls: function disableTextControls(editor, controlsArr) {
           var edControls = editor.controlManager.controls;
-          controlsArr.forEach(function(controlObj) {
+          controlsArr.forEach(function (controlObj) {
             if (!controlObj.isDisabled) {
               edControls[controlObj.id].setDisabled(true);
             }
@@ -133,7 +133,7 @@ CStudioAuthoring.Module.requireModule(
 
         enableTextControls: function enableTextControls(editor, controlsArr) {
           var edControls = editor.controlManager.controls;
-          controlsArr.forEach(function(controlObj) {
+          controlsArr.forEach(function (controlObj) {
             if (!controlObj.isDisabled) {
               edControls[controlObj.id].setDisabled(false);
             }
@@ -176,11 +176,11 @@ CStudioAuthoring.Module.requireModule(
               fontSize: '14px'
             });
 
-            editor.codeView.on('focus', function() {
+            editor.codeView.on('focus', function () {
               rteControl.form.setFocusedField(rteControl);
             });
 
-            editor.codeView.on('change', function() {
+            editor.codeView.on('change', function () {
               rteControl.edited = true;
             });
           } else {
@@ -215,7 +215,7 @@ CStudioAuthoring.Module.requireModule(
           } catch (err) {}
         },
 
-        disableCodeView: function(editor) {
+        disableCodeView: function (editor) {
           var rteControl = editor.contextControl,
             rteContainer = YAHOO.util.Selector.query(
               '.cstudio-form-control-rte-container',
@@ -239,23 +239,18 @@ CStudioAuthoring.Module.requireModule(
           tinymce2.activeEditor.getBody().focus();
 
           // iefix - when an element with focus disappears programatically focus does not work unless another item is focused
-          $(editor.codeTextArea)
-            .show()
-            .focus();
-          $('#mce_0_ifr')
-            .contents()
-            .find('body')
-            .focus();
+          $(editor.codeTextArea).show().focus();
+          $('#mce_0_ifr').contents().find('body').focus();
           $(editor.codeTextArea).hide();
 
           rteControl.scrollToTopOfElement(rteControl.containerEl, 30);
         },
 
-        createControl: function(n, cm) {
+        createControl: function (n, cm) {
           return null;
         },
 
-        getInfo: function() {
+        getInfo: function () {
           return {
             longname: 'Crafter Studio Edit Code',
             author: 'Crafter Software',

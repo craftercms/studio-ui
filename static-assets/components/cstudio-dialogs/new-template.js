@@ -26,14 +26,14 @@ CStudioAuthoring.Dialogs.NewTemplate = CStudioAuthoring.Dialogs.NewTemplate || {
   /**
    * initialize module
    */
-  initialize: function(config) {
+  initialize: function (config) {
     this.config = config;
   },
 
   /**
    * show dialog
    */
-  showDialog: function(cb, path) {
+  showDialog: function (cb, path) {
     //this.config = config;
     this._self = this;
     this.cb = cb;
@@ -46,14 +46,14 @@ CStudioAuthoring.Dialogs.NewTemplate = CStudioAuthoring.Dialogs.NewTemplate || {
   /**
    * hide dialog
    */
-  closeDialog: function() {
+  closeDialog: function () {
     this.dialog.destroy();
   },
 
   /**
    * create dialog
    */
-  createDialog: function(path) {
+  createDialog: function (path) {
     var CMgs = CStudioAuthoring.Messages;
     var langBundle = CMgs.getBundle('contentTypes', CStudioAuthoringContext.lang);
 
@@ -127,7 +127,7 @@ CStudioAuthoring.Dialogs.NewTemplate = CStudioAuthoring.Dialogs.NewTemplate || {
 
     YAHOO.util.Event.addListener('createCancelButton', 'click', this.popupCancelClick);
 
-    $('body').on('keyup', function(e) {
+    $('body').on('keyup', function (e) {
       if (e.keyCode === 13 || e.keyCode === 10) {
         me.createClick(e, eventParams);
         $('body').off('keyup');
@@ -142,7 +142,7 @@ CStudioAuthoring.Dialogs.NewTemplate = CStudioAuthoring.Dialogs.NewTemplate || {
     return dialog;
   },
 
-  limitInput: function(event, params) {
+  limitInput: function (event, params) {
     var value = params.nameEl.value;
     value = value.replace(' ', '-');
     value = value.replace(/[^a-zA-Z0-9-\._]/g, '');
@@ -152,7 +152,7 @@ CStudioAuthoring.Dialogs.NewTemplate = CStudioAuthoring.Dialogs.NewTemplate || {
   /**
    * create clicked
    */
-  createClick: function(event, params) {
+  createClick: function (event, params) {
     var _self = CStudioAuthoring.Dialogs.NewTemplate;
     var name = params.nameEl.value;
     var templatePath;
@@ -180,14 +180,14 @@ CStudioAuthoring.Dialogs.NewTemplate = CStudioAuthoring.Dialogs.NewTemplate || {
         templatePath + '/' + name,
         'default',
         {
-          success: function() {
+          success: function () {
             if (_self.cb.success) {
               _self.cb.success(templatePath + '/' + name);
             } else {
               _self.cb(templatePath + '/' + name);
             }
           },
-          failure: function() {}
+          failure: function () {}
         },
         null,
         null
@@ -198,7 +198,7 @@ CStudioAuthoring.Dialogs.NewTemplate = CStudioAuthoring.Dialogs.NewTemplate || {
   /**
    * event fired when the ok is pressed
    */
-  popupCancelClick: function(event) {
+  popupCancelClick: function (event) {
     CStudioAuthoring.Dialogs.NewTemplate.closeDialog();
   }
 };

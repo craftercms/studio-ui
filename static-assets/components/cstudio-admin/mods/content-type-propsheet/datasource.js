@@ -16,7 +16,7 @@
 
 CStudioAdminConsole.Tool.ContentTypes.PropertyType.Datasource =
   CStudioAdminConsole.Tool.ContentTypes.PropertyType.Datasource ||
-  function(fieldName, containerEl, form, type) {
+  function (fieldName, containerEl, form, type) {
     this.fieldName = fieldName;
     this.containerEl = containerEl;
     this.form = form;
@@ -29,7 +29,7 @@ YAHOO.extend(
   CStudioAdminConsole.Tool.ContentTypes.PropertyType.Datasource,
   CStudioAdminConsole.Tool.ContentTypes.PropertyType,
   {
-    render: function(value, updateFn, fName, itemId) {
+    render: function (value, updateFn, fName, itemId) {
       var type = this['interface'];
       var containerEl = this.containerEl;
       var valuesEl, controlEl;
@@ -65,14 +65,14 @@ YAHOO.extend(
       }
     },
 
-    createLabel: function(containerEl) {
+    createLabel: function (containerEl) {
       var labelEl = document.createElement('span');
       labelEl.innerHTML = CMgs.format(langBundle, 'noDatasources');
       YDom.setStyle(labelEl, 'font-style', 'italic');
       containerEl.appendChild(labelEl);
     },
 
-    createControl: function(datasource, updateFn, type, itemId) {
+    createControl: function (datasource, updateFn, type, itemId) {
       var labelEl,
         cbEl,
         labelText,
@@ -86,7 +86,7 @@ YAHOO.extend(
 
       cbEl = document.createElement('input');
 
-      var clickFn = function() {};
+      var clickFn = function () {};
 
       if (itemId === 'checkboxgroup') {
         cbEl.type = 'radio';
@@ -94,7 +94,7 @@ YAHOO.extend(
           this.radioGroupName = CStudioAuthoring.Utils.generateUUID();
         }
         cbEl.name = this.radioGroupName;
-        clickFn = function() {
+        clickFn = function () {
           _self.removeAll();
           _self.addValue(this.id);
           updateFn(null, { fieldName: _self.fieldName, value: _self.fieldValue.toString() });
@@ -102,14 +102,9 @@ YAHOO.extend(
       } else {
         cbEl.type = 'checkbox';
 
-        clickFn = function() {
+        clickFn = function () {
           if (this.checked) {
-            if (
-              $(this)
-                .parent()
-                .parent()
-                .find('input[type="checkbox"]:checked').length === 1
-            ) {
+            if ($(this).parent().parent().find('input[type="checkbox"]:checked').length === 1) {
               _self.removeAll();
             }
             _self.addValue(this.value);
@@ -135,21 +130,21 @@ YAHOO.extend(
       return labelEl;
     },
 
-    addValue: function(elKey) {
+    addValue: function (elKey) {
       var idx = this.fieldValue.indexOf(elKey);
       if (0 > idx) this.fieldValue.push(elKey);
     },
 
-    removeAll: function() {
+    removeAll: function () {
       this.fieldValue.splice(0, this.fieldValue.length);
     },
 
-    removeValue: function(elKey) {
+    removeValue: function (elKey) {
       var idx = this.fieldValue.indexOf(elKey);
       this.fieldValue.splice(idx, 1);
     },
 
-    getValue: function() {
+    getValue: function () {
       return this.fieldValue;
     }
   }

@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-CStudioForms.Controls.NodeSelector = function(id, form, owner, properties, constraints, readonly) {
+CStudioForms.Controls.NodeSelector = function (id, form, owner, properties, constraints, readonly) {
   this.owner = owner;
   this.owner.registerField(this);
   this.errors = [];
@@ -55,11 +55,11 @@ CStudioForms.Controls.NodeSelector.prototype = {
 };
 
 YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, {
-  getLabel: function() {
+  getLabel: function () {
     return CMgs.format(langBundle, 'itemSelector');
   },
 
-  getRequirementCount: function() {
+  getRequirementCount: function () {
     var count = 0;
 
     if (this.minSize > 0) {
@@ -69,7 +69,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     return count;
   },
 
-  _onChange: function() {
+  _onChange: function () {
     if (this.minSize > 0) {
       // Needs validation
       if (this.items.length < this.minSize) {
@@ -87,7 +87,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     this._renderItems();
   },
 
-  _onChangeVal: function(obj) {
+  _onChangeVal: function (obj) {
     obj.edited = true;
     this._onChange();
   },
@@ -98,18 +98,18 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     value: ''
   },
 
-  addNode: function() {
+  addNode: function () {
     // Create element
     // Add to global node array
   },
 
-  deleteNode: function() {
+  deleteNode: function () {
     // Drop element from global node array
   },
 
-  editNode: function() {},
+  editNode: function () {},
 
-  onIceUpdate: function(data) {
+  onIceUpdate: function (data) {
     var item = this.items.find((item) => item.key === data.objId);
     if (item) {
       item.value = data.value;
@@ -118,13 +118,13 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     }
   },
 
-  onDatasourceLoaded: function(data) {
+  onDatasourceLoaded: function (data) {
     if (this.datasourceName === data.name && !this.datasource) {
       this._setActions();
     }
   },
 
-  render: function(config, containerEl) {
+  render: function (config, containerEl) {
     containerEl.id = this.id;
     this.maxSize = 0;
     this.minSize = 0;
@@ -245,7 +245,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     YAHOO.util.Event.addListener(
       nodeItemsContainerEl,
       'click',
-      function(evt, context) {
+      function (evt, context) {
         context.form.setFocusedField(context);
       },
       this,
@@ -253,7 +253,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     );
   },
 
-  _setActions: function() {
+  _setActions: function () {
     var _self = this;
 
     var dataSourceNames = this.datasourceName.split(','),
@@ -287,7 +287,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
         YAHOO.util.Event.on(
           this.$addBtn[0],
           'click',
-          function(evt) {
+          function (evt) {
             var selectItemsCount = _self.getItemsLeftCount();
             _self.form.setFocusedField(_self);
             if (selectItemsCount === 0) {
@@ -316,7 +316,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     }
   },
 
-  _renderItems: function() {
+  _renderItems: function () {
     var itemsContainerEl = this.itemsContainerEl;
     const _self = this;
 
@@ -355,7 +355,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
       if (this.allowEdit) {
         if (isComponent || !this.readonly) {
           $(itemEl).append(editBtn);
-          editBtn.on('click', function() {
+          editBtn.on('click', function () {
             const elIndex = $(this).data('index');
             let selectedDatasource =
               _self.datasources.find((item) => item.id === _self.items[elIndex].datasource) || _self.datasources[0];
@@ -365,19 +365,19 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
 
         if (this.readonly != true) {
           $(itemEl).append(deleteBtn);
-          deleteBtn.on('click', function() {
+          deleteBtn.on('click', function () {
             _self.deleteItem(itemIndex);
             _self._renderItems();
           });
         }
 
-        itemEl._onMouseDown = function() {};
+        itemEl._onMouseDown = function () {};
       }
       itemsContainerEl.appendChild(itemEl);
     }
   },
 
-  getItemsLeftCount: function() {
+  getItemsLeftCount: function () {
     if (typeof this.items == 'string') {
       this.items = [];
     }
@@ -388,7 +388,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     return -1;
   },
 
-  getIndex: function(key) {
+  getIndex: function (key) {
     var index = -1;
     var values = this.getValue();
 
@@ -405,14 +405,14 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
   /**
    * move a item from it's current position to a new position
    */
-  moveExistingItemBefore: function(onTheMoveIndex, beforeItemIndex) {
+  moveExistingItemBefore: function (onTheMoveIndex, beforeItemIndex) {
     var item = this.items[onTheMoveIndex];
     this.items.splice(onTheMoveIndex, 1);
     this.items.splice(beforeItemIndex, 0, item);
     this._onChangeVal(this);
   },
 
-  deleteItem: function(index) {
+  deleteItem: function (index) {
     if (index != -1) {
       this.items.splice(index, 1);
       this.count();
@@ -420,13 +420,13 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     }
   },
 
-  insertEmbeddedItem: function(data) {
+  insertEmbeddedItem: function (data) {
     if (this.id === data.selectorId) {
       this.insertItem(data.key, data.value, null, null, data.ds, data.order);
     }
   },
 
-  checkValidations: function(key, value) {
+  checkValidations: function (key, value) {
     let validation = {
       successful: true,
       message: ''
@@ -454,7 +454,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     return validation;
   },
 
-  newInsertItem: function(key, value, type) {
+  newInsertItem: function (key, value, type) {
     const validation = this.checkValidations(key, value);
 
     if (validation.successful) {
@@ -477,7 +477,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     }
   },
 
-  insertItem: function(key, value, fileType, fileSize, datasource, order) {
+  insertItem: function (key, value, fileType, fileSize, datasource, order) {
     const validation = this.checkValidations(key, value);
     if (validation.successful) {
       var item = {};
@@ -575,7 +575,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     }, 50);
   },
 
-  count: function() {
+  count: function () {
     var itemCount = this.items.length;
 
     if (this.maxSize && this.maxSize != 0) {
@@ -585,11 +585,11 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     }
   },
 
-  getValue: function() {
+  getValue: function () {
     return this.items;
   },
 
-  updateEditedItem: function(value, datasource, index) {
+  updateEditedItem: function (value, datasource, index) {
     var item = this.items[index];
     item.value = value;
     if (datasource) {
@@ -599,7 +599,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     this._onChangeVal(this);
   },
 
-  updateItems: function() {
+  updateItems: function () {
     if (this.datasource && this.datasource.updateItem) {
       for (var i = 0; i < this.items.length; i++) {
         this.datasource.updateItem(this.items[i], this);
@@ -608,7 +608,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     }
   },
 
-  setValue: function(value) {
+  setValue: function (value) {
     this.items = value;
     this.edited = false;
 
@@ -643,11 +643,11 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     this.count();
   },
 
-  getName: function() {
+  getName: function () {
     return 'node-selector';
   },
 
-  getSupportedProperties: function() {
+  getSupportedProperties: function () {
     return [
       { label: CMgs.format(langBundle, 'minSize'), name: 'minSize', type: 'int' },
       { label: CMgs.format(langBundle, 'maxSize'), name: 'maxSize', type: 'int' },
@@ -670,11 +670,11 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     ];
   },
 
-  getSupportedConstraints: function() {
+  getSupportedConstraints: function () {
     return [{ label: CMgs.format(langBundle, 'allowDuplicate'), name: 'allowDuplicates', type: 'boolean' }];
   },
 
-  getSupportedPostFixes: function() {
+  getSupportedPostFixes: function () {
     return this.supportedPostFixes;
   }
 });
@@ -682,7 +682,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
 /**
  * drag and drop controls
  */
-NodeSelectorDragAndDropDecorator = function(id, sGroup, config) {
+NodeSelectorDragAndDropDecorator = function (id, sGroup, config) {
   NodeSelectorDragAndDropDecorator.superclass.constructor.call(this, id, sGroup, config);
 
   this.logger = this.logger || YAHOO;
@@ -695,12 +695,12 @@ NodeSelectorDragAndDropDecorator = function(id, sGroup, config) {
 };
 
 YAHOO.extend(NodeSelectorDragAndDropDecorator, YAHOO.util.DDProxy, {
-  onMouseDown: function(e) {
+  onMouseDown: function (e) {
     var clickEl = this.getEl();
     clickEl._onMouseDown();
   },
 
-  startDrag: function(x, y) {
+  startDrag: function (x, y) {
     // make the proxy look like the source element
     var dragEl = this.getDragEl();
     var clickEl = this.getEl();
@@ -715,7 +715,7 @@ YAHOO.extend(NodeSelectorDragAndDropDecorator, YAHOO.util.DDProxy, {
     YAHOO.util.Dom.setStyle(dragEl, 'border-radius', '4px');
   },
 
-  endDrag: function(e) {
+  endDrag: function (e) {
     var srcEl = this.getEl();
     if (this.oldIndex != srcEl._index) {
       srcEl.context.moveExistingItemBefore(this.oldIndex, srcEl._index);
@@ -739,14 +739,14 @@ YAHOO.extend(NodeSelectorDragAndDropDecorator, YAHOO.util.DDProxy, {
     var thisid = this.id;
 
     // Hide the proxy and show the source element when finished with the animation
-    a.onComplete.subscribe(function() {
+    a.onComplete.subscribe(function () {
       YAHOO.util.Dom.setStyle(proxyid, 'visibility', 'hidden');
       YAHOO.util.Dom.setStyle(thisid, 'visibility', '');
     });
     a.animate();
   },
 
-  onDragDrop: function(e, id) {
+  onDragDrop: function (e, id) {
     if (YAHOO.util.DragDropMgr.interactionInfo.drop.length === 1) {
       var pt = YAHOO.util.DragDropMgr.interactionInfo.point;
       var region = YAHOO.util.DragDropMgr.interactionInfo.sourceRegion;
@@ -768,7 +768,7 @@ YAHOO.extend(NodeSelectorDragAndDropDecorator, YAHOO.util.DDProxy, {
     }
   },
 
-  onDrag: function(e) {
+  onDrag: function (e) {
     // Keep track of the direction of the drag for use during onDragOver
     var y = YAHOO.util.Event.getPageY(e);
 
@@ -781,7 +781,7 @@ YAHOO.extend(NodeSelectorDragAndDropDecorator, YAHOO.util.DDProxy, {
     this.lastY = y;
   },
 
-  onDragOver: function(e, id) {
+  onDragOver: function (e, id) {
     var srcEl = this.getEl();
     var destEl = YAHOO.util.Dom.get(id);
 

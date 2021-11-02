@@ -14,13 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-(function() {
+(function () {
   CStudioAuthoring.register('Env.ModuleMap', {
     moduleInfo: {},
-    map: function(moduleId, classRef) {
+    map: function (moduleId, classRef) {
       this.moduleInfo[moduleId] = classRef;
     },
-    get: function(moduleId) {
+    get: function (moduleId) {
       return this.moduleInfo[moduleId];
     }
   });
@@ -32,11 +32,11 @@
  * @author: Roy Art
  * @date: 03.01.2011
  **/
-(function() {
+(function () {
   var CStudioLoader,
     CustomEvent = YAHOO.util.CustomEvent;
 
-  CStudioAuthoring.register('Component.Loader', function(usrCfg) {
+  CStudioAuthoring.register('Component.Loader', function (usrCfg) {
     CStudioAuthoring.Component.Loader.superclass.constructor.apply(this, arguments);
 
     this.loadStartEvt = new CustomEvent('loader.event.loadstart', this);
@@ -44,7 +44,7 @@
 
     var onSuccess = this.onSuccess;
     var _this = this;
-    this.onSuccess = function() {
+    this.onSuccess = function () {
       onSuccess && onSuccess.apply(this, arguments);
       _this.onEnd && _this.onEnd();
       _this.onEnd = null;
@@ -54,7 +54,7 @@
 
   CStudioLoader = CStudioAuthoring.Component.Loader;
   YAHOO.extend(CStudioLoader, YAHOO.util.YUILoader, {
-    use: function() {
+    use: function () {
       var last = arguments[arguments.length - 1],
         callback = YAHOO.lang.isFunction(last) ? last : null,
         modules;
@@ -69,16 +69,16 @@
       this.require.apply(this, modules);
       this.insert();
     },
-    insert: function(o, type) {
+    insert: function (o, type) {
       this.fire('loadStart');
       CStudioLoader.superclass.insert.apply(this, arguments);
     },
-    on: function(evt, handler, context) {
+    on: function (evt, handler, context) {
       var e = this[evt + 'Evt'];
       e && e.subscribe(handler, context);
       return !!e;
     },
-    fire: function(evt) {
+    fire: function (evt) {
       var e = this[evt + 'Evt'];
       e && e.fire();
     }
@@ -87,7 +87,7 @@
   CStudioAuthoring.Env.ModuleMap.map('component-loader', CStudioLoader);
 })();
 
-(function() {
+(function () {
   CStudioAuthoring.namespace('Env.Loader');
 
   CStudioAuthoring.Env.Loader = new CStudioAuthoring.Component.Loader({

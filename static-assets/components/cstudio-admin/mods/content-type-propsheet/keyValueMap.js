@@ -16,7 +16,7 @@
 
 CStudioAdminConsole.Tool.ContentTypes.PropertyType.KeyValueMap =
   CStudioAdminConsole.Tool.ContentTypes.PropertyType.KeyValueMap ||
-  function(fieldName, containerEl) {
+  function (fieldName, containerEl) {
     this.fieldName = fieldName;
     this.containerEl = containerEl;
     return this;
@@ -26,7 +26,7 @@ YAHOO.extend(
   CStudioAdminConsole.Tool.ContentTypes.PropertyType.KeyValueMap,
   CStudioAdminConsole.Tool.ContentTypes.PropertyType,
   {
-    render: function(value, updateFn) {
+    render: function (value, updateFn) {
       this.setValue(value);
       this.updateFn = updateFn;
       var containerEl = this.containerEl;
@@ -42,7 +42,7 @@ YAHOO.extend(
       YAHOO.util.Event.on(
         valueEl,
         'keydown',
-        function(evt) {
+        function (evt) {
           YAHOO.util.Event.stopEvent(evt);
         },
         valueEl
@@ -53,11 +53,11 @@ YAHOO.extend(
       this.valueEl = valueEl;
     },
 
-    getValue: function() {
+    getValue: function () {
       return this.value;
     },
 
-    setValue: function(value) {
+    setValue: function (value) {
       if (Array.isArray(value)) {
         this.value = value;
       } else if (typeof value == 'string') {
@@ -75,7 +75,7 @@ YAHOO.extend(
       }
     },
 
-    valueToString: function() {
+    valueToString: function () {
       var strValue = '';
       var values = this.value;
 
@@ -87,11 +87,11 @@ YAHOO.extend(
       return strValue;
     },
 
-    valueToJsonString: function(value) {
+    valueToJsonString: function (value) {
       return JSON.stringify(value);
     },
 
-    showEdit: function() {
+    showEdit: function () {
       var _self = this;
       var keyValueDialogEl = document.getElementById('keyValueDialog');
       if (!keyValueDialogEl) {
@@ -144,7 +144,7 @@ YAHOO.extend(
       YAHOO.util.Event.on(
         saveEl,
         'click',
-        function(evt) {
+        function (evt) {
           _self.context.save();
         },
         saveEl
@@ -159,14 +159,14 @@ YAHOO.extend(
       YAHOO.util.Event.on(
         cancelEl,
         'click',
-        function(evt) {
+        function (evt) {
           _self.context.cancel();
         },
         cancelEl
       );
     },
 
-    renderListItems: function() {
+    renderListItems: function () {
       var keyValueDialogEl = document.getElementById('keyValueDialog');
       var tableContainerEl = document.getElementById('keyValueDialogContainer');
       var values = keyValueDialogEl.values;
@@ -196,7 +196,7 @@ YAHOO.extend(
         YAHOO.util.Event.on(
           addEl,
           'click',
-          function(evt) {
+          function (evt) {
             _self.insertItem(this.index);
             _self.renderListItems();
           },
@@ -214,7 +214,7 @@ YAHOO.extend(
           YAHOO.util.Event.on(
             delEl,
             'click',
-            function(evt) {
+            function (evt) {
               _self.removeItem(this.index);
               _self.renderListItems();
             },
@@ -230,7 +230,7 @@ YAHOO.extend(
         YAHOO.util.Event.on(
           keyEl,
           'keyup',
-          function(evt) {
+          function (evt) {
             _self.updateKey(this.index, this.value);
           },
           keyEl
@@ -241,7 +241,7 @@ YAHOO.extend(
         YAHOO.util.Event.on(
           valEl,
           'keyup',
-          function(evt) {
+          function (evt) {
             _self.updateValue(this.index, this.value);
           },
           valEl
@@ -263,34 +263,34 @@ YAHOO.extend(
       }
     },
 
-    insertItem: function(index) {
+    insertItem: function (index) {
       var keyValueDialogEl = document.getElementById('keyValueDialog');
       keyValueDialogEl.values.splice(index + 1, 0, { key: '', value: '' });
     },
 
-    removeItem: function(index) {
+    removeItem: function (index) {
       var keyValueDialogEl = document.getElementById('keyValueDialog');
       keyValueDialogEl.values.splice(index, 1);
     },
 
-    updateKey: function(index, value) {
+    updateKey: function (index, value) {
       var keyValueDialogEl = document.getElementById('keyValueDialog');
       keyValueDialogEl.values[index].key = value;
     },
 
-    updateValue: function(index, value) {
+    updateValue: function (index, value) {
       var keyValueDialogEl = document.getElementById('keyValueDialog');
       keyValueDialogEl.values[index].value = value;
     },
 
-    cancel: function() {
+    cancel: function () {
       var keyValueDialogEl = document.getElementById('keyValueDialog');
       var keyValueDialogMaskEl = document.getElementById('keyValueDialogMask');
       keyValueDialogEl.parentNode.removeChild(keyValueDialogMaskEl);
       keyValueDialogEl.parentNode.removeChild(keyValueDialogEl);
     },
 
-    save: function() {
+    save: function () {
       var keyValueDialogEl = document.getElementById('keyValueDialog');
       var keyValueDialogMaskEl = document.getElementById('keyValueDialogMask');
       this.value = keyValueDialogEl.values;

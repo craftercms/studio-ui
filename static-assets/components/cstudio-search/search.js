@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-(function(window, $, Handlebars) {
+(function (window, $, Handlebars) {
   'use strict';
 
   if (typeof window.CStudioSearch == 'undefined' || !window.CStudioSearch) {
@@ -28,7 +28,7 @@
     mode: 'default' // possible mode values: [default|select]
   };
 
-  CStudioSearch.init = function() {
+  CStudioSearch.init = function () {
     CStudioAuthoring.OverlayRequiredResources.loadRequiredResources();
     CStudioAuthoring.OverlayRequiredResources.loadContextNavCss();
 
@@ -46,20 +46,17 @@
     this.bindEvents();
   };
 
-  CStudioSearch.bindEvents = function() {
-    $('#cstudio-command-controls').on('click', '#formSaveButton', function() {
+  CStudioSearch.bindEvents = function () {
+    $('#cstudio-command-controls').on('click', '#formSaveButton', function () {
       CStudioSearch.saveContent();
     });
-    $('#cstudio-command-controls').on('click', '#formCancelButton', function() {
+    $('#cstudio-command-controls').on('click', '#formCancelButton', function () {
       window.close();
-      $(window.frameElement.parentElement)
-        .closest('.studio-ice-dialog')
-        .parent()
-        .remove(); // TODO: find a better way
+      $(window.frameElement.parentElement).closest('.studio-ice-dialog').parent().remove(); // TODO: find a better way
     });
   };
 
-  CStudioSearch.renderFormControls = function(result) {
+  CStudioSearch.renderFormControls = function (result) {
     var $formControlContainer = $('#cstudio-command-controls-container'),
       source = $('#hb-command-controls').html(),
       template = Handlebars.compile(source),
@@ -69,9 +66,9 @@
     $(html).appendTo($formControlContainer);
   };
 
-  CStudioSearch.changeSelectStatus = function(path, selected) {
+  CStudioSearch.changeSelectStatus = function (path, selected) {
     var callback = {
-      success: function(contentTO) {
+      success: function (contentTO) {
         if (selected == true) {
           CStudioAuthoring.SelectedContent.selectContent(contentTO.item);
         } else {
@@ -81,7 +78,7 @@
           $('#formSaveButton').prop('disabled', CStudioAuthoring.SelectedContent.getSelectedContentCount() === 0);
         }
       },
-      failure: function(error) {
+      failure: function (error) {
         console.error(error);
       }
     };
@@ -89,7 +86,7 @@
     CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, path, callback, false, false);
   };
 
-  CStudioSearch.saveContent = function() {
+  CStudioSearch.saveContent = function () {
     var _self = this;
     var searchId = this.searchContext ? this.searchContext.searchId : '';
     var crossServerAccess = false;
@@ -122,10 +119,7 @@
             }
 
             window.close();
-            $(window.frameElement.parentElement)
-              .closest('.studio-ice-dialog')
-              .parent()
-              .remove(); // TODO: find a better way
+            $(window.frameElement.parentElement).closest('.studio-ice-dialog').parent().remove(); // TODO: find a better way
           } else {
             CStudioAuthoring.Operations.showSimpleDialog(
               'lookUpChildError-dialog',
@@ -137,13 +131,10 @@
               [
                 {
                   text: 'OK',
-                  handler: function() {
+                  handler: function () {
                     this.hide();
                     window.close();
-                    $(window.frameElement.parentElement)
-                      .closest('.studio-ice-dialog')
-                      .parent()
-                      .remove(); // TODO: find a better way
+                    $(window.frameElement.parentElement).closest('.studio-ice-dialog').parent().remove(); // TODO: find a better way
                   },
                   isDefault: false
                 }
@@ -162,13 +153,10 @@
             [
               {
                 text: 'OK',
-                handler: function() {
+                handler: function () {
                   this.hide();
                   window.close();
-                  $(window.frameElement.parentElement)
-                    .closest('.studio-ice-dialog')
-                    .parent()
-                    .remove(); // TODO: find a better way
+                  $(window.frameElement.parentElement).closest('.studio-ice-dialog').parent().remove(); // TODO: find a better way
                 },
                 isDefault: false
               }
@@ -182,10 +170,7 @@
       // no window opening context or cross server call
       // the only thing we can do is close the window
       window.close();
-      $(window.frameElement.parentElement)
-        .closest('.studio-ice-dialog')
-        .parent()
-        .remove(); // TODO: find a better way
+      $(window.frameElement.parentElement).closest('.studio-ice-dialog').parent().remove(); // TODO: find a better way
     }
   };
 })(window, jQuery, Handlebars);

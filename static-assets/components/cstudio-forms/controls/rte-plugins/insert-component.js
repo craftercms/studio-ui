@@ -16,7 +16,7 @@
 
 CStudioForms.Controls.RTE.InsertComponent =
   CStudioForms.Controls.RTE.InsertComponent ||
-  (function() {
+  (function () {
     var WAITING_IMG =
         "<img src='" +
         CStudioAuthoringContext.authoringAppBaseUri +
@@ -31,11 +31,11 @@ CStudioForms.Controls.RTE.InsertComponent =
       deleteEl;
 
     return {
-      init: function(ed, url) {
+      init: function (ed, url) {
         var _self = this;
 
         var beforeSaveCb = {
-          beforeSave: function() {
+          beforeSave: function () {
             var rteControl = this.editor.contextControl;
             var docBodyEl = this.editor.dom.doc.body;
 
@@ -59,24 +59,24 @@ CStudioForms.Controls.RTE.InsertComponent =
         ed.contextControl.form.registerBeforeSaveCallback(beforeSaveCb);
       },
 
-      createControl: function(n, cm) {
+      createControl: function (n, cm) {
         var editor = cm.editor,
           model = editor.contextControl.form.model,
           rteWidgets = editor.contextControl.rteConfig.rteWidgets.widget,
           _self = this;
 
         if (n == 'insertComponent') {
-          editor.onLoadContent.add(function(ed, cm) {
+          editor.onLoadContent.add(function (ed, cm) {
             _self.renderComponents(ed);
           });
 
-          editor.onDblClick.add(function(ed, e) {
+          editor.onDblClick.add(function (ed, e) {
             if (_self.isControl(e.target)) {
               _self.showControls(ed, _self.getWidgetContainerElement(e.target));
             }
           });
 
-          editor.onClick.add(function(ed, e) {
+          editor.onClick.add(function (ed, e) {
             if (_self.firstClick && _self.firstClick == true) {
               _self.firstClick = false;
               return;
@@ -86,7 +86,7 @@ CStudioForms.Controls.RTE.InsertComponent =
             _self.hideControls(ed);
           });
 
-          amplify.subscribe('/rte/blurred', function() {
+          amplify.subscribe('/rte/blurred', function () {
             _self.hideControls(editor);
           });
 
@@ -107,13 +107,13 @@ CStudioForms.Controls.RTE.InsertComponent =
 
             c.rteWidgets = rteWidgets;
 
-            c.onRenderMenu.add(function(c, m) {
+            c.onRenderMenu.add(function (c, m) {
               for (var i = 0; i < rteWidgets.length; i++) {
                 var widget = rteWidgets[i];
 
-                var onclickFn = function() {
+                var onclickFn = function () {
                   var formSaveCb = {
-                    success: function(contentTO, a, b, c) {
+                    success: function (contentTO, a, b, c) {
                       var name = contentTO.item.uri;
                       var id = name.substring(name.lastIndexOf('/') + 1).replace('.xml', '');
 
@@ -136,7 +136,7 @@ CStudioForms.Controls.RTE.InsertComponent =
 
                       _self.renderComponent(editor, componentItem);
                     },
-                    failure: function() {}
+                    failure: function () {}
                   };
 
                   var path = this.onclick.widget.contentPath;
@@ -166,7 +166,7 @@ CStudioForms.Controls.RTE.InsertComponent =
                   var networkErrorMsg = CMgs.format(formsLangBundle, 'contentTypeNotFound');
 
                   CStudioAuthoring.Service.lookupContentType(CStudioAuthoringContext.site, contentType, {
-                    success: function(result) {
+                    success: function (result) {
                       if (result == null) {
                         var CMgs = CStudioAuthoring.Messages;
                         var langBundle = CMgs.getBundle('forms', CStudioAuthoringContext.lang);
@@ -192,13 +192,13 @@ CStudioForms.Controls.RTE.InsertComponent =
                         );
                       }
                     },
-                    failure: function() {}
+                    failure: function () {}
                   });
                 };
 
                 onclickFn.widget = widget;
 
-                var onClickBrowse = function() {
+                var onClickBrowse = function () {
                   var path = this.onclick.widget.contentPath;
                   path = path.replace('{objectGroupId}', model.objectGroupId);
                   path = path.replace('{objectId}', model.objectId);
@@ -217,7 +217,7 @@ CStudioForms.Controls.RTE.InsertComponent =
                   path = path.replace('{month}', ('0' + (currentDate.getMonth() + 1)).slice(-2));
 
                   CStudioAuthoring.Operations.openBrowse('', path, '1', 'select', true, {
-                    success: function(searchId, selectedTOs) {
+                    success: function (searchId, selectedTOs) {
                       var name = selectedTOs[0].uri;
                       var id = name.substring(name.lastIndexOf('/') + 1).replace('.xml', '');
 
@@ -240,7 +240,7 @@ CStudioForms.Controls.RTE.InsertComponent =
 
                       _self.renderComponent(editor, componentItem);
                     },
-                    failure: function() {},
+                    failure: function () {},
                     context: _self
                   });
                 };
@@ -254,7 +254,7 @@ CStudioForms.Controls.RTE.InsertComponent =
               }
             });
 
-            c.onRenderMenu.add(function(c, m) {
+            c.onRenderMenu.add(function (c, m) {
               /* ==== */
               // Add widget Libraries
               var rteWidgetLibraries = editor.contextControl.rteConfig.rteWidgetLibraries;
@@ -271,12 +271,12 @@ CStudioForms.Controls.RTE.InsertComponent =
               if (rteWidgetLibraries.length > 0) {
                 c.rteWidgetLibraries = rteWidgetLibraries;
 
-                c.onRenderMenu.add(function(c, m) {
+                c.onRenderMenu.add(function (c, m) {
                   for (var i = 0; i < rteWidgetLibraries.length; i++) {
                     var library = rteWidgetLibraries[i];
 
                     var formSaveCb = {
-                      success: function(searchId, selectedTOs) {
+                      success: function (searchId, selectedTOs) {
                         var item = selectedTOs[0];
                         var name = item.uri;
                         var id = name.substring(name.lastIndexOf('/') + 1).replace('.xml', '');
@@ -300,10 +300,10 @@ CStudioForms.Controls.RTE.InsertComponent =
 
                         _self.renderComponent(editor, componentItem);
                       },
-                      failure: function() {}
+                      failure: function () {}
                     };
 
-                    var onclickFn = function() {
+                    var onclickFn = function () {
                       var path = this.onclick.library.contentPath;
                       CStudioAuthoring.Operations.openBrowse('', path, 1, 'select', true, formSaveCb);
                     };
@@ -326,7 +326,7 @@ CStudioForms.Controls.RTE.InsertComponent =
       /**
        * render components
        */
-      renderComponents: function(editor) {
+      renderComponents: function (editor) {
         var model = editor.contextControl.form.model;
         var _self = this;
         var components = [];
@@ -344,7 +344,7 @@ CStudioForms.Controls.RTE.InsertComponent =
       /**
        * render individual component
        */
-      renderComponent: function(editor, componentItem) {
+      renderComponent: function (editor, componentItem) {
         var componentEl = editor.dom.doc.getElementById(componentItem.id);
         var _self = this;
 
@@ -352,11 +352,11 @@ CStudioForms.Controls.RTE.InsertComponent =
           try {
             componentEl.innerHTML = WAITING_IMG;
             CStudioAuthoring.Service.getComponentPreview(componentItem.contentId, {
-              success: function(content) {
+              success: function (content) {
                 componentEl.innerHTML = content;
                 YAHOO.util.Dom.addClass(componentEl, 'mceNonEditable');
               },
-              failure: function() {
+              failure: function () {
                 componentEl.innerHTML = ERROR_IMG;
               }
             });
@@ -364,7 +364,7 @@ CStudioForms.Controls.RTE.InsertComponent =
         }
       },
 
-      showControls: function(editor, el) {
+      showControls: function (editor, el) {
         var _self = this;
         var controlsEl = editor.dom.doc.getElementById('cstudio-component-controls');
         var model = editor.contextControl.form.model;
@@ -384,7 +384,7 @@ CStudioForms.Controls.RTE.InsertComponent =
         el.appendChild(controlsEl);
 
         moveEl = tinymce2.DOM.select('#cstudio-component-controls .move > a', editor.getDoc())[0];
-        moveEl.onclick = function() {
+        moveEl.onclick = function () {
           var id = el.id;
           var contentItem = null;
           var components = model['rteComponents'];
@@ -400,7 +400,7 @@ CStudioForms.Controls.RTE.InsertComponent =
         };
 
         editEl = tinymce2.DOM.select('#cstudio-component-controls .edit > a', editor.getDoc())[0];
-        editEl.onclick = function() {
+        editEl.onclick = function () {
           var id = el.id;
           var contentItem = null;
           var components = model['rteComponents'];
@@ -413,12 +413,12 @@ CStudioForms.Controls.RTE.InsertComponent =
 
           if (contentItem) {
             var lookupItemCb = {
-              success: function(contentTO) {
+              success: function (contentTO) {
                 var formSaveCb = {
-                  success: function(formName, name, value) {
+                  success: function (formName, name, value) {
                     _self.renderComponent(tinymce2.activeEditor, contentItem);
                   },
-                  failure: function() {}
+                  failure: function () {}
                 };
 
                 CStudioAuthoring.Operations.openContentWebForm(
@@ -432,7 +432,7 @@ CStudioForms.Controls.RTE.InsertComponent =
                   [{ name: 'childForm', value: 'true' }]
                 );
               },
-              failure: function() {}
+              failure: function () {}
             };
 
             CStudioAuthoring.Service.lookupContentItem(
@@ -444,7 +444,7 @@ CStudioForms.Controls.RTE.InsertComponent =
         };
 
         deleteEl = tinymce2.DOM.select('#cstudio-component-controls .delete > a', editor.getDoc())[0];
-        deleteEl.onclick = function() {
+        deleteEl.onclick = function () {
           var id = el.id;
           var components = model['rteComponents'];
 
@@ -459,7 +459,7 @@ CStudioForms.Controls.RTE.InsertComponent =
         };
       },
 
-      handleComponentDrop: function(ed, e) {
+      handleComponentDrop: function (ed, e) {
         var _self = this;
 
         if (_self.componentOnTheMove && e.target !== moveEl) {
@@ -479,7 +479,7 @@ CStudioForms.Controls.RTE.InsertComponent =
         }
       },
 
-      hideControls: function(editor) {
+      hideControls: function (editor) {
         var controlsEl;
 
         try {
@@ -500,7 +500,7 @@ CStudioForms.Controls.RTE.InsertComponent =
         }
       },
 
-      getWidgetContainerElement: function(el) {
+      getWidgetContainerElement: function (el) {
         if (YAHOO.util.Dom.hasClass(el, 'crComponent')) {
           return el;
         } else {
@@ -508,7 +508,7 @@ CStudioForms.Controls.RTE.InsertComponent =
         }
       },
 
-      isControl: function(el) {
+      isControl: function (el) {
         var containerEl = this.getWidgetContainerElement(el);
         return containerEl ? true : false;
       }

@@ -16,7 +16,7 @@
 
 CStudioAdminConsole.Tool.ContentTypes.PropertyType.Date =
   CStudioAdminConsole.Tool.ContentTypes.PropertyType.Date ||
-  function(fieldName, containerEl) {
+  function (fieldName, containerEl) {
     this.fieldName = fieldName;
     this.containerEl = containerEl;
     this.defaulValue = {
@@ -40,7 +40,7 @@ YAHOO.extend(
   CStudioAdminConsole.Tool.ContentTypes.PropertyType.Date,
   CStudioAdminConsole.Tool.ContentTypes.PropertyType,
   {
-    render: function(value, updateFn) {
+    render: function (value, updateFn) {
       var _self = this,
         wrapperEl = document.createElement('div'),
         optionsEl = document.createElement('ul'),
@@ -48,7 +48,7 @@ YAHOO.extend(
         liArr;
 
       /* @param el : The field container */
-      var updateValue = function(el) {
+      var updateValue = function (el) {
         var showEl = YAHOO.util.Selector.filter(el.children, "[type='checkbox']")[0],
           options = YAHOO.util.Selector.query("[type='checkbox']", optionsEl),
           selected = [];
@@ -62,13 +62,13 @@ YAHOO.extend(
         _self.setValue({ show: showEl.checked, option: selected });
       };
 
-      var updateField = function(evt, el) {
+      var updateField = function (evt, el) {
         updateValue(el);
         updateFn(evt, _self);
         CStudioAdminConsole.Tool.ContentTypes.visualization.render();
       };
 
-      var toggleUpdateField = function(evt, el) {
+      var toggleUpdateField = function (evt, el) {
         var target = YAHOO.util.Event.getTarget(evt),
           options,
           defaultOptions = this.defaulValue.option;
@@ -80,7 +80,7 @@ YAHOO.extend(
             YAHOO.util.Dom.addClass(optionsEl, 'hidden');
             // When the options are hidden, reset the options to the default values
             options = YAHOO.util.Selector.query("[type='checkbox']", optionsEl);
-            options.forEach(function(el) {
+            options.forEach(function (el) {
               if (defaultOptions.indexOf(el.id) >= 0) {
                 options[0].checked = true;
               } else {
@@ -92,7 +92,7 @@ YAHOO.extend(
         updateField(evt, el);
       };
 
-      var populateOptions = function(container, opts, selected, show) {
+      var populateOptions = function (container, opts, selected, show) {
         var html = '';
         for (var option in opts) {
           if (opts[option].type == 'checkbox') {
@@ -161,21 +161,21 @@ YAHOO.extend(
         YAHOO.util.Event.on(showEl, 'change', toggleUpdateField, wrapperEl, this);
 
         liArr = YAHOO.util.Selector.query("[type='checkbox']", wrapperEl);
-        liArr.forEach(function(el) {
+        liArr.forEach(function (el) {
           YAHOO.util.Event.on(el, 'change', updateField, wrapperEl);
         });
       }
     },
 
-    isShown: function() {
+    isShown: function () {
       return this.value.show;
     },
 
-    getValue: function() {
+    getValue: function () {
       return this.value;
     },
 
-    setValue: function(val) {
+    setValue: function (val) {
       if (typeof val == 'object') {
         this.value = val;
       } else if (typeof val == 'boolean') {

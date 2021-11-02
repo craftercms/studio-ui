@@ -15,7 +15,7 @@
  */
 
 CStudioForms.Controls.RTE.InsertPredefinedTable = CStudioForms.Controls.RTE.InsertPredefinedTable || {
-  createControl: function(name, cm) {
+  createControl: function (name, cm) {
     var predefinedTables = cm.editor.contextControl.rteTables;
     predefinedTables =
       predefinedTables === undefined
@@ -33,11 +33,11 @@ CStudioForms.Controls.RTE.InsertPredefinedTable = CStudioForms.Controls.RTE.Inse
         icons: false
       });
 
-      c.onRenderMenu.add(function(c, m) {
-        var addMenuOption = function(el) {
+      c.onRenderMenu.add(function (c, m) {
+        var addMenuOption = function (el) {
           this.add({
             title: el.name,
-            onclick: function() {
+            onclick: function () {
               tinymce2.activeEditor.execCommand('mceInsertContent', false, el.prototype);
             }
           });
@@ -56,7 +56,7 @@ CStudioForms.Controls.RTE.InsertPredefinedTable = CStudioForms.Controls.RTE.Inse
    *
    * @return {Object} Name/value array containing information about the plugin.
    */
-  getInfo: function() {
+  getInfo: function () {
     return {
       longname: 'Crafter Studio Insert Predefined Table',
       author: 'Crafter Software',

@@ -16,7 +16,7 @@
 
 CStudioForms.Datasources.VideoCMISRepo =
   CStudioForms.Datasources.VideoCMISRepo ||
-  function(id, form, properties, constraints) {
+  function (id, form, properties, constraints) {
     this.id = id;
     this.form = form;
     this.properties = properties;
@@ -47,7 +47,7 @@ CStudioForms.Datasources.VideoCMISRepo =
   };
 
 YAHOO.extend(CStudioForms.Datasources.VideoCMISRepo, CStudioForms.CStudioFormDatasource, {
-  insertVideoAction: function(callback) {
+  insertVideoAction: function (callback) {
     var _self = this;
 
     CStudioAuthoring.Operations.openCMISBrowse(
@@ -58,8 +58,8 @@ YAHOO.extend(CStudioForms.Datasources.VideoCMISRepo, CStudioForms.CStudioFormDat
       'select',
       true,
       {
-        success: function(searchId, selectedTOs) {
-          var cb = function(repositories) {
+        success: function (searchId, selectedTOs) {
+          var cb = function (repositories) {
             var repo = null;
             if (!repositories.length) {
               repo = repositories;
@@ -101,35 +101,35 @@ YAHOO.extend(CStudioForms.Datasources.VideoCMISRepo, CStudioForms.CStudioFormDat
 
           _self.getConfig(cb);
         },
-        failure: function() {}
+        failure: function () {}
       }
     );
   },
 
-  getConfig: function(callback) {
+  getConfig: function (callback) {
     CStudioAuthoring.Service.getConfiguration(CStudioAuthoringContext.site, '/data-sources/cmis-config.xml', {
-      success: function(config) {
+      success: function (config) {
         callback(config.repositories.repository);
       }
     });
   },
 
   // remove edit because edit is not supported
-  edit: function(key) {},
+  edit: function (key) {},
 
-  getLabel: function() {
+  getLabel: function () {
     return CMgs.format(langBundle, 'videoCMISRepository');
   },
 
-  getInterface: function() {
+  getInterface: function () {
     return 'video';
   },
 
-  getName: function() {
+  getName: function () {
     return 'video-cmis-repo';
   },
 
-  getSupportedProperties: function() {
+  getSupportedProperties: function () {
     return [
       { label: CMgs.format(langBundle, 'repositoryPath'), name: 'repoPath', type: 'string' },
       { label: CMgs.format(langBundle, 'repositoryId'), name: 'repoId', type: 'string' },
@@ -159,7 +159,7 @@ YAHOO.extend(CStudioForms.Datasources.VideoCMISRepo, CStudioForms.CStudioFormDat
     ];
   },
 
-  getSupportedConstraints: function() {
+  getSupportedConstraints: function () {
     return [];
   }
 });

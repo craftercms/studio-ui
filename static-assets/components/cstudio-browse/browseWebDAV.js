@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-(function(window, $, Handlebars) {
+(function (window, $, Handlebars) {
   'use strict';
 
   var storage = CStudioAuthoring.Storage,
@@ -22,7 +22,7 @@
 
   var CStudioBrowseWebDAV = $.extend({}, window.CStudioBrowse);
 
-  CStudioBrowseWebDAV.init = function() {
+  CStudioBrowseWebDAV.init = function () {
     var me = this;
 
     this.repoBaseUrl = CStudioAuthoring.Utils.getQueryParameterByName('baseUrl');
@@ -33,17 +33,17 @@
     this.searchContext = searchContext;
 
     CStudioBrowseWebDAV.getContent('browse', {
-      success: function(response) {
+      success: function (response) {
         me.rootItems = response;
         me.renderSiteFolders(me.rootItems);
       },
-      failure: function() {}
+      failure: function () {}
     });
 
     var CMgs = CStudioAuthoring.Messages,
       browseLangBundle = CMgs.getBundle('browse', CStudioAuthoringContext.lang);
 
-    var cb = function(repositories) {
+    var cb = function (repositories) {
       var repo = null,
         repoId = CStudioAuthoring.Utils.getQueryParameterByName('repoId');
       if (!repositories.length) {
@@ -60,18 +60,18 @@
     };
   };
 
-  CStudioBrowseWebDAV.bindEvents = function() {
+  CStudioBrowseWebDAV.bindEvents = function () {
     var me = this,
       $tree = $('#data');
 
     // tree related events
 
-    $tree.on('ready.jstree', function(event, data) {
+    $tree.on('ready.jstree', function (event, data) {
       var tree = data.instance;
       var obj = tree.get_selected(true)[0];
       me.currentSelection = '';
 
-      var openNodes = function(nodes, index) {
+      var openNodes = function (nodes, index) {
         if (0 == index) {
           var $tree = $('#data');
 
@@ -81,7 +81,7 @@
           $tree.jstree('select_node', '#' + nodes[index]);
         } else {
           $('#' + nodes[index] + ' > .jstree-ocl').click();
-          $('#data').one('open_node.jstree', function(event, node) {
+          $('#data').one('open_node.jstree', function (event, node) {
             openNodes(nodes, index - 1);
           });
         }
@@ -106,7 +106,7 @@
       me.renderContextMenu('.jstree-anchor');
     });
 
-    $tree.on('select_node.jstree', function(event, data) {
+    $tree.on('select_node.jstree', function (event, data) {
       var path = data.node.a_attr['data-path'];
 
       if (me.currentSelection != data.node.id) {
@@ -122,10 +122,7 @@
 
         if ('webdav-root' !== currentNode.id) {
           while (!finished) {
-            (parent = currentNode.parent),
-              (parentNode = $('#data')
-                .jstree(true)
-                .get_node(parent));
+            (parent = currentNode.parent), (parentNode = $('#data').jstree(true).get_node(parent));
 
             if ('webdav-root' === parent) {
               finished = true;
@@ -140,27 +137,21 @@
       }
     });
 
-    $('.cstudio-browse-container').on('click', '.path span', function() {
+    $('.cstudio-browse-container').on('click', '.path span', function () {
       var path = $(this).attr('data-path');
 
       me.renderSiteContent(path);
     });
 
     // When expanding a node -> show its content
-    $tree.on('open_node.jstree', function(event, node) {
+    $tree.on('open_node.jstree', function (event, node) {
       $('#' + node.node.id + '_anchor').click();
     });
 
     // Click on expand/collapse icon
-    $tree.on('click', '.jstree-ocl', function(event, node) {
-      if (
-        !$(this)
-          .parent()
-          .attr('aria-expanded')
-      ) {
-        var $node = $('#data')
-            .jstree(true)
-            .get_node(this.parentElement.id),
+    $tree.on('click', '.jstree-ocl', function (event, node) {
+      if (!$(this).parent().attr('aria-expanded')) {
+        var $node = $('#data').jstree(true).get_node(this.parentElement.id),
           rootPath = CStudioAuthoring.Utils.getQueryParameterByName('path'),
           path = 'webdav-root' === $node.a_attr['data-path'] ? rootPath : $node.a_attr['data-path'],
           $resultsContainer = $('#cstudio-wcm-browse-result .results'),
@@ -174,11 +165,11 @@
         CStudioBrowseWebDAV.getContent(
           'browse',
           {
-            success: function(response) {
+            success: function (response) {
               var subFolders = false;
 
               if (response.length > 0) {
-                $.each(response, function(index, value) {
+                $.each(response, function (index, value) {
                   if (value.folder && encodeURI(path) !== CStudioBrowseWebDAV.cleanUrl(value.url)) {
                     $tree.jstree(
                       'create_node',
@@ -210,30 +201,25 @@
 
               $('#' + $node.id + '_anchor').click();
             },
-            failure: function() {}
+            failure: function () {}
           },
           path
         );
       }
     });
 
-    $('#cstudio-command-controls').on('click', '#formCancelButton', function() {
+    $('#cstudio-command-controls').on('click', '#formCancelButton', function () {
       window.close();
-      $(window.frameElement.parentElement)
-        .closest('.studio-ice-dialog')
-        .parent()
-        .remove();
+      $(window.frameElement.parentElement).closest('.studio-ice-dialog').parent().remove();
     });
 
-    $('.cstudio-wcm-result .results').delegate('.add-link-btn', 'click', function() {
-      var contentTO = $(this.parentElement)
-        .closest('.cstudio-search-result')
-        .data('item');
+    $('.cstudio-wcm-result .results').delegate('.add-link-btn', 'click', function () {
+      var contentTO = $(this.parentElement).closest('.cstudio-search-result').data('item');
       CStudioAuthoring.SelectedContent.selectContent(contentTO);
       me.saveContent();
     });
 
-    $('.cstudio-wcm-result .results').delegate('.magnify-icon', 'click', function() {
+    $('.cstudio-wcm-result .results').delegate('.magnify-icon', 'click', function () {
       var path = $(this).attr('data-source');
       var type = $(this).attr('data-type');
       CStudioAuthoring.Utils.previewAssetDialog(path, type);
@@ -245,7 +231,7 @@
     $('.current-folder .path').html(pathLabel);
   };
 
-  CStudioBrowseWebDAV.renderSiteFolders = function(items) {
+  CStudioBrowseWebDAV.renderSiteFolders = function (items) {
     var me = this;
 
     // Removes jstree cached state from localStorage
@@ -255,7 +241,7 @@
     $('#data').jstree({
       core: {
         check_callback: true,
-        data: function(node, cb) {
+        data: function (node, cb) {
           var data = me.parseObjToFolders(items);
           cb(data);
         }
@@ -269,7 +255,7 @@
     });
   };
 
-  CStudioBrowseWebDAV.parseObjToFolders = function(items) {
+  CStudioBrowseWebDAV.parseObjToFolders = function (items) {
     var path = CStudioAuthoring.Utils.getQueryParameterByName('path');
     path = path.slice(-1) == '/' ? path.substring(0, path.length - 1) : path;
     var parsed = {
@@ -286,7 +272,7 @@
       },
       object;
 
-    $.each(items, function(index, value) {
+    $.each(items, function (index, value) {
       // Do not show root folder (coming from service).
       var valueUrl = CStudioBrowseWebDAV.cleanUrl(value.url);
       if (value.folder && path !== valueUrl) {
@@ -305,7 +291,7 @@
     return parsed;
   };
 
-  CStudioBrowseWebDAV.parseItemObj = function(item) {
+  CStudioBrowseWebDAV.parseItemObj = function (item) {
     var filter = CStudioAuthoring.Utils.getQueryParameterByName('filter'),
       parsed = {
         itemId: item.item_id,
@@ -320,7 +306,7 @@
     return parsed;
   };
 
-  CStudioBrowseWebDAV.renderSiteContent = function(path, type) {
+  CStudioBrowseWebDAV.renderSiteContent = function (path, type) {
     var me = this,
       type = type ? type : 'browse',
       $resultsContainer =
@@ -348,7 +334,7 @@
         var $resultsWrapper = $('<div class="results-wrapper"/>');
         $resultsContainer.prepend($resultsWrapper);
 
-        $.each(items, function(index, value) {
+        $.each(items, function (index, value) {
           if (!value.folder) {
             me.renderItem(me.parseItemObj(value), $resultsWrapper, repoPath);
             filesPresent = true;
@@ -365,7 +351,7 @@
       this.getContent(
         type,
         {
-          success: function(response) {
+          success: function (response) {
             var filesPresent = false,
               items = response;
 
@@ -376,7 +362,7 @@
               var $resultsWrapper = $('<div class="results-wrapper"/>');
               $resultsContainer.prepend($resultsWrapper);
 
-              $.each(items, function(index, value) {
+              $.each(items, function (index, value) {
                 if (!value.folder) {
                   me.renderItem(me.parseItemObj(value), $resultsWrapper, repoPath);
                   filesPresent = true;
@@ -390,14 +376,14 @@
               me.renderNoItems(type);
             }
           },
-          failure: function() {}
+          failure: function () {}
         },
         path
       );
     }
   };
 
-  CStudioBrowseWebDAV.renderNoItems = function(type) {
+  CStudioBrowseWebDAV.renderNoItems = function (type) {
     var $resultsContainer, msj;
 
     if ('search' === type) {
@@ -411,22 +397,22 @@
     $resultsContainer.append('<p style="text-align: center; font-weight: bold; display: block;">' + msj + '</p>');
   };
 
-  CStudioBrowseWebDAV.refreshContent = function(path) {
+  CStudioBrowseWebDAV.refreshContent = function (path) {
     this.renderSiteContent(path);
   };
 
-  CStudioBrowseWebDAV.renderContextMenu = function(selector) {
+  CStudioBrowseWebDAV.renderContextMenu = function (selector) {
     var me = this;
 
     $.contextMenu({
       selector: selector,
-      callback: function(key, options) {
+      callback: function (key, options) {
         var pathToUpload = options.$trigger.attr('data-path'),
           basePath = CStudioAuthoring.Utils.getQueryParameterByName('path');
         pathToUpload = pathToUpload === 'webdav-root' ? basePath : pathToUpload;
 
         var upload = me.uploadContent(CStudioAuthoringContext.site, pathToUpload);
-        upload.then(function() {
+        upload.then(function () {
           me.refreshContent(pathToUpload);
         });
       },
@@ -436,7 +422,7 @@
     });
   };
 
-  CStudioBrowseWebDAV.getContent = function(type, cb, cPath) {
+  CStudioBrowseWebDAV.getContent = function (type, cb, cPath) {
     var pathURL = CStudioAuthoring.Utils.getQueryParameterByName('path'),
       path = cPath ? cPath : pathURL.slice(-1) == '/' ? pathURL.substring(0, pathURL.length - 1) : pathURL,
       profileId = CStudioAuthoring.Utils.getQueryParameterByName('profileId'),
@@ -444,10 +430,10 @@
       filter = CStudioAuthoring.Utils.getQueryParameterByName('filter');
 
     var callbackContent = {
-      success: function(response) {
+      success: function (response) {
         cb.success(response);
       },
-      failure: function(response) {
+      failure: function (response) {
         var message = CMgs.format(browseLangBundle, '' + response.status + '');
         var error = JSON.parse(response.responseText),
           errorMessage = error.errors[0];
@@ -471,7 +457,7 @@
           'studioDialog'
         );
 
-        $('#error-dialog').on('click', '.show-more-toggle', function() {
+        $('#error-dialog').on('click', '.show-more-toggle', function () {
           var code = $('#errorCode'),
             toggle = $('.show-more-toggle');
 
@@ -499,22 +485,22 @@
       .subscribe(callbackContent.success, callbackContent.failure);
   };
 
-  CStudioBrowseWebDAV.uploadContent = function(site, path) {
+  CStudioBrowseWebDAV.uploadContent = function (site, path) {
     var d = new $.Deferred(),
       profileId = CStudioAuthoring.Utils.getQueryParameterByName('profileId');
 
     CStudioAuthoring.Operations.uploadWebDAVAsset(site, path, profileId, {
-      success: function(results) {
+      success: function (results) {
         d.resolve(results);
       },
-      failure: function() {}
+      failure: function () {}
     });
 
     return d.promise();
   };
 
   // Cleans url by removing baseUrl for getContent to work (needs relative url)
-  CStudioBrowseWebDAV.cleanUrl = function(url) {
+  CStudioBrowseWebDAV.cleanUrl = function (url) {
     return encodeURI(url.replace(this.repoBaseUrl, ''));
   };
 

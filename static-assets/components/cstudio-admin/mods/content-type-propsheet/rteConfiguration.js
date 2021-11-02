@@ -16,7 +16,7 @@
 
 CStudioAdminConsole.Tool.ContentTypes.PropertyType.RteConfiguration =
   CStudioAdminConsole.Tool.ContentTypes.PropertyType.RteConfiguration ||
-  function(fieldName, containerEl, form, type) {
+  function (fieldName, containerEl, form, type) {
     this.fieldName = fieldName;
     this.containerEl = containerEl;
     this.form = form;
@@ -27,7 +27,7 @@ YAHOO.extend(
   CStudioAdminConsole.Tool.ContentTypes.PropertyType.RteConfiguration,
   CStudioAdminConsole.Tool.ContentTypes.PropertyType,
   {
-    render: function(value, updateFn) {
+    render: function (value, updateFn) {
       var _self = this;
       var form = this.form;
       var type = this['interface'];
@@ -49,7 +49,7 @@ YAHOO.extend(
       YAHOO.util.Event.on(
         valueEl,
         'keydown',
-        function(evt) {
+        function (evt) {
           YAHOO.util.Event.stopEvent(evt);
         },
         valueEl
@@ -57,12 +57,12 @@ YAHOO.extend(
       YAHOO.util.Event.on(
         valueEl,
         'click',
-        function(evt) {
+        function (evt) {
           valueEl.style.display = 'none';
           pickEl.style.display = 'inline';
 
           var configCb = {
-            success: function(config) {
+            success: function (config) {
               pickEl.options.length = 0;
 
               for (var j = 0; j < config.setup.length; j++) {
@@ -74,7 +74,7 @@ YAHOO.extend(
                 }
               }
             },
-            failure: function() {}
+            failure: function () {}
           };
 
           CStudioAuthoring.Service.lookupConfigurtion(
@@ -89,7 +89,7 @@ YAHOO.extend(
       YAHOO.util.Event.on(
         pickEl,
         'change',
-        function(evt) {
+        function (evt) {
           valueEl.style.display = 'inline';
           pickEl.style.display = 'none';
           var value = pickEl.options[pickEl.selectedIndex].value;
@@ -101,7 +101,7 @@ YAHOO.extend(
       );
     },
 
-    getValue: function() {
+    getValue: function () {
       return this.valueEl.value;
     }
   }

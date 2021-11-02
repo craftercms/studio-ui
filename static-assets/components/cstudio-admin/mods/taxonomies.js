@@ -16,12 +16,12 @@
 
 CStudioAdminConsole.Tool.ContentTypes =
   CStudioAdminConsole.Tool.ContentTypes ||
-  function(config, el) {
+  function (config, el) {
     return this;
   };
 
 YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes, CStudioAdminConsole.Tool, {
-  renderWorkarea: function() {
+  renderWorkarea: function () {
     var a = "<div id='content-type-canvas'>" + '' + '</div>' + "<div id='content-type-tools'>" + '' + '</div>';
 
     var actions = [];

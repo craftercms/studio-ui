@@ -16,7 +16,7 @@
 
 CStudioForms.Datasources.CMISUpload =
   CStudioForms.Datasources.CMISUpload ||
-  function(id, form, properties, constraints) {
+  function (id, form, properties, constraints) {
     this.id = id;
     this.form = form;
     this.properties = properties;
@@ -44,7 +44,7 @@ YAHOO.extend(CStudioForms.Datasources.CMISUpload, CStudioForms.CStudioFormDataso
   /**
    * action called when user clicks insert file
    */
-  add: function(control, multiple) {
+  add: function (control, multiple) {
     (this._self = this), (me = this);
 
     var site = CStudioAuthoringContext.site;
@@ -76,9 +76,9 @@ YAHOO.extend(CStudioForms.Datasources.CMISUpload, CStudioForms.CStudioFormDataso
       </li>`
     );
 
-    create.find('a').on('click', function() {
+    create.find('a').on('click', function () {
       CStudioAuthoring.Operations.uploadCMISAsset(site, path, me.repositoryId, {
-        success: function(fileData) {
+        success: function (fileData) {
           if (control) {
             var item = fileData.url,
               fileName = fileData.url,
@@ -91,7 +91,7 @@ YAHOO.extend(CStudioForms.Datasources.CMISUpload, CStudioForms.CStudioFormDataso
             CStudioAuthoring.Utils.decreaseFormDialog();
           }
         },
-        failure: function() {
+        failure: function () {
           if (control) {
             control.failure('An error occurred while uploading the file.');
           }
@@ -103,26 +103,26 @@ YAHOO.extend(CStudioForms.Datasources.CMISUpload, CStudioForms.CStudioFormDataso
     control.$dropdownMenu.append(create);
   },
 
-  getLabel: function() {
+  getLabel: function () {
     return CMgs.format(langBundle, 'CMISUpload');
   },
 
-  getInterface: function() {
+  getInterface: function () {
     return 'item';
   },
 
-  getName: function() {
+  getName: function () {
     return 'CMIS-upload';
   },
 
-  getSupportedProperties: function() {
+  getSupportedProperties: function () {
     return [
       { label: CMgs.format(langBundle, 'repositoryPath'), name: 'repoPath', type: 'string' },
       { label: CMgs.format(langBundle, 'repositoryId'), name: 'repositoryId', type: 'string' }
     ];
   },
 
-  getSupportedConstraints: function() {
+  getSupportedConstraints: function () {
     return [];
   }
 });

@@ -16,7 +16,7 @@
 
 CStudioForms.Datasources.WebDAVRepo =
   CStudioForms.Datasources.WebDAVRepo ||
-  function(id, form, properties, constraints) {
+  function (id, form, properties, constraints) {
     this.id = id;
     this.form = form;
     this.properties = properties;
@@ -39,7 +39,7 @@ CStudioForms.Datasources.WebDAVRepo =
   };
 
 YAHOO.extend(CStudioForms.Datasources.WebDAVRepo, CStudioForms.CStudioFormDatasource, {
-  add: function(control, multiple) {
+  add: function (control, multiple) {
     var _self = this;
 
     var datasourceDef = this.form.definition.datasources,
@@ -61,14 +61,14 @@ YAHOO.extend(CStudioForms.Datasources.WebDAVRepo, CStudioForms.CStudioFormDataso
       </li>`
     );
 
-    create.find('a').on('click', function() {
+    create.find('a').on('click', function () {
       CStudioAuthoring.Operations.openWebDAVBrowse(
         _self.processPathsForMacros(_self.repoPath),
         _self.profileId,
         'select',
         true,
         {
-          success: function(searchId, selectedTOs) {
+          success: function (searchId, selectedTOs) {
             for (var i = 0; i < selectedTOs.length; i++) {
               var item = selectedTOs[i];
               var uri = item.browserUri;
@@ -81,7 +81,7 @@ YAHOO.extend(CStudioForms.Datasources.WebDAVRepo, CStudioForms.CStudioFormDataso
               }
             }
           },
-          failure: function() {}
+          failure: function () {}
         }
       );
     });
@@ -89,34 +89,34 @@ YAHOO.extend(CStudioForms.Datasources.WebDAVRepo, CStudioForms.CStudioFormDataso
     control.$dropdownMenu.append(create);
   },
 
-  getConfig: function(callback) {
+  getConfig: function (callback) {
     CStudioAuthoring.Service.getConfiguration(CStudioAuthoringContext.site, '/webdav/webdav.xml', {
-      success: function(config) {
+      success: function (config) {
         callback(config);
       }
     });
   },
 
-  getLabel: function() {
+  getLabel: function () {
     return CMgs.format(langBundle, 'fileWebDavRepository');
   },
 
-  getInterface: function() {
+  getInterface: function () {
     return 'item';
   },
 
-  getName: function() {
+  getName: function () {
     return 'WebDAV-repo';
   },
 
-  getSupportedProperties: function() {
+  getSupportedProperties: function () {
     return [
       { label: CMgs.format(langBundle, 'repositoryPath'), name: 'repoPath', type: 'string' },
       { label: CMgs.format(langBundle, 'profileId'), name: 'profileId', type: 'string' }
     ];
   },
 
-  getSupportedConstraints: function() {
+  getSupportedConstraints: function () {
     return [];
   }
 });

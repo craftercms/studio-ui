@@ -16,8 +16,8 @@
 
 CStudioForms.Controls.RTE.ImageEditor =
   CStudioForms.Controls.RTE.ImageEditor ||
-  (function() {
-    var validateAndClose = function() {
+  (function () {
+    var validateAndClose = function () {
       if (imageEditor.isSet()) {
         if (tinymce2.activeEditor.contextControl.forceImageAlts == true) {
           var altTextEl = document.getElementById('rteImageAltText'),
@@ -45,12 +45,12 @@ CStudioForms.Controls.RTE.ImageEditor =
     };
 
     var imageEditor = {
-      isSet: function() {
+      isSet: function () {
         var imagePropertiesEl = document.getElementById('rte-image-properties');
         return imagePropertiesEl && !YAHOO.util.Dom.hasClass(imagePropertiesEl, 'hidden');
       },
 
-      hide: function() {
+      hide: function () {
         var imagePropertiesEl = document.getElementById('rte-image-properties');
 
         if (imagePropertiesEl) {
@@ -58,7 +58,7 @@ CStudioForms.Controls.RTE.ImageEditor =
         }
       },
 
-      renderImageEdit: function(editor, imageElement) {
+      renderImageEdit: function (editor, imageElement) {
         var rteControl = editor.contextControl,
           imagePropertiesEl = document.getElementById('rte-image-properties');
 
@@ -120,14 +120,14 @@ CStudioForms.Controls.RTE.ImageEditor =
         var imageHeightEl = document.getElementById('rteImageHeight');
         YAHOO.util.Dom.addClass(imageHeightEl, 'rte-image-prop-size-input form-control');
         imageHeightEl.value = imageElement.height;
-        YAHOO.util.Event.on(imageHeightEl, 'keyup', function() {
+        YAHOO.util.Event.on(imageHeightEl, 'keyup', function () {
           imageElement.height = imageHeightEl.value;
         });
 
         var imageWidthEl = document.getElementById('rteImageWidth');
         YAHOO.util.Dom.addClass(imageWidthEl, 'rte-image-prop-size-input form-control');
         imageWidthEl.value = imageElement.width;
-        YAHOO.util.Event.on(imageWidthEl, 'keyup', function() {
+        YAHOO.util.Event.on(imageWidthEl, 'keyup', function () {
           imageElement.width = imageWidthEl.value;
         });
 
@@ -137,7 +137,7 @@ CStudioForms.Controls.RTE.ImageEditor =
         var imageAlignRightEl = document.getElementById('rteImageAlignRight');
         var imageAlignCenterEl = document.getElementById('rteImageAlignCenter');
 
-        var selectAlignFn = function() {
+        var selectAlignFn = function () {
           YAHOO.util.Dom.removeClass(imageAlignNoneEl, 'rte-image-prop-align-selected');
           YAHOO.util.Dom.removeClass(imageAlignLeftEl, 'rte-image-prop-align-selected');
           YAHOO.util.Dom.removeClass(imageAlignRightEl, 'rte-image-prop-align-selected');
@@ -162,7 +162,7 @@ CStudioForms.Controls.RTE.ImageEditor =
 
         YAHOO.util.Dom.addClass(imageAlignNoneEl, 'rte-image-prop-align');
         YAHOO.util.Dom.addClass(imageAlignNoneEl, 'rte-image-prop-align-none');
-        YAHOO.util.Event.on(imageAlignNoneEl, 'click', function() {
+        YAHOO.util.Event.on(imageAlignNoneEl, 'click', function () {
           imageElement.align = 'none';
           CStudioForms.Controls.RTE.ImageEditor.setStyleStr(editor, imageElement, 'display', 'inline');
           CStudioForms.Controls.RTE.ImageEditor.setStyleStr(editor, imageElement, 'margin', '');
@@ -172,7 +172,7 @@ CStudioForms.Controls.RTE.ImageEditor =
 
         YAHOO.util.Dom.addClass(imageAlignLeftEl, 'rte-image-prop-align');
         YAHOO.util.Dom.addClass(imageAlignLeftEl, 'rte-image-prop-align-left');
-        YAHOO.util.Event.on(imageAlignLeftEl, 'click', function() {
+        YAHOO.util.Event.on(imageAlignLeftEl, 'click', function () {
           imageElement.align = 'left';
           CStudioForms.Controls.RTE.ImageEditor.setStyleStr(editor, imageElement, 'display', 'inline');
           CStudioForms.Controls.RTE.ImageEditor.setStyleStr(editor, imageElement, 'margin', '');
@@ -182,7 +182,7 @@ CStudioForms.Controls.RTE.ImageEditor =
 
         YAHOO.util.Dom.addClass(imageAlignRightEl, 'rte-image-prop-align');
         YAHOO.util.Dom.addClass(imageAlignRightEl, 'rte-image-prop-align-right');
-        YAHOO.util.Event.on(imageAlignRightEl, 'click', function() {
+        YAHOO.util.Event.on(imageAlignRightEl, 'click', function () {
           imageElement.align = 'right';
           CStudioForms.Controls.RTE.ImageEditor.setStyleStr(editor, imageElement, 'display', 'inline');
           CStudioForms.Controls.RTE.ImageEditor.setStyleStr(editor, imageElement, 'margin', '');
@@ -192,7 +192,7 @@ CStudioForms.Controls.RTE.ImageEditor =
 
         YAHOO.util.Dom.addClass(imageAlignCenterEl, 'rte-image-prop-align');
         YAHOO.util.Dom.addClass(imageAlignCenterEl, 'rte-image-prop-align-center');
-        YAHOO.util.Event.on(imageAlignCenterEl, 'click', function() {
+        YAHOO.util.Event.on(imageAlignCenterEl, 'click', function () {
           imageElement.align = 'middle';
           CStudioForms.Controls.RTE.ImageEditor.setStyleStr(editor, imageElement, 'display', 'block');
           CStudioForms.Controls.RTE.ImageEditor.setStyleStr(editor, imageElement, 'margin', '0 auto');
@@ -229,7 +229,7 @@ CStudioForms.Controls.RTE.ImageEditor =
         YAHOO.util.Dom.addClass(imageMarginTopEl, 'rte-image-prop-layout-input form-control');
         YAHOO.util.Dom.addClass(imageMarginTopEl, 'rte-image-prop-layout-topm');
         imageMarginTopEl.value = imageElement.style.marginTop.replace('px', '');
-        YAHOO.util.Event.on(imageMarginTopEl, 'keyup', function() {
+        YAHOO.util.Event.on(imageMarginTopEl, 'keyup', function () {
           CStudioForms.Controls.RTE.ImageEditor.setStyleStr(
             editor,
             imageElement,
@@ -242,7 +242,7 @@ CStudioForms.Controls.RTE.ImageEditor =
         YAHOO.util.Dom.addClass(imageMarginBottomEl, 'rte-image-prop-layout-input form-control');
         YAHOO.util.Dom.addClass(imageMarginBottomEl, 'rte-image-prop-layout-bottomm');
         imageMarginBottomEl.value = imageElement.style.marginBottom.replace('px', '');
-        YAHOO.util.Event.on(imageMarginBottomEl, 'keyup', function() {
+        YAHOO.util.Event.on(imageMarginBottomEl, 'keyup', function () {
           CStudioForms.Controls.RTE.ImageEditor.setStyleStr(
             editor,
             imageElement,
@@ -255,7 +255,7 @@ CStudioForms.Controls.RTE.ImageEditor =
         YAHOO.util.Dom.addClass(imageMarginLeftEl, 'rte-image-prop-layout-input form-control');
         YAHOO.util.Dom.addClass(imageMarginLeftEl, 'rte-image-prop-layout-leftm');
         imageMarginLeftEl.value = imageElement.style.marginLeft.replace('px', '');
-        YAHOO.util.Event.on(imageMarginLeftEl, 'keyup', function() {
+        YAHOO.util.Event.on(imageMarginLeftEl, 'keyup', function () {
           CStudioForms.Controls.RTE.ImageEditor.setStyleStr(
             editor,
             imageElement,
@@ -268,7 +268,7 @@ CStudioForms.Controls.RTE.ImageEditor =
         YAHOO.util.Dom.addClass(imageMarginRightEl, 'rte-image-prop-layout-input form-control');
         YAHOO.util.Dom.addClass(imageMarginRightEl, 'rte-image-prop-layout-rightm');
         imageMarginRightEl.value = imageElement.style.marginRight.replace('px', '');
-        YAHOO.util.Event.on(imageMarginRightEl, 'keyup', function() {
+        YAHOO.util.Event.on(imageMarginRightEl, 'keyup', function () {
           CStudioForms.Controls.RTE.ImageEditor.setStyleStr(
             editor,
             imageElement,
@@ -290,7 +290,7 @@ CStudioForms.Controls.RTE.ImageEditor =
         var AltTextEl = document.getElementById('rteImageAltText');
         AltTextEl.value = imageElement.alt;
         YAHOO.util.Dom.addClass(AltTextEl, 'rte-image-prop-altlink-alttext form-control');
-        YAHOO.util.Event.on(AltTextEl, 'keyup', function() {
+        YAHOO.util.Event.on(AltTextEl, 'keyup', function () {
           imageElement.alt = AltTextEl.value;
         });
 
@@ -308,7 +308,7 @@ CStudioForms.Controls.RTE.ImageEditor =
         saveBtn.style.cssText = 'margin-right: 10px;';
         imageActionButtons.appendChild(saveBtn);
 
-        YAHOO.util.Event.on(saveBtn, 'click', function() {
+        YAHOO.util.Event.on(saveBtn, 'click', function () {
           me.hide();
         });
 
@@ -318,7 +318,7 @@ CStudioForms.Controls.RTE.ImageEditor =
         cancelBtn.value = 'Cancel';
         imageActionButtons.appendChild(cancelBtn);
 
-        YAHOO.util.Event.on(cancelBtn, 'click', function() {
+        YAHOO.util.Event.on(cancelBtn, 'click', function () {
           imageElement.height = imageProperties.height;
           imageElement.width = imageProperties.width;
           imageElement.style.marginTop = imageProperties.marginTop;
@@ -334,7 +334,7 @@ CStudioForms.Controls.RTE.ImageEditor =
         imagePropertiesEl.appendChild(imageActionButtons);
       },
 
-      setStyleStr: function(editor, element, style, value) {
+      setStyleStr: function (editor, element, style, value) {
         tinymce2.DOM.setStyle(element, style, value);
         var styleStr =
           typeof element.getAttribute('style') !== 'string' ? element.style.cssText : element.getAttribute('style');

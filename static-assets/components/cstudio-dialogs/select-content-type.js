@@ -153,7 +153,7 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = {
     // Render the Dialog
     content_type_dialog.render();
 
-    content_type_dialog.cfg.subscribe('configChanged', function(p_sType, p_aArgs) {
+    content_type_dialog.cfg.subscribe('configChanged', function (p_sType, p_aArgs) {
       var aProperty = p_aArgs[0],
         sPropertyName = aProperty[0],
         oPropertyValue = aProperty[1];
@@ -167,7 +167,7 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = {
       self: this
     });
 
-    $('#closeWCMPopup').click(function() {
+    $('#closeWCMPopup').click(function () {
       self.contentPopupCancel();
     });
 
@@ -177,7 +177,7 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = {
         CStudioAuthoring.Utils.setDefaultFocusOn(YDom.get('submitWCMPopup'));
       }
 
-      $(document).on('keyup', function(e) {
+      $(document).on('keyup', function (e) {
         // esc
         if (e.keyCode === 27) {
           self.contentPopupCancel();
@@ -264,7 +264,7 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = {
       contentTypesSelect.options.add(option);
     }
 
-    YAHOO.util.Event.addListener('wcm-content-types-dropdown', 'change', function() {
+    YAHOO.util.Event.addListener('wcm-content-types-dropdown', 'change', function () {
       var defaultSrc = CStudioAuthoringContext.baseUri + '/static-assets/themes/cstudioTheme/images/';
       var defaultImg = 'default-contentType.jpg';
       var contentTypePreviewImg = YDom.get('contentTypePreviewImg');
@@ -319,7 +319,7 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = {
   /**
    * event fired when the ok is pressed
    */
-  contentPopupSubmit: function(event, args) {
+  contentPopupSubmit: function (event, args) {
     var contentTypesSelect = document.getElementById('wcm-content-types-dropdown');
     var selectedIndex = contentTypesSelect.selectedIndex;
     var selectedType = contentTypesSelect.value;
@@ -333,7 +333,7 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = {
   /**
    * event fired when the cancel is pressed
    */
-  contentPopupCancel: function(event) {
+  contentPopupCancel: function (event) {
     CStudioAuthoring.Dialogs.DialogSelectContentType.hideDialog();
     if (window.frameElement) {
       var id = window.frameElement.getAttribute('id').split('-editor-')[1];

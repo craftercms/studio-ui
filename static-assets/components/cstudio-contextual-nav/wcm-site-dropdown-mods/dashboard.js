@@ -26,7 +26,7 @@ CStudioAuthoring.ContextualNav.Dashboard = CStudioAuthoring.ContextualNav.Dashbo
   /**
    * initialize module
    */
-  initialize: function(config) {
+  initialize: function (config) {
     if (config.name == 'dashboard') {
       var moduleConfig = {
         label: 'dashboard',

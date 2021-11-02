@@ -25,7 +25,7 @@ CStudioAuthoring.ContextualNav.WcmLogo = CStudioAuthoring.ContextualNav.WcmLogo 
   /**
    * initialize module
    */
-  initialize: function(config) {
+  initialize: function (config) {
     var LOGO = '/studio/static-assets/images/logo.svg';
 
     YDom.get('cstudio-logo').src = LOGO;

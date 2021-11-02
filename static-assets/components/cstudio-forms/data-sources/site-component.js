@@ -16,7 +16,7 @@
 
 CStudioForms.Datasources.SiteComponent =
   CStudioForms.Datasources.SiteComponent ||
-  function(id, form, properties, constraints) {
+  function (id, form, properties, constraints) {
     this.id = id;
     this.form = form;
     this.properties = properties;
@@ -67,11 +67,11 @@ CStudioForms.Datasources.SiteComponent =
   };
 
 YAHOO.extend(CStudioForms.Datasources.SiteComponent, CStudioForms.CStudioFormDatasource, {
-  getLabel: function() {
+  getLabel: function () {
     return CrafterCMSNext.i18n.intl.formatMessage(CrafterCMSNext.i18n.messages.siteComponentDSMessages.siteComponent);
   },
 
-  getInterface: function() {
+  getInterface: function () {
     return 'item';
   },
 
@@ -85,11 +85,11 @@ YAHOO.extend(CStudioForms.Datasources.SiteComponent, CStudioForms.CStudioFormDat
   getDataType: function getDataType() {
     var val = null;
 
-    this.properties.forEach(function(prop) {
+    this.properties.forEach(function (prop) {
       if (prop.name === 'dataType') {
         // return the value of the option currently selected
         var value = JSON.parse(prop.value);
-        value.forEach(function(opt) {
+        value.forEach(function (opt) {
           if (opt.selected) {
             val = opt.value;
           }
@@ -99,11 +99,11 @@ YAHOO.extend(CStudioForms.Datasources.SiteComponent, CStudioForms.CStudioFormDat
     return val;
   },
 
-  getName: function() {
+  getName: function () {
     return 'site-component';
   },
 
-  getSupportedProperties: function() {
+  getSupportedProperties: function () {
     return [
       {
         label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.siteComponentDSMessages.dataType),
@@ -151,7 +151,7 @@ YAHOO.extend(CStudioForms.Datasources.SiteComponent, CStudioForms.CStudioFormDat
     ];
   },
 
-  getSupportedConstraints: function() {
+  getSupportedConstraints: function () {
     return [
       {
         label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.siteComponentDSMessages.required),
@@ -161,7 +161,7 @@ YAHOO.extend(CStudioForms.Datasources.SiteComponent, CStudioForms.CStudioFormDat
     ];
   },
 
-  getList: function(cb) {
+  getList: function (cb) {
     if (!this.list) {
       this.callbacks[this.callbacks.length] = cb;
     } else {

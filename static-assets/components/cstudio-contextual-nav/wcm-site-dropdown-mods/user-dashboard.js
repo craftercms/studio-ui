@@ -21,7 +21,7 @@ CStudioAuthoring.ContextualNav.UserDashboard = CStudioAuthoring.ContextualNav.Us
   /**
    * initialize module
    */
-  initialize: function(config) {
+  initialize: function (config) {
     if (config.name == 'user-dashboard') {
       this.initialized = true;
       var dropdownInnerEl = config.containerEl;
@@ -36,7 +36,7 @@ CStudioAuthoring.ContextualNav.UserDashboard = CStudioAuthoring.ContextualNav.Us
 
       parentFolderLinkEl.id = 'user-dashboard';
       parentFolderLinkEl.innerHTML = 'User Dashboard';
-      parentFolderLinkEl.onclick = function() {
+      parentFolderLinkEl.onclick = function () {
         document.location = CStudioAuthoringContext.authoringAppBaseUri + '/user-dashboard';
       };
 

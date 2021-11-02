@@ -23,12 +23,12 @@ CStudioAuthoring.ContextualNav.PreviewToolsMod = CStudioAuthoring.ContextualNav.
   /**
    * initialize module
    */
-  initialize: function(config) {
+  initialize: function (config) {
     this.definePlugin();
     CStudioAuthoring.ContextualNav.PreviewToolsNav.init();
   },
 
-  definePlugin: function() {
+  definePlugin: function () {
     var YDom = YAHOO.util.Dom,
       YEvent = YAHOO.util.Event;
     /**
@@ -36,22 +36,22 @@ CStudioAuthoring.ContextualNav.PreviewToolsMod = CStudioAuthoring.ContextualNav.
      */
     CStudioAuthoring.register({
       'ContextualNav.PreviewToolsNav': {
-        init: function() {
+        init: function () {
           if (CStudioAuthoringContext.isPreview == true) {
             if (CStudioAuthoring.PreviewTools) {
               this.render();
             } else {
               cb = {
-                moduleLoaded: function(moduleName, moduleClass, moduleConfig) {
+                moduleLoaded: function (moduleName, moduleClass, moduleConfig) {
                   try {
                     if (!this.initialized) {
-                      CStudioAuthoring.PreviewTools.PreviewToolsOffEvent.subscribe(function() {
+                      CStudioAuthoring.PreviewTools.PreviewToolsOffEvent.subscribe(function () {
                         var el = YDom.get('acn-preview-tools-container');
                         YDom.removeClass(el.children[0], 'icon-light-blue');
                         YDom.addClass(el.children[0], 'icon-default');
                       });
 
-                      CStudioAuthoring.PreviewTools.PreviewToolsOnEvent.subscribe(function() {
+                      CStudioAuthoring.PreviewTools.PreviewToolsOnEvent.subscribe(function () {
                         var el = YDom.get('acn-preview-tools-container');
                         YDom.removeClass(el.children[0], 'icon-default');
                         YDom.addClass(el.children[0], 'icon-light-blue');
@@ -77,7 +77,7 @@ CStudioAuthoring.ContextualNav.PreviewToolsMod = CStudioAuthoring.ContextualNav.
           }
         },
 
-        render: function() {
+        render: function () {
           var el, containerEl, iconEl, ptoOn;
 
           var CMgs = CStudioAuthoring.Messages;
@@ -106,7 +106,7 @@ CStudioAuthoring.ContextualNav.PreviewToolsMod = CStudioAuthoring.ContextualNav.
 
           var cstopic = crafter.studio.preview.cstopic;
 
-          el.onclick = function() {
+          el.onclick = function () {
             var ptoOn = !!sessionStorage.getItem('pto-on'),
               componentsOn = !!sessionStorage.getItem('components-on');
 
@@ -117,7 +117,7 @@ CStudioAuthoring.ContextualNav.PreviewToolsMod = CStudioAuthoring.ContextualNav.
                   '/preview-tools/components-config.xml',
                   {
                     failure: CStudioAuthoring.Utils.noop,
-                    success: function(config) {
+                    success: function (config) {
                       amplify.publish(cstopic('DND_COMPONENTS_PANEL_ON'), {
                         components: config
                       });

@@ -16,7 +16,7 @@
 
 CStudioForms.Datasources.ImgWebS3Repo =
   CStudioForms.Datasources.ImgWebS3Repo ||
-  function(id, form, properties, constraints) {
+  function (id, form, properties, constraints) {
     this.id = id;
     this.form = form;
     this.properties = properties;
@@ -35,11 +35,11 @@ CStudioForms.Datasources.ImgWebS3Repo =
   };
 
 YAHOO.extend(CStudioForms.Datasources.ImgWebS3Repo, CStudioForms.CStudioFormDatasource, {
-  insertImageAction: function(insertCb) {
+  insertImageAction: function (insertCb) {
     var _self = this;
 
     var browseCb = {
-      success: function(searchId, selectedTOs) {
+      success: function (searchId, selectedTOs) {
         for (var i = 0; i < selectedTOs.length; i++) {
           var item = selectedTOs[i];
           var uri = item.browserUri;
@@ -56,7 +56,7 @@ YAHOO.extend(CStudioForms.Datasources.ImgWebS3Repo, CStudioForms.CStudioFormData
           insertCb.success(imageData, true);
         }
       },
-      failure: function() {}
+      failure: function () {}
     };
 
     CStudioAuthoring.Operations.openS3Browse(
@@ -69,26 +69,26 @@ YAHOO.extend(CStudioForms.Datasources.ImgWebS3Repo, CStudioForms.CStudioFormData
     );
   },
 
-  getLabel: function() {
+  getLabel: function () {
     return CMgs.format(langBundle, 'imageS3Repository');
   },
 
-  getInterface: function() {
+  getInterface: function () {
     return 'image';
   },
 
-  getName: function() {
+  getName: function () {
     return 'img-S3-repo';
   },
 
-  getSupportedProperties: function() {
+  getSupportedProperties: function () {
     return [
       { label: CMgs.format(langBundle, 'repositoryPath'), name: 'path', type: 'string' },
       { label: CMgs.format(langBundle, 'profileId'), name: 'profileId', type: 'string' }
     ];
   },
 
-  getSupportedConstraints: function() {
+  getSupportedConstraints: function () {
     return [];
   }
 });
