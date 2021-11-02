@@ -21,70 +21,70 @@ YAHOO.tool.TestRunner.add(
     company1: YAHOO.util.Dom.get('company1').getElementsByTagName('input')[0],
     company2: YAHOO.util.Dom.get('company2').getElementsByTagName('input')[0],
 
-    testValueCompare1: function() {
+    testValueCompare1: function () {
       ORBEON.util.Test.executeCausingAjaxRequest(
         this,
-        function() {
+        function () {
           this.company1.focus();
         },
-        function() {
+        function () {
           YAHOO.util.Assert.areEqual('foo', this.company1.value, "Value doesn't match, 'foo' Expected");
         }
       );
     },
 
-    testValueCompare2: function() {
+    testValueCompare2: function () {
       ORBEON.util.Test.executeCausingAjaxRequest(
         this,
-        function() {
+        function () {
           this.company1.focus();
         },
-        function() {
+        function () {
           YAHOO.util.Assert.areEqual('bar', this.company1.value, "Value doesn't match, 'foo' Expected");
         }
       );
     },
 
-    testSizeCompare1: function() {
+    testSizeCompare1: function () {
       ORBEON.util.Test.executeCausingAjaxRequest(
         this,
-        function() {
+        function () {
           this.company1.focus();
         },
-        function() {
+        function () {
           YAHOO.util.Assert.areSame(6, this.company1.value.length, "Size doesn't match");
         }
       );
     },
 
-    testSizeCompareMax1: function() {
+    testSizeCompareMax1: function () {
       ORBEON.util.Test.executeCausingAjaxRequest(
         this,
-        function() {
+        function () {
           // YAHOO.util.UserAction.keyup(this.company2);
         },
-        function() {
+        function () {
           YAHOO.util.Assert.areSame(5, this.company2.value.length, "Size doesn't match");
         }
       );
     },
 
-    testSizeCompareMax2: function() {
+    testSizeCompareMax2: function () {
       ORBEON.util.Test.executeCausingAjaxRequest(
         this,
-        function() {
+        function () {
           YAHOO.util.UserAction.keyup(this.company2);
         },
-        function() {
+        function () {
           YAHOO.util.Assert.areSame(5, this.company2.value.length, "Size doesn't match");
         }
       );
     },
 
-    testSizeDisplay1: function() {
+    testSizeDisplay1: function () {
       ORBEON.util.Test.executeCausingAjaxRequest(
         this,
-        function() {
+        function () {
           this.company2.value = 'Hello Company!';
           // YAHOO.util.UserAction.keyup(this.company2);
           this.displayElement = YAHOO.util.Dom.getElementsByClassName(
@@ -98,7 +98,7 @@ YAHOO.tool.TestRunner.add(
             YAHOO.util.Dom.get('company2')
           )[0];
         },
-        function() {
+        function () {
           YAHOO.util.Assert.areSame(
             this.displayElement.innerHTML,
             this.company2.value.length + ' / ' + this.maxLength.innerHTML,
@@ -108,10 +108,10 @@ YAHOO.tool.TestRunner.add(
       );
     },
 
-    testSizeDisplay2: function() {
+    testSizeDisplay2: function () {
       ORBEON.util.Test.executeCausingAjaxRequest(
         this,
-        function() {
+        function () {
           this.company2.value = 'Hello Company!';
           YAHOO.util.UserAction.keyup(this.company2);
           this.displayElement = YAHOO.util.Dom.getElementsByClassName(
@@ -125,7 +125,7 @@ YAHOO.tool.TestRunner.add(
             YAHOO.util.Dom.get('company2')
           )[0];
         },
-        function() {
+        function () {
           YAHOO.util.Assert.areSame(
             this.displayElement.innerHTML,
             this.company2.value.length + ' / ' + this.maxLength.innerHTML,
@@ -137,7 +137,7 @@ YAHOO.tool.TestRunner.add(
   })
 );
 
-ORBEON.xforms.Events.orbeonLoadedEvent.subscribe(function() {
+ORBEON.xforms.Events.orbeonLoadedEvent.subscribe(function () {
   if (parent && parent.TestManager) {
     parent.TestManager.load();
   } else {

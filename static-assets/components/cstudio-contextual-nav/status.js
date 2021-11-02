@@ -23,29 +23,29 @@ CStudioAuthoring.ContextualNav.StatusNavMod = {
   /**
    * initialize module
    */
-  initialize: function() {
+  initialize: function () {
     CrafterCMSNext.system.getStore().subscribe((store) => {
       this.definePlugin(store);
       CStudioAuthoring.ContextualNav.StatusNav.init();
     });
   },
 
-  definePlugin: function(store) {
+  definePlugin: function (store) {
     var CMgs = CStudioAuthoring.Messages;
     /**
      * WCM preview tools Contextual Nav Widget
      */
     CStudioAuthoring.register({
       'ContextualNav.StatusNav': {
-        init: function() {
+        init: function () {
           this.render();
-          window.onmessage = function(e) {
+          window.onmessage = function (e) {
             if (e.data === 'status-changed') {
               store.dispatch({ type: 'FETCH_PUBLISHING_STATUS' });
             }
           };
         },
-        render: function() {
+        render: function () {
           var //
             $el = $('#acn-status'),
             iconClass,
@@ -69,11 +69,11 @@ CStudioAuthoring.ContextualNav.StatusNavMod = {
             }
           });
 
-          $el.on('click', function() {
+          $el.on('click', function () {
             store.dispatch({ type: 'SHOW_PUBLISHING_STATUS_DIALOG', payload: {} });
           });
         },
-        getStatusMessage: function(contextNavLangBundle, status) {
+        getStatusMessage: function (contextNavLangBundle, status) {
           return CMgs.format(contextNavLangBundle, status.toLowerCase());
         }
       }

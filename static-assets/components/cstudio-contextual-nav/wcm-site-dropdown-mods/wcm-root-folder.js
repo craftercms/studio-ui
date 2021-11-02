@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-(function() {
+(function () {
   var YDom = YAHOO.util.Dom,
     YEvent = YAHOO.util.Event,
     YConnect = YAHOO.util.Connect,
@@ -25,7 +25,7 @@
 
   if (YAHOO.lang && !YAHOO.lang.escapeHTML) {
     // YUI version conflicts
-    YAHOO.lang.escapeHTML = function(val) {
+    YAHOO.lang.escapeHTML = function (val) {
       return val;
     };
   }
@@ -72,7 +72,7 @@
       /**
        * initialize module
        */
-      initialize: function(config) {
+      initialize: function (config) {
         var Self = this;
 
         // When initializing, check if it's in preview and set the current previewed item into tree cookie
@@ -187,7 +187,7 @@
                 { config: mod },
                 {
                   context: instance,
-                  moduleLoaded: function(moduleName, moduleClass, moduleConfig) {
+                  moduleLoaded: function (moduleName, moduleClass, moduleConfig) {
                     this.context.mods[this.context.mods.length] = moduleClass;
                     moduleClass.init(moduleConfig);
                   }
@@ -231,7 +231,7 @@
           this.addContentTreeRootFolder(instance);
 
           var contOpenTreeTimes = 0;
-          var openTreeFn = function(instance, thisComponent) {
+          var openTreeFn = function (instance, thisComponent) {
             var readyToLoad = true;
             if (instance.mods.length > 0) {
               for (var m = 0; m < instance.mods.length; m++) {
@@ -249,7 +249,7 @@
                 window.firstClick = true;
                 thisComponent.openLatest(instance);
               }
-              YEvent.on('acn-dropdown-toggler', 'click', function() {
+              YEvent.on('acn-dropdown-toggler', 'click', function () {
                 if (!window.firstClick && YAHOO.util.Dom.getStyle('acn-dropdown-menu-wrapper', 'display') != 'none') {
                   window.firstClick = true;
                   thisComponent.openLatest(instance);
@@ -272,7 +272,7 @@
       /**
        * add a root level folder to the content drop down
        */
-      addContentTreeRootFolder: function(instance) {
+      addContentTreeRootFolder: function (instance) {
         var folderListEl = instance.config.containerEl;
         var parentFolderEl = document.createElement('div');
         var parentFolderLinkEl = document.createElement('a');
@@ -293,11 +293,7 @@
 
         parentFolderLinkEl.appendChild(moduleClosed);
         parentFolderLinkEl.appendChild(moduleOpen);
-        parentFolderLinkEl.appendChild(
-          $('<span />')
-            .text(label)
-            .get(0)
-        );
+        parentFolderLinkEl.appendChild($('<span />').text(label).get(0));
 
         parentFolderLinkEl.onclick = Self.onRootFolderClick;
         parentFolderLinkEl.componentInstance = instance;
@@ -322,7 +318,7 @@
        * initialize the content tree for the dropdown.
        * There are many methods involved, but it all starts here.
        */
-      initializeContentTree: function(treeEl, path, instance) {
+      initializeContentTree: function (treeEl, path, instance) {
         var site = treeEl.rootFolderSite;
         var rootPath = treeEl.rootFolderPath;
         var pathToOpen = path != undefined ? path : null;
@@ -363,11 +359,11 @@
             servPath = rootPath;
           }
 
-          (function(ind) {
+          (function (ind) {
             function treePrint(servPath) {
               CStudioAuthoring.Service.lookupSiteContent(site, servPath, 1, 'default', {
                 openToPath: pathToOpen,
-                success: function(treeData) {
+                success: function (treeData) {
                   YDom.removeClass(label, 'loading');
                   // if(servPath == "/site/website")
                   window.treeData = treeData;
@@ -390,7 +386,7 @@
                   }
                 },
 
-                failure: function() {
+                failure: function () {
                   YDom.removeClass(label, 'loading');
                 }
               });
@@ -404,7 +400,7 @@
       /**
        * to check, if extra ajax call can be reduced
        */
-      pathOnlyHasCannedSearch: function(path, instance) {
+      pathOnlyHasCannedSearch: function (path, instance) {
         if (!instance.showRootItem && instance.cannedSearchCache && instance.cannedSearchCache[path]) return true;
         return false;
       },
@@ -412,11 +408,11 @@
       /**
        * creating Exclude Array
        */
-      creatingExcludeArray: function(exclude, excludeCache) {
+      creatingExcludeArray: function (exclude, excludeCache) {
         if (exclude) {
           const excludes = Array.isArray(exclude) ? exclude : [exclude];
 
-          excludes.forEach(function(path) {
+          excludes.forEach(function (path) {
             if (!excludeCache[path]) {
               excludeCache[path] = [];
             }
@@ -428,7 +424,7 @@
       /**
        * is Exclude
        */
-      isExcludeFromNav: function(path, instance) {
+      isExcludeFromNav: function (path, instance) {
         var regex;
         if (instance.excludeCache[path]) {
           return true;
@@ -445,7 +441,7 @@
       /**
        * render function called on root level elements
        */
-      drawTree: function(treeItems, tree, pathToOpenTo, instance, uniquePath) {
+      drawTree: function (treeItems, tree, pathToOpenTo, instance, uniquePath) {
         self = this;
 
         var treeNodes = [];
@@ -526,8 +522,8 @@
 
         document.addEventListener(
           'setContentDone',
-          function() {
-            var checkRenderingTemplates = function(renderingTemplates) {
+          function () {
+            var checkRenderingTemplates = function (renderingTemplates) {
               var noTemplate = true;
               for (var x = 0; x < renderingTemplates.length; x++) {
                 if (renderingTemplates[x].uri != '') {
@@ -568,7 +564,7 @@
           container: 'acn-context-tooltip'
         });
 
-        tree.subscribe('clickEvent', function(args) {
+        tree.subscribe('clickEvent', function (args) {
           var idTree = tree.id.toString().replace(/-/g, '');
           Self.myTree = Self.myTreePages[idTree];
           Self.onTreeNodeClick(args.node);
@@ -579,11 +575,11 @@
           }
         });
 
-        tree.subscribe('dblClickEvent', function(node) {
+        tree.subscribe('dblClickEvent', function (node) {
           return false;
         });
 
-        tree.subscribe('expand', function(node) {
+        tree.subscribe('expand', function (node) {
           var id = node.labelElId;
           var nodeId = YDom.get(id);
 
@@ -607,7 +603,7 @@
           return true;
         });
 
-        tree.subscribe('collapse', function(node) {
+        tree.subscribe('collapse', function (node) {
           var id = node.labelElId;
           var nodeId = YDom.get(id);
           var collapsedNodeStyle = nodeId.className;
@@ -764,7 +760,7 @@
       /**
        * render method called on sub root level elements
        */
-      drawSubtree: function(treeItems, root, pathToOpenTo, instance) {
+      drawSubtree: function (treeItems, root, pathToOpenTo, instance) {
         var treeNodes = new Array();
         var treeNodesLabels = new Array();
         var nodeToOpen = null;
@@ -901,7 +897,7 @@
       /**
        * draw a canned search element
        */
-      drawCannedSearch: function(searchConfig, root) {
+      drawCannedSearch: function (searchConfig, root) {
         var treeNode = null;
         var searchId = CStudioAuthoring.Utils.generateUUID();
         var newId = CStudioAuthoring.Utils.generateUUID();
@@ -936,7 +932,7 @@
         treeNode.labelStyle = 'acn-canned-search yui-resize-label';
         treeNode._yuiGetHtml = treeNode.getHtml();
 
-        treeNode.getHtml = function() {
+        treeNode.getHtml = function () {
           var markup = treeNode._yuiGetHtml;
           markup = markup.replace(/\&gt;/g, '>');
           markup = markup.replace(/\&lt;/g, '<');
@@ -951,7 +947,7 @@
       /**
        * render a tree item
        */
-      drawTreeItem: function(treeNodeTO, root, instance) {
+      drawTreeItem: function (treeNodeTO, root, instance) {
         var _self = this,
           isPreview = CStudioAuthoringContext.isPreview,
           isLevelDescriptor = '/component/level-descriptor' === treeNodeTO.contentType,
@@ -993,8 +989,9 @@
               )}</div>`
             : treeNodeTO.title;
           nodeSpan.setAttribute('title', tooltip);
-          nodeSpan.className = `${treeNodeTO.style} yui-resize-label treenode-label over-effect-set ${treeNodeTO
-            .statusObj.deleted && 'warning'} ${highlight && 'highlighted'}`;
+          nodeSpan.className = `${treeNodeTO.style} yui-resize-label treenode-label over-effect-set ${
+            treeNodeTO.statusObj.deleted && 'warning'
+          } ${highlight && 'highlighted'}`;
 
           if (!isLevelDescriptor) {
             nodeSpan.dataset.uri = treeNodeTO.uri;
@@ -1038,7 +1035,7 @@
           // Adding ItemMenu Icon and Trigger
           const menuIcon = document.createElement('i');
           menuIcon.className = 'fa fa-ellipsis-v item-menu-trigger';
-          menuIcon.onclick = function(event) {
+          menuIcon.onclick = function (event) {
             event.preventDefault();
             event.stopPropagation();
             openItemMenu();
@@ -1062,7 +1059,7 @@
           });
 
           if (highlight) {
-            window.setTimeout(function() {
+            window.setTimeout(function () {
               self.scrollToHighlighted();
             }, 500);
           }
@@ -1084,7 +1081,7 @@
       /**
        *
        */
-      scrollToHighlighted: function() {
+      scrollToHighlighted: function () {
         var $highlightedEl = $('#acn-dropdown-menu .highlighted'),
           highlightedElTop = $highlightedEl.length > 0 ? $highlightedEl.offset().top : 0,
           $dropdownMenuContainer = $('#acn-dropdown-menu'),
@@ -1099,14 +1096,14 @@
       /**
        * method fired when user clicks on the root level folder
        */
-      onRootFolderClick: function() {
+      onRootFolderClick: function () {
         Self.toggleFolderState(this.componentInstance, Self.ROOT_TOGGLE);
       },
 
       /**
        * toggle folder state
        */
-      toggleFolderState: function(instance, forceState, path) {
+      toggleFolderState: function (instance, forceState, path) {
         var WcmRootFolder = Self,
           $el;
         if (forceState != null && forceState != WcmRootFolder.ROOT_TOGGLE) {
@@ -1145,11 +1142,11 @@
         }
       },
 
-      getStoredPathKey: function(instance) {
+      getStoredPathKey: function (instance) {
         return `${CStudioAuthoringContext.site}-${instance.label.replace(' ', '').toLowerCase()}-opened`;
       },
 
-      getNumKey: function(nodes, key, callback) {
+      getNumKey: function (nodes, key, callback) {
         var num;
         for (n = 0; nodes.length > n; n++) {
           var el = nodes[n].getEl(),
@@ -1170,7 +1167,7 @@
         return num;
       },
 
-      openLatest: function(instance) {
+      openLatest: function (instance) {
         var latestStored = instance.openArray;
         var index = instance.indexPath;
 
@@ -1187,12 +1184,12 @@
             k = {},
             pathTrace = {},
             rooth = {},
-            updatePathTrace = function(j, key) {
+            updatePathTrace = function (j, key) {
               var appendedPath = paths[key] && paths[key][j] ? paths[key][j][counter[key][j]++] : '';
               appendedPath = appendedPath !== '' ? '/' + appendedPath : '';
               return (pathTrace[key][j] = pathTrace[key][j] + appendedPath);
             },
-            nextPathTrace = function(j, key) {
+            nextPathTrace = function (j, key) {
               var cont = j == 0 ? 0 : counter[key][j] + 1;
               return pathTrace[key][j] + '/' + paths[key][j][counter[key][j]];
             };
@@ -1200,8 +1197,8 @@
           YSelector = YAHOO.util.Selector.query;
           var label = instance.rootFolderEl.previousElementSibling;
           YDom.addClass(label, 'loading');
-          var doCall = function(n, j, key) {
-            Self.onLoadNodeDataOnClick(n, function() {
+          var doCall = function (n, j, key) {
+            Self.onLoadNodeDataOnClick(n, function () {
               n.loadComplete();
 
               if (n.expanded && n.data.style.match(/\bfolder\b/)) {
@@ -1217,7 +1214,7 @@
                 updatePathTrace(j, key);
                 var node = tree.getNodesByProperty('path', pathTrace[key][j]);
                 if (node != null) {
-                  Self.getNumKey(node, key, function(currentNode) {
+                  Self.getNumKey(node, key, function (currentNode) {
                     var loadEl = YSelector('.ygtvtp', currentNode.getEl(), true);
                     loadEl == null && (loadEl = YSelector('.ygtvlp', currentNode.getEl(), true));
                     YDom.addClass(loadEl, 'ygtvloading');
@@ -1233,7 +1230,7 @@
                 if (latestStored[key].length > k[key]) {
                   pathTrace[key][k[key]] = rooth[key];
                   counter[key][k[key]] = 0;
-                  (function() {
+                  (function () {
                     tmp[key][k[key]] = latestStored[key][k[key]].replace(rooth[key], '');
                     paths[key][k[key]] = tmp[key][k[key]].length
                       ? (tmp[key][k[key]].charAt(0) == '/' ? tmp[key][k[key]].substr(1) : tmp[key][k[key]]).split('/')
@@ -1252,7 +1249,7 @@
                   }
 
                   if (node != null) {
-                    Self.getNumKey(node, key, function(currentNode) {
+                    Self.getNumKey(node, key, function (currentNode) {
                       var loadEl = YSelector('.ygtvtp', currentNode.getEl(), true);
                       loadEl == null && (loadEl = YSelector('.ygtvlp', currentNode.getEl(), true));
                       YDom.addClass(loadEl, 'ygtvloading');
@@ -1288,10 +1285,10 @@
               servPath = rootPath;
             }
 
-            (function(ind) {
+            (function (ind) {
               function treePrint(servPath) {
                 CStudioAuthoring.Service.lookupSiteContent(site, servPath, 1, 'default', {
-                  success: function(treeData) {
+                  success: function (treeData) {
                     var key = treeData.item.path.replace(/\//g, '').toLowerCase();
                     (paths[key] = []), (counter[key] = []), (recursiveCalls[key] = []), (tmp[key] = {});
                     (k[key] = 0), (pathTrace[key] = []), (rooth[key] = treeData.item.path);
@@ -1320,7 +1317,7 @@
                     if (latestStored[key] && latestStored[key][[key]] != Self.ROOT_OPENED) {
                       pathTrace[key][k[key]] = treeData.item.path;
                       counter[key][k[key]] = 0;
-                      (function() {
+                      (function () {
                         tmp[key][k[key]] = (latestStored[key][k[key]] || '').replace(treeData.item.path, '');
                         paths[key][k[key]] = tmp[key][k[key]].length
                           ? (tmp[key][k[key]].charAt(0) === '/' ? tmp[key][k[key]].substr(1) : tmp[key][k[key]]).split(
@@ -1332,7 +1329,7 @@
                       var nodes, node, loadEl;
                       nodes = tree.getNodesByProperty('path', treeData.item.path);
                       if (nodes != null) {
-                        Self.getNumKey(nodes, key, function(currentNode) {
+                        Self.getNumKey(nodes, key, function (currentNode) {
                           node = currentNode;
                         });
                       }
@@ -1368,7 +1365,7 @@
                       treePrint(servPath);
                     }
                   },
-                  failure: function() {}
+                  failure: function () {}
                 });
               }
 
@@ -1379,14 +1376,14 @@
           Self.firePathLoaded(instance);
         }
       },
-      firePathLoaded: function(instance) {
+      firePathLoaded: function (instance) {
         ++Self.treePathOpenedEvt.fireCount;
         Self.treePathOpenedEvt.fire(Self.instanceCount, Self.treePathOpenedEvt.fireCount);
       },
       /**
        *  wire up new to search items
        */
-      wireUpCannedSearches: function() {
+      wireUpCannedSearches: function () {
         var searchesToWire = Self.searchesToWire;
 
         for (var i = 0; i < searchesToWire.length; i++) {
@@ -1403,17 +1400,17 @@
           searchEl.searchTO = searchesToWire[i].searchTO;
 
           var createCb = {
-            success: function() {
+            success: function () {
               this.callingWindow.location.reload(true);
             },
 
-            failure: function() {},
+            failure: function () {},
 
             callingWindow: window
           };
 
           if (newEl) {
-            newEl.onclick = function() {
+            newEl.onclick = function () {
               CStudioAuthoring.Operations.createNewContent(
                 CStudioAuthoringContext.site,
                 this.searchTO.newPath,
@@ -1425,7 +1422,7 @@
             };
           }
 
-          searchEl.onclick = function() {
+          searchEl.onclick = function () {
             var url =
               CStudioAuthoringContext.authoringAppBaseUri + '/search?site=' + CStudioAuthoringContext.site + '&s=';
 
@@ -1445,7 +1442,7 @@
        * method fired when tree node is expanded for first time
        */
 
-      onLoadNodeDataOnClick: function(node, fnLoadComplete) {
+      onLoadNodeDataOnClick: function (node, fnLoadComplete) {
         // applicable for items under detail folder
         if (!node.treeNodeTO) {
           fnLoadComplete();
@@ -1460,7 +1457,7 @@
         // Self.save(node.instance, plainpath);
 
         var serviceCb = {
-          success: function(treeData, args) {
+          success: function (treeData, args) {
             /**
              * nodes will not have collapse/expand icon if they do not have any children
              * after clicking them.
@@ -1480,7 +1477,7 @@
             Self.setChildrenStyles(args.node);
           },
 
-          failure: function(err, args) {
+          failure: function (err, args) {
             args.fnLoadComplete();
           },
 
@@ -1495,7 +1492,7 @@
         CStudioAuthoring.Service.lookupSiteContent(site, path, 1, 'default', serviceCb);
       },
 
-      expandTree: function(node, fnLoadComplete) {
+      expandTree: function (node, fnLoadComplete) {
         if (node) {
           var iniPath;
           try {
@@ -1532,7 +1529,7 @@
         }
       },
 
-      collapseTree: function(node, fnLoadComplete) {
+      collapseTree: function (node, fnLoadComplete) {
         var iniPath;
         try {
           iniPath = node.treeNodeTO.path;
@@ -1574,7 +1571,7 @@
         $el.addClass('closed');
       },
 
-      save: function(instance, path, fileName, num, mode) {
+      save: function (instance, path, fileName, num, mode) {
         var flag = true;
         if (!instance.openArray[num]) {
           instance.openArray[num] = [];
@@ -1623,16 +1620,16 @@
         storage.write(Self.getStoredPathKey(instance), JSON.stringify(instance.openArray), 360);
       },
 
-      remove: function(instance, path) {
+      remove: function (instance, path) {
         storage.eliminate(Self.getStoredPathKey(instance));
       },
 
-      findAncestor: function(el, cls) {
+      findAncestor: function (el, cls) {
         while ((el = el.parentElement) && !el.classList.contains(cls));
         return el;
       },
 
-      updateNote: function(note, treeData) {
+      updateNote: function (note, treeData) {
         note.browserUri != treeData.browserUri && treeData.browserUri != undefined
           ? (note.browserUri = treeData.browserUri)
           : null;
@@ -1693,7 +1690,7 @@
       /**
        * methos that fires when new items added to tree.
        */
-      refreshNodes: function(
+      refreshNodes: function (
         treeNode,
         status,
         parent,
@@ -1793,7 +1790,7 @@
 
                 if (nodeToChange) {
                   for (var i = 0; i < nodeToChange.length; i++) {
-                    (function(nodeToChange, i) {
+                    (function (nodeToChange, i) {
                       lookupSiteContent(nodeToChange[i], currentUri);
                       nodeOpen = true;
                     })(nodeToChange, i);
@@ -1808,7 +1805,7 @@
                       if (treeToUpdateDependencies) {
                         for (var j = 0; j < treeToUpdateDependencies.length; j++) {
                           if (treeToUpdateDependencies[j].data.contentType != 'folder') {
-                            (function(treeToUpdateDependencies, j) {
+                            (function (treeToUpdateDependencies, j) {
                               lookupSiteContent(treeToUpdateDependencies[j], treeToUpdateDependencies[j].data.uri);
                               nodeOpen = true;
                             })(treeToUpdateDependencies, j);
@@ -1827,7 +1824,7 @@
                       1,
                       'default',
                       {
-                        success: function(treeData) {
+                        success: function (treeData) {
                           if (currentUri.replace(/ /g, '%20') == treeData.item.uri) {
                             var style = '',
                               cont = paramCont ? paramCont : 0,
@@ -1884,7 +1881,7 @@
                             } else {
                               if (style.indexOf('in-flight') != -1) {
                                 cont++;
-                                setTimeout(function() {
+                                setTimeout(function () {
                                   lookupSiteContent(curNode, currentUri, cont);
                                 }, 3000);
                               } else {
@@ -1898,7 +1895,7 @@
                                 }
 
                                 if ((indexOfFolder != -1 && cont < 25) || (indexOfFolder == -1 && cont < 2)) {
-                                  setTimeout(function() {
+                                  setTimeout(function () {
                                     lookupSiteContent(curNode, currentUri, cont);
                                     if (
                                       typeof WcmDashboardWidgetCommon != 'undefined' &&
@@ -1932,7 +1929,7 @@
                               : null;
                           }
                         },
-                        failure: function() {}
+                        failure: function () {}
                       }
                     );
                   }
@@ -2002,7 +1999,7 @@
                 }
               }
               if (root && instance) {
-                setTimeout(function() {
+                setTimeout(function () {
                   CStudioAuthoring.ContextualNav.WcmRootFolder.openLatest(instance);
                 }, 100);
               }
@@ -2049,7 +2046,7 @@
       /**
        * method fired when tree item is clicked
        */
-      onTreeNodeClick: function(node) {
+      onTreeNodeClick: function (node) {
         // lets remove ths case logic here and just invoke a callback
         if (node.nodeType == 'CONTENT') {
           if (node.data.previewable == true && node.instance.onClickAction == 'preview') {
@@ -2068,7 +2065,7 @@
       /**
        * create a transfer object for a node
        */
-      createTreeNodeTransferObject: function(treeItem) {
+      createTreeNodeTransferObject: function (treeItem) {
         var retTransferObj = new Object();
         retTransferObj.site = CStudioAuthoringContext.site;
         retTransferObj.internalName = treeItem.internalName;
@@ -2213,7 +2210,7 @@
        * build the HTML for the scheduled tool tip.
        *
        */
-      buildToolTipRegular: function(
+      buildToolTipRegular: function (
         label,
         contentType,
         style,
@@ -2250,7 +2247,7 @@
        * build the HTML for the scheduled tool tip.
        *
        */
-      buildToolTipScheduled: function(
+      buildToolTipScheduled: function (
         label,
         contentType,
         style,
@@ -2291,15 +2288,15 @@
       /**
        * unlock a content item
        */
-      unlockContent: function() {
+      unlockContent: function () {
         var unlockCb = {
-          success: function() {
+          success: function () {
             eventNS.data = oCurrentTextNode;
             eventNS.typeAction = '';
             eventNS.oldPath = null;
             document.dispatchEvent(eventNS);
           },
-          failure: function() {},
+          failure: function () {},
           callingWindow: window
         };
         CStudioAuthoring.Service.unlockContentItem(CStudioAuthoringContext.site, oCurrentTextNode.data.uri, unlockCb);
@@ -2307,14 +2304,14 @@
       /**
        * given a path, attempt to open the folder to that path
        */
-      openTreeToPath: function(instance, path) {
+      openTreeToPath: function (instance, path) {
         // open first level
         this.toggleFolderState(instance, this.ROOT_OPEN, path);
       },
       /**
        * add hover effect to context nav items.
        */
-      setChildrenStyles: function(treeNode) {
+      setChildrenStyles: function (treeNode) {
         var parentNode = treeNode.getContentEl();
         if (
           parentNode.children[0] &&
@@ -2330,7 +2327,7 @@
         }
       },
 
-      resetNodeStyles: function() {
+      resetNodeStyles: function () {
         var treeInner = YDom.get('acn-dropdown-menu-inner');
         var previousCutEl = YDom.getElementsByClassName('status-icon', null, treeInner);
         for (var i = 0; i < previousCutEl.length; i++) {
@@ -2346,7 +2343,7 @@
    * instance object
    * CStudioAuthoring.ContextualNav.WcmRootFolder is static
    */
-  CStudioAuthoring.ContextualNav.WcmRootFolderInstance = function(config) {
+  CStudioAuthoring.ContextualNav.WcmRootFolderInstance = function (config) {
     ++CStudioAuthoring.ContextualNav.WcmRootFolder.instanceCount;
     this._self = this;
     this._toggleState = CStudioAuthoring.ContextualNav.WcmRootFolder.ROOT_CLOSED;
@@ -2361,7 +2358,7 @@
     this.mods = [];
 
     if (config.params.path === '/site/website') {
-      amplify.subscribe('SELECTED_CONTENT_SET', function(message) {
+      amplify.subscribe('SELECTED_CONTENT_SET', function (message) {
         var contentTO = message.contentTO,
           reload = message.reload,
           $highlightEl = $('#acn-dropdown-menu [data-uri="' + contentTO.uri + '"]');

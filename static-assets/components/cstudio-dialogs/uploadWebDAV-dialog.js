@@ -29,12 +29,12 @@ CStudioAuthoring.Dialogs.UploadWebDAVDialog = CStudioAuthoring.Dialogs.UploadWeb
   /**
    * initialize module
    */
-  initialize: function(config) {},
+  initialize: function (config) {},
 
   /**
    * show dialog
    */
-  showDialog: function(site, path, profileId, serviceUri, callback, fileTypes) {
+  showDialog: function (site, path, profileId, serviceUri, callback, fileTypes) {
     this._self = this;
 
     this.site = site;
@@ -64,14 +64,14 @@ CStudioAuthoring.Dialogs.UploadWebDAVDialog = CStudioAuthoring.Dialogs.UploadWeb
   /**
    * hide dialog
    */
-  closeDialog: function() {
+  closeDialog: function () {
     this.dialog.destroy();
   },
 
   /**
    * create dialog
    */
-  createDialog: function(path, site, profileId, serviceUri) {
+  createDialog: function (path, site, profileId, serviceUri) {
     var me = this;
     YDom.removeClass('cstudio-wcm-popup-div', 'yui-pe-content');
 
@@ -136,7 +136,7 @@ CStudioAuthoring.Dialogs.UploadWebDAVDialog = CStudioAuthoring.Dialogs.UploadWeb
 
     YAHOO.util.Event.addListener('uploadCancelButton', 'click', this.uploadPopupCancel);
 
-    $('body').on('keyup', '#cstudio-wcm-popup-div', function(e) {
+    $('body').on('keyup', '#cstudio-wcm-popup-div', function (e) {
       if (e.keyCode === 27 && !me.uploadingFile) {
         // esc
         me.closeDialog();
@@ -153,11 +153,11 @@ CStudioAuthoring.Dialogs.UploadWebDAVDialog = CStudioAuthoring.Dialogs.UploadWeb
       path: path,
       url: url,
       fileTypes: me.fileTypes,
-      onUploadStart: function() {
+      onUploadStart: function () {
         me.uploadingFile = true;
         $('#uploadCancelButton').attr('disabled', true);
       },
-      onComplete: function(result) {
+      onComplete: function (result) {
         let item = result.successful[0].response.body.item,
           uploaded = item.url ? item.url : item; // Will return only url
 
@@ -167,7 +167,7 @@ CStudioAuthoring.Dialogs.UploadWebDAVDialog = CStudioAuthoring.Dialogs.UploadWeb
         me.callback.success(uploaded);
         CStudioAuthoring.Dialogs.UploadWebDAVDialog.closeDialog();
       },
-      onError: function(file, error, response) {
+      onError: function (file, error, response) {
         const res = response.body.response,
           errorMsg = `${res.message}. ${res.remedialAction}`;
 
@@ -182,7 +182,7 @@ CStudioAuthoring.Dialogs.UploadWebDAVDialog = CStudioAuthoring.Dialogs.UploadWeb
           [
             {
               text: 'OK',
-              handler: function() {
+              handler: function () {
                 this.destroy();
                 callback.failure(response);
               },
@@ -203,7 +203,7 @@ CStudioAuthoring.Dialogs.UploadWebDAVDialog = CStudioAuthoring.Dialogs.UploadWeb
   /**
    * event fired when the ok is pressed
    */
-  uploadPopupCancel: function(event) {
+  uploadPopupCancel: function (event) {
     CStudioAuthoring.Dialogs.UploadWebDAVDialog.closeDialog();
     if (window.frameElement) {
       var id = window.frameElement.getAttribute('id').split('-editor-')[1];

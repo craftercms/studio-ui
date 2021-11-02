@@ -16,7 +16,7 @@
 
 CStudioForms.Controls.FileName =
   CStudioForms.Controls.FileName ||
-  function(id, form, owner, properties, constraints, readonly) {
+  function (id, form, owner, properties, constraints, readonly) {
     this.owner = owner;
     this.owner.registerField(this);
     this.errors = [];
@@ -40,31 +40,31 @@ CStudioForms.Controls.FileName =
   };
 
 YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
-  getFixedId: function() {
+  getFixedId: function () {
     return 'file-name';
   },
 
-  getLabel: function() {
+  getLabel: function () {
     return CMgs.format(langBundle, 'fileName');
   },
 
-  getRequirementCount: function() {
+  getRequirementCount: function () {
     // 2 Requirement:
     // 1. The field is required
     // 2. The Path must be valid
     return 2;
   },
 
-  getCurrentPath: function() {
+  getCurrentPath: function () {
     return this.form.path ? this.form.path : CStudioAuthoring.Utils.getQueryVariable(location.search, 'path');
   },
 
-  isRootPath: function() {
+  isRootPath: function () {
     if (this.getCurrentPath() == '/site/website/index.xml') return true;
     return false;
   },
 
-  _onChange: function(evt, obj) {
+  _onChange: function (evt, obj) {
     var oldValue = obj.value;
     obj.value = obj.inputEl.value;
     if (obj.value != '' && oldValue != obj.value)
@@ -94,7 +94,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
     }
   },
 
-  _onChangeVal: function(evt, obj) {
+  _onChangeVal: function (evt, obj) {
     obj.edited = true;
     obj._onChange(evt, obj);
   },
@@ -104,7 +104,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
    * @param evt event
    * @param el element
    */
-  count: function(evt, countEl, el) {
+  count: function (evt, countEl, el) {
     // 'this' is the input box
     el = el ? el : this;
     var text = el.value;
@@ -150,7 +150,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
   /**
    * don't allow characters which are invalid for file names and check length
    */
-  processKey: function(evt, el) {
+  processKey: function (evt, el) {
     var invalid = new RegExp('[.!@#$%^&*\\(\\)\\+=\\[\\]\\\\\\\'`;,\\/\\{\\}|":<>\\?~ ]', 'g');
     // Prevent the use of non english characters
     var nonEnglishChar = new RegExp('[^\x00-\x80]', 'g');
@@ -186,7 +186,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
   /**
    * check availability on mouse out
    */
-  filenameAvailable: function() {
+  filenameAvailable: function () {
     var newPath = '';
     var path = this.getCurrentPath();
 
@@ -199,7 +199,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
     newPath = newPath.replace('//', '/');
 
     var checkCb = {
-      exists: function(exists) {
+      exists: function (exists) {
         if (exists == true) {
           this.obj.setError('exists', 'Path exists already');
           this.obj.renderValidation(true, false);
@@ -210,7 +210,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
           YAHOO.util.Dom.removeClass(this.obj.urlErrEl, 'on');
         }
       },
-      failure: function() {
+      failure: function () {
         this.availableEl.style.display = 'none';
         this.availableEl.innerHTML = '';
       },
@@ -226,7 +226,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
     }
   },
 
-  render: function(config, containerEl) {
+  render: function (config, containerEl) {
     // we need to make the general layout of a control inherit from common
     // you should be able to override it -- but most of the time it wil be the same
     containerEl.id = this.id;
@@ -276,7 +276,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
     Event.on(
       inputEl,
       'click',
-      function(evt, context) {
+      function (evt, context) {
         context.form.setFocusedField(context);
       },
       this
@@ -284,7 +284,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
     Event.on(
       inputEl,
       'focus',
-      function() {
+      function () {
         YAHOO.util.Dom.addClass(inputContainer, 'focused');
       },
       this
@@ -293,7 +293,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
     Event.on(
       inputEl,
       'blur',
-      function(evt, obj) {
+      function (evt, obj) {
         YAHOO.util.Dom.removeClass(inputContainer, 'focused');
         self._onChange(evt, obj);
       },
@@ -303,8 +303,8 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
     Event.on(
       inputEl,
       'paste',
-      function(evt, el) {
-        setTimeout(function() {
+      function (evt, el) {
+        setTimeout(function () {
           me.processKey(evt, el);
         }, 100);
       },
@@ -357,7 +357,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
     containerEl.appendChild(descriptionEl);
   },
 
-  _renderEdit: function(containerEl) {
+  _renderEdit: function (containerEl) {
     var _self = this;
     if (CStudioAuthoring.Utils.getQueryVariable(location.search, 'edit') && this.readonly == false) {
       var editFileNameEl = document.createElement('div');
@@ -375,7 +375,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
       this.inputEl.disabled = true;
       YAHOO.util.Dom.addClass(this.inputContainer, 'disabled');
 
-      var createWarningDialog = function() {
+      var createWarningDialog = function () {
         var dialog = new YAHOO.widget.SimpleDialog('changeNameWar', {
           width: '440px',
           fixedcenter: true,
@@ -389,7 +389,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
 
         var viewDependenciesLink = document.createElement('a');
         viewDependenciesLink.innerHTML = 'here';
-        viewDependenciesLink.onclick = function() {
+        viewDependenciesLink.onclick = function () {
           window.parent.CStudioAuthoring.Operations.viewDependencies(
             window.parent.CStudioAuthoringContext.site,
             window.parent.CStudioAuthoring.SelectedContent.getSelectedContent(),
@@ -410,14 +410,14 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
           {
             text: 'Cancel',
             isDefault: true,
-            handler: function() {
+            handler: function () {
               this.destroy();
               $(document).off('CloseFormWithChangesUserWarningDialogShown', onEscape);
             }
           },
           {
             text: 'OK',
-            handler: function() {
+            handler: function () {
               _self.inputEl.disabled = false;
               YAHOO.util.Dom.removeClass(_self.inputContainer, 'disabled');
               _self.inputEl.focus();
@@ -440,7 +440,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
         $(document).on('CloseFormWithChangesUserWarningDialogShown', onEscape);
       };
 
-      YAHOO.util.Event.on(editFileNameBtn, 'click', function() {
+      YAHOO.util.Event.on(editFileNameBtn, 'click', function () {
         _self.form.setFocusedField(_self);
         if (_self.showWarnOnEdit) {
           createWarningDialog();
@@ -449,11 +449,11 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
     }
   },
 
-  getValue: function() {
+  getValue: function () {
     return this.value;
   },
 
-  setValue: function(value) {
+  setValue: function (value) {
     var path = this.getCurrentPath();
     if (value == '') {
       this.value = this.defaultValue;
@@ -471,7 +471,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
     this.edited = false;
   },
 
-  _getValue: function() {
+  _getValue: function () {
     var value = '';
     var path = this.getCurrentPath();
     path = path.replace('/site/website', '');
@@ -498,7 +498,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
     return value;
   },
 
-  _getPath: function() {
+  _getPath: function () {
     var path = this.getCurrentPath();
     var hasXmlFile = path.indexOf('.xml') >= 0;
 
@@ -516,11 +516,11 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
     return path;
   },
 
-  getName: function() {
+  getName: function () {
     return 'file-name';
   },
 
-  getSupportedProperties: function() {
+  getSupportedProperties: function () {
     return [
       { label: CMgs.format(langBundle, 'size'), name: 'size', type: 'int', defaultValue: '50' },
       {
@@ -533,7 +533,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
     ];
   },
 
-  getSupportedConstraints: function() {
+  getSupportedConstraints: function () {
     return [
       // required is assumed
     ];

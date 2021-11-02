@@ -16,7 +16,7 @@
 
 CStudioAdminConsole.Tool.ContentTypes.PropertyType.Int =
   CStudioAdminConsole.Tool.ContentTypes.PropertyType.Int ||
-  function(fieldName, containerEl) {
+  function (fieldName, containerEl) {
     this.fieldName = fieldName;
     this.containerEl = containerEl;
     this.formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
@@ -28,7 +28,7 @@ YAHOO.extend(
   CStudioAdminConsole.Tool.ContentTypes.PropertyType.Int,
   CStudioAdminConsole.Tool.ContentTypes.PropertyType,
   {
-    render: function(value, updateFn) {
+    render: function (value, updateFn) {
       var _self = this;
       var containerEl = this.containerEl;
       var valueEl = document.createElement('input');
@@ -37,11 +37,11 @@ YAHOO.extend(
       valueEl.value = value;
       valueEl.fieldName = this.fieldName;
 
-      $(valueEl).on('focus', function() {
+      $(valueEl).on('focus', function () {
         valueEl.setAttribute('type', 'number');
       });
 
-      $(valueEl).on('blur', function(e) {
+      $(valueEl).on('blur', function (e) {
         valueEl.setAttribute('type', 'text');
 
         const integerValue = parseInt($(valueEl).val());
@@ -54,7 +54,7 @@ YAHOO.extend(
       });
 
       if (updateFn) {
-        var updateFieldFn = function(event, el) {
+        var updateFieldFn = function (event, el) {
           updateFn(event, el);
           CStudioAdminConsole.Tool.ContentTypes.visualization.render();
         };
@@ -63,7 +63,7 @@ YAHOO.extend(
       this.valueEl = valueEl;
     },
 
-    getValue: function() {
+    getValue: function () {
       return this.valueEl.value;
     }
   }

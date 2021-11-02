@@ -25,14 +25,14 @@ if (typeof WcmDashboardWidgetCommon == 'undefined' || !WcmDashboardWidgetCommon)
 
 WcmDashboardWidgetCommon.dashboards = new Array();
 
-WcmDashboardWidgetCommon.sortClick = function(event, matchedEl, el, params) {
+WcmDashboardWidgetCommon.sortClick = function (event, matchedEl, el, params) {
   var eventId = matchedEl.id;
   var sortBy = eventId.substring(4, eventId.indexOf('-'));
   var Widget = WcmDashboardWidgetCommon.dashboards[params.widgetId];
   WcmDashboardWidgetCommon.loadTableData(sortBy, YDom.get(params.widgetId), params.widgetId, null, true);
 };
 
-WcmDashboardWidgetCommon.encodePathToNumbers = function(path) {
+WcmDashboardWidgetCommon.encodePathToNumbers = function (path) {
   var re1 = new RegExp('/', 'g');
 
   var res = path.replace(re1, '00'); // substitute all forward slash with '00'
@@ -54,10 +54,10 @@ WcmDashboardWidgetCommon.verifyEditColumn = (widgetId, hasWritePermissions) => {
   }
 };
 
-WcmDashboardWidgetCommon.insertEditLink = function(item, editLinkId, widgetId) {
+WcmDashboardWidgetCommon.insertEditLink = function (item, editLinkId, widgetId) {
   if (CStudioAuthoring.Utils.isEditableFormAsset(item.mimeType)) {
     CStudioAuthoring.Service.getUserPermissions(CStudioAuthoringContext.site, item.uri, {
-      success: function(results) {
+      success: function (results) {
         function addEditLink() {
           var editLink = document.getElementById(editLinkId);
 
@@ -81,7 +81,7 @@ WcmDashboardWidgetCommon.insertEditLink = function(item, editLinkId, widgetId) {
         }
         WcmDashboardWidgetCommon.verifyEditColumn(widgetId, isWrite);
       },
-      failure: function() {
+      failure: function () {
         throw new Error('Unable to retrieve user permissions');
       }
     });
@@ -90,10 +90,10 @@ WcmDashboardWidgetCommon.insertEditLink = function(item, editLinkId, widgetId) {
   }
 };
 
-WcmDashboardWidgetCommon.insertViewLink = function(item, viewLinkId) {
+WcmDashboardWidgetCommon.insertViewLink = function (item, viewLinkId) {
   if (CStudioAuthoring.Utils.isEditableFormAsset(item.mimeType)) {
     CStudioAuthoring.Service.getUserPermissions(CStudioAuthoringContext.site, item.uri, {
-      success: function(results) {
+      success: function (results) {
         function addViewLink() {
           var viewLink = document.getElementById(viewLinkId);
 
@@ -117,14 +117,14 @@ WcmDashboardWidgetCommon.insertViewLink = function(item, viewLinkId) {
           addViewLink();
         }
       },
-      failure: function() {
+      failure: function () {
         throw new Error('Unable to retrieve user permissions');
       }
     });
   }
 };
 
-WcmDashboardWidgetCommon.convertDate = function(dateString) {
+WcmDashboardWidgetCommon.convertDate = function (dateString) {
   if (!dateString) return 0;
   // our eventDate are passing in the format "YYYY-MM-DDTHH:MM:SS;"
   var dateObj = null;
@@ -148,9 +148,9 @@ WcmDashboardWidgetCommon.convertDate = function(dateString) {
   return 0;
 };
 
-WcmDashboardWidgetCommon.sortItems = function(items, currentSortBy, currentSortType) {
+WcmDashboardWidgetCommon.sortItems = function (items, currentSortBy, currentSortType) {
   try {
-    items.sort(function(firstItem, secondItem) {
+    items.sort(function (firstItem, secondItem) {
       if (currentSortBy == 'userLastName') {
         var firstItemVal = firstItem[currentSortBy];
         var secondItemVal = secondItem[currentSortBy];
@@ -210,7 +210,7 @@ WcmDashboardWidgetCommon.sortItems = function(items, currentSortBy, currentSortT
 /*
  * get level 2 and beyond children (becomes a flat stucture)
  */
-WcmDashboardWidgetCommon.getChilderenRecursive = function(items) {
+WcmDashboardWidgetCommon.getChilderenRecursive = function (items) {
   for (var i = 0; i < items.length; i++) {
     var item = items[i];
     subChildren.push(item);
@@ -224,7 +224,7 @@ WcmDashboardWidgetCommon.getChilderenRecursive = function(items) {
 /*
  * build level 2 and beyond children (becomes a flat stucture)
  */
-WcmDashboardWidgetCommon.getSubSubChilderen = function(table, parentClass, items, widgetId, depth) {
+WcmDashboardWidgetCommon.getSubSubChilderen = function (table, parentClass, items, widgetId, depth) {
   var rowHtml = '';
   var instance = WcmDashboardWidgetCommon.dashboards[widgetId];
 
@@ -244,7 +244,7 @@ WcmDashboardWidgetCommon.getSubSubChilderen = function(table, parentClass, items
   return rowHtml;
 };
 
-WcmDashboardWidgetCommon.getDisplayName = function(item) {
+WcmDashboardWidgetCommon.getDisplayName = function (item) {
   var displayName = '';
   var hasLastName = !CStudioAuthoring.Utils.isEmpty(item.userLastName);
   if (hasLastName) {
@@ -257,7 +257,7 @@ WcmDashboardWidgetCommon.getDisplayName = function(item) {
   return displayName;
 };
 
-WcmDashboardWidgetCommon.getFormattedString = function(str, maxLength, isNewFile) {
+WcmDashboardWidgetCommon.getFormattedString = function (str, maxLength, isNewFile) {
   var formattedString = '';
   if (str != undefined && str != null) {
     if (str.length > maxLength) {
@@ -274,7 +274,7 @@ WcmDashboardWidgetCommon.getFormattedString = function(str, maxLength, isNewFile
 WcmDashboardWidgetCommon.Ajax = {
   container: null,
   loadingImage: null,
-  disableDashboard: function() {
+  disableDashboard: function () {
     if (WcmDashboardWidgetCommon.Ajax.container != null) {
       document.body.removeChild(WcmDashboardWidgetCommon.Ajax.container);
     }
@@ -306,7 +306,7 @@ WcmDashboardWidgetCommon.Ajax = {
     imagePopUp.center();
     imagePopUp.render();
   },
-  enableDashboard: function() {
+  enableDashboard: function () {
     if (WcmDashboardWidgetCommon.Ajax.container != null) {
       document.body.removeChild(WcmDashboardWidgetCommon.Ajax.container);
       WcmDashboardWidgetCommon.Ajax.container = null;
@@ -318,19 +318,19 @@ WcmDashboardWidgetCommon.Ajax = {
   }
 };
 
-WcmDashboardWidgetCommon.hideURLCol = function() {
+WcmDashboardWidgetCommon.hideURLCol = function () {
   if ($('.container').width() < 707) {
-    $('.urlCol').each(function() {
+    $('.urlCol').each(function () {
       $(this).hide();
     });
-    $("th[id*='browserUri-']").each(function() {
+    $("th[id*='browserUri-']").each(function () {
       $(this).hide();
     });
   } else {
-    $('.urlCol').each(function() {
+    $('.urlCol').each(function () {
       $(this).show();
     });
-    $("th[id*='browserUri-']").each(function() {
+    $("th[id*='browserUri-']").each(function () {
       $(this).show();
     });
   }
@@ -339,7 +339,7 @@ WcmDashboardWidgetCommon.hideURLCol = function() {
 /**
  * init widget
  */
-WcmDashboardWidgetCommon.init = function(instance) {
+WcmDashboardWidgetCommon.init = function (instance) {
   var widgetId = instance.widgetId;
   var sortBy = instance.defaultSortBy;
   var pageId = instance.pageId;
@@ -353,12 +353,12 @@ WcmDashboardWidgetCommon.init = function(instance) {
     YDom.get('widget-showitems-' + widgetId + '-label').innerHTML = CMgs.format(langBundle, 'showNumItems');
   }
 
-  YEvent.onAvailable(widgetId, function() {
+  YEvent.onAvailable(widgetId, function () {
     WcmDashboardWidgetCommon.dashboards[widgetId] = instance;
     dashboardEl = YDom.get(widgetId);
     dashboardEl.style.display = 'none';
 
-    var hasPermsForDashboardFn = function(perms, permission) {
+    var hasPermsForDashboardFn = function (perms, permission) {
       var hasPerm = false;
 
       for (var k = 0; k < perms.permissions.length; k++) {
@@ -375,7 +375,7 @@ WcmDashboardWidgetCommon.init = function(instance) {
       widgetId: widgetId,
       dashboardEl: dashboardEl,
 
-      success: function(perms) {
+      success: function (perms) {
         WcmDashboardWidgetCommon.cachedPerms = perms;
         var dashboardEl = this.dashboardEl;
 
@@ -401,7 +401,7 @@ WcmDashboardWidgetCommon.init = function(instance) {
 
           WcmDashboardWidgetCommon.toggleWidget(widgetId, pageId, state);
 
-          var checkboxClick = function(event, matchedEl) {
+          var checkboxClick = function (event, matchedEl) {
             CStudioAuthoring.Utils.Cookies.createCookie('dashboard-selected', instance.widgetId.trim());
             if (instance.onCheckedClickHandler) {
               instance.onCheckedClickHandler(event, matchedEl);
@@ -411,7 +411,7 @@ WcmDashboardWidgetCommon.init = function(instance) {
             isChecked();
           };
 
-          var isChecked = function() {
+          var isChecked = function () {
             var inputsElt = YDom.get(instance.widgetId + '-tbody').getElementsByClassName('dashlet-item-check');
             var checkedElts = false;
             var checkAllElt = YDom.get(instance.widgetId + 'CheckAll');
@@ -427,7 +427,7 @@ WcmDashboardWidgetCommon.init = function(instance) {
             }
           };
 
-          var editClick = function(event, matchedEl) {
+          var editClick = function (event, matchedEl) {
             WcmDashboardWidgetCommon.editItem(matchedEl, matchedEl.checked);
 
             if (typeof CStudioAuthoring.editDisabled === 'undefined') {
@@ -436,15 +436,15 @@ WcmDashboardWidgetCommon.init = function(instance) {
             CStudioAuthoring.editDisabled.push(matchedEl);
           };
 
-          var viewClick = function(event, matchedEl) {
+          var viewClick = function (event, matchedEl) {
             WcmDashboardWidgetCommon.viewItem(matchedEl, matchedEl.checked);
           };
 
-          var previewClick = function(event, matchedEl) {
+          var previewClick = function (event, matchedEl) {
             WcmDashboardWidgetCommon.previewItem(matchedEl, matchedEl.checked);
           };
 
-          var dispatchLinkClick = function(event, matchedEl) {
+          var dispatchLinkClick = function (event, matchedEl) {
             if (matchedEl.className.indexOf('previewLink') != -1) {
               previewClick(event, matchedEl);
             } else if (matchedEl.className.indexOf('viewLink') != -1) {
@@ -515,13 +515,13 @@ WcmDashboardWidgetCommon.init = function(instance) {
 
           // attach keydown event to search limit input
           if (searchLimitInput) {
-            var isInt = function(val) {
+            var isInt = function (val) {
               var parsedVal = parseInt(val);
               if (isNaN(parsedVal) || val == '0') return false;
               return val == parsedVal && val.toString() == parsedVal.toString();
             };
 
-            var searchLimitInputEvent = function(event) {
+            var searchLimitInputEvent = function (event) {
               var searchNumber = searchLimitInput.value;
 
               // added to protect non numeric input.
@@ -563,7 +563,7 @@ WcmDashboardWidgetCommon.init = function(instance) {
               }
             };
 
-            var validateSearchLimitInputValue = function(event) {
+            var validateSearchLimitInputValue = function (event) {
               var searchNum = searchLimitInput.value;
               // insert default value if invalid
               if (!isInt(searchNum)) {
@@ -579,7 +579,7 @@ WcmDashboardWidgetCommon.init = function(instance) {
         }
       },
 
-      failure: function() {}
+      failure: function () {}
     };
 
     if (WcmDashboardWidgetCommon.cachedPerms) {
@@ -588,13 +588,13 @@ WcmDashboardWidgetCommon.init = function(instance) {
       CStudioAuthoring.Service.getUserPermissions(CStudioAuthoringContext.site, '~DASHBOARD~', getPermsCb);
     }
 
-    $(window).resize(function() {
+    $(window).resize(function () {
       WcmDashboardWidgetCommon.hideURLCol();
     });
   });
 };
 
-WcmDashboardWidgetCommon.getSimpleRow = function(prefix, widgetId, rowTitle, classes) {
+WcmDashboardWidgetCommon.getSimpleRow = function (prefix, widgetId, rowTitle, classes) {
   var row =
     '<th id="' +
     prefix +
@@ -611,7 +611,7 @@ WcmDashboardWidgetCommon.getSimpleRow = function(prefix, widgetId, rowTitle, cla
   return row;
 };
 
-WcmDashboardWidgetCommon.getSortableRow = function(prefix, widgetId, rowTitle, classes) {
+WcmDashboardWidgetCommon.getSortableRow = function (prefix, widgetId, rowTitle, classes) {
   var row =
     '<th id="' +
     prefix +
@@ -640,7 +640,7 @@ WcmDashboardWidgetCommon.getSortableRow = function(prefix, widgetId, rowTitle, c
     '</th>';
   return row;
 };
-WcmDashboardWidgetCommon.getDefaultSortRow = function(prefix, widgetId, rowTitle, classes) {
+WcmDashboardWidgetCommon.getDefaultSortRow = function (prefix, widgetId, rowTitle, classes) {
   var row =
     '<th id="' +
     prefix +
@@ -664,7 +664,7 @@ WcmDashboardWidgetCommon.getDefaultSortRow = function(prefix, widgetId, rowTitle
 /**
  * open and close a given dashboard widget
  */
-WcmDashboardWidgetCommon.toggleWidget = function(widgetId, pageId, newState) {
+WcmDashboardWidgetCommon.toggleWidget = function (widgetId, pageId, newState) {
   var widgetBodyEl = YDom.get(widgetId + '-body');
   var widgetToggleEl = YDom.get('widget-toggle-' + widgetId) || {};
   var currentState = widgetToggleEl ? (widgetToggleEl.className == 'ttOpen' ? 'closed' : 'open') : 'open';
@@ -706,7 +706,7 @@ WcmDashboardWidgetCommon.toggleWidget = function(widgetId, pageId, newState) {
 /**
  * get user's preference on widget state
  */
-WcmDashboardWidgetCommon.getCurrentWidgetTogglePreference = function(widgetId, pageId) {
+WcmDashboardWidgetCommon.getCurrentWidgetTogglePreference = function (widgetId, pageId) {
   var widgetState = '';
 
   widgetState = CStudioAuthoring.Service.getWindowState(CStudioAuthoringContext.user, pageId, widgetId, 'widgetToggle');
@@ -717,7 +717,7 @@ WcmDashboardWidgetCommon.getCurrentWidgetTogglePreference = function(widgetId, p
 /**
  * toggle (expand or collapse) a given line item
  */
-WcmDashboardWidgetCommon.toggleLineItem = function(id, ignoreParent) {
+WcmDashboardWidgetCommon.toggleLineItem = function (id, ignoreParent) {
   var parentId = YDom.get(id),
     childItems = CStudioAuthoring.Utils.getElementsByClassName(id),
     length = childItems.length,
@@ -771,7 +771,7 @@ WcmDashboardWidgetCommon.toggleLineItem = function(id, ignoreParent) {
   }
 };
 
-WcmDashboardWidgetCommon.toggleHeaderLink = function(widget, linkEl, showCollapsed) {
+WcmDashboardWidgetCommon.toggleHeaderLink = function (widget, linkEl, showCollapsed) {
   if (showCollapsed) {
     linkEl.setAttribute('href', 'javascript:void(0);');
     linkEl.innerHTML = CMgs.format(langBundle, 'dashboardExpandAll');
@@ -788,7 +788,7 @@ WcmDashboardWidgetCommon.toggleHeaderLink = function(widget, linkEl, showCollaps
 /**
  * toggle All items
  */
-WcmDashboardWidgetCommon.toggleAllItems = function(widgetId) {
+WcmDashboardWidgetCommon.toggleAllItems = function (widgetId) {
   var widget = YDom.get(widgetId),
     instance = widget.instance,
     link = YDom.get('expand-all-' + widgetId),
@@ -810,7 +810,7 @@ WcmDashboardWidgetCommon.toggleAllItems = function(widgetId) {
 /**
  * toggle the whole table
  */
-WcmDashboardWidgetCommon.toggleTable = function(widgetId) {
+WcmDashboardWidgetCommon.toggleTable = function (widgetId) {
   var table = YDom.get(widgetId + '-body'),
     link = YDom.get('section-widget-' + widgetId),
     site = CStudioAuthoringContext.site;
@@ -829,7 +829,7 @@ WcmDashboardWidgetCommon.toggleTable = function(widgetId) {
 /**
  * edit an item
  */
-WcmDashboardWidgetCommon.editItem = function(matchedElement, isChecked) {
+WcmDashboardWidgetCommon.editItem = function (matchedElement, isChecked) {
   const path = WcmDashboardWidgetCommon.getItemPathFromMatchedElement(matchedElement);
   const type = CrafterCMSNext.util.content.getSystemTypeFromPath(path);
   const site = CrafterCMSNext.system.store.getState().sites.active;
@@ -1003,7 +1003,7 @@ WcmDashboardWidgetCommon.editItem = function(matchedElement, isChecked) {
   }
 };
 
-WcmDashboardWidgetCommon.viewItem = function(matchedElement, isChecked) {
+WcmDashboardWidgetCommon.viewItem = function (matchedElement, isChecked) {
   const path = WcmDashboardWidgetCommon.getItemPathFromMatchedElement(matchedElement);
   const type = CrafterCMSNext.util.content.getSystemTypeFromPath(path);
   const site = CrafterCMSNext.system.store.getState().sites.active;
@@ -1038,9 +1038,9 @@ WcmDashboardWidgetCommon.viewItem = function(matchedElement, isChecked) {
 /**
  * User clicked on preview link, open preview
  */
-WcmDashboardWidgetCommon.previewItem = function(matchedElement, isChecked) {
+WcmDashboardWidgetCommon.previewItem = function (matchedElement, isChecked) {
   var callback = {
-    success: function(contentTO) {
+    success: function (contentTO) {
       if (contentTO.name.indexOf('.xml') != -1) {
         CStudioAuthoring.Storage.write(
           CStudioAuthoring.Service.menuParentPathKeyFromItemUrl(contentTO.path),
@@ -1051,7 +1051,7 @@ WcmDashboardWidgetCommon.previewItem = function(matchedElement, isChecked) {
       CStudioAuthoring.Operations.openPreview(contentTO);
     },
 
-    failure: function() {}
+    failure: function () {}
   };
 
   WcmDashboardWidgetCommon.getContentItemForMatchedElement(matchedElement, callback);
@@ -1060,10 +1060,10 @@ WcmDashboardWidgetCommon.previewItem = function(matchedElement, isChecked) {
 /**
  * Select an item in the dashboard widget
  */
-WcmDashboardWidgetCommon.selectItem = function(matchedElement, isChecked, triggerEvent) {
+WcmDashboardWidgetCommon.selectItem = function (matchedElement, isChecked, triggerEvent) {
   if (matchedElement.type == 'checkbox') WcmDashboardWidgetCommon.Ajax.disableDashboard();
   var callback = {
-    success: function(contentTO) {
+    success: function (contentTO) {
       if (isChecked == true) {
         CStudioAuthoring.SelectedContent.selectContent(contentTO, triggerEvent);
       } else {
@@ -1072,7 +1072,7 @@ WcmDashboardWidgetCommon.selectItem = function(matchedElement, isChecked, trigge
       WcmDashboardWidgetCommon.Ajax.enableDashboard();
     },
 
-    failure: function() {
+    failure: function () {
       WcmDashboardWidgetCommon.Ajax.enableDashboard();
     }
   };
@@ -1084,12 +1084,12 @@ WcmDashboardWidgetCommon.selectItem = function(matchedElement, isChecked, trigge
  * return the item Path for the matched item
  */
 
-WcmDashboardWidgetCommon.getItemPathFromMatchedElement = function(matchedElement) {
+WcmDashboardWidgetCommon.getItemPathFromMatchedElement = function (matchedElement) {
   // walk the DOM to get the path  get parent of current element
   const parentTD = YDom.getAncestorByTagName(matchedElement, 'td');
 
   // get a sibling, that is <td>, that has attribute of title
-  const urlEl = YDom.getNextSiblingBy(parentTD, function(el) {
+  const urlEl = YDom.getNextSiblingBy(parentTD, function (el) {
     return el.getAttribute('title') == 'fullUri';
   });
 
@@ -1099,14 +1099,14 @@ WcmDashboardWidgetCommon.getItemPathFromMatchedElement = function(matchedElement
 /**
  * return the transfer object for the matched item
  */
-WcmDashboardWidgetCommon.getContentItemForMatchedElement = function(matchedElement, callback) {
+WcmDashboardWidgetCommon.getContentItemForMatchedElement = function (matchedElement, callback) {
   var itemUrl = '';
 
   // walk the DOM to get the path  get parent of current element
   var parentTD = YDom.getAncestorByTagName(matchedElement, 'td');
 
   // get a sibling, that is <td>, that has attribute of title
-  var urlEl = YDom.getNextSiblingBy(parentTD, function(el) {
+  var urlEl = YDom.getNextSiblingBy(parentTD, function (el) {
     return el.getAttribute('title') == 'fullUri';
   });
 
@@ -1119,11 +1119,11 @@ WcmDashboardWidgetCommon.getContentItemForMatchedElement = function(matchedEleme
   }
 
   var getContentItemsCb = {
-    success: function(contentTO) {
+    success: function (contentTO) {
       callback.success(contentTO.item);
     },
 
-    failure: function() {
+    failure: function () {
       callback.failure();
     }
   };
@@ -1146,7 +1146,7 @@ WcmDashboardWidgetCommon.updateInstanceTotalItems = (widgetId, results) => {
 /**
  * load and render table data
  */
-WcmDashboardWidgetCommon.loadTableData = function(sortBy, container, widgetId, filterByNumber, sortFromCachedData) {
+WcmDashboardWidgetCommon.loadTableData = function (sortBy, container, widgetId, filterByNumber, sortFromCachedData) {
   var instance = WcmDashboardWidgetCommon.dashboards[widgetId];
   var tableName = widgetId;
   var webscriptName = widgetId + '-table';
@@ -1157,7 +1157,7 @@ WcmDashboardWidgetCommon.loadTableData = function(sortBy, container, widgetId, f
   var pageId = instance.pageId;
 
   var callback = {
-    success: function(results) {
+    success: function (results) {
       if (results.total > 0) {
         YDom.addClass(divTableContainer, 'table-responsive');
       }
@@ -1263,7 +1263,7 @@ WcmDashboardWidgetCommon.loadTableData = function(sortBy, container, widgetId, f
       // Check for already checked items,
       // un-check then to remove those items from selected items list.
       var checkboxArray = YDom.getElementsBy(
-        function(el) {
+        function (el) {
           return el.type === 'checkbox' && el.checked === true;
         },
         'input',
@@ -1320,11 +1320,11 @@ WcmDashboardWidgetCommon.loadTableData = function(sortBy, container, widgetId, f
       /*************************************************************
        * registering mouse over and mouse out events for row items.
        ************************************************************/
-      var rowMouseover = function(event, matchedEl) {
+      var rowMouseover = function (event, matchedEl) {
         YDom.addClass(matchedEl, 'over');
       };
 
-      var rowMouseout = function(event, matchedEl) {
+      var rowMouseout = function (event, matchedEl) {
         YDom.removeClass(matchedEl, 'over', '');
       };
 
@@ -1366,10 +1366,10 @@ WcmDashboardWidgetCommon.loadTableData = function(sortBy, container, widgetId, f
       YEvent.addListener(
         tableName + 'CheckAll',
         'click',
-        function(e) {
+        function (e) {
           YDom.setStyle('loading-' + widgetId, 'display', '');
 
-          setTimeout(function() {
+          setTimeout(function () {
             var checkAllElt = YDom.get(tableName + 'CheckAll');
             var inputsElt = window.document.querySelectorAll('#' + tableName + ' input:enabled');
             var avoidEvent;
@@ -1398,11 +1398,11 @@ WcmDashboardWidgetCommon.loadTableData = function(sortBy, container, widgetId, f
       WcmDashboardWidgetCommon.hideURLCol();
     },
 
-    failure: function() {
+    failure: function () {
       YDom.setStyle('loading-' + widgetId, 'display', 'none');
     },
 
-    beforeServiceCall: function() {
+    beforeServiceCall: function () {
       YDom.setStyle('loading-' + widgetId, 'display', '');
     }
   };
@@ -1416,7 +1416,7 @@ WcmDashboardWidgetCommon.loadTableData = function(sortBy, container, widgetId, f
 
 // For filtering Widgets
 
-WcmDashboardWidgetCommon.loadFilterTableData = function(sortBy, container, widgetId, filterByNumber, filterBy) {
+WcmDashboardWidgetCommon.loadFilterTableData = function (sortBy, container, widgetId, filterByNumber, filterBy) {
   var instance = WcmDashboardWidgetCommon.dashboards[widgetId];
   var tableName = widgetId;
   var webscriptName = widgetId + '-table';
@@ -1427,7 +1427,7 @@ WcmDashboardWidgetCommon.loadFilterTableData = function(sortBy, container, widge
   var pageId = instance.pageId;
 
   var callback = {
-    success: function(results) {
+    success: function (results) {
       if (results.total > 0) {
         YDom.addClass(divTableContainer, 'table-responsive');
       }
@@ -1517,7 +1517,7 @@ WcmDashboardWidgetCommon.loadFilterTableData = function(sortBy, container, widge
       // Check for already checked items,
       // un-check then to remove those items from selected items list.
       var checkboxArray = YDom.getElementsBy(
-        function(el) {
+        function (el) {
           return el.type === 'checkbox' && el.checked === true;
         },
         'input',
@@ -1573,11 +1573,11 @@ WcmDashboardWidgetCommon.loadFilterTableData = function(sortBy, container, widge
       /*************************************************************
        * registering mouse over and mouse out events for row items.
        ************************************************************/
-      var rowMouseover = function(event, matchedEl) {
+      var rowMouseover = function (event, matchedEl) {
         YDom.addClass(matchedEl, 'over');
       };
 
-      var rowMouseout = function(event, matchedEl) {
+      var rowMouseout = function (event, matchedEl) {
         YDom.removeClass(matchedEl, 'over', '');
       };
 
@@ -1619,7 +1619,7 @@ WcmDashboardWidgetCommon.loadFilterTableData = function(sortBy, container, widge
       YEvent.addListener(
         tableName + 'CheckAll',
         'click',
-        function(e) {
+        function (e) {
           var checkAllElt = YDom.get(tableName + 'CheckAll');
           var inputsElt = window.document.querySelectorAll('#' + tableName + ' input:enabled');
 
@@ -1642,11 +1642,11 @@ WcmDashboardWidgetCommon.loadFilterTableData = function(sortBy, container, widge
       );
     },
 
-    failure: function() {
+    failure: function () {
       YDom.setStyle('loading-' + widgetId, 'display', 'none');
     },
 
-    beforeServiceCall: function() {
+    beforeServiceCall: function () {
       YDom.setStyle('loading-' + widgetId, 'display', 'block');
     }
   };
@@ -1657,7 +1657,7 @@ WcmDashboardWidgetCommon.loadFilterTableData = function(sortBy, container, widge
 /**
  * Handle children level 2 and beyond (becomes a flat stucture)
  */
-WcmDashboardWidgetCommon.getSubSubChilderenRecursive = function(table, parentClass, items, widgetId, depth) {
+WcmDashboardWidgetCommon.getSubSubChilderenRecursive = function (table, parentClass, items, widgetId, depth) {
   var rowHtml = '';
   var instance = WcmDashboardWidgetCommon.dashboards[widgetId];
 
@@ -1693,14 +1693,14 @@ WcmDashboardWidgetCommon.getSubSubChilderenRecursive = function(table, parentCla
  * @param item - content object
  * @param dashboardInstance instance of the dashboard
  */
-WcmDashboardWidgetCommon.buildItemTableRow = function(item, dashboardInstance, firstRow, count, depth) {
+WcmDashboardWidgetCommon.buildItemTableRow = function (item, dashboardInstance, firstRow, count, depth) {
   return dashboardInstance.renderLineItem(item, firstRow, count, depth);
 };
 
 /**
  * update sorting icons
  */
-WcmDashboardWidgetCommon.updateSortIconsInWidget = function(currentSortBy, currentSortType, widgetId) {
+WcmDashboardWidgetCommon.updateSortIconsInWidget = function (currentSortBy, currentSortType, widgetId) {
   if (YAHOO.lang.isNull(currentSortBy)) {
     return;
   }
@@ -1731,7 +1731,7 @@ WcmDashboardWidgetCommon.updateSortIconsInWidget = function(currentSortBy, curre
   }
 };
 
-WcmDashboardWidgetCommon.initFilterToWidget = function(widgetId, widgetFilterBy) {
+WcmDashboardWidgetCommon.initFilterToWidget = function (widgetId, widgetFilterBy) {
   var filterByEl = document.createElement('select');
   if (widgetId) {
     filterByEl.setAttribute('id', 'widget-filterBy-' + widgetId);
@@ -1759,7 +1759,7 @@ WcmDashboardWidgetCommon.initFilterToWidget = function(widgetId, widgetFilterBy)
 /**
  * get selected item from cache data
  */
-WcmDashboardWidgetCommon.getContentRecursive = function(dashBoardData, itemUrl) {
+WcmDashboardWidgetCommon.getContentRecursive = function (dashBoardData, itemUrl) {
   var sortDocuments = dashBoardData.documents;
   var result = null;
   for (var j = 0; j < sortDocuments.length; j++) {
@@ -1777,7 +1777,7 @@ WcmDashboardWidgetCommon.getContentRecursive = function(dashBoardData, itemUrl) 
 /**
  * clear selected item in the dashboard widget
  */
-WcmDashboardWidgetCommon.clearItem = function(matchedElement, dashBoardData) {
+WcmDashboardWidgetCommon.clearItem = function (matchedElement, dashBoardData) {
   if (matchedElement.type == 'checkbox') {
     if (dashBoardData) {
       var itemUrl = '';
@@ -1786,7 +1786,7 @@ WcmDashboardWidgetCommon.clearItem = function(matchedElement, dashBoardData) {
       var parentTD = YDom.getAncestorByTagName(matchedElement, 'td');
 
       // get a sibling, that is <td>, that has attribute of title
-      var urlEl = YDom.getNextSiblingBy(parentTD, function(el) {
+      var urlEl = YDom.getNextSiblingBy(parentTD, function (el) {
         return el.getAttribute('title') == 'fullUri';
       });
 
@@ -1811,7 +1811,7 @@ WcmDashboardWidgetCommon.clearItem = function(matchedElement, dashBoardData) {
 /**
  * refresh a specific dashboard
  */
-WcmDashboardWidgetCommon.refreshDashboard = function(inst) {
+WcmDashboardWidgetCommon.refreshDashboard = function (inst) {
   var instace = WcmDashboardWidgetCommon.dashboards[inst];
   var filterByTypeEl = YDom.get('widget-filterBy-' + instace.widgetId);
   var filterByTypeValue = 'all';
@@ -1842,7 +1842,7 @@ const dashboardsIds = ['MyRecentActivity', 'recentlyMadeLive', 'approvedSchedule
 /**
  * refresh all dashboards
  */
-WcmDashboardWidgetCommon.refreshAllDashboards = function() {
+WcmDashboardWidgetCommon.refreshAllDashboards = function () {
   if (typeof WcmDashboardWidgetCommon != 'undefined') {
     dashboardsIds.forEach((dashboardId) => {
       WcmDashboardWidgetCommon.refreshDashboard(dashboardId);
@@ -1851,12 +1851,10 @@ WcmDashboardWidgetCommon.refreshAllDashboards = function() {
   }
 };
 
-WcmDashboardWidgetCommon.clearSelections = function() {
+WcmDashboardWidgetCommon.clearSelections = function () {
   if (typeof WcmDashboardWidgetCommon != 'undefined') {
     dashboardsIds.forEach((dashboardId) => {
-      $(`#${dashboardId}-table`)
-        .find('input[type="checkbox"]')
-        .prop('checked', false);
+      $(`#${dashboardId}-table`).find('input[type="checkbox"]').prop('checked', false);
     });
     CStudioAuthoring.SelectedContent.clear();
   }

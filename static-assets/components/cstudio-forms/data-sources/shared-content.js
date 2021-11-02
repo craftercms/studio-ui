@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-CStudioForms.Datasources.SharedContent = function(id, form, properties, constraints) {
+CStudioForms.Datasources.SharedContent = function (id, form, properties, constraints) {
   this.id = id;
   this.form = form;
   this.properties = properties;
@@ -76,18 +76,18 @@ CStudioForms.Datasources.SharedContent = function(id, form, properties, constrai
 YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDatasource, {
   itemsAreContentReferences: true,
 
-  createElementAction: function(control, _self) {
+  createElementAction: function (control, _self) {
     if (_self.type === '') {
       CStudioAuthoring.Operations.createNewContent(
         CStudioAuthoringContext.site,
         _self.processPathsForMacros(_self.repoPath),
         false,
         {
-          success: function(formName, name, value) {
+          success: function (formName, name, value) {
             control.insertItem(value, formName.item.internalName, null, null, _self.id);
             control._renderItems();
           },
-          failure: function() {}
+          failure: function () {}
         },
         true
       );
@@ -100,18 +100,18 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
         false,
         false,
         {
-          success: function(contentTO, editorId, name, value) {
+          success: function (contentTO, editorId, name, value) {
             control.insertItem(name, value, null, null, _self.id);
             control._renderItems();
           },
-          failure: function() {}
+          failure: function () {}
         },
         [{ name: 'childForm', value: 'true' }]
       );
     }
   },
 
-  browseExistingElementAction: function(control, _self) {
+  browseExistingElementAction: function (control, _self) {
     // if the browsePath property is set, use the property instead of the repoPath property
     // otherwise continue to use the repoPath for both cases for backward compatibility
     var browsePath = _self.repoPath;
@@ -125,7 +125,7 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
       'select',
       true,
       {
-        success: function(searchId, selectedTOs) {
+        success: function (searchId, selectedTOs) {
           for (var i = 0; i < selectedTOs.length; i++) {
             var item = selectedTOs[i];
             var value = item.internalName && item.internalName != '' ? item.internalName : item.uri;
@@ -133,12 +133,12 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
             control._renderItems();
           }
         },
-        failure: function() {}
+        failure: function () {}
       }
     );
   },
 
-  searchExistingElementAction: function(control, _self) {
+  searchExistingElementAction: function (control, _self) {
     var searchContext = {
       searchId: null,
       itemsPerPage: 12,
@@ -168,19 +168,19 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
       true,
       {
         success(searchId, selectedTOs) {
-          selectedTOs.forEach(function(item) {
+          selectedTOs.forEach(function (item) {
             const value = item.label && item.label !== '' ? item.label : item.path;
             control.insertItem(item.path, value, null, null, _self.id);
             control._renderItems();
           });
         },
-        failure: function() {}
+        failure: function () {}
       },
       searchContext.searchId
     );
   },
 
-  add: function(control, onlyAppend) {
+  add: function (control, onlyAppend) {
     var CMgs = CStudioAuthoring.Messages;
     var langBundle = CMgs.getBundle('contentTypes', CStudioAuthoringContext.lang);
 
@@ -209,7 +209,7 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
         YAHOO.util.Event.on(
           create[0],
           'click',
-          function() {
+          function () {
             _self.createElementAction(control, _self);
           },
           create[0]
@@ -233,7 +233,7 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
         YAHOO.util.Event.on(
           browse[0],
           'click',
-          function() {
+          function () {
             _self.browseExistingElementAction(control, _self);
           },
           browse[0]
@@ -257,7 +257,7 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
         YAHOO.util.Event.on(
           search[0],
           'click',
-          function() {
+          function () {
             _self.searchExistingElementAction(control, _self);
           },
           search[0]
@@ -268,13 +268,13 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
     }
   },
 
-  edit: function(key, control, index) {
+  edit: function (key, control, index) {
     var _self = this;
     const readonly = control.readonly;
     const action = readonly ? CStudioAuthoring.Operations.viewContent : CStudioAuthoring.Operations.editContent;
 
     CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, key, {
-      success: function(contentTO) {
+      success: function (contentTO) {
         action(
           contentTO.item.contentType,
           CStudioAuthoringContext.siteId,
@@ -283,7 +283,7 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
           contentTO.item.uri,
           false,
           {
-            success: function(contentTO, editorId, name, value, draft, action) {
+            success: function (contentTO, editorId, name, value, draft, action) {
               if (control) {
                 control.updateEditedItem(value, _self.id, index);
                 CStudioForms.communication.sendMessage({
@@ -298,37 +298,37 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
           }
         );
       },
-      failure: function() {}
+      failure: function () {}
     });
   },
 
-  updateItem: function(item, control) {
+  updateItem: function (item, control) {
     if (item.key && item.key.match(/\.xml$/)) {
       var getContentItemCb = {
-        success: function(contentTO) {
+        success: function (contentTO) {
           item.value = contentTO.item.internalName || item.value;
           control._renderItems();
         },
-        failure: function() {}
+        failure: function () {}
       };
 
       CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, item.key, getContentItemCb);
     }
   },
 
-  getLabel: function() {
+  getLabel: function () {
     return this.formatMessage(this.sharedContentDSMessages.sharedContent);
   },
 
-  getInterface: function() {
+  getInterface: function () {
     return 'item';
   },
 
-  getName: function() {
+  getName: function () {
     return 'shared-content';
   },
 
-  getSupportedProperties: function() {
+  getSupportedProperties: function () {
     return [
       {
         label: CMgs.format(langBundle, 'enableCreateNew'),
@@ -372,7 +372,7 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
     ];
   },
 
-  getSupportedConstraints: function() {
+  getSupportedConstraints: function () {
     return [];
   }
 });

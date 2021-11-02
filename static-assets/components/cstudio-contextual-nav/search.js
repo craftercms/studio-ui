@@ -23,12 +23,12 @@ CStudioAuthoring.ContextualNav.WcmSearchMod = CStudioAuthoring.ContextualNav.Wcm
   /**
    * initialize module
    */
-  initialize: function(config) {
+  initialize: function (config) {
     this.definePlugin();
     CStudioAuthoring.ContextualNav.WcmSearch.init();
   },
 
-  definePlugin: function() {
+  definePlugin: function () {
     var YDom = YAHOO.util.Dom,
       YEvent = YAHOO.util.Event;
     /**
@@ -36,7 +36,7 @@ CStudioAuthoring.ContextualNav.WcmSearchMod = CStudioAuthoring.ContextualNav.Wcm
      */
     CStudioAuthoring.register({
       'ContextualNav.WcmSearch': {
-        init: function() {
+        init: function () {
           var e = YDom.get('acn-searchtext');
           YAHOO.util.Event.addListener(e, 'click', this.doSearch);
           this.setDefaultSearchText();
@@ -45,7 +45,7 @@ CStudioAuthoring.ContextualNav.WcmSearchMod = CStudioAuthoring.ContextualNav.Wcm
         /**
          * user has focused on search text box
          */
-        focusSearchText: function(e) {
+        focusSearchText: function (e) {
           var e = YDom.get('acn-searchtext');
           YDom.setStyle(e, 'color', '');
           e.value = '';
@@ -54,7 +54,7 @@ CStudioAuthoring.ContextualNav.WcmSearchMod = CStudioAuthoring.ContextualNav.Wcm
         /**
          * handle on blur event
          */
-        blurSearchText: function(e) {
+        blurSearchText: function (e) {
           var e = YDom.get('acn-searchtext');
           var searchVal = e.value;
           CStudioAuthoring.ContextualNav.WcmSearch.setDefaultSearchText();
@@ -62,14 +62,14 @@ CStudioAuthoring.ContextualNav.WcmSearchMod = CStudioAuthoring.ContextualNav.Wcm
         /**
          * set the search box to it's default search text value
          */
-        setDefaultSearchText: function() {
+        setDefaultSearchText: function () {
           var CMgs = CStudioAuthoring.Messages;
           var contextNavLangBundle = CMgs.getBundle('contextnav', CStudioAuthoringContext.lang);
         },
         /**
          * perform the search
          */
-        doSearch: function() {
+        doSearch: function () {
           var searchContext = CStudioAuthoring.Service.createSearchContext();
           searchContext.keywords = encodeURIComponent('');
           CStudioAuthoring.Operations.openSearch(searchContext, false, null, null);

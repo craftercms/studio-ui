@@ -16,7 +16,7 @@
 
 CStudioForms.Datasources.VideoWebDAVRepo =
   CStudioForms.Datasources.VideoWebDAVRepo ||
-  function(id, form, properties, constraints) {
+  function (id, form, properties, constraints) {
     this.id = id;
     this.form = form;
     this.properties = properties;
@@ -35,11 +35,11 @@ CStudioForms.Datasources.VideoWebDAVRepo =
   };
 
 YAHOO.extend(CStudioForms.Datasources.VideoWebDAVRepo, CStudioForms.CStudioFormDatasource, {
-  insertVideoAction: function(insertCb) {
+  insertVideoAction: function (insertCb) {
     var _self = this;
 
     var browseCb = {
-      success: function(searchId, selectedTOs) {
+      success: function (searchId, selectedTOs) {
         for (var i = 0; i < selectedTOs.length; i++) {
           var item = selectedTOs[i];
           var uri = item.browserUri;
@@ -56,7 +56,7 @@ YAHOO.extend(CStudioForms.Datasources.VideoWebDAVRepo, CStudioForms.CStudioFormD
           insertCb.success(videoData);
         }
       },
-      failure: function() {}
+      failure: function () {}
     };
 
     CStudioAuthoring.Operations.openWebDAVBrowse(
@@ -69,34 +69,34 @@ YAHOO.extend(CStudioForms.Datasources.VideoWebDAVRepo, CStudioForms.CStudioFormD
     );
   },
 
-  getConfig: function(callback) {
+  getConfig: function (callback) {
     CStudioAuthoring.Service.getConfiguration(CStudioAuthoringContext.site, '/webdav/webdav.xml', {
-      success: function(config) {
+      success: function (config) {
         callback(config);
       }
     });
   },
 
-  getLabel: function() {
+  getLabel: function () {
     return CMgs.format(langBundle, 'videoWebDavRepository');
   },
 
-  getInterface: function() {
+  getInterface: function () {
     return 'video';
   },
 
-  getName: function() {
+  getName: function () {
     return 'video-WebDAV-repo';
   },
 
-  getSupportedProperties: function() {
+  getSupportedProperties: function () {
     return [
       { label: CMgs.format(langBundle, 'repositoryPath'), name: 'repoPath', type: 'string' },
       { label: CMgs.format(langBundle, 'profileId'), name: 'profileId', type: 'string' }
     ];
   },
 
-  getSupportedConstraints: function() {
+  getSupportedConstraints: function () {
     return [];
   }
 });

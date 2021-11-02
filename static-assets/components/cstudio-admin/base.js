@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-(function() {
+(function () {
   const i18n = CrafterCMSNext.i18n,
     formatMessage = i18n.intl.formatMessage,
     contentTypesMessages = i18n.messages.contentTypesMessages;
@@ -22,7 +22,7 @@
   CStudioAdminConsole = {
     toolContainerEls: [],
 
-    render: function(containerEl) {
+    render: function (containerEl) {
       this.containerEl = containerEl;
 
       if (!$('body').hasClass('embedded')) {
@@ -40,7 +40,7 @@
           CStudioAuthoringContext.site,
           '/administration/site-config-tools.xml',
           {
-            success: function(config) {
+            success: function (config) {
               var panelEl = YAHOO.util.Selector.query(
                 '#admin-console .categories-panel #categoriesPanelWrapper',
                 null,
@@ -51,7 +51,7 @@
               this.context.buildModules(config, panelEl);
             },
 
-            failure: function() {},
+            failure: function () {},
 
             context: this
           }
@@ -64,7 +64,7 @@
       const toolsNames = tools.map((tool) => tool.name);
 
       routie({
-        'tool/:name?': function(name) {
+        'tool/:name?': function (name) {
           if (toolsNames.includes(name)) {
             _self.currentRoute = name;
             if (_self.toolsModules[name]) {
@@ -94,14 +94,14 @@
             }
           }
         },
-        '*': function() {
+        '*': function () {
           _self.renderNothingSelected();
         }
       });
     },
 
-    buildModules: function(config, panelEl) {
-      amplify.subscribe('/content-type/loaded', function() {
+    buildModules: function (config, panelEl) {
+      amplify.subscribe('/content-type/loaded', function () {
         var catEl = document.getElementById('admin-console');
         catEl.className = ''; // Clear any classes
         YDom.addClass(catEl, 'work-area-active');
@@ -121,7 +121,7 @@
             }
 
             var cb = {
-              moduleLoaded: function(moduleName, moduleClass, moduleConfig) {
+              moduleLoaded: function (moduleName, moduleClass, moduleConfig) {
                 try {
                   var tool = new moduleClass(moduleConfig, this.toolContainerEl);
                   this.context.toolsModules[tool.config.config.name] = tool;
@@ -149,7 +149,7 @@
               `/static-assets/components/cstudio-admin/mods/${tool.name}.js`,
               {
                 config: tool,
-                onError: function() {
+                onError: function () {
                   CStudioAuthoring.Utils.showNotification(
                     formatMessage(contentTypesMessages.loadModuleError, { tool: tool.name }),
                     'top',
@@ -204,7 +204,7 @@
           [
             {
               text: CMgs.format(formsLangBundle, 'yes'),
-              handler: function() {
+              handler: function () {
                 CStudioAdminConsole.isDirty = false;
                 selectedItem();
                 this.destroy();
@@ -213,7 +213,7 @@
             },
             {
               text: CMgs.format(formsLangBundle, 'no'),
-              handler: function() {
+              handler: function () {
                 this.destroy();
               },
               isDefault: false
@@ -241,7 +241,7 @@
       }
     },
 
-    renderNothingSelected: function() {
+    renderNothingSelected: function () {
       $('#cstudio-admin-console-workarea').append(`
         <div class="work-area-empty">
           <img src="/studio/static-assets/images/choose_option.svg" alt="">
@@ -250,7 +250,7 @@
     }
   };
 
-  CStudioAdminConsole.Toolbar = function(containerEl) {
+  CStudioAdminConsole.Toolbar = function (containerEl) {
     this.containerEl = containerEl;
     this.tools = [];
     this.toolContainerEls = [];
@@ -258,7 +258,7 @@
   };
 
   CStudioAdminConsole.Toolbar.prototype = {
-    addToolbarItem: function(tool, toolContainerEl) {
+    addToolbarItem: function (tool, toolContainerEl) {
       var label = tool.config.label.toLowerCase();
       label = label.replace(/ /g, '');
       var labelLangBundle = CMgs.format(langBundle, label);
@@ -304,18 +304,18 @@
     }
   };
 
-  CStudioAdminConsole.Tool = function() {};
+  CStudioAdminConsole.Tool = function () {};
 
   CStudioAdminConsole.Tool.prototype = {
-    initialize: function(config) {
+    initialize: function (config) {
       this.config = config;
     },
 
-    renderWorkarea: function() {}
+    renderWorkarea: function () {}
   };
 
   CStudioAdminConsole.CommandBar = {
-    render: function(actions) {
+    render: function (actions) {
       if (!this.commandBarEl) {
         this.commandBarEl = document.createElement('div');
         this.commandBarEl.id = 'cstudio-admin-console-command-bar';
@@ -329,15 +329,15 @@
       this.addActions(actions);
     },
 
-    hide: function() {
+    hide: function () {
       YDom.addClass(this.commandBarEl, 'hidden');
     },
 
-    show: function() {
+    show: function () {
       YDom.removeClass(this.commandBarEl, 'hidden');
     },
 
-    addActions: function(actions) {
+    addActions: function (actions) {
       this.commandBarEl.innerHTML = '';
 
       if (actions.length > 0) {
@@ -349,7 +349,7 @@
       }
     },
 
-    addAction: function(action) {
+    addAction: function (action) {
       var buttonEl = document.createElement('input');
       YDom.addClass(buttonEl, 'btn');
       YDom.addClass(buttonEl, action.class ? action.class : 'btn-primary');
@@ -363,7 +363,7 @@
     }
   };
 
-  YAHOO.util.Event.onAvailable('admin-console', function() {
+  YAHOO.util.Event.onAvailable('admin-console', function () {
     CStudioAdminConsole.render(document.getElementById('admin-console'));
   });
 })();

@@ -27,13 +27,13 @@ CStudioAuthoring.MediumPanel = CStudioAuthoring.MediumPanel || {
   /**
    * initialize module
    */
-  initialize: function(config) {
+  initialize: function (config) {
     if (this.initialized === false) {
       this.initialized = true;
     }
   },
 
-  render: function(containerEl, config) {
+  render: function (containerEl, config) {
     var me = this,
       $select,
       $engine = $('#engineWindow'),
@@ -75,14 +75,14 @@ CStudioAuthoring.MediumPanel = CStudioAuthoring.MediumPanel || {
 
     $select[0].options[1].selected = true;
 
-    $select.change(function() {
+    $select.change(function () {
       var preset = $(this).val();
       me.presetSelected(preset);
     });
 
     var timeout, currentValue;
 
-    $container.find('input').keyup(function(e) {
+    $container.find('input').keyup(function (e) {
       var $el = $(e.currentTarget),
         value = $el.val(),
         number = parseInt(value);
@@ -91,7 +91,7 @@ CStudioAuthoring.MediumPanel = CStudioAuthoring.MediumPanel || {
 
       if (currentValue != value) {
         clearTimeout(timeout);
-        timeout = setTimeout(function() {
+        timeout = setTimeout(function () {
           if (value === '' || value === 'auto') {
             $el.val('');
             $el.data('rollback', '');
@@ -110,7 +110,7 @@ CStudioAuthoring.MediumPanel = CStudioAuthoring.MediumPanel || {
       }
     });
 
-    $container.find('a.flip').click(function() {
+    $container.find('a.flip').click(function () {
       var $inputs = me.$container.find('input'),
         $width = $inputs.filter('[data-axis="x"]'),
         $height = $inputs.filter('[data-axis="y"]'),
@@ -125,7 +125,7 @@ CStudioAuthoring.MediumPanel = CStudioAuthoring.MediumPanel || {
     this.$container = $container;
   },
 
-  update: function() {
+  update: function () {
     var $body = $('body'),
       $engine = $('#engineWindow'),
       $studioPreview = $('.studio-preview'),
@@ -203,7 +203,7 @@ CStudioAuthoring.MediumPanel = CStudioAuthoring.MediumPanel || {
     $engine.css('top', topPosition);
   },
 
-  presetSelected: function(value) {
+  presetSelected: function (value) {
     var $window = $(window);
     switch (value) {
       case 'custom':
@@ -219,7 +219,7 @@ CStudioAuthoring.MediumPanel = CStudioAuthoring.MediumPanel || {
       default: {
         var channel;
 
-        this.channels.forEach(function(item) {
+        this.channels.forEach(function (item) {
           if (item.value === value) channel = item;
         });
 

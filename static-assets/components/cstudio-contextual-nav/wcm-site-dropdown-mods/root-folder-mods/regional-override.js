@@ -19,12 +19,12 @@ CStudioAuthoring.ContextualNav.WcmRootFolder.RegionalOverride = CStudioAuthoring
   Self: this,
   region: '',
 
-  init: function(moduleConfig) {
+  init: function (moduleConfig) {
     Self.region = moduleConfig.config.region;
     Self.filterFolders = this.filterFolders;
   },
 
-  _renderContextMenu: function(tree, target, p_aArgs, component, menuItems, oCurrentTextNode, isWrite) {
+  _renderContextMenu: function (tree, target, p_aArgs, component, menuItems, oCurrentTextNode, isWrite) {
     var data = {
       tree: tree,
       currentTextNode: oCurrentTextNode,
@@ -43,12 +43,12 @@ CStudioAuthoring.ContextualNav.WcmRootFolder.RegionalOverride = CStudioAuthoring
     ]);
   },
 
-  createRegionalContent: function(action, evt, data) {
+  createRegionalContent: function (action, evt, data) {
     var createCb = {
-      success: function() {
+      success: function () {
         this.callingWindow.location.reload(true);
       },
-      failure: function() {},
+      failure: function () {},
       callingWindow: window
     };
 
@@ -59,7 +59,7 @@ CStudioAuthoring.ContextualNav.WcmRootFolder.RegionalOverride = CStudioAuthoring
     CStudioAuthoring.Operations.createNewContent(CStudioAuthoringContext.site, path, false, createCb);
   },
 
-  filterItem: function(treeItem) {
+  filterItem: function (treeItem) {
     var filterFolders = ['lac', 'usa', 'euro'];
 
     for (var i = 0; i < filterFolders.length; i++) {
@@ -75,7 +75,7 @@ CStudioAuthoring.ContextualNav.WcmRootFolder.RegionalOverride = CStudioAuthoring
     return false;
   },
 
-  drawTreeItem: function(treeNodeTO, root, treeNode) {
+  drawTreeItem: function (treeNodeTO, root, treeNode) {
     if (treeNodeTO.fileName == Self.region) {
       treeNode.label = Self.region.toUpperCase() + ' ' + treeNode.parent.label.replace('*', '') + 'Regional Content';
     }

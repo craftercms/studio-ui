@@ -16,7 +16,7 @@
 
 CStudioForms.Datasources.ConfiguredList =
   CStudioForms.Datasources.ConfiguredList ||
-  function(id, form, properties, constraints) {
+  function (id, form, properties, constraints) {
     this.id = id;
     this.form = form;
     this.sort = this.SORT_NONE;
@@ -39,7 +39,7 @@ CStudioForms.Datasources.ConfiguredList =
 
       if (property.name == 'listName') {
         var cb = {
-          success: function(config) {
+          success: function (config) {
             if (config) {
               var values = config.values.item;
               if (!values.length) {
@@ -48,11 +48,11 @@ CStudioForms.Datasources.ConfiguredList =
 
               if (_self.sort != _self.SORT_NONE) {
                 if (_self.sort == _self.SORT_ASC) {
-                  values = values.sort(function(a, b) {
+                  values = values.sort(function (a, b) {
                     return a.value > b.value;
                   });
                 } else {
-                  values = values.sort(function(a, b) {
+                  values = values.sort(function (a, b) {
                     return a.value < b.value;
                   });
                 }
@@ -65,7 +65,7 @@ CStudioForms.Datasources.ConfiguredList =
               }
             }
           },
-          failure: function() {}
+          failure: function () {}
         };
 
         CStudioAuthoring.Service.lookupConfigurtion(
@@ -80,11 +80,11 @@ CStudioForms.Datasources.ConfiguredList =
   };
 
 YAHOO.extend(CStudioForms.Datasources.ConfiguredList, CStudioForms.CStudioFormDatasource, {
-  getLabel: function() {
+  getLabel: function () {
     return CMgs.format(langBundle, 'configuredListOfPairs');
   },
 
-  getInterface: function() {
+  getInterface: function () {
     return 'item';
   },
 
@@ -98,11 +98,11 @@ YAHOO.extend(CStudioForms.Datasources.ConfiguredList, CStudioForms.CStudioFormDa
   getDataType: function getDataType() {
     var val = null;
 
-    this.properties.forEach(function(prop) {
+    this.properties.forEach(function (prop) {
       if (prop.name == 'dataType') {
         // return the value of the option currently selected
         var value = JSON.parse(prop.value);
-        value.forEach(function(opt) {
+        value.forEach(function (opt) {
           if (opt.selected) {
             val = opt.value;
           }
@@ -112,11 +112,11 @@ YAHOO.extend(CStudioForms.Datasources.ConfiguredList, CStudioForms.CStudioFormDa
     return val;
   },
 
-  getName: function() {
+  getName: function () {
     return 'configured-list';
   },
 
-  getSupportedProperties: function() {
+  getSupportedProperties: function () {
     return [
       {
         label: CMgs.format(langBundle, 'dataType'),
@@ -187,11 +187,11 @@ YAHOO.extend(CStudioForms.Datasources.ConfiguredList, CStudioForms.CStudioFormDa
     ];
   },
 
-  getSupportedConstraints: function() {
+  getSupportedConstraints: function () {
     return [{ label: CMgs.format(langBundle, 'required'), name: 'required', type: 'boolean' }];
   },
 
-  getList: function(cb) {
+  getList: function (cb) {
     if (!this.list) {
       this.callbacks[this.callbacks.length] = cb;
     } else {

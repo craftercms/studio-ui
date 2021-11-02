@@ -24,7 +24,7 @@ CStudioAuthoring.ContextualNav.SiteConfig = CStudioAuthoring.ContextualNav.SiteC
   /**
    * initialize module
    */
-  initialize: function(config) {
+  initialize: function (config) {
     if (config.name == 'site-config') {
       var moduleConfig = {
         label: 'siteConfig',
@@ -52,7 +52,7 @@ CStudioAuthoring.ContextualNav.SiteConfig = CStudioAuthoring.ContextualNav.SiteC
 
       parentFolderLinkEl.innerHTML += label;
 
-      parentFolderLinkEl.onclick = function() {
+      parentFolderLinkEl.onclick = function () {
         document.location =
           CStudioAuthoringContext.authoringAppBaseUri + moduleConfig.path + '?site=' + CStudioAuthoringContext.site;
       };

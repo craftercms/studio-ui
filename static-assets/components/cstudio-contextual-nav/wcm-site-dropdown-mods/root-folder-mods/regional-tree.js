@@ -20,13 +20,13 @@ CStudioAuthoring.ContextualNav.WcmRootFolder.RegionalTree = CStudioAuthoring.Con
   readyToLoad: false,
   region: '',
 
-  init: function(moduleConfig) {
+  init: function (moduleConfig) {
     Self.region = moduleConfig.config.region;
     Self.filterPaths = [];
     Self.filterFolders = this.filterFolders;
 
     var cb = {
-      success: function(results) {
+      success: function (results) {
         for (var i = 0; i < results.objectList.length; i++) {
           var item = results.objectList[i].item;
           var pathOfItem = item.localId.replace('/index.xml', '');
@@ -39,7 +39,7 @@ CStudioAuthoring.ContextualNav.WcmRootFolder.RegionalTree = CStudioAuthoring.Con
 
         this._self.RegionalTree.readyToLoad = true;
       },
-      failure: function(err) {
+      failure: function (err) {
         console.log('error getting paths for region. err:' + err);
       },
       _self: Self
@@ -62,10 +62,10 @@ CStudioAuthoring.ContextualNav.WcmRootFolder.RegionalTree = CStudioAuthoring.Con
     );
   },
 
-  _renderContextMenu: function(tree, target, p_aArgs, component, menuItems, oCurrentTextNode, isWrite) {},
+  _renderContextMenu: function (tree, target, p_aArgs, component, menuItems, oCurrentTextNode, isWrite) {},
 
-  sortTreeItems: function(treeItems) {
-    treeItems.sort(function(a, b) {
+  sortTreeItems: function (treeItems) {
+    treeItems.sort(function (a, b) {
       var itemPathA = a.uri;
       var itemPathB = b.uri;
 
@@ -79,7 +79,7 @@ CStudioAuthoring.ContextualNav.WcmRootFolder.RegionalTree = CStudioAuthoring.Con
     return treeItems;
   },
 
-  filterItem: function(treeItem) {
+  filterItem: function (treeItem) {
     var filterItem = false;
     var itemPath = treeItem.uri.replace('/index.xml', '');
 
@@ -104,7 +104,7 @@ CStudioAuthoring.ContextualNav.WcmRootFolder.RegionalTree = CStudioAuthoring.Con
     return filterItem;
   },
 
-  drawTreeItem: function(treeNodeTO, root, treeNode) {
+  drawTreeItem: function (treeNodeTO, root, treeNode) {
     if (treeNodeTO.uri == '/site/website/wip') {
       treeNode.label = 'Work in Progress';
     } else if (treeNodeTO.uri.indexOf('/site/website/wip/' + Self.region) != -1) {

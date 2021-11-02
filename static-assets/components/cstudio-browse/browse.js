@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-(function(window, $, Handlebars) {
+(function (window, $, Handlebars) {
   'use strict';
 
   var activePromise;
@@ -24,7 +24,7 @@
     window.CStudioBrowse = CStudioBrowse;
   }
 
-  CStudioBrowse.init = function() {
+  CStudioBrowse.init = function () {
     var searchContext = this.determineSearchContextFromUrl();
     this.searchContext = searchContext;
     this.renderSiteFolders(searchContext.site, searchContext.path);
@@ -33,7 +33,7 @@
       browseLangBundle = CMgs.getBundle('browse', CStudioAuthoringContext.lang);
   };
 
-  CStudioBrowse.bindEvents = function() {
+  CStudioBrowse.bindEvents = function () {
     var me = this,
       $tree = $('#data'),
       $resultsContainer = $('#cstudio-wcm-search-result .results'),
@@ -42,7 +42,7 @@
 
     // tree related events
 
-    $tree.on('ready.jstree', function(event, data) {
+    $tree.on('ready.jstree', function (event, data) {
       var tree = data.instance;
       var obj = tree.get_selected(true)[0];
       me.currentSelection = '';
@@ -58,7 +58,7 @@
       me.renderContextMenu();
     });
 
-    $tree.on('select_node.jstree', function(event, data) {
+    $tree.on('select_node.jstree', function (event, data) {
       var path = data.node.a_attr['data-path'];
 
       if (me.currentSelection != data.node.id) {
@@ -67,20 +67,20 @@
       }
     });
 
-    $('.cstudio-browse-container').on('click', '.path span', function() {
+    $('.cstudio-browse-container').on('click', '.path span', function () {
       var path = $(this).attr('data-path');
 
       me.renderSiteContent(me.searchContext.site, path);
     });
 
-    $tree.on('open_node.jstree', function(event, node) {
+    $tree.on('open_node.jstree', function (event, node) {
       // TODO: find out how to show node as selected
       $('#' + node.node.id + '_anchor').click();
     });
 
     // results related events
 
-    $resultsContainer.on('change', 'input[name=result-select]', function() {
+    $resultsContainer.on('change', 'input[name=result-select]', function () {
       var contentTO = $(this.parentElement.parentElement).data('item');
 
       me.validateSelections();
@@ -97,45 +97,38 @@
       }
     });
 
-    $resultsActions.on('click', '.cstudio-search-select-all', function() {
+    $resultsActions.on('click', '.cstudio-search-select-all', function () {
       var checkBoxes = $resultsContainer.find('input[name=result-select]');
       checkBoxes.prop('checked', true).trigger('change');
     });
 
-    $resultsActions.on('click', '.cstudio-search-clear-selection', function() {
+    $resultsActions.on('click', '.cstudio-search-clear-selection', function () {
       var checkBoxes = $resultsContainer.find('input[name=result-select]');
       checkBoxes.prop('checked', false).trigger('change');
     });
 
-    $('#cstudio-command-controls').on('click', '#formSaveButton', function() {
+    $('#cstudio-command-controls').on('click', '#formSaveButton', function () {
       me.saveContent();
     });
 
-    $('#cstudio-command-controls').on('click', '#formCancelButton', function() {
+    $('#cstudio-command-controls').on('click', '#formCancelButton', function () {
       window.close();
-      $(window.frameElement.parentElement)
-        .closest('.studio-ice-dialog')
-        .parent()
-        .remove(); // TODO: find a better way
+      $(window.frameElement.parentElement).closest('.studio-ice-dialog').parent().remove(); // TODO: find a better way
     });
 
-    $('#cstudio-command-controls').on('click', '#colExpButtonBtn', function() {
+    $('#cstudio-command-controls').on('click', '#colExpButtonBtn', function () {
       if (top !== window) {
-        $(window.frameElement.parentElement)
-          .closest('.studio-ice-dialog')
-          .height(60);
+        $(window.frameElement.parentElement).closest('.studio-ice-dialog').height(60);
       }
     });
 
-    $resultsContainer.on('click', '.add-close-btn', function() {
-      var input = $(this)
-        .closest('.cstudio-search-result')
-        .find('.cstudio-search-select-container input');
+    $resultsContainer.on('click', '.add-close-btn', function () {
+      var input = $(this).closest('.cstudio-search-result').find('.cstudio-search-select-container input');
       input.prop('checked', true).trigger('change');
       me.saveContent();
     });
 
-    $resultsContainer.on('click', '.magnify-icon', function() {
+    $resultsContainer.on('click', '.magnify-icon', function () {
       var path = $(this).attr('data-source');
       var type = $(this).attr('data-type');
       CStudioAuthoring.Utils.previewAssetDialog(path, type);
@@ -144,7 +137,7 @@
 
   // Utilities
 
-  CStudioBrowse.determineSearchContextFromUrl = function() {
+  CStudioBrowse.determineSearchContextFromUrl = function () {
     var searchContext = {};
 
     var queryString = document.location.search;
@@ -193,10 +186,10 @@
     return searchContext;
   };
 
-  CStudioBrowse.parseObjForTree = function(obj) {
-    var parsed = JSON.parse(JSON.stringify(obj), function(key, value) {
+  CStudioBrowse.parseObjForTree = function (obj) {
+    var parsed = JSON.parse(JSON.stringify(obj), function (key, value) {
       if (key === 'children') {
-        $.each(value, function(index, elem) {
+        $.each(value, function (index, elem) {
           if (!elem.folder && elem.numOfChildren === 0) {
             value[index].li_attr = {
               'data-display': 'hidden-node'
@@ -233,7 +226,7 @@
     return parsed;
   };
 
-  CStudioBrowse.renderItem = function(item, $resultsContainer, repoPath) {
+  CStudioBrowse.renderItem = function (item, $resultsContainer, repoPath) {
     if (!$resultsContainer) {
       $resultsContainer = $('#cstudio-wcm-search-result .results');
     }
@@ -286,14 +279,14 @@
     }
   };
 
-  CStudioBrowse.renderNoItems = function() {
+  CStudioBrowse.renderNoItems = function () {
     var $resultsContainer = $('#cstudio-wcm-search-result .results'),
       msj = 'There are no files at this path.';
 
     $resultsContainer.append('<p style="text-align: center; font-weight: bold;">' + msj + '</p>');
   };
 
-  CStudioBrowse.renderItemsActions = function() {
+  CStudioBrowse.renderItemsActions = function () {
     var searchContext = this.searchContext,
       $actionsContainer = $('#cstudio-wcm-search-result .cstudio-results-actions');
     $actionsContainer.empty();
@@ -313,17 +306,17 @@
     }
   };
 
-  CStudioBrowse.refreshCurrentResults = function() {
+  CStudioBrowse.refreshCurrentResults = function () {
     var searchContext = this.searchContext;
 
     this.renderSiteContent(searchContext.site, this.currentResultsPath);
   };
 
-  CStudioBrowse.getItemState = function(item) {
+  CStudioBrowse.getItemState = function (item) {
     return CStudioAuthoring.Utils.getIconFWClasses(item);
   };
 
-  CStudioBrowse.validateSelections = function() {
+  CStudioBrowse.validateSelections = function () {
     var searchContext = this.searchContext,
       selectLimit = searchContext.selectLimit,
       $resultsContainer = $('#cstudio-wcm-search-result .results'),
@@ -346,7 +339,7 @@
     }
   };
 
-  CStudioBrowse.saveContent = function() {
+  CStudioBrowse.saveContent = function () {
     var searchId = this.searchContext ? this.searchContext.searchId : '';
     var crossServerAccess = false;
     var opener = window.opener ? window.opener : parent.iframeOpener;
@@ -382,10 +375,7 @@
             }
 
             window.close();
-            $(window.frameElement.parentElement)
-              .closest('.studio-ice-dialog')
-              .parent()
-              .remove(); // TODO: find a better way
+            $(window.frameElement.parentElement).closest('.studio-ice-dialog').parent().remove(); // TODO: find a better way
           } else {
             CStudioAuthoring.Operations.showSimpleDialog(
               'lookUpChildError-dialog',
@@ -395,13 +385,10 @@
               [
                 {
                   text: 'OK',
-                  handler: function() {
+                  handler: function () {
                     this.hide();
                     window.close();
-                    $(window.frameElement.parentElement)
-                      .closest('.studio-ice-dialog')
-                      .parent()
-                      .remove(); // TODO: find a better way
+                    $(window.frameElement.parentElement).closest('.studio-ice-dialog').parent().remove(); // TODO: find a better way
                   },
                   isDefault: false
                 }
@@ -419,13 +406,10 @@
             [
               {
                 text: 'OK',
-                handler: function() {
+                handler: function () {
                   this.hide();
                   window.close();
-                  $(window.frameElement.parentElement)
-                    .closest('.studio-ice-dialog')
-                    .parent()
-                    .remove(); // TODO: find a better way
+                  $(window.frameElement.parentElement).closest('.studio-ice-dialog').parent().remove(); // TODO: find a better way
                 },
                 isDefault: false
               }
@@ -439,27 +423,24 @@
       // no window opening context or cross server call
       // the only thing we can do is close the window
       window.close();
-      $(window.frameElement.parentElement)
-        .closest('.studio-ice-dialog')
-        .parent()
-        .remove(); // TODO: find a better way
+      $(window.frameElement.parentElement).closest('.studio-ice-dialog').parent().remove(); // TODO: find a better way
     }
   };
 
-  CStudioBrowse.renderContextMenu = function() {
+  CStudioBrowse.renderContextMenu = function () {
     var me = this,
       searchContext = this.searchContext,
       permissions = this._getUserPermissions(searchContext.site, searchContext.path);
 
-    permissions.then(function(response) {
+    permissions.then(function (response) {
       var isWrite = CStudioAuthoring.Service.isWrite(response.permissions);
 
       if (isWrite != false) {
         $.contextMenu({
           selector: '.jstree-anchor',
-          callback: function(key, options) {
+          callback: function (key, options) {
             var upload = me.uploadContent(searchContext.site, options.$trigger.attr('data-path'));
-            upload.then(function() {
+            upload.then(function () {
               me.refreshCurrentResults();
             });
           },
@@ -473,7 +454,7 @@
 
   // Services
 
-  CStudioBrowse.renderSiteFolders = function(site, path) {
+  CStudioBrowse.renderSiteFolders = function (site, path) {
     var me = this;
 
     // Removes jstree cached state from localStorage
@@ -483,11 +464,11 @@
     $('#data').jstree({
       core: {
         check_callback: true,
-        data: function(node, cb) {
+        data: function (node, cb) {
           var notRoot = typeof node.a_attr !== 'undefined' && typeof node.a_attr['data-path'] !== 'undefined';
           var currentPath = notRoot ? node.a_attr['data-path'] : path; // use node path or root path
           var foldersPromise = me._lookupSiteFolders(site, currentPath);
-          foldersPromise.then(function(treeData) {
+          foldersPromise.then(function (treeData) {
             var items = new Array(treeData.item);
             items = me.parseObjForTree(items);
             if (notRoot) {
@@ -507,15 +488,15 @@
     });
   };
 
-  CStudioBrowse._lookupSiteFolders = function(site, path) {
+  CStudioBrowse._lookupSiteFolders = function (site, path) {
     var d = new $.Deferred();
 
     CStudioAuthoring.Service.lookupSiteFolders(site, path, 2, 'default', {
-      success: function(treeData) {
+      success: function (treeData) {
         // done (?)
         d.resolve(treeData);
       },
-      failure: function() {
+      failure: function () {
         // fail (?)
       }
     });
@@ -523,7 +504,7 @@
     return d.promise();
   };
 
-  CStudioBrowse.renderSiteContent = function(site, path) {
+  CStudioBrowse.renderSiteContent = function (site, path) {
     var me = this,
       $resultsContainer = $('#cstudio-wcm-search-result .results'),
       $resultsActions = $('#cstudio-wcm-search-result .cstudio-results-actions'),
@@ -536,7 +517,7 @@
 
     $resultsContainer.html('<span class="cstudio-spinner"></span>' + CMgs.format(browseLangBundle, 'loading') + '...');
 
-    contentPromise.then(function(results) {
+    contentPromise.then(function (results) {
       if (activePromise != contentPromise) {
         return;
       }
@@ -557,7 +538,7 @@
           var $resultsWrapper = $('<div class="results-wrapper"/>');
           $resultsContainer.prepend($resultsWrapper);
 
-          $.each(results, function(index, value) {
+          $.each(results, function (index, value) {
             if (!value.folder) {
               me.renderItem(value, $resultsWrapper, null);
               filesPresent = true;
@@ -576,7 +557,7 @@
     });
   };
 
-  CStudioBrowse._lookupSiteContent = function(site, path) {
+  CStudioBrowse._lookupSiteContent = function (site, path) {
     var me = this;
 
     if (this.siteContentDef) {
@@ -586,36 +567,36 @@
     this.siteContentDef = new $.Deferred();
 
     CStudioAuthoring.Service.lookupSiteContent(site, path, 1, 'default', {
-      success: function(results) {
+      success: function (results) {
         me.siteContentDef.resolve(results);
       },
-      failure: function() {}
+      failure: function () {}
     });
 
     return this.siteContentDef.promise();
   };
 
-  CStudioBrowse._getUserPermissions = function(site, path) {
+  CStudioBrowse._getUserPermissions = function (site, path) {
     var d = new $.Deferred();
 
     CStudioAuthoring.Service.getUserPermissions(site, path, {
-      success: function(results) {
+      success: function (results) {
         d.resolve(results);
       },
-      failure: function() {}
+      failure: function () {}
     });
 
     return d.promise();
   };
 
-  CStudioBrowse.uploadContent = function(site, path) {
+  CStudioBrowse.uploadContent = function (site, path) {
     var d = new $.Deferred();
 
     CStudioAuthoring.Operations.uploadAsset(site, path, 'upload', {
-      success: function(results) {
+      success: function (results) {
         d.resolve(results);
       },
-      failure: function() {}
+      failure: function () {}
     });
 
     return d.promise();

@@ -20,10 +20,10 @@ CStudioForms.Controls.RTE.ImageInsert = CStudioForms.Controls.RTE.ImageInsert ||
    * @param {tinymce2.Editor} ed Editor instance that the plugin is initialized in.
    * @param {string} url Absolute URL to where the plugin is located.
    */
-  init: function(ed, url) {
+  init: function (ed, url) {
     var _self = this;
     var beforeSaveCb = {
-      beforeSave: function() {
+      beforeSave: function () {
         var docBodyEl = ed.dom.doc.body;
 
         if (docBodyEl) {
@@ -47,14 +47,14 @@ CStudioForms.Controls.RTE.ImageInsert = CStudioForms.Controls.RTE.ImageInsert ||
     ed.contextControl.form.registerBeforeSaveCallback(beforeSaveCb);
 
     // Register the command so that it can be invoked by using tinymce2.activeEditor.execCommand('mceExample');
-    ed.addCommand('mceInsertManagedImage', function(param, datasource) {
+    ed.addCommand('mceInsertManagedImage', function (param, datasource) {
       var CMgs = CStudioAuthoring.Messages;
       var langBundle = CMgs.getBundle('forms', CStudioAuthoringContext.lang);
 
       if (datasource) {
         if (datasource.insertImageAction) {
           datasource.insertImageAction({
-            success: function(imageData) {
+            success: function (imageData) {
               var cleanUrl = imageData.relativeUrl.replace(/^(.+?\.(png|jpe?g)).*$/i, '$1'); //remove timestamp
               var actualCaretPositionBookmark = { id: ed.id };
 
@@ -68,18 +68,18 @@ CStudioForms.Controls.RTE.ImageInsert = CStudioForms.Controls.RTE.ImageInsert ||
                 )
               ) {
                 CStudioAuthoring.Service.contentExists(imageData.relativeUrl, {
-                  exists: function(result) {
+                  exists: function (result) {
                     if (result) {
                       ed.execCommand('mceInsertContent', true, '<img src="' + cleanUrl + '" />');
                       ed.contextControl.save();
                     } else {
-                      setTimeout(function() {
+                      setTimeout(function () {
                         ed.execCommand('mceInsertContent', true, '<img src="' + cleanUrl + '" />');
                         ed.contextControl.save();
                       }, 500);
                     }
                   },
-                  failure: function(message) {
+                  failure: function (message) {
                     console.log(message);
                   }
                 });
@@ -88,7 +88,7 @@ CStudioForms.Controls.RTE.ImageInsert = CStudioForms.Controls.RTE.ImageInsert ||
                 ed.contextControl.save();
               }
             },
-            failure: function(message) {
+            failure: function (message) {
               CStudioAuthoring.Operations.showSimpleDialog(
                 'message-dialog',
                 CStudioAuthoring.Operations.simpleDialogTypeINFO,
@@ -125,17 +125,17 @@ CStudioForms.Controls.RTE.ImageInsert = CStudioForms.Controls.RTE.ImageInsert ||
     });
 
     // Add a node change handler, selects the button in the UI when a image is selected
-    ed.onNodeChange.add(function(ed, cm, n) {
+    ed.onNodeChange.add(function (ed, cm, n) {
       cm.setActive('managedImage', n.nodeName == 'IMG');
     });
   },
 
-  cleanUrl: function(url) {
+  cleanUrl: function (url) {
     var urlVal = url.replace(CStudioAuthoringContext.previewAppBaseUri, ''); // remove domain name & junction (optional) from image URL
     return urlVal;
   },
 
-  createControl: function(name, cm) {
+  createControl: function (name, cm) {
     var imageManagerNames = cm.editor.contextControl.imageManagerName; // List of image datasource IDs, could be an array or a string
 
     imageManagerNames = !imageManagerNames
@@ -152,13 +152,13 @@ CStudioForms.Controls.RTE.ImageInsert = CStudioForms.Controls.RTE.ImageInsert ||
         icons: false
       });
 
-      c.onRenderMenu.add(function(c, m) {
+      c.onRenderMenu.add(function (c, m) {
         var datasourceMap = this.editor.contextControl.form.datasourceMap,
           datasourceDef = this.editor.contextControl.form.definition.datasources;
         // The datasource title is only found in the definition.datasources. It'd make more sense to have all
         // the information in just one place.
 
-        var addMenuOption = function(el) {
+        var addMenuOption = function (el) {
           // We want to avoid possible substring conflicts by using a reg exp (a simple indexOf
           // would fail if a datasource id string is a substring of another datasource id)
           var regexpr = new RegExp('(' + el.id + ')[\\s,]|(' + el.id + ')$'),
@@ -170,7 +170,7 @@ CStudioForms.Controls.RTE.ImageInsert = CStudioForms.Controls.RTE.ImageInsert ||
 
             this.add({
               title: el.title,
-              onclick: function() {
+              onclick: function () {
                 tinymce2.activeEditor.execCommand('mceInsertManagedImage', false, mapDatasource);
               }
             });
@@ -191,7 +191,7 @@ CStudioForms.Controls.RTE.ImageInsert = CStudioForms.Controls.RTE.ImageInsert ||
    *
    * @return {Object} Name/value array containing information about the plugin.
    */
-  getInfo: function() {
+  getInfo: function () {
     return {
       longname: 'Crafter Studio Insert Image',
       author: 'Crafter Software',

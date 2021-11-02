@@ -16,7 +16,7 @@
 
 CStudioForms.Datasources.VideoS3Upload =
   CStudioForms.Datasources.VideoS3Upload ||
-  function(id, form, properties, constraints) {
+  function (id, form, properties, constraints) {
     this.id = id;
     this.form = form;
     this.properties = properties;
@@ -40,7 +40,7 @@ YAHOO.extend(CStudioForms.Datasources.VideoS3Upload, CStudioForms.CStudioFormDat
   /**
    * action called when user clicks insert file
    */
-  insertVideoAction: function(insertCb) {
+  insertVideoAction: function (insertCb) {
     (this._self = this), (me = this);
 
     var path = this._self.repoPath;
@@ -56,7 +56,7 @@ YAHOO.extend(CStudioForms.Datasources.VideoS3Upload, CStudioForms.CStudioFormDat
     }
 
     var callback = {
-      success: function(fileData) {
+      success: function (fileData) {
         var uri = fileData;
         var fileExtension = fileData.split('.').pop();
 
@@ -70,7 +70,7 @@ YAHOO.extend(CStudioForms.Datasources.VideoS3Upload, CStudioForms.CStudioFormDat
         insertCb.success(videoData);
       },
 
-      failure: function() {
+      failure: function () {
         insertCb.failure('An error occurred while uploading the video.');
       },
 
@@ -82,26 +82,26 @@ YAHOO.extend(CStudioForms.Datasources.VideoS3Upload, CStudioForms.CStudioFormDat
     });
   },
 
-  getLabel: function() {
+  getLabel: function () {
     return CMgs.format(langBundle, 'S3UploadVideo');
   },
 
-  getInterface: function() {
+  getInterface: function () {
     return 'video';
   },
 
-  getName: function() {
+  getName: function () {
     return 'video-S3-upload';
   },
 
-  getSupportedProperties: function() {
+  getSupportedProperties: function () {
     return [
       { label: CMgs.format(langBundle, 'repositoryPath'), name: 'repoPath', type: 'string' },
       { label: CMgs.format(langBundle, 'profileId'), name: 'profileId', type: 'string' }
     ];
   },
 
-  getSupportedConstraints: function() {
+  getSupportedConstraints: function () {
     return [];
   }
 });

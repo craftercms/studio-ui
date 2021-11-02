@@ -25,7 +25,7 @@ if (typeof CStudioAuthoringWidgets == 'undefined' || !CStudioAuthoringWidgets) {
  */
 CStudioAuthoringWidgets.IconGuideDashboard =
   CStudioAuthoringWidgets.IconGuideDashboard ||
-  function(widgetId, pageId) {
+  function (widgetId, pageId) {
     this.widgetId = widgetId;
     this.pageId = pageId;
     this._self = this;
@@ -35,7 +35,7 @@ CStudioAuthoringWidgets.IconGuideDashboard =
 
     WcmDashboardWidgetCommon.init(this);
 
-    this.setStatusIcons = function() {
+    this.setStatusIcons = function () {
       var statusIcons = CStudioAuthoring.Constants.WORKFLOWICONS,
         el,
         elClass;
@@ -54,14 +54,14 @@ CStudioAuthoringWidgets.IconGuideDashboard =
     /**
      * get table data
      */
-    this.retrieveTableData = function(sortBy, sortAscDesc, callback) {
+    this.retrieveTableData = function (sortBy, sortAscDesc, callback) {
       // never called
     };
 
     /**
      * callback to render the table headings
      */
-    this.renderItemsHeading = function() {
+    this.renderItemsHeading = function () {
       // doesn't get called because we never invoke retrieve table data
       return '';
     };
@@ -69,7 +69,7 @@ CStudioAuthoringWidgets.IconGuideDashboard =
     /**
      * Call back to render each line item of the table
      */
-    this.renderLineItem = function(item) {
+    this.renderLineItem = function (item) {
       // doesn't get called because we never invoke retrieve table data
       return '';
     };

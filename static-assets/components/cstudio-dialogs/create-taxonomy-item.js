@@ -26,13 +26,13 @@ CStudioAuthoring.Dialogs.DialogCreateTaxonomy = CStudioAuthoring.Dialogs.DialogC
   /**
    * initialize module
    */
-  initialize: function(config) {},
+  initialize: function (config) {},
 
   changeTemplateCalled: false,
   /**
    * show dialog
    */
-  showDialog: function(taxonomyType, TaxonomyName, path, onSaveCallback) {
+  showDialog: function (taxonomyType, TaxonomyName, path, onSaveCallback) {
     this._self = this;
 
     this.dialog = this.createDialog(taxonomyType, TaxonomyName, path, onSaveCallback);
@@ -46,14 +46,14 @@ CStudioAuthoring.Dialogs.DialogCreateTaxonomy = CStudioAuthoring.Dialogs.DialogC
   /**
    * hide dialog
    */
-  hideDialog: function() {
+  hideDialog: function () {
     this.dialog.hide();
   },
 
   /**
    * create dialog
    */
-  createDialog: function(taxonomyType, taxonomyName, path, selectTemplateCb) {
+  createDialog: function (taxonomyType, taxonomyName, path, selectTemplateCb) {
     YDom.removeClass('cstudio-wcm-popup-div', 'yui-pe-content');
 
     var newdiv = document.createElement('div');
@@ -107,7 +107,7 @@ CStudioAuthoring.Dialogs.DialogCreateTaxonomy = CStudioAuthoring.Dialogs.DialogC
       minWidth: 600,
       handles: ['br']
     });
-    resizeHandler.on('endResize', function() {
+    resizeHandler.on('endResize', function () {
       var dialogObj = this._wrap;
       if (dialogObj) {
         try {
@@ -138,7 +138,7 @@ CStudioAuthoring.Dialogs.DialogCreateTaxonomy = CStudioAuthoring.Dialogs.DialogC
 
     // Render the Dialog
     content_type_dialog.render();
-    content_type_dialog.cfg.subscribe('configChanged', function(p_sType, p_aArgs) {
+    content_type_dialog.cfg.subscribe('configChanged', function (p_sType, p_aArgs) {
       var aProperty = p_aArgs[0],
         sPropertyName = aProperty[0],
         oPropertyValue = aProperty[1];
@@ -158,7 +158,7 @@ CStudioAuthoring.Dialogs.DialogCreateTaxonomy = CStudioAuthoring.Dialogs.DialogC
     };
 
     YAHOO.util.Event.addListener('submitWCMPopup', 'click', this.contentPopupSubmit, eventParams);
-    YAHOO.util.Event.addListener('closeWCMPopup', 'click', function() {
+    YAHOO.util.Event.addListener('closeWCMPopup', 'click', function () {
       CStudioAuthoring.Dialogs.DialogCreateTaxonomy.closeDialog();
     });
 
@@ -168,17 +168,17 @@ CStudioAuthoring.Dialogs.DialogCreateTaxonomy = CStudioAuthoring.Dialogs.DialogC
   /**
    * event fired when the ok is pressed
    */
-  contentPopupSubmit: function(event, args) {
+  contentPopupSubmit: function (event, args) {
     var taxonomyType = document.getElementById('taxonomyTypeVal').value;
     var taxonomyPath = document.getElementById('taxonomyPathVal').value;
     var taxonomyLabel = document.getElementById('taxonomyLabelVal').value;
 
     var createCb = {
-      success: function(response) {
+      success: function (response) {
         CStudioAuthoring.Dialogs.DialogCreateTaxonomy.closeDialog();
         args.self.onSaveCallback.success();
       },
-      failure: function(response) {
+      failure: function (response) {
         CStudioAuthoring.Operations.showSimpleDialog(
           'taxonomy-dialog',
           CStudioAuthoring.Operations.simpleDialogTypeINFO,
@@ -187,7 +187,7 @@ CStudioAuthoring.Dialogs.DialogCreateTaxonomy = CStudioAuthoring.Dialogs.DialogC
           [
             {
               text: 'OK',
-              handler: function() {
+              handler: function () {
                 this.hide();
                 CStudioAuthoring.Dialogs.DialogCreateTaxonomy.closeDialog();
               },
@@ -203,7 +203,7 @@ CStudioAuthoring.Dialogs.DialogCreateTaxonomy = CStudioAuthoring.Dialogs.DialogC
     CStudioAuthoring.Service.createTaxonomyItem(taxonomyPath, taxonomyType, taxonomyLabel, createCb);
   },
 
-  closeDialog: function() {
+  closeDialog: function () {
     this.dialog.hide();
     var element = YDom.get('cstudio-wcm-popup-div');
     element.parentNode.removeChild(element);
@@ -212,7 +212,7 @@ CStudioAuthoring.Dialogs.DialogCreateTaxonomy = CStudioAuthoring.Dialogs.DialogC
   /**
    * event fired when the cancel is pressed
    */
-  contentPopupCancel: function(event) {
+  contentPopupCancel: function (event) {
     CStudioAuthoring.Dialogs.DialogCreateTaxonomy.hideDialog();
   }
 };

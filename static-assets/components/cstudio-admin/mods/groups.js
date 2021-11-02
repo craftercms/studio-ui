@@ -16,7 +16,7 @@
 
 CStudioAdminConsole.Tool.Groups =
   CStudioAdminConsole.Tool.Groups ||
-  function(config, el) {
+  function (config, el) {
     this.containerEl = el;
     this.config = config;
     this.types = [];
@@ -28,7 +28,7 @@ CStudioAdminConsole.Tool.Groups =
  * Overarching class that drives the content type tools
  */
 YAHOO.extend(CStudioAdminConsole.Tool.Groups, CStudioAdminConsole.Tool, {
-  renderWorkarea: function() {
+  renderWorkarea: function () {
     var workareaEl = document.getElementById('cstudio-admin-console-workarea'),
       auditUrl = '/studio/#/groups?iframe=true&site=' + CStudioAuthoringContext.siteId,
       actions = [];

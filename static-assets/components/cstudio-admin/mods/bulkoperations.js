@@ -17,7 +17,7 @@
 CStudioAuthoring.Utils.addCss('/static-assets/components/cstudio-admin/mods/bulkoperations.css');
 CStudioAdminConsole.Tool.BulkOperations =
   CStudioAdminConsole.Tool.BulkOperations ||
-  function(config, el) {
+  function (config, el) {
     this.containerEl = el;
     this.config = config;
     this.types = [];
@@ -28,7 +28,7 @@ CStudioAdminConsole.Tool.BulkOperations =
  * Overarching class that drives the content type tools
  */
 YAHOO.extend(CStudioAdminConsole.Tool.BulkOperations, CStudioAdminConsole.Tool, {
-  renderWorkarea: function() {
+  renderWorkarea: function () {
     var workareaEl = document.getElementById('cstudio-admin-console-workarea');
 
     workareaEl.innerHTML = "<div id='bulk-ops'>" + '</div>';
@@ -40,8 +40,8 @@ YAHOO.extend(CStudioAdminConsole.Tool.BulkOperations, CStudioAdminConsole.Tool, 
     this.renderJobsList();
   },
 
-  renderGoLive: function() {
-    CStudioAdminConsole.Tool.BulkOperations.golive = function() {
+  renderGoLive: function () {
+    CStudioAdminConsole.Tool.BulkOperations.golive = function () {
       var CSA = CStudioAuthoring,
         CSAC = CStudioAuthoringContext,
         fmt = CSA.StringUtils.format;
@@ -162,7 +162,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.BulkOperations, CStudioAdminConsole.Tool, 
 
     CrafterCMSNext.services.publishing
       .fetchPublishingTargets(CStudioAuthoringContext.site)
-      .subscribe(function(channels) {
+      .subscribe(function (channels) {
         var publishingOptions = '';
         var channel_index = 0;
         for (idx in channels) {
@@ -173,7 +173,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.BulkOperations, CStudioAdminConsole.Tool, 
       });
   },
 
-  renderJobsList: function() {
+  renderJobsList: function () {
     var actions = [{ name: 'Publish', context: this, method: this.renderGoLive }];
     CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions(actions);
 

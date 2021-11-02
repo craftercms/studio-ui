@@ -16,7 +16,7 @@
 
 CStudioForms.Datasources.ImgCMISRepo =
   CStudioForms.Datasources.ImgCMISRepo ||
-  function(id, form, properties, constraints) {
+  function (id, form, properties, constraints) {
     this.id = id;
     this.form = form;
     this.properties = properties;
@@ -46,14 +46,14 @@ CStudioForms.Datasources.ImgCMISRepo =
   };
 
 YAHOO.extend(CStudioForms.Datasources.ImgCMISRepo, CStudioForms.CStudioFormDatasource, {
-  getLabel: function() {
+  getLabel: function () {
     return CMgs.format(langBundle, 'imageFromCMISRepository');
   },
 
   /**
    * action called when user clicks insert image
    */
-  insertImageAction: function(insertCb) {
+  insertImageAction: function (insertCb) {
     var _self = this;
     CStudioAuthoring.Operations.openCMISBrowse(
       _self.repoId,
@@ -63,8 +63,8 @@ YAHOO.extend(CStudioForms.Datasources.ImgCMISRepo, CStudioForms.CStudioFormDatas
       'select',
       true,
       {
-        success: function(searchId, selectedTOs) {
-          var cb = function(repositories) {
+        success: function (searchId, selectedTOs) {
+          var cb = function (repositories) {
             var repo = null;
             if (!repositories.length) {
               repo = repositories;
@@ -100,14 +100,14 @@ YAHOO.extend(CStudioForms.Datasources.ImgCMISRepo, CStudioForms.CStudioFormDatas
 
           _self.getConfig(cb);
         },
-        failure: function() {}
+        failure: function () {}
       }
     );
   },
 
-  getConfig: function(callback) {
+  getConfig: function (callback) {
     CStudioAuthoring.Service.getConfiguration(CStudioAuthoringContext.site, '/data-sources/cmis-config.xml', {
-      success: function(config) {
+      success: function (config) {
         callback(config.repositories.repository);
       }
     });
@@ -116,14 +116,14 @@ YAHOO.extend(CStudioForms.Datasources.ImgCMISRepo, CStudioForms.CStudioFormDatas
   /**
    * create preview URL
    */
-  createPreviewUrl: function(imagePath) {
+  createPreviewUrl: function (imagePath) {
     return CStudioAuthoringContext.previewAppBaseUri + imagePath + '';
   },
 
   /**
    * clean up preview URL so that URL is canonical
    */
-  cleanPreviewUrl: function(previewUrl) {
+  cleanPreviewUrl: function (previewUrl) {
     var url = previewUrl;
 
     if (previewUrl.indexOf(CStudioAuthoringContext.previewAppBaseUri) !== -1) {
@@ -137,17 +137,17 @@ YAHOO.extend(CStudioForms.Datasources.ImgCMISRepo, CStudioForms.CStudioFormDatas
     return url;
   },
 
-  deleteImage: function(path) {},
+  deleteImage: function (path) {},
 
-  getInterface: function() {
+  getInterface: function () {
     return 'image';
   },
 
-  getName: function() {
+  getName: function () {
     return 'img-cmis-repo';
   },
 
-  getSupportedProperties: function() {
+  getSupportedProperties: function () {
     return [
       { label: CMgs.format(langBundle, 'repositoryPath'), name: 'repoPath', type: 'string' },
       { label: CMgs.format(langBundle, 'repositoryId'), name: 'repoId', type: 'string' },
@@ -177,7 +177,7 @@ YAHOO.extend(CStudioForms.Datasources.ImgCMISRepo, CStudioForms.CStudioFormDatas
     ];
   },
 
-  getSupportedConstraints: function() {
+  getSupportedConstraints: function () {
     return [];
   }
 });

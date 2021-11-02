@@ -16,7 +16,7 @@
 
 CStudioForms.Datasources.S3Upload =
   CStudioForms.Datasources.S3Upload ||
-  function(id, form, properties, constraints) {
+  function (id, form, properties, constraints) {
     this.id = id;
     this.form = form;
     this.properties = properties;
@@ -44,7 +44,7 @@ YAHOO.extend(CStudioForms.Datasources.S3Upload, CStudioForms.CStudioFormDatasour
   /**
    * action called when user clicks insert file
    */
-  add: function(control, multiple) {
+  add: function (control, multiple) {
     (this._self = this), (me = this);
 
     var path = this._self.repoPath;
@@ -77,9 +77,9 @@ YAHOO.extend(CStudioForms.Datasources.S3Upload, CStudioForms.CStudioFormDatasour
       </li>`
     );
 
-    create.find('a').on('click', function() {
+    create.find('a').on('click', function () {
       CStudioAuthoring.Operations.uploadS3Asset(site, path, me.profileId, {
-        success: function(fileData) {
+        success: function (fileData) {
           if (control) {
             var item = fileData,
               fileName = item,
@@ -91,7 +91,7 @@ YAHOO.extend(CStudioForms.Datasources.S3Upload, CStudioForms.CStudioFormDatasour
             CStudioAuthoring.Utils.decreaseFormDialog();
           }
         },
-        failure: function() {
+        failure: function () {
           if (control) {
             control.failure('An error occurred while uploading the file.');
           }
@@ -103,26 +103,26 @@ YAHOO.extend(CStudioForms.Datasources.S3Upload, CStudioForms.CStudioFormDatasour
     control.$dropdownMenu.append(create);
   },
 
-  getLabel: function() {
+  getLabel: function () {
     return CMgs.format(langBundle, 'fileUploadedS3Repository');
   },
 
-  getInterface: function() {
+  getInterface: function () {
     return 'item';
   },
 
-  getName: function() {
+  getName: function () {
     return 'S3-upload';
   },
 
-  getSupportedProperties: function() {
+  getSupportedProperties: function () {
     return [
       { label: CMgs.format(langBundle, 'repositoryPath'), name: 'repoPath', type: 'string' },
       { label: CMgs.format(langBundle, 'profileId'), name: 'profileId', type: 'string' }
     ];
   },
 
-  getSupportedConstraints: function() {
+  getSupportedConstraints: function () {
     return [];
   }
 });

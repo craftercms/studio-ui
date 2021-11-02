@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-(function() {
+(function () {
   var STUDIO_BAR_HEIGHT = 50;
 
   /**
@@ -30,7 +30,7 @@
     /**
      * initialize module
      */
-    initialize: function(config) {
+    initialize: function (config) {
       var panelEl, that, ptoOn, ptoLeft, ptoTop;
 
       if (!this.initialized) {
@@ -65,16 +65,16 @@
           autofillheight: null
         });
 
-        panel.moveEvent.subscribe(function(e, args) {
+        panel.moveEvent.subscribe(function (e, args) {
           that.updateLocationPrefs.call(that);
           if (args[0][1] < STUDIO_BAR_HEIGHT) {
-            setTimeout(function() {
+            setTimeout(function () {
               panel.moveTo(args[0][0], STUDIO_BAR_HEIGHT);
             });
           }
         });
 
-        YAHOO.widget.Overlay.windowResizeEvent.subscribe(function() {
+        YAHOO.widget.Overlay.windowResizeEvent.subscribe(function () {
           CStudioAuthoring.PreviewTools.panelCheckBounds.call(CStudioAuthoring.PreviewTools);
         });
 
@@ -82,7 +82,7 @@
         panel.render();
 
         CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/preview-tools/panel.xml', {
-          success: function(config) {
+          success: function (config) {
             this.context.buildModules(config);
 
             if (ptoOn) {
@@ -100,7 +100,7 @@
       }
     },
 
-    turnToolsOn: function() {
+    turnToolsOn: function () {
       this.panelCheckBounds();
       this.panel.show();
       sessionStorage.setItem('pto-on', 'on');
@@ -115,7 +115,7 @@
       $('.studio-preview').css('right', 265);
     },
 
-    turnToolsOff: function() {
+    turnToolsOff: function () {
       this.panel.hide();
       sessionStorage.setItem('pto-on', ''); // empty string value so that when we cast it to boolean we get false+
 
@@ -132,7 +132,7 @@
     /*
      * Update the panel's location preferences based on the panel's current coordinates.
      */
-    updateLocationPrefs: function() {
+    updateLocationPrefs: function () {
       var panelXYvalues = this.panel.cfg.config.xy.value;
       sessionStorage.setItem('pto-left', panelXYvalues[0]);
       sessionStorage.setItem('pto-top', panelXYvalues[1] < STUDIO_BAR_HEIGHT ? STUDIO_BAR_HEIGHT : panelXYvalues[1]);
@@ -142,7 +142,7 @@
      * Keep the panel within the horizontal limits of the window.
      * This method will be called, for example, when the window is resized.
      */
-    panelCheckBounds: function() {
+    panelCheckBounds: function () {
       var offsetX, panelWidth, rightPadding, panelX, panel, ptoTop, winWidth;
 
       panel = this.panel;
@@ -164,7 +164,7 @@
     /**
      * given a dropdown configuration, build the nav
      */
-    buildModules: function(navConfig) {
+    buildModules: function (navConfig) {
       var containerEl = document.getElementById('preview-tools-panel-container');
       containerEl.style.height = 'auto';
 
@@ -195,7 +195,7 @@
             {
               context: this,
               containerEl: containersEls[i],
-              moduleLoaded: function(moduleName, moduleClass, moduleConfig) {
+              moduleLoaded: function (moduleName, moduleClass, moduleConfig) {
                 this.context.buildModule(this.containerEl, moduleClass, moduleConfig);
                 moduleClass.initialize(moduleConfig);
               }
@@ -205,14 +205,14 @@
       }
     },
 
-    buildModule: function(containerEl, moduleClass, moduleConfig) {
+    buildModule: function (containerEl, moduleClass, moduleConfig) {
       var moduleEl = document.createElement('div'),
         headerEl = document.createElement('div'),
         toggleEl = document.createElement('a'),
         panelEl = document.createElement('div'),
         previewLangBundle = CMgs.getBundle('previewTools', CStudioAuthoringContext.lang);
 
-      var toggleFn = function(e) {
+      var toggleFn = function (e) {
         YEvent.preventDefault(e);
 
         if (YDom.hasClass(moduleEl, 'contracted')) {

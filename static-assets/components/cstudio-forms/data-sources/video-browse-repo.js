@@ -16,7 +16,7 @@
 
 CStudioForms.Datasources.VideoBrowseRepo =
   CStudioForms.Datasources.VideoBrowseRepo ||
-  function(id, form, properties, constraints) {
+  function (id, form, properties, constraints) {
     this.id = id;
     this.form = form;
     this.properties = properties;
@@ -32,11 +32,11 @@ CStudioForms.Datasources.VideoBrowseRepo =
   };
 
 YAHOO.extend(CStudioForms.Datasources.VideoBrowseRepo, CStudioForms.CStudioFormDatasource, {
-  insertVideoAction: function(callback) {
+  insertVideoAction: function (callback) {
     var _self = this;
 
     CStudioAuthoring.Operations.openBrowse('', _self.processPathsForMacros(_self.repoPath), '-1', 'select', true, {
-      success: function(searchId, selectedTOs) {
+      success: function (searchId, selectedTOs) {
         var item = selectedTOs[0];
         var url = CStudioAuthoringContext.previewAppBaseUri + item.uri;
         var videoData = {};
@@ -45,30 +45,30 @@ YAHOO.extend(CStudioForms.Datasources.VideoBrowseRepo, CStudioForms.CStudioFormD
         videoData.fileExtension = url.substring(url.lastIndexOf('.') + 1);
         callback.success(videoData);
       },
-      failure: function() {}
+      failure: function () {}
     });
   },
 
   // remove edit because edit is not supported
-  edit: function(key) {},
+  edit: function (key) {},
 
-  getLabel: function() {
+  getLabel: function () {
     return CMgs.format(langBundle, 'videoBrowse');
   },
 
-  getInterface: function() {
+  getInterface: function () {
     return 'video';
   },
 
-  getName: function() {
+  getName: function () {
     return 'video-browse-repo';
   },
 
-  getSupportedProperties: function() {
+  getSupportedProperties: function () {
     return [{ label: CMgs.format(langBundle, 'repositoryPath'), name: 'repoPath', type: 'string' }];
   },
 
-  getSupportedConstraints: function() {
+  getSupportedConstraints: function () {
     return [];
   }
 });

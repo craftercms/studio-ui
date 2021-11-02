@@ -28,7 +28,7 @@ CStudioForms.Controls.RTEManager = CStudioForms.Controls.RTEManager || {
   /**
    * get cached configuration
    */
-  getRteConfiguration: function(setupId, context, callback, configUrl) {
+  getRteConfiguration: function (setupId, context, callback, configUrl) {
     var style = setupId == null ? 'generic' : setupId;
     var configPath = configUrl ? configUrl : '/form-control-config/rte/rte-setup.xml';
     var cacheKey = configPath;
@@ -48,7 +48,7 @@ CStudioForms.Controls.RTEManager = CStudioForms.Controls.RTEManager || {
           context: context,
           configMgr: this,
 
-          success: function(config) {
+          success: function (config) {
             this.configMgr.cachedConfig[cacheKey] = config;
 
             this.configMgr.inProcessCacheReqs[cacheKey] = false;
@@ -81,7 +81,7 @@ CStudioForms.Controls.RTEManager = CStudioForms.Controls.RTEManager || {
             this.configMgr.queuedConfigCallbacks[cacheKey] = new Array();
           },
 
-          failure: function() {
+          failure: function () {
             var queuedCbs = this.configMgr.queuedConfigCallbacks[cacheKey];
 
             for (var i = 0; i < queuedCbs.length; i++) {

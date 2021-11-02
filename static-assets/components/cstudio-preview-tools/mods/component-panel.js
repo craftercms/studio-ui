@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-(function(CStudioAuthoring, CStudioAuthoringContext, amplify, $) {
-  var callback = function(isRev) {
+(function (CStudioAuthoring, CStudioAuthoringContext, amplify, $) {
+  var callback = function (isRev) {
     if (!isRev) {
       var ComponentsPanel,
         cstopic = crafter.studio.preview.cstopic,
@@ -63,7 +63,7 @@
         zones: null,
         cacheValidation: {},
 
-        initialize: function(config) {
+        initialize: function (config) {
           var self = this,
             Topics = crafter.studio.preview.Topics;
 
@@ -74,19 +74,19 @@
 
             this.ajaxOverlay = this.createAjaxOverlay('ajax-overlay', 'preview-tools-panel-container_c', -5);
 
-            amplify.subscribe('/operation/started', function() {
+            amplify.subscribe('/operation/started', function () {
               self.ajaxOverlay.show();
             });
 
-            amplify.subscribe('/operation/completed', function() {
+            amplify.subscribe('/operation/completed', function () {
               self.ajaxOverlay.hide();
             });
 
-            amplify.subscribe('/operation/failed', function() {
+            amplify.subscribe('/operation/failed', function () {
               self.ajaxOverlay.hide();
             });
 
-            amplify.subscribe('/page-model/loaded', function(data) {
+            amplify.subscribe('/page-model/loaded', function (data) {
               try {
                 var dom = new window.DOMParser().parseFromString(data.model, 'text/xml').documentElement;
 
@@ -120,7 +120,7 @@
                   case 'save-components':
                   case 'save-components-new':
                     CStudioForms.Util.loadFormDefinition(contentMap['content-type'], {
-                      success: function(formDefinition) {
+                      success: function (formDefinition) {
                         $.extend(contentMap, data.zones ? data.zones : self.zones);
                         amplify.publish('components/form-def/loaded', {
                           contentMap: contentMap,
@@ -133,7 +133,7 @@
                           model: data.model
                         });
                       },
-                      failure: function() {
+                      failure: function () {
                         amplify.publish('/operation/failed');
                         var CMgs = CStudioAuthoring.Messages;
                         var langBundle = CMgs.getBundle('forms', CStudioAuthoringContext.lang);
@@ -155,7 +155,7 @@
               }
             });
 
-            amplify.subscribe('components/form-def/loaded', function(data) {
+            amplify.subscribe('components/form-def/loaded', function (data) {
               amplify.publish('/operation/started');
               self.saveModel(
                 data.pagePath,
@@ -171,19 +171,19 @@
               );
             });
 
-            amplify.subscribe(cstopic('COMPONENT_DROPPED'), function() {
+            amplify.subscribe(cstopic('COMPONENT_DROPPED'), function () {
               self.ondrop.apply(self, arguments);
             });
 
-            amplify.subscribe(cstopic('SAVE_DRAG_AND_DROP'), function(isNew) {
+            amplify.subscribe(cstopic('SAVE_DRAG_AND_DROP'), function (isNew) {
               self.save.apply(isNew, arguments);
             });
 
-            amplify.subscribe(cstopic('ENABLE_DRAG_AND_DROP'), function() {
+            amplify.subscribe(cstopic('ENABLE_DRAG_AND_DROP'), function () {
               self.enable();
             });
 
-            amplify.subscribe(cstopic('GUEST_SITE_LOAD'), function() {
+            amplify.subscribe(cstopic('GUEST_SITE_LOAD'), function () {
               if (!CStudioAuthoring.Utils.Cookies.readCookie('cstudio-save-draft')) {
                 var dialogIframe = document.getElementsByClassName('studio-ice-dialog')[0];
                 if (dialogIframe) {
@@ -194,15 +194,15 @@
               self.init();
             });
 
-            amplify.subscribe(cstopic('DND_ZONES_MODEL_REQUEST'), function(item) {
+            amplify.subscribe(cstopic('DND_ZONES_MODEL_REQUEST'), function (item) {
               self.getPageModel(item.path, 'init-components', true, false);
             });
 
-            amplify.subscribe(cstopic('LOAD_MODEL_REQUEST'), function(item) {
+            amplify.subscribe(cstopic('LOAD_MODEL_REQUEST'), function (item) {
               self.getPageModel(item.path, 'load-components', true, false);
             });
 
-            var interval = setInterval(function() {
+            var interval = setInterval(function () {
               if (CStudioAuthoringContext.previewCurrentPath) {
                 self.init();
                 clearInterval(interval);
@@ -211,7 +211,7 @@
           }
         },
 
-        ondrop: function(type, path, isNew, tracking, zones, compPath, conComp, modelP, datasource) {
+        ondrop: function (type, path, isNew, tracking, zones, compPath, conComp, modelP, datasource) {
           var previewPath = CStudioAuthoring.ComponentsPanel.getPreviewPagePath(
             CStudioAuthoringContext.previewCurrentPath
           );
@@ -223,8 +223,8 @@
                 include: modelPath,
                 datasource: datasource
               };
-              $.each(zones, function(key, array) {
-                $.each(array, function(i, item) {
+              $.each(zones, function (key, array) {
+                $.each(array, function (i, item) {
                   if (item === tracking) {
                     zones[key][i] = modelData;
                   }
@@ -245,7 +245,7 @@
                 var order = zones[selectorId].findIndex((item) => item === tracking);
                 ComponentsPanel.onDropEmbedded(previewPath, compPath, type, selectorId, datasource, order);
               } else {
-                var subscribeCallback = function(_message) {
+                var subscribeCallback = function (_message) {
                   switch (_message.type) {
                     case 'FORM_CANCEL': {
                       amplify.unsubscribe('FORM_ENGINE_MESSAGE_POSTED', subscribeCallback);
@@ -264,7 +264,7 @@
                   false,
                   {
                     failure: CStudioAuthoring.Utils.noop,
-                    success: function(contentTO) {
+                    success: function (contentTO) {
                       amplify.publish('/operation/started');
                       // Use the information from the newly created component entry and use it to load the model data for the
                       // component placeholder in the UI. After this update, we can then proceed to save all the components
@@ -279,15 +279,10 @@
               }
             } else {
               CStudioAuthoring.Service.getContent(path, 'false', {
-                success: function(model) {
-                  isNewEvent(
-                    $(model)
-                      .find('internal-name')
-                      .text(),
-                    path
-                  );
+                success: function (model) {
+                  isNewEvent($(model).find('internal-name').text(), path);
                 },
-                failure: function(err) {}
+                failure: function (err) {}
               });
             }
           } else {
@@ -295,8 +290,8 @@
           }
         },
 
-        onDropEmbedded: function(previewPath, compPath, type, selectorId, ds, order) {
-          var subscribeCallback = function(_message) {
+        onDropEmbedded: function (previewPath, compPath, type, selectorId, ds, order) {
+          var subscribeCallback = function (_message) {
             switch (_message.type) {
               case 'FORM_ENGINE_RENDER_COMPLETE': {
                 amplify.unsubscribe('FORM_ENGINE_MESSAGE_POSTED', subscribeCallback);
@@ -321,17 +316,17 @@
             CStudioAuthoringContext.site,
             parentPath,
             {
-              success: function(contentTO) {
+              success: function (contentTO) {
                 CStudioAuthoring.Operations.performSimpleIceEdit(
                   contentTO.item,
                   null,
                   true,
                   {
                     failure: CStudioAuthoring.Utils.noop,
-                    success: function(contentTO, editorId, name, value, draft) {
+                    success: function (contentTO, editorId, name, value, draft) {
                       amplify.publish(cstopic('REFRESH_PREVIEW'));
                     },
-                    refresh: function() {
+                    refresh: function () {
                       amplify.publish(cstopic('REFRESH_PREVIEW'));
                     }
                   },
@@ -346,7 +341,7 @@
           );
         },
 
-        save: function(isNew, zones, compPath, conComp) {
+        save: function (isNew, zones, compPath, conComp) {
           ComponentsPanel.zones = zones;
           if (compPath) {
             CStudioAuthoring.ComponentsPanel.getPageModel(
@@ -369,7 +364,7 @@
           }
         },
 
-        init: function() {
+        init: function () {
           //clean params from currentPath
           var previewCurrentPath = CStudioAuthoringContext.previewCurrentPath;
 
@@ -381,7 +376,7 @@
           );
         },
 
-        render: function(containerEl, config) {
+        render: function (containerEl, config) {
           // this.componentsOn = !!(sessionStorage.getItem('components-on'));
           // if(this.componentsOn == true) {
           // 	this.expand(containerEl, config);
@@ -399,13 +394,13 @@
                  complete in this function -ie. the operation continues in another function)
                  * @publish event: /components/model/loaded
                  */
-        getPageModel: function(pagePath, operation, start, complete, zones, conComp) {
+        getPageModel: function (pagePath, operation, start, complete, zones, conComp) {
           if (start) {
             amplify.publish('/operation/started');
           }
 
           CStudioAuthoring.Service.getContent(pagePath, 'false', {
-            success: function(model) {
+            success: function (model) {
               amplify.publish('/page-model/loaded', {
                 model: model,
                 pagePath: pagePath,
@@ -417,7 +412,7 @@
                 amplify.publish('/operation/completed');
               }
             },
-            failure: function(err) {
+            failure: function (err) {
               // The operation must be completed if there was a failure
               amplify.publish('/operation/failed');
               var CMgs = CStudioAuthoring.Messages;
@@ -435,7 +430,7 @@
           });
         },
 
-        copyObj: function(srcObj, destObj) {
+        copyObj: function (srcObj, destObj) {
           if (
             srcObj &&
             typeof srcObj == 'object' &&
@@ -457,12 +452,12 @@
          * loaded from this model (right now the model is being used by the ftl, but it isn't bounded to the DOM elements at all).
          *
          */
-        linkComponentsToModel: function(contentMap) {
+        linkComponentsToModel: function (contentMap) {
           var containerEls = YDom.getElementsByClassName(dcContainerClass),
             dcEls;
 
           if (contentMap) {
-            containerEls.forEach(function(el) {
+            containerEls.forEach(function (el) {
               var containerName = el.id.replace('zone-', '');
 
               dcEls = YDom.getElementsByClassName(dcComponentClass, 'div', el);
@@ -480,7 +475,7 @@
           // console.log("initial model ", contentMap);
         },
 
-        saveModel: function(
+        saveModel: function (
           pagePath,
           formDefinition,
           contentMap,
@@ -514,17 +509,17 @@
             false,
             true,
             {
-              success: function() {
+              success: function () {
                 if (complete) {
                   amplify.publish('/operation/completed');
                   if (isNew || conComp) {
-                    setTimeout(function() {
+                    setTimeout(function () {
                       amplify.publish(cstopic('REFRESH_PREVIEW'));
                     });
                   }
                 }
               },
-              failure: function(err) {
+              failure: function (err) {
                 var message = eval('(' + err.responseText + ')');
                 if (message.message.indexOf('is in system processing') > 0) {
                   ComponentsPanel.save(isNew, zones, compPath ? compPath : pagePath, conComp);
@@ -535,7 +530,7 @@
           );
         },
 
-        expand: function(containerEl, config) {
+        expand: function (containerEl, config) {
           var self = this,
             componentPanelElem = document.getElementById('component-panel-elem');
 
@@ -544,7 +539,7 @@
 
           var serviceCallback = {
             failure: CStudioAuthoring.Utils.noop,
-            success: function(config) {
+            success: function (config) {
               if (!compConfCached) {
                 cache.set(cacheCompConfKey, config, CStudioAuthoring.Constants.CACHE_TIME_CONFIGURATION);
                 CStudioAuthoring.compConfProcessing = false;
@@ -575,7 +570,7 @@
             }
           };
 
-          var getInfo = function() {
+          var getInfo = function () {
             if (!CStudioAuthoring.compConfProcessing) {
               compConfCached = cache.get(cacheCompConfKey);
 
@@ -591,7 +586,7 @@
                 );
               }
             } else {
-              setTimeout(function() {
+              setTimeout(function () {
                 getInfo();
               }, 100);
             }
@@ -599,7 +594,7 @@
           getInfo();
         },
 
-        collapse: function(containerEl, config) {
+        collapse: function (containerEl, config) {
           amplify.publish(cstopic('STOP_DRAG_AND_DROP'), {
             components: config
           });
@@ -610,7 +605,7 @@
          * @param className -class name to distinguish this type of element
          * @return the new DOM element
          */
-        createDeleteControl: function(className) {
+        createDeleteControl: function (className) {
           var deleteEl = document.createElement('a'),
             btnEl = document.createElement('img');
 
@@ -630,7 +625,7 @@
          * @param tipText -text to display when the component is dragged from the Preview Tools panel
          * @return the new DOM element
          */
-        createMenuComponent: function(component, tipText) {
+        createMenuComponent: function (component, tipText) {
           var menuComponent = document.createElement('div');
 
           if (component && component.path && component.type && component.label) {
@@ -653,7 +648,7 @@
           return menuComponent;
         },
 
-        renderComponents: function(containerEl, config) {
+        renderComponents: function (containerEl, config) {
           containerEl.innerHTML = '';
 
           if (!config.category.length) {
@@ -682,7 +677,7 @@
          * @param refElementId -ID of HTML element to use as reference (optional)
          * @param zIndexDiff -Number difference between the overlay z-index value and the reference element (optional)
          */
-        createOverlay: function(overlayId, refElementId, zIndexDiff, showCallback, hideCallback) {
+        createOverlay: function (overlayId, refElementId, zIndexDiff, showCallback, hideCallback) {
           var overlayElement,
             overlayEl = document.getElementById(overlayId),
             zIndexDiff = zIndexDiff || 0,
@@ -706,13 +701,13 @@
             overlayEl.appendTo(document.body);
             YDom.setStyle(overlayElement, 'z-index', zIndexOverlay);
 
-            return (function() {
+            return (function () {
               var el = overlayElement,
                 zIndex = zIndexOverlay,
                 callbackOnShow = showCallback, // Default callback on show
                 callbackOnHide = hideCallback; // Default callback on hide
 
-              var transitionEndEvent = (function() {
+              var transitionEndEvent = (function () {
                 var el = document.createElement('telement');
                 var transitions = {
                   transition: 'transitionend', // Should be 'transitionEnd'; changed to be compatible with FF
@@ -729,7 +724,7 @@
               })();
 
               // Define callbacks after css transitions
-              YAHOO.util.Event.on(el, transitionEndEvent, function() {
+              YAHOO.util.Event.on(el, transitionEndEvent, function () {
                 if (YDom.hasClass(el, 'visible') && typeof callbackOnShow == 'function') {
                   callbackOnShow();
                 } else if (typeof callbackOnHide == 'function') {
@@ -738,20 +733,20 @@
               });
 
               return {
-                getOverlayElement: function() {
+                getOverlayElement: function () {
                   return el;
                 },
-                show: function(callback) {
+                show: function (callback) {
                   // Override callback if one is provided
                   callbackOnShow = callback ? callback : callbackOnShow;
                   YDom.replaceClass(el, 'invisible', 'visible');
                 },
-                hide: function(callback) {
+                hide: function (callback) {
                   // Override callback if one is provided
                   callbackOnHide = callback ? callback : callbackOnHide;
                   YDom.replaceClass(el, 'visible', 'invisible');
                 },
-                getzIndex: function() {
+                getzIndex: function () {
                   return zIndex;
                 }
               };
@@ -767,7 +762,7 @@
          * @param -same as createOverlay function
          * @return -reference to the newly created overlay
          */
-        createAjaxOverlay: function(overlayId, refElementId, zIndexDiff, showCallback, hideCallback) {
+        createAjaxOverlay: function (overlayId, refElementId, zIndexDiff, showCallback, hideCallback) {
           var loaderImg = document.createElement('div'),
             overlayObj = this.createOverlay(overlayId, refElementId, zIndexDiff, showCallback, hideCallback);
 
@@ -784,7 +779,7 @@
          *
          * TO-DO : This function will be more complex if we also consider multiple background images or background images or styles that show partly in the element.
          */
-        getInheritedBackground: function(el) {
+        getInheritedBackground: function (el) {
           var stylesArr;
 
           /* FF bug fix: http://siderite.blogspot.com/2009/07/jquery-firexof-error-could-not-convert.html */
@@ -828,7 +823,7 @@
          * @param el -the element for which we want to find the inherited z-index
          * @return integer that is the z-index value
          */
-        getMaxzIndex: function(el, zIndex) {
+        getMaxzIndex: function (el, zIndex) {
           var stylesArr;
 
           /* FF bug fix: http://siderite.blogspot.com/2009/07/jquery-firexof-error-could-not-convert.html */
@@ -859,7 +854,7 @@
          * Creates a placeholder (duplicate) of an element copying its dimensions, class names and its ID (adding a prefix to it)
          * @param el -the element we are creating a placeholder for
          */
-        createPlaceholder: function(el) {
+        createPlaceholder: function (el) {
           var pId = 'placeholder-' + el.id,
             pEl = document.createElement('div');
 
@@ -874,7 +869,7 @@
          * @param component -the component we are creating a placeholder for
          * @return placeholder (ie. a copy of the component with wrappers)
          */
-        createNewComponentPlaceholder: function(component) {
+        createNewComponentPlaceholder: function (component) {
           var cpl = document.createElement('div');
           YDom.addClass(cpl, dcWrapperClass);
           cpl.innerHTML = '<div>' + component.parentNode.innerHTML + '</div>';
@@ -885,9 +880,9 @@
           return cpl;
         },
 
-        clearActive: function() {
+        clearActive: function () {
           var bodyEl = document.getElementsByTagName('body')[0];
-          var activeContainer = YDom.getFirstChildBy(bodyEl, function(el) {
+          var activeContainer = YDom.getFirstChildBy(bodyEl, function (el) {
             return YDom.hasClass(el, dcContainerClass + '-active');
           });
           YDom.removeClass(activeContainer, dcContainerClass + '-active');
@@ -896,7 +891,7 @@
         /*
          * Return an object will all the styles an element has inline (e.g. { 'color': '#333', 'font-weight': 'bold'})
          */
-        getInlineStyles: function(el) {
+        getInlineStyles: function (el) {
           var cssArr,
             len,
             res = {};
@@ -918,7 +913,7 @@
          * and set its z-index to one number higher than the reference z-index value provided. Save the original inlines values in the element.
          * @param zIndex -integer z-index reference value (optional). If "auto" or not set, the element's z-index will be set to 1
          */
-        absolutePosition: function(el, zIndex) {
+        absolutePosition: function (el, zIndex) {
           zIndex = zIndex || 'auto';
 
           el.style.width =
@@ -935,8 +930,8 @@
          * @param computedStyles : computed styles collection
          * @param stylesArr : array of styles that will be copied inline from the computed styles collection
          */
-        copyComputedStylesInline: function(el, computedStyles, stylesArr) {
-          stylesArr.forEach(function(style) {
+        copyComputedStylesInline: function (el, computedStyles, stylesArr) {
+          stylesArr.forEach(function (style) {
             var styleVal = computedStyles.getPropertyValue(style);
             YDom.setStyle(el, style, styleVal);
           });
@@ -945,9 +940,9 @@
         /*
          * Set all styles in a style object inline on an element. Remove any other inline styles the element may have.
          */
-        restoreInlineStyles: function(el, stylesObj) {
+        restoreInlineStyles: function (el, stylesObj) {
           var cssPropertiesArr = el.style.cssText.split(/:.+?;\s*/);
-          cssPropertiesArr.forEach(function(cssProperty) {
+          cssPropertiesArr.forEach(function (cssProperty) {
             if (!cssProperty) {
               // Discard any empty strings (if any)
               return;
@@ -969,11 +964,11 @@
          * @param frontClass -special class that all elements moved will have
          * @return an array with all the elements that were moved
          */
-        moveElementsToFront: function(cssSelector, refElement, frontClass) {
+        moveElementsToFront: function (cssSelector, refElement, frontClass) {
           var zoneEls = YAHOO.util.Selector.query(cssSelector);
           zIndexRef = +YDom.getStyle(refElement, 'z-index');
 
-          zoneEls.forEach(function(el) {
+          zoneEls.forEach(function (el) {
             // Save the element's inline styles
             el.origInlineStyles = this.getInlineStyles(el);
 
@@ -1005,7 +1000,7 @@
          * @param el -element that is being moved
          * @param frontClass -special class that identifies the element as having moved to the front. This class will need to be removed.
          */
-        moveBackToSource: function(el, frontClass) {
+        moveBackToSource: function (el, frontClass) {
           var pEl = document.getElementById('placeholder-' + el.id);
 
           YDom.setStyle(pEl, 'visibility', 'hidden'); // Set placeholder visibility to hidden
@@ -1029,12 +1024,12 @@
          * @param frontClass -special class that identifies all elements that have been moved to the front.
          * @return an array with all the elements that were moved
          */
-        moveElementsBack: function(refElement, frontClass) {
+        moveElementsBack: function (refElement, frontClass) {
           var ancestor = refElement.parentNode;
-          var zoneEls = YDom.getChildrenBy(ancestor, function(el) {
+          var zoneEls = YDom.getChildrenBy(ancestor, function (el) {
             return YDom.hasClass(el, frontClass);
           });
-          zoneEls.forEach(function(el) {
+          zoneEls.forEach(function (el) {
             this.moveBackToSource(el, frontClass);
           }, this);
 
@@ -1065,7 +1060,7 @@
            * Update the height of a container placeholder.
            * @param container -container whose placeholder we're going to update
            */
-          refreshPlaceholderHeight: function(container) {
+          refreshPlaceholderHeight: function (container) {
             var pContainer = document.getElementById('placeholder-' + container.id);
 
             var stylesArr = window.getComputedStyle
@@ -1079,7 +1074,7 @@
             }
           },
 
-          resizeProxy: function(el, dragEl) {
+          resizeProxy: function (el, dragEl) {
             var bt = parseInt(YDom.getStyle(dragEl, 'borderTopWidth'), 10);
             var br = parseInt(YDom.getStyle(dragEl, 'borderRightWidth'), 10);
             var bb = parseInt(YDom.getStyle(dragEl, 'borderBottomWidth'), 10);
@@ -1106,7 +1101,7 @@
           },
 
           /* --- UI Functions --- */
-          addComponent: function(src, dest, callback) {
+          addComponent: function (src, dest, callback) {
             var srcEl, srcContainer, destContainer;
 
             if (src && dest) {
@@ -1130,7 +1125,7 @@
             }
           },
 
-          moveComponent: function(src, dest, goingUp, callback) {
+          moveComponent: function (src, dest, goingUp, callback) {
             var srcContainer, destContainer;
 
             if (src && dest) {
@@ -1157,7 +1152,7 @@
             }
           },
 
-          removeComponent: function(srcEl, callback) {
+          removeComponent: function (srcEl, callback) {
             var srcWrapper = YDom.getAncestorByClassName(srcEl, dcWrapperClass),
               srcContainer = YDom.getAncestorByClassName(srcEl, dcContainerClass);
 
@@ -1190,7 +1185,7 @@
         }
 
         YAHOO.extend(DragAndDropDecorator, YAHOO.util.DDProxy, {
-          startDrag: function(x, y) {
+          startDrag: function (x, y) {
             // make the proxy look like the source element
             var srcEl = this.getEl(),
               proxy = this.getDragEl(),
@@ -1222,7 +1217,7 @@
             }
           },
 
-          endDrag: function(e) {
+          endDrag: function (e) {
             var srcEl = this.getEl(),
               proxy = this.getDragEl();
 
@@ -1246,14 +1241,14 @@
             var thisid = this.id;
 
             // Hide the proxy and show the source element when finished with the animation
-            a.onComplete.subscribe(function() {
+            a.onComplete.subscribe(function () {
               YDom.setStyle(proxyid, 'visibility', 'hidden');
               YDom.setStyle(thisid, 'visibility', '');
             });
             a.animate();
           },
 
-          onInvalidDrop: function(e) {
+          onInvalidDrop: function (e) {
             var srcEl = this.getEl(),
               proxy = this.getDragEl();
 
@@ -1272,7 +1267,7 @@
             }
           },
 
-          onDragDrop: function(e, id) {
+          onDragDrop: function (e, id) {
             var srcEl = this.getEl(),
               proxy = this.getDragEl();
 
@@ -1300,7 +1295,7 @@
                   null,
                   false,
                   {
-                    success: function(contentTO) {
+                    success: function (contentTO) {
                       // Use the information from the newly created component entry and use it to load the model data for the
                       // component placeholder in the UI. After this update, we can then proceed to save all the components
                       var value = !!contentTO.item.internalName ? contentTO.item.internalName : contentTO.item.uri;
@@ -1338,7 +1333,7 @@
             }
           },
 
-          onDrag: function(e) {
+          onDrag: function (e) {
             // Keep track of the direction of the drag for use during onDragOver
             var y = YAHOO.util.Event.getPageY(e);
 
@@ -1351,7 +1346,7 @@
             this.lastY = y;
           },
 
-          onDragEnter: function(e, id) {
+          onDragEnter: function (e, id) {
             var proxy = this.getDragEl(),
               srcEl = this.getEl(),
               destEl = YDom.get(id),
@@ -1431,13 +1426,13 @@
             }
           },
 
-          onDragOut: function(e, id) {
+          onDragOut: function (e, id) {
             // var destEl = YDom.get(id);
             // destEl = YDom.getAncestorByClassName(destEl, dcContainerClass);
             // YDom.removeClass(destEl, dcContainerClass + "-active");
           },
 
-          verifyMode: function(e) {
+          verifyMode: function (e) {
             self.componentsOn = !!sessionStorage.getItem('components-on');
 
             var initialContentModel;
@@ -1447,8 +1442,8 @@
                 '/preview-tools/components-config.xml',
                 {
                   failure: CStudioAuthoring.Utils.noop,
-                  success: function(response) {
-                    amplify.subscribe('/page-model/loaded', function(data) {
+                  success: function (response) {
+                    amplify.subscribe('/page-model/loaded', function (data) {
                       var dom = new window.DOMParser().parseFromString(data.model, 'text/xml').documentElement;
                       var contentMap = CStudioForms.Util.xmlModelToMap(dom);
                       initialContentModel = amplify.publish(cstopic('DND_COMPONENTS_MODEL_LOAD'), contentMap);
@@ -1458,7 +1453,7 @@
                       var categories = [];
 
                       if ($.isArray(data)) {
-                        $.each(data, function(i, c) {
+                        $.each(data, function (i, c) {
                           if (c.component) {
                             categories.push({ label: c.label, components: c.component });
                           } else {

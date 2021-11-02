@@ -52,17 +52,17 @@ CStudioAuthoring.AnnotatePanel = CStudioAuthoring.AnnotatePanel || {
   /**
    * initialize module
    */
-  initialize: function(config) {
+  initialize: function (config) {
     if (this.initialized == false) {
       this.initialized = true;
     }
   },
 
-  render: function(containerEl, config) {
+  render: function (containerEl, config) {
     containerEl.style.height = '300px';
   },
 
-  expand: function(containerEl, config) {
+  expand: function (containerEl, config) {
     try {
       var boardEl = document.getElementById('default-board');
 
@@ -130,7 +130,7 @@ CStudioAuthoring.AnnotatePanel = CStudioAuthoring.AnnotatePanel || {
     }
   },
 
-  collapse: function(containerEl, config) {
+  collapse: function (containerEl, config) {
     var boardEl = document.getElementById('default-board');
 
     if (boardEl) {
@@ -139,7 +139,7 @@ CStudioAuthoring.AnnotatePanel = CStudioAuthoring.AnnotatePanel || {
   }
 };
 
-setTimeout(function() {
+setTimeout(function () {
   DrawingBoard.Control.Comment = DrawingBoard.Control.extend({
     name: 'comment',
 
@@ -152,7 +152,7 @@ setTimeout(function() {
 
     types: ['dropdown', 'range'],
 
-    initialize: function() {
+    initialize: function () {
       var tpl = this._template();
 
       this.$el.append($(tpl));
@@ -183,10 +183,10 @@ setTimeout(function() {
 		}, this));
 */
 
-      setTimeout(function() {
+      setTimeout(function () {
         var annotateOnOffEl = document.getElementById('annotate');
 
-        annotateOnOffEl.onClick = function() {
+        annotateOnOffEl.onClick = function () {
           try {
             if (annotationMode == 'on') {
               annotationMode = 'off';
@@ -200,17 +200,17 @@ setTimeout(function() {
       }, 1000);
     },
 
-    _template: function() {
+    _template: function () {
       var tpl = '<button id="annotate" class="drawing-board-control-download-button"></button>';
 
       return tpl;
     },
 
-    onBoardReset: function(opts) {
+    onBoardReset: function (opts) {
       this.updateView();
     },
 
-    updateView: function() {}
+    updateView: function () {}
   });
 }, 1000);
 

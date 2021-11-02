@@ -23,13 +23,13 @@ CStudioAuthoring.MediumPanel.IPad = CStudioAuthoring.MediumPanel.IPad || {
   /**
    * initialize module
    */
-  initialize: function(config) {
+  initialize: function (config) {
     if (this.initialized == false) {
       this.initialized = true;
     }
   },
 
-  render: function(containerEl, config) {
+  render: function (containerEl, config) {
     var emulateEl = document.getElementById('cstudio-emulate');
     var mode = 'vert';
 
@@ -121,7 +121,7 @@ CStudioAuthoring.MediumPanel.IPad = CStudioAuthoring.MediumPanel.IPad || {
     rotateControlEl.control = emulateEl;
     rotateControlEl.controller = this;
 
-    rotateControlEl.onclick = function() {
+    rotateControlEl.onclick = function () {
       if (this.mode == 'vert') {
         this.control.mode = 'horiz';
       } else {
@@ -138,14 +138,14 @@ CStudioAuthoring.MediumPanel.IPad = CStudioAuthoring.MediumPanel.IPad || {
       location += '?cstudio-useragent=ipad';
     }
 
-    iframeEl.onload = function() {
+    iframeEl.onload = function () {
       var els = YAHOO.util.Dom.getElementsBy(
-        function(el) {
+        function (el) {
           return true;
         },
         'a',
         this.contentDocument.body,
-        function(el) {
+        function (el) {
           return true;
         }
       );

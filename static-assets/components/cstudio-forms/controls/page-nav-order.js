@@ -16,7 +16,7 @@
 
 CStudioForms.Controls.PageNavOrder =
   CStudioForms.Controls.PageNavOrder ||
-  function(id, form, owner, properties, constraints, readonly) {
+  function (id, form, owner, properties, constraints, readonly) {
     this.owner = owner;
     this.owner.registerField(this);
     this.errors = [];
@@ -37,15 +37,15 @@ CStudioForms.Controls.PageNavOrder =
   };
 
 YAHOO.extend(CStudioForms.Controls.PageNavOrder, CStudioForms.CStudioFormField, {
-  getFixedId: function() {
+  getFixedId: function () {
     return 'pageNavOrder';
   },
 
-  getLabel: function() {
+  getLabel: function () {
     return CMgs.format(langBundle, 'pageOrder');
   },
 
-  _onChange: function(evt, obj) {
+  _onChange: function (evt, obj) {
     obj.value = obj.dropdownEl.value; // value from the dropdown
 
     obj.owner.notifyValidation();
@@ -59,14 +59,14 @@ YAHOO.extend(CStudioForms.Controls.PageNavOrder, CStudioForms.CStudioFormField, 
     }
   },
 
-  _onChangeVal: function(evt, obj, changeEvt) {
+  _onChangeVal: function (evt, obj, changeEvt) {
     obj.edited = true;
     if (changeEvt) {
       this._onChange(evt, obj);
     }
   },
 
-  showEditPosition: function() {
+  showEditPosition: function () {
     if (this.dropdownEl.value == 'true') {
       this.editPositionEl.style.display = 'inline';
       if (!this.orderValue || this.orderValue === -1) {
@@ -81,7 +81,7 @@ YAHOO.extend(CStudioForms.Controls.PageNavOrder, CStudioForms.CStudioFormField, 
     }
   },
 
-  showEditPositionDialog: function() {
+  showEditPositionDialog: function () {
     var CMgs = CStudioAuthoring.Messages;
     var langBundle = CMgs.getBundle('forms', CStudioAuthoringContext.lang);
     // Disable Edit Position button to not allow double clicks
@@ -92,7 +92,7 @@ YAHOO.extend(CStudioForms.Controls.PageNavOrder, CStudioForms.CStudioFormField, 
     var order = 'default';
 
     var callback = {
-      success: function(contentTypes) {
+      success: function (contentTypes) {
         var query = location.search.substring(1);
         var currentPath = CStudioAuthoring.Utils.getQueryVariable(query, 'path');
         var contentTypeSize = contentTypes.order.length;
@@ -129,7 +129,7 @@ YAHOO.extend(CStudioForms.Controls.PageNavOrder, CStudioForms.CStudioFormField, 
         this.parentControl.editPositionEl.disabled = false;
       },
 
-      failure: function() {
+      failure: function () {
         // Enable Edit Position button
         this.parentControl.editPositionEl.disabled = false;
       }
@@ -140,7 +140,7 @@ YAHOO.extend(CStudioForms.Controls.PageNavOrder, CStudioForms.CStudioFormField, 
     this.editPositionEl.disabled = false;
   },
 
-  render: function(config, containerEl) {
+  render: function (config, containerEl) {
     containerEl.id = this.id;
 
     var currentValue = this.value == '_not-set' ? this.defaultValue : this.value;
@@ -226,7 +226,7 @@ YAHOO.extend(CStudioForms.Controls.PageNavOrder, CStudioForms.CStudioFormField, 
     YAHOO.util.Event.on(
       dropdownEl,
       'click',
-      function(evt, context) {
+      function (evt, context) {
         context.form.setFocusedField(context);
       },
       this
@@ -234,18 +234,18 @@ YAHOO.extend(CStudioForms.Controls.PageNavOrder, CStudioForms.CStudioFormField, 
     YAHOO.util.Event.addListener(editPositionEl, 'click', this.showEditPositionDialog, this, true);
   },
 
-  getValue: function() {
+  getValue: function () {
     return this.value;
   },
 
-  setOrderValue: function() {
+  setOrderValue: function () {
     var submitCallback = {
-      success: function(orderValue) {
+      success: function (orderValue) {
         this.parentControl.orderValue = orderValue;
         this.parentControl._onChange(null, this.parentControl);
       },
 
-      failure: function() {
+      failure: function () {
         this.parentControl.orderValue = -1;
         this.parentControl._onChange(null, this.parentControl);
       }
@@ -257,7 +257,7 @@ YAHOO.extend(CStudioForms.Controls.PageNavOrder, CStudioForms.CStudioFormField, 
     CStudioAuthoring.Service.getNextOrderSequenceRequest(CStudioAuthoringContext.site, parentPath, submitCallback);
   },
 
-  setValue: function(value) {
+  setValue: function (value) {
     this.value = value;
     this.edited = false;
 
@@ -278,15 +278,15 @@ YAHOO.extend(CStudioForms.Controls.PageNavOrder, CStudioForms.CStudioFormField, 
     }
   },
 
-  getName: function() {
+  getName: function () {
     return 'page-nav-order';
   },
 
-  getSupportedProperties: function() {
+  getSupportedProperties: function () {
     return [{ label: CMgs.format(langBundle, 'readonly'), name: 'readonly', type: 'boolean' }];
   },
 
-  getSupportedConstraints: function() {
+  getSupportedConstraints: function () {
     return [{ label: CMgs.format(langBundle, 'required'), name: 'required', type: 'boolean' }];
   }
 });

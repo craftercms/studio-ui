@@ -19,7 +19,7 @@ CStudioAuthoring.Module.requireModule(
   '/static-assets/libs/ace/ace.js',
   {},
   {
-    moduleLoaded: function() {
+    moduleLoaded: function () {
       CStudioAuthoring.Utils.addCss('/static-assets/themes/cstudioTheme/css/template-editor.css');
       CStudioAuthoring.Utils.addJavascript('/static-assets/libs/ace/ext-language_tools.js');
 
@@ -28,10 +28,10 @@ CStudioAuthoring.Module.requireModule(
         '/static-assets/components/cstudio-forms/forms-engine.js',
         {},
         {
-          moduleLoaded: function() {
+          moduleLoaded: function () {
             CStudioForms.TemplateEditor =
               CStudioForms.TemplateEditor ||
-              function() {
+              function () {
                 return this;
               };
 
@@ -163,7 +163,7 @@ CStudioAuthoring.Module.requireModule(
             };
 
             CStudioForms.TemplateEditor.prototype = {
-              render: function(templatePath, channel, onSaveCb, contentType, mode) {
+              render: function (templatePath, channel, onSaveCb, contentType, mode) {
                 var me = this;
                 const readonly = mode === 'read';
 
@@ -198,7 +198,7 @@ CStudioAuthoring.Module.requireModule(
                       [
                         {
                           text: 'OK',
-                          handler: function() {
+                          handler: function () {
                             this.hide();
                             callback.failure(response);
                           },
@@ -228,10 +228,10 @@ CStudioAuthoring.Module.requireModule(
                 });
               },
 
-              renderTemplateEditor: function(templatePath, content, onSaveCb, contentType, mode) {
+              renderTemplateEditor: function (templatePath, content, onSaveCb, contentType, mode) {
                 const me = this;
                 var permsCallback = {
-                  success: function(response) {
+                  success: function (response) {
                     var isWrite = CStudioAuthoring.Service.isWrite(response.permissions);
 
                     var modalEl = document.createElement('div');
@@ -302,7 +302,7 @@ CStudioAuthoring.Module.requireModule(
 
                     var langTools;
 
-                    var initEditorFn = function() {
+                    var initEditorFn = function () {
                       if (typeof ace === 'undefined') {
                         window.setTimeout(500, initEditorFn);
                       } else {
@@ -382,18 +382,16 @@ CStudioAuthoring.Module.requireModule(
                           readOnly: isRead
                         });
 
-                        $(modalEl)
-                          .find('#themeSelector')
-                          .val(theme);
+                        $(modalEl).find('#themeSelector').val(theme);
 
                         $(modalEl)
                           .find('#themeSelector')
-                          .on('change', function() {
+                          .on('change', function () {
                             aceEditor.setTheme('ace/theme/' + this.value);
                             localStorage.setItem('templateEditorTheme', this.value);
                           });
 
-                        aceEditor.getSession().on('change', function() {
+                        aceEditor.getSession().on('change', function () {
                           aceEditor.isModified = true;
                           onSaveCb.pendingChanges?.(true);
                         });
@@ -404,11 +402,11 @@ CStudioAuthoring.Module.requireModule(
 
                     var aceEditor = initEditorFn();
 
-                    var _getVarsFromSections = function(sections, parent, variables) {
+                    var _getVarsFromSections = function (sections, parent, variables) {
                       var variables = variables ? variables : [],
-                        _searchFields = function(section) {
+                        _searchFields = function (section) {
                           if (section.fields.field.length) {
-                            $.each(section.fields.field, function() {
+                            $.each(section.fields.field, function () {
                               if (this.id) {
                                 var value = this.title ? this.title : this.id,
                                   containsDash =
@@ -484,7 +482,7 @@ CStudioAuthoring.Module.requireModule(
                         };
 
                       if (sections.length) {
-                        $.each(sections, function() {
+                        $.each(sections, function () {
                           //puede haber solo una seccion
                           _searchFields(this);
                         });
@@ -515,10 +513,10 @@ CStudioAuthoring.Module.requireModule(
 
                         langTools = ace.require('ace/ext/language_tools');
                         var customCompleter = {
-                          getCompletions: function(editor, session, pos, prefix, callback) {
+                          getCompletions: function (editor, session, pos, prefix, callback) {
                             callback(
                               null,
-                              Object.keys(variableOpts).map(function(key, index) {
+                              Object.keys(variableOpts).map(function (key, index) {
                                 return {
                                   caption: variableOpts[key].label,
                                   value: variableOpts[key].value,
@@ -538,10 +536,10 @@ CStudioAuthoring.Module.requireModule(
 
                         langTools = ace.require('ace/ext/language_tools');
                         var customCompleter = {
-                          getCompletions: function(editor, session, pos, prefix, callback) {
+                          getCompletions: function (editor, session, pos, prefix, callback) {
                             callback(
                               null,
-                              Object.keys(variableOpts).map(function(key, index) {
+                              Object.keys(variableOpts).map(function (key, index) {
                                 return {
                                   caption: variableOpts[key].label,
                                   value: variableOpts[key].value,
@@ -571,7 +569,7 @@ CStudioAuthoring.Module.requireModule(
                           CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, path, {
                             success: (response) => {
                               const variables = _getVarsFromSections(response.sections.section);
-                              Object.keys(variableOpts).map(function(key) {
+                              Object.keys(variableOpts).map(function (key) {
                                 if (key === 'content-variable' || key === 'access-content-model') {
                                   let optgroup = document.createElement('optgroup');
                                   optgroup.label = variableOpts[key].label;
@@ -593,7 +591,7 @@ CStudioAuthoring.Module.requireModule(
                             }
                           });
                         } else {
-                          Object.keys(variableOpts).map(function(key) {
+                          Object.keys(variableOpts).map(function (key) {
                             let option = document.createElement('option');
                             option.value = key;
                             option.text = variableOpts[key].label;
@@ -601,7 +599,7 @@ CStudioAuthoring.Module.requireModule(
                           });
                         }
 
-                        $(selectList).on('change', function(event) {
+                        $(selectList).on('change', function (event) {
                           const cursorPosition = aceEditor.getCursorPosition();
                           const itemKey = this.value;
                           let snippet;
@@ -633,15 +631,15 @@ CStudioAuthoring.Module.requireModule(
                       }
                     }
 
-                    var cancelEdit = function() {
+                    var cancelEdit = function () {
                       var cancelEditCb = {
-                        success: function(response) {
+                        success: function (response) {
                           // dispatch legacyTemplateEditor.opened
                           var event = new CustomEvent('legacyTemplateEditor.closed');
                           document.dispatchEvent(event);
                           modalEl.parentNode.removeChild(modalEl);
                         },
-                        failure: function() {}
+                        failure: function () {}
                       };
 
                       if (typeof CStudioAuthoring.editDisabled !== 'undefined') {
@@ -660,7 +658,7 @@ CStudioAuthoring.Module.requireModule(
 
                     $(modalEl)
                       .find('.template-editor-cancel-button')
-                      .on('click', function(e) {
+                      .on('click', function (e) {
                         if (!aceEditor.isModified) {
                           e.stopPropagation();
                           cancelEdit();
@@ -672,7 +670,7 @@ CStudioAuthoring.Module.requireModule(
 
                     $(modalEl)
                       .find('.template-editor-cancel-button + .dropdown-menu .confirm')
-                      .on('click', function(e) {
+                      .on('click', function (e) {
                         e.preventDefault();
                         cancelEdit();
                         if (onSaveCb.cancelled) {
@@ -712,7 +710,7 @@ CStudioAuthoring.Module.requireModule(
                       onSaveCb.renderComplete();
                     }
                   },
-                  failure: function() {
+                  failure: function () {
                     if (onSaveCb.failure) {
                       onSaveCb.failure();
                     }
@@ -767,7 +765,7 @@ CStudioAuthoring.Module.requireModule(
                     //set prev value
                     $select.data('prev', $select.val());
 
-                    $select.on('change', function() {
+                    $select.on('change', function () {
                       const path = templatePath.substring(0, templatePath.lastIndexOf('/'));
                       let localePath = templatePath;
 
@@ -870,7 +868,7 @@ CStudioAuthoring.Module.requireModule(
 
                 CrafterCMSNext.util.ajax
                   .post(CStudioAuthoring.Service.createServiceUri(writeServiceUrl), value)
-                  .subscribe(function(response) {
+                  .subscribe(function (response) {
                     const data = response.response;
 
                     if (data && data.result && data.result.success) {

@@ -29,12 +29,12 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
   /**
    * initialize module
    */
-  initialize: function(config) {},
+  initialize: function (config) {},
 
   /**
    * show dialog
    */
-  showDialog: function(site, Message, imageData, imageWidth, imageHeight, aspectRatio, repoImage, callback) {
+  showDialog: function (site, Message, imageData, imageWidth, imageHeight, aspectRatio, repoImage, callback) {
     this._self = this;
     this.site = site;
     this.message = Message;
@@ -66,14 +66,14 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
   /**
    * hide dialog
    */
-  closeDialog: function() {
+  closeDialog: function () {
     this.dialog.destroy();
   },
 
   /**
    * create dialog
    */
-  createDialog: function(Message, imageData, repoImage) {
+  createDialog: function (Message, imageData, repoImage) {
     self = this;
     YDom.removeClass('cstudio-wcm-popup-div', 'yui-pe-content');
 
@@ -245,7 +245,7 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
       dragCrop: false,
       cropBoxResizable: boxResizable,
       preview: '.img-preview',
-      crop: function(e) {
+      crop: function (e) {
         // Output the result data for cropping image.
         $dataX.val(Math.round(e.x));
         $dataY.val(Math.round(e.y));
@@ -266,7 +266,7 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
           inputValidation(parseInt(minWidthCropBox), parseInt(maxWidthCropBox), $dataWidth, $dataHeight);
         }
       },
-      built: function() {
+      built: function () {
         $image.cropper('setData', {
           width: parseInt(widthCropBox),
           height: parseInt(heightCropBox)
@@ -279,15 +279,15 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
       }
     });
 
-    $('#zoomIn').on('click', function() {
+    $('#zoomIn').on('click', function () {
       $image.cropper('zoom', 0.1);
     });
 
-    $('#zoomOut').on('click', function() {
+    $('#zoomOut').on('click', function () {
       $image.cropper('zoom', -0.1);
     });
 
-    $('#refresh').on('click', function() {
+    $('#refresh').on('click', function () {
       $image.cropper('reset');
       $image.cropper('setData', { width: parseInt(widthCropBox), height: parseInt(heightCropBox) });
     });
@@ -318,11 +318,11 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
         self = self;
 
       var cropImageCallBack = {
-        success: function(content) {
+        success: function (content) {
           self.callback.success(content);
           self.cropPopupCancel();
         },
-        failure: function(message) {
+        failure: function (message) {
           CStudioAuthoring.Operations.showSimpleDialog(
             'error-dialog',
             CStudioAuthoring.Operations.simpleDialogTypeINFO,
@@ -353,7 +353,7 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
           path: path,
           imageInformation: imageInformation,
           cropImageCallBack: cropImageCallBack,
-          exists: function(exists) {
+          exists: function (exists) {
             if (exists) {
               CStudioAuthoring.Operations.showSimpleDialog(
                 'error-dialog',
@@ -379,7 +379,7 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
               } catch (err) {}
             }
           },
-          failure: function() {}
+          failure: function () {}
         };
 
         CStudioAuthoring.Service.contentExists(imageData.renameRelativeUrl, contextExistsCallBack);
@@ -411,7 +411,7 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
         '"><span style="display: inline-block; float: left; margin-right: 10px; margin-top: 7px;">Filename:</span> <input id="renameFileInput" type="text" style="display: inline-block; width: 220px; border-right-width: 54px; border-right-color: rgba(204, 204, 204, 0.33);"></div>' +
         buttons;
 
-      YAHOO.util.Event.on('renameFileInput', 'keyup', function() {
+      YAHOO.util.Event.on('renameFileInput', 'keyup', function () {
         this.value = this.value.replace(/ /g, '_');
         this.value = this.value.replace(/[^A-Za-z0-9-_]/g, '').toLowerCase();
 
@@ -422,14 +422,14 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
         }
       });
 
-      YAHOO.util.Event.addListener('renameButton', 'click', function(e) {
+      YAHOO.util.Event.addListener('renameButton', 'click', function (e) {
         _cropImage(self, document.getElementById('renameFileInput').value);
       });
 
       YAHOO.util.Event.addListener(
         'uploadCancelButton',
         'click',
-        function() {
+        function () {
           self.cropPopupCancel();
         },
         this,
@@ -455,13 +455,13 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
           buttons;
 
         YAHOO.util.Event.addListener('uploadCancelButton', 'click', this.cropPopupCancel, this, true);
-        YAHOO.util.Event.addListener('renameButton', 'click', function() {
+        YAHOO.util.Event.addListener('renameButton', 'click', function () {
           _renameFile(self, imageData);
         });
         YAHOO.util.Event.addListener(
           'overwriteButton',
           'click',
-          function() {
+          function () {
             _cropImage(self);
           },
           this,
@@ -479,12 +479,12 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
     upload_dialog.show();
   },
 
-  cropPopupCancel: function(event) {
+  cropPopupCancel: function (event) {
     CStudioAuthoring.Dialogs.CropDialog.closeDialog();
     CStudioAuthoring.Utils.decreaseFormDialog();
   },
 
-  increaseFormDialogForCrop: function() {
+  increaseFormDialogForCrop: function () {
     if (window.frameElement) {
       var id = window.frameElement.getAttribute('id').split('-editor-')[1];
       var getFormSizeVal = typeof getFormSize === 'function' ? getFormSize : parent.getFormSize;

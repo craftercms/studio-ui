@@ -20,13 +20,13 @@ CStudioAuthoring.ExperimentsPanel = CStudioAuthoring.ExperimentsPanel || {
   /**
    * initialize module
    */
-  initialize: function(config) {
+  initialize: function (config) {
     if (this.initialized == false) {
       this.initialized = true;
     }
   },
 
-  render: function(containerEl, config) {
+  render: function (containerEl, config) {
     var experiments = config.config.experiments.experiment.length
       ? config.config.experiments.experiment
       : [config.config.experiments.experiment];
@@ -37,7 +37,7 @@ CStudioAuthoring.ExperimentsPanel = CStudioAuthoring.ExperimentsPanel || {
     var tree = new YAHOO.widget.TreeView('acnAbtestPanel');
     var rootNode = tree.getRoot();
 
-    tree.subscribe('labelClick', function(node) {
+    tree.subscribe('labelClick', function (node) {
       if (node.variation) {
         CStudioAuthoring.Operations.setPreview(node.variation.url);
       }

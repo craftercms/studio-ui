@@ -16,7 +16,7 @@
 
 CStudioForms.Datasources.KeyValueList =
   CStudioForms.Datasources.KeyValueList ||
-  function(id, form, properties, constraints) {
+  function (id, form, properties, constraints) {
     this.id = id;
     this.form = form;
     this.properties = properties;
@@ -26,11 +26,11 @@ CStudioForms.Datasources.KeyValueList =
   };
 
 YAHOO.extend(CStudioForms.Datasources.KeyValueList, CStudioForms.CStudioFormDatasource, {
-  getLabel: function() {
+  getLabel: function () {
     return CMgs.format(langBundle, 'staticKeyValuePairs');
   },
 
-  add: function(control) {
+  add: function (control) {
     var _self = this;
 
     var addContainerEl = null;
@@ -61,7 +61,7 @@ YAHOO.extend(CStudioForms.Datasources.KeyValueList, CStudioForms.CStudioFormData
         YAHOO.util.Event.on(
           itemEl,
           'click',
-          function() {
+          function () {
             control.insertItem(this._key, this._value);
             control._renderItems();
           },
@@ -71,7 +71,7 @@ YAHOO.extend(CStudioForms.Datasources.KeyValueList, CStudioForms.CStudioFormData
     }
   },
 
-  showKeys: function() {
+  showKeys: function () {
     var showKeys = false;
     var properties = this.properties;
 
@@ -89,7 +89,7 @@ YAHOO.extend(CStudioForms.Datasources.KeyValueList, CStudioForms.CStudioFormData
     return showKeys;
   },
 
-  getList: function(cb) {
+  getList: function (cb) {
     var value = [];
     var properties = this.properties;
 
@@ -111,7 +111,7 @@ YAHOO.extend(CStudioForms.Datasources.KeyValueList, CStudioForms.CStudioFormData
     }
   },
 
-  getInterface: function() {
+  getInterface: function () {
     return 'item';
   },
 
@@ -125,11 +125,11 @@ YAHOO.extend(CStudioForms.Datasources.KeyValueList, CStudioForms.CStudioFormData
   getDataType: function getDataType() {
     var val = null;
 
-    this.properties.forEach(function(prop) {
+    this.properties.forEach(function (prop) {
       if (prop.name == 'dataType') {
         // return the value of the option currently selected
         var value = JSON.parse(prop.value);
-        value.forEach(function(opt) {
+        value.forEach(function (opt) {
           if (opt.selected) {
             val = opt.value;
           }
@@ -139,11 +139,11 @@ YAHOO.extend(CStudioForms.Datasources.KeyValueList, CStudioForms.CStudioFormData
     return val;
   },
 
-  getName: function() {
+  getName: function () {
     return 'key-value-list';
   },
 
-  getSupportedProperties: function() {
+  getSupportedProperties: function () {
     return [
       {
         label: CMgs.format(langBundle, 'dataType'),
@@ -196,7 +196,7 @@ YAHOO.extend(CStudioForms.Datasources.KeyValueList, CStudioForms.CStudioFormData
     ];
   },
 
-  getSupportedConstraints: function() {
+  getSupportedConstraints: function () {
     return [{ label: CMgs.format(langBundle, 'required'), name: 'required', type: 'boolean' }];
   }
 });

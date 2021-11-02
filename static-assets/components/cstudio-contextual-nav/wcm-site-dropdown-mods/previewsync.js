@@ -24,7 +24,7 @@ CStudioAuthoring.ContextualNav.PreviewSync = CStudioAuthoring.ContextualNav.Prev
   /**
    * initialize module
    */
-  initialize: function(config) {
+  initialize: function (config) {
     if (config.name == 'previewsync') {
       this.initialized = true;
       var dropdownInnerEl = config.containerEl;
@@ -37,9 +37,9 @@ CStudioAuthoring.ContextualNav.PreviewSync = CStudioAuthoring.ContextualNav.Prev
 
       parentFolderLinkEl.id = 'previewsync';
       parentFolderLinkEl.innerHTML = CMgs.format(siteDropdownLangBundle, 'previewSync');
-      parentFolderLinkEl.onclick = function() {
+      parentFolderLinkEl.onclick = function () {
         CStudioAuthoring.Service.previewServerSyncAll(CStudioAuthoringContext.site, {
-          success: function() {
+          success: function () {
             CStudioAuthoring.Operations.showSimpleDialog(
               'previewInitiated-dialog',
               CStudioAuthoring.Operations.simpleDialogTypeINFO,
@@ -50,7 +50,7 @@ CStudioAuthoring.ContextualNav.PreviewSync = CStudioAuthoring.ContextualNav.Prev
               'success studioDialog'
             );
           },
-          failure: function() {}
+          failure: function () {}
         });
       };
 

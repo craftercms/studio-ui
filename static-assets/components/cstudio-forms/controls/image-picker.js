@@ -16,7 +16,7 @@
 
 CStudioForms.Controls.ImagePicker =
   CStudioForms.Controls.ImagePicker ||
-  function(id, form, owner, properties, constraints, readonly) {
+  function (id, form, owner, properties, constraints, readonly) {
     this.owner = owner;
     this.owner.registerField(this);
     this.errors = [];
@@ -63,11 +63,11 @@ CStudioForms.Controls.ImagePicker =
   };
 
 YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
-  getLabel: function() {
+  getLabel: function () {
     return CMgs.format(langBundle, 'image');
   },
 
-  _onChange: function(evt, obj) {
+  _onChange: function (evt, obj) {
     obj.value = obj.inputEl.value;
 
     if (obj.required) {
@@ -86,7 +86,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
     obj.form.updateModel(obj.id, obj.getValue(), obj.remote);
   },
 
-  _onChangeVal: function(evt, obj) {
+  _onChangeVal: function (evt, obj) {
     obj.edited = true;
     this._onChange(evt, obj);
   },
@@ -96,12 +96,12 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
    * @param evt event
    * @param el element
    */
-  count: function(evt, countEl, el) {},
+  count: function (evt, countEl, el) {},
 
   /**
    * Aspect Ratios
    */
-  calculateAspectRatioFit: function(srcWidth, srcHeight, maxWidth, maxHeight) {
+  calculateAspectRatioFit: function (srcWidth, srcHeight, maxWidth, maxHeight) {
     var ratio = Math.min(maxWidth / srcWidth, maxHeight / srcHeight);
 
     return { width: srcWidth * ratio, height: srcHeight * ratio };
@@ -110,7 +110,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
   /**
    * create dialog
    */
-  createDialog: function() {
+  createDialog: function () {
     YDom.removeClass('cstudio-wcm-popup-div', 'yui-pe-content');
 
     var newdiv = YDom.get('cstudio-wcm-popup-div');
@@ -166,7 +166,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
     YAHOO.util.Event.addListener(
       'zoomFullButton',
       'click',
-      function() {
+      function () {
         this.fullImageTab(!this.external ? CStudioAuthoringContext.previewAppBaseUri : '' + this.inputEl.value);
       },
       this,
@@ -179,18 +179,18 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
   /**
    * event fired when the full is pressed
    */
-  fullImageTab: function(url) {
+  fullImageTab: function (url) {
     window.open(url);
   },
 
   /**
    * event fired when the ok is pressed
    */
-  uploadPopupCancel: function(event) {
+  uploadPopupCancel: function (event) {
     this.upload_dialog.destroy();
   },
 
-  showAlert: function(message) {
+  showAlert: function (message) {
     var self = this;
     var dialog = new YAHOO.widget.SimpleDialog('alertDialog', {
       width: '400px',
@@ -205,7 +205,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
       buttons: [
         {
           text: 'OK',
-          handler: function() {
+          handler: function () {
             this.destroy();
             CStudioAuthoring.Utils.decreaseFormDialog();
           },
@@ -219,12 +219,12 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
     dialog.innerElement.parentElement.style.setProperty('z-index', '100104', 'important');
   },
 
-  cropPopupCancel: function(event) {
+  cropPopupCancel: function (event) {
     this.crop_dialog.destroy();
     CStudioAuthoring.Utils.decreaseFormDialog();
   },
 
-  setImageData: function(imagePicker, imageData) {
+  setImageData: function (imagePicker, imageData) {
     let CMgs = CStudioAuthoring.Messages;
     let langBundle = CMgs.getBundle('contentTypes', CStudioAuthoringContext.lang);
     imagePicker.inputEl.value = imageData.relativeUrl;
@@ -245,7 +245,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
     imagePicker._onChangeVal(null, imagePicker);
   },
 
-  increaseFormDialogForCrop: function() {
+  increaseFormDialogForCrop: function () {
     var id = window.frameElement.getAttribute('id').split('-editor-')[1];
     var getFormSizeVal = typeof getFormSize === 'function' ? getFormSize : parent.getFormSize;
     var setFormSizeVal = typeof setFormSize === 'function' ? setFormSize : parent.setFormSize;
@@ -255,7 +255,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
     }
   },
 
-  addImage: function() {
+  addImage: function () {
     var _self = this;
     var imageManagerNames = this.datasources;
 
@@ -270,7 +270,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
     if (imageManagerNames !== '') {
       // The datasource title is only found in the definition.datasources. It'd make more sense to have all
       // the information in just one place.
-      datasourceDef.forEach(function(el) {
+      datasourceDef.forEach(function (el) {
         // We want to avoid possible substring conflicts by using a reg exp (a simple indexOf
         // would fail if a datasource id string is a substring of another datasource id)
         var mapDatasource;
@@ -281,7 +281,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
           YAHOO.util.Event.on(
             $itemEl[0],
             'click',
-            function() {
+            function () {
               _self._addImage(mapDatasource);
             },
             $itemEl[0]
@@ -291,13 +291,13 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
     }
   },
 
-  _addImage: function(datasourceEl) {
+  _addImage: function (datasourceEl) {
     self = this;
     var datasource = datasourceEl;
     if (datasource) {
       if (datasource.insertImageAction) {
         var callback = {
-          success: function(imageData, repoImage) {
+          success: function (imageData, repoImage) {
             var valid = false,
               message = '',
               repoImage;
@@ -334,9 +334,9 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
                     message = 'Image is smaller than the constraint size';
                     self.showAlert(message);
                   } else {
-                    (function(self) {
+                    (function (self) {
                       var callbackCropper = {
-                        success: function(content) {
+                        success: function (content) {
                           var imagePicker = self;
 
                           imageData.relativeUrl = imageData.renameRelativeUrl
@@ -382,7 +382,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
                 }
               }
               image.addEventListener('load', imageLoaded, false);
-              image.addEventListener('error', function() {
+              image.addEventListener('error', function () {
                 message = 'Unable to load the selected image. Please try again or select another image';
                 imagePicker.showAlert(message);
               });
@@ -392,7 +392,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
               });
             }
           },
-          failure: function(message) {
+          failure: function (message) {
             this.imagePicker.showAlert(message);
           }
         };
@@ -402,7 +402,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
     }
   },
 
-  deleteImage: function() {
+  deleteImage: function () {
     var CMgs = CStudioAuthoring.Messages;
     var langBundle = CMgs.getBundle('contentTypes', CStudioAuthoringContext.lang);
 
@@ -433,7 +433,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
     }
   },
 
-  render: function(config, containerEl) {
+  render: function (config, containerEl) {
     containerEl.id = this.id;
 
     var divPrefix = config.id + '-';
@@ -624,7 +624,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
     YAHOO.util.Event.addListener(
       imageEl,
       'click',
-      function(evt, context) {
+      function (evt, context) {
         context.form.setFocusedField(context);
       },
       this,
@@ -639,7 +639,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
     YAHOO.util.Event.addListener(
       $addBtn[0],
       'click',
-      function(evt, context) {
+      function (evt, context) {
         context.form.setFocusedField(context);
       },
       this,
@@ -649,7 +649,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
     YAHOO.util.Event.addListener(
       delEl,
       'click',
-      function(evt, context) {
+      function (evt, context) {
         context.form.setFocusedField(context);
         this.deleteImage();
       },
@@ -662,7 +662,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
     YAHOO.util.Event.addListener(imageEl, 'mouseout', this.hideButtons, this, true);
   },
 
-  showButtons: function(evt) {
+  showButtons: function (evt) {
     if (this.value !== '') {
       if (this.originalWidth > this.previewBoxWidth || this.originalHeight > this.previewBoxHeight) {
         this.zoomEl.style.display = 'inline-block';
@@ -674,17 +674,17 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
     }
   },
 
-  hideButtons: function(evt) {
+  hideButtons: function (evt) {
     this.zoomEl.style.display = 'none';
     this.downloadEl.style.display = 'none';
   },
 
-  getValue: function() {
+  getValue: function () {
     return this.value;
   },
 
-  renderImageConstraints: function(containerEl) {
-    var checkFn = function(label, value) {
+  renderImageConstraints: function (containerEl) {
+    var checkFn = function (label, value) {
       var message = '';
 
       if (value) {
@@ -728,10 +728,10 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
     }
   },
 
-  isImageValid: function() {
+  isImageValid: function () {
     var result = true;
 
-    var checkFn = function(value, srcValue) {
+    var checkFn = function (value, srcValue) {
       var internalResult = true;
 
       if (value) {
@@ -763,7 +763,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
     return result;
   },
 
-  adjustImage: function() {
+  adjustImage: function () {
     // var wImg = this.originalWidth || 0;
     // var hImg = this.originalHeight || 0;
     // var wThb = parseInt(this.previewBoxWidth, 10);
@@ -793,7 +793,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
     // }
   },
 
-  setValue: function(value, attribute) {
+  setValue: function (value, attribute) {
     var _self = this;
     this.value = value;
     this.remote = attribute === true ? true : false;
@@ -835,11 +835,11 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
     this.edited = false;
   },
 
-  getName: function() {
+  getName: function () {
     return 'image-picker';
   },
 
-  getSupportedProperties: function() {
+  getSupportedProperties: function () {
     return [
       { label: CMgs.format(langBundle, 'width'), name: 'width', type: 'range' },
       { label: CMgs.format(langBundle, 'height'), name: 'height', type: 'range' },
@@ -854,11 +854,11 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
     ];
   },
 
-  getSupportedConstraints: function() {
+  getSupportedConstraints: function () {
     return [{ label: CMgs.format(langBundle, 'required'), name: 'required', type: 'boolean' }];
   },
 
-  getSupportedPostFixes: function() {
+  getSupportedPostFixes: function () {
     return this.supportedPostFixes;
   }
 });

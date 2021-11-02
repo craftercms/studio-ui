@@ -26,13 +26,13 @@ CStudioAuthoring.Dialogs.DialogSelectTaxonomyType = CStudioAuthoring.Dialogs.Dia
   /**
    * initialize module
    */
-  initialize: function(config) {},
+  initialize: function (config) {},
 
   changeTemplateCalled: false,
   /**
    * show dialog
    */
-  showDialog: function(contentTypes, path, asPopup, onSaveCallback, isChangeTemplate) {
+  showDialog: function (contentTypes, path, asPopup, onSaveCallback, isChangeTemplate) {
     /**
      * indicating, from where showDialog is called (new/change template).
      */
@@ -54,14 +54,14 @@ CStudioAuthoring.Dialogs.DialogSelectTaxonomyType = CStudioAuthoring.Dialogs.Dia
   /**
    * hide dialog
    */
-  hideDialog: function() {
+  hideDialog: function () {
     this.dialog.hide();
   },
 
   /**
    * create dialog
    */
-  createDialog: function(path, selectTemplateCb) {
+  createDialog: function (path, selectTemplateCb) {
     YDom.removeClass('cstudio-wcm-popup-div', 'yui-pe-content');
 
     var newdiv = document.createElement('div');
@@ -107,7 +107,7 @@ CStudioAuthoring.Dialogs.DialogSelectTaxonomyType = CStudioAuthoring.Dialogs.Dia
       minWidth: 600,
       handles: ['br']
     });
-    resizeHandler.on('endResize', function() {
+    resizeHandler.on('endResize', function () {
       var dialogObj = this._wrap;
       if (dialogObj) {
         try {
@@ -149,7 +149,7 @@ CStudioAuthoring.Dialogs.DialogSelectTaxonomyType = CStudioAuthoring.Dialogs.Dia
 
     // Render the Dialog
     content_type_dialog.render();
-    content_type_dialog.cfg.subscribe('configChanged', function(p_sType, p_aArgs) {
+    content_type_dialog.cfg.subscribe('configChanged', function (p_sType, p_aArgs) {
       var aProperty = p_aArgs[0],
         sPropertyName = aProperty[0],
         oPropertyValue = aProperty[1];
@@ -170,7 +170,7 @@ CStudioAuthoring.Dialogs.DialogSelectTaxonomyType = CStudioAuthoring.Dialogs.Dia
 
     YAHOO.util.Event.addListener('submitWCMPopup', 'click', this.contentPopupSubmit, eventParams);
 
-    YAHOO.util.Event.addListener('closeWCMPopup', 'click', function() {
+    YAHOO.util.Event.addListener('closeWCMPopup', 'click', function () {
       CStudioAuthoring.Dialogs.DialogSelectTaxonomyType.closeDialog();
     });
 
@@ -180,7 +180,7 @@ CStudioAuthoring.Dialogs.DialogSelectTaxonomyType = CStudioAuthoring.Dialogs.Dia
   /**
    * set default template
    */
-  setDefaultTemplate: function(contentTypes) {
+  setDefaultTemplate: function (contentTypes) {
     var contentTypesSelect = YDom.get('wcm-content-types-dropdown');
     if (!contentTypesSelect) return;
     var defaultSrc = CStudioAuthoringContext.baseUri + '/themes/cstudioTheme/images/';
@@ -201,7 +201,7 @@ CStudioAuthoring.Dialogs.DialogSelectTaxonomyType = CStudioAuthoring.Dialogs.Dia
   /**
    * update the content types
    */
-  updateAvailableTemplates: function(dialog, contentTypes) {
+  updateAvailableTemplates: function (dialog, contentTypes) {
     var contentTypesSelect = document.getElementById('wcm-content-types-dropdown');
 
     contentTypesSelect.contentTypes = contentTypes;
@@ -216,7 +216,7 @@ CStudioAuthoring.Dialogs.DialogSelectTaxonomyType = CStudioAuthoring.Dialogs.Dia
       contentTypesSelect.options.add(option);
     }
 
-    YAHOO.util.Event.addListener('wcm-content-types-dropdown', 'change', function() {
+    YAHOO.util.Event.addListener('wcm-content-types-dropdown', 'change', function () {
       var defaultSrc = CStudioAuthoringContext.baseUri + '/static-assets/themes/cstudioTheme/images/';
       var defaultImg = 'default-contentType.jpg';
       var contentTypePreviewImg = YDom.get('contentTypePreviewImg');
@@ -236,7 +236,7 @@ CStudioAuthoring.Dialogs.DialogSelectTaxonomyType = CStudioAuthoring.Dialogs.Dia
   /**
    * close dialog
    */
-  closeDialog: function() {
+  closeDialog: function () {
     this.dialog.hide();
     var element = YDom.get('cstudio-wcm-popup-div');
     element.parentNode.removeChild(element);
@@ -245,7 +245,7 @@ CStudioAuthoring.Dialogs.DialogSelectTaxonomyType = CStudioAuthoring.Dialogs.Dia
   /**
    * event fired when the ok is pressed
    */
-  contentPopupSubmit: function(event, args) {
+  contentPopupSubmit: function (event, args) {
     var contentTypesSelectEl = document.getElementById('wcm-content-types-dropdown');
     var selectedIndex = contentTypesSelectEl.selectedIndex;
     var selectedType = contentTypesSelectEl.contentTypes[selectedIndex];
@@ -257,7 +257,7 @@ CStudioAuthoring.Dialogs.DialogSelectTaxonomyType = CStudioAuthoring.Dialogs.Dia
   /**
    * event fired when the cancel is pressed
    */
-  contentPopupCancel: function(event) {
+  contentPopupCancel: function (event) {
     CStudioAuthoring.Dialogs.DialogSelectTaxonomyType.closeDialog();
   }
 };

@@ -16,7 +16,7 @@
 
 CStudioForms.Datasources.ImgWebDAVUpload =
   CStudioForms.Datasources.ImgWebDAVUpload ||
-  function(id, form, properties, constraints) {
+  function (id, form, properties, constraints) {
     this.id = id;
     this.form = form;
     this.properties = properties;
@@ -40,7 +40,7 @@ YAHOO.extend(CStudioForms.Datasources.ImgWebDAVUpload, CStudioForms.CStudioFormD
   /**
    * action called when user clicks insert file
    */
-  insertImageAction: function(insertCb, file) {
+  insertImageAction: function (insertCb, file) {
     (this._self = this), (me = this);
 
     var site = CStudioAuthoringContext.site;
@@ -56,7 +56,7 @@ YAHOO.extend(CStudioForms.Datasources.ImgWebDAVUpload, CStudioForms.CStudioFormD
     }
 
     var callback = {
-      success: function(fileData) {
+      success: function (fileData) {
         var uri = fileData.url ? fileData.url : fileData;
         var fileExtension = uri.split('.').pop();
 
@@ -74,7 +74,7 @@ YAHOO.extend(CStudioForms.Datasources.ImgWebDAVUpload, CStudioForms.CStudioFormD
         insertCb.success(imageData);
       },
 
-      failure: function() {
+      failure: function () {
         insertCb.failure('An error occurred while uploading the image.');
       },
 
@@ -97,26 +97,26 @@ YAHOO.extend(CStudioForms.Datasources.ImgWebDAVUpload, CStudioForms.CStudioFormD
     }
   },
 
-  getLabel: function() {
+  getLabel: function () {
     return CMgs.format(langBundle, 'WebDAV Upload Image');
   },
 
-  getInterface: function() {
+  getInterface: function () {
     return 'image';
   },
 
-  getName: function() {
+  getName: function () {
     return 'img-WebDAV-upload';
   },
 
-  getSupportedProperties: function() {
+  getSupportedProperties: function () {
     return [
       { label: CMgs.format(langBundle, 'repositoryPath'), name: 'repoPath', type: 'string' },
       { label: CMgs.format(langBundle, 'profileId'), name: 'profileId', type: 'string' }
     ];
   },
 
-  getSupportedConstraints: function() {
+  getSupportedConstraints: function () {
     return [];
   }
 });

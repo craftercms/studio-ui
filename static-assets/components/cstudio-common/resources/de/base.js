@@ -963,7 +963,8 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'de', {
   confTabUiConf: 'Konfiguration der Benutzeroberfläche',
   confTabUiConfDesc: 'Definiert die in der Benutzeroberfläche angezeigten Widgets',
   confTabMimeTypes: 'Mime-Typen',
-  confTabMimeTypesDesc: 'Diese Datei konfiguriert die Mime-Typen, die Symbole für diese Site / Blaupause überschreiben.',
+  confTabMimeTypesDesc:
+    'Diese Datei konfiguriert die Mime-Typen, die Symbole für diese Site / Blaupause überschreiben.',
   confTabEngineUrlRewriteConf: 'Konfiguration zum Umschreiben der Engine-URL (XML-Stil)',
   confTabEngineUrlRewriteConfDesc: 'Diese Datei konfiguriert die von Crafter Engine verwendeten Site-Eigenschaften',
   confTabEngineUrlRewriteConfPreview: 'Konfiguration zum Umschreiben der Engine-URL (XML-Stil) - Vorschau',

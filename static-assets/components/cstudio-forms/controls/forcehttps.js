@@ -16,7 +16,7 @@
 
 CStudioForms.Controls.ForceHttps =
   CStudioForms.Controls.ForceHttps ||
-  function(id, form, owner, properties, constraints, readonly) {
+  function (id, form, owner, properties, constraints, readonly) {
     this.owner = owner;
     this.owner.registerField(this);
     this.errors = [];
@@ -33,15 +33,15 @@ CStudioForms.Controls.ForceHttps =
   };
 
 YAHOO.extend(CStudioForms.Controls.Disabled, CStudioForms.CStudioFormField, {
-  getFixedId: function() {
+  getFixedId: function () {
     return 'forceHttps';
   },
 
-  getLabel: function() {
+  getLabel: function () {
     return CMgs.format(langBundle, 'forceHTTPS');
   },
 
-  _onChange: function(evt, obj) {
+  _onChange: function (evt, obj) {
     obj.value = obj.inputEl.checked;
 
     if (obj.required) {
@@ -60,12 +60,12 @@ YAHOO.extend(CStudioForms.Controls.Disabled, CStudioForms.CStudioFormField, {
     obj.form.updateModel(obj.id, obj.getValue());
   },
 
-  _onChangeVal: function(evt, obj) {
+  _onChangeVal: function (evt, obj) {
     obj.edited = true;
     this._onChange(evt, obj);
   },
 
-  render: function(config, containerEl) {
+  render: function (config, containerEl) {
     // we need to make the general layout of a control inherit from common
     // you should be able to override it -- but most of the time it wil be the same
     containerEl.id = this.id;
@@ -105,7 +105,7 @@ YAHOO.extend(CStudioForms.Controls.Disabled, CStudioForms.CStudioFormField, {
     YAHOO.util.Event.on(
       inputEl,
       'focus',
-      function(evt, context) {
+      function (evt, context) {
         context.form.setFocusedField(context);
       },
       this
@@ -129,26 +129,26 @@ YAHOO.extend(CStudioForms.Controls.Disabled, CStudioForms.CStudioFormField, {
     containerEl.appendChild(descriptionEl);
   },
 
-  getValue: function() {
+  getValue: function () {
     return this.value;
   },
 
-  setValue: function(value) {
+  setValue: function (value) {
     this.value = value;
     this.inputEl.checked = this.value == 'true' || this.value == true ? true : false;
     this._onChange(null, this);
     this.edited = false;
   },
 
-  getName: function() {
+  getName: function () {
     return 'disabled';
   },
 
-  getSupportedProperties: function() {
+  getSupportedProperties: function () {
     return [{ label: Mgs.format(langBundle, 'readonly'), name: 'readonly', type: 'boolean' }];
   },
 
-  getSupportedConstraints: function() {
+  getSupportedConstraints: function () {
     return [];
   }
 });

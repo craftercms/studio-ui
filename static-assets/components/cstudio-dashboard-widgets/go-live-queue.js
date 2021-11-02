@@ -24,7 +24,7 @@ if (typeof CStudioAuthoringWidgets == 'undefined' || !CStudioAuthoringWidgets) {
 /**
  * golive queue
  */
-CStudioAuthoringWidgets.GoLiveQueueDashboard = function(widgetId, pageId) {
+CStudioAuthoringWidgets.GoLiveQueueDashboard = function (widgetId, pageId) {
   this.widgetId = widgetId;
   this.pageId = pageId;
   this._self = this;
@@ -45,7 +45,7 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard = function(widgetId, pageId) {
   /**
    * get table data
    */
-  this.retrieveTableData = function(sortBy, sortAscDesc, callback) {
+  this.retrieveTableData = function (sortBy, sortAscDesc, callback) {
     sortAscDesc = CStudioAuthoring.Utils.sortByAsc.init(sortBy, widgetId);
     CStudioAuthoring.Service.getGoLiveQueueItems(
       CStudioAuthoringContext.site,
@@ -59,7 +59,7 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard = function(widgetId, pageId) {
   /**
    * render widget specific controls
    */
-  this.renderAuxControls = function(containerEl) {
+  this.renderAuxControls = function (containerEl) {
     var listItemEl = document.createElement('li');
 
     var itemFilterEl = document.createElement('a');
@@ -83,7 +83,7 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard = function(widgetId, pageId) {
     listItemEl.appendChild(itemFilterEl);
     itemFilterEl._self = this;
 
-    itemFilterEl.onclick = function() {
+    itemFilterEl.onclick = function () {
       var _self = this._self;
 
       _self.showInprogressItems = !_self.showInprogressItems;
@@ -116,7 +116,7 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard = function(widgetId, pageId) {
   /**
    * callback to render the table headings
    */
-  this.renderItemsHeading = function() {
+  this.renderItemsHeading = function () {
     var widgetId = this._self.widgetId,
       Common = WcmDashboardWidgetCommon;
 
@@ -161,14 +161,14 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard = function(widgetId, pageId) {
   /**
    * optional on click handler
    */
-  this.onCheckedClickHandler = function(event, matchedEl) {
+  this.onCheckedClickHandler = function (event, matchedEl) {
     this.handleTopDownPathDependenciesItemsClick(event, matchedEl);
   };
 
   /**
    * Call back to render each line item of the table
    */
-  this.renderLineItem = function(item, isFirst, count, depth) {
+  this.renderLineItem = function (item, isFirst, count, depth) {
     if (!item.folder) {
       var html = [],
         name = item.internalName,
@@ -316,7 +316,7 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard = function(widgetId, pageId) {
    * internal method to help determine what items are parents
    * We need to improve this - performance is not great and there must be an easier way
    */
-  this.handleTopDownPathDependenciesItemsClick = function(event, matchedEl) {
+  this.handleTopDownPathDependenciesItemsClick = function (event, matchedEl) {
     var isChecked = matchedEl.checked;
     var selectedElementURI = decodeURIComponent(matchedEl.id);
     var item = CStudioAuthoringWidgets.GoLiveQueueDashboard.resultMap[selectedElementURI];

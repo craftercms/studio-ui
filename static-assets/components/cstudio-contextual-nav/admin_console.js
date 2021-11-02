@@ -23,33 +23,33 @@ CStudioAuthoring.ContextualNav.AdminConsoleMod = CStudioAuthoring.ContextualNav.
   /**
    * initialize module
    */
-  initialize: function(config) {
+  initialize: function (config) {
     this.definePlugin();
     CStudioAuthoring.ContextualNav.AdminConsoleNav.init();
   },
 
-  definePlugin: function() {
+  definePlugin: function () {
     var YDom = YAHOO.util.Dom,
       YEvent = YAHOO.util.Event;
 
     CStudioAuthoring.register({
       'ContextualNav.AdminConsoleNav': {
-        init: function() {
+        init: function () {
           if (CStudioAuthoringContext.isAuthoringConsole == true) {
             this.render();
           }
         },
 
-        render: function() {
+        render: function () {
           document.getElementById('acn-dropdown').style.display = 'none';
           document.getElementById('acn-search').style.display = 'none';
         },
 
-        clearActions: function() {
+        clearActions: function () {
           document.getElementById('activeContentActions').innerHTML = '';
         },
 
-        initActions: function(actions) {
+        initActions: function (actions) {
           this.clearActions();
 
           var containerEl = document.getElementById('activeContentActions');
@@ -79,7 +79,7 @@ CStudioAuthoring.ContextualNav.AdminConsoleMod = CStudioAuthoring.ContextualNav.
             YAHOO.util.Event.on(
               linkEl,
               'click',
-              function(evt, param) {
+              function (evt, param) {
                 param.method();
               },
               { method: action.method, context: action.context }
