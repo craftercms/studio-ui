@@ -2316,7 +2316,7 @@
                 }
               ]);
             };
-            var publishAllowed = function () {
+            var publishAllowed = function (isWrite) {
               //add publish/request
               var isRelevant = !(oCurrentTextNode.data.lockOwner != '') && !oCurrentTextNode.data.statusObj.live;
 
@@ -2352,7 +2352,7 @@
                       }
                     }
                   ]);
-                } else {
+                } else if (isWrite) {
                   if (
                     oCurrentTextNode.data.status
                       .toLowerCase()
@@ -2523,7 +2523,7 @@
 
               if (oCurrentTextNode.data.contentType != 'folder') {
                 p_aArgs.addItems([menuItems.separator]);
-                publishAllowed();
+                publishAllowed(isWrite);
                 dependenciesAllowed();
               }
 
@@ -2768,7 +2768,7 @@
                       p_aArgs.addItems([menuItems.separator]);
                     }
 
-                    publishAllowed();
+                    publishAllowed(isWrite);
                     dependenciesAllowed();
                   }
 
