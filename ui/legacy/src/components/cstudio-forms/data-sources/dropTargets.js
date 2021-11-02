@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-(function() {
+(function () {
   function formatMessage(id) {
     return CrafterCMSNext.i18n.intl.formatMessage(CrafterCMSNext.i18n.messages.dropTargetsMessages[id]);
   }
@@ -46,7 +46,7 @@
   }
 
   DropTargets.prototype = {
-    add: function(control) {
+    add: function (control) {
       const self = this;
       if (this.contentTypes) {
         this.contentTypes.split(',').forEach((contentType) => {
@@ -78,7 +78,7 @@
       }
     },
 
-    edit: function(key, control, index) {
+    edit: function (key, control, index) {
       const self = this;
       if (key.endsWith('.xml')) {
         self._editShared(key, control, self.id, index);
@@ -87,21 +87,21 @@
       }
     },
 
-    updateItem: function(item, control) {},
+    updateItem: function (item, control) {},
 
-    getLabel: function() {
+    getLabel: function () {
       return formatMessage('dropTargets');
     },
 
-    getInterface: function() {
+    getInterface: function () {
       return 'item';
     },
 
-    getName: function() {
+    getName: function () {
       return 'dropTargets';
     },
 
-    getSupportedProperties: function() {
+    getSupportedProperties: function () {
       return [
         {
           label: formatMessage('allowShared'),
@@ -146,14 +146,14 @@
       ];
     },
 
-    getSupportedConstraints: function() {
+    getSupportedConstraints: function () {
       return [];
     },
 
-    _openBrowse: function(contentType, control) {
+    _openBrowse: function (contentType, control) {
       const path = `${this.baseBrowsePath}/${contentType.replace(/\//g, '_').substr(1)}`;
       CStudioAuthoring.Operations.openBrowse('', path, -1, 'select', true, {
-        success: function(searchId, selectedTOs) {
+        success: function (searchId, selectedTOs) {
           for (let i = 0; i < selectedTOs.length; i++) {
             let item = selectedTOs[i];
             let value = item.internalName && item.internalName !== '' ? item.internalName : item.uri;
@@ -161,11 +161,11 @@
             control._renderItems();
           }
         },
-        failure: function() {}
+        failure: function () {}
       });
     },
 
-    _openSearch: function(control) {
+    _openSearch: function (control) {
       const searchContext = {
         searchId: null,
         itemsPerPage: 12,
@@ -183,7 +183,13 @@
       };
 
       if (this.contentTypes) {
-        searchContext.filters['content-type'] = this.contentTypes.split(',');
+        if (this.contentTypes === '*') {
+          searchContext.filters['content-type'] = Object.keys(
+            CrafterCMSNext.system.store.getState().contentTypes.byId
+          ).filter((key) => /^\/component(s?)\//.test(key));
+        } else {
+          searchContext.filters['content-type'] = this.contentTypes.split(',');
+        }
       }
 
       CStudioAuthoring.Operations.openSearch(
@@ -191,29 +197,29 @@
         true,
         {
           success(searchId, selectedTOs) {
-            selectedTOs.forEach(function(item) {
+            selectedTOs.forEach(function (item) {
               const value = item.label && item.label !== '' ? item.label : item.path;
               control.newInsertItem(item.path, value, 'shared');
               control._renderItems();
             });
           },
-          failure: function() {}
+          failure: function () {}
         },
         searchContext.searchId
       );
     },
 
-    _openCreateAny: function(control, type) {
+    _openCreateAny: function (control, type) {
       CStudioAuthoring.Operations.createNewContent(
         CStudioAuthoringContext.site,
         'getAllContentType',
         false,
         {
-          success: function(contentTO, editorId, name, value) {
+          success: function (contentTO, editorId, name, value) {
             control.newInsertItem(name, value, type);
             control._renderItems();
           },
-          failure: function() {}
+          failure: function () {}
         },
         true,
         type === 'embedded',
@@ -227,7 +233,7 @@
       const action = readonly ? CStudioAuthoring.Operations.viewContent : CStudioAuthoring.Operations.editContent;
 
       CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, key, {
-        success: function(contentTO) {
+        success: function (contentTO) {
           action(
             contentTO.item.contentType,
             CStudioAuthoringContext.siteId,
@@ -236,7 +242,7 @@
             contentTO.item.uri,
             false,
             {
-              success: function(contentTO, editorId, name, value, draft, action) {
+              success: function (contentTO, editorId, name, value, draft, action) {
                 if (control) {
                   control.updateEditedItem(value, datasource, index);
                 }
@@ -244,15 +250,16 @@
             }
           );
         },
-        failure: function() {}
+        failure: function () {}
       });
     },
 
     _editEmbedded(key, control, datasource, index) {
       const readonly = control.readonly;
       CStudioForms.communication.sendAndAwait(key, (message) => {
-        const contentType = CStudioForms.communication.parseDOM(message.payload).querySelector('content-type')
-          .innerHTML;
+        const contentType = CStudioForms.communication
+          .parseDOM(message.payload)
+          .querySelector('content-type').innerHTML;
         const auxParams = [];
 
         if (readonly) {
@@ -263,7 +270,7 @@
           null,
           true,
           {
-            success: function(contentTO, editorId, name, value) {
+            success: function (contentTO, editorId, name, value) {
               if (control) {
                 control.updateEditedItem(value, datasource, index);
               }
@@ -312,7 +319,7 @@
               <a class="cstudio-form-control-node-selector-add-container-item">${message}</a>
             </li>
           `);
-      $option.on('click', function() {
+      $option.on('click', function () {
         callback();
       });
       return $option;
@@ -331,11 +338,11 @@
         false,
         false,
         {
-          success: function(contentTO, editorId, name, value, draft, action) {
+          success: function (contentTO, editorId, name, value, draft, action) {
             control.newInsertItem(name, value, type);
             control._renderItems();
           },
-          failure: function() {}
+          failure: function () {}
         },
         [
           { name: 'childForm', value: 'true' },

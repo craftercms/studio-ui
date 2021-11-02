@@ -83,7 +83,7 @@ let refCount: LookupTable<number> = {};
 export function register(registration: ICERecordRegistration): number {
   // For consistency, set `fieldId` and `index` props
   // to null for records that don't include those values
-  const data = Object.assign({}, DEFAULT_RECORD_DATA, pluckProps(registration, 'modelId', 'fieldId', 'index'));
+  const data = Object.assign({}, DEFAULT_RECORD_DATA, pluckProps(registration, true, 'modelId', 'fieldId', 'index'));
 
   if (nullOrUndefined(data.modelId)) {
     throw new Error(

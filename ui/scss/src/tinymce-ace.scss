@@ -17,6 +17,19 @@
  */
 
 .tox-dialog {
+  &.acecode .tox-dialog__header {
+    padding: 5px 10px !important;
+    border-bottom: 1px solid #cccccc;
+  }
+  &.acecode .tox-dialog__body-content {
+    border: none;
+  }
+
+  .tox-dialog__footer {
+    display: none !important;
+    border-top: 1px solid #cccccc;
+  }
+
   .ace_editor {
     position: relative;
 
@@ -121,5 +134,41 @@
   &.acecode .tox-dialog__body-content [role='presentation'],
   .tox-dialog__body-content [role='presentation'] .ace_editor {
     height: 100%;
+  }
+}
+
+.acecode-inline {
+  border: 1px solid #ced4da;
+
+  .inline-container-header {
+    border-bottom: 1px solid #ced4da;
+    display: flex;
+    flex-direction: row-reverse;
+  }
+
+  .ace_editor {
+    position: relative;
+
+    * {
+      font: 12px / normal 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace !important;
+      font-family: monospace !important;
+      white-space: pre;
+    }
+  }
+
+  .acecode-inline-btn {
+    display: flex;
+    align-items: center;
+    background: none;
+    cursor: pointer;
+    border: none;
+    padding: 6px;
+    height: 24px;
+    box-sizing: content-box;
+
+    &:hover {
+      background-color: #e3e3e3;
+      border-color: #e3e3e3;
+    }
   }
 }

@@ -24,6 +24,7 @@ import * as elementRegistry from './classes/ElementRegistry';
 import * as iceRegistry from './classes/ICERegistry';
 import * as contentController from './classes/ContentController';
 import { fromTopic } from './utils/communicator';
+import queryString from 'query-string';
 
 export interface BaseCrafterConfig {
   baseUrl?: string;
@@ -75,8 +76,9 @@ export function fetchIsAuthoring(config?: BaseCrafterConfig): Promise<boolean> {
 
 export function initInContextEditing(props: GuestProps) {
   const guestProxyElement = document.createElement('craftercms-guest-proxy');
+  const { crafterCMSGuestDisabled } = queryString.parse(window.location.search);
   ReactDOM.render(
-    <Guest isAuthoring {...props}>
+    <Guest isAuthoring={crafterCMSGuestDisabled !== 'true'} {...props}>
       <GuestProxy />
     </Guest>,
     guestProxyElement
