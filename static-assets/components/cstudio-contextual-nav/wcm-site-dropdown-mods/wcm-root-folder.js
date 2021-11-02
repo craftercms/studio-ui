@@ -2964,9 +2964,9 @@
         var permsCallback = {
           success: function (response) {
             var isWrite = CStudioAuthoring.Service.isWrite(response.permissions);
+            Self.IS_WRITE = isWrite;
 
             if (isWrite) {
-              Self.IS_WRITE = true;
               this._self._renderContextMenu(target, p_aArgs, this.component, menuItems, oCurrentTextNode, true);
             } else {
               this._self._renderContextMenu(target, p_aArgs, this.component, menuItems, oCurrentTextNode, false);
