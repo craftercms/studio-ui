@@ -174,7 +174,8 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
     }
 
     if (this.browsePath) {
-      searchContext.path = this.browsePath.endsWith('/') ? `${this.browsePath}.+` : `${this.browsePath}/.+`;
+      const path = _self.processPathsForMacros(this.browsePath)
+      searchContext.path = path.endsWith('/') ? `${path}.+` : `${path}/.+`;
       searchContext.externalPath = true;
     }
 
