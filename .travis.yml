@@ -4,6 +4,9 @@ git:
   quiet: true
 language:
 - java
+- node_js
+node_js:
+- 16.13.0
 jdk:
 - openjdk11
 branches:
