@@ -271,7 +271,7 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
     }
 
     if (this.enableSearchExisting || this.defaultEnableSearchExisting) {
-      if (this.countOptions > 1) {
+      if (this.countOptions > 1 || onlyAppend) {
         addContainerEl.search = document.createElement('div');
         addContainerEl.appendChild(addContainerEl.search);
         YAHOO.util.Dom.addClass(addContainerEl.search, 'cstudio-form-controls-search-element');
