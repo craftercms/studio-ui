@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ElasticParams, Filter as FilterType } from '../../models/Search';
+import { Filter as FilterType } from '../../models/Search';
 import { defineMessages, useIntl } from 'react-intl';
 import Select from '@mui/material/Select';
 import clsx from 'clsx';
@@ -52,17 +52,17 @@ const messages = defineMessages({
 });
 
 interface SortOrderProps {
-  queryParams: Partial<ElasticParams>;
-
+  sortBy?: string;
+  sortOrder?: string;
   handleFilterChange(filter: FilterType, isFilter?: boolean): any;
 }
 
 export default function SiteSearchSortOrder(props: SortOrderProps) {
   const classes = useStyles({});
   const { formatMessage } = useIntl();
-  const { queryParams, handleFilterChange } = props;
-  // queryParams['sortBy'] === undefined: this means the current filter is the default === _score
-  const isRelevance = queryParams['sortBy'] === '_score' || queryParams['sortBy'] === undefined;
+  const { handleFilterChange, sortBy, sortOrder = 'desc' } = props;
+  // sortBy === undefined: this means the current filter is the default === _score
+  const isRelevance = sortBy === '_score' || sortBy === undefined;
   const options = isRelevance
     ? [
         {
@@ -86,7 +86,7 @@ export default function SiteSearchSortOrder(props: SortOrderProps) {
       ];
   return (
     <Select
-      value={queryParams['sortOrder'] || 'desc'}
+      value={sortOrder}
       className={clsx(classes.select, 'last')}
       onChange={(event) => handleFilterChange({ name: 'sortOrder', value: event.target.value })}
     >

@@ -49,7 +49,6 @@ interface FilterProps {
   facet: string;
   facetsLookupTable: LookupTable;
   checkedFilters: LookupTable;
-
   handleFilterChange(filter: FilterType, isFilter: boolean): any;
   handleClearClick(filter: string): void;
   setCheckedFilters(checkedFilters: object): any;

@@ -117,7 +117,7 @@
                               true,
                               {
                                 success: (response, editorId, name, value, draft, action) => {
-                                  window.top.postMessage({
+                                  window.parent.postMessage({
                                     ...response,
                                     type: 'EMBEDDED_LEGACY_FORM_SUCCESS',
                                     refresh: true,
@@ -127,7 +127,7 @@
                                 },
                                 failure: error => {
                                   error && console.error(error);
-                                  window.top.postMessage({
+                                  window.parent.postMessage({
                                     type: 'EMBEDDED_LEGACY_FORM_FAILURE',
                                     refresh: false,
                                     tab: type,
@@ -140,7 +140,7 @@
                                   if(response && response.close === false) {
                                     close = false;
                                   }
-                                  window.top.postMessage({
+                                  window.parent.postMessage({
                                     type: 'EMBEDDED_LEGACY_FORM_CLOSE',
                                     refresh: false,
                                     close: close,
@@ -165,17 +165,17 @@
                                       }
                                     });
                                   } else {
-                                    window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED' }, '*');
+                                    window.parent.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED' }, '*');
                                   }
                                 },
                                 pendingChanges: () => {
-                                  window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_PENDING_CHANGES', action: 'pendingChanges'}, '*');
+                                  window.parent.postMessage({ type: 'EMBEDDED_LEGACY_FORM_PENDING_CHANGES', action: 'pendingChanges'}, '*');
                                 },
                                 renderFailed(error) {
-                                  window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDER_FAILED', payload: { error } }, '*');
+                                  window.parent.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDER_FAILED', payload: { error } }, '*');
                                 },
                                 minimize: () => {
-                                  window.top.postMessage({
+                                  window.parent.postMessage({
                                     type: 'EMBEDDED_LEGACY_MINIMIZE_REQUEST'
                                   }, '*');
                                 },
@@ -188,7 +188,7 @@
                     },
                     failure: error => {
                       error && console.error(error);
-                      window.top.postMessage({
+                      window.parent.postMessage({
                         type: 'EMBEDDED_LEGACY_FORM_FAILURE',
                         refresh: false,
                         tab: type,
@@ -209,7 +209,7 @@
                   false,
                   {
                     success: (response, editorId, name, value, draft, action) => {
-                      window.top.postMessage({
+                      window.parent.postMessage({
                         ...response,
                         type: 'EMBEDDED_LEGACY_FORM_SAVE',
                         refresh: false,
@@ -221,14 +221,14 @@
                     },
                     failure: (error) => {
                       error && console.error(error);
-                      window.top.postMessage({
+                      window.parent.postMessage({
                         type: 'EMBEDDED_LEGACY_FORM_FAILURE',
                         refresh: false, tab: type, action: 'failure',
                         message: formatMessage(embeddedLegacyFormMessages.contentFormFailedToLoadErrorMessage)
                       }, '*');
                     },
                     cancelled: () => {
-                      window.top.postMessage({
+                      window.parent.postMessage({
                         close: true,
                         type: 'EMBEDDED_LEGACY_FORM_CLOSE',
                         refresh: false,
@@ -237,10 +237,10 @@
                       }, '*');
                     },
                     renderComplete: () => {
-                      window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED' }, '*');
+                      window.parent.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED' }, '*');
                     },
                     pendingChanges: () => {
-                      window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_PENDING_CHANGES', action: 'pendingChanges'}, '*');
+                      window.parent.postMessage({ type: 'EMBEDDED_LEGACY_FORM_PENDING_CHANGES', action: 'pendingChanges'}, '*');
                     },
                     id: type
                   },
@@ -259,25 +259,25 @@
         }
         CStudioAuthoring.Operations.openTemplateEditor(path, 'default', {
           success: function (action) {
-            window.top.postMessage({
+            window.parent.postMessage({
               type: 'LEGACY_CODE_EDITOR_SUCCESS',
               action
             }, '*');
           },
           cancelled: function () {
-            window.top.postMessage({
+            window.parent.postMessage({
               type: 'LEGACY_CODE_EDITOR_CLOSE',
               action: 'cancelled'
             }, '*');
           },
           pendingChanges: function() {
-            window.top.postMessage({
+            window.parent.postMessage({
               type: 'LEGACY_CODE_EDITOR_PENDING_CHANGES',
               action: 'pendingChanges'
             }, '*');
           },
           renderComplete: function () {
-            window.top.postMessage({
+            window.parent.postMessage({
               type: 'LEGACY_CODE_EDITOR_RENDERED',
               action: 'renderComplete'
             }, '*');
