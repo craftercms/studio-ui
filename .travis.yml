@@ -3,8 +3,8 @@ git:
   depth: 1
   quiet: true
 language:
-- java
 - node_js
+- java
 node_js:
 - 16.13.0
 jdk:
