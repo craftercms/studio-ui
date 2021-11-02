@@ -186,7 +186,7 @@
         if (this.contentTypes === '*') {
           searchContext.filters['content-type'] = Object.keys(
             CrafterCMSNext.system.store.getState().contentTypes.byId
-          ).filter((key) => key.startsWith('/component/'));
+          ).filter((key) => /^\/component(s?)\//.test(key));
         } else {
           searchContext.filters['content-type'] = this.contentTypes.split(',');
         }
