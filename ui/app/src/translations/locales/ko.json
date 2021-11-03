@@ -438,7 +438,7 @@
   "groupsAdmin.usereRemoved": "{username} successfully removed from {group}",
   "groupsAdmin.usersAdded": "User(s) successfully added.",
   "groupsGrid.emptyStateMessage": "No Groups Found",
-  "guestDetectionMessage": "미리보기 응용 프로그램과의 통신이 감지되지 않았습니다. Studio는 계속해서 연결을 다시 시도합니다.",
+  "guestDetectionMessage": "미리보기 응용 프로그램과의 통신이 중단되었습니다. Studio는 계속해서 연결을 다시 시도합니다.",
   "historyDialog.back.selectRevision": "Back to history list",
   "historyDialog.confirmRevertBody": "Are you sure you want to revert to {versionTitle}?",
   "historyDialog.confirmRevertTitle": "Revert confirmation",

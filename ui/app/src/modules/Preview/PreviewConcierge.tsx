@@ -842,7 +842,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         message={
           <FormattedMessage
             id="guestDetectionMessage"
-            defaultMessage="Communication with the preview application not detected. Studio will continue to retry the connection."
+            defaultMessage="Communication with the preview application was interrupted. Studio will continue to retry the connection."
           />
         }
         anchorOrigin={{
