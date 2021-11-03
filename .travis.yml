@@ -22,4 +22,4 @@ notifications:
     skip_join: true
   slack: craftersoftware:7YiSb41ZG5rfMgiAY7Qgprc7
 script:
-  - bash -c "mvn -q -Dmaven.javadoc.skip=true clean package"
+  - bash -c "mvn -X -Dmaven.javadoc.skip=true clean package"
