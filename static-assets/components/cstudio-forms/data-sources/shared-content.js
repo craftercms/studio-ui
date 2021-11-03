@@ -245,7 +245,7 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
     }
 
     if (this.enableSearchExisting || this.defaultEnableSearchExisting) {
-      if (this.countOptions > 1) {
+      if (this.countOptions > 1 || onlyAppend) {
         const search = $(
           `<li class="cstudio-form-controls-search-element"><a class="cstudio-form-control-node-selector-add-container-item">${CMgs.format(
             langBundle,
