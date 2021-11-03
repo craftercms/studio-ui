@@ -14,10 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { nou, retrieveProperty, setProperty } from './object';
+import { notNullOrUndefined, nou, retrieveProperty, setProperty } from './object';
 import { removeLastPiece } from './string';
 import ContentInstance from '../models/ContentInstance';
 import LookupTable from '../models/LookupTable';
+import { ModelHierarchyMap } from './content';
+import { forEach } from './array';
+import * as Model from '@craftercms/studio-guest/build_tsc/utils/model';
 
 const systemPropList = ['id', 'path', 'contentTypeId', 'dateCreated', 'dateModified', 'label'];
 
@@ -117,4 +120,28 @@ export function getModelIdFromInheritedField(
   return model.craftercms.sourceMap?.[fieldId]
     ? modelIdByPath[model.craftercms.sourceMap?.[fieldId]]
     : model.craftercms.id;
+}
+
+export function findParentModelId(
+  modelId: string,
+  hierarchyDescriptorLookup: ModelHierarchyMap,
+  models: LookupTable<ContentInstance>
+): string {
+  const parentId = forEach(
+    Object.entries(hierarchyDescriptorLookup),
+    ([id, children]) => {
+      if (notNullOrUndefined(children) && id !== modelId && children.children.includes(modelId)) {
+        return id;
+      }
+    },
+    null
+  );
+  return notNullOrUndefined(parentId)
+    ? // If it has a path, it is not embedded and hence the parent
+      // Otherwise, need to keep looking.
+      notNullOrUndefined(Model.prop(models[parentId], 'path'))
+      ? parentId
+      : findParentModelId(parentId, hierarchyDescriptorLookup, models)
+    : // No parent found for this model
+      null;
 }

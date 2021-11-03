@@ -160,9 +160,11 @@ export function PreviewAddressBar(props: AddressBarProps) {
       <PreviewBackButton />
       <PreviewForwardButton />
       <Tooltip title={<FormattedMessage id="previewAddressBar.reloadButtonLabel" defaultMessage="Reload this page" />}>
-        <IconButton onClick={onRefresh} size="large" disabled={disabled}>
-          <RefreshRounded />
-        </IconButton>
+        <div>
+          <IconButton onClick={onRefresh} size="large" disabled={disabled}>
+            <RefreshRounded />
+          </IconButton>
+        </div>
       </Tooltip>
       <Paper
         variant={focus ? 'elevation' : 'outlined'}
