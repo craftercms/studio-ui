@@ -1,14 +1,14 @@
-version: ~> 1.0
+version: "~> 1.0"
+dist: focal
+language: java
 git:
   depth: 1
   quiet: true
-language:
-  - node_js
-  - java
-node_js:
-  - 16.13.0
 jdk:
-  - openjdk11
+- openjdk11
+cache:
+  directories:
+  - "$HOME/.m2"
 branches:
   only:
   - develop
@@ -21,5 +21,13 @@ notifications:
     use_notice: true
     skip_join: true
   slack: craftersoftware:7YiSb41ZG5rfMgiAY7Qgprc7
+install: skip
 script:
-  - bash -c "mvn -q -Dmaven.javadoc.skip=true clean package"
+- wget -q https://raw.githubusercontent.com/craftercms/craftercms/develop/.travis-prep-jdk.sh
+- chmod +x .travis-prep-jdk.sh
+- "./.travis-prep-jdk.sh"
+- export JAVA_HOME=$HOME/jdk
+- export PATH=$HOME/jdk/bin:$PATH
+- which java
+- java -version
+- mvn -q -Dmaven.javadoc.skip=true clean package
