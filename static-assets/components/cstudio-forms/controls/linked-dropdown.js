@@ -16,7 +16,7 @@
 
 CStudioForms.Controls.LinkedDropdown =
   CStudioForms.Controls.LinkedDropdown ||
-  function(id, form, owner, properties, constraints, readonly) {
+  function (id, form, owner, properties, constraints, readonly) {
     this.owner = owner;
     this.owner.registerField(this);
     this.errors = [];
@@ -37,11 +37,11 @@ CStudioForms.Controls.LinkedDropdown =
   };
 
 YAHOO.extend(CStudioForms.Controls.LinkedDropdown, CStudioForms.CStudioFormField, {
-  getLabel: function() {
+  getLabel: function () {
     return CMgs.format(langBundle, 'linkedDropdown');
   },
 
-  _onChange: function(evt, obj) {
+  _onChange: function (evt, obj) {
     if (obj.inputEl) obj.value = obj.inputEl.value;
 
     if (obj.required) {
@@ -60,12 +60,12 @@ YAHOO.extend(CStudioForms.Controls.LinkedDropdown, CStudioForms.CStudioFormField
     obj.form.updateModel(obj.id, obj.getValue());
   },
 
-  _onChangeVal: function(evt, obj) {
+  _onChangeVal: function (evt, obj) {
     obj.edited = true;
     obj._onChange(evt, obj);
   },
 
-  onDatasourceLoaded: function(data) {
+  onDatasourceLoaded: function (data) {
     if (this.datasourceName === data.name && !this.datasource) {
       var datasource = this.form.datasourceMap[this.datasourceName];
       this.datasource = datasource;
@@ -73,7 +73,7 @@ YAHOO.extend(CStudioForms.Controls.LinkedDropdown, CStudioForms.CStudioFormField
     }
   },
 
-  render: function(config, containerEl) {
+  render: function (config, containerEl) {
     // we need to make the general layout of a control inherit from common
     // you should be able to override it -- but most of the time it wil be the same
     containerEl.id = this.id;
@@ -104,7 +104,7 @@ YAHOO.extend(CStudioForms.Controls.LinkedDropdown, CStudioForms.CStudioFormField
     var keyValueList = null;
 
     var cb = {
-      success: function(list) {
+      success: function (list) {
         keyValueList = list;
         var titleEl = document.createElement('span');
 
@@ -152,7 +152,7 @@ YAHOO.extend(CStudioForms.Controls.LinkedDropdown, CStudioForms.CStudioFormField
         YAHOO.util.Event.on(
           inputEl,
           'focus',
-          function(evt, context) {
+          function (evt, context) {
             context.form.setFocusedField(context);
           },
           _self
@@ -186,22 +186,22 @@ YAHOO.extend(CStudioForms.Controls.LinkedDropdown, CStudioForms.CStudioFormField
     }
   },
 
-  getValue: function() {
+  getValue: function () {
     return this.value;
   },
 
-  setValue: function(value) {
+  setValue: function (value) {
     this.value = value;
     if (this.inputEl) this.inputEl.value = value;
     this._onChange(null, this);
     this.edited = false;
   },
 
-  getName: function() {
+  getName: function () {
     return 'linked-dropdown';
   },
 
-  getSupportedProperties: function() {
+  getSupportedProperties: function () {
     return [
       { label: CMgs.format(langBundle, 'datasource'), name: 'datasource', type: 'datasource:item' },
       { label: CMgs.format(langBundle, 'allowEmptyValue'), name: 'emptyvalue', type: 'boolean' },
@@ -210,7 +210,7 @@ YAHOO.extend(CStudioForms.Controls.LinkedDropdown, CStudioForms.CStudioFormField
     ];
   },
 
-  getSupportedConstraints: function() {
+  getSupportedConstraints: function () {
     return [{ label: CMgs.format(langBundle, 'required'), name: 'required', type: 'boolean' }];
   }
 });

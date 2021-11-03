@@ -20,7 +20,7 @@
  * @author: Russ Danner
  * @date: 4.26.2011
  **/
-(function() {
+(function () {
   CStudioAuthoring.register('TemplateHolder.InContextEdit', {
     ROOT_ROW: [''].join(''),
     SUB_ROW: [''].join(''),

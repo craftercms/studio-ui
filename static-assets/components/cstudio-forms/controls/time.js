@@ -16,7 +16,7 @@
 
 CStudioForms.Controls.Time =
   CStudioForms.Controls.Time ||
-  function(id, form, owner, properties, constraints, readonly) {
+  function (id, form, owner, properties, constraints, readonly) {
     this.owner = owner;
     this.owner.registerField(this);
     this.errors = [];
@@ -152,18 +152,18 @@ CStudioForms.Controls.Time =
   };
 
 YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
-  formatTime: function(time) {
+  formatTime: function (time) {
     const timeMomentObj = moment(time, 'hh:mm:ss a'); // Format used by control
     const format = this.hour12 ? 'hh:mm:ss a' : 'HH:mm:ss';
 
     return timeMomentObj.format(format);
   },
 
-  getLabel: function() {
+  getLabel: function () {
     return CMgs.format(langBundle, 'time');
   },
 
-  validate: function(evt, obj) {
+  validate: function (evt, obj) {
     var timeValue = obj.timeEl.dataset.value,
       valid;
 
@@ -183,11 +183,11 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
     return valid;
   },
 
-  _onChange: function(evt, obj) {
+  _onChange: function (evt, obj) {
     obj.updateTime();
   },
 
-  _onChangeVal: function(evt, obj) {
+  _onChangeVal: function (evt, obj) {
     obj.edited = true;
     if (obj._onChange) {
       obj._onChange(evt, obj);
@@ -196,7 +196,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
 
   // Get the UTC date representation for what is currently in the UI fields (date/time)
   // Returns a date/time value in a string (see getConvertFormat for value format)
-  getFieldValue: function() {
+  getFieldValue: function () {
     var dateValue = new Date();
     var day = dateValue.getDate();
     var monthIndex = dateValue.getMonth() + 1;
@@ -234,7 +234,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
   },
 
   // Get a date/time string to use with the time converting service
-  getDateTimeString: function(date, time) {
+  getDateTimeString: function (date, time) {
     // There should always be a time value or else, we risk calculating the date value incorrectly; but, just in case ...
     var dateTimeStr = date ? date + (time ? ' ' + time : ' 00:00:00') : '' + time;
     return dateTimeStr;
@@ -246,7 +246,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
   // we want to store the UTC representation of a date before the form closes. The form engine offers the possibility to
   // register "beforeSave" callbacks, but these are assumed to be synchronous (forms-engine.js, onBeforeSave method)
 
-  convertDateTime: function(date, time, newTimeZone, toUTC, callback) {
+  convertDateTime: function (date, time, newTimeZone, toUTC, callback) {
     var convertString = this.getDateTimeString(date, time.replace(/\./g, ''));
     var newDate;
 
@@ -266,7 +266,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
   },
 
   // set the timestamp and format for the output
-  setTimeStamp: function(timeStamp, timeFormat) {
+  setTimeStamp: function (timeStamp, timeFormat) {
     return (
       this._padAZero(timeStamp.getHours()) +
       ':' +
@@ -278,14 +278,14 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
     );
   },
 
-  updateTime: function(evt, param) {
+  updateTime: function (evt, param) {
     // patterns to match the time format
     var timeParsePatterns = [
       // Now
       {
         re: /^now/i,
         example: new Array('now'),
-        handler: function() {
+        handler: function () {
           return new Date();
         }
       },
@@ -293,7 +293,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
       {
         re: /(\d{1,2}):(\d{1,2}):(\d{1,2})(?:p| p)/,
         example: new Array('9:55:00 pm', '12:55:00 pm', '9:55:00 p', '11:5:10pm', '9:5:1p'),
-        handler: function(bits) {
+        handler: function (bits) {
           var d = new Date();
           var h = parseInt(bits[1], 10);
           d.setHours(h);
@@ -306,7 +306,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
       {
         re: /(\d{1,2}):(\d{1,2})(?:p| p)/,
         example: new Array('9:55 pm', '12:55 pm', '9:55 p', '11:5pm', '9:5p'),
-        handler: function(bits) {
+        handler: function (bits) {
           var d = new Date();
           var h = parseInt(bits[1], 10);
           d.setHours(h);
@@ -319,7 +319,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
       {
         re: /(\d{1,2})(?:p| p)/,
         example: new Array('9 pm', '12 pm', '9 p', '11pm', '9p'),
-        handler: function(bits) {
+        handler: function (bits) {
           var d = new Date();
           var h = parseInt(bits[1], 10);
           d.setHours(h);
@@ -332,7 +332,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
       {
         re: /(\d{1,2}):(\d{1,2}):(\d{1,2})/,
         example: new Array('9:55:00', '19:55:00', '19:5:10', '9:5:1', '9:55:00 am', '11:55:00a'),
-        handler: function(bits) {
+        handler: function (bits) {
           var d = new Date();
           var h = parseInt(bits[1], 10);
           d.setHours(h);
@@ -345,7 +345,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
       {
         re: /(\d{1,2}):(\d{1,2})/,
         example: new Array('9:55', '19:55', '19:5', '9:55 am', '11:55a'),
-        handler: function(bits) {
+        handler: function (bits) {
           var d = new Date();
           var h = parseInt(bits[1], 10);
           d.setHours(h);
@@ -358,7 +358,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
       {
         re: /(\d{1,6})/,
         example: new Array('9', '9a', '9am', '19', '1950', '195510', '0955'),
-        handler: function(bits) {
+        handler: function (bits) {
           var d = new Date();
           var h = bits[1].substring(0, 2);
           var m = parseInt(bits[1].substring(2, 4), 10);
@@ -416,7 +416,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
           [
             {
               text: 'OK',
-              handler: function() {
+              handler: function () {
                 this.hide();
                 self_.timeEl.value = '';
                 self_.timeEl.dataset.value = '';
@@ -446,7 +446,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
             [
               {
                 text: 'OK',
-                handler: function() {
+                handler: function () {
                   this.hide();
                   self_.timeEl.focus();
                   self_.setDateTime('');
@@ -470,7 +470,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
   /**
    * padd a zero if single digit found
    */
-  _padAZero: function(s) {
+  _padAZero: function (s) {
     s = s.toString();
     return s.length == 1 ? '0' + s : s;
   },
@@ -480,10 +480,10 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
    * that increse the input time
    */
 
-  textFieldTimeIncrementHelper: function(triggerEl, targetEl, event, keyCode) {
+  textFieldTimeIncrementHelper: function (triggerEl, targetEl, event, keyCode) {
     var self = this;
 
-    var incrementHandler = function(type, args) {
+    var incrementHandler = function (type, args) {
       var timePicker = YDom.get(targetEl),
         timeValue = timePicker.dataset.value,
         cursorPosition;
@@ -549,10 +549,10 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
    * create timepicker decrement and decrement helper
    * that decrese the input time
    */
-  textFieldTimeDecrementHelper: function(triggerEl, targetEl, event, keyCode) {
+  textFieldTimeDecrementHelper: function (triggerEl, targetEl, event, keyCode) {
     var self = this;
 
-    var decrementHandler = function(type, args) {
+    var decrementHandler = function (type, args) {
       var timePicker = YDom.get(targetEl),
         timeValue = timePicker.dataset.value,
         cursorPosition;
@@ -624,7 +624,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
    * @param containerEl : DOM element that will contain the link
    * @param label : Text value of the link
    */
-  _renderDateLink: function(containerEl, label) {
+  _renderDateLink: function (containerEl, label) {
     var dl = document.createElement('a');
 
     dl.setAttribute('alt', '');
@@ -635,7 +635,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
     YAHOO.util.Event.on(
       dl,
       'click',
-      function(e, context) {
+      function (e, context) {
         YAHOO.util.Event.preventDefault(e);
         context.form.setFocusedField(context);
 
@@ -644,14 +644,14 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
           cb;
 
         cb = {
-          success: function(response) {
+          success: function (response) {
             var timezoneNow = response;
 
             timezoneNowObj = _self.getFormattedDateTimeObject(timezoneNow, true);
             _self.populateDateTime(timezoneNowObj, _self.timeEl);
             _self.validate(null, _self, true);
           },
-          failure: function(response) {
+          failure: function (response) {
             console.log('Unable to convert current date/time');
           }
         };
@@ -664,7 +664,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
     containerEl.appendChild(dl);
   },
 
-  render: function(config, containerEl, lastTwo) {
+  render: function (config, containerEl, lastTwo) {
     // we need to make the general layout of a control inherit from common
     // you should be able to override it -- but most of the time it wil be the same
     containerEl.id = this.id;
@@ -672,7 +672,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
     var langBundle = CMgs.getBundle('contentTypes', CStudioAuthoringContext.lang);
 
     var beforeSaveCb = {
-      beforeSave: function(paramObj) {
+      beforeSave: function (paramObj) {
         var _self = this.context;
         var val = _self.getFieldValue();
         if (typeof val == 'string') {
@@ -777,7 +777,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
       YAHOO.util.Event.on(
         incrementControlEl,
         'click',
-        function() {
+        function () {
           self.form.setFocusedField(self);
         },
         this
@@ -790,7 +790,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
       YAHOO.util.Event.on(
         decrementControlEl,
         'click',
-        function() {
+        function () {
           self.form.setFocusedField(self);
         },
         this
@@ -813,7 +813,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
     YAHOO.util.Event.addListener(
       timeEl,
       'click',
-      function(e) {
+      function (e) {
         var caretPos = this.saveCaretPosition(timeEl);
         self.form.setFocusedField(self);
         timeEl.setAttribute('data-cursor', caretPos);
@@ -827,7 +827,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
     YAHOO.util.Event.addListener(
       timeEl,
       'keyup',
-      function(e) {
+      function (e) {
         var caretPos = this.saveCaretPosition(timeEl);
         timeEl.setAttribute('data-cursor', caretPos);
       },
@@ -847,7 +847,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
       YAHOO.util.Event.addListener(
         timezoneEl,
         'change',
-        function(e) {
+        function (e) {
           var value = this.getFieldValue();
 
           this.timezone = this.getSelectedTimezone(timezoneEl);
@@ -885,7 +885,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
       YAHOO.util.Event.addListener(
         clearDateEl,
         'click',
-        function(e) {
+        function (e) {
           YAHOO.util.Event.preventDefault(e);
           self.form.setFocusedField(self);
           this._onChangeVal(null, this);
@@ -932,7 +932,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
     });
   },
 
-  addTimezoneOptions: function(selectEl) {
+  addTimezoneOptions: function (selectEl) {
     for (var i = 0; i < this.timezones.length; i++) {
       var timezone = this.timezones[i];
 
@@ -944,7 +944,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
     }
   },
 
-  saveCaretPosition: function(inputEl) {
+  saveCaretPosition: function (inputEl) {
     var iCaretPos = 0;
 
     // IE Support
@@ -967,12 +967,12 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
     return iCaretPos;
   },
 
-  getValue: function() {
+  getValue: function () {
     return CStudioAuthoring.Utils.formatDateToISO(this.value);
   },
 
   // check this
-  getDateTimeObject: function(timeObj) {
+  getDateTimeObject: function (timeObj) {
     return {
       date: timeObj.getUTCMonth() + 1 + '/' + timeObj.getUTCDate() + '/' + timeObj.getUTCFullYear(),
       time: timeObj.getUTCHours() + ':' + timeObj.getUTCMinutes() + ':' + timeObj.getUTCSeconds()
@@ -980,7 +980,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
   },
 
   // Parse a date/time string (of the form: "MM/dd/yyyy HH:mm:ss") and return an object with valid date and time values
-  getFormattedDateTimeObject: function(datetimeStr, includeDate) {
+  getFormattedDateTimeObject: function (datetimeStr, includeDate) {
     var values, timeVals, hh, mi, ss, a, h, hpad, dateObj;
 
     if (typeof datetimeStr == 'string' && datetimeStr != '') {
@@ -1010,7 +1010,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
     return dateObj;
   },
 
-  displayMessage: function(msgStr, msgType, msgClass) {
+  displayMessage: function (msgStr, msgType, msgClass) {
     var msgContainer = YAHOO.util.Selector.query('.date-time-container', this.containerEl, true),
       msgExists = YAHOO.util.Selector.query('.' + msgType, msgContainer, true),
       warningEl = document.createElement('div');
@@ -1022,7 +1022,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
     }
   },
 
-  removeMessage: function(msgType) {
+  removeMessage: function (msgType) {
     var msgContainer = YAHOO.util.Selector.query('.date-time-container', this.containerEl, true),
       msgExists = YAHOO.util.Selector.query('.' + msgType, msgContainer, true);
 
@@ -1032,7 +1032,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
   },
 
   // Populates the date/time fields using the information from a dateObj
-  populateDateTime: function(dateObj, timeEl) {
+  populateDateTime: function (dateObj, timeEl) {
     if (dateObj.time) {
       timeEl.value = this.formatTime(dateObj.time);
       timeEl.dataset.value = dateObj.time;
@@ -1042,7 +1042,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
     }
   },
 
-  routeDateTimePopulation: function(value) {
+  routeDateTimePopulation: function (value) {
     var _self = this,
       nowObj = this.getDateTimeObject(_self.startDateTimeObj),
       dateVal,
@@ -1058,7 +1058,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
     if (value != '' && value != '_not-set') {
       // If a value already exists for the date/time field, then convert this value (in UTC) to the site's timezone
       cb = {
-        success: function(response) {
+        success: function (response) {
           // Set date and time values in the UI
           var timezoneTime = response,
             tzDateTimeObj = _self.getFormattedDateTimeObject(timezoneTime, true);
@@ -1080,7 +1080,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
           // in case the fields are required
           _self.validate(null, _self);
         },
-        failure: function(response) {
+        failure: function (response) {
           console.log('Unable to convert stored date/time values');
           if (_self.timeEl) {
             _self.timeEl.value = '';
@@ -1114,7 +1114,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
     }
   },
 
-  doDatePopulateExpression: function(currentDate) {
+  doDatePopulateExpression: function (currentDate) {
     var modifier = 1;
 
     if (this.checkPopulateDateExpisValid()) {
@@ -1134,7 +1134,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
     return currentDate;
   },
 
-  checkPopulateDateExpisValid: function() {
+  checkPopulateDateExpisValid: function () {
     if (this.populateDateExp) {
       if (this.populateDateExp.replace(/ /g, '').match(/(now)?(\+|\-)\d+((hours)|(minutes))/gi)) {
         return true;
@@ -1143,13 +1143,13 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
     return false;
   },
 
-  getCurrentDateTime: function(now, configTimezone, callback) {
+  getCurrentDateTime: function (now, configTimezone, callback) {
     var dtObj = this.getDateTimeObject(now);
 
     this.convertDateTime(dtObj.date, dtObj.time, configTimezone, false, callback);
   },
 
-  setStaticTimezone: function(value, timezone) {
+  setStaticTimezone: function (value, timezone) {
     var timezoneElt = document.getElementById(this.id + '-timezoneCode');
     if (timezoneElt) {
       var timezoneStr = timezone.substr(0, 3);
@@ -1158,20 +1158,20 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
     this._setValue(value, timezone);
   },
 
-  _setValue: function(value, configTimezone) {
+  _setValue: function (value, configTimezone) {
     var storedVal = CStudioAuthoring.Utils.formatDateToStudio(value),
       nowObj = new Date(),
       cgTz = configTimezone,
       _self = this;
 
     var cb = {
-      success: function(response) {
+      success: function (response) {
         var timezoneNow = response;
         _self.startTzDateTimeStr = timezoneNow;
 
         _self.routeDateTimePopulation(storedVal);
       },
-      failure: function(response) {
+      failure: function (response) {
         _self.startTzDateTimeStr = '';
         console.log('Unable to convert current date/time');
       }
@@ -1180,7 +1180,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
     this.getCurrentDateTime(nowObj, configTimezone, cb);
   },
 
-  setValue: function(value) {
+  setValue: function (value) {
     this.edited = false;
     this.timezone = this.form.getModelValue(this.timezoneId);
 
@@ -1197,12 +1197,12 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
         CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/site-config.xml', {
           context: this,
 
-          success: function(config) {
+          success: function (config) {
             this.context.timezone = config.locale?.dateTimeFormatOptions?.timeZone ?? this.context.defaultTimezone;
             this.context.setStaticTimezone(value, this.context.timezone);
           },
 
-          failure: function() {
+          failure: function () {
             this.context.timezone = this.context.defaultTimezone;
           }
         });
@@ -1212,7 +1212,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
     }
   },
 
-  getSelectedTimezone: function(selectEl) {
+  getSelectedTimezone: function (selectEl) {
     if (!selectEl) {
       selectEl = YDom.get(this.id + '-timezoneCode');
     }
@@ -1220,7 +1220,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
     return selectEl.options[selectEl.selectedIndex].value;
   },
 
-  setSelectedTimezone: function(timezone, selectEl) {
+  setSelectedTimezone: function (timezone, selectEl) {
     if (!selectEl) {
       selectEl = YDom.get(this.id + '-timezoneCode');
     }
@@ -1233,7 +1233,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
     }
   },
 
-  setDateTime: function(value) {
+  setDateTime: function (value) {
     var dateTimePath = this.form.model,
       dateTime,
       studioFormat,
@@ -1272,17 +1272,17 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
     this.form.updateModel(this.timezoneId, this.timezone);
   },
 
-  getDescendantProp: function(obj, desc) {
+  getDescendantProp: function (obj, desc) {
     var arr = desc.split('|');
     while (arr.length && (obj = obj[arr.shift()]));
     return obj;
   },
 
-  getName: function() {
+  getName: function () {
     return 'time';
   },
 
-  getSupportedProperties: function() {
+  getSupportedProperties: function () {
     return [
       {
         label: CMgs.format(langBundle, 'showClear'),
@@ -1324,11 +1324,11 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
     ];
   },
 
-  getSupportedConstraints: function() {
+  getSupportedConstraints: function () {
     return [{ label: CMgs.format(langBundle, 'required'), name: 'required', type: 'boolean' }];
   },
 
-  getSupportedPostFixes: function() {
+  getSupportedPostFixes: function () {
     return this.supportedPostFixes;
   }
 });

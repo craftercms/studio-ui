@@ -16,7 +16,7 @@
 
 CStudioForms.Datasources.VideoS3Repo =
   CStudioForms.Datasources.VideoS3Repo ||
-  function(id, form, properties, constraints) {
+  function (id, form, properties, constraints) {
     this.id = id;
     this.form = form;
     this.properties = properties;
@@ -35,11 +35,11 @@ CStudioForms.Datasources.VideoS3Repo =
   };
 
 YAHOO.extend(CStudioForms.Datasources.VideoS3Repo, CStudioForms.CStudioFormDatasource, {
-  insertVideoAction: function(insertCb) {
+  insertVideoAction: function (insertCb) {
     var _self = this;
 
     var browseCb = {
-      success: function(searchId, selectedTOs) {
+      success: function (searchId, selectedTOs) {
         for (var i = 0; i < selectedTOs.length; i++) {
           var item = selectedTOs[i];
           var uri = item.browserUri;
@@ -56,7 +56,7 @@ YAHOO.extend(CStudioForms.Datasources.VideoS3Repo, CStudioForms.CStudioFormDatas
           insertCb.success(videoData);
         }
       },
-      failure: function() {}
+      failure: function () {}
     };
 
     CStudioAuthoring.Operations.openS3Browse(
@@ -69,26 +69,26 @@ YAHOO.extend(CStudioForms.Datasources.VideoS3Repo, CStudioForms.CStudioFormDatas
     );
   },
 
-  getLabel: function() {
+  getLabel: function () {
     return CMgs.format(langBundle, 'videoS3Repository');
   },
 
-  getInterface: function() {
+  getInterface: function () {
     return 'video';
   },
 
-  getName: function() {
+  getName: function () {
     return 'video-S3-repo';
   },
 
-  getSupportedProperties: function() {
+  getSupportedProperties: function () {
     return [
       { label: CMgs.format(langBundle, 'repositoryPath'), name: 'path', type: 'string' },
       { label: CMgs.format(langBundle, 'profileId'), name: 'profileId', type: 'string' }
     ];
   },
 
-  getSupportedConstraints: function() {
+  getSupportedConstraints: function () {
     return [];
   }
 });

@@ -14,14 +14,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-(function() {
+(function () {
   const i18n = CrafterCMSNext.i18n,
     formatMessage = i18n.intl.formatMessage,
     checkboxGroupControlMessages = i18n.messages.checkboxGroupControlMessages;
 
   CStudioForms.Controls.CheckBoxGroup =
     CStudioForms.Controls.CheckBoxGroup ||
-    function(id, form, owner, properties, constraints, readonly) {
+    function (id, form, owner, properties, constraints, readonly) {
       this.owner = owner;
       this.owner.registerField(this);
       this.errors = [];
@@ -46,11 +46,11 @@
     };
 
   YAHOO.extend(CStudioForms.Controls.CheckBoxGroup, CStudioForms.CStudioFormField, {
-    getLabel: function() {
+    getLabel: function () {
       return CMgs.format(langBundle, 'groupedCheckboxes');
     },
 
-    getRequirementCount: function() {
+    getRequirementCount: function () {
       var count = 0;
 
       if (this.minSize > 0) {
@@ -60,7 +60,7 @@
       return count;
     },
 
-    validate: function() {
+    validate: function () {
       if (this.minSize > 0) {
         if (this.value.length < this.minSize) {
           this.setError('minCount', '# items are required');
@@ -75,11 +75,11 @@
       this.owner.notifyValidation();
     },
 
-    _onChangeVal: function(evt, obj) {
+    _onChangeVal: function (evt, obj) {
       obj.edited = true;
     },
 
-    onDatasourceLoaded: function(data) {
+    onDatasourceLoaded: function (data) {
       if (this.datasourceName === data.name && !this.datasource) {
         var datasource = this.form.datasourceMap[this.datasourceName];
         this.datasource = datasource;
@@ -91,7 +91,7 @@
       }
     },
 
-    render: function(config, containerEl, lastTwo, isValueSet) {
+    render: function (config, containerEl, lastTwo, isValueSet) {
       containerEl.id = this.id;
       this.containerEl = containerEl;
       this.config = config;
@@ -123,7 +123,7 @@
 
         if (prop.name === 'listDirection') {
           var value = JSON.parse(prop.value);
-          value.forEach(function(opt) {
+          value.forEach(function (opt) {
             if (opt.selected) {
               val = opt.value;
             }
@@ -142,7 +142,7 @@
       }
 
       var cb = {
-        success: function(list) {
+        success: function (list) {
           var keyValueList = list,
             // setValue will provide an array with the values that were checked last time the form was saved (datasource A).
             // If someone decides to tie this control to a different datasource (datasource B): none, some or all of values
@@ -197,7 +197,7 @@
             YAHOO.util.Event.on(
               inputEl,
               'click',
-              function(evt, context) {
+              function (evt, context) {
                 context.form.setFocusedField(context);
               },
               _self
@@ -274,7 +274,7 @@
       }
     },
 
-    renderItem: function(item, groupEl, newValue) {
+    renderItem: function (item, groupEl, newValue) {
       let rowEl, labelEl, textEl, inputEl;
       const _self = this;
 
@@ -319,7 +319,7 @@
       YAHOO.util.Event.on(
         inputEl,
         'click',
-        function(evt, context) {
+        function (evt, context) {
           context.form.setFocusedField(context);
           _self.checkStates(this);
         },
@@ -334,7 +334,7 @@
       groupEl.appendChild(rowEl);
     },
 
-    toggleAll: function(evt, el) {
+    toggleAll: function (evt, el) {
       var ancestor = YAHOO.util.Dom.getAncestorByClassName(el, 'checkbox-group'),
         checkboxes = YAHOO.util.Selector.query('.checkbox input[type="checkbox"]', ancestor),
         _self = this;
@@ -343,7 +343,7 @@
       this.value.length = 0;
       if (el.checked) {
         // select all
-        checkboxes.forEach(function(el) {
+        checkboxes.forEach(function (el) {
           var valObj = {};
 
           el.checked = true;
@@ -356,7 +356,7 @@
         });
       } else {
         // unselect all
-        checkboxes.forEach(function(el) {
+        checkboxes.forEach(function (el) {
           el.checked = false;
         });
       }
@@ -366,7 +366,7 @@
       this._onChangeVal(evt, this);
     },
 
-    checkStates: function(el) {
+    checkStates: function (el) {
       var ancestor = YAHOO.util.Dom.getAncestorByClassName(el, 'checkbox-group'),
         checkboxes = YAHOO.util.Selector.query('.checkbox input[type="checkbox"]', ancestor),
         state = el.checked,
@@ -374,7 +374,7 @@
         checkAllEl = YAHOO.util.Selector.query('.checkbox.select-all input[type="checkbox"]', ancestor)[0];
 
       if (checkAllEl) {
-        checkboxes.forEach(function(el) {
+        checkboxes.forEach(function (el) {
           var isSelectAll = el.parentElement.className.indexOf('select-all') != -1;
 
           if (!isSelectAll && el.checked != state) {
@@ -390,7 +390,7 @@
       }
     },
 
-    onChange: function(evt, el) {
+    onChange: function (evt, el) {
       var checked = el.checked;
 
       if (checked) {
@@ -404,7 +404,7 @@
       this._onChangeVal(evt, this);
     },
 
-    isSelected: function(key) {
+    isSelected: function (key) {
       var selected = false;
       var values = this.getValue();
 
@@ -417,7 +417,7 @@
       return selected;
     },
 
-    getIndex: function(key) {
+    getIndex: function (key) {
       var index = -1;
       var values = this.getValue();
 
@@ -431,7 +431,7 @@
       return index;
     },
 
-    selectItem: function(key, value) {
+    selectItem: function (key, value) {
       var valObj = {};
 
       if (!this.isSelected(key)) {
@@ -442,7 +442,7 @@
       }
     },
 
-    unselectItem: function(key) {
+    unselectItem: function (key) {
       var index = this.getIndex(key);
 
       if (index != -1) {
@@ -450,11 +450,11 @@
       }
     },
 
-    getValue: function() {
+    getValue: function () {
       return this.value;
     },
 
-    updateDataType: function(valObj) {
+    updateDataType: function (valObj) {
       if (this.dataType) {
         for (var prop in valObj) {
           if (prop.match(/value/)) {
@@ -471,7 +471,7 @@
       }
     },
 
-    setValue: function(value) {
+    setValue: function (value) {
       if (value === '') {
         value = [];
       } else if (typeof value === 'string') {
@@ -488,7 +488,7 @@
       this.hiddenEl.value = this.valueToString();
     },
 
-    valueToString: function() {
+    valueToString: function () {
       var strValue = '[';
       var values = this.getValue();
       var item = null;
@@ -506,11 +506,11 @@
       return strValue;
     },
 
-    getName: function() {
+    getName: function () {
       return 'checkbox-group';
     },
 
-    getSupportedProperties: function() {
+    getSupportedProperties: function () {
       return [
         {
           label: formatMessage(checkboxGroupControlMessages.datasource),
@@ -547,11 +547,11 @@
       ];
     },
 
-    getSupportedConstraints: function() {
+    getSupportedConstraints: function () {
       return [{ label: CMgs.format(langBundle, 'minimumSelection'), name: 'minSize', type: 'int' }];
     },
 
-    getSupportedPostFixes: function() {
+    getSupportedPostFixes: function () {
       return this.supportedPostFixes;
     }
   });

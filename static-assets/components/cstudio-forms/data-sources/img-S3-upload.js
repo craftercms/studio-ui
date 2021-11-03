@@ -16,7 +16,7 @@
 
 CStudioForms.Datasources.ImgS3Upload =
   CStudioForms.Datasources.ImgS3Upload ||
-  function(id, form, properties, constraints) {
+  function (id, form, properties, constraints) {
     this.id = id;
     this.form = form;
     this.properties = properties;
@@ -40,7 +40,7 @@ YAHOO.extend(CStudioForms.Datasources.ImgS3Upload, CStudioForms.CStudioFormDatas
   /**
    * action called when user clicks insert file
    */
-  insertImageAction: function(insertCb, file) {
+  insertImageAction: function (insertCb, file) {
     (this._self = this), (me = this);
 
     var path = this._self.repoPath;
@@ -56,7 +56,7 @@ YAHOO.extend(CStudioForms.Datasources.ImgS3Upload, CStudioForms.CStudioFormDatas
     }
 
     var callback = {
-      success: function(fileData) {
+      success: function (fileData) {
         var uri = fileData.url ? fileData.url : fileData;
         var fileExtension = uri.split('.').pop();
 
@@ -74,7 +74,7 @@ YAHOO.extend(CStudioForms.Datasources.ImgS3Upload, CStudioForms.CStudioFormDatas
         insertCb.success(imageData);
       },
 
-      failure: function() {
+      failure: function () {
         insertCb.failure('An error occurred while uploading the image.');
       },
 
@@ -99,26 +99,26 @@ YAHOO.extend(CStudioForms.Datasources.ImgS3Upload, CStudioForms.CStudioFormDatas
     }
   },
 
-  getLabel: function() {
+  getLabel: function () {
     return CMgs.format(langBundle, 'S3UploadImage');
   },
 
-  getInterface: function() {
+  getInterface: function () {
     return 'image';
   },
 
-  getName: function() {
+  getName: function () {
     return 'img-S3-upload';
   },
 
-  getSupportedProperties: function() {
+  getSupportedProperties: function () {
     return [
       { label: CMgs.format(langBundle, 'repositoryPath'), name: 'repoPath', type: 'string' },
       { label: CMgs.format(langBundle, 'profileId'), name: 'profileId', type: 'string' }
     ];
   },
 
-  getSupportedConstraints: function() {
+  getSupportedConstraints: function () {
     return [];
   }
 });

@@ -25,7 +25,7 @@ if (typeof CStudioAuthoringWidgets == 'undefined' || !CStudioAuthoringWidgets) {
  */
 CStudioAuthoringWidgets.MyNotificationsDashboard =
   CStudioAuthoringWidgets.MyNotificationsDashboard ||
-  function(widgetId, pageId) {
+  function (widgetId, pageId) {
     this.widgetId = widgetId;
     this.pageId = pageId;
     this._self = this;
@@ -38,7 +38,7 @@ CStudioAuthoringWidgets.MyNotificationsDashboard =
     /**
      * get table data
      */
-    this.retrieveTableData = function(sortBy, sortAscDesc, callback, retrieveTableData, filterByNumber) {
+    this.retrieveTableData = function (sortBy, sortAscDesc, callback, retrieveTableData, filterByNumber) {
       sortAscDesc = CStudioAuthoring.Utils.sortByAsc.init(sortBy, widgetId);
 
       CStudioAuthoring.Service.getGoLiveQueueItems(
@@ -54,7 +54,7 @@ CStudioAuthoringWidgets.MyNotificationsDashboard =
     /**
      * callback to render the table headings
      */
-    this.renderItemsHeading = function() {
+    this.renderItemsHeading = function () {
       var widgetId = this._self.widgetId;
 
       var header =
@@ -135,7 +135,7 @@ CStudioAuthoringWidgets.MyNotificationsDashboard =
     /**
      * Call back to render each line item of the table
      */
-    this.renderLineItem = function(item) {
+    this.renderLineItem = function (item) {
       var itemStatusIconClass = CStudioAuthoring.Utils.getContentItemClassName(item);
       var itemNameClass = '';
       var browserUri = (browserUriValue = item.browserUri);

@@ -28,7 +28,7 @@ CStudioAuthoring.IceTools = CStudioAuthoring.IceTools || {
   /**
    * initialize module
    */
-  initialize: function(config) {
+  initialize: function (config) {
     var iceOn;
 
     if (this.initialized == false) {
@@ -42,7 +42,7 @@ CStudioAuthoring.IceTools = CStudioAuthoring.IceTools || {
     }
   },
 
-  turnEditOn: function() {
+  turnEditOn: function () {
     /*if(!!(sessionStorage.getItem('pto-on') == false)) {   // cast string value to a boolean
 			CStudioAuthoring.PreviewTools.turnToolsOn();
 		}*/
@@ -50,7 +50,7 @@ CStudioAuthoring.IceTools = CStudioAuthoring.IceTools || {
     this.IceToolsOnEvent.fire();
   },
 
-  turnEditOff: function() {
+  turnEditOff: function () {
     sessionStorage.setItem('ice-on', '');
     this.IceToolsOffEvent.fire();
   }

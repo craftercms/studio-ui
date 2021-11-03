@@ -15,12 +15,12 @@
  */
 import React from 'react';
 import { HashRouter, Route } from 'react-router-dom';
-import Search from '../modules/Search/Search';
+import URLDrivenSearch from '../components/Search/URLDrivenSearch';
 
 export default function SearchApp(topProps: any) {
   return (
     <HashRouter>
-      <Route path="/" render={(routeProps: any) => <Search {...topProps} {...routeProps} />} />
+      <Route path="/" render={(routeProps: any) => <URLDrivenSearch {...topProps} {...routeProps} />} />
     </HashRouter>
   );
 }

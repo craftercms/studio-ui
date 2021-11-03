@@ -16,7 +16,7 @@
 
 CStudioAdminConsole.Tool.ContentTypes.PropertyType.Bool =
   CStudioAdminConsole.Tool.ContentTypes.PropertyType.Bool ||
-  function(fieldName, containerEl) {
+  function (fieldName, containerEl) {
     this.fieldName = fieldName;
     this.containerEl = containerEl;
     return this;
@@ -26,7 +26,7 @@ YAHOO.extend(
   CStudioAdminConsole.Tool.ContentTypes.PropertyType.Bool,
   CStudioAdminConsole.Tool.ContentTypes.PropertyType,
   {
-    render: function(value, updateFn, fName, itemId, defaultValue, typeControl, disabled, properties) {
+    render: function (value, updateFn, fName, itemId, defaultValue, typeControl, disabled, properties) {
       var _self = this;
       var containerEl = this.containerEl,
         wrapperEl = document.createElement('div'),
@@ -41,7 +41,7 @@ YAHOO.extend(
       containerEl.appendChild(wrapperEl);
 
       if (updateFn) {
-        var updateFieldFn = function(event, el) {
+        var updateFieldFn = function (event, el) {
           _self.value = _self.getValue();
           updateFn(event, _self);
           CStudioAdminConsole.Tool.ContentTypes.visualization.render();
@@ -68,7 +68,7 @@ YAHOO.extend(
       this.valueEl = valueEl;
     },
 
-    getValue: function() {
+    getValue: function () {
       return '' + (this.valueEl.checked == true);
     }
   }

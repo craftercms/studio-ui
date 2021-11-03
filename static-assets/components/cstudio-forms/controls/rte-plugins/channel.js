@@ -15,7 +15,7 @@
  */
 
 CStudioForms.Controls.RTE.ChannelSelect = CStudioForms.Controls.RTE.ChannelSelect || {
-  createControl: function(n, cm, editor) {
+  createControl: function (n, cm, editor) {
     switch (n) {
       case 'channel':
         var config = tinymce2.activeEditor.contextControl.fieldConfig;
@@ -35,7 +35,7 @@ CStudioForms.Controls.RTE.ChannelSelect = CStudioForms.Controls.RTE.ChannelSelec
           if (channels.length && channels.length > 0) {
             var mlb = cm.createListBox('channelSelect', {
               title: 'Channel',
-              onselect: function(v) {
+              onselect: function (v) {
                 var channelConfig = v.split(':');
 
                 tinymce2.activeEditor.contextControl._applyChannelStyleSheets(channelConfig[0]);

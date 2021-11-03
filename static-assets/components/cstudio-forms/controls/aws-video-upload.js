@@ -16,7 +16,7 @@
 
 CStudioForms.Controls.AWSVideoUpload =
   CStudioForms.Controls.AWSVideoUpload ||
-  function(id, form, owner, properties, constraints, readonly) {
+  function (id, form, owner, properties, constraints, readonly) {
     this.owner = owner;
     this.owner.registerField(this);
     this.errors = [];
@@ -31,13 +31,13 @@ CStudioForms.Controls.AWSVideoUpload =
     this.readonly = readonly;
 
     if (properties) {
-      var required = constraints.find(function(property) {
+      var required = constraints.find(function (property) {
         return property.name === 'required';
       });
       if (required) {
         this.required = required.value === 'true';
       }
-      var profile_id = properties.find(function(property) {
+      var profile_id = properties.find(function (property) {
         return property.name === 'profile_id';
       });
       if (profile_id) {
@@ -49,15 +49,15 @@ CStudioForms.Controls.AWSVideoUpload =
   };
 
 YAHOO.extend(CStudioForms.Controls.AWSVideoUpload, CStudioForms.CStudioFormField, {
-  getLabel: function() {
+  getLabel: function () {
     return 'AWS Video Upload';
   },
 
-  getName: function() {
+  getName: function () {
     return 'aws-video-upload';
   },
 
-  setValue: function(value) {
+  setValue: function (value) {
     var validationResult = true;
     if (value && value[0] && value[0].base_key) {
       this.value = value;
@@ -72,11 +72,11 @@ YAHOO.extend(CStudioForms.Controls.AWSVideoUpload, CStudioForms.CStudioFormField
     this.owner.notifyValidation();
   },
 
-  getValue: function() {
+  getValue: function () {
     return this.value;
   },
 
-  getSupportedProperties: function() {
+  getSupportedProperties: function () {
     return [
       {
         label: 'Service',
@@ -96,16 +96,16 @@ YAHOO.extend(CStudioForms.Controls.AWSVideoUpload, CStudioForms.CStudioFormField
     ];
   },
 
-  getSupportedConstraints: function() {
+  getSupportedConstraints: function () {
     return [{ label: CMgs.format(langBundle, 'required'), name: 'required', type: 'boolean' }];
   },
 
-  _onChange: function(evt, obj) {
+  _onChange: function (evt, obj) {
     var service = JSON.parse(
-      obj.properties.find(function(p) {
+      obj.properties.find(function (p) {
         return p.name === 'service';
       }).value
-    ).find(function(p) {
+    ).find(function (p) {
       return p.selected;
     }).value;
     var url;
@@ -118,7 +118,7 @@ YAHOO.extend(CStudioForms.Controls.AWSVideoUpload, CStudioForms.CStudioFormField
 
     var callback = {
       cache: false,
-      upload: function(o) {
+      upload: function (o) {
         document.getElementById('cstudioSaveAndClose').disabled = '';
         document.getElementById('cstudioSaveAndCloseDraft').disabled = '';
         document.getElementById('cstudioSaveAndPreview').disabled = '';
@@ -152,7 +152,7 @@ YAHOO.extend(CStudioForms.Controls.AWSVideoUpload, CStudioForms.CStudioFormField
           );
         }
       },
-      failure: function(o) {
+      failure: function (o) {
         obj.fileEl.innerHTML = '';
         document.getElementById('cstudioSaveAndClose').disabled = '';
         document.getElementById('cstudioSaveAndCloseDraft').disabled = '';
@@ -181,7 +181,7 @@ YAHOO.extend(CStudioForms.Controls.AWSVideoUpload, CStudioForms.CStudioFormField
     obj.fileEl.innerHTML = '<i class="fa fa-spinner fa-spin"/>';
   },
 
-  render: function(config, containerEl, lastTwo) {
+  render: function (config, containerEl, lastTwo) {
     var titleEl = document.createElement('span');
     YAHOO.util.Dom.addClass(titleEl, 'cstudio-form-field-title');
     titleEl.textContent = config.title;

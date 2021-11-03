@@ -16,7 +16,7 @@
 
 CStudioForms.Controls.Input =
   CStudioForms.Controls.Input ||
-  function(id, form, owner, properties, constraints, readonly) {
+  function (id, form, owner, properties, constraints, readonly) {
     this.owner = owner;
     this.owner.registerField(this);
     this.errors = [];
@@ -40,11 +40,11 @@ CStudioForms.Controls.Input =
   };
 
 YAHOO.extend(CStudioForms.Controls.Input, CStudioForms.CStudioFormField, {
-  getLabel: function() {
+  getLabel: function () {
     return CMgs.format(langBundle, 'input');
   },
 
-  _onChange: function(evt, obj) {
+  _onChange: function (evt, obj) {
     obj.value = obj.inputEl.value;
 
     // Empty error state before new validation (for a clean state)
@@ -97,7 +97,7 @@ YAHOO.extend(CStudioForms.Controls.Input, CStudioForms.CStudioFormField, {
     obj.form.updateModel(obj.id, valueToSet);
   },
 
-  _onChangeVal: function(evt, obj) {
+  _onChangeVal: function (evt, obj) {
     obj.edited = true;
     if (this._onChange) {
       this._onChange(evt, obj);
@@ -109,7 +109,7 @@ YAHOO.extend(CStudioForms.Controls.Input, CStudioForms.CStudioFormField, {
    * @param evt event
    * @param el element
    */
-  count: function(evt, countEl, el) {
+  count: function (evt, countEl, el) {
     // 'this' is the input box
     el = el ? el : this;
     var text = el.value;
@@ -152,7 +152,7 @@ YAHOO.extend(CStudioForms.Controls.Input, CStudioForms.CStudioFormField, {
     }
   },
 
-  render: function(config, containerEl) {
+  render: function (config, containerEl) {
     // we need to make the general layout of a control inherit from common
     // you should be able to override it -- but most of the time it wil be the same
     containerEl.id = this.id;
@@ -181,7 +181,7 @@ YAHOO.extend(CStudioForms.Controls.Input, CStudioForms.CStudioFormField, {
     YAHOO.util.Event.on(
       inputEl,
       'focus',
-      function(evt, context) {
+      function (evt, context) {
         context.form.setFocusedField(context);
       },
       this
@@ -243,11 +243,11 @@ YAHOO.extend(CStudioForms.Controls.Input, CStudioForms.CStudioFormField, {
     containerEl.appendChild(descriptionEl);
   },
 
-  getValue: function() {
+  getValue: function () {
     return this.value;
   },
 
-  setValue: function(value) {
+  setValue: function (value) {
     const valueToSet = this.escapeContent ? CStudioForms.Util.unEscapeXml(value) : value;
 
     this.value = valueToSet;
@@ -257,11 +257,11 @@ YAHOO.extend(CStudioForms.Controls.Input, CStudioForms.CStudioFormField, {
     this.edited = false;
   },
 
-  getName: function() {
+  getName: function () {
     return 'input';
   },
 
-  getSupportedProperties: function() {
+  getSupportedProperties: function () {
     return [
       {
         label: CMgs.format(langBundle, 'displaySize'),
@@ -286,14 +286,14 @@ YAHOO.extend(CStudioForms.Controls.Input, CStudioForms.CStudioFormField, {
     ];
   },
 
-  getSupportedConstraints: function() {
+  getSupportedConstraints: function () {
     return [
       { label: CMgs.format(langBundle, 'required'), name: 'required', type: 'boolean' },
       { label: CMgs.format(langBundle, 'matchPattern'), name: 'pattern', type: 'string' }
     ];
   },
 
-  getSupportedPostFixes: function() {
+  getSupportedPostFixes: function () {
     return this.supportedPostFixes;
   }
 });

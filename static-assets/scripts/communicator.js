@@ -14,15 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-(function(window) {
+(function (window) {
   var define =
     typeof window.crafterDefine === 'function' && window.crafterDefine.amd
       ? window.crafterDefine
-      : function(a, b, f) {
+      : function (a, b, f) {
           f(window.crafter, window.amplify);
         };
 
-  define('communicator', ['crafter', 'amplify'], function(crafter, amplify) {
+  define('communicator', ['crafter', 'amplify'], function (crafter, amplify) {
     'use strict';
 
     if (typeof amplify === 'undefined') {
@@ -84,33 +84,33 @@
         allowedOrigins: allowedOrigins
       };
 
-      this.setAllowedOrigins = function(origins) {
+      this.setAllowedOrigins = function (origins) {
         privates.allowedOrigins = origins;
       };
 
-      this.getAllowedOrigins = function() {
+      this.getAllowedOrigins = function () {
         return privates.allowedOrigins;
       };
 
-      this.getDefaultScope = function() {
+      this.getDefaultScope = function () {
         return privates.defaultScope;
       };
 
-      this.setDefaultScope = function(defaultScope) {
+      this.setDefaultScope = function (defaultScope) {
         privates.defaultScope = defaultScope;
       };
 
-      this.getTargetWindows = function() {
+      this.getTargetWindows = function () {
         return privates.targetWindows;
       };
 
-      this.setTargetWindows = function(targetWindows) {
+      this.setTargetWindows = function (targetWindows) {
         privates.targetWindows = targetWindows;
       };
 
       window.addEventListener(
         'message',
-        function(event) {
+        function (event) {
           receiveMessage.call(me, event);
         },
         false

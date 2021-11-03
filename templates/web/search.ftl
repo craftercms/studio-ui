@@ -41,7 +41,7 @@
     <#assign mode = 'select' />
   </#if>
 
-  <div id="root" style="height: calc(100vh<#if embedded> - 65px</#if>)"></div>
+  <div id="root"></div>
 
   <script>
     <#if mode == 'select'>
@@ -59,7 +59,7 @@
     }
     </#if>
 
-    CrafterCMSNext.render('#root', 'Search', {
+    CrafterCMSNext.render('#root', 'SearchPage', {
       embedded: ${embedded?string},
       mode: "${mode}",
       <#if mode == 'select'>

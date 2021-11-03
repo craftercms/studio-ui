@@ -16,7 +16,7 @@
 
 CStudioForms.Controls.Label =
   CStudioForms.Controls.Label ||
-  function(id, form, owner, properties, constraints) {
+  function (id, form, owner, properties, constraints) {
     this.owner = owner;
     this.owner.registerField(this);
     this.errors = [];
@@ -34,11 +34,11 @@ CStudioForms.Controls.Label =
   };
 
 YAHOO.extend(CStudioForms.Controls.Label, CStudioForms.CStudioFormField, {
-  getLabel: function() {
+  getLabel: function () {
     return CMgs.format(langBundle, 'label');
   },
 
-  render: function(config, containerEl) {
+  render: function (config, containerEl) {
     // we need to make the general layout of a control inherit from common
     // you should be able to override it -- but most of the time it wil be the same
     containerEl.id = this.id;
@@ -73,24 +73,24 @@ YAHOO.extend(CStudioForms.Controls.Label, CStudioForms.CStudioFormField, {
     }
   },
 
-  getValue: function() {
+  getValue: function () {
     return this.value;
   },
 
-  setValue: function(value) {
+  setValue: function (value) {
     this.value = value;
   },
 
-  getName: function() {
+  getName: function () {
     return 'label';
   },
 
-  getSupportedProperties: function() {
+  getSupportedProperties: function () {
     return [
-      { 
-        label: CMgs.format(langBundle, 'text'), 
-        name: 'text', 
-        type: 'string' 
+      {
+        label: CMgs.format(langBundle, 'text'),
+        name: 'text',
+        type: 'string'
       },
       {
         label: CMgs.format(langBundle, 'renderAsHTML'),
@@ -100,11 +100,11 @@ YAHOO.extend(CStudioForms.Controls.Label, CStudioForms.CStudioFormField, {
     ];
   },
 
-  getSupportedConstraints: function() {
+  getSupportedConstraints: function () {
     return [];
   },
 
-  getSupportedPostFixes: function() {
+  getSupportedPostFixes: function () {
     return this.supportedPostFixes;
   }
 });

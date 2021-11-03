@@ -16,7 +16,7 @@
 
 CStudioForms.Datasources.VideoCMISUpload =
   CStudioForms.Datasources.VideoCMISUpload ||
-  function(id, form, properties, constraints) {
+  function (id, form, properties, constraints) {
     this.id = id;
     this.form = form;
     this.properties = properties;
@@ -40,7 +40,7 @@ YAHOO.extend(CStudioForms.Datasources.VideoCMISUpload, CStudioForms.CStudioFormD
   /**
    * action called when user clicks insert file
    */
-  insertVideoAction: function(insertCb) {
+  insertVideoAction: function (insertCb) {
     (this._self = this), (me = this);
 
     var site = CStudioAuthoringContext.site;
@@ -56,7 +56,7 @@ YAHOO.extend(CStudioForms.Datasources.VideoCMISUpload, CStudioForms.CStudioFormD
     }
 
     var callback = {
-      success: function(fileData) {
+      success: function (fileData) {
         var uri = fileData.url;
         var fileExtension = fileData.fileExtension;
 
@@ -70,7 +70,7 @@ YAHOO.extend(CStudioForms.Datasources.VideoCMISUpload, CStudioForms.CStudioFormD
         insertCb.success(videoData);
       },
 
-      failure: function() {
+      failure: function () {
         insertCb.failure('An error occurred while uploading the video.');
       },
 
@@ -80,26 +80,26 @@ YAHOO.extend(CStudioForms.Datasources.VideoCMISUpload, CStudioForms.CStudioFormD
     CStudioAuthoring.Operations.uploadCMISAsset(site, path, me.repositoryId, callback, ['video/*']);
   },
 
-  getLabel: function() {
+  getLabel: function () {
     return CMgs.format(langBundle, 'CMISUploadVideo');
   },
 
-  getInterface: function() {
+  getInterface: function () {
     return 'video';
   },
 
-  getName: function() {
+  getName: function () {
     return 'video-CMIS-upload';
   },
 
-  getSupportedProperties: function() {
+  getSupportedProperties: function () {
     return [
       { label: CMgs.format(langBundle, 'repositoryPath'), name: 'repoPath', type: 'string' },
       { label: CMgs.format(langBundle, 'repositoryId'), name: 'repositoryId', type: 'string' }
     ];
   },
 
-  getSupportedConstraints: function() {
+  getSupportedConstraints: function () {
     return [];
   }
 });

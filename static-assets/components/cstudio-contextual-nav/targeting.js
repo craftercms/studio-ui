@@ -30,12 +30,12 @@ CStudioAuthoring.ContextualNav.TargetingMod = {
   /**
    * initialize module
    */
-  initialize: function(config) {
+  initialize: function (config) {
     this.definePlugin();
     CStudioAuthoring.ContextualNav.TargetingNav.init();
   },
 
-  definePlugin: function() {
+  definePlugin: function () {
     var YDom = YAHOO.util.Dom,
       YEvent = YAHOO.util.Event;
     /**
@@ -43,17 +43,17 @@ CStudioAuthoring.ContextualNav.TargetingMod = {
      */
     CStudioAuthoring.register({
       'ContextualNav.TargetingNav': {
-        init: function() {
+        init: function () {
           if (CStudioAuthoringContext.isPreview == true) {
             this.render();
           }
           this.model = {};
         },
 
-        bindEvents: function() {
+        bindEvents: function () {
           var me = this;
 
-          $(document).on('keyup', function(e) {
+          $(document).on('keyup', function (e) {
             if (e.keyCode == 10 || e.keyCode == 13) {
               // enter
               var reportContainerEl = document.getElementById('cstudioPreviewTargetingOverlay');
@@ -70,7 +70,7 @@ CStudioAuthoring.ContextualNav.TargetingMod = {
           });
         },
 
-        render: function() {
+        render: function () {
           var me = this,
             el,
             containerEl,
@@ -93,7 +93,7 @@ CStudioAuthoring.ContextualNav.TargetingMod = {
           containerEl.appendChild(iconEl);
           el.appendChild(containerEl);
 
-          el.onclick = function() {
+          el.onclick = function () {
             var targetingDialog = $('#cstudioPreviewTargetingOverlay')[0];
 
             if (targetingDialog) {
@@ -104,7 +104,7 @@ CStudioAuthoring.ContextualNav.TargetingMod = {
           };
         },
 
-        getTargeting: function() {
+        getTargeting: function () {
           var CMgs = CStudioAuthoring.Messages;
           var previewLangBundle = CMgs.getBundle('targeting', CStudioAuthoringContext.lang);
 
@@ -150,14 +150,14 @@ CStudioAuthoring.ContextualNav.TargetingMod = {
           reportContainerEl.appendChild(targetingContainerEl);
 
           CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/targeting/targeting-config.xml', {
-            success: function(config) {
+            success: function (config) {
               var properties = config.property,
                 currentProp,
                 controlContainer;
 
               me.initModel(properties, {
                 // update model and properties with current profile
-                success: function(properties) {
+                success: function (properties) {
                   // Create and append the options
                   for (var i = 0; i < properties.length; i++) {
                     currentProp = properties[i];
@@ -251,13 +251,11 @@ CStudioAuthoring.ContextualNav.TargetingMod = {
                           checkBoxGroupContainer.appendChild(checkbox);
                         }
 
-                        checkboxSelectAll.onclick = function() {
-                          var checkAll = $(this)
-                            .find("input[type='checkbox']")
-                            .is(':checked');
+                        checkboxSelectAll.onclick = function () {
+                          var checkAll = $(this).find("input[type='checkbox']").is(':checked');
                           var checkboxes = $(this.parentElement).find('input[type="checkbox"]:not(".select-all")');
 
-                          $.each(checkboxes, function(i, el) {
+                          $.each(checkboxes, function (i, el) {
                             el.checked = checkAll;
                           });
                         };
@@ -309,12 +307,12 @@ CStudioAuthoring.ContextualNav.TargetingMod = {
           YAHOO.util.Dom.addClass(clearBtn, 'btn btn-primary mr10');
           clearBtn.style.marginRight = 'auto';
           clearBtn.innerHTML = targetingMod.formatMessage(targetingMod.messages.defaults);
-          clearBtn.onclick = function() {
+          clearBtn.onclick = function () {
             CStudioAuthoring.Service.lookupConfigurtion(
               CStudioAuthoringContext.site,
               '/targeting/targeting-config.xml',
               {
-                success: function(config) {
+                success: function (config) {
                   var properties = Array.isArray(config.property) ? config.property : [config.property],
                     currentProp,
                     controlEl;
@@ -372,7 +370,7 @@ CStudioAuthoring.ContextualNav.TargetingMod = {
           var applyBtn = document.createElement('a');
           YAHOO.util.Dom.addClass(applyBtn, 'btn btn-primary');
           applyBtn.innerHTML = CMgs.format(previewLangBundle, 'apply');
-          applyBtn.onclick = function() {
+          applyBtn.onclick = function () {
             me.updateTargeting(reportContainerEl);
           };
 
@@ -383,7 +381,7 @@ CStudioAuthoring.ContextualNav.TargetingMod = {
           var cancelBtn = document.createElement('a');
           YAHOO.util.Dom.addClass(cancelBtn, 'btn btn-default mr10');
           cancelBtn.innerHTML = CMgs.format(previewLangBundle, 'cancel');
-          cancelBtn.onclick = function() {
+          cancelBtn.onclick = function () {
             me.closeDialog(reportContainerEl);
             $(document).off('keyup');
           };
@@ -397,7 +395,7 @@ CStudioAuthoring.ContextualNav.TargetingMod = {
         },
 
         // update model from current form and save on profile
-        updateTargeting: function(reportContainerEl) {
+        updateTargeting: function (reportContainerEl) {
           this.updateModel();
 
           var serviceUri = '/api/1/profile/set?',
@@ -419,7 +417,7 @@ CStudioAuthoring.ContextualNav.TargetingMod = {
           serviceUri += 'nocache=' + new Date();
 
           YConnect.asyncRequest('GET', CStudioAuthoring.Service.createEngineServiceUri(encodeURI(serviceUri)), {
-            success: function() {
+            success: function () {
               document.body.removeChild(reportContainerEl);
 
               if (CStudioAuthoringContext.isPreview) {
@@ -429,12 +427,12 @@ CStudioAuthoring.ContextualNav.TargetingMod = {
           });
         },
 
-        closeDialog: function(reportContainerEl) {
+        closeDialog: function (reportContainerEl) {
           document.body.removeChild(reportContainerEl);
         },
 
         // model created from xml config file and currentProfile
-        initModel: function(properties, callback) {
+        initModel: function (properties, callback) {
           var me = this,
             properties = properties;
 
@@ -444,14 +442,14 @@ CStudioAuthoring.ContextualNav.TargetingMod = {
           }
 
           // properties from xml
-          properties.forEach(function(item) {
+          properties.forEach(function (item) {
             me.model[item.name] = item.default_value ? item.default_value : '';
           });
 
           // properties from profile
           var serviceUri = '/api/1/profile/get?time=' + new Date();
           YConnect.asyncRequest('GET', CStudioAuthoring.Service.createEngineServiceUri(serviceUri), {
-            success: function(oResponse) {
+            success: function (oResponse) {
               var json = oResponse.responseText,
                 currentProfile = eval('(' + json + ')');
 
@@ -473,58 +471,38 @@ CStudioAuthoring.ContextualNav.TargetingMod = {
         },
 
         // get model from current form
-        updateModel: function() {
+        updateModel: function () {
           var me = this,
             test = $('#targeting-container .control-container'),
             key,
             value;
 
-          $.each(test, function(index, element) {
+          $.each(test, function (index, element) {
             if ($(element).hasClass('dropdown')) {
-              key = $(element)
-                .find('select')
-                .attr('id');
-              value = $(element)
-                .find('select option:selected')
-                .text();
+              key = $(element).find('select').attr('id');
+              value = $(element).find('select option:selected').text();
             } else if ($(element).hasClass('checkboxes')) {
-              key = $(element)
-                .find('.checkbox-group')
-                .attr('id');
+              key = $(element).find('.checkbox-group').attr('id');
               value = [];
               var checkedElements = $(element).find(
                 '.checkbox-group input[type="checkbox"]:not(".select-all"):checked'
               );
 
-              $.each(checkedElements, function(i, el) {
+              $.each(checkedElements, function (i, el) {
                 value.push($(el).attr('data-value'));
               });
             } else if ($(element).hasClass('input')) {
-              key = $(element)
-                .find('input')
-                .attr('id');
-              value = $(element)
-                .find('input')
-                .val();
+              key = $(element).find('input').attr('id');
+              value = $(element).find('input').val();
             } else if ($(element).hasClass('datetime')) {
-              key = $(element)
-                .find('.date-container')
-                .attr('id');
+              key = $(element).find('.date-container').attr('id');
 
               const timezone = $('.zone-picker option:selected').val(),
-                valueDate = $(element)
-                  .find('.date-picker')
-                  .val(),
+                valueDate = $(element).find('.date-picker').val(),
                 pickerDate =
                   valueDate === ''
                     ? ''
-                    : moment.tz(
-                        $(element)
-                          .find('.date-picker')
-                          .val(),
-                        'YYYY-MM-DD HH:mm A',
-                        timezone
-                      );
+                    : moment.tz($(element).find('.date-picker').val(), 'YYYY-MM-DD HH:mm A', timezone);
 
               value = pickerDate === '' ? '' : pickerDate.toISOString();
               me.model[`${key}_tz`] = encodeURIComponent(timezone);
@@ -533,7 +511,7 @@ CStudioAuthoring.ContextualNav.TargetingMod = {
           });
         },
 
-        dateTimeInit: function(controlContainer, currentProp) {
+        dateTimeInit: function (controlContainer, currentProp) {
           const targetingMod = CStudioAuthoring.ContextualNav.TargetingMod;
 
           $(controlContainer).addClass('datetime');
@@ -582,14 +560,14 @@ CStudioAuthoring.ContextualNav.TargetingMod = {
             $dateTimeEl.val('');
           }
 
-          $setNowLink.on('click', function(e) {
+          $setNowLink.on('click', function (e) {
             e.preventDefault();
             $dateTimeEl.datetimepicker({
               value: new Date()
             });
           });
 
-          $setClearLink.on('click', function(e) {
+          $setClearLink.on('click', function (e) {
             e.preventDefault();
             $dateTimeEl.val('');
           });

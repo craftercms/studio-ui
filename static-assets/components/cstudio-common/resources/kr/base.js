@@ -881,8 +881,7 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'kr', {
   confTabEngineUrlRewriteConfStaging: '엔진 URL 재 작성 구성 (XML 스타일) - 각색',
   confTabEngineUrlRewriteConfLive: '엔진 URL 재 작성 구성 (XML 스타일) - 라이브',
   confTabDependencyResolverConf: '종속성 해결 프로그램 구성',
-  confTabDependencyResolverConfDesc:
-    '이 파일은 Crafter가 종속성으로 간주하는 파일 경로와 추출 방법을 구성합니다.',
+  confTabDependencyResolverConfDesc: '이 파일은 Crafter가 종속성으로 간주하는 파일 경로와 추출 방법을 구성합니다.',
   confTabAWSProfiles: 'AWS 프로필',
   confTabAWSProfilesDesc: 'AWS 프로필 구성 파일.',
   confTabBoxProfiles: '박스 프로파일',

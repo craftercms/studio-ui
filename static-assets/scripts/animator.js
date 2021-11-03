@@ -19,10 +19,10 @@
  */
 (
   window.crafterDefine ||
-  function(a, b, f) {
+  function (a, b, f) {
     f(crafter, $);
   }
-)('animator', ['crafter', 'jquery'], function(crafter, $) {
+)('animator', ['crafter', 'jquery'], function (crafter, $) {
   var ANIMATE_CLASS = 'craftercms-animated',
     END_EVENT = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
 
@@ -36,53 +36,53 @@
 
   function Animator(element) {
     var $element = $(element).addClass(ANIMATE_CLASS);
-    this.$el = function(el) {
+    this.$el = function (el) {
       if (el) $element = $(el).addClass(ANIMATE_CLASS);
       return $element;
     };
   }
 
   Animator.prototype = {
-    fadeIn: function(callback) {
+    fadeIn: function (callback) {
       enter.call(this, FADE, callback);
     },
-    fadeOut: function(callback) {
+    fadeOut: function (callback) {
       exit.call(this, FADE, callback);
     },
-    bounceIn: function(callback) {
+    bounceIn: function (callback) {
       enter.call(this, BOUNCE, callback);
     },
-    bounceOut: function(callback) {
+    bounceOut: function (callback) {
       exit.call(this, BOUNCE, callback);
     },
-    zoomIn: function(callback) {
+    zoomIn: function (callback) {
       enter.call(this, ZOOM, callback);
     },
-    zoomOut: function(callback) {
+    zoomOut: function (callback) {
       exit.call(this, ZOOM, callback);
     },
-    slideIn: function(callback) {
+    slideIn: function (callback) {
       enter.call(this, SLIDE_LEFT, callback);
     },
-    slideOut: function(callback) {
+    slideOut: function (callback) {
       exit.call(this, SLIDE_LEFT, callback);
     },
-    slideInRight: function(callback) {
+    slideInRight: function (callback) {
       enter.call(this, SLIDE_RIGHT, callback);
     },
-    slideOutRight: function(callback) {
+    slideOutRight: function (callback) {
       exit.call(this, SLIDE_RIGHT, callback);
     },
-    slideInUp: function(callback) {
+    slideInUp: function (callback) {
       enter.call(this, SLIDE_UP, callback);
     },
-    slideOutDown: function(callback) {
+    slideOutDown: function (callback) {
       enter.call(this, SLIDE_DOWN, callback);
     },
-    slideInDown: function(callback) {
+    slideInDown: function (callback) {
       enter.call(this, SLIDE_DOWN, callback);
     },
-    slideOutUp: function(callback) {
+    slideOutUp: function (callback) {
       enter.call(this, SLIDE_UP, callback);
     }
   };
@@ -98,7 +98,7 @@
       .removeClass(effect.enter)
       .removeClass(effect.exit)
       .addClass(effect.enter)
-      .one(END_EVENT, function() {
+      .one(END_EVENT, function () {
         $element.removeClass(effect.enter);
         callback && callback($element);
       });
@@ -110,7 +110,7 @@
       .removeClass(effect.enter)
       .removeClass(effect.exit)
       .addClass(effect.exit)
-      .one(END_EVENT, function() {
+      .one(END_EVENT, function () {
         if (!$element.hasClass(effect.enter)) $element.hide();
         $element.removeClass(effect.exit);
         callback && callback($element);

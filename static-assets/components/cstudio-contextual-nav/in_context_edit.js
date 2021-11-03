@@ -7,13 +7,13 @@ CStudioAuthoring.ContextualNav.InContextEditMod = CStudioAuthoring.ContextualNav
   /**
    * initialize module
    */
-  initialize: function(config) {
+  initialize: function (config) {
     this.definePlugin();
     CStudioAuthoring.Operations.createNavBarDropDown('in-context-edit');
     CStudioAuthoring.ContextualNav.InContextEditsNav.init();
   },
 
-  definePlugin: function() {
+  definePlugin: function () {
     var YDom = YAHOO.util.Dom,
       YEvent = YAHOO.util.Event;
     /**
@@ -21,29 +21,29 @@ CStudioAuthoring.ContextualNav.InContextEditMod = CStudioAuthoring.ContextualNav
      */
     CStudioAuthoring.register({
       'ContextualNav.InContextEditsNav': {
-        init: function() {
+        init: function () {
           var _self = this;
-          var callback = function(isRev) {
+          var callback = function (isRev) {
             if (CStudioAuthoringContext.isPreview == true && !isRev) {
               _self.render();
 
               // TODO: check events that will be used for new ice
               if (CStudioAuthoring.IceTools) {
                 //CStudioAuthoring.IceTools) {
-                CStudioAuthoring.IceTools.IceToolsOffEvent.subscribe(function() {
+                CStudioAuthoring.IceTools.IceToolsOffEvent.subscribe(function () {
                   // var el = YDom.get("acn-ice-tools-container");
                   // YDom.removeClass(el.children[0], "icon-yellow");
                   // YDom.addClass(el.children[0], "icon-default");
                 });
 
-                CStudioAuthoring.IceTools.IceToolsOnEvent.subscribe(function() {
+                CStudioAuthoring.IceTools.IceToolsOnEvent.subscribe(function () {
                   // var el = YDom.get("acn-ice-tools-container");
                   // YDom.removeClass(el.children[0], "icon-default");
                   // YDom.addClass(el.children[0], "icon-yellow");
                 });
 
                 cb = {
-                  moduleLoaded: function(moduleName, moduleClass, moduleConfig) {
+                  moduleLoaded: function (moduleName, moduleClass, moduleConfig) {
                     try {
                       CStudioAuthoring.IceTools.initialize(moduleConfig);
                       if (this.self.initialized == false) {
@@ -52,13 +52,13 @@ CStudioAuthoring.ContextualNav.InContextEditMod = CStudioAuthoring.ContextualNav
 
                       this.self.initialized = true;
 
-                      CStudioAuthoring.IceTools.IceToolsOffEvent.subscribe(function() {
+                      CStudioAuthoring.IceTools.IceToolsOffEvent.subscribe(function () {
                         // var el = YDom.get("acn-ice-tools-container");
                         // YDom.removeClass(el.children[0], "icon-yellow");
                         // YDom.addClass(el.children[0], "icon-default");
                       });
 
-                      CStudioAuthoring.IceTools.IceToolsOnEvent.subscribe(function() {
+                      CStudioAuthoring.IceTools.IceToolsOnEvent.subscribe(function () {
                         // var el = YDom.get("acn-ice-tools-container");
                         // YDom.removeClass(el.children[0], "icon-default");
                         // YDom.addClass(el.children[0], "icon-yellow");
@@ -81,13 +81,13 @@ CStudioAuthoring.ContextualNav.InContextEditMod = CStudioAuthoring.ContextualNav
           CStudioAuthoring.Utils.isReviewer(callback);
         },
 
-        render: function() {
+        render: function () {
           var iceToggle = YDom.get('ice-toggle'),
             contentToggle = YDom.get('ice-toggle-content'),
             componentsToggle = YDom.get('ice-toggle-components'),
             pageContentToggle = YDom.get('ice-toggle-pagecontent');
 
-          iceToggle.onclick = function() {
+          iceToggle.onclick = function () {
             var iceOn = !!sessionStorage.getItem('ice-on'); // cast string value to a boolean
 
             if (!iceOn) {
@@ -97,15 +97,15 @@ CStudioAuthoring.ContextualNav.InContextEditMod = CStudioAuthoring.ContextualNav
             }
           };
 
-          contentToggle.onclick = function() {
+          contentToggle.onclick = function () {
             CStudioAuthoring.IceTools.turnEditOn('content');
           };
 
-          componentsToggle.onclick = function() {
+          componentsToggle.onclick = function () {
             CStudioAuthoring.IceTools.turnEditOn('components');
           };
 
-          pageContentToggle.onclick = function() {
+          pageContentToggle.onclick = function () {
             CStudioAuthoring.IceTools.turnEditOn('pageContent');
           };
         }

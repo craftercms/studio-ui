@@ -16,7 +16,7 @@
 
 CStudioAdminConsole.Tool.PreviewSync =
   CStudioAdminConsole.Tool.PreviewSync ||
-  function(config, el) {
+  function (config, el) {
     return this;
   };
 
@@ -24,13 +24,13 @@ CStudioAdminConsole.Tool.PreviewSync =
  * Overarching class that drives the content type tools
  */
 YAHOO.extend(CStudioAdminConsole.Tool.PreviewSync, CStudioAdminConsole.Tool, {
-  renderWorkarea: function() {
+  renderWorkarea: function () {
     var workareaEl = document.getElementById('cstudio-admin-console-workarea'),
       actions = [];
     workareaEl.innerHTML = '';
     CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions(actions);
     CStudioAuthoring.Service.previewServerSyncAll(CStudioAuthoringContext.site, {
-      success: function() {
+      success: function () {
         CStudioAuthoring.Operations.showSimpleDialog(
           'previewInitiated-dialog',
           CStudioAuthoring.Operations.simpleDialogTypeINFO,
@@ -41,7 +41,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.PreviewSync, CStudioAdminConsole.Tool, {
           'success studioDialog'
         );
       },
-      failure: function() {}
+      failure: function () {}
     });
   }
 });

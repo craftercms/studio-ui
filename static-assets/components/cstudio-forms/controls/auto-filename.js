@@ -16,7 +16,7 @@
 
 CStudioForms.Controls.AutoFilename =
   CStudioForms.Controls.AutoFilename ||
-  function(id, form, owner, properties, constraints) {
+  function (id, form, owner, properties, constraints) {
     var _self = this;
     this.owner = owner;
     this.owner.registerField(this);
@@ -35,23 +35,23 @@ CStudioForms.Controls.AutoFilename =
   };
 
 YAHOO.extend(CStudioForms.Controls.AutoFilename, CStudioForms.CStudioFormField, {
-  getFixedId: function() {
+  getFixedId: function () {
     return 'file-name';
   },
 
-  getLabel: function() {
+  getLabel: function () {
     return CMgs.format(langBundle, 'autoFilename');
   },
 
-  render: function(config, containerEl) {
+  render: function (config, containerEl) {
     // this widget has no visual presentation
   },
 
-  getValue: function() {
+  getValue: function () {
     return this.value;
   },
 
-  setValue: function(value) {
+  setValue: function (value) {
     var filename = value;
     var changeTemplate = CStudioAuthoring.Utils.getQueryVariable(location.search, 'changeTemplate');
 
@@ -74,15 +74,15 @@ YAHOO.extend(CStudioForms.Controls.AutoFilename, CStudioForms.CStudioFormField, 
     }
   },
 
-  getName: function() {
+  getName: function () {
     return 'auto-filename';
   },
 
-  getSupportedProperties: function() {
+  getSupportedProperties: function () {
     return [];
   },
 
-  getSupportedConstraints: function() {
+  getSupportedConstraints: function () {
     return [
       // required is assumed
     ];

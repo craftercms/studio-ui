@@ -15,7 +15,7 @@
  */
 
 CStudioForms.Controls.RTE.InsertLayout = CStudioForms.Controls.RTE.InsertLayout || {
-  createControl: function(n, cm, editor) {
+  createControl: function (n, cm, editor) {
     switch (n) {
       case 'insertLayout':
         var config = tinymce2.activeEditor.contextControl.rteConfig;
@@ -37,12 +37,12 @@ CStudioForms.Controls.RTE.InsertLayout = CStudioForms.Controls.RTE.InsertLayout 
 
           c.layouts = layouts;
 
-          c.onRenderMenu.add(function(c, m) {
+          c.onRenderMenu.add(function (c, m) {
             for (var i = 0; i < layouts.length; i++) {
               var layout = layouts[i];
               var prototype = layout.prototype;
 
-              var onClickFn = function() {
+              var onClickFn = function () {
                 tinymce2.activeEditor.execCommand('mceInsertContent', false, this.layoutPrototype);
                 cm.editor.contextControl.save();
               };

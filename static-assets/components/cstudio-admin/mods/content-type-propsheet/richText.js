@@ -16,7 +16,7 @@
 
 CStudioAdminConsole.Tool.ContentTypes.PropertyType.RichText =
   CStudioAdminConsole.Tool.ContentTypes.PropertyType.RichText ||
-  function(fieldName, containerEl) {
+  function (fieldName, containerEl) {
     this.fieldName = fieldName;
     this.containerEl = containerEl;
     return this;
@@ -26,7 +26,7 @@ YAHOO.extend(
   CStudioAdminConsole.Tool.ContentTypes.PropertyType.RichText,
   CStudioAdminConsole.Tool.ContentTypes.PropertyType,
   {
-    render: function(value, updateFn) {
+    render: function (value, updateFn) {
       this.value = value;
       this.updateFn = updateFn;
       var containerEl = this.containerEl;
@@ -41,7 +41,7 @@ YAHOO.extend(
       YAHOO.util.Event.on(
         valueEl,
         'keydown',
-        function(evt) {
+        function (evt) {
           YAHOO.util.Event.stopEvent(evt);
         },
         valueEl
@@ -50,11 +50,11 @@ YAHOO.extend(
       this.valueEl = valueEl;
     },
 
-    getValue: function() {
+    getValue: function () {
       return this.value;
     },
 
-    valueToString: function(value) {
+    valueToString: function (value) {
       var strValue = '';
 
       if (!Array.isArray(value) && value !== '') {
@@ -66,7 +66,7 @@ YAHOO.extend(
       return strValue;
     },
 
-    showEdit: function() {
+    showEdit: function () {
       var _self = this;
       var richTextDialogEl = document.getElementById('richTextDialog');
       if (!richTextDialogEl) {
@@ -113,7 +113,7 @@ YAHOO.extend(
       YAHOO.util.Event.on(
         cancelEl,
         'click',
-        function(evt) {
+        function (evt) {
           _self.context.cancel();
         },
         cancelEl
@@ -127,14 +127,14 @@ YAHOO.extend(
       YAHOO.util.Event.on(
         saveEl,
         'click',
-        function(evt) {
+        function (evt) {
           _self.context.save();
         },
         saveEl
       );
     },
 
-    renderText: function() {
+    renderText: function () {
       // TODO: Add rte control
       var richTextDialogEl = document.getElementById('richTextDialog');
       var dialogContainerEl = document.getElementById('richTextBodyDialog');
@@ -171,8 +171,8 @@ YAHOO.extend(
           'formatselect | bold italic strikethrough forecolor backcolor | link | alignleft aligncenter alignright alignjustify | numlist bullist outdent indent | removeformat',
         valid_elements:
           'ul[class,style],li[class,style],img[src,style,class],p[class,style],br,strong/b,a[href|target=_blank]',
-        setup: function(editor) {
-          editor.on('init', function(e) {
+        setup: function (editor) {
+          editor.on('init', function (e) {
             _self.editor = editor;
             editor.setContent(value);
           });
@@ -180,14 +180,14 @@ YAHOO.extend(
       });
     },
 
-    cancel: function() {
+    cancel: function () {
       var richTextDialogEl = document.getElementById('richTextDialog');
       var keyValueDialogMaskEl = document.getElementById('keyValueDialogMask');
       richTextDialogEl.parentNode.removeChild(keyValueDialogMaskEl);
       richTextDialogEl.parentNode.removeChild(richTextDialogEl);
     },
 
-    save: function() {
+    save: function () {
       var richTextDialogEl = document.getElementById('richTextDialog');
       var keyValueDialogMaskEl = document.getElementById('keyValueDialogMask');
       if (this.editor) {

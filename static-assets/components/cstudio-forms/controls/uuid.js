@@ -16,7 +16,7 @@
 
 CStudioForms.Controls.UUID =
   CStudioForms.Controls.UUID ||
-  function(id, form, owner, properties, constraints, readonly, obj) {
+  function (id, form, owner, properties, constraints, readonly, obj) {
     this.owner = owner;
     this.owner.registerField(this);
     this.errors = [];
@@ -36,11 +36,11 @@ CStudioForms.Controls.UUID =
   };
 
 YAHOO.extend(CStudioForms.Controls.UUID, CStudioForms.CStudioFormField, {
-  getLabel: function() {
+  getLabel: function () {
     return CMgs.format(langBundle, 'uuid');
   },
 
-  _onChange: function(evt, obj) {
+  _onChange: function (evt, obj) {
     obj.value = obj.inputEl.value;
 
     var validationExist = false;
@@ -62,12 +62,12 @@ YAHOO.extend(CStudioForms.Controls.UUID, CStudioForms.CStudioFormField, {
     obj.form.updateModel(obj.id, obj.getValue());
   },
 
-  _onChangeVal: function(evt, obj) {
+  _onChangeVal: function (evt, obj) {
     obj.edited = true;
     this._onChange(evt, obj);
   },
 
-  render: function(config, containerEl) {
+  render: function (config, containerEl) {
     // we need to make the general layout of a control inherit from common
     // you should be able to override it -- but most of the time it wil be the same
     containerEl.id = this.id;
@@ -91,7 +91,7 @@ YAHOO.extend(CStudioForms.Controls.UUID, CStudioForms.CStudioFormField, {
     YAHOO.util.Event.on(
       inputEl,
       'focus',
-      function(evt, context) {
+      function (evt, context) {
         context.form.setFocusedField(context);
       },
       this
@@ -112,11 +112,11 @@ YAHOO.extend(CStudioForms.Controls.UUID, CStudioForms.CStudioFormField, {
     containerEl.appendChild(controlWidgetContainerEl);
   },
 
-  getValue: function() {
+  getValue: function () {
     return this.value;
   },
 
-  setValue: function(value) {
+  setValue: function (value) {
     if (!value || value == '') {
       value = this.generateUUID();
     }
@@ -126,20 +126,20 @@ YAHOO.extend(CStudioForms.Controls.UUID, CStudioForms.CStudioFormField, {
     this.edited = false;
   },
 
-  getName: function() {
+  getName: function () {
     return 'uuid';
   },
 
-  getSupportedProperties: function() {
+  getSupportedProperties: function () {
     return [{ label: CMgs.format(langBundle, 'Hidden'), name: 'hidden', type: 'boolean' }];
   },
 
-  getSupportedConstraints: function() {
+  getSupportedConstraints: function () {
     return [];
   },
-  generateUUID: function() {
+  generateUUID: function () {
     var d = new Date().getTime();
-    var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
       var r = (d + Math.random() * 16) % 16 | 0;
       d = Math.floor(d / 16);
       return (c == 'x' ? r : (r & 0x3) | 0x8).toString(16);

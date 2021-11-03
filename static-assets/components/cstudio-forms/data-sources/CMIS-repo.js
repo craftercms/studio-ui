@@ -16,7 +16,7 @@
 
 CStudioForms.Datasources.CMISRepo =
   CStudioForms.Datasources.CMISRepo ||
-  function(id, form, properties, constraints) {
+  function (id, form, properties, constraints) {
     this.id = id;
     this.form = form;
     this.properties = properties;
@@ -51,7 +51,7 @@ CStudioForms.Datasources.CMISRepo =
   };
 
 YAHOO.extend(CStudioForms.Datasources.CMISRepo, CStudioForms.CStudioFormDatasource, {
-  add: function(control, multiple) {
+  add: function (control, multiple) {
     const _self = this;
 
     var datasourceDef = this.form.definition.datasources,
@@ -73,7 +73,7 @@ YAHOO.extend(CStudioForms.Datasources.CMISRepo, CStudioForms.CStudioFormDatasour
       </li>`
     );
 
-    create.find('a').on('click', function() {
+    create.find('a').on('click', function () {
       CStudioAuthoring.Operations.openCMISBrowse(
         _self.repoId,
         _self.repoPath,
@@ -82,8 +82,8 @@ YAHOO.extend(CStudioForms.Datasources.CMISRepo, CStudioForms.CStudioFormDatasour
         'select',
         true,
         {
-          success: function(searchId, selectedTOs) {
-            var cb = function(repositories) {
+          success: function (searchId, selectedTOs) {
+            var cb = function (repositories) {
               var repo = null;
               if (!repositories.length) {
                 repo = repositories;
@@ -116,7 +116,7 @@ YAHOO.extend(CStudioForms.Datasources.CMISRepo, CStudioForms.CStudioFormDatasour
 
             _self.getConfig(cb);
           },
-          failure: function() {}
+          failure: function () {}
         }
       );
     });
@@ -124,27 +124,27 @@ YAHOO.extend(CStudioForms.Datasources.CMISRepo, CStudioForms.CStudioFormDatasour
     control.$dropdownMenu.append(create);
   },
 
-  getConfig: function(callback) {
+  getConfig: function (callback) {
     CStudioAuthoring.Service.getConfiguration(CStudioAuthoringContext.site, '/data-sources/cmis-config.xml', {
-      success: function(config) {
+      success: function (config) {
         callback(config.repositories.repository);
       }
     });
   },
 
-  getLabel: function() {
+  getLabel: function () {
     return CMgs.format(langBundle, 'CMISRepository');
   },
 
-  getInterface: function() {
+  getInterface: function () {
     return 'item';
   },
 
-  getName: function() {
+  getName: function () {
     return 'CMIS-repo';
   },
 
-  getSupportedProperties: function() {
+  getSupportedProperties: function () {
     return [
       { label: CMgs.format(langBundle, 'repositoryPath'), name: 'repoPath', type: 'string' },
       { label: CMgs.format(langBundle, 'repositoryId'), name: 'repoId', type: 'string' },
@@ -174,7 +174,7 @@ YAHOO.extend(CStudioForms.Datasources.CMISRepo, CStudioForms.CStudioFormDatasour
     ];
   },
 
-  getSupportedConstraints: function() {
+  getSupportedConstraints: function () {
     return [];
   }
 });

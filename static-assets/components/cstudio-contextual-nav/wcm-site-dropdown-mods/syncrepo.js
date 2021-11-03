@@ -24,7 +24,7 @@ CStudioAuthoring.ContextualNav.SyncFromRepo = CStudioAuthoring.ContextualNav.Syn
   /**
    * initialize module
    */
-  initialize: function(config) {
+  initialize: function (config) {
     if (config.name == 'syncrepo') {
       this.initialized = true;
       var dropdownInnerEl = config.containerEl;
@@ -37,9 +37,9 @@ CStudioAuthoring.ContextualNav.SyncFromRepo = CStudioAuthoring.ContextualNav.Syn
 
       parentFolderLinkEl.id = 'syncrepo';
       parentFolderLinkEl.innerHTML = CMgs.format(siteDropdownLangBundle, 'syncrepo');
-      parentFolderLinkEl.onclick = function() {
+      parentFolderLinkEl.onclick = function () {
         CStudioAuthoring.Service.syncFromRepo(CStudioAuthoringContext.site, {
-          success: function(result) {
+          success: function (result) {
             CStudioAuthoring.Operations.showSimpleDialog(
               'previewInitiated-dialog',
               CStudioAuthoring.Operations.simpleDialogTypeINFO,
@@ -50,7 +50,7 @@ CStudioAuthoring.ContextualNav.SyncFromRepo = CStudioAuthoring.ContextualNav.Syn
               'success studioDialog'
             );
           },
-          failure: function() {}
+          failure: function () {}
         });
       };
 

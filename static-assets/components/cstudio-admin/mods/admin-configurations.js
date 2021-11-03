@@ -14,10 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-(function() {
+(function () {
   CStudioAdminConsole.Tool.AdminConfig =
     CStudioAdminConsole.Tool.AdminConfig ||
-    function(config, el) {
+    function (config, el) {
       this.containerEl = el;
       this.config = config;
       this.types = [];
@@ -28,7 +28,7 @@
    * Overarching class that drives the content type tools
    */
   YAHOO.extend(CStudioAdminConsole.Tool.AdminConfig, CStudioAdminConsole.Tool, {
-    renderWorkarea: function() {
+    renderWorkarea: function () {
       var workarea = document.querySelector('#cstudio-admin-console-workarea');
       var el = document.createElement('div');
       el.className = 'cstudio-admin-console-workarea-container';

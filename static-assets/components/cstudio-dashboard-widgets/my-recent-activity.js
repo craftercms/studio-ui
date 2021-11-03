@@ -24,7 +24,7 @@ if (typeof CStudioAuthoringWidgets == 'undefined' || !CStudioAuthoringWidgets) {
 /**
  * my recent activity
  */
-CStudioAuthoringWidgets.MyRecentActivityDashboard = function(widgetId, pageId) {
+CStudioAuthoringWidgets.MyRecentActivityDashboard = function (widgetId, pageId) {
   this.widgetId = widgetId;
   this.pageId = pageId;
   this._self = this;
@@ -42,7 +42,7 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard = function(widgetId, pageId) {
   /**
    * get table data
    */
-  this.retrieveTableData = function(sortBy, sortAscDesc, callback, retrieveTableData, filterByNumber, filterBy) {
+  this.retrieveTableData = function (sortBy, sortAscDesc, callback, retrieveTableData, filterByNumber, filterBy) {
     sortAscDesc = CStudioAuthoring.Utils.sortByAsc.init(sortBy, widgetId);
 
     CStudioAuthoring.Service.getUserActivitiesServices(
@@ -60,7 +60,7 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard = function(widgetId, pageId) {
   /**
    * render widget specific controls
    */
-  this.renderAuxControls = function(containerEl) {
+  this.renderAuxControls = function (containerEl) {
     var listItemEl = document.createElement('li');
     var itemFilterEl = document.createElement('a');
 
@@ -101,7 +101,7 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard = function(widgetId, pageId) {
 
     filterByEl._self = this;
 
-    filterByEl.onchange = function() {
+    filterByEl.onchange = function () {
       var _self = this._self;
       var selectedItems = filterByEl.selectedIndex;
 
@@ -124,7 +124,7 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard = function(widgetId, pageId) {
       }
     };
 
-    itemFilterEl.onclick = function() {
+    itemFilterEl.onclick = function () {
       var _self = this._self;
 
       _self.excludeLiveItems = !_self.excludeLiveItems;
@@ -143,7 +143,7 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard = function(widgetId, pageId) {
   /**
    * callback to render the table headings
    */
-  this.renderItemsHeading = function() {
+  this.renderItemsHeading = function () {
     var widgetId = this._self.widgetId,
       Common = WcmDashboardWidgetCommon;
 
@@ -201,7 +201,7 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard = function(widgetId, pageId) {
   /**
    * Call back to render each line item of the table
    */
-  this.renderLineItem = function(item) {
+  this.renderLineItem = function (item) {
     var itemName = item.internalName;
     if (!itemName || itemName == '') {
       itemName = item.title;

@@ -26,14 +26,14 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
   /**
    * initialize module
    */
-  initialize: function(config) {
+  initialize: function (config) {
     this.config = config;
   },
 
   /**
    * show dialog
    */
-  showDialog: function(cb, config) {
+  showDialog: function (cb, config) {
     this.config = config;
     this._self = this;
     this.cb = cb;
@@ -56,7 +56,7 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
   /**
    * create dialog
    */
-  createDialog: function() {
+  createDialog: function () {
     YDom.removeClass('cstudio-wcm-popup-div', 'yui-pe-content');
 
     var newdiv = YDom.get('cstudio-wcm-popup-div'),
@@ -150,7 +150,7 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
 
     // Render the Dialog
     dialog.render();
-    setTimeout(function() {
+    setTimeout(function () {
       $('#contentTypeDisplayName').focus();
     }, 200);
 
@@ -164,7 +164,7 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
       objectTypeEl: document.getElementById('contentTypeObjectType')
     };
 
-    YEvent.on('contentTypeObjectType', 'change', function() {
+    YEvent.on('contentTypeObjectType', 'change', function () {
       var type = document.getElementById('contentTypeObjectType').value;
       if (type == 'page') {
         document.getElementById('contentTypeAsFolder').checked = true;
@@ -173,7 +173,7 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
       }
     });
 
-    YEvent.on('contentTypeDisplayName', 'keyup', function() {
+    YEvent.on('contentTypeDisplayName', 'keyup', function () {
       YAHOO.Bubbling.fire('content-type.values.changed');
       value = document.getElementById('contentTypeDisplayName').value;
 
@@ -189,7 +189,7 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
 
     YEvent.addListener('createCancelButton', 'click', this.popupCancelClick);
 
-    $(document).on('keyup', function(e) {
+    $(document).on('keyup', function (e) {
       if (e.keyCode === 27) {
         // esc
         me.popupCancelClick();
@@ -203,7 +203,7 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
   /**
    * create clicked
    */
-  createClick: function(event, params) {
+  createClick: function (event, params) {
     var label = CStudioAuthoring.Dialogs.NewContentType.xmlEscape(params.labelEl.value);
     var name = CStudioAuthoring.Dialogs.NewContentType.xmlEscape(params.typeNameEl.value);
     var type = CStudioAuthoring.Dialogs.NewContentType.xmlEscape(params.objectTypeEl.value);
@@ -484,7 +484,7 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
   /**
    * event fired when the ok is pressed
    */
-  popupCancelClick: function(event) {
+  popupCancelClick: function (event) {
     CStudioAuthoring.Dialogs.NewContentType.closeDialog();
   },
 
@@ -495,14 +495,14 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
    * @param inputConfigObj : An object where the keys are IDs of the inputs, and the values are arrays of
    reg expressions with values that are invalid for the input
    */
-  buttonValidator: function(buttonId, inputConfigObj) {
+  buttonValidator: function (buttonId, inputConfigObj) {
     var enableButton,
       button = YDom.get(buttonId),
       configObj = inputConfigObj,
       inputEl = null,
       regExp;
 
-    var checkButton = function() {
+    var checkButton = function () {
       enableButton = true;
 
       controlLoop: for (var inputId in configObj) {
@@ -532,7 +532,7 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
     YAHOO.Bubbling.on('content-type.values.changed', checkButton);
   },
 
-  xmlEscape: function(value) {
+  xmlEscape: function (value) {
     value = value
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')

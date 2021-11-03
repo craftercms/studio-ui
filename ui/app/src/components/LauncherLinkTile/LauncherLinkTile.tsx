@@ -51,7 +51,7 @@ const LauncherLinkTile = (props: LauncherLinkTileProps) => {
           const id = systemLinkId === 'siteDashboardDialog' ? 'craftercms.components.Dashboard' : (
             systemLinkId === 'siteToolsDialog'
               ? 'craftercms.components.EmbeddedSiteTools'
-              : 'craftercms.components.EmbeddedSearchIframe'
+              : 'craftercms.components.Search'
           );
           dispatch(
             batchActions([
@@ -59,7 +59,7 @@ const LauncherLinkTile = (props: LauncherLinkTileProps) => {
               showWidgetDialog({
                 id: systemLinkId,
                 title,
-                widget: { id }
+                widget: { id, ...(systemLinkId === 'siteSearchDialog' && { configuration: { embedded: true } }) }
               })
             ])
           );

@@ -16,7 +16,7 @@
 
 CStudioForms.Controls.AWSFileUpload =
   CStudioForms.Controls.AWSFileUpload ||
-  function(id, form, owner, properties, constraints, readonly) {
+  function (id, form, owner, properties, constraints, readonly) {
     this.owner = owner;
     this.owner.registerField(this);
     this.errors = [];
@@ -31,13 +31,13 @@ CStudioForms.Controls.AWSFileUpload =
     this.readonly = readonly;
 
     if (properties) {
-      var required = constraints.find(function(property) {
+      var required = constraints.find(function (property) {
         return property.name === 'required';
       });
       if (required) {
         this.required = required.value === 'true';
       }
-      var profile_id = properties.find(function(property) {
+      var profile_id = properties.find(function (property) {
         return property.name === 'profile_id';
       });
       if (profile_id) {
@@ -49,15 +49,15 @@ CStudioForms.Controls.AWSFileUpload =
   };
 
 YAHOO.extend(CStudioForms.Controls.AWSFileUpload, CStudioForms.CStudioFormField, {
-  getLabel: function() {
+  getLabel: function () {
     return 'AWS File Upload';
   },
 
-  getName: function() {
+  getName: function () {
     return 'aws-file-upload';
   },
 
-  setValue: function(value) {
+  setValue: function (value) {
     var validationResult = true;
     if (value && value[0] && value[0].key) {
       this.value = value;
@@ -72,24 +72,24 @@ YAHOO.extend(CStudioForms.Controls.AWSFileUpload, CStudioForms.CStudioFormField,
     this.owner.notifyValidation();
   },
 
-  getValue: function() {
+  getValue: function () {
     return this.value;
   },
 
-  getSupportedProperties: function() {
+  getSupportedProperties: function () {
     return [{ label: 'Profile ID', name: 'profile_id', type: 'string', defaultValue: 's3-default' }];
   },
 
-  getSupportedConstraints: function() {
+  getSupportedConstraints: function () {
     return [{ label: CMgs.format(langBundle, 'required'), name: 'required', type: 'boolean' }];
   },
 
-  _onChange: function(evt, obj) {
+  _onChange: function (evt, obj) {
     var serviceUri = CStudioAuthoring.Service.createServiceUri('/api/1/services/api/1/aws/s3/upload.json');
 
     var callback = {
       cache: false,
-      upload: function(o) {
+      upload: function (o) {
         document.getElementById('cstudioSaveAndClose').disabled = '';
         document.getElementById('cstudioSaveAndCloseDraft').disabled = '';
         document.getElementById('cstudioSaveAndPreview').disabled = '';
@@ -123,7 +123,7 @@ YAHOO.extend(CStudioForms.Controls.AWSFileUpload, CStudioForms.CStudioFormField,
           );
         }
       },
-      failure: function(o) {
+      failure: function (o) {
         obj.fileEl.innerHTML = '';
         document.getElementById('cstudioSaveAndClose').disabled = '';
         document.getElementById('cstudioSaveAndCloseDraft').disabled = '';
@@ -152,7 +152,7 @@ YAHOO.extend(CStudioForms.Controls.AWSFileUpload, CStudioForms.CStudioFormField,
     obj.fileEl.innerHTML = '<i class="fa fa-spinner fa-spin"/>';
   },
 
-  render: function(config, containerEl, lastTwo) {
+  render: function (config, containerEl, lastTwo) {
     var titleEl = document.createElement('span');
     YAHOO.util.Dom.addClass(titleEl, 'cstudio-form-field-title');
     titleEl.textContent = config.title;

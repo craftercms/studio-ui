@@ -3,12 +3,12 @@ git:
   depth: 1
   quiet: true
 language:
-- node_js
-- java
+  - node_js
+  - java
 node_js:
-- 14.5.0
+  - 16.13.0
 jdk:
-- openjdk11
+  - openjdk11
 branches:
   only:
   - develop
@@ -22,4 +22,4 @@ notifications:
     skip_join: true
   slack: craftersoftware:7YiSb41ZG5rfMgiAY7Qgprc7
 script:
-  - bash -c "mvn -q -Dmaven.javadoc.skip=true clean package"
+  - bash -c "mvn -X -Dmaven.javadoc.skip=true clean package"

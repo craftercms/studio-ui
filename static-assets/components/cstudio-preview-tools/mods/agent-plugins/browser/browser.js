@@ -20,13 +20,13 @@
 CStudioAuthoring.MediumPanel.Browser = CStudioAuthoring.MediumPanel.Browser || {
   initialized: false,
 
-  initialize: function(config) {
+  initialize: function (config) {
     if (this.initialized == false) {
       this.initialized = true;
     }
   },
 
-  render: function(containerEl, config) {
+  render: function (containerEl, config) {
     var emulateEl = document.getElementById('cstudio-emulate');
 
     if (emulateEl) {
