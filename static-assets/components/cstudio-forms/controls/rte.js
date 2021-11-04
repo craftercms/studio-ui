@@ -561,7 +561,7 @@ CStudioAuthoring.Module.requireModule(
                     $('.cstudio-form-control-image-picker-add-container').remove();
 
                     try {
-                      addFunction(mapDatasource, cb); //video or image add function
+                      addFunction(mapDatasource, cb); // video or image add function
                     } catch (e) {
                       CStudioAuthoring.Operations.showSimpleDialog(
                         'datasourceError',
@@ -570,7 +570,9 @@ CStudioAuthoring.Module.requireModule(
                         _self.formatMessage(_self.messages.incompatibleDatasource),
                         null, // use default button
                         YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                        'studioDialog'
+                        'studioDialog',
+                        null,
+                        1301
                       );
                     }
                   },
