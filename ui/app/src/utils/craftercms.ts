@@ -25,6 +25,17 @@ import { IntlShape } from 'react-intl';
 import { CrafterCMSStore, getStoreSync } from '../state/store';
 import { getCurrentIntl } from './i18n';
 import { ComponentRecord, components, PluginDescriptor, plugins, registerPlugin } from '../services/plugin';
+import { Observable, from } from 'rxjs';
+
+// TODO:
+//  To avoid pre-loading all services and utils and ending up with a large app
+//  bundle, these can be made observables of the actual artefact.
+//  Then, services/utils, would be used in this fashion:
+//  craftercms.services.configuration$.pipe(
+//    switchMap((service) => service.fetchActiveTargetingModel())
+//  ).subscribe((targetingModel) => {
+//    // Do something with `targetingModel`
+//  });
 
 declare global {
   interface Window {
@@ -54,7 +65,9 @@ export interface CrafterCMSGlobal {
   plugins: Map<string, PluginDescriptor>;
   components: Map<string, ComponentRecord>;
   // utils: {};
-  // services: {};
+  services: {
+    configuration$: Observable<typeof import('../services/configuration')>;
+  };
   getIntl(): IntlShape;
   getStore(): CrafterCMSStore;
   define: {
@@ -120,13 +133,16 @@ define.amd = true;
 
 export { getCurrentIntl as getIntl, plugins, components, getStoreSync as getStore };
 
-const craftercms: CrafterCMSGlobal = {
+export const craftercms: CrafterCMSGlobal = {
   libs,
   plugins,
   components,
   define,
   getStore: getStoreSync,
-  getIntl: getCurrentIntl
+  getIntl: getCurrentIntl,
+  services: {
+    configuration$: from(import('../services/configuration'))
+  }
 };
 
 window.craftercms = craftercms;
