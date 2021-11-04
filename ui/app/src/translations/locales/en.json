@@ -438,7 +438,7 @@
   "groupsAdmin.usereRemoved": "{username} successfully removed from {group}",
   "groupsAdmin.usersAdded": "User(s) successfully added.",
   "groupsGrid.emptyStateMessage": "No Groups Found",
-  "guestDetectionMessage": "Communication with the preview application not detected. Studio will continue to retry the connection.",
+  "guestDetectionMessage": "Communication with the preview application was interrupted. Studio will continue to retry the connection.",
   "historyDialog.back.selectRevision": "Back to history list",
   "historyDialog.confirmRevertBody": "Are you sure you want to revert to {versionTitle}?",
   "historyDialog.confirmRevertTitle": "Revert confirmation",
