@@ -87,7 +87,6 @@
     "@emotion/react": "*",
     "@emotion/styled": "*",
     "@mui/material": "*",
-    "lorem-ipsum": "^2.0.4",
     "react": "*",
     "react-dom": "*",
     "typescript": "*",
