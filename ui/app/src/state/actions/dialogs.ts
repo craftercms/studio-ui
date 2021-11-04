@@ -45,6 +45,7 @@ import { PreviewDialogStateProps } from '../../components/PreviewDialog/utils';
 import { EditSiteDialogStateProps } from '../../components/EditSiteDialog/utils';
 import { LegacyFormDialogStateProps } from '../../components/LegacyFormDialog/utils';
 import { SingleFileUploadDialogStateProps } from '../../components/SingleFileUploadDialog';
+import { BrowseFilesDialogStateProps } from '../../components/BrowseFilesDialog';
 
 // region History
 export const showHistoryDialog = /*#__PURE__*/ createAction<Partial<HistoryDialogStateProps>>('SHOW_HISTORY_DIALOG');
@@ -264,4 +265,11 @@ export const updateWidgetDialog = /*#__PURE__*/ createAction<Partial<WidgetDialo
 
 // region Show Keyboard Shortcuts Dialog
 export const showKeyboardShortcutsDialog = /*#__PURE__*/ createAction('SHOW_KEYBOARD_SHORTCUTS_DIALOG');
+// endregion
+
+// region Browse Files Dialog
+export const showBrowseFilesDialog =
+  /*#__PURE__*/ createAction<Partial<BrowseFilesDialogStateProps>>('SHOW_BROWSE_FILES_DIALOG');
+export const closeBrowseFilesDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_BROWSE_FILES_DIALOG');
+export const browseFilesClosed = /*#__PURE__*/ createAction('BROWSE_FILES_DIALOG_CLOSED');
 // endregion

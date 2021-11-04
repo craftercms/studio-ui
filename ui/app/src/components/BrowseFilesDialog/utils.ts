@@ -18,6 +18,7 @@ import { ElasticParams, MediaItem, SearchItem } from '../../models/Search';
 import StandardAction from '../../models/StandardAction';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 import React from 'react';
+import { EnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
 
 export interface BrowseFilesDialogBaseProps {
   path: string;
@@ -32,7 +33,7 @@ export interface BrowseFilesDialogProps extends BrowseFilesDialogBaseProps, Enha
   onSuccess?(items: MediaItem | MediaItem[]): void;
 }
 
-export interface BrowseFilesDialogPropsStateProps extends BrowseFilesDialogBaseProps {
+export interface BrowseFilesDialogStateProps extends BrowseFilesDialogBaseProps, EnhancedDialogState {
   onClose?: StandardAction;
   onSuccess?: StandardAction;
   onClosed?: StandardAction;

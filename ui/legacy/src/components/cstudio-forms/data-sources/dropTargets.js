@@ -156,18 +156,39 @@
     },
 
     _openBrowse: function (contentType, control) {
-      let path = this._processPathsForMacros(this.baseBrowsePath);
-      path = `${path}/${contentType.replace(/\//g, '_').substr(1)}`;
-      CStudioAuthoring.Operations.openBrowse('', path, -1, 'select', true, {
-        success: function (searchId, selectedTOs) {
-          for (let i = 0; i < selectedTOs.length; i++) {
-            let item = selectedTOs[i];
-            let value = item.internalName && item.internalName !== '' ? item.internalName : item.uri;
-            control.newInsertItem(item.uri, value, 'shared');
-            control._renderItems();
+      const path = this._processPathsForMacros(this.baseBrowsePath);
+
+      const eventId = 'openBrowse.event.browseFilesDialog';
+      CrafterCMSNext.system.store.dispatch({
+        type: 'SHOW_BROWSE_FILES_DIALOG',
+        payload: {
+          open: true,
+          multiSelect: true,
+          path,
+          contentTypes: [contentType],
+          onSuccess: {
+            type: 'BATCH_ACTIONS',
+            payload: [
+              {
+                type: 'DISPATCH_DOM_EVENT',
+                payload: { id: eventId, type: 'success' }
+              },
+              {
+                type: 'CLOSE_BROWSE_FILES_DIALOG'
+              }
+            ]
+          },
+          onClosed: {
+            type: 'BROWSE_FILES_DIALOG_CLOSED'
           }
-        },
-        failure: function () {}
+        }
+      });
+
+      CrafterCMSNext.createLegacyCallbackListener(eventId, (result) => {
+        const { name, path } = result;
+        const value = name && name !== '' ? name : path;
+        control.newInsertItem(path, value, 'shared');
+        control._renderItems();
       });
     },
 
@@ -333,7 +354,7 @@
 
     _openContentTypeForm(contentType, type, control) {
       const self = this;
-      const path = `${self.baseRepoPath}/${contentType.replace(/\//g, '_').substr(1)}`;
+      const path = `${self.baseRepoPath}/${contentType.split('/').pop()}`;
 
       let parentPath = self.form.path;
       CStudioAuthoring.Operations.openContentWebForm(

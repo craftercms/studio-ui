@@ -56,6 +56,7 @@ const ItemMenu = lazy(() => import('../ItemActionsMenu'));
 const ItemMegaMenu = lazy(() => import('../ItemMegaMenu'));
 const AuthMonitor = lazy(() => import('../SystemStatus/AuthMonitor'));
 const PublishingStatusDialog = lazy(() => import('../PublishingStatusDialog'));
+const BrowseFilesDialog = lazy(() => import('../BrowseFilesDialog'));
 
 // @formatter:off
 function createCallback(action: StandardAction, dispatch: Dispatch): (output?: unknown) => void {
@@ -414,6 +415,15 @@ function GlobalDialogManager() {
           onMaximize={createCallback(tab.onMaximized, dispatch)}
         />
       ))}
+      {/* endregion */}
+
+      {/* region Browse Files Dialog */}
+      <BrowseFilesDialog
+        {...state.browseFiles}
+        onClose={createCallback(state.browseFiles.onClose, dispatch)}
+        onClosed={createCallback(state.browseFiles.onClosed, dispatch)}
+        onSuccess={createCallback(state.browseFiles.onSuccess, dispatch)}
+      />
       {/* endregion */}
     </Suspense>
   );
