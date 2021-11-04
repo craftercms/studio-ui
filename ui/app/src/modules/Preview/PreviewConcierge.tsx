@@ -74,7 +74,6 @@ import {
 import { filter, map, pluck, switchMap, take, takeUntil } from 'rxjs/operators';
 import ContentType from '../../models/ContentType';
 import { forkJoin, Observable, of, ReplaySubject } from 'rxjs';
-import Button from '@mui/material/Button';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { getGuestToHostBus, getHostToGuestBus, getHostToHostBus } from './previewContext';
 import { useDispatch } from 'react-redux';
