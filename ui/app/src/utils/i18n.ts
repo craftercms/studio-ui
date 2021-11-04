@@ -22,6 +22,8 @@ import { createIntl, createIntlCache, IntlShape } from 'react-intl';
 import { Subject } from 'rxjs';
 import TranslationOrText from '../models/TranslationOrText';
 import { nou } from './object';
+import { FormatXMLElementFn, PrimitiveType } from 'intl-messageformat';
+import { ReactElement, ReactNodeArray } from 'react';
 
 export type BundledTranslationsLocaleCodes = 'en' | 'es' | 'de' | 'ko';
 
@@ -83,12 +85,13 @@ export function getTranslation(key: string, table: any, formatMessage = (descrip
 
 export function getPossibleTranslation(
   titleOrDescriptor: TranslationOrText,
-  formatMessage: IntlShape['formatMessage']
-): string {
+  formatMessage: IntlShape['formatMessage'],
+  values?: Record<string, PrimitiveType | ReactElement | FormatXMLElementFn>
+): string | ReactNodeArray {
   if (nou(titleOrDescriptor)) {
     return null;
   }
-  return typeof titleOrDescriptor === 'object' ? formatMessage(titleOrDescriptor) : titleOrDescriptor;
+  return typeof titleOrDescriptor === 'object' ? formatMessage(titleOrDescriptor, values) : titleOrDescriptor;
 }
 
 export function getCurrentLocale(): string {

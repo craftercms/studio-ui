@@ -16,7 +16,7 @@
 
 import { createLookupTable } from './object';
 import ContentType, { ContentTypeField } from '../models/ContentType';
-import { LoremIpsum } from 'lorem-ipsum';
+import Jabber from 'jabber';
 import LookupTable from '../models/LookupTable';
 
 export function getRelatedContentTypeIds(contentType: ContentType): string[] {
@@ -107,17 +107,14 @@ export function getDefaultValue(field: ContentTypeField): string | number {
       case 'textarea':
       case 'text': {
         let maxLength = parseInt(field.validations.maxLength?.value);
-        let lorem = new LoremIpsum({
-          wordsPerSentence: {
-            max: 4,
-            min: 4
-          }
-        });
-        return maxLength ? lorem.generateSentences(1).substring(0, maxLength / 2) : lorem.generateWords(1);
+        let textGen = new Jabber();
+        return maxLength
+          ? `${textGen.createParagraph(50).substring(0, maxLength)}.`.replace(/\.+/, '.')
+          : textGen.createParagraph(10);
       }
       case 'html':
-        let lorem = new LoremIpsum();
-        return lorem.generateParagraphs(1);
+        let textGen = new Jabber();
+        return textGen.createParagraph(10);
       case 'numeric-input': {
         return field.validations.minValue?.value ?? 1;
       }

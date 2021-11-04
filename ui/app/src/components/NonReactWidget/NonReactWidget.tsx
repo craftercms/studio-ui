@@ -15,7 +15,7 @@
  */
 
 import React, { useRef } from 'react';
-import * as craftercms from '../../utils/craftercms';
+import { craftercms } from '../../utils/craftercms';
 import { NonReactComponentRecord } from '../../services/plugin';
 import { useMount } from '../../utils/hooks/useMount';
 

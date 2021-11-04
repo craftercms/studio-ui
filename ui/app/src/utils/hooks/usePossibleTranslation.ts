@@ -46,5 +46,5 @@ export function usePossibleTranslation(
   values?: Record<string, PrimitiveType | ReactElement | FormatXMLElementFn>
 ): string | ReactNodeArray {
   const { formatMessage } = useIntl();
-  return getPossibleTranslation(titleOrDescriptor, formatMessage);
+  return getPossibleTranslation(titleOrDescriptor, formatMessage, values);
 }

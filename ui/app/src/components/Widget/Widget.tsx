@@ -94,22 +94,25 @@ const Widget = memo(function (props: WidgetProps) {
             }
           }
         }),
-        () => ({
-          default: function ({ id, plugin }) {
-            return (
-              <ErrorState
-                styles={{ image: { width: 100 } }}
-                title={formatMessage(messages.pluginLoadFailedMessageTitle)}
-                message={formatMessage(messages.pluginLoadFailedMessageBody, {
-                  id,
-                  info: Object.entries(plugin)
-                    .map(([key, value]) => `${key} "${value}"`)
-                    .join(', ')
-                })}
-              />
-            );
-          }
-        })
+        (error) => {
+          console.error(error);
+          return {
+            default: function ({ id, plugin }) {
+              return (
+                <ErrorState
+                  styles={{ image: { width: 100 } }}
+                  title={formatMessage(messages.pluginLoadFailedMessageTitle)}
+                  message={formatMessage(messages.pluginLoadFailedMessageBody, {
+                    id,
+                    info: Object.entries(plugin)
+                      .map(([key, value]) => `${key} "${value}"`)
+                      .join(', ')
+                  })}
+                />
+              );
+            }
+          };
+        }
       )
     );
     return <Component {...props} />;
