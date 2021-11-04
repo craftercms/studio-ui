@@ -16,7 +16,7 @@
 
 CStudioForms.Controls.Dropdown =
   CStudioForms.Controls.Dropdown ||
-  function(id, form, owner, properties, constraints, readonly) {
+  function (id, form, owner, properties, constraints, readonly) {
     this.owner = owner;
     this.owner.registerField(this);
     this.errors = [];
@@ -37,11 +37,11 @@ CStudioForms.Controls.Dropdown =
   };
 
 YAHOO.extend(CStudioForms.Controls.Dropdown, CStudioForms.CStudioFormField, {
-  getLabel: function() {
+  getLabel: function () {
     return CMgs.format(langBundle, 'dropdown');
   },
 
-  validate: function(obj) {
+  validate: function (obj) {
     if (obj.inputEl) obj.value = obj.inputEl.value;
     if (obj.required) {
       if (obj.value == '') {
@@ -57,17 +57,17 @@ YAHOO.extend(CStudioForms.Controls.Dropdown, CStudioForms.CStudioFormField, {
     obj.owner.notifyValidation();
   },
 
-  _onChange: function(evt, obj) {
+  _onChange: function (evt, obj) {
     this.validate(obj);
     obj.form.updateModel(obj.id, obj.getValue());
   },
 
-  _onChangeVal: function(evt, obj) {
+  _onChangeVal: function (evt, obj) {
     obj.edited = true;
     obj._onChange(evt, obj);
   },
 
-  onDatasourceLoaded: function(data) {
+  onDatasourceLoaded: function (data) {
     // TODO: is this being called? forms-engine 1439
     if (this.datasourceName === data.name && !this.datasource) {
       var datasource = this.form.datasourceMap[this.datasourceName];
@@ -76,7 +76,7 @@ YAHOO.extend(CStudioForms.Controls.Dropdown, CStudioForms.CStudioFormField, {
     }
   },
 
-  render: function(config, containerEl) {
+  render: function (config, containerEl) {
     // we need to make the general layout of a control inherit from common
     // you should be able to override it -- but most of the time it wil be the same
     containerEl.id = this.id;
@@ -107,7 +107,7 @@ YAHOO.extend(CStudioForms.Controls.Dropdown, CStudioForms.CStudioFormField, {
     var keyValueList = null;
 
     var cb = {
-      success: function(list) {
+      success: function (list) {
         keyValueList = list;
         var titleEl = document.createElement('span');
 
@@ -142,7 +142,7 @@ YAHOO.extend(CStudioForms.Controls.Dropdown, CStudioForms.CStudioFormField, {
           YAHOO.util.Event.on(
             inputEl,
             'focus',
-            function(evt, context) {
+            function (evt, context) {
               context.form.setFocusedField(context);
             },
             _self
@@ -223,22 +223,22 @@ YAHOO.extend(CStudioForms.Controls.Dropdown, CStudioForms.CStudioFormField, {
     }
   },
 
-  getValue: function() {
+  getValue: function () {
     return this.value;
   },
 
-  setValue: function(value) {
+  setValue: function (value) {
     this.value = value;
     if (this.inputEl) this.inputEl.value = value;
     this._onChange(null, this);
     this.edited = false;
   },
 
-  getName: function() {
+  getName: function () {
     return 'dropdown';
   },
 
-  getSupportedProperties: function() {
+  getSupportedProperties: function () {
     return [
       { label: CMgs.format(langBundle, 'datasource'), name: 'datasource', type: 'datasource:item' },
       { label: CMgs.format(langBundle, 'allowEmptyValue'), name: 'emptyvalue', type: 'boolean' },
@@ -246,11 +246,11 @@ YAHOO.extend(CStudioForms.Controls.Dropdown, CStudioForms.CStudioFormField, {
     ];
   },
 
-  getSupportedConstraints: function() {
+  getSupportedConstraints: function () {
     return [{ label: CMgs.format(langBundle, 'required'), name: 'required', type: 'boolean' }];
   },
 
-  getSupportedPostFixes: function() {
+  getSupportedPostFixes: function () {
     return this.supportedPostFixes;
   }
 });

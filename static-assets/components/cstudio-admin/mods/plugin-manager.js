@@ -17,14 +17,14 @@
 CStudioAuthoring.Utils.addCss('/static-assets/components/cstudio-admin/mods/plugin-manager/plugin.css');
 CStudioAdminConsole.Tool.PluginManager =
   CStudioAdminConsole.Tool.PluginManager ||
-  function(config, el) {
+  function (config, el) {
     this.containerEl = el;
     this.config = config;
     return this;
   };
 
 YAHOO.extend(CStudioAdminConsole.Tool.PluginManager, CStudioAdminConsole.Tool, {
-  renderWorkarea: function() {
+  renderWorkarea: function () {
     var workareaEl = document.getElementById('cstudio-admin-console-workarea'),
       actions = [];
     workareaEl.innerHTML = '<h1>Plugins</h1>';

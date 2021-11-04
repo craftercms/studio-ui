@@ -14,14 +14,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-(function(window) {
+(function (window) {
   'use strict';
 
   var crafter = {};
 
-  crafter.noop = function() {};
+  crafter.noop = function () {};
 
-  crafter.define = function(packageName, component) {
+  crafter.define = function (packageName, component) {
     var root = crafter,
       packages = packageName.split('.'),
       componentName = packages[packages.length - 1];
@@ -32,14 +32,14 @@
     }
     root[componentName] = component;
     if (typeof window.crafterDefine === 'function' && window.crafterDefine.amd) {
-      window.crafterDefine(dasherize(componentName), [], function() {
+      window.crafterDefine(dasherize(componentName), [], function () {
         return component;
       });
     }
     return 'crafter.' + packageName;
   };
 
-  crafter.guid = function() {
+  crafter.guid = function () {
     return (
       (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1) +
       '-' +
@@ -54,7 +54,7 @@
   crafter.String = CrafterString;
 
   crafter.studio = {
-    define: function(packageName, component) {
+    define: function (packageName, component) {
       packageName = 'studio.' + packageName;
       return crafter.define(packageName, component);
     },
@@ -124,7 +124,7 @@
 
         '': ''
       },
-      cstopic: function(topic) {
+      cstopic: function (topic) {
         return crafter.studio.preview.Topics[topic] + '_cstd';
       }
     }
@@ -138,10 +138,10 @@
   }
 
   CrafterString.prototype = {
-    fmt: function(/* fmt1, fmt2, fmt2 */) {
+    fmt: function (/* fmt1, fmt2, fmt2 */) {
       var index = 0,
         formats = Array.prototype.splice.call(arguments, 0);
-      return this.string.replace(/%@([0-9]+)?/g, function(s, argIndex) {
+      return this.string.replace(/%@([0-9]+)?/g, function (s, argIndex) {
         argIndex = argIndex ? parseInt(argIndex, 10) - 1 : index++;
         index >= formats.length && (index = 0);
         s = formats[argIndex];
@@ -159,7 +159,7 @@
       .toLowerCase();
   }
 
-  crafter.join = function(/* path segments */) {
+  crafter.join = function (/* path segments */) {
     // Split the inputs into a list of path commands.
     var parts = [];
     for (var i = 0, l = arguments.length; i < l; i++) {
@@ -185,12 +185,12 @@
 
   // A simple function to get the dirname of a path
   // Trailing slashes are ignored. Leading slash is preserved.
-  crafter.dirname = function(path) {
+  crafter.dirname = function (path) {
     return join(path, '..');
   };
 
   if (typeof window.crafterDefine === 'function' && window.crafterDefine.amd) {
-    window.crafterDefine('crafter', [], function() {
+    window.crafterDefine('crafter', [], function () {
       return crafter;
     });
   } else {

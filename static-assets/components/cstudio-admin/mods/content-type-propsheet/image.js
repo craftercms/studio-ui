@@ -16,7 +16,7 @@
 
 CStudioAdminConsole.Tool.ContentTypes.PropertyType.Image =
   CStudioAdminConsole.Tool.ContentTypes.PropertyType.Image ||
-  function(fieldName, containerEl) {
+  function (fieldName, containerEl) {
     this.fieldName = fieldName;
     this.containerEl = containerEl;
     this.WIDTHCONSTRAINS = 775;
@@ -28,7 +28,7 @@ YAHOO.extend(
   CStudioAdminConsole.Tool.ContentTypes.PropertyType.Image,
   CStudioAdminConsole.Tool.ContentTypes.PropertyType,
   {
-    render: function(value, updateFn) {
+    render: function (value, updateFn) {
       var _self = this;
       var containerEl = this.containerEl;
       var valueEl = document.createElement('input');
@@ -45,7 +45,7 @@ YAHOO.extend(
       YAHOO.util.Event.on(
         valueEl,
         'keydown',
-        function(evt) {
+        function (evt) {
           YAHOO.util.Event.stopEvent(evt);
         },
         valueEl
@@ -54,14 +54,14 @@ YAHOO.extend(
       YAHOO.util.Event.on(
         valueEl,
         'focus',
-        function(evt) {
+        function (evt) {
           _self.showIcons();
         },
         valueEl
       );
 
       if (updateFn) {
-        var updateFieldFn = function(event, el) {
+        var updateFieldFn = function (event, el) {
           updateFn(event, el);
           CStudioAdminConsole.Tool.ContentTypes.visualization.render();
         };
@@ -72,11 +72,11 @@ YAHOO.extend(
       this.valueEl = valueEl;
     },
 
-    getValue: function() {
+    getValue: function () {
       return this.valueEl.value;
     },
 
-    showIcons: function() {
+    showIcons: function () {
       var _self = this;
       var configFilesPath = CStudioAuthoring.Constants.CONFIG_FILES_PATH;
       var validExtensions = CStudioAuthoring.Constants.IMAGE_VALID_EXTENSIONS;
@@ -100,9 +100,9 @@ YAHOO.extend(
 
         this.controlsContainerEl = controlsContainerEl;
 
-        uploadEl.onclick = function() {
+        uploadEl.onclick = function () {
           var uploadCb = {
-            success: function(to) {
+            success: function (to) {
               var imageData = to;
               _self.createImageData(
                 imageData,
@@ -139,7 +139,7 @@ YAHOO.extend(
                     _self.updateFn(null, _self.valueEl);
                   } else {
                     var callback = {
-                      success: function(content) {
+                      success: function (content) {
                         var itemURL = content.message.internalName;
                         _self.valueEl.value = itemURL;
                         _self.value = itemURL;
@@ -160,7 +160,7 @@ YAHOO.extend(
                   }
                 }
                 image.addEventListener('load', imageLoaded, false);
-                image.addEventListener('error', function() {
+                image.addEventListener('error', function () {
                   message = CMgs.format(langBundle, 'loadImageError');
                   CStudioAuthoring.Operations.showSimpleDialog(
                     'error-dialog',
@@ -190,7 +190,7 @@ YAHOO.extend(
               }
             },
 
-            failure: function() {}
+            failure: function () {}
           };
 
           CStudioAuthoring.Operations.uploadAsset(
@@ -201,7 +201,7 @@ YAHOO.extend(
           );
         };
 
-        deleteEl.onclick = function() {
+        deleteEl.onclick = function () {
           if (_self.valueEl.value != '') {
             _self.valueEl.value = '';
             _self.value = '';
@@ -215,11 +215,11 @@ YAHOO.extend(
     /**
      * create preview URL
      */
-    createPreviewUrl: function(imagePath) {
+    createPreviewUrl: function (imagePath) {
       return CStudioAuthoringContext.previewAppBaseUri + imagePath + '';
     },
 
-    createImageData: function(imageData, path) {
+    createImageData: function (imageData, path) {
       var url = this.createPreviewUrl(
         CStudioAuthoringContext.baseUri +
           '/api/1/services/api/1/content/get-content-at-path.bin?site=' +
@@ -231,10 +231,10 @@ YAHOO.extend(
       imageData.relativeUrl = path;
     },
 
-    isImageValid: function(width, originalWidth, height, originalHeight) {
+    isImageValid: function (width, originalWidth, height, originalHeight) {
       var result = true;
 
-      var checkFn = function(value, srcValue) {
+      var checkFn = function (value, srcValue) {
         var internalResult = true;
 
         if (value) {

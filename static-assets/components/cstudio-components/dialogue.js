@@ -20,12 +20,12 @@
  * @author: Roy Art
  * @date: 03.01.2011
  **/
-(function() {
+(function () {
   var Dialogue,
     Dom = YAHOO.util.Dom,
     Event = YAHOO.util.Event;
 
-  CStudioAuthoring.register('Component.Dialogue', function(el, userConfig) {
+  CStudioAuthoring.register('Component.Dialogue', function (el, userConfig) {
     CStudioAuthoring.Component.Dialogue.superclass.constructor.call(this, el, userConfig);
   });
 
@@ -40,25 +40,25 @@
   ].join('');
 
   YAHOO.extend(Dialogue, YAHOO.widget.SimpleDialog, {
-    init: function(el, userConfig) {
+    init: function (el, userConfig) {
       Dialogue.superclass.init.call(this, el, userConfig);
       Dom.addClass(this.element, Dialogue.CSS_CLASS_TOP);
 
-      this.changeBodyEvent.subscribe(function(bodyContent) {
+      this.changeBodyEvent.subscribe(function (bodyContent) {
         Dom.addClass(this.body, Dialogue.CSS_BODY);
       }, this);
 
-      this.changeBodyEvent.subscribe(function(bodyContent) {
+      this.changeBodyEvent.subscribe(function (bodyContent) {
         Dom.addClass(this.mask, Dialogue.CSS_CLASS_MASK);
       }, this);
 
-      this.showMaskEvent.subscribe(function() {
+      this.showMaskEvent.subscribe(function () {
         Dom.addClass(this.mask, Dialogue.CSS_CLASS_MASK);
       }, this);
 
       return this;
     },
-    initDefaultConfig: function() {
+    initDefaultConfig: function () {
       Dialogue.superclass.initDefaultConfig.call(this);
       this.cfg.addProperty('loadBody', {
         handler: this.configLoadBodyFragment,
@@ -73,7 +73,7 @@
      * Intended for loading an HTML fragment that will
      * serve as the Dialogue's body
      */
-    configLoadBodyFragment: function(type, args, obj) {
+    configLoadBodyFragment: function (type, args, obj) {
       var self = this,
         cfg = this.cfg.getProperty('loadBody');
       if (cfg) {
@@ -84,17 +84,17 @@
         !hasBody && this.render();
         /* - - */
         cfg.loaderFn({
-          success: function(oResponse) {
+          success: function (oResponse) {
             self.setBody(oResponse.responseText);
             cfg.callback && cfg.callback(oResponse);
           },
-          failure: function() {
+          failure: function () {
             self.cfg.setProperty('close', true);
             var elId = CStudioAuthoring.Utils.getScopedId('retry');
             self.setBody(
               'Unable to load the requested resource. <a id="' + elId + '" href="javascript:">Try again</a>'
             );
-            Event.addListener(elId, 'click', function() {
+            Event.addListener(elId, 'click', function () {
               self.configLoadBodyFragment(type, args, obj);
             });
           }
@@ -102,7 +102,7 @@
       }
     },
 
-    configFixedX: function(type, args, obj) {
+    configFixedX: function (type, args, obj) {
       var val = args[0],
         alreadySubscribed = YAHOO.util.Config.alreadySubscribed,
         windowResizeEvent = YAHOO.widget.Overlay.windowResizeEvent;
@@ -116,7 +116,7 @@
         windowResizeEvent.unsubscribe(this.doCentreXOnDomEvent, this);
       }
     },
-    centreX: function() {
+    centreX: function () {
       var nViewportOffset = YAHOO.widget.Overlay.VIEWPORT_OFFSET,
         elementWidth = this.element.offsetWidth,
         viewPortWidth = Dom.getViewportWidth(),
@@ -129,13 +129,13 @@
       this.cfg.setProperty('x', parseInt(x, 10));
       this.cfg.refireEvent('iframe');
     },
-    doCentreXOnDomEvent: function() {
+    doCentreXOnDomEvent: function () {
       if (this.cfg.getProperty('visible')) {
         this.centreX();
       }
     },
 
-    configFixedY: function(type, args, obj) {
+    configFixedY: function (type, args, obj) {
       var val = args[0],
         alreadySubscribed = YAHOO.util.Config.alreadySubscribed,
         windowResizeEvent = YAHOO.widget.Overlay.windowResizeEvent;
@@ -149,7 +149,7 @@
         windowResizeEvent.unsubscribe(this.doCentreYOnDomEvent, this);
       }
     },
-    centreY: function() {
+    centreY: function () {
       var nViewportOffset = YAHOO.widget.Overlay.VIEWPORT_OFFSET,
         elementHeight = this.element.offsetHeight,
         viewPortHeight = Dom.getViewportHeight(),
@@ -164,13 +164,13 @@
       this.cfg.setProperty('y', parseInt(y, 10));
       this.cfg.refireEvent('iframe');
     },
-    doCentreYOnDomEvent: function() {
+    doCentreYOnDomEvent: function () {
       if (this.cfg.getProperty('visible')) {
         this.centreY();
       }
     },
 
-    destroy: function() {
+    destroy: function () {
       CStudioAuthoring.Component.Dialogue.superclass.destroy.call(this);
       YAHOO.widget.Overlay.windowResizeEvent.unsubscribe(this.doCentreXOnDomEvent, this);
     }

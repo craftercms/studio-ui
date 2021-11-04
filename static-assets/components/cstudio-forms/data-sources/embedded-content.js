@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-CStudioForms.Datasources.EmbeddedContent = function(id, form, properties, constraints) {
+CStudioForms.Datasources.EmbeddedContent = function (id, form, properties, constraints) {
   this.id = id;
   this.form = form;
   this.properties = properties;
@@ -38,18 +38,18 @@ CStudioForms.Datasources.EmbeddedContent = function(id, form, properties, constr
 YAHOO.extend(CStudioForms.Datasources.EmbeddedContent, CStudioForms.CStudioFormDatasource, {
   itemsAreContentReferences: true,
 
-  createElementAction: function(control, _self) {
+  createElementAction: function (control, _self) {
     if (_self.contentType === '') {
       CStudioAuthoring.Operations.createNewContent(
         CStudioAuthoringContext.site,
         CStudioAuthoring.Constants.GET_ALL_CONTENT_TYPES,
         false,
         {
-          success: function(contentTO, editorId, name, value) {
+          success: function (contentTO, editorId, name, value) {
             control.insertItem(name, value, null, null, _self.id);
             control._renderItems();
           },
-          failure: function() {}
+          failure: function () {}
         },
         true,
         true,
@@ -65,11 +65,11 @@ YAHOO.extend(CStudioForms.Datasources.EmbeddedContent, CStudioForms.CStudioFormD
         false,
         false,
         {
-          success: function(contentTO, editorId, name, value) {
+          success: function (contentTO, editorId, name, value) {
             control.insertItem(name, value, null, null, _self.id);
             control._renderItems();
           },
-          failure: function() {}
+          failure: function () {}
         },
         [
           { name: 'childForm', value: 'true' },
@@ -81,7 +81,7 @@ YAHOO.extend(CStudioForms.Datasources.EmbeddedContent, CStudioForms.CStudioFormD
     }
   },
 
-  add: function(control, onlyAppend) {
+  add: function (control, onlyAppend) {
     var CMgs = CStudioAuthoring.Messages;
     var langBundle = CMgs.getBundle('contentTypes', CStudioAuthoringContext.lang);
 
@@ -109,7 +109,7 @@ YAHOO.extend(CStudioForms.Datasources.EmbeddedContent, CStudioForms.CStudioFormD
       YAHOO.util.Event.on(
         create[0],
         'click',
-        function() {
+        function () {
           _self.createElementAction(control, _self);
         },
         create[0]
@@ -119,7 +119,7 @@ YAHOO.extend(CStudioForms.Datasources.EmbeddedContent, CStudioForms.CStudioFormD
     }
   },
 
-  edit: function(key, control, index) {
+  edit: function (key, control, index) {
     var _self = this;
     const readonly = control.readonly;
     CStudioForms.communication.sendAndAwait(key, (message) => {
@@ -135,7 +135,7 @@ YAHOO.extend(CStudioForms.Datasources.EmbeddedContent, CStudioForms.CStudioFormD
         null, // field
         true,
         {
-          success: function(contentTO, editorId, name, value, draft, action) {
+          success: function (contentTO, editorId, name, value, draft, action) {
             if (control) {
               control.updateEditedItem(value, _self.id, index);
             }
@@ -147,23 +147,23 @@ YAHOO.extend(CStudioForms.Datasources.EmbeddedContent, CStudioForms.CStudioFormD
     });
   },
 
-  getLabel: function() {
+  getLabel: function () {
     return this.formatMessage(this.embeddedContentDSMessages.embeddedContent);
   },
 
-  getInterface: function() {
+  getInterface: function () {
     return 'item';
   },
 
-  getName: function() {
+  getName: function () {
     return 'embedded-content';
   },
 
-  getSupportedProperties: function() {
+  getSupportedProperties: function () {
     return [{ label: CMgs.format(langBundle, 'contentType'), name: 'contentType', type: 'string' }];
   },
 
-  getSupportedConstraints: function() {
+  getSupportedConstraints: function () {
     return [];
   }
 });

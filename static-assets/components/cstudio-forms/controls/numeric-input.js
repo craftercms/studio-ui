@@ -14,14 +14,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-(function() {
+(function () {
   const i18n = CrafterCMSNext.i18n,
     formatMessage = i18n.intl.formatMessage,
     numericInputControlMessages = i18n.messages.numericInputControlMessages;
 
   CStudioForms.Controls.numericInput =
     CStudioForms.Controls.numericInput ||
-    function(id, form, owner, properties, constraints, readonly) {
+    function (id, form, owner, properties, constraints, readonly) {
       this.owner = owner;
       this.owner.registerField(this);
       this.errors = [];
@@ -42,11 +42,11 @@
     };
 
   YAHOO.extend(CStudioForms.Controls.numericInput, CStudioForms.CStudioFormField, {
-    getLabel: function() {
+    getLabel: function () {
       return CMgs.format(langBundle, 'numericInput');
     },
 
-    _onChange: function(evt, obj) {
+    _onChange: function (evt, obj) {
       obj.value = obj.inputEl.value;
 
       // Empty error state before new validation (for a clean state)
@@ -125,7 +125,7 @@
       obj.form.updateModel(obj.id, obj.getValue());
     },
 
-    _onChangeVal: function(evt, obj) {
+    _onChangeVal: function (evt, obj) {
       obj.edited = true;
       if (this._onChange) {
         this._onChange(evt, obj);
@@ -137,11 +137,11 @@
      * @param evt event
      * @param el element
      */
-    count: function(evt, countEl, el) {
+    count: function (evt, countEl, el) {
       const self = this;
       clearTimeout(el.inputTimeout);
 
-      el.inputTimeout = setTimeout(function() {
+      el.inputTimeout = setTimeout(function () {
         const element = el ? el : self,
           max = element.maxValue,
           min = element.minValue;
@@ -154,7 +154,7 @@
       }, 500);
     },
 
-    render: function(config, containerEl) {
+    render: function (config, containerEl) {
       const self = this;
       // we need to make the general layout of a control inherit from common
       // you should be able to override it -- but most of the time it wil be the same
@@ -183,7 +183,7 @@
       YAHOO.util.Event.on(
         inputEl,
         'focus',
-        function(evt, context) {
+        function (evt, context) {
           context.form.setFocusedField(context);
         },
         this
@@ -236,7 +236,7 @@
       controlWidgetContainerEl.appendChild(numTypeErrEl);
       this.numTypeErrEl = numTypeErrEl;
 
-      $(inputEl).on('keyup keypress mouseup', function(e) {
+      $(inputEl).on('keyup keypress mouseup', function (e) {
         self.count(e, countEl, this);
       });
 
@@ -253,11 +253,11 @@
       containerEl.appendChild(descriptionEl);
     },
 
-    getValue: function() {
+    getValue: function () {
       return this.value;
     },
 
-    setValue: function(value) {
+    setValue: function (value) {
       this.value = value;
       this.inputEl.value = value;
 
@@ -266,11 +266,11 @@
       this.edited = false;
     },
 
-    getName: function() {
+    getName: function () {
       return 'numeric-input';
     },
 
-    getSupportedProperties: function() {
+    getSupportedProperties: function () {
       return [
         {
           label: CMgs.format(langBundle, 'displaySize'),
@@ -293,14 +293,14 @@
       ];
     },
 
-    getSupportedConstraints: function() {
+    getSupportedConstraints: function () {
       return [
         { label: CMgs.format(langBundle, 'required'), name: 'required', type: 'boolean' },
         { label: CMgs.format(langBundle, 'matchPattern'), name: 'pattern', type: 'string' }
       ];
     },
 
-    getSupportedPostFixes: function() {
+    getSupportedPostFixes: function () {
       return this.supportedPostFixes;
     }
   });

@@ -16,7 +16,7 @@
 
 CStudioAdminConsole.Tool.ContentTypes.PropertyType.Dropdown =
   CStudioAdminConsole.Tool.ContentTypes.PropertyType.Dropdown ||
-  function(fieldName, containerEl) {
+  function (fieldName, containerEl) {
     this.fieldName = fieldName;
     this.containerEl = containerEl;
     this.value = null;
@@ -28,12 +28,12 @@ YAHOO.extend(
   CStudioAdminConsole.Tool.ContentTypes.PropertyType.Dropdown,
   CStudioAdminConsole.Tool.ContentTypes.PropertyType,
   {
-    render: function(value, updateFn) {
+    render: function (value, updateFn) {
       function createDropdown(value) {
         var ddEl = document.createElement('select');
 
         if (Array.isArray(value)) {
-          value.forEach(function(optObj) {
+          value.forEach(function (optObj) {
             var optEl = document.createElement('option');
 
             if (optObj.hasOwnProperty('value') && optObj.hasOwnProperty('label') && optObj.hasOwnProperty('selected')) {
@@ -65,7 +65,7 @@ YAHOO.extend(
       this.containerEl.appendChild(wrapperEl);
 
       if (updateFn) {
-        var updateFieldFn = function(event, _this) {
+        var updateFieldFn = function (event, _this) {
           _this.value = _this.getValue();
           updateFn(event, _this);
           CStudioAdminConsole.Tool.ContentTypes.visualization.render();
@@ -74,12 +74,12 @@ YAHOO.extend(
       }
     },
 
-    getValue: function() {
+    getValue: function () {
       var controlEl = this.controlEl,
         ddValue = this.value;
 
       // controlEl.options isn't a "real" array so it doesn't have the forEach function, but we'll borrow it from the Array prototype
-      Array.prototype.forEach.call(controlEl.options, function(opt, idx) {
+      Array.prototype.forEach.call(controlEl.options, function (opt, idx) {
         ddValue[idx].selected = opt.selected; // Only update the selected value of each one of the options in the dropdown
       });
       return ddValue;

@@ -16,7 +16,7 @@
 
 CStudioAdminConsole.Tool.ContentTypes.PropertyType.Range =
   CStudioAdminConsole.Tool.ContentTypes.PropertyType.Range ||
-  function(fieldName, containerEl) {
+  function (fieldName, containerEl) {
     this.fieldName = fieldName;
     this.containerEl = containerEl;
     this.fieldValue = { exact: '', min: '', max: '' };
@@ -29,7 +29,7 @@ YAHOO.extend(
   CStudioAdminConsole.Tool.ContentTypes.PropertyType.Range,
   CStudioAdminConsole.Tool.ContentTypes.PropertyType,
   {
-    render: function(value, updateFn) {
+    render: function (value, updateFn) {
       var _self = this;
       var isExact = false;
       if (value) {
@@ -92,7 +92,7 @@ YAHOO.extend(
       ctrlsContainerEl.appendChild(rangeContainerEl);
       containerEl.appendChild(ctrlsContainerEl);
 
-      var switchFn = function(evt, el) {
+      var switchFn = function (evt, el) {
         if (YDom.hasClass(exactContainerEl, 'hide')) {
           minValEl.resetValue();
           maxValEl.resetValue();
@@ -116,7 +116,7 @@ YAHOO.extend(
       updateFn(null, { fieldName: this.fieldName, value: this.valueToJsonString(this.fieldValue) });
     },
 
-    createControl: function(label, updateFn) {
+    createControl: function (label, updateFn) {
       var _self = this;
 
       var valueEl = document.createElement('div');
@@ -132,12 +132,12 @@ YAHOO.extend(
 
       valEl.value = this.fieldValue[label];
 
-      var hideFn = function(evt, el) {
+      var hideFn = function (evt, el) {
         var spanEl = YDom.getNextSibling(el);
         YDom.addClass(spanEl, 'hide');
       };
 
-      var showFn = function(evt, el) {
+      var showFn = function (evt, el) {
         var spanEl = YDom.getNextSibling(el);
         YDom.removeClass(spanEl, 'hide');
 
@@ -169,7 +169,7 @@ YAHOO.extend(
       YAHOO.util.Event.on(valEl, 'focus', hideFn, valEl);
       YAHOO.util.Event.on(valEl, 'blur', showFn, valEl);
 
-      valueEl.resetValue = function() {
+      valueEl.resetValue = function () {
         _self.fieldValue[label] = '';
         valEl.value = '';
       };
@@ -177,7 +177,7 @@ YAHOO.extend(
       return valueEl;
     },
 
-    valueToJsonString: function(value) {
+    valueToJsonString: function (value) {
       var strValue = '';
 
       strValue = '{ "exact":"' + value['exact'] + '", ';
@@ -187,11 +187,11 @@ YAHOO.extend(
       return strValue;
     },
 
-    getValue: function() {
+    getValue: function () {
       return this.valueEl.value;
     },
 
-    isNumberKey: function(charCode) {
+    isNumberKey: function (charCode) {
       return !(charCode != 43 && charCode > 31 && (charCode < 48 || charCode > 57));
     }
   }

@@ -17,7 +17,7 @@
 CStudioAuthoring.Utils.addCss('/static-assets/components/cstudio-admin/mods/workflow-states.css');
 CStudioAdminConsole.Tool.WorkflowStates =
   CStudioAdminConsole.Tool.WorkflowStates ||
-  function(config, el) {
+  function (config, el) {
     this.containerEl = el;
     this.config = config;
     this.types = [];
@@ -29,7 +29,7 @@ var wfStates = [];
  * Overarching class that drives the content type tools
  */
 YAHOO.extend(CStudioAdminConsole.Tool.WorkflowStates, CStudioAdminConsole.Tool, {
-  renderWorkarea: function() {
+  renderWorkarea: function () {
     var workareaEl = document.getElementById('cstudio-admin-console-workarea');
 
     workareaEl.innerHTML = "<div id='state-list'>" + '</div>';
@@ -42,12 +42,12 @@ YAHOO.extend(CStudioAdminConsole.Tool.WorkflowStates, CStudioAdminConsole.Tool, 
     this.renderJobsList();
   },
 
-  renderJobsList: function() {
+  renderJobsList: function () {
     this.initActions();
     this.renderStatesTable();
   },
 
-  initActions: function() {
+  initActions: function () {
     const isEmbedded = $('body').hasClass('embedded');
 
     if (isEmbedded) {
@@ -56,7 +56,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.WorkflowStates, CStudioAdminConsole.Tool, 
 
       $(`<button type="button" class="mt35 ml40 btn btn-default">${btnLabel}</button>`)
         .prependTo('#cstudio-admin-console-workarea')
-        .on('click', function() {
+        .on('click', function () {
           me.setStates();
         });
     } else {
@@ -73,7 +73,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.WorkflowStates, CStudioAdminConsole.Tool, 
     }
   },
 
-  renderStatesTable: function() {
+  renderStatesTable: function () {
     var stateLisEl = document.getElementById('state-list');
     stateLisEl.className = 'cstudio-admin-console-workarea-container';
     stateLisEl.innerHTML =
@@ -126,7 +126,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.WorkflowStates, CStudioAdminConsole.Tool, 
       });
   },
 
-  setStates: function() {
+  setStates: function () {
     var items = document.getElementsByClassName('act');
 
     for (var i = 0; i < items.length; i++) {
@@ -168,7 +168,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.WorkflowStates, CStudioAdminConsole.Tool, 
       ": <input id='setProcessing' type='checkbox' value='false'/>" +
       '</div>';
 
-    var handleSet = function() {
+    var handleSet = function () {
       var state = document.getElementById('setState').value;
       var processing = document.getElementById('setProcessing').checked;
       var maxList = list.length - 1;
@@ -195,7 +195,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.WorkflowStates, CStudioAdminConsole.Tool, 
       this.destroy();
     };
 
-    var handleCancel = function() {
+    var handleCancel = function () {
       this.destroy();
     };
 
@@ -217,7 +217,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.WorkflowStates, CStudioAdminConsole.Tool, 
 });
 
 // add static function
-CStudioAdminConsole.Tool.WorkflowStates.selectAll = function() {
+CStudioAdminConsole.Tool.WorkflowStates.selectAll = function () {
   var items = document.getElementsByClassName('act');
 
   for (var i = 0; i < items.length; i++) {

@@ -16,7 +16,7 @@
 
 CStudioAdminConsole.Tool.ContentTypes.PropertyType.String =
   CStudioAdminConsole.Tool.ContentTypes.PropertyType.String ||
-  function(fieldName, containerEl) {
+  function (fieldName, containerEl) {
     this.fieldName = fieldName;
     this.containerEl = containerEl;
     return this;
@@ -26,7 +26,7 @@ YAHOO.extend(
   CStudioAdminConsole.Tool.ContentTypes.PropertyType.String,
   CStudioAdminConsole.Tool.ContentTypes.PropertyType,
   {
-    render: function(value, updateFn, fName, itemId, defaultValue, typeControl, disabled, validations) {
+    render: function (value, updateFn, fName, itemId, defaultValue, typeControl, disabled, validations) {
       var _self = this;
       var containerEl = this.containerEl,
         wrapperEl = document.createElement('div'),
@@ -41,13 +41,13 @@ YAHOO.extend(
       validations && valueEl.setAttribute('data-label', validations.label);
 
       if (updateFn) {
-        var updateFieldFn = function(event, el) {
+        var updateFieldFn = function (event, el) {
           updateFn(event, el);
           CStudioAdminConsole.Tool.ContentTypes.visualization.render();
           valueEl.dispatchEvent(new Event('propertyUpdate', { event }));
         };
 
-        var onBlur = function(event, el) {
+        var onBlur = function (event, el) {
           if (!el.value.startsWith(validations.startsWith)) {
             if (el.value.startsWith('/')) {
               el.value = validations.startsWith + el.value;
@@ -81,7 +81,7 @@ YAHOO.extend(
       this.valueEl = valueEl;
     },
 
-    getValue: function() {
+    getValue: function () {
       return this.valueEl.value;
     }
   }

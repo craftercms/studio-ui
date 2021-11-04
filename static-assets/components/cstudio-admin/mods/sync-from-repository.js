@@ -16,7 +16,7 @@
 
 CStudioAdminConsole.Tool.SyncFromRepository =
   CStudioAdminConsole.Tool.SyncFromRepository ||
-  function(config, el) {
+  function (config, el) {
     return this;
   };
 
@@ -24,13 +24,13 @@ CStudioAdminConsole.Tool.SyncFromRepository =
  * Overarching class that drives the content type tools
  */
 YAHOO.extend(CStudioAdminConsole.Tool.SyncFromRepository, CStudioAdminConsole.Tool, {
-  renderWorkarea: function() {
+  renderWorkarea: function () {
     var workareaEl = document.getElementById('cstudio-admin-console-workarea'),
       actions = [];
     workareaEl.innerHTML = '';
     CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions(actions);
     CStudioAuthoring.Service.syncFromRepo(CStudioAuthoringContext.site, {
-      success: function(result) {
+      success: function (result) {
         CStudioAuthoring.Operations.showSimpleDialog(
           'previewInitiated-dialog',
           CStudioAuthoring.Operations.simpleDialogTypeINFO,
@@ -41,7 +41,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.SyncFromRepository, CStudioAdminConsole.To
           'success studioDialog'
         );
       },
-      failure: function() {}
+      failure: function () {}
     });
   }
 });

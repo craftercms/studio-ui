@@ -16,7 +16,7 @@
 
 CStudioForms.Datasources.S3Repo =
   CStudioForms.Datasources.S3Repo ||
-  function(id, form, properties, constraints) {
+  function (id, form, properties, constraints) {
     this.id = id;
     this.form = form;
     this.properties = properties;
@@ -39,7 +39,7 @@ CStudioForms.Datasources.S3Repo =
   };
 
 YAHOO.extend(CStudioForms.Datasources.S3Repo, CStudioForms.CStudioFormDatasource, {
-  add: function(control, multiple) {
+  add: function (control, multiple) {
     var _self = this;
 
     var datasourceDef = this.form.definition.datasources,
@@ -61,14 +61,14 @@ YAHOO.extend(CStudioForms.Datasources.S3Repo, CStudioForms.CStudioFormDatasource
       </li>`
     );
 
-    create.find('a').on('click', function() {
+    create.find('a').on('click', function () {
       CStudioAuthoring.Operations.openS3Browse(
         _self.profileId,
         _self.processPathsForMacros(_self.path),
         'select',
         true,
         {
-          success: function(searchId, selectedTOs) {
+          success: function (searchId, selectedTOs) {
             for (var i = 0; i < selectedTOs.length; i++) {
               var item = selectedTOs[i];
               var uri = item.browserUri;
@@ -81,7 +81,7 @@ YAHOO.extend(CStudioForms.Datasources.S3Repo, CStudioForms.CStudioFormDatasource
               }
             }
           },
-          failure: function() {}
+          failure: function () {}
         }
       );
     });
@@ -89,26 +89,26 @@ YAHOO.extend(CStudioForms.Datasources.S3Repo, CStudioForms.CStudioFormDatasource
     control.$dropdownMenu.append(create);
   },
 
-  getLabel: function() {
+  getLabel: function () {
     return CMgs.format(langBundle, 'fileS3Repository');
   },
 
-  getInterface: function() {
+  getInterface: function () {
     return 'item';
   },
 
-  getName: function() {
+  getName: function () {
     return 'S3-repo';
   },
 
-  getSupportedProperties: function() {
+  getSupportedProperties: function () {
     return [
       { label: CMgs.format(langBundle, 'repositoryPath'), name: 'path', type: 'string' },
       { label: CMgs.format(langBundle, 'profileId'), name: 'profileId', type: 'string' }
     ];
   },
 
-  getSupportedConstraints: function() {
+  getSupportedConstraints: function () {
     return [];
   }
 });

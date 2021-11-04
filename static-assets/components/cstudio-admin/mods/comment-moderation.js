@@ -16,12 +16,12 @@
 
 CStudioAdminConsole.Tool.CommentModeration =
   CStudioAdminConsole.Tool.CommentModeration ||
-  function(config, el) {
+  function (config, el) {
     return this;
   };
 
 YAHOO.extend(CStudioAdminConsole.Tool.CommentModeration, CStudioAdminConsole.Tool, {
-  renderWorkarea: function() {
+  renderWorkarea: function () {
     var workareaEl = document.getElementById('cstudio-admin-console-workarea');
 
     workareaEl.innerHTML = 'Not Yet Implemented';

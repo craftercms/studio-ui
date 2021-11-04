@@ -27,7 +27,7 @@ CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.W
   /**
    * initialize module
    */
-  initialize: function() {
+  initialize: function () {
     const quickCreateWrapper = $('.dropdown.quick-create');
     const container = $('#quick-create-menu')[0];
 
@@ -75,7 +75,7 @@ CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.W
       const editDialogSuccess = 'editDialogSuccess';
       const editDialogCancel = 'editDialogCancel';
 
-      const showEditDialog = function(payload) {
+      const showEditDialog = function (payload) {
         CrafterCMSNext.system.store.dispatch({
           type: 'SHOW_EDIT_DIALOG',
           payload: Object.assign(payload, {
@@ -131,7 +131,7 @@ CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.W
         });
       };
 
-      const onNewContentSelected = function() {
+      const onNewContentSelected = function () {
         const contentTypeSelected = 'contentTypeSelected';
         const contentDialogCancel = 'contentDialogCancel';
 

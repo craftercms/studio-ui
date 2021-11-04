@@ -16,7 +16,7 @@
 
 CStudioAdminConsole.Tool.statusView =
   CStudioAdminConsole.Tool.statusView ||
-  function(config, el) {
+  function (config, el) {
     this.containerEl = el;
     this.config = config;
     this.types = [];
@@ -27,7 +27,7 @@ CStudioAdminConsole.Tool.statusView =
  * Overarching class that drives the content type tools
  */
 YAHOO.extend(CStudioAdminConsole.Tool.statusView, CStudioAdminConsole.Tool, {
-  renderWorkarea: function() {
+  renderWorkarea: function () {
     const workarea = document.getElementById('cstudio-admin-console-workarea');
     var el = document.createElement('div');
     el.className = 'cstudio-admin-console-workarea-container';

@@ -31,7 +31,7 @@ try {
   parentWindowLocation = window.location.href;
 }
 
-var getFormSize = function(id) {
+var getFormSize = function (id) {
   var formSize;
 
   if (document.getElementsByClassName('studio-ice-container-' + id).length > 0) {
@@ -43,7 +43,7 @@ var getFormSize = function(id) {
   return formSize;
 };
 
-var setFormSize = function(height, id) {
+var setFormSize = function (height, id) {
   var form;
 
   if (document.getElementsByClassName('studio-ice-container-' + id).length) {
@@ -57,7 +57,7 @@ var setFormSize = function(height, id) {
 
 var CStudioForms =
   CStudioForms ||
-  (function() {
+  (function () {
     var cfe = {};
 
     var CMgs = CStudioAuthoring.Messages;
@@ -74,7 +74,7 @@ var CStudioForms =
     /**
      * A data source provides data and services to fields
      */
-    var CStudioFormDatasource = function(id, form, properties) {
+    var CStudioFormDatasource = function (id, form, properties) {
       this.id = id;
       this.form = form;
       this.properties = properties;
@@ -85,42 +85,42 @@ var CStudioForms =
       /**
        * type of data returned by datasource
        */
-      getInterface: function() {
+      getInterface: function () {
         return '';
       },
 
       /**
        * unique type for datasource
        */
-      getType: function() {
+      getType: function () {
         return '';
       },
 
       /**
        * return the name unless overwritten
        */
-      getLabel: function() {
+      getLabel: function () {
         return this.getName();
       },
 
       /**
        * unique id for datasource
        */
-      getName: function() {
+      getName: function () {
         return '';
       },
 
       /**
        * datasource properties
        */
-      getSupportedProperties: function() {
+      getSupportedProperties: function () {
         return [];
       },
 
       /**
        * handle macros in file paths
        */
-      processPathsForMacros: function(path) {
+      processPathsForMacros: function (path) {
         var model = this.form.model;
 
         return CStudioAuthoring.Operations.processPathsForMacros(path, model);
@@ -131,7 +131,7 @@ var CStudioForms =
      * Field controller
      * The purpose of this class is to allow implementation specific rules to be implemented
      */
-    var FormController = function() {
+    var FormController = function () {
       return this;
     };
 
@@ -139,7 +139,7 @@ var CStudioForms =
       /**
        * initialize controller
        */
-      initialize: function(form) {
+      initialize: function (form) {
         this.form = form;
       },
 
@@ -147,14 +147,14 @@ var CStudioForms =
        * allows you to do any data manipulation or custom validation rules you want
        * return true to go forward with save.  Return false to stop the save
        */
-      onBeforeSave: function() {
+      onBeforeSave: function () {
         return true;
       },
 
       /**
        * called by for each field on a form. By returning true the field will be included in the form.
        */
-      isFieldRelevant: function(field) {
+      isFieldRelevant: function (field) {
         return true;
       }
     };
@@ -162,7 +162,7 @@ var CStudioForms =
     /**
      * Field base class
      */
-    var CStudioFormField = function(id, form, owner, properties, constraints) {
+    var CStudioFormField = function (id, form, owner, properties, constraints) {
       this.owner = owner;
       this.owner.registerField(this);
       this.errors = [];
@@ -180,15 +180,15 @@ var CStudioForms =
     };
 
     CStudioFormField.prototype = {
-      getFixedId: function() {
+      getFixedId: function () {
         return '';
       },
 
-      focusOut: function() {},
+      focusOut: function () {},
 
-      focusIn: function() {},
+      focusIn: function () {},
 
-      renderValidation: function(onOff) {
+      renderValidation: function (onOff) {
         var valid = true;
 
         for (key in this.errors) {
@@ -221,12 +221,12 @@ var CStudioForms =
       /**
        * factory method
        */
-      create: function() {},
+      create: function () {},
 
       /**
        * get requirement count
        */
-      getRequirementCount: function() {
+      getRequirementCount: function () {
         var count = 0;
 
         for (var i = 0; i < this.constraints.length; i++) {
@@ -243,7 +243,7 @@ var CStudioForms =
       /**
        * register validation error
        */
-      setError: function(errorId, message) {
+      setError: function (errorId, message) {
         this.errors[errorId] = message;
         this.owner.notifyValidation();
       },
@@ -251,7 +251,7 @@ var CStudioForms =
       /**
        * remove a specific error
        */
-      clearError: function(errorId) {
+      clearError: function (errorId) {
         delete this.errors[errorId];
         this.owner.notifyValidation();
       },
@@ -259,7 +259,7 @@ var CStudioForms =
       /**
        * remove all errors
        */
-      clearAllErrors: function() {
+      clearAllErrors: function () {
         this.errors = [];
         this.owner.notifyValidation();
       },
@@ -267,14 +267,14 @@ var CStudioForms =
       /**
        * return errors
        */
-      getErrors: function() {
+      getErrors: function () {
         return this.errors;
       },
 
       /**
        * initialize module
        */
-      initialize: function(config, containerEl, lastTwo) {
+      initialize: function (config, containerEl, lastTwo) {
         this.containerEl = containerEl;
 
         for (var j = 0; j < config.constraints.length; j++) {
@@ -301,7 +301,7 @@ var CStudioForms =
       /**
        * render
        */
-      render: function(config, containerEl) {
+      render: function (config, containerEl) {
         containerEl.innerHTML = 'Widget';
         containerEl.style.color = 'white';
         containerEl.style.border = '1px solid black';
@@ -312,27 +312,27 @@ var CStudioForms =
         containerEl.style.textAlign = 'center';
       },
 
-      _onChange: function() {},
+      _onChange: function () {},
 
-      getLabel: function() {
+      getLabel: function () {
         return this.getName();
       },
 
-      getName: function() {
+      getName: function () {
         return '';
       },
 
-      getValue: function() {
+      getValue: function () {
         return '';
       },
 
-      setValue: function(value) {},
+      setValue: function (value) {},
 
-      getSupportedProperties: function() {
+      getSupportedProperties: function () {
         return [];
       },
 
-      renderHelp: function(config, containerEl) {
+      renderHelp: function (config, containerEl) {
         if (!Array.isArray(config.help) && config.help !== '') {
           var helpEl = document.createElement('span');
           YAHOO.util.Dom.addClass(helpEl, 'hint');
@@ -343,7 +343,7 @@ var CStudioForms =
           YAHOO.util.Event.on(
             helpEl,
             'mouseover',
-            function(evt, context) {
+            function (evt, context) {
               YAHOO.util.Dom.addClass(helpEl, 'on');
             },
             this
@@ -352,7 +352,7 @@ var CStudioForms =
           YAHOO.util.Event.on(
             helpEl,
             'mouseout',
-            function(evt, context) {
+            function (evt, context) {
               YAHOO.util.Dom.removeClass(helpEl, 'on');
             },
             this
@@ -361,7 +361,7 @@ var CStudioForms =
           YAHOO.util.Event.on(
             helpEl,
             'click',
-            function(evt, context) {
+            function (evt, context) {
               var helpDialogEl = document.getElementById('help-dialog');
               if (!helpDialogEl) {
                 helpDialogEl = document.createElement('div');
@@ -402,7 +402,7 @@ var CStudioForms =
               YAHOO.util.Event.on(
                 okEl,
                 'click',
-                function(evt) {
+                function (evt) {
                   var helpDialogEl = document.getElementById('help-dialog');
                   var dialogMask = document.getElementById('dialogMask');
                   helpDialogEl.parentNode.removeChild(helpDialogEl);
@@ -416,7 +416,7 @@ var CStudioForms =
         }
       },
 
-      escapeXml: function(value) {
+      escapeXml: function (value) {
         if (value && typeof value === 'string') {
           value = value
             .replace(/&/g, '&amp;')
@@ -429,7 +429,7 @@ var CStudioForms =
         return value;
       },
 
-      unEscapeXml: function(value) {
+      unEscapeXml: function (value) {
         if (value && typeof value === 'string') {
           value = value
             .replace(/&amp;/g, '&')
@@ -446,7 +446,7 @@ var CStudioForms =
     /**
      * Section base class
      */
-    var CStudioFormSection = function(owner, containerEl, iceWindowCallback) {
+    var CStudioFormSection = function (owner, containerEl, iceWindowCallback) {
       this.fields = [];
       this.owner = owner;
       this.containerEl = containerEl;
@@ -458,14 +458,14 @@ var CStudioForms =
       /**
        * register field with section
        */
-      registerField: function(field) {
+      registerField: function (field) {
         this.fields[this.fields.length] = field;
       },
 
       /**
        * get validation state
        */
-      getValidationState: function() {
+      getValidationState: function () {
         var requirements = 0;
         var invalid = 0;
 
@@ -484,7 +484,7 @@ var CStudioForms =
         return { requirements: requirements, invalid: invalid };
       },
 
-      getValidationStateDraft: function() {
+      getValidationStateDraft: function () {
         var requirements = 0;
         var invalid = 0;
 
@@ -506,7 +506,7 @@ var CStudioForms =
         return { requirements: requirements, invalid: invalid };
       },
 
-      notifyValidation: function() {
+      notifyValidation: function () {
         var validationEl = YAHOO.util.Dom.getElementsByClassName(
           'cstudio-form-section-validation',
           null,
@@ -548,7 +548,7 @@ var CStudioForms =
     /**
      * form base class
      */
-    var CStudioForm = function(name, formDefinition, model, style, customController) {
+    var CStudioForm = function (name, formDefinition, model, style, customController) {
       this.id = name;
       this.style = style;
       this.definition = formDefinition;
@@ -570,25 +570,25 @@ var CStudioForms =
     };
 
     CStudioForm.prototype = {
-      registerDynamicField: function(name) {
+      registerDynamicField: function (name) {
         if (!this.dynamicFields.includes(name)) {
           this.dynamicFields.push(name);
         }
       },
 
-      registerBeforeSaveCallback: function(callback) {
+      registerBeforeSaveCallback: function (callback) {
         this.beforeSaveCallbacks[this.beforeSaveCallbacks.length] = callback;
       },
 
-      registerAfterSaveCallback: function(callback) {
+      registerAfterSaveCallback: function (callback) {
         this.afterSaveCallbacks[this.afterSaveCallbacks.length] = callback;
       },
 
-      registerBeforeUiRefreshCallback: function(callback) {
+      registerBeforeUiRefreshCallback: function (callback) {
         this.beforeUiRefreshCallbacks[this.beforeUiRefreshCallbacks.length] = callback;
       },
 
-      isInError: function() {
+      isInError: function () {
         var inError = false;
 
         for (var i = 0; i < this.sections.length; i++) {
@@ -601,7 +601,7 @@ var CStudioForms =
         return inError;
       },
 
-      isInErrorDraft: function() {
+      isInErrorDraft: function () {
         var inError = false;
 
         for (var i = 0; i < this.sections.length; i++) {
@@ -614,7 +614,7 @@ var CStudioForms =
         return inError;
       },
 
-      getModelValue: function(id) {
+      getModelValue: function (id) {
         var value = null;
         if (id.indexOf('|') != -1) {
           var parts = id.split('|');
@@ -637,7 +637,7 @@ var CStudioForms =
         return value;
       },
 
-      updateModel: function(id, value, remote) {
+      updateModel: function (id, value, remote) {
         let formField = null;
 
         this.sections.forEach((section) => {
@@ -680,7 +680,7 @@ var CStudioForms =
         CStudioForms.updatedModel = this.model;
       },
 
-      onBeforeSave: function(paramObj) {
+      onBeforeSave: function (paramObj) {
         var callbacks = this.beforeSaveCallbacks;
         for (var i = 0; i < callbacks.length; i++) {
           var callback = callbacks[i];
@@ -688,7 +688,7 @@ var CStudioForms =
         }
       },
 
-      onBeforeUiRefresh: function() {
+      onBeforeUiRefresh: function () {
         var callbacks = this.beforeUiRefreshCallbacks;
         for (var i = 0; i < callbacks.length; i++) {
           var callback = callbacks[i];
@@ -696,7 +696,7 @@ var CStudioForms =
         }
       },
 
-      onAfterSave: function() {
+      onAfterSave: function () {
         var callbacks = this.afterSaveCallbacks;
         for (var i = 0; i < callbacks.length; i++) {
           var callback = callbacks[i];
@@ -704,7 +704,7 @@ var CStudioForms =
         }
       },
 
-      setFocusedField: function(field) {
+      setFocusedField: function (field) {
         var previousFocusedField = this.focusedField;
         this.focusedField = field;
 
@@ -751,7 +751,7 @@ var CStudioForms =
     const getCustomCallback = (callback) => {
       if (typeof callback === 'string') {
         let type = callback;
-        return function() {
+        return function () {
           getTopLegacyWindow().top.postMessage({ type }, '*');
         };
       } else {
@@ -872,7 +872,7 @@ var CStudioForms =
        * Main entry point for the forms engine, renders
        * a form in the given style.
        */
-      render: function(_, style) {
+      render: function (_, style) {
         var _self = this;
 
         if (style !== 'default') {
@@ -1093,7 +1093,7 @@ var CStudioForms =
         });
       },
 
-      _getPageLocation: function(path) {
+      _getPageLocation: function (path) {
         var pathStr = path.replace(/^\/site\/website\//, ''); // Remove string "/site/website/" from path(Page)
         if (pathStr.match(/^\/site\/components\//)) pathStr = pathStr.replace(/^\/site\//, ''); // Remove string "/site/" from path (Component)
         pathStr = pathStr.replace(/\/index\.xml$/, ''); // Remove string /index.xml from path
@@ -1101,7 +1101,7 @@ var CStudioForms =
         return pathStr.replace(/\//g, ' » '); // Replace forward slash (/) with " >> "
       },
 
-      _createDialog: function() {
+      _createDialog: function () {
         var dialog = new YAHOO.widget.SimpleDialog('closeUserWarning', {
           width: '300px',
           fixedcenter: true,
@@ -1119,7 +1119,7 @@ var CStudioForms =
         dialogEl.dialog = dialog;
       },
 
-      _getPageName: function(content) {
+      _getPageName: function (content) {
         var _content = content.responseXML ? content.responseXML : content;
         if (_content) {
           var internalNameArr = '';
@@ -1137,7 +1137,7 @@ var CStudioForms =
         return '';
       },
 
-      _renderFormWithContent: function(content, formId, formDef, style, customControllerClass, readOnly) {
+      _renderFormWithContent: function (content, formId, formDef, style, customControllerClass, readOnly) {
         var me = this;
 
         function getDateTimeObject(timeObj) {
@@ -1147,7 +1147,7 @@ var CStudioForms =
           };
         }
 
-        var closeAjaxOverlay = function() {
+        var closeAjaxOverlay = function () {
           if (form.asyncFields == 0) {
             // Form can now be safely manipulated
             var ajaxOverlayEl = document.getElementById('ajax-overlay');
@@ -1196,7 +1196,7 @@ var CStudioForms =
 
         CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/site-config.xml', {
           failure: crafter.noop,
-          success: function(config) {
+          success: function (config) {
             timezone = config.locale?.dateTimeFormatOptions?.timeZone ?? 'EST5EDT';
           }
         });
@@ -1209,7 +1209,7 @@ var CStudioForms =
          * internal form properties
          */
         form.registerBeforeSaveCallback({
-          beforeSave: function() {
+          beforeSave: function () {
             var oModel = form.model;
 
             if (oModel.createdDate === undefined || oModel.createdDate === 'undefined' || oModel.createdDate === '') {
@@ -1230,7 +1230,7 @@ var CStudioForms =
         form.definition.pageLocation = this._getPageLocation(path);
         form.containerEl = document.getElementById('formContainer');
 
-        this._loadDatasources(form, function(loaded, notLoaded) {
+        this._loadDatasources(form, function (loaded, notLoaded) {
           var iceId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'iceId');
           var iceComponent = CStudioAuthoring.Utils.getQueryVariable(location.search, 'iceComponent');
           const selectedFields = CStudioAuthoring.Utils.getQueryVariable(location.search, 'selectedFields');
@@ -1262,7 +1262,7 @@ var CStudioForms =
             expandAllEl.form = form;
             collapseAllEl.form = form;
 
-            expandAllEl.onclick = function() {
+            expandAllEl.onclick = function () {
               var sections = form.sections;
               for (var q = 0; q < sections.length; q++) {
                 var section = sections[q];
@@ -1274,7 +1274,7 @@ var CStudioForms =
               }
             };
 
-            collapseAllEl.onclick = function() {
+            collapseAllEl.onclick = function () {
               var sections = form.sections;
               for (var q = 0; q < sections.length; q++) {
                 var section = sections[q];
@@ -1293,7 +1293,7 @@ var CStudioForms =
             }
           }
 
-          var buildEntityIdFn = function(draft) {
+          var buildEntityIdFn = function (draft) {
             var entityId = path.replace('.html', '.xml');
             var changeTemplate = CStudioAuthoring.Utils.getQueryVariable(location.search, 'changeTemplate');
             var length = entityId.length;
@@ -1368,7 +1368,7 @@ var CStudioForms =
           var editorId = CStudioAuthoring.Utils.getQueryVariable(queryString, 'editorId');
           var iceWindowCallback = CStudioAuthoring.InContextEdit.getIceCallback(editorId);
 
-          var saveFn = function(preview, draft, embeddedIceDraft, action) {
+          var saveFn = function (preview, draft, embeddedIceDraft, action) {
             showWarnMsg = false;
             var saveDraft = draft == true ? true : false;
 
@@ -1394,7 +1394,7 @@ var CStudioForms =
                   buttons: [
                     {
                       text: CMgs.format(formsLangBundle, 'ok'),
-                      handler: function() {
+                      handler: function () {
                         this.hide();
                       },
                       isDefault: false
@@ -1474,11 +1474,11 @@ var CStudioForms =
             } else {
               const saveContent = () => {
                 CrafterCMSNext.util.ajax.post(CStudioAuthoring.Service.createServiceUri(serviceUrl), xml).subscribe(
-                  function() {
+                  function () {
                     YAHOO.util.Event.removeListener(window, 'beforeunload', unloadFn, me);
 
                     var getContentItemCb = {
-                      success: function(contentTO) {
+                      success: function (contentTO) {
                         var previewUrl = CStudioAuthoringContext.previewAppBaseUri + contentTO.item.browserUri;
                         path = entityId;
                         var formId = CStudioAuthoring.Utils.getQueryVariable(location.search.substring(1), 'wid');
@@ -1549,7 +1549,7 @@ var CStudioForms =
                           sendMessage({ type: FORM_CANCEL_REQUEST });
                         }
                       },
-                      failure: function(err) {
+                      failure: function (err) {
                         CStudioAuthoring.Operations.showSimpleDialog(
                           'error-dialog',
                           CStudioAuthoring.Operations.simpleDialogTypeINFO,
@@ -1558,7 +1558,7 @@ var CStudioForms =
                           [
                             {
                               text: 'OK',
-                              handler: function() {
+                              handler: function () {
                                 this.hide();
                                 form.onAfterSave();
                                 setButtonsEnabled(true);
@@ -1590,7 +1590,7 @@ var CStudioForms =
                       );
                     }
                   },
-                  function(err) {
+                  function (err) {
                     try {
                       CStudioAuthoring.Operations.showSimpleDialog(
                         'error-dialog',
@@ -1665,7 +1665,7 @@ var CStudioForms =
             window.parent.location.reload();
           }
 
-          var beforeUnloadFn = function(e) {
+          var beforeUnloadFn = function (e) {
             if (showWarnMsg) {
               var evt = e || window.event;
               evt.returnValue = message;
@@ -1674,7 +1674,7 @@ var CStudioForms =
             }
           };
 
-          var unloadFn = function(e) {
+          var unloadFn = function (e) {
             if (_notifyServer) {
               path = CStudioAuthoring.Utils.getQueryVariable(location.search, 'path');
               if (path && path.indexOf('.xml') != -1) {
@@ -1684,13 +1684,13 @@ var CStudioForms =
             }
           };
 
-          var unlockBeforeCancel = function(path) {
+          var unlockBeforeCancel = function (path) {
             CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, path, {
-              success: function(itemTO) {
+              success: function (itemTO) {
                 //Unlock if the item is locked by the user
                 if (itemTO.item && itemTO.item.lockOwner == CStudioAuthoringContext.user) {
                   CStudioAuthoring.Service.unlockContentItem(CStudioAuthoringContext.site, path, {
-                    success: function() {
+                    success: function () {
                       _notifyServer = false;
                       eventNS.data = itemTO.item;
                       eventNS.typeAction = '';
@@ -1699,7 +1699,7 @@ var CStudioForms =
                       var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
                       CStudioAuthoring.InContextEdit.unstackDialog(editorId);
                     },
-                    failure: function() {}
+                    failure: function () {}
                   });
                 } else {
                   _notifyServer = false;
@@ -1707,11 +1707,11 @@ var CStudioForms =
                   CStudioAuthoring.InContextEdit.unstackDialog(editorId);
                 }
               },
-              failure: function() {}
+              failure: function () {}
             });
           };
 
-          isModified = function() {
+          isModified = function () {
             let flag = false;
             if (form.sections.length) {
               for (var j = 0; j < form.sections.length; j++) {
@@ -1727,7 +1727,7 @@ var CStudioForms =
             return flag;
           };
 
-          var cancelFn = function() {
+          var cancelFn = function () {
             if (iceWindowCallback && iceWindowCallback.refresh) {
               iceWindowCallback.refresh();
             }
@@ -1760,7 +1760,7 @@ var CStudioForms =
                   buttons: [
                     {
                       text: CMgs.format(formsLangBundle, 'yes'),
-                      handler: function() {
+                      handler: function () {
                         if (iceWindowCallback && iceWindowCallback.cancelled) {
                           iceWindowCallback.cancelled();
                         }
@@ -1786,7 +1786,7 @@ var CStudioForms =
                     },
                     {
                       text: CMgs.format(formsLangBundle, 'no'),
-                      handler: function() {
+                      handler: function () {
                         this.destroy();
                       },
                       isDefault: true
@@ -1838,7 +1838,7 @@ var CStudioForms =
             }
           };
 
-          var collapseFn = function() {
+          var collapseFn = function () {
             if ((iceId && iceId !== '') || (iceComponent && iceComponent !== '')) {
               var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
               CStudioAuthoring.InContextEdit.collapseDialog(editorId);
@@ -1849,7 +1849,7 @@ var CStudioForms =
 
           cfe.engine.cancelForm = cancelFn;
 
-          amplify.subscribe('/field/init/completed', function() {
+          amplify.subscribe('/field/init/completed', function () {
             form.asyncFields--;
             closeAjaxOverlay();
           });
@@ -1871,7 +1871,7 @@ var CStudioForms =
 
             // This is really the right thing to do but previewable doesn't come through
             CStudioAuthoring.Service.lookupContentType(CStudioAuthoringContext.site, contentType, {
-              success: function(type) {
+              success: function (type) {
                 const options = [
                   {
                     label: formatMessage(formEngineMessages.save),
@@ -1906,7 +1906,7 @@ var CStudioForms =
                   disablePortal: false
                 });
               },
-              failure: function() {}
+              failure: function () {}
             });
 
             YAHOO.util.Event.addListener(window, 'beforeunload', unloadFn, me);
@@ -1923,7 +1923,7 @@ var CStudioForms =
             YAHOO.util.Event.addListener(closeButtonEl, 'click', cancelFn, me);
 
             var focusEl = window;
-            setTimeout(function() {
+            setTimeout(function () {
               focusEl.focus();
             }, 500);
           }
@@ -1931,7 +1931,7 @@ var CStudioForms =
           var overlayContainer = parent.document.getElementById(window.frameElement.id).parentElement;
           YDom.addClass(overlayContainer, 'overlay');
 
-          $(document).on('keyup', function(e) {
+          $(document).on('keyup', function (e) {
             if (e.keyCode === 27) {
               // esc
               if (e.currentTarget.activeElement) {
@@ -1966,10 +1966,10 @@ var CStudioForms =
                       edit,
                       {
                         ...callback,
-                        success: function(contentTO, editorId, objId, value, draft, action) {
+                        success: function (contentTO, editorId, objId, value, draft, action) {
                           sendMessage({ type: FORM_SAVE_REQUEST, objId, value, draft, action });
                         },
-                        cancelled: function() {
+                        cancelled: function () {
                           sendMessage({ type: FORM_CANCEL_REQUEST });
                         }
                       },
@@ -1986,7 +1986,7 @@ var CStudioForms =
                       false,
                       {
                         ...callback,
-                        success: function(contentTO, editorId, objId, value, draft, action) {
+                        success: function (contentTO, editorId, objId, value, draft, action) {
                           sendMessage({
                             type: FORM_SAVE_REQUEST,
                             key: objId,
@@ -1999,10 +1999,10 @@ var CStudioForms =
                             action
                           });
                         },
-                        cancelled: function() {
+                        cancelled: function () {
                           sendMessage({ type: FORM_CANCEL_REQUEST });
                         },
-                        type: function() {
+                        type: function () {
                           return 'dnd';
                         }
                       },
@@ -2026,7 +2026,7 @@ var CStudioForms =
       /**
        * load datasource objects in to form so that fields can attach to them when they load
        */
-      _loadDatasources: function(form, callback) {
+      _loadDatasources: function (form, callback) {
         var formDef = form.definition,
           loadControl = 0,
           loaded = [],
@@ -2035,7 +2035,7 @@ var CStudioForms =
 
         form.datasourceMap = {};
 
-        releaseCallback = function() {
+        releaseCallback = function () {
           if (loaded.length + notLoaded.length === formDef.datasources.length) {
             callback(loaded, notLoaded);
           }
@@ -2061,8 +2061,8 @@ var CStudioForms =
               script = CStudioAuthoringContext.baseUri + pluginInfo.path;
               script = CStudioAuthoring.Utils.addURLParameter(script, 'version', CStudioAuthoring.UIBuildId);
 
-              var onDone = (function(datasourceDef, pluginInfo) {
-                return function(script, textStatus) {
+              var onDone = (function (datasourceDef, pluginInfo) {
+                return function (script, textStatus) {
                   try {
                     if ('' === script) {
                       notLoaded.push(datasourceDef.type);
@@ -2089,8 +2089,8 @@ var CStudioForms =
                   .getScript(script)
                   .done(onDone)
                   .fail(
-                    (function(datasourceDef) {
-                      return function(jqxhr, settings, exception) {
+                    (function (datasourceDef) {
+                      return function (jqxhr, settings, exception) {
                         console.log(exception);
                         notLoaded.push(datasourceDef.type);
                         releaseCallback();
@@ -2112,7 +2112,7 @@ var CStudioForms =
       /**
        * render a form section
        */
-      _renderFormSections: function(form) {
+      _renderFormSections: function (form) {
         var formDef = form.definition;
         form.sectionsMap = [];
         var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
@@ -2145,7 +2145,7 @@ var CStudioForms =
           formSection.sectionOpenCloseWidgetEl = sectionOpenCloseWidgetEl;
           formSection.sectionBodyEl = sectionBodyEl;
 
-          sectionHeadingEl.onclick = function() {
+          sectionHeadingEl.onclick = function () {
             YDom.getElementsByClassName('panel-body', null, this)[0];
             if (YDom.getElementsByClassName('panel-body', null, this)[0].style.display === 'none') {
               YDom.getElementsByClassName('panel-body', null, this)[0].style.display = 'block';
@@ -2190,7 +2190,7 @@ var CStudioForms =
       /**
        * render a repeat
        */
-      _renderRepeat: function(formDef, repeat, form, formSection, sectionEl) {
+      _renderRepeat: function (formDef, repeat, form, formSection, sectionEl) {
         if (form.customController && form.customController.isFieldRelevant(repeat) == false) {
           return;
         }
@@ -2205,9 +2205,9 @@ var CStudioForms =
         repeatContainerEl.formSection = formSection;
         repeatContainerEl.sectionEl = sectionEl;
         repeatContainerEl.formEngine = this;
-        repeatContainerEl.reRender = function(controlEl) {
-          var arrayFilter = function(arr, attFilter) {
-            return arr.filter(function(el) {
+        repeatContainerEl.reRender = function (controlEl) {
+          var arrayFilter = function (arr, attFilter) {
+            return arr.filter(function (el) {
               return el[attFilter];
             });
           };
@@ -2225,7 +2225,7 @@ var CStudioForms =
        * this method will clean up all the repeating group fields
        * to make sure old fields don't cause validation issues
        */
-      _cleanUpRepeatBodyFields: function(repeatContainerEl, id) {
+      _cleanUpRepeatBodyFields: function (repeatContainerEl, id) {
         var formSectionFields = [];
         var repFields = repeatContainerEl.formSection.fields;
         if (repFields && repFields.length > 0) {
@@ -2243,7 +2243,7 @@ var CStudioForms =
        * has been separated from renderRepeat so it can be called on
        * repeat manipulation events
        */
-      _renderRepeatBody: function(repeatContainerEl) {
+      _renderRepeatBody: function (repeatContainerEl) {
         var maxOccurs = repeatContainerEl.maxOccurs;
         var minOccurs = repeatContainerEl.minOccurs;
         var formDef = repeatContainerEl.formDef;
@@ -2274,7 +2274,7 @@ var CStudioForms =
           repeatInstanceContainerEl.appendChild(addEl);
           YAHOO.util.Dom.addClass(addEl, 'cstudio-form-repeat-control btn btn-default btn-sm');
           addEl.innerHTML = 'Add First Item';
-          addEl.onclick = function() {
+          addEl.onclick = function () {
             repeatContainerEl.form.setFocusedField(repeatContainerEl);
             form.model[repeat.id] = [];
             form.model[repeat.id][0] = [];
@@ -2314,7 +2314,7 @@ var CStudioForms =
           if (form.readOnly || (maxOccurs != '*' && currentCount >= maxOccurs)) {
             YAHOO.util.Dom.addClass(addEl, 'cstudio-form-repeat-control-disabled');
           } else {
-            addEl.onclick = function() {
+            addEl.onclick = function () {
               form.onBeforeUiRefresh();
               repeatContainerEl.form.setFocusedField(repeatContainerEl);
               var itemArray = form.model[repeat.id];
@@ -2337,7 +2337,7 @@ var CStudioForms =
           if (form.readOnly || i == 0) {
             YAHOO.util.Dom.addClass(upEl, 'cstudio-form-repeat-control-disabled');
           } else {
-            upEl.onclick = function() {
+            upEl.onclick = function () {
               //form.setFocusedField(null);
               repeatContainerEl.form.setFocusedField(repeatContainerEl);
               form.onBeforeUiRefresh();
@@ -2363,7 +2363,7 @@ var CStudioForms =
           if (form.readOnly || i == repeatCount - 1) {
             YAHOO.util.Dom.addClass(downEl, 'cstudio-form-repeat-control-disabled');
           } else {
-            downEl.onclick = function() {
+            downEl.onclick = function () {
               //form.setFocusedField(null);
               repeatContainerEl.form.setFocusedField(repeatContainerEl);
               form.onBeforeUiRefresh();
@@ -2389,7 +2389,7 @@ var CStudioForms =
           if (form.readOnly || currentCount <= minOccurs) {
             YAHOO.util.Dom.addClass(deleteEl, 'cstudio-form-repeat-control-disabled');
           } else {
-            deleteEl.onclick = function() {
+            deleteEl.onclick = function () {
               repeatContainerEl.form.setFocusedField(repeatContainerEl);
               form.onBeforeUiRefresh();
               var itemArray = form.model[repeat.id];
@@ -2422,7 +2422,7 @@ var CStudioForms =
        * render a field
        * repeatField, repeatIndex are used only when repeat
        */
-      _renderField: function(
+      _renderField: function (
         formDef,
         field,
         form,
@@ -2455,7 +2455,7 @@ var CStudioForms =
 
         // initialize each control
         var cb = {
-          moduleLoaded: function(moduleName, moduleClass, moduleConfig) {
+          moduleLoaded: function (moduleName, moduleClass, moduleConfig) {
             try {
               var fieldId = moduleConfig.config.field.id;
               if (repeatField) {
@@ -2507,7 +2507,7 @@ var CStudioForms =
               formField.fieldDef = this.fieldDef;
               try {
                 if (lastTwo) {
-                  setTimeout(function(lastTwo) {
+                  setTimeout(function (lastTwo) {
                     for (var k = 0; k < formField.form.sections[0].fields.length; k++) {
                       var elt = formField.form.sections[0].fields[k].inputEl;
                       if (elt && !elt.disabled) {
@@ -2557,7 +2557,7 @@ var CStudioForms =
         }
       },
 
-      _renderInContextEdit: function(form, iceId) {
+      _renderInContextEdit: function (form, iceId) {
         var formDef = form.definition;
         form.sectionsMap = [];
         var sectionContainerEl = document.getElementById('ice-container');
@@ -2590,7 +2590,7 @@ var CStudioForms =
 
       /* Render a list of fields from the form */
       /* fields: string[] - fields ids */
-      _renderFields: function(form, fields) {
+      _renderFields: function (form, fields) {
         const formDef = form.definition;
         const sectionContainerEl = document.getElementById('ice-container');
         const sectionBodyEl = YDom.getElementsByClassName('cstudio-form-section-body', null, sectionContainerEl)[0];
@@ -2614,7 +2614,7 @@ var CStudioForms =
       /**
        * refresh the page name and page location
        */
-      _reRenderPageLocation: function(formDef) {
+      _reRenderPageLocation: function (formDef) {
         var pageEl = document.getElementById('page-name');
         var locationEl = document.getElementById('page-location');
 
@@ -2630,7 +2630,7 @@ var CStudioForms =
       /**
        * draw the html for the form
        */
-      _renderFormLayout: function(form) {
+      _renderFormLayout: function (form) {
         // long term even the layout should be delgated to a pluggable module
         // for now we'll start with delegation of widgets
         var formDef = form.definition;
@@ -2644,9 +2644,7 @@ var CStudioForms =
           formDef.pageName ? formDef.pageName : CMgs.format(formsLangBundle, 'new') + ' ' + formDef.title
         );
         if (formDef.title) {
-          $('.page-header h1 .name')
-            .addClass('has-page-name')
-            .text(formDef.title);
+          $('.page-header h1 .name').addClass('has-page-name').text(formDef.title);
         }
         if (formDef.pageLocation) {
           $('.page-header h1 .location').text(formDef.pageLocation);
@@ -2704,7 +2702,7 @@ var CStudioForms =
       /**
        * draw the html for the ICE form
        */
-      _renderIceLayout: function(form) {
+      _renderIceLayout: function (form) {
         var formDef = form.definition;
         var html = '';
 
@@ -2737,9 +2735,9 @@ var CStudioForms =
        * @param formId
        *      path to the form you want to render
        */
-      loadFormDefinition: function(formId, cb) {
+      loadFormDefinition: function (formId, cb) {
         var configCb = {
-          success: function(config) {
+          success: function (config) {
             // make sure the json is correct
             var def = config;
             def.contentType = formId;
@@ -2797,7 +2795,7 @@ var CStudioForms =
               var sectionId = section.title.replace(/ /g, '');
               section.id = sectionId;
 
-              processFieldsFn = function(container) {
+              processFieldsFn = function (container) {
                 if (!container.fields || !container.fields.field) {
                   container.fields = [];
                 } else {
@@ -2842,7 +2840,7 @@ var CStudioForms =
             // notify
             cb.success(def);
           },
-          failure: function() {}
+          failure: function () {}
         };
 
         CStudioAuthoring.Service.lookupConfigurtion(
@@ -2858,9 +2856,9 @@ var CStudioForms =
        * @param formId
        *      path to the form you want to render
        */
-      loadConfig: function(formId, cb) {
+      loadConfig: function (formId, cb) {
         var configCb = {
-          success: function(config) {
+          success: function (config) {
             // make sure the json is correct
             var conf = config;
             conf.contentType = formId;
@@ -2868,7 +2866,7 @@ var CStudioForms =
             // notify
             cb.success(conf);
           },
-          failure: function() {}
+          failure: function () {}
         };
 
         CStudioAuthoring.Service.lookupConfigurtion(
@@ -2881,15 +2879,15 @@ var CStudioForms =
       /**
        * Load the form field controller and form configuration
        */
-      LoadFormConfig: function(formId, cb) {
+      LoadFormConfig: function (formId, cb) {
         var configCb = {
-          success: function(formConfig) {
+          success: function (formConfig) {
             if (formConfig['controller'] && formConfig['controller'] == 'true') {
               var moduleCb = {
-                moduleLoaded: function(moduleName, clazz, config) {
+                moduleLoaded: function (moduleName, clazz, config) {
                   cb.success(clazz, formConfig);
                 },
-                failure: function() {
+                failure: function () {
                   cb.failure();
                 }
               };
@@ -2913,7 +2911,7 @@ var CStudioForms =
               cb.success(undefined, formConfig);
             }
           },
-          failure: function() {
+          failure: function () {
             cb.failure();
           }
         };
@@ -2928,7 +2926,7 @@ var CStudioForms =
       /**
        * Getting the value of some item
        */
-      getModelItemValue: function(item) {
+      getModelItemValue: function (item) {
         var value = '';
 
         try {
@@ -2948,7 +2946,7 @@ var CStudioForms =
       /**
        * Initialize Attribute Object
        */
-      initAttributeObject: function(contentDom, attribute) {
+      initAttributeObject: function (contentDom, attribute) {
         var children = contentDom.children ? contentDom.children : contentDom.childNodes;
         var child, attributes;
         for (var i = 0; i < children.length; i++) {
@@ -2971,7 +2969,7 @@ var CStudioForms =
       /**
        * take an xml content item and turn it in to a property map
        */
-      xmlModelToMap: function(dom) {
+      xmlModelToMap: function (dom) {
         var map = {};
         var children = dom.children ? dom.children : dom.childNodes;
 
@@ -2988,7 +2986,7 @@ var CStudioForms =
         return map;
       },
 
-      xmlModelToMapChildren: function(node, children) {
+      xmlModelToMapChildren: function (node, children) {
         for (var i = 0; i < children.length; i++) {
           try {
             var child = children[i];
@@ -3009,7 +3007,7 @@ var CStudioForms =
         }
       },
 
-      xmlModelToMapArray: function(node, child) {
+      xmlModelToMapArray: function (node, child) {
         // array/repeat item
         node[child.nodeName] = [];
 
@@ -3073,14 +3071,14 @@ var CStudioForms =
         }
       },
 
-      createFlattenerState: function(dom) {
+      createFlattenerState: function (dom) {
         const components = Array.from(dom.querySelectorAll(`item > component`));
         components.forEach((component) => {
           FlattenerState[component.getAttribute('id')] = component.outerHTML;
         });
       },
 
-      serializeModelToXml: function(form, saveDraft) {
+      serializeModelToXml: function (form, saveDraft) {
         var xml = '<' + form.definition.objectType + '>\r\n';
 
         if (saveDraft) {
@@ -3114,7 +3112,7 @@ var CStudioForms =
         return xml;
       },
 
-      printFieldsToXml: function(formModel, formDynamicFields, formSections, formConfig) {
+      printFieldsToXml: function (formModel, formDynamicFields, formSections, formConfig) {
         var fieldInstructions = [];
         var fieldLists = [];
         var validFields = [
@@ -3266,7 +3264,7 @@ var CStudioForms =
         return output;
       },
 
-      recursiveRetrieveItemValues: function(item, output, key, fieldInstructions) {
+      recursiveRetrieveItemValues: function (item, output, key, fieldInstructions) {
         item.forEach((repeatItem) => {
           let attributes;
           attributes = repeatItem.datasource ? `datasource=\"${repeatItem.datasource}\"` : '';
@@ -3302,19 +3300,15 @@ var CStudioForms =
         return output;
       },
 
-      escapeXml: function(value) {
+      escapeXml: function (value) {
         if (value && typeof value === 'string') {
-          value = value
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;');
+          value = value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
         }
 
         return value;
       },
 
-      unEscapeXml: function(value) {
+      unEscapeXml: function (value) {
         if (value && typeof value === 'string') {
           value = value
             .replace(/&lt;/g, '<')

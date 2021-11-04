@@ -131,6 +131,8 @@ static-assets/libs/monaco
 static-assets/libs/ace
 static-assets/images/blueprints
 static-assets/libs/js-yaml
+static-assets/components/cstudio-admin/mods/plugin-management.js
+static-assets/components/cstudio-forms/data-sources/dropTargets.js
 
 # misc
 *.ignore.*

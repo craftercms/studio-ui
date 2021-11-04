@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-(function(window, $, Handlebars) {
+(function (window, $, Handlebars) {
   'use strict';
 
   var storage = CStudioAuthoring.Storage,
@@ -27,7 +27,7 @@
     browseCMISMessages = i18n.messages.browseCMISMessages,
     words = i18n.messages.words;
 
-  CStudioBrowseCMIS.init = function() {
+  CStudioBrowseCMIS.init = function () {
     var me = this;
 
     CStudioBrowseCMIS.bindEvents();
@@ -36,17 +36,17 @@
     this.searchContext = searchContext;
 
     CStudioBrowseCMIS.getContent('browse', {
-      success: function(response) {
+      success: function (response) {
         me.rootItems = response;
         me.renderSiteFolders(me.rootItems);
       },
-      failure: function() {}
+      failure: function () {}
     });
 
     var CMgs = CStudioAuthoring.Messages,
       browseLangBundle = CMgs.getBundle('browse', CStudioAuthoringContext.lang);
 
-    var cb = function(repositories) {
+    var cb = function (repositories) {
       var repo = null,
         repoId = CStudioAuthoring.Utils.getQueryParameterByName('repoId');
       if (!repositories.length) {
@@ -65,18 +65,18 @@
     CStudioBrowseCMIS.getConfig(cb);
   };
 
-  CStudioBrowseCMIS.bindEvents = function() {
+  CStudioBrowseCMIS.bindEvents = function () {
     var me = this,
       $tree = $('#data');
 
     // tree related events
 
-    $tree.on('ready.jstree', function(event, data) {
+    $tree.on('ready.jstree', function (event, data) {
       var tree = data.instance;
       var obj = tree.get_selected(true)[0];
       me.currentSelection = '';
 
-      var openNodes = function(nodes, index) {
+      var openNodes = function (nodes, index) {
         if (0 == index) {
           var $tree = $('#data');
 
@@ -86,7 +86,7 @@
           $tree.jstree('select_node', '#' + nodes[index]);
         } else {
           $('#' + nodes[index] + ' > .jstree-ocl').click();
-          $('#data').one('open_node.jstree', function(event, node) {
+          $('#data').one('open_node.jstree', function (event, node) {
             openNodes(nodes, index - 1);
           });
         }
@@ -111,7 +111,7 @@
       me.renderContextMenu('.jstree-anchor');
     });
 
-    $tree.on('select_node.jstree', function(event, data) {
+    $tree.on('select_node.jstree', function (event, data) {
       var path = data.node.a_attr['data-path'];
 
       if (me.currentSelection != data.node.id) {
@@ -127,10 +127,7 @@
 
         if ('cmis-root' !== currentNode.id) {
           while (!finished) {
-            (parent = currentNode.parent),
-              (parentNode = $('#data')
-                .jstree(true)
-                .get_node(parent));
+            (parent = currentNode.parent), (parentNode = $('#data').jstree(true).get_node(parent));
 
             if ('cmis-root' === parent) {
               finished = true;
@@ -145,25 +142,19 @@
       }
     });
 
-    $('.cstudio-browse-container').on('click', '.path span', function() {
+    $('.cstudio-browse-container').on('click', '.path span', function () {
       var path = $(this).attr('data-path');
 
       me.renderSiteContent(path);
     });
 
-    $tree.on('open_node.jstree', function(event, node) {
+    $tree.on('open_node.jstree', function (event, node) {
       $('#' + node.node.id + '_anchor').click();
     });
 
-    $tree.on('click', '.jstree-ocl', function(event, node) {
-      if (
-        !$(this)
-          .parent()
-          .attr('aria-expanded')
-      ) {
-        var $node = $('#data')
-            .jstree(true)
-            .get_node(this.parentElement.id),
+    $tree.on('click', '.jstree-ocl', function (event, node) {
+      if (!$(this).parent().attr('aria-expanded')) {
+        var $node = $('#data').jstree(true).get_node(this.parentElement.id),
           path = 'cmis-root' === $node.a_attr['data-path'] ? '' : $node.a_attr['data-path'],
           $resultsContainer = $('#cstudio-wcm-browse-result .results'),
           $resultsActions = $('#cstudio-wcm-browse-result .cstudio-results-actions');
@@ -176,11 +167,11 @@
         CStudioBrowseCMIS.getContent(
           'browse',
           {
-            success: function(response) {
+            success: function (response) {
               var subFolders = false;
 
               if (response.length > 0) {
-                $.each(response, function(index, value) {
+                $.each(response, function (index, value) {
                   if ('folder' === value.mimeType) {
                     $tree.jstree(
                       'create_node',
@@ -212,20 +203,20 @@
 
               $('#' + $node.id + '_anchor').click();
             },
-            failure: function() {}
+            failure: function () {}
           },
           path
         );
       }
     });
 
-    $("#cstudio-wcm-search-filter-controls input[value='Search']").on('click', function() {
+    $("#cstudio-wcm-search-filter-controls input[value='Search']").on('click', function () {
       var searchTerm = $('#searchInfo').val();
 
       me.renderSiteContent('', 'search', searchTerm);
     });
 
-    $('#searchForm input').keypress(function(e) {
+    $('#searchForm input').keypress(function (e) {
       if ((e.which && e.which === 13) || (e.keyCode && e.keyCode === 13)) {
         $("#cstudio-wcm-search-filter-controls input[value='Search']").click();
         return false;
@@ -252,12 +243,9 @@
     //     }
     // });
 
-    $('#cstudio-command-controls').on('click', '#formCancelButton', function() {
+    $('#cstudio-command-controls').on('click', '#formCancelButton', function () {
       window.close();
-      $(window.frameElement.parentElement)
-        .closest('.studio-ice-dialog')
-        .parent()
-        .remove();
+      $(window.frameElement.parentElement).closest('.studio-ice-dialog').parent().remove();
     });
 
     // $('#cstudio-command-controls').on('click', '#colExpButtonBtn', function(){
@@ -268,18 +256,14 @@
     //     }
     // })
 
-    $('.cstudio-wcm-result .results').delegate('.add-link-btn', 'click', function() {
-      var contentTO = $(this.parentElement)
-        .closest('.cstudio-search-result')
-        .data('item');
+    $('.cstudio-wcm-result .results').delegate('.add-link-btn', 'click', function () {
+      var contentTO = $(this.parentElement).closest('.cstudio-search-result').data('item');
       CStudioAuthoring.SelectedContent.selectContent(contentTO);
       me.saveContent();
     });
 
-    $('.cstudio-wcm-result .results').delegate('.clone-btn', 'click', function() {
-      var contentTO = $(this.parentElement)
-          .closest('.cstudio-search-result')
-          .data('item'),
+    $('.cstudio-wcm-result .results').delegate('.clone-btn', 'click', function () {
+      var contentTO = $(this.parentElement).closest('.cstudio-search-result').data('item'),
         studioPath = CStudioAuthoring.Utils.getQueryParameterByName('studioPath'),
         repoId = CStudioAuthoring.Utils.getQueryParameterByName('repoId'),
         site = CStudioAuthoring.Utils.getQueryParameterByName('site'),
@@ -289,13 +273,13 @@
       CrafterCMSNext.services.cmis
         .clone(paramsJson.siteId, paramsJson.cmisRepoId, paramsJson.cmisPath, paramsJson.studioPath)
         .subscribe(
-          function() {
+          function () {
             contentTO.clone = true;
             $('#cloneCMISLoader, #cloneCMISLoader_mask').remove();
             CStudioAuthoring.SelectedContent.selectContent(contentTO);
             me.saveContent();
           },
-          function() {
+          function () {
             $('#cloneCMISLoader, #cloneCMISLoader_mask').remove();
             const error = JSON.parse(response.responseText);
             CStudioAuthoring.Operations.showSimpleDialog(
@@ -330,7 +314,7 @@
       );
     });
 
-    $('.cstudio-wcm-result .results').delegate('.magnify-icon', 'click', function() {
+    $('.cstudio-wcm-result .results').delegate('.magnify-icon', 'click', function () {
       var path = $(this).attr('data-source');
       var type = $(this).attr('data-type');
       CStudioAuthoring.Utils.previewAssetDialog(path, type);
@@ -341,7 +325,7 @@
     var pathLabel = pathURL.replace(/\//g, ' / ');
     $('.current-folder .path').html(pathLabel);
 
-    $('.tabs .tab-links a').on('click', function(e) {
+    $('.tabs .tab-links a').on('click', function (e) {
       var currentAttrValue = jQuery(this).attr('href');
 
       // Show/Hide Tabs
@@ -351,17 +335,13 @@
         .hide();
 
       // Change/remove current tab to active
-      $(this)
-        .parent('li')
-        .addClass('active')
-        .siblings()
-        .removeClass('active');
+      $(this).parent('li').addClass('active').siblings().removeClass('active');
 
       e.preventDefault();
     });
   };
 
-  CStudioBrowseCMIS.renderSiteFolders = function(items) {
+  CStudioBrowseCMIS.renderSiteFolders = function (items) {
     var me = this;
 
     // Removes jstree cached state from localStorage
@@ -371,7 +351,7 @@
     $('#data').jstree({
       core: {
         check_callback: true,
-        data: function(node, cb) {
+        data: function (node, cb) {
           var data = me.parseObjToFolders(items);
           cb(data);
         }
@@ -385,7 +365,7 @@
     });
   };
 
-  CStudioBrowseCMIS.parseObjToFolders = function(items) {
+  CStudioBrowseCMIS.parseObjToFolders = function (items) {
     var path = CStudioAuthoring.Utils.getQueryParameterByName('path');
     path = path.slice(-1) == '/' ? path.substring(0, path.length - 1) : path;
     var parsed = {
@@ -402,7 +382,7 @@
       },
       object;
 
-    $.each(items, function(index, value) {
+    $.each(items, function (index, value) {
       if ('folder' === value.mimeType) {
         object = {
           id: value.itemId,
@@ -419,7 +399,7 @@
     return parsed;
   };
 
-  CStudioBrowseCMIS.parseItemObj = function(item) {
+  CStudioBrowseCMIS.parseItemObj = function (item) {
     var parsed = {
       itemId: item.itemId,
       selectMode: '',
@@ -433,7 +413,7 @@
     return parsed;
   };
 
-  CStudioBrowseCMIS.renderSiteContent = function(path, type, searchTerm) {
+  CStudioBrowseCMIS.renderSiteContent = function (path, type, searchTerm) {
     var me = this,
       type = type ? type : 'browse',
       $resultsContainer =
@@ -461,7 +441,7 @@
         var $resultsWrapper = $('<div class="results-wrapper"/>');
         $resultsContainer.prepend($resultsWrapper);
 
-        $.each(items, function(index, value) {
+        $.each(items, function (index, value) {
           if ('folder' != value.mimeType) {
             me.renderItem(me.parseItemObj(value), $resultsWrapper, repoPath);
             filesPresent = true;
@@ -478,7 +458,7 @@
       this.getContent(
         type,
         {
-          success: function(response) {
+          success: function (response) {
             var filesPresent = false,
               items = response;
 
@@ -489,7 +469,7 @@
               var $resultsWrapper = $('<div class="results-wrapper"/>');
               $resultsContainer.prepend($resultsWrapper);
 
-              $.each(items, function(index, value) {
+              $.each(items, function (index, value) {
                 if ('folder' != value.mimeType) {
                   me.renderItem(me.parseItemObj(value), $resultsWrapper, repoPath);
                   filesPresent = true;
@@ -503,7 +483,7 @@
               me.renderNoItems(type);
             }
           },
-          failure: function() {}
+          failure: function () {}
         },
         path,
         searchTerm
@@ -511,7 +491,7 @@
     }
   };
 
-  CStudioBrowseCMIS.renderNoItems = function(type) {
+  CStudioBrowseCMIS.renderNoItems = function (type) {
     var $resultsContainer, msj;
 
     if ('search' === type) {
@@ -525,17 +505,17 @@
     $resultsContainer.append('<p style="text-align: center; font-weight: bold; display: block;">' + msj + '</p>');
   };
 
-  CStudioBrowseCMIS.getContent = function(type, cb, cPath, searchTerm) {
+  CStudioBrowseCMIS.getContent = function (type, cb, cPath, searchTerm) {
     var pathURL = CStudioAuthoring.Utils.getQueryParameterByName('path'),
       path = cPath ? cPath : pathURL.slice(-1) == '/' ? pathURL.substring(0, pathURL.length - 1) : pathURL,
       repoId = CStudioAuthoring.Utils.getQueryParameterByName('repoId'),
       site = CStudioAuthoring.Utils.getQueryParameterByName('site');
 
     var callbackContent = {
-      success: function(response) {
+      success: function (response) {
         cb.success(response);
       },
-      failure: function(response) {
+      failure: function (response) {
         var message = CMgs.format(browseLangBundle, '' + response.status + '');
         var error = JSON.parse(response.responseText);
 
@@ -558,7 +538,7 @@
           'studioDialog'
         );
 
-        $('#error-dialog').on('click', '.show-more-toggle', function() {
+        $('#error-dialog').on('click', '.show-more-toggle', function () {
           var code = $('#errorCode'),
             toggle = $('.show-more-toggle');
 
@@ -597,17 +577,17 @@
     }
   };
 
-  CStudioBrowseCMIS.renderContextMenu = function(selector) {
+  CStudioBrowseCMIS.renderContextMenu = function (selector) {
     var me = this;
 
     $.contextMenu({
       selector: selector,
-      callback: function(key, options) {
+      callback: function (key, options) {
         var pathToUpload = options.$trigger.attr('data-path'),
           basePath = CStudioAuthoring.Utils.getQueryParameterByName('path');
         pathToUpload = pathToUpload === 'cmis-root' ? basePath : pathToUpload;
 
-        me.uploadContent(CStudioAuthoringContext.site, pathToUpload).then(function() {
+        me.uploadContent(CStudioAuthoringContext.site, pathToUpload).then(function () {
           me.renderSiteContent(pathToUpload);
         });
       },
@@ -617,23 +597,23 @@
     });
   };
 
-  CStudioBrowseCMIS.uploadContent = function(site, path) {
+  CStudioBrowseCMIS.uploadContent = function (site, path) {
     var d = new $.Deferred(),
       repoId = CStudioAuthoring.Utils.getQueryParameterByName('repoId');
 
     CStudioAuthoring.Operations.uploadCMISAsset(site, path, repoId, {
-      success: function(results) {
+      success: function (results) {
         d.resolve(results);
       },
-      failure: function() {}
+      failure: function () {}
     });
 
     return d.promise();
   };
 
-  (CStudioBrowseCMIS.getConfig = function(callback) {
+  (CStudioBrowseCMIS.getConfig = function (callback) {
     CStudioAuthoring.Service.getConfiguration(CStudioAuthoringContext.site, '/data-sources/cmis-config.xml', {
-      success: function(config) {
+      success: function (config) {
         callback(config.repositories.repository);
       }
     });

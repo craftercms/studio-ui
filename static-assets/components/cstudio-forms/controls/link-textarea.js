@@ -16,7 +16,7 @@
 
 CStudioForms.Controls.LinkTextarea =
   CStudioForms.Controls.LinkTextarea ||
-  function(id, form, owner, properties, constraints, readonly) {
+  function (id, form, owner, properties, constraints, readonly) {
     this.owner = owner;
     this.owner.registerField(this);
     this.errors = [];
@@ -34,11 +34,11 @@ CStudioForms.Controls.LinkTextarea =
   };
 
 YAHOO.extend(CStudioForms.Controls.LinkTextarea, CStudioForms.CStudioFormField, {
-  getLabel: function() {
+  getLabel: function () {
     return CMgs.format(langBundle, 'linkTextarea');
   },
 
-  _onChange: function(evt, obj) {
+  _onChange: function (evt, obj) {
     obj.value = obj.inputEl.value;
 
     if (obj.required) {
@@ -53,15 +53,15 @@ YAHOO.extend(CStudioForms.Controls.LinkTextarea, CStudioForms.CStudioFormField, 
       obj.renderValidation(false, true);
       var id = obj.id;
       if (obj.inputEl.value != '') {
-        var fields = obj.owner.fields.forEach(function(item) {
+        var fields = obj.owner.fields.forEach(function (item) {
           var el = item;
-          var properties = item.properties.forEach(function(prop) {
+          var properties = item.properties.forEach(function (prop) {
             if (prop.name == 'depends') {
               if (id.includes(prop.value) && prop.value != '' && el.value == '_blank') {
                 el.required = true;
                 el.setError('required', 'Field is Required');
                 el.renderValidation(true, false);
-                var constraints = el.constraints.forEach(function(constr) {
+                var constraints = el.constraints.forEach(function (constr) {
                   if (constr.name == 'required') {
                     constr.value = 'true';
                   }
@@ -71,15 +71,15 @@ YAHOO.extend(CStudioForms.Controls.LinkTextarea, CStudioForms.CStudioFormField, 
           });
         });
       } else {
-        var fields = obj.owner.fields.forEach(function(item) {
+        var fields = obj.owner.fields.forEach(function (item) {
           var el = item;
-          var properties = item.properties.forEach(function(prop) {
+          var properties = item.properties.forEach(function (prop) {
             if (prop.name == 'depends') {
               if (id.includes(prop.value) && prop.value != '') {
                 el.required = false;
                 el.clearError('required');
                 el.renderValidation(false, false);
-                var constraints = el.constraints.forEach(function(constr) {
+                var constraints = el.constraints.forEach(function (constr) {
                   if (constr.name == 'required') {
                     constr.value = 'false';
                   }
@@ -94,7 +94,7 @@ YAHOO.extend(CStudioForms.Controls.LinkTextarea, CStudioForms.CStudioFormField, 
     obj.owner.notifyValidation();
     obj.form.updateModel(obj.id, obj.getValue());
   },
-  _onChangeVal: function(evt, obj) {
+  _onChangeVal: function (evt, obj) {
     obj.edited = true;
     this._onChange(evt, obj);
   },
@@ -104,7 +104,7 @@ YAHOO.extend(CStudioForms.Controls.LinkTextarea, CStudioForms.CStudioFormField, 
    * @param evt event
    * @param el element
    */
-  count: function(evt, countEl, el) {
+  count: function (evt, countEl, el) {
     // 'this' is the input box
     el = el ? el : this;
     var text = el.value;
@@ -147,7 +147,7 @@ YAHOO.extend(CStudioForms.Controls.LinkTextarea, CStudioForms.CStudioFormField, 
     }
   },
 
-  render: function(config, containerEl) {
+  render: function (config, containerEl) {
     // we need to make the general layout of a control inherit from common
     // you should be able to override it -- but most of the time it wil be the same
     containerEl.id = this.id;
@@ -176,7 +176,7 @@ YAHOO.extend(CStudioForms.Controls.LinkTextarea, CStudioForms.CStudioFormField, 
     YAHOO.util.Event.on(
       inputEl,
       'focus',
-      function(evt, context) {
+      function (evt, context) {
         context.form.setFocusedField(context);
       },
       this
@@ -239,11 +239,11 @@ YAHOO.extend(CStudioForms.Controls.LinkTextarea, CStudioForms.CStudioFormField, 
     containerEl.appendChild(descriptionEl);
   },
 
-  getValue: function() {
+  getValue: function () {
     return this.value;
   },
 
-  setValue: function(value) {
+  setValue: function (value) {
     this.value = value;
     this.inputEl.value = value;
     this.count(null, this.countEl, this.inputEl);
@@ -251,11 +251,11 @@ YAHOO.extend(CStudioForms.Controls.LinkTextarea, CStudioForms.CStudioFormField, 
     this.edited = false;
   },
 
-  getName: function() {
+  getName: function () {
     return 'link-textarea';
   },
 
-  getSupportedProperties: function() {
+  getSupportedProperties: function () {
     return [
       { label: CMgs.format(langBundle, 'columns'), name: 'cols', type: 'int', defaultValue: '50' },
       { label: CMgs.format(langBundle, 'rows'), name: 'rows', type: 'int', defaultValue: '5' },
@@ -275,7 +275,7 @@ YAHOO.extend(CStudioForms.Controls.LinkTextarea, CStudioForms.CStudioFormField, 
     ];
   },
 
-  getSupportedConstraints: function() {
+  getSupportedConstraints: function () {
     return [{ label: CMgs.format(langBundle, 'required'), name: 'required', type: 'boolean' }];
   }
 });

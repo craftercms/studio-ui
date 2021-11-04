@@ -16,7 +16,7 @@
 
 CStudioForms.Datasources.FlashDesktopUpload =
   CStudioForms.Datasources.FlashDesktopUpload ||
-  function(id, form, properties, constraints) {
+  function (id, form, properties, constraints) {
     this.id = id;
     this.form = form;
     this.properties = properties;
@@ -26,14 +26,14 @@ CStudioForms.Datasources.FlashDesktopUpload =
   };
 
 YAHOO.extend(CStudioForms.Datasources.FlashDesktopUpload, CStudioForms.CStudioFormDatasource, {
-  getLabel: function() {
+  getLabel: function () {
     return CMgs.format(langBundle, 'flashUploadedDesktop');
   },
 
   /**
    * action called when user clicks insert flash
    */
-  insertFlashAction: function(insertCb) {
+  insertFlashAction: function (insertCb) {
     this._self = this;
     var site = CStudioAuthoringContext.site;
     var path = '/static-assets/flash'; // default
@@ -48,13 +48,13 @@ YAHOO.extend(CStudioForms.Datasources.FlashDesktopUpload, CStudioForms.CStudioFo
     }
 
     var callback = {
-      success: function(flashData) {
+      success: function (flashData) {
         var url = this.context.createPreviewUrl(path + '/' + flashData.fileName);
         flashData.previewUrl = url;
         flashData.relativeUrl = path + '/' + flashData.fileName;
         insertCb.success(flashData);
       },
-      failure: function() {
+      failure: function () {
         insertCb.failure('An error occurred while uploading the flash.');
       },
       context: this
@@ -66,14 +66,14 @@ YAHOO.extend(CStudioForms.Datasources.FlashDesktopUpload, CStudioForms.CStudioFo
   /**
    * create preview URL
    */
-  createPreviewUrl: function(flashPath) {
+  createPreviewUrl: function (flashPath) {
     return CStudioAuthoringContext.previewAppBaseUri + flashPath + '';
   },
 
   /**
    * clean up preview URL so that URL is canonical
    */
-  cleanPreviewUrl: function(previewUrl) {
+  cleanPreviewUrl: function (previewUrl) {
     var url = previewUrl;
 
     if (previewUrl.indexOf(CStudioAuthoringContext.previewAppBaseUri) != -1) {
@@ -83,21 +83,21 @@ YAHOO.extend(CStudioForms.Datasources.FlashDesktopUpload, CStudioForms.CStudioFo
     return url;
   },
 
-  deleteFlash: function(path) {},
+  deleteFlash: function (path) {},
 
-  getInterface: function() {
+  getInterface: function () {
     return 'flash';
   },
 
-  getName: function() {
+  getName: function () {
     return 'flash-desktop-upload';
   },
 
-  getSupportedProperties: function() {
+  getSupportedProperties: function () {
     return [{ label: CMgs.format(langBundle, 'repositoryPath'), name: 'repoPath', type: 'string' }];
   },
 
-  getSupportedConstraints: function() {
+  getSupportedConstraints: function () {
     return [{ label: CMgs.format(langBundle, 'required'), name: 'required', type: 'boolean' }];
   }
 });

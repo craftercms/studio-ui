@@ -26,9 +26,9 @@ CStudioAuthoring.Dialogs.panelPageNavOrder = CStudioAuthoring.Dialogs.panelPageN
   /**
    * initialize module
    */
-  initialize: function() {},
+  initialize: function () {},
 
-  create: function(id) {
+  create: function (id) {
     reorderPageMap['dirty'] = false;
 
     reorderPanel = new YAHOO.widget.Panel(id, {
@@ -65,11 +65,11 @@ CStudioAuthoring.Dialogs.panelPageNavOrder = CStudioAuthoring.Dialogs.panelPageN
     }
   },
 
-  destroy: function(id) {
+  destroy: function (id) {
     reorderPanel.destroy();
   },
 
-  layout: function(config) {
+  layout: function (config) {
     var panelId = config.id;
     var panelDiv = document.createElement('div');
     panelDiv.id = panelId;
@@ -110,7 +110,7 @@ CStudioAuthoring.Dialogs.panelPageNavOrder = CStudioAuthoring.Dialogs.panelPageN
   },
 
   // create the panel content for drag and drop
-  content: function(panelId, orderJson, config) {
+  content: function (panelId, orderJson, config) {
     var CMgs = CStudioAuthoring.Messages;
     var langBundle = CMgs.getBundle('forms', CStudioAuthoringContext.lang);
 
@@ -152,10 +152,9 @@ CStudioAuthoring.Dialogs.panelPageNavOrder = CStudioAuthoring.Dialogs.panelPageN
       // Added ~ to create a unique key. Order could be same for a new page
       orderToPageMap[orderNum + '~' + orderDetails.id] = orderDetails;
       orderArray[i] = orderNum + '~' + orderDetails.id;
-      delete orderDetails;
     }
 
-    orderArray.sort(function(a, b) {
+    orderArray.sort(function (a, b) {
       var order1 = a.split('~')[0];
       var order2 = b.split('~')[0];
       return order1 - order2;
@@ -237,18 +236,18 @@ CStudioAuthoring.Dialogs.panelPageNavOrder = CStudioAuthoring.Dialogs.panelPageN
       dndOKButtonDiv.style.visibility = 'hidden'; // Hidden the ok button
     }
 
-    YAHOO.util.Event.addListener('dndOKButton', 'click', function() {
+    YAHOO.util.Event.addListener('dndOKButton', 'click', function () {
       onDnDsubmitClick();
     });
-    YAHOO.util.Event.addListener('dndCancelButton', 'click', function() {
+    YAHOO.util.Event.addListener('dndCancelButton', 'click', function () {
       onDnDCancelClick();
     });
 
-    var onDnDCancelClick = function() {
+    var onDnDCancelClick = function () {
       CStudioAuthoring.Dialogs.panelPageNavOrder.destroy(this.panelId);
     };
 
-    var onDnDsubmitClick = function() {
+    var onDnDsubmitClick = function () {
       if (!reorderPageMap['dirty'] || (orderJson.order && orderJson.order.length == 1)) {
         // only page exists in the given level
         CStudioAuthoring.Dialogs.panelPageNavOrder.destroy(this.panelId);
@@ -287,7 +286,7 @@ CStudioAuthoring.Dialogs.panelPageNavOrder = CStudioAuthoring.Dialogs.panelPageN
       order = 'default';
 
       var submitCallback = {
-        success: function(contentTypes) {
+        success: function (contentTypes) {
           if (contentTypes.orderValue) {
             this.config.control.orderValue = contentTypes.orderValue;
             this.config.control._onChange(null, this.config.control);
@@ -295,7 +294,7 @@ CStudioAuthoring.Dialogs.panelPageNavOrder = CStudioAuthoring.Dialogs.panelPageN
           }
         },
 
-        failure: function() {
+        failure: function () {
           CStudioAuthoring.Dialogs.panelPageNavOrder.destroy(this.panelId);
         }
       }; // end of callback
@@ -312,7 +311,7 @@ CStudioAuthoring.Dialogs.panelPageNavOrder = CStudioAuthoring.Dialogs.panelPageN
   }
 };
 
-CStudioForms.DDList = function(id, draggableItemId, sGroup, config) {
+CStudioForms.DDList = function (id, draggableItemId, sGroup, config) {
   CStudioForms.DDList.superclass.constructor.call(this, id, sGroup, config);
 
   this.logger = this.logger || YAHOO;
@@ -325,7 +324,7 @@ CStudioForms.DDList = function(id, draggableItemId, sGroup, config) {
 };
 
 YAHOO.extend(CStudioForms.DDList, YAHOO.util.DDProxy, {
-  startDrag: function(x, y) {
+  startDrag: function (x, y) {
     this.logger.log(this.id + ' startDrag');
 
     // make the proxy look like the source element
@@ -339,7 +338,7 @@ YAHOO.extend(CStudioForms.DDList, YAHOO.util.DDProxy, {
     YAHOO.util.Dom.setStyle(dragEl, 'border', '2px solid #7EA6B2');
   },
 
-  endDrag: function(e) {
+  endDrag: function (e) {
     reorderPageMap['dirty'] = true;
     var srcEl = this.getEl();
     var prevSibling = YAHOO.util.Dom.getPreviousSibling(srcEl);
@@ -368,14 +367,14 @@ YAHOO.extend(CStudioForms.DDList, YAHOO.util.DDProxy, {
     var thisid = this.id;
 
     // Hide the proxy and show the source element when finished with the animation
-    a.onComplete.subscribe(function() {
+    a.onComplete.subscribe(function () {
       YAHOO.util.Dom.setStyle(proxyid, 'visibility', 'hidden');
       YAHOO.util.Dom.setStyle(thisid, 'visibility', '');
     });
     a.animate();
   },
 
-  onDragDrop: function(e, id) {
+  onDragDrop: function (e, id) {
     // If there is one drop interaction, the li was dropped either on the list,
     // or it was dropped on the current location of the source element.
     if (YAHOO.util.DragDropMgr.interactionInfo.drop.length === 1) {
@@ -400,7 +399,7 @@ YAHOO.extend(CStudioForms.DDList, YAHOO.util.DDProxy, {
     }
   },
 
-  onDrag: function(e) {
+  onDrag: function (e) {
     // Keep track of the direction of the drag for use during onDragOver
     var y = YAHOO.util.Event.getPageY(e);
 
@@ -413,7 +412,7 @@ YAHOO.extend(CStudioForms.DDList, YAHOO.util.DDProxy, {
     this.lastY = y;
   },
 
-  onDragOver: function(e, id) {
+  onDragOver: function (e, id) {
     var srcEl = this.getEl();
     var destEl = YAHOO.util.Dom.get(id);
 

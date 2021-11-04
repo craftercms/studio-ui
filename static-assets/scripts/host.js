@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-(function($, window, amplify, CStudioAuthoring) {
+(function ($, window, amplify, CStudioAuthoring) {
   'use strict';
 
   if (!window.location.origin) {
@@ -33,7 +33,7 @@
     previewWidth,
     hasCheckIn = false;
 
-  communicator.subscribe(Topics.RESET_ICE_TOOLS_CONTENT, function(message) {
+  communicator.subscribe(Topics.RESET_ICE_TOOLS_CONTENT, function (message) {
     sessionStorage.setItem('ice-tools-content', message);
     try {
       // For ICE tools panel syncing.
@@ -41,11 +41,11 @@
     } catch (e) {}
   });
 
-  communicator.subscribe(Topics.SET_SESSION_STORAGE_ITEM, function(message) {
+  communicator.subscribe(Topics.SET_SESSION_STORAGE_ITEM, function (message) {
     sessionStorage.setItem(message.key, message.value);
   });
 
-  communicator.subscribe(Topics.REQUEST_SESSION_STORAGE_ITEM, function(key) {
+  communicator.subscribe(Topics.REQUEST_SESSION_STORAGE_ITEM, function (key) {
     if (typeof key === 'string') {
       communicator.publish(Topics.REQUEST_SESSION_STORAGE_ITEM_REPLY, {
         key: key,
@@ -61,7 +61,7 @@
     }
   });
 
-  communicator.subscribe(Topics.GUEST_CHECKIN, function(url) {
+  communicator.subscribe(Topics.GUEST_CHECKIN, function (url) {
     var site = CStudioAuthoring.Utils.Cookies.readCookie('crafterSite');
     var params = { page: url, site };
     setHash(params);
@@ -73,7 +73,7 @@
   let compatibilityQueryArg = CrafterCMSNext.util.path.getQueryVariable(window.location.search, 'compatibility');
   let compatibilityForceStay = compatibilityQueryArg === 'stay';
   let compatibilityAsk = compatibilityQueryArg === 'ask';
-  communicator.subscribe(Topics.GUEST_CHECK_IN, function(data) {
+  communicator.subscribe(Topics.GUEST_CHECK_IN, function (data) {
     const doGo = () => {
       const state = CrafterCMSNext.system.store.getState();
       window.location.href = CrafterCMSNext.util.system.getSystemLink({
@@ -115,12 +115,12 @@
     communicator.dispatch({ type: Topics.LEGACY_CHECK_IN, payload: { editMode: false } });
   });
 
-  communicator.subscribe(Topics.GUEST_CHECKOUT, function() {
+  communicator.subscribe(Topics.GUEST_CHECKOUT, function () {
     CStudioAuthoring.ContextualNav.WcmActiveContent?.disableNav(true);
   });
 
   // Opens studio form on pencil click
-  communicator.subscribe(Topics.ICE_ZONE_ON, function(message, scope) {
+  communicator.subscribe(Topics.ICE_ZONE_ON, function (message, scope) {
     var isWrite = false;
     var par = [];
     var currentPath = message.itemId ? message.itemId : CStudioAuthoring.SelectedContent.getSelectedContent()[0].uri;
@@ -130,7 +130,7 @@
         CStudioAuthoringContext.site + '_' + currentPath + '_' + CStudioAuthoringContext.user + '_content',
       isContentCached = cache.get(cacheContentKey);
 
-    const openForm = function(path, readonly) {
+    const openForm = function (path, readonly) {
       const site = CrafterCMSNext.system.store.getState().sites.active;
       const authoringBase = CrafterCMSNext.system.store.getState().env.authoringBase;
       const eventIdSuccess = 'editDialogSuccess';
@@ -194,7 +194,7 @@
     };
 
     var editPermsCallback = {
-      success: function(response) {
+      success: function (response) {
         if (!isPermissionCached) {
           cache.set(cachePermissionsKey, response.permissions, CStudioAuthoring.Constants.CACHE_TIME_PERMISSION);
         }
@@ -214,7 +214,7 @@
           openForm(CStudioAuthoring.SelectedContent.getSelectedContent()[0].uri, readonly);
         } else {
           var getContentItemsCb = {
-            success: function(contentTO) {
+            success: function (contentTO) {
               if (!isContentCached) {
                 cache.set(cacheContentKey, contentTO.item, CStudioAuthoring.Constants.CACHE_TIME_GET_CONTENT_ITEM);
               }
@@ -226,7 +226,7 @@
 
               openForm(contentTO.item.uri, readonly);
             },
-            failure: function() {
+            failure: function () {
               callback.failure();
             }
           };
@@ -246,7 +246,7 @@
           }
         }
       },
-      failure: function() {}
+      failure: function () {}
     };
 
     if (isPermissionCached) {
@@ -259,7 +259,7 @@
   });
 
   // Listen to the guest site load
-  communicator.subscribe(Topics.GUEST_SITE_LOAD, function(message, scope) {
+  communicator.subscribe(Topics.GUEST_SITE_LOAD, function (message, scope) {
     hasCheckIn = true;
 
     if (message.url) {
@@ -284,7 +284,7 @@
     });
   });
 
-  communicator.subscribe(Topics.GUEST_SITE_URL_CHANGE, function(message, scope) {
+  communicator.subscribe(Topics.GUEST_SITE_URL_CHANGE, function (message, scope) {
     if (message.url) {
       var site = CStudioAuthoring.Utils.Cookies.readCookie('crafterSite'),
         studioPath = CStudioAuthoring.ComponentsPanel.getPreviewPagePath(message.url);
@@ -297,10 +297,10 @@
     }
   });
 
-  communicator.subscribe(Topics.STOP_DRAG_AND_DROP, function() {
+  communicator.subscribe(Topics.STOP_DRAG_AND_DROP, function () {
     expandContractChannel();
     CStudioAuthoring.PreviewTools.panel.element.style.visibility = 'visible';
-    $(CStudioAuthoring.PreviewTools.panel.element).show('slow', function() {
+    $(CStudioAuthoring.PreviewTools.panel.element).show('slow', function () {
       if (!previewWidth || previewWidth == 0 || previewWidth == '0px') {
         previewWidth = 265;
       }
@@ -309,7 +309,7 @@
     });
   });
 
-  amplify.subscribe(cstopic('DND_COMPONENTS_PANEL_OFF'), function(config) {
+  amplify.subscribe(cstopic('DND_COMPONENTS_PANEL_OFF'), function (config) {
     sessionStorage.setItem('pto-on', '');
     var el = YDom.get('acn-preview-tools-container');
     YDom.removeClass(el.children[0], 'icon-light-blue');
@@ -317,7 +317,7 @@
     communicator.publish(Topics.DND_COMPONENTS_PANEL_OFF, {});
   });
 
-  amplify.subscribe(cstopic('DND_COMPONENTS_PANEL_ON'), function(config) {
+  amplify.subscribe(cstopic('DND_COMPONENTS_PANEL_ON'), function (config) {
     sessionStorage.setItem('pto-on', 'on');
     var el = YDom.get('acn-preview-tools-container');
     YDom.removeClass(el.children[0], 'icon-default');
@@ -327,7 +327,7 @@
     });
   });
 
-  communicator.subscribe(Topics.COMPONENT_DROPPED, function(message) {
+  communicator.subscribe(Topics.COMPONENT_DROPPED, function (message) {
     message.model = initialContentModel;
     amplify.publish(
       cstopic('COMPONENT_DROPPED'),
@@ -343,7 +343,7 @@
     );
   });
 
-  communicator.subscribe(Topics.START_DIALOG, function(message) {
+  communicator.subscribe(Topics.START_DIALOG, function (message) {
     var newdiv = document.createElement('div');
     var text;
     var link = '';
@@ -394,7 +394,7 @@
       buttons: [
         {
           text: 'Cancel',
-          handler: function() {
+          handler: function () {
             $(this).destroy();
           },
           isDefault: true
@@ -406,7 +406,7 @@
     dialog.show();
     dialog.cfg.setProperty('zIndex', 1040); // Update the z-index value to make it go over the site content nav
 
-    YAHOO.util.Event.addListener('cancelButton', 'click', function() {
+    YAHOO.util.Event.addListener('cancelButton', 'click', function () {
       dialog.destroy();
       var masks = YAHOO.util.Dom.getElementsByClassName('mask');
       for (var i = 0; i < masks.length; i++) {
@@ -419,7 +419,7 @@
     return dialog;
   });
 
-  communicator.subscribe(Topics.OPEN_BROWSE, function(message) {
+  communicator.subscribe(Topics.OPEN_BROWSE, function (message) {
     CStudioAuthoring.Operations.openBrowse(
       '',
       CStudioAuthoring.Operations.processPathsForMacros(message.path, initialContentModel),
@@ -427,7 +427,7 @@
       'select',
       true,
       {
-        success: function(searchId, selectedTOs) {
+        success: function (searchId, selectedTOs) {
           for (var i = 0; i < selectedTOs.length; i++) {
             var item = selectedTOs[i];
             communicator.publish(Topics.DND_CREATE_BROWSE_COMP, {
@@ -436,37 +436,37 @@
             });
           }
         },
-        failure: function() {}
+        failure: function () {}
       }
     );
   });
 
-  communicator.subscribe(Topics.SAVE_DRAG_AND_DROP, function(message) {
+  communicator.subscribe(Topics.SAVE_DRAG_AND_DROP, function (message) {
     amplify.publish(cstopic('SAVE_DRAG_AND_DROP'), message.isNew, message.zones, message.compPath, message.conComp);
   });
 
-  communicator.subscribe(Topics.INIT_DRAG_AND_DROP, function(message) {
+  communicator.subscribe(Topics.INIT_DRAG_AND_DROP, function (message) {
     amplify.publish(cstopic('INIT_DRAG_AND_DROP'), message.zones);
   });
 
-  communicator.subscribe(Topics.DND_ZONES_MODEL_REQUEST, function(message) {
+  communicator.subscribe(Topics.DND_ZONES_MODEL_REQUEST, function (message) {
     amplify.publish(cstopic('DND_ZONES_MODEL_REQUEST'), message.aNotFound);
   });
 
-  communicator.subscribe(Topics.LOAD_MODEL_REQUEST, function(message) {
+  communicator.subscribe(Topics.LOAD_MODEL_REQUEST, function (message) {
     amplify.publish(cstopic('LOAD_MODEL_REQUEST'), message.aNotFound);
   });
 
-  amplify.subscribe(cstopic('REFRESH_PREVIEW'), function() {
+  amplify.subscribe(cstopic('REFRESH_PREVIEW'), function () {
     communicator.publish(Topics.REFRESH_PREVIEW);
   });
 
   var initialContentModel;
-  amplify.subscribe(cstopic('START_DRAG_AND_DROP'), function(config) {
+  amplify.subscribe(cstopic('START_DRAG_AND_DROP'), function (config) {
     expandContractChannel('expand');
     previewWidth = $('.studio-preview').css('right');
     $('.studio-preview').css('right', 0);
-    $(CStudioAuthoring.PreviewTools.panel.element).hide('fast', function() {
+    $(CStudioAuthoring.PreviewTools.panel.element).hide('fast', function () {
       var data, dataBrowse;
       if (config.components.category) {
         data = config.components.category;
@@ -483,7 +483,7 @@
 
       if (data) {
         if ($.isArray(data)) {
-          $.each(data, function(i, c) {
+          $.each(data, function (i, c) {
             if (c.component) {
               categories.push({ label: c.label, components: c.component });
             } else {
@@ -501,7 +501,7 @@
 
       if (dataBrowse) {
         if ($.isArray(dataBrowse)) {
-          $.each(dataBrowse, function(i, c) {
+          $.each(dataBrowse, function (i, c) {
             browse.push({ label: c.label, path: c.path });
           });
         } else {
@@ -523,43 +523,43 @@
     });
   });
 
-  amplify.subscribe(cstopic('DND_COMPONENT_MODEL_LOAD'), function(data) {
+  amplify.subscribe(cstopic('DND_COMPONENT_MODEL_LOAD'), function (data) {
     communicator.publish(Topics.DND_COMPONENT_MODEL_LOAD, data);
   });
 
-  amplify.subscribe(cstopic('DND_COMPONENTS_MODEL_LOAD'), function(data) {
+  amplify.subscribe(cstopic('DND_COMPONENTS_MODEL_LOAD'), function (data) {
     initialContentModel = data;
     communicator.publish(Topics.DND_COMPONENTS_MODEL_LOAD, data);
   });
 
-  amplify.subscribe(cstopic('ICE_TOOLS_OFF'), function() {
+  amplify.subscribe(cstopic('ICE_TOOLS_OFF'), function () {
     communicator.publish(Topics.ICE_TOOLS_OFF);
   });
 
-  communicator.subscribe(Topics.ICE_CHANGE_PENCIL_OFF, function(message) {
+  communicator.subscribe(Topics.ICE_CHANGE_PENCIL_OFF, function (message) {
     $('#acn-ice-tools-container img').attr(
       'src',
       `${CStudioAuthoringContext.authoringAppBaseUri}/static-assets/themes/cstudioTheme/images/edit_off.png`
     );
   });
 
-  communicator.subscribe(Topics.ICE_CHANGE_PENCIL_ON, function(message) {
+  communicator.subscribe(Topics.ICE_CHANGE_PENCIL_ON, function (message) {
     $('#acn-ice-tools-container img').attr(
       'src',
       `${CStudioAuthoringContext.authoringAppBaseUri}/static-assets/themes/cstudioTheme/images/edit.png`
     );
   });
 
-  amplify.subscribe(cstopic('ICE_TOOLS_ON'), function() {
+  amplify.subscribe(cstopic('ICE_TOOLS_ON'), function () {
     communicator.publish(Topics.ICE_TOOLS_ON);
   });
 
-  amplify.subscribe(cstopic('ICE_TOOLS_REGIONS'), function(data) {
+  amplify.subscribe(cstopic('ICE_TOOLS_REGIONS'), function (data) {
     communicator.publish(Topics.ICE_TOOLS_REGIONS, data);
   });
 
-  communicator.subscribe(Topics.IS_REVIEWER, function(resize) {
-    var callback = function(isRev) {
+  communicator.subscribe(Topics.IS_REVIEWER, function (resize) {
+    var callback = function (isRev) {
       if (!isRev) {
         communicator.publish(resize ? Topics.RESIZE_ICE_REGIONS : Topics.INIT_ICE_REGIONS, {
           iceOn: sessionStorage.getItem('ice-on'),
@@ -571,9 +571,9 @@
     CStudioAuthoring.Utils.isReviewer(callback);
   });
 
-  communicator.subscribe(Topics.REQUEST_FORM_DEFINITION, function(message) {
+  communicator.subscribe(Topics.REQUEST_FORM_DEFINITION, function (message) {
     CStudioForms.Util.loadFormDefinition(message.contentType, {
-      success: function(response) {
+      success: function (response) {
         communicator.publish(Topics.REQUEST_FORM_DEFINITION_RESPONSE, response);
       }
     });
@@ -642,7 +642,7 @@
 
     CrafterCMSNext.system.getStore().subscribe(() => {
       CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, path, {
-        success: function(content) {
+        success: function (content) {
           CStudioAuthoring.SelectedContent.setContent(content.item);
           selectContentSet(content.item, false);
           CStudioAuthoring.ContextualNav.WcmActiveContent?.disableNav(false);
@@ -695,7 +695,7 @@
 
   function selectStudioContent(site, url) {
     CStudioAuthoring.Service.lookupContentItem(site, url, {
-      success: function(content) {
+      success: function (content) {
         if (content.item.isPage) {
           CStudioAuthoring.SelectedContent.setContent(content.item);
           selectContentSet(content.item, true);
@@ -709,7 +709,7 @@
   // item: selected item
   // reloadTree: if needed, allows tree to be reloaded. For assets it will be false since reload is not needed.
   function selectContentSet(item, reloadTree) {
-    window.setTimeout(function() {
+    window.setTimeout(function () {
       amplify.publish('SELECTED_CONTENT_SET', {
         contentTO: item,
         reload: reloadTree
@@ -719,7 +719,7 @@
 
   window.addEventListener(
     'hashchange',
-    function(e) {
+    function (e) {
       e.preventDefault();
       goToHashPage();
     },
@@ -728,7 +728,7 @@
 
   window.addEventListener(
     'load',
-    function() {
+    function () {
       if (window.location.hash.indexOf('page') === -1) {
         setHash({
           page: '/',

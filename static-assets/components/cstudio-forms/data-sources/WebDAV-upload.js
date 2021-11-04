@@ -16,7 +16,7 @@
 
 CStudioForms.Datasources.WebDAVUpload =
   CStudioForms.Datasources.WebDAVUpload ||
-  function(id, form, properties, constraints) {
+  function (id, form, properties, constraints) {
     this.id = id;
     this.form = form;
     this.properties = properties;
@@ -44,7 +44,7 @@ YAHOO.extend(CStudioForms.Datasources.WebDAVUpload, CStudioForms.CStudioFormData
   /**
    * action called when user clicks insert file
    */
-  add: function(control, multiple) {
+  add: function (control, multiple) {
     var me = this;
 
     var site = CStudioAuthoringContext.site;
@@ -76,9 +76,9 @@ YAHOO.extend(CStudioForms.Datasources.WebDAVUpload, CStudioForms.CStudioFormData
       </li>`
     );
 
-    create.find('a').on('click', function() {
+    create.find('a').on('click', function () {
       CStudioAuthoring.Operations.uploadWebDAVAsset(site, path, me.profileId, {
-        success: function(fileData) {
+        success: function (fileData) {
           if (control) {
             var item = fileData,
               fileName = item,
@@ -91,7 +91,7 @@ YAHOO.extend(CStudioForms.Datasources.WebDAVUpload, CStudioForms.CStudioFormData
             CStudioAuthoring.Utils.decreaseFormDialog();
           }
         },
-        failure: function() {
+        failure: function () {
           if (control) {
             control.failure('An error occurred while uploading the file.');
           }
@@ -103,26 +103,26 @@ YAHOO.extend(CStudioForms.Datasources.WebDAVUpload, CStudioForms.CStudioFormData
     control.$dropdownMenu.append(create);
   },
 
-  getLabel: function() {
+  getLabel: function () {
     return CMgs.format(langBundle, 'fileUploadedWebDavRepository');
   },
 
-  getInterface: function() {
+  getInterface: function () {
     return 'item';
   },
 
-  getName: function() {
+  getName: function () {
     return 'WebDAV-upload';
   },
 
-  getSupportedProperties: function() {
+  getSupportedProperties: function () {
     return [
       { label: CMgs.format(langBundle, 'repositoryPath'), name: 'repoPath', type: 'string' },
       { label: CMgs.format(langBundle, 'profileId'), name: 'profileId', type: 'string' }
     ];
   },
 
-  getSupportedConstraints: function() {
+  getSupportedConstraints: function () {
     return [];
   }
 });

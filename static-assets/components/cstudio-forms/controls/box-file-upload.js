@@ -19,7 +19,7 @@ CStudioAuthoring.Utils.addJavascript('https://cdn01.boxcdn.net/platform/elements
 
 CStudioForms.Controls.BoxFileUpload =
   CStudioForms.Controls.BoxFileUpload ||
-  function(id, form, owner, properties, constraints, readonly) {
+  function (id, form, owner, properties, constraints, readonly) {
     this.owner = owner;
     this.owner.registerField(this);
     this.errors = [];
@@ -37,31 +37,31 @@ CStudioForms.Controls.BoxFileUpload =
     this.logo = 'box';
 
     if (properties) {
-      var required = constraints.find(function(property) {
+      var required = constraints.find(function (property) {
         return property.name === 'required';
       });
       if (required) {
         this.required = required.value === 'true';
       }
-      var profile_id = properties.find(function(property) {
+      var profile_id = properties.find(function (property) {
         return property.name === 'profile_id';
       });
       if (profile_id) {
         this.profile_id = profile_id.value;
       }
-      var enable_upload = properties.find(function(property) {
+      var enable_upload = properties.find(function (property) {
         return property.name === 'enable_upload';
       });
       if (enable_upload) {
         this.enable_upload = enable_upload.value === 'true';
       }
-      var enable_multi = properties.find(function(property) {
+      var enable_multi = properties.find(function (property) {
         return property.name === 'enable_multi_selection';
       });
       if (enable_multi) {
         this.enable_multi = enable_multi.value;
       }
-      var logo = properties.find(function(property) {
+      var logo = properties.find(function (property) {
         return property.name === 'logo';
       });
       if (logo) {
@@ -73,19 +73,19 @@ CStudioForms.Controls.BoxFileUpload =
   };
 
 YAHOO.extend(CStudioForms.Controls.BoxFileUpload, CStudioForms.CStudioFormField, {
-  getLabel: function() {
+  getLabel: function () {
     return 'Box File Upload';
   },
 
-  getName: function() {
+  getName: function () {
     return 'box-file-upload';
   },
 
-  setValue: function(value) {
+  setValue: function (value) {
     var validationResult = true,
       self = this;
     if (value && value.length > 0) {
-      value.forEach(function(element, index, array) {
+      value.forEach(function (element, index, array) {
         CrafterCMSNext.services.box
           .fetchBoxURL(CStudioAuthoringContext.site, self.profile_id, value[index].id, value[index].name)
           .subscribe(
@@ -96,7 +96,7 @@ YAHOO.extend(CStudioForms.Controls.BoxFileUpload, CStudioForms.CStudioFormField,
                 self.value = value;
                 self.form.updateModel(self.id, self.value);
                 self.fileEl.innerHTML = value
-                  .map(function(f) {
+                  .map(function (f) {
                     const name = CrafterCMSNext.util.string.escapeHTML(f.name);
                     return `<span id="${f.name}">${name}*<a class="removeItemBox" data-id="${f.id}"<i class='fa fa-trash'></i></span>`;
                   })
@@ -105,9 +105,9 @@ YAHOO.extend(CStudioForms.Controls.BoxFileUpload, CStudioForms.CStudioFormField,
                 var _self;
                 var removeItems = document.getElementsByClassName('removeItemBox');
                 for (var i = 0; i < removeItems.length; i++) {
-                  removeItems[i].addEventListener('click', function() {
+                  removeItems[i].addEventListener('click', function () {
                     _self = this;
-                    self.value = self.value.filter(function(el) {
+                    self.value = self.value.filter(function (el) {
                       return el.id !== _self.getAttribute('data-id');
                     });
                     self.setValue(self.value);
@@ -136,11 +136,11 @@ YAHOO.extend(CStudioForms.Controls.BoxFileUpload, CStudioForms.CStudioFormField,
     }
   },
 
-  getValue: function() {
+  getValue: function () {
     return this.value;
   },
 
-  getSupportedProperties: function() {
+  getSupportedProperties: function () {
     return [
       { label: 'Profile ID', name: 'profile_id', type: 'string', defaultValue: 'box-default' },
       { label: 'Enable Upload', name: 'enable_upload', type: 'boolean', defaultValue: false },
@@ -154,11 +154,11 @@ YAHOO.extend(CStudioForms.Controls.BoxFileUpload, CStudioForms.CStudioFormField,
     ];
   },
 
-  getSupportedConstraints: function() {
+  getSupportedConstraints: function () {
     return [{ label: CMgs.format(langBundle, 'required'), name: 'required', type: 'boolean' }];
   },
 
-  render: function(config, containerEl, lastTwo) {
+  render: function (config, containerEl, lastTwo) {
     var titleEl = document.createElement('span');
     YAHOO.util.Dom.addClass(titleEl, 'cstudio-form-field-title');
     titleEl.textContent = config.title;
@@ -187,9 +187,9 @@ YAHOO.extend(CStudioForms.Controls.BoxFileUpload, CStudioForms.CStudioFormField,
     CrafterCMSNext.services.box.fetchToken(CStudioAuthoringContext.site, this.profile_id).subscribe((accessToken) => {
       var folderId = '0';
       var filePicker = new Box.FilePicker();
-      filePicker.addListener('choose', function(evt) {
+      filePicker.addListener('choose', function (evt) {
         self.edited = true;
-        var value = evt.map(function(e) {
+        var value = evt.map(function (e) {
           return { id: e.id, name: e.name };
         });
 

@@ -29,12 +29,12 @@ CStudioAuthoring.Dialogs.UploadCMISDialog = CStudioAuthoring.Dialogs.UploadCMISD
   /**
    * initialize module
    */
-  initialize: function(config) {},
+  initialize: function (config) {},
 
   /**
    * show dialog
    */
-  showDialog: function(site, path, repositoryId, serviceUri, callback, fileTypes) {
+  showDialog: function (site, path, repositoryId, serviceUri, callback, fileTypes) {
     this._self = this;
 
     this.site = site;
@@ -64,7 +64,7 @@ CStudioAuthoring.Dialogs.UploadCMISDialog = CStudioAuthoring.Dialogs.UploadCMISD
   /**
    * hide dialog
    */
-  closeDialog: function() {
+  closeDialog: function () {
     this.dialog.destroy();
     $('#cstudio-wcm-popup-div').off('keyup');
   },
@@ -72,7 +72,7 @@ CStudioAuthoring.Dialogs.UploadCMISDialog = CStudioAuthoring.Dialogs.UploadCMISD
   /**
    * create dialog
    */
-  createDialog: function(path, site, repositoryId, serviceUri) {
+  createDialog: function (path, site, repositoryId, serviceUri) {
     var me = this;
     YDom.removeClass('cstudio-wcm-popup-div', 'yui-pe-content');
 
@@ -139,7 +139,7 @@ CStudioAuthoring.Dialogs.UploadCMISDialog = CStudioAuthoring.Dialogs.UploadCMISD
     YAHOO.util.Event.addListener('uploadButton', 'click', this.uploadPopupSubmit, eventParams);
     YAHOO.util.Event.addListener('uploadCancelButton', 'click', this.uploadPopupCancel);
 
-    $('body').on('keyup', '#cstudio-wcm-popup-div', function(e) {
+    $('body').on('keyup', '#cstudio-wcm-popup-div', function (e) {
       if (e.keyCode === 27 && !me.uploadingFile) {
         // esc
         me.closeDialog();
@@ -155,11 +155,11 @@ CStudioAuthoring.Dialogs.UploadCMISDialog = CStudioAuthoring.Dialogs.UploadCMISD
       path: path,
       url: url,
       fileTypes: me.fileTypes,
-      onUploadStart: function() {
+      onUploadStart: function () {
         me.uploadingFile = true;
         $('#uploadCancelButton').attr('disabled', true);
       },
-      onComplete: function(result) {
+      onComplete: function (result) {
         let uploaded = result.successful[0].response.body.item;
 
         $('#uploadCancelButton').attr('disabled', false);
@@ -168,7 +168,7 @@ CStudioAuthoring.Dialogs.UploadCMISDialog = CStudioAuthoring.Dialogs.UploadCMISD
         me.callback.success(uploaded);
         CStudioAuthoring.Dialogs.UploadCMISDialog.closeDialog();
       },
-      onError: function(file, error, response) {
+      onError: function (file, error, response) {
         const res = response.body.response,
           errorMsg = `${res.message}. ${res.remedialAction}`;
 
@@ -183,7 +183,7 @@ CStudioAuthoring.Dialogs.UploadCMISDialog = CStudioAuthoring.Dialogs.UploadCMISD
           [
             {
               text: 'OK',
-              handler: function() {
+              handler: function () {
                 this.destroy();
                 callback.failure(response);
               },
@@ -204,7 +204,7 @@ CStudioAuthoring.Dialogs.UploadCMISDialog = CStudioAuthoring.Dialogs.UploadCMISD
   /**
    * event fired when the ok is pressed
    */
-  uploadPopupCancel: function(event) {
+  uploadPopupCancel: function (event) {
     CStudioAuthoring.Dialogs.UploadCMISDialog.closeDialog();
     if (window.frameElement) {
       var id = window.frameElement.getAttribute('id').split('-editor-')[1];

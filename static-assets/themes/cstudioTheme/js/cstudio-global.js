@@ -19,15 +19,15 @@
  * so far it looks like this is only used on the login page
  */
 
-$(document).ready(function() {
+$(document).ready(function () {
   /* dashboard tree table row color change on mouseover and reset on mouseout */
   if ($('table.ttTable').length > 0) {
     $('.ttTable tbody tr:not(.avoid)')
-      .mouseover(function() {
+      .mouseover(function () {
         $(this).addClass('rowHighLight');
       })
 
-      .mouseout(function() {
+      .mouseout(function () {
         $(this).removeClass('rowHighLight');
       });
   }
@@ -37,12 +37,12 @@ $(document).ready(function() {
     var searchBox = $('input.searchBox');
     var searchBoxDefault = 'Search';
 
-    searchBox.focus(function(e) {
+    searchBox.focus(function (e) {
       if ($(this).attr('value') == searchBoxDefault) $(this).attr('value', '');
       $(this).css({ color: '#444' });
     });
 
-    searchBox.blur(function() {
+    searchBox.blur(function () {
       if ($(this).attr('value') == '') {
         $(this).attr('value', searchBoxDefault);
         $(this).css({ color: '#ccc' });
@@ -56,12 +56,12 @@ $(document).ready(function() {
     var nameBox = $('input#username');
     var nameBoxDefault = 'Citrite Username';
 
-    nameBox.focus(function(e) {
+    nameBox.focus(function (e) {
       if ($(this).attr('value') == nameBoxDefault) $(this).attr('value', '');
       $(this).css({ color: '#444' });
     });
 
-    nameBox.blur(function() {
+    nameBox.blur(function () {
       if ($(this).attr('value') == '') {
         $(this).attr('value', nameBoxDefault);
         $(this).css({ color: '#ccc' });
@@ -72,13 +72,13 @@ $(document).ready(function() {
     var passDummyBox = $('input#pwDummy');
     var passBoxDefault = 'Password';
 
-    passDummyBox.focus(function(e) {
+    passDummyBox.focus(function (e) {
       $(this).css({ display: 'none' });
       passBox.css({ display: 'block', color: '#444' });
       passBox.focus();
     });
 
-    passBox.blur(function() {
+    passBox.blur(function () {
       if ($(this).attr('value') == '') {
         $(this).css({ display: 'none' });
         passDummyBox.css({ display: 'block' });
@@ -89,7 +89,7 @@ $(document).ready(function() {
 
     nameBox.blur();
 
-    var disableLogin = function(loginInfo) {
+    var disableLogin = function (loginInfo) {
       if ($('#verticalContainer')) {
         $('<div id="loginInfoContainer"><p id="loginInfo">' + loginInfo + '</p></div>').insertBefore(
           '#verticalContainer'

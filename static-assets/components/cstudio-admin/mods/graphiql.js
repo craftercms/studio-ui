@@ -16,7 +16,7 @@
 
 CStudioAdminConsole.Tool.GraphiQL =
   CStudioAdminConsole.Tool.GraphiQL ||
-  function(config, el) {
+  function (config, el) {
     this.containerEl = el;
     this.config = config;
     this.types = [];
@@ -28,13 +28,13 @@ var wfStates = [];
  * Overarching class that drives the content type tools
  */
 YAHOO.extend(CStudioAdminConsole.Tool.GraphiQL, CStudioAdminConsole.Tool, {
-  renderWorkarea: function() {
+  renderWorkarea: function () {
     $('#cstudio-admin-console-workarea').html('<div id="graphContainer"/>');
 
     this.initializeGraphi();
   },
 
-  initializeGraphi: function() {
+  initializeGraphi: function () {
     var site = CStudioAuthoringContext.site,
       actions = [];
 

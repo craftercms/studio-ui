@@ -24,11 +24,11 @@ CStudioAuthoring.ContextualNav.QuickContentMod = CStudioAuthoring.ContextualNav.
   /**
    * initialize module
    */
-  initialize: function(config) {
+  initialize: function (config) {
     this.render();
   },
 
-  render: function() {
+  render: function () {
     var el, containerEl, imageEl, ptoOn;
 
     el = YDom.get('acn-quick-content');
@@ -50,12 +50,12 @@ CStudioAuthoring.ContextualNav.QuickContentMod = CStudioAuthoring.ContextualNav.
 
     var buttonEl = document.getElementById('acn-qc-wrapper');
     buttonEl.control = this;
-    buttonEl.onclick = function() {
+    buttonEl.onclick = function () {
       this.control.toggle();
     };
 
     CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/context-nav/quick-content.xml', {
-      success: function(config) {
+      success: function (config) {
         this.context.buildModules(config);
       },
       failure: CStudioAuthoring.Utils.noop,
@@ -63,7 +63,7 @@ CStudioAuthoring.ContextualNav.QuickContentMod = CStudioAuthoring.ContextualNav.
     });
   },
 
-  buildModules: function(config) {
+  buildModules: function (config) {
     var listEl = document.getElementById('quick-content-options');
 
     if (config.quickContent && !config.quickContent.length) {
@@ -82,7 +82,7 @@ CStudioAuthoring.ContextualNav.QuickContentMod = CStudioAuthoring.ContextualNav.
         optionEl.innerHTML = config.quickContent[j].name;
         optionEl.control = this;
         optionEl.contentData = config.quickContent[j];
-        optionEl.onclick = function() {
+        optionEl.onclick = function () {
           this.control.newContent(this.contentData.contentType, this.contentData.contentPath);
         };
 
@@ -91,9 +91,9 @@ CStudioAuthoring.ContextualNav.QuickContentMod = CStudioAuthoring.ContextualNav.
     }
   },
 
-  newContent: function(contentType, path) {
+  newContent: function (contentType, path) {
     var formSaveCb = {
-      success: function() {
+      success: function () {
         document.location = document.location;
       }
     };
@@ -107,7 +107,7 @@ CStudioAuthoring.ContextualNav.QuickContentMod = CStudioAuthoring.ContextualNav.
     );
   },
 
-  toggle: function() {
+  toggle: function () {
     var dropdownEl = document.getElementById('acn-qc-dropdown');
     var buttonEl = document.getElementById('acn-qc-wrapper');
 

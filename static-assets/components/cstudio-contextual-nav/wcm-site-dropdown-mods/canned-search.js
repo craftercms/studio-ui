@@ -26,7 +26,7 @@ CStudioAuthoring.ContextualNav.CannedSearch = CStudioAuthoring.ContextualNav.Can
   /**
    * initialize module
    */
-  initialize: function(config) {
+  initialize: function (config) {
     if (!this.initialized) {
       this.initialized = true;
 
@@ -36,7 +36,7 @@ CStudioAuthoring.ContextualNav.CannedSearch = CStudioAuthoring.ContextualNav.Can
 
       var parentFolderLinkEl = document.createElement('a');
       parentFolderLinkEl.innerHTML = '<br/>&nbsp;&nbsp;+&nbsp;&nbsp;&nbsp;Downloads Canned Search Example';
-      parentFolderLinkEl.onclick = function() {
+      parentFolderLinkEl.onclick = function () {
         var url =
           CStudioAuthoringContext.authoringAppBaseUri +
           '/search?site=' +

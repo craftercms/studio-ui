@@ -23,12 +23,12 @@ CStudioAuthoring.ContextualNav.IceToolsMod = CStudioAuthoring.ContextualNav.IceT
   /**
    * initialize module
    */
-  initialize: function(config) {
+  initialize: function (config) {
     this.definePlugin();
     CStudioAuthoring.ContextualNav.EditorsToolsNav.init();
   },
 
-  definePlugin: function() {
+  definePlugin: function () {
     var YDom = YAHOO.util.Dom,
       YEvent = YAHOO.util.Event;
     /**
@@ -36,20 +36,20 @@ CStudioAuthoring.ContextualNav.IceToolsMod = CStudioAuthoring.ContextualNav.IceT
      */
     CStudioAuthoring.register({
       'ContextualNav.EditorsToolsNav': {
-        init: function() {
+        init: function () {
           var _self = this;
-          var callback = function(isRev) {
+          var callback = function (isRev) {
             if (CStudioAuthoringContext.isPreview == true && !isRev) {
               _self.render();
               if (CStudioAuthoring.IceTools) {
                 //CStudioAuthoring.IceTools) {
-                CStudioAuthoring.IceTools.IceToolsOffEvent.subscribe(function() {
+                CStudioAuthoring.IceTools.IceToolsOffEvent.subscribe(function () {
                   var el = YDom.get('acn-ice-tools-container');
                   YDom.removeClass(el.children[0], 'icon-yellow');
                   YDom.addClass(el.children[0], 'icon-default');
                 });
 
-                CStudioAuthoring.IceTools.IceToolsOnEvent.subscribe(function() {
+                CStudioAuthoring.IceTools.IceToolsOnEvent.subscribe(function () {
                   var el = YDom.get('acn-ice-tools-container');
                   YDom.removeClass(el.children[0], 'icon-default');
                   YDom.addClass(el.children[0], 'icon-yellow');
@@ -58,7 +58,7 @@ CStudioAuthoring.ContextualNav.IceToolsMod = CStudioAuthoring.ContextualNav.IceT
                 //						}
                 //						else {
                 cb = {
-                  moduleLoaded: function(moduleName, moduleClass, moduleConfig) {
+                  moduleLoaded: function (moduleName, moduleClass, moduleConfig) {
                     try {
                       CStudioAuthoring.IceTools.initialize(moduleConfig);
                       if (this.self.initialized == false) {
@@ -67,13 +67,13 @@ CStudioAuthoring.ContextualNav.IceToolsMod = CStudioAuthoring.ContextualNav.IceT
 
                       this.self.initialized = true;
 
-                      CStudioAuthoring.IceTools.IceToolsOffEvent.subscribe(function() {
+                      CStudioAuthoring.IceTools.IceToolsOffEvent.subscribe(function () {
                         var el = YDom.get('acn-ice-tools-container');
                         YDom.removeClass(el.children[0], 'icon-yellow');
                         YDom.addClass(el.children[0], 'icon-default');
                       });
 
-                      CStudioAuthoring.IceTools.IceToolsOnEvent.subscribe(function() {
+                      CStudioAuthoring.IceTools.IceToolsOnEvent.subscribe(function () {
                         var el = YDom.get('acn-ice-tools-container');
                         YDom.removeClass(el.children[0], 'icon-default');
                         YDom.addClass(el.children[0], 'icon-yellow');
@@ -84,8 +84,8 @@ CStudioAuthoring.ContextualNav.IceToolsMod = CStudioAuthoring.ContextualNav.IceT
                         '/static-assets/components/cstudio-preview-tools/preview-tools.js',
                         0,
                         {
-                          moduleLoaded: function(moduleName, moduleClass, moduleConfig) {
-                            CStudioAuthoring.PreviewTools.PreviewToolsOffEvent.subscribe(function() {
+                          moduleLoaded: function (moduleName, moduleClass, moduleConfig) {
+                            CStudioAuthoring.PreviewTools.PreviewToolsOffEvent.subscribe(function () {
                               CStudioAuthoring.IceTools.turnEditOff();
                             });
                           }
@@ -109,7 +109,7 @@ CStudioAuthoring.ContextualNav.IceToolsMod = CStudioAuthoring.ContextualNav.IceT
           CStudioAuthoring.Utils.isReviewer(callback);
         },
 
-        render: function() {
+        render: function () {
           var el, containerEl, pencilIcon, iceOn;
 
           var CMgs = CStudioAuthoring.Messages;
@@ -137,7 +137,7 @@ CStudioAuthoring.ContextualNav.IceToolsMod = CStudioAuthoring.ContextualNav.IceT
           containerEl.appendChild(pencilIcon);
           el.appendChild(containerEl);
 
-          el.onclick = function() {
+          el.onclick = function () {
             var iceOn = !!sessionStorage.getItem('ice-on'); // cast string value to a boolean
 
             if (!iceOn) {

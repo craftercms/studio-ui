@@ -14,14 +14,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-(function() {
+(function () {
   const i18n = CrafterCMSNext.i18n,
     formatMessage = i18n.intl.formatMessage,
     internalNameControlMessages = i18n.messages.internalNameControlMessages;
 
   CStudioForms.Controls.InternalName =
     CStudioForms.Controls.InternalName ||
-    function(id, form, owner, properties, constraints, readonly) {
+    function (id, form, owner, properties, constraints, readonly) {
       this.owner = owner;
       this.owner.registerField(this);
       this.errors = [];
@@ -40,15 +40,15 @@
     };
 
   YAHOO.extend(CStudioForms.Controls.InternalName, CStudioForms.CStudioFormField, {
-    getFixedId: function() {
+    getFixedId: function () {
       return 'internal-name';
     },
 
-    getLabel: function() {
+    getLabel: function () {
       return formatMessage(internalNameControlMessages.label);
     },
 
-    _onChange: function(evt, obj) {
+    _onChange: function (evt, obj) {
       obj.value = obj.inputEl.value;
 
       var validationExist = false;
@@ -95,7 +95,7 @@
       obj.form.updateModel(obj.id, obj.getValue());
     },
 
-    _onChangeVal: function(evt, obj) {
+    _onChangeVal: function (evt, obj) {
       obj.edited = true;
       if (this._onChange) {
         this._onChange(evt, obj);
@@ -107,7 +107,7 @@
      * @param evt event
      * @param el element
      */
-    count: function(evt, countEl, el) {
+    count: function (evt, countEl, el) {
       // 'this' is the input box
       el = el ? el : this;
       var text = el.value;
@@ -150,7 +150,7 @@
       }
     },
 
-    render: function(config, containerEl) {
+    render: function (config, containerEl) {
       // we need to make the general layout of a control inherit from common
       // you should be able to override it -- but most of the time it wil be the same
       containerEl.id = this.id;
@@ -178,7 +178,7 @@
       YAHOO.util.Event.on(
         inputEl,
         'focus',
-        function(evt, context) {
+        function (evt, context) {
           context.form.setFocusedField(context);
         },
         this
@@ -235,11 +235,11 @@
       containerEl.appendChild(descriptionEl);
     },
 
-    getValue: function() {
+    getValue: function () {
       return this.value;
     },
 
-    setValue: function(value) {
+    setValue: function (value) {
       this.value = value;
       this.inputEl.value = value;
       this.count(null, this.countEl, this.inputEl);
@@ -247,11 +247,11 @@
       this.edited = false;
     },
 
-    getName: function() {
+    getName: function () {
       return 'internal-name';
     },
 
-    getSupportedProperties: function() {
+    getSupportedProperties: function () {
       return [
         {
           label: formatMessage(internalNameControlMessages.displaySize),
@@ -268,7 +268,7 @@
       ];
     },
 
-    getSupportedConstraints: function() {
+    getSupportedConstraints: function () {
       return [];
     }
   });
