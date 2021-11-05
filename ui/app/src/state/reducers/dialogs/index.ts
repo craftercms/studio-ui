@@ -44,7 +44,6 @@ import launcher from './launcher';
 import publishingStatus from './publishingStatus';
 import unlockPublisher from './unlockPublisher';
 import widget from './widget';
-import browseFiles from './browseFiles';
 
 export default combineReducers({
   confirm,
@@ -75,6 +74,5 @@ export default combineReducers({
   launcher,
   publishingStatus,
   unlockPublisher,
-  widget,
-  browseFiles
+  widget
 });

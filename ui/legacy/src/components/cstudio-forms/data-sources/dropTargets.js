@@ -158,37 +158,27 @@
     _openBrowse: function (contentType, control) {
       const path = this._processPathsForMacros(this.baseBrowsePath);
 
-      const eventId = 'openBrowse.event.browseFilesDialog';
-      CrafterCMSNext.system.store.dispatch({
-        type: 'SHOW_BROWSE_FILES_DIALOG',
-        payload: {
-          open: true,
-          multiSelect: true,
-          path,
-          contentTypes: [contentType],
-          onSuccess: {
-            type: 'BATCH_ACTIONS',
-            payload: [
-              {
-                type: 'DISPATCH_DOM_EVENT',
-                payload: { id: eventId, type: 'success' }
-              },
-              {
-                type: 'CLOSE_BROWSE_FILES_DIALOG'
-              }
-            ]
-          },
-          onClosed: {
-            type: 'BROWSE_FILES_DIALOG_CLOSED'
-          }
-        }
-      });
+      let unmount;
+      const dialogContainer = document.createElement('div');
+      CrafterCMSNext.render(dialogContainer, 'BrowseFilesDialog', {
+        open: true,
+        path: path,
+        contentTypes: [contentType],
+        multiSelect: true,
+        onSuccess: (result) => {
+          result.forEach(({ name, path }) => {
+            const value = name && name !== '' ? name : path;
+            control.newInsertItem(path, value, 'shared');
+            control._renderItems();
+          });
 
-      CrafterCMSNext.createLegacyCallbackListener(eventId, (result) => {
-        const { name, path } = result;
-        const value = name && name !== '' ? name : path;
-        control.newInsertItem(path, value, 'shared');
-        control._renderItems();
+          unmount();
+        },
+        onClose: () => {
+          return unmount();
+        }
+      }).then(function (done) {
+        return (unmount = done.unmount);
       });
     },
 

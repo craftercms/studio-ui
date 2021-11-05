@@ -63,7 +63,6 @@ import { PreviewDialogStateProps } from '../components/PreviewDialog/utils';
 import { EditSiteDialogStateProps } from '../components/EditSiteDialog/utils';
 import { LegacyFormDialogStateProps } from '../components/LegacyFormDialog/utils';
 import { SingleFileUploadDialogStateProps } from '../components/SingleFileUploadDialog';
-import { BrowseFilesDialogStateProps } from '../components/BrowseFilesDialog';
 
 export type HighlightMode = 'all' | 'move';
 
@@ -225,7 +224,6 @@ export interface GlobalState {
     publishingStatus: PublishingStatusDialogStateProps;
     unlockPublisher: UnlockPublisherDialogStateProps;
     widget: WidgetDialogStateProps;
-    browseFiles: BrowseFilesDialogStateProps;
   };
   uiConfig: {
     error: ApiResponse;
