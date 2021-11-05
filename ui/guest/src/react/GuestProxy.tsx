@@ -144,7 +144,9 @@ export function GuestProxy() {
               .indexOf(isSimple(fieldId) ? fieldId : popPiece(fieldId));
             let elementIndex = $(element).attr('data-craftercms-index');
             let splitIndex = elementIndex.split('.');
-            splitIndex[position] = elementNewIndex.toString();
+            splitIndex[position] = isSimple(fieldId)
+              ? elementNewIndex.toString()
+              : popPiece(elementNewIndex.toString());
 
             $(element).attr('data-craftercms-index', splitIndex.join('.'));
 
