@@ -19,7 +19,7 @@ import * as ReactDOM from 'react-dom';
 import * as MaterialUI from '@mui/material';
 import * as ReactRedux from 'react-redux';
 import * as ReactIntl from 'react-intl';
-import * as EmotionCSS from '@emotion/css';
+import * as rxjs from 'rxjs';
 import createEmotion from '@emotion/css/create-instance';
 import { IntlShape } from 'react-intl';
 import { CrafterCMSStore, getStoreSync } from '../state/store';
@@ -50,23 +50,26 @@ export interface CrafterCMSGlobal {
     MaterialUI: typeof MaterialUI;
     ReactRedux: typeof ReactRedux;
     ReactIntl: typeof ReactIntl;
-    EmotionCSS: typeof EmotionCSS;
     createEmotion: typeof createEmotion;
     // Include also package name aliases for builds that might use those
     // when invoking require('...') or define([...], factory).
     react: typeof React;
+    rxjs: typeof rxjs;
     'react-dom': typeof ReactDOM;
     'react-redux': typeof ReactRedux;
     'react-intl': typeof ReactIntl;
     '@mui/material': typeof MaterialUI;
-    '@emotion/css': typeof EmotionCSS;
     '@emotion/css/create-instance': typeof createEmotion;
   };
   plugins: Map<string, PluginDescriptor>;
   components: Map<string, ComponentRecord>;
-  // utils: {};
+  utils: {
+    ajax$: Observable<typeof import('../utils/ajax')>;
+    object$: Observable<typeof import('../utils/object')>;
+  };
   services: {
     configuration$: Observable<typeof import('../services/configuration')>;
+    monitoring$: Observable<typeof import('../services/monitoring')>;
   };
   getIntl(): IntlShape;
   getStore(): CrafterCMSStore;
@@ -79,19 +82,18 @@ export interface CrafterCMSGlobal {
 let UND;
 
 export const libs: CrafterCMSGlobal['libs'] = {
+  rxjs,
   React,
   ReactDOM,
   ReactIntl,
   MaterialUI,
   ReactRedux,
-  EmotionCSS,
   createEmotion,
   react: React,
   'react-dom': ReactDOM,
   'react-redux': ReactRedux,
   'react-intl': ReactIntl,
   '@mui/material': MaterialUI,
-  '@emotion/css': EmotionCSS,
   '@emotion/css/create-instance': createEmotion
 };
 
@@ -141,7 +143,12 @@ export const craftercms: CrafterCMSGlobal = {
   getStore: getStoreSync,
   getIntl: getCurrentIntl,
   services: {
-    configuration$: from(import('../services/configuration'))
+    configuration$: from(import('../services/configuration')),
+    monitoring$: from(import('../services/monitoring'))
+  },
+  utils: {
+    ajax$: from(import('../utils/ajax')),
+    object$: from(import('../utils/object'))
   }
 };
 
