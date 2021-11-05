@@ -118,12 +118,13 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
     if (_self.browsePath != undefined && _self.browsePath != '') {
       browsePath = _self.browsePath;
     }
+    const multiSelect = _self.selectItemsCount === -1 || _self.selectItemsCount > 1;
     CStudioAuthoring.Operations.openBrowseFilesDialog({
-      open: true,
       path: _self.processPathsForMacros(browsePath),
-      multiSelect: true,
+      multiSelect,
       onSuccess: (result) => {
-        result.forEach(({ name, path }) => {
+        const items = Array.isArray(result) ? result : [result];
+        items.forEach(({ name, path }) => {
           const value = name && name !== '' ? name : path;
           control.newInsertItem(path, value, 'shared');
           control._renderItems();

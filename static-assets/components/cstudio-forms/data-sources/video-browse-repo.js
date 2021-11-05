@@ -21,6 +21,7 @@ CStudioForms.Datasources.VideoBrowseRepo =
     this.form = form;
     this.properties = properties;
     this.constraints = constraints;
+    this.selectItemsCount = -1;
 
     for (var i = 0; i < properties.length; i++) {
       if (properties[i].name == 'repoPath') {
@@ -35,17 +36,22 @@ YAHOO.extend(CStudioForms.Datasources.VideoBrowseRepo, CStudioForms.CStudioFormD
   insertVideoAction: function (callback) {
     var _self = this;
 
-    CStudioAuthoring.Operations.openBrowse('', _self.processPathsForMacros(_self.repoPath), '-1', 'select', true, {
-      success: function (searchId, selectedTOs) {
-        var item = selectedTOs[0];
-        var url = CStudioAuthoringContext.previewAppBaseUri + item.uri;
-        var videoData = {};
-        videoData.previewUrl = url;
-        videoData.relativeUrl = item.uri;
-        videoData.fileExtension = url.substring(url.lastIndexOf('.') + 1);
-        callback.success(videoData);
-      },
-      failure: function () {}
+    const multiSelect = _self.selectItemsCount === -1 || _self.selectItemsCount > 1;
+    CStudioAuthoring.Operations.openBrowseFilesDialog({
+      path: _self.processPathsForMacros(_self.repoPath),
+      multiSelect,
+      onSuccess: (result) => {
+        const items = Array.isArray(result) ? result : [result];
+        items.forEach(({ path }) => {
+          const url = CStudioAuthoringContext.previewAppBaseUri + path;
+          const videoData = {
+            previewUrl: url,
+            relativeUrl: path,
+            fileExtension: url.substring(url.lastIndexOf('.') + 1)
+          };
+          callback.success(videoData);
+        });
+      }
     });
   },
 

@@ -24,6 +24,7 @@
     this.form = form;
     this.properties = properties;
     this.constraints = constraints;
+    this.selectItemsCount = -1;
     this.type = '';
     this.allowShared = false;
     this.allowEmbedded = false;
@@ -157,11 +158,11 @@
 
     _openBrowse: function (contentType, control) {
       const path = this._processPathsForMacros(this.baseBrowsePath);
+      const multiSelect = this.selectItemsCount === -1 || this.selectItemsCount > 1;
       CStudioAuthoring.Operations.openBrowseFilesDialog({
-        open: true,
         path,
         contentTypes: [contentType],
-        multiSelect: true,
+        multiSelect,
         onSuccess: (result) => {
           result.forEach(({ name, path }) => {
             const value = name && name !== '' ? name : path;

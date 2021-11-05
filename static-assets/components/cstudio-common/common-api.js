@@ -1319,6 +1319,7 @@ var nodeOpen = false,
         const dialogContainer = document.createElement('div');
         CrafterCMSNext.render(dialogContainer, 'BrowseFilesDialog', {
           ...props,
+          open: true,
           onSuccess: (result) => {
             props.onSuccess?.(result);
             unmount();
