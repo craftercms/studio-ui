@@ -111,7 +111,7 @@ export function GuestProxy() {
           }
           $(el).attr('data-craftercms-index', elementNewIndex);
           const elementRecord = ElementRegistry.fromElement(el);
-          ElementRegistry.deregister(elementRecord.id);
+          elementRecord && ElementRegistry.deregister(elementRecord.id);
         });
         itemsToReRegister.forEach((el) => registerElement(el));
       } else if (type === 'sort') {
@@ -151,14 +151,14 @@ export function GuestProxy() {
             childrenToRegister.push(element);
 
             const elementRecord = ElementRegistry.fromElement(element);
-            ElementRegistry.deregister(elementRecord.id);
+            elementRecord && ElementRegistry.deregister(elementRecord.id);
           });
 
           if (originalOldIndex === elementNewIndex) {
             addAnimation($(el), 'craftercms-content-tree-locate');
           }
           const elementRecord = ElementRegistry.fromElement(el);
-          ElementRegistry.deregister(elementRecord.id);
+          elementRecord && ElementRegistry.deregister(elementRecord.id);
         });
         itemsToReRegister.concat(childrenToRegister).forEach((el) => registerElement(el));
       }

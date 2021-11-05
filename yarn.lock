@@ -2095,7 +2095,6 @@ __metadata:
     "@mui/material": "*"
     "@types/tinymce": ^4.6.4
     build-if-changed: "*"
-    lorem-ipsum: ^2.0.4
     npm-run-all: "*"
     react: "*"
     react-dom: "*"
@@ -2176,6 +2175,7 @@ __metadata:
     graphiql-explorer: ^0.6.3
     graphql: ^15.6.1
     highlight.js: ^11.3.1
+    jabber: ^1.2.2
     marked: ^3.0.8
     moment-timezone: ^0.5.33
     ncp: ^2.0.0
@@ -6937,7 +6937,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"commander@npm:^2.17.1, commander@npm:^2.20.0":
+"commander@npm:^2.20.0":
   version: 2.20.3
   resolution: "commander@npm:2.20.3"
   checksum: ab8c07884e42c3a8dbc5dd9592c606176c7eb5c1ca5ff274bcf907039b2c41de3626f684ea75ccf4d361ba004bbaff1f577d5384c155f3871e456bdf27becf9e
@@ -11684,6 +11684,15 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"jabber@npm:^1.2.2":
+  version: 1.2.2
+  resolution: "jabber@npm:1.2.2"
+  bin:
+    jabber: bin/index.js
+  checksum: ee8d57dd190c9a71f1c13284ff90274e224c9460fc4557236fe67717848f2eb470df689435d30742ab9a1119f89bc06703c29ffa82187067cb3f373fd17ae460
+  languageName: node
+  linkType: hard
+
 "jest-changed-files@npm:^26.6.2":
   version: 26.6.2
   resolution: "jest-changed-files@npm:26.6.2"
@@ -12959,17 +12968,6 @@ fsevents@^1.2.7:
   bin:
     loose-envify: cli.js
   checksum: 6517e24e0cad87ec9888f500c5b5947032cdfe6ef65e1c1936a0c48a524b81e65542c9c3edc91c97d5bddc806ee2a985dbc79be89215d613b1de5db6d1cfe6f4
-  languageName: node
-  linkType: hard
-
-"lorem-ipsum@npm:^2.0.4":
-  version: 2.0.4
-  resolution: "lorem-ipsum@npm:2.0.4"
-  dependencies:
-    commander: ^2.17.1
-  bin:
-    lorem-ipsum: dist/bin/lorem-ipsum.bin.js
-  checksum: 5f3864bfaef504922f2109a645783307f79fbadcce780b5c24e24de64fe5c63090aa3831b389d21072cea9a3d0a9fa959da5e20fab584a912d2f085d3936b197
   languageName: node
   linkType: hard
 
