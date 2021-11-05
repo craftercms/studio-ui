@@ -382,7 +382,7 @@ export function parseContentXML(
             );
           }
         }
-        const field = contentTypesLookup[sourceContentTypeId ?? contentTypeId].fields[tagName];
+        const field = contentTypesLookup[sourceContentTypeId ?? contentTypeId]?.fields[tagName];
         if (!field) {
           console.error(
             `[parseContentXML] Field "${tagName}" was not found on "${
