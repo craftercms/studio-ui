@@ -44,7 +44,7 @@ import {
 import { GuestState } from '../store/models/GuestStore';
 import { notNullOrUndefined } from '@craftercms/studio-ui/utils/object';
 import { forEach } from '@craftercms/studio-ui/utils/array';
-import { popPiece, removeLastPiece } from '@craftercms/studio-ui/utils/string';
+import { isSimple, popPiece, removeLastPiece } from '@craftercms/studio-ui/utils/string';
 import { addAnimation } from '../utils/dom';
 
 export function GuestProxy() {
@@ -135,13 +135,15 @@ export function GuestProxy() {
 
           $(el).attr('data-craftercms-index', elementNewIndex);
 
-          // TODO: Pending to check if fieldId may have dotted notation. (repeat inside repeat)
           el.querySelectorAll(
             `[data-craftercms-field-id^="${fieldId}."][data-craftercms-index^="${currentElementIndex}"]`
           ).forEach((element) => {
-            const position = $(element).attr('data-craftercms-field-id').split('.').indexOf(fieldId);
-            const elementIndex = $(element).attr('data-craftercms-index');
-            const splitIndex = elementIndex.split('.');
+            let position = $(element)
+              .attr('data-craftercms-field-id')
+              .split('.')
+              .indexOf(isSimple(fieldId) ? fieldId : popPiece(fieldId));
+            let elementIndex = $(element).attr('data-craftercms-index');
+            let splitIndex = elementIndex.split('.');
             splitIndex[position] = elementNewIndex.toString();
 
             $(element).attr('data-craftercms-index', splitIndex.join('.'));

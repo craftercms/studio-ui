@@ -484,7 +484,6 @@ export function sortItem(
   // Insert in desired position
   result.splice(targetIndexParsed, 0, collection[currentIndexParsed]);
 
-  // TODO: Pending to check if fieldId may have dotted notation. (repeat inside repeat)
   function updateModel(fieldId: string, model: ModelHierarchyDescriptor, currentIndex: number, targetIndex: number) {
     const position = model.parentContainerFieldPath.split('.').indexOf(fieldId);
     const index = model.parentContainerFieldIndex as string;
@@ -521,11 +520,13 @@ export function sortItem(
           }
     );
   } else {
-    modelHierarchyMap[modelId].children.forEach((_modelId) => {
-      if (modelHierarchyMap[_modelId].parentContainerFieldPath.startsWith(fieldId)) {
-        updateModel(fieldId, modelHierarchyMap[_modelId], currentIndexParsed, targetIndexParsed);
-      }
-    });
+    if (isSimple(fieldId)) {
+      modelHierarchyMap[modelId].children.forEach((_modelId) => {
+        if (modelHierarchyMap[_modelId].parentContainerFieldPath.startsWith(fieldId)) {
+          updateModel(fieldId, modelHierarchyMap[_modelId], currentIndexParsed, targetIndexParsed);
+        }
+      });
+    }
   }
 
   const model = setCollection(

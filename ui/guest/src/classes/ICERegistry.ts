@@ -27,10 +27,10 @@ import {
 } from '@craftercms/studio-ui/models/ContentType';
 import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
 import { ICEProps, ICERecord, ICERecordRegistration, ReferentialEntries } from '../models/InContextEditing';
-import { nullOrUndefined, notNullOrUndefined, nou, pluckProps } from '@craftercms/studio-ui/utils/object';
+import { notNullOrUndefined, nou, nullOrUndefined, pluckProps } from '@craftercms/studio-ui/utils/object';
 import { forEach } from '@craftercms/studio-ui/utils/array';
 import { determineRecordType, findComponentContainerFields } from '../utils/ice';
-import { removeLastPiece } from '@craftercms/studio-ui/utils/string';
+import { isSimple, removeLastPiece } from '@craftercms/studio-ui/utils/string';
 
 const validationChecks: { [key in ValidationKeys]: Function } = {
   // TODO: implement max/min value.
@@ -77,6 +77,9 @@ let rid = 0;
 
 /* private */
 const registry: Map<number, ICERecord> = new Map();
+
+// @ts-ignore
+window.registry = registry;
 
 let refCount: LookupTable<number> = {};
 
@@ -356,20 +359,30 @@ export function isMovableType(id: number): boolean {
 }
 
 export function getMovableParentRecord(id: number): number {
-  const { recordType, modelId } = getReferentialEntries(id);
+  const { recordType, modelId, index, fieldId } = getReferentialEntries(id);
   const modelHierarchyMap = contentController.modelHierarchyMap;
   if (isMovableType(id)) {
     return id;
   } else if (recordType === 'field' || recordType === 'component') {
-    // Can be...
-    // - Field of a component (possible move target)
-    // - Field of a repeat (certain move target)
-    // - Field of a page
-    return exists({
-      modelId: modelHierarchyMap[modelId].parentId,
-      fieldId: modelHierarchyMap[modelId].parentContainerFieldPath,
-      index: modelHierarchyMap[modelId].parentContainerFieldIndex
-    });
+    if (isSimple(fieldId)) {
+      // Can be...
+      // - Field of a component (possible move target)
+      // - Field of a repeat (certain move target)
+      // - Field of a page
+      return exists({
+        modelId: modelHierarchyMap[modelId].parentId,
+        fieldId: modelHierarchyMap[modelId].parentContainerFieldPath,
+        index: modelHierarchyMap[modelId].parentContainerFieldIndex
+      });
+    } else {
+      // It means the field is a child of a repeat item
+      // looking for the parent item of the field
+      return exists({
+        modelId: modelId,
+        fieldId: removeLastPiece(fieldId),
+        index: index
+      });
+    }
   }
   return null;
 }
@@ -530,6 +543,17 @@ export function flush(): void {
 }
 
 export function findContainerRecord(modelId: string, fieldId: string, index: string | number): ICERecord {
+  console.log({
+    modelId: modelId,
+    fieldId: fieldId,
+    index: index
+  });
+  console.log({
+    modelId: modelId,
+    fieldId: fieldId,
+    index: fieldId.includes('.') ? parseInt(removeLastPiece(index as string)) : null
+  });
+
   const recordId = exists({
     modelId: modelId,
     fieldId: fieldId,
