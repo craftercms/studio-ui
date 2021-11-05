@@ -157,12 +157,9 @@
 
     _openBrowse: function (contentType, control) {
       const path = this._processPathsForMacros(this.baseBrowsePath);
-
-      let unmount;
-      const dialogContainer = document.createElement('div');
-      CrafterCMSNext.render(dialogContainer, 'BrowseFilesDialog', {
+      CStudioAuthoring.Operations.openBrowseFilesDialog({
         open: true,
-        path: path,
+        path,
         contentTypes: [contentType],
         multiSelect: true,
         onSuccess: (result) => {
@@ -171,14 +168,7 @@
             control.newInsertItem(path, value, 'shared');
             control._renderItems();
           });
-
-          unmount();
-        },
-        onClose: () => {
-          return unmount();
         }
-      }).then(function (done) {
-        return (unmount = done.unmount);
       });
     },
 
