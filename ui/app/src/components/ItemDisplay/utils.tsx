@@ -51,8 +51,8 @@ export function getItemStateText(stateMap: ItemStateMap) {
       ) : (
         <FormattedMessage id="itemState.scheduledToGoLive" defaultMessage="Scheduled for live" />
       ),
-    staged: null,
-    live: null,
+    staged: () => '',
+    live: () => '',
     disabled: () => <FormattedMessage id="itemState.disabled" defaultMessage="Disabled" />,
     translationUpToDate: null,
     translationPending: null,
