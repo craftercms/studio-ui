@@ -543,17 +543,6 @@ export function flush(): void {
 }
 
 export function findContainerRecord(modelId: string, fieldId: string, index: string | number): ICERecord {
-  console.log({
-    modelId: modelId,
-    fieldId: fieldId,
-    index: index
-  });
-  console.log({
-    modelId: modelId,
-    fieldId: fieldId,
-    index: fieldId.includes('.') ? parseInt(removeLastPiece(index as string)) : null
-  });
-
   const recordId = exists({
     modelId: modelId,
     fieldId: fieldId,

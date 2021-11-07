@@ -102,18 +102,45 @@ export function GuestProxy() {
       // Because more than one item may change their index, we need to deregister all items before
       // proceeding to registering again. Registering immediately after de-registering on the same
       // loop causes misjudging ICE records refCounts due to displaced collection items.
+
+      function updateRepeatGroupsItems(element, fieldId, index, newIndex, array) {
+        element
+          .querySelectorAll(`[data-craftercms-field-id^="${fieldId}."][data-craftercms-index^="${index}"]`)
+          .forEach((element) => {
+            let position = $(element)
+              .attr('data-craftercms-field-id')
+              .split('.')
+              .indexOf(isSimple(fieldId) ? fieldId : popPiece(fieldId));
+            let elementIndex = $(element).attr('data-craftercms-index');
+            let splitIndex = elementIndex.split('.');
+            splitIndex[position] = isSimple(fieldId) ? newIndex.toString() : popPiece(newIndex.toString());
+
+            $(element).attr('data-craftercms-index', splitIndex.join('.'));
+
+            array.push(element);
+
+            const elementRecord = ElementRegistry.fromElement(element);
+            elementRecord && ElementRegistry.deregister(elementRecord.id);
+          });
+      }
+
       if (type === 'insert' || type === 'delete') {
         const itemsToReRegister = collection.slice(newIndex);
+        const childrenToRegister = [];
         itemsToReRegister.forEach((el, i) => {
+          const currentElementIndex = $(el).attr('data-craftercms-index');
           const elementNewIndex = appendIndex(originalNewIndex, i);
           if (type === 'insert' && String(originalNewIndex) === String(elementNewIndex)) {
             addAnimation($(el), 'craftercms-content-tree-locate');
           }
           $(el).attr('data-craftercms-index', elementNewIndex);
+
+          updateRepeatGroupsItems(el, fieldId, currentElementIndex, elementNewIndex, childrenToRegister);
+
           const elementRecord = ElementRegistry.fromElement(el);
           elementRecord && ElementRegistry.deregister(elementRecord.id);
         });
-        itemsToReRegister.forEach((el) => registerElement(el));
+        itemsToReRegister.concat(childrenToRegister).forEach((el) => registerElement(el));
       } else if (type === 'sort') {
         let from;
         let to;
@@ -135,26 +162,7 @@ export function GuestProxy() {
 
           $(el).attr('data-craftercms-index', elementNewIndex);
 
-          el.querySelectorAll(
-            `[data-craftercms-field-id^="${fieldId}."][data-craftercms-index^="${currentElementIndex}"]`
-          ).forEach((element) => {
-            let position = $(element)
-              .attr('data-craftercms-field-id')
-              .split('.')
-              .indexOf(isSimple(fieldId) ? fieldId : popPiece(fieldId));
-            let elementIndex = $(element).attr('data-craftercms-index');
-            let splitIndex = elementIndex.split('.');
-            splitIndex[position] = isSimple(fieldId)
-              ? elementNewIndex.toString()
-              : popPiece(elementNewIndex.toString());
-
-            $(element).attr('data-craftercms-index', splitIndex.join('.'));
-
-            childrenToRegister.push(element);
-
-            const elementRecord = ElementRegistry.fromElement(element);
-            elementRecord && ElementRegistry.deregister(elementRecord.id);
-          });
+          updateRepeatGroupsItems(el, fieldId, currentElementIndex, elementNewIndex, childrenToRegister);
 
           if (originalOldIndex === elementNewIndex) {
             addAnimation($(el), 'craftercms-content-tree-locate');
@@ -307,7 +315,7 @@ export function GuestProxy() {
           setTimeout(() => {
             const $daddy: JQuery<Element> = $(phyRecord.element).parent();
             $(phyRecord.element).remove();
-            updateElementRegistrations(Array.from($daddy.children()), 'delete', index);
+            updateElementRegistrations(Array.from($daddy.children()), 'delete', index, null, fieldId);
           });
 
           break;
@@ -349,7 +357,7 @@ export function GuestProxy() {
                 );
                 const $component = $(itemElement?.outerHTML);
                 insertElement($component, $daddy, targetIndex);
-                updateElementRegistrations(Array.from($daddy.children()), 'insert', targetIndex);
+                updateElementRegistrations(Array.from($daddy.children()), 'insert', targetIndex, null, fieldId);
                 $component.find('[data-craftercms-model-id]').each((i, el) => registerElement(el));
                 ifrm.remove();
               };

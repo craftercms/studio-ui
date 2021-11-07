@@ -672,11 +672,41 @@ export function deleteItem(modelId: string, fieldId: string, index: number | str
 
   const result = collection.slice(0, parsedIndex).concat(collection.slice(parsedIndex + 1));
 
+  function updateIndex(fieldId: string, model: ModelHierarchyDescriptor, currentIndex: number) {
+    const position = model.parentContainerFieldPath.split('.').indexOf(fieldId);
+    const index = model.parentContainerFieldIndex as string;
+    const splitIndex = index.split('.');
+    const numericIndex = Number(splitIndex[position]);
+
+    if (numericIndex > currentIndex) {
+      splitIndex[position] = (numericIndex - 1).toString();
+    }
+    model.parentContainerFieldIndex = splitIndex.join('.');
+  }
+
   // Deleting item from modelHierarchyMap
   if (typeof result[0] === 'string') {
     delete modelHierarchyMap[item];
+    const isSimpleIndex = isSimple(modelHierarchyMap[result[0]].parentContainerFieldIndex);
+    result.forEach(
+      isSimpleIndex
+        ? (id, index) => {
+            modelHierarchyMap[id].parentContainerFieldIndex = String(index);
+          }
+        : (id, index) => {
+            const current = modelHierarchyMap[id].parentContainerFieldIndex as string;
+            modelHierarchyMap[id].parentContainerFieldIndex = `${removeLastPiece(current)}.${index}`;
+          }
+    );
   } else {
-    // TODO: check modelHierarchyMap[item].children
+    if (isSimple(fieldId)) {
+      // WIP
+      modelHierarchyMap[modelId].children.forEach((_modelId) => {
+        if (modelHierarchyMap[_modelId].parentContainerFieldPath.startsWith(fieldId)) {
+          updateIndex(fieldId, modelHierarchyMap[_modelId], parsedIndex);
+        }
+      });
+    }
   }
 
   const model = setCollection(
@@ -691,12 +721,12 @@ export function deleteItem(modelId: string, fieldId: string, index: number | str
     [modelId]: model
   });
 
-  post(deleteItemOperation.type, {
-    modelId,
-    fieldId,
-    index,
-    parentModelId: getParentModelId(modelId, models, modelHierarchyMap)
-  });
+  // post(deleteItemOperation.type, {
+  //   modelId,
+  //   fieldId,
+  //   index,
+  //   parentModelId: getParentModelId(modelId, models, modelHierarchyMap)
+  // });
 
   operations$.next({
     type: deleteItemOperation.type,
