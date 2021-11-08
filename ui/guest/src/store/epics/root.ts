@@ -53,8 +53,8 @@ import { GuestState } from '../models/GuestStore';
 import { nullOrUndefined, notNullOrUndefined, reversePluckProps } from '@craftercms/studio-ui/utils/object';
 import { ElementRecord, ICEProps } from '../../models/InContextEditing';
 import * as ElementRegistry from '../../classes/ElementRegistry';
-import { get } from '../../classes/ElementRegistry';
-import { scrollToElement, scrollToIceProps } from '../../utils/dom';
+import { get, getElementFromICEProps } from '../../classes/ElementRegistry';
+import { scrollToElement } from '../../utils/dom';
 import {
   computedDragEnd,
   desktopAssetDragEnded,
@@ -601,7 +601,8 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
       ofType(contentTreeFieldSelected.type),
       switchMap((action) => {
         const { iceProps, scrollElement, name } = action.payload;
-        if (scrollToIceProps(iceProps, scrollElement)) {
+        const element = getElementFromICEProps(iceProps.modelId, iceProps.fieldId, iceProps.index);
+        if (scrollToElement(element, scrollElement)) {
           return escape$.pipe(
             takeUntil(clearAndListen$),
             map(() => clearContentTreeFieldSelected()),

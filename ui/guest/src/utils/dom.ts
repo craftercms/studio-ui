@@ -336,14 +336,6 @@ export function addAnimation($element: JQuery<Element> | JQuery<HTMLElement>, an
   });
 }
 
-export function scrollToIceProps(iceProps: ICEProps, scrollElement: string, animate: boolean = false): JQuery<Element> {
-  return scrollToElement(
-    getElementFromICEProps(iceProps.modelId, iceProps.fieldId, iceProps.index),
-    scrollElement,
-    animate
-  );
-}
-
 export function scrollToElement(element: Element, scrollElement: string, animate: boolean = false): JQuery<Element> {
   const $element = $(element);
 

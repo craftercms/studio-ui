@@ -30,4 +30,4 @@ script:
 - export PATH=$HOME/jdk/bin:$PATH
 - which java
 - java -version
-- mvn -q -Dmaven.javadoc.skip=true clean package
+- mvn -Dmaven.javadoc.skip=true clean package

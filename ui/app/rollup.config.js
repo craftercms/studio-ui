@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import typescript from 'rollup-plugin-typescript2';
+import typescript from '@rollup/plugin-typescript';
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import treeshaking from 'rollup-plugin-ts-treeshaking';
@@ -41,10 +41,7 @@ const plugins = [
     extensions,
     mainFields: ['module', 'main', 'browser']
   }),
-  commonjs({
-    include: /node_modules/,
-    namedExports: {}
-  })
+  commonjs({ include: /node_modules/ })
 ];
 
 const config = [

@@ -150,8 +150,14 @@
       return [];
     },
 
+    _processPathsForMacros: function (path) {
+      const model = this.form.model;
+      return CStudioAuthoring.Operations.processPathsForMacros(path, model);
+    },
+
     _openBrowse: function (contentType, control) {
-      const path = `${this.baseBrowsePath}/${contentType.replace(/\//g, '_').substr(1)}`;
+      let path = this._processPathsForMacros(this.baseBrowsePath);
+      path = `${path}/${contentType.replace(/\//g, '_').substr(1)}`;
       CStudioAuthoring.Operations.openBrowse('', path, -1, 'select', true, {
         success: function (searchId, selectedTOs) {
           for (let i = 0; i < selectedTOs.length; i++) {
