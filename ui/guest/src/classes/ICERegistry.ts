@@ -541,7 +541,7 @@ export function flush(): void {
 export function findContainerRecord(modelId: string, fieldId: string, index: string | number): ICERecord {
   const recordId = exists({
     modelId: modelId,
-    fieldId: fieldId,
+    fieldId: isSimple(fieldId) ? fieldId : removeLastPiece(fieldId),
     index: fieldId.includes('.') ? parseInt(removeLastPiece(index as string)) : null
   });
   return recordId ? getById(recordId) : null;
