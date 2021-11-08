@@ -129,7 +129,6 @@ const reducer = createReducer(initialState, {
         return { ...state, highlighted: { [record.id]: highlight } };
       } else if (highlightMode === HighlightMode.MOVE_TARGETS) {
         const iceId = record.iceIds[0];
-
         const movableRecordId = iceRegistry.getMovableParentRecord(iceId);
         if (notNullOrUndefined(movableRecordId)) {
           const elementId = iceId === movableRecordId ? record.id : fromICEId(movableRecordId).id;

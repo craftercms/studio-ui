@@ -721,12 +721,12 @@ export function deleteItem(modelId: string, fieldId: string, index: number | str
     [modelId]: model
   });
 
-  // post(deleteItemOperation.type, {
-  //   modelId,
-  //   fieldId,
-  //   index,
-  //   parentModelId: getParentModelId(modelId, models, modelHierarchyMap)
-  // });
+  post(deleteItemOperation.type, {
+    modelId,
+    fieldId,
+    index,
+    parentModelId: getParentModelId(modelId, models, modelHierarchyMap)
+  });
 
   operations$.next({
     type: deleteItemOperation.type,

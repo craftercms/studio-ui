@@ -78,9 +78,6 @@ let rid = 0;
 /* private */
 const registry: Map<number, ICERecord> = new Map();
 
-// @ts-ignore
-window.registry = registry;
-
 let refCount: LookupTable<number> = {};
 
 export function register(registration: ICERecordRegistration): number {
@@ -367,7 +364,6 @@ export function getMovableParentRecord(id: number): number {
     if (isSimple(fieldId)) {
       // Can be...
       // - Field of a component (possible move target)
-      // - Field of a repeat (certain move target)
       // - Field of a page
       return exists({
         modelId: modelHierarchyMap[modelId].parentId,
