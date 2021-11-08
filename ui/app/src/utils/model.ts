@@ -20,7 +20,6 @@ import ContentInstance from '../models/ContentInstance';
 import LookupTable from '../models/LookupTable';
 import { ModelHierarchyMap } from './content';
 import { forEach } from './array';
-import * as Model from '@craftercms/studio-guest/build_tsc/utils/model';
 
 const systemPropList = ['id', 'path', 'contentTypeId', 'dateCreated', 'dateModified', 'label'];
 
@@ -139,7 +138,7 @@ export function findParentModelId(
   return notNullOrUndefined(parentId)
     ? // If it has a path, it is not embedded and hence the parent
       // Otherwise, need to keep looking.
-      notNullOrUndefined(Model.prop(models[parentId], 'path'))
+      notNullOrUndefined(prop(models[parentId], 'path'))
       ? parentId
       : findParentModelId(parentId, hierarchyDescriptorLookup, models)
     : // No parent found for this model

@@ -17,7 +17,7 @@
 import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
 import { ContentTypeField } from '@craftercms/studio-ui/models/ContentType';
 import { ContentInstance } from '@craftercms/studio-ui/models/ContentInstance';
-import { nullOrUndefined, notNullOrUndefined, nou } from '@craftercms/studio-ui/utils/object';
+import { notNullOrUndefined, nou, nullOrUndefined } from '@craftercms/studio-ui/utils/object';
 import * as Model from './model';
 import { forEach, mergeArraysAlternatively } from '@craftercms/studio-ui/utils/array';
 import { isSimple, isSymmetricCombination, popPiece } from '@craftercms/studio-ui/utils/string';
@@ -85,7 +85,7 @@ export function getCollection(model: ContentInstance, fieldId: string, index: st
 }
 
 export function setCollection(model: ContentInstance, fieldId: string, index: number | string, collection: string[]) {
-  if (fieldId.includes('.')) {
+  if (!isSimple(fieldId)) {
     const concatFieldId = mergeArraysAlternatively(fieldId.split('.'), index.toString().split('.')).join('.');
     const fieldNames = concatFieldId.split('.');
     const { length } = fieldNames;
@@ -93,7 +93,7 @@ export function setCollection(model: ContentInstance, fieldId: string, index: nu
     const _model = { ...model };
 
     fieldNames.reduce((acc, _fieldId, i) => {
-      if (i === length) {
+      if (i === length - 1) {
         acc[_fieldId] = collection;
       }
       return (acc[_fieldId] = Array.isArray(acc[_fieldId]) ? [...acc[_fieldId]] : { ...acc[_fieldId] });

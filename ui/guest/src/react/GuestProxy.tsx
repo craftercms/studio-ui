@@ -103,7 +103,7 @@ export function GuestProxy() {
       // proceeding to registering again. Registering immediately after de-registering on the same
       // loop causes misjudging ICE records refCounts due to displaced collection items.
 
-      function updateRepeatGroupsItems(element, fieldId, index, newIndex, array) {
+      function updateRepeatGroupsItems(element, fieldId, index, newIndex, elements) {
         element
           .querySelectorAll(`[data-craftercms-field-id^="${fieldId}."][data-craftercms-index^="${index}"]`)
           .forEach((element) => {
@@ -117,7 +117,7 @@ export function GuestProxy() {
 
             $(element).attr('data-craftercms-index', splitIndex.join('.'));
 
-            array.push(element);
+            elements.push(element);
 
             const elementRecord = ElementRegistry.fromElement(element);
             elementRecord && ElementRegistry.deregister(elementRecord.id);
