@@ -160,7 +160,8 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
     }
 
     if (this.browsePath) {
-      searchContext.path = this.browsePath.endsWith('/') ? `${this.browsePath}.+` : `${this.browsePath}/.+`;
+      const path = _self.processPathsForMacros(this.browsePath);
+      searchContext.path = path.endsWith('/') ? `${path}.+` : `${path}/.+`;
     }
 
     CStudioAuthoring.Operations.openSearch(
@@ -244,7 +245,7 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
     }
 
     if (this.enableSearchExisting || this.defaultEnableSearchExisting) {
-      if (this.countOptions > 1) {
+      if (this.countOptions > 1 || onlyAppend) {
         const search = $(
           `<li class="cstudio-form-controls-search-element"><a class="cstudio-form-control-node-selector-add-container-item">${CMgs.format(
             langBundle,
