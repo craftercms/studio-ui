@@ -500,6 +500,7 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
                     keyword={keyword}
                     onChange={setKeyword}
                     showActionButton={Boolean(keyword)}
+                    autoFocus
                   />
                 </>
               ) : (
