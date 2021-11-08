@@ -172,6 +172,8 @@ CStudioAuthoringWidgets.ApprovedScheduledItemsDashboard = function (widgetId, pa
         editLinkId;
 
       if (isFirst) {
+        const formattedDate = CStudioAuthoring.Utils.formatDateFromUTC(name, studioTimeZone);
+
         html.push('<td colspan="5">');
 
         if (item.numOfChildren > 0) {
@@ -192,7 +194,7 @@ CStudioAuthoringWidgets.ApprovedScheduledItemsDashboard = function (widgetId, pa
           '<span class="wcm-widget-margin-align" title="',
           name,
           '">',
-          displayName,
+          formattedDate,
           ' (',
           item.numOfChildren,
           ')',

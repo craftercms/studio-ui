@@ -3705,18 +3705,18 @@ var nodeOpen = false,
       getScheduledItems: function (site, sortBy, sortAscDesc, filterBy, callback) {
         callback.beforeServiceCall();
 
-        if (filterBy === undefined && filterBy === null) {
+        if (filterBy === undefined || filterBy === null) {
           filterBy = 'page';
         }
 
-        CrafterCMSNext.services.dashboard.fetchLegacyScheduledItems(site, sortBy, sortAscDesc, filterBy).subscribe(
-          function (response) {
+        CrafterCMSNext.services.dashboard.fetchLegacyScheduledItems(site, sortBy, sortAscDesc, filterBy).subscribe({
+          next: (response) => {
             callback.success(response);
           },
-          function (response) {
+          error: (response) => {
             callback.failure(response);
           }
-        );
+        });
       },
       /**
        * get recently deployed items
@@ -3724,20 +3724,18 @@ var nodeOpen = false,
       getDeploymentHistory: function (site, sortBy, sortAscDesc, days, number, filterBy, callback) {
         callback.beforeServiceCall();
 
-        if (filterBy === undefined && filterBy === null) {
+        if (filterBy === undefined || filterBy === null) {
           filterBy = 'page';
         }
 
-        CrafterCMSNext.services.dashboard
-          .fetchLegacyDeploymentHistory(site, sortBy, sortAscDesc, days, number, filterBy)
-          .subscribe(
-            function (response) {
-              callback.success(response);
-            },
-            function (response) {
-              callback.failure(response);
-            }
-          );
+        CrafterCMSNext.services.dashboard.fetchLegacyDeploymentHistory(site, days, number, filterBy).subscribe({
+          next: (response) => {
+            callback.success(response);
+          },
+          error: (response) => {
+            callback.failure(response);
+          }
+        });
       },
 
       /**
