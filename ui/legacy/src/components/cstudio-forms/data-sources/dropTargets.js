@@ -335,7 +335,7 @@
 
     _openContentTypeForm(contentType, type, control) {
       const self = this;
-      const path = `${self.baseRepoPath}/${contentType.split('/').pop()}`;
+      const path = `${self.baseRepoPath}/${contentType.replace(/^\/component(s?)\//, '')}`;
 
       let parentPath = self.form.path;
       CStudioAuthoring.Operations.openContentWebForm(

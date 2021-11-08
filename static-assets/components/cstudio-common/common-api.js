@@ -1326,7 +1326,7 @@ var nodeOpen = false,
           },
           onClose: () => {
             props.onClose?.();
-            return unmount();
+            unmount();
           }
         }).then(function (done) {
           return (unmount = done.unmount);

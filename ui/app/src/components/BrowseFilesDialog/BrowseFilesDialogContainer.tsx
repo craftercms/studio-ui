@@ -55,7 +55,7 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
   const [total, setTotal] = useState<number>();
   const [selectedLookup, setSelectedLookup] = useSpreadState<LookupTable<MediaItem>>({});
   const selectedArray = Object.keys(selectedLookup).filter((key) => selectedLookup[key]);
-  const browsePath = path.endsWith('/') ? path.slice(0, -1) : path;
+  const browsePath = path.replace(/\/+$/, '');
   const [currentPath, setCurrentPath] = useState(browsePath);
 
   const fetchItems = useCallback(() => {
