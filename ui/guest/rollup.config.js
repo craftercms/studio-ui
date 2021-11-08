@@ -19,16 +19,7 @@ import copy from 'rollup-plugin-copy';
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import replace from '@rollup/plugin-replace';
-import * as jsxRuntime from 'react/jsx-runtime';
-import * as reactIs from 'react-is';
-import * as reactDom from 'react-dom';
-import * as react from 'react';
 import pkg from './package.json';
-
-const keysWithoutDefault = (object) => {
-  const array = Object.keys(object);
-  return array.slice(0, array.length - 1);
-};
 
 const input = 'src/index.tsx';
 
@@ -56,17 +47,7 @@ const plugins = [
     dedupe: ['react', 'react-dom', 'react-is'],
     mainFields: ['module', 'main', 'browser']
   }),
-  commonjs({
-    include: /node_modules/,
-    namedExports: {
-      'react-dom': keysWithoutDefault(reactDom),
-      'react-is': keysWithoutDefault(reactIs),
-      'react/jsx-runtime': keysWithoutDefault(jsxRuntime),
-      'prop-types': ['elementType'],
-      react: keysWithoutDefault(react),
-      'lorem-ipsum': ['LoremIpsum']
-    }
-  }),
+  commonjs({ include: /node_modules/ }),
   copy({
     targets: [
       { src: 'build/*.umd.js', dest: '../app/public' },
