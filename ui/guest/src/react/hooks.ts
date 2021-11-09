@@ -23,7 +23,7 @@ import { ICEProps } from '../models/InContextEditing';
 import { byPathFetchIfNotLoaded, model$, models$ } from '../classes/ContentController';
 import { distinctUntilChanged, map, withLatestFrom } from 'rxjs/operators';
 import { denormalizeModel } from '@craftercms/studio-ui/utils/content';
-import * as Model from '../utils/model';
+import * as Model from '@craftercms/studio-ui/utils/model';
 
 // region Typings
 
