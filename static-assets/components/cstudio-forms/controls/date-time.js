@@ -1452,8 +1452,7 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
   setStaticTimezone: function (value, timezone) {
     var timezoneElt = document.getElementById(this.id + '-timezoneCode');
     if (timezoneElt) {
-      var timezoneStr = timezone.substr(0, 3);
-      $(timezoneElt).html(timezoneStr);
+      $(timezoneElt).html(timezone);
     }
     this._setValue(value, timezone);
   },
