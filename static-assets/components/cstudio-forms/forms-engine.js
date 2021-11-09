@@ -551,10 +551,10 @@ var CStudioForms =
       this.id = name;
       this.style = style;
       this.definition = formDefinition;
-      // Initialize dynamicFields with all current keys in model
-      // This is because if we're opening a form with only some values (for example an ice field) and
-      // there were already values in the model set by registering dynamic fields and the controls are not being
-      // rendered (so dynamic fields wont be registered), then when saving the content id won't save the dynamic fields.
+      // Initialize dynamicFields with all current keys in model.
+      // This is because if we're opening a form with only some fields and there were already values in the model
+      // // set by registering dynamic fields and the controls are not being rendered (so dynamic fields wont be
+      // registered), then when saving the content id won't save the dynamic fields.
       // This way we can assure that all original fields (when opening the form) will be saved and no other fields will
       // unless registering them via `registerDynamicField`.
       this.dynamicFields = Object.keys(model) ?? [];
