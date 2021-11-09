@@ -104,12 +104,14 @@
       // If is enter -> immediate search
       if (event.keyCode === 13) {
         CStudioSearch.searchContext.keywords = e.target.value;
+        CStudioSearch.searchContext.currentPage = 1;
         CStudioSearch.performSearch();
         CStudioSearch.updateUrl();
       } else {
         clearTimeout(searchTimeout);
         searchTimeout = setTimeout(function () {
           CStudioSearch.searchContext.keywords = e.target.value;
+          CStudioSearch.searchContext.currentPage = 1;
           CStudioSearch.performSearch();
           CStudioSearch.updateUrl();
         }, 700);
@@ -119,6 +121,7 @@
     $('#searchButton').on('click', function (e) {
       var $searchInput = $('#searchInput');
       CStudioSearch.searchContext.keywords = $searchInput.val();
+      CStudioSearch.searchContext.currentPage = 1;
       CStudioSearch.performSearch(true);
       CStudioSearch.updateUrl();
       $searchInput.focus().select();
