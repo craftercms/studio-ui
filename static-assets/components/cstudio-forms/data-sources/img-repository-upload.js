@@ -89,19 +89,16 @@ YAHOO.extend(CStudioForms.Datasources.ImgRepoUpload, CStudioForms.CStudioFormDat
         null
       );
     } else {
-      CStudioAuthoring.Operations.openBrowse('', _self.processPathsForMacros(_self.repoPath), '1', 'select', true, {
-        success(searchId, selectedTOs) {
-          var imageData = {};
-          var path = selectedTOs[0].uri;
-          var url = this.context.createPreviewUrl(path);
-          imageData.previewUrl = url;
+      CStudioAuthoring.Operations.openBrowseFilesDialog({
+        path: _self.processPathsForMacros(_self.repoPath),
+        onSuccess: ({ path }) => {
+          const imageData = {};
+          imageData.previewUrl = _self.createPreviewUrl(path);
           imageData.relativeUrl = path;
           imageData.fileExtension = path.substring(path.lastIndexOf('.') + 1);
 
           insertCb.success(imageData, true);
-        },
-        failure() {},
-        context: _self
+        }
       });
     }
   },
