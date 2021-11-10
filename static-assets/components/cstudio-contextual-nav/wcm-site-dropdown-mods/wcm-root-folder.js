@@ -837,7 +837,7 @@
             if (!treeItems[i].hideInAuthoring) {
               var itemCannedSearch = instance.cannedSearchCache[treeNodeTO.path];
 
-              if (itemCannedSearch && itemCannedSearch.length != 0 && itemCannedSearch[0].insertAs != 'append') {
+              if (itemCannedSearch && itemCannedSearch.length != 0 && (itemCannedSearch[0].insertAs != 'append' && itemCannedSearch[0].insertAs != 'replaceAllChildFolders')) {
                 replaceChildren.push(treeNodeTO.path);
               } else {
                 var treeNode = this.drawTreeItem(treeNodeTO, root, instance);
