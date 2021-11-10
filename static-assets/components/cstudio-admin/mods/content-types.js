@@ -3742,7 +3742,11 @@
 
     CStudioAdminConsole.helpInsert = function (button, identifier) {
       var $button = $(button);
-      var $input = $(identifier).siblings('input');
+      // Some prop-types wrap the input within a div
+      const $input =
+        $(identifier).siblings('div').length > 0
+          ? $(identifier).siblings('div').find('input')
+          : $(identifier).siblings('input');
       $input.val($input.val() + $button.attr('data-insert'));
 
       $input.change();
