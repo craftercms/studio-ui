@@ -15,7 +15,7 @@
  */
 
 import Dialog from '@mui/material/Dialog';
-import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
+import React, { PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
 import { MarketplacePlugin } from '../../models/MarketplacePlugin';
 import DialogHeader from '../DialogHeader/DialogHeader';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -37,12 +37,13 @@ import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import LookupTable from '../../models/LookupTable';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
-import { useMount } from '../../utils/hooks/useMount';
 import { useSubject } from '../../utils/hooks/useSubject';
 import { useSpreadState } from '../../utils/hooks/useSpreadState';
 import { translations } from './translations';
 import { batchActions } from '../../state/actions/misc';
 import { popTab, pushTab } from '../../state/reducers/dialogs/minimizedTabs';
+import Pagination from '../Pagination';
+import DialogFooter from '../Dialogs/DialogFooter';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -73,18 +74,21 @@ export type InstallPluginDialogProps = PropsWithChildren<
 export default function InstallPluginDialog(props: InstallPluginDialogProps) {
   return (
     <Dialog open={props.open} onClose={props.onClose} fullWidth maxWidth="md">
-      <InstallPluginDialogUI {...props} />
+      <InstallPluginDialogContainer {...props} />
     </Dialog>
   );
 }
 
-function InstallPluginDialogUI(props: InstallPluginDialogProps) {
+function InstallPluginDialogContainer(props: InstallPluginDialogProps) {
   const siteId = useActiveSiteId();
   const { installPermission = false, onInstall, installedPlugins = {} } = props;
   const [keyword, setKeyword] = useState('');
+  const [debounceKeyword, setDebounceKeyword] = useState('');
   const [plugins, setPlugins] = useState<PagedArray<MarketplacePlugin>>(null);
   const [showSearchBar, setShowSearchBar] = useState<boolean>(false);
   const [isFetching, setIsFetching] = useState<boolean>(null);
+  const [offset, setOffset] = useState(0);
+  const [limit, setLimit] = useState(10);
   const [selectedDetailsPlugin, setSelectedDetailsPlugin] = useState<MarketplacePlugin>(null);
   const classes = useStyles();
   const onSearch$ = useSubject<string>();
@@ -92,29 +96,31 @@ function InstallPluginDialogUI(props: InstallPluginDialogProps) {
   const { formatMessage } = useIntl();
   const [installingLookup, setInstallingLookup] = useSpreadState<LookupTable<boolean>>({});
 
-  useMount(() => {
+  const fetchPlugins = useCallback(() => {
     setIsFetching(true);
-    fetchMarketplacePlugins({ type: 'site' }).subscribe((plugins) => {
-      setIsFetching(false);
+    fetchMarketplacePlugins({ type: 'site', keywords: debounceKeyword, limit, offset }).subscribe((plugins) => {
       setPlugins(plugins);
+      setIsFetching(false);
     });
-  });
+  }, [debounceKeyword, limit, offset]);
+
+  useEffect(() => {
+    fetchPlugins();
+  }, [fetchPlugins]);
 
   useEffect(() => {
     const subscription = onSearch$.pipe(debounceTime(400)).subscribe((keywords) => {
-      setIsFetching(true);
-      fetchMarketplacePlugins({ type: 'site', keywords }).subscribe((plugins) => {
-        // Moving setPlugins above of setIsFetching to avoid resolve the resource with the prev plugins
-        setPlugins(plugins);
-        setIsFetching(false);
-      });
+      setDebounceKeyword(keywords);
     });
     return () => {
       subscription.unsubscribe();
     };
   }, [onSearch$]);
 
-  const resource = useLogicResource<MarketplacePlugin[], { plugins: MarketplacePlugin[]; isFetching: boolean }>(
+  const resource = useLogicResource<
+    PagedArray<MarketplacePlugin>,
+    { plugins: PagedArray<MarketplacePlugin>; isFetching: boolean }
+  >(
     useMemo(() => ({ plugins, isFetching }), [plugins, isFetching]),
     {
       shouldResolve: (source) => Boolean(source.plugins) && source.isFetching === false,
@@ -176,6 +182,14 @@ function InstallPluginDialogUI(props: InstallPluginDialogProps) {
         );
       }
     );
+  };
+
+  const onPageChange = (page: number) => {
+    setOffset(page * limit);
+  };
+
+  const onRowsPerPageChange = (e) => {
+    setLimit(e.target.value);
   };
 
   return (
@@ -247,12 +261,34 @@ function InstallPluginDialogUI(props: InstallPluginDialogProps) {
           </SuspenseWithEmptyState>
         </DialogBody>
       )}
+      <DialogFooter>
+        {plugins && (
+          <Pagination
+            rowsPerPageOptions={[5, 10, 15]}
+            sx={{
+              root: {
+                marginLeft: 'auto',
+                marginRight: '20px',
+                minHeight: '40px'
+              },
+              selectRoot: {
+                background: 'red'
+              }
+            }}
+            count={plugins.total}
+            rowsPerPage={plugins.limit}
+            page={plugins && Math.ceil(plugins.offset / plugins.limit)}
+            onPageChange={(page: number) => onPageChange(page)}
+            onRowsPerPageChange={onRowsPerPageChange}
+          />
+        )}
+      </DialogFooter>
     </>
   );
 }
 
 interface PluginListProps {
-  resource: Resource<MarketplacePlugin[]>;
+  resource: Resource<PagedArray<MarketplacePlugin>>;
   installPermission: boolean;
   installedPlugins: LookupTable<boolean>;
   installingLookup: LookupTable<boolean>;
@@ -274,7 +310,7 @@ function PluginList(props: PluginListProps) {
   return (
     <Grid container spacing={3}>
       {plugins.map((plugin) => (
-        <Grid item xs={12} sm={6} md={4} lg={3} key={plugin.id}>
+        <Grid item xs={12} sm={6} md={4} key={plugin.id}>
           <PluginCard
             plugin={plugin}
             inUse={Boolean(installedPlugins[plugin.id])}
