@@ -17,7 +17,7 @@
 import * as contentController from './ContentController';
 import { DEFAULT_RECORD_DATA } from '../utils/util';
 import * as contentTypeUtils from '@craftercms/studio-ui/utils/contentType';
-import * as Model from '../utils/model';
+import * as Model from '@craftercms/studio-ui/utils/model';
 import { ContentInstance } from '@craftercms/studio-ui/models/ContentInstance';
 import {
   ContentType,
