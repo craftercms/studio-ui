@@ -16,7 +16,7 @@
 
 CStudioForms.Controls.FileName =
   CStudioForms.Controls.FileName ||
-  function (id, form, owner, properties, constraints, readonly) {
+  function (id, form, owner, properties, constraints, readonly, allowEditWithoutWarning) {
     this.owner = owner;
     this.owner.registerField(this);
     this.errors = [];
@@ -30,6 +30,7 @@ CStudioForms.Controls.FileName =
     this.id = 'file-name';
     this.contentAsFolder = form.definition ? form.definition.contentAsFolder : null;
     this.readonly = readonly;
+    this.allowEditWithoutWarning = allowEditWithoutWarning;
     this.defaultValue = '';
     this.showWarnOnEdit = true;
     this.messages = {
@@ -322,6 +323,10 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
       if (prop.name == 'readonly' && prop.value == 'true') {
         this.readonly = true;
       }
+
+      if (prop.name == 'allowEditWithoutWarning' && prop.value == 'true') {
+        this.allowEditWithoutWarning = true;
+      }
     }
 
     if (this.isRootPath() || this.readonly == true) {
@@ -352,7 +357,9 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
 
     containerEl.appendChild(titleEl);
     containerEl.appendChild(validEl);
-    this._renderEdit(containerEl);
+    if (!this.allowEditWithoutWarning) {
+      this._renderEdit(containerEl);
+    }
     containerEl.appendChild(controlWidgetContainerEl);
     containerEl.appendChild(descriptionEl);
   },
@@ -529,7 +536,8 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
         type: 'int',
         defaultValue: '50'
       },
-      { label: CMgs.format(langBundle, 'readonly'), name: 'readonly', type: 'boolean' }
+      { label: CMgs.format(langBundle, 'readonly'), name: 'readonly', type: 'boolean' },
+      { label: CMgs.format(langBundle, 'allowEditWithoutWarning'), name: 'allowEditWithoutWarning', type: 'boolean' },
     ];
   },
 

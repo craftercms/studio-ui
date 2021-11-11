@@ -841,6 +841,7 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'en', {
   enableBrowseExisting: 'Enable Browse Existing',
   enableSearchExisting: 'Enable Search Existing',
   useSearch: 'Use Search',
+  allowEditWithoutWarning: 'Allow Edit Without Warning',
 
   /*Restrictions*/
   required: 'Required',
