@@ -314,6 +314,9 @@
                                     197,
                                     'saveContentType'
                                   );
+                                  CrafterCMSNext.system.store.dispatch({
+                                    type: 'FETCH_CONTENT_TYPES'
+                                  });
                                 },
                                 () => {
                                   CStudioAuthoring.Operations.showSimpleDialog(
