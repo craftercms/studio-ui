@@ -629,6 +629,10 @@ export const formEngineMessages = defineMessages({
   formNotReadyForSaving: {
     id: 'formEngine.formNotReadyForSaving',
     defaultMessage: 'Form is not ready for saving. Please try again momentarily or use the cancel button.'
+  },
+  useMVS: {
+    id: 'formEngine.useMVS',
+    defaultMessage: 'Use _mvs postfix (backward compat)'
   }
 });
 
