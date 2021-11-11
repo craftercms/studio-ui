@@ -16,7 +16,7 @@
 
 import React, { useEffect } from 'react';
 import { defineMessages, FormattedMessage } from 'react-intl';
-import { initToolsPanelConfig, updateToolsPanelWidth } from '../../state/actions/preview';
+import { fetchContentTypes, initToolsPanelConfig, updateToolsPanelWidth } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 import ResizeableDrawer from './ResizeableDrawer';
 import { renderWidgets, WidgetDescriptor } from '../../components/Widget';
@@ -38,6 +38,9 @@ import {
   setStoredPreviewToolsPanelWidth
 } from '../../utils/state';
 import { useActiveSite } from '../../utils/hooks/useActiveSite';
+import { getHostToHostBus } from './previewContext';
+import { filter } from 'rxjs/operators';
+import { pluginInstalled } from '../../state/actions/system';
 
 defineMessages({
   previewSiteExplorerPanelTitle: {
@@ -83,6 +86,21 @@ export default function ToolsPanel() {
       dispatch(initToolsPanelConfig({ configXml: uiConfig.xml, storedPage, toolsPanelWidth }));
     }
   }, [uiConfig.xml, toolsPanel, dispatch, uuid, username, siteId]);
+
+  useEffect(() => {
+    const events = [pluginInstalled.type];
+    const hostToHost$ = getHostToHostBus();
+    const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
+      switch (type) {
+        case pluginInstalled.type: {
+          dispatch(fetchContentTypes());
+        }
+      }
+    });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   const resource = useLogicResource<WidgetDescriptor[], LookupTable<WidgetDescriptor[]>>(toolsPanel, {
     errorSelector: (source) => uiConfig.error,
