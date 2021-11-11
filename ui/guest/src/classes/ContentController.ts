@@ -419,6 +419,14 @@ export function insertComponent(
     [modelId]: model
   });
 
+  modelHierarchyMap[instance.craftercms.id] = {
+    children: [],
+    modelId: instance.craftercms.id,
+    parentContainerFieldIndex: isSimple(targetIndex) ? null : removeLastPiece(targetIndex as string),
+    parentContainerFieldPath: isSimple(fieldId) ? fieldId : removeLastPiece(fieldId),
+    parentId: modelId
+  };
+
   modelHierarchyMap[modelId]?.children.push(instance.craftercms.id);
 
   updateHierarchyMapIndexes(result);
@@ -466,6 +474,14 @@ export function insertInstance(
     [instance.craftercms.id]: instance,
     [modelId]: model
   });
+
+  modelHierarchyMap[instance.craftercms.id] = {
+    children: [],
+    modelId: instance.craftercms.id,
+    parentContainerFieldIndex: isSimple(targetIndex) ? null : removeLastPiece(targetIndex as string),
+    parentContainerFieldPath: isSimple(fieldId) ? fieldId : removeLastPiece(fieldId),
+    parentId: modelId
+  };
 
   modelHierarchyMap[modelId]?.children.push(instance.craftercms.id);
 
