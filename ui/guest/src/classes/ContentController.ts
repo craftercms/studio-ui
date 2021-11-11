@@ -421,6 +421,8 @@ export function insertComponent(
 
   modelHierarchyMap[modelId]?.children.push(instance.craftercms.id);
 
+  updateHierarchyMapIndexes(result);
+
   post(insertComponentOperation.type, {
     modelId,
     fieldId,
@@ -466,6 +468,8 @@ export function insertInstance(
   });
 
   modelHierarchyMap[modelId]?.children.push(instance.craftercms.id);
+
+  updateHierarchyMapIndexes(result);
 
   post(insertInstanceOperation.type, {
     modelId,

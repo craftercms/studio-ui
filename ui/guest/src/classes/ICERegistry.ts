@@ -539,10 +539,20 @@ export function flush(): void {
 }
 
 export function findContainerRecord(modelId: string, fieldId: string, index: string | number): ICERecord {
-  const recordId = exists({
-    modelId: modelId,
-    fieldId: isSimple(fieldId) ? fieldId : removeLastPiece(fieldId),
-    index: fieldId.includes('.') ? parseInt(removeLastPiece(index as string)) : null
-  });
+  let recordId;
+  if (isSimple(fieldId)) {
+    recordId = exists({
+      modelId: modelId,
+      fieldId: removeLastPiece(fieldId),
+      index: null
+    });
+  } else {
+    recordId = exists({
+      modelId: modelId,
+      fieldId: fieldId,
+      index: parseInt(removeLastPiece(index as string))
+    });
+  }
+
   return recordId ? getById(recordId) : null;
 }

@@ -323,6 +323,7 @@ export function GuestProxy() {
         case insertComponentOperation.type:
         case insertInstanceOperation.type: {
           const { modelId, fieldId, targetIndex, instance } = op.args;
+          debugger;
 
           const $spinner = $(`
             <svg class="craftercms-placeholder-spinner" width=50 height=50 viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
