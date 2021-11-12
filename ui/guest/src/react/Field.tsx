@@ -18,7 +18,7 @@ import React, { ComponentType, ElementType, Fragment, PropsWithChildren } from '
 import { ICEProps } from '../models/InContextEditing';
 import ContentInstance from '@craftercms/studio-ui/models/ContentInstance';
 import { useICE } from './hooks';
-import { extractCollectionItem, value as getModelValue } from '../utils/model';
+import { extractCollectionItem, value as getModelValue } from '@craftercms/studio-ui/utils/model';
 import { nnou, setProperty } from '@craftercms/studio-ui/utils/object';
 
 export type FieldProps<P = {}> = PropsWithChildren<

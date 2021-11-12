@@ -18,7 +18,7 @@ import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
 import { ContentTypeField } from '@craftercms/studio-ui/models/ContentType';
 import { ContentInstance } from '@craftercms/studio-ui/models/ContentInstance';
 import { nullOrUndefined, notNullOrUndefined, nou } from '@craftercms/studio-ui/utils/object';
-import * as Model from './model';
+import * as Model from '@craftercms/studio-ui/utils/model';
 import { forEach, mergeArraysAlternatively } from '@craftercms/studio-ui/utils/array';
 import { isSimple, isSymmetricCombination, popPiece } from '@craftercms/studio-ui/utils/string';
 import { ModelHierarchyMap } from '@craftercms/studio-ui/utils/content';
