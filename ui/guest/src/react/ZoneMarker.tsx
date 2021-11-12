@@ -89,6 +89,9 @@ export function ZoneMarker(props: ZoneMarkerProps) {
           anchorEl={elRef.current}
           placement="top-start"
           onClick={onPopperClick}
+          style={{
+            transition: 'none'
+          }}
           modifiers={[
             {
               name: 'offset',
