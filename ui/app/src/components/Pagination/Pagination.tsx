@@ -100,7 +100,6 @@ export default function Pagination(props: PaginationProps) {
   } = props;
   const { formatMessage } = useIntl();
   const sx = getStyles(props.sx);
-  console.log(sx);
   return (
     <TablePagination
       classes={{
