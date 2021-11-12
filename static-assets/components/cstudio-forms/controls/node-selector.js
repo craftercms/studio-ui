@@ -37,12 +37,14 @@ CStudioForms.Controls.NodeSelector = function (id, form, owner, properties, cons
   this.defaultValue = '';
   this.disableFlattening = false;
   this.useSingleValueFilename = false;
+  this.useMVS = false;
   this.supportedPostFixes = ['_o'];
   amplify.subscribe('/datasource/loaded', this, this.onDatasourceLoaded);
   amplify.subscribe('UPDATE_NODE_SELECTOR', this, this.onIceUpdate);
   amplify.subscribe('UPDATE_NODE_SELECTOR_NEW', this, this.insertEmbeddedItem);
   this.formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
   this.words = CrafterCMSNext.i18n.messages.words;
+  this.formEngineMessages = CrafterCMSNext.i18n.messages.formEngineMessages;
 
   return this;
 };
@@ -159,6 +161,9 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
       }
       if (prop.name == 'useSingleValueFilename' && prop.value == 'true') {
         this.useSingleValueFilename = true;
+      }
+      if (prop.name === 'useMVS' && prop.value === 'true') {
+        this.useMVS = true;
       }
       if (prop.name == 'disableFlattening' && prop.value == 'true') {
         this.disableFlattening = true;
@@ -325,6 +330,11 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     }
 
     var items = this.items;
+    const hasLegacyPrefix = items.some((item) => Object.keys(item).filter((key) => key.includes('_mvs')).length > 0);
+    // only if true -> set value - for backward compatibility
+    if (hasLegacyPrefix) {
+      this.useMVS = true;
+    }
 
     itemsContainerEl.innerHTML = '';
     var tar = new YAHOO.util.DDTarget(itemsContainerEl);
@@ -508,13 +518,22 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
           item = {
             key: key,
             value: value,
-            fileType_mvs: fileType,
-            fileSize_s: fileSize
+            ...(this.useMVS
+              ? { fileType_mvs: fileType, fileSize_s: fileSize }
+              : { fileType_smv: fileType, fileSize_smv: fileSize })
           };
         } else if (fileType && !fileSize) {
-          item = { key: key, value: value, fileType_mvs: fileType };
+          item = {
+            key: key,
+            value: value,
+            ...(this.useMVS ? { fileType_mvs: fileType } : { fileType_smv: fileType })
+          };
         } else if (!fileType && fileSize) {
-          item = { key: key, value: value, fileSize_mvs: fileSize };
+          item = {
+            key: key,
+            value: value,
+            ...(this.useMVS ? { fileSize_mvs: fileSize } : { fileSize_smv: fileSize })
+          };
         } else {
           item = { key: key, value: value };
         }
@@ -665,6 +684,11 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
       {
         label: CMgs.format(langBundle, 'singleValueFilename'),
         name: 'useSingleValueFilename',
+        type: 'boolean'
+      },
+      {
+        label: this.formatMessage(this.formEngineMessages.useMVS),
+        name: 'useMVS',
         type: 'boolean'
       }
     ];

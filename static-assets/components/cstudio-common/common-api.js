@@ -1312,6 +1312,28 @@ var nodeOpen = false,
       },
 
       /**
+       * Open BrowseFilesDialog component
+       */
+      openBrowseFilesDialog: function (props) {
+        let unmount;
+        const dialogContainer = document.createElement('div');
+        CrafterCMSNext.render(dialogContainer, 'BrowseFilesDialog', {
+          ...props,
+          open: true,
+          onSuccess: (result) => {
+            props.onSuccess?.(result);
+            unmount();
+          },
+          onClose: () => {
+            props.onClose?.();
+            unmount();
+          }
+        }).then(function (done) {
+          return (unmount = done.unmount);
+        });
+      },
+
+      /**
        * open a browse page for CMIS repo
        */
       openCMISBrowse: function (repoId, path, studioPath, allowedOperations, mode, newWindow, callback) {
