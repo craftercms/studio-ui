@@ -730,17 +730,17 @@ export function deleteItem(modelId: string, fieldId: string, index: number | str
     deleteItemFromHierarchyMap(item as string);
     updateHierarchyMapIndexes(result);
   } else {
-    const modelsToDeleted = [];
+    const modelsToDelete = [];
     modelHierarchyMap[modelId].children.forEach((_modelId) => {
       if (modelHierarchyMap[_modelId].parentContainerFieldPath.startsWith(fieldId)) {
         const { numericIndex } = getIndexMetaData(fieldId, modelHierarchyMap[_modelId]);
         if (numericIndex === parsedIndex) {
-          modelsToDeleted.push(_modelId);
+          modelsToDelete.push(_modelId);
         }
         updateIndex(fieldId, modelHierarchyMap[_modelId], parsedIndex);
       }
     });
-    modelsToDeleted.forEach((id) => {
+    modelsToDelete.forEach((id) => {
       deleteItemFromHierarchyMap(id);
     });
   }
