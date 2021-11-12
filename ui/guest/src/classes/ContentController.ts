@@ -16,7 +16,7 @@
 
 import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import { filter, map, pluck, switchMap, take, tap } from 'rxjs/operators';
-import * as Model from '../utils/model';
+import * as Model from '@craftercms/studio-ui/utils/model';
 import Cookies from 'js-cookie';
 import { fromTopic, post } from '../utils/communicator';
 import { v4 as uuid } from 'uuid';

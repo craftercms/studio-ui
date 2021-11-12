@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { notNullOrUndefined, nou, retrieveProperty, setProperty } from './object';
+import { nnou, nou, retrieveProperty, setProperty } from './object';
 import { removeLastPiece } from './string';
 import ContentInstance from '../models/ContentInstance';
 import LookupTable from '../models/LookupTable';
@@ -23,7 +23,7 @@ import { forEach } from './array';
 
 const systemPropList = ['id', 'path', 'contentTypeId', 'dateCreated', 'dateModified', 'label'];
 
-export function prop(model: ContentInstance, propName: string) {
+export function prop(model: ContentInstance, propName: string): string {
   if (model == null) {
     return null;
   } else if (systemPropList.includes(propName)) {
@@ -32,20 +32,20 @@ export function prop(model: ContentInstance, propName: string) {
   return retrieveProperty(model, propName);
 }
 
-export function value(model: ContentInstance, fieldId: string, newValue?: any) {
+export function value(model: ContentInstance, fieldId: string, newValue?: unknown): any {
   // TODO: GraphQL transforms names as left-rail_o to left__rail_o.
   // This transform is potentially unreliable. We should discuss approach.
   const cleanFieldId = fieldId.replace(/-/g, '__');
   if (cleanFieldId !== fieldId && retrieveProperty(model, cleanFieldId)) {
     fieldId = cleanFieldId;
   }
-  if (newValue != null) {
+  if (nnou(newValue)) {
     setProperty(model, fieldId, newValue);
   }
   return retrieveProperty(model, fieldId);
 }
 
-export function extractCollection(model: ContentInstance, fieldId: string, index: string | number) {
+export function extractCollection(model: ContentInstance, fieldId: string, index: string | number): string[] {
   return extractCollectionPiece(model, fieldId, removeLastPiece(`${index}`));
 }
 
@@ -70,11 +70,11 @@ export function extractCollectionItem(model: ContentInstance, fieldId: string, i
   return extractCollectionPiece(model, fieldId, index);
 }
 
-export function getContentTypeId(model) {
+export function getContentTypeId(model: ContentInstance): string {
   return model?.craftercms?.contentTypeId;
 }
 
-export function isEmbedded(model: ContentInstance) {
+export function isEmbedded(model: ContentInstance): boolean {
   return nou(prop(model, 'path'));
 }
 
@@ -129,16 +129,16 @@ export function findParentModelId(
   const parentId = forEach(
     Object.entries(hierarchyDescriptorLookup),
     ([id, children]) => {
-      if (notNullOrUndefined(children) && id !== modelId && children.children.includes(modelId)) {
+      if (nnou(children) && id !== modelId && children.children.includes(modelId)) {
         return id;
       }
     },
     null
   );
-  return notNullOrUndefined(parentId)
+  return nnou(parentId)
     ? // If it has a path, it is not embedded and hence the parent
       // Otherwise, need to keep looking.
-      notNullOrUndefined(prop(models[parentId], 'path'))
+      nnou(prop(models[parentId], 'path'))
       ? parentId
       : findParentModelId(parentId, hierarchyDescriptorLookup, models)
     : // No parent found for this model

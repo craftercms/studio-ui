@@ -24,6 +24,7 @@
     this.form = form;
     this.properties = properties;
     this.constraints = constraints;
+    this.selectItemsCount = -1;
     this.type = '';
     this.allowShared = false;
     this.allowEmbedded = false;
@@ -156,18 +157,19 @@
     },
 
     _openBrowse: function (contentType, control) {
-      let path = this._processPathsForMacros(this.baseBrowsePath);
-      path = `${path}/${contentType.replace(/\//g, '_').substr(1)}`;
-      CStudioAuthoring.Operations.openBrowse('', path, -1, 'select', true, {
-        success: function (searchId, selectedTOs) {
-          for (let i = 0; i < selectedTOs.length; i++) {
-            let item = selectedTOs[i];
-            let value = item.internalName && item.internalName !== '' ? item.internalName : item.uri;
-            control.newInsertItem(item.uri, value, 'shared');
+      const path = this._processPathsForMacros(this.baseBrowsePath);
+      const multiSelect = this.selectItemsCount === -1 || this.selectItemsCount > 1;
+      CStudioAuthoring.Operations.openBrowseFilesDialog({
+        path,
+        contentTypes: [contentType],
+        multiSelect,
+        onSuccess: (result) => {
+          result.forEach(({ name, path }) => {
+            const value = name && name !== '' ? name : path;
+            control.newInsertItem(path, value, 'shared');
             control._renderItems();
-          }
-        },
-        failure: function () {}
+          });
+        }
       });
     },
 
@@ -333,7 +335,7 @@
 
     _openContentTypeForm(contentType, type, control) {
       const self = this;
-      const path = `${self.baseRepoPath}/${contentType.replace(/\//g, '_').substr(1)}`;
+      const path = `${self.baseRepoPath}/${contentType.replace(/^\/component(s?)\//, '')}`;
 
       let parentPath = self.form.path;
       CStudioAuthoring.Operations.openContentWebForm(
