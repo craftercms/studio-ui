@@ -119,7 +119,7 @@ function BlueprintForm(props: BlueprintFormProps) {
 
   useEffect(() => {
     if (sites === null) {
-      fetchAll().subscribe(setSites);
+      fetchAll({ limit: 1000, offset: 0 }).subscribe(setSites);
     }
   }, [sites]);
 
@@ -146,10 +146,12 @@ function BlueprintForm(props: BlueprintFormProps) {
       if (inputs.siteId === currentSiteNameParsed || inputs.siteId === '') {
         const siteId = getSiteId(e.target.value);
         const invalidSiteId = siteId.startsWith('0') || siteId.startsWith('-') || siteId.startsWith('_');
+        const siteIdExist = Boolean(sites.find((site: any) => site.id === siteId));
         setInputs({
           [e.target.name]: e.target.value,
           siteId,
-          invalidSiteId
+          invalidSiteId,
+          siteIdExist
         });
       } else {
         setInputs({ [e.target.name]: e.target.value });
