@@ -679,18 +679,18 @@ export function moveItem(
     return item;
   };
 
-  if (originalFieldId.includes('.')) {
+  if (isSimple(originalFieldId)) {
+    newOriginalModel[originalFieldId] = currentResult;
+  } else {
     let item = getFieldItem(newOriginalModel, originalFieldId, originalIndex);
     item[popPiece(originalFieldId)] = currentResult;
-  } else {
-    newOriginalModel[originalFieldId] = currentResult;
   }
 
-  if (targetModelId !== originalModelId && targetFieldId.includes('.')) {
+  if (isSimple(targetFieldId)) {
+    newTargetModel[targetFieldId] = targetResult;
+  } else {
     let item = getFieldItem(newTargetModel, targetFieldId, targetIndex);
     item[popPiece(targetFieldId)] = targetResult;
-  } else {
-    newTargetModel[targetFieldId] = targetResult;
   }
 
   models$.next(
