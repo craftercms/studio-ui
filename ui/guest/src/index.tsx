@@ -74,6 +74,8 @@ export function fetchIsAuthoring(config?: BaseCrafterConfig): Promise<boolean> {
     .then((response) => response.preview);
 }
 
+document.domain = 'localhost';
+
 export function initInContextEditing(props: GuestProps) {
   const guestProxyElement = document.createElement('craftercms-guest-proxy');
   const { crafterCMSGuestDisabled } = queryString.parse(window.location.search);

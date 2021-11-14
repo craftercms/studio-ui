@@ -19,6 +19,8 @@ import { registerComponents } from './utils/registerComponents';
 
 registerComponents();
 
+document.domain = 'localhost';
+
 if (process.env.NODE_ENV === 'production') {
   require('./utils/codebase-bridge').createCodebaseBridge();
 } else {

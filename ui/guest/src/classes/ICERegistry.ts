@@ -211,12 +211,14 @@ export function getRecordDropTargets(id: number): ICERecord[] {
 
 export function getRepeatGroupItemDropTargets(record: ICERecord): ICERecord[] {
   const entries = getReferentialEntries(record);
+  const modelHierarchyMap = contentController.modelHierarchyMap;
+  const parentModelId = modelHierarchyMap[entries.modelId].modelId;
   const dropTargets = [];
   const records = registry.values();
   for (const item of records) {
     if (nullOrUndefined(item.index) && item.fieldId === record.fieldId) {
       const es = getReferentialEntries(item);
-      if (es.contentTypeId === entries.contentTypeId) {
+      if (es.contentTypeId === entries.contentTypeId && parentModelId === modelHierarchyMap[es.modelId].modelId) {
         dropTargets.push(item);
       }
     }
