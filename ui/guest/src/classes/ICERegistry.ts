@@ -545,7 +545,7 @@ export function findContainerRecord(modelId: string, fieldId: string, index: str
   if (isSimple(fieldId)) {
     recordId = exists({
       modelId: modelId,
-      fieldId: removeLastPiece(fieldId),
+      fieldId: fieldId,
       index: null
     });
   } else {

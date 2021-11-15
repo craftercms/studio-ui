@@ -200,8 +200,7 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
               sortable: legacyField.type === 'node-selector' || legacyField.type === 'repeat',
               validations: {},
               properties: {},
-              defaultValue: legacyField.defaultValue,
-              required: false
+              defaultValue: legacyField.defaultValue
             };
 
             legacyField.properties &&
@@ -260,8 +259,7 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
                     type: typeMap[_legacyField.type] || _legacyField.type,
                     sortable: legacyField.type === 'node-selector' || legacyField.type === 'repeat',
                     validations: {},
-                    defaultValue: '',
-                    required: false
+                    defaultValue: ''
                   };
                   if (field.fields[_fieldId].type === 'node-selector') {
                     field.fields[_fieldId].validations = getFieldValidations(
