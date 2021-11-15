@@ -52,6 +52,9 @@ export const useStyles = makeStyles((theme) =>
       alignItems: 'center',
       placeContent: 'left center',
       maxWidth: '100%',
+      '& .MuiSvgIcon-root': {
+        fontSize: '1.1rem'
+      },
       ...styles.root
     }),
     label: (styles) => ({
