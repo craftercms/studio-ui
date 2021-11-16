@@ -186,11 +186,6 @@ export const useStyles = makeStyles(
       menuList: {
         padding: 0
       },
-      // region Nav Styles
-      stateGraphics: {
-        width: 100
-      },
-      // endregion
       // region Nav Item Styles
       icon: {
         fontSize: '1.2rem'

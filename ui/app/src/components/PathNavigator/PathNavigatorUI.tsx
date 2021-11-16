@@ -258,7 +258,7 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
         <SuspenseWithEmptyState
           resource={resource}
           errorBoundaryProps={{
-            errorStateProps: { classes: { image: classes.stateGraphics } }
+            errorStateProps: { imageUrl: null }
           }}
           withEmptyStateProps={{
             /* We don't want an empty state message but SuspenseWithEmptyState
