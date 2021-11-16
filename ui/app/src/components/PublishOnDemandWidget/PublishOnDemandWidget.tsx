@@ -141,15 +141,23 @@ export default function PublishOnDemandWidget(props: PublishOnDemandWidgetProps)
   const idCancel = 'bulkPublishCancel';
 
   useEffect(() => {
-    fetchPublishingTargets(siteId).subscribe(
-      (targets) => {
+    fetchPublishingTargets(siteId).subscribe({
+      next(targets) {
         setPublishingTargets(targets);
+
+        // Set pre-selected environment.
+        if (targets.length) {
+          const stagingEnv = targets.filter((target) => target.name === 'staging')?.[0];
+          const environment = stagingEnv?.name ?? targets[0].name;
+          setPublishGitFormData({ environment });
+          setPublishStudioFormData({ environment });
+        }
       },
-      (error) => {
+      error(error) {
         setPublishingTargetsError(error);
       }
-    );
-  }, [siteId]);
+    });
+  }, [siteId, setPublishGitFormData, setPublishStudioFormData]);
 
   const publishBy = () => {
     const { commitIds, environment, comment } = publishGitFormData;
