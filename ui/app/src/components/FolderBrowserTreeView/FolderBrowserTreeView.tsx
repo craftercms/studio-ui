@@ -22,11 +22,12 @@ import { ApiResponse } from '../../models/ApiResponse';
 import { forkJoin, Observable } from 'rxjs';
 import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 import { useLogicResource } from '../../utils/hooks/useLogicResource';
-import Suspencified from '../SystemStatus/Suspencified';
+import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import FolderBrowserTreeViewSkeleton from './FolderBrowserTreeViewSkeleton';
 import { LegacyItem } from '../../models/Item';
 import { fetchLegacyItemsTree } from '../../services/content';
 import { legacyItemsToTreeNodes } from './utils';
+import { FormattedMessage } from 'react-intl';
 
 interface FolderBrowserTreeViewProps {
   rootPath: string;
@@ -89,7 +90,17 @@ export default function FolderBrowserTreeView(props: FolderBrowserTreeViewProps)
                   nodesLookup[child.id] = child;
                 });
               });
-              rootNode && setTreeNodes({ ...rootNode });
+
+              if (rootNode) {
+                setTreeNodes({ ...rootNode });
+              } else {
+                setTreeNodes({
+                  id: 'empty',
+                  name: 'empty',
+                  children: [],
+                  fetched: true
+                });
+              }
             },
             (response) => {
               setError(response);
@@ -117,7 +128,7 @@ export default function FolderBrowserTreeView(props: FolderBrowserTreeViewProps)
   const resource = useLogicResource<TreeNode, { treeNodes: TreeNode; error?: ApiResponse }>(
     useMemo(() => ({ treeNodes, error }), [treeNodes, error]),
     {
-      shouldResolve: ({ treeNodes }) => Boolean(treeNodes),
+      shouldResolve: ({ treeNodes }) => Boolean(treeNodes) || (treeNodes && treeNodes.id === 'empty'),
       shouldReject: ({ error }) => Boolean(error),
       shouldRenew: ({ treeNodes }, resource) => treeNodes === null && resource.complete,
       resultSelector: ({ treeNodes }) => treeNodes,
@@ -126,7 +137,23 @@ export default function FolderBrowserTreeView(props: FolderBrowserTreeViewProps)
   );
 
   return (
-    <Suspencified suspenseProps={{ fallback: <FolderBrowserTreeViewSkeleton /> }}>
+    <SuspenseWithEmptyState
+      suspenseProps={{ fallback: <FolderBrowserTreeViewSkeleton /> }}
+      withEmptyStateProps={{
+        isEmpty: (value) => value.id === 'empty',
+        emptyStateProps: {
+          image: null,
+          title: (
+            <FormattedMessage
+              id="folderBrowserTreeView.pathNotFound"
+              defaultMessage="Path not found: `{path}`"
+              values={{ path: currentPath }}
+            />
+          )
+        }
+      }}
+      resource={resource}
+    >
       <FolderBrowserTreeViewUI
         onIconClick={onIconClick}
         onLabelClick={onLabelClick}
@@ -139,6 +166,6 @@ export default function FolderBrowserTreeView(props: FolderBrowserTreeViewProps)
         classes={classes}
         disableSelection={true}
       />
-    </Suspencified>
+    </SuspenseWithEmptyState>
   );
 }
