@@ -314,9 +314,13 @@
                                     197,
                                     'saveContentType'
                                   );
-                                  CrafterCMSNext.system.store.dispatch({
-                                    type: 'FETCH_CONTENT_TYPES'
-                                  });
+
+                                  window.top.postMessage(
+                                    {
+                                      type: 'CONTENT_TYPES_ON_SAVE'
+                                    },
+                                    '*'
+                                  );
                                 },
                                 () => {
                                   CStudioAuthoring.Operations.showSimpleDialog(
