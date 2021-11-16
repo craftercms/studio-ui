@@ -22,7 +22,7 @@ import { FullSxRecord, PartialClassRecord, PartialSxRecord } from '@craftercms/s
 import LevelDescriptorIcon from '@craftercms/studio-ui/components/Icons/LevelDescriptor';
 import FieldIcon from '@craftercms/studio-ui/components/Icons/ContentTypeField';
 
-export type ZoneMarkerClassKey = 'box' | 'paper' | 'icon';
+export type ZoneMarkerClassKey = 'box' | 'paper' | 'icon' | 'tooltip';
 
 export type ZoneMarkerFullSx = FullSxRecord<ZoneMarkerClassKey>;
 
@@ -68,6 +68,10 @@ function getStyles(sx: ZoneMarkerPartialSx): ZoneMarkerFullSx {
     icon: {
       marginRight: 1,
       ...sx?.icon
+    },
+    tooltip: {
+      transition: 'none',
+      ...sx?.tooltip
     }
   } as Record<ZoneMarkerClassKey, SxProps<Theme>>;
 }
@@ -84,11 +88,13 @@ export function ZoneMarker(props: ZoneMarkerProps) {
     <>
       <Box ref={elRef} style={zoneStyle} sx={sx.box} className={classes?.box} />
       {showZoneTooltip && (
-        <Popper
+        <Box
+          component={Popper}
           open
           anchorEl={elRef.current}
           placement="top-start"
           onClick={onPopperClick}
+          sx={sx.tooltip}
           modifiers={[
             {
               name: 'offset',
@@ -107,7 +113,7 @@ export function ZoneMarker(props: ZoneMarkerProps) {
               <Box sx={{ ml: 1, pointerEvents: 'all', alignItems: 'center', display: 'flex' }}>{menuItems}</Box>
             )}
           </Paper>
-        </Popper>
+        </Box>
       )}
     </>
   );

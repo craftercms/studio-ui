@@ -22,10 +22,12 @@ import { useHistoryBackStack } from '../../utils/hooks/useHistoryBackStack';
 import { FormattedMessage } from 'react-intl';
 import Tooltip from '@mui/material/Tooltip';
 import { goToLastPage } from '../../state/actions/preview';
+import { useSelection } from '../../utils/hooks/useSelection';
 
 export interface PreviewBackButtonProps extends IconButtonProps {}
 
 export default function PreviewBackButton(props: PreviewBackButtonProps) {
+  const currentUrlPath = useSelection((state) => state.previewNavigation.currentUrlPath);
   const stack = useHistoryBackStack();
   const dispatch = useDispatch();
   const onClick = () => {
@@ -35,7 +37,12 @@ export default function PreviewBackButton(props: PreviewBackButtonProps) {
   return (
     <Tooltip title={<FormattedMessage id="words.back" defaultMessage="Back" />}>
       <span>
-        <IconButton disabled={stack.length <= 1} onClick={onClick} {...props} size="large">
+        <IconButton
+          disabled={stack.length === 0 || currentUrlPath === stack[stack.length - 1]}
+          onClick={onClick}
+          size="large"
+          {...props}
+        >
           <ArrowBackRoundedIcon />
         </IconButton>
       </span>

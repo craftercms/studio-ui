@@ -17,3 +17,7 @@
 export { default } from './InstallPluginDialog';
 
 export * from './InstallPluginDialog';
+
+export * from './InstallPluginDialogContainer';
+
+export * from './utils';

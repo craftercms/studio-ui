@@ -3742,7 +3742,7 @@
 
     CStudioAdminConsole.helpInsert = function (button, identifier) {
       var $button = $(button);
-      var $input = $(identifier).siblings('input');
+      const $input = $(identifier).parent().find('input');
       $input.val($input.val() + $button.attr('data-insert'));
 
       $input.change();
