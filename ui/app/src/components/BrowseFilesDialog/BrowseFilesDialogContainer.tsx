@@ -26,6 +26,10 @@ import { useDispatch } from 'react-redux';
 import LookupTable from '../../models/LookupTable';
 import { BrowseFilesDialogUI } from '.';
 import { BrowseFilesDialogContainerProps, initialParameters } from './utils';
+import { checkPathExistence } from '../../services/content';
+import { FormattedMessage } from 'react-intl';
+import EmptyState from '../SystemStatus/EmptyState';
+import useStyles from './styles';
 
 export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProps) {
   const {
@@ -57,17 +61,27 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
   const selectedArray = Object.keys(selectedLookup).filter((key) => selectedLookup[key]);
   const browsePath = path.replace(/\/+$/, '');
   const [currentPath, setCurrentPath] = useState(browsePath);
+  const [currentPathExists, setCurrentPathExists] = useState(true);
+  const classes = useStyles();
 
-  const fetchItems = useCallback(() => {
-    search(site, { ...searchParameters, path: `${currentPath}/[^/]+` }).subscribe((response) => {
-      setTotal(response.total);
-      setItems(response.items);
-    });
-  }, [searchParameters, currentPath, site]);
+  const fetchItems = useCallback(
+    () =>
+      search(site, { ...searchParameters, path: `${currentPath}/[^/]+` }).subscribe((response) => {
+        setTotal(response.total);
+        setItems(response.items);
+      }),
+    [searchParameters, currentPath, site]
+  );
 
   useEffect(() => {
-    fetchItems();
-  }, [fetchItems]);
+    checkPathExistence(site, currentPath).subscribe((exists) => {
+      if (exists) {
+        fetchItems();
+      } else {
+        setCurrentPathExists(false);
+      }
+    });
+  }, [fetchItems, site, currentPath]);
 
   const onCardSelected = (item: MediaItem) => {
     if (multiSelect) {
@@ -123,7 +137,7 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
 
   const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
 
-  return (
+  return currentPathExists ? (
     <BrowseFilesDialogUI
       items={items}
       path={browsePath}
@@ -146,6 +160,19 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
       onSelectButtonClick={onSelectButtonClick}
       numOfLoaderItems={numOfLoaderItems}
       rowsPerPageOptions={rowsPerPageOptions}
+    />
+  ) : (
+    <EmptyState
+      title={
+        <FormattedMessage
+          id="browseFilesDialog.emptyStateMessage"
+          defaultMessage="Path `{path}` doesn't exist."
+          values={{ path: currentPath }}
+        />
+      }
+      classes={{
+        root: classes.bodyEmptyState
+      }}
     />
   );
 }
