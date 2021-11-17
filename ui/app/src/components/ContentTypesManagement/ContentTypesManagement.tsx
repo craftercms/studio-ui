@@ -37,24 +37,24 @@ export default function ContentTypeManagement(props: ContentTypeManagementProps)
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
 
-  const messages = fromEvent(window, 'message').pipe(
-    filter((e: any) =>
-      ['CONTENT_TYPES_ON_SAVE', 'CONTENT_TYPES_ON_SUBMITTING_OR_PENDING_CHANGES_MESSAGE'].includes(e.data?.type)
-    )
-  );
-
   useEffect(() => {
-    const messagesSubscription = messages.subscribe((e: any) => {
-      if (e.data.type === 'CONTENT_TYPES_ON_SAVE') {
-        dispatch(fetchContentTypes());
-      } else {
-        onSubmittingAndOrPendingChange?.(e.data.payload);
-      }
-    });
+    const messagesSubscription = fromEvent(window, 'message')
+      .pipe(
+        filter((e: any) =>
+          ['CONTENT_TYPES_ON_SAVE', 'CONTENT_TYPES_ON_SUBMITTING_OR_PENDING_CHANGES_MESSAGE'].includes(e.data?.type)
+        )
+      )
+      .subscribe((e: any) => {
+        if (e.data.type === 'CONTENT_TYPES_ON_SAVE') {
+          dispatch(fetchContentTypes());
+        } else {
+          onSubmittingAndOrPendingChange?.(e.data.payload);
+        }
+      });
     return () => {
       messagesSubscription.unsubscribe();
     };
-  }, [dispatch, messages, onSubmittingAndOrPendingChange]);
+  }, [dispatch, onSubmittingAndOrPendingChange]);
 
   return (
     <Box height="100%" display="flex" flexDirection="column">

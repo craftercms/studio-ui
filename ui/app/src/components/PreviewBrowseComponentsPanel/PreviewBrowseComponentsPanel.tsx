@@ -40,6 +40,7 @@ import { useDebouncedInput } from '../../utils/hooks/useDebouncedInput';
 import translations from './translations';
 import useStyles from './styles';
 import PreviewBrowseComponentsPanelUI from './PreviewBrowseComponentsPanelUI';
+import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
 
 interface ComponentResource {
   count: number;
@@ -52,6 +53,7 @@ interface ComponentResource {
 export default function PreviewBrowseComponentsPanel() {
   const classes = useStyles();
   const dispatch = useDispatch();
+  const siteId = useActiveSiteId();
   const initialKeyword = useSelection((state) => state.preview.components.query.keywords);
   const contentTypeFilter = useSelection((state) => state.preview.components.contentTypeFilter);
   const [keyword, setKeyword] = useState(initialKeyword);
@@ -64,10 +66,10 @@ export default function PreviewBrowseComponentsPanel() {
     : null;
 
   useEffect(() => {
-    if (contentTypesBranch.isFetching === false) {
+    if (siteId && contentTypesBranch.isFetching === false) {
       dispatch(fetchComponentsByContentType({}));
     }
-  }, [contentTypesBranch, dispatch]);
+  }, [siteId, contentTypesBranch, dispatch]);
 
   const resource = useSelectorResource<ComponentResource, PagedEntityState<ContentInstance>>(
     (state) => state.preview.components,
