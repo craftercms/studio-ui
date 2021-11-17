@@ -88,6 +88,7 @@ export function initTinyMCE(
     base_url: '/studio/static-assets/modules/editors/tinymce/v5/tinymce',
     suffix: '.min',
     external_plugins: external,
+    code_editor_inline: false,
     setup(editor: Editor) {
       editor.on('init', function () {
         let changed = false;
@@ -222,7 +223,8 @@ export function initTinyMCE(
             'height', // Height is set to the size of content
             'file_picker_callback', // Files/images handlers currently not supported
             'paste_postprocess',
-            'images_upload_handler'
+            'images_upload_handler',
+            'code_editor_inline'
           )
         }
       : {}),
