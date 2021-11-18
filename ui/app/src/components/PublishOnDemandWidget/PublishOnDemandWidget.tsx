@@ -140,24 +140,29 @@ export default function PublishOnDemandWidget(props: PublishOnDemandWidgetProps)
   const idSuccess = 'bulkPublishSuccess';
   const idCancel = 'bulkPublishCancel';
 
+  const setDefaultPublishingTarget = (targets) => {
+    if (targets.length) {
+      const stagingEnv = targets.find((target) => target.name === 'staging');
+      const environment = stagingEnv?.name ?? targets[0].name;
+      setPublishGitFormData({ environment });
+      setPublishStudioFormData({ environment });
+    }
+  };
+
   useEffect(() => {
     fetchPublishingTargets(siteId).subscribe({
       next(targets) {
         setPublishingTargets(targets);
-
         // Set pre-selected environment.
-        if (targets.length) {
-          const stagingEnv = targets.filter((target) => target.name === 'staging')?.[0];
-          const environment = stagingEnv?.name ?? targets[0].name;
-          setPublishGitFormData({ environment });
-          setPublishStudioFormData({ environment });
-        }
+        setDefaultPublishingTarget(targets);
       },
       error(error) {
         setPublishingTargetsError(error);
       }
     });
-  }, [siteId, setPublishGitFormData, setPublishStudioFormData]);
+    // We only want to re-fetch the publishingTargets when the site changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [siteId]);
 
   const publishBy = () => {
     const { commitIds, environment, comment } = publishGitFormData;
@@ -230,8 +235,7 @@ export default function PublishOnDemandWidget(props: PublishOnDemandWidgetProps)
 
   const onCancel = () => {
     setMode(null);
-    setPublishStudioFormData(initialPublishStudioFormData);
-    setPublishGitFormData(initialPublishGitFormData);
+    setDefaultPublishingTarget(publishingTargets);
   };
 
   useEffect(() => {
