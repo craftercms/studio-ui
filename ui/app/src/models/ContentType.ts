@@ -67,7 +67,6 @@ export interface ContentTypeField {
   validations: Partial<ContentTypeFieldValidations>;
   properties?: LookupTable;
   defaultValue: any;
-  required?: boolean;
   fields?: LookupTable<ContentTypeField>;
   values?: { label: string; value: string }[];
   helpText?: string;
