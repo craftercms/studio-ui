@@ -37,7 +37,7 @@ import {
 import { ValidationResult } from '@craftercms/studio-ui/models/ContentType';
 import { RegistryEntry } from '../models/Registry';
 import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
-import { nullOrUndefined, notNullOrUndefined } from '@craftercms/studio-ui/utils/object';
+import { notNullOrUndefined, nullOrUndefined } from '@craftercms/studio-ui/utils/object';
 import { forEach } from '@craftercms/studio-ui/utils/array';
 import { getChildArrangement, sibling } from '../utils/dom';
 import $ from 'jquery';
@@ -322,7 +322,7 @@ export function getSiblingRects(id: number): LookupTable<DOMRect> {
 export function fromElement(element: Element): ElementRecord {
   return forEach(Object.values(db), (record) => {
     if (record.element === element) {
-      return get(record.id);
+      return record;
     }
   });
 }

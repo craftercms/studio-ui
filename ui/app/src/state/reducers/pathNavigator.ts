@@ -104,6 +104,7 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
           [id]: {
             ...state[id],
             currentPath: path,
+            offset: 0,
             breadcrumb: getIndividualPaths(withoutIndex(path), withoutIndex(state[id].rootPath)),
             itemsInPath: children.map((item) => item.path),
             levelDescriptor: children.levelDescriptor?.path,

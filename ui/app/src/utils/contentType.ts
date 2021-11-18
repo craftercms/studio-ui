@@ -98,7 +98,7 @@ export function getFieldsByType(contentType: ContentType, fieldType): ContentTyp
 export function getDefaultValue(field: ContentTypeField): string | number {
   if (field.defaultValue) {
     return field.defaultValue;
-  } else if (field.required) {
+  } else if (field.validations.required?.value) {
     switch (field.type) {
       case 'image':
         const width = field.validations.width?.value ?? field.validations.minWidth?.value ?? 150;

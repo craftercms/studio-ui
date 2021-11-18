@@ -226,6 +226,56 @@ function collectReferrers(modelId) {
   return modelsToUpdate;
 }
 
+function updateHierarchyMapIndexesFromCollection(collection: string[]) {
+  if (collection.length) {
+    const isSimpleIndex = isSimple(modelHierarchyMap[collection[0]].parentContainerFieldIndex);
+    // 1. Update item being sorted and items getting displaced because of that sort
+    collection.forEach(
+      isSimpleIndex
+        ? (id, index) => {
+            modelHierarchyMap[id].parentContainerFieldIndex = String(index);
+          }
+        : (id, index) => {
+            const current = modelHierarchyMap[id].parentContainerFieldIndex as string;
+            modelHierarchyMap[id].parentContainerFieldIndex = `${removeLastPiece(current)}.${index}`;
+          }
+    );
+  }
+}
+
+function updateHierarchyMapIndexesFromPosition(fieldId: string, model: ModelHierarchyDescriptor, currentIndex: number) {
+  const { position, splitIndex, numericIndex } = getIndexMetaData(fieldId, model);
+  if (numericIndex > currentIndex) {
+    splitIndex[position] = (numericIndex - 1).toString();
+  }
+  model.parentContainerFieldIndex = splitIndex.join('.');
+}
+
+function getIndexMetaData(fieldId: string, model: ModelHierarchyDescriptor) {
+  const position = model.parentContainerFieldPath.split('.').indexOf(isSimple(fieldId) ? fieldId : popPiece(fieldId));
+  const index = model.parentContainerFieldIndex as string;
+  const splitIndex = index.split('.');
+  const numericIndex = Number(splitIndex[position]);
+
+  return {
+    position,
+    splitIndex,
+    numericIndex
+  };
+}
+
+function deleteItemFromHierarchyMap(modelId: string) {
+  modelHierarchyMap[modelId].children.forEach((_modelId) => {
+    deleteItemFromHierarchyMap(_modelId);
+  });
+  const index = modelHierarchyMap[modelHierarchyMap[modelId].parentId].children.indexOf(modelId);
+  const children = [...modelHierarchyMap[modelHierarchyMap[modelId].parentId].children];
+  modelHierarchyMap[modelHierarchyMap[modelId].parentId].children = children
+    .slice(0, index)
+    .concat(children.slice(index + 1));
+  delete modelHierarchyMap[modelId];
+}
+
 export function updateField(modelId: string, fieldId: string, index: string | number, value: unknown): void {
   const models = getCachedModels();
   const model = { ...models[modelId] };
@@ -377,7 +427,17 @@ export function insertComponent(
     [modelId]: model
   });
 
+  modelHierarchyMap[instance.craftercms.id] = {
+    children: [],
+    modelId: instance.craftercms.id,
+    parentContainerFieldIndex: isSimple(targetIndex) ? null : removeLastPiece(targetIndex as string),
+    parentContainerFieldPath: isSimple(fieldId) ? fieldId : removeLastPiece(fieldId),
+    parentId: modelId
+  };
+
   modelHierarchyMap[modelId]?.children.push(instance.craftercms.id);
+
+  updateHierarchyMapIndexesFromCollection(result);
 
   post(insertComponentOperation.type, {
     modelId,
@@ -423,7 +483,17 @@ export function insertInstance(
     [modelId]: model
   });
 
+  modelHierarchyMap[instance.craftercms.id] = {
+    children: [],
+    modelId: instance.craftercms.id,
+    parentContainerFieldIndex: isSimple(targetIndex) ? null : removeLastPiece(targetIndex as string),
+    parentContainerFieldPath: isSimple(fieldId) ? fieldId : removeLastPiece(fieldId),
+    parentId: modelId
+  };
+
   modelHierarchyMap[modelId]?.children.push(instance.craftercms.id);
+
+  updateHierarchyMapIndexesFromCollection(result);
 
   post(insertInstanceOperation.type, {
     modelId,
@@ -484,13 +554,8 @@ export function sortItem(
   // Insert in desired position
   result.splice(targetIndexParsed, 0, collection[currentIndexParsed]);
 
-  // TODO: Pending to check if fieldId may have dotted notation. (repeat inside repeat)
   function updateModel(fieldId: string, model: ModelHierarchyDescriptor, currentIndex: number, targetIndex: number) {
-    const position = model.parentContainerFieldPath.split('.').indexOf(fieldId);
-    const index = model.parentContainerFieldIndex as string;
-    const splitIndex = index.split('.');
-    const numericIndex = Number(splitIndex[position]);
-
+    const { position, splitIndex, numericIndex } = getIndexMetaData(fieldId, model);
     if (numericIndex === currentIndex) {
       splitIndex[position] = targetIndex.toString();
     } else if (numericIndex === targetIndex) {
@@ -508,18 +573,7 @@ export function sortItem(
   // a node selector collections will have strings on them (ids of the components they hold) vs
   // repeating groups that will have objects (the items per se).
   if (typeof result[0] === 'string') {
-    const isSimpleIndex = isSimple(modelHierarchyMap[result[0]].parentContainerFieldIndex);
-    // 1. Update item being sorted and items getting displaced because of that sort
-    result.forEach(
-      isSimpleIndex
-        ? (id, index) => {
-            modelHierarchyMap[id].parentContainerFieldIndex = String(index);
-          }
-        : (id, index) => {
-            const current = modelHierarchyMap[id].parentContainerFieldIndex as string;
-            modelHierarchyMap[id].parentContainerFieldIndex = `${removeLastPiece(current)}.${index}`;
-          }
-    );
+    updateHierarchyMapIndexesFromCollection(result);
   } else {
     modelHierarchyMap[modelId].children.forEach((_modelId) => {
       if (modelHierarchyMap[_modelId].parentContainerFieldPath.startsWith(fieldId)) {
@@ -581,12 +635,13 @@ export function moveItem(
   const currentCollection = symmetricOriginal
     ? Model.extractCollection(currentModel, originalFieldId, originalIndex)
     : Model.extractCollectionItem(currentModel, originalFieldId, originalIndex);
+  const item = currentCollection[originalIndexParsed];
   // Remove item from original collection
   const currentResult = currentCollection
     .slice(0, originalIndexParsed)
     .concat(currentCollection.slice(originalIndexParsed + 1));
 
-  // TODO: Remove modelId from modelHierarchyMap[modelId].children
+  updateHierarchyMapIndexesFromCollection(currentResult);
 
   const targetModel = models[targetModelId];
   const targetCollection = symmetricTarget
@@ -595,9 +650,18 @@ export function moveItem(
   // Insert item in target collection @ the desired position
   const targetResult = targetCollection.slice(0);
 
-  // TODO: insert newItem modelId from modelHierarchyMap[modelId].children
-
   targetResult.splice(targetIndexParsed, 0, currentCollection[originalIndexParsed]);
+
+  modelHierarchyMap[item] = {
+    ...modelHierarchyMap[item],
+    parentContainerFieldIndex: targetIndex,
+    parentContainerFieldPath: targetFieldId,
+    parentId: targetModelId
+  };
+
+  modelHierarchyMap[targetModelId]?.children.push(item);
+
+  updateHierarchyMapIndexesFromCollection(targetResult);
 
   const newOriginalModel = { ...currentModel };
   const newTargetModel = originalModelId === targetModelId ? newOriginalModel : { ...targetModel };
@@ -615,18 +679,18 @@ export function moveItem(
     return item;
   };
 
-  if (originalFieldId.includes('.')) {
-    let item = getFieldItem(newOriginalModel, originalFieldId, originalIndex);
-    item[popPiece(originalFieldId)] = targetResult;
-  } else {
+  if (isSimple(originalFieldId)) {
     newOriginalModel[originalFieldId] = currentResult;
+  } else {
+    let item = getFieldItem(newOriginalModel, originalFieldId, originalIndex);
+    item[popPiece(originalFieldId)] = currentResult;
   }
 
-  if (targetModelId !== originalModelId && targetFieldId.includes('.')) {
+  if (isSimple(targetFieldId)) {
+    newTargetModel[targetFieldId] = targetResult;
+  } else {
     let item = getFieldItem(newTargetModel, targetFieldId, targetIndex);
     item[popPiece(targetFieldId)] = targetResult;
-  } else {
-    newTargetModel[targetFieldId] = targetResult;
   }
 
   models$.next(
@@ -672,10 +736,23 @@ export function deleteItem(modelId: string, fieldId: string, index: number | str
   const result = collection.slice(0, parsedIndex).concat(collection.slice(parsedIndex + 1));
 
   // Deleting item from modelHierarchyMap
-  if (typeof result[0] === 'string') {
-    delete modelHierarchyMap[item];
+  if (typeof collection[0] === 'string') {
+    deleteItemFromHierarchyMap(item as string);
+    updateHierarchyMapIndexesFromCollection(result);
   } else {
-    // TODO: check modelHierarchyMap[item].children
+    const modelsToDelete = [];
+    modelHierarchyMap[modelId].children.forEach((_modelId) => {
+      if (modelHierarchyMap[_modelId].parentContainerFieldPath.startsWith(fieldId)) {
+        const { numericIndex } = getIndexMetaData(fieldId, modelHierarchyMap[_modelId]);
+        if (numericIndex === parsedIndex) {
+          modelsToDelete.push(_modelId);
+        }
+        updateHierarchyMapIndexesFromPosition(fieldId, modelHierarchyMap[_modelId], parsedIndex);
+      }
+    });
+    modelsToDelete.forEach((id) => {
+      deleteItemFromHierarchyMap(id);
+    });
   }
 
   const model = setCollection(
