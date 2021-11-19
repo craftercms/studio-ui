@@ -96,7 +96,6 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
   useEffect(() => {
     if (item && content === null) {
       setLoading(true);
-
       dispatch(
         updateCodeEditorDialog({
           isSubmitting: true
