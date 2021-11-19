@@ -791,7 +791,8 @@ export const itemActionDispatcher = ({
                 showCodeEditorDialog({
                   path: item.path,
                   mode: getEditorMode(item),
-                  onClose: batchActions([closeCodeEditorDialog(), conditionallyUnlockItem({ path: item.path })])
+                  onClose: closeCodeEditorDialog(),
+                  onClosed: conditionallyUnlockItem({ path: item.path })
                 })
               ])
             );
