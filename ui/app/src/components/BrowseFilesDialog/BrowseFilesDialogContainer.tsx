@@ -30,6 +30,7 @@ import { checkPathExistence } from '../../services/content';
 import { FormattedMessage } from 'react-intl';
 import EmptyState from '../SystemStatus/EmptyState';
 import useStyles from './styles';
+import BrowseFilesDialogContainerSkeleton from './BrowseFilesDialogContainerSkeleton';
 
 export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProps) {
   const {
@@ -61,7 +62,8 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
   const selectedArray = Object.keys(selectedLookup).filter((key) => selectedLookup[key]);
   const browsePath = path.replace(/\/+$/, '');
   const [currentPath, setCurrentPath] = useState(browsePath);
-  const [currentPathExists, setCurrentPathExists] = useState(true);
+  const [fetchingCurrentPathExists, setFetchingCurrentPathExists] = useState(false);
+  const [currentPathExists, setCurrentPathExists] = useState(false);
   const classes = useStyles();
 
   const fetchItems = useCallback(
@@ -74,13 +76,18 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
   );
 
   useEffect(() => {
-    checkPathExistence(site, currentPath).subscribe((exists) => {
+    setFetchingCurrentPathExists(true);
+    const subscription = checkPathExistence(site, currentPath).subscribe((exists) => {
       if (exists) {
         fetchItems();
-      } else {
-        setCurrentPathExists(false);
+        setCurrentPathExists(true);
       }
+      setFetchingCurrentPathExists(false);
     });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [fetchItems, site, currentPath]);
 
   const onCardSelected = (item: MediaItem) => {
@@ -137,7 +144,9 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
 
   const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
 
-  return currentPathExists ? (
+  return fetchingCurrentPathExists ? (
+    <BrowseFilesDialogContainerSkeleton />
+  ) : currentPathExists ? (
     <BrowseFilesDialogUI
       items={items}
       path={browsePath}
