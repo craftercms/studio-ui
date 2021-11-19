@@ -19,7 +19,7 @@ import { createTheme, Theme, ThemeOptions } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import palette from './palette';
 import { useMemo } from 'react';
-import { ZoneMarkerFullSx } from '../react';
+import { ZoneMarkerPartialSx } from '../react';
 
 export interface GuestStyleConfig extends GuestStyleSheetConfig {}
 
@@ -59,17 +59,13 @@ export function useGuestTheme(styleConfig: ThemeOptions): Theme {
 export interface GuestStylesSx {
   zoneMarker: Record<
     'base' | 'selectModeHighlight' | 'moveModeHighlight' | 'errorHighlight' | 'warnHighlight',
-    ZoneMarkerFullSx
+    ZoneMarkerPartialSx
   >;
 }
 
 export const styleSxDefaults: GuestStylesSx = {
   zoneMarker: {
-    base: {
-      paper: {},
-      box: {},
-      icon: {}
-    },
+    base: {},
     selectModeHighlight: {
       paper: {
         bgcolor: 'success.light',
@@ -99,8 +95,7 @@ export const styleSxDefaults: GuestStylesSx = {
       },
       box: {
         bgcolor: 'error.light'
-      },
-      icon: {}
+      }
     },
     warnHighlight: {
       paper: {
@@ -109,8 +104,7 @@ export const styleSxDefaults: GuestStylesSx = {
       },
       box: {
         outlineColor: (theme) => theme.palette.warning.light
-      },
-      icon: {}
+      }
     }
   }
 };

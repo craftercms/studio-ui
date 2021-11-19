@@ -154,14 +154,13 @@ YAHOO.extend(
         };
 
         pickEl.onclick = function () {
-          CStudioAuthoring.Operations.openBrowse('', '/templates/web', '1', 'select', true, {
-            success: function (searchId, selectedTOs) {
-              var item = selectedTOs[0];
-              _self.valueEl.value = item.uri;
-              _self.value = item.uri;
+          CStudioAuthoring.Operations.openBrowseFilesDialog({
+            path: '/templates/web',
+            onSuccess: ({ path }) => {
+              _self.valueEl.value = path;
+              _self.value = path;
               _self.updateFn(null, _self.valueEl);
-            },
-            failure: function () {}
+            }
           });
         };
       }

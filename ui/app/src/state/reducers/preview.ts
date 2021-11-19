@@ -173,9 +173,9 @@ const fetchGuestModelsCompleteHandler = (state, { type, payload }) => {
           ...state.guest.modelIdByPath,
           ...payload.modelIdByPath
         },
-        childrenMap: {
-          ...state.guest?.childrenMap,
-          ...payload.childrenMap
+        hierarchyMap: {
+          ...state.guest?.hierarchyMap,
+          ...payload.hierarchyMap
         }
       }
     };
@@ -258,7 +258,7 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
         modelId,
         path,
         models: null,
-        childrenMap: null,
+        hierarchyMap: null,
         modelIdByPath: null,
         selected: null,
         itemBeingDragged: null

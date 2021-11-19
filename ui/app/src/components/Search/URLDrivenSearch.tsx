@@ -72,7 +72,7 @@ export function URLDrivenSearch(props: URLDrivenSearchProps) {
   useEffect(() => {
     const subscription = onSearch$.pipe(debounceTime(400), distinctUntilChanged()).subscribe((keywords: string) => {
       if (!keywords) keywords = undefined;
-      let qs = refs.current.createQueryString({ name: 'keywords', value: keywords });
+      let qs = refs.current.createQueryString({ name: 'keywords', value: keywords }, false, { offset: 0 });
       history.push({
         pathname: '/',
         search: `?${qs}`

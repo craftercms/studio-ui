@@ -165,15 +165,19 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
   },
 
   formatDate: function (date) {
-    const localeCode = this.locale.localeCode;
-    // these options need to be custom for control's date, that will always show day, month and year
-    const options = {
-      day: 'numeric',
-      month: 'numeric',
-      year: 'numeric'
-    };
+    if (Boolean(date)) {
+      const localeCode = this.locale.localeCode;
+      // these options need to be custom for control's date, that will always show day, month and year
+      const options = {
+        day: 'numeric',
+        month: 'numeric',
+        year: 'numeric'
+      };
 
-    return new Intl.DateTimeFormat(localeCode, options).format(new Date(date));
+      return new Intl.DateTimeFormat(localeCode, options).format(new Date(date));
+    } else {
+      return '';
+    }
   },
 
   getLabel: function () {
@@ -250,9 +254,9 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
     if (this.validate(null, this)) {
       // If dateValue == "", then it must be because only the date field is
       // displayed; otherwise, validation should not have allowed the user get this far
-      dateVal = dateValue != '' ? dateValue : nowObj.date;
+      dateVal = Boolean(dateValue) ? dateValue : nowObj.date;
 
-      if (timeValue != '') {
+      if (Boolean(timeValue)) {
         var timeVals = timeValue.split(' ');
         var isPm = timeVals[1] == 'pm' ? true : false;
         var timeFields = timeVals[0].split(':');
@@ -266,7 +270,7 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
         timeVal = ''; // Default time value if the user doesn't populate the time field
       }
 
-      if ((this.showDate && dateValue != '') || (this.showTime && !this.showDate && timeValue != '')) {
+      if ((this.showDate && Boolean(dateValue)) || (this.showTime && !this.showDate && Boolean(timeValue))) {
         res = this.convertDateTime(dateVal, timeValue, this.timezone, true, null).split(' ');
         return CStudioAuthoring.Utils.formatDateToISO(res[0] + ' ' + res[1]);
       } else {
@@ -1055,9 +1059,14 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
       }
     }
 
+    const controlsContainer = document.createElement('div');
+    controlsContainer.className = 'controls-container';
+    controlsContainer.style.display = 'flex';
+    controlWidgetContainerEl.appendChild(controlsContainer);
+
     if (this.showNowLink && !this.readonly) {
       // only show the link if the field is editable
-      this._renderDateLink(dateElContainer, 'Set Now');
+      this._renderDateLink(controlsContainer, 'Set Now');
     }
 
     if (!this.readonly && this.showClear) {
@@ -1084,7 +1093,7 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
         this
       );
 
-      dateElContainer.appendChild(clearDateEl);
+      controlsContainer.appendChild(clearDateEl);
     }
 
     this.renderHelp(config, controlWidgetContainerEl);
@@ -1194,7 +1203,7 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
   },
 
   getValue: function () {
-    return CStudioAuthoring.Utils.formatDateToISO(this.value);
+    return CStudioAuthoring.Utils.formatDateToISO(this.value) ?? '';
   },
 
   getDateTimeObject: function (timeObj) {
@@ -1452,8 +1461,7 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
   setStaticTimezone: function (value, timezone) {
     var timezoneElt = document.getElementById(this.id + '-timezoneCode');
     if (timezoneElt) {
-      var timezoneStr = timezone.substr(0, 3);
-      $(timezoneElt).html(timezoneStr);
+      $(timezoneElt).html(timezone);
     }
     this._setValue(value, timezone);
   },
@@ -1547,7 +1555,7 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
       this.dateEl.dataset.value = value;
       dateTime[0] = value;
     } else if (type == 'time' && this.timeEl) {
-      this.timeEl.value = this.formatTime(value);
+      this.timeEl.value = Boolean(value) ? this.formatTime(value) : value;
       this.timeEl.dataset.value = value;
       dateTime[1] = value;
     }

@@ -407,6 +407,7 @@ CStudioAuthoring.Module.requireModule(
             content_css: rteStylesheets,
             content_style: rteStyleOverride,
             code_editor_wrap: codeEditorWrap,
+            code_editor_inline: true,
 
             external_plugins: external,
 

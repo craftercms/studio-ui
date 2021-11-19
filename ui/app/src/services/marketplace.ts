@@ -42,6 +42,7 @@ export function fetchBlueprints(options?: {
 interface MarketplacePluginSearchOptions {
   type: string;
   limit: number;
+  offset: number;
   keywords: string;
   showIncompatible: boolean;
 }

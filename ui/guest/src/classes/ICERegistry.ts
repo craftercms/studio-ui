@@ -17,7 +17,7 @@
 import * as contentController from './ContentController';
 import { DEFAULT_RECORD_DATA } from '../utils/util';
 import * as contentTypeUtils from '@craftercms/studio-ui/utils/contentType';
-import * as Model from '../utils/model';
+import * as Model from '@craftercms/studio-ui/utils/model';
 import { ContentInstance } from '@craftercms/studio-ui/models/ContentInstance';
 import {
   ContentType,
@@ -27,10 +27,10 @@ import {
 } from '@craftercms/studio-ui/models/ContentType';
 import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
 import { ICEProps, ICERecord, ICERecordRegistration, ReferentialEntries } from '../models/InContextEditing';
-import { nullOrUndefined, notNullOrUndefined, nou, pluckProps } from '@craftercms/studio-ui/utils/object';
+import { notNullOrUndefined, nou, nullOrUndefined, pluckProps } from '@craftercms/studio-ui/utils/object';
 import { forEach } from '@craftercms/studio-ui/utils/array';
 import { determineRecordType, findComponentContainerFields } from '../utils/ice';
-import { removeLastPiece } from '@craftercms/studio-ui/utils/string';
+import { isSimple, removeLastPiece } from '@craftercms/studio-ui/utils/string';
 
 const validationChecks: { [key in ValidationKeys]: Function } = {
   // TODO: implement max/min value.
@@ -211,12 +211,14 @@ export function getRecordDropTargets(id: number): ICERecord[] {
 
 export function getRepeatGroupItemDropTargets(record: ICERecord): ICERecord[] {
   const entries = getReferentialEntries(record);
+  const modelHierarchyMap = contentController.modelHierarchyMap;
+  const parentModelId = modelHierarchyMap[entries.modelId].modelId;
   const dropTargets = [];
   const records = registry.values();
   for (const item of records) {
     if (nullOrUndefined(item.index) && item.fieldId === record.fieldId) {
       const es = getReferentialEntries(item);
-      if (es.contentTypeId === entries.contentTypeId) {
+      if (es.contentTypeId === entries.contentTypeId && parentModelId === modelHierarchyMap[es.modelId].modelId) {
         dropTargets.push(item);
       }
     }
@@ -356,20 +358,29 @@ export function isMovableType(id: number): boolean {
 }
 
 export function getMovableParentRecord(id: number): number {
-  const { recordType, modelId } = getReferentialEntries(id);
+  const { recordType, modelId, index, fieldId } = getReferentialEntries(id);
   const modelHierarchyMap = contentController.modelHierarchyMap;
   if (isMovableType(id)) {
     return id;
   } else if (recordType === 'field' || recordType === 'component') {
-    // Can be...
-    // - Field of a component (possible move target)
-    // - Field of a repeat (certain move target)
-    // - Field of a page
-    return exists({
-      modelId: modelHierarchyMap[modelId].parentId,
-      fieldId: modelHierarchyMap[modelId].parentContainerFieldPath,
-      index: modelHierarchyMap[modelId].parentContainerFieldIndex
-    });
+    if (isSimple(fieldId)) {
+      // Can be...
+      // - Field of a component (possible move target)
+      // - Field of a page
+      return exists({
+        modelId: modelHierarchyMap[modelId].parentId,
+        fieldId: modelHierarchyMap[modelId].parentContainerFieldPath,
+        index: modelHierarchyMap[modelId].parentContainerFieldIndex
+      });
+    } else {
+      // It means the field is a child of a repeat item
+      // looking for the parent item of the field
+      return exists({
+        modelId: modelId,
+        fieldId: removeLastPiece(fieldId),
+        index: index
+      });
+    }
   }
   return null;
 }
@@ -530,10 +541,20 @@ export function flush(): void {
 }
 
 export function findContainerRecord(modelId: string, fieldId: string, index: string | number): ICERecord {
-  const recordId = exists({
-    modelId: modelId,
-    fieldId: fieldId,
-    index: fieldId.includes('.') ? parseInt(removeLastPiece(index as string)) : null
-  });
+  let recordId;
+  if (isSimple(fieldId)) {
+    recordId = exists({
+      modelId: modelId,
+      fieldId: fieldId,
+      index: null
+    });
+  } else {
+    recordId = exists({
+      modelId: modelId,
+      fieldId: fieldId,
+      index: parseInt(removeLastPiece(index as string))
+    });
+  }
+
   return recordId ? getById(recordId) : null;
 }
