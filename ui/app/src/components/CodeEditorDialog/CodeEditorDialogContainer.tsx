@@ -96,15 +96,25 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
   useEffect(() => {
     if (item && content === null) {
       setLoading(true);
+      dispatch(
+        updateCodeEditorDialog({
+          isSubmitting: true
+        })
+      );
       fetchContentXML(site, item.path, { ...(!item.lockOwner && { lock: !readonly }) }).subscribe((xml) => {
         setContent(xml);
         setLoading(false);
         if (!readonly) {
           dispatch(localItemLock({ path: item.path, username: user.username }));
         }
+        dispatch(
+          updateCodeEditorDialog({
+            isSubmitting: false
+          })
+        );
       });
     }
-  }, [site, item, setContent, content, dispatch, user.username, readonly]);
+  }, [site, item, content, dispatch, user.username, readonly]);
 
   const onEditorChanges = () => {
     dispatch(
