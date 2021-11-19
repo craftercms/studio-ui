@@ -30,6 +30,7 @@ import {
   desktopAssetUploadProgress,
   desktopAssetUploadStarted,
   editModeToggleHotkey,
+  fetchContentTypes,
   fetchGuestModel,
   fetchGuestModelComplete,
   fetchPrimaryGuestModelComplete,
@@ -123,6 +124,7 @@ import { HighlightMode } from '../../models/GlobalState';
 import { useEnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
 import KeyboardShortcutsDialog from '../../components/KeyboardShortcutsDialog';
 import { previewKeyboardShortcuts } from '../../assets/keyboardShortcuts';
+import { pluginInstalled } from '../../state/actions/system';
 
 const originalDocDomain = document.domain;
 
@@ -375,6 +377,10 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           break;
         }
         // endregion
+        case pluginInstalled.type: {
+          dispatch(fetchContentTypes());
+          break;
+        }
         case guestCheckIn.type:
         case fetchGuestModel.type: {
           if (type === guestCheckIn.type) {
