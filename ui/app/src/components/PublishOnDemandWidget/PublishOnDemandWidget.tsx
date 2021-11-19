@@ -140,12 +140,18 @@ export default function PublishOnDemandWidget(props: PublishOnDemandWidgetProps)
   const idSuccess = 'bulkPublishSuccess';
   const idCancel = 'bulkPublishCancel';
 
-  const setDefaultPublishingTarget = (targets) => {
+  const setDefaultPublishingTarget = (targets, clearData?) => {
     if (targets.length) {
       const stagingEnv = targets.find((target) => target.name === 'staging');
       const environment = stagingEnv?.name ?? targets[0].name;
-      setPublishGitFormData({ environment });
-      setPublishStudioFormData({ environment });
+      setPublishGitFormData({
+        ...(clearData && initialPublishGitFormData),
+        environment
+      });
+      setPublishStudioFormData({
+        ...(clearData && initialPublishStudioFormData),
+        environment
+      });
     }
   };
 
@@ -235,7 +241,7 @@ export default function PublishOnDemandWidget(props: PublishOnDemandWidgetProps)
 
   const onCancel = () => {
     setMode(null);
-    setDefaultPublishingTarget(publishingTargets);
+    setDefaultPublishingTarget(publishingTargets, true);
   };
 
   useEffect(() => {
