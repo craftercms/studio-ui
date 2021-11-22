@@ -21,9 +21,9 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { fetchLegacyScheduledItems } from '../../services/dashboard';
 import { getNumOfMenuOptionsForItem, getSystemTypeFromPath, parseLegacyItemToDetailedItem } from '../../utils/content';
 import ApiResponse from '../../models/ApiResponse';
-import { DashboardItem } from '../AwaitingApprovalDashlet';
+import { AwaitingApprovalDashletDashboardItem } from '../AwaitingApprovalDashlet';
 import { AllItemActions, DetailedItem } from '../../models/Item';
-import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
+import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
 import ApprovedScheduledDashletGridUI from '../ApprovedScheduledDashletGrid';
 import useStyles from './styles';
 // prettier-ignore
@@ -35,8 +35,8 @@ import Button from '@mui/material/Button';
 import { itemsApproved, itemsDeleted, itemsRejected, itemsScheduled } from '../../state/actions/system';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { filter } from 'rxjs/operators';
-import { useLogicResource } from '../../utils/hooks/useLogicResource';
-import { useSpreadState } from '../../utils/hooks/useSpreadState';
+import { useLogicResource } from '../../hooks/useLogicResource';
+import { useSpreadState } from '../../hooks/useSpreadState';
 import { DashboardPreferences } from '../../models/Dashboard';
 import { getStoredDashboardPreferences, setStoredDashboardPreferences } from '../../utils/state';
 import { useDispatch, useSelector } from 'react-redux';
@@ -45,22 +45,22 @@ import { createPresenceTable } from '../../utils/array';
 import { completeDetailedItem } from '../../state/actions/content';
 import { showItemMegaMenu } from '../../state/actions/dialogs';
 import { itemActionDispatcher } from '../../utils/itemActions';
-import { useEnv } from '../../utils/hooks/useEnv';
+import { useEnv } from '../../hooks/useEnv';
 import ActionsBar from '../ActionsBar';
 import translations from './translations';
 import { batchActions } from '../../state/actions/misc';
-import { getEmptyStateStyleSet } from '../SystemStatus/EmptyState';
-import { useActiveSite } from '../../utils/hooks/useActiveSite';
+import { getEmptyStateStyleSet } from '../EmptyState';
+import { useActiveSite } from '../../hooks/useActiveSite';
 import { asLocalizedDateTime } from '../../utils/datetime';
 import { reversePluckProps } from '../../utils/object';
-import { useLocale } from '../../utils/hooks/useLocale';
+import { useLocale } from '../../hooks/useLocale';
 
 const dashletInitialPreferences: DashboardPreferences = {
   filterBy: 'all',
   expanded: true
 };
 
-export default function ApprovedScheduledDashlet() {
+export function ApprovedScheduledDashlet() {
   const [selectedLookup, setSelectedLookup] = useState<LookupTable<boolean>>({});
   const [error, setError] = useState<ApiResponse>();
   const { id: siteId, uuid } = useActiveSite();
@@ -69,7 +69,7 @@ export default function ApprovedScheduledDashlet() {
   const [state, setState] = useState<{
     itemsLookup: LookupTable<DetailedItem>;
     targetLookup: LookupTable<{ target: string; packageId: string }>;
-    parentItems: DashboardItem[];
+    parentItems: AwaitingApprovalDashletDashboardItem[];
     total: number;
   }>({
     targetLookup: {},
@@ -103,7 +103,7 @@ export default function ApprovedScheduledDashlet() {
     setIsFetching(true);
     fetchLegacyScheduledItems(siteId, 'eventDate', false, preferences.filterBy).subscribe({
       next(response) {
-        const parentItems: DashboardItem[] = [];
+        const parentItems: AwaitingApprovalDashletDashboardItem[] = [];
         const itemsLookup: LookupTable<DetailedItem> = {};
         const targetLookup: LookupTable<{ target: string; packageId: string }> = {};
         const expandedLookup: LookupTable<boolean> = {};
@@ -149,9 +149,9 @@ export default function ApprovedScheduledDashlet() {
   }, [refresh]);
 
   const resource = useLogicResource<
-    DashboardItem[],
+    AwaitingApprovalDashletDashboardItem[],
     {
-      items: DashboardItem[];
+      items: AwaitingApprovalDashletDashboardItem[];
       error: ApiResponse;
       isFetching: boolean;
     }
@@ -363,3 +363,5 @@ export default function ApprovedScheduledDashlet() {
     </Dashlet>
   );
 }
+
+export default ApprovedScheduledDashlet;

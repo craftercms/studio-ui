@@ -15,13 +15,13 @@
  */
 
 import React from 'react';
-import ToolPanel from '../../modules/Preview/Tools/ToolPanel';
+import ToolPanel from '../ToolPanel/ToolPanel';
 import { renderWidgets, WidgetDescriptor } from '../Widget';
 import { useDispatch } from 'react-redux';
 import { popIcePanelPage, popToolsPanelPage } from '../../state/actions/preview';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import { useActiveUser } from '../../utils/hooks/useActiveUser';
-import { usePossibleTranslation } from '../../utils/hooks/usePossibleTranslation';
+import { useActiveSiteId } from '../../hooks/useActiveSiteId';
+import { useActiveUser } from '../../hooks/useActiveUser';
+import { usePossibleTranslation } from '../../hooks/usePossibleTranslation';
 import ToolsPanelTarget from '../../models/ToolsPanelTarget';
 
 export interface ToolsPanelPageDescriptor {

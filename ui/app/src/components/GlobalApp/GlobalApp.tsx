@@ -18,7 +18,7 @@ import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import React, { useState } from 'react';
 import LauncherGlobalNav from '../LauncherGlobalNav';
-import ResizeableDrawer from '../../modules/Preview/ResizeableDrawer';
+import ResizeableDrawer from '../ResizeableDrawer/ResizeableDrawer';
 import { useStyles } from './styles';
 import { Redirect, Route, Switch } from 'react-router';
 import SitesManagement from '../SitesManagement';
@@ -33,22 +33,22 @@ import EncryptTool from '../EncryptTool';
 import TokenManagement from '../TokenManagement';
 import AboutCrafterCMSView from '../AboutCrafterCMSView';
 import AccountManagement from '../AccountManagement';
-import { urlMapping } from '../LauncherSection';
-import EmptyState from '../SystemStatus/EmptyState';
+import { urlMapping } from '../LauncherSection/utils';
+import EmptyState from '../EmptyState/EmptyState';
 import { FormattedMessage } from 'react-intl';
 import { useGlobalAppState } from './GlobalAppContext';
 import Typography from '@mui/material/Typography';
-import CrafterCMSLogo from '../Icons/CrafterCMSLogo';
-import LoadingState from '../SystemStatus/LoadingState';
+import CrafterCMSLogo from '../../icons/CrafterCMSLogo';
+import LoadingState from '../LoadingState/LoadingState';
 import LauncherOpenerButton from '../LauncherOpenerButton';
-import { useGlobalNavigation } from '../../utils/hooks/useGlobalNavigation';
+import { useGlobalNavigation } from '../../hooks/useGlobalNavigation';
 
 interface GlobalAppProps {
   passwordRequirementsRegex: string;
   footerHtml: string;
 }
 
-export default function GlobalApp(props: GlobalAppProps) {
+export function GlobalApp(props: GlobalAppProps) {
   const classes = useStyles();
   const { passwordRequirementsRegex, footerHtml } = props;
   const [width, setWidth] = useState(240);
@@ -157,3 +157,5 @@ export default function GlobalApp(props: GlobalAppProps) {
     </Paper>
   );
 }
+
+export default GlobalApp;

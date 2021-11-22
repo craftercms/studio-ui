@@ -20,7 +20,7 @@ import { MediaItem } from '../../models/Search';
 import { alpha } from '@mui/material';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
-import SearchBar from '../Controls/SearchBar';
+import SearchBar from '../SearchBar/SearchBar';
 import { useDispatch, useSelector } from 'react-redux';
 import GlobalState, { PagedEntityState } from '../../models/GlobalState';
 import TablePagination from '@mui/material/TablePagination';
@@ -33,19 +33,19 @@ import {
   fetchAssetsPanelItems,
   setPreviewEditMode
 } from '../../state/actions/preview';
-import MediaCard from '../MediaCard';
+import MediaCard from '../MediaCard/MediaCard';
 import DragIndicatorRounded from '@mui/icons-material/DragIndicatorRounded';
-import EmptyState from '../SystemStatus/EmptyState';
+import EmptyState from '../EmptyState/EmptyState';
 import UploadIcon from '@mui/icons-material/Publish';
 import { nnou, pluckProps } from '../../utils/object';
 import { uploadDataUrl } from '../../services/content';
-import Suspencified from '../SystemStatus/Suspencified';
+import Suspencified from '../Suspencified/Suspencified';
 import palette from '../../styles/palette';
 import { Resource } from '../../models/Resource';
-import { useSelection } from '../../utils/hooks/useSelection';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import { useLogicResource } from '../../utils/hooks/useLogicResource';
-import { useDebouncedInput } from '../../utils/hooks/useDebouncedInput';
+import { useSelection } from '../../hooks/useSelection';
+import { useActiveSiteId } from '../../hooks/useActiveSiteId';
+import { useLogicResource } from '../../hooks/useLogicResource';
+import { useDebouncedInput } from '../../hooks/useDebouncedInput';
 
 const translations = defineMessages({
   previewAssetsPanelTitle: {

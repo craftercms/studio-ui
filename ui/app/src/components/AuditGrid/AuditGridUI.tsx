@@ -33,9 +33,9 @@ import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover/Popover';
 import moment from 'moment-timezone';
 import LookupTable from '../../models/LookupTable';
 import { Button, Typography } from '@mui/material';
-import EmptyState from '../SystemStatus/EmptyState';
+import EmptyState from '../EmptyState/EmptyState';
 import AuditGridFilterPopover from '../AuditGridFilterPopover';
-import { useLocale } from '../../utils/hooks/useLocale';
+import { useLocale } from '../../hooks/useLocale';
 
 export interface AuditGridUIProps {
   page: number;

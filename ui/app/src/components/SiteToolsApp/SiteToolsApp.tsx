@@ -15,7 +15,7 @@
  */
 
 import useStyles from './styles';
-import ResizeableDrawer from '../../modules/Preview/ResizeableDrawer';
+import ResizeableDrawer from '../ResizeableDrawer/ResizeableDrawer';
 import React from 'react';
 import MenuList from '@mui/material/MenuList';
 import MenuItem from '@mui/material/MenuItem';
@@ -23,8 +23,8 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage, useIntl } from 'react-intl';
 import SystemIcon, { SystemIconDescriptor } from '../SystemIcon';
-import EmptyState from '../SystemStatus/EmptyState';
-import CrafterCMSLogo from '../Icons/CrafterCMSLogo';
+import EmptyState from '../EmptyState/EmptyState';
+import CrafterCMSLogo from '../../icons/CrafterCMSLogo';
 import { getPossibleTranslation } from '../../utils/i18n';
 import Widget, { WidgetDescriptor } from '../Widget';
 import IconButton from '@mui/material/IconButton';
@@ -34,9 +34,9 @@ import Tooltip from '@mui/material/Tooltip';
 import Paper from '@mui/material/Paper';
 import TranslationOrText from '../../models/TranslationOrText';
 import clsx from 'clsx';
-import Suspencified from '../SystemStatus/Suspencified';
+import Suspencified from '../Suspencified/Suspencified';
 import LauncherOpenerButton from '../LauncherOpenerButton';
-import { onSubmittingAndOrPendingChangeProps } from '../../utils/hooks/useEnhancedDialogState';
+import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 
 export interface Tool {
   title: TranslationOrText;
@@ -64,7 +64,7 @@ export interface SiteToolsAppProps {
   onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
-export default function SiteToolsApp(props: SiteToolsAppProps) {
+export function SiteToolsApp(props: SiteToolsAppProps) {
   const {
     site,
     activeToolId,
@@ -196,3 +196,5 @@ export default function SiteToolsApp(props: SiteToolsAppProps) {
     </Paper>
   );
 }
+
+export default SiteToolsApp;

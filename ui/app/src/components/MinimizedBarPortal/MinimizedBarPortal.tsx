@@ -30,7 +30,7 @@ function createPortalEl() {
   return portalEl;
 }
 
-export const useStyles = makeStyles((theme) =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     wrapper: {
       right: '0',

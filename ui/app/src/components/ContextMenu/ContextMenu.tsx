@@ -46,7 +46,7 @@ export interface ContextMenuProps extends MenuProps {
   onMenuItemClicked(optionId: string, event: React.MouseEvent<Element, MouseEvent>): void;
 }
 
-export const useStyles = makeStyles(() =>
+const useStyles = makeStyles(() =>
   createStyles({
     emptyRoot: {
       display: 'block',
@@ -60,7 +60,7 @@ export const useStyles = makeStyles(() =>
   })
 );
 
-export default function ContextMenu(props: ContextMenuProps) {
+export function ContextMenu(props: ContextMenuProps) {
   const classes = useStyles();
   const {
     options,
@@ -110,3 +110,5 @@ export default function ContextMenu(props: ContextMenuProps) {
     </Menu>
   );
 }
+
+export default ContextMenu;

@@ -20,7 +20,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import { Subject } from 'rxjs';
-import { useSpreadState } from '../../utils/hooks/useSpreadState';
+import { useSpreadState } from '../../hooks/useSpreadState';
 import { Filter } from '../../models/Search';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { reversePluckProps } from '../../utils/object';

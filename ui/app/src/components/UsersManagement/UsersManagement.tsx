@@ -24,17 +24,17 @@ import { fetchAll } from '../../services/users';
 import { PagedArray } from '../../models/PagedArray';
 import User from '../../models/User';
 import { ApiResponse } from '../../models/ApiResponse';
-import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
+import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import Button from '@mui/material/Button';
-import { useLogicResource } from '../../utils/hooks/useLogicResource';
-import SearchBar from '../Controls/SearchBar';
-import { useDebouncedInput } from '../../utils/hooks/useDebouncedInput';
+import { useLogicResource } from '../../hooks/useLogicResource';
+import SearchBar from '../SearchBar/SearchBar';
+import { useDebouncedInput } from '../../hooks/useDebouncedInput';
 import useStyles from './styles';
 import clsx from 'clsx';
 import Paper from '@mui/material/Paper';
-import { useEnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
-import { useWithPendingChangesCloseRequest } from '../../utils/hooks/useWithPendingChangesCloseRequest';
+import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
+import { useWithPendingChangesCloseRequest } from '../../hooks/useWithPendingChangesCloseRequest';
 
 interface UsersManagementProps {
   passwordRequirementsRegex?: string;

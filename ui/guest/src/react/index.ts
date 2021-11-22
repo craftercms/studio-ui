@@ -27,3 +27,5 @@ export * from './Field';
 export * from './hooks';
 export * from './UltraStyledIconButton';
 export * from './GuestGlobalStyles';
+export * from './RenderField';
+export * from './Model';

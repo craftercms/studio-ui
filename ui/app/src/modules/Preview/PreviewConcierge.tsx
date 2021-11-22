@@ -80,7 +80,7 @@ import { getGuestToHostBus, getHostToGuestBus, getHostToHostBus } from './previe
 import { useDispatch } from 'react-redux';
 import { nnou, pluckProps } from '../../utils/object';
 import { findParentModelId, getModelIdFromInheritedField, isInheritedField } from '../../utils/model';
-import RubbishBin from './Tools/RubbishBin';
+import RubbishBin from '../../components/RubbishBin/RubbishBin';
 import { useSnackbar } from 'notistack';
 import {
   getStoredClipboard,
@@ -89,7 +89,7 @@ import {
   removeStoredClipboard
 } from '../../utils/state';
 import { fetchSandboxItem, restoreClipboard } from '../../state/actions/content';
-import EditFormPanel from './Tools/EditFormPanel';
+import EditFormPanel from '../../components/EditFormPanel/EditFormPanel';
 import {
   createModelHierarchyDescriptorMap,
   getComputedEditMode,
@@ -106,22 +106,22 @@ import Snackbar from '@mui/material/Snackbar';
 import CloseRounded from '@mui/icons-material/CloseRounded';
 import IconButton from '@mui/material/IconButton';
 import { useHotkeys } from 'react-hotkeys-hook';
-import { useSelection } from '../../utils/hooks/useSelection';
-import { usePreviewState } from '../../utils/hooks/usePreviewState';
-import { useContentTypes } from '../../utils/hooks/useContentTypes';
-import { useActiveUser } from '../../utils/hooks/useActiveUser';
-import { useMount } from '../../utils/hooks/useMount';
-import { usePreviewNavigation } from '../../utils/hooks/usePreviewNavigation';
-import { useActiveSite } from '../../utils/hooks/useActiveSite';
+import { useSelection } from '../../hooks/useSelection';
+import { usePreviewState } from '../../hooks/usePreviewState';
+import { useContentTypes } from '../../hooks/useContentTypes';
+import { useActiveUser } from '../../hooks/useActiveUser';
+import { useMount } from '../../hooks/useMount';
+import { usePreviewNavigation } from '../../hooks/usePreviewNavigation';
+import { useActiveSite } from '../../hooks/useActiveSite';
 import { getPathFromPreviewURL } from '../../utils/path';
 import { showEditDialog, showKeyboardShortcutsDialog } from '../../state/actions/dialogs';
 import { UNDEFINED } from '../../utils/constants';
-import { useCurrentPreviewItem } from '../../utils/hooks/useCurrentPreviewItem';
-import { useSiteUIConfig } from '../../utils/hooks/useSiteUIConfig';
-import { useRTEConfig } from '../../utils/hooks/useRTEConfig';
+import { useCurrentPreviewItem } from '../../hooks/useCurrentPreviewItem';
+import { useSiteUIConfig } from '../../hooks/useSiteUIConfig';
+import { useRTEConfig } from '../../hooks/useRTEConfig';
 import { guestMessages } from '../../assets/guestMessages';
 import { HighlightMode } from '../../models/GlobalState';
-import { useEnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
+import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import KeyboardShortcutsDialog from '../../components/KeyboardShortcutsDialog';
 import { previewKeyboardShortcuts } from '../../assets/keyboardShortcuts';
 import {
@@ -895,3 +895,5 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
     </>
   );
 }
+
+export default PreviewConcierge;

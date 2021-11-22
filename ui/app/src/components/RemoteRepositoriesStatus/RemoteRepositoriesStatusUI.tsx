@@ -22,13 +22,14 @@ import GlobalAppGridRow from '../GlobalAppGridRow';
 import GlobalAppGridCell from '../GlobalAppGridCell';
 import Typography from '@mui/material/Typography';
 import React from 'react';
-import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import Button from '@mui/material/Button';
 import ConfirmDropdown from '../ConfirmDropdown';
 import clsx from 'clsx';
 import GlobalAppToolbar from '../GlobalAppToolbar';
+import { messages } from './translations';
 
 export interface RemoteRepositoriesStatusUIProps {
   status: RepositoryStatus;
@@ -80,45 +81,6 @@ const useStyles = makeStyles((theme) =>
     }
   })
 );
-
-export const messages = defineMessages({
-  revertAll: {
-    id: 'repositories.revertAll',
-    defaultMessage: 'Revert All'
-  },
-  no: {
-    id: 'words.no',
-    defaultMessage: 'No'
-  },
-  yes: {
-    id: 'words.yes',
-    defaultMessage: 'Yes'
-  },
-  confirmHelper: {
-    id: 'repositories.confirmHelper',
-    defaultMessage: "Cancel pull operation and keep what's on this repository."
-  },
-  acceptRemote: {
-    id: 'repositories.acceptRemote',
-    defaultMessage: 'Accept Remote'
-  },
-  acceptRemoteHelper: {
-    id: 'repositories.acceptRemoteHelper',
-    defaultMessage: 'Override local file with the version pulled from remote.'
-  },
-  keepLocal: {
-    id: 'repositories.keepLocal',
-    defaultMessage: 'Keep Local'
-  },
-  keepLocalHelper: {
-    id: 'repositories.keepLocalHelper',
-    defaultMessage: 'Discard remote changes and keep the local file.'
-  },
-  diff: {
-    id: 'words.diff',
-    defaultMessage: 'Diff'
-  }
-});
 
 export function RemoteRepositoriesStatusUI(props: RemoteRepositoriesStatusUIProps) {
   const { status, onRevertPull, onClickCommit, onResolveConflict, onDiffClick } = props;

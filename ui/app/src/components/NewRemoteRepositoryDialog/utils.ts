@@ -16,7 +16,7 @@
 
 import { SiteState } from '../../models/Site';
 import { EnhancedDialogProps } from '../EnhancedDialog';
-import { onSubmittingAndOrPendingChangeProps } from '../../utils/hooks/useEnhancedDialogState';
+import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 import React from 'react';
 
 interface NewRemoteRepositoryBaseProps {}

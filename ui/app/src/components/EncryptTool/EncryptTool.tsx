@@ -31,7 +31,7 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import Box from '@mui/material/Box';
-import { useSpreadState } from '../../utils/hooks/useSpreadState';
+import { useSpreadState } from '../../hooks/useSpreadState';
 import Paper from '@mui/material/Paper';
 
 interface EncryptToolProps {

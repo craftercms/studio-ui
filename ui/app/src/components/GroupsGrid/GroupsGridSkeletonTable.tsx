@@ -23,7 +23,7 @@ import TableBody from '@mui/material/TableBody';
 import Skeleton from '@mui/material/Skeleton';
 import { rand } from '../PathNavigator/utils';
 import React from 'react';
-import { styles } from './styles';
+import { useStyles } from './styles';
 import GlobalAppGridCell from '../GlobalAppGridCell/GlobalAppGridCell';
 import GlobalAppGridRow from '../GlobalAppGridRow';
 
@@ -34,7 +34,7 @@ export interface GroupsGridSkeletonTableProps {
 export const GroupsGridSkeletonTable = React.memo((props: GroupsGridSkeletonTableProps) => {
   const { numOfItems = 5 } = props;
   const items = new Array(numOfItems).fill(null);
-  const classes = styles();
+  const classes = useStyles();
   return (
     <TableContainer>
       <Table className={classes.tableRoot}>

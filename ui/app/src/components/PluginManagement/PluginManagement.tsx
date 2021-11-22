@@ -23,14 +23,14 @@ import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import withStyles from '@mui/styles/withStyles';
 import { PluginRecord } from '../../models/Plugin';
-import { ConditionalLoadingState } from '../SystemStatus/LoadingState';
+import { ConditionalLoadingState } from '../LoadingState/LoadingState';
 import TableContainer from '@mui/material/TableContainer';
 import Table from '@mui/material/Table';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import { AsDayMonthDateTime } from '../VersionList/VersionList';
-import EmptyState from '../SystemStatus/EmptyState';
+import EmptyState from '../EmptyState/EmptyState';
 import InstallPluginDialog from '../MarketplaceDialog';
 import { MarketplacePlugin } from '../../models/MarketplacePlugin';
 import IconButton from '@mui/material/IconButton';
@@ -52,9 +52,9 @@ import {
 import LookupTable from '../../models/LookupTable';
 import GlobalState from '../../models/GlobalState';
 import GlobalAppToolbar from '../GlobalAppToolbar';
-import { useSelection } from '../../utils/hooks/useSelection';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import { useMount } from '../../utils/hooks/useMount';
+import { useSelection } from '../../hooks/useSelection';
+import { useActiveSiteId } from '../../hooks/useActiveSiteId';
+import { useMount } from '../../hooks/useMount';
 import { batchActions } from '../../state/actions/misc';
 import Link from '@mui/material/Link';
 import { createPresenceTable } from '../../utils/array';
@@ -63,7 +63,7 @@ import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import TableBody from '@mui/material/TableBody';
 import DeleteIcon from '@mui/icons-material/DeleteOutline';
-import { useEnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
+import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import UninstallPluginDialog from '../DeletePluginDialog';
 
 const messages = defineMessages({

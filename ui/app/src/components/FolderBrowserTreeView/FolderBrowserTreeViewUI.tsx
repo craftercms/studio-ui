@@ -18,40 +18,40 @@ import React from 'react';
 import TreeView from '@mui/lab/TreeView';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import LoadingState from '../SystemStatus/LoadingState';
+import LoadingState from '../LoadingState/LoadingState';
 import { Resource } from '../../models/Resource';
 import clsx from 'clsx';
 import { RenderTreeNode } from './RenderTreeNode';
 import useStyles from './styles';
 import { PathSelected } from './PathSelected';
 
-export interface TreeNode {
+export interface FolderBrowserTreeViewNode {
   id: string;
   name: string;
-  children?: TreeNode[];
+  children?: FolderBrowserTreeViewNode[];
   fetched?: boolean;
 }
 
-interface FolderBrowserTreeViewUIProps {
+export interface FolderBrowserTreeViewUIProps {
   rootPath: string;
   currentPath: string;
   expanded: string[];
   selected: string;
   invalidPath?: boolean;
   isFetching?: boolean;
-  resource: Resource<TreeNode>;
+  resource: Resource<FolderBrowserTreeViewNode>;
   classes?: Partial<Record<'root' | 'treeViewRoot' | 'treeItemLabel', string>>;
   showPathTextBox?: boolean;
   disableSelection?: boolean;
   onNodeSelected?(event: React.ChangeEvent<{}>, nodeId: string): void;
   onNodeToggle?(event: React.ChangeEvent<{}>, nodeIds: string[]): void;
-  onIconClick?(event: React.ChangeEvent<{}>, node: TreeNode): void;
-  onLabelClick?(event: React.ChangeEvent<{}>, node: TreeNode): void;
+  onIconClick?(event: React.ChangeEvent<{}>, node: FolderBrowserTreeViewNode): void;
+  onLabelClick?(event: React.ChangeEvent<{}>, node: FolderBrowserTreeViewNode): void;
   onPathChanged?(path: string): void;
   onKeyPress?(event: React.KeyboardEvent): void;
 }
 
-export default function FolderBrowserTreeViewUI(props: FolderBrowserTreeViewUIProps) {
+export function FolderBrowserTreeViewUI(props: FolderBrowserTreeViewUIProps) {
   const classes = useStyles({});
   const {
     rootPath,
@@ -109,3 +109,5 @@ export default function FolderBrowserTreeViewUI(props: FolderBrowserTreeViewUIPr
     </section>
   );
 }
+
+export default FolderBrowserTreeViewUI;

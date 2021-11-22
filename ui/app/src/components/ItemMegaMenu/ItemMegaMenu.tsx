@@ -25,10 +25,10 @@ import { getRootPath, isValidCutPastePath } from '../../utils/path';
 import GlobalState from '../../models/GlobalState';
 import ItemMegaMenuUI from './ItemMegaMenuUI';
 import { AllItemActions } from '../../models/Item';
-import { useSelection } from '../../utils/hooks/useSelection';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import { useEnv } from '../../utils/hooks/useEnv';
-import { useItemsByPath } from '../../utils/hooks/useItemsByPath';
+import { useSelection } from '../../hooks/useSelection';
+import { useActiveSiteId } from '../../hooks/useActiveSiteId';
+import { useEnv } from '../../hooks/useEnv';
+import { useItemsByPath } from '../../hooks/useItemsByPath';
 
 export interface ItemMegaMenuBaseProps {
   path: string;

@@ -15,31 +15,11 @@
  */
 
 import React from 'react';
-import makeStyles from '@mui/styles/makeStyles';
 import { PreviewDialogContainer } from './PreviewDialogContainer';
 import { PreviewDialogProps } from './utils';
 import EnhancedDialog from '../EnhancedDialog';
 
-export const useStyles = makeStyles(() => ({
-  container: {
-    maxWidth: '700px',
-    minWidth: '500px',
-    minHeight: '400px',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    '& img': {
-      maxWidth: '100%'
-    }
-  },
-  editor: {
-    width: 900,
-    height: 600,
-    border: 'none'
-  }
-}));
-
-export default function PreviewDialog(props: PreviewDialogProps) {
+export function PreviewDialog(props: PreviewDialogProps) {
   const { title, type, url, content, mode, ...rest } = props;
   return (
     <EnhancedDialog
@@ -55,3 +35,5 @@ export default function PreviewDialog(props: PreviewDialogProps) {
     </EnhancedDialog>
   );
 }
+
+export default PreviewDialog;

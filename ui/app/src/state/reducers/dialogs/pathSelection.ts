@@ -17,7 +17,7 @@
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
 import { closePathSelectionDialog, pathSelectionDialogClosed, showPathSelectionDialog } from '../../actions/dialogs';
-import { PathSelectionDialogStateProps } from '../../../components/Dialogs/PathSelectionDialog';
+import { PathSelectionDialogStateProps } from '../../../components/PathSelectionDialog/PathSelectionDialog';
 
 const initialState: PathSelectionDialogStateProps = {
   open: false,

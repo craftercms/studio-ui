@@ -16,9 +16,9 @@
 
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
-import DialogBody from '../Dialogs/DialogBody';
-import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
-import DialogFooter from '../Dialogs/DialogFooter';
+import DialogBody from '../DialogBody/DialogBody';
+import { SuspenseWithEmptyState } from '../Suspencified';
+import DialogFooter from '../DialogFooter/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import DeleteDialogUIBody from './DeleteDialogUIBody';
@@ -76,3 +76,5 @@ export function DeleteDialogUI(props: DeleteDialogUIProps) {
     </>
   );
 }
+
+export default DeleteDialogUI;

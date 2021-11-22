@@ -25,7 +25,7 @@ import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../state/actions/system';
 import StandardAction from '../../models/StandardAction';
 import { fetchPublishingStatus } from '../../state/actions/publishingStatus';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 
 export interface UnlockPublisherDialogProps {
   open: boolean;

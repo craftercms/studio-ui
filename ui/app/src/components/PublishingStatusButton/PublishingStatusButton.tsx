@@ -19,7 +19,7 @@ import { IconButtonProps } from '@mui/material/IconButton';
 import { useDispatch } from 'react-redux';
 import PublishingStatusButtonUI, { PublishingStatusButtonUIProps } from './PublishingStatusButtonUI';
 import { showPublishingStatusDialog } from '../../state/actions/dialogs';
-import { useSelection } from '../../utils/hooks/useSelection';
+import { useSelection } from '../../hooks/useSelection';
 
 export interface PublishingStatusButtonProps extends IconButtonProps {
   variant?: PublishingStatusButtonUIProps['variant'];

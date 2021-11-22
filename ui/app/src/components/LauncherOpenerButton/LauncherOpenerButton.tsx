@@ -16,7 +16,7 @@
 
 import React, { useMemo } from 'react';
 import IconButton from '@mui/material/IconButton';
-import CrafterIcon from '../Icons/CrafterIcon';
+import CrafterIcon from '../../icons/CrafterIcon';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import { defineMessages, useIntl } from 'react-intl';
@@ -56,7 +56,7 @@ interface LauncherOpenerButtonProps {
   closeButtonPosition?: 'left' | 'right';
 }
 
-export default function LauncherOpenerButton(props: LauncherOpenerButtonProps) {
+export function LauncherOpenerButton(props: LauncherOpenerButtonProps) {
   const classes = useStyles({});
   const { sitesRailPosition = 'right', icon = 'logo', closeButtonPosition = 'right' } = props;
   const { formatMessage } = useIntl();
@@ -77,3 +77,5 @@ export default function LauncherOpenerButton(props: LauncherOpenerButtonProps) {
     </Tooltip>
   );
 }
+
+export default LauncherOpenerButton;

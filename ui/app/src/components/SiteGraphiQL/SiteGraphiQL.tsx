@@ -16,15 +16,15 @@
 
 import React from 'react';
 import Graphi from '../GraphiQL';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import { useEnv } from '../../utils/hooks/useEnv';
+import { useActiveSiteId } from '../../hooks/useActiveSiteId';
+import { useEnv } from '../../hooks/useEnv';
 
 interface SiteGraphiQLProps {
   embedded?: boolean;
   showAppsButton?: boolean;
 }
 
-export default function SiteGraphiQL(props: SiteGraphiQLProps) {
+export function SiteGraphiQL(props: SiteGraphiQLProps) {
   const site = useActiveSiteId();
   const { guestBase } = useEnv();
   return (
@@ -36,3 +36,5 @@ export default function SiteGraphiQL(props: SiteGraphiQLProps) {
     />
   );
 }
+
+export default SiteGraphiQL;

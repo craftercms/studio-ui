@@ -31,7 +31,7 @@ import { ElementRecord } from '../models/InContextEditing';
 import { extractCollection } from '@craftercms/studio-ui/utils/model';
 import { popPiece } from '@craftercms/studio-ui/utils/string';
 import { AnyAction } from '@reduxjs/toolkit';
-import useRef from '@craftercms/studio-ui/utils/hooks/useUpdateRefs';
+import useRef from '@craftercms/studio-ui/hooks/useUpdateRefs';
 import { findContainerRecord, runValidation } from '../classes/ICERegistry';
 import { post } from '../utils/communicator';
 import { validationMessage } from '@craftercms/studio-ui/state/actions/preview';

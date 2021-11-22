@@ -28,15 +28,15 @@ import GlobalAppGridCell from '../GlobalAppGridCell';
 import Skeleton from '@mui/material/Skeleton';
 import LookupTable from '../../models/LookupTable';
 import { rand } from '../PathNavigator/utils';
-import { DashboardItem } from '../AwaitingApprovalDashlet';
+import { AwaitingApprovalDashletDashboardItem } from '../AwaitingApprovalDashlet';
 
 interface ApprovedScheduledDashletSkeletonTableProps {
   numOfItems?: number;
-  items?: DashboardItem[];
+  items?: AwaitingApprovalDashletDashboardItem[];
   expandedLookup?: LookupTable<boolean>;
 }
 
-export default function ApprovedScheduledDashletSkeletonTable(props: ApprovedScheduledDashletSkeletonTableProps) {
+export function ApprovedScheduledDashletSkeletonTable(props: ApprovedScheduledDashletSkeletonTableProps) {
   const classes = useStyles();
   const { numOfItems = 4 } = props;
 
@@ -133,3 +133,5 @@ export default function ApprovedScheduledDashletSkeletonTable(props: ApprovedSch
     </TableContainer>
   );
 }
+
+export default ApprovedScheduledDashletSkeletonTable;

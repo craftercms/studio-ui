@@ -20,7 +20,7 @@ import EnhancedDialog from '../EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
 import SingleFileUploadDialogContainer from './SingleFileUploadDialogContainer';
 
-export default function SingleFileUploadDialog(props: SingleFileUploadDialogProps) {
+export function SingleFileUploadDialog(props: SingleFileUploadDialogProps) {
   const { site, path, customFileName, fileTypes, onUploadStart, onUploadComplete, onUploadError, ...rest } = props;
 
   return (
@@ -37,3 +37,5 @@ export default function SingleFileUploadDialog(props: SingleFileUploadDialogProp
     </EnhancedDialog>
   );
 }
+
+export default SingleFileUploadDialog;

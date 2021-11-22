@@ -32,7 +32,7 @@ import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import { AuditGridFilterPopoverProps } from './AuditGridFilterPopover';
 import moment from 'moment-timezone';
-import { useDebouncedInput } from '../../utils/hooks/useDebouncedInput';
+import { useDebouncedInput } from '../../hooks/useDebouncedInput';
 
 const translations = defineMessages({
   siteId: {

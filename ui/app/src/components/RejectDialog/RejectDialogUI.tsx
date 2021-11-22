@@ -16,15 +16,15 @@
 
 import { RejectDialogUIProps } from './utils';
 import { FormattedMessage } from 'react-intl';
-import DialogBody from '../Dialogs/DialogBody';
+import DialogBody from '../DialogBody/DialogBody';
 import Grid from '@mui/material/Grid';
-import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
+import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import TextFieldWithMax from '../Controls/TextFieldWithMax';
-import DialogFooter from '../Dialogs/DialogFooter';
+import TextFieldWithMax from '../TextFieldWithMax/TextFieldWithMax';
+import DialogFooter from '../DialogFooter/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import React from 'react';

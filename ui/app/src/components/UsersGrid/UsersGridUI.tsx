@@ -38,7 +38,7 @@ export interface UsersGridUIProps {
   onRowsPerPageChange?: React.ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
 }
 
-export default function UsersGridUI(props: UsersGridUIProps) {
+export function UsersGridUI(props: UsersGridUIProps) {
   const { resource, onRowClicked, onPageChange, onRowsPerPageChange } = props;
   const classes = useStyles();
   const users = resource.read();
@@ -103,3 +103,5 @@ export default function UsersGridUI(props: UsersGridUIProps) {
     </Box>
   );
 }
+
+export default UsersGridUI;

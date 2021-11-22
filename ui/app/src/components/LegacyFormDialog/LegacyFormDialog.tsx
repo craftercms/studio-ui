@@ -15,58 +15,18 @@
  */
 
 import React, { useRef } from 'react';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
-import { defineMessages, useIntl } from 'react-intl';
+import { useIntl } from 'react-intl';
 import DialogHeader from '../DialogHeader';
 import { LegacyFormDialogProps } from './utils';
 import { EmbeddedLegacyContainer } from './EmbeddedLegacyContainer';
 import MinimizedBar from '../MinimizedBar';
 import Dialog from '@mui/material/Dialog';
+import { useStyles } from './styles';
+import { translations } from './translations';
 
-export const translations = defineMessages({
-  title: {
-    id: 'legacyFormDialog.title',
-    defaultMessage: 'Content Form'
-  },
-  loadingForm: {
-    id: 'legacyFormDialog.loadingForm',
-    defaultMessage: 'Loading...'
-  },
-  error: {
-    id: 'legacyFormDialog.errorLoadingForm',
-    defaultMessage: 'An error occurred trying to load the form'
-  }
-});
-
-export const styles = makeStyles(() =>
-  createStyles({
-    iframe: {
-      height: '0',
-      border: 0,
-      '&.complete': {
-        height: '100%',
-        flexGrow: 1
-      }
-    },
-    dialog: {
-      minHeight: '90vh'
-    },
-    loadingRoot: {
-      flexGrow: 1,
-      justifyContent: 'center'
-    },
-    edited: {
-      width: '12px',
-      height: '12px',
-      marginLeft: '5px'
-    }
-  })
-);
-
-export default function LegacyFormDialog(props: LegacyFormDialogProps) {
+export function LegacyFormDialog(props: LegacyFormDialogProps) {
   const { formatMessage } = useIntl();
-  const classes = styles();
+  const classes = useStyles();
   const { open, inProgress, isMinimized, onMaximize, onMinimize, ...rest } = props;
 
   const iframeRef = useRef<HTMLIFrameElement>();
@@ -106,3 +66,5 @@ export default function LegacyFormDialog(props: LegacyFormDialogProps) {
     </>
   );
 }
+
+export default LegacyFormDialog;

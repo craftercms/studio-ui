@@ -64,17 +64,17 @@ import { SystemIconDescriptor } from '../SystemIcon';
 import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover/Popover';
 import { getNumOfMenuOptionsForItem } from '../../utils/content';
 import { batchActions } from '../../state/actions/misc';
-import { useSelection } from '../../utils/hooks/useSelection';
-import { useEnv } from '../../utils/hooks/useEnv';
-import { useItemsByPath } from '../../utils/hooks/useItemsByPath';
-import { useSubject } from '../../utils/hooks/useSubject';
-import { useSiteLocales } from '../../utils/hooks/useSiteLocales';
-import { useMount } from '../../utils/hooks/useMount';
+import { useSelection } from '../../hooks/useSelection';
+import { useEnv } from '../../hooks/useEnv';
+import { useItemsByPath } from '../../hooks/useItemsByPath';
+import { useSubject } from '../../hooks/useSubject';
+import { useSiteLocales } from '../../hooks/useSiteLocales';
+import { useMount } from '../../hooks/useMount';
 import { getSystemLink } from '../../utils/system';
-import { useLegacyPreviewPreference } from '../../utils/hooks/useLegacyPreviewPreference';
+import { useLegacyPreviewPreference } from '../../hooks/useLegacyPreviewPreference';
 import { getStoredPathNavigator } from '../../utils/state';
-import { useActiveSite } from '../../utils/hooks/useActiveSite';
-import { useActiveUser } from '../../utils/hooks/useActiveUser';
+import { useActiveSite } from '../../hooks/useActiveSite';
+import { useActiveUser } from '../../hooks/useActiveUser';
 
 interface Menu {
   path?: string;
@@ -135,7 +135,7 @@ const menuOptions: Record<'refresh', ContextMenuOptionDescriptor> = {
   }
 };
 
-export default function PathNavigator(props: PathNavigatorProps) {
+export function PathNavigator(props: PathNavigatorProps) {
   const {
     label = '(No name)',
     icon,
@@ -546,3 +546,5 @@ export default function PathNavigator(props: PathNavigatorProps) {
     </>
   );
 }
+
+export default PathNavigator;

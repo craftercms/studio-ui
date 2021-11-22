@@ -16,10 +16,10 @@
 
 import { EditSiteDialogUIProps } from './utils';
 import { FormattedMessage, useIntl } from 'react-intl';
-import DialogBody from '../Dialogs/DialogBody';
+import DialogBody from '../DialogBody/DialogBody';
 import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
-import DialogFooter from '../Dialogs/DialogFooter';
+import DialogFooter from '../DialogFooter/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import React from 'react';

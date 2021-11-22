@@ -15,16 +15,16 @@
  */
 
 import * as React from 'react';
-import { useMemo } from 'react';
 import { UninstallPluginDialogContainerProps } from './utils';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { useActiveSiteId } from '../../hooks/useActiveSiteId';
+import { useMemo } from 'react';
 import { createResource } from '../../utils/resource';
-import { fetchMarketplacePluginUsage, uninstallMarketplacePlugin } from '../../services/marketplace';
-import Suspencified from '../SystemStatus/Suspencified';
+import { uninstallMarketplacePlugin, fetchMarketplacePluginUsage } from '../../services/marketplace';
+import Suspencified from '../Suspencified/Suspencified';
 import { UninstallPluginDialogBody } from './UninstallPluginDialogBody';
 import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
-import useUpdateRefs from '../../utils/hooks/useUpdateRefs';
+import useUpdateRefs from '../../hooks/useUpdateRefs';
 
 export function UninstallPluginDialogContainer(props: UninstallPluginDialogContainerProps) {
   const { onClose, pluginId, onComplete, isSubmitting, onSubmittingAndOrPendingChange } = props;

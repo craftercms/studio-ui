@@ -13,6 +13,6 @@
     "js-yaml": "^4.0.0"
   },
   "devDependencies": {
-    "build-if-changed": "*"
+    "build-if-changed": "^1.5.5"
   }
 }

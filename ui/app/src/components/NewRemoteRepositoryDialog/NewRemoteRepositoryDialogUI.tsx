@@ -15,9 +15,9 @@
  */
 
 import { FormattedMessage } from 'react-intl';
-import DialogBody from '../Dialogs/DialogBody';
+import DialogBody from '../DialogBody/DialogBody';
 import NewRemoteRepositoryForm from '../NewRemoteRepositoryForm/NewRemoteRepositoryForm';
-import DialogFooter from '../Dialogs/DialogFooter';
+import DialogFooter from '../DialogFooter/DialogFooter';
 import React from 'react';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';

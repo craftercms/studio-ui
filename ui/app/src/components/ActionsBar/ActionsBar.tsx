@@ -43,13 +43,13 @@ const styles = makeStyles((theme) =>
   })
 );
 
-export interface Action {
+export interface ActionsBarAction {
   id: string;
   label: TranslationOrText;
 }
 
 interface ActionsBarProps {
-  options: Action[];
+  options: ActionsBarAction[];
   numOfSkeletonItems?: number;
   isLoading?: boolean;
   isIndeterminate: boolean;
@@ -59,7 +59,7 @@ interface ActionsBarProps {
   toggleSelectAll(): void;
 }
 
-export default function ActionsBar(props: ActionsBarProps) {
+export function ActionsBar(props: ActionsBarProps) {
   const classes = styles({});
   const { formatMessage } = useIntl();
   const {
@@ -88,7 +88,7 @@ export default function ActionsBar(props: ActionsBarProps) {
                 <Skeleton animation="pulse" height="12px" width={`${rand(40, 60)}px`} />
               </Button>
             ))
-          : options?.map((option: Action) => (
+          : options?.map((option: ActionsBarAction) => (
               <Button color="primary" variant="text" key={option.id} onClick={() => onOptionClicked(option.id)}>
                 {getPossibleTranslation(option.label, formatMessage)}
               </Button>
@@ -97,3 +97,5 @@ export default function ActionsBar(props: ActionsBarProps) {
     </section>
   );
 }
+
+export default ActionsBar;

@@ -20,13 +20,13 @@ import useStyles from './styles';
 import Paper from '@mui/material/Paper';
 import Checkbox from '@mui/material/Checkbox';
 import Typography from '@mui/material/Typography';
-import SearchBar from '../Controls/SearchBar';
+import SearchBar from '../SearchBar/SearchBar';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import CircularProgress from '@mui/material/CircularProgress';
-import EmptyState from '../SystemStatus/EmptyState';
+import EmptyState from '../EmptyState/EmptyState';
 import { FormattedMessage } from 'react-intl';
 import TransferListItem from './TransferListItem';
 

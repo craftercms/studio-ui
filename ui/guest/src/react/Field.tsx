@@ -14,30 +14,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ComponentType, ElementType, Fragment, PropsWithChildren } from 'react';
+import React, { ComponentType, ElementType, PropsWithChildren } from 'react';
 import { ICEProps } from '../models/InContextEditing';
 import ContentInstance from '@craftercms/studio-ui/models/ContentInstance';
 import { useICE } from './hooks';
-import { extractCollectionItem, value as getModelValue } from '@craftercms/studio-ui/utils/model';
-import { nnou, setProperty } from '@craftercms/studio-ui/utils/object';
 
 export type FieldProps<P = {}> = PropsWithChildren<
   P & {
     model: ContentInstance;
     index?: ICEProps['index'];
     fieldId?: ICEProps['fieldId'];
-    component?: ElementType<P>;
-  }
->;
-
-export type RenderFieldProps<P, V = any, F = V> = FieldProps<P> & {
-  renderTarget?: string;
-  format?: (value: V, fieldId: string) => F;
-};
-
-export type ModelProps<P = {}> = PropsWithChildren<
-  P & {
-    model: ContentInstance;
     component?: ElementType<P>;
   }
 >;
@@ -55,42 +41,6 @@ export function Field<P = {}>(props: FieldProps<P>) {
     // attribute model="[object Object]".
     ...(typeof component === 'string' ? {} : { model })
   } as P;
-  return <Component {...passDownProps} />;
-}
-
-export function RenderField<P = {}>(props: RenderFieldProps<P>) {
-  const {
-    model: modelProp,
-    fieldId,
-    index,
-    component = 'div',
-    // The renderTarget property for the field value. Can be multiple (CSVs),
-    // just like fieldId. Should have a 1-to-1 correspondence with fieldId.
-    renderTarget = 'children',
-    format = (value) => value,
-    ...other
-  } = props;
-  const { props: ice, model } = useICE({ model: modelProp, fieldId, index });
-  const Component = component as ComponentType<P>;
-  const passDownProps = Object.assign({}, other, ice) as P;
-  const fields = fieldId.replace(/\s/g, '').split(',');
-  const targets = renderTarget.replace(/\s/g, '').split(',');
-  targets.forEach((target, targetIndex) => {
-    const fieldId = fields[targetIndex];
-    setProperty(
-      passDownProps as {},
-      target,
-      format(nnou(index) ? extractCollectionItem(model, fieldId, index) : getModelValue(model, fieldId), fieldId)
-    );
-  });
-  return <Component {...passDownProps} />;
-}
-
-export function Model<P = {}>(props: ModelProps<P>) {
-  const { model, component = Fragment, ...other } = props;
-  useICE({ model, fieldId: null, index: null, noRef: true });
-  const Component = component as ComponentType<P>;
-  const passDownProps = other as P;
   return <Component {...passDownProps} />;
 }
 

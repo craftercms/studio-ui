@@ -15,15 +15,15 @@
  */
 
 import UnknownStateIcon from '@mui/icons-material/HelpOutlineRounded';
-import Js from '../Icons/Js';
-import JsonIcon from '../Icons/Json';
-import Groovy from '../Icons/Groovy';
-import Freemarker from '../Icons/Freemarker';
-import Html from '../Icons/Html';
-import Css from '../Icons/Css';
-import ComponentIcon from '../Icons/Component';
-import PageIcon from '../Icons/Page';
-import LevelDescriptorIcon from '../Icons/LevelDescriptor';
+import Js from '../../icons/Js';
+import JsonIcon from '../../icons/Json';
+import Groovy from '../../icons/Groovy';
+import Freemarker from '../../icons/Freemarker';
+import Html from '../../icons/Html';
+import Css from '../../icons/Css';
+import ComponentIcon from '../../icons/Component';
+import PageIcon from '../../icons/Page';
+import LevelDescriptorIcon from '../../icons/LevelDescriptor';
 import Tooltip from '@mui/material/Tooltip';
 import * as React from 'react';
 import { ItemDisplayProps } from '../ItemDisplay';
@@ -90,7 +90,7 @@ export function getItemTypeText(item: DetailedItem | SandboxItem, formatMessage:
     : formatMessage(messages.unknown);
 }
 
-export default function ItemTypeIcon(props: ItemTypeIconProps) {
+export function ItemTypeIcon(props: ItemTypeIconProps) {
   const { item, classes, className } = props;
   const { formatMessage } = useIntl();
   let TheIcon = UnknownStateIcon;
@@ -171,3 +171,5 @@ export default function ItemTypeIcon(props: ItemTypeIconProps) {
     </Tooltip>
   );
 }
+
+export default ItemTypeIcon;

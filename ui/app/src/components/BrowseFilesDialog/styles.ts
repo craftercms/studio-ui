@@ -80,5 +80,3 @@ export const useCardStyles = makeStyles(() =>
     }
   })
 );
-
-export default useStyles;

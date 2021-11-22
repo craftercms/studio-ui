@@ -22,7 +22,7 @@ import { FormattedMessage } from 'react-intl';
 import TextField from '@mui/material/TextField';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import TextFieldWithMax from '../Controls/TextFieldWithMax';
+import TextFieldWithMax from '../TextFieldWithMax/TextFieldWithMax';
 import Grid from '@mui/material/Grid';
 import { PublishFormData, PublishingTarget, PublishOnDemandMode } from '../../models/Publishing';
 import ApiResponse from '../../models/ApiResponse';

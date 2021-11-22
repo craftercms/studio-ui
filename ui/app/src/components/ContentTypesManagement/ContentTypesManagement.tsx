@@ -19,10 +19,10 @@ import { FormattedMessage } from 'react-intl';
 import React, { useEffect, useState } from 'react';
 import LegacyIFrame from '../LegacyIFrame';
 import Box from '@mui/material/Box';
-import LoadingState from '../SystemStatus/LoadingState';
+import LoadingState from '../LoadingState/LoadingState';
 import { fromEvent } from 'rxjs';
 import { filter } from 'rxjs/operators';
-import { onSubmittingAndOrPendingChangeProps } from '../../utils/hooks/useEnhancedDialogState';
+import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 import { useDispatch } from 'react-redux';
 import {
   contentTypeCreated,
@@ -37,7 +37,7 @@ interface ContentTypeManagementProps {
   onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
-export default function ContentTypeManagement(props: ContentTypeManagementProps) {
+export function ContentTypeManagement(props: ContentTypeManagementProps) {
   const { embedded = false, showAppsButton, onSubmittingAndOrPendingChange } = props;
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
@@ -102,3 +102,5 @@ export default function ContentTypeManagement(props: ContentTypeManagementProps)
     </Box>
   );
 }
+
+export default ContentTypeManagement;

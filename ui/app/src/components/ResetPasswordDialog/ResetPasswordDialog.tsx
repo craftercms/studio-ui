@@ -19,9 +19,9 @@ import React, { useState } from 'react';
 import User from '../../models/User';
 import DialogHeader from '../DialogHeader/DialogHeader';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import DialogBody from '../Dialogs/DialogBody';
+import DialogBody from '../DialogBody/DialogBody';
 import { Typography } from '@mui/material';
-import DialogFooter from '../Dialogs/DialogFooter';
+import DialogFooter from '../DialogFooter/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import { setPassword } from '../../services/users';
@@ -29,7 +29,7 @@ import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../state/actions/system';
 import PasswordRequirementsDisplay from '../PasswordRequirementsDisplay';
-import PasswordTextField from '../Controls/PasswordTextField';
+import PasswordTextField from '../PasswordTextField/PasswordTextField';
 
 interface ResetPasswordDialogProps {
   open: boolean;

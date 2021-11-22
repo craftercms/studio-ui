@@ -21,10 +21,10 @@ import { generateMultipleItemOptions, generateSingleItemOptions, itemActionDispa
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
-import { useSelection } from '../../utils/hooks/useSelection';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import { useEnv } from '../../utils/hooks/useEnv';
-import { useDetailedItems } from '../../utils/hooks/useDetailedItems';
+import { useSelection } from '../../hooks/useSelection';
+import { useActiveSiteId } from '../../hooks/useActiveSiteId';
+import { useEnv } from '../../hooks/useEnv';
+import { useDetailedItems } from '../../hooks/useDetailedItems';
 import { ContextMenuOption } from '../ContextMenu';
 import { batchActions } from '../../state/actions/misc';
 import { completeDetailedItem } from '../../state/actions/content';

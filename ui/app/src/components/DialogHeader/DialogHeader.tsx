@@ -27,7 +27,7 @@ import clsx from 'clsx';
 import Tooltip from '@mui/material/Tooltip';
 import { defineMessages, useIntl } from 'react-intl';
 import StandardAction from '../../models/StandardAction';
-import Action, { ActionIcon } from '../Dialogs/DialogHeaderAction';
+import Action, { ActionIcon } from '../DialogHeaderAction/DialogHeaderAction';
 
 const dialogTitleStyles = makeStyles((theme) =>
   createStyles({

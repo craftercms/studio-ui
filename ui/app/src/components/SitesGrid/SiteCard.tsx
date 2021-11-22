@@ -59,7 +59,7 @@ const translations = defineMessages({
   }
 });
 
-export default function SiteCard(props: SiteCardProps) {
+export function SiteCard(props: SiteCardProps) {
   const {
     site,
     onSiteClick,
@@ -146,3 +146,5 @@ export default function SiteCard(props: SiteCardProps) {
     </Card>
   );
 }
+
+export default SiteCard;

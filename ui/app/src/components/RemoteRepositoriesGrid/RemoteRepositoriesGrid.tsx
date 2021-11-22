@@ -25,8 +25,8 @@ import { deleteRemote as deleteRemoteService } from '../../services/repositories
 import { showSystemNotification } from '../../state/actions/system';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import { useEnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
+import { useActiveSiteId } from '../../hooks/useActiveSiteId';
+import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 
 export interface RemoteRepositoriesGridProps {
   resource: Resource<Array<Repository>>;

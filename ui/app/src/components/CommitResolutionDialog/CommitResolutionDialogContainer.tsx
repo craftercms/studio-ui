@@ -16,15 +16,15 @@
 
 import React, { useState } from 'react';
 import DialogHeader from '../DialogHeader/DialogHeader';
-import DialogBody from '../Dialogs/DialogBody';
-import DialogFooter from '../Dialogs/DialogFooter';
+import DialogBody from '../DialogBody/DialogBody';
+import DialogFooter from '../DialogFooter/DialogFooter';
 import { FormattedMessage } from 'react-intl';
 import TextField from '@mui/material/TextField';
 import { commitResolution } from '../../services/repositories';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import { isBlank } from '../../utils/string';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 
 export interface CommitResolutionDialogContainerProps {
   open: boolean;
@@ -35,7 +35,7 @@ export interface CommitResolutionDialogContainerProps {
   onCommitError?(status): void;
 }
 
-export default function CommitResolutionDialogContainer(props: CommitResolutionDialogContainerProps) {
+export function CommitResolutionDialogContainer(props: CommitResolutionDialogContainerProps) {
   const { onClose, onCommit, setDisableQuickDismiss, onCommitSuccess, onCommitError } = props;
   const siteId = useActiveSiteId();
   const [message, setMessage] = useState('');
@@ -98,3 +98,5 @@ export default function CommitResolutionDialogContainer(props: CommitResolutionD
     </form>
   );
 }
+
+export default CommitResolutionDialogContainer;

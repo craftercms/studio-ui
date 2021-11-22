@@ -25,10 +25,10 @@ import { Theme } from '@mui/material/styles';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import { ContentTypeField } from '../../models/ContentType';
-import Input from '../Controls/FormEngine/Input';
-import Dropdown from '../Controls/FormEngine/Dropdown';
-import CheckboxGroup from '../Controls/FormEngine/CheckboxGroup';
-import DateTime from '../Controls/FormEngine/DateTime';
+import Input from '../FormEngineControls/Input';
+import Dropdown from '../FormEngineControls/Dropdown';
+import CheckboxGroup from '../FormEngineControls/CheckboxGroup';
+import DateTime from '../FormEngineControls/DateTime';
 import LookupTable from '../../models/LookupTable';
 import { Alert } from '@mui/material';
 

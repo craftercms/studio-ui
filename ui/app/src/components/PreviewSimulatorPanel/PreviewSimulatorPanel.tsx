@@ -32,7 +32,7 @@ import TextField from '@mui/material/TextField';
 import { setHostSize } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 import { WidthAndHeight } from '../../models/WidthAndHeight';
-import { useSelection } from '../../utils/hooks/useSelection';
+import { useSelection } from '../../hooks/useSelection';
 
 const SIMULATOR_PANEL_RESPONSIVE_MODE = 'previewSimulatorPanel.previewWindowSize';
 const SIMULATOR_PANEL_CUSTOM_MODE = 'previewSimulatorPanel.custom';
@@ -104,7 +104,7 @@ const INITIAL_STATE = {
 
 const reducer = (a: any, b: any) => ({ ...a, ...b });
 
-export default function PreviewSimulatorPanel(props: any) {
+export function PreviewSimulatorPanel(props: any) {
   const classes = useStyles({});
   const { formatMessage } = useIntl();
   const toolsPanelWidth = useSelection<number>((state) => state.preview.toolsPanelWidth);
@@ -272,3 +272,5 @@ export default function PreviewSimulatorPanel(props: any) {
     </section>
   );
 }
+
+export default PreviewSimulatorPanel;

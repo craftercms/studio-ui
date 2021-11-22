@@ -31,7 +31,7 @@ export interface AuditGridSkeletonProps {
   siteMode?: boolean;
 }
 
-export default function AuditGridSkeleton(props: AuditGridSkeletonProps) {
+export function AuditGridSkeleton(props: AuditGridSkeletonProps) {
   const { numOfItems = 5, filters, siteMode = false } = props;
   const classes = useStyles();
   const { formatMessage } = useIntl();
@@ -197,3 +197,5 @@ export default function AuditGridSkeleton(props: AuditGridSkeletonProps) {
     </Box>
   );
 }
+
+export default AuditGridSkeleton;

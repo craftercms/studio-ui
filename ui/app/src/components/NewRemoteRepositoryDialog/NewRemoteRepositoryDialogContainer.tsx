@@ -17,8 +17,8 @@
 import React, { useEffect, useMemo } from 'react';
 import { addRemote } from '../../services/repositories';
 import NewRemoteRepositoryDialogUI from './NewRemoteRepositoryDialogUI';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import { useSpreadState } from '../../utils/hooks/useSpreadState';
+import { useActiveSiteId } from '../../hooks/useActiveSiteId';
+import { useSpreadState } from '../../hooks/useSpreadState';
 import { inputsInitialState, isFormValid, NewRemoteRepositoryDialogContainerProps } from './utils';
 
 export default function NewRemoteRepositoryDialogContainer(props: NewRemoteRepositoryDialogContainerProps) {

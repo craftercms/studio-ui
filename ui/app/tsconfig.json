@@ -26,6 +26,7 @@
     "src"
   ],
   "exclude": [
+    "src/index.npm.tsx",
     "**/*.test.ts"
   ]
 }

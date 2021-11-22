@@ -15,8 +15,8 @@
  */
 
 import React from 'react';
-import DialogBody from '../Dialogs/DialogBody';
-import useStyles from './styles';
+import DialogBody from '../DialogBody';
+import { useStyles } from './styles';
 import { Box } from '@mui/material';
 import MediaSkeletonCard from './MediaSkeletonCard';
 

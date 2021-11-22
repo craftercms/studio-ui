@@ -20,14 +20,14 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { FetchContentTypeUsageResponse } from '../../services/contentTypes';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
-import DialogBody from '../Dialogs/DialogBody';
-import EmptyState from '../SystemStatus/EmptyState';
+import DialogBody from '../DialogBody/DialogBody';
+import EmptyState from '../EmptyState/EmptyState';
 import Alert from '@mui/material/Alert';
 import { TextField } from '@mui/material';
-import DialogFooter from '../Dialogs/DialogFooter';
+import DialogFooter from '../DialogFooter/DialogFooter';
 import SecondaryButton from '../SecondaryButton/SecondaryButton';
 import PrimaryButton from '../PrimaryButton/PrimaryButton';
-import LoadingState from '../SystemStatus/LoadingState';
+import LoadingState from '../LoadingState/LoadingState';
 import ContentTypeUsageReport from './ContentTypeUsageReport';
 import { SandboxItem } from '../../models/Item';
 import { DeleteContentTypeDialogBodyProps } from './utils';
@@ -79,7 +79,7 @@ const useStyles = makeStyles(() =>
   })
 );
 
-function DeleteContentTypeDialogBody(props: DeleteContentTypeDialogBodyProps) {
+export function DeleteContentTypeDialogBody(props: DeleteContentTypeDialogBodyProps) {
   const classes = useStyles();
   const { onCloseButtonClick, resource, contentType, onSubmit: onSubmitProp, password = 'delete', submitting } = props;
   const data = resource.read();

@@ -15,13 +15,13 @@
  */
 
 import React, { useState } from 'react';
-import AsyncVideoPlayer from '../AsyncVideoPlayer';
-import LoadingState, { ConditionalLoadingState } from '../SystemStatus/LoadingState';
-import IFrame from '../IFrame';
+import AsyncVideoPlayer from '../AsyncVideoPlayer/AsyncVideoPlayer';
+import LoadingState, { ConditionalLoadingState } from '../LoadingState/LoadingState';
+import IFrame from '../IFrame/IFrame';
 import { nou } from '../../utils/object';
-import AceEditor from '../AceEditor';
-import { useStyles } from './PreviewDialog';
+import AceEditor from '../AceEditor/AceEditor';
 import { PreviewDialogContainerProps } from './utils';
+import { useStyles } from './styles';
 
 export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
   const classes = useStyles();

@@ -15,9 +15,9 @@
  */
 
 import { VersionResource, ViewVersionDialogContainerProps } from './utils';
-import { useLogicResource } from '../../utils/hooks/useLogicResource';
-import DialogBody from '../Dialogs/DialogBody';
-import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
+import { useLogicResource } from '../../hooks/useLogicResource';
+import DialogBody from '../DialogBody/DialogBody';
+import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
 import React from 'react';
 import LegacyVersionDialog from './LegacyVersionDialog';
 

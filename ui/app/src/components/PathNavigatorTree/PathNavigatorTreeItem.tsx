@@ -28,22 +28,22 @@ import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
-import { TreeNode } from './PathNavigatorTreeUI';
+import { PathNavigatorTreeNode } from './PathNavigatorTreeUI';
 import clsx from 'clsx';
-import SearchBar from '../Controls/SearchBar';
+import SearchBar from '../SearchBar/SearchBar';
 import CloseIconRounded from '@mui/icons-material/CloseRounded';
 import ErrorOutlineRoundedIcon from '@mui/icons-material/ErrorOutlineRounded';
 import Button from '@mui/material/Button';
 import ArrowRightRoundedIcon from '@mui/icons-material/ArrowRightRounded';
 import ArrowDropDownRoundedIcon from '@mui/icons-material/ArrowDropDownRounded';
 
-interface PathNavigatorTreeItemProps {
-  node: TreeNode;
+export interface PathNavigatorTreeItemProps {
+  node: PathNavigatorTreeNode;
   itemsByPath: LookupTable<DetailedItem>;
   keywordByPath: LookupTable<string>;
   totalByPath: LookupTable<number>;
   childrenByParentPath: LookupTable<string[]>;
-  classes?: Partial<Record<BreadcrumbsClassKey, string>>;
+  classes?: Partial<Record<PathNavigatorTreeBreadcrumbsClassKey, string>>;
   onLabelClick(event: React.MouseEvent<Element, MouseEvent>, path: string): void;
   onIconClick(path: string): void;
   onOpenItemMenu(element: Element, path: string): void;
@@ -51,7 +51,11 @@ interface PathNavigatorTreeItemProps {
   onMoreClick(path: string): void;
 }
 
-export type BreadcrumbsClassKey = 'searchRoot' | 'searchInput' | 'searchCleanButton' | 'searchCloseButton';
+export type PathNavigatorTreeBreadcrumbsClassKey =
+  | 'searchRoot'
+  | 'searchInput'
+  | 'searchCleanButton'
+  | 'searchCloseButton';
 
 const translations = defineMessages({
   filter: {
@@ -180,7 +184,7 @@ const useStyles = makeStyles((theme) =>
   })
 );
 
-export default function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
+export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
   const {
     node,
     itemsByPath,
@@ -399,3 +403,5 @@ export default function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps)
     }
   }
 }
+
+export default PathNavigatorTreeItem;

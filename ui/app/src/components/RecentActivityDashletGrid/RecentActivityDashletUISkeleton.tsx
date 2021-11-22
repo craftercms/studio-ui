@@ -31,7 +31,7 @@ export interface RecentActivityDashletUiSkeletonProps {
   numOfItems?: number;
 }
 
-export default function RecentActivityDashletUiSkeleton(props: RecentActivityDashletUiSkeletonProps) {
+export function RecentActivityDashletUiSkeleton(props: RecentActivityDashletUiSkeletonProps) {
   const classes = useStyles();
   const { numOfItems = 2 } = props;
   const items = new Array(numOfItems).fill(null);
@@ -96,3 +96,5 @@ export default function RecentActivityDashletUiSkeleton(props: RecentActivityDas
     </TableContainer>
   );
 }
+
+export default RecentActivityDashletUiSkeleton;

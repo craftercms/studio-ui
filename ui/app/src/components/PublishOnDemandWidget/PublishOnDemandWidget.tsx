@@ -19,7 +19,7 @@ import { useEffect, useState } from 'react';
 import Paper from '@mui/material/Paper';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import DialogHeader from '../DialogHeader/DialogHeader';
-import DialogFooter from '../Dialogs/DialogFooter';
+import DialogFooter from '../DialogFooter/DialogFooter';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import palette from '../../styles/palette';
@@ -39,8 +39,8 @@ import { useDispatch } from 'react-redux';
 import { closeConfirmDialog, showConfirmDialog } from '../../state/actions/dialogs';
 import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
 import Link from '@mui/material/Link';
-import { useSpreadState } from '../../utils/hooks/useSpreadState';
-import { useSelection } from '../../utils/hooks/useSelection';
+import { useSpreadState } from '../../hooks/useSpreadState';
+import { useSelection } from '../../hooks/useSelection';
 import { isBlank } from '../../utils/string';
 
 const useStyles = makeStyles((theme) =>

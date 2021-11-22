@@ -27,12 +27,12 @@ import moment from 'moment-timezone';
 import LogConsoleGridUI from '../LogConsoleGrid';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import { ConditionalLoadingState } from '../SystemStatus/LoadingState';
+import { ConditionalLoadingState } from '../LoadingState/LoadingState';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import LogConsoleDetailsDialog from '../LogConsoleDetailsDialog';
-import EmptyState from '../SystemStatus/EmptyState';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import { useMount } from '../../utils/hooks/useMount';
+import EmptyState from '../EmptyState/EmptyState';
+import { useActiveSiteId } from '../../hooks/useActiveSiteId';
+import { useMount } from '../../hooks/useMount';
 
 interface LogConsoleManagementProps {
   logType?: 'studio' | 'preview';
@@ -40,7 +40,7 @@ interface LogConsoleManagementProps {
   showAppsButton?: boolean;
 }
 
-export default function LogConsole(props: LogConsoleManagementProps) {
+export function LogConsole(props: LogConsoleManagementProps) {
   const { logType = 'studio', embedded, showAppsButton = !embedded } = props;
   const [logEvents, setLogEvents] = useState<LogEvent[]>();
   const [showLogEventDialog, setShowLogEventDialog] = useState(false);
@@ -148,3 +148,5 @@ export default function LogConsole(props: LogConsoleManagementProps) {
     </Box>
   );
 }
+
+export default LogConsole;

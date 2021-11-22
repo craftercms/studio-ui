@@ -16,8 +16,6 @@
 
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
 import Dialog from '@mui/material/Dialog';
 import { useDispatch } from 'react-redux';
 
@@ -29,29 +27,9 @@ import { UploadDialogProps } from './util';
 import { translations } from './translations';
 import { UploadDialogContainer } from './UploadDialogContainer';
 import MinimizedBar from '../MinimizedBar';
-import { useEnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
+import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 
-export const useStyles = makeStyles(() =>
-  createStyles({
-    rootTitle: {
-      paddingBottom: 0,
-      display: 'none'
-    },
-    subtitleWrapper: {
-      paddingBottom: 0,
-      display: 'flex',
-      alignItems: 'center',
-      width: '100%',
-      justifyContent: 'space-between'
-    },
-    dialogBody: {
-      minHeight: '60vh',
-      padding: 0
-    }
-  })
-);
-
-export default function UploadDialog(props: UploadDialogProps) {
+export function UploadDialog(props: UploadDialogProps) {
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
   const { isMinimized, onMaximize, onMinimize, hasPendingChanges, onSubmittingAndOrPendingChange } =
@@ -110,3 +88,5 @@ export default function UploadDialog(props: UploadDialogProps) {
     </>
   );
 }
+
+export default UploadDialog;

@@ -27,7 +27,7 @@ export interface SetItemStateDialogProps {
   onConfirm(update: StatesToUpdate): void;
 }
 
-export default function SetItemStateDialog(props: SetItemStateDialogProps) {
+export function SetItemStateDialog(props: SetItemStateDialogProps) {
   const { open, onClose } = props;
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
@@ -35,3 +35,5 @@ export default function SetItemStateDialog(props: SetItemStateDialogProps) {
     </Dialog>
   );
 }
+
+export default SetItemStateDialog;

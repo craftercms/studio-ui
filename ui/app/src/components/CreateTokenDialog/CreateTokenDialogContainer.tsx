@@ -19,25 +19,25 @@ import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import React, { useEffect, useState } from 'react';
 import GlobalState from '../../models/GlobalState';
-import DialogBody from '../Dialogs/DialogBody';
+import DialogBody from '../DialogBody/DialogBody';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import FormHelperText from '@mui/material/FormHelperText';
 import Collapse from '@mui/material/Collapse';
-import DateTimePicker from '../Controls/DateTimePicker';
-import DialogFooter from '../Dialogs/DialogFooter';
+import DateTimePicker from '../DateTimePicker/DateTimePicker';
+import DialogFooter from '../DialogFooter/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
-import { useSelection } from '../../utils/hooks/useSelection';
+import { useSelection } from '../../hooks/useSelection';
 import { getUserTimeZone } from '../../utils/datetime';
 import { CreateTokenContainerProps } from './utils';
 import { createToken } from '../../services/tokens';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';
 
-export const translations = defineMessages({
+const translations = defineMessages({
   placeholder: {
     id: 'words.label',
     defaultMessage: 'Label'

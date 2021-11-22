@@ -24,10 +24,10 @@ import { generateSingleItemOptions, itemActionDispatcher } from '../../utils/ite
 import { PopoverProps } from '@mui/material/Popover';
 import { getRootPath, isValidCutPastePath } from '../../utils/path';
 import { AllItemActions } from '../../models/Item';
-import { useSelection } from '../../utils/hooks/useSelection';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import { useEnv } from '../../utils/hooks/useEnv';
-import { useItemsByPath } from '../../utils/hooks/useItemsByPath';
+import { useSelection } from '../../hooks/useSelection';
+import { useActiveSiteId } from '../../hooks/useActiveSiteId';
+import { useEnv } from '../../hooks/useEnv';
+import { useItemsByPath } from '../../hooks/useItemsByPath';
 
 export interface ItemMenuBaseProps {
   path: string;
@@ -50,7 +50,7 @@ export interface ItemMenuStateProps extends ItemMenuBaseProps {
   onClose?: StandardAction;
 }
 
-export default function ItemActionsMenu(props: ItemMenuProps) {
+export function ItemActionsMenu(props: ItemMenuProps) {
   const {
     open,
     path,
@@ -96,3 +96,5 @@ export default function ItemActionsMenu(props: ItemMenuProps) {
     />
   );
 }
+
+export default ItemActionsMenu;

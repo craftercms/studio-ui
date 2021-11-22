@@ -16,12 +16,12 @@
 
 import * as React from 'react';
 import EditModesSwitcherUI from './EditModesSwitcherUI';
-import { useActiveUser } from '../../utils/hooks/useActiveUser';
+import { useActiveUser } from '../../hooks/useActiveUser';
 import { isItemLockedForMe } from '../../utils/content';
 import { useDispatch } from 'react-redux';
 import { setPreviewEditMode } from '../../state/actions/preview';
 import { DetailedItem } from '../../models/Item';
-import { usePreviewState } from '../../utils/hooks/usePreviewState';
+import { usePreviewState } from '../../hooks/usePreviewState';
 
 export interface EditModesSwitcherProps {
   item: DetailedItem;
