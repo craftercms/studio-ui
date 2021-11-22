@@ -63,17 +63,17 @@ import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import TableBody from '@mui/material/TableBody';
 import DeleteIcon from '@mui/icons-material/DeleteOutline';
-import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
+import { useEnhancedDialogState } from '../../hooks';
 import UninstallPluginDialog from '../DeletePluginDialog';
 
 const messages = defineMessages({
   pluginInstalled: {
-    id: 'PluginManagement.pluginInstalled',
+    id: 'pluginManagement.pluginInstalled',
     defaultMessage: 'Plugin installed successfully'
   },
-  pluginDeleted: {
-    id: 'PluginManagement.pluginDeleted',
-    defaultMessage: 'Plugin deleted successfully'
+  pluginUninstalled: {
+    id: 'pluginManagement.pluginUninstalled',
+    defaultMessage: 'Plugin uninstalled successfully'
   }
 });
 
@@ -191,7 +191,7 @@ export const PluginManagement = (props: PluginManagementProps) => {
     dispatch(
       batchActions([
         showSystemNotification({
-          message: formatMessage(messages.pluginDeleted)
+          message: formatMessage(messages.pluginUninstalled)
         }),
         emitSystemEvent(pluginUninstalled())
       ])

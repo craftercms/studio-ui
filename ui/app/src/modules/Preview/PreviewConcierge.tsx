@@ -344,27 +344,6 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
     const hostToGuest$ = getHostToGuestBus();
     const guestToHost$ = getGuestToHostBus();
     const hostToHost$ = getHostToHostBus();
-    const events = [
-      pluginInstalled.type,
-      pluginUninstalled.type,
-      contentTypeCreated.type,
-      contentTypeUpdated.type,
-      contentTypeDeleted.type
-    ];
-    const hostToHostSubscription = hostToHost$
-      .pipe(filter((e) => events.includes(e.type)))
-      .subscribe(({ type, payload }) => {
-        switch (type) {
-          case pluginUninstalled.type:
-          case contentTypeCreated.type:
-          case contentTypeUpdated.type:
-          case contentTypeDeleted.type:
-          case pluginInstalled.type: {
-            dispatch(fetchContentTypes());
-            break;
-          }
-        }
-      });
     const guestToHostSubscription = guestToHost$.subscribe((action) => {
       const { type, payload } = action;
       switch (type) {
@@ -803,7 +782,6 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
     });
     return () => {
       guestToHostSubscription.unsubscribe();
-      hostToHostSubscription.unsubscribe();
     };
   }, [
     authoringBase,
@@ -826,6 +804,35 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
     guest,
     keyboardShortcutsDialogState
   ]);
+
+  // region hostToHost$ subscription
+  useEffect(() => {
+    const hostToHost$ = getHostToHostBus();
+    const events = [
+      pluginInstalled.type,
+      pluginUninstalled.type,
+      contentTypeCreated.type,
+      contentTypeUpdated.type,
+      contentTypeDeleted.type
+    ];
+    const hostToHostSubscription = hostToHost$
+      .pipe(filter((e) => events.includes(e.type)))
+      .subscribe(({ type, payload }) => {
+        switch (type) {
+          case pluginUninstalled.type:
+          case contentTypeCreated.type:
+          case contentTypeUpdated.type:
+          case contentTypeDeleted.type:
+          case pluginInstalled.type: {
+            dispatch(fetchContentTypes());
+            break;
+          }
+        }
+      });
+    return () => {
+      hostToHostSubscription.unsubscribe();
+    };
+  }, [dispatch]);
 
   // Guest detection
   useEffect(() => {
