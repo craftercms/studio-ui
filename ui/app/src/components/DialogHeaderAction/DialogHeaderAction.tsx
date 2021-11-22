@@ -21,14 +21,16 @@ import HistoryIcon from '@mui/icons-material/HistoryRounded';
 import BackIcon from '@mui/icons-material/ArrowBackIosRounded';
 import CloseIcon from '@mui/icons-material/CloseRounded';
 import MinimizeIcon from '@mui/icons-material/RemoveRounded';
+import OpenInFullIcon from '@mui/icons-material/OpenInFullRounded';
 
-export type ActionIcon = 'HistoryIcon' | 'CloseIcon' | 'BackIcon' | 'MinimizeIcon';
+export type ActionIcon = 'HistoryIcon' | 'CloseIcon' | 'BackIcon' | 'MinimizeIcon' | 'MaximizeIcon';
 
 const ActionsIconMap: { [key in ActionIcon]: ElementType } = {
   CloseIcon: CloseIcon,
   HistoryIcon: HistoryIcon,
   BackIcon: BackIcon,
-  MinimizeIcon: MinimizeIcon
+  MinimizeIcon: MinimizeIcon,
+  MaximizeIcon: OpenInFullIcon
 };
 
 interface ActionProps extends IconButtonProps {
