@@ -23,23 +23,13 @@ import { uninstallMarketplacePlugin, fetchMarketplacePluginUsage } from '../../s
 import Suspencified from '../Suspencified/Suspencified';
 import { UninstallPluginDialogBody } from './UninstallPluginDialogBody';
 import { useDispatch } from 'react-redux';
-import { showSystemNotification } from '../../state/actions/system';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
-import { defineMessages, useIntl } from 'react-intl';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
-
-const messages = defineMessages({
-  pluginUninstalled: {
-    id: 'pluginManagement.pluginUninstalled',
-    defaultMessage: 'Plugin uninstalled'
-  }
-});
 
 export function UninstallPluginDialogContainer(props: UninstallPluginDialogContainerProps) {
   const { onClose, pluginId, onComplete, isSubmitting, onSubmittingAndOrPendingChange } = props;
   const site = useActiveSiteId();
   const dispatch = useDispatch();
-  const { formatMessage } = useIntl();
   const callbacksRef = useUpdateRefs({ onSubmittingAndOrPendingChange });
 
   const resource = useMemo(() => {
@@ -56,11 +46,6 @@ export function UninstallPluginDialogContainer(props: UninstallPluginDialogConta
         callbacksRef.current.onSubmittingAndOrPendingChange({
           isSubmitting: false
         });
-        dispatch(
-          showSystemNotification({
-            message: formatMessage(messages.pluginUninstalled)
-          })
-        );
         onComplete?.();
       },
       error: (response) => {
