@@ -57,6 +57,9 @@ export const useStyles = makeStyles((theme) =>
     },
     treeItemLabel: {
       width: '100%'
+    },
+    bodyEmptyState: {
+      height: '60vh'
     }
   })
 );

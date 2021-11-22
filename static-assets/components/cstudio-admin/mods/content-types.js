@@ -314,6 +314,13 @@
                                     197,
                                     'saveContentType'
                                   );
+
+                                  window.top.postMessage(
+                                    {
+                                      type: 'CONTENT_TYPES_ON_SAVE'
+                                    },
+                                    '*'
+                                  );
                                 },
                                 () => {
                                   CStudioAuthoring.Operations.showSimpleDialog(

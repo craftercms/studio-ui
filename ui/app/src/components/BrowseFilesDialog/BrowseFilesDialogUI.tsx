@@ -73,7 +73,7 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
             <SearchBar
               keyword={keyword}
               onChange={handleSearchKeyword}
-              showDecoratorIcon={true}
+              showDecoratorIcon
               showActionButton={Boolean(keyword)}
               classes={{ root: classes.searchRoot }}
             />

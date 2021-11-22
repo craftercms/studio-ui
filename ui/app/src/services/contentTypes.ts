@@ -184,110 +184,117 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
     asArray<LegacyFormDefinitionSection>(definition.sections.section).forEach((legacySection) => {
       const fieldIds = [];
 
-      legacySection.fields?.field &&
-        asArray<LegacyFormDefinitionField>(legacySection.fields.field).forEach((legacyField) => {
-          const fieldId = ['file-name', 'internal-name'].includes(legacyField.id)
-            ? camelize(legacyField.id)
-            : legacyField.id;
+      function parsingFields(field: LegacyFormDefinitionField[] | LegacyFormDefinitionField, fields: any) {
+        field &&
+          asArray<LegacyFormDefinitionField>(field).forEach((legacyField) => {
+            const fieldId = ['file-name', 'internal-name'].includes(legacyField.id)
+              ? camelize(legacyField.id)
+              : legacyField.id;
 
-          fieldIds.push(fieldId);
+            fieldIds.push(fieldId);
 
-          const field: ContentTypeField = {
-            id: fieldId,
-            name: legacyField.title,
-            type: typeMap[legacyField.type] || legacyField.type,
-            sortable: legacyField.type === 'node-selector' || legacyField.type === 'repeat',
-            validations: {},
-            properties: {},
-            defaultValue: legacyField.defaultValue,
-            required: false
-          };
+            const field: ContentTypeField = {
+              id: fieldId,
+              name: legacyField.title,
+              type: typeMap[legacyField.type] || legacyField.type,
+              sortable: legacyField.type === 'node-selector' || legacyField.type === 'repeat',
+              validations: {},
+              properties: {},
+              defaultValue: legacyField.defaultValue
+            };
 
-          legacyField.properties &&
-            asArray<LegacyFormDefinitionProperty>(legacyField.properties.property).forEach((legacyProp) => {
-              let value;
+            legacyField.properties &&
+              asArray<LegacyFormDefinitionProperty>(legacyField.properties.property).forEach((legacyProp) => {
+                let value;
 
-              switch (legacyProp.type) {
-                case 'boolean':
-                  value = legacyProp.value === 'true';
-                  break;
-                case 'int':
-                  value = parseInt(legacyProp.value);
-                  break;
-                default:
-                  value = legacyProp.value;
-              }
+                switch (legacyProp.type) {
+                  case 'boolean':
+                    value = legacyProp.value === 'true';
+                    break;
+                  case 'int':
+                    value = parseInt(legacyProp.value);
+                    break;
+                  default:
+                    value = legacyProp.value;
+                }
 
-              field.properties[legacyProp.name] = {
-                ...legacyProp,
-                value
-              };
-            });
-
-          legacyField.constraints &&
-            asArray<LegacyFormDefinitionProperty>(legacyField.constraints.constraint).forEach((legacyProp) => {
-              const value = legacyProp.value.trim();
-              switch (legacyProp.name) {
-                case 'required':
-                  if (value === 'true') {
-                    field.validations.required = {
-                      id: 'required',
-                      value: value === 'true',
-                      level: 'required'
-                    };
-                  }
-                  break;
-                case 'allowDuplicates':
-                  break;
-                case 'pattern':
-                  break;
-                case 'minSize':
-                  break;
-                default:
-                  console.log(`[parseLegacyFormDef] Unhandled constraint "${legacyProp.name}"`, legacyProp);
-              }
-            });
-
-          switch (legacyField.type) {
-            case 'repeat':
-              field.fields = {};
-              asArray(legacyField.fields.field).forEach((_legacyField) => {
-                const _fieldId = camelize(_legacyField.id);
-                field.fields[_fieldId] = {
-                  id: _fieldId,
-                  name: _legacyField.title,
-                  type: typeMap[_legacyField.type] || _legacyField.type,
-                  sortable: legacyField.type === 'node-selector' || legacyField.type === 'repeat',
-                  validations: {},
-                  defaultValue: '',
-                  required: false
+                field.properties[legacyProp.name] = {
+                  ...legacyProp,
+                  value
                 };
-                if (field.fields[_fieldId].type === 'node-selector') {
-                  field.fields[_fieldId].validations = getFieldValidations(
-                    _legacyField.properties.property,
-                    dropTargetsLookup
-                  );
+              });
+
+            legacyField.constraints &&
+              asArray<LegacyFormDefinitionProperty>(legacyField.constraints.constraint).forEach((legacyProp) => {
+                const value = legacyProp.value.trim();
+                switch (legacyProp.name) {
+                  case 'required':
+                    if (value === 'true') {
+                      field.validations.required = {
+                        id: 'required',
+                        value: value === 'true',
+                        level: 'required'
+                      };
+                    }
+                    break;
+                  case 'allowDuplicates':
+                    break;
+                  case 'pattern':
+                    break;
+                  case 'minSize':
+                    break;
+                  default:
+                    console.log(`[parseLegacyFormDef] Unhandled constraint "${legacyProp.name}"`, legacyProp);
                 }
               });
-              break;
-            case 'node-selector':
-              field.validations = {
-                ...field.validations,
-                ...getFieldValidations(legacyField.properties.property, dropTargetsLookup)
-              };
-              break;
-            case 'input':
-            case 'numeric-input':
-            case 'image-picker':
-              field.validations = {
-                ...field.validations,
-                ...getFieldValidations(legacyField.properties.property)
-              };
-              break;
-          }
 
-          fields[fieldId] = field;
-        });
+            switch (legacyField.type) {
+              case 'repeat':
+                field.fields = {};
+                asArray(legacyField.fields.field).forEach((_legacyField) => {
+                  const _fieldId = camelize(_legacyField.id);
+                  field.fields[_fieldId] = {
+                    id: _fieldId,
+                    name: _legacyField.title,
+                    type: typeMap[_legacyField.type] || _legacyField.type,
+                    sortable: legacyField.type === 'node-selector' || legacyField.type === 'repeat',
+                    validations: {},
+                    defaultValue: ''
+                  };
+                  if (field.fields[_fieldId].type === 'node-selector') {
+                    field.fields[_fieldId].validations = getFieldValidations(
+                      _legacyField.properties.property,
+                      dropTargetsLookup
+                    );
+                  }
+
+                  if (_legacyField.type === 'repeat') {
+                    field.fields[_fieldId].fields = {};
+                    parsingFields(_legacyField.fields.field, field.fields[_fieldId].fields);
+                  }
+                });
+                break;
+              case 'node-selector':
+                field.validations = {
+                  ...field.validations,
+                  ...getFieldValidations(legacyField.properties.property, dropTargetsLookup)
+                };
+                break;
+              case 'input':
+              case 'numeric-input':
+              case 'image-picker':
+                field.validations = {
+                  ...field.validations,
+                  ...getFieldValidations(legacyField.properties.property)
+                };
+                break;
+            }
+
+            fields[fieldId] = field;
+          });
+      }
+
+      parsingFields(legacySection.fields?.field, fields);
 
       sections.push({
         description: legacySection.description,

@@ -23,6 +23,8 @@ import LoadingState from '../LoadingState/LoadingState';
 import { fromEvent } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
+import { useDispatch } from 'react-redux';
+import { fetchContentTypes } from '../../state/actions/preview';
 
 interface ContentTypeManagementProps {
   embedded?: boolean;
@@ -30,22 +32,29 @@ interface ContentTypeManagementProps {
   onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
-export default function ContentTypeManagement(props: ContentTypeManagementProps) {
+export function ContentTypeManagement(props: ContentTypeManagementProps) {
   const { embedded = false, showAppsButton, onSubmittingAndOrPendingChange } = props;
   const [loading, setLoading] = useState(true);
-
-  const messages = fromEvent(window, 'message').pipe(
-    filter((e: any) => e.data?.type === 'CONTENT_TYPES_ON_SUBMITTING_OR_PENDING_CHANGES_MESSAGE')
-  );
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    const messagesSubscription = messages.subscribe((e: any) => {
-      onSubmittingAndOrPendingChange?.(e.data.payload);
-    });
+    const messagesSubscription = fromEvent(window, 'message')
+      .pipe(
+        filter((e: any) =>
+          ['CONTENT_TYPES_ON_SAVE', 'CONTENT_TYPES_ON_SUBMITTING_OR_PENDING_CHANGES_MESSAGE'].includes(e.data?.type)
+        )
+      )
+      .subscribe((e: any) => {
+        if (e.data.type === 'CONTENT_TYPES_ON_SAVE') {
+          dispatch(fetchContentTypes());
+        } else {
+          onSubmittingAndOrPendingChange?.(e.data.payload);
+        }
+      });
     return () => {
       messagesSubscription.unsubscribe();
     };
-  }, [messages, onSubmittingAndOrPendingChange]);
+  }, [dispatch, onSubmittingAndOrPendingChange]);
 
   return (
     <Box height="100%" display="flex" flexDirection="column">
@@ -70,3 +79,5 @@ export default function ContentTypeManagement(props: ContentTypeManagementProps)
     </Box>
   );
 }
+
+export default ContentTypeManagement;

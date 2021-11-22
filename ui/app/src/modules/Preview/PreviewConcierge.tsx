@@ -30,6 +30,7 @@ import {
   desktopAssetUploadProgress,
   desktopAssetUploadStarted,
   editModeToggleHotkey,
+  fetchContentTypes,
   fetchGuestModel,
   fetchGuestModelComplete,
   fetchPrimaryGuestModelComplete,
@@ -77,7 +78,8 @@ import { forkJoin, Observable, of, ReplaySubject } from 'rxjs';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { getGuestToHostBus, getHostToGuestBus, getHostToHostBus } from './previewContext';
 import { useDispatch } from 'react-redux';
-import { findParentModelId, nnou, pluckProps } from '../../utils/object';
+import { nnou, pluckProps } from '../../utils/object';
+import { findParentModelId, getModelIdFromInheritedField, isInheritedField } from '../../utils/model';
 import RubbishBin from '../../components/RubbishBin/RubbishBin';
 import { useSnackbar } from 'notistack';
 import {
@@ -100,7 +102,6 @@ import {
 import moment from 'moment-timezone';
 import ContentInstance from '../../models/ContentInstance';
 import LookupTable from '../../models/LookupTable';
-import { getModelIdFromInheritedField, isInheritedField } from '../../utils/model';
 import Snackbar from '@mui/material/Snackbar';
 import CloseRounded from '@mui/icons-material/CloseRounded';
 import IconButton from '@mui/material/IconButton';
@@ -123,6 +124,7 @@ import { HighlightMode } from '../../models/GlobalState';
 import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import KeyboardShortcutsDialog from '../../components/KeyboardShortcutsDialog';
 import { previewKeyboardShortcuts } from '../../assets/keyboardShortcuts';
+import { pluginInstalled } from '../../state/actions/system';
 
 const originalDocDomain = document.domain;
 
@@ -219,7 +221,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   const { formatMessage } = useIntl();
   const models = guest?.models;
   const modelIdByPath = guest?.modelIdByPath;
-  const childrenMap = guest?.childrenMap;
+  const hierarchyMap = guest?.hierarchyMap;
   const contentTypes$ = useMemo(() => new ReplaySubject<ContentType[]>(1), []);
   const requestedSourceMapPaths = useRef({});
   const guestDetectionTimeoutRef = useRef<number>();
@@ -375,6 +377,10 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           break;
         }
         // endregion
+        case pluginInstalled.type: {
+          dispatch(fetchContentTypes());
+          break;
+        }
         case guestCheckIn.type:
         case fetchGuestModel.type: {
           if (type === guestCheckIn.type) {
@@ -441,7 +447,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           const path = models[modelId ?? parentModelId].craftercms.path;
           if (isInheritedField(models[modelId], fieldId)) {
             modelId = getModelIdFromInheritedField(models[modelId], fieldId, modelIdByPath);
-            parentModelId = findParentModelId(modelId, childrenMap, models);
+            parentModelId = findParentModelId(modelId, hierarchyMap, models);
           }
 
           sortItem(
@@ -490,7 +496,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 
           if (isInheritedField(models[modelId], fieldId)) {
             modelId = getModelIdFromInheritedField(models[modelId], fieldId, modelIdByPath);
-            parentModelId = findParentModelId(modelId, childrenMap, models);
+            parentModelId = findParentModelId(modelId, hierarchyMap, models);
           }
 
           insertComponent(
@@ -533,7 +539,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 
           if (isInheritedField(models[modelId], fieldId)) {
             modelId = getModelIdFromInheritedField(models[modelId], fieldId, modelIdByPath);
-            parentModelId = findParentModelId(modelId, childrenMap, models);
+            parentModelId = findParentModelId(modelId, hierarchyMap, models);
           }
 
           insertInstance(
@@ -577,12 +583,12 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 
           if (isInheritedField(models[originalModelId], originalFieldId)) {
             originalModelId = getModelIdFromInheritedField(models[originalModelId], originalFieldId, modelIdByPath);
-            originalParentModelId = findParentModelId(originalModelId, childrenMap, models);
+            originalParentModelId = findParentModelId(originalModelId, hierarchyMap, models);
           }
 
           if (isInheritedField(models[targetModelId], targetFieldId)) {
             targetModelId = getModelIdFromInheritedField(models[targetModelId], targetFieldId, modelIdByPath);
-            targetParentModelId = findParentModelId(targetModelId, childrenMap, models);
+            targetParentModelId = findParentModelId(targetModelId, hierarchyMap, models);
           }
 
           moveItem(
@@ -613,7 +619,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 
           if (isInheritedField(models[modelId], fieldId)) {
             modelId = getModelIdFromInheritedField(models[modelId], fieldId, modelIdByPath);
-            parentModelId = findParentModelId(modelId, childrenMap, models);
+            parentModelId = findParentModelId(modelId, hierarchyMap, models);
           }
 
           deleteItem(
@@ -652,7 +658,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 
           if (isInheritedField(models[modelId], fieldId)) {
             modelId = getModelIdFromInheritedField(models[modelId], fieldId, modelIdByPath);
-            parentModelId = findParentModelId(modelId, childrenMap, models);
+            parentModelId = findParentModelId(modelId, hierarchyMap, models);
           }
 
           updateField(
@@ -785,7 +791,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
     formatMessage,
     models,
     modelIdByPath,
-    childrenMap,
+    hierarchyMap,
     guestBase,
     siteId,
     xsrfArgument,

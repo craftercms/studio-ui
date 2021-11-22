@@ -19,6 +19,8 @@ import LookupTable from '@craftercms/studio-ui/models/LookupTable';
 
 export interface TinymceOptions extends Settings {
   paste_postprocess?(plugin: string, args?: {}): void;
+  code_editor_inline?: boolean;
+  code_editor_wrap?: boolean;
 }
 
 export interface RteSetup {

@@ -63,6 +63,7 @@ import { PreviewDialogStateProps } from '../components/PreviewDialog/utils';
 import { EditSiteDialogStateProps } from '../components/EditSiteDialog/utils';
 import { LegacyFormDialogStateProps } from '../components/LegacyFormDialog/utils';
 import { SingleFileUploadDialogStateProps } from '../components/SingleFileUploadDialog';
+import { ModelHierarchyMap } from '../utils/content';
 
 export type HighlightMode = 'all' | 'move';
 
@@ -84,7 +85,7 @@ export interface GuestData {
   url: string;
   origin: string;
   models: LookupTable<ContentInstance>;
-  childrenMap: LookupTable<string[]>;
+  hierarchyMap: ModelHierarchyMap;
   modelIdByPath: LookupTable<string>;
   modelId: string;
   path: string;

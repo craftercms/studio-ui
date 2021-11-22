@@ -20,11 +20,12 @@ import CloseRounded from '@mui/icons-material/CloseRounded';
 import Typography from '@mui/material/Typography';
 import { useDispatch } from 'react-redux';
 import { defineMessages, useIntl } from 'react-intl';
-import { findParentModelId, nnou } from '../../utils/object';
-import { popPiece } from '../../utils/string';
-import * as ModelHelper from '../../utils/model';
-import { showCodeEditorDialog, showEditDialog } from '../../state/actions/dialogs';
-import { getField } from '../../utils/contentType';
+import { nnou } from '../../../utils/object';
+import * as ModelHelper from '../../../utils/model';
+import { findParentModelId } from '../../../utils/model';
+import { popPiece } from '../../../utils/string';
+import { showCodeEditorDialog, showEditDialog } from '../../../state/actions/dialogs';
+import { getField } from '../../../utils/contentType';
 import { Menu, MenuItem } from '@mui/material';
 import { GuestData } from '../../models/GlobalState';
 import { useSelection } from '../../hooks/useSelection';
@@ -41,13 +42,13 @@ interface EditFormPanelBodyProps {
   onDismiss: () => void;
   selected: GuestData['selected'];
   models: GuestData['models'];
-  childrenMap: GuestData['childrenMap'];
+  hierarchyMap: GuestData['hierarchyMap'];
   modelIdByPath: GuestData['modelIdByPath'];
 }
 
 const getEditDialogProps = (props: {
   authoringBase: string;
-  childrenMap: GuestData['childrenMap'];
+  hierarchyMap: GuestData['hierarchyMap'];
   model: ContentInstance;
   models: GuestData['models'];
   path: string;
@@ -55,7 +56,7 @@ const getEditDialogProps = (props: {
   site: string;
   selectedFields: string[];
 }) => {
-  const { authoringBase, childrenMap, model, models, path, selectedId, site, selectedFields } = props;
+  const { authoringBase, hierarchyMap, model, models, path, selectedId, site, selectedFields } = props;
   if (path) {
     return {
       authoringBase,
@@ -66,7 +67,7 @@ const getEditDialogProps = (props: {
   } else {
     let parentPath;
     if (model === models[selectedId]) {
-      let parentId = findParentModelId(model.craftercms.id, childrenMap, models);
+      let parentId = findParentModelId(model.craftercms.id, hierarchyMap, models);
       parentPath = models[parentId].craftercms.path;
     } else {
       parentPath = models[model.craftercms.id].craftercms.path;
@@ -100,7 +101,7 @@ const translations = defineMessages({
 
 export default function EditFormPanel(props: EditFormPanelProps) {
   const { showToolsPanel, guest } = usePreviewState();
-  const { selected, models, childrenMap, modelIdByPath } = guest ?? {};
+  const { selected, models, hierarchyMap, modelIdByPath } = guest ?? {};
   const getAnchorPosition = () => {
     let iframe = document.getElementById('crafterCMSPreviewIframe');
     let bounding = iframe.getBoundingClientRect();
@@ -122,7 +123,7 @@ export default function EditFormPanel(props: EditFormPanelProps) {
           <EditFormPanelBody
             models={models}
             selected={selected}
-            childrenMap={childrenMap}
+            hierarchyMap={hierarchyMap}
             modelIdByPath={modelIdByPath}
             onDismiss={props.onDismiss}
           />
@@ -135,7 +136,7 @@ export default function EditFormPanel(props: EditFormPanelProps) {
 }
 
 function EditFormPanelBody(props: EditFormPanelBodyProps) {
-  const { onDismiss, selected, models, modelIdByPath, childrenMap } = props;
+  const { onDismiss, selected, models, modelIdByPath, hierarchyMap } = props;
   const dispatch = useDispatch();
   const contentTypesBranch = useSelection((state) => state.contentTypes);
   const site = useActiveSiteId();
@@ -193,7 +194,7 @@ function EditFormPanelBody(props: EditFormPanelBodyProps) {
       const selectedFields = selected[0]?.fieldId.length ? selected[0].fieldId : null;
       dispatch(
         showEditDialog(
-          getEditDialogProps({ authoringBase, childrenMap, model, models, path, selectedFields, selectedId, site })
+          getEditDialogProps({ authoringBase, hierarchyMap, model, models, path, selectedFields, selectedId, site })
         )
       );
     } else {
