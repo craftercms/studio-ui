@@ -28,8 +28,8 @@ import { BrowseFilesDialogUI } from '.';
 import { BrowseFilesDialogContainerProps, initialParameters } from './utils';
 import { checkPathExistence } from '../../services/content';
 import { FormattedMessage } from 'react-intl';
-import EmptyState from '../SystemStatus/EmptyState';
-import useStyles from './styles';
+import EmptyState from '../EmptyState';
+import { useStyles } from './styles';
 import BrowseFilesDialogContainerSkeleton from './BrowseFilesDialogContainerSkeleton';
 
 export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProps) {
