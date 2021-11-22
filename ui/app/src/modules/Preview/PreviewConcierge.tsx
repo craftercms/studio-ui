@@ -805,7 +805,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
     keyboardShortcutsDialogState
   ]);
 
-  // region hostToHost$ subscription
+  // hostToHost$ subscription
   useEffect(() => {
     const hostToHost$ = getHostToHostBus();
     const events = [
