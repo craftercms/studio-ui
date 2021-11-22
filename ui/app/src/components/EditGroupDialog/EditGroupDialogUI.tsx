@@ -88,7 +88,6 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
               })}
               iconTooltip={<FormattedMessage id="editGroupDialog.deleteGroup" defaultMessage="Delete group" />}
               icon={DeleteRoundedIcon}
-              iconColor="action"
               onConfirm={() => {
                 onDeleteGroup(group);
               }}

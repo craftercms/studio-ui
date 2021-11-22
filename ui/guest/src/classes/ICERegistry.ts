@@ -269,10 +269,7 @@ export function runDropTargetsValidations(dropTargets: ICERecord[]): LookupTable
   dropTargets.forEach((record) => {
     const validationResult = {};
     const { fieldId, index } = record;
-    let {
-      field: { validations },
-      model
-    } = getReferentialEntries(record);
+    let { field: { validations = [] } = {}, model } = getReferentialEntries(record);
     const collection = Model.extractCollectionItem(model, fieldId, index);
     Object.keys(validations).forEach((key) => {
       const validation = validations[key];
@@ -308,9 +305,7 @@ export function runDropTargetsValidations(dropTargets: ICERecord[]): LookupTable
 
 export function runValidation(iceId: number, validationId: ValidationKeys, args?: unknown[]): ValidationResult {
   const record = getById(iceId);
-  let {
-    field: { validations }
-  } = getReferentialEntries(record);
+  const validations = getReferentialEntries(record).field?.validations;
   if (validations?.[validationId]) {
     return validationChecks[validationId](...[...Object.values(validations[validationId]), ...args]);
   } else {
@@ -348,7 +343,7 @@ export function getRecordField(record: ICERecord): ContentTypeField {
 }
 
 export function isMovable(id: number): boolean {
-  const { field, recordType } = getReferentialEntries(id);
+  const { field } = getReferentialEntries(id);
   return isMovableType(id) && field.sortable;
 }
 

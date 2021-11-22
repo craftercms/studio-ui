@@ -45,7 +45,7 @@ interface ConfirmDropdownProps {
   sx?: ConfirmDropdownPartialSx;
   size?: IconButtonProps['size'];
   icon?: OverridableComponent<SvgIconTypeMap>;
-  iconColor?: 'inherit' | 'primary' | 'secondary' | 'action' | 'disabled' | 'error';
+  iconColor?: IconButtonProps['color'];
   iconTooltip?: React.ReactNode;
   onConfirm(): any;
   onCancel?(): any;
@@ -88,7 +88,7 @@ export function ConfirmDropdown(props: ConfirmDropdownProps) {
     disabled = false,
     buttonVariant = 'outlined',
     icon: Icon,
-    iconColor = 'primary',
+    iconColor,
     iconTooltip,
     size = 'medium'
   } = props;
@@ -110,8 +110,8 @@ export function ConfirmDropdown(props: ConfirmDropdownProps) {
   // Not memoizing causes the menu to get misplaced upon opening.
   const iconButton = useMemo(
     () => (
-      <IconButton onClick={(e) => setAnchorEl(e.currentTarget)} size={size}>
-        <Icon color={disabled ? 'disabled' : iconColor} />
+      <IconButton color={iconColor} onClick={(e) => setAnchorEl(e.currentTarget)} size={size} disabled={disabled}>
+        <Icon />
       </IconButton>
     ),
     [Icon, disabled, iconColor, size]

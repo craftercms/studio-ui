@@ -118,7 +118,6 @@ export function EditUserDialogUI(props: EditUserDialogUIProps) {
                 })}
                 iconTooltip={<FormattedMessage id="userInfoDialog.deleteUser" defaultMessage="Delete user" />}
                 icon={DeleteRoundedIcon}
-                iconColor="action"
                 onConfirm={() => {
                   onDelete(user.username);
                 }}
