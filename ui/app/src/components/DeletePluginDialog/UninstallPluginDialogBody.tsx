@@ -22,14 +22,14 @@ import {
   UninstallPluginDialogBodyPartialSx,
   UninstallPluginDialogBodyProps
 } from './utils';
-import DialogBody from '../Dialogs/DialogBody';
-import EmptyState from '../SystemStatus/EmptyState';
+import DialogBody from '../DialogBody/DialogBody';
+import EmptyState from '../EmptyState/EmptyState';
 import { FormattedMessage } from 'react-intl';
 import Alert from '@mui/material/Alert';
-import DialogFooter from '../Dialogs/DialogFooter';
+import DialogFooter from '../DialogFooter/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
-import LoadingState from '../SystemStatus/LoadingState';
+import LoadingState from '../LoadingState/LoadingState';
 import { Box, ListItem, ListItemText, TextField, Theme } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import List from '@mui/material/List';

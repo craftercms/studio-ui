@@ -31,8 +31,8 @@ import clsx from 'clsx';
 import { showSystemNotification } from '../../state/actions/system';
 import ConfirmDropdown from '../ConfirmDropdown';
 import ActionsBar from '../ActionsBar';
-import { ConditionalLoadingState } from '../SystemStatus/LoadingState';
-import EmptyState from '../SystemStatus/EmptyState';
+import { ConditionalLoadingState } from '../LoadingState/LoadingState';
+import EmptyState from '../EmptyState/EmptyState';
 import CopyTokenDialog from '../CopyTokenDialog/CopyTokenDialog';
 import moment from 'moment-timezone';
 import { forkJoin } from 'rxjs';
@@ -50,8 +50,8 @@ import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
-import { useEnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
-import { useWithPendingChangesCloseRequest } from '../../utils/hooks/useWithPendingChangesCloseRequest';
+import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
+import { useWithPendingChangesCloseRequest } from '../../hooks/useWithPendingChangesCloseRequest';
 
 const styles = makeStyles((theme) =>
   createStyles({

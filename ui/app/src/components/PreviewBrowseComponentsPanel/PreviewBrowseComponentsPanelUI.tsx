@@ -20,8 +20,8 @@ import translations from './translations';
 import React from 'react';
 import List from '@mui/material/List';
 import ContentInstance from '../../models/ContentInstance';
-import { DraggablePanelListItem } from '../../modules/Preview/Tools/DraggablePanelListItem';
-import EmptyState from '../SystemStatus/EmptyState';
+import { DraggablePanelListItem } from '../DraggablePanelListItem/DraggablePanelListItem';
+import EmptyState from '../EmptyState/EmptyState';
 import { Resource } from '../../models/Resource';
 import { useComponentsPanelUI } from './styles';
 import FormHelperText from '@mui/material/FormHelperText';
@@ -56,7 +56,7 @@ export interface PreviewBrowseComponentsPanelUIProps {
   onDragEnd(): void;
 }
 
-export default function PreviewBrowseComponentsPanelUI(props: PreviewBrowseComponentsPanelUIProps) {
+export function PreviewBrowseComponentsPanelUI(props: PreviewBrowseComponentsPanelUIProps) {
   const { componentsResource, onPageChanged, onDragStart, onDragEnd } = props;
   const { formatMessage } = useIntl();
   const classes = useComponentsPanelUI();
@@ -109,3 +109,5 @@ export default function PreviewBrowseComponentsPanelUI(props: PreviewBrowseCompo
     </div>
   );
 }
+
+export default PreviewBrowseComponentsPanelUI;

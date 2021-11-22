@@ -19,7 +19,7 @@ import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 import { Button } from '@mui/material';
-import CrafterIcon from '../Icons/CrafterIcon';
+import CrafterIcon from '../../icons/CrafterIcon';
 import MenuRounded from '@mui/icons-material/MenuRounded';
 import { ButtonProps } from '@mui/material/Button';
 import clsx from 'clsx';

@@ -42,7 +42,7 @@ import { changeCurrentUrl, reloadRequest } from '../../state/actions/preview';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 import PreviewBackButton from '../PreviewBackButton';
 import PreviewForwardButton from '../PreviewForwardButton';
-import { usePreviewNavigation } from '../../utils/hooks/usePreviewNavigation';
+import { usePreviewNavigation } from '../../hooks/usePreviewNavigation';
 
 export interface AddressBarProps {
   site: string;

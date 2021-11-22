@@ -16,19 +16,19 @@
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { getIndividualPaths } from '../../utils/path';
-import FolderBrowserTreeViewUI, { TreeNode } from './FolderBrowserTreeViewUI';
+import FolderBrowserTreeViewUI, { FolderBrowserTreeViewNode } from './FolderBrowserTreeViewUI';
 import LookupTable from '../../models/LookupTable';
 import { ApiResponse } from '../../models/ApiResponse';
 import { forkJoin, Observable } from 'rxjs';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import { useLogicResource } from '../../utils/hooks/useLogicResource';
-import Suspencified from '../SystemStatus/Suspencified';
+import { useActiveSiteId } from '../../hooks/useActiveSiteId';
+import { useLogicResource } from '../../hooks/useLogicResource';
+import Suspencified from '../Suspencified/Suspencified';
 import FolderBrowserTreeViewSkeleton from './FolderBrowserTreeViewSkeleton';
 import { LegacyItem } from '../../models/Item';
 import { fetchLegacyItemsTree } from '../../services/content';
 import { legacyItemsToTreeNodes } from './utils';
 
-interface FolderBrowserTreeViewProps {
+export interface FolderBrowserTreeViewProps {
   rootPath: string;
   initialPath?: string;
   showPathTextBox?: boolean;
@@ -36,13 +36,13 @@ interface FolderBrowserTreeViewProps {
   onPathSelected?(path: string): void;
 }
 
-export default function FolderBrowserTreeView(props: FolderBrowserTreeViewProps) {
+export function FolderBrowserTreeView(props: FolderBrowserTreeViewProps) {
   const site = useActiveSiteId();
   const { rootPath, initialPath, showPathTextBox = true, classes, onPathSelected } = props;
   const [currentPath, setCurrentPath] = useState(initialPath ?? rootPath);
   const [expanded, setExpanded] = useState(initialPath ? getIndividualPaths(initialPath) : [rootPath]);
-  const [treeNodes, setTreeNodes] = useState<TreeNode>(null);
-  const nodesLookupRef = useRef<LookupTable<TreeNode>>({});
+  const [treeNodes, setTreeNodes] = useState<FolderBrowserTreeViewNode>(null);
+  const nodesLookupRef = useRef<LookupTable<FolderBrowserTreeViewNode>>({});
   const [error, setError] = useState<Partial<ApiResponse>>(null);
 
   useEffect(() => {
@@ -100,7 +100,7 @@ export default function FolderBrowserTreeView(props: FolderBrowserTreeViewProps)
     }
   }, [currentPath, rootPath, site]);
 
-  const onIconClick = (event: React.ChangeEvent<{}>, node: TreeNode) => {
+  const onIconClick = (event: React.ChangeEvent<{}>, node: FolderBrowserTreeViewNode) => {
     event.preventDefault();
     setCurrentPath(node.id);
     onPathSelected(node.id);
@@ -108,13 +108,16 @@ export default function FolderBrowserTreeView(props: FolderBrowserTreeViewProps)
     setExpanded(nextExpanded);
   };
 
-  const onLabelClick = (event: React.ChangeEvent<{}>, node: TreeNode) => {
+  const onLabelClick = (event: React.ChangeEvent<{}>, node: FolderBrowserTreeViewNode) => {
     event.preventDefault();
     setCurrentPath(node.id);
     onPathSelected(node.id);
   };
 
-  const resource = useLogicResource<TreeNode, { treeNodes: TreeNode; error?: ApiResponse }>(
+  const resource = useLogicResource<
+    FolderBrowserTreeViewNode,
+    { treeNodes: FolderBrowserTreeViewNode; error?: ApiResponse }
+  >(
     useMemo(() => ({ treeNodes, error }), [treeNodes, error]),
     {
       shouldResolve: ({ treeNodes }) => Boolean(treeNodes),
@@ -142,3 +145,5 @@ export default function FolderBrowserTreeView(props: FolderBrowserTreeViewProps)
     </Suspencified>
   );
 }
+
+export default FolderBrowserTreeView;

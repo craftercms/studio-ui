@@ -19,8 +19,8 @@ import ApiResponse from '../../models/ApiResponse';
 import { fetchItemStates, setItemStates, setItemStatesByQuery, StatesToUpdate } from '../../services/workflow';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
-import ItemStatesGridUI, { drawerWidth, ItemStatesGridSkeletonTable, states } from '../ItemStatesGrid';
+import { SuspenseWithEmptyState } from '../Suspencified';
+import ItemStatesGridUI, { ItemStatesGridSkeletonTable } from '../ItemStatesGrid';
 import SetItemStateDialog from '../SetWorkflowStateDialog';
 import Button from '@mui/material/Button';
 import FilterListRoundedIcon from '@mui/icons-material/FilterListRounded';
@@ -28,7 +28,7 @@ import { useStyles } from './styles';
 import LookupTable from '../../models/LookupTable';
 import { createPresenceTable } from '../../utils/array';
 import { getStateBitmap } from './utils';
-import { ItemStateMap, SandboxItem } from '../../models/Item';
+import { ItemStateMap, ItemStates, SandboxItem } from '../../models/Item';
 import { PagedArray } from '../../models/PagedArray';
 import Box from '@mui/material/Box';
 import CloseIcon from '@mui/icons-material/Close';
@@ -43,11 +43,11 @@ import ItemPublishingTargetIcon from '../ItemPublishingTargetIcon';
 import { getItemPublishingTargetText, getItemStateText } from '../ItemDisplay/utils';
 import ItemStateIcon from '../ItemStateIcon';
 import translations from './translations';
-import ResizeableDrawer from '../../modules/Preview/ResizeableDrawer';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import { useLogicResource } from '../../utils/hooks/useLogicResource';
-import { useDebouncedInput } from '../../utils/hooks/useDebouncedInput';
-import { useSpreadState } from '../../utils/hooks/useSpreadState';
+import ResizeableDrawer from '../ResizeableDrawer/ResizeableDrawer';
+import { useActiveSiteId } from '../../hooks/useActiveSiteId';
+import { useLogicResource } from '../../hooks/useLogicResource';
+import { useDebouncedInput } from '../../hooks/useDebouncedInput';
+import { useSpreadState } from '../../hooks/useSpreadState';
 import ItemActionsSnackbar from '../ItemActionsSnackbar';
 import SecondaryButton from '../SecondaryButton';
 
@@ -55,6 +55,20 @@ interface ItemStatesManagementProps {
   embedded?: boolean;
   showAppsButton?: boolean;
 }
+
+const drawerWidth = 260;
+
+const states: ItemStates[] = [
+  'new',
+  'modified',
+  'deleted',
+  'locked',
+  'systemProcessing',
+  'submitted',
+  'scheduled',
+  'staged',
+  'live'
+];
 
 export default function ItemStatesManagement(props: ItemStatesManagementProps) {
   const { embedded, showAppsButton = !embedded } = props;

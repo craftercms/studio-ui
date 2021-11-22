@@ -15,10 +15,10 @@
  */
 
 import React, { useEffect, useMemo, useState } from 'react';
-import { useSpreadState } from '../../utils/hooks/useSpreadState';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { useSpreadState } from '../../hooks/useSpreadState';
+import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useDispatch } from 'react-redux';
-import { useLogicResource } from '../../utils/hooks/useLogicResource';
+import { useLogicResource } from '../../hooks/useLogicResource';
 import {
   fetchDeleteDependencies,
   fetchDeleteDependenciesComplete,
@@ -29,8 +29,8 @@ import { deleteItems } from '../../services/content';
 import { emitSystemEvent, itemsDeleted } from '../../state/actions/system';
 import { DeleteDialogUI } from './DeleteDialogUI';
 import { DeleteDialogContainerProps } from './utils';
-import { useSelection } from '../../utils/hooks/useSelection';
-import { DeleteDependencies } from '../../modules/Content/Dependencies/DependencySelection';
+import { useSelection } from '../../hooks/useSelection';
+import { DeleteDependencies } from '../DependencySelection/DependencySelection';
 import { Resource } from '../../models/Resource';
 import LookupTable from '../../models/LookupTable';
 import { createPresenceTable } from '../../utils/array';
@@ -215,3 +215,5 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
     />
   );
 }
+
+export default DeleteDialogContainer;

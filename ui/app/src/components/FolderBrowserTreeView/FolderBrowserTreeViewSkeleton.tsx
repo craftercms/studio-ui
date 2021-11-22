@@ -21,7 +21,7 @@ import { Skeleton } from '@mui/material';
 import { useSkeletonStyles } from './styles';
 import { rand } from '../PathNavigator/utils';
 
-interface FolderBrowserTreeViewSkeletonProps {
+export interface FolderBrowserTreeViewSkeletonProps {
   data?: RenderTree[];
   expanded?: string[];
 }
@@ -31,7 +31,7 @@ interface RenderTree {
   children?: RenderTree[];
 }
 
-export default function FolderBrowserTreeViewSkeleton(props: FolderBrowserTreeViewSkeletonProps) {
+export function FolderBrowserTreeViewSkeleton(props: FolderBrowserTreeViewSkeletonProps) {
   const classes = useSkeletonStyles();
   const {
     data = [
@@ -69,3 +69,5 @@ export default function FolderBrowserTreeViewSkeleton(props: FolderBrowserTreeVi
 
   return <TreeView defaultExpanded={expanded}>{data.map((node) => renderTree(node))}</TreeView>;
 }
+
+export default FolderBrowserTreeViewSkeleton;

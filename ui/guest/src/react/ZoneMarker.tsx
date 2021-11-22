@@ -19,8 +19,8 @@ import { getZoneMarkerStyle } from '../utils/dom';
 import { Box, Paper, Popper, Theme, Typography } from '@mui/material';
 import { SxProps } from '@mui/system';
 import { FullSxRecord, PartialClassRecord, PartialSxRecord } from '@craftercms/studio-ui/models/CustomRecord';
-import LevelDescriptorIcon from '@craftercms/studio-ui/components/Icons/LevelDescriptor';
-import FieldIcon from '@craftercms/studio-ui/components/Icons/ContentTypeField';
+import LevelDescriptorIcon from '@craftercms/studio-ui/icons/LevelDescriptor';
+import FieldIcon from '@craftercms/studio-ui/icons/ContentTypeField';
 
 export type ZoneMarkerClassKey = 'box' | 'paper' | 'icon' | 'tooltip';
 

@@ -15,7 +15,7 @@
  */
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import PathNavigatorTreeUI, { TreeNode } from './PathNavigatorTreeUI';
+import PathNavigatorTreeUI, { PathNavigatorTreeNode } from './PathNavigatorTreeUI';
 import { useDispatch } from 'react-redux';
 import {
   pathNavigatorTreeBackgroundRefresh,
@@ -49,12 +49,12 @@ import { DetailedItem } from '../../models/Item';
 import { fetchContentXML } from '../../services/content';
 import { SystemIconDescriptor } from '../SystemIcon';
 import { completeDetailedItem } from '../../state/actions/content';
-import { useSelection } from '../../utils/hooks/useSelection';
-import { useEnv } from '../../utils/hooks/useEnv';
-import { useActiveUser } from '../../utils/hooks/useActiveUser';
-import { useItemsByPath } from '../../utils/hooks/useItemsByPath';
-import { useSubject } from '../../utils/hooks/useSubject';
-import { useDetailedItem } from '../../utils/hooks/useDetailedItem';
+import { useSelection } from '../../hooks/useSelection';
+import { useEnv } from '../../hooks/useEnv';
+import { useActiveUser } from '../../hooks/useActiveUser';
+import { useItemsByPath } from '../../hooks/useItemsByPath';
+import { useSubject } from '../../hooks/useSubject';
+import { useDetailedItem } from '../../hooks/useDetailedItem';
 import { debounceTime, filter } from 'rxjs/operators';
 import {
   folderCreated,
@@ -69,9 +69,9 @@ import {
   pluginInstalled
 } from '../../state/actions/system';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
-import { useActiveSite } from '../../utils/hooks/useActiveSite';
+import { useActiveSite } from '../../hooks/useActiveSite';
 
-interface PathNavigatorTreeProps {
+export interface PathNavigatorTreeProps {
   id: string;
   label: string;
   rootPath: string;
@@ -133,7 +133,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   const state = useSelection((state) => state.pathNavigatorTree)[id];
   const { id: siteId, uuid } = useActiveSite();
   const user = useActiveUser();
-  const nodesByPathRef = useRef<LookupTable<TreeNode>>({});
+  const nodesByPathRef = useRef<LookupTable<PathNavigatorTreeNode>>({});
   const onSearch$ = useSubject<{ keyword: string; path: string }>();
   const uiConfig = useSelection<GlobalState['uiConfig']>((state) => state.uiConfig);
   const storedState = useMemo(() => {
@@ -149,7 +149,10 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   const itemsByPath = useItemsByPath();
   const keywordByPath = useMemo(() => state?.keywordByPath ?? {}, [state?.keywordByPath]);
   const totalByPath = useMemo(() => state?.totalByPath ?? {}, [state?.totalByPath]);
-  const childrenByParentPath = useMemo(() => state?.childrenByParentPath ?? {}, [state?.childrenByParentPath]);
+  const childrenByParentPath = useMemo<LookupTable<string[]>>(
+    () => state?.childrenByParentPath ?? {},
+    [state?.childrenByParentPath]
+  );
   const fetchingByPath = useMemo(() => state?.fetchingByPath ?? {}, [state?.fetchingByPath]);
   const rootItem = useDetailedItem(props.rootPath);
   const rootPath = rootItem?.path;

@@ -28,7 +28,7 @@ import { Theme } from '@mui/material/styles';
 import makeStyles from '@mui/styles/makeStyles';
 import { MarketplacePlugin } from '../../models/MarketplacePlugin';
 import { defineMessages, useIntl } from 'react-intl';
-import MobileStepper from '../MobileStepper';
+import MobileStepper from '../MobileStepper/MobileStepper';
 import { backgroundColor } from '../../styles/theme';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';

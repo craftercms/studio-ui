@@ -17,7 +17,7 @@
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 
-export const styles = makeStyles((theme) =>
+export const useStyles = makeStyles(() =>
   createStyles({
     tableRoot: {
       tableLayout: 'fixed'
@@ -28,5 +28,3 @@ export const styles = makeStyles((theme) =>
     }
   })
 );
-
-export default styles;

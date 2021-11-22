@@ -17,7 +17,7 @@
 import React, { IframeHTMLAttributes } from 'react';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
-import { useEnv } from '../../utils/hooks/useEnv';
+import { useEnv } from '../../hooks/useEnv';
 
 export interface LegacyIFrameProps {
   path: string;

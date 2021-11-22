@@ -15,8 +15,6 @@
  */
 
 import React from 'react';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
 import { CompareVersionsDialogProps } from './utils';
 import CompareVersionsDialogContainer from './CompareVersionsDialogContainer';
 import EnhancedDialog from '../EnhancedDialog/EnhancedDialog';
@@ -26,25 +24,7 @@ import { compareVersion } from '../../state/reducers/versions';
 import { translations } from './translations';
 import { useDispatch } from 'react-redux';
 
-export const useStyles = makeStyles(() =>
-  createStyles({
-    dialogBody: {
-      overflow: 'auto',
-      minHeight: '50vh'
-    },
-    noPadding: {
-      padding: 0
-    },
-    singleItemSelector: {
-      marginBottom: '10px'
-    },
-    typography: {
-      lineHeight: '1.5'
-    }
-  })
-);
-
-export default function CompareVersionsDialog(props: CompareVersionsDialogProps) {
+export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
   const isSelectMode = props.selectedA && !props.selectedB;
   const isCompareMode = props.selectedA && props.selectedB;
   const {
@@ -106,3 +86,5 @@ export default function CompareVersionsDialog(props: CompareVersionsDialogProps)
     </EnhancedDialog>
   );
 }
+
+export default CompareVersionsDialog;

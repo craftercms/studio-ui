@@ -17,9 +17,9 @@
 import NewStateIcon from '@mui/icons-material/NewReleasesOutlined';
 import EditedStateIcon from '@mui/icons-material/EditOutlined';
 import DeletedStateIcon from '@mui/icons-material/DeleteOutlineRounded';
-import LockedStateIcon from '../Icons/LockOutline';
+import LockedStateIcon from '../../icons/LockOutline';
 import SystemProcessingStateIcon from '@mui/icons-material/HourglassEmptyRounded';
-import SubmittedStateIcon from '../Icons/PlanePaperOutline';
+import SubmittedStateIcon from '../../icons/PlanePaperOutline';
 import ScheduledStateIcon from '@mui/icons-material/AccessTimeRounded';
 import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined';
 import BlockRoundedIcon from '@mui/icons-material/BlockRounded';
@@ -110,7 +110,7 @@ const useStyles = makeStyles(() =>
   })
 );
 
-export default function ItemStateIcon(props: ItemStateIconProps) {
+export function ItemStateIcon(props: ItemStateIconProps) {
   const { item, classes: propClasses, styles, className, displayTooltip = true } = props;
   const classes = useStyles(styles);
   const { Icon, stateSpecificClass } = useMemo(() => {
@@ -160,3 +160,5 @@ export default function ItemStateIcon(props: ItemStateIconProps) {
     </Tooltip>
   );
 }
+
+export default ItemStateIcon;

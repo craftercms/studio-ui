@@ -36,12 +36,12 @@ import Checkbox from '@mui/material/Checkbox';
 import MoreVertRounded from '@mui/icons-material/MoreVertRounded';
 import ItemDisplay from '../ItemDisplay';
 import clsx from 'clsx';
-import { DashboardItem } from '../AwaitingApprovalDashlet';
+import { AwaitingApprovalDashletDashboardItem } from '../AwaitingApprovalDashlet';
 import { asLocalizedDateTime } from '../../utils/datetime';
-import { useLocale } from '../../utils/hooks/useLocale';
+import { useLocale } from '../../hooks/useLocale';
 
 interface ApprovedScheduledDashletGridUIProps {
-  resource: Resource<DashboardItem[]>;
+  resource: Resource<AwaitingApprovalDashletDashboardItem[]>;
   itemsLookup: LookupTable<DetailedItem>;
   expandedLookup: LookupTable<boolean>;
   selectedLookup: LookupTable<boolean>;

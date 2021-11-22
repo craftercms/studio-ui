@@ -18,10 +18,10 @@ import React from 'react';
 import useStyles from './styles';
 import { WidgetDialogProps } from './utils';
 import EnhancedDialog from '../EnhancedDialog';
-import Suspencified from '../SystemStatus/Suspencified';
+import Suspencified from '../Suspencified/Suspencified';
 import { Widget } from '../Widget/Widget';
 
-export default function WidgetDialog(props: WidgetDialogProps) {
+export function WidgetDialog(props: WidgetDialogProps) {
   const { title, widget, onSubmittingAndOrPendingChange, isSubmitting, ...rest } = props;
   const classes = useStyles();
 
@@ -41,3 +41,5 @@ export default function WidgetDialog(props: WidgetDialogProps) {
     </EnhancedDialog>
   );
 }
+
+export default WidgetDialog;

@@ -15,7 +15,7 @@
  */
 
 import React, { lazy, Suspense } from 'react';
-import CrafterCMSNextBridge from './CrafterCMSNextBridge';
+import CrafterCMSNextBridge from './CrafterCMSNextBridge/CrafterCMSNextBridge';
 import crafterIconUrl from '../assets/crafter-icon.svg';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';

@@ -19,7 +19,7 @@ import { FileDiff } from '../../models/Repository';
 import React from 'react';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
-import AceEditor from '../AceEditor';
+import AceEditor from '../AceEditor/AceEditor';
 import RemoteRepositoriesDiffDialogSplitView from './RemoteRepositoriesDiffDialogSplitView';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';

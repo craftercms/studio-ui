@@ -21,7 +21,7 @@ import { useIntl } from 'react-intl';
 import DialogHeader from '../DialogHeader';
 import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
 import LockOpenRoundedIcon from '@mui/icons-material/LockOpenRounded';
-import DialogBody from '../Dialogs/DialogBody';
+import DialogBody from '../DialogBody/DialogBody';
 import * as React from 'react';
 import PublishingStatusDisplay, { publishingStatusMessages } from '../PublishingStatusDisplay';
 import PauseCircleOutlineOutlinedIcon from '@mui/icons-material/PauseCircleOutlineOutlined';

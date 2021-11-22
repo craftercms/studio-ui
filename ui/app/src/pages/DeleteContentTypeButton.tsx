@@ -19,7 +19,7 @@ import IconButton from '@mui/material/IconButton';
 import DeleteRounded from '@mui/icons-material/DeleteRounded';
 import DeleteContentTypeDialog from '../components/DeleteContentTypeDialog';
 import ContentType from '../models/ContentType';
-import { useEnhancedDialogState } from '../utils/hooks/useEnhancedDialogState';
+import { useEnhancedDialogState } from '../hooks/useEnhancedDialogState';
 
 export interface DeleteContentTypeButtonProps {
   contentType: ContentType;

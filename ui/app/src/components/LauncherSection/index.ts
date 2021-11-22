@@ -18,8 +18,4 @@ export { default } from './LauncherSection';
 
 export * from './LauncherSection';
 
-export { default as LauncherSectionUI } from './LauncherSectionUI';
-
 export * from './LauncherSectionUI';
-
-export * from './utils';

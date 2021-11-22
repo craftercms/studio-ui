@@ -15,7 +15,7 @@
  */
 
 import React, { PropsWithChildren, ReactNode } from 'react';
-import LoadingState from '../SystemStatus/LoadingState';
+import LoadingState from '../LoadingState/LoadingState';
 
 export type ConditionalSuspenseProps = PropsWithChildren<{
   isLoading: boolean;

@@ -15,8 +15,8 @@
     "watch": "babel -w ./src -d ../../static-assets"
   },
   "devDependencies": {
-    "@babel/cli": "*",
-    "@babel/core": "*",
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "7.12.3",
     "@babel/plugin-proposal-class-properties": "7.7.4",
     "@babel/plugin-proposal-decorators": "7.7.4",
     "@babel/plugin-proposal-nullish-coalescing-operator": "7.7.4",
@@ -30,12 +30,12 @@
     "@babel/plugin-transform-runtime": "7.7.4",
     "@babel/preset-env": "7.7.4",
     "@babel/preset-react": "7.7.4",
-    "@babel/preset-typescript": "7.7.4",
-    "@babel/runtime": "*",
+    "@babel/preset-typescript": "^7.7.4",
+    "@babel/runtime": "^7.15.4",
     "babel-plugin-dynamic-import-node": "2.3.0",
     "babel-plugin-macros": "2.7.1",
     "babel-plugin-transform-react-remove-prop-types": "0.4.24",
     "babel-preset-react-app": "^10.0.0",
-    "build-if-changed": "*"
+    "build-if-changed": "^1.5.5"
   }
 }

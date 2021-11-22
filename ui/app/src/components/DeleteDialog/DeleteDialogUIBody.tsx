@@ -15,12 +15,12 @@
  */
 
 import React from 'react';
-import { DeleteDependencies } from '../../modules/Content/Dependencies/DependencySelection';
+import { DeleteDependencies } from '../DependencySelection';
 import { useDeleteDialogUIStyles } from './styles';
 import Grid from '@mui/material/Grid';
-import TextFieldWithMax from '../Controls/TextFieldWithMax';
+import TextFieldWithMax from '../TextFieldWithMax/TextFieldWithMax';
 import { FormattedMessage } from 'react-intl';
-import { SelectionList } from '../../modules/Content/Dependencies/SelectionList';
+import { SelectionList } from '../DependencySelection/SelectionList';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { DeleteDialogContentUIProps } from './utils';

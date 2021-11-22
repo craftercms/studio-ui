@@ -23,26 +23,16 @@ import { cancelFailedPull, resolveConflict as resolveConflictService } from '../
 import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../state/actions/system';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
-import { defineMessages, useIntl } from 'react-intl';
+import { useIntl } from 'react-intl';
 import RemoteRepositoriesDiffDialog from '../RemoteRepositoriesDiffDialog';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { useActiveSiteId } from '../../hooks/useActiveSiteId';
+import { messages } from './translations';
 
 export interface StudioRepositoryStatusProps {
   resource: Resource<RepositoryStatus>;
   setFetching(fetching): void;
   onActionSuccess?(status): void;
 }
-
-const messages = defineMessages({
-  revertPullSuccessMessage: {
-    id: 'repositories.revertPullSuccessMessage',
-    defaultMessage: 'Successfully reverted repository.'
-  },
-  commitSuccessMessage: {
-    id: 'repositories.commitSuccessMessage',
-    defaultMessage: 'Successfully committed.'
-  }
-});
 
 export default function StudioRepositoryStatus(props: StudioRepositoryStatusProps) {
   const { resource, setFetching, onActionSuccess } = props;

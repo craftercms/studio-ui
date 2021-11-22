@@ -37,11 +37,12 @@ import {
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 import { updateEditConfig } from '../../state/actions/dialogs';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
-import { useUnmount } from '../../utils/hooks/useUnmount';
-import LoadingState from '../SystemStatus/LoadingState';
+import { useUnmount } from '../../hooks/useUnmount';
+import LoadingState from '../LoadingState/LoadingState';
 import clsx from 'clsx';
-import ErrorDialog from '../SystemStatus/ErrorDialog';
-import { styles, translations } from './LegacyFormDialog';
+import ErrorDialog from '../ErrorDialog/ErrorDialog';
+import { translations } from './translations';
+import { useStyles } from './styles';
 
 export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyEditor(
   props: LegacyFormDialogContainerProps,
@@ -100,7 +101,7 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
   );
 
   const { formatMessage } = useIntl();
-  const classes = styles({});
+  const classes = useStyles({});
   const iframeRef = useRef(null);
   const dispatch = useDispatch();
   const [error, setError] = useState<ApiResponse>(null);
@@ -227,3 +228,5 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
     </>
   );
 });
+
+export default EmbeddedLegacyContainer;

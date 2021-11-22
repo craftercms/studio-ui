@@ -25,18 +25,18 @@ import useAutocomplete from '@mui/material/useAutocomplete';
 import { SearchItem } from '../../models/Search';
 import clsx from 'clsx';
 import { CircularProgress, IconButton, List, ListItem, ListItemIcon, ListItemText, Paper } from '@mui/material';
-import LoadingState from '../SystemStatus/LoadingState';
-import EmptyState from '../SystemStatus/EmptyState';
-import Page from '../Icons/Page';
+import LoadingState from '../LoadingState/LoadingState';
+import EmptyState from '../EmptyState/EmptyState';
+import Page from '../../icons/Page';
 import CloseIcon from '@mui/icons-material/Close';
 import { getPreviewURLFromPath } from '../../utils/path';
 import { FormattedMessage } from 'react-intl';
 import parse from 'autosuggest-highlight/parse';
 import match from 'autosuggest-highlight/match';
 import palette from '../../styles/palette';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import { useContentTypeList } from '../../utils/hooks/useContentTypeList';
-import { useSubject } from '../../utils/hooks/useSubject';
+import { useActiveSiteId } from '../../hooks/useActiveSiteId';
+import { useContentTypeList } from '../../hooks/useContentTypeList';
+import { useSubject } from '../../hooks/useSubject';
 
 export interface PagesSearchAheadProps {
   value: string;

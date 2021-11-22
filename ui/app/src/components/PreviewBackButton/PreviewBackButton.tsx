@@ -18,15 +18,15 @@ import React from 'react';
 import { IconButton, IconButtonProps } from '@mui/material';
 import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
 import { useDispatch } from 'react-redux';
-import { useHistoryBackStack } from '../../utils/hooks/useHistoryBackStack';
+import { useHistoryBackStack } from '../../hooks/useHistoryBackStack';
 import { FormattedMessage } from 'react-intl';
 import Tooltip from '@mui/material/Tooltip';
 import { goToLastPage } from '../../state/actions/preview';
-import { useSelection } from '../../utils/hooks/useSelection';
+import { useSelection } from '../../hooks/useSelection';
 
 export interface PreviewBackButtonProps extends IconButtonProps {}
 
-export default function PreviewBackButton(props: PreviewBackButtonProps) {
+export function PreviewBackButton(props: PreviewBackButtonProps) {
   const currentUrlPath = useSelection((state) => state.previewNavigation.currentUrlPath);
   const stack = useHistoryBackStack();
   const dispatch = useDispatch();
@@ -49,3 +49,5 @@ export default function PreviewBackButton(props: PreviewBackButtonProps) {
     </Tooltip>
   );
 }
+
+export default PreviewBackButton;

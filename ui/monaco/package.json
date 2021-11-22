@@ -12,7 +12,7 @@
     "monaco-editor": "^0.20.0"
   },
   "devDependencies": {
-    "build-if-changed": "*",
+    "build-if-changed": "^1.5.5",
     "monaco-editor-webpack-plugin": "^1.9.0",
     "webpack": "4.44.2",
     "webpack-cli": "^3.3.12"

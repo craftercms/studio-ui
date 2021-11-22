@@ -16,29 +16,11 @@
 
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
 import EnhancedDialog from '../EnhancedDialog';
 import WorkflowCancellationDialogContainer from './WorkflowCancellationDialogContainer';
 import { WorkflowCancellationDialogProps } from './utils';
 
-export const useStyles = makeStyles((theme) =>
-  createStyles({
-    suspense: {
-      minHeight: '442px',
-      margin: 0,
-      justifyContent: 'center'
-    },
-    filesList: {
-      height: '100%',
-      border: `1px solid ${theme.palette.divider}`,
-      background: theme.palette.background.paper,
-      padding: 0
-    }
-  })
-);
-
-export default function WorkflowCancellationDialog(props: WorkflowCancellationDialogProps) {
+export function WorkflowCancellationDialog(props: WorkflowCancellationDialogProps) {
   const { items, onContinue, ...rest } = props;
 
   return (
@@ -58,3 +40,5 @@ export default function WorkflowCancellationDialog(props: WorkflowCancellationDi
     </EnhancedDialog>
   );
 }
+
+export default WorkflowCancellationDialog;

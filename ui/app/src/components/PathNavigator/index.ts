@@ -17,20 +17,14 @@
 export { default } from './PathNavigator';
 export * from './PathNavigator';
 
-export { default as PathNavigatorBreadcrumbs } from './PathNavigatorBreadcrumbs';
 export * from './PathNavigatorBreadcrumbs';
 
-export { default as PathNavigatorHeader } from './PathNavigatorHeader';
 export * from './PathNavigatorHeader';
 
-export { default as PathNavigatorItem } from './PathNavigatorItem';
 export * from './PathNavigatorItem';
 
-export { default as PathNavigatorSkeleton } from './PathNavigatorSkeleton';
 export * from './PathNavigatorSkeleton';
 
-export { default as PathNavigatorSkeletonItem } from './PathNavigatorSkeletonItem';
 export * from './PathNavigatorSkeletonItem';
 
-export { default as PathNavigatorUI } from './PathNavigatorUI';
 export * from './PathNavigatorUI';

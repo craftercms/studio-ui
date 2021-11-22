@@ -18,10 +18,10 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import makeStyles from '@mui/styles/makeStyles';
 import List from '@mui/material/List';
-import SearchBar from '../Controls/SearchBar';
+import SearchBar from '../SearchBar/SearchBar';
 import { ComponentsContentTypeParams, ElasticParams, SearchItem } from '../../models/Search';
-import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
-import { DraggablePanelListItem } from '../../modules/Preview/Tools/DraggablePanelListItem';
+import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
+import { DraggablePanelListItem } from '../DraggablePanelListItem/DraggablePanelListItem';
 import TablePagination from '@mui/material/TablePagination';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 import {
@@ -40,14 +40,14 @@ import { fetchContentInstance } from '../../services/content';
 import { forkJoin, Observable, of } from 'rxjs';
 import { map, switchMap, takeUntil } from 'rxjs/operators';
 import { useDispatch } from 'react-redux';
-import { useSelection } from '../../utils/hooks/useSelection';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import { useContentTypeList } from '../../utils/hooks/useContentTypeList';
-import { useLogicResource } from '../../utils/hooks/useLogicResource';
-import { useMount } from '../../utils/hooks/useMount';
-import { useDebouncedInput } from '../../utils/hooks/useDebouncedInput';
-import { useSpreadState } from '../../utils/hooks/useSpreadState';
-import { useSubject } from '../../utils/hooks/useSubject';
+import { useSelection } from '../../hooks/useSelection';
+import { useActiveSiteId } from '../../hooks/useActiveSiteId';
+import { useContentTypeList } from '../../hooks/useContentTypeList';
+import { useLogicResource } from '../../hooks/useLogicResource';
+import { useMount } from '../../hooks/useMount';
+import { useDebouncedInput } from '../../hooks/useDebouncedInput';
+import { useSpreadState } from '../../hooks/useSpreadState';
+import { useSubject } from '../../hooks/useSubject';
 
 const translations = defineMessages({
   previewSearchPanelTitle: {

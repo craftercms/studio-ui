@@ -17,7 +17,7 @@
 import React from 'react';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
-import { useOnClose } from '../../utils/hooks/useOnClose';
+import { useOnClose } from '../../hooks/useOnClose';
 import { ConfirmDialogProps, ConfirmDialogStateClassKey, ConfirmDialogStateStyles } from './utils';
 import ConfirmDialogContainer from './ConfirmDialogContainer';
 import { Dialog } from '@mui/material';

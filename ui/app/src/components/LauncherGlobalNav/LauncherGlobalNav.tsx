@@ -19,16 +19,17 @@ import { getSimplifiedVersion } from '../../utils/string';
 import React, { useEffect, useState } from 'react';
 import TranslationOrText from '../../models/TranslationOrText';
 import { useIntl } from 'react-intl';
-import { getLauncherSectionLink, LauncherSectionUI, LauncherSectionUIStyles, urlMapping } from '../LauncherSection';
+import { LauncherSectionUI, LauncherSectionUIStyles } from '../LauncherSection';
+import { getLauncherSectionLink, urlMapping } from '../LauncherSection/utils';
 import { messages } from '../LauncherSection/utils';
 import { closeLauncher } from '../../state/actions/dialogs';
 import { useDispatch } from 'react-redux';
 import ApiResponseErrorState from '../ApiResponseErrorState';
 import { globalMenuMessages } from '../../utils/i18n-legacy';
 import Skeleton from '@mui/material/Skeleton';
-import { useEnv } from '../../utils/hooks/useEnv';
-import { useSystemVersion } from '../../utils/hooks/useSystemVersion';
-import { useGlobalNavigation } from '../../utils/hooks/useGlobalNavigation';
+import { useEnv } from '../../hooks/useEnv';
+import { useSystemVersion } from '../../hooks/useSystemVersion';
+import { useGlobalNavigation } from '../../hooks/useGlobalNavigation';
 
 export interface LauncherGlobalNavProps {
   title?: TranslationOrText;

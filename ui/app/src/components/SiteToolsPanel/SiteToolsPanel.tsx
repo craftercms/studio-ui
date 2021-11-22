@@ -15,12 +15,12 @@
  */
 
 import React from 'react';
-import { useReference } from '../../utils/hooks/useReference';
-import EmptyState from '../SystemStatus/EmptyState';
+import { useReference } from '../../hooks/useReference';
+import EmptyState from '../EmptyState/EmptyState';
 import { FormattedMessage } from 'react-intl';
 import ToolsPanelEmbeddedAppViewButton from '../ToolsPanelEmbeddedAppViewButton';
 
-export default function SiteToolsPanel() {
+export function SiteToolsPanel() {
   const siteTools = useReference('craftercms.siteTools');
   return (
     <>
@@ -56,3 +56,5 @@ export default function SiteToolsPanel() {
     </>
   );
 }
+
+export default SiteToolsPanel;

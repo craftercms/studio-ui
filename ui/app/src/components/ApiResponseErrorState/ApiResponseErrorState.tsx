@@ -65,8 +65,10 @@ export function createErrorStatePropsFromApiResponse(
   };
 }
 
-export default function ApiResponseErrorState(props: ApiResponseErrorStateProps) {
+export function ApiResponseErrorState(props: ApiResponseErrorStateProps) {
   const { error } = props;
   const { formatMessage } = useIntl();
   return <ErrorState {...props} {...createErrorStatePropsFromApiResponse(error, formatMessage)} />;
 }
+
+export default ApiResponseErrorState;

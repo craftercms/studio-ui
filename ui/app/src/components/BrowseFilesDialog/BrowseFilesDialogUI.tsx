@@ -15,18 +15,18 @@
  */
 
 import React from 'react';
-import DialogBody from '../Dialogs/DialogBody';
-import DialogFooter from '../Dialogs/DialogFooter';
+import DialogBody from '../DialogBody/DialogBody';
+import DialogFooter from '../DialogFooter/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import { FormattedMessage } from 'react-intl';
 import { SearchItem } from '../../models/Search';
-import MediaCard from '../MediaCard';
+import MediaCard from '../MediaCard/MediaCard';
 import { useStyles } from './styles';
-import SearchBar from '../Controls/SearchBar';
+import SearchBar from '../SearchBar/SearchBar';
 import clsx from 'clsx';
 import MediaSkeletonCard from './MediaSkeletonCard';
-import EmptyState from '../SystemStatus/EmptyState';
+import EmptyState from '../EmptyState/EmptyState';
 import Pagination from '../Pagination';
 import FolderBrowserTreeView from '../FolderBrowserTreeView';
 import Box from '@mui/material/Box';

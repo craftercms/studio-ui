@@ -17,10 +17,10 @@
 import React, { useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import { useSpreadState } from '../../utils/hooks/useSpreadState';
+import { useActiveSiteId } from '../../hooks/useActiveSiteId';
+import { useSpreadState } from '../../hooks/useSpreadState';
 import { HistoryDialogContainerProps, Menu, menuInitialState, menuOptions } from './utils';
-import { useLogicResource } from '../../utils/hooks/useLogicResource';
+import { useLogicResource } from '../../hooks/useLogicResource';
 import { LegacyVersion, VersionsStateProps } from '../../models/Version';
 import ContextMenu, { ContextMenuOption } from '../ContextMenu';
 import { hasRevertAction } from '../../utils/content';
@@ -48,11 +48,11 @@ import {
   versionsChangePage
 } from '../../state/reducers/versions';
 import { asDayMonthDateTime } from '../../utils/datetime';
-import DialogBody from '../Dialogs/DialogBody';
+import DialogBody from '../DialogBody/DialogBody';
 import SingleItemSelector from '../SingleItemSelector';
-import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
+import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
 import VersionList from '../VersionList';
-import DialogFooter from '../Dialogs/DialogFooter';
+import DialogFooter from '../DialogFooter/DialogFooter';
 import { Pagination } from './Pagination';
 import { historyStyles } from './HistoryDialog';
 

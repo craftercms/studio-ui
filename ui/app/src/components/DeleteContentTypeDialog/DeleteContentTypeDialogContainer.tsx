@@ -15,17 +15,27 @@
  */
 
 import { DeleteContentTypeDialogContainerProps } from './utils';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import { useIntl } from 'react-intl';
+import { useActiveSiteId } from '../../hooks/useActiveSiteId';
+import { defineMessages, useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
 import * as React from 'react';
 import { useMemo } from 'react';
 import { createResource } from '../../utils/resource';
 import { deleteContentType, fetchContentTypeUsage } from '../../services/contentTypes';
 import { showSystemNotification } from '../../state/actions/system';
-import Suspencified from '../SystemStatus/Suspencified';
+import Suspencified from '../Suspencified/Suspencified';
 import DeleteContentTypeDialogBody from './DeleteContentTypeDialogBody';
-import { messages } from './DeleteContentTypeDialog';
+
+const messages = defineMessages({
+  deleteComplete: {
+    id: 'deleteContentTypeDialog.contentTypeDeletedMessage',
+    defaultMessage: 'Content type deleted successfully'
+  },
+  deleteFailed: {
+    id: 'deleteContentTypeDialog.contentTypeDeleteFailedMessage',
+    defaultMessage: 'Error deleting content type'
+  }
+});
 
 export function DeleteContentTypeDialogContainer(props: DeleteContentTypeDialogContainerProps) {
   const { onClose, contentType, onComplete, isSubmitting, onSubmittingAndOrPendingChange } = props;

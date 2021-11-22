@@ -20,7 +20,7 @@ import Typography from '@mui/material/Typography';
 import SwipeableViews from 'react-swipeable-views';
 // @ts-ignore
 import { autoPlay } from 'react-swipeable-views-utils';
-import MobileStepper from '../MobileStepper';
+import MobileStepper from '../MobileStepper/MobileStepper';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { MarketplacePlugin } from '../../models/MarketplacePlugin';
 import Fab from '@mui/material/Fab';

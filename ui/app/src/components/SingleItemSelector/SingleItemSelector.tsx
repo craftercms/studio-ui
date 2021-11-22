@@ -29,7 +29,7 @@ import PaginationOptions from '../../models/PaginationOptions';
 import { LookupTable } from '../../models/LookupTable';
 import ApiResponse from '../../models/ApiResponse';
 import { createAction } from '@reduxjs/toolkit';
-import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
+import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
 import Breadcrumbs from '../PathNavigator/PathNavigatorBreadcrumbs';
 import PathNavigatorList from '../PathNavigator/PathNavigatorList';
 import { fetchChildrenByPath, fetchItemsByPath, fetchItemWithChildrenByPath } from '../../services/content';
@@ -41,8 +41,8 @@ import { lookupItemByPath, parseSandBoxItemToDetailedItem } from '../../utils/co
 import { GetChildrenResponse } from '../../models/GetChildrenResponse';
 import Pagination from '../Pagination';
 import NavItem from '../PathNavigator/PathNavigatorItem';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import { useLogicResource } from '../../utils/hooks/useLogicResource';
+import { useActiveSiteId } from '../../hooks/useActiveSiteId';
+import { useLogicResource } from '../../hooks/useLogicResource';
 import ItemDisplay from '../ItemDisplay';
 
 const useStyles = makeStyles((theme) => ({

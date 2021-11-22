@@ -21,4 +21,4 @@ export * from './RecentActivityDashlet';
 export * from '../RecentActivityDashletGrid/RecentActivityDashletGridUI';
 
 export * from '../RecentActivityDashletGrid/RecentActivityDashletUISkeleton';
-export { useDetailedItems } from '../../utils/hooks/useDetailedItems';
+export { useDetailedItems } from '../../hooks/useDetailedItems';

@@ -28,17 +28,17 @@ import LookupTable from '../../models/LookupTable';
 import { DetailedItem } from '../../models/Item';
 import { SystemIconDescriptor } from '../SystemIcon';
 
-export interface TreeNode {
+export interface PathNavigatorTreeNode {
   id: string;
-  children?: TreeNode[];
+  children?: PathNavigatorTreeNode[];
   parentPath?: string;
 }
 
-interface PathNavigatorTreeUIProps {
+export interface PathNavigatorTreeUIProps {
   title: string;
   icon?: SystemIconDescriptor;
   container?: Partial<StateStylingProps>;
-  rootNode: TreeNode;
+  rootNode: PathNavigatorTreeNode;
   itemsByPath: LookupTable<DetailedItem>;
   keywordByPath: LookupTable<string>;
   totalByPath: LookupTable<number>;
@@ -81,7 +81,7 @@ const useStyles = makeStyles(() =>
   })
 );
 
-export default function PathNavigatorTreeUI(props: PathNavigatorTreeUIProps) {
+export function PathNavigatorTreeUI(props: PathNavigatorTreeUIProps) {
   const classes = useStyles();
   const {
     icon,
@@ -146,3 +146,5 @@ export default function PathNavigatorTreeUI(props: PathNavigatorTreeUIProps) {
     </Accordion>
   );
 }
+
+export default PathNavigatorTreeUI;

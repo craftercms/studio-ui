@@ -26,7 +26,7 @@ export interface ConfigurationSamplePreviewDialogProps {
   onUseSampleClick(type: 'replace' | 'append'): void;
 }
 
-export default function ConfigurationSamplePreviewDialog(props: ConfigurationSamplePreviewDialogProps) {
+export function ConfigurationSamplePreviewDialog(props: ConfigurationSamplePreviewDialogProps) {
   const { open, onClose } = props;
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
@@ -34,3 +34,5 @@ export default function ConfigurationSamplePreviewDialog(props: ConfigurationSam
     </Dialog>
   );
 }
+
+export default ConfigurationSamplePreviewDialog;

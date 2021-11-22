@@ -24,13 +24,13 @@ import {
 } from '../../state/actions/preview';
 import GlobalState from '../../models/GlobalState';
 import ContentInstance from '../../models/ContentInstance';
-import { ConditionalLoadingState } from '../SystemStatus/LoadingState';
+import { ConditionalLoadingState } from '../LoadingState/LoadingState';
 import { AudiencesPanelUI } from './AudiencesPanelUI';
 import LookupTable from '../../models/LookupTable';
 import { ContentTypeField } from '../../models/ContentType';
-import EmptyState from '../SystemStatus/EmptyState';
-import { useSelection } from '../../utils/hooks/useSelection';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import EmptyState from '../EmptyState/EmptyState';
+import { useSelection } from '../../hooks/useSelection';
+import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 
 const translations = defineMessages({
   audiencesPanel: {
@@ -47,7 +47,7 @@ export interface PreviewAudiencesPanelProps {
   fields: LookupTable<ContentTypeField>;
 }
 
-export default function PreviewAudiencesPanel(props: PreviewAudiencesPanelProps) {
+export function PreviewAudiencesPanel(props: PreviewAudiencesPanelProps) {
   const site = useActiveSiteId();
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
@@ -89,3 +89,5 @@ export default function PreviewAudiencesPanel(props: PreviewAudiencesPanelProps)
     </ConditionalLoadingState>
   );
 }
+
+export default PreviewAudiencesPanel;

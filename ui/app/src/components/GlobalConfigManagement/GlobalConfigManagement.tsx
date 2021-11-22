@@ -19,22 +19,22 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import React, { useEffect, useRef, useState } from 'react';
 import { Box } from '@mui/material';
 import { fetchConfigurationXML, writeConfiguration } from '../../services/configuration';
-import AceEditor from '../AceEditor';
+import AceEditor from '../AceEditor/AceEditor';
 import useStyles from './styles';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import { forkJoin } from 'rxjs';
-import { ConditionalLoadingState } from '../SystemStatus/LoadingState';
+import { ConditionalLoadingState } from '../LoadingState/LoadingState';
 import ConfigurationSamplePreviewDialog from '../ConfigurationSamplePreviewDialog';
 import ConfirmDropdown from '../ConfirmDropdown';
 import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../state/actions/system';
 import { useHistory } from 'react-router';
 import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
-import { useMount } from '../../utils/hooks/useMount';
+import { useMount } from '../../hooks/useMount';
 import Paper from '@mui/material/Paper';
 
-export const translations = defineMessages({
+const translations = defineMessages({
   configSaved: {
     id: 'globalConfig.configSaved',
     defaultMessage: 'Configuration saved successfully.'
@@ -45,7 +45,7 @@ export const translations = defineMessages({
   }
 });
 
-export default function GlobalConfigManagement() {
+export function GlobalConfigManagement() {
   const [content, setContent] = useState('');
   const [sample, setSample] = useState('');
   const [lastSavedContent, setLastSavedContent] = useState('');
@@ -224,3 +224,5 @@ export default function GlobalConfigManagement() {
     </Paper>
   );
 }
+
+export default GlobalConfigManagement;

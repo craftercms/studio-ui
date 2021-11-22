@@ -18,8 +18,8 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { PagedEntityState } from '../../models/GlobalState';
 import { nnou, pluckProps } from '../../utils/object';
-import { ErrorBoundary } from '../SystemStatus/ErrorBoundary';
-import LoadingState from '../SystemStatus/LoadingState';
+import { ErrorBoundary } from '../ErrorBoundary/ErrorBoundary';
+import LoadingState from '../LoadingState/LoadingState';
 import ContentInstance from '../../models/ContentInstance';
 import {
   componentInstanceDragEnded,
@@ -29,15 +29,15 @@ import {
   setPreviewEditMode
 } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
-import SearchBar from '../Controls/SearchBar';
+import SearchBar from '../SearchBar/SearchBar';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import ContentType from '../../models/ContentType';
-import { useSelection } from '../../utils/hooks/useSelection';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import { useSelectorResource } from '../../utils/hooks/useSelectorResource';
-import { useDebouncedInput } from '../../utils/hooks/useDebouncedInput';
+import { useSelection } from '../../hooks/useSelection';
+import { useActiveSiteId } from '../../hooks/useActiveSiteId';
+import { useSelectorResource } from '../../hooks/useSelectorResource';
+import { useDebouncedInput } from '../../hooks/useDebouncedInput';
 import translations from './translations';
 import useStyles from './styles';
 import PreviewBrowseComponentsPanelUI from './PreviewBrowseComponentsPanelUI';
@@ -50,7 +50,7 @@ interface ComponentResource {
   items: Array<ContentInstance>;
 }
 
-export default function PreviewBrowseComponentsPanel() {
+export function PreviewBrowseComponentsPanel() {
   const classes = useStyles();
   const dispatch = useDispatch();
   const site = useActiveSiteId();
@@ -172,3 +172,5 @@ export default function PreviewBrowseComponentsPanel() {
     </>
   );
 }
+
+export default PreviewBrowseComponentsPanel;

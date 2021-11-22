@@ -23,12 +23,12 @@ import { isBlank } from '../../utils/string';
 import { changeSite } from '../../state/reducers/sites';
 import { setSiteCookie } from '../../utils/auth';
 import { useDispatch } from 'react-redux';
-import { useEnv } from '../../utils/hooks/useEnv';
-import { useSiteList } from '../../utils/hooks/useSiteList';
+import { useEnv } from '../../hooks/useEnv';
+import { useSiteList } from '../../hooks/useSiteList';
 import clsx from 'clsx';
 import { getSystemLink } from '../../utils/system';
 import { PREVIEW_URL_PATH } from '../../utils/constants';
-import { useLegacyPreviewPreference } from '../../utils/hooks/useLegacyPreviewPreference';
+import { useLegacyPreviewPreference } from '../../hooks/useLegacyPreviewPreference';
 
 export interface SiteSwitcherSelectProps extends SelectProps {
   site: string;

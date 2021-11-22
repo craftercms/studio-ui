@@ -17,10 +17,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { search } from '../../services/search';
 import { MediaItem, SearchItem } from '../../models/Search';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import { useEnv } from '../../utils/hooks/useEnv';
-import { useDebouncedInput } from '../../utils/hooks/useDebouncedInput';
-import { useSpreadState } from '../../utils/hooks/useSpreadState';
+import { useActiveSiteId } from '../../hooks/useActiveSiteId';
+import { useEnv } from '../../hooks/useEnv';
+import { useDebouncedInput } from '../../hooks/useDebouncedInput';
+import { useSpreadState } from '../../hooks/useSpreadState';
 import { showPreviewDialog } from '../../state/actions/dialogs';
 import { useDispatch } from 'react-redux';
 import LookupTable from '../../models/LookupTable';

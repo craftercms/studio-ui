@@ -25,7 +25,7 @@ import ConfirmDropdown from '../ConfirmDropdown';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import Divider from '@mui/material/Divider';
-import DialogBody from '../Dialogs/DialogBody';
+import DialogBody from '../DialogBody/DialogBody';
 import Switch from '@mui/material/Switch';
 import Chip from '@mui/material/Chip';
 import SecondaryButton from '../SecondaryButton';
