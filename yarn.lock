@@ -2094,6 +2094,7 @@ __metadata:
     "@mui/x-data-grid": ^5.0.0-beta.5
     "@prettier/plugin-xml": ^1.1.0
     "@reduxjs/toolkit": ^1.6.2
+    "@rollup/plugin-typescript": ^8.3.0
     "@types/graphql": ^14.5.0
     "@types/jquery": ^3
     "@types/js-cookie": ^3
@@ -3293,6 +3294,20 @@ __metadata:
   peerDependencies:
     rollup: ^1.20.0 || ^2.0.0
   checksum: 5a7c29e9ae3ff713b0f7ab56536a33c6482eb50158c3a422deeed796f3a25d31b7b3a7bbc65e2ef4dc60c9c42f65612b3b2a49a62119f4becbfd194cd523c230
+  languageName: node
+  linkType: hard
+
+"@rollup/plugin-typescript@npm:^8.3.0":
+  version: 8.3.0
+  resolution: "@rollup/plugin-typescript@npm:8.3.0"
+  dependencies:
+    "@rollup/pluginutils": ^3.1.0
+    resolve: ^1.17.0
+  peerDependencies:
+    rollup: ^2.14.0
+    tslib: "*"
+    typescript: ">=3.7.0"
+  checksum: f8253a775389f29feadf639c2e04d87bddb4c30126b0d95b9e17bfffa2addad1b6275cb8dead40604348ea7ac0128fe4394413bc3b2129c4a545f93eb4585149
   languageName: node
   linkType: hard
 
