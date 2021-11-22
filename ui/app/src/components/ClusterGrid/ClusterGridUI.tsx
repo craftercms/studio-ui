@@ -103,7 +103,6 @@ export default function ClusterGridUI(props: ClusterGridProps) {
                     }
                     iconTooltip={<FormattedMessage id="clusterGrid.deleteCluster" defaultMessage="Delete cluster" />}
                     icon={DeleteRoundedIcon}
-                    iconColor="action"
                     onConfirm={() => {
                       onDeleteCluster(cluster);
                     }}

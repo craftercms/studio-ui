@@ -86,7 +86,6 @@ export function RemoteRepositoriesGridUI(props: RemoteRepositoriesGridUIProps) {
                   }
                   iconTooltip={<FormattedMessage id="words.delete" defaultMessage="Delete" />}
                   icon={DeleteRoundedIcon}
-                  iconColor="action"
                   onConfirm={() => {
                     onDeleteRemote(repository.name);
                   }}
