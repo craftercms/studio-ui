@@ -43,7 +43,12 @@ import { useDispatch } from 'react-redux';
 import { fetchInstalledMarketplacePlugins } from '../../services/marketplace';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { getUserPermissions } from '../../services/security';
-import { emitSystemEvent, pluginInstalled, showSystemNotification } from '../../state/actions/system';
+import {
+  emitSystemEvent,
+  pluginInstalled,
+  pluginUninstalled,
+  showSystemNotification
+} from '../../state/actions/system';
 import LookupTable from '../../models/LookupTable';
 import GlobalState from '../../models/GlobalState';
 import GlobalAppToolbar from '../GlobalAppToolbar';
@@ -58,13 +63,17 @@ import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import TableBody from '@mui/material/TableBody';
 import DeleteIcon from '@mui/icons-material/DeleteOutline';
-import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
+import { useEnhancedDialogState } from '../../hooks';
 import UninstallPluginDialog from '../DeletePluginDialog';
 
 const messages = defineMessages({
   pluginInstalled: {
-    id: 'PluginManagement.pluginInstalled',
+    id: 'pluginManagement.pluginInstalled',
     defaultMessage: 'Plugin installed successfully'
+  },
+  pluginUninstalled: {
+    id: 'pluginManagement.pluginUninstalled',
+    defaultMessage: 'Plugin uninstalled successfully'
   }
 });
 
@@ -179,6 +188,14 @@ export const PluginManagement = (props: PluginManagementProps) => {
   };
 
   const onDeletePlugin = () => {
+    dispatch(
+      batchActions([
+        showSystemNotification({
+          message: formatMessage(messages.pluginUninstalled)
+        }),
+        emitSystemEvent(pluginUninstalled())
+      ])
+    );
     deletePluginDialogState.onClose();
     refresh();
   };

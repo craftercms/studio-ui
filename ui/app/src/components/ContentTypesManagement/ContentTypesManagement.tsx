@@ -24,7 +24,12 @@ import { fromEvent } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 import { useDispatch } from 'react-redux';
-import { fetchContentTypes } from '../../state/actions/preview';
+import {
+  contentTypeCreated,
+  contentTypeDeleted,
+  contentTypeUpdated,
+  emitSystemEvent
+} from '../../state/actions/system';
 
 interface ContentTypeManagementProps {
   embedded?: boolean;
@@ -41,14 +46,32 @@ export function ContentTypeManagement(props: ContentTypeManagementProps) {
     const messagesSubscription = fromEvent(window, 'message')
       .pipe(
         filter((e: any) =>
-          ['CONTENT_TYPES_ON_SAVE', 'CONTENT_TYPES_ON_SUBMITTING_OR_PENDING_CHANGES_MESSAGE'].includes(e.data?.type)
+          [
+            'CONTENT_TYPES_ON_SAVED',
+            'CONTENT_TYPES_ON_CREATED',
+            'CONTENT_TYPES_ON_DELETED',
+            'CONTENT_TYPES_ON_SUBMITTING_OR_PENDING_CHANGES_MESSAGE'
+          ].includes(e.data?.type)
         )
       )
       .subscribe((e: any) => {
-        if (e.data.type === 'CONTENT_TYPES_ON_SAVE') {
-          dispatch(fetchContentTypes());
-        } else {
-          onSubmittingAndOrPendingChange?.(e.data.payload);
+        switch (e.data.type) {
+          case 'CONTENT_TYPES_ON_SAVED': {
+            dispatch(emitSystemEvent(contentTypeUpdated()));
+            break;
+          }
+          case 'CONTENT_TYPES_ON_CREATED': {
+            dispatch(emitSystemEvent(contentTypeCreated()));
+            break;
+          }
+          case 'CONTENT_TYPES_ON_DELETED': {
+            dispatch(emitSystemEvent(contentTypeDeleted()));
+            break;
+          }
+          case 'CONTENT_TYPES_ON_SUBMITTING_OR_PENDING_CHANGES_MESSAGE': {
+            onSubmittingAndOrPendingChange?.(e.data.payload);
+            break;
+          }
         }
       });
     return () => {

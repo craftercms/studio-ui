@@ -124,7 +124,13 @@ import { HighlightMode } from '../../models/GlobalState';
 import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import KeyboardShortcutsDialog from '../../components/KeyboardShortcutsDialog';
 import { previewKeyboardShortcuts } from '../../assets/keyboardShortcuts';
-import { pluginInstalled } from '../../state/actions/system';
+import {
+  contentTypeCreated,
+  contentTypeDeleted,
+  contentTypeUpdated,
+  pluginInstalled,
+  pluginUninstalled
+} from '../../state/actions/system';
 
 const originalDocDomain = document.domain;
 
@@ -377,10 +383,6 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           break;
         }
         // endregion
-        case pluginInstalled.type: {
-          dispatch(fetchContentTypes());
-          break;
-        }
         case guestCheckIn.type:
         case fetchGuestModel.type: {
           if (type === guestCheckIn.type) {
@@ -802,6 +804,35 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
     guest,
     keyboardShortcutsDialogState
   ]);
+
+  // hostToHost$ subscription
+  useEffect(() => {
+    const hostToHost$ = getHostToHostBus();
+    const events = [
+      pluginInstalled.type,
+      pluginUninstalled.type,
+      contentTypeCreated.type,
+      contentTypeUpdated.type,
+      contentTypeDeleted.type
+    ];
+    const hostToHostSubscription = hostToHost$
+      .pipe(filter((e) => events.includes(e.type)))
+      .subscribe(({ type, payload }) => {
+        switch (type) {
+          case pluginUninstalled.type:
+          case contentTypeCreated.type:
+          case contentTypeUpdated.type:
+          case contentTypeDeleted.type:
+          case pluginInstalled.type: {
+            dispatch(fetchContentTypes());
+            break;
+          }
+        }
+      });
+    return () => {
+      hostToHostSubscription.unsubscribe();
+    };
+  }, [dispatch]);
 
   // Guest detection
   useEffect(() => {
