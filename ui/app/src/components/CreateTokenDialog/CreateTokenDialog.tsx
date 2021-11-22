@@ -20,7 +20,7 @@ import { CreateTokenDialogProps } from './utils';
 import EnhancedDialog from '../EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
 
-export default function CreateTokenDialog(props: CreateTokenDialogProps) {
+export function CreateTokenDialog(props: CreateTokenDialogProps) {
   const { onCreated, isSubmitting, onSubmittingAndOrPendingChange, ...rest } = props;
 
   return (
@@ -38,3 +38,5 @@ export default function CreateTokenDialog(props: CreateTokenDialogProps) {
     </EnhancedDialog>
   );
 }
+
+export default CreateTokenDialog;

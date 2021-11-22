@@ -17,7 +17,7 @@
 import React, { ComponentType, memo } from 'react';
 import NonReactWidget from '../NonReactWidget/NonReactWidget';
 import { components, importPlugin, PluginFileBuilder } from '../../services/plugin';
-import EmptyState from '../SystemStatus/EmptyState';
+import EmptyState from '../EmptyState/EmptyState';
 import { defineMessages, useIntl } from 'react-intl';
 import ErrorState from '../ErrorState';
 import * as ReactIs from 'react-is';

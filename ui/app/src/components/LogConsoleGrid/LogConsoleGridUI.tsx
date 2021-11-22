@@ -26,7 +26,7 @@ import { FormattedMessage } from 'react-intl';
 import TableBody from '@mui/material/TableBody';
 import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
 import { IconButton } from '@mui/material';
-import { useSelection } from '../../utils/hooks/useSelection';
+import { useSelection } from '../../hooks/useSelection';
 
 interface LogConsoleGridUIProps {
   logEvents: LogEvent[];

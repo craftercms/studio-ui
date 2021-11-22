@@ -377,7 +377,7 @@ const translations = defineMessages({
   }
 });
 
-export default function UppyDashboard(props: UppyDashboardProps) {
+export function UppyDashboard(props: UppyDashboardProps) {
   const { uppy, site, path, onClose, onMinimized, title, onPendingChanges, maxActiveUploads } = props;
   const options = {
     replaceTargetContent: true,
@@ -486,3 +486,5 @@ export default function UppyDashboard(props: UppyDashboardProps) {
 
   return <section ref={ref} className={classes.dashboard} />;
 }
+
+export default UppyDashboard;

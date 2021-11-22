@@ -15,8 +15,8 @@
  */
 import React, { createContext, Dispatch, SetStateAction, useContext, useEffect, useMemo } from 'react';
 import { getStoredGlobalAppOpenSidebar, setStoredGlobalAppOpenSidebar } from '../../utils/state';
-import { useActiveUser } from '../../utils/hooks/useActiveUser';
-import { useSpreadState } from '../../utils/hooks/useSpreadState';
+import { useActiveUser } from '../../hooks/useActiveUser';
+import { useSpreadState } from '../../hooks/useSpreadState';
 
 type Context = { openSidebar: boolean };
 type ContextType = [Context, Dispatch<SetStateAction<Partial<Context>>>];

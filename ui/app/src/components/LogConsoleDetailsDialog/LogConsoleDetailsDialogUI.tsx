@@ -17,15 +17,15 @@
 import { useStyles } from './styles';
 import DialogHeader from '../DialogHeader/DialogHeader';
 import { FormattedMessage } from 'react-intl';
-import DialogBody from '../Dialogs/DialogBody';
+import DialogBody from '../DialogBody/DialogBody';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import React from 'react';
 import { LogConsoleDetailsDialogProps } from './LogConsoleDetailsDialog';
-import { useSelection } from '../../utils/hooks/useSelection';
-import { useUnmount } from '../../utils/hooks/useUnmount';
+import { useSelection } from '../../hooks/useSelection';
+import { useUnmount } from '../../hooks/useUnmount';
 
-export default function LogConsoleDetailsDialogUI(props: LogConsoleDetailsDialogProps) {
+export function LogConsoleDetailsDialogUI(props: LogConsoleDetailsDialogProps) {
   const { logEvent, onClose, onClosed } = props;
   const localeBranch = useSelection((state) => state.uiConfig.locale);
   const classes = useStyles();
@@ -87,3 +87,5 @@ export default function LogConsoleDetailsDialogUI(props: LogConsoleDetailsDialog
     </>
   );
 }
+
+export default LogConsoleDetailsDialogUI;

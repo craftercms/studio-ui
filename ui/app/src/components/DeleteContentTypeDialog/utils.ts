@@ -18,7 +18,7 @@ import { Resource } from '../../models/Resource';
 import { FetchContentTypeUsageResponse } from '../../services/contentTypes';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 import React from 'react';
-import { onSubmittingAndOrPendingChangeProps } from '../../utils/hooks/useEnhancedDialogState';
+import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 
 export interface DeleteContentTypeBaseProps {
   contentType: ContentType;

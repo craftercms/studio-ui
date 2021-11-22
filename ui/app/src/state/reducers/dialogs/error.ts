@@ -17,7 +17,7 @@
 import { createAction, createReducer } from '@reduxjs/toolkit';
 import StandardAction from '../../../models/StandardAction';
 import GlobalState from '../../../models/GlobalState';
-import { ErrorDialogStateProps } from '../../../components/SystemStatus/ErrorDialog';
+import { ErrorDialogStateProps } from '../../../components/ErrorDialog/ErrorDialog';
 
 export const showErrorDialog = /*#__PURE__*/ createAction<Partial<ErrorDialogStateProps>>('SHOW_ERROR_DIALOG');
 

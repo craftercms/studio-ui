@@ -27,7 +27,7 @@ import { Resource } from '../../models/Resource';
 import Checkbox from '@mui/material/Checkbox';
 import ItemDisplay from '../ItemDisplay';
 import useStyles from './styles';
-import { ItemStates, SandboxItem } from '../../models/Item';
+import { SandboxItem } from '../../models/Item';
 import { PagedArray } from '../../models/PagedArray';
 import Pagination from '../Pagination';
 import clsx from 'clsx';
@@ -46,20 +46,6 @@ export interface WorkflowStatesGridUIProps {
   onRowSelected(item: SandboxItem): void;
   onRowsPerPageChange?: React.ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
 }
-
-export const drawerWidth = 260;
-
-export const states: ItemStates[] = [
-  'new',
-  'modified',
-  'deleted',
-  'locked',
-  'systemProcessing',
-  'submitted',
-  'scheduled',
-  'staged',
-  'live'
-];
 
 export default function ItemStatesGridUI(props: WorkflowStatesGridUIProps) {
   const {

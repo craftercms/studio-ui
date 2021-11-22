@@ -16,12 +16,12 @@
 
 import * as React from 'react';
 import { ReactNode } from 'react';
-import { useOnClose } from '../../utils/hooks/useOnClose';
+import { useOnClose } from '../../hooks/useOnClose';
 import MuiDialog, { DialogProps as MuiDialogProps } from '@mui/material/Dialog';
-import { useUnmount } from '../../utils/hooks/useUnmount';
+import { useUnmount } from '../../hooks/useUnmount';
 import DialogHeader, { DialogHeaderProps } from '../DialogHeader';
 import MinimizedBar from '../MinimizedBar';
-import { EnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
+import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 
 export interface EnhancedDialogProps extends Omit<MuiDialogProps, 'title'>, EnhancedDialogState {
   title?: ReactNode;

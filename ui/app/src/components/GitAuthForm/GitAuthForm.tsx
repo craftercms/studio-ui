@@ -207,7 +207,7 @@ function AuthFields(props: AuthFieldsProps) {
   );
 }
 
-export default function GitAuthForm(props: GitAuthFormProps) {
+export function GitAuthForm(props: GitAuthFormProps) {
   const { inputs, setInputs, handleInputChange, onKeyPress } = props;
 
   const viewAuth = (type: string) => {
@@ -271,3 +271,5 @@ export default function GitAuthForm(props: GitAuthFormProps) {
     </>
   );
 }
+
+export default GitAuthForm;

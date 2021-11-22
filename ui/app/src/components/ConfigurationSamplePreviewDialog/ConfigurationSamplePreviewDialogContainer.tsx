@@ -15,17 +15,17 @@
  */
 
 import { ConfigurationSamplePreviewDialogProps } from './ConfigurationSamplePreviewDialog';
-import AceEditor from '../AceEditor';
+import AceEditor from '../AceEditor/AceEditor';
 import React from 'react';
-import DialogBody from '../Dialogs/DialogBody';
+import DialogBody from '../DialogBody/DialogBody';
 import DialogHeader from '../DialogHeader/DialogHeader';
 import { FormattedMessage } from 'react-intl';
-import DialogFooter from '../Dialogs/DialogFooter';
+import DialogFooter from '../DialogFooter/DialogFooter';
 import ConfirmDropdown from '../ConfirmDropdown';
 import useStyles from './styles';
-import { useUnmount } from '../../utils/hooks/useUnmount';
+import { useUnmount } from '../../hooks/useUnmount';
 
-export default function ConfigurationSamplePreviewDialogContainer(props: ConfigurationSamplePreviewDialogProps) {
+export function ConfigurationSamplePreviewDialogContainer(props: ConfigurationSamplePreviewDialogProps) {
   const { content, onClose, onClosed, onUseSampleClick } = props;
   const classes = useStyles();
 
@@ -74,3 +74,5 @@ export default function ConfigurationSamplePreviewDialogContainer(props: Configu
     </>
   );
 }
+
+export default ConfigurationSamplePreviewDialogContainer;

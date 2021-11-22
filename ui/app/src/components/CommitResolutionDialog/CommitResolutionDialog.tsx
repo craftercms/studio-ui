@@ -19,9 +19,9 @@ import Dialog from '@mui/material/Dialog';
 import CommitResolutionDialogContainer, {
   CommitResolutionDialogContainerProps
 } from './CommitResolutionDialogContainer';
-import { useOnClose } from '../../utils/hooks/useOnClose';
+import { useOnClose } from '../../hooks/useOnClose';
 
-export default function CommitResolutionDialog(props: CommitResolutionDialogContainerProps) {
+export function CommitResolutionDialog(props: CommitResolutionDialogContainerProps) {
   const { open, onClose } = props;
   const [disableQuickDismiss, setDisableQuickDismiss] = useState(false);
   const onCloseHandler = useOnClose({
@@ -36,3 +36,5 @@ export default function CommitResolutionDialog(props: CommitResolutionDialogCont
     </Dialog>
   );
 }
+
+export default CommitResolutionDialog;

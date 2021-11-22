@@ -35,15 +35,15 @@ import Checkbox from '@mui/material/Checkbox';
 import MoreVertRounded from '@mui/icons-material/MoreVertRounded';
 import ItemDisplay from '../ItemDisplay';
 import clsx from 'clsx';
-import { DashboardItem } from '../AwaitingApprovalDashlet';
+import { AwaitingApprovalDashletDashboardItem } from '../AwaitingApprovalDashlet';
 import ExpandLessIcon from '@mui/icons-material/ExpandLessRounded';
 import { asLocalizedDateTime } from '../../utils/datetime';
 import Tooltip from '@mui/material/Tooltip';
-import { useLocale } from '../../utils/hooks/useLocale';
+import { useLocale } from '../../hooks/useLocale';
 import { getDateScheduled } from '../../utils/detailedItem';
 
 interface AwaitingApprovalDashletGridUIProps {
-  resource: Resource<DashboardItem[]>;
+  resource: Resource<AwaitingApprovalDashletDashboardItem[]>;
   itemsLookup: LookupTable<DetailedItem>;
   expandedLookup: LookupTable<boolean>;
   selectedLookup: LookupTable<boolean>;
@@ -56,7 +56,7 @@ interface AwaitingApprovalDashletGridUIProps {
   onItemMenuClick(event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, item: DetailedItem): void;
 }
 
-export default function AwaitingApprovalDashletGridUI(props: AwaitingApprovalDashletGridUIProps) {
+export function AwaitingApprovalDashletGridUI(props: AwaitingApprovalDashletGridUIProps) {
   const {
     resource,
     onExpandedRow,
@@ -237,3 +237,5 @@ export default function AwaitingApprovalDashletGridUI(props: AwaitingApprovalDas
     </TableContainer>
   );
 }
+
+export default AwaitingApprovalDashletGridUI;

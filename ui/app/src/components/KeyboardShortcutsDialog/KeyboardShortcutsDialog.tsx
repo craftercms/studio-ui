@@ -23,7 +23,7 @@ import {
 } from './utils';
 import EnhancedDialog from '../EnhancedDialog';
 import { FormattedMessage, useIntl } from 'react-intl';
-import DialogBody from '../Dialogs/DialogBody';
+import DialogBody from '../DialogBody/DialogBody';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import List from '@mui/material/List';

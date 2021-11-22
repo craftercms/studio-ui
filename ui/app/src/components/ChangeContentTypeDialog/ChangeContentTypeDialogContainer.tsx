@@ -15,23 +15,23 @@
  */
 
 import { ChangeContentTypeDialogContainerProps } from './utils';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useDispatch } from 'react-redux';
 import React, { useEffect, useMemo, useState } from 'react';
 import { LegacyContentType, LegacyFormConfig } from '../../models/ContentType';
 import { fetchLegacyContentTypes } from '../../services/contentTypes';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
-import { useLogicResource } from '../../utils/hooks/useLogicResource';
-import { useSubject } from '../../utils/hooks/useSubject';
+import { useLogicResource } from '../../hooks/useLogicResource';
+import { useSubject } from '../../hooks/useSubject';
 import { debounceTime } from 'rxjs/operators';
-import DialogBody from '../Dialogs/DialogBody';
+import DialogBody from '../DialogBody/DialogBody';
 import { Box, Checkbox, FormControlLabel } from '@mui/material';
 import SingleItemSelector from '../SingleItemSelector';
 import { FormattedMessage } from 'react-intl';
-import SearchBar from '../Controls/SearchBar';
-import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
+import SearchBar from '../SearchBar/SearchBar';
+import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
 import { ContentTypesGrid, ContentTypesLoader } from '../NewContentDialog';
-import DialogFooter from '../Dialogs/DialogFooter';
+import DialogFooter from '../DialogFooter/DialogFooter';
 import { Theme } from '@mui/material/styles';
 
 import createStyles from '@mui/styles/createStyles';

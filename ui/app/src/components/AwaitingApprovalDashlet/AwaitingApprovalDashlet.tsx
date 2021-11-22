@@ -20,7 +20,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { fetchLegacyGetGoLiveItems } from '../../services/dashboard';
 import { AllItemActions, DetailedItem } from '../../models/Item';
 import AwaitingApprovalDashletGridUI from '../AwaitingApprovalDashletGrid';
-import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
+import { SuspenseWithEmptyState } from '../Suspencified';
 import LookupTable from '../../models/LookupTable';
 import { getNumOfMenuOptionsForItem, getSystemTypeFromPath, parseLegacyItemToDetailedItem } from '../../utils/content';
 import Dashlet from '../Dashlet';
@@ -30,8 +30,8 @@ import Button from '@mui/material/Button';
 import { itemsApproved, itemsDeleted, itemsRejected, itemsScheduled } from '../../state/actions/system';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { filter } from 'rxjs/operators';
-import { useLogicResource } from '../../utils/hooks/useLogicResource';
-import { useSpreadState } from '../../utils/hooks/useSpreadState';
+import { useLogicResource } from '../../hooks/useLogicResource';
+import { useSpreadState } from '../../hooks/useSpreadState';
 import { DashboardPreferences } from '../../models/Dashboard';
 import { useDispatch, useSelector } from 'react-redux';
 import GlobalState from '../../models/GlobalState';
@@ -42,12 +42,12 @@ import ActionsBar from '../ActionsBar';
 import translations from './translations';
 import { createPresenceTable } from '../../utils/array';
 import { itemActionDispatcher } from '../../utils/itemActions';
-import { useEnv } from '../../utils/hooks/useEnv';
+import { useEnv } from '../../hooks/useEnv';
 import { batchActions } from '../../state/actions/misc';
-import { getEmptyStateStyleSet } from '../SystemStatus/EmptyState';
-import { useActiveSite } from '../../utils/hooks/useActiveSite';
+import { getEmptyStateStyleSet } from '../EmptyState';
+import { useActiveSite } from '../../hooks/useActiveSite';
 
-export interface DashboardItem {
+export interface AwaitingApprovalDashletDashboardItem {
   label: string;
   path: string;
   children: string[];
@@ -64,7 +64,7 @@ export default function AwaitingApprovalDashlet() {
   const [state, setState] = useState<{
     itemsLookup: LookupTable<DetailedItem>;
     publishingTargetLookup: LookupTable<string>;
-    parentItems: DashboardItem[];
+    parentItems: AwaitingApprovalDashletDashboardItem[];
     total: number;
   }>({
     publishingTargetLookup: {},
@@ -100,7 +100,7 @@ export default function AwaitingApprovalDashlet() {
     setIsFetching(true);
     fetchLegacyGetGoLiveItems(siteId, 'eventDate', null, preferences.showUnpublished, null).subscribe(
       (response) => {
-        const parentItems: DashboardItem[] = [];
+        const parentItems: AwaitingApprovalDashletDashboardItem[] = [];
         const itemsLookup = {};
         const publishingTargetLookup = {};
         const expandedLookup = {};
@@ -166,9 +166,9 @@ export default function AwaitingApprovalDashlet() {
   }, [preferences, currentUser, uuid]);
 
   const resource = useLogicResource<
-    DashboardItem[],
+    AwaitingApprovalDashletDashboardItem[],
     {
-      items: DashboardItem[];
+      items: AwaitingApprovalDashletDashboardItem[];
       error: ApiResponse;
       isFetching: boolean;
     }

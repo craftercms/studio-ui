@@ -21,11 +21,11 @@ import TranslationOrText from '../../models/TranslationOrText';
 import { useDispatch } from 'react-redux';
 import { closeLauncher, showWidgetDialog } from '../../state/actions/dialogs';
 import { batchActions } from '../../state/actions/misc';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import { useEnv } from '../../utils/hooks/useEnv';
-import { usePossibleTranslation } from '../../utils/hooks/usePossibleTranslation';
+import { useActiveSiteId } from '../../hooks/useActiveSiteId';
+import { useEnv } from '../../hooks/useEnv';
+import { usePossibleTranslation } from '../../hooks/usePossibleTranslation';
 import { getSystemLink, SystemLinkId } from '../../utils/system';
-import { useLegacyPreviewPreference } from '../../utils/hooks/useLegacyPreviewPreference';
+import { useLegacyPreviewPreference } from '../../hooks/useLegacyPreviewPreference';
 
 export interface LauncherLinkTileProps {
   title: TranslationOrText;

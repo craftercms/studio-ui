@@ -16,32 +16,6 @@
 
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
-import palette from '../../styles/palette';
-
-export const useStyles = makeStyles(() =>
-  createStyles({
-    dialogBody: {
-      overflow: 'auto'
-    },
-    btnSpinner: {
-      marginLeft: 11,
-      marginRight: 11,
-      color: '#fff'
-    },
-    errorPaperRoot: {
-      maxHeight: '586px',
-      height: '100vh',
-      padding: 0
-    },
-    countContainer: {
-      padding: '5px'
-    },
-    submissionCommentCount: {
-      fontSize: '14px',
-      color: palette.gray.medium4
-    }
-  })
-);
 
 export const useDeleteDialogUIStyles = makeStyles((theme) =>
   createStyles({

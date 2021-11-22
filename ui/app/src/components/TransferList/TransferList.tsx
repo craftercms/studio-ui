@@ -47,7 +47,7 @@ function intersection(a: any, b: any) {
   return a.filter((value) => b.find((next) => value.id === next.id));
 }
 
-export default function TransferList(props: TransferListProps) {
+export function TransferList(props: TransferListProps) {
   const { source, target, inProgressIds, onTargetListItemsAdded, onTargetListItemsRemoved } = props;
   const [sourceItems, setSourceItems] = useState<TransferListItem[]>(source.items);
   const [targetItems, setTargetItems] = useState<TransferListItem[]>(target.items);
@@ -197,3 +197,5 @@ export default function TransferList(props: TransferListProps) {
     </Box>
   );
 }
+
+export default TransferList;

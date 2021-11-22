@@ -16,17 +16,17 @@
 
 import * as React from 'react';
 import { UninstallPluginDialogContainerProps } from './utils';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useMemo } from 'react';
 import { createResource } from '../../utils/resource';
 import { uninstallMarketplacePlugin, fetchMarketplacePluginUsage } from '../../services/marketplace';
-import Suspencified from '../SystemStatus/Suspencified';
+import Suspencified from '../Suspencified/Suspencified';
 import { UninstallPluginDialogBody } from './UninstallPluginDialogBody';
 import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../state/actions/system';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { defineMessages, useIntl } from 'react-intl';
-import useUpdateRefs from '../../utils/hooks/useUpdateRefs';
+import useUpdateRefs from '../../hooks/useUpdateRefs';
 
 const messages = defineMessages({
   pluginUninstalled: {

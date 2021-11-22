@@ -2,12 +2,12 @@ import StandardAction from '../../models/StandardAction';
 import { DetailedItem } from '../../models/Item';
 import React from 'react';
 import { Resource } from '../../models/Resource';
-import { DeleteDependencies } from '../../modules/Content/Dependencies/DependencySelection';
 import LookupTable from '../../models/LookupTable';
 import { InputProps } from '@mui/material/Input';
-import { SelectionListProps } from '../../modules/Content/Dependencies/SelectionList';
+import { SelectionListProps } from '../DependencySelection/SelectionList';
 import { EnhancedDialogProps } from '../EnhancedDialog';
-import { EnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
+import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
+import { DeleteDependencies } from '../DependencySelection';
 
 export interface DeleteDialogBaseProps {
   items: DetailedItem[];

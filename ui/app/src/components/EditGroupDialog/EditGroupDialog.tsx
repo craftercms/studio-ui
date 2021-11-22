@@ -19,7 +19,7 @@ import EditGroupDialogContainer from './EditGroupDialogContainer';
 import { EditGroupDialogProps } from './utils';
 import EnhancedDialog from '../EnhancedDialog';
 
-export default function EditGroupDialog(props: EditGroupDialogProps) {
+export function EditGroupDialog(props: EditGroupDialogProps) {
   const { group, onGroupDeleted, onGroupSaved, onSubmittingAndOrPendingChange, ...rest } = props;
 
   return (
@@ -33,3 +33,5 @@ export default function EditGroupDialog(props: EditGroupDialogProps) {
     </EnhancedDialog>
   );
 }
+
+export default EditGroupDialog;

@@ -16,7 +16,7 @@
 
 import React from 'react';
 import AuditManagement from '../AuditManagement';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 
 interface SiteAuditManagementProps {
   embedded?: boolean;

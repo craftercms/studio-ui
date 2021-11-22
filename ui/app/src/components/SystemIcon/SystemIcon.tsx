@@ -32,7 +32,7 @@ export interface SystemIconProps {
   style?: object;
 }
 
-export default function SystemIcon(props: SystemIconProps) {
+export function SystemIcon(props: SystemIconProps) {
   let { icon, className, style } = props;
   if ('id' in icon) {
     const IconComponent = components.get(icon.id) as typeof ErrorRounded;
@@ -59,3 +59,5 @@ export default function SystemIcon(props: SystemIconProps) {
     );
   }
 }
+
+export default SystemIcon;

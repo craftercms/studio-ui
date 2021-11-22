@@ -24,13 +24,13 @@ import useStyles from './styles';
 import Avatar from '@mui/material/Avatar';
 import Container from '@mui/material/Container';
 import { dispatchLanguageChange, getCurrentLocale, setStoredLanguage } from '../../utils/i18n';
-import { SystemLang } from '../SystemStatus/LoginView';
+import { SystemLang } from '../LoginView/LoginView';
 import { fetchProductLanguages } from '../../services/configuration';
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 import FormHelperText from '@mui/material/FormHelperText';
 import Skeleton from '@mui/material/Skeleton';
-import PasswordTextField from '../Controls/PasswordTextField';
+import PasswordTextField from '../PasswordTextField/PasswordTextField';
 import PasswordRequirementsDisplay from '../PasswordRequirementsDisplay';
 import PrimaryButton from '../PrimaryButton';
 import { setMyPassword } from '../../services/users';
@@ -38,7 +38,7 @@ import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { showSystemNotification } from '../../state/actions/system';
 import clsx from 'clsx';
-import { useActiveUser } from '../../utils/hooks/useActiveUser';
+import { useActiveUser } from '../../hooks/useActiveUser';
 
 interface AccountManagementProps {
   passwordRequirementsRegex?: string;

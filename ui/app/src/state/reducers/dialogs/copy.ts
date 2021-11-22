@@ -17,7 +17,7 @@
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
 import { closeCopyDialog, copyDialogClosed, showCopyDialog } from '../../actions/dialogs';
-import { CopyDialogStateProps } from '../../../components/Dialogs/CopyDialog';
+import { CopyDialogStateProps } from '../../../components/CopyDialog/CopyDialog';
 
 const initialState: CopyDialogStateProps = {
   open: false,

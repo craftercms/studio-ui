@@ -31,7 +31,7 @@ import { LegacyVersion } from '../../models/Version';
 import clsx from 'clsx';
 import palette from '../../styles/palette';
 import GlobalState from '../../models/GlobalState';
-import { useSelection } from '../../utils/hooks/useSelection';
+import { useSelection } from '../../hooks/useSelection';
 
 const versionListStyles = makeStyles((theme) =>
   createStyles({
@@ -103,7 +103,7 @@ interface VersionListProps {
   onOpenMenu?(anchorEl: Element, version: LegacyVersion, isCurrent: boolean, lastOne: boolean): void;
 }
 
-export default function VersionList(props: VersionListProps) {
+export function VersionList(props: VersionListProps) {
   const classes = versionListStyles({});
   const { versions: versionsResource, onOpenMenu, onItemClick, current, selected } = props;
   const versions = versionsResource.read();
@@ -158,3 +158,5 @@ export default function VersionList(props: VersionListProps) {
     </List>
   );
 }
+
+export default VersionList;

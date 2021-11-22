@@ -15,8 +15,8 @@
  */
 
 import React, { useState } from 'react';
-import DialogBody from '../Dialogs/DialogBody';
-import DialogFooter from '../Dialogs/DialogFooter';
+import DialogBody from '../DialogBody/DialogBody';
+import DialogFooter from '../DialogFooter/DialogFooter';
 import { FormattedMessage } from 'react-intl';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
@@ -28,7 +28,7 @@ import { push } from '../../services/repositories';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import { isBlank } from '../../utils/string';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { PushToRemoteDialogContainerProps } from './utils';
 
 const useStyles = makeStyles(() =>

@@ -29,7 +29,7 @@ import {
 } from '../../state/actions/dialogs';
 import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
-import { ConditionalLoadingState } from '../SystemStatus/LoadingState';
+import { ConditionalLoadingState } from '../LoadingState/LoadingState';
 import { EditSiteDialogUI } from './EditSiteDialogUI';
 import { createCustomDocumentEventListener } from '../../utils/dom';
 

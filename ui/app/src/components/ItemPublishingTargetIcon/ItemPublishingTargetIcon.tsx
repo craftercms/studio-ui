@@ -60,7 +60,7 @@ const useStyles = makeStyles(() =>
   })
 );
 
-export default function ItemPublishingTargetIcon(props: ItemPublishingTargetIconProps) {
+export function ItemPublishingTargetIcon(props: ItemPublishingTargetIconProps) {
   const { item, classes: propClasses, styles, className, displayTooltip = true } = props;
   const classes = useStyles(styles);
 
@@ -85,3 +85,5 @@ export default function ItemPublishingTargetIcon(props: ItemPublishingTargetIcon
     </Tooltip>
   );
 }
+
+export default ItemPublishingTargetIcon;

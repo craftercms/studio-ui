@@ -16,7 +16,7 @@
 
 import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
-import EmptyState from '../SystemStatus/EmptyState';
+import EmptyState from '../EmptyState/EmptyState';
 import { FormattedMessage } from 'react-intl';
 import clsx from 'clsx';
 import Typography from '@mui/material/Typography';
@@ -83,7 +83,7 @@ export interface ItemMegaMenuUIProps {
   onMenuItemClicked(option: string, event: React.MouseEvent<Element, MouseEvent>): void;
 }
 
-export const useStyles = makeStyles((theme) =>
+const useStyles = makeStyles((theme) =>
   createStyles<ItemMegaMenuUIClassKey, ItemMegaMenuUIStyles>({
     root: (styles) => ({
       maxWidth: 400,

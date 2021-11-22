@@ -45,7 +45,7 @@ export interface ItemDisplayProps<LabelTypographyComponent extends React.Element
   labelComponent?: ElementType;
 }
 
-export const useStyles = makeStyles((theme) =>
+const useStyles = makeStyles((theme) =>
   createStyles<ItemDisplayClassKey, ItemDisplayStyles>({
     root: (styles) => ({
       display: 'inline-flex',

@@ -23,8 +23,8 @@ import { disable, enable, fetchRolesBySite, trash, update } from '../../services
 import { showSystemNotification } from '../../state/actions/system';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { EditUserDialogUI } from './EditUserDialogUI';
-import { useSpreadState } from '../../utils/hooks/useSpreadState';
-import { useSitesBranch } from '../../utils/hooks/useSitesBranch';
+import { useSpreadState } from '../../hooks/useSpreadState';
+import { useSitesBranch } from '../../hooks/useSitesBranch';
 import { EditUserDialogContainerProps } from './utils';
 
 const translations = defineMessages({

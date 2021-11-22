@@ -19,7 +19,7 @@ import StandardAction from '../../models/StandardAction';
 import { SandboxItem } from '../../models/Item';
 import { ApiResponse } from '../../models/ApiResponse';
 import { EnhancedDialogProps } from '../EnhancedDialog';
-import { EnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
+import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import React from 'react';
 import { CannedMessage } from '../../services/configuration';
 

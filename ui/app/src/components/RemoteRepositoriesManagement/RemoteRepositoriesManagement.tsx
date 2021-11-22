@@ -22,7 +22,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { Repository, RepositoryStatus } from '../../models/Repository';
 import ApiResponse from '../../models/ApiResponse';
 import { fetchRepositories as fetchRepositoriesService, fetchStatus } from '../../services/repositories';
-import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
+import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
 import RemoteRepositoriesGridSkeletonTable from '../RemoteRepositoriesGrid/RemoteRepositoriesGridSkeletonTable';
 import RemoteRepositoriesGrid from '../RemoteRepositoriesGrid';
 import StudioRepositoryStatus from '../RemoteRepositoriesStatus/StudioRepositoryStatus';
@@ -34,11 +34,11 @@ import Alert from '@mui/material/Alert';
 import Typography from '@mui/material/Typography';
 import useStyles from './styles';
 import translations from './translations';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import { useLogicResource } from '../../utils/hooks/useLogicResource';
+import { useActiveSiteId } from '../../hooks/useActiveSiteId';
+import { useLogicResource } from '../../hooks/useLogicResource';
 import Paper from '@mui/material/Paper';
-import { useEnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
-import { useWithPendingChangesCloseRequest } from '../../utils/hooks/useWithPendingChangesCloseRequest';
+import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
+import { useWithPendingChangesCloseRequest } from '../../hooks/useWithPendingChangesCloseRequest';
 
 interface RemoteRepositoriesManagementProps {
   embedded?: boolean;

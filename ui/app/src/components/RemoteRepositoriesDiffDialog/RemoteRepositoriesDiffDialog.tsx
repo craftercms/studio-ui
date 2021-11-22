@@ -17,23 +17,23 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import Dialog from '@mui/material/Dialog';
 import DialogHeader from '../DialogHeader';
-import DialogBody from '../Dialogs/DialogBody';
-import DialogFooter from '../Dialogs/DialogFooter';
+import DialogBody from '../DialogBody/DialogBody';
+import DialogFooter from '../DialogFooter/DialogFooter';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { diffConflictedFile as diffConflictedFileService } from '../../services/repositories';
 import ApiResponse from '../../models/ApiResponse';
 import { FileDiff } from '../../models/Repository';
-import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
+import { SuspenseWithEmptyState } from '../Suspencified';
 import RemoteRepositoriesDiffDialogUI from './RemoteRepositoriesDiffDialogUI';
 import SecondaryButton from '../SecondaryButton';
 import ConfirmDropdown from '../ConfirmDropdown';
-import { messages } from '../RemoteRepositoriesStatus';
+import { messages } from '../RemoteRepositoriesStatus/translations';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import { useLogicResource } from '../../utils/hooks/useLogicResource';
+import { useActiveSiteId } from '../../hooks/useActiveSiteId';
+import { useLogicResource } from '../../hooks/useLogicResource';
 
 export interface RemoteRepositoriesDiffDialogProps {
   open: boolean;
@@ -73,7 +73,7 @@ const useStyles = makeStyles((theme) =>
   })
 );
 
-export default function RemoteRepositoriesDiffDialog(props: RemoteRepositoriesDiffDialogProps) {
+export function RemoteRepositoriesDiffDialog(props: RemoteRepositoriesDiffDialogProps) {
   const { open, path, onResolveConflict, onClose } = props;
   const siteId = useActiveSiteId();
   const [tab, setTab] = useState(0);
@@ -173,3 +173,5 @@ export default function RemoteRepositoriesDiffDialog(props: RemoteRepositoriesDi
     </Dialog>
   );
 }
+
+export default RemoteRepositoriesDiffDialog;

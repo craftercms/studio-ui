@@ -20,7 +20,7 @@ import { EditSiteDialogProps } from './utils';
 import EnhancedDialog from '../EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
 
-export default function EditSiteDialog(props: EditSiteDialogProps) {
+export function EditSiteDialog(props: EditSiteDialogProps) {
   const { site, onSaveSuccess, onSiteImageChange, isSubmitting, ...rest } = props;
   return (
     <EnhancedDialog
@@ -38,3 +38,5 @@ export default function EditSiteDialog(props: EditSiteDialogProps) {
     </EnhancedDialog>
   );
 }
+
+export default EditSiteDialog;

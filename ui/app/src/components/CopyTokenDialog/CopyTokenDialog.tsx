@@ -15,37 +15,10 @@
  */
 
 import React from 'react';
-import { defineMessages, FormattedMessage } from 'react-intl';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { FormattedMessage } from 'react-intl';
 import { CopyTokenProps } from './utils';
 import { CopyTokenContainer } from './CopyTokenContainer';
 import EnhancedDialog from '../EnhancedDialog';
-
-export const translations = defineMessages({
-  placeholder: {
-    id: 'words.label',
-    defaultMessage: 'Label'
-  },
-  expiresLabel: {
-    id: 'createTokenDialog.expiresLabel',
-    defaultMessage: 'Expire Token'
-  }
-});
-
-export const styles = makeStyles((theme) =>
-  createStyles({
-    footer: {
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between'
-    },
-    input: {
-      marginTop: '16px',
-      marginBottom: '8px'
-    }
-  })
-);
 
 export function CopyTokenDialog(props: CopyTokenProps) {
   const { token, onCopy, ...rest } = props;

@@ -18,19 +18,19 @@ import * as React from 'react';
 import { Suspense, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { initIcePanelConfig, updateIcePanelWidth } from '../../state/actions/preview';
-import LoadingState, { ConditionalLoadingState } from '../SystemStatus/LoadingState';
-import { useSelection } from '../../utils/hooks/useSelection';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import { useActiveUser } from '../../utils/hooks/useActiveUser';
-import { useSiteUIConfig } from '../../utils/hooks/useSiteUIConfig';
+import LoadingState, { ConditionalLoadingState } from '../LoadingState/LoadingState';
+import { useSelection } from '../../hooks/useSelection';
+import { useActiveSiteId } from '../../hooks/useActiveSiteId';
+import { useActiveUser } from '../../hooks/useActiveUser';
+import { useSiteUIConfig } from '../../hooks/useSiteUIConfig';
 import { renderWidgets } from '../Widget';
-import ResizeableDrawer from '../../modules/Preview/ResizeableDrawer';
-import { usePreviewState } from '../../utils/hooks/usePreviewState';
-import EmptyState from '../SystemStatus/EmptyState';
+import ResizeableDrawer from '../ResizeableDrawer/ResizeableDrawer';
+import { usePreviewState } from '../../hooks/usePreviewState';
+import EmptyState from '../EmptyState/EmptyState';
 import { FormattedMessage } from 'react-intl';
 import { nnou } from '../../utils/object';
 import { getComputedEditMode } from '../../utils/content';
-import { useCurrentPreviewItem } from '../../utils/hooks/useCurrentPreviewItem';
+import { useCurrentPreviewItem } from '../../hooks/useCurrentPreviewItem';
 import { getStoredICEToolsPanelWidth, setStoredICEToolsPanelWidth } from '../../utils/state';
 
 export function ICEToolsPanel() {

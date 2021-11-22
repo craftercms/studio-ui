@@ -21,10 +21,10 @@ import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import { contentTreeFieldSelected, setContentTypeFilter, setPreviewEditMode } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
-import Suspencified from '../SystemStatus/Suspencified';
+import Suspencified from '../Suspencified/Suspencified';
 import ContentInstance from '../../models/ContentInstance';
 import LookupTable from '../../models/LookupTable';
-import SearchBar from '../Controls/SearchBar';
+import SearchBar from '../SearchBar/SearchBar';
 import Select from '@mui/material/Select';
 import ListItem from '@mui/material/ListItem';
 import Avatar from '@mui/material/Avatar';
@@ -33,12 +33,12 @@ import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItemText from '@mui/material/ListItemText';
 import CircularProgress from '@mui/material/CircularProgress';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
-import EmptyState from '../SystemStatus/EmptyState';
+import EmptyState from '../EmptyState/EmptyState';
 import { Resource } from '../../models/Resource';
-import { useSelection } from '../../utils/hooks/useSelection';
-import { usePreviewGuest } from '../../utils/hooks/usePreviewGuest';
-import { useContentTypes } from '../../utils/hooks/useContentTypes';
-import { useLogicResource } from '../../utils/hooks/useLogicResource';
+import { useSelection } from '../../hooks/useSelection';
+import { usePreviewGuest } from '../../hooks/usePreviewGuest';
+import { useContentTypes } from '../../hooks/useContentTypes';
+import { useLogicResource } from '../../hooks/useLogicResource';
 
 const translations = defineMessages({
   previewInPageInstancesPanel: {
@@ -85,7 +85,7 @@ const useStyles = makeStyles((theme) =>
   })
 );
 
-export default function PreviewInPageInstancesPanel() {
+export function PreviewInPageInstancesPanel() {
   const classes = useStyles({});
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
@@ -261,3 +261,5 @@ function InPageInstancesUI(props: InPageInstancesUIProps) {
     </>
   );
 }
+
+export default PreviewInPageInstancesPanel;

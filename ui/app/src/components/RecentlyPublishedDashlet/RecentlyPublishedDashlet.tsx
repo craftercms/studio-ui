@@ -19,7 +19,7 @@ import RecentlyPublishedWidgetUI from './RecentlyPublishedDashletUI';
 import ApiResponse from '../../models/ApiResponse';
 import { DashboardPreferences } from '../../models/Dashboard';
 import { fetchLegacyDeploymentHistory } from '../../services/dashboard';
-import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
+import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
 import { FormattedMessage } from 'react-intl';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
@@ -33,21 +33,21 @@ import TextField from '@mui/material/TextField';
 import { itemsApproved, itemsDeleted, itemsRejected, itemsScheduled } from '../../state/actions/system';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { filter } from 'rxjs/operators';
-import { useLogicResource } from '../../utils/hooks/useLogicResource';
-import { useSpreadState } from '../../utils/hooks/useSpreadState';
-import { useLocale } from '../../utils/hooks/useLocale';
+import { useLogicResource } from '../../hooks/useLogicResource';
+import { useSpreadState } from '../../hooks/useSpreadState';
+import { useLocale } from '../../hooks/useLocale';
 import { getStoredDashboardPreferences, setStoredDashboardPreferences } from '../../utils/state';
 import { useDispatch, useSelector } from 'react-redux';
 import GlobalState from '../../models/GlobalState';
 import { completeDetailedItem } from '../../state/actions/content';
 import { showItemMegaMenu } from '../../state/actions/dialogs';
 import { batchActions } from '../../state/actions/misc';
-import { getEmptyStateStyleSet } from '../SystemStatus/EmptyState';
-import { useActiveSite } from '../../utils/hooks/useActiveSite';
+import { getEmptyStateStyleSet } from '../EmptyState';
+import { useActiveSite } from '../../hooks/useActiveSite';
 import { asLocalizedDateTime } from '../../utils/datetime';
 import { reversePluckProps } from '../../utils/object';
 
-export interface DashboardItem {
+export interface RecentlyPublishedDashletDashboardItem {
   label: string;
   children: string[];
 }
@@ -61,7 +61,7 @@ const dashletInitialPreferences: DashboardPreferences = {
 export default function RecentlyPublishedDashlet() {
   const [fetchingHistory, setFetchingHistory] = useState(false);
   const [errorHistory, setErrorHistory] = useState<ApiResponse>();
-  const [parentItems, setParentItems] = useState<DashboardItem[]>();
+  const [parentItems, setParentItems] = useState<RecentlyPublishedDashletDashboardItem[]>();
   const [itemsLookup, setItemsLookup] = useSpreadState<LookupTable<DetailedItem>>({});
   const dashletPreferencesId = 'recentlyPublishedDashlet';
   const currentUser = useSelector<GlobalState, string>((state) => state.user.username);
@@ -186,7 +186,10 @@ export default function RecentlyPublishedDashlet() {
   }, [fetchHistory, itemsLookup]);
   // endregion
 
-  const resource = useLogicResource<DashboardItem[], { items: DashboardItem[]; error: ApiResponse; fetching: boolean }>(
+  const resource = useLogicResource<
+    RecentlyPublishedDashletDashboardItem[],
+    { items: RecentlyPublishedDashletDashboardItem[]; error: ApiResponse; fetching: boolean }
+  >(
     useMemo(
       () => ({ items: parentItems, error: errorHistory, fetching: fetchingHistory }),
       [parentItems, errorHistory, fetchingHistory]

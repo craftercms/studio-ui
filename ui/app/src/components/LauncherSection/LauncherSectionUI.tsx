@@ -24,7 +24,7 @@ import { EnhancedUser } from '../../models/User';
 import { FormatXMLElementFn, PrimitiveType } from 'intl-messageformat';
 import { CSSProperties } from '@mui/styles';
 import clsx from 'clsx';
-import { usePossibleTranslation } from '../../utils/hooks/usePossibleTranslation';
+import { usePossibleTranslation } from '../../hooks/usePossibleTranslation';
 
 export type LauncherSectionUIClassKey = 'title' | 'nav';
 
@@ -61,7 +61,7 @@ const useStyles = makeStyles((theme) =>
   })
 );
 
-function LauncherSectionUI(props: LauncherSectionUIProps) {
+export function LauncherSectionUI(props: LauncherSectionUIProps) {
   const classes = useStyles(props.styles);
   const title = usePossibleTranslation(props.title, props.translationValues);
   const { children } = props;

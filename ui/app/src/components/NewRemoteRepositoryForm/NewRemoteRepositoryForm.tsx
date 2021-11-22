@@ -39,7 +39,7 @@ export interface NewRemoteRepositoryFormProps {
   setInputs(inputs): void;
 }
 
-export default function NewRemoteRepositoryForm(props: NewRemoteRepositoryFormProps) {
+export function NewRemoteRepositoryForm(props: NewRemoteRepositoryFormProps) {
   const classes = useStyles();
   const { inputs, setInputs } = props;
 
@@ -96,3 +96,5 @@ export default function NewRemoteRepositoryForm(props: NewRemoteRepositoryFormPr
     </Grid>
   );
 }
+
+export default NewRemoteRepositoryForm;

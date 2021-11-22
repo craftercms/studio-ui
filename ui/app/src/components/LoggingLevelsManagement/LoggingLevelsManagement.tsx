@@ -21,12 +21,12 @@ import ApiResponse from '../../models/ApiResponse';
 import { fetchLoggers as fetchLoggersService, setLogger } from '../../services/logs';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
+import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
 import LoggingLevelsGridUI, { LoggingLevelsGridSkeletonTable } from '../LoggingLevelsGrid';
 import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { showSystemNotification } from '../../state/actions/system';
-import { useLogicResource } from '../../utils/hooks/useLogicResource';
+import { useLogicResource } from '../../hooks/useLogicResource';
 import Paper from '@mui/material/Paper';
 
 const messages = defineMessages({
@@ -36,7 +36,7 @@ const messages = defineMessages({
   }
 });
 
-export default function LoggingLevelsManagement() {
+export function LoggingLevelsManagement() {
   const [fetching, setFetching] = useState(false);
   const [loggers, setLoggers] = useState<Array<Logger>>(null);
   const [error, setError] = useState<ApiResponse>();
@@ -105,3 +105,5 @@ export default function LoggingLevelsManagement() {
     </Paper>
   );
 }
+
+export default LoggingLevelsManagement;

@@ -72,7 +72,7 @@ const useStyles = makeStyles((theme) =>
   })
 );
 
-export default function PasswordRequirementsDisplay(props: PasswordRequirementsDisplayProps) {
+export function PasswordRequirementsDisplay(props: PasswordRequirementsDisplayProps) {
   const classes = useStyles(props.styles);
   const { passwordRequirementsRegex, formatMessage, value, onValidStateChanged } = props;
   const { regEx, conditions } = useMemo(
@@ -205,3 +205,5 @@ function getPrimeMatter(props: Partial<PasswordRequirementsDisplayProps>) {
       : [fallback]
   };
 }
+
+export default PasswordRequirementsDisplay;

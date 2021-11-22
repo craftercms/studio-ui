@@ -17,7 +17,7 @@
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import { FormattedMessage, useIntl } from 'react-intl';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import Suspencified from '../SystemStatus/Suspencified';
+import Suspencified from '../Suspencified/Suspencified';
 import { PagedArray } from '../../models/PagedArray';
 import { ApiResponse } from '../../models/ApiResponse';
 import { AuditLogEntry, AuditLogEntryParameter } from '../../models/Audit';
@@ -32,12 +32,12 @@ import AuditLogEntryParametersDialog from '../AuditLogEntryParametersDialog';
 import { nnou } from '../../utils/object';
 import Button from '@mui/material/Button';
 import AuditGridSkeleton from '../AuditGrid/AuditGridSkeleton';
-import { useLogicResource } from '../../utils/hooks/useLogicResource';
-import { useMount } from '../../utils/hooks/useMount';
-import { useSpreadState } from '../../utils/hooks/useSpreadState';
-import { useSiteList } from '../../utils/hooks/useSiteList';
+import { useLogicResource } from '../../hooks/useLogicResource';
+import { useMount } from '../../hooks/useMount';
+import { useSpreadState } from '../../hooks/useSpreadState';
+import { useSiteList } from '../../hooks/useSiteList';
 import Paper from '@mui/material/Paper';
-import { useEnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
+import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 
 interface AuditManagementProps {
   site?: string;

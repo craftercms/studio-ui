@@ -38,11 +38,11 @@ import {
   setPreviewEditMode
 } from '../../state/actions/preview';
 import { Resource } from '../../models/Resource';
-import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
+import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
 import { LookupTable } from '../../models/LookupTable';
-import { useSelection } from '../../utils/hooks/useSelection';
-import { useLogicResource } from '../../utils/hooks/useLogicResource';
-import { useMount } from '../../utils/hooks/useMount';
+import { useSelection } from '../../hooks/useSelection';
+import { useLogicResource } from '../../hooks/useLogicResource';
+import { useMount } from '../../hooks/useMount';
 
 const translations = defineMessages({
   dropTargetsPanel: {

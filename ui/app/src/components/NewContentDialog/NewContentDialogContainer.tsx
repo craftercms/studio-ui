@@ -15,11 +15,11 @@
  */
 
 import { NewContentDialogContainerProps } from './utils';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
 import useStyles from './styles';
-import { useSelection } from '../../utils/hooks/useSelection';
+import { useSelection } from '../../hooks/useSelection';
 import React, { useEffect, useMemo, useState } from 'react';
 import { LegacyContentType, LegacyFormConfig } from '../../models/ContentType';
 import translations from './translations';
@@ -28,15 +28,15 @@ import { batchActions } from '../../state/actions/misc';
 import { closeNewContentDialog, newContentCreationComplete } from '../../state/actions/dialogs';
 import { fetchLegacyContentTypes } from '../../services/contentTypes';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
-import { useLogicResource } from '../../utils/hooks/useLogicResource';
-import { useSubject } from '../../utils/hooks/useSubject';
+import { useLogicResource } from '../../hooks/useLogicResource';
+import { useSubject } from '../../hooks/useSubject';
 import { debounceTime } from 'rxjs/operators';
-import DialogBody from '../Dialogs/DialogBody';
+import DialogBody from '../DialogBody/DialogBody';
 import { Box, Checkbox, FormControlLabel } from '@mui/material';
 import SingleItemSelector from '../SingleItemSelector';
-import SearchBar from '../Controls/SearchBar';
-import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
-import DialogFooter from '../Dialogs/DialogFooter';
+import SearchBar from '../SearchBar/SearchBar';
+import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
+import DialogFooter from '../DialogFooter/DialogFooter';
 import ContentTypesFilter from '../ContentTypeFilter';
 import { ContentTypesGrid, ContentTypesLoader } from './NewContentDialog';
 

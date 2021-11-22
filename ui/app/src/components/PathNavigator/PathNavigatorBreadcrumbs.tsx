@@ -18,7 +18,7 @@ import { DetailedItem } from '../../models/Item';
 import { useStyles } from './styles';
 import React, { useState } from 'react';
 import clsx from 'clsx';
-import SearchBar from '../Controls/SearchBar';
+import SearchBar from '../SearchBar/SearchBar';
 import MuiBreadcrumbs from '@mui/material/Breadcrumbs';
 import NavigateNextIcon from '@mui/icons-material/NavigateNextRounded';
 import Link from '@mui/material/Link';
@@ -28,12 +28,17 @@ import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import CloseIconRounded from '@mui/icons-material/CloseRounded';
 import { defineMessages, useIntl } from 'react-intl';
 
-export type BreadcrumbsClassKey = 'root' | 'searchRoot' | 'searchInput' | 'searchCleanButton' | 'searchCloseButton';
+export type PathNavigatorBreadcrumbsClassKey =
+  | 'root'
+  | 'searchRoot'
+  | 'searchInput'
+  | 'searchCleanButton'
+  | 'searchCloseButton';
 
 export interface BreadcrumbsProps {
   breadcrumb: DetailedItem[];
   keyword?: string;
-  classes?: Partial<Record<BreadcrumbsClassKey, string>>;
+  classes?: Partial<Record<PathNavigatorBreadcrumbsClassKey, string>>;
   onSearch?(keyword: string): void;
   onCrumbSelected(breadcrumb: DetailedItem, event: React.SyntheticEvent): void;
 }

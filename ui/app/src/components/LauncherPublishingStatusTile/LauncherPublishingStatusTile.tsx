@@ -21,7 +21,7 @@ import { useDispatch } from 'react-redux';
 import { batchActions } from '../../state/actions/misc';
 import { Tooltip } from '@mui/material';
 import { useIntl } from 'react-intl';
-import { useSelection } from '../../utils/hooks/useSelection';
+import { useSelection } from '../../hooks/useSelection';
 import { publishingStatusMessages } from '../PublishingStatusDisplay';
 
 function LauncherPublishingStatusTile() {

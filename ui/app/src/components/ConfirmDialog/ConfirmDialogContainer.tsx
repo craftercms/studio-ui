@@ -17,11 +17,11 @@
 import { ConfirmDialogContainerProps } from './utils';
 import questionGraphicUrl from '../../assets/question.svg';
 import { useIntl } from 'react-intl';
-import { useUnmount } from '../../utils/hooks/useUnmount';
+import { useUnmount } from '../../hooks/useUnmount';
 import DialogContent from '@mui/material/DialogContent';
 import Typography from '@mui/material/Typography';
 import DialogContentText from '@mui/material/DialogContentText';
-import DialogFooter from '../Dialogs/DialogFooter';
+import DialogFooter from '../DialogFooter/DialogFooter';
 import PrimaryButton from '../PrimaryButton';
 import translations from './translations';
 import SecondaryButton from '../SecondaryButton';

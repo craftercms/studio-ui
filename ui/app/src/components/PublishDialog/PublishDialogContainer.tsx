@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useSpreadState } from '../../utils/hooks/useSpreadState';
+import { useSpreadState } from '../../hooks/useSpreadState';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { PublishingTarget } from '../../models/Publishing';
 import LookupTable from '../../models/LookupTable';
@@ -25,23 +25,23 @@ import {
   PublishDialogResourceBody,
   PublishDialogResourceInput
 } from './utils';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import { usePermissionsBySite } from '../../utils/hooks/usePermissionsBySite';
+import { useActiveSiteId } from '../../hooks/useActiveSiteId';
+import { usePermissionsBySite } from '../../hooks/usePermissionsBySite';
 import { useDispatch } from 'react-redux';
 import { fetchPublishingTargets } from '../../services/publishing';
 import { emitSystemEvent, itemsApproved, itemsScheduled } from '../../state/actions/system';
 import { getComputedPublishingTarget, getDateScheduled } from '../../utils/detailedItem';
 import { FormattedMessage } from 'react-intl';
-import { useLogicResource } from '../../utils/hooks/useLogicResource';
+import { useLogicResource } from '../../hooks/useLogicResource';
 import { createPresenceTable } from '../../utils/array';
 import { fetchDependencies, FetchDependenciesResponse } from '../../services/dependencies';
 import { PublishDialogUI } from './PublishDialogUI';
 import useStyles from './styles';
-import { useSelection } from '../../utils/hooks/useSelection';
+import { useSelection } from '../../hooks/useSelection';
 import { isBlank } from '../../utils/string';
-import { useLocale } from '../../utils/hooks/useLocale';
+import { useLocale } from '../../hooks/useLocale';
 import { getUserTimeZone } from '../../utils/datetime';
-import { DateChangeData } from '../Controls/DateTimePicker';
+import { DateChangeData } from '../DateTimePicker/DateTimePicker';
 import { pluckProps } from '../../utils/object';
 import moment from 'moment-timezone';
 import { updatePublishDialog } from '../../state/actions/dialogs';

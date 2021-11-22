@@ -21,8 +21,8 @@ import { FormControl, FormControlLabel, FormHelperText, FormLabel, Radio, RadioG
 import { setHighlightMode } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 import EditModeSwitch from '../EditModeSwitch';
-import { usePreviewState } from '../../utils/hooks/usePreviewState';
-import { useCurrentPreviewItem } from '../../utils/hooks/useCurrentPreviewItem';
+import { usePreviewState } from '../../hooks/usePreviewState';
+import { useCurrentPreviewItem } from '../../hooks/useCurrentPreviewItem';
 import { HighlightMode } from '../../models/GlobalState';
 
 const translations = defineMessages({
@@ -72,7 +72,7 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-export default function PreviewSettingsPanel() {
+export function PreviewSettingsPanel() {
   const classes = useStyles();
   const { formatMessage } = useIntl();
   const { highlightMode } = usePreviewState();
@@ -124,3 +124,5 @@ export default function PreviewSettingsPanel() {
     </section>
   );
 }
+
+export default PreviewSettingsPanel;

@@ -16,18 +16,33 @@
 
 import React, { useCallback, useEffect, useRef } from 'react';
 import { FormattedMessage } from 'react-intl';
-import DialogBody from '../Dialogs/DialogBody';
+import DialogBody from '../DialogBody/DialogBody';
 import FormHelperText from '@mui/material/FormHelperText';
 import InputBase from '@mui/material/InputBase';
-import DialogFooter from '../Dialogs/DialogFooter';
+import DialogFooter from '../DialogFooter/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
-import { styles } from './CopyTokenDialog';
 import { CopyTokenContainerProps } from './utils';
+import makeStyles from '@mui/styles/makeStyles';
+import createStyles from '@mui/styles/createStyles';
+
+const useStyles = makeStyles(() =>
+  createStyles({
+    footer: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between'
+    },
+    input: {
+      marginTop: '16px',
+      marginBottom: '8px'
+    }
+  })
+);
 
 export function CopyTokenContainer(props: CopyTokenContainerProps) {
   const { onClose, token, onCopy } = props;
-  const classes = styles();
+  const classes = useStyles();
   const inputRef = useRef<HTMLInputElement>();
 
   const copyToken = useCallback(() => {
