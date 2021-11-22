@@ -43,7 +43,12 @@ import { useDispatch } from 'react-redux';
 import { fetchInstalledMarketplacePlugins } from '../../services/marketplace';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { getUserPermissions } from '../../services/security';
-import { emitSystemEvent, pluginInstalled, showSystemNotification } from '../../state/actions/system';
+import {
+  emitSystemEvent,
+  pluginInstalled,
+  pluginUninstalled,
+  showSystemNotification
+} from '../../state/actions/system';
 import LookupTable from '../../models/LookupTable';
 import GlobalState from '../../models/GlobalState';
 import GlobalAppToolbar from '../GlobalAppToolbar';
@@ -65,6 +70,10 @@ const messages = defineMessages({
   pluginInstalled: {
     id: 'PluginManagement.pluginInstalled',
     defaultMessage: 'Plugin installed successfully'
+  },
+  pluginDeleted: {
+    id: 'PluginManagement.pluginDeleted',
+    defaultMessage: 'Plugin deleted successfully'
   }
 });
 
@@ -179,6 +188,14 @@ export const PluginManagement = (props: PluginManagementProps) => {
   };
 
   const onDeletePlugin = () => {
+    dispatch(
+      batchActions([
+        showSystemNotification({
+          message: formatMessage(messages.pluginDeleted)
+        }),
+        emitSystemEvent(pluginUninstalled())
+      ])
+    );
     deletePluginDialogState.onClose();
     refresh();
   };

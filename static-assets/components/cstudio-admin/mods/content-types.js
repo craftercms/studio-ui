@@ -314,10 +314,9 @@
                                     197,
                                     'saveContentType'
                                   );
-
                                   window.top.postMessage(
                                     {
-                                      type: 'CONTENT_TYPES_ON_SAVE'
+                                      type: 'CONTENT_TYPES_ON_SAVED'
                                     },
                                     '*'
                                   );
@@ -931,6 +930,12 @@
                 success: function (type) {
                   $('#cstudio-admin-console-workarea').html(WORK_AREA_HTML);
                   context.openExistingItemRender(type);
+                  window.top.postMessage(
+                    {
+                      type: 'CONTENT_TYPES_ON_CREATED'
+                    },
+                    '*'
+                  );
                 },
                 failure: function () {},
                 close(didCreate) {
@@ -1060,6 +1065,12 @@
             name: this.definition.title
           },
           onComplete() {
+            window.top.postMessage(
+              {
+                type: 'CONTENT_TYPES_ON_DELETED'
+              },
+              '*'
+            );
             CStudioAdminConsole.renderWorkArea(null, {
               tool: CStudioAdminConsole.toolsModules['content-types'],
               toolbar: CStudioAdminConsole.toolbar
