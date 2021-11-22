@@ -92,10 +92,16 @@ function extractCollectionPiece(model: ContentInstance, fieldId: string, index: 
         `is ${indexes} and fields is ${fields}`
     );
   }
+
   indexes.forEach((index, i) => {
     const field = fields[i];
-    aux = aux[field][index];
+    aux = aux[field]?.[index];
   });
+
+  if (nou(aux)) {
+    return aux;
+  }
+
   if (indexes.length === fields.length) {
     return aux;
   } else if (indexes.length < fields.length) {

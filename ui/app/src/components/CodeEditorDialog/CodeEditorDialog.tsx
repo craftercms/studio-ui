@@ -44,6 +44,7 @@ export function CodeEditorDialog(props: CodeEditorDialogProps) {
         title={title}
         isSubmitting={isSubmitting}
         onMinimize={onMinimize}
+        readonly={readonly}
       />
     </EnhancedDialog>
   );
