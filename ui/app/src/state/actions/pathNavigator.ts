@@ -73,8 +73,11 @@ export const pathNavigatorFetchParentItems = /*#__PURE__*/ createAction<
   PayloadWithId<{ path: string; excludes?: string[]; limit: number; offset?: number; keyword?: string }>
 >('PATH_NAVIGATOR_FETCH_PARENT_ITEMS');
 
+export const pathNavigatorFetchPath =
+  /*#__PURE__*/ createAction<PayloadWithId<{ path: string }>>('PATH_NAVIGATOR_FETCH_PATH');
+
 export const pathNavigatorFetchPathComplete = /*#__PURE__*/ createAction<
-  PayloadWithId<{ parent?: DetailedItem; children: GetChildrenResponse }>
+  PayloadWithId<{ parent?: DetailedItem; children: GetChildrenResponse; path?: string }>
 >('PATH_NAVIGATOR_FETCH_PATH_COMPLETE');
 
 export const pathNavigatorFetchParentItemsComplete = /*#__PURE__*/ createAction<

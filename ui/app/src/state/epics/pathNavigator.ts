@@ -28,6 +28,7 @@ import {
   pathNavigatorConditionallySetPathFailed,
   pathNavigatorFetchParentItems,
   pathNavigatorFetchParentItemsComplete,
+  pathNavigatorFetchPath,
   pathNavigatorFetchPathComplete,
   pathNavigatorFetchPathFailed,
   pathNavigatorInit,
@@ -92,6 +93,29 @@ export default [
                 return pathNavigatorFetchPathFailed({ error, id });
               }
             })
+          )
+      )
+    ),
+  // endregion
+  // region pathNavigatorFetchPath
+  (action$, state$) =>
+    action$.pipe(
+      ofType(pathNavigatorFetchPath.type),
+      withLatestFrom(state$),
+      mergeMap(
+        ([
+          {
+            type,
+            payload: { id, path }
+          },
+          state
+        ]) =>
+          fetchItemWithChildrenByPath(state.sites.active, path, { excludes: state.pathNavigator[id].excludes }).pipe(
+            map(({ item, children }) => pathNavigatorFetchPathComplete({ id, path, parent: item, children })),
+            catchAjaxError(
+              (error) => pathNavigatorFetchPathFailed({ id, error }),
+              (error) => showErrorDialog({ error: error.response ?? error })
+            )
           )
       )
     ),
