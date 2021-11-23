@@ -199,23 +199,26 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 
   const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
 
+  const rightActions = [];
+  if (onMinimize) {
+    rightActions.push({
+      icon: 'MinimizeIcon',
+      onClick: onMinimize
+    });
+  }
+  if (toggleMaximized) {
+    rightActions.push({
+      icon: 'MaximizeIcon',
+      onClick: toggleMaximized
+    });
+  }
+
   return (
     <>
       <DialogHeader
         title={item ? item.label : <Skeleton width="120px" />}
         onCloseButtonClick={onCloseButtonClick}
-        {...(onMinimize && {
-          rightActions: [
-            {
-              icon: 'MinimizeIcon',
-              onClick: onMinimize
-            },
-            {
-              icon: 'MaximizeIcon',
-              onClick: toggleMaximized
-            }
-          ]
-        })}
+        rightActions={rightActions}
       />
       <DialogBody className={classes.dialogBody}>
         <ConditionalLoadingState isLoading={loading} classes={{ root: classes.loadingState }}>
