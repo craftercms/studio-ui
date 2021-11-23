@@ -51,6 +51,8 @@ import {
   guestCheckOut,
   highlightModeChanged,
   hostCheckIn,
+  keyDown,
+  keyUp,
   navigationRequest,
   reloadRequest,
   scrollToDropTarget,
@@ -102,6 +104,7 @@ export type GuestProps = PropsWithChildren<{
 
 const initialDocumentDomain = document.domain;
 const editModeClass = 'craftercms-ice-on';
+const zKeyClass = 'craftercms-ice-bypass';
 
 export function getEditModeClass() {
   return editModeClass;
@@ -169,17 +172,41 @@ function Guest(props: GuestProps) {
   useEffect(() => {
     const keydown = (e) => {
       refs.current.keysPressed[e.key] = true;
+      if (e.key === 'z') {
+        $('html').addClass(zKeyClass);
+      }
     };
     const keyup = (e) => {
       refs.current.keysPressed[e.key] = false;
+      if (e.key === 'z') {
+        $('html').removeClass(zKeyClass);
+      }
     };
+    const message$Subscription = message$
+      .pipe(filter((action) => action.type === keyUp.type || action.type === keyDown.type))
+      .subscribe((action) => {
+        const fn = action.type === keyUp.type ? keyup : keydown;
+        fn(action.payload);
+      });
     document.addEventListener('keydown', keydown, false);
     document.addEventListener('keyup', keyup, false);
     return () => {
+      message$Subscription.unsubscribe();
       document.removeEventListener('keydown', keydown, false);
       document.removeEventListener('keyup', keyup, false);
     };
   }, []);
+
+  useEffect(() => {
+    const $html = $('html');
+    const cls = `craftercms-highlight-${highlightMode}`;
+    if (editMode) {
+      $html.addClass(cls);
+      return () => {
+        $html.removeClass(cls);
+      };
+    }
+  }, [editMode, highlightMode]);
 
   // Sets document domain
   useEffect(() => {

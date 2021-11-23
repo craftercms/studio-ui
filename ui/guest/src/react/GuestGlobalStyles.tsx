@@ -21,6 +21,8 @@ import { defaultStyleConfig as config } from '../styles/stylesheet';
 
 export interface GuestGlobalStylesProps {}
 
+const captureOverlayAttribute = '[data-craftercms-event-capture-overlay]';
+
 // Hoist global styles to a static constant to avoid re-rendering.
 const styles = (
   <Global
@@ -148,7 +150,6 @@ const styles = (
         }
       },
       // Classes
-
       '.craftercms-placeholder-spinner': {
         animation: 'craftercms-placeholder-animation 2s linear infinite',
         '& .path': {
@@ -174,11 +175,38 @@ const styles = (
         whiteSpace: 'nowrap'
       },
       '.craftercms-ice-on': {
-        '& [data-craftercms-model-id], & [data-craftercms-model-id] a': {
+        '[data-craftercms-model-id], & [data-craftercms-model-id] a': {
           cursor: 'url("/studio/static-assets/images/cursor-edit@1.5x.png"), pointer !important'
         },
-        '& [draggable="true"]': {
+        '[draggable="true"]': {
           cursor: 'url("/studio/static-assets/images/cursor-drag@1.5x.png"), move !important'
+        },
+        [`&.craftercms-highlight-move ${captureOverlayAttribute}`]: {
+          background: 'rgba(0, 0, 0, .9)',
+          '&::before': {
+            content: '"Content hidden to enable dragging."'
+          },
+          '> *': {
+            visibility: 'hidden'
+          }
+        },
+        [`&.craftercms-ice-bypass ${captureOverlayAttribute}:hover::before`]: {
+          backgroundColor: 'rgba(0, 0, 0, .9)',
+          content: '"Turn off edit mode to interact with this element."'
+        },
+        [captureOverlayAttribute]: {
+          position: 'relative',
+          '&::before': {
+            top: 0,
+            left: 0,
+            right: 0,
+            color: '#fff',
+            bottom: 0,
+            content: '""',
+            padding: '20px',
+            fontWeight: 'bold',
+            position: 'absolute'
+          }
         }
       },
       '.mce-content-body': {

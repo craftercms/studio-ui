@@ -47,6 +47,8 @@ import {
   insertOperationComplete,
   instanceDragBegun,
   instanceDragEnded,
+  keyDown,
+  keyUp,
   moveItemOperation,
   selectForEdit,
   setContentTypeDropTargets,
@@ -293,8 +295,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
     if (rteConfig) getHostToGuestBus().next({ type: updateRteConfig.type, payload: { rteConfig } });
   }, [rteConfig]);
 
-  // Guest detection, document domain restoring, editMode/highlightMode preference retrieval, clipboard retrieval
-  // and contentType subject cleanup.
+  // Guest detection, document domain restoring, editMode/highlightMode preference retrieval,
+  // and guest key up/down notifications.
   useMount(() => {
     const localEditMode = getStoredEditModeChoice(user.username);
     if (nnou(localEditMode) && editMode !== localEditMode) {
@@ -308,9 +310,17 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 
     startGuestDetectionTimeout(guestDetectionTimeoutRef, setGuestDetectionSnackbarOpen);
 
+    const hostToGuest = getHostToGuestBus();
+    const keydown = (e) => hostToGuest.next(keyDown({ key: e.key }));
+    const keyup = (e) => hostToGuest.next(keyUp({ key: e.key }));
+    document.addEventListener('keydown', keydown, false);
+    document.addEventListener('keyup', keyup, false);
+
     return () => {
       contentTypes$.complete();
       contentTypes$.unsubscribe();
+      document.removeEventListener('keydown', keydown, false);
+      document.removeEventListener('keyup', keyup, false);
       document.domain = originalDocDomain;
     };
   });
