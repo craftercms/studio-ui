@@ -396,6 +396,8 @@ function GlobalDialogManager() {
       <WidgetDialog
         {...state.widget}
         onClose={createCallback(state.widget.onClose, dispatch)}
+        onMinimize={createCallback(state.widget.onMinimize, dispatch)}
+        onMaximize={createCallback(state.widget.onMaximize, dispatch)}
         onClosed={createCallback(state.widget.onClosed, dispatch)}
         onWithPendingChangesCloseRequest={useWithPendingChangesCloseRequest(
           createCallback(state.widget.onClose, dispatch)
