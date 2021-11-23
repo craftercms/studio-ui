@@ -461,6 +461,7 @@ function parseElementByContentType(
     case 'textarea':
     case 'dropdown':
     case 'date-time':
+    case 'time':
       return getInnerHtml(element);
     case 'boolean':
     case 'page-nav-order':
