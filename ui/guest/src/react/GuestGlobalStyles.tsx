@@ -31,7 +31,7 @@ import {
 
 export interface GuestGlobalStylesProps {}
 
-const overlayBackgroundColor = 'rgba(0, 0, 0, .6)';
+const overlayBackgroundColor = 'rgba(0, 0, 0, .4)';
 
 // Hoist global styles to a static constant to avoid re-rendering.
 const styles = (
@@ -244,12 +244,13 @@ const styles = (
         [`.${emptyFieldClass}`]: {
           minHeight: '40px',
           minWidth: '50px',
+          borderRadius: '5px',
           backgroundColor: overlayBackgroundColor,
           '&::before': {
             color: '#fff',
             display: 'inline-block',
             padding: '10px',
-            content: '"Field has no content."',
+            content: '"Click to add content."',
             fontWeight: 'bold'
           }
         }

@@ -72,6 +72,9 @@ export function initTinyMCE(
     paste_cleanup: '/studio/static-assets/js/tinymce-plugins/paste_cleanup/plugin.js'
   };
 
+  const $element = $(record.element);
+  $element.removeClass(emptyFieldClass);
+
   window.tinymce.init({
     mode: 'none',
     target: record.element,
@@ -94,10 +97,6 @@ export function initTinyMCE(
       editor.on('init', function () {
         let changed = false;
         let originalContent = getContent();
-
-        const $element = $(record.element);
-
-        $element.removeClass(emptyFieldClass);
 
         editor.focus(false);
         editor.selection.select(editor.getBody(), true);
@@ -182,6 +181,7 @@ export function initTinyMCE(
           }
 
           if ($element.html().trim() === '') {
+            console.log(`Adding class ${emptyFieldClass}.`);
             $element.addClass(emptyFieldClass);
           }
 
