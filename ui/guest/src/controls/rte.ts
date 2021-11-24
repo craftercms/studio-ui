@@ -28,6 +28,7 @@ import { reversePluckProps } from '@craftercms/studio-ui/utils/object';
 import { showEditDialog, validationMessage } from '@craftercms/studio-ui/state/actions/preview';
 import { RteSetup } from '../models/Rte';
 import { editComponentInline, exitComponentInlineEdit } from '../store/actions';
+import { emptyFieldClass } from '../constants';
 
 export function initTinyMCE(
   record: ElementRecord,
@@ -93,6 +94,10 @@ export function initTinyMCE(
       editor.on('init', function () {
         let changed = false;
         let originalContent = getContent();
+
+        const $element = $(record.element);
+
+        $element.removeClass(emptyFieldClass);
 
         editor.focus(false);
         editor.selection.select(editor.getBody(), true);
@@ -170,15 +175,23 @@ export function initTinyMCE(
           // In case the user did some text bolding or other formatting which won't
           // be honoured on plain text, revert the content to the edited plain text
           // version of the input.
-          changed && type === 'text' && $(record.element).html(content);
+          changed && type === 'text' && $element.html(content);
 
           if (elementDisplay === 'inline') {
-            $(record.element).css('display', '');
+            $element.css('display', '');
           }
 
-          dispatch$.next({ type: exitComponentInlineEdit.type });
-          dispatch$.complete();
-          dispatch$.unsubscribe();
+          if ($element.html().trim() === '') {
+            $element.addClass(emptyFieldClass);
+          }
+
+          // The timeout prevents clicking the edit menu to be shown when clicking out of an RTE
+          // with the intention to exit editing.
+          setTimeout(() => {
+            dispatch$.next({ type: exitComponentInlineEdit.type });
+            dispatch$.complete();
+            dispatch$.unsubscribe();
+          }, 150);
         }
 
         if (type !== 'html') {
