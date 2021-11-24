@@ -44,7 +44,7 @@ export interface CodeEditorDialogContainerProps
   extends CodeEditorDialogBaseProps,
     Pick<CodeEditorDialogProps, 'onMinimize' | 'isSubmitting' | 'onSuccess' | 'onClose'> {
   title: string;
-  toggleMaximized(): void;
+  onFullScreen(): void;
   onSaveClose?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
 }
 

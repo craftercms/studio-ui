@@ -27,7 +27,7 @@ export function CodeEditorDialog(props: CodeEditorDialogProps) {
 
   const title = formatMessage(translations.title);
   const [isMaximized, setIsMaximized] = useState(false);
-  const toggleMaximized = () => {
+  const onFullScreen = () => {
     setIsMaximized(!isMaximized);
   };
 
@@ -50,7 +50,7 @@ export function CodeEditorDialog(props: CodeEditorDialogProps) {
         isSubmitting={isSubmitting}
         onMinimize={onMinimize}
         readonly={readonly}
-        onMaximize={toggleMaximized}
+        onFullScreen={onFullScreen}
       />
     </EnhancedDialog>
   );
