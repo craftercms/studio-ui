@@ -211,13 +211,7 @@ export default [
             ...(Boolean(state.pathNavigator[id].keyword) && { keyword: state.pathNavigator[id].keyword }),
             offset
           }).pipe(
-            map((children) =>
-              pathNavigatorFetchPathComplete({
-                id,
-                children,
-                parent: state.content.itemsByPath[state.pathNavigator[id].currentPath]
-              })
-            ),
+            map((children) => pathNavigatorFetchPathComplete({ id, children })),
             catchAjaxError((error) => pathNavigatorFetchPathFailed({ error, id }))
           )
       )
