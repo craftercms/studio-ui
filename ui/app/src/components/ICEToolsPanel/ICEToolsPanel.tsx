@@ -20,7 +20,6 @@ import { useDispatch } from 'react-redux';
 import { initIcePanelConfig, updateIcePanelWidth } from '../../state/actions/preview';
 import LoadingState, { ConditionalLoadingState } from '../LoadingState/LoadingState';
 import { useSelection } from '../../hooks/useSelection';
-import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useActiveUser } from '../../hooks/useActiveUser';
 import { useSiteUIConfig } from '../../hooks/useSiteUIConfig';
 import { renderWidgets } from '../Widget';
@@ -59,7 +58,7 @@ export function ICEToolsPanel() {
       const storedPage = getStoredICEToolsPanelPage(uuid, username);
       dispatch(initIcePanelConfig({ configXml: uiConfig.xml, storedPage, icePanelWidth }));
     }
-  }, [uiConfig.xml, dispatch, icePanel, site, username]);
+  }, [uiConfig.xml, dispatch, icePanel, site, username, uuid]);
 
   return (
     <ResizeableDrawer open={isOpen} belowToolbar anchor="right" width={width} onWidthChange={onWidthChange}>
