@@ -50,7 +50,7 @@ import { CodeEditorDialogContainerProps, getContentModelSnippets } from './utils
 import { batchActions } from '../../state/actions/misc';
 
 export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps) {
-  const { path, onMinimize, onClose, onSaveClose, mode, isSubmitting, readonly, contentType, toggleMaximized } = props;
+  const { path, onMinimize, onClose, onSaveClose, mode, isSubmitting, readonly, contentType, onMaximize } = props;
   const item = useDetailedItem(path);
   const site = useActiveSiteId();
   const user = useActiveUser();
@@ -206,10 +206,10 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
       onClick: onMinimize
     });
   }
-  if (toggleMaximized) {
+  if (onMaximize) {
     rightActions.push({
       icon: 'MaximizeIcon',
-      onClick: toggleMaximized
+      onClick: onMaximize
     });
   }
 

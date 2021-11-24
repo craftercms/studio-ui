@@ -50,7 +50,7 @@ export function CodeEditorDialog(props: CodeEditorDialogProps) {
         isSubmitting={isSubmitting}
         onMinimize={onMinimize}
         readonly={readonly}
-        toggleMaximized={toggleMaximized}
+        onMaximize={toggleMaximized}
       />
     </EnhancedDialog>
   );
