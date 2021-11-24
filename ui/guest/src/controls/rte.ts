@@ -181,7 +181,6 @@ export function initTinyMCE(
           }
 
           if ($element.html().trim() === '') {
-            console.log(`Adding class ${emptyFieldClass}.`);
             $element.addClass(emptyFieldClass);
           }
 
