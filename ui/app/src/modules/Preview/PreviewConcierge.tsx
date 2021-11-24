@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react';
 import {
   changeCurrentUrl,
   checkInGuest,
@@ -72,9 +72,8 @@ import {
   updateField,
   uploadDataUrl
 } from '../../services/content';
-import { filter, map, pluck, switchMap, take, takeUntil } from 'rxjs/operators';
-import ContentType from '../../models/ContentType';
-import { forkJoin, Observable, of, ReplaySubject } from 'rxjs';
+import { filter, map, pluck, switchMap, takeUntil } from 'rxjs/operators';
+import { forkJoin, Observable, of } from 'rxjs';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { getGuestToHostBus, getHostToGuestBus, getHostToHostBus } from './previewContext';
 import { useDispatch } from 'react-redux';
@@ -228,7 +227,6 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   const models = guest?.models;
   const modelIdByPath = guest?.modelIdByPath;
   const hierarchyMap = guest?.hierarchyMap;
-  const contentTypes$ = useMemo(() => new ReplaySubject<ContentType[]>(1), []);
   const requestedSourceMapPaths = useRef({});
   const guestDetectionTimeoutRef = useRef<number>();
   const [guestDetectionSnackbarOpen, setGuestDetectionSnackbarOpen] = useState(false);
@@ -309,8 +307,6 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
     startGuestDetectionTimeout(guestDetectionTimeoutRef, setGuestDetectionSnackbarOpen);
 
     return () => {
-      contentTypes$.complete();
-      contentTypes$.unsubscribe();
       document.domain = originalDocDomain;
     };
   });
@@ -336,8 +332,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 
   // Post content types
   useEffect(() => {
-    contentTypes && contentTypes$.next(Object.values(contentTypes));
-  }, [contentTypes, contentTypes$]);
+    contentTypes && getHostToGuestBus().next({ type: contentTypesResponse.type, payload: Object.values(contentTypes) });
+  }, [contentTypes]);
 
   // region guestToHost$ subscription
   useEffect(() => {
@@ -406,11 +402,9 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
               nnou(siteId) && dispatch(changeCurrentUrl('/'));
             } else {
               const path = payload.path;
-              // If the content types have already been loaded, contentTypes$ subject will emit
-              // immediately. If not, it will emit when the content type fetch payload does arrive.
-              contentTypes$.pipe(take(1)).subscribe((payload) => {
-                hostToGuest$.next({ type: contentTypesResponse.type, payload });
-              });
+
+              contentTypes &&
+                hostToGuest$.next({ type: contentTypesResponse.type, payload: Object.values(contentTypes) });
 
               issueDescriptorRequest({
                 site: siteId,
@@ -785,7 +779,6 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
     };
   }, [
     authoringBase,
-    contentTypes$,
     contentTypes,
     currentUrlPath,
     dispatch,
