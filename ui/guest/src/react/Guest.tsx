@@ -30,7 +30,7 @@ import { fromTopic, message$, post } from '../utils/communicator';
 import Cookies from 'js-cookie';
 import { HighlightData } from '../models/InContextEditing';
 import AssetUploaderMask from './AssetUploaderMask';
-import { EditingStatus, HighlightMode } from '../constants';
+import { EditingStatus, editOnClass, HighlightMode, iceBypassKeyClass } from '../constants';
 import {
   assetDragEnded,
   assetDragStarted,
@@ -64,7 +64,7 @@ import { createGuestStore } from '../store/store';
 import { Provider } from 'react-redux';
 import { clearAndListen$ } from '../store/subjects';
 import { GuestState } from '../store/models/GuestStore';
-import { nullOrUndefined, nnou } from '@craftercms/studio-ui/utils/object';
+import { nnou, nullOrUndefined } from '@craftercms/studio-ui/utils/object';
 import { scrollToDropTargets } from '../utils/dom';
 import { dragOk } from '../store/util';
 import SnackBar, { Snack } from './SnackBar';
@@ -103,12 +103,6 @@ export type GuestProps = PropsWithChildren<{
 }>;
 
 const initialDocumentDomain = document.domain;
-const editModeClass = 'craftercms-ice-on';
-const zKeyClass = 'craftercms-ice-bypass';
-
-export function getEditModeClass() {
-  return editModeClass;
-}
 
 function Guest(props: GuestProps) {
   // TODO: support path driven Guest.
@@ -173,13 +167,13 @@ function Guest(props: GuestProps) {
     const keydown = (e) => {
       refs.current.keysPressed[e.key] = true;
       if (e.key === 'z') {
-        $('html').addClass(zKeyClass);
+        $('html').addClass(iceBypassKeyClass);
       }
     };
     const keyup = (e) => {
       refs.current.keysPressed[e.key] = false;
       if (e.key === 'z') {
-        $('html').removeClass(zKeyClass);
+        $('html').removeClass(iceBypassKeyClass);
       }
     };
     const message$Subscription = message$
@@ -224,14 +218,14 @@ function Guest(props: GuestProps) {
   // Add/remove edit on class
   useEffect(() => {
     if (editMode === false) {
-      $('html').removeClass(editModeClass);
+      $('html').removeClass(editOnClass);
       document.dispatchEvent(new CustomEvent('craftercms.editMode', { detail: false }));
       // Refreshing the page for now. Will revisit on a later release.
       if (!refs.current.firstRender && refs.current.hasChanges) {
         window.location.reload();
       }
     } else {
-      $('html').addClass(editModeClass);
+      $('html').addClass(editOnClass);
       document.dispatchEvent(new CustomEvent('craftercms.editMode', { detail: true }));
     }
     if (refs.current.firstRender) {

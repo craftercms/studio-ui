@@ -25,7 +25,7 @@ import * as contentController from '../../classes/ContentController';
 import { interval, merge, NEVER, Observable, of, Subject } from 'rxjs';
 import { clearAndListen$, destroyDragSubjects, dragover$, escape$, initializeDragSubjects } from '../subjects';
 import { initTinyMCE } from '../../controls/rte';
-import { EditingStatus, HighlightMode } from '../../constants';
+import { dragAndDropActiveClass, EditingStatus, HighlightMode } from '../../constants';
 import {
   assetDragEnded,
   assetDragStarted,
@@ -69,6 +69,7 @@ import {
   setEditingStatus,
   startListening
 } from '../actions';
+import $ from 'jquery';
 
 const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
   // region mouseover, mouseleave
@@ -105,6 +106,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
             e.dataTransfer.setData('text/plain', `${record.id}`);
             e.dataTransfer.setDragImage(document.querySelector('.craftercms-dragged-element'), 20, 20);
           }
+          $('html').addClass(dragAndDropActiveClass);
           return initializeDragSubjects(state$);
         }
         return NEVER;
@@ -397,7 +399,10 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
   (action$: MouseEventActionObservable) =>
     action$.pipe(
       ofType(computedDragEnd.type),
-      tap(() => destroyDragSubjects()),
+      tap(() => {
+        $('html').removeClass(dragAndDropActiveClass);
+        destroyDragSubjects();
+      }),
       ignoreElements()
     ),
   // endregion
@@ -531,8 +536,10 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
                 values: { contentType: state.dragContext.contentType.name }
               })
             );
+          } else {
+            $('html').addClass(dragAndDropActiveClass);
+            return initializeDragSubjects(state$);
           }
-          return initializeDragSubjects(state$);
         }
         return NEVER;
       })
@@ -555,8 +562,10 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
                 values: { contentType: state.dragContext.contentType.name }
               })
             );
+          } else {
+            $('html').addClass(dragAndDropActiveClass);
+            return initializeDragSubjects(state$);
           }
-          return initializeDragSubjects(state$);
         }
         return NEVER;
       })

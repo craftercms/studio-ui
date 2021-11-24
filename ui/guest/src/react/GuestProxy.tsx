@@ -46,6 +46,7 @@ import { notNullOrUndefined } from '@craftercms/studio-ui/utils/object';
 import { forEach } from '@craftercms/studio-ui/utils/array';
 import { isSimple, popPiece, removeLastPiece } from '@craftercms/studio-ui/utils/string';
 import { addAnimation } from '../utils/dom';
+import { emptyCollectionClass } from '../constants';
 
 export function GuestProxy() {
   const draggable = useSelector<GuestState['draggable']>((state) => state.draggable);
@@ -267,6 +268,7 @@ export function GuestProxy() {
           const moveTargetICEId = iceRegistry.exists({ modelId, fieldId, index });
           const moveTargetPhyRecord = ElementRegistry.fromICEId(moveTargetICEId);
 
+          const $sourceDropZone = $(currentDropZonePhyRecord.element);
           const $targetDropZone = $(targetDropZonePhyRecord.element);
 
           if (targetIndexParsed === 0) {
@@ -298,6 +300,11 @@ export function GuestProxy() {
               });
           });
 
+          $targetDropZone.removeClass(emptyCollectionClass);
+          if ($sourceDropZone.children().length === 0) {
+            $sourceDropZone.addClass(emptyCollectionClass);
+          }
+
           addAnimation($(moveTargetPhyRecord.element), 'craftercms-content-tree-locate');
 
           break;
@@ -315,6 +322,9 @@ export function GuestProxy() {
           setTimeout(() => {
             const $daddy: JQuery<Element> = $(phyRecord.element).parent();
             $(phyRecord.element).remove();
+            if ($daddy.children().length === 0) {
+              $daddy.addClass(emptyCollectionClass);
+            }
             updateElementRegistrations(Array.from($daddy.children()), 'delete', index, null, fieldId);
           });
 
@@ -332,6 +342,7 @@ export function GuestProxy() {
 
           const $daddy = getParentElementFromICEProps(modelId, fieldId, targetIndex);
 
+          $daddy.removeClass(emptyCollectionClass);
           insertElement($spinner, $daddy, targetIndex);
 
           message$

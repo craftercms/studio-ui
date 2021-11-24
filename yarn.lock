@@ -1967,42 +1967,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@craftercms/models@npm:2.0.1":
-  version: 2.0.1
-  resolution: "@craftercms/models@npm:2.0.1"
-  checksum: 69c2ab8e1d22d0392dc29cfb7651684b9271e9456873f42dd6c35e760f7e0954603ef07ea49d2bc45b1b031141c603257ccc2a719a4142f5721994f70c6d907b
-  languageName: node
-  linkType: hard
-
-"@craftercms/monaco-adapter@workspace:ui/monaco":
+"@craftercms/experience-builder@workspace:ui/guest":
   version: 0.0.0-use.local
-  resolution: "@craftercms/monaco-adapter@workspace:ui/monaco"
-  dependencies:
-    build-if-changed: ^1.5.5
-    monaco-editor: ^0.20.0
-    monaco-editor-webpack-plugin: ^1.9.0
-    webpack: 4.44.2
-    webpack-cli: ^3.3.12
-  languageName: unknown
-  linkType: soft
-
-"@craftercms/search@npm:^2.0.1":
-  version: 2.0.1
-  resolution: "@craftercms/search@npm:2.0.1"
-  dependencies:
-    "@craftercms/classes": 2.0.1
-    "@craftercms/models": 2.0.1
-    "@craftercms/utils": 2.0.1
-    rxjs: ^7.0.0
-    url-search-params-polyfill: ^5.0.0
-    uuid: ^3.4.0
-  checksum: 16617861aec55cb6adf901dbc932f9bb90102943f6c7aea827e8c4b8245d1ae04ef4672d59c88296820801e26243950500750be3e36a426cb103d10a1d04c43a
-  languageName: node
-  linkType: hard
-
-"@craftercms/studio-guest@workspace:ui/guest":
-  version: 0.0.0-use.local
-  resolution: "@craftercms/studio-guest@workspace:ui/guest"
+  resolution: "@craftercms/experience-builder@workspace:ui/guest"
   dependencies:
     "@babel/cli": ^7.8.4
     "@babel/core": 7.12.3
@@ -2036,6 +2003,39 @@ __metadata:
     yargs: ^15.3.1
   languageName: unknown
   linkType: soft
+
+"@craftercms/models@npm:2.0.1":
+  version: 2.0.1
+  resolution: "@craftercms/models@npm:2.0.1"
+  checksum: 69c2ab8e1d22d0392dc29cfb7651684b9271e9456873f42dd6c35e760f7e0954603ef07ea49d2bc45b1b031141c603257ccc2a719a4142f5721994f70c6d907b
+  languageName: node
+  linkType: hard
+
+"@craftercms/monaco-adapter@workspace:ui/monaco":
+  version: 0.0.0-use.local
+  resolution: "@craftercms/monaco-adapter@workspace:ui/monaco"
+  dependencies:
+    build-if-changed: ^1.5.5
+    monaco-editor: ^0.20.0
+    monaco-editor-webpack-plugin: ^1.9.0
+    webpack: 4.44.2
+    webpack-cli: ^3.3.12
+  languageName: unknown
+  linkType: soft
+
+"@craftercms/search@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "@craftercms/search@npm:2.0.1"
+  dependencies:
+    "@craftercms/classes": 2.0.1
+    "@craftercms/models": 2.0.1
+    "@craftercms/utils": 2.0.1
+    rxjs: ^7.0.0
+    url-search-params-polyfill: ^5.0.0
+    uuid: ^3.4.0
+  checksum: 16617861aec55cb6adf901dbc932f9bb90102943f6c7aea827e8c4b8245d1ae04ef4672d59c88296820801e26243950500750be3e36a426cb103d10a1d04c43a
+  languageName: node
+  linkType: hard
 
 "@craftercms/studio-ui-legacy@workspace:ui/legacy":
   version: 0.0.0-use.local
