@@ -520,8 +520,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
             instance,
             parentModelId ? models[parentModelId].craftercms.path : null,
             shared
-          ).subscribe(
-            () => {
+          ).subscribe({
+            next() {
               issueDescriptorRequest({
                 site: siteId,
                 path: path ?? models[parentModelId].craftercms.path,
@@ -537,11 +537,11 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
               });
               enqueueSnackbar(formatMessage(guestMessages.insertOperationComplete));
             },
-            (error) => {
+            error(error) {
               console.error(`${type} failed`, error);
               enqueueSnackbar(formatMessage(guestMessages.insertOperationFailed));
             }
-          );
+          });
           break;
         }
         case insertInstanceOperation.type: {
