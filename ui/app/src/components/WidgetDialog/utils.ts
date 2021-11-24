@@ -32,4 +32,6 @@ export interface WidgetDialogProps extends WidgetDialogBaseProps, Omit<EnhancedD
 export interface WidgetDialogStateProps extends WidgetDialogBaseProps, EnhancedDialogState {
   onClose?: StandardAction;
   onClosed?: StandardAction;
+  onMaximize?: StandardAction;
+  onMinimize?: StandardAction;
 }
