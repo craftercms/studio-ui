@@ -30,6 +30,7 @@ export interface RenderTreeNodeProps {
   classes?: Partial<Record<'treeItemLabel', string>>;
   onIconClick?(event: React.ChangeEvent<{}>, node: FolderBrowserTreeViewNode): void;
   onLabelClick?(event: React.ChangeEvent<{}>, node: FolderBrowserTreeViewNode): void;
+  onContextMenu?(element: Element): void;
 }
 
 const translations = defineMessages({
@@ -44,7 +45,7 @@ const translations = defineMessages({
 });
 
 export function RenderTreeNode(props: RenderTreeNodeProps) {
-  const { node, onIconClick, onLabelClick } = props;
+  const { node, onIconClick, onLabelClick, onContextMenu } = props;
   const classes = useTreeNodeStyles();
   const { formatMessage } = useIntl();
 
@@ -59,8 +60,17 @@ export function RenderTreeNode(props: RenderTreeNodeProps) {
     <TreeItem
       key={node.id}
       nodeId={node.id}
+      onContextMenu={
+        onContextMenu
+          ? (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onContextMenu(e.target as Element);
+            }
+          : null
+      }
       label={
-        <div role="button" onClick={(e) => onLabelClick?.(e, node)}>
+        <div role="button" data-path={node.id} onClick={(e) => onLabelClick?.(e, node)}>
           {node.name}
         </div>
       }

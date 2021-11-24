@@ -49,6 +49,7 @@ export interface FolderBrowserTreeViewUIProps {
   onLabelClick?(event: React.ChangeEvent<{}>, node: FolderBrowserTreeViewNode): void;
   onPathChanged?(path: string): void;
   onKeyPress?(event: React.KeyboardEvent): void;
+  onContextMenu?(element: Element): void;
 }
 
 export function FolderBrowserTreeViewUI(props: FolderBrowserTreeViewUIProps) {
@@ -68,7 +69,8 @@ export function FolderBrowserTreeViewUI(props: FolderBrowserTreeViewUIProps) {
     showPathTextBox = true,
     disableSelection = false,
     onIconClick,
-    onLabelClick
+    onLabelClick,
+    onContextMenu
   } = props;
 
   const treeNodes = resource.read();
@@ -101,6 +103,7 @@ export function FolderBrowserTreeViewUI(props: FolderBrowserTreeViewUIProps) {
             node={treeNodes}
             onIconClick={onIconClick}
             onLabelClick={onLabelClick}
+            onContextMenu={onContextMenu}
           />
         </TreeView>
       ) : (
