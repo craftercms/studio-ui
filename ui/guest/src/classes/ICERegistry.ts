@@ -362,11 +362,13 @@ export function getMovableParentRecord(id: number): number {
       // Can be...
       // - Field of a component (possible move target)
       // - Field of a page
-      return exists({
-        modelId: modelHierarchyMap[modelId].parentId,
-        fieldId: modelHierarchyMap[modelId].parentContainerFieldPath,
-        index: modelHierarchyMap[modelId].parentContainerFieldIndex
-      });
+      return modelHierarchyMap[modelId]
+        ? exists({
+            modelId: modelHierarchyMap[modelId].parentId,
+            fieldId: modelHierarchyMap[modelId].parentContainerFieldPath,
+            index: modelHierarchyMap[modelId].parentContainerFieldIndex
+          })
+        : null;
     } else {
       // It means the field is a child of a repeat item
       // looking for the parent item of the field
