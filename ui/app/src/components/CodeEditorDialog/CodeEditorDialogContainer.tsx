@@ -48,6 +48,7 @@ import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 import { reloadRequest } from '../../state/actions/preview';
 import { CodeEditorDialogContainerProps, getContentModelSnippets } from './utils';
 import { batchActions } from '../../state/actions/misc';
+import { getStoredSaveButtonSubAction, setStoredSaveButtonSubAction } from '../../utils/state';
 
 export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps) {
   const { path, onMinimize, onClose, onSaveClose, mode, isSubmitting, readonly, contentType, onFullScreen } = props;
@@ -64,6 +65,10 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [snippets, setSnippets] = useState<LookupTable<{ label: string; value: string }>>({});
   const [contentModelSnippets, setContentModelSnippets] = useState<{ label: string; value: string }[]>(null);
+  const storedId = 'codeEditor';
+  const [saveSubOptionSelection, setSaveSubOptionSelection] = useState(
+    getStoredSaveButtonSubAction(user.username, storedId) ?? 0
+  );
   const {
     'craftercms.freemarkerCodeSnippets': freemarkerCodeSnippets,
     'craftercms.groovyCodeSnippets': groovyCodeSnippets
@@ -199,6 +204,12 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 
   const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
 
+  const onSaveSubAction = (action, index) => {
+    setSaveSubOptionSelection(index);
+    setStoredSaveButtonSubAction(user.username, storedId, index);
+    action();
+  };
+
   const rightActions = [];
   if (onMinimize) {
     rightActions.push({
@@ -250,10 +261,14 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
           <SplitButton
             loading={isSubmitting}
             disabled={disableEdit}
+            defaultSelected={saveSubOptionSelection}
             options={[
-              { label: formatMessage(translations.save), callback: onSave },
-              { label: formatMessage(translations.saveAndClose), callback: saveAndClose },
-              { label: formatMessage(translations.saveAndMinimize), callback: onSaveAndMinimize }
+              { label: formatMessage(translations.save), callback: () => onSaveSubAction(onSave, 0) },
+              { label: formatMessage(translations.saveAndClose), callback: () => onSaveSubAction(saveAndClose, 1) },
+              {
+                label: formatMessage(translations.saveAndMinimize),
+                callback: () => onSaveSubAction(onSaveAndMinimize, 2)
+              }
             ]}
           />
         </DialogFooter>

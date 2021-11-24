@@ -1868,26 +1868,31 @@ var CStudioForms =
 
             //In Context Edit, the preview button must not be shown
             var iceId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'iceId');
-
+            const user = CStudioAuthoringContext.user;
             // This is really the right thing to do but previewable doesn't come through
             CStudioAuthoring.Service.lookupContentType(CStudioAuthoringContext.site, contentType, {
               success: function (type) {
+                const storedId = type.previewable ? 'formEditorPreviewable' : 'formEditorNotPreviewable';
+                const defaultSelected = CrafterCMSNext.util.state.getStoredSaveButtonSubAction(user, storedId) ?? 1;
                 const options = [
                   {
                     label: formatMessage(formEngineMessages.save),
                     callback: () => {
+                      CrafterCMSNext.util.state.setStoredSaveButtonSubAction(user, storedId, 0);
                       saveFn(false, true, null, 'save');
                     }
                   },
                   {
                     label: formatMessage(formEngineMessages.saveAndClose),
                     callback: () => {
+                      CrafterCMSNext.util.state.setStoredSaveButtonSubAction(user, storedId, 1);
                       saveFn(false, false, null, 'saveAndClose');
                     }
                   },
                   {
                     label: formatMessage(formEngineMessages.saveAndMinimize),
                     callback: () => {
+                      CrafterCMSNext.util.state.setStoredSaveButtonSubAction(user, storedId, 2);
                       saveFn(false, true, null, 'saveAndMinimize');
                     }
                   }
@@ -1896,13 +1901,14 @@ var CStudioForms =
                   options.push({
                     label: formatMessage(formEngineMessages.saveAndPreview),
                     callback: () => {
+                      CrafterCMSNext.util.state.setStoredSaveButtonSubAction(user, storedId, 3);
                       saveFn(true, false, null, 'saveAndPreview');
                     }
                   });
                 }
                 CrafterCMSNext.render(buttonsContainer, 'SplitButton', {
                   options,
-                  defaultSelected: 1,
+                  defaultSelected,
                   disablePortal: false
                 });
               },

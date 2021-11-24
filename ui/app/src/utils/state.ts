@@ -207,3 +207,11 @@ export function commonDialogProps<T>(specificProps: T): EnhancedDialogState & T 
     ...specificProps
   };
 }
+
+export function setStoredSaveButtonSubAction(user: string, id: string, value: number) {
+  window.localStorage.setItem(`craftercms.${user}.saveButtonSubAction.${id}`, JSON.stringify(value));
+}
+
+export function getStoredSaveButtonSubAction(user: string, id: string) {
+  return JSON.parse(window.localStorage.getItem(`craftercms.${user}.saveButtonSubAction.${id}`));
+}
