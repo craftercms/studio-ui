@@ -15,7 +15,7 @@
  */
 
 import React, { useMemo } from 'react';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import TablePagination from '@mui/material/TablePagination';
 import { DetailedItem } from '../../models/Item';
 import clsx from 'clsx';
@@ -261,10 +261,14 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
             errorStateProps: { imageUrl: null }
           }}
           withEmptyStateProps={{
-            /* We don't want an empty state message but SuspenseWithEmptyState
-            is still appropriate for error handling and loading state displaying.
-            So, leaving it and setting isEmpty checker to always return false */
-            isEmpty: () => false
+            /* If there are no children and no level descriptor => empty */
+            isEmpty: (children) => children.length === 0 && !Boolean(levelDescriptor),
+            emptyStateProps: {
+              title: (
+                <FormattedMessage id="pathNavigator.noItemsAtLocation" defaultMessage="No items at this location" />
+              ),
+              image: null
+            }
           }}
           suspenseProps={{
             fallback: <NavLoader numOfItems={state.itemsInPath?.length > 0 ? state.itemsInPath.length : state.limit} />
