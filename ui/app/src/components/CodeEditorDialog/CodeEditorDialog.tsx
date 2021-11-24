@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useIntl } from 'react-intl';
 import translations from './translations';
 import { CodeEditorDialogContainer } from './CodeEditorDialogContainer';
@@ -26,6 +26,10 @@ export function CodeEditorDialog(props: CodeEditorDialogProps) {
   const { mode, isSubmitting, path, readonly, contentType, onSuccess, onClose, onMinimize, ...rest } = props;
 
   const title = formatMessage(translations.title);
+  const [isMaximized, setIsMaximized] = useState(false);
+  const onFullScreen = () => {
+    setIsMaximized(!isMaximized);
+  };
 
   return (
     <EnhancedDialog
@@ -35,6 +39,7 @@ export function CodeEditorDialog(props: CodeEditorDialogProps) {
       isSubmitting={isSubmitting}
       onMinimize={onMinimize}
       onClose={onClose}
+      fullScreen={isMaximized}
       {...rest}
     >
       <CodeEditorDialogContainer
@@ -45,6 +50,7 @@ export function CodeEditorDialog(props: CodeEditorDialogProps) {
         isSubmitting={isSubmitting}
         onMinimize={onMinimize}
         readonly={readonly}
+        onFullScreen={onFullScreen}
       />
     </EnhancedDialog>
   );
