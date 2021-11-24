@@ -196,10 +196,25 @@ export function getRecordDropTargets(id: number): ICERecord[] {
     // Get content type of item
     const models = contentController.getCachedModels();
     const id = Model.extractCollectionItem(model, fieldId, index);
-    // @ts-ignore TODO: Fix type
     const nestedModel = models[id];
     const contentType = Model.getContentTypeId(nestedModel);
-    return getContentTypeDropTargets(contentType).map((rec) => rec);
+    const hierarchyMap = contentController.modelHierarchyMap;
+    const allChildren = [];
+
+    function flattenChildren(id: string, accum: string[]) {
+      if (hierarchyMap[id].children.length) {
+        accum.push(...hierarchyMap[id].children);
+        hierarchyMap[id].children.forEach((child) => flattenChildren(child, accum));
+      }
+    }
+
+    flattenChildren(id, allChildren);
+
+    return getContentTypeDropTargets(contentType).filter((rec) => {
+      // Not the current item nor a descendant of it (i.e. can't
+      // move a item deeper inside itself).
+      return rec.modelId !== id && !allChildren.includes(rec.modelId);
+    });
   } else if (field.type === 'repeat') {
     // const item = Model.extractCollectionItem(model, fieldId, index);
     return getRepeatGroupItemDropTargets(record);
