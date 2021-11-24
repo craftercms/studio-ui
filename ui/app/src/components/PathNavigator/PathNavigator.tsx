@@ -26,6 +26,7 @@ import {
   pathNavigatorBackgroundRefresh,
   pathNavigatorChangePage,
   pathNavigatorConditionallySetPath,
+  pathNavigatorFetchPath,
   pathNavigatorInit,
   pathNavigatorItemChecked,
   pathNavigatorItemUnchecked,
@@ -344,7 +345,7 @@ export function PathNavigator(props: PathNavigatorProps) {
 
   const onPathSelected = (item: DetailedItem) => {
     dispatch(
-      pathNavigatorConditionallySetPath({
+      pathNavigatorFetchPath({
         id,
         path: item.path
       })

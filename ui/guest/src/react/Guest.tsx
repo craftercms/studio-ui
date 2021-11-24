@@ -240,6 +240,9 @@ function Guest(props: GuestProps) {
       switch (type) {
         case highlightModeChanged.type:
         case setPreviewEditMode.type:
+          if (status === EditingStatus.FIELD_SELECTED && action.payload.highlightMode !== 'move') {
+            clearAndListen$.next();
+          }
           dispatch(action);
           break;
         case assetDragStarted.type:
