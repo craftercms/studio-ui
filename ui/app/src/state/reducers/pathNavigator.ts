@@ -135,14 +135,14 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
       ...state,
       [payload.id]: { ...state[payload.id], isFetching: true, error: null }
     }),
-    [pathNavigatorFetchPathComplete.type]: (state, { payload: { id, children, path } }) => {
-      const newPath = path ?? state[id].currentPath;
+    [pathNavigatorFetchPathComplete.type]: (state, { payload: { id, children, parent } }) => {
+      const path = parent?.path;
       return {
         ...state,
         [id]: {
           ...state[id],
-          ...(path && { currentPath: path }),
-          breadcrumb: getIndividualPaths(withoutIndex(newPath), withoutIndex(state[id].rootPath)),
+          currentPath: path,
+          breadcrumb: getIndividualPaths(withoutIndex(path), withoutIndex(state[id].rootPath)),
           itemsInPath: children.length === 0 ? [] : children.map((item) => item.path),
           levelDescriptor: children.levelDescriptor?.path,
           total: children.total,
@@ -150,7 +150,7 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
           limit: children.limit,
           leaves:
             children.length === 0
-              ? state[id].leaves.concat(newPath)
+              ? state[id].leaves.concat(path)
               : [...state[id].leaves, ...getLeavesFromChildren(children)],
           isFetching: false,
           error: null

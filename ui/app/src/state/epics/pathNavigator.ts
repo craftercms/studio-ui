@@ -111,7 +111,7 @@ export default [
           state
         ]) =>
           fetchItemWithChildrenByPath(state.sites.active, path, { excludes: state.pathNavigator[id].excludes }).pipe(
-            map(({ item, children }) => pathNavigatorFetchPathComplete({ id, path, parent: item, children })),
+            map(({ item, children }) => pathNavigatorFetchPathComplete({ id, parent: item, children })),
             catchAjaxError(
               (error) => pathNavigatorFetchPathFailed({ id, error }),
               (error) => showErrorDialog({ error: error.response ?? error })
@@ -211,7 +211,13 @@ export default [
             ...(Boolean(state.pathNavigator[id].keyword) && { keyword: state.pathNavigator[id].keyword }),
             offset
           }).pipe(
-            map((children) => pathNavigatorFetchPathComplete({ id, children })),
+            map((children) =>
+              pathNavigatorFetchPathComplete({
+                id,
+                children,
+                parent: state.content.itemsByPath[state.pathNavigator[id].currentPath]
+              })
+            ),
             catchAjaxError((error) => pathNavigatorFetchPathFailed({ error, id }))
           )
       )

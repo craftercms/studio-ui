@@ -77,7 +77,7 @@ export const pathNavigatorFetchPath =
   /*#__PURE__*/ createAction<PayloadWithId<{ path: string }>>('PATH_NAVIGATOR_FETCH_PATH');
 
 export const pathNavigatorFetchPathComplete = /*#__PURE__*/ createAction<
-  PayloadWithId<{ parent?: DetailedItem; children: GetChildrenResponse; path?: string }>
+  PayloadWithId<{ parent?: DetailedItem; children: GetChildrenResponse }>
 >('PATH_NAVIGATOR_FETCH_PATH_COMPLETE');
 
 export const pathNavigatorFetchParentItemsComplete = /*#__PURE__*/ createAction<
