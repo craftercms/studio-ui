@@ -332,8 +332,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 
   // Post content types
   useEffect(() => {
-    const hostToGuest$ = getHostToGuestBus();
-    contentTypes && hostToGuest$.next({ type: contentTypesResponse.type, payload: Object.values(contentTypes) });
+    contentTypes && getHostToGuestBus().next({ type: contentTypesResponse.type, payload: Object.values(contentTypes) });
   }, [contentTypes]);
 
   // region guestToHost$ subscription
