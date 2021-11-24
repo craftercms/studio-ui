@@ -57,7 +57,7 @@ export default [
   (action$) =>
     action$.pipe(
       ofType(changeSite.type),
-      map(() => fetchMyRolesInSite(), fetchMyPermissionsInSite())
+      switchMap(() => [fetchMyRolesInSite(), fetchMyPermissionsInSite()])
     ),
   // endregion
   // region fetchMyPermissionsInSite

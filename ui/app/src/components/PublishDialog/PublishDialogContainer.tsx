@@ -77,7 +77,7 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
   const siteId = useActiveSiteId();
   const permissionsBySite = usePermissionsBySite();
   const myPermissions = permissionsBySite[siteId];
-  const hasPublishPermission = myPermissions.includes('publish');
+  const hasPublishPermission = myPermissions?.includes('publish');
   const dispatch = useDispatch();
   const submissionCommentRequired = useSelection((state) => state.uiConfig.publishing.publishCommentRequired);
   const isApprove = hasPublishPermission && items.every((item) => item.stateMap.submitted);
