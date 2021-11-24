@@ -31,13 +31,18 @@ import { FormattedMessage } from 'react-intl';
 import { nnou } from '../../utils/object';
 import { getComputedEditMode } from '../../utils/content';
 import { useCurrentPreviewItem } from '../../hooks/useCurrentPreviewItem';
-import { getStoredICEToolsPanelWidth, setStoredICEToolsPanelWidth } from '../../utils/state';
+import {
+  getStoredICEToolsPanelPage,
+  getStoredICEToolsPanelWidth,
+  setStoredICEToolsPanelWidth
+} from '../../utils/state';
+import { useActiveSite } from '../../hooks';
 
 export function ICEToolsPanel() {
   const dispatch = useDispatch();
   const uiConfig = useSiteUIConfig();
   const { icePanel } = usePreviewState();
-  const site = useActiveSiteId();
+  const { id: site, uuid } = useActiveSite();
   const { rolesBySite, username } = useActiveUser();
   const { icePanelWidth: width, editMode, icePanelStack } = useSelection((state) => state.preview);
   const item = useCurrentPreviewItem();
@@ -51,7 +56,8 @@ export function ICEToolsPanel() {
   useEffect(() => {
     if (nnou(uiConfig.xml) && !icePanel) {
       const icePanelWidth = getStoredICEToolsPanelWidth(site, username);
-      dispatch(initIcePanelConfig({ configXml: uiConfig.xml, icePanelWidth }));
+      const storedPage = getStoredICEToolsPanelPage(uuid, username);
+      dispatch(initIcePanelConfig({ configXml: uiConfig.xml, storedPage, icePanelWidth }));
     }
   }, [uiConfig.xml, dispatch, icePanel, site, username]);
 

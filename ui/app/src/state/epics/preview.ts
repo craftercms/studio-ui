@@ -19,18 +19,22 @@ import { ignoreElements, tap, withLatestFrom } from 'rxjs/operators';
 import {
   closeToolsPanel,
   openToolsPanel,
+  popIcePanelPage,
   popToolsPanelPage,
   previewItem,
+  pushIcePanelPage,
   pushToolsPanelPage,
   setHighlightMode,
   setPreviewEditMode
 } from '../actions/preview';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 import {
+  removeStoredICEToolsPanelPage,
   removeStoredPreviewToolsPanelPage,
   setStoredClipboard,
   setStoredEditModeChoice,
   setStoredHighlightModeChoice,
+  setStoredICEToolsPanelPage,
   setStoredPreviewToolsPanelPage,
   setStoredShowToolsPanel
 } from '../../utils/state';
@@ -141,6 +145,30 @@ export default [
         setStoredShowToolsPanel(uuid, state.user.username, state.preview.showToolsPanel);
       }),
       ignoreElements()
-    )
+    ),
   // endregion
+  // region pushIcePanelPage
+  (action$, state$) =>
+    action$.pipe(
+      ofType(pushIcePanelPage.type),
+      withLatestFrom(state$),
+      tap(([{ payload }, state]) => {
+        if (payload) {
+          const uuid = state.sites.byId[state.sites.active].uuid;
+          setStoredICEToolsPanelPage(uuid, state.user.username, payload);
+        }
+      }),
+      ignoreElements()
+    ),
+  // endregion
+  (action$, state$) =>
+    action$.pipe(
+      ofType(popIcePanelPage.type),
+      withLatestFrom(state$),
+      tap(([, state]) => {
+        const uuid = state.sites.byId[state.sites.active].uuid;
+        removeStoredICEToolsPanelPage(uuid, state.user.username);
+      }),
+      ignoreElements()
+    )
 ] as CrafterCMSEpic[];

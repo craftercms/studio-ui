@@ -676,6 +676,7 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
 
     return {
       ...state,
+      ...(payload.storedPage && { icePanelStack: [payload.storedPage] }),
       icePanel: icePanelConfig,
       icePanelWidth: icePanelWidth ?? state.icePanelWidth
     };
