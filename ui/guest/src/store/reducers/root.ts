@@ -408,7 +408,7 @@ const reducer = createReducer(initialState, {
   [highlightModeChanged.type]: (state, { payload }) =>
     state.highlightMode !== payload.highlightMode
       ? {
-          ...state,
+          ...resetState(state),
           highlighted: {},
           highlightMode: payload.highlightMode
         }
