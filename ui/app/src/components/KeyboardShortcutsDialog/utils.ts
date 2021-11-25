@@ -20,7 +20,7 @@ import { MessageDescriptor } from 'react-intl';
 
 export interface KeyboardShortcutsDialogProps extends EnhancedDialogProps {
   shortcuts: KeyboardShortcutsCategory[];
-  sx?: KeyboardShortcutsDialogPartialSx;
+  sxs?: KeyboardShortcutsDialogPartialSx;
 }
 
 export type KeyboardShortcutsDialogClassKey = 'categoryTitle' | 'shortcutChip' | 'shortcutsList';
