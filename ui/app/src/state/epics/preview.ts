@@ -169,7 +169,7 @@ export default [
         const uuid = state.sites.byId[state.sites.active].uuid;
 
         if (state.preview.icePanelStack.length) {
-          setStoredPreviewToolsPanelPage(
+          setStoredICEToolsPanelPage(
             uuid,
             state.user.username,
             state.preview.icePanelStack[state.preview.icePanelStack.length - 1]
