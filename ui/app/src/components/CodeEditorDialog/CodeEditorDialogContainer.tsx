@@ -50,7 +50,7 @@ import { CodeEditorDialogContainerProps, getContentModelSnippets } from './utils
 import { batchActions } from '../../state/actions/misc';
 
 export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps) {
-  const { path, onMinimize, onClose, onSaveClose, mode, isSubmitting, readonly, contentType } = props;
+  const { path, onMinimize, onClose, onSaveClose, mode, isSubmitting, readonly, contentType, onFullScreen } = props;
   const item = useDetailedItem(path);
   const site = useActiveSiteId();
   const user = useActiveUser();
@@ -199,19 +199,26 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 
   const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
 
+  const rightActions = [];
+  if (onMinimize) {
+    rightActions.push({
+      icon: 'MinimizeIcon',
+      onClick: onMinimize
+    });
+  }
+  if (onFullScreen) {
+    rightActions.push({
+      icon: 'MaximizeIcon',
+      onClick: onFullScreen
+    });
+  }
+
   return (
     <>
       <DialogHeader
         title={item ? item.label : <Skeleton width="120px" />}
         onCloseButtonClick={onCloseButtonClick}
-        {...(onMinimize && {
-          rightActions: [
-            {
-              icon: 'MinimizeIcon',
-              onClick: onMinimize
-            }
-          ]
-        })}
+        rightActions={rightActions}
       />
       <DialogBody className={classes.dialogBody}>
         <ConditionalLoadingState isLoading={loading} classes={{ root: classes.loadingState }}>
