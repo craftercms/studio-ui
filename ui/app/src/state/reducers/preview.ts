@@ -55,6 +55,7 @@ import {
   SET_HOST_SIZE,
   SET_HOST_WIDTH,
   SET_ITEM_BEING_DRAGGED,
+  setDragHelpMode,
   setHighlightMode,
   setPreviewEditMode,
   UPDATE_AUDIENCES_PANEL_MODEL,
@@ -152,7 +153,8 @@ const initialState: GlobalState['preview'] = {
     rightSection: null
   },
   icePanel: null,
-  richTextEditor: null
+  richTextEditor: null,
+  dragHelpMode: false
 };
 
 const minDrawerWidth = 240;
@@ -709,7 +711,11 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
       ...state,
       richTextEditor: rteConfig
     };
-  }
+  },
+  [setDragHelpMode.type]: (state, { payload }) => ({
+    ...state,
+    dragHelpMode: payload.dragHelpMode
+  })
 });
 
 function minFrameSize(suggestedSize: number): number {

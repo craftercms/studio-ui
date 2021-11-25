@@ -30,11 +30,16 @@ import { ContentTypeDropTarget } from '../../models/ContentTypeDropTarget';
 import { WidgetDescriptor } from '../../components/Widget';
 import LookupTable from '../../models/LookupTable';
 import { DetailedItem } from '../../models/Item';
-import { HighlightMode } from '../../models/GlobalState';
+import GlobalState, { HighlightMode } from '../../models/GlobalState';
 
 // region Accommodation Action Creators
 
-export const hostCheckIn = /*#__PURE__*/ createAction('HOST_CHECK_IN');
+export const hostCheckIn = /*#__PURE__*/ createAction<{
+  editMode: boolean;
+  highlightMode: HighlightMode;
+  dragHelpMode: boolean;
+  rteConfig: GlobalState['preview']['richTextEditor'];
+}>('HOST_CHECK_IN');
 export const guestCheckIn = /*#__PURE__*/ createAction('GUEST_CHECK_IN');
 export const guestCheckOut = /*#__PURE__*/ createAction('GUEST_CHECK_OUT');
 export const fetchGuestModel = /*#__PURE__*/ createAction('FETCH_GUEST_MODEL');
@@ -105,7 +110,7 @@ export const contentTreeSwitchFieldInstance = /*#__PURE__*/ createAction<{ type:
 );
 export const keyUp = /*#__PURE__*/ createAction<{ key: string }>('KEYUP');
 export const keyDown = /*#__PURE__*/ createAction<{ key: string }>('KEYDOWN');
-
+export const setDragHelpMode = /*#__PURE__*/ createAction<{ dragHelpMode: boolean }>('SET_DRAG_HELP_MODE');
 // endregion
 
 // region Actions

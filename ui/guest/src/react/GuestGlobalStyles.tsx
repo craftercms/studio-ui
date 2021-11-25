@@ -26,7 +26,8 @@ import {
   emptyCollectionClass,
   moveModeClass,
   emptyFieldClass,
-  dragAndDropActiveClass
+  dragAndDropActiveClass,
+  dragHelpModeClass
 } from '../constants';
 
 export interface GuestGlobalStylesProps {}
@@ -195,10 +196,13 @@ const styles = (
           cursor: 'url("/studio/static-assets/images/cursor-drag@1.5x.png"), move !important'
         }
       },
-      [`.${dragAndDropActiveClass}`]: {
+      [`.${dragAndDropActiveClass}`]: {},
+      [`.${dragHelpModeClass}`]: {
         '[data-craftercms-type="collection"]': {
           paddingTop: '20px',
-          paddingBottom: '20px'
+          paddingRight: '20px',
+          paddingBottom: '20px',
+          paddingLeft: '20px'
         }
       },
       [`.${editOnClass}`]: {

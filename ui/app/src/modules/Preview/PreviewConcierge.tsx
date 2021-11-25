@@ -52,6 +52,7 @@ import {
   moveItemOperation,
   selectForEdit,
   setContentTypeDropTargets,
+  setDragHelpMode,
   setHighlightMode,
   setItemBeingDragged,
   setPreviewEditMode,
@@ -217,7 +218,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   const dispatch = useDispatch();
   const { id: siteId, uuid } = useActiveSite();
   const user = useActiveUser();
-  const { guest, editMode, highlightMode, icePanelWidth, toolsPanelWidth, hostSize, showToolsPanel } =
+  const { guest, editMode, highlightMode, dragHelpMode, icePanelWidth, toolsPanelWidth, hostSize, showToolsPanel } =
     usePreviewState();
   const item = useCurrentPreviewItem();
   const { currentUrlPath } = usePreviewNavigation();
@@ -292,6 +293,11 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   useEffect(() => {
     if (rteConfig) getHostToGuestBus().next({ type: updateRteConfig.type, payload: { rteConfig } });
   }, [rteConfig]);
+
+  // Update drag help mode
+  useEffect(() => {
+    getHostToGuestBus().next(setDragHelpMode({ dragHelpMode }));
+  }, [dragHelpMode]);
 
   // Guest detection, document domain restoring, editMode/highlightMode preference retrieval,
   // and guest key up/down notifications.
@@ -392,10 +398,14 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         case guestCheckIn.type:
         case fetchGuestModel.type: {
           if (type === guestCheckIn.type) {
-            getHostToGuestBus().next({
-              type: hostCheckIn.type,
-              payload: { editMode: false, highlightMode, rteConfig: rteConfig ?? {} }
-            });
+            getHostToGuestBus().next(
+              hostCheckIn({
+                editMode: false,
+                highlightMode,
+                dragHelpMode,
+                rteConfig: rteConfig ?? {}
+              })
+            );
             dispatch(checkInGuest(payload));
 
             if (payload.documentDomain) {
@@ -801,6 +811,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
     siteId,
     xsrfArgument,
     highlightMode,
+    dragHelpMode,
     conditionallyToggleEditMode,
     cdataEscapedFieldPatterns,
     rteConfig,

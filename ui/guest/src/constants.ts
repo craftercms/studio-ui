@@ -41,3 +41,4 @@ export const editModeClass = `craftercms-highlight-${HighlightMode.ALL}`;
 export const emptyCollectionClass = 'craftercms-empty-collection';
 export const emptyFieldClass = 'craftercms-empty-field';
 export const dragAndDropActiveClass = 'craftercms-drag-n-drop-active';
+export const dragHelpModeClass = 'craftercms-drag-help-mode';
