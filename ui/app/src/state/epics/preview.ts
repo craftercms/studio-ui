@@ -167,7 +167,16 @@ export default [
       withLatestFrom(state$),
       tap(([, state]) => {
         const uuid = state.sites.byId[state.sites.active].uuid;
-        removeStoredICEToolsPanelPage(uuid, state.user.username);
+
+        if (state.preview.icePanelStack.length) {
+          setStoredPreviewToolsPanelPage(
+            uuid,
+            state.user.username,
+            state.preview.icePanelStack[state.preview.icePanelStack.length - 1]
+          );
+        } else {
+          removeStoredICEToolsPanelPage(uuid, state.user.username);
+        }
       }),
       ignoreElements()
     )

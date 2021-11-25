@@ -206,8 +206,8 @@ export function getStoredICEToolsPanelPage(siteIdentifier: string, user: string)
   return JSON.parse(window.localStorage.getItem(`craftercms.${user}.ICEToolsPanel.${siteIdentifier}`));
 }
 
-export function removeStoredICEToolsPanelPage(siteIdentifier: string, user: string) {
-  return window.localStorage.removeItem(`craftercms.${user}.ICEToolsPanel.${siteIdentifier}`);
+export function removeStoredICEToolsPanelPage(siteIdentifier: string, user: string): void {
+  window.localStorage.removeItem(`craftercms.${user}.ICEToolsPanel.${siteIdentifier}`);
 }
 
 export function commonDialogProps<T>(specificProps: T): EnhancedDialogState & T {
