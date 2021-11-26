@@ -1873,43 +1873,25 @@ var CStudioForms =
             CStudioAuthoring.Service.lookupContentType(CStudioAuthoringContext.site, contentType, {
               success: function (type) {
                 const storedId = type.previewable ? 'formEditorPreviewable' : 'formEditorNotPreviewable';
-                const defaultSelected = CrafterCMSNext.util.state.getStoredSaveButtonSubAction(user, storedId) ?? 1;
-                const options = [
-                  {
-                    label: formatMessage(formEngineMessages.save),
-                    callback: () => {
-                      CrafterCMSNext.util.state.setStoredSaveButtonSubAction(user, storedId, 0);
-                      saveFn(false, true, null, 'save');
-                    }
-                  },
-                  {
-                    label: formatMessage(formEngineMessages.saveAndClose),
-                    callback: () => {
-                      CrafterCMSNext.util.state.setStoredSaveButtonSubAction(user, storedId, 1);
-                      saveFn(false, false, null, 'saveAndClose');
-                    }
-                  },
-                  {
-                    label: formatMessage(formEngineMessages.saveAndMinimize),
-                    callback: () => {
-                      CrafterCMSNext.util.state.setStoredSaveButtonSubAction(user, storedId, 2);
-                      saveFn(false, true, null, 'saveAndMinimize');
-                    }
-                  }
-                ];
+                const defaultSelected = 'saveAndClose';
+
+                const onMultiChoiceSaveButtonClick = (e, type) => {
+                  saveFn(false, true, null, type);
+                };
+
+                const options = ['save', 'saveAndClose', 'saveAndMinimize'];
                 if (type.previewable) {
                   options.push({
                     label: formatMessage(formEngineMessages.saveAndPreview),
-                    callback: () => {
-                      CrafterCMSNext.util.state.setStoredSaveButtonSubAction(user, storedId, 3);
-                      saveFn(true, false, null, 'saveAndPreview');
-                    }
+                    callback: (e) => onMultiChoiceSaveButtonClick(e, 'saveAndPreview')
                   });
                 }
-                CrafterCMSNext.render(buttonsContainer, 'SplitButton', {
+                CrafterCMSNext.render(buttonsContainer, 'MultiChoiceSaveButton', {
                   options,
                   defaultSelected,
-                  disablePortal: false
+                  disablePortal: false,
+                  storageKey: storedId,
+                  onClick: onMultiChoiceSaveButtonClick
                 });
               },
               failure: function () {}

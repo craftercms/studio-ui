@@ -208,10 +208,14 @@ export function commonDialogProps<T>(specificProps: T): EnhancedDialogState & T 
   };
 }
 
-export function setStoredSaveButtonSubAction(user: string, id: string, value: number) {
-  window.localStorage.setItem(`craftercms.${user}.saveButtonSubAction.${id}`, JSON.stringify(value));
+export function setStoredSaveButtonSubAction(user: string, id: string, value: string) {
+  window.localStorage.setItem(`craftercms.${user}.saveButtonSubAction.${id}`, value);
 }
 
-export function getStoredSaveButtonSubAction(user: string, id: string) {
-  return JSON.parse(window.localStorage.getItem(`craftercms.${user}.saveButtonSubAction.${id}`));
+export function getStoredSaveButtonSubAction(user: string, id: string): string {
+  return window.localStorage.getItem(`craftercms.${user}.saveButtonSubAction.${id}`);
+}
+
+export function removeStoredSaveButtonSubAction(user: string, id: string): void {
+  window.localStorage.removeItem(`craftercms.${user}.saveButtonSubAction.${id}`);
 }

@@ -31,7 +31,6 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { showSystemNotification } from '../../state/actions/system';
 import translations from './translations';
-import SplitButton from '../SplitButton/SplitButton';
 import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
@@ -48,7 +47,7 @@ import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 import { reloadRequest } from '../../state/actions/preview';
 import { CodeEditorDialogContainerProps, getContentModelSnippets } from './utils';
 import { batchActions } from '../../state/actions/misc';
-import { getStoredSaveButtonSubAction, setStoredSaveButtonSubAction } from '../../utils/state';
+import { MultiChoiceSaveButton } from '../MultiChoiceSaveButton';
 
 export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps) {
   const { path, onMinimize, onClose, onSaveClose, mode, isSubmitting, readonly, contentType, onFullScreen } = props;
@@ -66,9 +65,6 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
   const [snippets, setSnippets] = useState<LookupTable<{ label: string; value: string }>>({});
   const [contentModelSnippets, setContentModelSnippets] = useState<{ label: string; value: string }[]>(null);
   const storedId = 'codeEditor';
-  const [saveSubOptionSelection, setSaveSubOptionSelection] = useState(
-    getStoredSaveButtonSubAction(user.username, storedId) ?? 0
-  );
   const {
     'craftercms.freemarkerCodeSnippets': freemarkerCodeSnippets,
     'craftercms.groovyCodeSnippets': groovyCodeSnippets
@@ -204,10 +200,18 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 
   const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
 
-  const onSaveSubAction = (action, index) => {
-    setSaveSubOptionSelection(index);
-    setStoredSaveButtonSubAction(user.username, storedId, index);
-    action();
+  const onMultiChoiceSaveButtonClick = (e, type) => {
+    switch (type) {
+      case 'save':
+        onSave();
+        break;
+      case 'saveAndClose':
+        saveAndClose();
+        break;
+      case 'saveAndMinimize':
+        onSaveAndMinimize();
+        break;
+    }
   };
 
   const rightActions = [];
@@ -258,18 +262,11 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
           >
             <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
           </SecondaryButton>
-          <SplitButton
+          <MultiChoiceSaveButton
             loading={isSubmitting}
             disabled={disableEdit}
-            defaultSelected={saveSubOptionSelection}
-            options={[
-              { label: formatMessage(translations.save), callback: () => onSaveSubAction(onSave, 0) },
-              { label: formatMessage(translations.saveAndClose), callback: () => onSaveSubAction(saveAndClose, 1) },
-              {
-                label: formatMessage(translations.saveAndMinimize),
-                callback: () => onSaveSubAction(onSaveAndMinimize, 2)
-              }
-            ]}
+            storageKey={storedId}
+            onClick={onMultiChoiceSaveButtonClick}
           />
         </DialogFooter>
       )}
