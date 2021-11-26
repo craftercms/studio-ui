@@ -46,21 +46,12 @@ export interface RecentlyPublishedWidgetUIProps {
   itemsLookup: LookupTable<DetailedItem>;
   localeBranch: GlobalState['uiConfig']['locale'];
   expandedItems: LookupTable<boolean>;
-  itemsEndpointsOnHistory: LookupTable<string>;
   onItemMenuClick(event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, item: DetailedItem): void;
   setExpandedItems(itemExpanded): void;
 }
 
 export default function RecentlyPublishedDashletUI(props: RecentlyPublishedWidgetUIProps) {
-  const {
-    resource,
-    expandedItems,
-    setExpandedItems,
-    itemsLookup,
-    onItemMenuClick,
-    localeBranch,
-    itemsEndpointsOnHistory
-  } = props;
+  const { resource, expandedItems, setExpandedItems, itemsLookup, onItemMenuClick, localeBranch } = props;
   const parentItems = resource.read();
   const classes = useStyles();
 
@@ -135,7 +126,7 @@ export default function RecentlyPublishedDashletUI(props: RecentlyPublishedWidge
                               </Typography>
                             </GlobalAppGridCell>
                             <GlobalAppGridCell className="width20">
-                              {itemsEndpointsOnHistory[path] === 'live' ? (
+                              {itemsLookup[path].stateMap.live ? (
                                 <FormattedMessage id="words.live" defaultMessage="Live" />
                               ) : (
                                 <FormattedMessage id="words.staging" defaultMessage="Staging" />

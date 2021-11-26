@@ -63,7 +63,6 @@ export default function RecentlyPublishedDashlet() {
   const [errorHistory, setErrorHistory] = useState<ApiResponse>();
   const [parentItems, setParentItems] = useState<RecentlyPublishedDashletDashboardItem[]>();
   const [itemsLookup, setItemsLookup] = useSpreadState<LookupTable<DetailedItem>>({});
-  const [itemsEndpointsOnHistory, setItemsEndpointsOnHistory] = useSpreadState<LookupTable<string>>({});
   const dashletPreferencesId = 'recentlyPublishedDashlet';
   const currentUser = useSelector<GlobalState, string>((state) => state.user.username);
   const { id: siteId, uuid } = useActiveSite();
@@ -131,16 +130,22 @@ export default function RecentlyPublishedDashlet() {
               children: document.children.map((item) => {
                 const key = `${item.uri}:${item.eventDate}`;
                 childrenLookup[key] = parseLegacyItemToDetailedItem(item);
+
+                // For this dashlet we display the environment where the item was published at the moment, and the API
+                // returns the environment at the current time in the props isLive/isStaging. The prop used for the
+                // environment at the moment of publishing is `endpoint`. So we update `childrenLookup` with the endpoint value.
+                if (item.endpoint === 'live') {
+                  childrenLookup[key].stateMap.live = true;
+                  childrenLookup[key].stateMap.staging = true;
+                } else {
+                  childrenLookup[key].stateMap.live = false;
+                  childrenLookup[key].stateMap.staging = true;
+                }
+
                 // For this dashlet, the property needed is eventDate, since we display the published date at the moment
                 // of the publishing, not the current.
                 childrenLookup[key].live.datePublished = item.eventDate;
                 childrenLookup[key].staging.datePublished = item.eventDate;
-
-                // For this dashlet we display the environment where the item was published at the moment, if we use the
-                // state map to retrieve the live/staging prop it will get the environment at the current time, so it may
-                // not match the desired value. The history API retrieves an endpoint value that matches what we need
-                // for this case.
-                setItemsEndpointsOnHistory({ [key]: item.endpoint });
                 return key;
               })
             });
@@ -163,8 +168,7 @@ export default function RecentlyPublishedDashlet() {
     toggleCollapseAllItems,
     setItemsLookup,
     localeBranch.localeCode,
-    localeBranch.dateTimeFormatOptions,
-    setItemsEndpointsOnHistory
+    localeBranch.dateTimeFormatOptions
   ]);
 
   useEffect(() => {
@@ -331,7 +335,6 @@ export default function RecentlyPublishedDashlet() {
           expandedItems={expandedItems}
           setExpandedItems={setExpandedItems}
           onItemMenuClick={onItemMenuClick}
-          itemsEndpointsOnHistory={itemsEndpointsOnHistory}
         />
       </SuspenseWithEmptyState>
     </Dashlet>
