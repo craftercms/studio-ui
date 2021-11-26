@@ -53,8 +53,8 @@ function getStyles(sx: KeyboardShortcutsDialogPartialSx): KeyboardShortcutsDialo
 }
 
 export function KeyboardShortcutsDialog(props: KeyboardShortcutsDialogProps) {
-  const { shortcuts, ...rest } = props;
-  const sx = getStyles(props.sx);
+  const { shortcuts, sxs, ...rest } = props;
+  const sx = getStyles(sxs);
   const { formatMessage } = useIntl();
 
   return (

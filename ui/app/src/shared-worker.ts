@@ -50,6 +50,7 @@ function onmessage(event) {
         // If an error occurred or auth expired, need to retry/retrieve upon new connections.
         // Otherwise, the worker may end up staying 'dirty' when one tab expires, dies and
         // another comes in later after having logged in properly.
+        clearCurrent();
         retrieve();
       }
       break;

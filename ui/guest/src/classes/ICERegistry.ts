@@ -216,7 +216,6 @@ export function getRecordDropTargets(id: number): ICERecord[] {
       return rec.modelId !== id && !allChildren.includes(rec.modelId);
     });
   } else if (field.type === 'repeat') {
-    // const item = Model.extractCollectionItem(model, fieldId, index);
     return getRepeatGroupItemDropTargets(record);
   } else {
     console.error('[ICERegistry/getRecordDropTargets] Unhandled path');
@@ -224,21 +223,40 @@ export function getRecordDropTargets(id: number): ICERecord[] {
   }
 }
 
-export function getRepeatGroupItemDropTargets(record: ICERecord): ICERecord[] {
-  const entries = getReferentialEntries(record);
-  const modelHierarchyMap = contentController.modelHierarchyMap;
-  const parentModelId = modelHierarchyMap[entries.modelId].modelId;
-  const dropTargets = [];
+export function getRepeatGroupItemDropTargets(repeatItemRecord: ICERecord): ICERecord[] {
   const records = registry.values();
-  for (const item of records) {
-    if (nullOrUndefined(item.index) && item.fieldId === record.fieldId) {
-      const es = getReferentialEntries(item);
-      if (es.contentTypeId === entries.contentTypeId && parentModelId === modelHierarchyMap[es.modelId].modelId) {
-        dropTargets.push(item);
+  for (const record of records) {
+    if (
+      // not the present record
+      record.id !== repeatItemRecord.id &&
+      // same field and model
+      record.fieldId === repeatItemRecord.fieldId &&
+      record.modelId === repeatItemRecord.modelId
+    ) {
+      if (isSimple(repeatItemRecord.index)) {
+        // if the item's index is simple (no dot notation), the parent record wouldn't have an index
+        // must have this as separate if statement as the item's index can be simple but the current
+        // record not be the one with the null index in which case, it shouldn't fall on the else.
+        if (nullOrUndefined(record.index)) {
+          return [record];
+        }
+      } else if (
+        // if the item's index isn't simple, the parent record index should be the item's index minus
+        // the last piece (e.g. item.index = 1.2, parent.index = 1)
+        removeLastPiece(repeatItemRecord.index as string) === String(record.index)
+      ) {
+        return [record];
       }
     }
   }
-  return dropTargets;
+  console.error(
+    '[IceRegistry/getRepeatGroupItemDropTargets] ' +
+      'No drop target found for repeat group item. Repeat group items should always have a drop target. ' +
+      'Check that the repeat group itself was registered and that the item in question is a repeat group item. ' +
+      'Repeat item in question attached.',
+    repeatItemRecord
+  );
+  return [];
 }
 
 export function getComponentItemDropTargets(record: ICERecord): number[] {
