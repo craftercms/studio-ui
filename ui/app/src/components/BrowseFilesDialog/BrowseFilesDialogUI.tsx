@@ -55,7 +55,8 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
     onChangePage,
     onChangeRowsPerPage,
     onCloseButtonClick,
-    onContextMenu
+    onContextMenu,
+    onRefresh
   } = props;
   const classes = useStyles();
   return (
@@ -72,13 +73,19 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
             />
           </section>
           <section className={classes.rightWrapper}>
-            <SearchBar
-              keyword={keyword}
-              onChange={handleSearchKeyword}
-              showDecoratorIcon
-              showActionButton={Boolean(keyword)}
-              classes={{ root: classes.searchRoot }}
-            />
+            <Box display="flex" alignItems="center" marginBottom="16px">
+              <SearchBar
+                keyword={keyword}
+                onChange={handleSearchKeyword}
+                showDecoratorIcon
+                showActionButton={Boolean(keyword)}
+                classes={{ root: classes.searchRoot }}
+              />
+              <SecondaryButton onClick={onRefresh}>
+                <FormattedMessage id="word.refresh" defaultMessage="Refresh" />
+              </SecondaryButton>
+            </Box>
+
             <div className={classes.cardsContainer}>
               {items
                 ? items.map((item: SearchItem) => (

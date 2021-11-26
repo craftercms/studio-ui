@@ -65,6 +65,7 @@ export interface BrowseFilesDialogUIProps {
   onChangeRowsPerPage(event): void;
   onCloseButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
   onContextMenu?(element: Element): void;
+  onRefresh(): void;
 }
 
 export const initialParameters: ElasticParams = {

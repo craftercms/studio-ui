@@ -69,8 +69,8 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
   const selectedArray = Object.keys(selectedLookup).filter((key) => selectedLookup[key]);
   const browsePath = path.replace(/\/+$/, '');
   const [currentPath, setCurrentPath] = useState(browsePath);
-  const [fetchingCurrentPathExists, setFetchingCurrentPathExists] = useState(false);
-  const [currentPathExists, setCurrentPathExists] = useState(false);
+  const [fetchingBrowsePathExists, setFetchingBrowsePathExists] = useState(false);
+  const [browsePathExists, setBrowsePathExists] = useState(false);
   const classes = useStyles();
   const [contextMenuAnchorEl, setContextMenuAnchorEl] = useState(null);
 
@@ -84,19 +84,24 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
   );
 
   useEffect(() => {
-    setFetchingCurrentPathExists(true);
-    const subscription = checkPathExistence(site, currentPath).subscribe((exists) => {
-      if (exists) {
-        fetchItems();
-        setCurrentPathExists(true);
-      }
-      setFetchingCurrentPathExists(false);
-    });
+    let subscription;
+    if (!browsePathExists) {
+      setFetchingBrowsePathExists(true);
+      subscription = checkPathExistence(site, browsePath).subscribe((exists) => {
+        if (exists) {
+          fetchItems();
+          setBrowsePathExists(true);
+        }
+        setFetchingBrowsePathExists(false);
+      });
+    } else {
+      fetchItems();
+    }
 
     return () => {
-      subscription.unsubscribe();
+      subscription?.unsubscribe();
     };
-  }, [fetchItems, site, currentPath]);
+  }, [fetchItems, site, browsePath, browsePathExists]);
 
   const onCardSelected = (item: MediaItem) => {
     if (multiSelect) {
@@ -157,7 +162,7 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
     setContextMenuAnchorEl(element);
   };
 
-  const onUpdate = () => {
+  const onUpload = () => {
     const path = contextMenuAnchorEl.attributes['data-path'].value;
     setContextMenuAnchorEl(null);
     dispatch(
@@ -171,13 +176,19 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
     );
 
     createCustomDocumentEventListener('imageUploaded', (response) => {
-      fetchItems();
+      setTimeout(() => {
+        fetchItems();
+      }, 2000);
     });
   };
 
-  return fetchingCurrentPathExists ? (
+  const onRefresh = () => {
+    fetchItems();
+  };
+
+  return fetchingBrowsePathExists ? (
     <BrowseFilesDialogContainerSkeleton />
-  ) : currentPathExists ? (
+  ) : browsePathExists ? (
     <>
       <BrowseFilesDialogUI
         items={items}
@@ -202,13 +213,14 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
         onContextMenu={onContextMenu}
         numOfLoaderItems={numOfLoaderItems}
         rowsPerPageOptions={rowsPerPageOptions}
+        onRefresh={onRefresh}
       />
       <Menu
         anchorEl={contextMenuAnchorEl}
         open={Boolean(contextMenuAnchorEl)}
         onClose={() => setContextMenuAnchorEl(null)}
       >
-        <MenuItem onClick={onUpdate}>
+        <MenuItem onClick={onUpload}>
           <FormattedMessage id="words.upload" defaultMessage="Upload" />
         </MenuItem>
       </Menu>
