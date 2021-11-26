@@ -23,9 +23,9 @@ import {
   getHoverData,
   getRecordsFromIceId,
   getSiblingRects
-} from '../../classes/ElementRegistry';
+} from '../../elementRegistry';
 import { dragOk } from '../util';
-import * as iceRegistry from '../../classes/ICERegistry';
+import * as iceRegistry from '../../iceRegistry';
 import { Reducer } from '@reduxjs/toolkit';
 import { GuestStandardAction } from '../models/GuestStandardAction';
 import { ElementRecord } from '../../models/InContextEditing';

@@ -79,7 +79,8 @@
     "start": "rollup -c -w",
     "watch": "rollup -c -w",
     "compile": "tsc --build tsconfig.json",
-    "package": "node ./scripts/package.js"
+    "create-package-file": "node ./scripts/package.js",
+    "package": "run-s compile create-package-file"
   },
   "dependencies": {
     "@craftercms/classes": "^2.0.1",

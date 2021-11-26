@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as contentController from './ContentController';
-import { DEFAULT_RECORD_DATA } from '../utils/util';
+import * as contentController from './contentController';
+import { DEFAULT_RECORD_DATA } from './utils/util';
 import * as contentTypeUtils from '@craftercms/studio-ui/utils/contentType';
 import * as Model from '@craftercms/studio-ui/utils/model';
 import { ContentInstance } from '@craftercms/studio-ui/models/ContentInstance';
@@ -26,10 +26,10 @@ import {
   ValidationResult
 } from '@craftercms/studio-ui/models/ContentType';
 import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
-import { ICEProps, ICERecord, ICERecordRegistration, ReferentialEntries } from '../models/InContextEditing';
+import { ICEProps, ICERecord, ICERecordRegistration, ReferentialEntries } from './models/InContextEditing';
 import { notNullOrUndefined, nou, nullOrUndefined, pluckProps } from '@craftercms/studio-ui/utils/object';
 import { forEach } from '@craftercms/studio-ui/utils/array';
-import { determineRecordType, findComponentContainerFields } from '../utils/ice';
+import { determineRecordType, findComponentContainerFields } from './utils/ice';
 import { isSimple, removeLastPiece } from '@craftercms/studio-ui/utils/string';
 
 const validationChecks: { [key in ValidationKeys]: Function } = {

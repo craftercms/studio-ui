@@ -15,7 +15,7 @@
  */
 
 import * as React from 'react';
-import palette from '../styles/palette';
+import palette from '@craftercms/studio-ui/styles/palette';
 import Global from '@mui/material/GlobalStyles';
 import { defaultStyleConfig as config } from '../styles/stylesheet';
 import {
