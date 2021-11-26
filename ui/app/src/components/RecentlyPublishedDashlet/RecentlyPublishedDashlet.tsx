@@ -137,8 +137,9 @@ export default function RecentlyPublishedDashlet() {
                 childrenLookup[key].staging.datePublished = item.eventDate;
 
                 // For this dashlet we display the environment where the item was published at the moment, if we use the
-                // state map to retrieve the live/staging prop it will get the current environment, so it may not match
-                // the desired value. The history API retrieves an endpoint value that matches what we need for this case.
+                // state map to retrieve the live/staging prop it will get the environment at the current time, so it may
+                // not match the desired value. The history API retrieves an endpoint value that matches what we need
+                // for this case.
                 setItemsEndpointsOnHistory({ [key]: item.endpoint });
                 return key;
               })
