@@ -198,6 +198,18 @@ export function getStoredICEToolsPanelWidth(siteIdentifier: string, user: string
   return value === null ? (value as null) : parseInt(value);
 }
 
+export function setStoredICEToolsPanelPage(siteIdentifier: string, user: string, value: WidgetDescriptor): void {
+  window.localStorage.setItem(`craftercms.${user}.ICEToolsPanel.${siteIdentifier}`, JSON.stringify(value));
+}
+
+export function getStoredICEToolsPanelPage(siteIdentifier: string, user: string): WidgetDescriptor {
+  return JSON.parse(window.localStorage.getItem(`craftercms.${user}.ICEToolsPanel.${siteIdentifier}`));
+}
+
+export function removeStoredICEToolsPanelPage(siteIdentifier: string, user: string): void {
+  window.localStorage.removeItem(`craftercms.${user}.ICEToolsPanel.${siteIdentifier}`);
+}
+
 export function commonDialogProps<T>(specificProps: T): EnhancedDialogState & T {
   return {
     open: false,

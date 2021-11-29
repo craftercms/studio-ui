@@ -322,6 +322,7 @@ export const initToolbarConfig = /*#__PURE__*/ createAction<{ configXml: string 
 
 export const initIcePanelConfig = /*#__PURE__*/ createAction<{
   configXml: string;
+  storedPage?: WidgetDescriptor;
   icePanelWidth?: number;
 }>('INIT_ICE_PANEL_CONFIG');
 
