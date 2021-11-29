@@ -181,7 +181,7 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
         </Tooltip>
       )}
       <Tooltip title="Trash (⌫)">
-        <UltraStyledIconButton size="small" onClick={onTrash} ref={trashButtonRef}>
+        <UltraStyledIconButton size="small" onClick={() => setShowTrashConfirmation(true)} ref={trashButtonRef}>
           <DeleteOutlineRoundedIcon />
         </UltraStyledIconButton>
       </Tooltip>
@@ -205,7 +205,7 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
         sx={{ zIndex: 1501 }}
       >
         <Typography variant="body1" sx={{ padding: '10px 16px 10px 16px' }}>
-          {isEmbedded ? 'Disassociate' : 'Delete'} this component?
+          {isEmbedded ? 'Delete' : 'Disassociate'} this component?
         </Typography>
         <MenuItem
           onClick={(e) => {

@@ -468,13 +468,13 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 
           sortItem(
             siteId,
-            parentModelId ? modelId : models[modelId].craftercms.path,
+            modelId,
             fieldId,
             currentIndex,
             targetIndex,
-            parentModelId ? models[parentModelId].craftercms.path : null
-          ).subscribe(
-            ({ updatedDocument }) => {
+            models[parentModelId ? parentModelId : modelId].craftercms.path
+          ).subscribe({
+            next({ updatedDocument }) {
               const updatedModels = {};
               parseContentXML(
                 updatedDocument,
@@ -498,11 +498,11 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
               });
               enqueueSnackbar(formatMessage(guestMessages.sortOperationComplete));
             },
-            (error) => {
+            error(error) {
               console.error(`${type} failed`, error);
               enqueueSnackbar(formatMessage(guestMessages.sortOperationFailed));
             }
-          );
+          });
           break;
         }
         case insertComponentOperation.type: {
@@ -517,12 +517,12 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 
           insertComponent(
             siteId,
-            parentModelId ? modelId : models[modelId].craftercms.path,
+            modelId,
             fieldId,
             targetIndex,
             contentTypes[instance.craftercms.contentTypeId],
             instance,
-            parentModelId ? models[parentModelId].craftercms.path : null,
+            models[parentModelId ? parentModelId : modelId].craftercms.path,
             shared
           ).subscribe({
             next() {
@@ -560,13 +560,13 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 
           insertInstance(
             siteId,
-            parentModelId ? modelId : models[modelId].craftercms.path,
+            modelId,
             fieldId,
             targetIndex,
             instance,
-            parentModelId ? models[parentModelId].craftercms.path : null
-          ).subscribe(
-            () => {
+            models[parentModelId ? parentModelId : modelId].craftercms.path
+          ).subscribe({
+            next() {
               issueDescriptorRequest({
                 site: siteId,
                 path: path ?? models[parentModelId].craftercms.path,
@@ -582,11 +582,11 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
               });
               enqueueSnackbar(formatMessage(guestMessages.insertOperationComplete));
             },
-            (error) => {
+            error(error) {
               console.error(`${type} failed`, error);
               enqueueSnackbar(formatMessage(guestMessages.insertOperationFailed));
             }
-          );
+          });
           break;
         }
         case insertItemOperation.type: {
@@ -609,23 +609,23 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 
           moveItem(
             siteId,
-            originalParentModelId ? originalModelId : models[originalModelId].craftercms.path,
+            originalModelId,
             originalFieldId,
             originalIndex,
-            targetParentModelId ? targetModelId : models[targetModelId].craftercms.path,
+            targetModelId,
             targetFieldId,
             targetIndex,
-            originalParentModelId ? models[originalParentModelId].craftercms.path : null,
-            targetParentModelId ? models[targetParentModelId].craftercms.path : null
-          ).subscribe(
-            () => {
+            models[originalParentModelId ? originalParentModelId : originalModelId].craftercms.path,
+            models[targetParentModelId ? targetParentModelId : targetModelId].craftercms.path
+          ).subscribe({
+            next() {
               enqueueSnackbar(formatMessage(guestMessages.moveOperationComplete));
             },
-            (error) => {
+            error(error) {
               console.error(`${type} failed`, error);
               enqueueSnackbar(formatMessage(guestMessages.moveOperationFailed));
             }
-          );
+          });
           break;
         }
         case deleteItemOperation.type: {
@@ -640,10 +640,10 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 
           deleteItem(
             siteId,
-            parentModelId ? modelId : models[modelId].craftercms.path,
+            modelId,
             fieldId,
             index,
-            parentModelId ? models[parentModelId].craftercms.path : null
+            models[parentModelId ? parentModelId : modelId].craftercms.path
           ).subscribe({
             next: () => {
               issueDescriptorRequest({
@@ -679,20 +679,20 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 
           updateField(
             siteId,
-            parentModelId ? modelId : models[modelId].craftercms.path,
+            modelId,
             fieldId,
             index,
-            parentModelId ? models[parentModelId].craftercms.path : null,
+            models[parentModelId ? parentModelId : modelId].craftercms.path,
             value,
             cdataEscapedFieldPatterns.some((pattern) => Boolean(fieldId.match(pattern)))
-          ).subscribe(
-            () => {
+          ).subscribe({
+            next() {
               enqueueSnackbar(formatMessage(guestMessages.updateOperationComplete));
             },
-            () => {
+            error() {
               enqueueSnackbar(formatMessage(guestMessages.updateOperationFailed));
             }
-          );
+          });
           break;
         }
         case iceZoneSelected.type: {

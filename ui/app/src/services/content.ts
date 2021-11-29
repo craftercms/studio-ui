@@ -17,7 +17,7 @@
 import { errorSelectorApi1, get, getBinary, getGlobalHeaders, getText, post, postJSON } from '../utils/ajax';
 import { catchError, map, mapTo, pluck, switchMap, tap } from 'rxjs/operators';
 import { forkJoin, Observable, of, zip } from 'rxjs';
-import { cdataWrap, createElements, fromString, getInnerHtml, serialize, wrapElementInAuxDocument } from '../utils/xml';
+import { cdataWrap, createElement, createElements, fromString, getInnerHtml, serialize } from '../utils/xml';
 import { ContentType } from '../models/ContentType';
 import { createLookupTable, nnou, nou, reversePluckProps, toQueryString } from '../utils/object';
 import { LookupTable } from '../models/LookupTable';
@@ -184,70 +184,82 @@ function writeContentUrl(qs: object): string {
   return `/studio/api/1/services/api/1/content/write-content.json?${qs.toString()}`;
 }
 
+// region Operations
+
 export function updateField(
   site: string,
   modelId: string,
   fieldId: string,
   indexToUpdate: number,
-  parentModelId: string = null,
+  path: string,
   value: any,
   serializeValue: boolean | ((value: any) => string) = false
 ): Observable<any> {
-  return performMutation(site, modelId, parentModelId, (doc) => {
-    let node = extractNode(doc, removeLastPiece(fieldId) || fieldId, indexToUpdate);
-
-    if (fieldId.includes('.')) {
-      // node is <item/> inside collection
-      const fieldToUpdate = popPiece(fieldId);
-      let fieldNode = node.querySelector(`:scope > ${fieldToUpdate}`);
-      if (nou(fieldNode)) {
-        fieldNode = doc.createElement(fieldToUpdate);
-        node.appendChild(fieldNode);
+  return performMutation(
+    site,
+    path,
+    (element) => {
+      let node = extractNode(element, removeLastPiece(fieldId) || fieldId, indexToUpdate);
+      if (fieldId.includes('.')) {
+        // node is <item /> inside collection
+        const fieldToUpdate = popPiece(fieldId);
+        let fieldNode = node.querySelector(`:scope > ${fieldToUpdate}`);
+        if (nou(fieldNode)) {
+          fieldNode = createElement(fieldToUpdate);
+          node.appendChild(fieldNode);
+        }
+        node = fieldNode;
+      } else if (!node) {
+        // node is <fieldId /> inside the element
+        node = createElement(fieldId);
+        element.appendChild(node);
       }
-      node = fieldNode;
-    } else if (!node) {
-      // node is <fieldId/> inside the doc
-      node = doc.createElement(fieldId);
-      doc.documentElement.appendChild(node);
-    }
-    node.innerHTML =
-      typeof serializeValue === 'function' ? serializeValue(value) : Boolean(serializeValue) ? cdataWrap(value) : value;
-  });
+      node.innerHTML =
+        typeof serializeValue === 'function'
+          ? serializeValue(value)
+          : Boolean(serializeValue)
+          ? cdataWrap(value)
+          : value;
+    },
+    modelId
+  );
 }
 
 function performMutation(
   site: string,
-  modelId: string,
-  parentModelId: string = null,
-  mutation: (doc: XMLDocument) => void
+  path: string,
+  mutation: (doc: Element) => void,
+  modelId: string = null
 ): Observable<any> {
-  const isEmbeddedTarget = nnou(parentModelId);
-  return fetchContentDOM(site, isEmbeddedTarget ? parentModelId : modelId).pipe(
+  return fetchContentDOM(site, path).pipe(
     switchMap((doc) => {
-      const qs = {
-        site,
-        path: isEmbeddedTarget ? parentModelId : modelId,
-        unlock: 'true',
-        fileName: getInnerHtml(doc.querySelector(':scope > file-name'))
-      };
-
-      if (isEmbeddedTarget) {
+      const documentModelId = doc.querySelector(':scope > objectId').innerHTML.trim();
+      if (nnou(modelId) && documentModelId !== modelId) {
         const component = doc.querySelector(`[id="${modelId}"]`);
-        const auxiliaryDocument = wrapElementInAuxDocument(component);
-        mutation(auxiliaryDocument);
-        updateModifiedDateElement(auxiliaryDocument);
-        component.replaceWith(auxiliaryDocument.documentElement);
+        mutation(component);
+        updateModifiedDateElement(component);
       } else {
-        mutation(doc);
+        mutation(doc.documentElement);
       }
 
-      updateModifiedDateElement(doc);
+      updateModifiedDateElement(doc.documentElement);
 
-      return post(writeContentUrl(qs), serialize(doc)).pipe(mapTo({ updatedDocument: doc }));
+      return post(
+        writeContentUrl({
+          site,
+          path: path,
+          unlock: 'true',
+          fileName: getInnerHtml(doc.querySelector(':scope > file-name'))
+        }),
+        serialize(doc)
+      ).pipe(mapTo({ updatedDocument: doc }));
     })
   );
 }
 
+/**
+ * Insert a *new* component on to the document
+ * */
 export function insertComponent(
   site: string,
   modelId: string,
@@ -255,82 +267,95 @@ export function insertComponent(
   targetIndex: string | number,
   contentType: ContentType,
   instance: ContentInstance,
-  parentModelId: string = null,
+  path: string,
   shared = false
 ): Observable<any> {
-  return performMutation(site, modelId, parentModelId, (doc) => {
-    const id = instance.craftercms.id;
-    const path = shared ? instance.craftercms.path ?? getComponentPath(id, instance.craftercms.contentTypeId) : null;
+  return performMutation(
+    site,
+    path,
+    (element) => {
+      const id = instance.craftercms.id;
+      const path = shared ? instance.craftercms.path ?? getComponentPath(id, instance.craftercms.contentTypeId) : null;
 
-    // Create the new `item` that holds or references (embedded vs shared) the component.
-    const newItem = doc.createElement('item');
+      // Create the new `item` that holds or references (embedded vs shared) the component.
+      const newItem = createElement('item');
 
-    delete instance.fileName;
-    delete instance.internalName;
+      delete instance.fileName;
+      delete instance.internalName;
 
-    // Create the new component that will be either embedded into the parent's XML or
-    // shared stored on it's own.
-    const component = mergeContentDocumentProps('component', {
-      '@attributes': { id },
-      'content-type': contentType.id,
-      'display-template': contentType.displayTemplate,
-      // TODO: per this, at this point, internal-name is always cdata wrapped, not driven by config.
-      'internal-name': cdataWrap(instance.craftercms.label),
-      'file-name': `${id}.xml`,
-      objectId: id,
-      ...reversePluckProps(instance, 'craftercms')
-    });
+      // Create the new component that will be either embedded into the parent's XML or
+      // shared stored on it's own.
+      const component = mergeContentDocumentProps('component', {
+        '@attributes': { id },
+        'content-type': contentType.id,
+        'display-template': contentType.displayTemplate,
+        // TODO: per this, at this point, internal-name is always cdata wrapped, not driven by config.
+        'internal-name': cdataWrap(instance.craftercms.label),
+        'file-name': `${id}.xml`,
+        objectId: id,
+        ...reversePluckProps(instance, 'craftercms')
+      });
 
-    // Add the child elements into the `item` node
-    createElements(doc, newItem, {
-      '@attributes': {
-        // TODO: Hardcoded value. Fix.
-        datasource: 'TODO',
-        ...(shared ? {} : { inline: true })
-      },
-      key: shared ? path : id,
-      value: instance.craftercms.label,
-      ...(shared
-        ? {
-            include: path,
-            disableFlattening: 'false'
-          }
-        : {
-            component
-          })
-    });
+      // Add the child elements into the `item` node
+      createElements(newItem, {
+        '@attributes': {
+          // TODO: Hardcoded value. Fix.
+          datasource: 'TODO',
+          ...(shared ? {} : { inline: true })
+        },
+        key: shared ? path : id,
+        value: instance.craftercms.label,
+        ...(shared
+          ? {
+              include: path,
+              disableFlattening: 'false'
+            }
+          : {
+              component
+            })
+      });
 
-    insertCollectionItem(doc, fieldId, targetIndex, newItem);
-  });
+      insertCollectionItem(element, fieldId, targetIndex, newItem);
+    },
+    modelId
+  );
 }
 
+/**
+ * Insert a *existing* (i.e. shared) component on to the document
+ * */
 export function insertInstance(
   site: string,
   modelId: string,
   fieldId: string,
   targetIndex: string | number,
   instance: ContentInstance,
-  parentModelId: string = null,
+  path: string,
   datasource?: string
 ): Observable<any> {
-  return performMutation(site, modelId, parentModelId, (doc) => {
-    const path = instance.craftercms.path;
+  return performMutation(
+    site,
+    path,
+    (element) => {
+      const path = instance.craftercms.path;
 
-    const newItem = doc.createElement('item');
+      const newItem = createElement('item');
 
-    createElements(doc, newItem, {
-      '@attributes': {
-        // TODO: Hardcoded value. Fix.
-        datasource: datasource ?? 'TODO'
-      },
-      key: path,
-      value: instance.craftercms.label,
-      include: path,
-      disableFlattening: 'false'
-    });
+      createElements(newItem, {
+        '@attributes': {
+          // TODO: Hardcoded value. Fix.
+          datasource: datasource ?? 'TODO'
+        },
+        key: path,
+        value: instance.craftercms.label,
+        include: path,
+        disableFlattening: 'false'
+      });
 
-    insertCollectionItem(doc, fieldId, targetIndex, newItem);
-  });
+      insertCollectionItem(element, fieldId, targetIndex, newItem);
+    },
+    modelId
+  );
 }
 
 export function insertItem() {}
@@ -341,12 +366,17 @@ export function sortItem(
   fieldId: string,
   currentIndex: number,
   targetIndex: number,
-  parentModelId: string = null
+  path: string
 ): Observable<any> {
-  return performMutation(site, modelId, parentModelId, (doc) => {
-    const item = extractNode(doc, fieldId, currentIndex);
-    insertCollectionItem(doc, fieldId, targetIndex, item, currentIndex);
-  });
+  return performMutation(
+    site,
+    path,
+    (element) => {
+      const item = extractNode(element, fieldId, currentIndex);
+      insertCollectionItem(element, fieldId, targetIndex, item, currentIndex);
+    },
+    modelId
+  );
 }
 
 export function moveItem(
@@ -357,24 +387,32 @@ export function moveItem(
   targetModelId: string,
   targetFieldId: string,
   targetIndex: number,
-  originalParentModelId: string = null,
-  targetParentModelId: string = null
+  originalParentPath: string,
+  targetParentPath: string
 ): Observable<any> {
   // TODO Warning: cannot perform as transaction whilst the UI is the one to do all this.
-  // const isOriginalEmbedded = nnou(originalParentModelId);
-  // const isTargetEmbedded = nnou(targetParentModelId);
-  // When Moving between inherited dropzone to other dropzone, the modelsIds will be different but in some cases the parentId will be null for both targets
-  // in that case we need to add a nnou validation to parentsModelId;
-  if (
-    originalModelId === targetModelId ||
-    (nnou(originalParentModelId) && nnou(targetParentModelId) && originalParentModelId === targetParentModelId)
-  ) {
-    // Moving items between two fields of the same model...
-    return performMutation(site, originalModelId, originalParentModelId, (doc) => {
-      const item = extractNode(doc, originalFieldId, originalIndex);
-      const targetField = extractNode(doc, targetFieldId, removeLastPiece(`${targetIndex}`));
+  // const isOriginalEmbedded = nnou(originalParentPath);
+  // const isTargetEmbedded = nnou(targetParentPath);
+  // When moving between inherited dropzone to other dropzone, the modelsIds will be different but in some cases the
+  // parentId will be null for both targets in that case we need to add a nnou validation to parentsModelId;
+  const isSameModel = originalModelId === targetModelId;
+  const isSameDocument = originalParentPath === targetParentPath;
+  if (isSameDocument || isSameModel) {
+    // Moving items between two fields of the same document or model...
+    return performMutation(site, originalParentPath, (element) => {
+      // Item may be moving...
+      // - from parent model to an embedded model
+      // - from an embedded model to the parent model
+      // - from an embedded model to another embedded model
+      // - from a field to another WITHIN the same model (parent or embedded)
+      const parentDocumentModelId = getInnerHtml(element.querySelector(':scope > objectId'));
+      const sourceModelElement =
+        parentDocumentModelId === originalModelId ? element : element.querySelector(`[id="${originalModelId}"]`);
+      const targetModelElement =
+        parentDocumentModelId === targetModelId ? element : element.querySelector(`[id="${targetModelId}"]`);
+      const item = extractNode(sourceModelElement, originalFieldId, originalIndex);
+      const targetField = extractNode(targetModelElement, targetFieldId, removeLastPiece(`${targetIndex}`));
       const targetFieldItems = targetField.querySelectorAll(':scope > item');
-
       const parsedTargetIndex = parseInt(popPiece(`${targetIndex}`));
       if (targetFieldItems.length === parsedTargetIndex) {
         targetField.appendChild(item);
@@ -384,23 +422,33 @@ export function moveItem(
     });
   } else {
     let removedItemHTML: string;
-    return performMutation(site, originalModelId, originalParentModelId, (doc) => {
-      const item: Element = extractNode(doc, originalFieldId, originalIndex);
-      const field: Element = extractNode(doc, originalFieldId, removeLastPiece(`${originalIndex}`));
+    return performMutation(
+      site,
+      originalParentPath,
+      (element) => {
+        const item: Element = extractNode(element, originalFieldId, originalIndex);
+        const field: Element = extractNode(element, originalFieldId, removeLastPiece(`${originalIndex}`));
 
-      removedItemHTML = item.outerHTML;
-      field.removeChild(item);
-    }).pipe(
+        removedItemHTML = item.outerHTML;
+        field.removeChild(item);
+      },
+      originalModelId
+    ).pipe(
       switchMap(() =>
-        performMutation(site, targetModelId, targetParentModelId, (doc) => {
-          const item: Element = extractNode(doc, targetFieldId, targetIndex);
-          const field: Element = extractNode(doc, targetFieldId, removeLastPiece(`${targetIndex}`));
+        performMutation(
+          site,
+          targetParentPath,
+          (element) => {
+            const item: Element = extractNode(element, targetFieldId, targetIndex);
+            const field: Element = extractNode(element, targetFieldId, removeLastPiece(`${targetIndex}`));
 
-          const auxElement = doc.createElement('hold');
-          auxElement.innerHTML = removedItemHTML;
+            const auxElement = createElement('hold');
+            auxElement.innerHTML = removedItemHTML;
 
-          field.insertBefore(auxElement.querySelector(':scope > item'), item);
-        })
+            field.insertBefore(auxElement.querySelector(':scope > item'), item);
+          },
+          targetModelId
+        )
       )
     );
   }
@@ -411,35 +459,42 @@ export function deleteItem(
   modelId: string,
   fieldId: string,
   indexToDelete: number | string,
-  parentModelId: string = null
+  path: string
 ): Observable<any> {
-  return performMutation(site, modelId, parentModelId, (doc) => {
-    let index = indexToDelete;
-    let fieldNode = doc.querySelector(`:scope > ${fieldId}`);
+  return performMutation(
+    site,
+    path,
+    (element) => {
+      let index = indexToDelete;
+      let fieldNode = element.querySelector(`:scope > ${fieldId}`);
 
-    if (typeof indexToDelete === 'string') {
-      index = parseInt(popPiece(indexToDelete));
-      // A fieldId can be in the form of `a.b`, which translates to `a > item > b` on the XML.
-      // In terms of index, since all it should ever arrive here is collection items,
-      // this assumes the index path points to the item itself, not the collection.
-      // By calling removeLastPiece(indexToDelete), we should get the collection node here.
-      fieldNode = extractNode(doc, fieldId, removeLastPiece(`${indexToDelete}`));
-    }
+      if (typeof indexToDelete === 'string') {
+        index = parseInt(popPiece(indexToDelete));
+        // A fieldId can be in the form of `a.b`, which translates to `a > item > b` on the XML.
+        // In terms of index, since all it should ever arrive here is collection items,
+        // this assumes the index path points to the item itself, not the collection.
+        // By calling removeLastPiece(indexToDelete), we should get the collection node here.
+        fieldNode = extractNode(element, fieldId, removeLastPiece(`${indexToDelete}`));
+      }
 
-    const $fieldNode = $(fieldNode);
+      const $fieldNode = $(fieldNode);
 
-    $fieldNode
-      .children()
-      .eq(index as number)
-      .remove();
+      $fieldNode
+        .children()
+        .eq(index as number)
+        .remove();
 
-    if ($fieldNode.children().length === 0) {
-      // If the node isn't completely blank, the xml formatter won't do it's job in converting to a self-closing tag.
-      // Also, later on, when retrieved, some *legacy* functions would impaired as the deserializing into JSON had unexpected content
-      $fieldNode.html('');
-    }
-  });
+      if ($fieldNode.children().length === 0) {
+        // If the node isn't completely blank, the xml formatter won't do it's job in converting to a self-closing tag.
+        // Also, later on, when retrieved, some *legacy* functions would impaired as the deserializing into JSON had unexpected content
+        $fieldNode.html('');
+      }
+    },
+    modelId
+  );
 }
+
+// endregion
 
 interface SearchServiceResponse {
   response: ApiResponse;
@@ -558,9 +613,9 @@ interface AnyObject {
   [key: string]: any;
 }
 
-function extractNode(doc: XMLDocument, fieldId: string, index: string | number) {
+function extractNode(doc: XMLDocument | Element, fieldId: string, index: string | number) {
   const indexes = index === '' || nou(index) ? [] : `${index}`.split('.').map((i) => parseInt(i, 10));
-  let aux: any = doc.documentElement;
+  let aux: Element = (doc as XMLDocument).documentElement ?? (doc as Element);
   if (nou(index) || isBlank(`${index}`)) {
     return aux.querySelector(`:scope > ${fieldId}`);
   }
@@ -614,7 +669,7 @@ function createModifiedDate() {
   return new Date().toISOString();
 }
 
-function updateModifiedDateElement(doc: XMLDocument) {
+function updateModifiedDateElement(doc: Element) {
   doc.querySelector(':scope > lastModifiedDate_dt').innerHTML = createModifiedDate();
 }
 
@@ -624,13 +679,13 @@ function getComponentPath(id: string, contentType: string) {
 }
 
 function insertCollectionItem(
-  doc: XMLDocument,
+  element: Element,
   fieldId: string,
   targetIndex: string | number,
   newItem: Node,
   currentIndex?: number
 ): void {
-  let fieldNode = extractNode(doc, fieldId, removeLastPiece(`${targetIndex}`));
+  let fieldNode = extractNode(element, fieldId, removeLastPiece(`${targetIndex}`));
   let index = typeof targetIndex === 'string' ? parseInt(popPiece(targetIndex)) : targetIndex;
 
   // If currentIndex it means the op is a 'sort', and the index(targetIndex) needs to plus 1 or no
@@ -645,9 +700,9 @@ function insertCollectionItem(
   }
 
   if (nou(fieldNode)) {
-    fieldNode = doc.createElement(fieldId);
+    fieldNode = createElement(fieldId);
     fieldNode.setAttribute('item-list', 'true');
-    doc.documentElement.appendChild(fieldNode);
+    element.appendChild(fieldNode);
   }
 
   const itemList = fieldNode.querySelectorAll(`:scope > item`);
@@ -655,7 +710,7 @@ function insertCollectionItem(
   if (itemList.length === index) {
     fieldNode.appendChild(newItem);
   } else {
-    $(newItem).insertBefore(itemList[index]);
+    fieldNode.insertBefore(newItem, itemList[index]);
   }
 }
 
