@@ -340,7 +340,7 @@ const systemPropsList = [
 ];
 
 export function parseContentXML(
-  doc: Document,
+  doc: XMLDocument,
   path: string = null,
   contentTypesLookup: LookupTable<ContentType>,
   instanceLookup: LookupTable<ContentInstance>
