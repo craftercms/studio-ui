@@ -37,10 +37,11 @@ import {
 import { ValidationResult } from '@craftercms/studio-ui/models/ContentType';
 import { RegistryEntry } from './models/Registry';
 import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
-import { notNullOrUndefined, nullOrUndefined } from '@craftercms/studio-ui/utils/object';
+import { notNullOrUndefined, nou, nullOrUndefined } from '@craftercms/studio-ui/utils/object';
 import { forEach } from '@craftercms/studio-ui/utils/array';
 import { getChildArrangement, sibling } from './utils/dom';
 import $ from 'jquery';
+import { isSimple, isSymmetricCombination, popPiece } from '@craftercms/studio-ui/utils/string';
 
 let seq = 0;
 // Element record registry
@@ -63,41 +64,50 @@ export function setLabel(record: ElementRecord): void {
     const iceRecord = iceRegistry.getById(iceId);
     const { model, field, fieldId, index, contentType } = iceRegistry.getReferentialEntries(iceRecord);
     if (notNullOrUndefined(field)) {
-      if (field.type === 'node-selector') {
-        if (notNullOrUndefined(index)) {
-          let component;
-          if (notNullOrUndefined(fieldId) && ContentType.isGroupItem(contentType, fieldId)) {
-            // Repeat groups with possibly nested node-selector/repeat
-            let aux = Model.extractCollectionItem(model, fieldId, index);
-            // TODO: Only works for nested node-selector (?)...
-            // A nested repeat group would not be a component and `aux` would rather be
-            // an object to read the last piece of the `fieldId`
-            // @ts-ignore TODO: Fix type
-            component = models[aux];
-          } else {
-            // Ok for mono-level node selectors
-            const id = Model.value(model, field.id)[index];
-            component = models[id];
-          }
-
-          if (component) {
-            labels.push(
-              `${component.craftercms.label} (${getCachedContentType(component.craftercms.contentTypeId).name})`
-            );
+      switch (field.type) {
+        case 'node-selector': {
+          if (notNullOrUndefined(index)) {
+            if (isSymmetricCombination(fieldId, index)) {
+              let aux = Model.extractCollectionItem(model, fieldId, index);
+              let component = models[aux];
+              if (component) {
+                labels.push(
+                  `${component.craftercms.label} (${getCachedContentType(component.craftercms.contentTypeId).name})`
+                );
+              } else {
+                labels.push(`${field.name}`);
+              }
+            } else {
+              labels.push(`${field.name}`);
+            }
           } else {
             labels.push(`${field.name}`);
           }
-        } else {
-          labels.push(`${field.name}`);
+          break;
         }
-      } else {
-        if (field.type === 'text' || field.type === 'textarea') {
+        case 'repeat':
+          if (nou(index)) {
+            labels.push(`${field.name} (Repeat Group)`);
+          } else {
+            if (isSymmetricCombination(fieldId, index)) {
+              labels.push(
+                `${field.name} item # ${parseInt(isSimple(index) ? String(index) : popPiece(String(index))) + 1}`
+              );
+            } else {
+              labels.push(`${field.name} (Repeat Group)`);
+            }
+          }
+          break;
+        case 'text':
+        case 'textarea':
           labels.push(`${field.name} (Plain Text)`);
-        } else if (field.type === 'html') {
+          break;
+        case 'html':
           labels.push(`${field.name} (Rich Text)`);
-        } else {
+          break;
+        default:
           labels.push(field.name);
-        }
+          break;
       }
     } else {
       labels.push(`${model.craftercms.label} (${contentType.name})`);
