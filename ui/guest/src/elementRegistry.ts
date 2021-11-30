@@ -68,15 +68,8 @@ export function setLabel(record: ElementRecord): void {
         case 'node-selector': {
           if (notNullOrUndefined(index)) {
             if (isSymmetricCombination(fieldId, index)) {
-              let component;
-              if (isSimple(fieldId)) {
-                // Ok for top-level node selectors
-                const id = Model.value(model, field.id)[index];
-                component = models[id];
-              } else {
-                let aux = Model.extractCollectionItem(model, fieldId, index);
-                component = models[aux];
-              }
+              let aux = Model.extractCollectionItem(model, fieldId, index);
+              let component = models[aux];
               if (component) {
                 labels.push(
                   `${component.craftercms.label} (${getCachedContentType(component.craftercms.contentTypeId).name})`
