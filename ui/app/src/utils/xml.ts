@@ -122,7 +122,21 @@ export function createElements(element: Element, data: object): void {
       if (typeof content === 'string' || typeof content === 'number' || typeof content === 'boolean') {
         elem.innerHTML = `${content}`;
       } else if (Array.isArray(content)) {
-        console.error('[utils/xml/createElements] Path not implemented.', content);
+        elem.setAttribute('item-list', 'true');
+        if (content.length) {
+          if (typeof content[0] === 'object') {
+            content.forEach((itemData) => {
+              const item = createElement('item');
+              createElements(item, itemData);
+              elem.appendChild(item);
+            });
+          } else {
+            console.error(
+              `[utils/xml/createElements] Incorrect data supplied. Received an array with items of type ${typeof content[0]}.`,
+              content
+            );
+          }
+        }
       } else if (content instanceof Element) {
         elem.appendChild(content);
       } else if (content !== null && content !== void 0) {
