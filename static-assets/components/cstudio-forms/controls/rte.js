@@ -450,6 +450,7 @@ CStudioAuthoring.Module.requireModule(
                 if (!e.initial) {
                   _thisControl.save();
                 }
+                _thisControl._onChangeVal(null, _thisControl);
               });
 
               editor.on('DblClick', function (e) {
@@ -718,6 +719,9 @@ CStudioAuthoring.Module.requireModule(
                       });
 
                       $imageToAdd.css('opacity', '');
+
+                      _self._onChangeVal(null, _self);
+
                       success(url);
                     },
                     failure: function (error) {
@@ -814,6 +818,8 @@ CStudioAuthoring.Module.requireModule(
           obj.value = this.editor ? this.editor.getContent() : obj.value;
 
           if (obj.required) {
+            // console.log('html', obj.value);
+
             if (CStudioAuthoring.Utils.isEmptyHtml(obj.value)) {
               obj.setError('required', this.formatMessage(this.messages.requiredField));
               obj.renderValidation(true, false);
