@@ -187,9 +187,9 @@ tinymce.PluginManager.add(PLUGIN_NAME, function (editor, url) {
 
       if (inlineMode) {
         aceModes.inline.getSession().setValue(aceEditor.getValue());
-      } else {
-        editor.fire('external_change');
       }
+
+      editor.fire('external_change');
     });
   };
 });
