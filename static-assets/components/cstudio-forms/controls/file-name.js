@@ -164,6 +164,9 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
         el.selectionEnd = cursorPosition;
       }
     }
+    // Remove accents/diacritics
+    el.value = el.value.normalize('NFD').replace(/\p{Diacritic}/gu, '');
+
     var data = el.value;
 
     if (invalid.exec(data) != null) {
