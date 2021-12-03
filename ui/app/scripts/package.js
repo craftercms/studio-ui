@@ -123,25 +123,9 @@ async function run() {
     fse.copy(path.join(srcPath, 'assets'), path.join(buildPath, 'assets'));
     console.log(`Copied assets to build`);
 
-    let pathToNpmIndex = path.join(buildPath, 'index.npm.js');
-    fse.pathExists(pathToNpmIndex, (err, exists) => {
-      if (exists) {
-        fse.move(pathToNpmIndex, path.join(buildPath, 'index.js'));
-        console.log(`Renamed index.npm.js to index.js`);
-      } else {
-        console.log(`File "index.npm.js" not found, skipping.`);
-      }
-    });
+    await renameNpmIndex('index.npm.js', 'index.js');
 
-    pathToNpmIndex = path.join(buildPath, 'index.npm.d.ts');
-    fse.pathExists(pathToNpmIndex, (err, exists) => {
-      if (exists) {
-        fse.move(pathToNpmIndex, path.join(buildPath, 'index.d.js'));
-        console.log(`Renamed index.npm.ts to index.d.ts`);
-      } else {
-        console.log(`File "index.npm.ts" not found, skipping.`);
-      }
-    });
+    await renameNpmIndex('index.npm.d.ts', 'index.d.ts');
 
     await fse.copyFile(path.join(packagePath, 'scripts', 'LICENSE'), path.join(buildPath, 'LICENSE'));
     console.log('License file added');
@@ -153,6 +137,21 @@ async function run() {
   } catch (err) {
     console.error(err);
     process.exit(1);
+  }
+}
+
+async function renameNpmIndex(sourceFileName, destFileName) {
+  let pathToNpmIndex = path.join(buildPath, sourceFileName);
+  let sourceExists = await fse.pathExists(pathToNpmIndex);
+  if (sourceExists) {
+    try {
+      await fse.move(pathToNpmIndex, path.join(buildPath, destFileName));
+      console.log(`Renamed ${sourceFileName} to ${destFileName}`);
+    } catch (e) {
+      console.error(e);
+    }
+  } else {
+    console.log(`File "${sourceFileName}" not found, skipping`);
   }
 }
 

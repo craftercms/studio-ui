@@ -54,11 +54,11 @@ const translations = defineMessages({
   },
   dragHelpModeLabel: {
     id: 'settingsPanel.dragHelpModeLabel',
-    defaultMessage: 'Drag-friendly mode'
+    defaultMessage: 'Edit-mode padding'
   },
   dragHelpModeHelp: {
     id: 'settingsPanel.dragHelpModeHelp',
-    defaultMessage: 'Enables styles for facilitating drag & drop.'
+    defaultMessage: 'Adds padding to collections for easier interaction in edit-mode.'
   }
 });
 
