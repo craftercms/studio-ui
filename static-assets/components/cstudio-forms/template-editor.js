@@ -680,16 +680,30 @@ CStudioAuthoring.Module.requireModule(
 
                     if (isWrite == true && !isRead) {
                       var saveEl = modalEl.querySelector('.template-editor-update-button');
-
-                      const onMultiChoiceSaveButtonClick = (e, type) => {
-                        me.save(modalEl, aceEditor, templatePath, onSaveCb, false, type);
-                      };
-
                       let unmount;
-                      CrafterCMSNext.render(saveEl, 'MultiChoiceSaveButton', {
-                        defaultSelected: 'saveAndClose',
-                        storageKey: 'codeEditor',
-                        onClick: onMultiChoiceSaveButtonClick
+                      const options = [
+                        {
+                          label: formatMessage(messages.save),
+                          callback: () => {
+                            me.save(modalEl, aceEditor, templatePath, onSaveCb, false, 'save');
+                          }
+                        },
+                        {
+                          label: formatMessage(messages.saveAndClose),
+                          callback: () => {
+                            me.save(modalEl, aceEditor, templatePath, onSaveCb, true, 'saveAndClose');
+                          }
+                        },
+                        {
+                          label: formatMessage(messages.saveAndMinimize),
+                          callback: () => {
+                            me.save(modalEl, aceEditor, templatePath, onSaveCb, false, 'saveAndMinimize');
+                          }
+                        }
+                      ];
+                      CrafterCMSNext.render(saveEl, 'SplitButton', {
+                        options,
+                        defaultSelected: 1
                       }).then((done) => (unmount = done.unmount));
                     }
                     if (onSaveCb.renderComplete) {
