@@ -22,7 +22,7 @@ import Suspencified from '../Suspencified/Suspencified';
 import { Widget } from '../Widget/Widget';
 
 export function WidgetDialog(props: WidgetDialogProps) {
-  const { title, widget, onSubmittingAndOrPendingChange, isSubmitting, ...rest } = props;
+  const { title, widget, onSubmittingAndOrPendingChange, isSubmitting, configuration, ...rest } = props;
   const classes = useStyles();
 
   return (
@@ -35,7 +35,7 @@ export function WidgetDialog(props: WidgetDialogProps) {
     >
       <section className={classes.toolPanelBody}>
         <Suspencified>
-          <Widget {...widget} extraProps={{ onSubmittingAndOrPendingChange, isSubmitting }} />
+          <Widget {...widget} extraProps={{ onSubmittingAndOrPendingChange, isSubmitting, configuration }} />
         </Suspencified>
       </section>
     </EnhancedDialog>

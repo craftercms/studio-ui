@@ -1872,22 +1872,13 @@ var CStudioForms =
             // This is really the right thing to do but previewable doesn't come through
             CStudioAuthoring.Service.lookupContentType(CStudioAuthoringContext.site, contentType, {
               success: function (type) {
-                const storedId = type.previewable ? 'formEditorPreviewable' : 'formEditorNotPreviewable';
+                const storedId = 'formEditor';
                 const defaultSelected = 'saveAndClose';
 
                 const onMultiChoiceSaveButtonClick = (e, type) => {
                   saveFn(false, true, null, type);
                 };
-
-                const options = ['save', 'saveAndClose', 'saveAndMinimize'];
-                if (type.previewable) {
-                  options.push({
-                    label: formatMessage(formEngineMessages.saveAndPreview),
-                    callback: (e) => onMultiChoiceSaveButtonClick(e, 'saveAndPreview')
-                  });
-                }
                 CrafterCMSNext.render(buttonsContainer, 'MultiChoiceSaveButton', {
-                  options,
                   defaultSelected,
                   disablePortal: false,
                   storageKey: storedId,

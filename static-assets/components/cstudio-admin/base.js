@@ -350,16 +350,27 @@
     },
 
     addAction: function (action) {
-      var buttonEl = document.createElement('input');
-      YDom.addClass(buttonEl, 'btn');
-      YDom.addClass(buttonEl, action.class ? action.class : 'btn-primary');
-      buttonEl.type = 'button';
-      buttonEl.value = action.label;
-      if (action.id) {
-        buttonEl.id = action.id;
+      if (!action.multiChoice) {
+        var buttonEl = document.createElement('input');
+        YDom.addClass(buttonEl, 'btn');
+        YDom.addClass(buttonEl, action.class ? action.class : 'btn-primary');
+        buttonEl.type = 'button';
+        buttonEl.value = action.label;
+        if (action.id) {
+          buttonEl.id = action.id;
+        }
+        this.commandBarEl.appendChild(buttonEl);
+        buttonEl.onclick = action.fn;
+      } else {
+        const saveContainer = document.createElement('span');
+        CrafterCMSNext.render(saveContainer, 'MultiChoiceSaveButton', {
+          defaultSelected: 'save',
+          disablePortal: false,
+          storageKey: 'contentTypeEditor',
+          onClick: action.fn
+        }).then((done) => (unmount = done.unmount));
+        this.commandBarEl.appendChild(saveContainer);
       }
-      this.commandBarEl.appendChild(buttonEl);
-      buttonEl.onclick = action.fn;
     }
   };
 

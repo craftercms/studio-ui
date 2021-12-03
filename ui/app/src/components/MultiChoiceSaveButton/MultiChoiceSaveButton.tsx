@@ -37,11 +37,11 @@ const translations = defineMessages({
     defaultMessage: 'Save'
   },
   saveAndClose: {
-    id: 'codeEditor.saveAndClose',
+    id: 'multiChoiceSaveButton.saveAndClose',
     defaultMessage: 'Save & Close'
   },
   saveAndMinimize: {
-    id: 'codeEditor.saveAndMinimize',
+    id: 'multiChoiceSaveButton.saveAndMinimize',
     defaultMessage: 'Save & Minimize'
   }
 });

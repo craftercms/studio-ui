@@ -30,15 +30,18 @@ import {
   contentTypeUpdated,
   emitSystemEvent
 } from '../../state/actions/system';
+import { updateWidgetDialog } from '../../state/actions/dialogs';
+import { LookupTable } from '../../models';
 
 interface ContentTypeManagementProps {
   embedded?: boolean;
   showAppsButton?: boolean;
+  configuration?: LookupTable;
   onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 export function ContentTypeManagement(props: ContentTypeManagementProps) {
-  const { embedded = false, showAppsButton, onSubmittingAndOrPendingChange } = props;
+  const { embedded = false, showAppsButton, configuration, onSubmittingAndOrPendingChange } = props;
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
 
@@ -58,6 +61,21 @@ export function ContentTypeManagement(props: ContentTypeManagementProps) {
         switch (e.data.type) {
           case 'CONTENT_TYPES_ON_SAVED': {
             dispatch(emitSystemEvent(contentTypeUpdated()));
+            switch (e.data.saveType) {
+              case 'saveAndClose':
+                if (embedded) {
+                  configuration?.onClose?.();
+                }
+                break;
+              case 'saveAndMinimize':
+                if (embedded) {
+                  configuration?.onMinimize?.();
+                } else if (configuration?.isContainerDialog) {
+                  // If not embedded but container is a dialog, dispatch action to minimize.
+                  dispatch(updateWidgetDialog({ isMinimized: true }));
+                }
+                break;
+            }
             break;
           }
           case 'CONTENT_TYPES_ON_CREATED': {
@@ -77,7 +95,7 @@ export function ContentTypeManagement(props: ContentTypeManagementProps) {
     return () => {
       messagesSubscription.unsubscribe();
     };
-  }, [dispatch, onSubmittingAndOrPendingChange]);
+  }, [dispatch, onSubmittingAndOrPendingChange, configuration, embedded]);
 
   return (
     <Box height="100%" display="flex" flexDirection="column">

@@ -157,7 +157,15 @@ export function SiteToolsApp(props: SiteToolsAppProps) {
         {activeToolId ? (
           tool ? (
             <Suspencified>
-              <Widget {...tool} extraProps={{ embedded: false, showAppsButton, onSubmittingAndOrPendingChange }} />
+              <Widget
+                {...tool}
+                extraProps={{
+                  embedded: false,
+                  showAppsButton,
+                  onSubmittingAndOrPendingChange,
+                  configuration: { isContainerDialog: hideSidebarSiteSwitcher }
+                }}
+              />
             </Suspencified>
           ) : (
             <Box display="flex" flexDirection="column" height="100%">
