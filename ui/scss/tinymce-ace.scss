@@ -17,17 +17,18 @@
  */
 
 .tox-dialog {
-  &.acecode .tox-dialog__header {
-    padding: 5px 10px !important;
-    border-bottom: 1px solid #cccccc;
-  }
-  &.acecode .tox-dialog__body-content {
-    border: none;
-  }
-
-  .tox-dialog__footer {
-    display: none !important;
-    border-top: 1px solid #cccccc;
+  &.acecode {
+    .tox-dialog__header {
+      padding: 5px 10px !important;
+      border-bottom: 1px solid #cccccc;
+    }
+    .tox-dialog__body-content {
+      border: none;
+    }
+    .tox-dialog__footer {
+      display: none !important;
+      border-top: 1px solid #cccccc;
+    }
   }
 
   .ace_editor {

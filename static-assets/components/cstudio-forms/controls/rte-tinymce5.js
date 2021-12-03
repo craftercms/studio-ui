@@ -417,6 +417,7 @@ CStudioAuthoring.Module.requireModule(
                 if (!e.initial) {
                   _thisControl.save();
                 }
+                _thisControl._onChangeVal(null, _thisControl);
               });
 
               editor.on('DblClick', function (e) {
