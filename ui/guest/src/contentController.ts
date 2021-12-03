@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -18,12 +18,12 @@ import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import { filter, map, pluck, switchMap, take, tap } from 'rxjs/operators';
 import * as Model from '@craftercms/studio-ui/utils/model';
 import Cookies from 'js-cookie';
-import { fromTopic, post } from '../utils/communicator';
+import { fromTopic, post } from './utils/communicator';
 import { v4 as uuid } from 'uuid';
 import { ContentInstance } from '@craftercms/studio-ui/models/ContentInstance';
 import { ContentType, ContentTypeField } from '@craftercms/studio-ui/models/ContentType';
 import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
-import { Operation } from '../models/Operations';
+import { Operation } from './models/Operations';
 import {
   contentTypesResponse,
   deleteItemOperation,
@@ -36,7 +36,7 @@ import {
 } from '@craftercms/studio-ui/state/actions/preview';
 import { createLookupTable, nnou, nou } from '@craftercms/studio-ui/utils/object';
 import { isSimple, popPiece, removeLastPiece } from '@craftercms/studio-ui/utils/string';
-import { getCollection, getCollectionWithoutItemAtIndex, getParentModelId, setCollection } from '../utils/ice';
+import { getCollection, getCollectionWithoutItemAtIndex, getParentModelId, setCollection } from './utils/ice';
 import { createQuery, search } from '@craftercms/search';
 import { parseDescriptor, preParseSearchResults } from '@craftercms/content';
 import { crafterConf } from '@craftercms/classes';

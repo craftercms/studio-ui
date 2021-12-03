@@ -52,6 +52,7 @@ import {
   moveItemOperation,
   selectForEdit,
   setContentTypeDropTargets,
+  setDragHelpMode,
   setHighlightMode,
   setItemBeingDragged,
   setPreviewEditMode,
@@ -217,7 +218,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   const dispatch = useDispatch();
   const { id: siteId, uuid } = useActiveSite();
   const user = useActiveUser();
-  const { guest, editMode, highlightMode, icePanelWidth, toolsPanelWidth, hostSize, showToolsPanel } =
+  const { guest, editMode, highlightMode, dragHelpMode, icePanelWidth, toolsPanelWidth, hostSize, showToolsPanel } =
     usePreviewState();
   const item = useCurrentPreviewItem();
   const { currentUrlPath } = usePreviewNavigation();
@@ -292,6 +293,11 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   useEffect(() => {
     if (rteConfig) getHostToGuestBus().next({ type: updateRteConfig.type, payload: { rteConfig } });
   }, [rteConfig]);
+
+  // Update drag help mode
+  useEffect(() => {
+    getHostToGuestBus().next(setDragHelpMode({ dragHelpMode }));
+  }, [dragHelpMode]);
 
   // Guest detection, document domain restoring, editMode/highlightMode preference retrieval,
   // and guest key up/down notifications.
@@ -392,10 +398,14 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         case guestCheckIn.type:
         case fetchGuestModel.type: {
           if (type === guestCheckIn.type) {
-            getHostToGuestBus().next({
-              type: hostCheckIn.type,
-              payload: { editMode: false, highlightMode, rteConfig: rteConfig ?? {} }
-            });
+            getHostToGuestBus().next(
+              hostCheckIn({
+                editMode: false,
+                highlightMode,
+                dragHelpMode,
+                rteConfig: rteConfig ?? {}
+              })
+            );
             dispatch(checkInGuest(payload));
 
             if (payload.documentDomain) {
@@ -458,13 +468,13 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 
           sortItem(
             siteId,
-            parentModelId ? modelId : models[modelId].craftercms.path,
+            modelId,
             fieldId,
             currentIndex,
             targetIndex,
-            parentModelId ? models[parentModelId].craftercms.path : null
-          ).subscribe(
-            ({ updatedDocument }) => {
+            models[parentModelId ? parentModelId : modelId].craftercms.path
+          ).subscribe({
+            next({ updatedDocument }) {
               const updatedModels = {};
               parseContentXML(
                 updatedDocument,
@@ -488,11 +498,11 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
               });
               enqueueSnackbar(formatMessage(guestMessages.sortOperationComplete));
             },
-            (error) => {
+            error(error) {
               console.error(`${type} failed`, error);
               enqueueSnackbar(formatMessage(guestMessages.sortOperationFailed));
             }
-          );
+          });
           break;
         }
         case insertComponentOperation.type: {
@@ -507,12 +517,12 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 
           insertComponent(
             siteId,
-            parentModelId ? modelId : models[modelId].craftercms.path,
+            modelId,
             fieldId,
             targetIndex,
             contentTypes[instance.craftercms.contentTypeId],
             instance,
-            parentModelId ? models[parentModelId].craftercms.path : null,
+            models[parentModelId ? parentModelId : modelId].craftercms.path,
             shared
           ).subscribe({
             next() {
@@ -550,13 +560,13 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 
           insertInstance(
             siteId,
-            parentModelId ? modelId : models[modelId].craftercms.path,
+            modelId,
             fieldId,
             targetIndex,
             instance,
-            parentModelId ? models[parentModelId].craftercms.path : null
-          ).subscribe(
-            () => {
+            models[parentModelId ? parentModelId : modelId].craftercms.path
+          ).subscribe({
+            next() {
               issueDescriptorRequest({
                 site: siteId,
                 path: path ?? models[parentModelId].craftercms.path,
@@ -572,11 +582,11 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
               });
               enqueueSnackbar(formatMessage(guestMessages.insertOperationComplete));
             },
-            (error) => {
+            error(error) {
               console.error(`${type} failed`, error);
               enqueueSnackbar(formatMessage(guestMessages.insertOperationFailed));
             }
-          );
+          });
           break;
         }
         case insertItemOperation.type: {
@@ -599,23 +609,23 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 
           moveItem(
             siteId,
-            originalParentModelId ? originalModelId : models[originalModelId].craftercms.path,
+            originalModelId,
             originalFieldId,
             originalIndex,
-            targetParentModelId ? targetModelId : models[targetModelId].craftercms.path,
+            targetModelId,
             targetFieldId,
             targetIndex,
-            originalParentModelId ? models[originalParentModelId].craftercms.path : null,
-            targetParentModelId ? models[targetParentModelId].craftercms.path : null
-          ).subscribe(
-            () => {
+            models[originalParentModelId ? originalParentModelId : originalModelId].craftercms.path,
+            models[targetParentModelId ? targetParentModelId : targetModelId].craftercms.path
+          ).subscribe({
+            next() {
               enqueueSnackbar(formatMessage(guestMessages.moveOperationComplete));
             },
-            (error) => {
+            error(error) {
               console.error(`${type} failed`, error);
               enqueueSnackbar(formatMessage(guestMessages.moveOperationFailed));
             }
-          );
+          });
           break;
         }
         case deleteItemOperation.type: {
@@ -630,10 +640,10 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 
           deleteItem(
             siteId,
-            parentModelId ? modelId : models[modelId].craftercms.path,
+            modelId,
             fieldId,
             index,
-            parentModelId ? models[parentModelId].craftercms.path : null
+            models[parentModelId ? parentModelId : modelId].craftercms.path
           ).subscribe({
             next: () => {
               issueDescriptorRequest({
@@ -669,20 +679,20 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 
           updateField(
             siteId,
-            parentModelId ? modelId : models[modelId].craftercms.path,
+            modelId,
             fieldId,
             index,
-            parentModelId ? models[parentModelId].craftercms.path : null,
+            models[parentModelId ? parentModelId : modelId].craftercms.path,
             value,
             cdataEscapedFieldPatterns.some((pattern) => Boolean(fieldId.match(pattern)))
-          ).subscribe(
-            () => {
+          ).subscribe({
+            next() {
               enqueueSnackbar(formatMessage(guestMessages.updateOperationComplete));
             },
-            () => {
+            error() {
               enqueueSnackbar(formatMessage(guestMessages.updateOperationFailed));
             }
-          );
+          });
           break;
         }
         case iceZoneSelected.type: {
@@ -801,6 +811,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
     siteId,
     xsrfArgument,
     highlightMode,
+    dragHelpMode,
     conditionallyToggleEditMode,
     cdataEscapedFieldPatterns,
     rteConfig,

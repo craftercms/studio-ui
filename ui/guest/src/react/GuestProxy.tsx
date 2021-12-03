@@ -16,9 +16,9 @@
 
 import React, { useEffect, useRef } from 'react';
 import { useGuestContext, useSelector } from './GuestContext';
-import * as ElementRegistry from '../classes/ElementRegistry';
-import { getParentElementFromICEProps } from '../classes/ElementRegistry';
-import * as iceRegistry from '../classes/ICERegistry';
+import * as ElementRegistry from '../elementRegistry';
+import { getParentElementFromICEProps } from '../elementRegistry';
+import * as iceRegistry from '../iceRegistry';
 import $ from 'jquery';
 import {
   contentTypes$,
@@ -27,7 +27,7 @@ import {
   models$,
   operations$,
   paths$
-} from '../classes/ContentController';
+} from '../contentController';
 import { zip } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
 import * as ContentType from '@craftercms/studio-ui/utils/contentType';

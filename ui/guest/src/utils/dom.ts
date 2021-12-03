@@ -18,12 +18,11 @@ import { forEach } from '@craftercms/studio-ui/utils/array';
 import { Coordinates, DropMarkerPosition, DropMarkerPositionArgs, InRectStats } from '../models/Positioning';
 import $ from 'jquery';
 import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
-import { DropZone, ICEProps } from '../models/InContextEditing';
+import { DropZone } from '../models/InContextEditing';
 import { ValidationResult } from '@craftercms/studio-ui/models/ContentType';
 import { HORIZONTAL, TOLERANCE_PERCENTS, VERTICAL, X_AXIS, Y_AXIS } from './util';
 import { CSSProperties } from 'react';
 import { ContentTypeDropTarget } from '@craftercms/studio-ui/models/ContentTypeDropTarget';
-import { getElementFromICEProps } from '../classes/ElementRegistry';
 
 // Regular click gets triggered even after loooong mouse downs or
 // when mousing-down and dragging cursor - without actually being on

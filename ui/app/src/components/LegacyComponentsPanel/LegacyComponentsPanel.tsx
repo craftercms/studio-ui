@@ -140,7 +140,7 @@ export function LegacyComponentsPanel(props: LegacyComponentsPanelProps) {
           }
         });
 
-        deleteItem(siteId, compPath ? compPath : guestPath, fieldId, index).subscribe(() => {
+        deleteItem(siteId, null, fieldId, index, compPath ? compPath : guestPath).subscribe(() => {
           dispatch(
             showSystemNotification({
               message: formatMessage(guestMessages.deleteOperationComplete)
@@ -380,13 +380,15 @@ export function LegacyComponentsPanel(props: LegacyComponentsPanelProps) {
                 }
               });
 
-              sortItem(siteId, compPath ? compPath : guestPath, fieldId, currentIndex, targetIndex).subscribe(() => {
-                dispatch(
-                  showSystemNotification({
-                    message: formatMessage(guestMessages.sortOperationComplete)
-                  })
-                );
-              });
+              sortItem(siteId, null, fieldId, currentIndex, targetIndex, compPath ? compPath : guestPath).subscribe(
+                () => {
+                  dispatch(
+                    showSystemNotification({
+                      message: formatMessage(guestMessages.sortOperationComplete)
+                    })
+                  );
+                }
+              );
               // endregion
             } else {
               // region delete
@@ -403,7 +405,7 @@ export function LegacyComponentsPanel(props: LegacyComponentsPanelProps) {
                   return 'break';
                 }
               });
-              deleteItem(siteId, compPath ? compPath : guestPath, fieldId, index).subscribe(() => {});
+              deleteItem(siteId, null, fieldId, index, compPath ? compPath : guestPath).subscribe(() => {});
               // endregion
             }
           }

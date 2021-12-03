@@ -19,9 +19,9 @@ import { GuestStandardAction } from '../models/GuestStandardAction';
 import { filter, ignoreElements, map, mapTo, switchMap, take, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 import { not } from '../../utils/util';
 import { post } from '../../utils/communicator';
-import * as iceRegistry from '../../classes/ICERegistry';
+import * as iceRegistry from '../../iceRegistry';
 import { dragOk, unwrapEvent } from '../util';
-import * as contentController from '../../classes/ContentController';
+import * as contentController from '../../contentController';
 import { interval, merge, NEVER, Observable, of, Subject } from 'rxjs';
 import { clearAndListen$, destroyDragSubjects, dragover$, escape$, initializeDragSubjects } from '../subjects';
 import { initTinyMCE } from '../../controls/rte';
@@ -52,8 +52,8 @@ import { MouseEventActionObservable } from '../models/Actions';
 import { GuestState } from '../models/GuestStore';
 import { nullOrUndefined, notNullOrUndefined, reversePluckProps } from '@craftercms/studio-ui/utils/object';
 import { ElementRecord, ICEProps } from '../../models/InContextEditing';
-import * as ElementRegistry from '../../classes/ElementRegistry';
-import { get, getElementFromICEProps } from '../../classes/ElementRegistry';
+import * as ElementRegistry from '../../elementRegistry';
+import { get, getElementFromICEProps } from '../../elementRegistry';
 import { scrollToElement } from '../../utils/dom';
 import {
   computedDragEnd,

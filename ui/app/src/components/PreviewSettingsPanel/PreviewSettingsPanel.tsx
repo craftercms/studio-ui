@@ -18,12 +18,13 @@ import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import makeStyles from '@mui/styles/makeStyles';
 import { FormControl, FormControlLabel, FormHelperText, FormLabel, Radio, RadioGroup } from '@mui/material';
-import { setHighlightMode } from '../../state/actions/preview';
+import { setDragHelpMode, setHighlightMode } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 import EditModeSwitch from '../EditModeSwitch';
 import { usePreviewState } from '../../hooks/usePreviewState';
 import { useCurrentPreviewItem } from '../../hooks/useCurrentPreviewItem';
 import { HighlightMode } from '../../models/GlobalState';
+import Switch from '@mui/material/Switch';
 
 const translations = defineMessages({
   editMode: {
@@ -50,6 +51,14 @@ const translations = defineMessages({
   highlightMovable: {
     id: 'settingsPanel.highlightMovable',
     defaultMessage: 'Highlight Movable'
+  },
+  dragHelpModeLabel: {
+    id: 'settingsPanel.dragHelpModeLabel',
+    defaultMessage: 'Drag-friendly mode'
+  },
+  dragHelpModeHelp: {
+    id: 'settingsPanel.dragHelpModeHelp',
+    defaultMessage: 'Enables styles for facilitating drag & drop.'
   }
 });
 
@@ -75,10 +84,12 @@ const useStyles = makeStyles(() => ({
 export function PreviewSettingsPanel() {
   const classes = useStyles();
   const { formatMessage } = useIntl();
-  const { highlightMode } = usePreviewState();
+  const { highlightMode, dragHelpMode } = usePreviewState();
   const item = useCurrentPreviewItem();
   const dispatch = useDispatch();
-
+  const onDragHelpModeChange = (e) => {
+    dispatch(setDragHelpMode({ dragHelpMode: e.target.checked }));
+  };
   return (
     <section className={classes.root}>
       <FormControl>
@@ -120,6 +131,15 @@ export function PreviewSettingsPanel() {
           />
         </RadioGroup>
         <FormHelperText>{formatMessage(translations.highlightModeHelperText)}</FormHelperText>
+      </FormControl>
+      <FormControl>
+        <FormControlLabel
+          classes={{ root: classes.labelRoot }}
+          control={<Switch checked={dragHelpMode} onChange={onDragHelpModeChange} />}
+          label={formatMessage(translations.dragHelpModeLabel)}
+          labelPlacement="start"
+        />
+        <FormHelperText>{formatMessage(translations.dragHelpModeHelp)}</FormHelperText>
       </FormControl>
     </section>
   );

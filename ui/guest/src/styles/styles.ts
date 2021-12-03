@@ -17,7 +17,7 @@
 import { GuestStyleSheetConfig } from './stylesheet';
 import { createTheme, Theme, ThemeOptions } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import palette from './palette';
+import palette from '@craftercms/studio-ui/styles/palette';
 import { useMemo } from 'react';
 import { ZoneMarkerPartialSx } from '../react';
 

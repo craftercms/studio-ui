@@ -216,6 +216,7 @@ export function DropMarker(props: DropMarkerProps) {
       sx={{
         ...sx.root,
         ...style,
+        // @ts-ignore
         '&::before, &::after': sx.tips,
         ...(arrangement === HORIZONTAL ? sx.horizontal : sx.vertical)
       }}
