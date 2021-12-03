@@ -5696,8 +5696,11 @@ var nodeOpen = false,
         const textarea = document.createElement('textarea');
         const div = document.createElement('div');
         textarea.innerHTML = html;
-        div.innerHTML = textarea.value;
-        return div.innerText.trim() === '';
+        // Remove spaces
+        div.innerHTML = textarea.value.replace(/\s/g, '');
+        // Remove empty elements (elements like <img src=""/> are not removed)
+        $(div).find('*:empty').remove();
+        return $(div).is(':empty');
       },
 
       /**
