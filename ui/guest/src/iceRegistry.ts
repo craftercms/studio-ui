@@ -588,3 +588,22 @@ export function findContainerRecord(modelId: string, fieldId: string, index: str
 
   return recordId ? getById(recordId) : null;
 }
+
+export function findChildRecord(modelId: string, fieldId: string, index: string | number): ICERecord {
+  const hierarchyMap = contentController.modelHierarchyMap;
+  const mapItem = hierarchyMap[modelId];
+  if (mapItem) {
+    for (const childId of mapItem.children) {
+      const entry = hierarchyMap[childId];
+      if (
+        entry.parentId === modelId &&
+        entry.parentContainerFieldPath === fieldId &&
+        String(entry.parentContainerFieldIndex) === String(index)
+      ) {
+        const recordId = exists({ modelId: entry.modelId, fieldId: null, index: null });
+        return notNullOrUndefined(recordId) ? getById(recordId) : null;
+      }
+    }
+  }
+  return null;
+}

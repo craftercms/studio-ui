@@ -67,6 +67,7 @@ import {
   setEditMode,
   startListening
 } from '../actions';
+import { findChildRecord, getById } from '../../iceRegistry';
 
 type CaseReducer<S = GuestState, A extends GuestStandardAction = GuestStandardAction> = Reducer<S, A>;
 
@@ -626,13 +627,34 @@ const reducer = createReducer(initialState, {
   // TODO: Not pure
   [contentTreeFieldSelected.type]: (state, action) => {
     const { iceProps } = action.payload;
-    const iceId = iceRegistry.exists(iceProps);
-    if (iceId === null) return;
-    const registryEntries = getRecordsFromIceId(iceId);
+    let iceId = iceRegistry.exists(iceProps);
+    if (iceId === null) {
+      return state;
+    }
+    let iceRecord = getById(iceId);
+    let registryEntries, highlight;
+
+    if (iceRecord.recordType === 'component') {
+      if (state.highlightMode === HighlightMode.MOVE_TARGETS) {
+        // If in move mode, dynamically switch components to their movable item record so users can manipulate.
+        const movableRecordId = iceRegistry.getMovableParentRecord(iceId);
+        iceId = notNullOrUndefined(movableRecordId) ? movableRecordId : iceId;
+      }
+    } else if (iceRecord.recordType === 'repeat-item' || iceRecord.recordType === 'node-selector-item') {
+      if (state.highlightMode === HighlightMode.ALL) {
+        // If in edit mode, switching to the component record, so people can edit the component.
+        const componentRecord = findChildRecord(iceRecord.modelId, iceRecord.fieldId, iceRecord.index);
+        iceId = notNullOrUndefined(componentRecord) ? componentRecord.id : iceId;
+      }
+    }
+
+    registryEntries = getRecordsFromIceId(iceId);
     if (!registryEntries) {
       return state;
     }
-    const highlight = getHoverData(registryEntries[0].id);
+
+    highlight = getHoverData(registryEntries[0].id);
+
     return {
       ...state,
       status: EditingStatus.FIELD_SELECTED,

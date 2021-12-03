@@ -1124,7 +1124,7 @@
   "settingsPanel.editModeHelperText": "Enable In-context editing, highlighting editable zones as you hover on them.",
   "settingsPanel.highlightAllZones": "Highlight All Zones",
   "settingsPanel.highlightMode": "Highlight Mode",
-  "settingsPanel.highlightModeHelperText": "When \"highlight movable\" is active, only content items you can move around drop zones highlight.",
+  "settingsPanel.highlightModeHelperText": "When \"highlight movable\" is active, only content items you can move around drop targets highlight.",
   "settingsPanel.highlightMovable": "Highlight Movable",
   "sharedContentDS.sharedContent": "Contenido compartido",
   "site.deleted": "Site deleted successfully",
