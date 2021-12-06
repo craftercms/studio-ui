@@ -127,6 +127,10 @@ export function initTinyMCE(
           changed = true;
         });
 
+        editor.once('external_change', () => {
+          changed = true;
+        });
+
         editor.on('keydown', (e) => {
           if (e.key === 'Escape') {
             e.stopImmediatePropagation();

@@ -184,7 +184,12 @@ tinymce.PluginManager.add(PLUGIN_NAME, function (editor, url) {
     aceEditor.on('change', function () {
       editorTextareaEl.value = aceEditor.getValue();
       editor.setContent(aceEditor.getValue());
-      aceModes.inline.getSession().setValue(aceEditor.getValue());
+
+      if (inlineMode) {
+        aceModes.inline.getSession().setValue(aceEditor.getValue());
+      }
+
+      editor.fire('external_change');
     });
   };
 });
