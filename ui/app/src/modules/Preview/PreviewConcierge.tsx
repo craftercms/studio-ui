@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react';
+import React, { PropsWithChildren, useEffect, useRef, useState } from 'react';
 import {
   changeCurrentUrl,
   checkInGuest,
@@ -29,7 +29,6 @@ import {
   desktopAssetUploadComplete,
   desktopAssetUploadProgress,
   desktopAssetUploadStarted,
-  editModeToggleHotkey,
   fetchContentTypes,
   fetchGuestModel,
   fetchGuestModelComplete,
@@ -39,6 +38,7 @@ import {
   guestModelUpdated,
   guestSiteLoad,
   hostCheckIn,
+  hotKeyDown,
   iceZoneSelected,
   initRichTextEditorConfig,
   insertComponentOperation,
@@ -52,13 +52,14 @@ import {
   moveItemOperation,
   selectForEdit,
   setContentTypeDropTargets,
-  setDragHelpMode,
+  setEditModePadding,
   setHighlightMode,
   setItemBeingDragged,
   setPreviewEditMode,
   showEditDialog as showEditDialogAction,
   sortItemOperation,
   sortItemOperationComplete,
+  toggleEditModePadding,
   trashed,
   updateFieldValueOperation,
   updateRteConfig,
@@ -87,6 +88,7 @@ import { useSnackbar } from 'notistack';
 import {
   getStoredClipboard,
   getStoredEditModeChoice,
+  getStoredEditModePadding,
   getStoredHighlightModeChoice,
   removeStoredClipboard
 } from '../../utils/state';
@@ -107,7 +109,6 @@ import LookupTable from '../../models/LookupTable';
 import Snackbar from '@mui/material/Snackbar';
 import CloseRounded from '@mui/icons-material/CloseRounded';
 import IconButton from '@mui/material/IconButton';
-import { useHotkeys } from 'react-hotkeys-hook';
 import { useSelection } from '../../hooks/useSelection';
 import { usePreviewState } from '../../hooks/usePreviewState';
 import { useContentTypes } from '../../hooks/useContentTypes';
@@ -116,7 +117,7 @@ import { useMount } from '../../hooks/useMount';
 import { usePreviewNavigation } from '../../hooks/usePreviewNavigation';
 import { useActiveSite } from '../../hooks/useActiveSite';
 import { getPathFromPreviewURL } from '../../utils/path';
-import { showEditDialog, showKeyboardShortcutsDialog } from '../../state/actions/dialogs';
+import { showEditDialog } from '../../state/actions/dialogs';
 import { UNDEFINED } from '../../utils/constants';
 import { useCurrentPreviewItem } from '../../hooks/useCurrentPreviewItem';
 import { useSiteUIConfig } from '../../hooks/useSiteUIConfig';
@@ -133,6 +134,7 @@ import {
   pluginInstalled,
   pluginUninstalled
 } from '../../state/actions/system';
+import { useUpdateRefs } from '../../hooks';
 
 const originalDocDomain = document.domain;
 
@@ -218,7 +220,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   const dispatch = useDispatch();
   const { id: siteId, uuid } = useActiveSite();
   const user = useActiveUser();
-  const { guest, editMode, highlightMode, dragHelpMode, icePanelWidth, toolsPanelWidth, hostSize, showToolsPanel } =
+  const { guest, editMode, highlightMode, editModePadding, icePanelWidth, toolsPanelWidth, hostSize, showToolsPanel } =
     usePreviewState();
   const item = useCurrentPreviewItem();
   const { currentUrlPath } = usePreviewNavigation();
@@ -238,26 +240,39 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   const { cdataEscapedFieldPatterns } = uiConfig;
   const rteConfig = useRTEConfig();
   const keyboardShortcutsDialogState = useEnhancedDialogState();
+  const conditionallyToggleEditMode = (nextHighlightMode?: HighlightMode) => {
+    if (item && !isItemLockedForMe(item, user.username) && hasEditAction(item.availableActions)) {
+      dispatch(
+        setPreviewEditMode({
+          // If switching from highlight modes (all vs move), we just want to switch modes without turning off edit mode.
+          editMode: nextHighlightMode !== highlightMode ? true : !editMode,
+          highlightMode: nextHighlightMode
+        })
+      );
+    }
+  };
 
-  const conditionallyToggleEditMode = useCallback(
-    (nextHighlightMode?: HighlightMode) => {
-      if (item && !isItemLockedForMe(item, user.username) && hasEditAction(item.availableActions)) {
-        dispatch(
-          setPreviewEditMode({
-            // If switching from highlight modes (all vs move), we just want to switch modes without turning off edit mode.
-            editMode: nextHighlightMode !== highlightMode ? true : !editMode,
-            highlightMode: nextHighlightMode
-          })
-        );
-      }
-    },
-    [dispatch, item, editMode, user.username, highlightMode]
-  );
-
-  function clearSelectedZonesHandler() {
-    dispatch(clearSelectForEdit());
-    getHostToGuestBus().next({ type: clearSelectedZones.type });
-  }
+  const upToDateRefs = useUpdateRefs({
+    guest,
+    models,
+    siteId,
+    dispatch,
+    guestBase,
+    rteConfig,
+    contentTypes,
+    xsrfArgument,
+    hierarchyMap,
+    highlightMode,
+    modelIdByPath,
+    formatMessage,
+    authoringBase,
+    currentUrlPath,
+    enqueueSnackbar,
+    editModePadding,
+    cdataEscapedFieldPatterns,
+    conditionallyToggleEditMode,
+    keyboardShortcutsDialogState
+  });
 
   // Legacy Guest pencil repaint - When the guest screen size changes, pencils need to be repainted.
   useEffect(() => {
@@ -291,13 +306,11 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 
   // Update rte config
   useEffect(() => {
-    if (rteConfig) getHostToGuestBus().next({ type: updateRteConfig.type, payload: { rteConfig } });
+    if (rteConfig) {
+      // @ts-ignore - TODO: type action accordingly
+      getHostToGuestBus().next(updateRteConfig({ rteConfig }));
+    }
   }, [rteConfig]);
-
-  // Update drag help mode
-  useEffect(() => {
-    getHostToGuestBus().next(setDragHelpMode({ dragHelpMode }));
-  }, [dragHelpMode]);
 
   // Guest detection, document domain restoring, editMode/highlightMode preference retrieval,
   // and guest key up/down notifications.
@@ -312,11 +325,42 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
       dispatch(setHighlightMode({ highlightMode: localHighlightMode }));
     }
 
+    const localPaddingMode = getStoredEditModePadding(user.username);
+    if (nnou(localPaddingMode) && editModePadding !== localPaddingMode) {
+      dispatch(setEditModePadding({ editModePadding: localPaddingMode }));
+    }
+
     startGuestDetectionTimeout(guestDetectionTimeoutRef, setGuestDetectionSnackbarOpen);
 
+    // Only transmit the relevant guest key events to guest avoid double activation of handlers
+    // on either host/guest sides. This requires maintenance as key shortcuts evolve/change.
     const hostToGuest = getHostToGuestBus();
-    const keydown = (e) => hostToGuest.next(keyDown({ key: e.key }));
-    const keyup = (e) => hostToGuest.next(keyUp({ key: e.key }));
+    const keydown = (e) => {
+      switch (e.key) {
+        case 'e':
+          upToDateRefs.current.conditionallyToggleEditMode('all');
+          break;
+        case 'm':
+          upToDateRefs.current.conditionallyToggleEditMode('move');
+          break;
+        case 'p':
+          dispatch(toggleEditModePadding());
+          break;
+        case '?':
+          upToDateRefs.current.keyboardShortcutsDialogState.onOpen();
+          break;
+        case 'z':
+          hostToGuest.next(keyDown({ key: e.key }));
+          break;
+      }
+    };
+    const keyup = (e) => {
+      switch (e.key) {
+        case 'z':
+          hostToGuest.next(keyUp({ key: e.key }));
+          break;
+      }
+    };
     document.addEventListener('keydown', keydown, false);
     document.addEventListener('keyup', keyup, false);
 
@@ -348,7 +392,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 
   // Post content types
   useEffect(() => {
-    contentTypes && getHostToGuestBus().next({ type: contentTypesResponse.type, payload: Object.values(contentTypes) });
+    contentTypes && getHostToGuestBus().next(contentTypesResponse({ contentTypes: Object.values(contentTypes) }));
   }, [contentTypes]);
 
   // region guestToHost$ subscription
@@ -357,6 +401,18 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
     const guestToHost$ = getGuestToHostBus();
     const hostToHost$ = getHostToHostBus();
     const guestToHostSubscription = guestToHost$.subscribe((action) => {
+      const {
+        siteId,
+        models,
+        dispatch,
+        guestBase,
+        contentTypes,
+        hierarchyMap,
+        authoringBase,
+        formatMessage,
+        modelIdByPath,
+        enqueueSnackbar
+      } = upToDateRefs.current;
       const { type, payload } = action;
       switch (type) {
         case guestSiteLoad.type:
@@ -401,9 +457,9 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
             getHostToGuestBus().next(
               hostCheckIn({
                 editMode: false,
-                highlightMode,
-                dragHelpMode,
-                rteConfig: rteConfig ?? {}
+                highlightMode: upToDateRefs.current.highlightMode,
+                editModePadding: upToDateRefs.current.editModePadding,
+                rteConfig: upToDateRefs.current.rteConfig ?? {}
               })
             );
             dispatch(checkInGuest(payload));
@@ -423,8 +479,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
             } else {
               const path = payload.path;
 
-              contentTypes &&
-                hostToGuest$.next({ type: contentTypesResponse.type, payload: Object.values(contentTypes) });
+              contentTypes && hostToGuest$.next(contentTypesResponse({ contentTypes: Object.values(contentTypes) }));
 
               issueDescriptorRequest({
                 site: siteId,
@@ -462,8 +517,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           let { modelId, parentModelId } = payload;
           const path = models[modelId ?? parentModelId].craftercms.path;
           if (isInheritedField(models[modelId], fieldId)) {
-            modelId = getModelIdFromInheritedField(models[modelId], fieldId, modelIdByPath);
-            parentModelId = findParentModelId(modelId, hierarchyMap, models);
+            modelId = getModelIdFromInheritedField(models[modelId], fieldId, upToDateRefs.current.modelIdByPath);
+            parentModelId = findParentModelId(modelId, upToDateRefs.current.hierarchyMap, models);
           }
 
           sortItem(
@@ -492,10 +547,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
                 dispatch,
                 completeAction: fetchGuestModelComplete
               });
-              hostToHost$.next({
-                type: sortItemOperationComplete.type,
-                payload
-              });
+              // @ts-ignore - TODO: type action accordingly
+              hostToHost$.next(sortItemOperationComplete(payload));
               enqueueSnackbar(formatMessage(guestMessages.sortOperationComplete));
             },
             error(error) {
@@ -537,7 +590,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 
               hostToGuest$.next({
                 type: insertOperationComplete.type,
-                payload: { ...payload, currentFullUrl: `${guestBase}${currentUrlPath}` }
+                payload: { ...payload, currentFullUrl: `${guestBase}${upToDateRefs.current.currentUrlPath}` }
               });
               enqueueSnackbar(formatMessage(guestMessages.insertOperationComplete));
             },
@@ -578,7 +631,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 
               hostToGuest$.next({
                 type: insertOperationComplete.type,
-                payload: { ...payload, currentFullUrl: `${guestBase}${currentUrlPath}` }
+                payload: { ...payload, currentFullUrl: `${guestBase}${upToDateRefs.current.currentUrlPath}` }
               });
               enqueueSnackbar(formatMessage(guestMessages.insertOperationComplete));
             },
@@ -684,7 +737,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
             index,
             models[parentModelId ? parentModelId : modelId].craftercms.path,
             value,
-            cdataEscapedFieldPatterns.some((pattern) => Boolean(fieldId.match(pattern)))
+            upToDateRefs.current.cdataEscapedFieldPatterns.some((pattern) => Boolean(fieldId.match(pattern)))
           ).subscribe({
             next() {
               enqueueSnackbar(formatMessage(guestMessages.updateOperationComplete));
@@ -710,12 +763,13 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         }
         case desktopAssetDrop.type: {
           enqueueSnackbar(formatMessage(guestMessages.assetUploadStarted));
-          hostToHost$.next({ type: desktopAssetUploadStarted.type, payload });
+          // @ts-ignore - TODO: type action accordingly
+          hostToHost$.next(desktopAssetUploadStarted(payload));
           const uppySubscription = uploadDataUrl(
             siteId,
             pluckProps(payload, 'name', 'type', 'dataUrl'),
             `/static-assets/images/${payload.record.modelId}`,
-            xsrfArgument
+            upToDateRefs.current.xsrfArgument
           )
             .pipe(
               filter(({ type }) => type === 'progress'),
@@ -767,15 +821,28 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           });
           break;
         }
-        case editModeToggleHotkey.type: {
-          conditionallyToggleEditMode(payload.mode);
+        case hotKeyDown.type: {
+          switch (payload.key) {
+            case 'e':
+              upToDateRefs.current.conditionallyToggleEditMode('all');
+              break;
+            case 'm':
+              upToDateRefs.current.conditionallyToggleEditMode('move');
+              break;
+            case 'p':
+              dispatch(toggleEditModePadding());
+              break;
+            case '?':
+              upToDateRefs.current.keyboardShortcutsDialogState.onOpen();
+              break;
+          }
           break;
         }
         case showEditDialogAction.type: {
           dispatch(
             showEditDialog({
               authoringBase,
-              path: guest.path,
+              path: upToDateRefs.current.guest.path,
               selectedFields: payload.selectedFields,
               site: siteId
             })
@@ -783,41 +850,16 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           break;
         }
         case updateRteConfig.type: {
-          getHostToGuestBus().next({
-            type: updateRteConfig.type,
-            payload: { rteConfig: rteConfig ?? {} }
-          });
+          // @ts-ignore - TODO: type action accordingly
+          getHostToGuestBus().next(updateRteConfig({ rteConfig: upToDateRefs.current.rteConfig ?? {} }));
           break;
-        }
-        case showKeyboardShortcutsDialog.type: {
-          keyboardShortcutsDialogState.onOpen();
         }
       }
     });
     return () => {
       guestToHostSubscription.unsubscribe();
     };
-  }, [
-    authoringBase,
-    contentTypes,
-    currentUrlPath,
-    dispatch,
-    enqueueSnackbar,
-    formatMessage,
-    models,
-    modelIdByPath,
-    hierarchyMap,
-    guestBase,
-    siteId,
-    xsrfArgument,
-    highlightMode,
-    dragHelpMode,
-    conditionallyToggleEditMode,
-    cdataEscapedFieldPatterns,
-    rteConfig,
-    guest,
-    keyboardShortcutsDialogState
-  ]);
+  }, [upToDateRefs]);
 
   // hostToHost$ subscription
   useEffect(() => {
@@ -869,15 +911,6 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
     }
   }, [uiConfig.xml, siteId, rteConfig, dispatch]);
 
-  // Hotkeys
-  useHotkeys('e', () => conditionallyToggleEditMode('all'), [conditionallyToggleEditMode]);
-  useHotkeys('m', () => conditionallyToggleEditMode('move'), [conditionallyToggleEditMode]);
-  useHotkeys(
-    'shift+/', // 'shift+/' = '?'
-    () => keyboardShortcutsDialogState.onOpen(),
-    []
-  );
-
   return (
     <>
       {props.children}
@@ -885,7 +918,13 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         open={nnou(guest?.itemBeingDragged)}
         onTrash={() => getHostToGuestBus().next({ type: trashed.type, payload: guest.itemBeingDragged })}
       />
-      <EditFormPanel open={nnou(guest?.selected)} onDismiss={clearSelectedZonesHandler} />
+      <EditFormPanel
+        open={nnou(guest?.selected)}
+        onDismiss={() => {
+          dispatch(clearSelectForEdit());
+          getHostToGuestBus().next(clearSelectedZones());
+        }}
+      />
       <Snackbar
         open={guestDetectionSnackbarOpen}
         onClose={() => void 0}

@@ -32,12 +32,12 @@ import { HighlightData } from '../models/InContextEditing';
 import AssetUploaderMask from './AssetUploaderMask';
 import {
   EditingStatus,
+  editModeClass,
+  editModePaddingClass,
   editOnClass,
   HighlightMode,
   iceBypassKeyClass,
-  dragHelpModeClass,
-  moveModeClass,
-  editModeClass
+  moveModeClass
 } from '../constants';
 import {
   assetDragEnded,
@@ -54,17 +54,17 @@ import {
   contentTypeDropTargetsRequest,
   desktopAssetUploadComplete,
   desktopAssetUploadProgress,
-  editModeToggleHotkey,
   guestCheckIn,
   guestCheckOut,
   highlightModeChanged,
   hostCheckIn,
+  hotKeyDown,
   keyDown,
   keyUp,
   navigationRequest,
   reloadRequest,
   scrollToDropTarget,
-  setDragHelpMode,
+  setEditModePadding,
   setPreviewEditMode,
   trashed,
   updateRteConfig
@@ -80,7 +80,6 @@ import SnackBar, { Snack } from './SnackBar';
 import { createLocationArgument } from '../utils/util';
 import FieldInstanceSwitcher from './FieldInstanceSwitcher';
 import LookupTable from '@craftercms/studio-ui/models/LookupTable';
-import { useHotkeys } from 'react-hotkeys-hook';
 import { ThemeOptions, ThemeProvider } from '@mui/material';
 import { deepmerge } from '@mui/utils';
 import { DeepPartial } from 'redux';
@@ -99,7 +98,6 @@ import {
 } from '../store/actions';
 import DragGhostElement from './DragGhostElement';
 import GuestGlobalStyles from './GuestGlobalStyles';
-import { showKeyboardShortcutsDialog } from '@craftercms/studio-ui/state/actions/dialogs';
 
 // TODO: add themeOptions and global styles customising
 export type GuestProps = PropsWithChildren<{
@@ -122,7 +120,7 @@ function Guest(props: GuestProps) {
   const [snack, setSnack] = useState<Partial<Snack>>();
   const dispatch = useDispatch();
   const state = useSelector<GuestState>((state) => state);
-  const { editMode, highlightMode, dragHelpMode, status, hostCheckedIn: hasHost, draggable } = state;
+  const { editMode, highlightMode, editModePadding, status, hostCheckedIn: hasHost, draggable } = state;
   const refs = useRef({
     contentReady: false,
     firstRender: true,
@@ -166,14 +164,14 @@ function Guest(props: GuestProps) {
     return deepmerge(styleSxDefaults, sxOverrides);
   }, [sxOverrides]);
 
-  // Hotkeys propagation to preview
-  useHotkeys('e', () => post(editModeToggleHotkey({ mode: HighlightMode.ALL })));
-  useHotkeys('m', () => post(editModeToggleHotkey({ mode: HighlightMode.MOVE_TARGETS })));
-  useHotkeys('shift+/', () => post(showKeyboardShortcutsDialog()));
-
   // Key press/hold keeper events
   useEffect(() => {
     const keydown = (e) => {
+      // Only transmit relevant host key events to host to avoid double activation of handlers
+      // on either host/guest sides. This requires maintenance as key shortcuts evolve/change.
+      if (['m', 'e', 'p', '?'].includes(e.key)) {
+        post(hotKeyDown({ key: e.key }));
+      }
       refs.current.keysPressed[e.key] = true;
       if (e.key === 'z') {
         $('html').addClass(iceBypassKeyClass);
@@ -213,13 +211,13 @@ function Guest(props: GuestProps) {
 
   useEffect(() => {
     const $html = $('html');
-    if (editMode && dragHelpMode) {
-      $html.addClass(dragHelpModeClass);
+    if (editMode && editModePadding) {
+      $html.addClass(editModePaddingClass);
       return () => {
-        $html.removeClass(dragHelpModeClass);
+        $html.removeClass(editModePaddingClass);
       };
     }
-  }, [editMode, dragHelpMode]);
+  }, [editMode, editModePadding]);
 
   // Sets document domain
   useEffect(() => {
@@ -324,7 +322,7 @@ function Guest(props: GuestProps) {
         case desktopAssetUploadProgress.type:
         case desktopAssetUploadComplete.type:
         case updateRteConfig.type:
-        case setDragHelpMode.type:
+        case setEditModePadding.type:
           dispatch(action);
           break;
       }

@@ -786,7 +786,7 @@ export function deleteItem(modelId: string, fieldId: string, index: number | str
 // Host sends over all content types upon Guest check in.
 fromTopic(contentTypesResponse.type)
   .pipe(pluck('payload'))
-  .subscribe((contentTypes) => {
+  .subscribe(({ contentTypes }) => {
     contentTypes$.next(Array.isArray(contentTypes) ? createLookupTable(contentTypes) : contentTypes);
   });
 
