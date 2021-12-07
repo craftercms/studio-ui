@@ -37,11 +37,20 @@ interface ContentTypeManagementProps {
   embedded?: boolean;
   showAppsButton?: boolean;
   configuration?: LookupTable;
+  onClose?: () => void;
+  onMinimize?: () => void;
   onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 export function ContentTypeManagement(props: ContentTypeManagementProps) {
-  const { embedded = false, showAppsButton, configuration, onSubmittingAndOrPendingChange } = props;
+  const {
+    embedded = false,
+    showAppsButton,
+    configuration,
+    onClose,
+    onMinimize,
+    onSubmittingAndOrPendingChange
+  } = props;
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
 
@@ -64,16 +73,11 @@ export function ContentTypeManagement(props: ContentTypeManagementProps) {
             switch (e.data.saveType) {
               case 'saveAndClose':
                 if (embedded) {
-                  configuration?.onClose?.();
+                  onClose?.();
                 }
                 break;
               case 'saveAndMinimize':
-                if (embedded) {
-                  configuration?.onMinimize?.();
-                } else if (configuration?.isContainerDialog) {
-                  // If not embedded but container is a dialog, dispatch action to minimize.
-                  dispatch(updateWidgetDialog({ isMinimized: true }));
-                }
+                onMinimize?.();
                 break;
             }
             break;

@@ -23,7 +23,7 @@ import { LookupTable } from '../../models';
 interface WidgetDialogBaseProps {
   title: string;
   widget: WidgetDescriptor;
-  configuration?: LookupTable;
+  extraProps?: any;
 }
 
 export interface WidgetDialogProps extends WidgetDialogBaseProps, Omit<EnhancedDialogProps, 'title'> {

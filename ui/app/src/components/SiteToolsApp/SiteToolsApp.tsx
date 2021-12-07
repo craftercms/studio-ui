@@ -37,6 +37,8 @@ import clsx from 'clsx';
 import Suspencified from '../Suspencified/Suspencified';
 import LauncherOpenerButton from '../LauncherOpenerButton';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
+import { useDispatch } from 'react-redux';
+import { updateWidgetDialog } from '../../state/actions/dialogs';
 
 export interface Tool {
   title: TranslationOrText;
@@ -86,6 +88,7 @@ export function SiteToolsApp(props: SiteToolsAppProps) {
   const { formatMessage } = useIntl();
 
   const tool = tools?.find((tool) => tool.url === activeToolId)?.widget;
+  const dispatch = useDispatch();
 
   return (
     <Paper className={clsx(classes.root, props.classes?.root)} elevation={0}>
@@ -163,7 +166,12 @@ export function SiteToolsApp(props: SiteToolsAppProps) {
                   embedded: false,
                   showAppsButton,
                   onSubmittingAndOrPendingChange,
-                  configuration: { isContainerDialog: hideSidebarSiteSwitcher }
+                  configuration: { isContainerDialog: hideSidebarSiteSwitcher },
+                  ...(hideSidebarSiteSwitcher && {
+                    onMinimize: () => {
+                      dispatch(updateWidgetDialog({ isMinimized: true }));
+                    }
+                  })
                 }}
               />
             </Suspencified>

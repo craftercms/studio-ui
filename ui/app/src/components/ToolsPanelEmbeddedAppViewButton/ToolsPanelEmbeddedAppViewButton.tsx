@@ -56,7 +56,7 @@ export function ToolsPanelEmbeddedAppViewButton(props: ToolsPanelEmbeddedAppView
         open={open}
         onClose={onClose}
         widget={props.widget}
-        configuration={{
+        extraProps={{
           onMinimize,
           onMaximize,
           onClose
