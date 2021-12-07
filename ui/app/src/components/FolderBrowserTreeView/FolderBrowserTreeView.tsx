@@ -34,12 +34,11 @@ export interface FolderBrowserTreeViewProps {
   showPathTextBox?: boolean;
   classes?: Partial<Record<'root' | 'treeViewRoot' | 'treeItemLabel', string>>;
   onPathSelected?(path: string): void;
-  onContextMenu?(element: Element): void;
 }
 
 export function FolderBrowserTreeView(props: FolderBrowserTreeViewProps) {
   const site = useActiveSiteId();
-  const { rootPath, initialPath, showPathTextBox = true, classes, onPathSelected, onContextMenu } = props;
+  const { rootPath, initialPath, showPathTextBox = true, classes, onPathSelected } = props;
   const [currentPath, setCurrentPath] = useState(initialPath ?? rootPath);
   const [expanded, setExpanded] = useState(initialPath ? getIndividualPaths(initialPath) : [rootPath]);
   const [treeNodes, setTreeNodes] = useState<FolderBrowserTreeViewNode>(null);
@@ -134,7 +133,6 @@ export function FolderBrowserTreeView(props: FolderBrowserTreeViewProps) {
       <FolderBrowserTreeViewUI
         onIconClick={onIconClick}
         onLabelClick={onLabelClick}
-        onContextMenu={onContextMenu}
         rootPath={rootPath}
         currentPath={currentPath}
         expanded={expanded}

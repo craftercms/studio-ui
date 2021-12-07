@@ -31,6 +31,8 @@ import Pagination from '../Pagination';
 import FolderBrowserTreeView from '../FolderBrowserTreeView';
 import Box from '@mui/material/Box';
 import { BrowseFilesDialogUIProps } from './utils';
+import Typography from '@mui/material/Typography';
+import Divider from '@mui/material/Divider';
 
 export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
   const {
@@ -40,6 +42,7 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
     selectedArray,
     multiSelect = false,
     path,
+    currentPath,
     limit,
     offset,
     keyword,
@@ -55,10 +58,12 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
     onChangePage,
     onChangeRowsPerPage,
     onCloseButtonClick,
-    onContextMenu,
-    onRefresh
+    onRefresh,
+    onUpload
   } = props;
   const classes = useStyles();
+  console.log(props);
+
   return (
     <>
       <DialogBody className={classes.dialogBody}>
@@ -69,11 +74,20 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
               rootPath={path}
               showPathTextBox={false}
               onPathSelected={onPathSelected}
-              onContextMenu={onContextMenu}
             />
           </section>
           <section className={classes.rightWrapper}>
-            <Box display="flex" alignItems="center" marginBottom="16px">
+            <Typography component="h2" variant="h6">
+              {currentPath}
+            </Typography>
+            <Divider />
+            <Box display="flex" alignItems="center" marginTop="16px" marginBottom="16px" gap="8px">
+              <SecondaryButton onClick={onUpload}>
+                <FormattedMessage id="word.upload" defaultMessage="Upload" />
+              </SecondaryButton>
+              <SecondaryButton onClick={onRefresh}>
+                <FormattedMessage id="word.refresh" defaultMessage="Refresh" />
+              </SecondaryButton>
               <SearchBar
                 keyword={keyword}
                 onChange={handleSearchKeyword}
@@ -81,9 +95,6 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
                 showActionButton={Boolean(keyword)}
                 classes={{ root: classes.searchRoot }}
               />
-              <SecondaryButton onClick={onRefresh}>
-                <FormattedMessage id="word.refresh" defaultMessage="Refresh" />
-              </SecondaryButton>
             </Box>
 
             <div className={classes.cardsContainer}>

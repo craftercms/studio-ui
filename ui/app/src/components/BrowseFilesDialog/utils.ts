@@ -49,6 +49,7 @@ export interface BrowseFilesDialogUIProps {
   selectedArray: string[];
   multiSelect?: boolean;
   path: string;
+  currentPath: string;
   limit: number;
   offset: number;
   keyword: string;
@@ -64,8 +65,8 @@ export interface BrowseFilesDialogUIProps {
   onChangePage(page: number): void;
   onChangeRowsPerPage(event): void;
   onCloseButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
-  onContextMenu?(element: Element): void;
   onRefresh(): void;
+  onUpload(): void;
 }
 
 export const initialParameters: ElasticParams = {

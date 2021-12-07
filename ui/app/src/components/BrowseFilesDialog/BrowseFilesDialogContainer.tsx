@@ -35,7 +35,6 @@ import { FormattedMessage } from 'react-intl';
 import EmptyState from '../EmptyState';
 import { useStyles } from './styles';
 import BrowseFilesDialogContainerSkeleton from './BrowseFilesDialogContainerSkeleton';
-import { Menu, MenuItem } from '@mui/material';
 import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
 import { createCustomDocumentEventListener } from '../../utils/dom';
 
@@ -72,7 +71,6 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
   const [fetchingBrowsePathExists, setFetchingBrowsePathExists] = useState(false);
   const [browsePathExists, setBrowsePathExists] = useState(false);
   const classes = useStyles();
-  const [contextMenuAnchorEl, setContextMenuAnchorEl] = useState(null);
 
   const fetchItems = useCallback(
     () =>
@@ -157,18 +155,11 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
 
   const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
 
-  const onContextMenu = (element: Element) => {
-    console.log(element);
-    setContextMenuAnchorEl(element);
-  };
-
   const onUpload = () => {
-    const path = contextMenuAnchorEl.attributes['data-path'].value;
-    setContextMenuAnchorEl(null);
     dispatch(
       showSingleFileUploadDialog({
         site,
-        path,
+        path: currentPath,
         fileTypes: mimeTypes,
         onClose: closeSingleFileUploadDialog(),
         onUploadComplete: batchActions([closeSingleFileUploadDialog(), dispatchDOMEvent({ id: 'imageUploaded' })])
@@ -189,42 +180,32 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
   return fetchingBrowsePathExists ? (
     <BrowseFilesDialogContainerSkeleton />
   ) : browsePathExists ? (
-    <>
-      <BrowseFilesDialogUI
-        items={items}
-        path={browsePath}
-        guestBase={guestBase}
-        keyword={keyword}
-        selectedCard={selectedCard}
-        selectedArray={selectedArray}
-        multiSelect={multiSelect}
-        limit={searchParameters.limit}
-        offset={searchParameters.offset}
-        total={total}
-        onCardSelected={onCardSelected}
-        onChangePage={onChangePage}
-        onChangeRowsPerPage={onChangeRowsPerPage}
-        onCheckboxChecked={onCheckboxChecked}
-        handleSearchKeyword={handleSearchKeyword}
-        onCloseButtonClick={onCloseButtonClick}
-        onPathSelected={onPathSelected}
-        onPreviewImage={onPreviewImage}
-        onSelectButtonClick={onSelectButtonClick}
-        onContextMenu={onContextMenu}
-        numOfLoaderItems={numOfLoaderItems}
-        rowsPerPageOptions={rowsPerPageOptions}
-        onRefresh={onRefresh}
-      />
-      <Menu
-        anchorEl={contextMenuAnchorEl}
-        open={Boolean(contextMenuAnchorEl)}
-        onClose={() => setContextMenuAnchorEl(null)}
-      >
-        <MenuItem onClick={onUpload}>
-          <FormattedMessage id="words.upload" defaultMessage="Upload" />
-        </MenuItem>
-      </Menu>
-    </>
+    <BrowseFilesDialogUI
+      currentPath={currentPath}
+      items={items}
+      path={browsePath}
+      guestBase={guestBase}
+      keyword={keyword}
+      selectedCard={selectedCard}
+      selectedArray={selectedArray}
+      multiSelect={multiSelect}
+      limit={searchParameters.limit}
+      offset={searchParameters.offset}
+      total={total}
+      onCardSelected={onCardSelected}
+      onChangePage={onChangePage}
+      onChangeRowsPerPage={onChangeRowsPerPage}
+      onCheckboxChecked={onCheckboxChecked}
+      handleSearchKeyword={handleSearchKeyword}
+      onCloseButtonClick={onCloseButtonClick}
+      onPathSelected={onPathSelected}
+      onPreviewImage={onPreviewImage}
+      onSelectButtonClick={onSelectButtonClick}
+      numOfLoaderItems={numOfLoaderItems}
+      rowsPerPageOptions={rowsPerPageOptions}
+      onRefresh={onRefresh}
+      onUpload={onUpload}
+    />
   ) : (
     <EmptyState
       title={
