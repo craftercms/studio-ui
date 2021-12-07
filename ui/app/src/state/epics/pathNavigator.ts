@@ -22,6 +22,7 @@ import { getIndividualPaths, getRootPath } from '../../utils/path';
 import { forkJoin } from 'rxjs';
 import {
   pathNavigatorBackgroundRefresh,
+  pathNavigatorChangeLimit,
   pathNavigatorChangePage,
   pathNavigatorConditionallySetPath,
   pathNavigatorConditionallySetPathComplete,
@@ -196,7 +197,7 @@ export default [
   // region pathNavigatorChangePage
   (action$, state$) =>
     action$.pipe(
-      ofType(pathNavigatorChangePage.type),
+      ofType(pathNavigatorChangePage.type, pathNavigatorChangeLimit.type),
       withLatestFrom(state$),
       mergeMap(
         ([
@@ -209,7 +210,7 @@ export default [
           fetchChildrenByPath(state.sites.active, state.pathNavigator[id].currentPath, {
             limit: state.pathNavigator[id].limit,
             ...(Boolean(state.pathNavigator[id].keyword) && { keyword: state.pathNavigator[id].keyword }),
-            offset
+            offset: offset
           }).pipe(
             map((children) => pathNavigatorFetchPathComplete({ id, children })),
             catchAjaxError((error) => pathNavigatorFetchPathFailed({ error, id }))
