@@ -922,7 +922,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         open={nnou(guest?.selected)}
         onDismiss={() => {
           dispatch(clearSelectForEdit());
-          getHostToGuestBus().next({ type: clearSelectedZones.type });
+          getHostToGuestBus().next(clearSelectedZones());
         }}
       />
       <Snackbar
