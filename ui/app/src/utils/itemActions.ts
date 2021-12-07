@@ -300,8 +300,9 @@ export function generateSingleItemOptions(
 
   const type = item.systemType;
   const isImage = item.mimeType?.startsWith('image/');
-  const isTemplate = item.path.includes('/templates');
-  const isController = item.path.includes('/scripts');
+  const isTemplate = item.path.startsWith('/templates');
+  const isController = item.path.startsWith('/scripts');
+  const isStaticAssets = item.path.startsWith('/static-assets');
   const menuOptions: Record<AllItemActions, ContextMenuOption> = toContextMenuOptionsLookup(
     unparsedMenuOptions,
     formatMessage
@@ -318,7 +319,13 @@ export function generateSingleItemOptions(
   if (hasUnlockAction(item.availableActions) && actionsToInclude.unlock) {
     sectionA.push(menuOptions.unlock);
   }
-  if (hasCreateAction(item.availableActions) && actionsToInclude.createContent) {
+  if (
+    !isStaticAssets &&
+    !isController &&
+    !isTemplate &&
+    hasCreateAction(item.availableActions) &&
+    actionsToInclude.createContent
+  ) {
     sectionA.push(menuOptions.createContent);
   }
   if (hasUploadAction(item.availableActions) && actionsToInclude.upload) {

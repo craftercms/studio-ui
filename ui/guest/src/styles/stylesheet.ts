@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import palette from './palette';
+import palette from '@craftercms/studio-ui/styles/palette';
 import { JssStyle, Styles } from 'jss';
 
 export type GuestRules =

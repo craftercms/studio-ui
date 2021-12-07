@@ -157,7 +157,7 @@ export interface LegacyDataSource {
 export interface LegacyFormDefinition {
   // As returned by `/studio/api/1/services/api/1/site/get-configuration.json?site=${site}&path=/content-types/.../form-definition.xml`
   title: string; // e.g. Page - Home
-  contentType: string; // e.g. /page/home
+  'content-type': string; // e.g. /page/home
   description: string; // e.g. ""
   imageThumbnail: string; // e.g. page-home.png
   objectType: string; // e.g. page

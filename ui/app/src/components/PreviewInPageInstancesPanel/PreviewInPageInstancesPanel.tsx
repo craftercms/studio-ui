@@ -162,15 +162,17 @@ export function PreviewInPageInstancesPanel() {
     if (!editMode) {
       dispatch(setPreviewEditMode({ editMode: true }));
     }
-    hostToGuest$.next({
-      type: contentTreeFieldSelected.type,
-      payload: {
+    hostToGuest$.next(
+      contentTreeFieldSelected({
         name: instance.craftercms.label,
-        modelId: instance.craftercms.id,
-        fieldId: null,
-        index: null
-      }
-    });
+        scrollElement: null,
+        iceProps: {
+          modelId: instance.craftercms.id,
+          fieldId: null,
+          index: null
+        }
+      })
+    );
     return;
   };
 

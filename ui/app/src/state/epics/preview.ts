@@ -19,18 +19,25 @@ import { ignoreElements, tap, withLatestFrom } from 'rxjs/operators';
 import {
   closeToolsPanel,
   openToolsPanel,
+  popIcePanelPage,
   popToolsPanelPage,
   previewItem,
+  pushIcePanelPage,
   pushToolsPanelPage,
+  setEditModePadding,
   setHighlightMode,
-  setPreviewEditMode
+  setPreviewEditMode,
+  toggleEditModePadding
 } from '../actions/preview';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 import {
+  removeStoredICEToolsPanelPage,
   removeStoredPreviewToolsPanelPage,
   setStoredClipboard,
   setStoredEditModeChoice,
+  setStoredEditModePadding,
   setStoredHighlightModeChoice,
+  setStoredICEToolsPanelPage,
   setStoredPreviewToolsPanelPage,
   setStoredShowToolsPanel
 } from '../../utils/state';
@@ -97,6 +104,20 @@ export default [
       ignoreElements()
     ),
   // endregion
+  // region setEditModePadding
+  (action$, state$) =>
+    action$.pipe(
+      ofType(setEditModePadding.type, toggleEditModePadding.type),
+      withLatestFrom(state$),
+      tap(([action, state]) => {
+        const nextValue =
+          action.type === setEditModePadding.type ? action.payload.editModePadding : state.preview.editModePadding;
+        setStoredEditModePadding(nextValue, state.user.username);
+        getHostToGuestBus().next(setEditModePadding({ editModePadding: nextValue }));
+      }),
+      ignoreElements()
+    ),
+  // endregion
   // region Clipboard
   (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(
@@ -141,6 +162,39 @@ export default [
         setStoredShowToolsPanel(uuid, state.user.username, state.preview.showToolsPanel);
       }),
       ignoreElements()
-    )
+    ),
   // endregion
+  // region pushIcePanelPage
+  (action$, state$) =>
+    action$.pipe(
+      ofType(pushIcePanelPage.type),
+      withLatestFrom(state$),
+      tap(([{ payload }, state]) => {
+        if (payload) {
+          const uuid = state.sites.byId[state.sites.active].uuid;
+          setStoredICEToolsPanelPage(uuid, state.user.username, payload);
+        }
+      }),
+      ignoreElements()
+    ),
+  // endregion
+  (action$, state$) =>
+    action$.pipe(
+      ofType(popIcePanelPage.type),
+      withLatestFrom(state$),
+      tap(([, state]) => {
+        const uuid = state.sites.byId[state.sites.active].uuid;
+
+        if (state.preview.icePanelStack.length) {
+          setStoredICEToolsPanelPage(
+            uuid,
+            state.user.username,
+            state.preview.icePanelStack[state.preview.icePanelStack.length - 1]
+          );
+        } else {
+          removeStoredICEToolsPanelPage(uuid, state.user.username);
+        }
+      }),
+      ignoreElements()
+    )
 ] as CrafterCMSEpic[];

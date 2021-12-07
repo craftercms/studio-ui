@@ -23,8 +23,8 @@ import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
 import UltraStyledIconButton from './UltraStyledIconButton';
 import HighlightOffRoundedIcon from '@mui/icons-material/HighlightOffRounded';
 import { Tooltip } from '@mui/material';
-import * as contentController from '../classes/ContentController';
-import { getCachedModel } from '../classes/ContentController';
+import * as contentController from '../contentController';
+import { getCachedModel } from '../contentController';
 import { clearAndListen$ } from '../store/subjects';
 import { startListening } from '../store/actions';
 import { ElementRecord } from '../models/InContextEditing';
@@ -32,7 +32,7 @@ import { extractCollection } from '@craftercms/studio-ui/utils/model';
 import { popPiece } from '@craftercms/studio-ui/utils/string';
 import { AnyAction } from '@reduxjs/toolkit';
 import useRef from '@craftercms/studio-ui/hooks/useUpdateRefs';
-import { findContainerRecord, runValidation } from '../classes/ICERegistry';
+import { findContainerRecord, runValidation } from '../iceRegistry';
 import { post } from '../utils/communicator';
 import { validationMessage } from '@craftercms/studio-ui/state/actions/preview';
 import Menu from '@mui/material/Menu';
@@ -181,7 +181,7 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
         </Tooltip>
       )}
       <Tooltip title="Trash (⌫)">
-        <UltraStyledIconButton size="small" onClick={onTrash} ref={trashButtonRef}>
+        <UltraStyledIconButton size="small" onClick={() => setShowTrashConfirmation(true)} ref={trashButtonRef}>
           <DeleteOutlineRoundedIcon />
         </UltraStyledIconButton>
       </Tooltip>
@@ -205,7 +205,7 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
         sx={{ zIndex: 1501 }}
       >
         <Typography variant="body1" sx={{ padding: '10px 16px 10px 16px' }}>
-          {isEmbedded ? 'Disassociate' : 'Delete'} this component?
+          {isEmbedded ? 'Delete' : 'Disassociate'} this component?
         </Typography>
         <MenuItem
           onClick={(e) => {

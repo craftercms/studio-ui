@@ -1,6 +1,7 @@
 {
   "name": "@craftercms/experience-builder",
-  "version": "1.0.0",
+  "description": "Crafter CMS' Experience Builder integration sdk.",
+  "version": "1.0.0-beta.1",
   "private": true,
   "main": "build_tsc/index.js",
   "module": "build_tsc/index.js",
@@ -79,7 +80,8 @@
     "start": "rollup -c -w",
     "watch": "rollup -c -w",
     "compile": "tsc --build tsconfig.json",
-    "package": "node ./scripts/package.js"
+    "create-package-file": "node ./scripts/package.js",
+    "package": "run-s compile create-package-file"
   },
   "dependencies": {
     "@craftercms/classes": "^2.0.1",
@@ -88,8 +90,8 @@
     "@craftercms/studio-ui": "workspace:^",
     "@emotion/react": "^11.5.0",
     "@emotion/styled": "^11.3.0",
-    "@mui/icons-material": "^5.0.5",
-    "@mui/material": "^5.0.6",
+    "@mui/icons-material": "^5.2.0",
+    "@mui/material": "^5.2.1",
     "@reduxjs/toolkit": "^1.6.2",
     "jquery": "^3.6.0",
     "js-cookie": "^3.0.1",

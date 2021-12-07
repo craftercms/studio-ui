@@ -38,7 +38,7 @@ export function forEach<T = any, R = undefined>(
 }
 
 export function asArray<T = unknown>(value: T | T[]): T[] {
-  return Array.isArray(value) ? value : [value];
+  return Boolean(value) ? (Array.isArray(value) ? value : [value]) : [];
 }
 
 export function createPresenceTable(list: string[]): LookupTable<boolean>;

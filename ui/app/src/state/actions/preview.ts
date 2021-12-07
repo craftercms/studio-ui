@@ -30,11 +30,16 @@ import { ContentTypeDropTarget } from '../../models/ContentTypeDropTarget';
 import { WidgetDescriptor } from '../../components/Widget';
 import LookupTable from '../../models/LookupTable';
 import { DetailedItem } from '../../models/Item';
-import { HighlightMode } from '../../models/GlobalState';
+import GlobalState, { HighlightMode } from '../../models/GlobalState';
 
 // region Accommodation Action Creators
 
-export const hostCheckIn = /*#__PURE__*/ createAction('HOST_CHECK_IN');
+export const hostCheckIn = /*#__PURE__*/ createAction<{
+  editMode: boolean;
+  highlightMode: HighlightMode;
+  editModePadding: boolean;
+  rteConfig: GlobalState['preview']['richTextEditor'];
+}>('HOST_CHECK_IN');
 export const guestCheckIn = /*#__PURE__*/ createAction('GUEST_CHECK_IN');
 export const guestCheckOut = /*#__PURE__*/ createAction('GUEST_CHECK_OUT');
 export const fetchGuestModel = /*#__PURE__*/ createAction('FETCH_GUEST_MODEL');
@@ -64,7 +69,8 @@ export const assetDragEnded = /*#__PURE__*/ createAction('ASSET_DRAG_ENDED');
 export const componentDragStarted = /*#__PURE__*/ createAction<{ contentType: ContentType }>('COMPONENT_DRAG_STARTED');
 export const componentDragEnded = /*#__PURE__*/ createAction('COMPONENT_DRAG_ENDED');
 export const trashed = /*#__PURE__*/ createAction<{ iceId: number }>('TRASHED');
-export const contentTypesResponse = /*#__PURE__*/ createAction('CONTENT_TYPES_RESPONSE');
+export const contentTypesResponse =
+  /*#__PURE__*/ createAction<{ contentTypes: Array<ContentType> }>('CONTENT_TYPES_RESPONSE');
 export const instanceDragBegun = /*#__PURE__*/ createAction<number>('INSTANCE_DRAG_BEGUN');
 export const instanceDragEnded = /*#__PURE__*/ createAction('INSTANCE_DRAG_ENDED');
 export const navigationRequest = /*#__PURE__*/ createAction('NAVIGATION_REQUEST');
@@ -94,6 +100,7 @@ export const contentTreeFieldSelected =
 export const clearContentTreeFieldSelected = /*#__PURE__*/ createAction('CLEAR_CONTENT_TREE_FIELD_SELECTED');
 export const validationMessage = /*#__PURE__*/ createAction<ValidationResult>('VALIDATION_MESSAGE');
 export const editModeToggleHotkey = /*#__PURE__*/ createAction<{ mode: string }>('EDIT_MODE_TOGGLE_HOTKEY');
+export const hotKeyDown = /*#__PURE__*/ createAction<{ key: string }>('HOY_KEY_PRESSS');
 export const showEditDialog = /*#__PURE__*/ createAction('SHOW_EDIT_DIALOG');
 export const updateRteConfig = /*#__PURE__*/ createAction('UPDATE_RTE_CONFIG');
 export const highlightModeChanged = /*#__PURE__*/ createAction('HIGHLIGHT_MODE_CHANGED');
@@ -105,7 +112,8 @@ export const contentTreeSwitchFieldInstance = /*#__PURE__*/ createAction<{ type:
 );
 export const keyUp = /*#__PURE__*/ createAction<{ key: string }>('KEYUP');
 export const keyDown = /*#__PURE__*/ createAction<{ key: string }>('KEYDOWN');
-
+export const setEditModePadding = /*#__PURE__*/ createAction<{ editModePadding: boolean }>('SET_DRAG_HELP_MODE');
+export const toggleEditModePadding = /*#__PURE__*/ createAction('TOGGLE_DRAG_HELP_MODE');
 // endregion
 
 // region Actions
@@ -317,6 +325,7 @@ export const initToolbarConfig = /*#__PURE__*/ createAction<{ configXml: string 
 
 export const initIcePanelConfig = /*#__PURE__*/ createAction<{
   configXml: string;
+  storedPage?: WidgetDescriptor;
   icePanelWidth?: number;
 }>('INIT_ICE_PANEL_CONFIG');
 
