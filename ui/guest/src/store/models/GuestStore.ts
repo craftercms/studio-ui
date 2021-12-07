@@ -53,7 +53,7 @@ export interface GuestState {
   status: EditingStatus;
   editMode: boolean;
   highlightMode: string;
-  dragHelpMode: boolean;
+  editModePadding: boolean;
   editable: T;
   draggable: T;
   highlighted: T;

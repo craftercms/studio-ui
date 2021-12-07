@@ -55,9 +55,10 @@ import {
   SET_HOST_SIZE,
   SET_HOST_WIDTH,
   SET_ITEM_BEING_DRAGGED,
-  setDragHelpMode,
+  setEditModePadding,
   setHighlightMode,
   setPreviewEditMode,
+  toggleEditModePadding,
   UPDATE_AUDIENCES_PANEL_MODEL,
   updateIcePanelWidth,
   updateToolsPanelWidth
@@ -154,7 +155,7 @@ const initialState: GlobalState['preview'] = {
   },
   icePanel: null,
   richTextEditor: null,
-  dragHelpMode: false
+  editModePadding: false
 };
 
 const minDrawerWidth = 240;
@@ -713,9 +714,13 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
       richTextEditor: rteConfig
     };
   },
-  [setDragHelpMode.type]: (state, { payload }) => ({
+  [setEditModePadding.type]: (state, { payload }) => ({
     ...state,
-    dragHelpMode: payload.dragHelpMode
+    editModePadding: payload.editModePadding
+  }),
+  [toggleEditModePadding.type]: (state) => ({
+    ...state,
+    editModePadding: !state.editModePadding
   })
 });
 

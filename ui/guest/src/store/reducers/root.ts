@@ -47,7 +47,7 @@ import {
   desktopAssetUploadStarted,
   highlightModeChanged,
   hostCheckIn,
-  setDragHelpMode,
+  setEditModePadding,
   setPreviewEditMode,
   updateRteConfig
 } from '@craftercms/studio-ui/state/actions/preview';
@@ -90,7 +90,7 @@ const initialState: GuestState = {
   hostCheckedIn: false,
   rteConfig: {},
   activeSite: '',
-  dragHelpMode: false
+  editModePadding: false
 };
 
 function createReducer<S, CR extends CaseReducers<S>>(initialState: S, actionsMap: CR): Reducer<S> {
@@ -702,7 +702,7 @@ const reducer = createReducer(initialState, {
   [hostCheckIn.type]: (state, action) => ({
     ...state,
     hostCheckedIn: true,
-    dragHelpMode: action.payload.dragHelpMode,
+    editModePadding: action.payload.editModePadding,
     highlightMode: action.payload.highlightMode,
     editMode: action.payload.editMode,
     rteConfig: action.payload.rteConfig,
@@ -715,10 +715,10 @@ const reducer = createReducer(initialState, {
     rteConfig: action.payload.rteConfig
   }),
   // endregion
-  // region setDragHelpMode
-  [setDragHelpMode.type]: (state, action) => ({
+  // region setEditModePadding
+  [setEditModePadding.type]: (state, action) => ({
     ...state,
-    dragHelpMode: action.payload.dragHelpMode
+    editModePadding: action.payload.editModePadding
   })
   // endregion
 });

@@ -27,7 +27,7 @@ import {
   moveModeClass,
   emptyFieldClass,
   dragAndDropActiveClass,
-  dragHelpModeClass
+  editModePaddingClass
 } from '../constants';
 
 export interface GuestGlobalStylesProps {}
@@ -197,7 +197,7 @@ const styles = (
         }
       },
       [`.${dragAndDropActiveClass}`]: {},
-      [`.${dragHelpModeClass}`]: {
+      [`.${editModePaddingClass}`]: {
         '[data-craftercms-type="collection"]': {
           paddingTop: '20px',
           paddingRight: '20px',

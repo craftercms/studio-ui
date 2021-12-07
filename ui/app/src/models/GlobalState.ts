@@ -186,7 +186,7 @@ export interface GlobalState {
       widgets: WidgetDescriptor[];
     };
     richTextEditor: LookupTable;
-    dragHelpMode: boolean;
+    editModePadding: boolean;
   };
   previewNavigation: {
     currentUrlPath: string;

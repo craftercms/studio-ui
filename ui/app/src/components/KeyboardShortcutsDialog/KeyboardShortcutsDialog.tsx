@@ -42,6 +42,7 @@ function getStyles(sx: KeyboardShortcutsDialogPartialSx): KeyboardShortcutsDialo
       ...sx?.categoryTitle
     },
     shortcutChip: {
+      fontFamily: 'monospace',
       borderRadius: '8px',
       ...sx?.shortcutChip
     },

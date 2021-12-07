@@ -69,6 +69,15 @@ export function getStoredHighlightModeChoice(user: string): HighlightMode {
   return window.localStorage.getItem(`craftercms.${user}.highlightModeChoice`) as HighlightMode;
 }
 
+export function setStoredEditModePadding(value: string, user: string): void {
+  window.localStorage.setItem(`craftercms.${user}.editModePadding`, value);
+}
+
+export function getStoredEditModePadding(user: string): boolean {
+  const value = window.localStorage.getItem(`craftercms.${user}.editModePadding`);
+  return value ? value === 'true' : null;
+}
+
 export function setStoredClipboard(siteIdentifier: string, user: string, value: object): void {
   window.localStorage.setItem(
     `craftercms.${user}.clipboard.${siteIdentifier}`,
