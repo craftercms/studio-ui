@@ -58,7 +58,8 @@ const translations = defineMessages({
   },
   editModePaddingHelp: {
     id: 'settingsPanel.editModePaddingHelp',
-    defaultMessage: 'Adds padding to collections for easier interaction in edit-mode. Press `p` at any point to toggle on/off.'
+    defaultMessage:
+      'Adds padding to collections for easier interaction in edit-mode. Press `p` at any point to toggle on/off.'
   }
 });
 
