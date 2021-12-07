@@ -29,7 +29,7 @@ import Switch from '@mui/material/Switch';
 const translations = defineMessages({
   editMode: {
     id: 'settingsPanel.editMode',
-    defaultMessage: 'Edit Mode'
+    defaultMessage: 'Edit Mode (e | m)'
   },
   editModeHelperText: {
     id: 'settingsPanel.editModeHelperText',
@@ -42,23 +42,23 @@ const translations = defineMessages({
   highlightModeHelperText: {
     id: 'settingsPanel.highlightModeHelperText',
     defaultMessage:
-      'When "highlight movable" is selected, only content items you can be moved or sorted highlight. Text inputs and other non-movable won\'t highlight'
+      'When "highlight movable" is selected, only content items you can be moved or sorted highlight. Text inputs and other non-movable won\'t highlight. Press `e` and `m` at any point to toggle between modes.'
   },
   highlightAllZones: {
     id: 'settingsPanel.highlightAllTargets',
-    defaultMessage: 'Highlight All Targets'
+    defaultMessage: 'Highlight all targets (e)'
   },
   highlightMovable: {
     id: 'settingsPanel.highlightMovable',
-    defaultMessage: 'Highlight Movable'
+    defaultMessage: 'Highlight movable (m)'
   },
   editModePaddingLabel: {
     id: 'settingsPanel.editModePaddingLabel',
-    defaultMessage: 'Edit-mode padding'
+    defaultMessage: 'Edit-mode padding (p)'
   },
   editModePaddingHelp: {
     id: 'settingsPanel.editModePaddingHelp',
-    defaultMessage: 'Adds padding to collections for easier interaction in edit-mode'
+    defaultMessage: 'Adds padding to collections for easier interaction in edit-mode. Press `p` at any point to toggle on/off.'
   }
 });
 
