@@ -30,27 +30,17 @@ import {
   contentTypeUpdated,
   emitSystemEvent
 } from '../../state/actions/system';
-import { updateWidgetDialog } from '../../state/actions/dialogs';
-import { LookupTable } from '../../models';
 
 interface ContentTypeManagementProps {
   embedded?: boolean;
   showAppsButton?: boolean;
-  configuration?: LookupTable;
   onClose?: () => void;
   onMinimize?: () => void;
   onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 export function ContentTypeManagement(props: ContentTypeManagementProps) {
-  const {
-    embedded = false,
-    showAppsButton,
-    configuration,
-    onClose,
-    onMinimize,
-    onSubmittingAndOrPendingChange
-  } = props;
+  const { embedded = false, showAppsButton, onClose, onMinimize, onSubmittingAndOrPendingChange } = props;
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
 
@@ -99,7 +89,7 @@ export function ContentTypeManagement(props: ContentTypeManagementProps) {
     return () => {
       messagesSubscription.unsubscribe();
     };
-  }, [dispatch, onSubmittingAndOrPendingChange, configuration, embedded]);
+  }, [dispatch, onSubmittingAndOrPendingChange, embedded, onClose, onMinimize]);
 
   return (
     <Box height="100%" display="flex" flexDirection="column">
