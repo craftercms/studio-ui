@@ -62,9 +62,7 @@ export function ContentTypeManagement(props: ContentTypeManagementProps) {
             dispatch(emitSystemEvent(contentTypeUpdated()));
             switch (e.data.saveType) {
               case 'saveAndClose':
-                if (embedded) {
-                  onClose?.();
-                }
+                onClose?.();
                 break;
               case 'saveAndMinimize':
                 onMinimize?.();

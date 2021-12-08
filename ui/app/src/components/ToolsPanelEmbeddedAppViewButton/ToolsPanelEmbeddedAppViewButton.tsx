@@ -40,6 +40,7 @@ export function ToolsPanelEmbeddedAppViewButton(props: ToolsPanelEmbeddedAppView
   } = useEnhancedDialogState();
   const title = usePossibleTranslation(props.title);
   const widgetDialogPendingChangesCloseRequest = useWithPendingChangesCloseRequest(onClose);
+  const isWidgetEmbedded = props.widget?.configuration?.embedded;
 
   const openEmbeddedApp = () => {
     if (isMinimized) {
@@ -59,7 +60,7 @@ export function ToolsPanelEmbeddedAppViewButton(props: ToolsPanelEmbeddedAppView
         extraProps={{
           onMinimize,
           onMaximize,
-          onClose
+          ...(isWidgetEmbedded && { onClose })
         }}
         hasPendingChanges={hasPendingChanges}
         onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}

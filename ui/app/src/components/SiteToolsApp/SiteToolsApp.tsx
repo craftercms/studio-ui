@@ -166,7 +166,6 @@ export function SiteToolsApp(props: SiteToolsAppProps) {
                   embedded: false,
                   showAppsButton,
                   onSubmittingAndOrPendingChange,
-                  configuration: { isContainerDialog: hideSidebarSiteSwitcher },
                   ...(hideSidebarSiteSwitcher && {
                     onMinimize: () => {
                       dispatch(updateWidgetDialog({ isMinimized: true }));
