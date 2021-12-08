@@ -23,7 +23,8 @@ export const useStyles = makeStyles((theme) =>
       minHeight: '60vh'
     },
     searchRoot: {
-      marginBottom: '16px'
+      marginLeft: 'auto',
+      maxWidth: '250px'
     },
     emptyState: {
       flexGrow: 1
