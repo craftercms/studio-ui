@@ -60,6 +60,7 @@ export interface SiteToolsAppProps {
   hideSidebarSiteSwitcher?: boolean;
   showAppsButton?: boolean;
   classes?: Partial<Record<'root', string>>;
+  urlDriven?: boolean;
   onBackClick?(): void;
   onWidthChange(width: number): void;
   onNavItemClick(url: string): void;
@@ -73,6 +74,7 @@ export function SiteToolsApp(props: SiteToolsAppProps) {
     hideSidebarSiteSwitcher = false,
     hideSidebarLogo = false,
     sidebarBelowToolbar = false,
+    urlDriven = false,
     footerHtml,
     onBackClick,
     openSidebar,
@@ -164,13 +166,12 @@ export function SiteToolsApp(props: SiteToolsAppProps) {
                 {...tool}
                 extraProps={{
                   embedded: false,
+                  urlDriven,
                   showAppsButton,
                   onSubmittingAndOrPendingChange,
-                  ...(hideSidebarSiteSwitcher && {
-                    onMinimize: () => {
-                      dispatch(updateWidgetDialog({ isMinimized: true }));
-                    }
-                  })
+                  onMinimize: () => {
+                    dispatch(updateWidgetDialog({ isMinimized: true }));
+                  }
                 }}
               />
             </Suspencified>

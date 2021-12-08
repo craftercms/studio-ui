@@ -362,12 +362,18 @@
         this.commandBarEl.appendChild(buttonEl);
         buttonEl.onclick = action.fn;
       } else {
+        const urlDriven = CStudioAuthoring.Utils.getQueryParameterByName('urlDriven') === 'true';
+        const options = ['save', 'saveAndClose'];
+        if (!urlDriven) {
+          options.push('saveAndMinimize');
+        }
         const saveContainer = document.createElement('span');
         CrafterCMSNext.render(saveContainer, 'MultiChoiceSaveButton', {
           defaultSelected: 'save',
           disablePortal: false,
           storageKey: 'contentTypeEditor',
-          onClick: action.fn
+          onClick: action.fn,
+          options
         }).then((done) => (unmount = done.unmount));
         this.commandBarEl.appendChild(saveContainer);
       }
