@@ -1868,7 +1868,6 @@ var CStudioForms =
 
             //In Context Edit, the preview button must not be shown
             var iceId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'iceId');
-            const user = CStudioAuthoringContext.user;
             // This is really the right thing to do but previewable doesn't come through
             CStudioAuthoring.Service.lookupContentType(CStudioAuthoringContext.site, contentType, {
               success: function (type) {
