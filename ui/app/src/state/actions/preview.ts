@@ -100,7 +100,7 @@ export const contentTreeFieldSelected =
 export const clearContentTreeFieldSelected = /*#__PURE__*/ createAction('CLEAR_CONTENT_TREE_FIELD_SELECTED');
 export const validationMessage = /*#__PURE__*/ createAction<ValidationResult>('VALIDATION_MESSAGE');
 export const editModeToggleHotkey = /*#__PURE__*/ createAction<{ mode: string }>('EDIT_MODE_TOGGLE_HOTKEY');
-export const hotKeyDown = /*#__PURE__*/ createAction<{ key: string }>('HOY_KEY_PRESSS');
+export const hotKey = /*#__PURE__*/ createAction<{ key: string; type: 'keyup' | 'keydown' }>('HOT_KEY');
 export const showEditDialog = /*#__PURE__*/ createAction('SHOW_EDIT_DIALOG');
 export const updateRteConfig = /*#__PURE__*/ createAction('UPDATE_RTE_CONFIG');
 export const highlightModeChanged = /*#__PURE__*/ createAction('HIGHLIGHT_MODE_CHANGED');
@@ -110,8 +110,6 @@ export const childrenMapUpdate = /*#__PURE__*/ createAction('CHILDREN_MAP_UPDATE
 export const contentTreeSwitchFieldInstance = /*#__PURE__*/ createAction<{ type: string; scrollElement: string }>(
   'CONTENT_TREE_SWITCH_FIELD_INSTANCE'
 );
-export const keyUp = /*#__PURE__*/ createAction<{ key: string }>('KEYUP');
-export const keyDown = /*#__PURE__*/ createAction<{ key: string }>('KEYDOWN');
 export const setEditModePadding = /*#__PURE__*/ createAction<{ editModePadding: boolean }>('SET_DRAG_HELP_MODE');
 export const toggleEditModePadding = /*#__PURE__*/ createAction('TOGGLE_DRAG_HELP_MODE');
 // endregion

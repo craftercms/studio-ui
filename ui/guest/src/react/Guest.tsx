@@ -58,9 +58,7 @@ import {
   guestCheckOut,
   highlightModeChanged,
   hostCheckIn,
-  hotKeyDown,
-  keyDown,
-  keyUp,
+  hotKey,
   navigationRequest,
   reloadRequest,
   scrollToDropTarget,
@@ -98,6 +96,7 @@ import {
 } from '../store/actions';
 import DragGhostElement from './DragGhostElement';
 import GuestGlobalStyles from './GuestGlobalStyles';
+import { useHotkeys } from 'react-hotkeys-hook';
 
 // TODO: add themeOptions and global styles customising
 export type GuestProps = PropsWithChildren<{
@@ -110,6 +109,12 @@ export type GuestProps = PropsWithChildren<{
 }>;
 
 const initialDocumentDomain = document.domain;
+
+function bypassKeyStroke(e, refs) {
+  const isKeyDown = e.type === 'keydown';
+  refs.current.keysPressed['z'] = isKeyDown;
+  $('html')[isKeyDown ? 'addClass' : 'removeClass'](iceBypassKeyClass);
+}
 
 function Guest(props: GuestProps) {
   // TODO: support path driven Guest.
@@ -164,39 +169,23 @@ function Guest(props: GuestProps) {
     return deepmerge(styleSxDefaults, sxOverrides);
   }, [sxOverrides]);
 
-  // Key press/hold keeper events
-  useEffect(() => {
-    const keydown = (e) => {
-      // Only transmit relevant host key events to host to avoid double activation of handlers
-      // on either host/guest sides. This requires maintenance as key shortcuts evolve/change.
-      if (['m', 'e', 'p', '?'].includes(e.key)) {
-        post(hotKeyDown({ key: e.key }));
-      }
-      refs.current.keysPressed[e.key] = true;
-      if (e.key === 'z') {
-        $('html').addClass(iceBypassKeyClass);
-      }
-    };
-    const keyup = (e) => {
-      refs.current.keysPressed[e.key] = false;
-      if (e.key === 'z') {
-        $('html').removeClass(iceBypassKeyClass);
-      }
-    };
-    const message$Subscription = message$
-      .pipe(filter((action) => action.type === keyUp.type || action.type === keyDown.type))
-      .subscribe((action) => {
-        const fn = action.type === keyUp.type ? keyup : keydown;
-        fn(action.payload);
-      });
-    document.addEventListener('keydown', keydown, false);
-    document.addEventListener('keyup', keyup, false);
-    return () => {
-      message$Subscription.unsubscribe();
-      document.removeEventListener('keydown', keydown, false);
-      document.removeEventListener('keyup', keyup, false);
-    };
-  }, []);
+  // region Hotkeys
+
+  // This requires maintenance as key shortcuts evolve/change.
+  useHotkeys('m,e,p,shift+/', (e) => {
+    post(hotKey({ key: e.key, type: 'keydown' }));
+  });
+
+  // ICE bypass key
+  useHotkeys(
+    'z',
+    (e) => {
+      bypassKeyStroke(e, refs);
+    },
+    { keyup: true, keydown: true }
+  );
+
+  // endregion
 
   useEffect(() => {
     const $html = $('html');
@@ -324,6 +313,11 @@ function Guest(props: GuestProps) {
         case updateRteConfig.type:
         case setEditModePadding.type:
           dispatch(action);
+          break;
+        case hotKey.type:
+          if (payload.key === 'z') {
+            bypassKeyStroke(payload, refs);
+          }
           break;
       }
     });
