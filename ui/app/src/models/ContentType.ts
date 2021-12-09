@@ -133,6 +133,9 @@ export interface LegacyFormDefinitionField {
   fields?: {
     field: LegacyFormDefinitionField | Array<LegacyFormDefinitionField>;
   };
+  // Repeat groups carry these both at the top and inside of "properties" (duplicated)
+  minOccurs?: string;
+  maxOccurs?: string;
 }
 
 export interface LegacyFormDefinitionSection {
