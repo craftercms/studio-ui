@@ -362,9 +362,9 @@
         this.commandBarEl.appendChild(buttonEl);
         buttonEl.onclick = action.fn;
       } else {
-        const urlDriven = CStudioAuthoring.Utils.getQueryParameterByName('urlDriven') === 'true';
+        const mountMode = CStudioAuthoring.Utils.getQueryParameterByName('mountMode');
         const options = ['save', 'saveAndClose'];
-        if (!urlDriven) {
+        if (mountMode !== 'page') {
           options.push('saveAndMinimize');
         }
         const saveContainer = document.createElement('span');

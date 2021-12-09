@@ -34,14 +34,14 @@ import {
 interface ContentTypeManagementProps {
   embedded?: boolean;
   showAppsButton?: boolean;
-  urlDriven?: boolean;
+  mountMode?: boolean;
   onClose?: () => void;
   onMinimize?: () => void;
   onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 export function ContentTypeManagement(props: ContentTypeManagementProps) {
-  const { embedded = false, showAppsButton, onClose, onMinimize, urlDriven, onSubmittingAndOrPendingChange } = props;
+  const { embedded = false, showAppsButton, onClose, onMinimize, mountMode, onSubmittingAndOrPendingChange } = props;
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
 
@@ -100,7 +100,7 @@ export function ContentTypeManagement(props: ContentTypeManagementProps) {
       )}
       {loading && <LoadingState styles={{ root: { flexGrow: 1 } }} />}
       <LegacyIFrame
-        path={`/legacy-site-config?mode=embedded${urlDriven ? '&urlDriven=true' : ''}#tool/content-types`}
+        path={`/legacy-site-config?mode=embedded${mountMode ? '&mountMode=' + mountMode : ''}#tool/content-types`}
         iframeProps={{
           style: {
             height: loading ? '0' : '100%'

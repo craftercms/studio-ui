@@ -60,7 +60,8 @@ export interface SiteToolsAppProps {
   hideSidebarSiteSwitcher?: boolean;
   showAppsButton?: boolean;
   classes?: Partial<Record<'root', string>>;
-  urlDriven?: boolean;
+  // Whether the component is mounted on a dialog or it's the main app on a page (i.e. `/studio/site-tools`)
+  mountMode?: 'dialog' | 'page';
   onBackClick?(): void;
   onWidthChange(width: number): void;
   onNavItemClick(url: string): void;
@@ -74,7 +75,7 @@ export function SiteToolsApp(props: SiteToolsAppProps) {
     hideSidebarSiteSwitcher = false,
     hideSidebarLogo = false,
     sidebarBelowToolbar = false,
-    urlDriven = false,
+    mountMode = 'dialog',
     footerHtml,
     onBackClick,
     openSidebar,
@@ -166,7 +167,7 @@ export function SiteToolsApp(props: SiteToolsAppProps) {
                 {...tool}
                 extraProps={{
                   embedded: false,
-                  urlDriven,
+                  mountMode,
                   showAppsButton,
                   onSubmittingAndOrPendingChange,
                   onMinimize: () => {
