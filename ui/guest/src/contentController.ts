@@ -576,7 +576,7 @@ export function sortItem(
     updateHierarchyMapIndexesFromCollection(result);
   } else {
     modelHierarchyMap[modelId].children.forEach((_modelId) => {
-      if (modelHierarchyMap[_modelId].parentContainerFieldPath.startsWith(fieldId)) {
+      if (modelHierarchyMap[_modelId].parentContainerFieldPath?.startsWith(fieldId)) {
         updateModel(fieldId, modelHierarchyMap[_modelId], currentIndexParsed, targetIndexParsed);
       }
     });
