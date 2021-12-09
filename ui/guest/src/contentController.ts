@@ -389,27 +389,11 @@ export function insertComponent(
     }
   };
 
-  function processFields(instance, fields: LookupTable<ContentTypeField>) {
-    Object.entries(fields).forEach(([id, field]) => {
-      switch (field.type) {
-        case 'repeat':
-        case 'node-selector': {
-          instance[id] = [];
-          if (field.type === 'repeat') {
-            instance[id].push({});
-            processFields(instance[id][0], field.fields);
-          }
-          break;
-        }
-        default:
-          if (!systemProps.includes(field.id)) {
-            instance[id] = getDefaultValue(field);
-          }
-      }
-    });
-  }
-
-  processFields(instance, contentType.fields);
+  Object.entries(contentType.fields).forEach(([id, field]) => {
+    if (!systemProps.includes(field.id)) {
+      instance[id] = getDefaultValue(field);
+    }
+  });
 
   // Insert in desired position
   result.splice(targetIndex as number, 0, instance.craftercms.id);
