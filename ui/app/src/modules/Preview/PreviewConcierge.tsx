@@ -38,7 +38,7 @@ import {
   guestModelUpdated,
   guestSiteLoad,
   hostCheckIn,
-  hotKeyDown,
+  hotKey,
   iceZoneSelected,
   initRichTextEditorConfig,
   insertComponentOperation,
@@ -47,8 +47,6 @@ import {
   insertOperationComplete,
   instanceDragBegun,
   instanceDragEnded,
-  keyDown,
-  keyUp,
   moveItemOperation,
   selectForEdit,
   setContentTypeDropTargets,
@@ -135,6 +133,7 @@ import {
   pluginUninstalled
 } from '../../state/actions/system';
 import { useUpdateRefs } from '../../hooks';
+import { useHotkeys } from 'react-hotkeys-hook';
 
 const originalDocDomain = document.domain;
 
@@ -332,41 +331,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 
     startGuestDetectionTimeout(guestDetectionTimeoutRef, setGuestDetectionSnackbarOpen);
 
-    // Only transmit the relevant guest key events to guest avoid double activation of handlers
-    // on either host/guest sides. This requires maintenance as key shortcuts evolve/change.
-    const hostToGuest = getHostToGuestBus();
-    const keydown = (e) => {
-      switch (e.key) {
-        case 'e':
-          upToDateRefs.current.conditionallyToggleEditMode('all');
-          break;
-        case 'm':
-          upToDateRefs.current.conditionallyToggleEditMode('move');
-          break;
-        case 'p':
-          dispatch(toggleEditModePadding());
-          break;
-        case '?':
-          upToDateRefs.current.keyboardShortcutsDialogState.onOpen();
-          break;
-        case 'z':
-          hostToGuest.next(keyDown({ key: e.key }));
-          break;
-      }
-    };
-    const keyup = (e) => {
-      switch (e.key) {
-        case 'z':
-          hostToGuest.next(keyUp({ key: e.key }));
-          break;
-      }
-    };
-    document.addEventListener('keydown', keydown, false);
-    document.addEventListener('keyup', keyup, false);
-
     return () => {
-      document.removeEventListener('keydown', keydown, false);
-      document.removeEventListener('keyup', keyup, false);
       document.domain = originalDocDomain;
     };
   });
@@ -821,7 +786,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           });
           break;
         }
-        case hotKeyDown.type: {
+        case hotKey.type: {
           switch (payload.key) {
             case 'e':
               upToDateRefs.current.conditionallyToggleEditMode('all');
@@ -910,6 +875,33 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
       dispatch(initRichTextEditorConfig({ configXml: uiConfig.xml, siteId }));
     }
   }, [uiConfig.xml, siteId, rteConfig, dispatch]);
+
+  // Host hotkeys
+  useHotkeys('e,m,p,shift+/', (e) => {
+    switch (e.key) {
+      case 'e':
+        upToDateRefs.current.conditionallyToggleEditMode('all');
+        break;
+      case 'm':
+        upToDateRefs.current.conditionallyToggleEditMode('move');
+        break;
+      case 'p':
+        upToDateRefs.current.dispatch(toggleEditModePadding());
+        break;
+      case '?':
+        upToDateRefs.current.keyboardShortcutsDialogState.onOpen();
+        break;
+    }
+  });
+
+  // Guest hotkeys
+  useHotkeys(
+    'z',
+    (e) => {
+      getHostToGuestBus().next(hotKey({ key: e.key, type: e.type as 'keyup' }));
+    },
+    { keyup: true, keydown: true }
+  );
 
   return (
     <>

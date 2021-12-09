@@ -205,7 +205,7 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
         sx={{ zIndex: 1501 }}
       >
         <Typography variant="body1" sx={{ padding: '10px 16px 10px 16px' }}>
-          {isEmbedded ? 'Delete' : 'Disassociate'} this component?
+          {isEmbedded ? 'Delete' : 'Disassociate'} this item?
         </Typography>
         <MenuItem
           onClick={(e) => {
