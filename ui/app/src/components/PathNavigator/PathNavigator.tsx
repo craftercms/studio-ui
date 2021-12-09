@@ -159,7 +159,7 @@ export function PathNavigator(props: PathNavigatorProps) {
   const { id: siteId, uuid } = useActiveSite();
   const user = useActiveUser();
   const { authoringBase } = useEnv();
-  const dispatch = useDispatch();@ro
+  const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const [widgetMenu, setWidgetMenu] = useState<Menu>({
     anchorEl: null,

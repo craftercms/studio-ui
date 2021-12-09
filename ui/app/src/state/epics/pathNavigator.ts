@@ -210,7 +210,7 @@ export default [
           fetchChildrenByPath(state.sites.active, state.pathNavigator[id].currentPath, {
             limit: state.pathNavigator[id].limit,
             ...(Boolean(state.pathNavigator[id].keyword) && { keyword: state.pathNavigator[id].keyword }),
-            offset: offset
+            offset
           }).pipe(
             map((children) => pathNavigatorFetchPathComplete({ id, children })),
             catchAjaxError((error) => pathNavigatorFetchPathFailed({ error, id }))
