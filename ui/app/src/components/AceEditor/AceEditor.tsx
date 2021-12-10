@@ -303,6 +303,6 @@ function AceEditorComp(props: AceEditorProps, ref: MutableRef<AceAjax.Editor>) {
   );
 }
 
-const AceEditor = React.forwardRef<AceAjax.Editor, AceEditorProps>(AceEditorComp);
+export const AceEditor = React.forwardRef<AceAjax.Editor, AceEditorProps>(AceEditorComp);
 
 export default AceEditor;
