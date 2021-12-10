@@ -230,7 +230,7 @@ const reducer = createReducer<ContentState>(initialState, {
     return { ...state, itemsByPath: { ...state.itemsByPath, ...nextByPath } };
   },
   [localItemLock.type]: (state, { payload }) => {
-    if (state.itemsByPath[payload.path].lockOwner && state.itemsByPath[payload.path].stateMap.locked) {
+    if (state.itemsByPath[payload.path].stateMap.locked) {
       return state;
     }
     return {

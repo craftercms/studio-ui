@@ -66,3 +66,4 @@ export * from './monitoring/Status';
 export * from './monitoring/Version';
 
 export * from './content/QuickCreateItem';
+export * from './MutableRef';

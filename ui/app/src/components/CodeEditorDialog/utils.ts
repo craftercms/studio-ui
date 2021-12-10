@@ -38,6 +38,8 @@ export interface CodeEditorDialogStateProps extends CodeEditorDialogBaseProps, E
   onClosed?: StandardAction;
   onMinimize?: StandardAction;
   onMaximize?: StandardAction;
+  onFullScreen?: StandardAction;
+  onCancelFullScreen?: StandardAction;
 }
 
 export interface CodeEditorDialogContainerProps
