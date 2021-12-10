@@ -90,6 +90,15 @@ export function uninstallMarketplacePlugin(
   }).pipe(mapTo(true));
 }
 
+export function getPluginConfiguration(siteId: string, pluginId: string): Observable<any> {
+  const qs = toQueryString({ siteId, pluginId });
+  return get(`/studio/api/2/plugin/get_configuration${qs}`).pipe(pluck('response', 'content'));
+}
+
+export function setPluginConfiguration(siteId: string, pluginId: string, content: string): Observable<any> {
+  return postJSON('/studio/api/2/plugin/write_configuration', { siteId, pluginId, content }).pipe(mapTo(true));
+}
+
 export function fetchMarketplacePluginUsage(siteId: string, pluginId: string): Observable<SandboxItem[]> {
   const qs = toQueryString({ siteId, pluginId });
   return get(`/studio/api/2/marketplace/usage${qs}`).pipe(

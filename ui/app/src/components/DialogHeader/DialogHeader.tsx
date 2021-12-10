@@ -21,6 +21,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import createStyles from '@mui/styles/createStyles';
 import CloseIconRounded from '@mui/icons-material/CloseRounded';
 import MinimizeIconRounded from '@mui/icons-material/RemoveRounded';
+import FullscreenIconRounded from '@mui/icons-material/OpenInFullRounded';
 import ArrowBack from '@mui/icons-material/ArrowBackIosRounded';
 import React, { ElementType, PropsWithChildren, ReactNode } from 'react';
 import clsx from 'clsx';
@@ -94,6 +95,10 @@ const translations = defineMessages({
   minimize: {
     id: 'words.minimize',
     defaultMessage: 'Minimize'
+  },
+  fullscreen: {
+    id: 'words.fullscreen',
+    defaultMessage: 'Fullscreen'
   }
 });
 
@@ -110,6 +115,7 @@ export type DialogHeaderProps<
   rightActions?: DialogHeaderAction[];
   closeIcon?: ElementType;
   minimizeIcon?: ElementType;
+  fullscreenIcon?: ElementType;
   backIcon?: ElementType;
   classes?: {
     root?: string;
@@ -119,8 +125,10 @@ export type DialogHeaderProps<
   className?: string;
   disableDismiss?: boolean;
   disableMinimize?: boolean;
+  disableFullscreen?: boolean;
   onCloseButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
   onMinimizeButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
+  onFullscreenButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
   onBack?(): void;
 }>;
 
@@ -132,8 +140,10 @@ export function DialogHeader(props: DialogHeaderProps) {
     id,
     onCloseButtonClick,
     onMinimizeButtonClick,
+    onFullscreenButtonClick,
     disableDismiss = false,
     disableMinimize = false,
+    disableFullscreen = false,
     onBack,
     title,
     children,
@@ -142,6 +152,7 @@ export function DialogHeader(props: DialogHeaderProps) {
     rightActions,
     closeIcon: CloseIcon = CloseIconRounded,
     minimizeIcon: MinimizeIcon = MinimizeIconRounded,
+    fullscreenIcon: FullscreenIcon = FullscreenIconRounded,
     backIcon: BackIcon = ArrowBack,
     titleTypographyProps = {
       variant: 'h6',
@@ -183,6 +194,13 @@ export function DialogHeader(props: DialogHeaderProps) {
               <Tooltip title={formatMessage(translations.minimize)}>
                 <IconButton aria-label="close" onClick={onMinimizeButtonClick} disabled={disableMinimize}>
                   <MinimizeIcon />
+                </IconButton>
+              </Tooltip>
+            )}
+            {onFullscreenButtonClick && (
+              <Tooltip title={formatMessage(translations.fullscreen)}>
+                <IconButton aria-label="close" onClick={onFullscreenButtonClick} disabled={disableFullscreen}>
+                  <FullscreenIcon />
                 </IconButton>
               </Tooltip>
             )}

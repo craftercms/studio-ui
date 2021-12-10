@@ -84,7 +84,6 @@ import { DeepPartial } from 'redux';
 import MoveModeZoneMenu from './MoveModeZoneMenu';
 import {
   contentReady,
-  desktopAssetDragStarted,
   documentDragEnd,
   documentDragLeave,
   documentDragOver,
@@ -420,7 +419,7 @@ function Guest(props: GuestProps) {
         .subscribe((e) => {
           e.preventDefault();
           e.stopPropagation();
-          dispatch(desktopAssetDragStarted({ asset: e.dataTransfer.items[0] }));
+          // dispatch(desktopAssetDragStarted({ asset: e.dataTransfer.items[0] }));
         });
       return () => subscription.unsubscribe();
     }

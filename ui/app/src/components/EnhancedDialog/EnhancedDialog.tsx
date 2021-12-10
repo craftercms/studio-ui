@@ -27,6 +27,7 @@ export interface EnhancedDialogProps extends Omit<MuiDialogProps, 'title'>, Enha
   title?: ReactNode;
   onMinimize?(): void;
   onMaximize?(): void;
+  onFullscreen?(): void;
   onClosed?(): void;
   onWithPendingChangesCloseRequest?: MuiDialogProps['onClose'];
   omitHeader?: boolean;
@@ -45,6 +46,7 @@ export function EnhancedDialog(props: EnhancedDialogProps) {
     onClosed,
     onMinimize,
     onMaximize,
+    onFullscreen,
     onWithPendingChangesCloseRequest,
     children,
     dialogHeaderProps,
@@ -78,6 +80,7 @@ export function EnhancedDialog(props: EnhancedDialogProps) {
           <DialogHeader
             {...dialogHeaderProps}
             onMinimizeButtonClick={onMinimize}
+            onFullscreenButtonClick={onFullscreen}
             title={title}
             onCloseButtonClick={(e) => onClose(e, null)}
             disableDismiss={isSubmitting}

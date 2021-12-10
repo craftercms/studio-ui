@@ -49,10 +49,13 @@ export function useEnhancedDialogState(initialState?: Partial<EnhancedDialogStat
       isSubmitting,
       hasPendingChanges
     }: onSubmittingAndOrPendingChangeProps) => {
+      console.log('current', state);
+      console.log('trying to set', { isSubmitting, hasPendingChanges });
       if (
         (nnou(isSubmitting) && state.isSubmitting !== isSubmitting) ||
         (nnou(hasPendingChanges) && state.hasPendingChanges !== hasPendingChanges)
       ) {
+        console.log('setting', isSubmitting, hasPendingChanges);
         setState({
           isSubmitting: isSubmitting ?? state.isSubmitting,
           hasPendingChanges: hasPendingChanges ?? state.hasPendingChanges
