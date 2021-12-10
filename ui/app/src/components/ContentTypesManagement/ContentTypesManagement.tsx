@@ -34,7 +34,7 @@ import {
 interface ContentTypeManagementProps {
   embedded?: boolean;
   showAppsButton?: boolean;
-  mountMode?: boolean;
+  mountMode?: 'dialog' | 'page';
   onClose?: () => void;
   onMinimize?: () => void;
   onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;

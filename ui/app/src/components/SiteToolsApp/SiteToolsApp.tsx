@@ -37,8 +37,6 @@ import clsx from 'clsx';
 import Suspencified from '../Suspencified/Suspencified';
 import LauncherOpenerButton from '../LauncherOpenerButton';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
-import { useDispatch } from 'react-redux';
-import { updateWidgetDialog } from '../../state/actions/dialogs';
 
 export interface Tool {
   title: TranslationOrText;
@@ -66,6 +64,7 @@ export interface SiteToolsAppProps {
   onWidthChange(width: number): void;
   onNavItemClick(url: string): void;
   onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
+  onMinimize?: () => void;
 }
 
 export function SiteToolsApp(props: SiteToolsAppProps) {
@@ -85,13 +84,13 @@ export function SiteToolsApp(props: SiteToolsAppProps) {
     tools,
     onNavItemClick,
     showAppsButton,
-    onSubmittingAndOrPendingChange
+    onSubmittingAndOrPendingChange,
+    onMinimize
   } = props;
   const classes = useStyles();
   const { formatMessage } = useIntl();
 
   const tool = tools?.find((tool) => tool.url === activeToolId)?.widget;
-  const dispatch = useDispatch();
 
   return (
     <Paper className={clsx(classes.root, props.classes?.root)} elevation={0}>
@@ -170,9 +169,7 @@ export function SiteToolsApp(props: SiteToolsAppProps) {
                   mountMode,
                   showAppsButton,
                   onSubmittingAndOrPendingChange,
-                  onMinimize: () => {
-                    dispatch(updateWidgetDialog({ isMinimized: true }));
-                  }
+                  onMinimize
                 }}
               />
             </Suspencified>

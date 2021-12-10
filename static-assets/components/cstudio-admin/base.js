@@ -364,7 +364,7 @@
       } else {
         const mountMode = CStudioAuthoring.Utils.getQueryParameterByName('mountMode');
         const options = ['save', 'saveAndClose'];
-        if (mountMode !== 'page') {
+        if (mountMode === 'dialog') {
           options.push('saveAndMinimize');
         }
         const saveContainer = document.createElement('span');

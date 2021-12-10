@@ -35,7 +35,10 @@ export function WidgetDialog(props: WidgetDialogProps) {
     >
       <section className={classes.toolPanelBody}>
         <Suspencified>
-          <Widget {...widget} extraProps={{ onSubmittingAndOrPendingChange, isSubmitting, ...extraProps }} />
+          <Widget
+            {...widget}
+            extraProps={{ onSubmittingAndOrPendingChange, isSubmitting, mountMode: 'dialog', ...extraProps }}
+          />
         </Suspencified>
       </section>
     </EnhancedDialog>
