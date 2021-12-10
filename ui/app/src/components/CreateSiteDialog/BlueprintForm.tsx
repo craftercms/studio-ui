@@ -20,10 +20,9 @@ import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import GitForm from './GitForm';
-import { MarketplacePlugin } from '../../models/MarketplacePlugin';
-import { SiteState } from '../../models/Site';
+import { MarketplacePlugin, SiteState } from '../../models';
 import { defineMessages, useIntl } from 'react-intl';
-import FormBuilder from './FormBuilder';
+import PluginFormBuilder from '../PluginFormBuilder';
 import { fetchAll } from '../../services/sites';
 import Switch from '@mui/material/Switch';
 import Typography from '@mui/material/Typography';
@@ -156,7 +155,7 @@ function BlueprintForm(props: BlueprintFormProps) {
       } else {
         setInputs({ [e.target.name]: e.target.value });
       }
-    } else if (type === 'blueprintFields') {
+    } else if (type === 'fields') {
       let parameters = { ...inputs.blueprintFields, [e.target.name]: e.target.value };
       setInputs({ blueprintFields: parameters });
     } else {
@@ -321,10 +320,11 @@ function BlueprintForm(props: BlueprintFormProps) {
           </Grid>
         )}
         {blueprint.parameters && (
-          <FormBuilder
+          <PluginFormBuilder
             parameters={blueprint.parameters}
             handleInputChange={handleInputChange}
-            inputs={inputs}
+            submitted={inputs.submitted}
+            fields={inputs.blueprintFields}
             onKeyPress={onKeyPress}
           />
         )}

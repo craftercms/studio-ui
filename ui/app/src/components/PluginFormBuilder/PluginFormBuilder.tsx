@@ -19,16 +19,16 @@ import { MarketplacePluginParameter } from '../../models/MarketplacePlugin';
 import TextField from '@mui/material/TextField';
 import Grid from '@mui/material/Grid';
 import makeStyles from '@mui/styles/makeStyles';
-import { SiteState } from '../../models/Site';
 import { defineMessages, useIntl } from 'react-intl';
 import PasswordTextField from '../PasswordTextField/PasswordTextField';
 
 interface FormBuilderProps {
   parameters: [MarketplacePluginParameter];
-  inputs: SiteState;
-
+  submitted: boolean;
+  fields: {
+    [key: string]: string;
+  };
   handleInputChange(event: React.ChangeEvent, type?: string): any;
-
   onKeyPress(event: React.KeyboardEvent): any;
 }
 
@@ -48,9 +48,9 @@ const messages = defineMessages({
   }
 });
 
-export default function FormBuilder(props: FormBuilderProps) {
+export function PluginFormBuilder(props: FormBuilderProps) {
   const classes = useStyles({});
-  const { parameters, handleInputChange, inputs, onKeyPress } = props;
+  const { parameters, handleInputChange, submitted, fields, onKeyPress } = props;
   const { formatMessage } = useIntl();
 
   function renderHelperText(
@@ -79,17 +79,16 @@ export default function FormBuilder(props: FormBuilderProps) {
               label={parameter.label}
               required={parameter.required}
               onKeyPress={onKeyPress}
-              InputLabelProps={{ shrink: !!parameter.defaultValue }}
               placeholder={parameter.defaultValue}
-              onChange={(event) => handleInputChange(event, 'blueprintFields')}
-              value={inputs.blueprintFields[parameter.name] ? inputs.blueprintFields[parameter.name] : ''}
-              error={parameter.required && inputs.submitted && !inputs.blueprintFields[parameter.name]}
+              onChange={(event) => handleInputChange(event, 'fields')}
+              value={fields[parameter.name] ? fields[parameter.name] : ''}
+              error={parameter.required && submitted && !fields[parameter.name]}
               helperText={renderHelperText(
                 parameter.label,
-                inputs.blueprintFields[parameter.name],
+                fields[parameter.name],
                 parameter.description,
                 parameter.required,
-                inputs.submitted
+                submitted
               )}
             />
           ) : (
@@ -100,15 +99,15 @@ export default function FormBuilder(props: FormBuilderProps) {
               label={parameter.label}
               required={parameter.required}
               onKeyPress={onKeyPress}
-              onChange={(event: React.ChangeEvent) => handleInputChange(event, 'blueprintFields')}
-              value={inputs.blueprintFields[parameter.name] ? inputs.blueprintFields[parameter.name] : ''}
-              error={parameter.required && inputs.submitted && !inputs.blueprintFields[parameter.name]}
+              onChange={(event: React.ChangeEvent) => handleInputChange(event, 'fields')}
+              value={fields[parameter.name] ? fields[parameter.name] : ''}
+              error={parameter.required && submitted && !fields[parameter.name]}
               helperText={renderHelperText(
                 parameter.label,
-                inputs.blueprintFields[parameter.name],
+                fields[parameter.name],
                 parameter.description,
                 parameter.required,
-                inputs.submitted
+                submitted
               )}
             />
           )}
@@ -123,3 +122,5 @@ export default function FormBuilder(props: FormBuilderProps) {
     </Grid>
   );
 }
+
+export default PluginFormBuilder;

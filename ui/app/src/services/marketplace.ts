@@ -15,16 +15,21 @@
  */
 
 import { get, postJSON } from '../utils/ajax';
-import { MarketplaceSite } from '../models/Site';
+import {
+  Api2BulkResponseFormat,
+  Api2ResponseFormat,
+  LookupTable,
+  MarketplacePlugin,
+  MarketplacePluginVersion,
+  MarketplaceSite,
+  PagedArray,
+  PluginRecord,
+  SandboxItem
+} from '../models';
 import { map, mapTo, pluck, switchMap } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
-import { MarketplacePlugin, MarketplacePluginVersion } from '../models/MarketplacePlugin';
 import { pluckProps, toQueryString } from '../utils/object';
-import { PagedArray } from '../models/PagedArray';
-import { PluginRecord } from '../models/Plugin';
-import { Api2BulkResponseFormat, Api2ResponseFormat } from '../models/ApiResponse';
 import { fetchItemsByPath } from './content';
-import { SandboxItem } from '../models/Item';
 
 export function fetchBlueprints(options?: {
   type?: string;
@@ -65,9 +70,12 @@ export function fetchMarketplacePlugins(
 export function installMarketplacePlugin(
   siteId: string,
   pluginId: string,
-  pluginVersion: MarketplacePluginVersion
+  pluginVersion: MarketplacePluginVersion,
+  parameters?: LookupTable<string>
 ): Observable<boolean> {
-  return postJSON('/studio/api/2/marketplace/install', { siteId, pluginId, pluginVersion }).pipe(mapTo(true));
+  return postJSON('/studio/api/2/marketplace/install', { siteId, pluginId, pluginVersion, parameters }).pipe(
+    mapTo(true)
+  );
 }
 
 export function uninstallMarketplacePlugin(
