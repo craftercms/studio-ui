@@ -14,7 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './EnhancedDialog';
+import { createContext, useContext } from 'react';
+import { EnhancedDialogState } from '../../hooks';
 
-export * from './EnhancedDialog';
-export * from './useEnhancedDialogContext';
+export const EnhancedDialogContext = createContext<EnhancedDialogState>(void 0);
+
+export function useEnhancedDialogContext() {
+  return useContext(EnhancedDialogContext);
+}
+
+export default useEnhancedDialogContext;
