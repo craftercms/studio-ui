@@ -156,7 +156,8 @@ export const showCodeEditorDialog =
   /*#__PURE__*/ createAction<Partial<CodeEditorDialogStateProps>>('SHOW_CODE_EDITOR_DIALOG');
 export const closeCodeEditorDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_CODE_EDITOR_DIALOG');
 export const codeEditorDialogClosed = /*#__PURE__*/ createAction('CODE_EDITOR_DIALOG_CLOSED');
-export const updateCodeEditorDialog = /*#__PURE__*/ createAction<any>('UPDATE_CODE_EDITOR_DIALOG');
+export const updateCodeEditorDialog =
+  /*#__PURE__*/ createAction<Partial<CodeEditorDialogStateProps>>('UPDATE_CODE_EDITOR_DIALOG');
 // endregion
 
 // region Create Folder Dialog

@@ -159,7 +159,115 @@ function getFieldValidations(
   return validations;
 }
 
-function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentType> {
+function parseLegacyFormDefinitionFields(
+  legacyFieldsToBeParsed: LegacyFormDefinitionField[] | LegacyFormDefinitionField,
+  currentFieldLookup: LookupTable<ContentTypeField>,
+  dropTargetsLookup: LookupTable<LegacyDataSource>,
+  sectionFieldIds?: Array<string>
+) {
+  asArray<LegacyFormDefinitionField>(legacyFieldsToBeParsed).forEach((legacyField) => {
+    const fieldId = ['file-name', 'internal-name'].includes(legacyField.id) ? camelize(legacyField.id) : legacyField.id;
+
+    sectionFieldIds?.push(fieldId);
+
+    const field: ContentTypeField = {
+      id: fieldId,
+      name: legacyField.title,
+      type: typeMap[legacyField.type] || legacyField.type,
+      sortable: legacyField.type === 'node-selector' || legacyField.type === 'repeat',
+      validations: {},
+      properties: {},
+      defaultValue: legacyField.defaultValue
+    };
+
+    asArray<LegacyFormDefinitionProperty>(legacyField.properties?.property).forEach((legacyProp) => {
+      let value;
+      switch (legacyProp.type) {
+        case 'boolean':
+          value = legacyProp.value === 'true';
+          break;
+        case 'int':
+          value = parseInt(legacyProp.value);
+          break;
+        default:
+          value = legacyProp.value;
+      }
+      field.properties[legacyProp.name] = {
+        ...legacyProp,
+        value
+      };
+    });
+
+    asArray<LegacyFormDefinitionProperty>(legacyField.constraints?.constraint).forEach((legacyProp) => {
+      const value = legacyProp.value.trim();
+      switch (legacyProp.name) {
+        case 'required':
+          if (value === 'true') {
+            field.validations.required = {
+              id: 'required',
+              value: value === 'true',
+              level: 'required'
+            };
+          }
+          break;
+        case 'allowDuplicates':
+          break;
+        case 'pattern':
+          break;
+        case 'minSize':
+          break;
+        default:
+          console.log(`[parseLegacyFormDef] Unhandled constraint "${legacyProp.name}"`, legacyProp);
+      }
+    });
+
+    switch (legacyField.type) {
+      case 'repeat':
+        field.fields = {};
+        let min = parseInt(legacyField?.minOccurs);
+        let max = parseInt(legacyField?.maxOccurs);
+        isNaN(min) && (min = 0);
+        field.validations.required = {
+          id: 'required',
+          value: min > 0,
+          level: 'required'
+        };
+        min > 0 &&
+          (field.validations.minCount = {
+            id: 'minCount',
+            value: min,
+            level: 'required'
+          });
+        !isNaN(max) &&
+          (field.validations.maxCount = {
+            id: 'maxCount',
+            value: max,
+            level: 'required'
+          });
+        parseLegacyFormDefinitionFields(legacyField.fields.field, field.fields, dropTargetsLookup);
+        break;
+      case 'node-selector':
+        // TODO: check min & max count for node selector
+        field.validations = {
+          ...field.validations,
+          ...getFieldValidations(legacyField.properties.property, dropTargetsLookup)
+        };
+        break;
+      case 'input':
+      case 'numeric-input':
+      case 'image-picker':
+        field.validations = {
+          ...field.validations,
+          ...getFieldValidations(legacyField.properties.property)
+        };
+        break;
+    }
+
+    currentFieldLookup[fieldId] = field;
+  });
+}
+
+function parseLegacyFormDefinition(definition: LegacyFormDefinition): Partial<ContentType> {
   if (nou(definition)) {
     return {};
   }
@@ -177,119 +285,7 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
   // Parse Sections & Fields
   asArray<LegacyFormDefinitionSection>(definition.sections?.section).forEach((legacySection) => {
     const fieldIds = [];
-
-    function parseFields(
-      field: LegacyFormDefinitionField[] | LegacyFormDefinitionField,
-      fields: LookupTable<ContentTypeField>
-    ) {
-      asArray<LegacyFormDefinitionField>(field).forEach((legacyField) => {
-        const fieldId = ['file-name', 'internal-name'].includes(legacyField.id)
-          ? camelize(legacyField.id)
-          : legacyField.id;
-
-        // TODO: Check section fields when there are nested repeat groups. Nested
-        //  repeat group fields might be ending up as direct children of the sections.
-        fieldIds.push(fieldId);
-
-        const field: ContentTypeField = {
-          id: fieldId,
-          name: legacyField.title,
-          type: typeMap[legacyField.type] || legacyField.type,
-          sortable: legacyField.type === 'node-selector' || legacyField.type === 'repeat',
-          validations: {},
-          properties: {},
-          defaultValue: legacyField.defaultValue
-        };
-
-        asArray<LegacyFormDefinitionProperty>(legacyField.properties?.property).forEach((legacyProp) => {
-          let value;
-
-          switch (legacyProp.type) {
-            case 'boolean':
-              value = legacyProp.value === 'true';
-              break;
-            case 'int':
-              value = parseInt(legacyProp.value);
-              break;
-            default:
-              value = legacyProp.value;
-          }
-
-          field.properties[legacyProp.name] = {
-            ...legacyProp,
-            value
-          };
-        });
-
-        asArray<LegacyFormDefinitionProperty>(legacyField.constraints?.constraint).forEach((legacyProp) => {
-          const value = legacyProp.value.trim();
-          switch (legacyProp.name) {
-            case 'required':
-              if (value === 'true') {
-                field.validations.required = {
-                  id: 'required',
-                  value: value === 'true',
-                  level: 'required'
-                };
-              }
-              break;
-            case 'allowDuplicates':
-              break;
-            case 'pattern':
-              break;
-            case 'minSize':
-              break;
-            default:
-              console.log(`[parseLegacyFormDef] Unhandled constraint "${legacyProp.name}"`, legacyProp);
-          }
-        });
-
-        switch (legacyField.type) {
-          case 'repeat':
-            field.fields = {};
-            asArray(legacyField.fields.field).forEach((_legacyField) => {
-              const _fieldId = _legacyField.id;
-              field.fields[_fieldId] = {
-                id: _fieldId,
-                name: _legacyField.title,
-                type: typeMap[_legacyField.type] || _legacyField.type,
-                sortable: legacyField.type === 'node-selector' || legacyField.type === 'repeat',
-                validations: {},
-                defaultValue: ''
-              };
-              if (field.fields[_fieldId].type === 'node-selector') {
-                field.fields[_fieldId].validations = getFieldValidations(
-                  _legacyField.properties.property,
-                  dropTargetsLookup
-                );
-              } else if (_legacyField.type === 'repeat') {
-                field.fields[_fieldId].fields = {};
-                parseFields(_legacyField.fields.field, field.fields[_fieldId].fields);
-              }
-            });
-            break;
-          case 'node-selector':
-            field.validations = {
-              ...field.validations,
-              ...getFieldValidations(legacyField.properties.property, dropTargetsLookup)
-            };
-            break;
-          case 'input':
-          case 'numeric-input':
-          case 'image-picker':
-            field.validations = {
-              ...field.validations,
-              ...getFieldValidations(legacyField.properties.property)
-            };
-            break;
-        }
-
-        fields[fieldId] = field;
-      });
-    }
-
-    parseFields(legacySection.fields?.field, fields);
-
+    parseLegacyFormDefinitionFields(legacySection.fields?.field, fields, dropTargetsLookup, fieldIds);
     sections.push({
       description: legacySection.description,
       expandByDefault: legacySection.defaultOpen === 'true',
@@ -327,7 +323,7 @@ function parseLegacyContentType(legacy: LegacyContentType): ContentType {
 
 function fetchFormDefinition(site: string, contentTypeId: string): Observable<Partial<ContentType>> {
   const path = `/content-types${contentTypeId}/form-definition.xml`;
-  return fetchConfigurationJSON(site, path, 'studio').pipe(map((def) => parseLegacyFormDef(def.form)));
+  return fetchConfigurationJSON(site, path, 'studio').pipe(map((def) => parseLegacyFormDefinition(def.form)));
 }
 
 export function fetchContentType(site: string, contentTypeId: string): Observable<ContentType> {

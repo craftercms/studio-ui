@@ -22,6 +22,8 @@ import { CSSProperties } from '@mui/styles';
 import { useMount } from '../../hooks/useMount';
 import { useTheme } from '@mui/material/styles';
 import clsx from 'clsx';
+import { useEnhancedDialogContext } from '../EnhancedDialog/useEnhancedDialogContext';
+import MutableRef from '../../models/MutableRef';
 
 // @see https://github.com/ajaxorg/ace/wiki/Configuring-Ace
 export interface AceOptions {
@@ -107,7 +109,7 @@ export interface AceEditorProps extends Partial<AceOptions> {
 
 declare global {
   interface Window {
-    ace: any;
+    ace: AceAjax.Ace;
   }
 }
 
@@ -171,19 +173,25 @@ const aceOptions: Array<keyof AceOptions> = [
 const useStyles = makeStyles(() =>
   createStyles<AceEditorClassKey, AceEditorStyles>({
     root: (styles) => ({
+      position: 'relative',
       display: 'contents',
       ...styles.root
     }),
     editorRoot: (styles) => ({
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      margin: 0,
       width: '100%',
       height: '100%',
-      margin: 0,
+      position: 'relative',
       ...styles.editorRoot
     })
   })
 );
 
-export default React.forwardRef(function AceEditor(props: AceEditorProps, ref) {
+function AceEditorComp(props: AceEditorProps, ref: MutableRef<AceAjax.Editor>) {
   const { value = '', autoFocus = false, onChange } = props;
   const classes = useStyles(props.styles);
   const editorRootClasses = props.classes?.editorRoot;
@@ -207,13 +215,14 @@ export default React.forwardRef(function AceEditor(props: AceEditorProps, ref) {
   useMount(() => {
     let unmounted = false;
     let initialized = false;
-    let aceEditor;
+    let aceEditor: AceAjax.Editor;
     const init = () => {
       if (!unmounted) {
         const pre = document.createElement('pre');
         pre.className = clsx(classes.editorRoot, editorRootClasses);
         refs.current.pre = pre;
         refs.current.elem.appendChild(pre);
+        // @ts-ignore - Ace types are incorrect; they don't implement the constructor that receives options.
         aceEditor = window.ace.edit(pre, options);
         autoFocus && aceEditor.focus();
         refs.current.ace = aceEditor;
@@ -253,6 +262,12 @@ export default React.forwardRef(function AceEditor(props: AceEditorProps, ref) {
     ]
   );
 
+  // If the Editor is inside a dialog, resize when fullscreen changes
+  const isFullScreen = useEnhancedDialogContext()?.isFullScreen;
+  useEffect(() => {
+    refs.current.ace?.resize();
+  }, [isFullScreen]);
+
   useEffect(() => {
     if (initialized) {
       const ace = refs.current.ace;
@@ -286,4 +301,8 @@ export default React.forwardRef(function AceEditor(props: AceEditorProps, ref) {
       className={clsx(classes.root, props.classes?.root)}
     />
   );
-});
+}
+
+export const AceEditor = React.forwardRef<AceAjax.Editor, AceEditorProps>(AceEditorComp);
+
+export default AceEditor;

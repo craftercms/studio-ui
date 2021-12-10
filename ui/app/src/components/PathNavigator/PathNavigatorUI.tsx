@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo } from 'react';
+import React, { ChangeEvent, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import TablePagination from '@mui/material/TablePagination';
 import { DetailedItem } from '../../models/Item';
@@ -129,6 +129,7 @@ export interface PathNavigatorUIProps {
    *
    **/
   onPageChanged?: (page: number) => void;
+  onRowsPerPageChange?: (e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => void;
 }
 
 const NavLoader = React.memo((props: { numOfItems?: number }) => {
@@ -165,7 +166,8 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
     onOpenItemMenu,
     onItemClicked,
     onPageChanged,
-    computeActiveItems
+    computeActiveItems,
+    onRowsPerPageChange
   } = props;
   // endregion
   const { formatMessage } = useIntl();
@@ -311,6 +313,7 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
             page={state && Math.ceil(state.offset / state.limit)}
             backIconButtonProps={{ 'aria-label': formatMessage(translations.previousPage) }}
             nextIconButtonProps={{ 'aria-label': formatMessage(translations.nextPage) }}
+            onRowsPerPageChange={onRowsPerPageChange}
             onPageChange={(e, page: number) => onPageChanged(page)}
           />
         )}

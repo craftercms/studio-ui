@@ -94,3 +94,6 @@ export const pathNavigatorSetKeyword =
 
 export const pathNavigatorChangePage =
   /*#__PURE__*/ createAction<PayloadWithId<{ offset: number }>>('PATH_NAVIGATOR_CHANGE_PAGE');
+
+export const pathNavigatorChangeLimit =
+  /*#__PURE__*/ createAction<PayloadWithId<{ limit: number; offset: number }>>('PATH_NAVIGATOR_CHANGE_LIMIT');

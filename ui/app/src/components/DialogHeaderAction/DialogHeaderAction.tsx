@@ -39,16 +39,16 @@ interface ActionProps extends IconButtonProps {
 }
 
 export default function DialogHeaderAction(props: ActionProps) {
-  const { icon, tooltip, ...rest } = props;
+  const { icon, tooltip, disabled = false, ...rest } = props;
   const Icon = typeof icon === 'string' ? ActionsIconMap[icon] : icon;
   return tooltip ? (
-    <Tooltip title={tooltip}>
-      <IconButton {...rest} size="large">
+    <Tooltip title={disabled ? '' : tooltip}>
+      <IconButton {...rest} disabled={disabled} size="large">
         <Icon />
       </IconButton>
     </Tooltip>
   ) : (
-    <IconButton {...rest} size="large">
+    <IconButton {...rest} disabled={disabled} size="large">
       <Icon />
     </IconButton>
   );
