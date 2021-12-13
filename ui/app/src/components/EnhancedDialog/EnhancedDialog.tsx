@@ -15,20 +15,22 @@
  */
 
 import * as React from 'react';
-import { ReactNode } from 'react';
+import { ReactNode, useMemo } from 'react';
 import { useOnClose } from '../../hooks/useOnClose';
 import MuiDialog, { DialogProps as MuiDialogProps } from '@mui/material/Dialog';
 import { useUnmount } from '../../hooks/useUnmount';
 import DialogHeader, { DialogHeaderProps } from '../DialogHeader';
 import MinimizedBar from '../MinimizedBar';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
+import { EnhancedDialogContext } from './useEnhancedDialogContext';
 
 export interface EnhancedDialogProps extends Omit<MuiDialogProps, 'title'>, EnhancedDialogState {
   title?: ReactNode;
   onMinimize?(): void;
   onMaximize?(): void;
-  onFullscreen?(): void;
   onClosed?(): void;
+  onFullScreen?(): void;
+  onCancelFullScreen?(): void;
   onWithPendingChangesCloseRequest?: MuiDialogProps['onClose'];
   omitHeader?: boolean;
   dialogHeaderProps?: Partial<DialogHeaderProps>;
@@ -42,15 +44,17 @@ export function EnhancedDialog(props: EnhancedDialogProps) {
     isSubmitting,
     hasPendingChanges,
     isMinimized,
+    isFullScreen = false,
     title,
     onClosed,
     onMinimize,
     onMaximize,
-    onFullscreen,
     onWithPendingChangesCloseRequest,
     children,
     dialogHeaderProps,
     omitHeader = false,
+    onFullScreen,
+    onCancelFullScreen,
     ...dialogProps
   } = props;
   // endregion
@@ -65,32 +69,42 @@ export function EnhancedDialog(props: EnhancedDialogProps) {
     disableBackdropClick: isSubmitting,
     disableEscapeKeyDown: isSubmitting
   });
-
+  const context = useMemo<EnhancedDialogState>(
+    () => ({
+      open,
+      isMinimized,
+      isFullScreen,
+      isSubmitting,
+      hasPendingChanges
+    }),
+    [hasPendingChanges, isFullScreen, isMinimized, isSubmitting, open]
+  );
   return (
-    <>
+    <EnhancedDialogContext.Provider value={context}>
       <MuiDialog
         open={open && !isMinimized}
         keepMounted={isMinimized}
         fullWidth
         maxWidth="md"
+        fullScreen={isFullScreen}
         {...dialogProps}
         onClose={onClose}
       >
         {!omitHeader && (
           <DialogHeader
             {...dialogHeaderProps}
-            onMinimizeButtonClick={onMinimize}
-            onFullscreenButtonClick={onFullscreen}
             title={title}
+            disabled={isSubmitting}
+            onMinimizeButtonClick={onMinimize}
+            onFullScreenButtonClick={isFullScreen ? onCancelFullScreen : onFullScreen}
             onCloseButtonClick={(e) => onClose(e, null)}
-            disableDismiss={isSubmitting}
           />
         )}
         {React.Children.map(children, (child) => React.cloneElement(child as React.ReactElement, { onClose }))}
         <OnClosedInvoker onClosed={onClosed} />
       </MuiDialog>
       <MinimizedBar open={isMinimized} onMaximize={onMaximize} title={title} />
-    </>
+    </EnhancedDialogContext.Provider>
   );
 }
 

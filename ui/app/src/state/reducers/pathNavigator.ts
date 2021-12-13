@@ -19,6 +19,7 @@ import { PathNavigatorStateProps } from '../../components/PathNavigator';
 import LookupTable from '../../models/LookupTable';
 import { getIndividualPaths, withoutIndex } from '../../utils/path';
 import {
+  pathNavigatorChangeLimit,
   pathNavigatorChangePage,
   pathNavigatorClearChecked,
   pathNavigatorConditionallySetPath,
@@ -249,6 +250,10 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
     [pathNavigatorChangePage.type]: (state, { payload: { id } }) => ({
       ...state,
       [id]: { ...state[id], isFetching: true }
+    }),
+    [pathNavigatorChangeLimit.type]: (state, { payload: { id, limit } }) => ({
+      ...state,
+      [id]: { ...state[id], limit, isFetching: true }
     }),
     [changeSite.type]: () => ({}),
     [fetchSiteUiConfig.type]: () => ({})

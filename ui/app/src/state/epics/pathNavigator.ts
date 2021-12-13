@@ -22,6 +22,7 @@ import { getIndividualPaths, getRootPath } from '../../utils/path';
 import { forkJoin } from 'rxjs';
 import {
   pathNavigatorBackgroundRefresh,
+  pathNavigatorChangeLimit,
   pathNavigatorChangePage,
   pathNavigatorConditionallySetPath,
   pathNavigatorConditionallySetPathComplete,
@@ -196,7 +197,7 @@ export default [
   // region pathNavigatorChangePage
   (action$, state$) =>
     action$.pipe(
-      ofType(pathNavigatorChangePage.type),
+      ofType(pathNavigatorChangePage.type, pathNavigatorChangeLimit.type),
       withLatestFrom(state$),
       mergeMap(
         ([

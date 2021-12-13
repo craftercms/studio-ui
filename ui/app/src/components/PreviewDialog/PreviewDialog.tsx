@@ -22,15 +22,7 @@ import EnhancedDialog from '../EnhancedDialog';
 export function PreviewDialog(props: PreviewDialogProps) {
   const { title, type, url, content, mode, ...rest } = props;
   return (
-    <EnhancedDialog
-      title={props.title}
-      dialogHeaderProps={{
-        subtitle: props.subtitle
-      }}
-      fullWidth={false}
-      maxWidth="md"
-      {...rest}
-    >
+    <EnhancedDialog maxWidth="xl" title={props.title} dialogHeaderProps={{ subtitle: props.subtitle }} {...rest}>
       <PreviewDialogContainer type={type} title={title} url={url} content={content} mode={mode} />
     </EnhancedDialog>
   );

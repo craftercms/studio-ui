@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useIntl } from 'react-intl';
 import translations from './translations';
 import { CodeEditorDialogContainer } from './CodeEditorDialogContainer';
@@ -23,14 +23,9 @@ import EnhancedDialog from '../EnhancedDialog';
 
 export function CodeEditorDialog(props: CodeEditorDialogProps) {
   const { formatMessage } = useIntl();
-  const { mode, isSubmitting, path, readonly, contentType, onSuccess, onClose, onMinimize, ...rest } = props;
-
+  const { mode, isSubmitting, path, readonly, contentType, onSuccess, onClose, onMinimize, onFullScreen, ...rest } =
+    props;
   const title = formatMessage(translations.title);
-  const [isMaximized, setIsMaximized] = useState(false);
-  const onFullScreen = () => {
-    setIsMaximized(!isMaximized);
-  };
-
   return (
     <EnhancedDialog
       title={title}
@@ -39,7 +34,6 @@ export function CodeEditorDialog(props: CodeEditorDialogProps) {
       isSubmitting={isSubmitting}
       onMinimize={onMinimize}
       onClose={onClose}
-      fullScreen={isMaximized}
       {...rest}
     >
       <CodeEditorDialogContainer
@@ -50,7 +44,7 @@ export function CodeEditorDialog(props: CodeEditorDialogProps) {
         isSubmitting={isSubmitting}
         onMinimize={onMinimize}
         readonly={readonly}
-        onFullScreen={onFullScreen}
+        onFullScreen={props.isFullScreen ? props.onCancelFullScreen : props.onFullScreen}
       />
     </EnhancedDialog>
   );
