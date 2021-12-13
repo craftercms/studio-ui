@@ -115,7 +115,6 @@ export type DialogHeaderProps<
   rightActions?: DialogHeaderAction[];
   closeIcon?: ElementType;
   minimizeIcon?: ElementType;
-  fullscreenIcon?: ElementType;
   backIcon?: ElementType;
   classes?: Partial<Record<'root' | 'titleWrapper' | 'subtitleWrapper', string>>;
   className?: string;

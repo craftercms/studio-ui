@@ -14,18 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { EnhancedDialogProps } from '../EnhancedDialog';
-import { onSubmittingAndOrPendingChangeProps } from '../../hooks';
+export { default } from './PluginConfigDialog';
 
-export interface ConfigPluginDialogBaseProps {
-  pluginId: string;
-}
+export * from './PluginConfigDialog';
 
-export interface ConfigPluginDialogProps extends ConfigPluginDialogBaseProps, EnhancedDialogProps {
-  onSubmittingAndOrPendingChange(value: onSubmittingAndOrPendingChangeProps): void;
-  onSaved(): void;
-}
-
-export interface ConfigPluginDialogContainerProps
-  extends ConfigPluginDialogBaseProps,
-    Pick<ConfigPluginDialogProps, 'onSaved' | 'onClose' | 'isSubmitting' | 'onSubmittingAndOrPendingChange'> {}
+export * from './utils';

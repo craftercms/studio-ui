@@ -64,7 +64,7 @@ import TableBody from '@mui/material/TableBody';
 import DeleteIcon from '@mui/icons-material/DeleteOutline';
 import UninstallPluginDialog from '../DeletePluginDialog';
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
-import { ConfigPluginDialog } from '../ConfigPluginDialog';
+import { PluginConfigDialog } from '../PluginConfigDialog';
 
 const messages = defineMessages({
   pluginInstalled: {
@@ -370,7 +370,7 @@ export const PluginManagement = (props: PluginManagementProps) => {
         pluginId={pluginToDelete}
         onComplete={onDeletePlugin}
       />
-      <ConfigPluginDialog
+      <PluginConfigDialog
         open={configPluginDialogState.open}
         onClose={configPluginDialogState.onClose}
         isSubmitting={configPluginDialogState.isSubmitting}

@@ -15,12 +15,12 @@
  */
 
 import { FormattedMessage } from 'react-intl';
-import { ConfigPluginDialogProps } from './utils';
+import { PluginConfigDialogProps } from './utils';
 import { useState } from 'react';
 import { EnhancedDialog } from '../EnhancedDialog';
-import { ConfigPluginDialogContainer } from './ConfigPluginDialogContainer';
+import { PluginConfigDialogContainer } from './PluginConfigDialogContainer';
 
-export function ConfigPluginDialog(props: ConfigPluginDialogProps) {
+export function PluginConfigDialog(props: PluginConfigDialogProps) {
   const { pluginId, isSubmitting, onSubmittingAndOrPendingChange, onSaved, onClose, ...rest } = props;
 
   const [isMaximized, setIsMaximized] = useState(false);
@@ -36,10 +36,10 @@ export function ConfigPluginDialog(props: ConfigPluginDialogProps) {
       isSubmitting={isSubmitting}
       onClose={onClose}
       fullScreen={isMaximized}
-      onFullscreen={onFullScreen}
+      onFullScreen={onFullScreen}
       {...rest}
     >
-      <ConfigPluginDialogContainer
+      <PluginConfigDialogContainer
         pluginId={pluginId}
         onSaved={onSaved}
         onClose={onClose}
@@ -50,4 +50,4 @@ export function ConfigPluginDialog(props: ConfigPluginDialogProps) {
   );
 }
 
-export default ConfigPluginDialog;
+export default PluginConfigDialog;

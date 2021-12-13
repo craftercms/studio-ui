@@ -16,7 +16,7 @@
 
 import DialogBody from '../DialogBody';
 import DialogFooter from '../DialogFooter';
-import { ConfigPluginDialogContainerProps } from './utils';
+import { PluginConfigDialogContainerProps } from './utils';
 import React, { useEffect, useRef, useState } from 'react';
 import { ConditionalLoadingState } from '../LoadingState';
 import AceEditor from '../AceEditor/AceEditor';
@@ -30,7 +30,7 @@ import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { showSystemNotification } from '../../state/actions/system';
 import { translations } from '../SiteConfigurationManagement/translations';
 
-export function ConfigPluginDialogContainer(props: ConfigPluginDialogContainerProps) {
+export function PluginConfigDialogContainer(props: PluginConfigDialogContainerProps) {
   const siteId = useActiveSiteId();
   const { pluginId, onSaved, isSubmitting, onClose, onSubmittingAndOrPendingChange } = props;
   const [loading, setLoading] = useState(false);
