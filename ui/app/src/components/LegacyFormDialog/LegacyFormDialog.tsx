@@ -55,7 +55,7 @@ export function LegacyFormDialog(props: LegacyFormDialogProps) {
           onCloseButtonClick={onCloseButtonClick}
           rightActions={[
             {
-              icon: 'MinimizeIcon',
+              icon: { id: '@mui/icons-material/RemoveRounded' },
               onClick: onMinimize
             }
           ]}

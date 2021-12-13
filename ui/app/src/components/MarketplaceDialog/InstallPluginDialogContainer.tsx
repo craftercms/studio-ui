@@ -180,7 +180,7 @@ export function InstallPluginDialogContainer(props: InstallPluginDialogProps) {
         onCloseButtonClick={props.onClose}
         rightActions={[
           {
-            icon: SearchIcon,
+            icon: { id: '@mui/icons-material/SearchRounded' },
             disabled: isFetching === null || plugins === null || Boolean(selectedDetailsPlugin),
             onClick: onToggleSearchBar
           }

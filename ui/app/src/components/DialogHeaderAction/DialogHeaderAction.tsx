@@ -15,41 +15,26 @@
  */
 
 import IconButton, { IconButtonProps } from '@mui/material/IconButton';
-import React, { ElementType } from 'react';
+import React from 'react';
 import Tooltip from '@mui/material/Tooltip';
-import HistoryIcon from '@mui/icons-material/HistoryRounded';
-import BackIcon from '@mui/icons-material/ArrowBackIosRounded';
-import CloseIcon from '@mui/icons-material/CloseRounded';
-import MinimizeIcon from '@mui/icons-material/RemoveRounded';
-import OpenInFullIcon from '@mui/icons-material/OpenInFullRounded';
-
-export type ActionIcon = 'HistoryIcon' | 'CloseIcon' | 'BackIcon' | 'MinimizeIcon' | 'MaximizeIcon';
-
-const ActionsIconMap: { [key in ActionIcon]: ElementType } = {
-  CloseIcon: CloseIcon,
-  HistoryIcon: HistoryIcon,
-  BackIcon: BackIcon,
-  MinimizeIcon: MinimizeIcon,
-  MaximizeIcon: OpenInFullIcon
-};
+import SystemIcon, { SystemIconDescriptor } from '../SystemIcon';
 
 interface ActionProps extends IconButtonProps {
-  icon: ActionIcon | ElementType;
+  icon: SystemIconDescriptor;
   tooltip: string;
 }
 
 export default function DialogHeaderAction(props: ActionProps) {
   const { icon, tooltip, disabled = false, ...rest } = props;
-  const Icon = typeof icon === 'string' ? ActionsIconMap[icon] : icon;
   return tooltip ? (
     <Tooltip title={disabled ? '' : tooltip}>
       <IconButton {...rest} disabled={disabled} size="large">
-        <Icon />
+        <SystemIcon icon={icon} />
       </IconButton>
     </Tooltip>
   ) : (
     <IconButton {...rest} disabled={disabled} size="large">
-      <Icon />
+      <SystemIcon icon={icon} />
     </IconButton>
   );
 }
