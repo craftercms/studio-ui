@@ -90,7 +90,7 @@ export function uninstallMarketplacePlugin(
   }).pipe(mapTo(true));
 }
 
-export function getPluginConfiguration(siteId: string, pluginId: string): Observable<any> {
+export function getPluginConfiguration(siteId: string, pluginId: string): Observable<string> {
   const qs = toQueryString({ siteId, pluginId });
   return get(`/studio/api/2/plugin/get_configuration${qs}`).pipe(pluck('response', 'content'));
 }

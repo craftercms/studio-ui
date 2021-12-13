@@ -723,9 +723,4 @@ const reducer = createReducer(initialState, {
   // endregion
 });
 
-const reducer2 = (state, action) => {
-  console.log(action);
-  return reducer(state, action);
-};
-
-export default reducer2;
+export default reducer;

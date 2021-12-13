@@ -22,14 +22,14 @@ import makeStyles from '@mui/styles/makeStyles';
 import { defineMessages, useIntl } from 'react-intl';
 import PasswordTextField from '../PasswordTextField/PasswordTextField';
 
-interface PluginFormEngineProps {
+export interface PluginFormEngineProps {
   parameters: [MarketplacePluginParameter];
   submitted: boolean;
   fields: {
     [key: string]: string;
   };
   handleInputChange(event: React.ChangeEvent, type?: string): any;
-  onKeyPress(event: React.KeyboardEvent): any;
+  onKeyPress?(event: React.KeyboardEvent): any;
 }
 
 const useStyles = makeStyles(() => ({

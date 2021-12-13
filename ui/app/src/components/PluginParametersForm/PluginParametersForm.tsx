@@ -72,8 +72,6 @@ export function PluginParametersForm(props: PluginParametersFormProps) {
     onPluginFieldChange(e.target.name, e.target.value);
   };
 
-  const onKeyPress = () => {};
-
   return (
     <Box sx={sx.root}>
       <Box sx={sx.header}>
@@ -88,7 +86,6 @@ export function PluginParametersForm(props: PluginParametersFormProps) {
         fields={fields}
         submitted={submitted}
         handleInputChange={handleInputChange}
-        onKeyPress={onKeyPress}
         parameters={plugin.parameters}
       />
     </Box>
