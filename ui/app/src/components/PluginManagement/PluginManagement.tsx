@@ -378,6 +378,9 @@ export const PluginManagement = (props: PluginManagementProps) => {
         isMinimized={configPluginDialogState.isMinimized}
         onMinimize={configPluginDialogState.onMinimize}
         onMaximize={configPluginDialogState.onMaximize}
+        isFullScreen={configPluginDialogState.isFullScreen}
+        onFullScreen={configPluginDialogState.onFullScreen}
+        onCancelFullScreen={configPluginDialogState.onCancelFullScreen}
         onSubmittingAndOrPendingChange={configPluginDialogState.onSubmittingAndOrPendingChange}
         pluginId={pluginToConfig}
         onSaved={onSavedPluginConfig}

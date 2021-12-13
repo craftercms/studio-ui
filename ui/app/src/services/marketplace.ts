@@ -95,7 +95,7 @@ export function getPluginConfiguration(siteId: string, pluginId: string): Observ
   return get(`/studio/api/2/plugin/get_configuration${qs}`).pipe(pluck('response', 'content'));
 }
 
-export function setPluginConfiguration(siteId: string, pluginId: string, content: string): Observable<any> {
+export function setPluginConfiguration(siteId: string, pluginId: string, content: string): Observable<boolean> {
   return postJSON('/studio/api/2/plugin/write_configuration', { siteId, pluginId, content }).pipe(mapTo(true));
 }
 

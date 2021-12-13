@@ -16,18 +16,11 @@
 
 import { FormattedMessage } from 'react-intl';
 import { PluginConfigDialogProps } from './utils';
-import { useState } from 'react';
 import { EnhancedDialog } from '../EnhancedDialog';
 import { PluginConfigDialogContainer } from './PluginConfigDialogContainer';
 
 export function PluginConfigDialog(props: PluginConfigDialogProps) {
   const { pluginId, isSubmitting, onSubmittingAndOrPendingChange, onSaved, onClose, ...rest } = props;
-
-  const [isMaximized, setIsMaximized] = useState(false);
-
-  const onFullScreen = () => {
-    setIsMaximized(!isMaximized);
-  };
 
   return (
     <EnhancedDialog
@@ -35,8 +28,6 @@ export function PluginConfigDialog(props: PluginConfigDialogProps) {
       maxWidth="xl"
       isSubmitting={isSubmitting}
       onClose={onClose}
-      fullScreen={isMaximized}
-      onFullScreen={onFullScreen}
       {...rest}
     >
       <PluginConfigDialogContainer
