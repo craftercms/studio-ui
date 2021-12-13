@@ -22,7 +22,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import { defineMessages, useIntl } from 'react-intl';
 import PasswordTextField from '../PasswordTextField/PasswordTextField';
 
-interface FormBuilderProps {
+interface PluginFormEngineProps {
   parameters: [MarketplacePluginParameter];
   submitted: boolean;
   fields: {
@@ -48,7 +48,7 @@ const messages = defineMessages({
   }
 });
 
-export function PluginFormBuilder(props: FormBuilderProps) {
+export function PluginFormEngine(props: PluginFormEngineProps) {
   const classes = useStyles({});
   const { parameters, handleInputChange, submitted, fields, onKeyPress } = props;
   const { formatMessage } = useIntl();
@@ -123,4 +123,4 @@ export function PluginFormBuilder(props: FormBuilderProps) {
   );
 }
 
-export default PluginFormBuilder;
+export default PluginFormEngine;

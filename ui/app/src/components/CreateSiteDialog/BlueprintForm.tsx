@@ -22,7 +22,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import GitForm from './GitForm';
 import { MarketplacePlugin, SiteState } from '../../models';
 import { defineMessages, useIntl } from 'react-intl';
-import PluginFormBuilder from '../PluginFormBuilder';
+import PluginFormEngine from '../PluginFormBuilder';
 import { fetchAll } from '../../services/sites';
 import Switch from '@mui/material/Switch';
 import Typography from '@mui/material/Typography';
@@ -320,7 +320,7 @@ function BlueprintForm(props: BlueprintFormProps) {
           </Grid>
         )}
         {blueprint.parameters && (
-          <PluginFormBuilder
+          <PluginFormEngine
             parameters={blueprint.parameters}
             handleInputChange={handleInputChange}
             submitted={inputs.submitted}

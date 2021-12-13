@@ -20,7 +20,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Typography from '@mui/material/Typography';
 import React from 'react';
 import Box from '@mui/material/Box';
-import PluginFormBuilder from '../PluginFormBuilder';
+import PluginFormEngine from '../PluginFormBuilder';
 import { FormattedMessage } from 'react-intl';
 import LookupTable from '../../models/LookupTable';
 
@@ -84,7 +84,7 @@ export function PluginParametersForm(props: PluginParametersFormProps) {
           {plugin.name} <FormattedMessage id="word.configuration" defaultMessage="Configuration" />
         </Typography>
       </Box>
-      <PluginFormBuilder
+      <PluginFormEngine
         fields={fields}
         submitted={submitted}
         handleInputChange={handleInputChange}

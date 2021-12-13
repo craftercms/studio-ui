@@ -24,6 +24,6 @@ export * from './BlueprintReview';
 
 export * from './FilterDropdown';
 
-export * from '../PluginFormBuilder/PluginFormBuilder';
+export * from '../PluginFormBuilder/PluginFormEngine';
 
 export * from './GitForm';
