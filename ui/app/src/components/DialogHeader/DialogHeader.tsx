@@ -116,6 +116,7 @@ export type DialogHeaderProps<
   rightActions?: DialogHeaderAction[];
   closeIcon?: ElementType;
   minimizeIcon?: ElementType;
+  fullScreenIcon?: ElementType;
   backIcon?: ElementType;
   classes?: Partial<Record<'root' | 'titleWrapper' | 'subtitleWrapper', string>>;
   className?: string;
@@ -144,6 +145,7 @@ export function DialogHeader(props: DialogHeaderProps) {
     rightActions,
     closeIcon: CloseIcon = CloseIconRounded,
     minimizeIcon: MinimizeIcon = MinimizeIconRounded,
+    fullScreenIcon: FullScreenIcon = OpenInFullIcon,
     backIcon: BackIcon = ArrowBack,
     titleTypographyProps = {
       variant: 'h6',
@@ -191,7 +193,7 @@ export function DialogHeader(props: DialogHeaderProps) {
             {onFullScreenButtonClick && (
               <Tooltip title={formatMessage(translations.fullScreen)}>
                 <IconButton aria-label="close" onClick={onFullScreenButtonClick} disabled={disabled}>
-                  <OpenInFullIcon />
+                  <FullScreenIcon />
                 </IconButton>
               </Tooltip>
             )}

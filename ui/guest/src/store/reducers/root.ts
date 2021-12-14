@@ -26,6 +26,7 @@ import {
 } from '../../elementRegistry';
 import { dragOk } from '../util';
 import * as iceRegistry from '../../iceRegistry';
+import { findChildRecord, getById } from '../../iceRegistry';
 import { Reducer } from '@reduxjs/toolkit';
 import { GuestStandardAction } from '../models/GuestStandardAction';
 import { ElementRecord } from '../../models/InContextEditing';
@@ -67,7 +68,6 @@ import {
   setEditMode,
   startListening
 } from '../actions';
-import { findChildRecord, getById } from '../../iceRegistry';
 
 type CaseReducer<S = GuestState, A extends GuestStandardAction = GuestStandardAction> = Reducer<S, A>;
 

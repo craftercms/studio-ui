@@ -14,14 +14,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './CreateSiteDialog';
+import { EnhancedDialogProps } from '../EnhancedDialog';
+import { onSubmittingAndOrPendingChangeProps } from '../../hooks';
 
-export * from './CreateSiteDialog';
+export interface PluginConfigDialogBaseProps {
+  pluginId: string;
+}
 
-export * from './BlueprintForm';
+export interface PluginConfigDialogProps extends PluginConfigDialogBaseProps, EnhancedDialogProps {
+  onSubmittingAndOrPendingChange(value: onSubmittingAndOrPendingChangeProps): void;
+  onSaved(): void;
+}
 
-export * from './BlueprintReview';
-
-export * from './FilterDropdown';
-
-export * from './GitForm';
+export interface PluginConfigDialogContainerProps
+  extends PluginConfigDialogBaseProps,
+    Pick<PluginConfigDialogProps, 'onSaved' | 'onClose' | 'isSubmitting' | 'onSubmittingAndOrPendingChange'> {}

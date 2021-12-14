@@ -17,18 +17,14 @@
 import makeStyles from '@mui/styles/makeStyles';
 import createStyles from '@mui/styles/createStyles';
 import { InstallPluginDialogProps } from './utils';
-import { useActiveSiteId } from '../../hooks/useActiveSiteId';
+import { useActiveSiteId, useLogicResource, useSpreadState, useSubject } from '../../hooks';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { PagedArray } from '../../models/PagedArray';
-import { MarketplacePlugin } from '../../models/MarketplacePlugin';
-import { useSubject } from '../../hooks/useSubject';
+import { MarketplacePlugin, PagedArray } from '../../models';
 import { useDispatch } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useSpreadState } from '../../hooks/useSpreadState';
 import LookupTable from '../../models/LookupTable';
 import { fetchMarketplacePlugins, installMarketplacePlugin } from '../../services/marketplace';
 import { debounceTime } from 'rxjs/operators';
-import { useLogicResource } from '../../hooks/useLogicResource';
 import { popTab, pushTab } from '../../state/reducers/dialogs/minimizedTabs';
 import { translations } from './translations';
 import { batchActions } from '../../state/actions/misc';
@@ -38,10 +34,13 @@ import SearchIcon from '@mui/icons-material/SearchRounded';
 import DialogBody from '../DialogBody/DialogBody';
 import PluginDetailsView from '../PluginDetailsView';
 import SearchBar from '../SearchBar/SearchBar';
-import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
+import { SuspenseWithEmptyState } from '../Suspencified';
 import DialogFooter from '../DialogFooter/DialogFooter';
 import Pagination from '../Pagination';
 import { PluginList } from './PluginList';
+import { PluginParametersForm } from '../PluginParametersForm';
+import SecondaryButton from '../SecondaryButton';
+import PrimaryButton from '../PrimaryButton';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -65,6 +64,17 @@ export function InstallPluginDialogContainer(props: InstallPluginDialogProps) {
   const [offset, setOffset] = useState(0);
   const [limit, setLimit] = useState(10);
   const [selectedDetailsPlugin, setSelectedDetailsPlugin] = useState<MarketplacePlugin>(null);
+  const [formPluginState, setFormPluginState] = useSpreadState<{
+    plugin: MarketplacePlugin;
+    fields: LookupTable<string>;
+    submitted: boolean;
+    error: LookupTable<boolean>;
+  }>({
+    plugin: null,
+    fields: {},
+    submitted: false,
+    error: {}
+  });
   const classes = useStyles();
   const onSearch$ = useSubject<string>();
   const dispatch = useDispatch();
@@ -123,7 +133,7 @@ export function InstallPluginDialogContainer(props: InstallPluginDialogProps) {
     setSelectedDetailsPlugin(null);
   };
 
-  const onPluginDetailsSelected = (plugin: MarketplacePlugin) => {
+  const onInstallPlugin = (plugin: MarketplacePlugin, parameters?: LookupTable<string>) => {
     setInstallingLookup({ [plugin.id]: true });
     dispatch(
       pushTab({
@@ -133,7 +143,7 @@ export function InstallPluginDialogContainer(props: InstallPluginDialogProps) {
         title: formatMessage(translations.installing, { name: plugin.name })
       })
     );
-    installMarketplacePlugin(siteId, plugin.id, plugin.version).subscribe(
+    installMarketplacePlugin(siteId, plugin.id, plugin.version, parameters).subscribe(
       () => {
         setInstallingLookup({ [plugin.id]: false });
         onInstall(plugin);
@@ -159,6 +169,27 @@ export function InstallPluginDialogContainer(props: InstallPluginDialogProps) {
     );
   };
 
+  const onPluginFieldChange = (key: string, value: string) => {
+    const error =
+      formPluginState.plugin.parameters.find((parameter) => parameter.name === key).required && value === '';
+    setFormPluginState({
+      fields: { ...formPluginState.fields, [key]: value },
+      error: { ...formPluginState.error, [key]: error }
+    });
+  };
+
+  const onPluginDetailsSelected = (plugin: MarketplacePlugin) => {
+    if (plugin.parameters.length) {
+      setFormPluginState({ plugin, submitted: false, fields: {} });
+    } else {
+      onInstallPlugin(plugin);
+    }
+  };
+
+  const onPluginFormClose = () => {
+    setFormPluginState({ plugin: null, submitted: false, fields: {} });
+  };
+
   const onPageChange = (page: number) => {
     setOffset(page * limit);
   };
@@ -166,6 +197,18 @@ export function InstallPluginDialogContainer(props: InstallPluginDialogProps) {
   const onRowsPerPageChange = (e) => {
     setLimit(e.target.value);
   };
+
+  useEffect(() => {
+    if (formPluginState.plugin) {
+      const lookup = {};
+      formPluginState.plugin.parameters.forEach((parameter) => {
+        if (parameter.required) {
+          lookup[parameter.name] = true;
+        }
+      });
+      setFormPluginState({ error: lookup });
+    }
+  }, [formPluginState.plugin, setFormPluginState]);
 
   return (
     <>
@@ -204,6 +247,16 @@ export function InstallPluginDialogContainer(props: InstallPluginDialogProps) {
             onBlueprintSelected={onPluginDetailsSelected}
           />
         </DialogBody>
+      ) : formPluginState.plugin ? (
+        <DialogBody style={{ minHeight: '60vh', padding: 0 }}>
+          <PluginParametersForm
+            plugin={formPluginState.plugin}
+            submitted={formPluginState.submitted}
+            fields={formPluginState.fields}
+            onPluginFieldChange={onPluginFieldChange}
+            onCancel={onPluginFormClose}
+          />
+        </DialogBody>
       ) : (
         <DialogBody style={{ minHeight: '60vh' }}>
           {showSearchBar && (
@@ -236,28 +289,47 @@ export function InstallPluginDialogContainer(props: InstallPluginDialogProps) {
           </SuspenseWithEmptyState>
         </DialogBody>
       )}
-      <DialogFooter>
-        {plugins && (
-          <Pagination
-            rowsPerPageOptions={[5, 10, 15]}
-            sx={{
-              root: {
-                marginLeft: 'auto',
-                marginRight: '20px',
-                minHeight: '40px'
-              },
-              selectRoot: {
-                background: 'red'
-              }
-            }}
-            count={plugins.total}
-            rowsPerPage={plugins.limit}
-            page={plugins && Math.ceil(plugins.offset / plugins.limit)}
-            onPageChange={(page: number) => onPageChange(page)}
-            onRowsPerPageChange={onRowsPerPageChange}
-          />
-        )}
-      </DialogFooter>
+      {!selectedDetailsPlugin && (
+        <DialogFooter>
+          {!formPluginState.plugin && plugins ? (
+            <Pagination
+              rowsPerPageOptions={[5, 10, 15]}
+              sx={{
+                root: {
+                  marginLeft: 'auto',
+                  marginRight: '20px',
+                  minHeight: '40px'
+                },
+                selectRoot: {
+                  background: 'red'
+                }
+              }}
+              count={plugins.total}
+              rowsPerPage={plugins.limit}
+              page={plugins && Math.ceil(plugins.offset / plugins.limit)}
+              onPageChange={(page: number) => onPageChange(page)}
+              onRowsPerPageChange={onRowsPerPageChange}
+            />
+          ) : (
+            <>
+              <SecondaryButton
+                onClick={onPluginFormClose}
+                sx={{
+                  mr: '8px'
+                }}
+              >
+                <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
+              </SecondaryButton>
+              <PrimaryButton
+                disabled={Object.values(formPluginState.error).some((value) => value)}
+                onClick={() => onInstallPlugin(formPluginState.plugin, formPluginState.fields)}
+              >
+                <FormattedMessage id="words.install" defaultMessage="Install" />
+              </PrimaryButton>
+            </>
+          )}
+        </DialogFooter>
+      )}
     </>
   );
 }

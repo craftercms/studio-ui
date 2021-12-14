@@ -253,8 +253,8 @@ const content: CrafterCMSEpic[] = [
       ofType(conditionallyUnlockItem.type),
       withLatestFrom(state$),
       filter(([{ payload }, state]) => state.content.itemsByPath[payload.path].lockOwner === state.user.username),
-      switchMap(([{ payload }, state]) => {
-        return unlock(state.sites.active, payload.path).pipe(
+      switchMap(([{ payload }, state]) =>
+        unlock(state.sites.active, payload.path).pipe(
           map(() =>
             payload.notify
               ? batchActions([
@@ -263,8 +263,8 @@ const content: CrafterCMSEpic[] = [
                 ])
               : emitSystemEvent(itemUnlocked({ target: payload.path }))
           )
-        );
-      })
+        )
+      )
     ),
   // endregion
   // region Asset Duplicate

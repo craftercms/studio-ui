@@ -14,9 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { MarketplacePlugin } from '../../models/MarketplacePlugin';
+import { MarketplacePlugin } from '../../models';
 import React, { useEffect, useState } from 'react';
-import Marked from 'marked';
+import { marked } from 'marked';
 import hljs from '../../utils/hljs';
 import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
@@ -32,26 +32,26 @@ export default function PluginDocumentation(props: PluginDocumentationProps) {
   const [link, setLink] = useState(null);
   const [markdownError, setMarkdownError] = useState<boolean>(null);
   useEffect(() => {
-    // if (plugin.documentation) {
-    //   Marked.setOptions({
-    //     highlight: function (code, lang) {
-    //       return hljs.highlightAuto(code).value;
-    //     },
-    //     langPrefix: 'hljs language-'
-    //   });
-    //   if (/(\/readme$)|(.md$)/.test(plugin.documentation)) {
-    //     fetch(plugin.documentation)
-    //       .then((r) => r.text())
-    //       .then((content) => {
-    //         setMarkdown(Marked(content));
-    //       })
-    //       .catch((error) => {
-    //         setMarkdownError(true);
-    //       });
-    //   } else if (plugin.documentation) {
-    //     setLink(plugin.documentation);
-    //   }
-    // }
+    if (plugin.documentation) {
+      marked.setOptions({
+        highlight: function (code, lang) {
+          return hljs.highlightAuto(code).value;
+        },
+        langPrefix: 'hljs language-'
+      });
+      if (/(\/readme$)|(.md$)/.test(plugin.documentation)) {
+        fetch(plugin.documentation)
+          .then((r) => r.text())
+          .then((content) => {
+            setMarkdown(marked(content));
+          })
+          .catch((error) => {
+            setMarkdownError(true);
+          });
+      } else if (plugin.documentation) {
+        setLink(plugin.documentation);
+      }
+    }
   }, [plugin]);
   return (
     <>

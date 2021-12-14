@@ -2109,7 +2109,7 @@ __metadata:
     "@types/graphql": ^14.5.0
     "@types/jquery": ^3
     "@types/js-cookie": ^3
-    "@types/marked": ^3.0.2
+    "@types/marked": ^4.0.1
     "@types/prettier": ^2.4.1
     "@types/react-redux": ^7
     "@types/react-swipeable-views": ^0.13.1
@@ -2129,7 +2129,7 @@ __metadata:
     jabber: ^1.2.2
     jquery: ^3.6.0
     js-cookie: ^3.0.1
-    marked: ^4.0.5
+    marked: ^4.0.6
     moment-timezone: ^0.5.34
     nanoid: ^3.1.30
     ncp: ^2.0.0
@@ -3836,10 +3836,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/marked@npm:^3.0.2":
-  version: 3.0.2
-  resolution: "@types/marked@npm:3.0.2"
-  checksum: 48c3c190f97bffafbaacfc2ebcb8b87bfee12977b302ebf5ca028258f8131ffa1d3042455eaac4087bc816a3d5e0c8f65f4250e792b9dd18a533d49e99742d35
+"@types/marked@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "@types/marked@npm:4.0.1"
+  checksum: c2dabaae5ed5e2806ee3ef7f717ef7fe91ac5ee2718162219dd34de9d684d36efd561987fb3316b659d1add6d432696ca507da04b94380a77aac30870cb276d7
   languageName: node
   linkType: hard
 
@@ -12912,12 +12912,12 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"marked@npm:^4.0.5":
-  version: 4.0.5
-  resolution: "marked@npm:4.0.5"
+"marked@npm:^4.0.6":
+  version: 4.0.6
+  resolution: "marked@npm:4.0.6"
   bin:
     marked: bin/marked.js
-  checksum: c9ab69cf846f4deaaf984cc596923c3251243701f005cee999ee55b704ceb46dd5c9ff454ae774d03eaf725654aed593a3461211076e6a412f1352a2df426d4d
+  checksum: 3a1a557729c4a0b5f0aebad279e2cd20f6d16842a85d91ac655fd5cdd275c1fb6f11db61cdf96a954247b696e0f932dbfaa81fc0b177e457f04d83d427aaa2f8
   languageName: node
   linkType: hard
 
