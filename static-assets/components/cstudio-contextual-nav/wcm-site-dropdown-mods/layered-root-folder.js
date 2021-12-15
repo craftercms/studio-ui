@@ -93,8 +93,6 @@ CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/site
               oCurrentTextNode.data.formId +
               '&fileName=' +
               encodeURI(filename) +
-              '&user=' +
-              CStudioAuthoringContext.user +
               '&unlock=true' +
               '&createFolders=true';
 
