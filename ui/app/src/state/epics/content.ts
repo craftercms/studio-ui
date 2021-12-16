@@ -487,16 +487,18 @@ const content: CrafterCMSEpic[] = [
                 }),
                 popTab({ id })
               ]),
-              catchAjaxError((error: AjaxError) => [
-                popTab({ id }),
-                error.status === 404
-                  ? showConfirmDialog({
-                      body: getIntl().formatMessage(
-                        itemFailureMessages[type === 'DELETE_CONTROLLER' ? 'controllerNotFound' : 'templateNotFound']
-                      )
-                    })
-                  : showErrorDialog({ error: error.response ?? error })
-              ])
+              catchAjaxError((error: AjaxError) =>
+                batchActions([
+                  popTab({ id }),
+                  error.status === 404
+                    ? showConfirmDialog({
+                        body: getIntl().formatMessage(
+                          itemFailureMessages[type === 'DELETE_CONTROLLER' ? 'controllerNotFound' : 'templateNotFound']
+                        )
+                      })
+                    : showErrorDialog({ error: error.response ?? error })
+                ])
+              )
             )
           );
         }
