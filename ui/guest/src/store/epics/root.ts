@@ -50,7 +50,7 @@ import {
 } from '@craftercms/studio-ui/state/actions/preview';
 import { MouseEventActionObservable } from '../models/Actions';
 import { GuestState } from '../models/GuestStore';
-import { nullOrUndefined, notNullOrUndefined, reversePluckProps } from '@craftercms/studio-ui/utils/object';
+import { nullOrUndefined, notNullOrUndefined, reversePluckProps, nnou } from '@craftercms/studio-ui/utils/object';
 import { ElementRecord, ICEProps } from '../../models/InContextEditing';
 import * as ElementRegistry from '../../elementRegistry';
 import { get, getElementFromICEProps } from '../../elementRegistry';
@@ -70,6 +70,9 @@ import {
   startListening
 } from '../actions';
 import $ from 'jquery';
+import { extractCollection, extractCollectionItem } from '@craftercms/studio-ui/utils/model';
+import { getCachedModel } from '../../contentController';
+import { isSimple } from '@craftercms/studio-ui/utils/string';
 
 const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
   // region mouseover, mouseleave
@@ -317,16 +320,21 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
       switchMap(([action, state]) => {
         const { record, event } = action.payload;
         if (state.highlightMode === HighlightMode.ALL && state.status === EditingStatus.LISTENING) {
+          let selected = {
+            modelId: null,
+            fieldId: [],
+            index: null,
+            coordinates: { x: event.clientX, y: event.clientY }
+          };
+          if (nnou(record.index) && isSimple(record.index)) {
+            selected.modelId = extractCollectionItem(getCachedModel(record.modelId), record.fieldId[0], record.index);
+          } else {
+            selected.modelId = record.modelId;
+            selected.index = record.index;
+            selected.fieldId = record.fieldId;
+          }
           const iceZoneSelected = () => {
-            post(
-              iceZoneSelectedAction({
-                modelId: record.modelId,
-                index: record.index,
-                fieldId: record.fieldId,
-                // @ts-ignore - clientX & clientY not being found in typings.
-                coordinates: { x: event.clientX, y: event.clientY }
-              })
-            );
+            post(iceZoneSelectedAction(selected));
             return merge(
               escape$.pipe(
                 takeUntil(clearAndListen$),
