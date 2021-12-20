@@ -326,7 +326,9 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
             index: null,
             coordinates: { x: event.clientX, y: event.clientY }
           };
-          if (nnou(record.index) && isSimple(record.index)) {
+          if (iceRegistry.getReferentialEntries(record.iceIds[0]).recordType === 'node-selector-item') {
+            // When selecting the item on a node-selector the desired edit will be the item itself.
+            // The following will send the component model id instead of the item model id
             selected.modelId = extractCollectionItem(getCachedModel(record.modelId), record.fieldId[0], record.index);
           } else {
             selected.modelId = record.modelId;
