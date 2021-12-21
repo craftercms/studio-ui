@@ -57,7 +57,7 @@ export const updateFieldValueOperation = /*#__PURE__*/ createAction('UPDATE_FIEL
 export const iceZoneSelected = /*#__PURE__*/ createAction<{
   modelId: string;
   index: number;
-  fieldId: string;
+  fieldId: string[];
   coordinates: {
     x: number;
     y: number;
