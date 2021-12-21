@@ -20,8 +20,10 @@ import { filter, ignoreElements, map, mapTo, switchMap, take, takeUntil, tap, wi
 import { not } from '../../utils/util';
 import { post } from '../../utils/communicator';
 import * as iceRegistry from '../../iceRegistry';
+import { getById } from '../../iceRegistry';
 import { dragOk, unwrapEvent } from '../util';
 import * as contentController from '../../contentController';
+import { getCachedModel } from '../../contentController';
 import { interval, merge, NEVER, Observable, of, Subject } from 'rxjs';
 import { clearAndListen$, destroyDragSubjects, dragover$, escape$, initializeDragSubjects } from '../subjects';
 import { initTinyMCE } from '../../controls/rte';
@@ -50,7 +52,7 @@ import {
 } from '@craftercms/studio-ui/state/actions/preview';
 import { MouseEventActionObservable } from '../models/Actions';
 import { GuestState } from '../models/GuestStore';
-import { nullOrUndefined, notNullOrUndefined, reversePluckProps, nnou } from '@craftercms/studio-ui/utils/object';
+import { notNullOrUndefined, nullOrUndefined, reversePluckProps } from '@craftercms/studio-ui/utils/object';
 import { ElementRecord, ICEProps } from '../../models/InContextEditing';
 import * as ElementRegistry from '../../elementRegistry';
 import { get, getElementFromICEProps } from '../../elementRegistry';
@@ -70,9 +72,7 @@ import {
   startListening
 } from '../actions';
 import $ from 'jquery';
-import { extractCollection, extractCollectionItem } from '@craftercms/studio-ui/utils/model';
-import { getCachedModel } from '../../contentController';
-import { isSimple } from '@craftercms/studio-ui/utils/string';
+import { extractCollectionItem } from '@craftercms/studio-ui/utils/model';
 
 const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
   // region mouseover, mouseleave
@@ -326,7 +326,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
             index: null,
             coordinates: { x: event.clientX, y: event.clientY }
           };
-          if (iceRegistry.getReferentialEntries(record.iceIds[0]).recordType === 'node-selector-item') {
+          if (getById(record.iceIds[0]).recordType === 'node-selector-item') {
             // When selecting the item on a node-selector the desired edit will be the item itself.
             // The following will send the component model id instead of the item model id
             selected.modelId = extractCollectionItem(getCachedModel(record.modelId), record.fieldId[0], record.index);
