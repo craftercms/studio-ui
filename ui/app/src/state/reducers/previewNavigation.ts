@@ -83,7 +83,7 @@ const reducer = createReducer<GlobalState['previewNavigation']>(
     [goToLastPage.type]: (state) => {
       const stack = [...state.historyBackStack];
       let path;
-      // Validating if the current page is a 404, in that case the page did not check in, and it is not in the stack, so a pop() is not needed
+      // When there's 404, the page doesn't check in, and it's url doesn't get pushed on to the stack. Hence, in these cases, pop is not required.
       if (stack[stack.length - 1] !== state.currentUrlPath) {
         path = stack[stack.length - 1];
       } else {
