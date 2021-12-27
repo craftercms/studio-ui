@@ -25,15 +25,17 @@ import {
   editController,
   editTemplate
 } from '../actions/misc';
-import { changeContentType, fetchWorkflowAffectedItems } from '../../services/content';
+import { changeContentType, createFile, fetchWorkflowAffectedItems } from '../../services/content';
 import { showCodeEditorDialog, showEditDialog, showWorkflowCancellationDialog } from '../actions/dialogs';
 import { reloadDetailedItem } from '../actions/content';
-import { showEditItemSuccessNotification } from '../actions/system';
+import { emitSystemEvent, itemCreated, showEditItemSuccessNotification } from '../actions/system';
 import { CrafterCMSEpic } from '../store';
 import { nanoid as uuid } from 'nanoid';
 import { translations } from '../../components/ItemActionsMenu/translations';
 import { showErrorDialog } from '../reducers/dialogs/error';
 import { popTab, pushTab } from '../reducers/dialogs/minimizedTabs';
+import { popPiece, removeLastPiece } from '../../utils/string';
+import { getFileNameFromPath, getParentPath } from '../../utils/path';
 
 const epics = [
   (action$, state$: Observable<GlobalState>) =>
@@ -103,7 +105,6 @@ const epics = [
                   ])
                 : batchActions([
                     showCodeEditorDialog({
-                      authoringBase: state.env.authoringBase,
                       site: state.sites.active,
                       path,
                       mode,
@@ -112,13 +113,29 @@ const epics = [
                     popTab({ id })
                   ])
             ),
-            catchError(() => {
+            catchError(({ response }) => {
+              if (response.response.code === 7000) {
+                const fileName = editContentTypeTemplate.type === type ? getFileNameFromPath(path) : payload.fileName;
+                const destinationPath = editContentTypeTemplate.type === type ? getParentPath(path) : payload.path;
+                return createFile(state.sites.active, destinationPath, fileName).pipe(
+                  map(() =>
+                    batchActions([
+                      emitSystemEvent(itemCreated({ target: path })),
+                      showCodeEditorDialog({
+                        site: state.sites.active,
+                        path,
+                        mode,
+                        contentType
+                      }),
+                      popTab({ id })
+                    ])
+                  )
+                );
+              }
               return of(
                 batchActions([
                   showErrorDialog({
-                    error: {
-                      message: getIntl().formatMessage(translations.unableToVerifyWorkflows)
-                    }
+                    error: response.response
                   }),
                   popTab({ id })
                 ])

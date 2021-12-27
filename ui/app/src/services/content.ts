@@ -1111,10 +1111,7 @@ export function unlock(site: string, path: string): Observable<boolean> {
 }
 
 export function fetchWorkflowAffectedItems(site: string, path: string): Observable<SandboxItem[]> {
-  return get(`/studio/api/2/workflow/affected_paths?siteId=${site}&path=${path}`).pipe(
-    pluck('response', 'items'),
-    catchError(errorSelectorApi1)
-  );
+  return get(`/studio/api/2/workflow/affected_paths?siteId=${site}&path=${path}`).pipe(pluck('response', 'items'));
 }
 
 export function createFolder(site: string, path: string, name: string): Observable<unknown> {
