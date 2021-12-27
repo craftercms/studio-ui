@@ -93,7 +93,7 @@ export function EnhancedDialog(props: EnhancedDialogProps) {
         {!omitHeader && (
           <DialogHeader
             {...dialogHeaderProps}
-            title={title}
+            title={title ?? dialogHeaderProps?.title}
             disabled={isSubmitting}
             onMinimizeButtonClick={onMinimize}
             onFullScreenButtonClick={isFullScreen ? onCancelFullScreen : onFullScreen}
