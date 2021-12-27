@@ -305,10 +305,7 @@ function GlobalDialogManager() {
 
       {/* region Create Folder */}
       <CopyItemsDialog
-        open={state.copy.open}
-        title={state.copy.title}
-        subtitle={state.copy.subtitle}
-        item={state.copy.item}
+        {...state.copy}
         onClose={createCallback(state.copy.onClose, dispatch)}
         onClosed={createCallback(state.copy.onClosed, dispatch)}
         onOk={createCallback(state.copy.onOk, dispatch)}

@@ -137,14 +137,9 @@ export const translations = defineMessages({
     id: 'itemActions.contentTypeDialogBody',
     defaultMessage: 'The following operation may result in data loss. Would you like to proceed?'
   },
-  copyDialogTitle: {
-    id: 'itemActions.copyDialogTitle',
-    defaultMessage: 'Copy'
-  },
-  copyDialogSubtitle: {
-    id: 'itemActions.copyDialogSubtitle',
-    defaultMessage:
-      'Please select any of the sub-pages you would like to batch copy. When pasting, any selected sub-pages and their positional heirarchy will be retained.'
+  processing: {
+    id: 'words.processing',
+    defaultMessage: 'Processing'
   },
   duplicateDialogBody: {
     id: 'itemActions.duplicateDialogBody',

@@ -66,7 +66,7 @@ import Paper from '@mui/material/Paper';
 import TableBody from '@mui/material/TableBody';
 import DeleteIcon from '@mui/icons-material/DeleteOutline';
 import UninstallPluginDialog from '../DeletePluginDialog';
-import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
+import SettingsRoundedIcon from '@mui/icons-material/SettingsOutlined';
 import { PluginConfigDialog } from '../PluginConfigDialog';
 
 const messages = defineMessages({

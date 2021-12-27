@@ -31,7 +31,7 @@ import { VersionsStateProps } from './Version';
 import QuickCreateItem from './content/QuickCreateItem';
 import { PathNavigatorStateProps } from '../components/PathNavigator';
 import { DetailedItem } from './Item';
-import { CopyDialogStateProps } from '../components/CopyDialog/CopyDialog';
+import { CopyDialogStateProps } from '../components/CopyDialog/utils';
 import { PathSelectionDialogStateProps } from '../components/PathSelectionDialog/PathSelectionDialog';
 import { WidgetDescriptor } from '../components/Widget';
 import { ItemMenuStateProps } from '../components/ItemActionsMenu';
