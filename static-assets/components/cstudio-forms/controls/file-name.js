@@ -473,6 +473,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
         this.inputEl.value = this.defaultValue;
       }
     }
+    this.inputEl.title = this.inputEl.value;
     this.count(null, this.countEl, this.inputEl);
     this._onChange(null, this);
     this.edited = false;
@@ -537,7 +538,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
         defaultValue: '50'
       },
       { label: CMgs.format(langBundle, 'readonly'), name: 'readonly', type: 'boolean' },
-      { label: CMgs.format(langBundle, 'allowEditWithoutWarning'), name: 'allowEditWithoutWarning', type: 'boolean' },
+      { label: CMgs.format(langBundle, 'allowEditWithoutWarning'), name: 'allowEditWithoutWarning', type: 'boolean' }
     ];
   },
 
