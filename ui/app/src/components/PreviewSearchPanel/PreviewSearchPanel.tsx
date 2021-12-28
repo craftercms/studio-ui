@@ -22,7 +22,6 @@ import SearchBar from '../SearchBar/SearchBar';
 import { ComponentsContentTypeParams, ElasticParams, SearchItem } from '../../models/Search';
 import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
 import { DraggablePanelListItem } from '../DraggablePanelListItem/DraggablePanelListItem';
-import TablePagination from '@mui/material/TablePagination';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 import {
   assetDragEnded,
@@ -48,6 +47,7 @@ import { useMount } from '../../hooks/useMount';
 import { useDebouncedInput } from '../../hooks/useDebouncedInput';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import { useSubject } from '../../hooks/useSubject';
+import Pagination from '../Pagination';
 
 const translations = defineMessages({
   previewSearchPanelTitle: {
@@ -75,30 +75,6 @@ const useStyles = makeStyles(() => ({
     padding: '0',
     '& li:first-child': {
       paddingTop: 0
-    }
-  },
-  pagination: {
-    borderTop: '1px solid rgba(0, 0, 0, 0.12)',
-    '& p': {
-      padding: 0
-    },
-    '& svg': {
-      top: 'inherit'
-    },
-    '& .hidden': {
-      display: 'none'
-    }
-  },
-  toolbar: {
-    padding: 0,
-    display: 'flex',
-    justifyContent: 'space-between',
-    paddingLeft: '12px',
-    '& .MuiTablePagination-spacer': {
-      display: 'none'
-    },
-    '& .MuiTablePagination-spacer + p': {
-      display: 'none'
     }
   }
 }));
@@ -148,6 +124,7 @@ export default function PreviewSearchPanel() {
   const [state, setState] = useSpreadState({
     isFetching: null,
     contentInstanceLookup: null,
+    limit: 10,
     items: null,
     count: null
   });
@@ -203,10 +180,16 @@ export default function PreviewSearchPanel() {
                 isFetching: false,
                 items: response.result.items,
                 contentInstanceLookup: createLookupTable(response.contentInstances, 'craftercms.path'),
-                count: response.result.total
+                count: response.result.total,
+                limit: options?.limit ?? initialSearchParameters.limit
               });
             } else {
-              setState({ isFetching: false, items: response.result.items, count: response.result.total });
+              setState({
+                isFetching: false,
+                items: response.result.items,
+                count: response.result.total,
+                limit: options?.limit ?? initialSearchParameters.limit
+              });
             }
           },
           error: ({ response }) => {
@@ -237,10 +220,17 @@ export default function PreviewSearchPanel() {
     onSearch$.next(keyword);
   }
 
-  function onPageChanged(event: React.MouseEvent<HTMLButtonElement, MouseEvent>, page: number) {
+  function onPageChanged(page: number) {
     onSearch(keyword, {
-      offset: page * initialSearchParameters.limit,
-      limit: initialSearchParameters.limit
+      offset: page * state.limit,
+      limit: state.limit
+    });
+  }
+
+  function onRowsPerPageChange(e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) {
+    onSearch(keyword, {
+      offset: 0,
+      limit: Number(e.target.value)
     });
   }
 
@@ -281,23 +271,14 @@ export default function PreviewSearchPanel() {
       </div>
       {state.items && (
         <div className={classes.paginationContainer}>
-          <TablePagination
-            className={classes.pagination}
-            classes={{ root: classes.pagination, selectRoot: 'hidden', toolbar: classes.toolbar }}
-            component="div"
-            labelRowsPerPage=""
+          <Pagination
+            rowsPerPageOptions={[5, 10, 15]}
+            sx={{ root: { marginRight: 'auto' }, toolbar: { paddingLeft: 0 } }}
             count={state.count}
-            rowsPerPage={initialSearchParameters.limit}
+            rowsPerPage={state.limit}
             page={pageNumber}
-            backIconButtonProps={{
-              'aria-label': formatMessage(translations.previousPage),
-              size: 'small'
-            }}
-            nextIconButtonProps={{
-              'aria-label': formatMessage(translations.nextPage),
-              size: 'small'
-            }}
-            onPageChange={(e: React.MouseEvent<HTMLButtonElement>, page: number) => onPageChanged(e, page)}
+            onPageChange={(page: number) => onPageChanged(page)}
+            onRowsPerPageChange={onRowsPerPageChange}
           />
         </div>
       )}
