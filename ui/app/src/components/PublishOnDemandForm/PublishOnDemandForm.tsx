@@ -70,7 +70,7 @@ export default function PublishOnDemandForm(props: PublishOnDemandFormProps) {
   } = props;
   const classes = useStyles();
   const handleFormChange = (name: string) => (event: React.ChangeEvent<{ value: unknown }> | SelectChangeEvent) => {
-    setFormData({ [name]: `/${event.target.value}`.replace(/\/{2,}/, '/') });
+    setFormData({ [name]: `/${event.target.value}`.replace(/\/{2,}/g, '/') });
   };
   return (
     <form>
