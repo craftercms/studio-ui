@@ -27,8 +27,9 @@ import clsx from 'clsx';
 import Tooltip from '@mui/material/Tooltip';
 import { defineMessages, useIntl } from 'react-intl';
 import StandardAction from '../../models/StandardAction';
-import Action, { ActionIcon } from '../DialogHeaderAction/DialogHeaderAction';
+import Action from '../DialogHeaderAction/DialogHeaderAction';
 import OpenInFullIcon from '@mui/icons-material/OpenInFullRounded';
+import { SystemIconDescriptor } from '../SystemIcon';
 
 const dialogTitleStyles = makeStyles((theme) =>
   createStyles({
@@ -72,12 +73,12 @@ const dialogTitleStyles = makeStyles((theme) =>
 );
 
 export interface DialogHeaderAction extends IconButtonProps {
-  icon: ActionIcon | ElementType;
+  icon: SystemIconDescriptor;
   tooltip?: string;
 }
 
 export interface DialogHeaderStateAction {
-  icon: ActionIcon;
+  icon: SystemIconDescriptor;
   'aria-label': string;
   onClick: StandardAction;
   [prop: string]: any;
