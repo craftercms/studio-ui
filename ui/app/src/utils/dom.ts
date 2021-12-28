@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export function createCustomDocumentEventListener(id: string, listener: EventListener): () => void {
+export function createCustomDocumentEventListener<T = any>(id: string, listener: (detail: T) => void): () => void {
   let callback;
   callback = (e) => {
     listener(e.detail);

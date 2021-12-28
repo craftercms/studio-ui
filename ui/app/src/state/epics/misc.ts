@@ -34,7 +34,6 @@ import { nanoid as uuid } from 'nanoid';
 import { translations } from '../../components/ItemActionsMenu/translations';
 import { showErrorDialog } from '../reducers/dialogs/error';
 import { popTab, pushTab } from '../reducers/dialogs/minimizedTabs';
-import { popPiece, removeLastPiece } from '../../utils/string';
 import { getFileNameFromPath, getParentPath } from '../../utils/path';
 
 const epics = [
