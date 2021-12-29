@@ -147,6 +147,7 @@ export function InstallPluginDialogContainer(props: InstallPluginDialogProps) {
       () => {
         setInstallingLookup({ [plugin.id]: false });
         onInstall(plugin);
+        onPluginFormClose();
         dispatch(
           popTab({
             id: plugin.id
@@ -181,6 +182,7 @@ export function InstallPluginDialogContainer(props: InstallPluginDialogProps) {
   const onPluginDetailsSelected = (plugin: MarketplacePlugin) => {
     if (plugin.parameters.length) {
       setFormPluginState({ plugin, submitted: false, fields: {} });
+      onPluginDetailsClose();
     } else {
       onInstallPlugin(plugin);
     }
@@ -223,7 +225,7 @@ export function InstallPluginDialogContainer(props: InstallPluginDialogProps) {
         onCloseButtonClick={props.onClose}
         rightActions={[
           {
-            icon: SearchIcon,
+            icon: { id: '@mui/icons-material/SearchRounded' },
             disabled: isFetching === null || plugins === null || Boolean(selectedDetailsPlugin),
             onClick: onToggleSearchBar
           }
@@ -321,7 +323,10 @@ export function InstallPluginDialogContainer(props: InstallPluginDialogProps) {
                 <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
               </SecondaryButton>
               <PrimaryButton
-                disabled={Object.values(formPluginState.error).some((value) => value)}
+                disabled={
+                  Object.values(formPluginState.error).some((value) => value) ||
+                  (formPluginState.plugin && installingLookup[formPluginState.plugin.id])
+                }
                 onClick={() => onInstallPlugin(formPluginState.plugin, formPluginState.fields)}
               >
                 <FormattedMessage id="words.install" defaultMessage="Install" />

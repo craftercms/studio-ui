@@ -63,7 +63,7 @@ export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
         leftActions: isCompareMode
           ? [
               {
-                icon: 'BackIcon',
+                icon: { id: '@mui/icons-material/ArrowBackIosRounded' },
                 onClick: () => dispatch(compareVersion({ id: versionsBranch.selected[0] })),
                 'aria-label': formatMessage(translations.backToSelectRevision)
               }

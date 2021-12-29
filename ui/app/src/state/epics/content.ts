@@ -103,6 +103,10 @@ export const sitePolicyMessages = defineMessages({
   itemPastePolicyError: {
     id: 'pastePolicy.error',
     defaultMessage: 'The selected {action} target goes against site policies for the destination directory.'
+  },
+  itemPasteValidating: {
+    id: 'words.validating',
+    defaultMessage: 'Validating'
   }
 });
 
@@ -408,34 +412,46 @@ const content: CrafterCMSEpic[] = [
         ) {
           fileName = withIndex(fileName);
         }
-        return validateActionPolicy(state.sites.active, {
-          type: state.content.clipboard.type === 'CUT' ? 'MOVE' : 'COPY',
-          target: `${withoutIndex(payload.path)}/${fileName}`,
-          source: state.content.clipboard.sourcePath
-        }).pipe(
-          map(({ allowed, modifiedValue, target }) => {
-            if (allowed && modifiedValue) {
-              return showConfirmDialog({
-                body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyConfirm, {
-                  action: state.content.clipboard.type === 'CUT' ? 'cut' : 'copy',
-                  path: target,
-                  modifiedPath: modifiedValue
-                }),
-                onCancel: closeConfirmDialog(),
-                onOk: batchActions([pasteItem({ path: payload.path }), closeConfirmDialog()])
-              });
-            } else if (allowed) {
-              return pasteItem({
-                path: payload.path
-              });
-            } else {
-              return showConfirmDialog({
-                body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyError, {
-                  action: state.content.clipboard.type === 'CUT' ? 'cut' : 'copy'
-                })
-              });
-            }
-          })
+        return merge(
+          of(
+            pushTab({
+              id: 'pastePolicyCheck',
+              status: 'indeterminate',
+              minimized: true,
+              title: `${getIntl().formatMessage(sitePolicyMessages.itemPasteValidating)}...`
+            })
+          ),
+          validateActionPolicy(state.sites.active, {
+            type: state.content.clipboard.type === 'CUT' ? 'MOVE' : 'COPY',
+            target: `${withoutIndex(payload.path)}/${fileName}`,
+            source: state.content.clipboard.sourcePath
+          }).pipe(
+            switchMap(({ allowed, modifiedValue, target }) => {
+              let mainAction;
+              if (allowed && modifiedValue) {
+                mainAction = showConfirmDialog({
+                  body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyConfirm, {
+                    action: state.content.clipboard.type === 'CUT' ? 'cut' : 'copy',
+                    path: target,
+                    modifiedPath: modifiedValue
+                  }),
+                  onCancel: closeConfirmDialog(),
+                  onOk: batchActions([pasteItem({ path: payload.path }), closeConfirmDialog()])
+                });
+              } else if (allowed) {
+                mainAction = pasteItem({
+                  path: payload.path
+                });
+              } else {
+                mainAction = showConfirmDialog({
+                  body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyError, {
+                    action: state.content.clipboard.type === 'CUT' ? 'cut' : 'copy'
+                  })
+                });
+              }
+              return [popTab({ id: 'pastePolicyCheck' }), mainAction];
+            })
+          )
         );
       })
     ),

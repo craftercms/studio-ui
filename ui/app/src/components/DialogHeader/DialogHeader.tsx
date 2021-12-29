@@ -27,8 +27,9 @@ import clsx from 'clsx';
 import Tooltip from '@mui/material/Tooltip';
 import { defineMessages, useIntl } from 'react-intl';
 import StandardAction from '../../models/StandardAction';
-import Action, { ActionIcon } from '../DialogHeaderAction/DialogHeaderAction';
+import Action from '../DialogHeaderAction/DialogHeaderAction';
 import OpenInFullIcon from '@mui/icons-material/OpenInFullRounded';
+import { SystemIconDescriptor } from '../SystemIcon';
 
 const dialogTitleStyles = makeStyles((theme) =>
   createStyles({
@@ -72,12 +73,12 @@ const dialogTitleStyles = makeStyles((theme) =>
 );
 
 export interface DialogHeaderAction extends IconButtonProps {
-  icon: ActionIcon | ElementType;
+  icon: SystemIconDescriptor;
   tooltip?: string;
 }
 
 export interface DialogHeaderStateAction {
-  icon: ActionIcon;
+  icon: SystemIconDescriptor;
   'aria-label': string;
   onClick: StandardAction;
   [prop: string]: any;
@@ -163,14 +164,20 @@ export function DialogHeader(props: DialogHeaderProps) {
         {(leftActions || onBack) && (
           <div className={classes.leftActions}>
             {onBack && (
-              <Tooltip title={formatMessage(translations.back)}>
-                <IconButton aria-label="close" onClick={onBack} className={classes.backIcon} size="large">
+              <Tooltip title={disabled ? '' : formatMessage(translations.back)}>
+                <IconButton
+                  aria-label="close"
+                  onClick={onBack}
+                  className={classes.backIcon}
+                  size="large"
+                  disabled={disabled}
+                >
                   <BackIcon />
                 </IconButton>
               </Tooltip>
             )}
             {leftActions?.map(({ icon, 'aria-label': tooltip, ...rest }: DialogHeaderAction, i: number) => (
-              <Action key={i} icon={icon} tooltip={tooltip} {...rest} />
+              <Action key={i} icon={icon} tooltip={tooltip} disabled={disabled} {...rest} />
             ))}
           </div>
         )}
@@ -183,21 +190,21 @@ export function DialogHeader(props: DialogHeaderProps) {
               <Action key={i} icon={icon} tooltip={tooltip} disabled={disabled} {...rest} />
             ))}
             {onMinimizeButtonClick && (
-              <Tooltip title={formatMessage(translations.minimize)}>
+              <Tooltip title={disabled ? '' : formatMessage(translations.minimize)}>
                 <IconButton aria-label="close" onClick={onMinimizeButtonClick} disabled={disabled}>
                   <MinimizeIcon />
                 </IconButton>
               </Tooltip>
             )}
             {onFullScreenButtonClick && (
-              <Tooltip title={formatMessage(translations.fullScreen)}>
+              <Tooltip title={disabled ? '' : formatMessage(translations.fullScreen)}>
                 <IconButton aria-label="close" onClick={onFullScreenButtonClick} disabled={disabled}>
                   <FullScreenIcon />
                 </IconButton>
               </Tooltip>
             )}
             {onCloseButtonClick && (
-              <Tooltip title={formatMessage(translations.dismiss)}>
+              <Tooltip title={disabled ? '' : formatMessage(translations.dismiss)}>
                 <IconButton aria-label="close" onClick={onCloseButtonClick} disabled={disabled} size="large">
                   <CloseIcon />
                 </IconButton>
