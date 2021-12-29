@@ -15,7 +15,7 @@
  */
 
 import { translations } from '../components/ItemActionsMenu/translations';
-import { AllItemActions, DetailedItem, LegacyItem } from '../models/Item';
+import { AllItemActions, DetailedItem } from '../models/Item';
 import { ContextMenuOption } from '../components/ContextMenu';
 import { getRootPath, withoutIndex } from './path';
 import {
@@ -46,7 +46,7 @@ import {
   showUploadDialog,
   showWorkflowCancellationDialog
 } from '../state/actions/dialogs';
-import { fetchLegacyItemsTree, fetchWorkflowAffectedItems } from '../services/content';
+import { fetchSandboxItem, fetchWorkflowAffectedItems } from '../services/content';
 import {
   batchActions,
   changeContentType,
@@ -105,7 +105,8 @@ import {
   hasRenameAction,
   hasSchedulePublishAction,
   hasUnlockAction,
-  hasUploadAction
+  hasUploadAction,
+  parseSandBoxItemToDetailedItem
 } from './content';
 import { getEditorMode, isNavigable } from '../components/PathNavigator/utils';
 import React from 'react';
@@ -623,14 +624,22 @@ export const itemActionDispatcher = ({
         break;
       }
       case 'copy': {
-        fetchLegacyItemsTree(site, item.path, { depth: 1000, order: 'default' }).subscribe(
-          (legacyItem: LegacyItem) => {
-            if (legacyItem.children.length) {
+        dispatch(
+          pushTab({
+            id: 'copyOperationPreCheck',
+            status: 'indeterminate',
+            minimized: true,
+            title: `${formatMessage(translations.processing)}...`
+          })
+        );
+        fetchSandboxItem(site, item.path).subscribe({
+          next(item) {
+            dispatch(popTab({ id: 'copyOperationPreCheck' }));
+            if (item.childrenCount) {
               dispatch(
                 showCopyDialog({
-                  title: formatMessage(translations.copyDialogTitle),
-                  subtitle: formatMessage(translations.copyDialogSubtitle),
-                  item: legacyItem,
+                  site,
+                  item: parseSandBoxItemToDetailedItem(item),
                   onOk: batchActions([
                     closeCopyDialog(),
                     setClipboard({
@@ -654,19 +663,32 @@ export const itemActionDispatcher = ({
               );
             }
           },
-          (response) => {
+          error(response) {
             dispatch(
               showErrorDialog({
                 error: response
               })
             );
           }
-        );
+        });
         break;
       }
       case 'paste': {
         if (clipboard.type === 'CUT') {
+          dispatch(
+            pushTab({
+              id: 'pasteOperationPreCheck',
+              status: 'indeterminate',
+              minimized: true,
+              title: `${formatMessage(translations.processing)}...`
+            })
+          );
           fetchWorkflowAffectedItems(site, clipboard.sourcePath).subscribe((items) => {
+            dispatch(
+              popTab({
+                id: 'pasteOperationPreCheck'
+              })
+            );
             if (items?.length > 0) {
               dispatch(
                 showWorkflowCancellationDialog({

@@ -54,6 +54,9 @@ function getStyles(sx: PaginationPartialSx): PaginationFullSx {
   return {
     root: {
       display: 'flex',
+      '.MuiInputBase-root': {
+        marginRight: '15px'
+      },
       '& p': {
         padding: 0,
         margin: 0

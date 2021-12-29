@@ -14,9 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './CopyDialog';
+import { MutableRefObject, RefCallback } from 'react';
 
-export * from './CopyDialog';
-export * from './CopyDialogBody';
-export * from './CopyDialogItemSelectorTree';
-export * from './utils';
+export type MutableRef<T> = RefCallback<T> | MutableRefObject<T> | null;
+
+export default MutableRef;

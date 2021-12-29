@@ -14,9 +14,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './CopyDialog';
+import { EnhancedDialogProps } from '../EnhancedDialog';
+import { onSubmittingAndOrPendingChangeProps } from '../../hooks';
 
-export * from './CopyDialog';
-export * from './CopyDialogBody';
-export * from './CopyDialogItemSelectorTree';
-export * from './utils';
+export interface PluginConfigDialogBaseProps {
+  pluginId: string;
+}
+
+export interface PluginConfigDialogProps extends PluginConfigDialogBaseProps, EnhancedDialogProps {
+  onSubmittingAndOrPendingChange(value: onSubmittingAndOrPendingChangeProps): void;
+  onSaved(): void;
+}
+
+export interface PluginConfigDialogContainerProps
+  extends PluginConfigDialogBaseProps,
+    Pick<PluginConfigDialogProps, 'onSaved' | 'onClose' | 'isSubmitting' | 'onSubmittingAndOrPendingChange'> {}

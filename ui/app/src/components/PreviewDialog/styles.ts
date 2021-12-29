@@ -18,10 +18,12 @@ import makeStyles from '@mui/styles/makeStyles';
 
 export const useStyles = makeStyles(() => ({
   container: {
-    maxWidth: '700px',
-    minWidth: '500px',
-    minHeight: '400px',
+    height: '100%',
     display: 'flex',
+    maxWidth: '100%',
+    minWidth: '500px',
+    minHeight: '600px',
+    position: 'relative',
     justifyContent: 'center',
     alignItems: 'center',
     '& img': {
@@ -29,8 +31,6 @@ export const useStyles = makeStyles(() => ({
     }
   },
   editor: {
-    width: 900,
-    height: 600,
-    border: 'none'
+    position: 'absolute'
   }
 }));

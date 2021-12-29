@@ -82,6 +82,10 @@
                             <followSymlinks>false</followSymlinks>
                         </fileset>
                         <fileset>
+                          <directory>ui/scss/node_modules</directory>
+                          <followSymlinks>false</followSymlinks>
+                        </fileset>
+                        <fileset>
                             <directory>ui</directory>
                             <includes>
                                 <include>**/.bic_cache</include>
@@ -218,7 +222,7 @@
         <repository>
             <id>sonatype-snapshots</id>
             <name>sonatype Snapshots</name>
-            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+            <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
             <releases>
                 <enabled>true</enabled>
                 <updatePolicy>always</updatePolicy>

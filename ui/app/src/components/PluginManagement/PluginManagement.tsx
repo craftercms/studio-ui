@@ -29,10 +29,10 @@ import Table from '@mui/material/Table';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
-import { AsDayMonthDateTime } from '../VersionList/VersionList';
+import { AsDayMonthDateTime } from '../VersionList';
 import EmptyState from '../EmptyState/EmptyState';
 import InstallPluginDialog from '../MarketplaceDialog';
-import { MarketplacePlugin } from '../../models/MarketplacePlugin';
+import { MarketplacePlugin } from '../../models';
 import IconButton from '@mui/material/IconButton';
 import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
 import Popover from '@mui/material/Popover';
@@ -55,6 +55,8 @@ import GlobalAppToolbar from '../GlobalAppToolbar';
 import { useSelection } from '../../hooks/useSelection';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useMount } from '../../hooks/useMount';
+import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
+import { useWithPendingChangesCloseRequest } from '../../hooks/useWithPendingChangesCloseRequest';
 import { batchActions } from '../../state/actions/misc';
 import Link from '@mui/material/Link';
 import { createPresenceTable } from '../../utils/array';
@@ -63,13 +65,18 @@ import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import TableBody from '@mui/material/TableBody';
 import DeleteIcon from '@mui/icons-material/DeleteOutline';
-import { useEnhancedDialogState } from '../../hooks';
 import UninstallPluginDialog from '../DeletePluginDialog';
+import SettingsRoundedIcon from '@mui/icons-material/SettingsOutlined';
+import { PluginConfigDialog } from '../PluginConfigDialog';
 
 const messages = defineMessages({
   pluginInstalled: {
     id: 'pluginManagement.pluginInstalled',
     defaultMessage: 'Plugin installed successfully'
+  },
+  pluginConfigUpdated: {
+    id: 'pluginManagement.pluginConfigUpdated',
+    defaultMessage: 'Plugin configuration updated successfully'
   },
   pluginUninstalled: {
     id: 'pluginManagement.pluginUninstalled',
@@ -118,7 +125,10 @@ export const PluginManagement = (props: PluginManagementProps) => {
   const [installedPluginsLookup, setInstalledPluginsLookup] = useState<LookupTable<boolean>>();
   const locale = useSelection<GlobalState['uiConfig']['locale']>((state) => state.uiConfig.locale);
   const deletePluginDialogState = useEnhancedDialogState();
+  const configPluginDialogState = useEnhancedDialogState();
+  const onWithPendingChangesCloseRequest = useWithPendingChangesCloseRequest(configPluginDialogState.onClose);
   const [pluginToDelete, setPluginToDelete] = useState(null);
+  const [pluginToConfig, setPluginToConfig] = useState(null);
 
   useMount(() => {
     getUserPermissions(siteId, '/').subscribe((permissions) => {
@@ -198,6 +208,20 @@ export const PluginManagement = (props: PluginManagementProps) => {
     );
     deletePluginDialogState.onClose();
     refresh();
+  };
+
+  const onSavedPluginConfig = () => {
+    dispatch(
+      showSystemNotification({
+        message: formatMessage(messages.pluginConfigUpdated)
+      })
+    );
+    configPluginDialogState.onClose();
+  };
+
+  const onEditPluginConfig = (plugin: PluginRecord) => {
+    setPluginToConfig(plugin.id);
+    configPluginDialogState.onOpen();
   };
 
   return (
@@ -302,6 +326,14 @@ export const PluginManagement = (props: PluginManagementProps) => {
                     <TableCell align="right" className={classes.actions}>
                       <IconButton
                         onClick={() => {
+                          onEditPluginConfig(plugin);
+                        }}
+                        color="primary"
+                      >
+                        <SettingsRoundedIcon />
+                      </IconButton>
+                      <IconButton
+                        onClick={() => {
                           setPluginToDelete(plugin.id);
                           deletePluginDialogState.onOpen();
                         }}
@@ -340,6 +372,22 @@ export const PluginManagement = (props: PluginManagementProps) => {
         onSubmittingAndOrPendingChange={deletePluginDialogState.onSubmittingAndOrPendingChange}
         pluginId={pluginToDelete}
         onComplete={onDeletePlugin}
+      />
+      <PluginConfigDialog
+        open={configPluginDialogState.open}
+        onClose={configPluginDialogState.onClose}
+        isSubmitting={configPluginDialogState.isSubmitting}
+        hasPendingChanges={configPluginDialogState.hasPendingChanges}
+        isMinimized={configPluginDialogState.isMinimized}
+        onMinimize={configPluginDialogState.onMinimize}
+        onMaximize={configPluginDialogState.onMaximize}
+        isFullScreen={configPluginDialogState.isFullScreen}
+        onFullScreen={configPluginDialogState.onFullScreen}
+        onCancelFullScreen={configPluginDialogState.onCancelFullScreen}
+        onSubmittingAndOrPendingChange={configPluginDialogState.onSubmittingAndOrPendingChange}
+        pluginId={pluginToConfig}
+        onSaved={onSavedPluginConfig}
+        onWithPendingChangesCloseRequest={onWithPendingChangesCloseRequest}
       />
       <Popover
         open={Boolean(anchorEl)}

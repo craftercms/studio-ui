@@ -420,7 +420,9 @@ function Guest(props: GuestProps) {
         .subscribe((e) => {
           e.preventDefault();
           e.stopPropagation();
-          dispatch(desktopAssetDragStarted({ asset: e.dataTransfer.items[0] }));
+          if (e.dataTransfer.items[0].type.startsWith('image') && e.dataTransfer.items[0].kind === 'file') {
+            dispatch(desktopAssetDragStarted({ asset: e.dataTransfer.items[0] }));
+          }
         });
       return () => subscription.unsubscribe();
     }

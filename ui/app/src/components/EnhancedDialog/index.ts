@@ -17,3 +17,4 @@
 export { default } from './EnhancedDialog';
 
 export * from './EnhancedDialog';
+export * from './useEnhancedDialogContext';

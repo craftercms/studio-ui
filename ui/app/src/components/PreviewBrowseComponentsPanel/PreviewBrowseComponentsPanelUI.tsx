@@ -15,7 +15,6 @@
  */
 
 import { FormattedMessage, useIntl } from 'react-intl';
-import TablePagination from '@mui/material/TablePagination';
 import translations from './translations';
 import React from 'react';
 import List from '@mui/material/List';
@@ -25,6 +24,7 @@ import EmptyState from '../EmptyState/EmptyState';
 import { Resource } from '../../models/Resource';
 import { useComponentsPanelUI } from './styles';
 import FormHelperText from '@mui/material/FormHelperText';
+import Pagination from '../Pagination';
 
 export interface ComponentResource {
   count: number;
@@ -51,13 +51,14 @@ export interface PreviewBrowseComponentsPanelUIProps {
       string
     >
   >;
-  onPageChanged(e: React.MouseEvent<HTMLButtonElement>, page: number): void;
+  onPageChanged(page: number): void;
+  onRowsPerPageChange(e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>): void;
   onDragStart(item: ContentInstance): void;
   onDragEnd(): void;
 }
 
 export function PreviewBrowseComponentsPanelUI(props: PreviewBrowseComponentsPanelUIProps) {
-  const { componentsResource, onPageChanged, onDragStart, onDragEnd } = props;
+  const { componentsResource, onPageChanged, onDragStart, onDragEnd, onRowsPerPageChange } = props;
   const { formatMessage } = useIntl();
   const classes = useComponentsPanelUI();
   const components = componentsResource.read();
@@ -65,23 +66,14 @@ export function PreviewBrowseComponentsPanelUI(props: PreviewBrowseComponentsPan
   return (
     <div className={classes.browsePanelWrapper}>
       <div className={classes.paginationContainer}>
-        <TablePagination
-          className={classes.pagination}
-          classes={{ root: classes.pagination, selectRoot: 'hidden', toolbar: classes.toolbar }}
-          component="div"
-          labelRowsPerPage=""
+        <Pagination
+          rowsPerPageOptions={[5, 10, 15]}
+          sx={{ root: { marginRight: 'auto' }, toolbar: { paddingLeft: 0 } }}
           count={count}
           rowsPerPage={limit}
           page={pageNumber}
-          backIconButtonProps={{
-            'aria-label': formatMessage(translations.previousPage),
-            size: 'small'
-          }}
-          nextIconButtonProps={{
-            'aria-label': formatMessage(translations.nextPage),
-            size: 'small'
-          }}
-          onPageChange={(e: React.MouseEvent<HTMLButtonElement>, page: number) => onPageChanged(e, page * limit)}
+          onPageChange={(page: number) => onPageChanged(page * limit)}
+          onRowsPerPageChange={onRowsPerPageChange}
         />
       </div>
       <List className={classes.list}>

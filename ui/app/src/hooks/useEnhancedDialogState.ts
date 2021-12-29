@@ -21,6 +21,7 @@ import { nnou } from '../utils/object';
 export interface EnhancedDialogState {
   open: boolean;
   isMinimized: boolean;
+  isFullScreen?: boolean;
   hasPendingChanges: boolean;
   isSubmitting: boolean;
 }
@@ -34,6 +35,7 @@ export function useEnhancedDialogState(initialState?: Partial<EnhancedDialogStat
   const [state, setState] = useSpreadState<EnhancedDialogState>({
     open: false,
     isMinimized: false,
+    isFullScreen: false,
     hasPendingChanges: false,
     isSubmitting: false,
     ...initialState
@@ -41,6 +43,8 @@ export function useEnhancedDialogState(initialState?: Partial<EnhancedDialogStat
   return useMemo(() => {
     const onOpen = () => setState({ open: true });
     const onClose = () => setState({ open: false });
+    const onFullScreen = () => setState({ isFullScreen: true });
+    const onCancelFullScreen = () => setState({ isFullScreen: false });
     const onMaximize = () => setState({ isMinimized: false });
     const onMinimize = () => setState({ isMinimized: true });
     const onSubmittingChange = (isSubmitting: boolean) => setState({ isSubmitting });
@@ -65,6 +69,8 @@ export function useEnhancedDialogState(initialState?: Partial<EnhancedDialogStat
       onClose,
       onMaximize,
       onMinimize,
+      onFullScreen,
+      onCancelFullScreen,
       onSubmittingChange,
       onHasPendingChange,
       onSubmittingAndOrPendingChange

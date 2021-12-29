@@ -153,6 +153,8 @@ function GlobalDialogManager() {
         onMaximize={createCallback(state.codeEditor.onMaximize, dispatch)}
         onClosed={createCallback(state.codeEditor.onClosed, dispatch)}
         onSuccess={createCallback(state.codeEditor.onSuccess, dispatch)}
+        onFullScreen={createCallback(state.codeEditor.onFullScreen, dispatch)}
+        onCancelFullScreen={createCallback(state.codeEditor.onCancelFullScreen, dispatch)}
         onWithPendingChangesCloseRequest={useWithPendingChangesCloseRequest(
           createCallback(state.codeEditor.onClose, dispatch)
         )}
@@ -303,10 +305,7 @@ function GlobalDialogManager() {
 
       {/* region Create Folder */}
       <CopyItemsDialog
-        open={state.copy.open}
-        title={state.copy.title}
-        subtitle={state.copy.subtitle}
-        item={state.copy.item}
+        {...state.copy}
         onClose={createCallback(state.copy.onClose, dispatch)}
         onClosed={createCallback(state.copy.onClosed, dispatch)}
         onOk={createCallback(state.copy.onOk, dispatch)}
@@ -335,8 +334,12 @@ function GlobalDialogManager() {
       {/* region PreviewDialog */}
       <PreviewDialog
         {...state.preview}
+        onMinimize={createCallback(state.preview.onMinimize, dispatch)}
+        onMaximize={createCallback(state.preview.onMaximize, dispatch)}
         onClose={createCallback(state.preview.onClose, dispatch)}
         onClosed={createCallback(state.preview.onClosed, dispatch)}
+        onFullScreen={createCallback(state.preview.onFullScreen, dispatch)}
+        onCancelFullScreen={createCallback(state.preview.onCancelFullScreen, dispatch)}
       />
       {/* endregion */}
 

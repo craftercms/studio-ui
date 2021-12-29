@@ -14,9 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './CopyDialog';
+export { default } from './PluginConfigDialog';
 
-export * from './CopyDialog';
-export * from './CopyDialogBody';
-export * from './CopyDialogItemSelectorTree';
+export * from './PluginConfigDialog';
+
 export * from './utils';
