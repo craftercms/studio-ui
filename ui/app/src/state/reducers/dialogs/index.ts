@@ -44,6 +44,7 @@ import launcher from './launcher';
 import publishingStatus from './publishingStatus';
 import unlockPublisher from './unlockPublisher';
 import widget from './widget';
+import uiBlocker from './uiBlocker';
 
 export default combineReducers({
   confirm,
@@ -74,5 +75,6 @@ export default combineReducers({
   launcher,
   publishingStatus,
   unlockPublisher,
-  widget
+  widget,
+  uiBlocker
 });

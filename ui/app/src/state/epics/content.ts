@@ -61,6 +61,7 @@ import {
 } from '../actions/dialogs';
 import { isEditableAsset } from '../../utils/content';
 import {
+  blockUI,
   emitSystemEvent,
   itemDuplicated,
   itemsPasted,
@@ -69,7 +70,8 @@ import {
   showDuplicatedItemSuccessNotification,
   showPasteItemSuccessNotification,
   showSystemNotification,
-  showUnlockItemSuccessNotification
+  showUnlockItemSuccessNotification,
+  unblockUI
 } from '../actions/system';
 import { batchActions } from '../actions/misc';
 import {
@@ -375,14 +377,11 @@ const content: CrafterCMSEpic[] = [
         }
       }),
       switchMap(([{ payload }, state]) => {
-        const id = uuid();
         return merge(
           of(
-            pushTab({
-              minimized: true,
-              id,
-              status: 'indeterminate',
-              title: getIntl().formatMessage(inProgressMessages.pasting)
+            blockUI({
+              progress: 'indeterminate',
+              message: getIntl().formatMessage(inProgressMessages.pasting)
             })
           ),
           paste(state.sites.active, payload.path, state.content.clipboard).pipe(
@@ -391,7 +390,7 @@ const content: CrafterCMSEpic[] = [
                 emitSystemEvent(itemsPasted({ target: payload.path, clipboard: state.content.clipboard })),
                 clearClipboard(),
                 showPasteItemSuccessNotification(),
-                popTab({ id })
+                unblockUI()
               ])
             )
           )
@@ -414,11 +413,9 @@ const content: CrafterCMSEpic[] = [
         }
         return merge(
           of(
-            pushTab({
-              id: 'pastePolicyCheck',
-              status: 'indeterminate',
-              minimized: true,
-              title: `${getIntl().formatMessage(sitePolicyMessages.itemPasteValidating)}...`
+            blockUI({
+              progress: 'indeterminate',
+              message: `${getIntl().formatMessage(sitePolicyMessages.itemPasteValidating)}...`
             })
           ),
           validateActionPolicy(state.sites.active, {
@@ -427,29 +424,35 @@ const content: CrafterCMSEpic[] = [
             source: state.content.clipboard.sourcePath
           }).pipe(
             switchMap(({ allowed, modifiedValue, target }) => {
-              let mainAction;
               if (allowed && modifiedValue) {
-                mainAction = showConfirmDialog({
-                  body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyConfirm, {
-                    action: state.content.clipboard.type === 'CUT' ? 'cut' : 'copy',
-                    path: target,
-                    modifiedPath: modifiedValue
-                  }),
-                  onCancel: closeConfirmDialog(),
-                  onOk: batchActions([pasteItem({ path: payload.path }), closeConfirmDialog()])
-                });
-              } else if (allowed) {
-                mainAction = pasteItem({
-                  path: payload.path
-                });
-              } else {
-                mainAction = showConfirmDialog({
-                  body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyError, {
-                    action: state.content.clipboard.type === 'CUT' ? 'cut' : 'copy'
+                return [
+                  unblockUI(),
+                  showConfirmDialog({
+                    body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyConfirm, {
+                      action: state.content.clipboard.type === 'CUT' ? 'cut' : 'copy',
+                      path: target,
+                      modifiedPath: modifiedValue
+                    }),
+                    onCancel: closeConfirmDialog(),
+                    onOk: batchActions([pasteItem({ path: payload.path }), closeConfirmDialog()])
                   })
-                });
+                ];
+              } else if (allowed) {
+                return [
+                  pasteItem({
+                    path: payload.path
+                  })
+                ];
+              } else {
+                return [
+                  unblockUI(),
+                  showConfirmDialog({
+                    body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyError, {
+                      action: state.content.clipboard.type === 'CUT' ? 'cut' : 'copy'
+                    })
+                  })
+                ];
               }
-              return [popTab({ id: 'pastePolicyCheck' }), mainAction];
             })
           )
         );

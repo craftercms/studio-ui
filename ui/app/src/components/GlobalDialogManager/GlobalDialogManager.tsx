@@ -56,6 +56,7 @@ const ItemMenu = lazy(() => import('../ItemActionsMenu'));
 const ItemMegaMenu = lazy(() => import('../ItemMegaMenu'));
 const AuthMonitor = lazy(() => import('../AuthMonitor'));
 const PublishingStatusDialog = lazy(() => import('../PublishingStatusDialog'));
+const UIBlocker = lazy(() => import('../UIBlocker'));
 
 // @formatter:off
 function createCallback(action: StandardAction, dispatch: Dispatch): (output?: unknown) => void {
@@ -419,6 +420,10 @@ function GlobalDialogManager() {
           onMaximize={createCallback(tab.onMaximized, dispatch)}
         />
       ))}
+      {/* endregion */}
+
+      {/* region UIBlocker */}
+      <UIBlocker {...state.uiBlocker} />
       {/* endregion */}
     </Suspense>
   );
