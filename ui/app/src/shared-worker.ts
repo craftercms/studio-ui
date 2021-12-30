@@ -27,6 +27,7 @@ let current: ObtainAuthTokenResponse = {
   token: null
 };
 let refreshInterval;
+let isRetrieving = false;
 
 const log =
   process.env.PRODUCTION === 'development'
@@ -108,9 +109,11 @@ function retrieve() {
     log(`Skipping token retrieval: local expiration check determined auth is expired`);
     unauthenticated();
     return null;
-  } else {
+  } else if (!isRetrieving) {
+    isRetrieving = true;
     return obtainAuthToken().subscribe({
       next(response) {
+        isRetrieving = false;
         if (response) {
           log('New token received');
           status = 'active';
@@ -130,6 +133,7 @@ function retrieve() {
         return current;
       },
       error(e: AjaxError) {
+        isRetrieving = false;
         clearTimeout(timeout);
         log('Error retrieving token', e);
         if (e.status === 401) {

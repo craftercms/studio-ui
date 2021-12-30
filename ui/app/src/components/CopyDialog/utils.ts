@@ -62,6 +62,6 @@ export const messages = defineMessages({
   copyDialogSubtitle: {
     id: 'itemActions.copyDialogSubtitle',
     defaultMessage:
-      'Please select any of the sub-pages you would like to batch copy. When pasting, any selected sub-pages and their positional heirarchy will be retained.'
+      'Please select any of the sub-pages you would like to batch copy. When pasting, any selected sub-pages and their positional hierarchy will be retained.'
   }
 });
