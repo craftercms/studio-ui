@@ -65,8 +65,8 @@ export function PublishingStatusDialogContainer(props: PublishingStatusDialogCon
           onStartStop && {
             icon:
               status === 'ready'
-                ? { id: '@mui/icons-material/PauseCircleOutlineOutlined ' }
-                : { id: '@mui/icons-material/PauseCircleOutlineOutlined' },
+                ? { id: '@mui/icons-material/PauseCircleOutlineOutlined' }
+                : { id: '@mui/icons-material/PlayCircleOutlineOutlined' },
             onClick: onStartStop,
             tooltip: formatMessage(status === 'ready' ? publishingStatusMessages.stop : publishingStatusMessages.start)
           },

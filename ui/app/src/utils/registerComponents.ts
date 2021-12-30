@@ -19,6 +19,14 @@ import { lazy } from 'react';
 
 export const registerComponents = () => {
   Object.entries({
+    '@mui/icons-material/RefreshRounded': lazy(() => import('@mui/icons-material/RefreshRounded')),
+    '@mui/icons-material/PlayCircleOutlineOutlined': lazy(
+      () => import('@mui/icons-material/PlayCircleOutlineOutlined')
+    ),
+    '@mui/icons-material/PauseCircleOutlineOutlined': lazy(
+      () => import('@mui/icons-material/PauseCircleOutlineOutlined')
+    ),
+    '@mui/icons-material/LockOpenRounded': lazy(() => import('@mui/icons-material/LockOpenRounded')),
     '@mui/icons-material/OpenInFullRounded': lazy(() => import('@mui/icons-material/OpenInFullRounded')),
     '@mui/icons-material/RemoveRounded': lazy(() => import('@mui/icons-material/RemoveRounded')),
     '@mui/icons-material/CloseRounded': lazy(() => import('@mui/icons-material/CloseRounded')),
