@@ -415,6 +415,10 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           );
           break;
         }
+        case 'IS_REVIEWER': {
+          getHostToGuestBus().next({ type: 'REPAINT_PENCILS' });
+          break;
+        }
         // endregion
         case guestCheckIn.type:
         case fetchGuestModel.type: {

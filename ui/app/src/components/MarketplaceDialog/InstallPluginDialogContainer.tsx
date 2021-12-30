@@ -41,7 +41,7 @@ import { PluginParametersForm } from '../PluginParametersForm';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 
-const useStyles = makeStyles((theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     searchWrapper: {
       marginBottom: '16px'
