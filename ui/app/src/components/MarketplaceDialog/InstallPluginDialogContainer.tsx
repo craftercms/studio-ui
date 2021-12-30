@@ -61,7 +61,7 @@ export function InstallPluginDialogContainer(props: InstallPluginDialogProps) {
   const [showSearchBar, setShowSearchBar] = useState<boolean>(false);
   const [isFetching, setIsFetching] = useState<boolean>(null);
   const [offset, setOffset] = useState(0);
-  const [limit, setLimit] = useState(10);
+  const [limit, setLimit] = useState(9);
   const [selectedDetailsPlugin, setSelectedDetailsPlugin] = useState<MarketplacePlugin>(null);
   const [formPluginState, setFormPluginState] = useSpreadState<{
     plugin: MarketplacePlugin;
@@ -294,7 +294,7 @@ export function InstallPluginDialogContainer(props: InstallPluginDialogProps) {
         <DialogFooter>
           {!formPluginState.plugin && plugins ? (
             <Pagination
-              rowsPerPageOptions={[5, 10, 15]}
+              rowsPerPageOptions={[6, 9, 15]}
               sx={{
                 root: {
                   marginLeft: 'auto',
