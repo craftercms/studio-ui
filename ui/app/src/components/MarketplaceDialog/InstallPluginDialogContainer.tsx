@@ -30,7 +30,6 @@ import { translations } from './translations';
 import { batchActions } from '../../state/actions/misc';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import DialogHeader from '../DialogHeader';
-import SearchIcon from '@mui/icons-material/SearchRounded';
 import DialogBody from '../DialogBody/DialogBody';
 import PluginDetailsView from '../PluginDetailsView';
 import SearchBar from '../SearchBar/SearchBar';
@@ -62,7 +61,7 @@ export function InstallPluginDialogContainer(props: InstallPluginDialogProps) {
   const [showSearchBar, setShowSearchBar] = useState<boolean>(false);
   const [isFetching, setIsFetching] = useState<boolean>(null);
   const [offset, setOffset] = useState(0);
-  const [limit, setLimit] = useState(10);
+  const [limit, setLimit] = useState(9);
   const [selectedDetailsPlugin, setSelectedDetailsPlugin] = useState<MarketplacePlugin>(null);
   const [formPluginState, setFormPluginState] = useSpreadState<{
     plugin: MarketplacePlugin;
@@ -295,7 +294,7 @@ export function InstallPluginDialogContainer(props: InstallPluginDialogProps) {
         <DialogFooter>
           {!formPluginState.plugin && plugins ? (
             <Pagination
-              rowsPerPageOptions={[5, 10, 15]}
+              rowsPerPageOptions={[6, 9, 15]}
               sx={{
                 root: {
                   marginLeft: 'auto',
