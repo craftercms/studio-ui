@@ -58,7 +58,7 @@ import { capitalize } from '../../utils/string';
 import { itemReverted, showSystemNotification } from '../../state/actions/system';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { filter, map } from 'rxjs/operators';
-import { fromString, serialize } from '../../utils/xml';
+import { parseValidateDocument, serialize } from '../../utils/xml';
 import { forkJoin } from 'rxjs';
 import { encrypt } from '../../services/security';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
@@ -70,6 +70,7 @@ import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useMount } from '../../hooks/useMount';
 import { ConfirmDialogProps } from '../ConfirmDialog';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
+import { findPendingEncryption } from './utils';
 
 interface SiteConfigurationManagementProps {
   embedded?: boolean;
@@ -184,7 +185,21 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
   };
 
   const onEncryptClick = () => {
-    const doc = fromString(editorRef.current.getValue());
+    const content = editorRef.current.getValue();
+    const doc = parseValidateDocument(content);
+    if (typeof doc === 'string') {
+      dispatch(
+        showSystemNotification({
+          message: formatMessage(translations.xmlContainsErrors, {
+            errors: doc
+          }),
+          options: {
+            variant: 'error'
+          }
+        })
+      );
+      return;
+    }
     const tags = doc.querySelectorAll('[encrypted]');
     const items = findPendingEncryption(tags);
     if (items.length) {
@@ -368,7 +383,20 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
 
   const onSave = () => {
     const content = editorRef.current.getValue();
-    const doc = fromString(content);
+    const doc = parseValidateDocument(content);
+    if (typeof doc === 'string') {
+      dispatch(
+        showSystemNotification({
+          message: formatMessage(translations.xmlContainsErrors, {
+            errors: doc
+          }),
+          options: {
+            variant: 'error'
+          }
+        })
+      );
+      return;
+    }
     const unencryptedItems = findPendingEncryption(doc.querySelectorAll('[encrypted]'));
     const errors = editorRef.current
       .getSession()
@@ -406,6 +434,7 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
             setSelectedConfigFileXml(content);
           },
           ({ response: { response } }) => {
+            onSubmittingAndOrPendingChange({ isSubmitting: false, hasPendingChanges: true });
             dispatch(showErrorDialog({ error: response }));
           }
         );
@@ -682,12 +711,4 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
       <ConfirmDialog open={false} {...confirmDialogProps} />
     </section>
   );
-}
-
-function findPendingEncryption(tags): { tag: Element; text: string }[] {
-  const items = [];
-  tags.forEach((tag) => {
-    tag.getAttribute('encrypted') === '' && items.push({ tag: tag, text: tag.innerHTML.trim() });
-  });
-  return items;
 }

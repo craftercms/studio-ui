@@ -29,6 +29,7 @@ import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { showSystemNotification } from '../../state/actions/system';
 import { translations } from '../SiteConfigurationManagement/translations';
+import { parseValidateDocument } from '../../utils/xml';
 
 export function PluginConfigDialogContainer(props: PluginConfigDialogContainerProps) {
   const siteId = useActiveSiteId();
@@ -69,6 +70,20 @@ export function PluginConfigDialogContainer(props: PluginConfigDialogContainerPr
 
   const onSave = () => {
     const content = editorRef.current.getValue();
+    const doc = parseValidateDocument(content);
+    if (typeof doc === 'string') {
+      dispatch(
+        showSystemNotification({
+          message: formatMessage(translations.xmlContainsErrors, {
+            errors: doc
+          }),
+          options: {
+            variant: 'error'
+          }
+        })
+      );
+      return;
+    }
     const errors = editorRef.current
       .getSession()
       .getAnnotations()
@@ -93,7 +108,7 @@ export function PluginConfigDialogContainer(props: PluginConfigDialogContainerPr
           onSaved();
         },
         error: ({ response }) => {
-          onSubmittingAndOrPendingChange({ isSubmitting: false });
+          onSubmittingAndOrPendingChange({ isSubmitting: false, hasPendingChanges: true });
           dispatch(
             showErrorDialog({
               error: response.response
