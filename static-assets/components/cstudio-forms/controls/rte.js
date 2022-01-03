@@ -403,8 +403,12 @@ CStudioAuthoring.Module.requireModule(
             },
 
             templates: templates,
-
-            content_css: rteStylesheets,
+            skin: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'oxide-dark' : 'oxide',
+            content_css: rteStylesheets
+              ? rteStylesheets
+              : window.matchMedia('(prefers-color-scheme: dark)').matches
+              ? 'dark'
+              : 'default',
             content_style: rteStyleOverride,
             code_editor_wrap: codeEditorWrap,
             code_editor_inline: true,
