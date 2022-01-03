@@ -75,6 +75,11 @@ export function initTinyMCE(
   const $element = $(record.element);
   $element.removeClass(emptyFieldClass);
 
+  console.log({
+    skin: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'oxide-dark' : 'oxide',
+    content_css: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default'
+  });
+
   window.tinymce.init({
     mode: 'none',
     target: record.element,
@@ -93,6 +98,8 @@ export function initTinyMCE(
     suffix: '.min',
     external_plugins: external,
     code_editor_inline: false,
+    skin: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'oxide-dark' : 'oxide',
+    content_css: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default',
     setup(editor: Editor) {
       editor.on('init', function () {
         let changed = false;
