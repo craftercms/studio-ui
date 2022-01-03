@@ -75,11 +75,6 @@ export function initTinyMCE(
   const $element = $(record.element);
   $element.removeClass(emptyFieldClass);
 
-  console.log({
-    skin: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'oxide-dark' : 'oxide',
-    content_css: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default'
-  });
-
   window.tinymce.init({
     mode: 'none',
     target: record.element,
