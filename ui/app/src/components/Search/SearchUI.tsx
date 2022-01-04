@@ -22,7 +22,7 @@ import SiteSearchFilters from '../SiteSearchFilters';
 import makeStyles from '@mui/styles/makeStyles';
 import palette from '../../styles/palette';
 import { ElasticParams, Filter, MediaItem, SearchResult } from '../../models/Search';
-import { CheckedFilter, drawerWidth, SearchApiState } from './utils';
+import { CheckedFilter, drawerWidth } from './utils';
 import LookupTable from '../../models/LookupTable';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -41,6 +41,7 @@ import ListItemText from '@mui/material/ListItemText';
 import { useIntl } from 'react-intl';
 import { AllItemActions, DetailedItem } from '../../models/Item';
 import { ContextMenuOption } from '../ContextMenu';
+import ApiResponse from '../../models/ApiResponse';
 
 interface SearchUIProps {
   selectedPath: string;
@@ -59,7 +60,8 @@ interface SearchUIProps {
   areAllSelected: boolean;
   checkedFilters: LookupTable<CheckedFilter>;
   searchParameters: ElasticParams;
-  apiState: SearchApiState;
+  error: ApiResponse;
+  isFetching: boolean;
   itemsByPath: LookupTable<DetailedItem>;
   onActionClicked(option: AllItemActions, event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
   handleSelectAll(checked: any): void;
@@ -139,7 +141,8 @@ const useStyles = makeStyles((theme) => ({
   content: {
     flexGrow: 1,
     padding: '25px 30px',
-    overflowY: 'scroll'
+    overflowY: 'scroll',
+    position: 'relative'
   },
   empty: {
     height: '100%',
@@ -261,7 +264,8 @@ export function SearchUI(props: SearchUIProps) {
   const {
     areAllSelected,
     itemsByPath,
-    apiState,
+    error,
+    isFetching,
     sortBy,
     sortOrder,
     searchParameters,
@@ -416,42 +420,46 @@ export function SearchUI(props: SearchUIProps) {
           />
         </div>
         <section className={classes.content}>
-          {apiState.error ? (
-            <ApiResponseErrorState error={apiState.errorResponse} />
+          {error ? (
+            <ApiResponseErrorState error={error} />
           ) : (
             <Grid container spacing={3} className={searchResults?.items.length === 0 ? classes.empty : ''}>
-              {searchResults === null ? (
+              {isFetching || searchResults === null ? (
                 <Spinner background="inherit" />
-              ) : searchResults.items.length > 0 ? (
-                searchResults.items.map((item: MediaItem, i) => (
-                  <Grid key={i} item xs={12} {...(currentView === 'grid' ? { sm: 6, md: 4, lg: 4, xl: 3 } : {})}>
-                    <MediaCard
-                      isList={currentView === 'list'}
-                      classes={
-                        currentView === 'list'
-                          ? {
-                              root: classes.mediaCardListRoot,
-                              checkbox: classes.mediaCardListCheckbox,
-                              header: classes.mediaCardListHeader,
-                              media: classes.mediaCardListMedia,
-                              mediaIcon: classes.mediaCardListMediaIcon
-                            }
-                          : void 0
-                      }
-                      item={item}
-                      onPreview={onPreview}
-                      onSelect={handleSelect}
-                      selected={selected}
-                      previewAppBaseUri={guestBase}
-                      onHeaderButtonClick={mode === 'default' ? onHeaderButtonClick : null}
-                    />
-                  </Grid>
-                ))
               ) : (
-                <EmptyState
-                  title={formatMessage(translations.noResults)}
-                  subtitle={formatMessage(translations.changeQuery)}
-                />
+                <>
+                  {searchResults.items.length > 0 ? (
+                    searchResults.items.map((item: MediaItem, i) => (
+                      <Grid key={i} item xs={12} {...(currentView === 'grid' ? { sm: 6, md: 4, lg: 4, xl: 3 } : {})}>
+                        <MediaCard
+                          isList={currentView === 'list'}
+                          classes={
+                            currentView === 'list'
+                              ? {
+                                  root: classes.mediaCardListRoot,
+                                  checkbox: classes.mediaCardListCheckbox,
+                                  header: classes.mediaCardListHeader,
+                                  media: classes.mediaCardListMedia,
+                                  mediaIcon: classes.mediaCardListMediaIcon
+                                }
+                              : void 0
+                          }
+                          item={item}
+                          onPreview={onPreview}
+                          onSelect={handleSelect}
+                          selected={selected}
+                          previewAppBaseUri={guestBase}
+                          onHeaderButtonClick={mode === 'default' ? onHeaderButtonClick : null}
+                        />
+                      </Grid>
+                    ))
+                  ) : (
+                    <EmptyState
+                      title={formatMessage(translations.noResults)}
+                      subtitle={formatMessage(translations.changeQuery)}
+                    />
+                  )}
+                </>
               )}
             </Grid>
           )}

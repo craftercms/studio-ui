@@ -28,11 +28,12 @@ import SiteSearchFilter from '../SiteSearchFilter';
 import PathSelector from '../SiteSearchPathSelector';
 import Button from '@mui/material/Button';
 import palette from '../../styles/palette';
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
+import MuiAccordion, { accordionClasses } from '@mui/material/Accordion';
+import MuiAccordionSummary, { accordionSummaryClasses } from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import Divider from '@mui/material/Divider';
 import { useSpreadState } from '../../hooks/useSpreadState';
+import { styled } from '@mui/material/styles';
 
 interface SiteSearchFiltersProps {
   className: any;
@@ -48,6 +49,19 @@ interface SiteSearchFiltersProps {
   handleFilterChange(filter: FilterType, isFilter?: boolean): any;
   handleClearClick(filter: string): void;
 }
+
+const AccordionSummary = styled(MuiAccordionSummary)(() => ({
+  [`&.${accordionSummaryClasses.expanded}`]: {
+    minHeight: 0,
+    [`& .${accordionSummaryClasses.content}`]: {
+      margin: '12px 0'
+    }
+  }
+}));
+
+const Accordion = styled(MuiAccordion)(() => ({
+  [`&.${accordionClasses.expanded}`]: { margin: 'auto' }
+}));
 
 const useStyles = makeStyles((theme) => ({
   header: {

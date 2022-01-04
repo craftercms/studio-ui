@@ -44,7 +44,8 @@ export function Search(props: SearchProps) {
   const onSearch$ = useMemo(() => new Subject<string>(), []);
   const desktopScreen = useMediaQuery(theme.breakpoints.up('md'));
   const {
-    apiState,
+    error,
+    isFetching,
     areAllSelected,
     selected,
     onActionClicked,
@@ -151,6 +152,8 @@ export function Search(props: SearchProps) {
 
   return (
     <SearchUI
+      error={error}
+      isFetching={isFetching}
       sortBy={filters.sortBy}
       sortOrder={filters.sortOrder}
       currentView={currentView}
@@ -170,7 +173,6 @@ export function Search(props: SearchProps) {
       handleSearchKeyword={handleSearchKeyword}
       onSelectedPathChanges={onSelectedPathChanges}
       onCheckedFiltersChanges={onCheckedFiltersChanges}
-      apiState={apiState}
       areAllSelected={areAllSelected}
       guestBase={guestBase}
       handleChangePage={handleChangePage}
