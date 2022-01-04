@@ -24,7 +24,7 @@ import { SelectionList } from '../DependencySelection/SelectionList';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { DeleteDialogContentUIProps } from './utils';
-import { Alert } from '@mui/material';
+import Alert from '@mui/material/Alert';
 
 export function DeleteDialogUIBody(props: DeleteDialogContentUIProps) {
   const {
