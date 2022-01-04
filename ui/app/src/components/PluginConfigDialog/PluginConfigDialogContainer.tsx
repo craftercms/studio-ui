@@ -24,7 +24,7 @@ import SecondaryButton from '../SecondaryButton';
 import { FormattedMessage, useIntl } from 'react-intl';
 import PrimaryButton from '../PrimaryButton';
 import { getPluginConfiguration, setPluginConfiguration } from '../../services/marketplace';
-import { useActiveSiteId } from '../../hooks';
+import { useActiveSiteId, useUpdateRefs } from '../../hooks';
 import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { showSystemNotification } from '../../state/actions/system';
@@ -40,6 +40,9 @@ export function PluginConfigDialogContainer(props: PluginConfigDialogContainerPr
   const dispatch = useDispatch();
   const [disabledSaveButton, setDisabledSaveButton] = useState(true);
   const { formatMessage } = useIntl();
+  const functionRefs = useUpdateRefs({
+    onSubmittingAndOrPendingChange
+  });
 
   useEffect(() => {
     setLoading(true);
@@ -101,14 +104,14 @@ export function PluginConfigDialogContainer(props: PluginConfigDialogContainerPr
         })
       );
     } else {
-      onSubmittingAndOrPendingChange({ isSubmitting: true });
+      functionRefs.current.onSubmittingAndOrPendingChange({ isSubmitting: true });
       setPluginConfiguration(siteId, pluginId, content).subscribe({
         next: () => {
-          onSubmittingAndOrPendingChange({ isSubmitting: false, hasPendingChanges: false });
+          functionRefs.current.onSubmittingAndOrPendingChange({ isSubmitting: false, hasPendingChanges: false });
           onSaved();
         },
         error: ({ response }) => {
-          onSubmittingAndOrPendingChange({ isSubmitting: false, hasPendingChanges: true });
+          functionRefs.current.onSubmittingAndOrPendingChange({ isSubmitting: false });
           dispatch(
             showErrorDialog({
               error: response.response

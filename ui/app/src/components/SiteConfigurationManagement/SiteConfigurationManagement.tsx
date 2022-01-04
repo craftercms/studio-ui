@@ -71,6 +71,7 @@ import { useMount } from '../../hooks/useMount';
 import { ConfirmDialogProps } from '../ConfirmDialog';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 import { findPendingEncryption } from './utils';
+import { useUpdateRefs } from '../../hooks';
 
 interface SiteConfigurationManagementProps {
   embedded?: boolean;
@@ -103,6 +104,9 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
   const history = useHistory();
   const dispatch = useDispatch();
   const disableBlocking = useRef(false);
+  const functionRefs = useUpdateRefs({
+    onSubmittingAndOrPendingChange
+  });
 
   const editorRef = useRef<any>({
     container: null
@@ -184,20 +188,24 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
     }
   };
 
+  const showXmlParseError = (error: string) => {
+    dispatch(
+      showSystemNotification({
+        message: formatMessage(translations.xmlContainsErrors, {
+          errors: error
+        }),
+        options: {
+          variant: 'error'
+        }
+      })
+    );
+  };
+
   const onEncryptClick = () => {
     const content = editorRef.current.getValue();
     const doc = parseValidateDocument(content);
     if (typeof doc === 'string') {
-      dispatch(
-        showSystemNotification({
-          message: formatMessage(translations.xmlContainsErrors, {
-            errors: doc
-          }),
-          options: {
-            variant: 'error'
-          }
-        })
-      );
+      showXmlParseError(doc);
       return;
     }
     const tags = doc.querySelectorAll('[encrypted]');
@@ -304,7 +312,7 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
     if (!disabledSaveButton) {
       setDisabledSaveButton(true);
     }
-    onSubmittingAndOrPendingChange?.({ hasPendingChanges: false, isSubmitting: false });
+    functionRefs.current.onSubmittingAndOrPendingChange?.({ hasPendingChanges: false, isSubmitting: false });
   };
 
   const onListItemClick = (file: SiteConfigurationFileWithId) => {
@@ -337,10 +345,10 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
   const onEditorChanges = () => {
     if (selectedConfigFileXml !== editorRef.current.getValue()) {
       setDisabledSaveButton(false);
-      onSubmittingAndOrPendingChange?.({ hasPendingChanges: true });
+      functionRefs.current.onSubmittingAndOrPendingChange?.({ hasPendingChanges: true });
     } else {
       setDisabledSaveButton(true);
-      onSubmittingAndOrPendingChange?.({ hasPendingChanges: false });
+      functionRefs.current.onSubmittingAndOrPendingChange?.({ hasPendingChanges: false });
     }
   };
 
@@ -385,16 +393,7 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
     const content = editorRef.current.getValue();
     const doc = parseValidateDocument(content);
     if (typeof doc === 'string') {
-      dispatch(
-        showSystemNotification({
-          message: formatMessage(translations.xmlContainsErrors, {
-            errors: doc
-          }),
-          options: {
-            variant: 'error'
-          }
-        })
-      );
+      showXmlParseError(doc);
       return;
     }
     const unencryptedItems = findPendingEncryption(doc.querySelectorAll('[encrypted]'));
@@ -416,10 +415,10 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
       );
     } else {
       if (unencryptedItems.length === 0) {
-        onSubmittingAndOrPendingChange({ isSubmitting: true });
-        writeConfiguration(site, selectedConfigFile.path, selectedConfigFile.module, content, environment).subscribe(
-          () => {
-            onSubmittingAndOrPendingChange({ isSubmitting: false, hasPendingChanges: false });
+        functionRefs.current.onSubmittingAndOrPendingChange?.({ isSubmitting: true });
+        writeConfiguration(site, selectedConfigFile.path, selectedConfigFile.module, content, environment).subscribe({
+          next: () => {
+            functionRefs.current.onSubmittingAndOrPendingChange?.({ isSubmitting: false, hasPendingChanges: false });
             dispatch(
               showSystemNotification({
                 message: formatMessage(translations.configSaved)
@@ -433,11 +432,11 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
             setDisabledSaveButton(true);
             setSelectedConfigFileXml(content);
           },
-          ({ response: { response } }) => {
-            onSubmittingAndOrPendingChange({ isSubmitting: false, hasPendingChanges: true });
+          error: ({ response: { response } }) => {
+            functionRefs.current.onSubmittingAndOrPendingChange?.({ isSubmitting: false });
             dispatch(showErrorDialog({ error: response }));
           }
-        );
+        });
       } else {
         let tags;
         if (unencryptedItems.length > 1) {

@@ -28,4 +28,3 @@ if (process.env.NODE_ENV === 'production') {
   const elem = document.getElementById('root');
   ReactDOM.render(<App />, elem);
 }
-export { parseValidateDocument } from './utils/xml';

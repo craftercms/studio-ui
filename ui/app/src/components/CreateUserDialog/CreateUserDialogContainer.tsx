@@ -38,6 +38,7 @@ import { forkJoin, of } from 'rxjs';
 import { addUserToGroup } from '../../services/groups';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import { CreateUserDialogContainerProps } from './utils';
+import { useUpdateRefs } from '../../hooks';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -139,13 +140,14 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
   const dispatch = useDispatch();
   const arrowRef = useRef();
   const selectedGroupsRef = useRef([]);
-  const callbacksRef = useRef({ onSubmittingAndOrPendingChange });
-  callbacksRef.current.onSubmittingAndOrPendingChange = onSubmittingAndOrPendingChange;
+  const functionRefs = useUpdateRefs({
+    onSubmittingAndOrPendingChange
+  });
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
     if (submitOk) {
-      onSubmittingAndOrPendingChange({
+      functionRefs.current.onSubmittingAndOrPendingChange({
         isSubmitting: true
       });
       setSubmitted(true);
@@ -163,12 +165,12 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
           .subscribe(
             () => {
               onCreateSuccess?.();
-              callbacksRef.current.onSubmittingAndOrPendingChange({
+              functionRefs.current.onSubmittingAndOrPendingChange({
                 isSubmitting: false
               });
             },
             ({ response: { response } }) => {
-              callbacksRef.current.onSubmittingAndOrPendingChange({
+              functionRefs.current.onSubmittingAndOrPendingChange({
                 isSubmitting: false
               });
               dispatch(showErrorDialog({ error: response }));
