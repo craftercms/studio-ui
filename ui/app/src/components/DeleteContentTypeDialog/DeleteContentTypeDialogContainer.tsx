@@ -25,6 +25,7 @@ import { deleteContentType, fetchContentTypeUsage } from '../../services/content
 import { showSystemNotification } from '../../state/actions/system';
 import Suspencified from '../Suspencified/Suspencified';
 import DeleteContentTypeDialogBody from './DeleteContentTypeDialogBody';
+import { useUpdateRefs } from '../../hooks';
 
 const messages = defineMessages({
   deleteComplete: {
@@ -42,25 +43,28 @@ export function DeleteContentTypeDialogContainer(props: DeleteContentTypeDialogC
   const site = useActiveSiteId();
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
+  const functionRefs = useUpdateRefs({
+    onSubmittingAndOrPendingChange
+  });
 
   const resource = useMemo(
     () => createResource(() => fetchContentTypeUsage(site, contentType.id).toPromise()),
     [site, contentType.id]
   );
   const onSubmit = () => {
-    onSubmittingAndOrPendingChange({
+    functionRefs.current.onSubmittingAndOrPendingChange({
       isSubmitting: true
     });
     deleteContentType(site, contentType.id).subscribe({
       next() {
-        onSubmittingAndOrPendingChange({
+        functionRefs.current.onSubmittingAndOrPendingChange({
           isSubmitting: false
         });
         dispatch(showSystemNotification({ message: formatMessage(messages.deleteComplete) }));
         onComplete?.();
       },
       error(e) {
-        onSubmittingAndOrPendingChange({
+        functionRefs.current.onSubmittingAndOrPendingChange({
           isSubmitting: false
         });
         const response = e.response?.response ?? e.response;
