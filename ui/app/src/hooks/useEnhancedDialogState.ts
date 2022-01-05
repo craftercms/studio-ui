@@ -85,5 +85,7 @@ export function useEnhancedDialogState(initialState?: Partial<EnhancedDialogStat
       onHasPendingChange,
       onSubmittingAndOrPendingChange
     };
-  }, [initialState, setState, state]);
+    // Users of the effect most likely won’t memo the initial state
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [setState, state]);
 }
