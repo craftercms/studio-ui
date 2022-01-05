@@ -15,8 +15,8 @@
     "watch": "babel -w ./src -d ../../static-assets"
   },
   "devDependencies": {
-    "@babel/cli": "^7.16.0",
-    "@babel/core": "^7.16.0",
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "7.12.3",
     "@babel/plugin-proposal-class-properties": "7.16.5",
     "@babel/plugin-proposal-decorators": "7.16.5",
     "@babel/plugin-proposal-nullish-coalescing-operator": "7.16.5",
