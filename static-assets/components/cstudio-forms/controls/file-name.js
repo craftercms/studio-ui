@@ -406,12 +406,8 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
         };
 
         dialog.setHeader('Warning');
-        dialog.setBody(
-          CrafterCMSNext.i18n.intl.formatMessage(_self.messages.fileNameControlMessages.urlChangeWaring) +
-            '</br></br>' +
-            CrafterCMSNext.i18n.intl.formatMessage(_self.messages.fileNameControlMessages.viewReferences)
-        );
-        dialog.body.insertBefore(viewDependenciesLink, dialog.body.lastChild);
+        dialog.setBody(CrafterCMSNext.i18n.intl.formatMessage(_self.messages.fileNameControlMessages.urlChangeWaring));
+        // TODO: We removed the 'here' to see depedencies on RC 1.0, on RC 2 the warning should populate the dependencies items
 
         var myButtons = [
           {
