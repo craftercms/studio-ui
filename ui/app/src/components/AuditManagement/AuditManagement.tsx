@@ -114,7 +114,8 @@ export default function AuditManagement(props: AuditManagementProps) {
   };
 
   const onPageSizeChange = (pageSize: number) => {
-    setOptions({ limit: pageSize });
+    setPage(0);
+    setOptions({ offset: 0, limit: pageSize });
   };
 
   const onFilterChange = ({ id, value }: { id: string; value: string | string[] }) => {

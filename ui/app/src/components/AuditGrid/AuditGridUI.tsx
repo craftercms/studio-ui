@@ -396,7 +396,7 @@ export default function AuditGridUI(props: AuditGridUIProps) {
         rows={auditLogs}
         columns={columns}
         page={page}
-        pageSize={10}
+        pageSize={auditLogs.limit}
         onSortModelChange={onTimestampSortChanges}
         onPageSizeChange={onPageSizeChange}
         rowsPerPageOptions={[5, 10, 15]}
