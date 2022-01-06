@@ -134,6 +134,7 @@ import {
 } from '../../state/actions/system';
 import { useUpdateRefs } from '../../hooks';
 import { useHotkeys } from 'react-hotkeys-hook';
+import { batchActions } from '../../state/actions/misc';
 
 const originalDocDomain = document.domain;
 
@@ -518,6 +519,11 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
               });
               // @ts-ignore - TODO: type action accordingly
               hostToHost$.next(sortItemOperationComplete(payload));
+              dispatch(
+                reloadDetailedItem({
+                  path
+                })
+              );
               enqueueSnackbar(formatMessage(guestMessages.sortOperationComplete));
             },
             error(error) {
@@ -561,6 +567,11 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
                 type: insertOperationComplete.type,
                 payload: { ...payload, currentFullUrl: `${guestBase}${upToDateRefs.current.currentUrlPath}` }
               });
+              dispatch(
+                reloadDetailedItem({
+                  path
+                })
+              );
               enqueueSnackbar(formatMessage(guestMessages.insertOperationComplete));
             },
             error(error) {
@@ -602,6 +613,11 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
                 type: insertOperationComplete.type,
                 payload: { ...payload, currentFullUrl: `${guestBase}${upToDateRefs.current.currentUrlPath}` }
               });
+              dispatch(
+                reloadDetailedItem({
+                  path
+                })
+              );
               enqueueSnackbar(formatMessage(guestMessages.insertOperationComplete));
             },
             error(error) {
@@ -618,6 +634,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         case moveItemOperation.type: {
           const { originalFieldId, originalIndex, targetFieldId, targetIndex } = payload;
           let { originalModelId, originalParentModelId, targetModelId, targetParentModelId } = payload;
+          const originPath = models[originalParentModelId ? originalParentModelId : originalModelId].craftercms.path;
+          const targetPath = models[targetParentModelId ? targetParentModelId : targetModelId].craftercms.path;
 
           if (isInheritedField(models[originalModelId], originalFieldId)) {
             originalModelId = getModelIdFromInheritedField(models[originalModelId], originalFieldId, modelIdByPath);
@@ -637,10 +655,20 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
             targetModelId,
             targetFieldId,
             targetIndex,
-            models[originalParentModelId ? originalParentModelId : originalModelId].craftercms.path,
-            models[targetParentModelId ? targetParentModelId : targetModelId].craftercms.path
+            originPath,
+            targetPath
           ).subscribe({
             next() {
+              dispatch(
+                batchActions([
+                  reloadDetailedItem({
+                    path: originPath
+                  }),
+                  reloadDetailedItem({
+                    path: targetPath
+                  })
+                ])
+              );
               enqueueSnackbar(formatMessage(guestMessages.moveOperationComplete));
             },
             error(error) {
@@ -681,6 +709,11 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
                 type: deleteItemOperationComplete.type,
                 payload
               });
+              dispatch(
+                reloadDetailedItem({
+                  path
+                })
+              );
               enqueueSnackbar(formatMessage(guestMessages.deleteOperationComplete));
             },
             error: (error) => {
