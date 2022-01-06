@@ -90,7 +90,7 @@ import {
   getStoredHighlightModeChoice,
   removeStoredClipboard
 } from '../../utils/state';
-import { fetchSandboxItem, restoreClipboard } from '../../state/actions/content';
+import { fetchSandboxItem, reloadDetailedItem, restoreClipboard } from '../../state/actions/content';
 import EditFormPanel from '../../components/EditFormPanel/EditFormPanel';
 import {
   createModelHierarchyDescriptorMap,
@@ -693,6 +693,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         case updateFieldValueOperation.type: {
           const { fieldId, index, value } = payload;
           let { modelId, parentModelId } = payload;
+          const path = models[parentModelId ? parentModelId : modelId].craftercms.path;
 
           if (isInheritedField(models[modelId], fieldId)) {
             modelId = getModelIdFromInheritedField(models[modelId], fieldId, modelIdByPath);
@@ -704,11 +705,16 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
             modelId,
             fieldId,
             index,
-            models[parentModelId ? parentModelId : modelId].craftercms.path,
+            path,
             value,
             upToDateRefs.current.cdataEscapedFieldPatterns.some((pattern) => Boolean(fieldId.match(pattern)))
           ).subscribe({
             next() {
+              dispatch(
+                reloadDetailedItem({
+                  path
+                })
+              );
               enqueueSnackbar(formatMessage(guestMessages.updateOperationComplete));
             },
             error() {
