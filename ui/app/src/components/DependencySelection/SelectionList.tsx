@@ -209,9 +209,15 @@ export function SelectionList(props: SelectionListProps) {
                             />
                           )
                         ) : item.stateMap.submitted ? (
-                          <FormattedMessage id="itemPublishingDate.now" defaultMessage="Submitted for ASAP" />
+                          <FormattedMessage
+                            id="itemPublishingDate.submittedForAsap"
+                            defaultMessage="Submitted for ASAP"
+                          />
                         ) : (
-                          <FormattedMessage id="itemPublishingDate.now" defaultMessage="Scheduled for ASAP" />
+                          <FormattedMessage
+                            id="itemPublishingDate.scheduledForAsap"
+                            defaultMessage="Scheduled for ASAP"
+                          />
                         )}
                       </Typography>
                       <ItemPublishingTargetIcon
