@@ -298,7 +298,7 @@ export const contentTypesMessages = defineMessages({
     defaultMessage: 'Notice'
   },
   contenTypeWarningMessage: {
-    id: 'contentType.contenTypeWarningMessage',
+    id: 'contentType.contentTypeWarningMessage',
     defaultMessage:
       'Please note Child Content datasource is being phased out of Crafter CMS. For components that need to be shared across pages or components, please use Shared Content instead. For components that belong exclusively to this content object, please use Embedded Content.'
   },
