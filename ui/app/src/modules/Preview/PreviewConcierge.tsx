@@ -367,7 +367,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
     const guestToHost$ = getGuestToHostBus();
     const hostToHost$ = getHostToHostBus();
     const updatedModifiedItem = (path: string) => {
-      dispatch(
+      upToDateRefs.current.dispatch(
         reloadDetailedItem({
           path
         })
