@@ -366,6 +366,13 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
     const hostToGuest$ = getHostToGuestBus();
     const guestToHost$ = getGuestToHostBus();
     const hostToHost$ = getHostToHostBus();
+    const updatedModifiedItem = (path: string) => {
+      dispatch(
+        reloadDetailedItem({
+          path
+        })
+      );
+    };
     const guestToHostSubscription = guestToHost$.subscribe((action) => {
       const {
         siteId,
@@ -519,11 +526,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
               });
               // @ts-ignore - TODO: type action accordingly
               hostToHost$.next(sortItemOperationComplete(payload));
-              dispatch(
-                reloadDetailedItem({
-                  path
-                })
-              );
+              updatedModifiedItem(path);
               enqueueSnackbar(formatMessage(guestMessages.sortOperationComplete));
             },
             error(error) {
@@ -567,11 +570,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
                 type: insertOperationComplete.type,
                 payload: { ...payload, currentFullUrl: `${guestBase}${upToDateRefs.current.currentUrlPath}` }
               });
-              dispatch(
-                reloadDetailedItem({
-                  path
-                })
-              );
+              updatedModifiedItem(path);
               enqueueSnackbar(formatMessage(guestMessages.insertOperationComplete));
             },
             error(error) {
@@ -613,11 +612,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
                 type: insertOperationComplete.type,
                 payload: { ...payload, currentFullUrl: `${guestBase}${upToDateRefs.current.currentUrlPath}` }
               });
-              dispatch(
-                reloadDetailedItem({
-                  path
-                })
-              );
+              updatedModifiedItem(path);
               enqueueSnackbar(formatMessage(guestMessages.insertOperationComplete));
             },
             error(error) {
@@ -709,11 +704,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
                 type: deleteItemOperationComplete.type,
                 payload
               });
-              dispatch(
-                reloadDetailedItem({
-                  path
-                })
-              );
+              updatedModifiedItem(path);
               enqueueSnackbar(formatMessage(guestMessages.deleteOperationComplete));
             },
             error: (error) => {
@@ -743,11 +734,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
             upToDateRefs.current.cdataEscapedFieldPatterns.some((pattern) => Boolean(fieldId.match(pattern)))
           ).subscribe({
             next() {
-              dispatch(
-                reloadDetailedItem({
-                  path
-                })
-              );
+              updatedModifiedItem(path);
               enqueueSnackbar(formatMessage(guestMessages.updateOperationComplete));
             },
             error() {
