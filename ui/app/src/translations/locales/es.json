@@ -432,7 +432,6 @@
   "encryptTool.pageTitle": "Herramienta de cifrado",
   "encryptTool.successMessage": "Texto cifrado copiado al portapapeles.",
   "fileNameControl.urlChangeWarning": "Cambiar este valor puede provocar referencias y enlaces rotos.",
-  "fileNameControl.viewReferences": "Para ver el contenido que hace referencia a este contenido, haga clic en",
   "fileUpload.chooseFile": "Elija el archivo",
   "fileUpload.createPolicy": "El nombre del archivo de carga va en contra de las políticas del sitio. El nombre de archivo modificado sugerido es: \"{name}\". ¿Le gustaría usar el nombre sugerido?",
   "fileUpload.policyError": "El nombre del archivo de carga va en contra de las políticas del sitio.",

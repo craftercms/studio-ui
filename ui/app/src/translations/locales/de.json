@@ -432,7 +432,6 @@
   "encryptTool.pageTitle": "Verschlüsselungs-Tool",
   "encryptTool.successMessage": "In die Zwischenablage kopierter verschlüsselter Text.",
   "fileNameControl.urlChangeWarning": "Das Ändern dieses Werts kann zu fehlerhaften Verweisen und Links führen.",
-  "fileNameControl.viewReferences": "Klicken Sie auf, um den Inhalt anzuzeigen, der auf diesen Inhalt verweist",
   "fileUpload.chooseFile": "Datei wählen",
   "fileUpload.createPolicy": "Der Name der Upload-Datei verstößt gegen die Site-Richtlinien. Der vorgeschlagene geänderte Dateiname ist: \"{name}\". Möchten Sie den vorgeschlagenen Namen verwenden?",
   "fileUpload.policyError": "Der Name der Upload-Datei verstößt gegen die Site-Richtlinien.",
