@@ -22,6 +22,8 @@ import { useDispatch } from 'react-redux';
 import { setPreviewEditMode } from '../../state/actions/preview';
 import { DetailedItem } from '../../models/Item';
 import { usePreviewState } from '../../hooks/usePreviewState';
+import { batchActions } from '../../state/actions/misc';
+import { conditionallyUnlockItem } from '../../state/actions/content';
 
 export interface EditModesSwitcherProps {
   item: DetailedItem;
@@ -35,7 +37,11 @@ export function EditModesSwitcher(props: EditModesSwitcherProps) {
   const write = Boolean(item?.availableActionsMap.edit);
   const dispatch = useDispatch();
   const { editMode, highlightMode } = usePreviewState();
-  const onChange = (editMode, highlightMode) => dispatch(setPreviewEditMode({ editMode, highlightMode }));
+  const onChange = (editMode, highlightMode) => {
+    dispatch(
+      batchActions([conditionallyUnlockItem({ path: item.path }), setPreviewEditMode({ editMode, highlightMode })])
+    );
+  };
   const isDisabled = disabled || !write || isLocked;
   return (
     <EditModesSwitcherUI

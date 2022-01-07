@@ -90,13 +90,20 @@ import {
   getStoredHighlightModeChoice,
   removeStoredClipboard
 } from '../../utils/state';
-import { fetchSandboxItem, reloadDetailedItem, restoreClipboard } from '../../state/actions/content';
+import {
+  fetchSandboxItem,
+  localItemLock,
+  lockItem,
+  reloadDetailedItem,
+  restoreClipboard
+} from '../../state/actions/content';
 import EditFormPanel from '../../components/EditFormPanel/EditFormPanel';
 import {
   createModelHierarchyDescriptorMap,
   getComputedEditMode,
   hasEditAction,
   isItemLockedForMe,
+  isLockedState,
   normalizeModel,
   normalizeModelsLookup,
   parseContentXML
@@ -290,10 +297,22 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   useEffect(() => {
     // FYI. Path navigator refresh triggers this effect too due to item changing.
     if (item) {
+      const mode = getComputedEditMode({ item, username: user.username, editMode });
+      if (mode && !isLockedState(item.state)) {
+        dispatch(
+          batchActions([
+            localItemLock({ path: item.path, username: user.username }),
+            lockItem({
+              path: item.path
+            })
+          ])
+        );
+      }
       getHostToGuestBus().next({
         type: setPreviewEditMode.type,
-        payload: { editMode: getComputedEditMode({ item, username: user.username, editMode }) }
+        payload: { editMode: mode }
       });
+      // lock
     }
   }, [item, editMode, user.username]);
 

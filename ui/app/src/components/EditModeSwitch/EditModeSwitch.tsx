@@ -15,7 +15,7 @@
  */
 
 import withStyles from '@mui/styles/withStyles';
-import Switch from '@mui/material/Switch';
+import Switch, { SwitchProps } from '@mui/material/Switch';
 import Tooltip from '@mui/material/Tooltip';
 import React from 'react';
 import { DetailedItem, SandboxItem } from '../../models/Item';
@@ -23,10 +23,11 @@ import { useIntl } from 'react-intl';
 import translations from './translations';
 import { useDispatch } from 'react-redux';
 import { setPreviewEditMode } from '../../state/actions/preview';
-import { SwitchProps } from '@mui/material/Switch';
 import { useSelection } from '../../hooks/useSelection';
 import { isItemLockedForMe } from '../../utils/content';
 import { useActiveUser } from '../../hooks/useActiveUser';
+import { batchActions } from '../../state/actions/misc';
+import { conditionallyUnlockItem } from '../../state/actions/content';
 
 const EditSwitch = withStyles((theme) => {
   const green = theme.palette.success.main;
@@ -100,7 +101,9 @@ export function EditModeSwitch(props: EditModeSwitchProps) {
   const editMode = useSelection((state) => state.preview.editMode) && !isLocked && write;
 
   const onChange = (e) => {
-    dispatch(setPreviewEditMode({ editMode: e.target.checked }));
+    dispatch(
+      batchActions([conditionallyUnlockItem({ path: item.path }), setPreviewEditMode({ editMode: e.target.checked })])
+    );
   };
 
   return (

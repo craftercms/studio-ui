@@ -35,6 +35,7 @@ import {
   fetchSandboxItemComplete,
   fetchSandboxItemFailed,
   FetchSandboxItemPayload,
+  lockItem,
   pasteItem,
   pasteItemWithPolicyValidation,
   reloadDetailedItem,
@@ -47,6 +48,7 @@ import {
   fetchItemByPath,
   fetchQuickCreateList,
   fetchSandboxItem as fetchSandboxItemService,
+  lock,
   paste,
   unlock
 } from '../../services/content';
@@ -64,6 +66,7 @@ import {
   blockUI,
   emitSystemEvent,
   itemDuplicated,
+  itemlocked,
   itemsPasted,
   itemUnlocked,
   showDeleteItemSuccessNotification,
@@ -249,6 +252,18 @@ const content: CrafterCMSEpic[] = [
                   showUnlockItemSuccessNotification()
                 ])
           )
+        );
+      })
+    ),
+  // endregion
+  // region lockItem
+  (action$, state$) =>
+    action$.pipe(
+      ofType(lockItem.type),
+      withLatestFrom(state$),
+      switchMap(([{ payload }, state]) => {
+        return lock(state.sites.active, payload.path).pipe(
+          map(() => emitSystemEvent(itemlocked({ target: payload.path })))
         );
       })
     ),
