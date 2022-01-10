@@ -41,8 +41,6 @@ YAHOO.extend(CStudioForms.Datasources.VideoBrowseRepo, CStudioForms.CStudioFormD
 
     if (this.useSearch) {
       const searchContext = {
-        searchId: null,
-        itemsPerPage: 12,
         keywords: '',
         filters: {
           // map with video-picker.js validExtensions
@@ -50,12 +48,6 @@ YAHOO.extend(CStudioForms.Datasources.VideoBrowseRepo, CStudioForms.CStudioFormD
         },
         sortBy: 'internalName',
         sortOrder: 'asc',
-        numFilters: 1,
-        filtersShowing: 10,
-        currentPage: 1,
-        searchInProgress: false,
-        view: 'grid',
-        lastSelectedFilterSelector: '',
         mode: 'select' // open search not in default but in select mode
       };
 
@@ -104,9 +96,9 @@ YAHOO.extend(CStudioForms.Datasources.VideoBrowseRepo, CStudioForms.CStudioFormD
   },
 
   /**
-  * create preview URL
-  */
-   createPreviewUrl(videoPath) {
+   * create preview URL
+   */
+  createPreviewUrl(videoPath) {
     return CStudioAuthoringContext.previewAppBaseUri + videoPath + '';
   },
 
