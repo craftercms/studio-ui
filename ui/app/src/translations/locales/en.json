@@ -432,7 +432,6 @@
   "encryptTool.pageTitle": "Encryption Tool",
   "encryptTool.successMessage": "Encrypted text copied to clipboard.",
   "fileNameControl.urlChangeWarning": "Changing this value may result in broken references and links.",
-  "fileNameControl.viewReferences": "To view the content that references this content, click ",
   "fileUpload.chooseFile": "Choose File",
   "fileUpload.createPolicy": "The upload file name goes against site policies. Suggested modified file name is: \"{name}\". Would you like to use the suggested name?",
   "fileUpload.policyError": "The upload file name goes against site policies.",
