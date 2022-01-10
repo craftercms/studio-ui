@@ -93,6 +93,7 @@ export function initTinyMCE(
     suffix: '.min',
     external_plugins: external,
     code_editor_inline: false,
+    skin: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'oxide-dark' : 'oxide',
     setup(editor: Editor) {
       editor.on('init', function () {
         let changed = false;
@@ -124,6 +125,10 @@ export function initTinyMCE(
         });
 
         editor.once('change', () => {
+          changed = true;
+        });
+
+        editor.once('external_change', () => {
           changed = true;
         });
 

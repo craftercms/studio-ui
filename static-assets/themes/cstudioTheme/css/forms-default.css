@@ -1370,6 +1370,11 @@ body.yui-skin-cstudioTheme.masked {
   flex-wrap: nowrap;
 }
 
+.cstudio-form-control-input-container.no-wrap .input-path {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
 .cstudio-form-control-input-container.input-wrapper {
   border: 1px solid #ced4da;
   border-radius: 4px;

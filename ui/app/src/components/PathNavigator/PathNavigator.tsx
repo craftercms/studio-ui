@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ElementType, useCallback, useEffect, useState } from 'react';
+import React, { ChangeEvent, ElementType, useCallback, useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { DetailedItem } from '../../models/Item';
 import ContextMenu, { ContextMenuOption } from '../ContextMenu/ContextMenu';
@@ -24,6 +24,7 @@ import { translations } from './translations';
 import { languages } from '../../utils/i18n-legacy';
 import {
   pathNavigatorBackgroundRefresh,
+  pathNavigatorChangeLimit,
   pathNavigatorChangePage,
   pathNavigatorConditionallySetPath,
   pathNavigatorFetchPath,
@@ -394,6 +395,17 @@ export function PathNavigator(props: PathNavigatorProps) {
     );
   };
 
+  const onRowsPerPageChange = (e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+    const limit = Number(e.target.value);
+    dispatch(
+      pathNavigatorChangeLimit({
+        id,
+        limit,
+        offset: 0
+      })
+    );
+  };
+
   const onSelectItem = (item: DetailedItem, checked: boolean) => {
     dispatch(
       checked
@@ -534,6 +546,7 @@ export function PathNavigator(props: PathNavigatorProps) {
         onOpenItemMenu={onOpenItemMenu}
         onItemClicked={onItemClicked}
         onPageChanged={onPageChanged}
+        onRowsPerPageChange={onRowsPerPageChange}
         computeActiveItems={computeActiveItems}
       />
       <ContextMenu

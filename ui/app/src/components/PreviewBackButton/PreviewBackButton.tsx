@@ -38,7 +38,7 @@ export function PreviewBackButton(props: PreviewBackButtonProps) {
     <Tooltip title={<FormattedMessage id="words.back" defaultMessage="Back" />}>
       <span>
         <IconButton
-          disabled={stack.length === 0 || currentUrlPath === stack[stack.length - 1]}
+          disabled={stack.length === 0 || (stack.length === 1 && currentUrlPath === stack[0])}
           onClick={onClick}
           size="large"
           {...props}

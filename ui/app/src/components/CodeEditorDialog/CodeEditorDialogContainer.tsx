@@ -31,12 +31,13 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { showSystemNotification } from '../../state/actions/system';
 import translations from './translations';
+import SplitButton from '../SplitButton/SplitButton';
 import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
 import LookupTable from '../../models/LookupTable';
-import { isItemLockedForMe } from '../../utils/content';
+import { isItemLockedForMe, isLockedState } from '../../utils/content';
 import { localItemLock } from '../../state/actions/content';
 import { useContentTypes } from '../../hooks/useContentTypes';
 import { useActiveUser } from '../../hooks/useActiveUser';
@@ -63,7 +64,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
   const contentTypes = useContentTypes();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [snippets, setSnippets] = useState<LookupTable<{ label: string; value: string }>>({});
-  const [contentModelSnippets, setContentModelSnippets] = useState<{ label: string; value: string }[]>(null);
+  const [contentModelSnippets, setContentModelSnippets] = useState<Array<{ label: string; value: string }>>(null);
   const storedId = 'codeEditor';
   const {
     'craftercms.freemarkerCodeSnippets': freemarkerCodeSnippets,
@@ -102,7 +103,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
           isSubmitting: true
         })
       );
-      fetchContentXML(site, item.path, { ...(!item.lockOwner && { lock: !readonly }) }).subscribe((xml) => {
+      fetchContentXML(site, item.path, { ...(!isLockedState(item.state) && { lock: !readonly }) }).subscribe((xml) => {
         setContent(xml);
         setLoading(false);
         if (!readonly) {
@@ -214,28 +215,22 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
     }
   };
 
-  const rightActions = [];
-  if (onMinimize) {
-    rightActions.push({
-      icon: 'MinimizeIcon',
-      onClick: onMinimize
-    });
-  }
-  if (onFullScreen) {
-    rightActions.push({
-      icon: 'MaximizeIcon',
-      onClick: onFullScreen
-    });
-  }
-
   return (
     <>
       <DialogHeader
         title={item ? item.label : <Skeleton width="120px" />}
         onCloseButtonClick={onCloseButtonClick}
-        rightActions={rightActions}
+        onMinimizeButtonClick={onMinimize}
+        onFullScreenButtonClick={onFullScreen}
       />
-      <DialogBody className={classes.dialogBody}>
+      <DialogBody
+        className={classes.dialogBody}
+        sx={{
+          '.MuiDialogTitle-root + &': {
+            pt: 0
+          }
+        }}
+      >
         <ConditionalLoadingState isLoading={loading} classes={{ root: classes.loadingState }}>
           <AceEditor
             ref={editorRef}
@@ -243,6 +238,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
             value={content ?? ''}
             onChange={onEditorChanges}
             readOnly={disableEdit || readonly}
+            classes={{ editorRoot: classes.aceRoot }}
             enableBasicAutocompletion
             enableSnippets
             enableLiveAutocompletion

@@ -29,7 +29,9 @@ const initialState: CodeEditorDialogStateProps = commonDialogProps({
   path: null,
   mode: null,
   contentType: null,
-  readonly: false
+  readonly: false,
+  isFullScreen: false,
+  isMinimized: false
 });
 
 export default createReducer<GlobalState['dialogs']['codeEditor']>(initialState, {
@@ -42,6 +44,8 @@ export default createReducer<GlobalState['dialogs']['codeEditor']>(initialState,
           onClosed: codeEditorDialogClosed(),
           onMinimize: updateCodeEditorDialog({ isMinimized: true }),
           onMaximize: updateCodeEditorDialog({ isMinimized: false }),
+          onFullScreen: updateCodeEditorDialog({ isFullScreen: true }),
+          onCancelFullScreen: updateCodeEditorDialog({ isFullScreen: false }),
           ...payload,
           open: true
         };

@@ -389,27 +389,11 @@ export function insertComponent(
     }
   };
 
-  function processFields(instance, fields: LookupTable<ContentTypeField>) {
-    Object.entries(fields).forEach(([id, field]) => {
-      switch (field.type) {
-        case 'repeat':
-        case 'node-selector': {
-          instance[id] = [];
-          if (field.type === 'repeat') {
-            instance[id].push({});
-            processFields(instance[id][0], field.fields);
-          }
-          break;
-        }
-        default:
-          if (!systemProps.includes(field.id)) {
-            instance[id] = getDefaultValue(field);
-          }
-      }
-    });
-  }
-
-  processFields(instance, contentType.fields);
+  Object.entries(contentType.fields).forEach(([id, field]) => {
+    if (!systemProps.includes(field.id)) {
+      instance[id] = getDefaultValue(field);
+    }
+  });
 
   // Insert in desired position
   result.splice(targetIndex as number, 0, instance.craftercms.id);
@@ -576,7 +560,7 @@ export function sortItem(
     updateHierarchyMapIndexesFromCollection(result);
   } else {
     modelHierarchyMap[modelId].children.forEach((_modelId) => {
-      if (modelHierarchyMap[_modelId].parentContainerFieldPath.startsWith(fieldId)) {
+      if (modelHierarchyMap[_modelId].parentContainerFieldPath?.startsWith(fieldId)) {
         updateModel(fieldId, modelHierarchyMap[_modelId], currentIndexParsed, targetIndexParsed);
       }
     });
@@ -786,7 +770,7 @@ export function deleteItem(modelId: string, fieldId: string, index: number | str
 // Host sends over all content types upon Guest check in.
 fromTopic(contentTypesResponse.type)
   .pipe(pluck('payload'))
-  .subscribe((contentTypes) => {
+  .subscribe(({ contentTypes }) => {
     contentTypes$.next(Array.isArray(contentTypes) ? createLookupTable(contentTypes) : contentTypes);
   });
 

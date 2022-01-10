@@ -24,8 +24,10 @@ import {
   previewItem,
   pushIcePanelPage,
   pushToolsPanelPage,
+  setEditModePadding,
   setHighlightMode,
-  setPreviewEditMode
+  setPreviewEditMode,
+  toggleEditModePadding
 } from '../actions/preview';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 import {
@@ -33,6 +35,7 @@ import {
   removeStoredPreviewToolsPanelPage,
   setStoredClipboard,
   setStoredEditModeChoice,
+  setStoredEditModePadding,
   setStoredHighlightModeChoice,
   setStoredICEToolsPanelPage,
   setStoredPreviewToolsPanelPage,
@@ -97,6 +100,20 @@ export default [
       tap(([action, state]) => {
         setStoredHighlightModeChoice(action.payload.highlightMode, state.user.username);
         getHostToGuestBus().next(action);
+      }),
+      ignoreElements()
+    ),
+  // endregion
+  // region setEditModePadding
+  (action$, state$) =>
+    action$.pipe(
+      ofType(setEditModePadding.type, toggleEditModePadding.type),
+      withLatestFrom(state$),
+      tap(([action, state]) => {
+        const nextValue =
+          action.type === setEditModePadding.type ? action.payload.editModePadding : state.preview.editModePadding;
+        setStoredEditModePadding(nextValue, state.user.username);
+        getHostToGuestBus().next(setEditModePadding({ editModePadding: nextValue }));
       }),
       ignoreElements()
     ),

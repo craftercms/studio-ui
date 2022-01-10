@@ -31,7 +31,7 @@ import { VersionsStateProps } from './Version';
 import QuickCreateItem from './content/QuickCreateItem';
 import { PathNavigatorStateProps } from '../components/PathNavigator';
 import { DetailedItem } from './Item';
-import { CopyDialogStateProps } from '../components/CopyDialog/CopyDialog';
+import { CopyDialogStateProps } from '../components/CopyDialog/utils';
 import { PathSelectionDialogStateProps } from '../components/PathSelectionDialog/PathSelectionDialog';
 import { WidgetDescriptor } from '../components/Widget';
 import { ItemMenuStateProps } from '../components/ItemActionsMenu';
@@ -64,6 +64,7 @@ import { EditSiteDialogStateProps } from '../components/EditSiteDialog/utils';
 import { LegacyFormDialogStateProps } from '../components/LegacyFormDialog/utils';
 import { SingleFileUploadDialogStateProps } from '../components/SingleFileUploadDialog';
 import { ModelHierarchyMap } from '../utils/content';
+import { UIBlockerStateProps } from '../components/UIBlocker';
 
 export type HighlightMode = 'all' | 'move';
 
@@ -186,7 +187,7 @@ export interface GlobalState {
       widgets: WidgetDescriptor[];
     };
     richTextEditor: LookupTable;
-    dragHelpMode: boolean;
+    editModePadding: boolean;
   };
   previewNavigation: {
     currentUrlPath: string;
@@ -226,6 +227,7 @@ export interface GlobalState {
     publishingStatus: PublishingStatusDialogStateProps;
     unlockPublisher: UnlockPublisherDialogStateProps;
     widget: WidgetDialogStateProps;
+    uiBlocker: UIBlockerStateProps;
   };
   uiConfig: {
     error: ApiResponse;

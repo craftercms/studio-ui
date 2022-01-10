@@ -15,7 +15,7 @@
  */
 
 import { translations } from '../components/ItemActionsMenu/translations';
-import { AllItemActions, DetailedItem, LegacyItem } from '../models/Item';
+import { AllItemActions, DetailedItem } from '../models/Item';
 import { ContextMenuOption } from '../components/ContextMenu';
 import { getRootPath, withoutIndex } from './path';
 import {
@@ -46,7 +46,7 @@ import {
   showUploadDialog,
   showWorkflowCancellationDialog
 } from '../state/actions/dialogs';
-import { fetchLegacyItemsTree, fetchWorkflowAffectedItems } from '../services/content';
+import { fetchSandboxItem, fetchWorkflowAffectedItems } from '../services/content';
 import {
   batchActions,
   changeContentType,
@@ -55,6 +55,7 @@ import {
   editTemplate
 } from '../state/actions/misc';
 import {
+  blockUI,
   emitSystemEvent,
   itemCut,
   showCopyItemSuccessNotification,
@@ -64,7 +65,8 @@ import {
   showDeleteItemSuccessNotification,
   showEditItemSuccessNotification,
   showPublishItemSuccessNotification,
-  showRejectItemSuccessNotification
+  showRejectItemSuccessNotification,
+  unblockUI
 } from '../state/actions/system';
 import {
   conditionallyUnlockItem,
@@ -105,7 +107,8 @@ import {
   hasRenameAction,
   hasSchedulePublishAction,
   hasUnlockAction,
-  hasUploadAction
+  hasUploadAction,
+  parseSandBoxItemToDetailedItem
 } from './content';
 import { getEditorMode, isNavigable } from '../components/PathNavigator/utils';
 import React from 'react';
@@ -113,8 +116,6 @@ import { previewItem } from '../state/actions/preview';
 import { asArray, createPresenceTable } from './array';
 import { fetchPublishingStatus } from '../state/actions/publishingStatus';
 import { Clipboard } from '../models/GlobalState';
-import { nanoid as uuid } from 'nanoid';
-import { popTab, pushTab } from '../state/reducers/dialogs/minimizedTabs';
 
 export type ContextMenuOptionDescriptor<ID extends string = string> = {
   id: ID;
@@ -300,8 +301,9 @@ export function generateSingleItemOptions(
 
   const type = item.systemType;
   const isImage = item.mimeType?.startsWith('image/');
-  const isTemplate = item.path.includes('/templates');
-  const isController = item.path.includes('/scripts');
+  const isTemplate = item.path.startsWith('/templates');
+  const isController = item.path.startsWith('/scripts');
+  const isStaticAssets = item.path.startsWith('/static-assets');
   const menuOptions: Record<AllItemActions, ContextMenuOption> = toContextMenuOptionsLookup(
     unparsedMenuOptions,
     formatMessage
@@ -318,7 +320,13 @@ export function generateSingleItemOptions(
   if (hasUnlockAction(item.availableActions) && actionsToInclude.unlock) {
     sectionA.push(menuOptions.unlock);
   }
-  if (hasCreateAction(item.availableActions) && actionsToInclude.createContent) {
+  if (
+    !isStaticAssets &&
+    !isController &&
+    !isTemplate &&
+    hasCreateAction(item.availableActions) &&
+    actionsToInclude.createContent
+  ) {
     sectionA.push(menuOptions.createContent);
   }
   if (hasUploadAction(item.availableActions) && actionsToInclude.upload) {
@@ -616,14 +624,20 @@ export const itemActionDispatcher = ({
         break;
       }
       case 'copy': {
-        fetchLegacyItemsTree(site, item.path, { depth: 1000, order: 'default' }).subscribe(
-          (legacyItem: LegacyItem) => {
-            if (legacyItem.children.length) {
+        dispatch(
+          blockUI({
+            progress: 'indeterminate',
+            message: `${formatMessage(translations.processing)}...`
+          })
+        );
+        fetchSandboxItem(site, item.path).subscribe({
+          next(item) {
+            dispatch(unblockUI());
+            if (item.childrenCount) {
               dispatch(
                 showCopyDialog({
-                  title: formatMessage(translations.copyDialogTitle),
-                  subtitle: formatMessage(translations.copyDialogSubtitle),
-                  item: legacyItem,
+                  site,
+                  item: parseSandBoxItemToDetailedItem(item),
                   onOk: batchActions([
                     closeCopyDialog(),
                     setClipboard({
@@ -647,19 +661,26 @@ export const itemActionDispatcher = ({
               );
             }
           },
-          (response) => {
+          error(response) {
             dispatch(
               showErrorDialog({
                 error: response
               })
             );
           }
-        );
+        });
         break;
       }
       case 'paste': {
         if (clipboard.type === 'CUT') {
+          dispatch(
+            blockUI({
+              progress: 'indeterminate',
+              title: `${formatMessage(translations.processing)}...`
+            })
+          );
           fetchWorkflowAffectedItems(site, clipboard.sourcePath).subscribe((items) => {
+            dispatch(unblockUI());
             if (items?.length > 0) {
               dispatch(
                 showWorkflowCancellationDialog({
@@ -759,21 +780,17 @@ export const itemActionDispatcher = ({
       }
       case 'editCode': {
         const path = item.path;
-        const id = uuid();
         dispatch(
-          pushTab({
-            minimized: true,
-            id,
-            status: 'indeterminate',
+          blockUI({
+            progress: 'indeterminate',
             title: formatMessage(translations.verifyingAffectedWorkflows)
           })
         );
-
         fetchWorkflowAffectedItems(site, path).subscribe((items) => {
           if (items?.length > 0) {
             dispatch(
               batchActions([
-                popTab({ id }),
+                unblockUI(),
                 showWorkflowCancellationDialog({
                   items,
                   onContinue: showCodeEditorDialog({
@@ -787,7 +804,7 @@ export const itemActionDispatcher = ({
           } else {
             dispatch(
               batchActions([
-                popTab({ id }),
+                unblockUI(),
                 showCodeEditorDialog({
                   path: item.path,
                   mode: getEditorMode(item),
