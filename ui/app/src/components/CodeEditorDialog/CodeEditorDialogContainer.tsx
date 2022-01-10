@@ -31,7 +31,6 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { showSystemNotification } from '../../state/actions/system';
 import translations from './translations';
-import SplitButton from '../SplitButton/SplitButton';
 import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
