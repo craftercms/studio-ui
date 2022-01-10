@@ -27,9 +27,11 @@ import {
   fetchSandboxItem,
   fetchSandboxItemComplete,
   localItemLock,
+  lockItemCompleted,
   reloadDetailedItem,
   restoreClipboard,
-  setClipboard
+  setClipboard,
+  unlockItemCompleted
 } from '../actions/content';
 import QuickCreateItem from '../../models/content/QuickCreateItem';
 import StandardAction from '../../models/StandardAction';
@@ -64,6 +66,26 @@ const initialState: ContentState = {
   itemsByPath: {},
   clipboard: null,
   itemsBeingFetchedByPath: {}
+};
+
+const updateItemLockState = (state: ContentState, { path, username, locked }) => {
+  if ((locked && state.itemsByPath[path].stateMap.locked) || (!locked && !state.itemsByPath[path].stateMap.locked)) {
+    return state;
+  }
+  return {
+    ...state,
+    itemsByPath: {
+      ...state.itemsByPath,
+      [path]: {
+        ...state.itemsByPath[path],
+        lockOwner: locked ? username : null,
+        state: locked
+          ? state.itemsByPath[path].state + STATE_LOCKED_MASK
+          : state.itemsByPath[path].state - STATE_LOCKED_MASK,
+        stateMap: { ...state.itemsByPath[path].stateMap, locked }
+      }
+    }
+  };
 };
 
 const updateItemByPath = (state: ContentState, { payload: { parent, children } }) => {
@@ -229,22 +251,14 @@ const reducer = createReducer<ContentState>(initialState, {
     });
     return { ...state, itemsByPath: { ...state.itemsByPath, ...nextByPath } };
   },
+  [unlockItemCompleted.type]: (state, { payload }) => {
+    return updateItemLockState(state, { path: payload.path, username: payload.username, locked: false });
+  },
+  [lockItemCompleted.type]: (state, { payload }) => {
+    return updateItemLockState(state, { path: payload.path, username: payload.username, locked: true });
+  },
   [localItemLock.type]: (state, { payload }) => {
-    if (state.itemsByPath[payload.path].stateMap.locked) {
-      return state;
-    }
-    return {
-      ...state,
-      itemsByPath: {
-        ...state.itemsByPath,
-        [payload.path]: {
-          ...state.itemsByPath[payload.path],
-          lockOwner: payload.username,
-          state: state.itemsByPath[payload.path].state + STATE_LOCKED_MASK,
-          stateMap: { ...state.itemsByPath[payload.path].stateMap, locked: true }
-        }
-      }
-    };
+    return updateItemLockState(state, { path: payload.path, username: payload.username, locked: true });
   },
   [changeSite.type]: () => initialState
 });

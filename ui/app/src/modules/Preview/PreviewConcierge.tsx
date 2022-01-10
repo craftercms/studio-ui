@@ -90,13 +90,7 @@ import {
   getStoredHighlightModeChoice,
   removeStoredClipboard
 } from '../../utils/state';
-import {
-  fetchSandboxItem,
-  localItemLock,
-  lockItem,
-  reloadDetailedItem,
-  restoreClipboard
-} from '../../state/actions/content';
+import { fetchSandboxItem, lockItem, reloadDetailedItem, restoreClipboard } from '../../state/actions/content';
 import EditFormPanel from '../../components/EditFormPanel/EditFormPanel';
 import {
   createModelHierarchyDescriptorMap,
@@ -301,7 +295,6 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
       if (mode && !isLockedState(item.state)) {
         dispatch(
           batchActions([
-            localItemLock({ path: item.path, username: user.username }),
             lockItem({
               path: item.path
             })
@@ -314,7 +307,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
       });
       // lock
     }
-  }, [item, editMode, user.username]);
+  }, [item, editMode, user.username, dispatch]);
 
   // Fetch active item
   useEffect(() => {
