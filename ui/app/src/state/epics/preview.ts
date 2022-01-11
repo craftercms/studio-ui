@@ -178,6 +178,7 @@ export default [
       ignoreElements()
     ),
   // endregion
+  // region popIcePanelPage
   (action$, state$) =>
     action$.pipe(
       ofType(popIcePanelPage.type),
@@ -197,4 +198,5 @@ export default [
       }),
       ignoreElements()
     )
+  // endregion
 ] as CrafterCMSEpic[];

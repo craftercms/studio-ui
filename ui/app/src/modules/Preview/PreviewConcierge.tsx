@@ -90,7 +90,13 @@ import {
   getStoredHighlightModeChoice,
   removeStoredClipboard
 } from '../../utils/state';
-import { fetchSandboxItem, lockItem, reloadDetailedItem, restoreClipboard } from '../../state/actions/content';
+import {
+  conditionallyUnlockItem,
+  fetchSandboxItem,
+  lockItem,
+  reloadDetailedItem,
+  restoreClipboard
+} from '../../state/actions/content';
 import EditFormPanel from '../../components/EditFormPanel/EditFormPanel';
 import {
   createModelHierarchyDescriptorMap,
@@ -497,7 +503,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         }
         case guestCheckOut.type: {
           requestedSourceMapPaths.current = {};
-          dispatch(checkOutGuest());
+          dispatch(batchActions([conditionallyUnlockItem({ path: upToDateRefs.current.guest.path }), checkOutGuest()]));
           startGuestDetectionTimeout(guestDetectionTimeoutRef, setGuestDetectionSnackbarOpen);
           break;
         }

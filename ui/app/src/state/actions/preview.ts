@@ -207,11 +207,7 @@ export const checkInGuest = /*#__PURE__*/ createAction<{
   documentDomain?: string;
 }>(guestCheckIn.type);
 
-export function checkOutGuest(): StandardAction {
-  return {
-    type: guestCheckOut.type
-  };
-}
+export const checkOutGuest = createAction(guestCheckOut.type);
 
 // This action is meant for the primary Guest model. The reducer
 // should set the guest.modelId of the model that comes in payload.
