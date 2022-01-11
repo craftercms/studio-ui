@@ -155,6 +155,10 @@ CStudioForms.Controls.DateTime =
   };
 
 YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
+  getAdditionalFields: function () {
+    return ['{id}_tz'];
+  },
+
   getLabel: function () {
     return CMgs.format(langBundle, 'dateTime');
   },

@@ -782,6 +782,7 @@
                     tool.id = tool.getFixedId();
                     controlEl.prototypeField = tool;
                     controls[idx].supportedPostFixes = tool.getSupportedPostFixes ? tool.getSupportedPostFixes() : [];
+                    controls[idx].additionalFields = tool.getAdditionalFields?.() ?? [];
 
                     YDom.addClass(controlEl, 'new-control-type');
                     YDom.addClass(
@@ -3446,9 +3447,31 @@
       },
 
       /**
+       * The list of controls is generic and not for each control in the form-definition.
+       * So when retrieving the additional fields if the additional field needs to match the field id then it will have
+       * a macro '{id}'.
+       * This function replaces the macro with the actual fieldId, so it can be written in the xml properly.
+       */
+      processAdditionalFieldsMacro: function(additionalFields, fieldId) {
+        const fields = [];
+        additionalFields.forEach((field) => {
+          let processedField = field;
+          if (field.includes('{id}')) {
+            processedField = field.replace('{id}', fieldId);
+          }
+          fields.push(processedField);
+        });
+        return fields;
+      },
+
+      /**
        * render a field as xml
        */
       renderFieldToXml: function (field) {
+        const control = CStudioAdminConsole.Tool.ContentTypes.propertySheet.config.controls.control
+          .filter((control) => control.name === field.type)[0];
+        const additionalFields = this.processAdditionalFieldsMacro(control.additionalFields, field.id);
+
         var xml = '';
 
         if (field) {
@@ -3533,7 +3556,18 @@
                 '\t\t\t\t\t\t</constraint>\r\n';
             }
           }
-          xml += '\t\t\t\t\t</constraints>\r\n' + '\t\t\t\t</field>\r\n';
+          xml += '\t\t\t\t\t</constraints>\r\n';
+          if (additionalFields.length > 0) {
+            xml += '\t\t\t\t\t<additionalFields>\r\n';
+            additionalFields.forEach((field) => {
+              xml +=
+                '\t\t\t\t\t\t<id>' +
+                field +
+                '</id>\r\n';
+            });
+            xml += '\t\t\t\t\t</additionalFields>\r\n';
+          }
+          xml += '\t\t\t\t</field>\r\n';
         }
         return xml;
       },

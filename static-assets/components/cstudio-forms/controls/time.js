@@ -151,6 +151,10 @@ CStudioForms.Controls.Time =
   };
 
 YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
+  getAdditionalFields: function () {
+    return ['{id}_tz'];
+  },
+
   getLabel: function () {
     return CMgs.format(langBundle, 'time');
   },
