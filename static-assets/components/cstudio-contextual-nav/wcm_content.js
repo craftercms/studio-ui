@@ -47,6 +47,23 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
         var CMgs = CStudioAuthoring.Messages;
         var contextNavLangBundle = CMgs.getBundle('contextnav', CStudioAuthoringContext.lang);
 
+        function createNoticeElement(parent, type) {
+          var noticeEl = document.createElement('div');
+          parent.appendChild(noticeEl);
+          YDom.addClass(noticeEl, type === 'draft' ? 'acnDraftContent' : 'acnDisabledContent');
+          noticeEl.innerHTML = CMgs.format(
+            contextNavLangBundle,
+            type === 'draft' ? 'wcmContentSavedAsDraft' : 'wcmContentPageDisabled'
+          );
+          var closeButtonElement = document.createElement('button');
+          closeButtonElement.className = 'acn-notice--close';
+          closeButtonElement.innerText = CMgs.format(contextNavLangBundle, 'close');
+          closeButtonElement.onclick = () => {
+            $(type === 'draft' ? '.acnDraftContent' : '.acnDisabledContent').remove();
+          };
+          noticeEl.appendChild(closeButtonElement);
+        }
+
         /**
          * WCM Site Dropdown Contextual Active Content
          */
@@ -150,10 +167,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
                       this._self._drawNav(selectedContent, isWrite, totalPerms);
 
                       if (CStudioAuthoringContext.isPreview == true && selectedContent[0].disabled == true) {
-                        var noticeEl = document.createElement('div');
-                        this._self.containerEl.parentNode.parentNode.appendChild(noticeEl);
-                        YDom.addClass(noticeEl, 'acnDisabledContent');
-                        noticeEl.innerHTML = CMgs.format(contextNavLangBundle, 'wcmContentPageDisabled');
+                        createNoticeElement(this._self.containerEl.parentNode.parentNode, 'disabled');
                       } else {
                         me.removeDisableMessage();
                       }
@@ -173,10 +187,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
                           if (currentContent.savedAsDraft == true) {
                             saveDraftFlag = true;
                             if (noticeEls.length < 1) {
-                              var noticeEl = document.createElement('div');
-                              thisContext._self.containerEl.parentNode.parentNode.appendChild(noticeEl);
-                              YDom.addClass(noticeEl, 'acnDraftContent');
-                              noticeEl.innerHTML = CMgs.format(contextNavLangBundle, 'wcmContentSavedAsDraft');
+                              createNoticeElement(thisContext._self.containerEl.parentNode.parentNode, 'draft');
                             }
                           } else {
                             if (!saveDraftFlag) {
@@ -320,10 +331,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
                             _this.containerEl.parentNode.parentNode
                           );
                           if (noticeEls.length < 1) {
-                            var noticeEl = document.createElement('div');
-                            _this.containerEl.parentNode.parentNode.appendChild(noticeEl);
-                            YDom.addClass(noticeEl, 'acnDraftContent');
-                            noticeEl.innerHTML = CMgs.format(contextNavLangBundle, 'wcmContentSavedAsDraft');
+                            createNoticeElement(_this.containerEl.parentNode.parentNode, 'draft');
                           }
                         } else {
                           if (!saveDraftFlag /*|| (saveDraftFlag && selectedContent.length-1 == s )*/) {
@@ -464,10 +472,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
                   this._self._drawNav(selectedContent, isWrite, perms);
 
                   if (CStudioAuthoringContext.isPreview == true && selectedContent[0].disabled == true) {
-                    var noticeEl = document.createElement('div');
-                    this._self.containerEl.parentNode.parentNode.appendChild(noticeEl);
-                    YDom.addClass(noticeEl, 'acnDisabledContent');
-                    noticeEl.innerHTML = CMgs.format(contextNavLangBundle, 'wcmContentPageDisabled');
+                    createNoticeElement(this._self.containerEl.parentNode.parentNode, 'disabled');
                   } else {
                     me.removeDisableMessage();
                   }
@@ -483,10 +488,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
                             _this.containerEl.parentNode.parentNode
                           );
                           if (noticeEls.length < 1) {
-                            var noticeEl = document.createElement('div');
-                            thisContext._self.containerEl.parentNode.parentNode.appendChild(noticeEl);
-                            YDom.addClass(noticeEl, 'acnDraftContent');
-                            noticeEl.innerHTML = CMgs.format(contextNavLangBundle, 'wcmContentSavedAsDraft');
+                            createNoticeElement(thisContext._self.containerEl.parentNode.parentNode, 'draft');
                           }
                         }
                       }
