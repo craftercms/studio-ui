@@ -18,10 +18,12 @@ import { WidgetDescriptor } from '../Widget';
 import StandardAction from '../../models/StandardAction';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState, onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
+import { LookupTable } from '../../models';
 
 interface WidgetDialogBaseProps {
   title: string;
   widget: WidgetDescriptor;
+  extraProps?: any;
 }
 
 export interface WidgetDialogProps extends WidgetDialogBaseProps, Omit<EnhancedDialogProps, 'title'> {

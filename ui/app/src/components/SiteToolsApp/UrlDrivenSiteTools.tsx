@@ -70,6 +70,7 @@ export function UrlDrivenSiteTools(props: UrlDrivenSiteToolsProps) {
       openSidebar={openSidebar || !activeToolId}
       tools={tools}
       imageUrl={`${baseUrl}/static-assets/images/choose_option.svg`}
+      mountMode="page"
     />
   );
 }

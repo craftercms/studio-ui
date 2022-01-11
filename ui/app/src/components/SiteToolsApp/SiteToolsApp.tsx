@@ -58,10 +58,13 @@ export interface SiteToolsAppProps {
   hideSidebarSiteSwitcher?: boolean;
   showAppsButton?: boolean;
   classes?: Partial<Record<'root', string>>;
+  // Whether the component is mounted on a dialog or it's the main app on a page (i.e. `/studio/site-tools`)
+  mountMode?: 'dialog' | 'page';
   onBackClick?(): void;
   onWidthChange(width: number): void;
   onNavItemClick(url: string): void;
   onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
+  onMinimize?: () => void;
 }
 
 export function SiteToolsApp(props: SiteToolsAppProps) {
@@ -71,6 +74,7 @@ export function SiteToolsApp(props: SiteToolsAppProps) {
     hideSidebarSiteSwitcher = false,
     hideSidebarLogo = false,
     sidebarBelowToolbar = false,
+    mountMode = 'dialog',
     footerHtml,
     onBackClick,
     openSidebar,
@@ -80,7 +84,8 @@ export function SiteToolsApp(props: SiteToolsAppProps) {
     tools,
     onNavItemClick,
     showAppsButton,
-    onSubmittingAndOrPendingChange
+    onSubmittingAndOrPendingChange,
+    onMinimize
   } = props;
   const classes = useStyles();
   const { formatMessage } = useIntl();
@@ -157,7 +162,16 @@ export function SiteToolsApp(props: SiteToolsAppProps) {
         {activeToolId ? (
           tool ? (
             <Suspencified>
-              <Widget {...tool} extraProps={{ embedded: false, showAppsButton, onSubmittingAndOrPendingChange }} />
+              <Widget
+                {...tool}
+                extraProps={{
+                  embedded: false,
+                  mountMode,
+                  showAppsButton,
+                  onSubmittingAndOrPendingChange,
+                  onMinimize
+                }}
+              />
             </Suspencified>
           ) : (
             <Box display="flex" flexDirection="column" height="100%">
