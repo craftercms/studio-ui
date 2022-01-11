@@ -235,11 +235,12 @@ export default function AwaitingApprovalDashlet() {
     if (option === 'clear') {
       setSelectedLookup({});
     } else {
+      const selected = Object.keys(selectedLookup)
+        .filter((path) => selectedLookup[path])
+        .map((path) => state.itemsLookup[path]);
       itemActionDispatcher({
         site: siteId,
-        item: Object.keys(selectedLookup)
-          .filter((path) => selectedLookup[path])
-          .map((path) => state.itemsLookup[path]),
+        item: selected.length > 1 ? selected : selected[0],
         option: option as AllItemActions,
         authoringBase,
         dispatch,
