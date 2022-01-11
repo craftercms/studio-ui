@@ -100,7 +100,7 @@ export function ContentTypeManagement(props: ContentTypeManagementProps) {
       )}
       {loading && <LoadingState styles={{ root: { flexGrow: 1 } }} />}
       <LegacyIFrame
-        path={`/legacy-site-config?mode=embedded${mountMode ? '&mountMode=' + mountMode : ''}#tool/content-types`}
+        path={`/legacy-site-config?mode=embedded${mountMode ? `&mountMode=${mountMode}` : ''}#tool/content-types`}
         iframeProps={{
           style: {
             height: loading ? '0' : '100%'
