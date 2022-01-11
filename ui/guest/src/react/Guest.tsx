@@ -37,7 +37,9 @@ import {
   editOnClass,
   HighlightMode,
   iceBypassKeyClass,
-  moveModeClass
+  moveModeClass,
+  editModeIceBypassEvent,
+  editModeEvent
 } from '../constants';
 import {
   assetDragEnded,
@@ -114,6 +116,7 @@ function bypassKeyStroke(e, refs) {
   const isKeyDown = e.type === 'keydown';
   refs.current.keysPressed['z'] = isKeyDown;
   $('html')[isKeyDown ? 'addClass' : 'removeClass'](iceBypassKeyClass);
+  document.dispatchEvent(new CustomEvent(editModeIceBypassEvent, { detail: isKeyDown }));
 }
 
 function Guest(props: GuestProps) {
@@ -225,14 +228,14 @@ function Guest(props: GuestProps) {
   useEffect(() => {
     if (editMode === false) {
       $('html').removeClass(editOnClass);
-      document.dispatchEvent(new CustomEvent('craftercms.editMode', { detail: false }));
+      document.dispatchEvent(new CustomEvent(editModeEvent, { detail: false }));
       // Refreshing the page for now. Will revisit on a later release.
       if (!refs.current.firstRender && refs.current.hasChanges) {
         window.location.reload();
       }
     } else {
       $('html').addClass(editOnClass);
-      document.dispatchEvent(new CustomEvent('craftercms.editMode', { detail: true }));
+      document.dispatchEvent(new CustomEvent(editModeEvent, { detail: true }));
     }
     if (refs.current.firstRender) {
       refs.current.firstRender = false;
@@ -533,11 +536,7 @@ function Guest(props: GuestProps) {
                       : null
                   }
                   menuItems={
-                    isMove && isFieldSelectedMode ? (
-                      <MoveModeZoneMenu record={elementRecord} dispatch={dispatch} />
-                    ) : (
-                      void 0
-                    )
+                    isFieldSelectedMode ? <MoveModeZoneMenu record={elementRecord} dispatch={dispatch} /> : void 0
                   }
                   sx={deepmerge(
                     deepmerge(

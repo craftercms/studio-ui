@@ -48,6 +48,7 @@ import {
   instanceDragBegun,
   instanceDragEnded,
   moveItemOperation,
+  requestEdit,
   selectForEdit,
   setContentTypeDropTargets,
   setEditModePadding,
@@ -115,7 +116,7 @@ import { useMount } from '../../hooks/useMount';
 import { usePreviewNavigation } from '../../hooks/usePreviewNavigation';
 import { useActiveSite } from '../../hooks/useActiveSite';
 import { getPathFromPreviewURL } from '../../utils/path';
-import { showEditDialog } from '../../state/actions/dialogs';
+import { showCodeEditorDialog, showEditDialog } from '../../state/actions/dialogs';
 import { UNDEFINED } from '../../utils/constants';
 import { useCurrentPreviewItem } from '../../hooks/useCurrentPreviewItem';
 import { useSiteUIConfig } from '../../hooks/useSiteUIConfig';
@@ -134,6 +135,7 @@ import {
 } from '../../state/actions/system';
 import { useUpdateRefs } from '../../hooks';
 import { useHotkeys } from 'react-hotkeys-hook';
+import { popPiece } from '../../utils/string';
 
 const originalDocDomain = document.domain;
 
@@ -822,6 +824,42 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           // @ts-ignore - TODO: type action accordingly
           getHostToGuestBus().next(updateRteConfig({ rteConfig: upToDateRefs.current.rteConfig ?? {} }));
           break;
+        }
+        case requestEdit.type: {
+          const { modelId, parentModelId, fields, type } = payload;
+          const model = models[modelId];
+          const contentType = contentTypes[model.craftercms.contentTypeId];
+          console.log(
+            `Edit ${type}`,
+            modelId,
+            parentModelId,
+            models[parentModelId ? parentModelId : modelId].craftercms.path,
+            fields,
+            model,
+            contentType
+          );
+          if (type === 'content') {
+            dispatch(
+              showEditDialog({
+                site: siteId,
+                modelId: parentModelId ? modelId : null,
+                authoringBase,
+                selectedFields: fields,
+                path: models[parentModelId ? parentModelId : modelId].craftercms.path
+              })
+            );
+          } else {
+            dispatch(
+              showCodeEditorDialog({
+                path:
+                  type === 'template'
+                    ? contentType.displayTemplate
+                    : `/scripts/pages/${popPiece(contentType.id, '/')}.groovy`,
+                contentType: contentType.id,
+                mode: type === 'template' ? 'ftl' : 'groovy'
+              })
+            );
+          }
         }
       }
     });

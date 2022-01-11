@@ -17,14 +17,23 @@
 import * as React from 'react';
 import { Dispatch, useEffect, useMemo, useState } from 'react';
 import DragIndicatorRounded from '@mui/icons-material/DragIndicatorRounded';
+import PencilIcon from '@mui/icons-material/EditOutlined';
 import ArrowDownwardRoundedIcon from '@mui/icons-material/ArrowDownwardRounded';
 import ArrowUpwardRoundedIcon from '@mui/icons-material/ArrowUpwardRounded';
 import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
+import GroovyIcon from '@craftercms/studio-ui/icons/Groovy';
+import FreemarkerIcon from '@craftercms/studio-ui/icons/Freemarker';
 import UltraStyledIconButton from './UltraStyledIconButton';
 import HighlightOffRoundedIcon from '@mui/icons-material/HighlightOffRounded';
 import { Tooltip } from '@mui/material';
-import * as contentController from '../contentController';
-import { getCachedModel } from '../contentController';
+import {
+  deleteItem,
+  getCachedModel,
+  getCachedModels,
+  modelHierarchyMap,
+  sortDownItem,
+  sortUpItem
+} from '../contentController';
 import { clearAndListen$ } from '../store/subjects';
 import { startListening } from '../store/actions';
 import { ElementRecord } from '../models/InContextEditing';
@@ -32,12 +41,13 @@ import { extractCollection } from '@craftercms/studio-ui/utils/model';
 import { popPiece } from '@craftercms/studio-ui/utils/string';
 import { AnyAction } from '@reduxjs/toolkit';
 import useRef from '@craftercms/studio-ui/hooks/useUpdateRefs';
-import { findContainerRecord, runValidation } from '../iceRegistry';
+import { findContainerRecord, getById, runValidation } from '../iceRegistry';
 import { post } from '../utils/communicator';
-import { validationMessage } from '@craftercms/studio-ui/state/actions/preview';
+import { requestEdit, validationMessage } from '@craftercms/studio-ui/state/actions/preview';
 import Menu from '@mui/material/Menu';
 import Typography from '@mui/material/Typography';
 import MenuItem from '@mui/material/MenuItem';
+import { getParentModelId } from '../utils/ice';
 
 export interface MoveModeZoneMenuProps {
   record: ElementRecord;
@@ -52,24 +62,67 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
     index
   } = record;
 
-  const elementIndex = useMemo(() => (typeof index === 'string' ? parseInt(popPiece(index), 10) : index), [index]);
   const trashButtonRef = React.useRef();
   const [showTrashConfirmation, setShowTrashConfirmation] = useState<boolean>(false);
 
-  const numOfItemsInContainerCollection = useMemo(
-    () => extractCollection(getCachedModel(modelId), fieldId, index).length,
-    [modelId, fieldId, index]
+  console.clear();
+
+  const iceRecord = getById(record.iceIds[0]);
+  const recordType = iceRecord.recordType;
+  const collection = useMemo(() => {
+    if (['node-selector-item', 'repeat-item'].includes(recordType)) {
+      return extractCollection(getCachedModel(modelId), fieldId, index);
+    } else if (recordType === 'component') {
+      // ToDo: Find container collection
+      const mapEntry = modelHierarchyMap[modelId];
+      if (mapEntry && mapEntry.parentId) {
+        return extractCollection(
+          getCachedModel(mapEntry.parentId),
+          mapEntry.parentContainerFieldPath,
+          mapEntry.parentContainerFieldIndex
+        );
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }, [modelId, fieldId, index, recordType]);
+  const elementIndex = useMemo(() => (typeof index === 'string' ? parseInt(popPiece(index), 10) : index), [index]);
+  const component =
+    recordType === 'component'
+      ? getCachedModel(modelId)
+      : recordType === 'node-selector-item'
+      ? collection[elementIndex]
+      : null;
+  const isMovable = ['node-selector-item', 'repeat-item', 'component'].includes(recordType);
+  const numOfItemsInContainerCollection = collection?.length;
+  const isFirstItem = isMovable ? elementIndex === 0 : null;
+  const isLastItem = isMovable ? elementIndex === numOfItemsInContainerCollection - 1 : null;
+  const isOnlyItem = isMovable ? isFirstItem && isLastItem : null;
+  const isEmbedded = useMemo(() => !Boolean(getCachedModel(modelId)?.craftercms.path), [modelId]);
+  const showCodeEditOptions = ['component', 'page', 'node-selector-item'].includes(recordType);
+  const isTrashable = recordType !== 'field' && recordType !== 'page';
+  const showAddItem = false; // for repeat group item
+  const showDuplicate = false; // could apply to repeat items or components
+
+  console.log(
+    `
+    modelId: ${modelId}
+    fieldId: ${fieldId}
+    index: ${index}
+    recordType: ${recordType}
+    elementIndex: ${elementIndex}
+    isFirstItem: ${isFirstItem}
+    numOfItems: ${numOfItemsInContainerCollection}
+    isLastItem: ${isLastItem}
+    isOnlyItem: ${isOnlyItem}
+    showCodeEditOptions: ${showCodeEditOptions}
+    isMovable: ${isMovable}
+    isTrashable: ${isTrashable}
+  `,
+    component
   );
-
-  const isEmbedded = useMemo(() => {
-    return !Boolean(
-      getCachedModel(extractCollection(getCachedModel(modelId), fieldId, index)[elementIndex])?.craftercms.path
-    );
-  }, [elementIndex, fieldId, index, modelId]);
-
-  const isFirstItem = elementIndex === 0;
-  const isLastItem = elementIndex === numOfItemsInContainerCollection - 1;
-  const isOnlyItem = isFirstItem && isLastItem;
 
   // region callbacks
 
@@ -78,23 +131,41 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
     dispatch(startListening());
   };
 
-  const onMoveUp = (e: React.MouseEvent<HTMLButtonElement, MouseEvent> | KeyboardEvent) => {
-    e.preventDefault();
+  const commonEdit = (e, type) => {
     e.stopPropagation();
-    contentController.sortUpItem(modelId, fieldId, index);
+    e.preventDefault();
+    const parentModelId = getParentModelId(modelId, getCachedModels(), modelHierarchyMap);
+    post(requestEdit({ modelId, parentModelId, type, fields: record.fieldId }));
     onCancel();
   };
 
-  const onMoveDown = (e: React.MouseEvent<HTMLButtonElement, MouseEvent> | KeyboardEvent) => {
+  const onEdit = (e) => {
+    commonEdit(e, 'content');
+  };
+
+  const onEditController = (e) => {
+    commonEdit(e, 'controller');
+  };
+
+  const onEditTemplate = (e) => {
+    commonEdit(e, 'template');
+  };
+
+  const onMoveUp = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    contentController.sortDownItem(modelId, fieldId, index);
+    sortUpItem(modelId, fieldId, index);
     onCancel();
   };
 
-  const onTrash = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent> | React.MouseEvent<HTMLLIElement, MouseEvent> | KeyboardEvent
-  ) => {
+  const onMoveDown = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    sortDownItem(modelId, fieldId, index);
+    onCancel();
+  };
+
+  const onTrash = (e) => {
     e.preventDefault();
     e.stopPropagation();
     const minCount = runValidation(findContainerRecord(modelId, fieldId, index).id, 'minCount', [
@@ -103,7 +174,7 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
     if (minCount) {
       post(validationMessage(minCount));
     } else {
-      contentController.deleteItem(modelId, fieldId, index);
+      deleteItem(modelId, fieldId, index);
       onCancel();
     }
   };
@@ -166,30 +237,56 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
           <HighlightOffRoundedIcon />
         </UltraStyledIconButton>
       </Tooltip>
-      {!isFirstItem && !isOnlyItem && (
-        <Tooltip title="Move up/left (← or ↑)">
-          <UltraStyledIconButton size="small" onClick={onMoveUp}>
-            <ArrowUpwardRoundedIcon />
+      <Tooltip title="Edit">
+        <UltraStyledIconButton size="small" onClick={onEdit}>
+          <PencilIcon />
+        </UltraStyledIconButton>
+      </Tooltip>
+      {showCodeEditOptions && (
+        <>
+          <Tooltip title="Edit controller">
+            <UltraStyledIconButton size="small" onClick={onEditTemplate}>
+              <FreemarkerIcon />
+            </UltraStyledIconButton>
+          </Tooltip>
+          <Tooltip title="Edit template">
+            <UltraStyledIconButton size="small" onClick={onEditController}>
+              <GroovyIcon />
+            </UltraStyledIconButton>
+          </Tooltip>
+        </>
+      )}
+      {isMovable &&
+        !isOnlyItem && [
+          !isFirstItem && (
+            <Tooltip title="Move up/left (← or ↑)">
+              <UltraStyledIconButton size="small" onClick={onMoveUp}>
+                <ArrowUpwardRoundedIcon />
+              </UltraStyledIconButton>
+            </Tooltip>
+          ),
+          !isLastItem && (
+            <Tooltip title="Move down/right (→ or ↓)">
+              <UltraStyledIconButton size="small" onClick={onMoveDown}>
+                <ArrowDownwardRoundedIcon />
+              </UltraStyledIconButton>
+            </Tooltip>
+          )
+        ]}
+      {isTrashable && (
+        <Tooltip title="Trash (⌫)">
+          <UltraStyledIconButton size="small" onClick={() => setShowTrashConfirmation(true)} ref={trashButtonRef}>
+            <DeleteOutlineRoundedIcon />
           </UltraStyledIconButton>
         </Tooltip>
       )}
-      {!isLastItem && !isOnlyItem && (
-        <Tooltip title="Move down/right (→ or ↓)">
-          <UltraStyledIconButton size="small" onClick={onMoveDown}>
-            <ArrowDownwardRoundedIcon />
+      {isMovable && (
+        <Tooltip title="Move">
+          <UltraStyledIconButton size="small" draggable sx={{ cursor: 'grab' }} onDragStart={onDragStart}>
+            <DragIndicatorRounded />
           </UltraStyledIconButton>
         </Tooltip>
       )}
-      <Tooltip title="Trash (⌫)">
-        <UltraStyledIconButton size="small" onClick={() => setShowTrashConfirmation(true)} ref={trashButtonRef}>
-          <DeleteOutlineRoundedIcon />
-        </UltraStyledIconButton>
-      </Tooltip>
-      <Tooltip title="Move">
-        <UltraStyledIconButton size="small" draggable sx={{ cursor: 'grab' }} onDragStart={onDragStart}>
-          <DragIndicatorRounded />
-        </UltraStyledIconButton>
-      </Tooltip>
       <Menu
         anchorEl={trashButtonRef.current}
         open={showTrashConfirmation}

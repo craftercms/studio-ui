@@ -337,6 +337,13 @@ export const dissociateTemplateComplete =
 
 export const dissociateTemplateFailed = /*#__PURE__*/ createAction('DISSOCIATE_TEMPLATE_FAILED');
 
+export const requestEdit = /*#__PURE__*/ createAction<{
+  type: 'content' | 'controller' | 'template';
+  modelId: string;
+  fields?: string[];
+  parentModelId: string;
+}>('REQUEST_EDIT');
+
 // endregion
 
 // region toolsPanelPageStack
@@ -355,13 +362,13 @@ export const popIcePanelPage = /*#__PURE__*/ createAction('POP_ICE_PANEL_PAGE');
 
 // endregion
 
-// region settings Mode
+// region Settings/Mode
 
 export const setHighlightMode = /*#__PURE__*/ createAction<{ highlightMode: HighlightMode }>('HIGHLIGHT_MODE_CHANGED');
 
 // endregion
 
-// region navigation stack
+// region Navigation stack
 export const goToLastPage = /*#__PURE__*/ createAction<string>('GO_TO_LAST_PAGE');
 export const goToNextPage = /*#__PURE__*/ createAction('GO_TO_NEXT_PAGE');
 // endregion

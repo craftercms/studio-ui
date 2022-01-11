@@ -81,7 +81,7 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
         contentTypeId,
         isNewContent,
         iceGroupId,
-        ...(selectedFields ? { selectedFields: JSON.stringify(selectedFields) } : {}),
+        ...(selectedFields && selectedFields.length ? { selectedFields: JSON.stringify(selectedFields) } : {}),
         ...(newEmbedded ? { newEmbedded: JSON.stringify(newEmbedded) } : {})
       }),
     [

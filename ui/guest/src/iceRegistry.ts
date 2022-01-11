@@ -575,13 +575,13 @@ export function findContainerRecord(modelId: string, fieldId: string, index: str
   if (isSimple(fieldId)) {
     recordId = exists({
       modelId: modelId,
-      fieldId: fieldId,
+      fieldId: fieldId ?? null,
       index: null
     });
   } else {
     recordId = exists({
       modelId: modelId,
-      fieldId: fieldId,
+      fieldId: fieldId ?? null,
       index: parseInt(removeLastPiece(index as string))
     });
   }
@@ -606,4 +606,8 @@ export function findChildRecord(modelId: string, fieldId: string, index: string 
     }
   }
   return null;
+}
+
+export function getRegistry() {
+  return registry;
 }
