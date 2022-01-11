@@ -778,6 +778,8 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'kr', {
   enableBrowseExisting: '쇼 기존 항목 찾아보기',
   enableSearchExisting: '쇼 기존 검색',
   useSearch: '검색 사용',
+  allowEditWithoutWarning: 'Allow Edit Without Warning',
+  replaceAccent: 'Convert accent/diacritics to latin characters',
 
   /*Restrictions*/
   required: '필요',

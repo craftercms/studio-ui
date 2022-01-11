@@ -16,7 +16,7 @@
 
 CStudioForms.Controls.FileName =
   CStudioForms.Controls.FileName ||
-  function (id, form, owner, properties, constraints, readonly, allowEditWithoutWarning) {
+  function (id, form, owner, properties, constraints, readonly, allowEditWithoutWarning, replaceAccent) {
     this.owner = owner;
     this.owner.registerField(this);
     this.errors = [];
@@ -31,6 +31,7 @@ CStudioForms.Controls.FileName =
     this.contentAsFolder = form.definition ? form.definition.contentAsFolder : null;
     this.readonly = readonly;
     this.allowEditWithoutWarning = allowEditWithoutWarning;
+    this.replaceAccent = replaceAccent;
     this.defaultValue = '';
     this.showWarnOnEdit = true;
     this.messages = {
@@ -151,7 +152,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
   /**
    * don't allow characters which are invalid for file names and check length
    */
-  processKey: function (evt, el) {
+  processKey: function (evt, el, replaceAccent) {
     var invalid = new RegExp('[.!@#$%^&*\\(\\)\\+=\\[\\]\\\\\\\'`;,\\/\\{\\}|":<>\\?~ ]', 'g');
     // Prevent the use of non english characters
     var nonEnglishChar = new RegExp('[^\x00-\x80]', 'g');
@@ -163,6 +164,9 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
         el.selectionStart = cursorPosition;
         el.selectionEnd = cursorPosition;
       }
+    }
+    if (replaceAccent) {
+      el.value = el.value.normalize('NFD').replace(/\p{Diacritic}/gu, '');
     }
     var data = el.value;
 
@@ -272,6 +276,27 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
 
     this.defaultValue = config.defaultValue;
 
+    for (var i = 0; i < config.properties.length; i++) {
+      var prop = config.properties[i];
+      if (prop.name == 'size') {
+        inputEl.size = prop.value;
+      } else if (prop.name == 'maxlength') {
+        inputEl.maxlength = prop.value;
+      }
+
+      if (prop.name == 'readonly' && prop.value == 'true') {
+        this.readonly = true;
+      }
+
+      if (prop.name == 'allowEditWithoutWarning' && prop.value == 'true') {
+        this.allowEditWithoutWarning = true;
+      }
+
+      if (prop.name == 'replaceAccent' && prop.value == 'true') {
+        this.replaceAccent = true;
+      }
+    }
+
     var Event = YAHOO.util.Event,
       me = this;
     Event.on(
@@ -300,34 +325,24 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
       },
       this
     );
-    Event.on(inputEl, 'keyup', this.processKey, inputEl);
+    Event.on(
+      inputEl,
+      'keyup',
+      function(evt, el) {
+        me.processKey(evt, el, me.replaceAccent);
+      },
+      inputEl
+    );
     Event.on(
       inputEl,
       'paste',
       function (evt, el) {
         setTimeout(function () {
-          me.processKey(evt, el);
+          me.processKey(evt, el, me.replaceAccent);
         }, 100);
       },
       inputEl
     );
-
-    for (var i = 0; i < config.properties.length; i++) {
-      var prop = config.properties[i];
-      if (prop.name == 'size') {
-        inputEl.size = prop.value;
-      } else if (prop.name == 'maxlength') {
-        inputEl.maxlength = prop.value;
-      }
-
-      if (prop.name == 'readonly' && prop.value == 'true') {
-        this.readonly = true;
-      }
-
-      if (prop.name == 'allowEditWithoutWarning' && prop.value == 'true') {
-        this.allowEditWithoutWarning = true;
-      }
-    }
 
     if (this.isRootPath() || this.readonly == true) {
       inputEl.disabled = true;
@@ -534,7 +549,8 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
         defaultValue: '50'
       },
       { label: CMgs.format(langBundle, 'readonly'), name: 'readonly', type: 'boolean' },
-      { label: CMgs.format(langBundle, 'allowEditWithoutWarning'), name: 'allowEditWithoutWarning', type: 'boolean' }
+      { label: CMgs.format(langBundle, 'allowEditWithoutWarning'), name: 'allowEditWithoutWarning', type: 'boolean' },
+      { label: CMgs.format(langBundle, 'replaceAccent'), name: 'replaceAccent', type: 'boolean' },
     ];
   },
 
