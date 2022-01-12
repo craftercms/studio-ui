@@ -58,7 +58,7 @@ import { capitalize } from '../../utils/string';
 import { itemReverted, showSystemNotification } from '../../state/actions/system';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { filter, map } from 'rxjs/operators';
-import { fromString, serialize } from '../../utils/xml';
+import { parseValidateDocument, serialize } from '../../utils/xml';
 import { forkJoin } from 'rxjs';
 import { encrypt } from '../../services/security';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
@@ -70,6 +70,8 @@ import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useMount } from '../../hooks/useMount';
 import { ConfirmDialogProps } from '../ConfirmDialog';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
+import { findPendingEncryption } from './utils';
+import { useUpdateRefs } from '../../hooks';
 
 interface SiteConfigurationManagementProps {
   embedded?: boolean;
@@ -102,6 +104,9 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
   const history = useHistory();
   const dispatch = useDispatch();
   const disableBlocking = useRef(false);
+  const functionRefs = useUpdateRefs({
+    onSubmittingAndOrPendingChange
+  });
 
   const editorRef = useRef<any>({
     container: null
@@ -183,8 +188,26 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
     }
   };
 
+  const showXmlParseError = (error: string) => {
+    dispatch(
+      showSystemNotification({
+        message: formatMessage(translations.xmlContainsErrors, {
+          errors: error
+        }),
+        options: {
+          variant: 'error'
+        }
+      })
+    );
+  };
+
   const onEncryptClick = () => {
-    const doc = fromString(editorRef.current.getValue());
+    const content = editorRef.current.getValue();
+    const doc = parseValidateDocument(content);
+    if (typeof doc === 'string') {
+      showXmlParseError(doc);
+      return;
+    }
     const tags = doc.querySelectorAll('[encrypted]');
     const items = findPendingEncryption(tags);
     if (items.length) {
@@ -289,7 +312,7 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
     if (!disabledSaveButton) {
       setDisabledSaveButton(true);
     }
-    onSubmittingAndOrPendingChange?.({ hasPendingChanges: false, isSubmitting: false });
+    functionRefs.current.onSubmittingAndOrPendingChange?.({ hasPendingChanges: false, isSubmitting: false });
   };
 
   const onListItemClick = (file: SiteConfigurationFileWithId) => {
@@ -322,10 +345,10 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
   const onEditorChanges = () => {
     if (selectedConfigFileXml !== editorRef.current.getValue()) {
       setDisabledSaveButton(false);
-      onSubmittingAndOrPendingChange?.({ hasPendingChanges: true });
+      functionRefs.current.onSubmittingAndOrPendingChange?.({ hasPendingChanges: true });
     } else {
       setDisabledSaveButton(true);
-      onSubmittingAndOrPendingChange?.({ hasPendingChanges: false });
+      functionRefs.current.onSubmittingAndOrPendingChange?.({ hasPendingChanges: false });
     }
   };
 
@@ -368,7 +391,11 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
 
   const onSave = () => {
     const content = editorRef.current.getValue();
-    const doc = fromString(content);
+    const doc = parseValidateDocument(content);
+    if (typeof doc === 'string') {
+      showXmlParseError(doc);
+      return;
+    }
     const unencryptedItems = findPendingEncryption(doc.querySelectorAll('[encrypted]'));
     const errors = editorRef.current
       .getSession()
@@ -388,10 +415,10 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
       );
     } else {
       if (unencryptedItems.length === 0) {
-        onSubmittingAndOrPendingChange({ isSubmitting: true });
-        writeConfiguration(site, selectedConfigFile.path, selectedConfigFile.module, content, environment).subscribe(
-          () => {
-            onSubmittingAndOrPendingChange({ isSubmitting: false, hasPendingChanges: false });
+        functionRefs.current.onSubmittingAndOrPendingChange?.({ isSubmitting: true });
+        writeConfiguration(site, selectedConfigFile.path, selectedConfigFile.module, content, environment).subscribe({
+          next: () => {
+            functionRefs.current.onSubmittingAndOrPendingChange?.({ isSubmitting: false, hasPendingChanges: false });
             dispatch(
               showSystemNotification({
                 message: formatMessage(translations.configSaved)
@@ -405,10 +432,11 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
             setDisabledSaveButton(true);
             setSelectedConfigFileXml(content);
           },
-          ({ response: { response } }) => {
+          error: ({ response: { response } }) => {
+            functionRefs.current.onSubmittingAndOrPendingChange?.({ isSubmitting: false });
             dispatch(showErrorDialog({ error: response }));
           }
-        );
+        });
       } else {
         let tags;
         if (unencryptedItems.length > 1) {
@@ -682,12 +710,4 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
       <ConfirmDialog open={false} {...confirmDialogProps} />
     </section>
   );
-}
-
-function findPendingEncryption(tags): { tag: Element; text: string }[] {
-  const items = [];
-  tags.forEach((tag) => {
-    tag.getAttribute('encrypted') === '' && items.push({ tag: tag, text: tag.innerHTML.trim() });
-  });
-  return items;
 }

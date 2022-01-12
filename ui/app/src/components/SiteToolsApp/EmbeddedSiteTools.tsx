@@ -62,6 +62,10 @@ export const EmbeddedSiteToolsContainer = () => {
         root: classes.root
       }}
       onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
+      onMinimize={() => {
+        dispatch(updateWidgetDialog({ isMinimized: true }));
+      }}
+      mountMode="dialog"
     />
   );
 };

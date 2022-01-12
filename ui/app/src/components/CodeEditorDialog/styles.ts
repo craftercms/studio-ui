@@ -28,6 +28,9 @@ const useStyles = makeStyles(() =>
     },
     addSnippet: {
       marginRight: 'auto'
+    },
+    aceRoot: {
+      position: 'absolute'
     }
   })
 );

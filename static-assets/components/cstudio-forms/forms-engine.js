@@ -566,6 +566,23 @@ var CStudioForms =
         customController.initialize(this);
       }
 
+      // Retrieve additional fields set in controls.
+      const _self = this;
+      const processSection = function (section) {
+        section.fields.forEach((field) => {
+          if (field.type !== 'repeat') {
+            if (field.additionalFields) {
+              const additionalFieldsArray =
+                typeof field.additionalFields.id === 'string' ? [field.additionalFields.id] : field.additionalFields.id;
+              _self.dynamicFields.push(...additionalFieldsArray);
+            }
+          } else {
+            processSection(field);
+          }
+        });
+      };
+      formDefinition.sections.forEach((section) => processSection(section));
+
       return this;
     };
 
@@ -1868,42 +1885,20 @@ var CStudioForms =
 
             //In Context Edit, the preview button must not be shown
             var iceId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'iceId');
-
             // This is really the right thing to do but previewable doesn't come through
             CStudioAuthoring.Service.lookupContentType(CStudioAuthoringContext.site, contentType, {
               success: function (type) {
-                const options = [
-                  {
-                    label: formatMessage(formEngineMessages.save),
-                    callback: () => {
-                      saveFn(false, true, null, 'save');
-                    }
-                  },
-                  {
-                    label: formatMessage(formEngineMessages.saveAndClose),
-                    callback: () => {
-                      saveFn(false, false, null, 'saveAndClose');
-                    }
-                  },
-                  {
-                    label: formatMessage(formEngineMessages.saveAndMinimize),
-                    callback: () => {
-                      saveFn(false, true, null, 'saveAndMinimize');
-                    }
-                  }
-                ];
-                if (type.previewable) {
-                  options.push({
-                    label: formatMessage(formEngineMessages.saveAndPreview),
-                    callback: () => {
-                      saveFn(true, false, null, 'saveAndPreview');
-                    }
-                  });
-                }
-                CrafterCMSNext.render(buttonsContainer, 'SplitButton', {
-                  options,
-                  defaultSelected: 1,
-                  disablePortal: false
+                const storedId = 'formEditor';
+                const defaultSelected = 'saveAndClose';
+
+                const onMultiChoiceSaveButtonClick = (e, type) => {
+                  saveFn(false, true, null, type);
+                };
+                CrafterCMSNext.render(buttonsContainer, 'MultiChoiceSaveButton', {
+                  defaultSelected,
+                  disablePortal: false,
+                  storageKey: storedId,
+                  onClick: onMultiChoiceSaveButtonClick
                 });
               },
               failure: function () {}

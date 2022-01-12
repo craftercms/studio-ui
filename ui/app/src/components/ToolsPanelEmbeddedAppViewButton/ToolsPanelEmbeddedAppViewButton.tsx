@@ -56,6 +56,11 @@ export function ToolsPanelEmbeddedAppViewButton(props: ToolsPanelEmbeddedAppView
         open={open}
         onClose={onClose}
         widget={props.widget}
+        extraProps={{
+          onMinimize,
+          onMaximize,
+          onClose
+        }}
         hasPendingChanges={hasPendingChanges}
         onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
         onWithPendingChangesCloseRequest={widgetDialogPendingChangesCloseRequest}

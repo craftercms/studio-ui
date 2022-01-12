@@ -48,20 +48,12 @@ YAHOO.extend(CStudioForms.Datasources.ImgRepoUpload, CStudioForms.CStudioFormDat
 
     if (this.useSearch) {
       var searchContext = {
-        searchId: null,
-        itemsPerPage: 12,
         keywords: '',
         filters: {
           'mime-type': ['image/jpeg', 'image/png', 'image/gif', 'image/tiff', 'image/bmp']
         },
         sortBy: 'internalName',
         sortOrder: 'asc',
-        numFilters: 1,
-        filtersShowing: 10,
-        currentPage: 1,
-        searchInProgress: false,
-        view: 'grid',
-        lastSelectedFilterSelector: '',
         mode: 'select' // open search not in default but in select mode
       };
 

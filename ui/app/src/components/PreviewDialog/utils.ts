@@ -32,6 +32,10 @@ export interface PreviewDialogProps extends PreviewDialogBaseProps, Omit<Enhance
 export interface PreviewDialogStateProps extends PreviewDialogBaseProps, EnhancedDialogState {
   onClose?: StandardAction;
   onClosed?: StandardAction;
+  onMinimize?: StandardAction;
+  onMaximize?: StandardAction;
+  onFullScreen?: StandardAction;
+  onCancelFullScreen?: StandardAction;
 }
 
 export interface PreviewDialogContainerProps extends PreviewDialogBaseProps, Pick<PreviewDialogProps, 'onClose'> {}

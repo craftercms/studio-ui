@@ -222,6 +222,11 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
     }
   };
 
+  const onContextMenu = (e) => {
+    e.preventDefault();
+    onOpenItemMenu(e.currentTarget.querySelector('[data-item-menu]'), node.id);
+  };
+
   switch (node.id) {
     case 'loading': {
       return (
@@ -293,6 +298,7 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
                 className={classes.itemDisplaySection}
                 onMouseOver={onMouseOver}
                 onMouseLeave={onMouseLeave}
+                onContextMenu={onContextMenu}
               >
                 <ItemDisplay
                   styles={{
@@ -309,6 +315,7 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
                     <IconButton
                       size="small"
                       className={classes.iconButton}
+                      data-item-menu
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();

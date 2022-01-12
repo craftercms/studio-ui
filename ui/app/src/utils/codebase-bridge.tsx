@@ -179,6 +179,7 @@ export function createCodebaseBridge() {
       PathSelectionDialog: lazy(() => import('../components/PathSelectionDialog/PathSelectionDialog')),
       BrowseFilesDialog: lazy(() => import('../components/BrowseFilesDialog')),
       SplitButton: lazy(() => import('../components/SplitButton/SplitButton')),
+      MultiChoiceSaveButton: lazy(() => import('../components/MultiChoiceSaveButton/MultiChoiceSaveButton')),
       CharCountStatusContainer: lazy(() =>
         import('../components/CharCountStatus/CharCountStatus').then((module) => ({
           default: module.CharCountStatusContainer

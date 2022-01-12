@@ -25,6 +25,7 @@ export const DialogBody = styled(MuiDialogContent, {
 })<DialogBodyProps>(({ theme, minHeight = false }) => ({
   display: 'flex',
   flex: '1 1 auto',
+  position: 'relative',
   flexDirection: 'column',
   padding: theme.spacing(2),
   backgroundColor: theme.palette.background.default,

@@ -154,7 +154,8 @@ export const useStyles = makeStyles(
       pagination: {
         marginBottom: 10,
         '& p': {
-          padding: 0
+          padding: 0,
+          margin: 0
         },
         '& svg': {
           top: 'inherit'

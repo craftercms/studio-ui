@@ -42,7 +42,8 @@ export function URLDrivenSearch(props: URLDrivenSearchProps) {
   // endregion
 
   const {
-    apiState,
+    error,
+    isFetching,
     areAllSelected,
     selected,
     currentView,
@@ -228,7 +229,8 @@ export function URLDrivenSearch(props: URLDrivenSearchProps) {
       handleSearchKeyword={handleSearchKeyword}
       onSelectedPathChanges={onSelectedPathChanges}
       onCheckedFiltersChanges={onCheckedFiltersChanges}
-      apiState={apiState}
+      error={error}
+      isFetching={isFetching}
       areAllSelected={areAllSelected}
       guestBase={guestBase}
       handleChangePage={handleChangePage}

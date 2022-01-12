@@ -20,7 +20,7 @@ import DialogFooter from '../DialogFooter/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import { FormattedMessage } from 'react-intl';
-import { SearchItem } from '../../models/Search';
+import { SearchItem } from '../../models';
 import MediaCard from '../MediaCard/MediaCard';
 import { useStyles } from './styles';
 import SearchBar from '../SearchBar/SearchBar';
@@ -31,6 +31,8 @@ import Pagination from '../Pagination';
 import FolderBrowserTreeView from '../FolderBrowserTreeView';
 import Box from '@mui/material/Box';
 import { BrowseFilesDialogUIProps } from './utils';
+import Typography from '@mui/material/Typography';
+import Divider from '@mui/material/Divider';
 
 export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
   const {
@@ -40,10 +42,11 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
     selectedArray,
     multiSelect = false,
     path,
+    currentPath,
     limit,
     offset,
     keyword,
-    rowsPerPageOptions = [10, 15, 20],
+    rowsPerPageOptions = [9, 15, 21],
     total,
     numOfLoaderItems = 12,
     onCardSelected,
@@ -54,9 +57,13 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
     onSelectButtonClick,
     onChangePage,
     onChangeRowsPerPage,
-    onCloseButtonClick
+    onCloseButtonClick,
+    onRefresh,
+    onUpload
   } = props;
   const classes = useStyles();
+  console.log(props);
+
   return (
     <>
       <DialogBody className={classes.dialogBody}>
@@ -70,13 +77,26 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
             />
           </section>
           <section className={classes.rightWrapper}>
-            <SearchBar
-              keyword={keyword}
-              onChange={handleSearchKeyword}
-              showDecoratorIcon
-              showActionButton={Boolean(keyword)}
-              classes={{ root: classes.searchRoot }}
-            />
+            <Typography component="h2" variant="h6">
+              {currentPath}
+            </Typography>
+            <Divider />
+            <Box display="flex" alignItems="center" marginTop="16px" marginBottom="16px" gap="8px">
+              <SecondaryButton onClick={onUpload}>
+                <FormattedMessage id="word.upload" defaultMessage="Upload" />
+              </SecondaryButton>
+              <SecondaryButton onClick={onRefresh}>
+                <FormattedMessage id="word.refresh" defaultMessage="Refresh" />
+              </SecondaryButton>
+              <SearchBar
+                keyword={keyword}
+                onChange={handleSearchKeyword}
+                showDecoratorIcon
+                showActionButton={Boolean(keyword)}
+                classes={{ root: classes.searchRoot }}
+              />
+            </Box>
+
             <div className={classes.cardsContainer}>
               {items
                 ? items.map((item: SearchItem) => (

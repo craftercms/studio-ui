@@ -69,6 +69,15 @@ export function getStoredHighlightModeChoice(user: string): HighlightMode {
   return window.localStorage.getItem(`craftercms.${user}.highlightModeChoice`) as HighlightMode;
 }
 
+export function setStoredEditModePadding(value: string, user: string): void {
+  window.localStorage.setItem(`craftercms.${user}.editModePadding`, value);
+}
+
+export function getStoredEditModePadding(user: string): boolean {
+  const value = window.localStorage.getItem(`craftercms.${user}.editModePadding`);
+  return value ? value === 'true' : null;
+}
+
 export function setStoredClipboard(siteIdentifier: string, user: string, value: object): void {
   window.localStorage.setItem(
     `craftercms.${user}.clipboard.${siteIdentifier}`,
@@ -218,4 +227,16 @@ export function commonDialogProps<T>(specificProps: T): EnhancedDialogState & T 
     hasPendingChanges: null,
     ...specificProps
   };
+}
+
+export function setStoredSaveButtonSubAction(user: string, id: string, value: string): void {
+  window.localStorage.setItem(`craftercms.${user}.saveButtonSubAction.${id}`, value);
+}
+
+export function getStoredSaveButtonSubAction(user: string, id: string): string {
+  return window.localStorage.getItem(`craftercms.${user}.saveButtonSubAction.${id}`);
+}
+
+export function removeStoredSaveButtonSubAction(user: string, id: string): void {
+  window.localStorage.removeItem(`craftercms.${user}.saveButtonSubAction.${id}`);
 }

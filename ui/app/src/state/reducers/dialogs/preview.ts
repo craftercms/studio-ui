@@ -23,6 +23,7 @@ const initialState: PreviewDialogStateProps = {
   open: false,
   isSubmitting: null,
   isMinimized: null,
+  isFullScreen: null,
   hasPendingChanges: null,
   type: null,
   title: null,
@@ -35,6 +36,10 @@ export default createReducer<GlobalState['dialogs']['preview']>(initialState, {
     ...state,
     onClose: closePreviewDialog(),
     onClosed: previewDialogClosed(),
+    onFullScreen: updatePreviewDialog({ isFullScreen: true }),
+    onCancelFullScreen: updatePreviewDialog({ isFullScreen: false }),
+    onMinimize: updatePreviewDialog({ isMinimized: true }),
+    onMaximize: updatePreviewDialog({ isMinimized: false }),
     ...payload,
     open: true
   }),

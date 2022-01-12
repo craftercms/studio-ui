@@ -61,6 +61,7 @@ import {
 } from '../actions/dialogs';
 import { isEditableAsset } from '../../utils/content';
 import {
+  blockUI,
   emitSystemEvent,
   itemDuplicated,
   itemsPasted,
@@ -69,7 +70,8 @@ import {
   showDuplicatedItemSuccessNotification,
   showPasteItemSuccessNotification,
   showSystemNotification,
-  showUnlockItemSuccessNotification
+  showUnlockItemSuccessNotification,
+  unblockUI
 } from '../actions/system';
 import { batchActions } from '../actions/misc';
 import {
@@ -103,6 +105,10 @@ export const sitePolicyMessages = defineMessages({
   itemPastePolicyError: {
     id: 'pastePolicy.error',
     defaultMessage: 'The selected {action} target goes against site policies for the destination directory.'
+  },
+  itemPasteValidating: {
+    id: 'words.validating',
+    defaultMessage: 'Validating'
   }
 });
 
@@ -253,8 +259,8 @@ const content: CrafterCMSEpic[] = [
       ofType(conditionallyUnlockItem.type),
       withLatestFrom(state$),
       filter(([{ payload }, state]) => state.content.itemsByPath[payload.path].lockOwner === state.user.username),
-      switchMap(([{ payload }, state]) => {
-        return unlock(state.sites.active, payload.path).pipe(
+      switchMap(([{ payload }, state]) =>
+        unlock(state.sites.active, payload.path).pipe(
           map(() =>
             payload.notify
               ? batchActions([
@@ -263,8 +269,8 @@ const content: CrafterCMSEpic[] = [
                 ])
               : emitSystemEvent(itemUnlocked({ target: payload.path }))
           )
-        );
-      })
+        )
+      )
     ),
   // endregion
   // region Asset Duplicate
@@ -371,14 +377,11 @@ const content: CrafterCMSEpic[] = [
         }
       }),
       switchMap(([{ payload }, state]) => {
-        const id = uuid();
         return merge(
           of(
-            pushTab({
-              minimized: true,
-              id,
-              status: 'indeterminate',
-              title: getIntl().formatMessage(inProgressMessages.pasting)
+            blockUI({
+              progress: 'indeterminate',
+              message: getIntl().formatMessage(inProgressMessages.pasting)
             })
           ),
           paste(state.sites.active, payload.path, state.content.clipboard).pipe(
@@ -387,7 +390,7 @@ const content: CrafterCMSEpic[] = [
                 emitSystemEvent(itemsPasted({ target: payload.path, clipboard: state.content.clipboard })),
                 clearClipboard(),
                 showPasteItemSuccessNotification(),
-                popTab({ id })
+                unblockUI()
               ])
             )
           )
@@ -408,34 +411,50 @@ const content: CrafterCMSEpic[] = [
         ) {
           fileName = withIndex(fileName);
         }
-        return validateActionPolicy(state.sites.active, {
-          type: state.content.clipboard.type === 'CUT' ? 'MOVE' : 'COPY',
-          target: `${withoutIndex(payload.path)}/${fileName}`,
-          source: state.content.clipboard.sourcePath
-        }).pipe(
-          map(({ allowed, modifiedValue, target }) => {
-            if (allowed && modifiedValue) {
-              return showConfirmDialog({
-                body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyConfirm, {
-                  action: state.content.clipboard.type === 'CUT' ? 'cut' : 'copy',
-                  path: target,
-                  modifiedPath: modifiedValue
-                }),
-                onCancel: closeConfirmDialog(),
-                onOk: batchActions([pasteItem({ path: payload.path }), closeConfirmDialog()])
-              });
-            } else if (allowed) {
-              return pasteItem({
-                path: payload.path
-              });
-            } else {
-              return showConfirmDialog({
-                body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyError, {
-                  action: state.content.clipboard.type === 'CUT' ? 'cut' : 'copy'
-                })
-              });
-            }
-          })
+        return merge(
+          of(
+            blockUI({
+              progress: 'indeterminate',
+              message: `${getIntl().formatMessage(sitePolicyMessages.itemPasteValidating)}...`
+            })
+          ),
+          validateActionPolicy(state.sites.active, {
+            type: state.content.clipboard.type === 'CUT' ? 'MOVE' : 'COPY',
+            target: `${withoutIndex(payload.path)}/${fileName}`,
+            source: state.content.clipboard.sourcePath
+          }).pipe(
+            switchMap(({ allowed, modifiedValue, target }) => {
+              if (allowed && modifiedValue) {
+                return [
+                  unblockUI(),
+                  showConfirmDialog({
+                    body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyConfirm, {
+                      action: state.content.clipboard.type === 'CUT' ? 'cut' : 'copy',
+                      path: target,
+                      modifiedPath: modifiedValue
+                    }),
+                    onCancel: closeConfirmDialog(),
+                    onOk: batchActions([pasteItem({ path: payload.path }), closeConfirmDialog()])
+                  })
+                ];
+              } else if (allowed) {
+                return [
+                  pasteItem({
+                    path: payload.path
+                  })
+                ];
+              } else {
+                return [
+                  unblockUI(),
+                  showConfirmDialog({
+                    body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyError, {
+                      action: state.content.clipboard.type === 'CUT' ? 'cut' : 'copy'
+                    })
+                  })
+                ];
+              }
+            })
+          )
         );
       })
     ),
@@ -487,16 +506,18 @@ const content: CrafterCMSEpic[] = [
                 }),
                 popTab({ id })
               ]),
-              catchAjaxError((error: AjaxError) => [
-                popTab({ id }),
-                error.status === 404
-                  ? showConfirmDialog({
-                      body: getIntl().formatMessage(
-                        itemFailureMessages[type === 'DELETE_CONTROLLER' ? 'controllerNotFound' : 'templateNotFound']
-                      )
-                    })
-                  : showErrorDialog({ error: error.response ?? error })
-              ])
+              catchAjaxError((error: AjaxError) =>
+                batchActions([
+                  popTab({ id }),
+                  error.status === 404
+                    ? showConfirmDialog({
+                        body: getIntl().formatMessage(
+                          itemFailureMessages[type === 'DELETE_CONTROLLER' ? 'controllerNotFound' : 'templateNotFound']
+                        )
+                      })
+                    : showErrorDialog({ error: error.response ?? error })
+                ])
+              )
             )
           );
         }

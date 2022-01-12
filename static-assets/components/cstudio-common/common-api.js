@@ -1154,7 +1154,15 @@ var nodeOpen = false,
       openSearch: function (searchContext, newWindow, callback, searchId) {
         var openInSameWindow = newWindow ? false : true;
 
-        var searchUrl = CStudioAuthoringContext.authoringAppBaseUri + '/search?site=' + CStudioAuthoringContext.site;
+        var searchUrl =
+          CStudioAuthoringContext.authoringAppBaseUri + '/search?site=' + CStudioAuthoringContext.site + '#/';
+
+        const filters = searchContext.filters;
+        if (!jQuery.isEmptyObject(searchContext.filters)) {
+          searchUrl += `?filters=${encodeURIComponent(JSON.stringify(filters))}`;
+        } else {
+          searchUrl += '?';
+        }
 
         if (!CStudioAuthoring.Utils.isEmpty(searchContext.keywords)) {
           searchUrl += '&keywords=' + searchContext.keywords;
@@ -1164,10 +1172,12 @@ var nodeOpen = false,
           searchUrl += '&sortBy=' + searchContext.sortBy;
         }
 
+        if (!CStudioAuthoring.Utils.isEmpty(searchContext.sortOrder)) {
+          searchUrl += '&sortOrder=' + searchContext.sortOrder;
+        }
+
         if (!CStudioAuthoring.Utils.isEmpty(searchContext.page)) {
-          searchUrl += '&page=' + searchContext.page;
-        } else {
-          searchUrl += '&page=1';
+          searchUrl += '&offset=' + searchContext.offset;
         }
 
         if (!CStudioAuthoring.Utils.isEmpty(searchContext.mode)) {
@@ -1177,28 +1187,15 @@ var nodeOpen = false,
           }
         }
 
-        if (!CStudioAuthoring.Utils.isEmpty(searchContext.itemsPerPage)) {
-          searchUrl += '&ipp=' + searchContext.itemsPerPage;
-        }
-
         if (!CStudioAuthoring.Utils.isEmpty(searchContext.query)) {
           searchUrl += '&query=' + searchContext.query;
         }
 
-        searchUrl += '&searchId=';
-
-        const filters = searchContext.filters;
-        if (!jQuery.isEmptyObject(searchContext.filters)) {
-          searchUrl += `#/?filters=${encodeURIComponent(JSON.stringify(filters))}`;
-
-          if (!CStudioAuthoring.Utils.isEmpty(searchContext.path)) {
-            searchUrl += '&path=' + encodeURIComponent(searchContext.path);
-          }
-        } else {
-          if (!CStudioAuthoring.Utils.isEmpty(searchContext.path)) {
-            searchUrl += '#/?path=' + encodeURIComponent(searchContext.path);
-          }
+        if (!CStudioAuthoring.Utils.isEmpty(searchContext.path)) {
+          searchUrl += '&path=' + encodeURIComponent(searchContext.path);
         }
+
+        searchUrl += '&searchId=';
 
         var childSearch = null;
 
@@ -5696,8 +5693,11 @@ var nodeOpen = false,
         const textarea = document.createElement('textarea');
         const div = document.createElement('div');
         textarea.innerHTML = html;
-        div.innerHTML = textarea.value;
-        return div.innerText.trim() === '';
+        // Remove spaces
+        div.innerHTML = textarea.value.replace(/\s/g, '');
+        // Remove empty elements (elements like <img src=""/> are not removed)
+        $(div).find('*:empty').remove();
+        return $(div).is(':empty');
       },
 
       /**

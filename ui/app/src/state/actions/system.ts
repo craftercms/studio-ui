@@ -22,6 +22,7 @@ import { ObtainAuthTokenResponse } from '../../services/auth';
 import User from '../../models/User';
 import { Site } from '../../models/Site';
 import LookupTable from '../../models/LookupTable';
+import { UIBlockerStateProps } from '../../components/UIBlocker';
 
 // region Item Events
 
@@ -130,3 +131,6 @@ export const fetchUseLegacyPreviewPreferenceComplete = /*#__PURE__*/ createActio
   useLegacyPreview: boolean;
 }>('FETCH_USE_PREVIEW_3_COMPLETE');
 export const fetchUseLegacyPreviewPreferenceFailed = /*#__PURE__*/ createAction('FETCH_USE_PREVIEW_3_FAILED');
+
+export const blockUI = /*#__PURE__*/ createAction<Partial<UIBlockerStateProps>>('BLOCK_UI');
+export const unblockUI = /*#__PURE__*/ createAction('UNBLOCK_UI');

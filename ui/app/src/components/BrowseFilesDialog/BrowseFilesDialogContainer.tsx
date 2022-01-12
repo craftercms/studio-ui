@@ -21,7 +21,11 @@ import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useEnv } from '../../hooks/useEnv';
 import { useDebouncedInput } from '../../hooks/useDebouncedInput';
 import { useSpreadState } from '../../hooks/useSpreadState';
-import { showPreviewDialog } from '../../state/actions/dialogs';
+import {
+  closeSingleFileUploadDialog,
+  showPreviewDialog,
+  showSingleFileUploadDialog
+} from '../../state/actions/dialogs';
 import { useDispatch } from 'react-redux';
 import LookupTable from '../../models/LookupTable';
 import { BrowseFilesDialogUI } from '.';
@@ -31,6 +35,8 @@ import { FormattedMessage } from 'react-intl';
 import EmptyState from '../EmptyState';
 import { useStyles } from './styles';
 import BrowseFilesDialogContainerSkeleton from './BrowseFilesDialogContainerSkeleton';
+import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
+import { createCustomDocumentEventListener } from '../../utils/dom';
 
 export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProps) {
   const {
@@ -62,8 +68,8 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
   const selectedArray = Object.keys(selectedLookup).filter((key) => selectedLookup[key]);
   const browsePath = path.replace(/\/+$/, '');
   const [currentPath, setCurrentPath] = useState(browsePath);
-  const [fetchingCurrentPathExists, setFetchingCurrentPathExists] = useState(false);
-  const [currentPathExists, setCurrentPathExists] = useState(false);
+  const [fetchingBrowsePathExists, setFetchingBrowsePathExists] = useState(false);
+  const [browsePathExists, setBrowsePathExists] = useState(false);
   const classes = useStyles();
 
   const fetchItems = useCallback(
@@ -76,19 +82,24 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
   );
 
   useEffect(() => {
-    setFetchingCurrentPathExists(true);
-    const subscription = checkPathExistence(site, currentPath).subscribe((exists) => {
-      if (exists) {
-        fetchItems();
-        setCurrentPathExists(true);
-      }
-      setFetchingCurrentPathExists(false);
-    });
+    let subscription;
+    if (!browsePathExists) {
+      setFetchingBrowsePathExists(true);
+      subscription = checkPathExistence(site, browsePath).subscribe((exists) => {
+        if (exists) {
+          fetchItems();
+          setBrowsePathExists(true);
+        }
+        setFetchingBrowsePathExists(false);
+      });
+    } else {
+      fetchItems();
+    }
 
     return () => {
-      subscription.unsubscribe();
+      subscription?.unsubscribe();
     };
-  }, [fetchItems, site, currentPath]);
+  }, [fetchItems, site, browsePath, browsePathExists]);
 
   const onCardSelected = (item: MediaItem) => {
     if (multiSelect) {
@@ -121,7 +132,7 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
   };
 
   const onChangeRowsPerPage = (e) => {
-    setSearchParameters({ limit: e.target.value });
+    setSearchParameters({ offset: 0, limit: e.target.value });
   };
 
   const onCheckboxChecked = (path: string, selected: boolean) => {
@@ -144,10 +155,33 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
 
   const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
 
-  return fetchingCurrentPathExists ? (
+  const onUpload = () => {
+    dispatch(
+      showSingleFileUploadDialog({
+        site,
+        path: currentPath,
+        fileTypes: mimeTypes,
+        onClose: closeSingleFileUploadDialog(),
+        onUploadComplete: batchActions([closeSingleFileUploadDialog(), dispatchDOMEvent({ id: 'imageUploaded' })])
+      })
+    );
+
+    createCustomDocumentEventListener('imageUploaded', (response) => {
+      setTimeout(() => {
+        fetchItems();
+      }, 2000);
+    });
+  };
+
+  const onRefresh = () => {
+    fetchItems();
+  };
+
+  return fetchingBrowsePathExists ? (
     <BrowseFilesDialogContainerSkeleton />
-  ) : currentPathExists ? (
+  ) : browsePathExists ? (
     <BrowseFilesDialogUI
+      currentPath={currentPath}
       items={items}
       path={browsePath}
       guestBase={guestBase}
@@ -169,6 +203,8 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
       onSelectButtonClick={onSelectButtonClick}
       numOfLoaderItems={numOfLoaderItems}
       rowsPerPageOptions={rowsPerPageOptions}
+      onRefresh={onRefresh}
+      onUpload={onUpload}
     />
   ) : (
     <EmptyState

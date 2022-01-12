@@ -18,7 +18,7 @@ import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import makeStyles from '@mui/styles/makeStyles';
 import { FormControl, FormControlLabel, FormHelperText, FormLabel, Radio, RadioGroup } from '@mui/material';
-import { setDragHelpMode, setHighlightMode } from '../../state/actions/preview';
+import { setEditModePadding, setHighlightMode } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 import EditModeSwitch from '../EditModeSwitch';
 import { usePreviewState } from '../../hooks/usePreviewState';
@@ -29,11 +29,11 @@ import Switch from '@mui/material/Switch';
 const translations = defineMessages({
   editMode: {
     id: 'settingsPanel.editMode',
-    defaultMessage: 'Edit Mode'
+    defaultMessage: 'Edit Mode (e | m)'
   },
   editModeHelperText: {
     id: 'settingsPanel.editModeHelperText',
-    defaultMessage: 'Enable In-context editing, highlighting editable targets as you hover on them.'
+    defaultMessage: 'Enable/disabled in-context editing'
   },
   highlightMode: {
     id: 'settingsPanel.highlightMode',
@@ -42,23 +42,24 @@ const translations = defineMessages({
   highlightModeHelperText: {
     id: 'settingsPanel.highlightModeHelperText',
     defaultMessage:
-      'When "highlight movable" is selected, only content items you can be moved or sorted highlight. Text inputs and other non-movable won\'t highlight.'
+      'When "highlight movable" is selected, only content items you can be moved or sorted highlight. Text inputs and other non-movable won\'t highlight. Press `e` and `m` at any point to toggle between modes.'
   },
   highlightAllZones: {
     id: 'settingsPanel.highlightAllTargets',
-    defaultMessage: 'Highlight All Targets'
+    defaultMessage: 'Highlight all targets (e)'
   },
   highlightMovable: {
     id: 'settingsPanel.highlightMovable',
-    defaultMessage: 'Highlight Movable'
+    defaultMessage: 'Highlight movable (m)'
   },
-  dragHelpModeLabel: {
-    id: 'settingsPanel.dragHelpModeLabel',
-    defaultMessage: 'Drag-friendly mode'
+  editModePaddingLabel: {
+    id: 'settingsPanel.editModePaddingLabel',
+    defaultMessage: 'Edit-mode padding (p)'
   },
-  dragHelpModeHelp: {
-    id: 'settingsPanel.dragHelpModeHelp',
-    defaultMessage: 'Enables styles for facilitating drag & drop.'
+  editModePaddingHelp: {
+    id: 'settingsPanel.editModePaddingHelp',
+    defaultMessage:
+      'Adds padding to collections for easier interaction in edit-mode. Press `p` at any point to toggle on/off.'
   }
 });
 
@@ -84,11 +85,11 @@ const useStyles = makeStyles(() => ({
 export function PreviewSettingsPanel() {
   const classes = useStyles();
   const { formatMessage } = useIntl();
-  const { highlightMode, dragHelpMode } = usePreviewState();
+  const { highlightMode, editModePadding } = usePreviewState();
   const item = useCurrentPreviewItem();
   const dispatch = useDispatch();
-  const onDragHelpModeChange = (e) => {
-    dispatch(setDragHelpMode({ dragHelpMode: e.target.checked }));
+  const onEditModePaddingChange = (e) => {
+    dispatch(setEditModePadding({ editModePadding: e.target.checked }));
   };
   return (
     <section className={classes.root}>
@@ -135,11 +136,11 @@ export function PreviewSettingsPanel() {
       <FormControl>
         <FormControlLabel
           classes={{ root: classes.labelRoot }}
-          control={<Switch checked={dragHelpMode} onChange={onDragHelpModeChange} />}
-          label={formatMessage(translations.dragHelpModeLabel)}
+          control={<Switch checked={editModePadding} onChange={onEditModePaddingChange} />}
+          label={formatMessage(translations.editModePaddingLabel)}
           labelPlacement="start"
         />
-        <FormHelperText>{formatMessage(translations.dragHelpModeHelp)}</FormHelperText>
+        <FormHelperText>{formatMessage(translations.editModePaddingHelp)}</FormHelperText>
       </FormControl>
     </section>
   );

@@ -14,43 +14,56 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
-import Button from '@mui/material/Button';
-import ButtonGroup from '@mui/material/ButtonGroup';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import ClickAwayListener from '@mui/material/ClickAwayListener';
-import Grow from '@mui/material/Grow';
-import Paper from '@mui/material/Paper';
-import Popper from '@mui/material/Popper';
-import MenuItem from '@mui/material/MenuItem';
-import MenuList from '@mui/material/MenuList';
+import React, { useEffect } from 'react';
 import PrimaryButton from '../PrimaryButton';
-
-interface SplitButtonProps {
-  options: {
-    label: string;
-    callback(): void;
-  }[];
-  defaultSelected?: number;
-  disablePortal?: boolean;
-  disabled?: boolean;
-  loading?: boolean;
-}
+import SplitButtonUI from './SplitButtonUI';
+import { SplitButtonProps } from './utils';
+import {
+  getStoredSaveButtonSubAction,
+  removeStoredSaveButtonSubAction,
+  setStoredSaveButtonSubAction
+} from '../../utils/state';
+import { useActiveUser } from '../../hooks';
 
 export function SplitButton(props: SplitButtonProps) {
-  const { options, defaultSelected = 0, disablePortal = true, disabled, loading } = props;
+  const { options, defaultSelected = options[0].id, disablePortal = true, disabled, loading, storageKey } = props;
   const [open, setOpen] = React.useState(false);
+  const user = useActiveUser();
   const anchorRef = React.useRef<HTMLDivElement>(null);
-  const [selectedIndex, setSelectedIndex] = React.useState(defaultSelected);
 
-  const handleClick = () => {
-    options[selectedIndex]?.callback();
+  const indexFromDefaultSelected = options.findIndex((option) => option.id === defaultSelected);
+  const [selectedIndex, setSelectedIndex] = React.useState(
+    indexFromDefaultSelected !== -1 ? indexFromDefaultSelected : 0
+  );
+
+  useEffect(() => {
+    if (storageKey) {
+      const storedValue = getStoredSaveButtonSubAction(user.username, storageKey);
+      if (storedValue) {
+        const index = options.findIndex((option) => option.id === storedValue);
+        if (index !== -1) {
+          setSelectedIndex(index);
+        } else {
+          removeStoredSaveButtonSubAction(user.username, storageKey);
+        }
+      }
+    }
+  }, [storageKey, options, user.username]);
+
+  const handleClick = (e) => {
+    options[selectedIndex]?.callback(e);
   };
 
   const handleMenuItemClick = (event: React.MouseEvent<Element, MouseEvent>, index: number) => {
     setSelectedIndex(index);
+
+    if (storageKey) {
+      const storageValue = options[index].id;
+      setStoredSaveButtonSubAction(user.username, storageKey, storageValue);
+    }
+
     setOpen(false);
-    options[index]?.callback();
+    options[index]?.callback(event);
   };
 
   const handleToggle = () => {
@@ -70,48 +83,19 @@ export function SplitButton(props: SplitButtonProps) {
       {loading ? (
         <PrimaryButton loading disabled />
       ) : (
-        <ButtonGroup disabled={disabled} variant="contained" color="primary" ref={anchorRef} aria-label="split button">
-          <Button onClick={handleClick}>{options[selectedIndex].label}</Button>
-          <Button
-            color="primary"
-            size="small"
-            aria-controls={open ? 'split-button-menu' : undefined}
-            aria-expanded={open ? 'true' : undefined}
-            aria-label="select option"
-            aria-haspopup="menu"
-            onClick={handleToggle}
-          >
-            <ArrowDropDownIcon />
-          </Button>
-        </ButtonGroup>
+        <SplitButtonUI
+          options={options}
+          disablePortal={disablePortal}
+          disabled={disabled}
+          anchorRef={anchorRef}
+          selectedIndex={selectedIndex}
+          handleClick={handleClick}
+          open={open}
+          handleToggle={handleToggle}
+          handleClose={handleClose}
+          handleMenuItemClick={handleMenuItemClick}
+        />
       )}
-
-      <Popper open={open} anchorEl={anchorRef.current} role={undefined} transition disablePortal={disablePortal}>
-        {({ TransitionProps, placement }) => (
-          <Grow
-            {...TransitionProps}
-            style={{
-              transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom'
-            }}
-          >
-            <Paper>
-              <ClickAwayListener onClickAway={handleClose}>
-                <MenuList id="split-button-menu">
-                  {options.map((option, index) => (
-                    <MenuItem
-                      key={option.label}
-                      selected={index === selectedIndex}
-                      onClick={(event) => handleMenuItemClick(event, index)}
-                    >
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </MenuList>
-              </ClickAwayListener>
-            </Paper>
-          </Grow>
-        )}
-      </Popper>
     </>
   );
 }

@@ -21,6 +21,7 @@ import { nnou } from '../utils/object';
 export interface EnhancedDialogState {
   open: boolean;
   isMinimized: boolean;
+  isFullScreen?: boolean;
   hasPendingChanges: boolean;
   isSubmitting: boolean;
 }
@@ -34,6 +35,7 @@ export function useEnhancedDialogState(initialState?: Partial<EnhancedDialogStat
   const [state, setState] = useSpreadState<EnhancedDialogState>({
     open: false,
     isMinimized: false,
+    isFullScreen: false,
     hasPendingChanges: false,
     isSubmitting: false,
     ...initialState
@@ -41,6 +43,17 @@ export function useEnhancedDialogState(initialState?: Partial<EnhancedDialogStat
   return useMemo(() => {
     const onOpen = () => setState({ open: true });
     const onClose = () => setState({ open: false });
+    const onResetState = () =>
+      setState({
+        open: false,
+        isMinimized: false,
+        isFullScreen: false,
+        hasPendingChanges: false,
+        isSubmitting: false,
+        ...initialState
+      });
+    const onFullScreen = () => setState({ isFullScreen: true });
+    const onCancelFullScreen = () => setState({ isFullScreen: false });
     const onMaximize = () => setState({ isMinimized: false });
     const onMinimize = () => setState({ isMinimized: true });
     const onSubmittingChange = (isSubmitting: boolean) => setState({ isSubmitting });
@@ -63,11 +76,16 @@ export function useEnhancedDialogState(initialState?: Partial<EnhancedDialogStat
       ...state,
       onOpen,
       onClose,
+      onResetState,
       onMaximize,
       onMinimize,
+      onFullScreen,
+      onCancelFullScreen,
       onSubmittingChange,
       onHasPendingChange,
       onSubmittingAndOrPendingChange
     };
+    // Users of the effect most likely won’t memo the initial state
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setState, state]);
 }

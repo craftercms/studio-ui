@@ -36,6 +36,7 @@ import { CreateTokenContainerProps } from './utils';
 import { createToken } from '../../services/tokens';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';
+import { useUpdateRefs } from '../../hooks';
 
 const translations = defineMessages({
   placeholder: {
@@ -72,6 +73,9 @@ export function CreateTokenDialogContainer(props: CreateTokenContainerProps) {
     onOk({ label, expiresAt: expires ? expiresAt : null });
   };
   const locale = useSelection<GlobalState['uiConfig']['locale']>((state) => state.uiConfig.locale);
+  const functionRefs = useUpdateRefs({
+    onSubmittingAndOrPendingChange
+  });
 
   useEffect(() => {
     onSubmittingAndOrPendingChange({
@@ -80,17 +84,20 @@ export function CreateTokenDialogContainer(props: CreateTokenContainerProps) {
   }, [onSubmittingAndOrPendingChange, expires, label]);
 
   const onOk = ({ label, expiresAt }) => {
-    onSubmittingAndOrPendingChange({
+    functionRefs.current.onSubmittingAndOrPendingChange({
       isSubmitting: true
     });
     createToken(label, expiresAt).subscribe(
       (token) => {
-        onSubmittingAndOrPendingChange({
+        functionRefs.current.onSubmittingAndOrPendingChange({
           isSubmitting: false
         });
         onCreated?.(token);
       },
       (response) => {
+        functionRefs.current.onSubmittingAndOrPendingChange({
+          isSubmitting: false
+        });
         dispatch(showErrorDialog({ error: response }));
       }
     );
