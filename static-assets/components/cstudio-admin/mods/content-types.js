@@ -768,6 +768,7 @@
                   try {
                     var tool = new moduleClass('fake', {}, fakeComponentOwner, [], [], []),
                       plugin = controls[idx].plugin ? controls[idx].plugin : null;
+                    tool.moduleClass = moduleClass;
                     CStudioAdminConsole.Tool.ContentTypes.types[tool.getName()] = tool;
                     if (plugin) {
                       CStudioAdminConsole.Tool.ContentTypes.types[tool.getName()].plugin = plugin;
@@ -3447,30 +3448,15 @@
       },
 
       /**
-       * The list of controls is generic and not for each control in the form-definition.
-       * So when retrieving the additional fields if the additional field needs to match the field id then it will have
-       * a macro '{id}'.
-       * This function replaces the macro with the actual fieldId, so it can be written in the xml properly.
-       */
-      processAdditionalFieldsMacro: function(additionalFields, fieldId) {
-        const fields = [];
-        additionalFields.forEach((field) => {
-          let processedField = field;
-          if (field.includes('{id}')) {
-            processedField = field.replace('{id}', fieldId);
-          }
-          fields.push(processedField);
-        });
-        return fields;
-      },
-
-      /**
        * render a field as xml
        */
       renderFieldToXml: function (field) {
-        const control = CStudioAdminConsole.Tool.ContentTypes.propertySheet.config.controls.control
-          .filter((control) => control.name === field.type)[0];
-        const additionalFields = this.processAdditionalFieldsMacro(control.additionalFields, field.id);
+        // Instantiate control to get its additional fields.
+        const controlClass = CStudioAdminConsole.Tool.ContentTypes.types[field.type].moduleClass;
+        const control = new controlClass(field.id, {}, {
+          registerField: function () {}
+        }, [], [], []);
+        const additionalFields = control.getAdditionalFields?.() ?? [];
 
         var xml = '';
 

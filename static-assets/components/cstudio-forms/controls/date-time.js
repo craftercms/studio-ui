@@ -156,7 +156,7 @@ CStudioForms.Controls.DateTime =
 
 YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
   getAdditionalFields: function () {
-    return ['{id}_tz'];
+    return [this.timezoneId];
   },
 
   getLabel: function () {
