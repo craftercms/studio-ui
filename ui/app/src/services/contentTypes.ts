@@ -432,10 +432,23 @@ export function associateTemplate(site: string, contentTypeId: string, displayTe
       );
       if (property) {
         property.querySelector('value').innerHTML = displayTemplate;
-        return writeConfiguration(site, path, module, beautify(serialize(doc)));
       } else {
-        return of(false);
+        const property = document.createElement('property');
+        const name = document.createElement('name');
+        const label = document.createElement('label');
+        const value = document.createElement('value');
+        const type = document.createElement('type');
+        name.innerHTML = 'display-template';
+        label.innerHTML = 'Display Template';
+        value.innerHTML = displayTemplate;
+        type.innerHTML = 'template';
+        property.appendChild(name);
+        property.appendChild(label);
+        property.appendChild(value);
+        property.appendChild(type);
+        doc.querySelector('properties').appendChild(property);
       }
+      return writeConfiguration(site, path, module, beautify(serialize(doc)));
     })
   );
 }
