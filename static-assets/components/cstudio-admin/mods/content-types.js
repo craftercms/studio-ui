@@ -715,6 +715,7 @@
                   try {
                     var tool = new moduleClass('fake', {}, fakeComponentOwner, [], [], []),
                       plugin = controls[idx].plugin ? controls[idx].plugin : null;
+                    tool.moduleClass = moduleClass;
                     CStudioAdminConsole.Tool.ContentTypes.types[tool.getName()] = tool;
                     if (plugin) {
                       CStudioAdminConsole.Tool.ContentTypes.types[tool.getName()].plugin = plugin;
@@ -3551,6 +3552,20 @@
        * render a field as xml
        */
       renderFieldToXml: function (field) {
+        // Instantiate control to get its additional fields.
+        const controlClass = CStudioAdminConsole.Tool.ContentTypes.types[field.type].moduleClass;
+        const control = new controlClass(
+          field.id,
+          {},
+          {
+            registerField: function () {}
+          },
+          [],
+          [],
+          []
+        );
+        const additionalFields = control.getAdditionalFields?.() ?? [];
+
         var xml = '';
 
         if (field) {
@@ -3638,7 +3653,15 @@
                 '\t\t\t\t\t\t</constraint>\r\n';
             }
           }
-          xml += '\t\t\t\t\t</constraints>\r\n' + '\t\t\t\t</field>\r\n';
+          xml += '\t\t\t\t\t</constraints>\r\n';
+          if (additionalFields.length > 0) {
+            xml += '\t\t\t\t\t<additionalFields>\r\n';
+            additionalFields.forEach((field) => {
+              xml += '\t\t\t\t\t\t<id>' + field + '</id>\r\n';
+            });
+            xml += '\t\t\t\t\t</additionalFields>\r\n';
+          }
+          xml += '\t\t\t\t</field>\r\n';
         }
         return xml;
       },
