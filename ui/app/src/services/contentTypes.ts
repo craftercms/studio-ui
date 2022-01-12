@@ -421,6 +421,25 @@ export function deleteContentType(site: string, contentTypeId: string): Observab
   }).pipe(mapTo(true));
 }
 
+export function associateTemplate(site: string, contentTypeId: string, displayTemplate: string): Observable<boolean> {
+  const path = stripDuplicateSlashes(`/content-types/${contentTypeId}/form-definition.xml`);
+  const module = 'studio';
+  return fetchConfigurationDOM(site, path, 'studio').pipe(
+    switchMap((doc) => {
+      const properties = doc.querySelectorAll('properties > property');
+      const property = Array.from(properties).find(
+        (node) => node.querySelector('name').innerHTML.trim() === 'display-template'
+      );
+      if (property) {
+        property.querySelector('value').innerHTML = displayTemplate;
+        return writeConfiguration(site, path, module, beautify(serialize(doc)));
+      } else {
+        return of(false);
+      }
+    })
+  );
+}
+
 export function dissociateTemplate(site: string, contentTypeId: string): Observable<boolean> {
   const path = stripDuplicateSlashes(`/content-types/${contentTypeId}/form-definition.xml`);
   const module = 'studio';

@@ -16,12 +16,16 @@
 
 import { ofType } from 'redux-observable';
 import {
+  associateTemplate as associateTemplateActionCreator,
+  associateTemplateComplete,
+  associateTemplateFailed,
+  dissociateTemplate as dissociateTemplateActionCreator,
   dissociateTemplateComplete,
   dissociateTemplateFailed,
   fetchComponentsByContentType,
-  fetchContentTypes,
   fetchComponentsByContentTypeComplete,
   fetchComponentsByContentTypeFailed,
+  fetchContentTypes,
   fetchContentTypesComplete,
   fetchContentTypesFailed
 } from '../actions/preview';
@@ -30,9 +34,11 @@ import { fetchItemsByContentType } from '../../services/content';
 import { catchAjaxError } from '../../utils/ajax';
 import GlobalState from '../../models/GlobalState';
 import { Observable } from 'rxjs';
-import { fetchContentTypes as fetchContentTypesService } from '../../services/contentTypes';
-import { dissociateTemplate as dissociateTemplateActionCreator } from '../actions/preview';
-import { dissociateTemplate as dissociateTemplateService } from '../../services/contentTypes';
+import {
+  associateTemplate as associateTemplateService,
+  dissociateTemplate as dissociateTemplateService,
+  fetchContentTypes as fetchContentTypesService
+} from '../../services/contentTypes';
 import { CrafterCMSEpic } from '../store';
 import ContentType from '../../models/ContentType';
 
@@ -72,6 +78,30 @@ export default [
           state.contentTypes.byId,
           state.preview.components.query
         ).pipe(map(fetchComponentsByContentTypeComplete), catchAjaxError(fetchComponentsByContentTypeFailed))
+      )
+    ),
+  // endregion
+  // region associateTemplate
+  (action$, state$) =>
+    action$.pipe(
+      ofType(associateTemplateActionCreator.type),
+      withLatestFrom(state$),
+      switchMap(
+        ([
+          { payload },
+          {
+            sites: { active }
+          }
+        ]) =>
+          associateTemplateService(active, payload.contentTypeId, payload.displayTemplate).pipe(
+            map(() =>
+              associateTemplateComplete({
+                contentTypeId: payload.contentTypeId,
+                displayTemplate: payload.displayTemplate
+              })
+            ),
+            catchAjaxError(associateTemplateFailed)
+          )
       )
     ),
   // endregion
