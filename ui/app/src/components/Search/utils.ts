@@ -82,11 +82,6 @@ export interface SearchProps {
   onAcceptSelection?(items: DetailedItem[]): any;
 }
 
-export interface SearchApiState {
-  error: boolean;
-  errorResponse: ApiResponse;
-}
-
 export interface CheckedFilter {
   key: string;
   value: string;
@@ -125,9 +120,10 @@ interface useSearchStateReturn {
   guestBase: string;
   searchResults: SearchResult;
   selectedPath: string;
-  apiState: SearchApiState;
+  error: ApiResponse;
   drawerOpen: boolean;
   currentView: 'grid' | 'list';
+  isFetching: boolean;
   onActionClicked(option: AllItemActions, event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
   onHeaderButtonClick(event: any, item: MediaItem): void;
   handleClearSelected(): void;
@@ -148,14 +144,12 @@ export const useSearchState = ({ searchParameters, onSelect }: useSearchStatePro
   const { authoringBase, guestBase } = useEnv();
   const [selected, setSelected] = useState<string[]>([]);
   const [searchResults, setSearchResults] = useState<SearchResult>(null);
-  const [selectedPath, setSelectedPath] = useState<string>('');
+  const [selectedPath, setSelectedPath] = useState<string>(searchParameters.path ?? '');
   const { itemsByPath, isFetching } = useDetailedItems(selected);
   const [drawerOpen, setDrawerOpen] = useState(window.innerWidth > 960);
   const [currentView, setCurrentView] = useState<'grid' | 'list'>('grid');
-  const [apiState, setApiState] = useState<SearchApiState>({
-    error: false,
-    errorResponse: null
-  });
+  const [error, setError] = useState<ApiResponse>(null);
+  const [isFetchingResults, setIsFetchingResults] = useState(false);
 
   const selectionOptions = useMemo(() => {
     if (selected.length === 0) {
@@ -238,14 +232,19 @@ export const useSearchState = ({ searchParameters, onSelect }: useSearchStatePro
   };
 
   const refreshSearch = useCallback(() => {
-    search(site, searchParameters).subscribe(
-      (result) => {
+    setError(null);
+    setIsFetchingResults(true);
+    search(site, searchParameters).subscribe({
+      next(result) {
         setSearchResults(result);
+        setIsFetchingResults(false);
       },
-      (error) => {
+      error(error) {
+        setIsFetchingResults(false);
+        setSearchResults({ total: 0, items: [], facets: [] });
         const { response } = error;
         if (response && response.response) {
-          setApiState({ error: true, errorResponse: response.response });
+          setError(response.response);
         } else {
           console.error(error);
           dispatch(
@@ -257,7 +256,7 @@ export const useSearchState = ({ searchParameters, onSelect }: useSearchStatePro
           );
         }
       }
-    );
+    });
   }, [dispatch, formatMessage, searchParameters, site]);
 
   const handleClearSelected = useCallback(() => {
@@ -402,11 +401,11 @@ export const useSearchState = ({ searchParameters, onSelect }: useSearchStatePro
 
   useEffect(() => {
     refreshSearch();
-    return () => setApiState({ error: false, errorResponse: null });
+    return () => setError(null);
   }, [refreshSearch]);
 
   return {
-    apiState,
+    error,
     selected,
     guestBase,
     drawerOpen,
@@ -417,6 +416,7 @@ export const useSearchState = ({ searchParameters, onSelect }: useSearchStatePro
     areAllSelected,
     selectionOptions,
     handleClearSelected,
+    isFetching: isFetchingResults,
     clearPath,
     onPreview,
     toggleDrawer,

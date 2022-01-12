@@ -21,7 +21,7 @@ import { FullSxRecord, PartialSxRecord } from '../../models/CustomRecord';
 import { SxProps } from '@mui/system';
 import { Theme } from '@mui/material';
 
-export type PaginationClassKey = 'root' | 'selectRoot' | 'toolbar';
+export type PaginationClassKey = 'root' | 'selectRoot' | 'toolbar' | 'actions';
 
 export type PaginationFullSx = FullSxRecord<PaginationClassKey>;
 
@@ -54,6 +54,9 @@ function getStyles(sx: PaginationPartialSx): PaginationFullSx {
   return {
     root: {
       display: 'flex',
+      '.MuiInputBase-root': {
+        margin: 0
+      },
       '& p': {
         padding: 0,
         margin: 0
@@ -71,7 +74,9 @@ function getStyles(sx: PaginationPartialSx): PaginationFullSx {
       ...sx?.selectRoot
     },
     toolbar: {
+      display: 'flex',
       padding: '0 0 0 12px',
+      width: '100%',
       minHeight: '30px !important',
       justifyContent: 'space-between',
       '& .MuiTablePagination-spacer': {
@@ -84,6 +89,10 @@ function getStyles(sx: PaginationPartialSx): PaginationFullSx {
         padding: 0
       },
       ...sx?.toolbar
+    },
+    actions: {
+      marginLeft: '0 !important',
+      ...sx?.actions
     }
   } as Record<PaginationClassKey, SxProps<Theme>>;
 }
@@ -114,6 +123,9 @@ export default function Pagination(props: PaginationProps) {
         },
         [`& .${tablePaginationClasses['selectRoot']}`]: {
           ...sx.selectRoot
+        },
+        [`& .${tablePaginationClasses['actions']}`]: {
+          ...sx.actions
         }
       }}
       component="div"

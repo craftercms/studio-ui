@@ -406,12 +406,8 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
         };
 
         dialog.setHeader('Warning');
-        dialog.setBody(
-          CrafterCMSNext.i18n.intl.formatMessage(_self.messages.fileNameControlMessages.urlChangeWaring) +
-            '</br></br>' +
-            CrafterCMSNext.i18n.intl.formatMessage(_self.messages.fileNameControlMessages.viewReferences)
-        );
-        dialog.body.insertBefore(viewDependenciesLink, dialog.body.lastChild);
+        dialog.setBody(CrafterCMSNext.i18n.intl.formatMessage(_self.messages.fileNameControlMessages.urlChangeWaring));
+        // TODO: We removed the 'here' to see depedencies on RC 1.0, on RC 2 the warning should populate the dependencies items
 
         var myButtons = [
           {
@@ -473,6 +469,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
         this.inputEl.value = this.defaultValue;
       }
     }
+    this.inputEl.title = this.inputEl.value;
     this.count(null, this.countEl, this.inputEl);
     this._onChange(null, this);
     this.edited = false;
@@ -537,7 +534,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
         defaultValue: '50'
       },
       { label: CMgs.format(langBundle, 'readonly'), name: 'readonly', type: 'boolean' },
-      { label: CMgs.format(langBundle, 'allowEditWithoutWarning'), name: 'allowEditWithoutWarning', type: 'boolean' },
+      { label: CMgs.format(langBundle, 'allowEditWithoutWarning'), name: 'allowEditWithoutWarning', type: 'boolean' }
     ];
   },
 

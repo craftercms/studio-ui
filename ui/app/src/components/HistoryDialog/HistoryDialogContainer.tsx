@@ -119,7 +119,7 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
       disableItemSwitching: true,
       rightActions: [
         {
-          icon: 'HistoryIcon',
+          icon: { id: '@mui/icons-material/HistoryRounded' },
           onClick: showHistoryDialog({}),
           'aria-label': formatMessage(translations.backToHistoryList)
         }
@@ -137,7 +137,7 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
           showViewVersionDialog({
             rightActions: [
               {
-                icon: 'HistoryIcon',
+                icon: { id: '@mui/icons-material/HistoryRounded' },
                 onClick: showHistoryDialog({}),
                 'aria-label': formatMessage(translations.backToHistoryList)
               }

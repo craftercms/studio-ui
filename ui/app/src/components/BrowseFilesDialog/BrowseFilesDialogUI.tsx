@@ -46,7 +46,7 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
     limit,
     offset,
     keyword,
-    rowsPerPageOptions = [10, 15, 20],
+    rowsPerPageOptions = [9, 15, 21],
     total,
     numOfLoaderItems = 12,
     onCardSelected,

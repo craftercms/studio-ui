@@ -181,3 +181,14 @@ export function deserialize(xml: string | Node, options?: X2jOptionsOptional): a
 export function cdataWrap(value: string): string {
   return `<![CDATA[${value}]]>`;
 }
+
+export function parseValidateDocument(content: string): XMLDocument | string {
+  const xml = fromString(content);
+  const parseError = xml.querySelector('parsererror');
+
+  if (parseError) {
+    return parseError.querySelector('div').innerText;
+  }
+
+  return xml;
+}

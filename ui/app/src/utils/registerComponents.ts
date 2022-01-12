@@ -19,6 +19,19 @@ import { lazy } from 'react';
 
 export const registerComponents = () => {
   Object.entries({
+    '@mui/icons-material/RefreshRounded': lazy(() => import('@mui/icons-material/RefreshRounded')),
+    '@mui/icons-material/PlayCircleOutlineOutlined': lazy(
+      () => import('@mui/icons-material/PlayCircleOutlineOutlined')
+    ),
+    '@mui/icons-material/PauseCircleOutlineOutlined': lazy(
+      () => import('@mui/icons-material/PauseCircleOutlineOutlined')
+    ),
+    '@mui/icons-material/LockOpenRounded': lazy(() => import('@mui/icons-material/LockOpenRounded')),
+    '@mui/icons-material/OpenInFullRounded': lazy(() => import('@mui/icons-material/OpenInFullRounded')),
+    '@mui/icons-material/RemoveRounded': lazy(() => import('@mui/icons-material/RemoveRounded')),
+    '@mui/icons-material/CloseRounded': lazy(() => import('@mui/icons-material/CloseRounded')),
+    '@mui/icons-material/ArrowBackIosRounded': lazy(() => import('@mui/icons-material/ArrowBackIosRounded')),
+    '@mui/icons-material/HistoryRounded': lazy(() => import('@mui/icons-material/HistoryRounded')),
     '@mui/icons-material/SearchRounded': lazy(() => import('@mui/icons-material/SearchRounded')),
     '@mui/icons-material/ExtensionOutlined': lazy(() => import('@mui/icons-material/ExtensionOutlined')),
     '@mui/icons-material/ImageOutlined': lazy(() => import('@mui/icons-material/ImageOutlined')),

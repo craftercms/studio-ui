@@ -20,6 +20,7 @@ import { PaginationOptions } from './PaginationOptions';
 
 export interface ElasticParams extends PaginationOptions {
   query?: string;
+  path?: string;
   keywords: string;
   sortBy?: string;
   sortOrder?: string;

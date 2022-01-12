@@ -66,7 +66,7 @@ import Paper from '@mui/material/Paper';
 import TableBody from '@mui/material/TableBody';
 import DeleteIcon from '@mui/icons-material/DeleteOutline';
 import UninstallPluginDialog from '../DeletePluginDialog';
-import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
+import SettingsRoundedIcon from '@mui/icons-material/SettingsOutlined';
 import { PluginConfigDialog } from '../PluginConfigDialog';
 
 const messages = defineMessages({
@@ -126,7 +126,7 @@ export const PluginManagement = (props: PluginManagementProps) => {
   const locale = useSelection<GlobalState['uiConfig']['locale']>((state) => state.uiConfig.locale);
   const deletePluginDialogState = useEnhancedDialogState();
   const configPluginDialogState = useEnhancedDialogState();
-  const onWithPendingChangesCloseRequest = useWithPendingChangesCloseRequest(configPluginDialogState.onClose);
+  const onWithPendingChangesCloseRequest = useWithPendingChangesCloseRequest(configPluginDialogState.onResetState);
   const [pluginToDelete, setPluginToDelete] = useState(null);
   const [pluginToConfig, setPluginToConfig] = useState(null);
 
@@ -206,7 +206,7 @@ export const PluginManagement = (props: PluginManagementProps) => {
         emitSystemEvent(pluginUninstalled())
       ])
     );
-    deletePluginDialogState.onClose();
+    deletePluginDialogState.onResetState();
     refresh();
   };
 
@@ -216,7 +216,7 @@ export const PluginManagement = (props: PluginManagementProps) => {
         message: formatMessage(messages.pluginConfigUpdated)
       })
     );
-    configPluginDialogState.onClose();
+    configPluginDialogState.onResetState();
   };
 
   const onEditPluginConfig = (plugin: PluginRecord) => {
@@ -365,7 +365,7 @@ export const PluginManagement = (props: PluginManagementProps) => {
       />
       <UninstallPluginDialog
         open={deletePluginDialogState.open}
-        onClose={deletePluginDialogState.onClose}
+        onClose={deletePluginDialogState.onResetState}
         isSubmitting={deletePluginDialogState.isSubmitting}
         hasPendingChanges={deletePluginDialogState.hasPendingChanges}
         isMinimized={deletePluginDialogState.isMinimized}
@@ -375,7 +375,7 @@ export const PluginManagement = (props: PluginManagementProps) => {
       />
       <PluginConfigDialog
         open={configPluginDialogState.open}
-        onClose={configPluginDialogState.onClose}
+        onClose={configPluginDialogState.onResetState}
         isSubmitting={configPluginDialogState.isSubmitting}
         hasPendingChanges={configPluginDialogState.hasPendingChanges}
         isMinimized={configPluginDialogState.isMinimized}

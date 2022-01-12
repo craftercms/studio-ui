@@ -67,7 +67,7 @@ export function RemoteRepositoriesGridUI(props: RemoteRepositoriesGridUIProps) {
                     </IconButton>
                   </span>
                 </Tooltip>
-                <Tooltip title={<FormattedMessage id="words.pull" defaultMessage="Push" />}>
+                <Tooltip title={<FormattedMessage id="words.push" defaultMessage="Push" />}>
                   <span>
                     <IconButton
                       onClick={() => onPushClick(repository.name, repository.branches)}

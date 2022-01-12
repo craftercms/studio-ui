@@ -117,8 +117,12 @@ export function PreviewBrowseComponentsPanel() {
 
   const onSearch$ = useDebouncedInput(onSearch, 600);
 
-  function onPageChanged(event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null, newPage: number) {
+  function onPageChanged(newPage: number) {
     dispatch(fetchComponentsByContentType({ offset: newPage }));
+  }
+
+  function onRowsPerPageChange(e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) {
+    dispatch(fetchComponentsByContentType({ offset: 0, limit: e.target.value }));
   }
 
   function handleSearchKeyword(keyword: string) {
@@ -163,6 +167,7 @@ export function PreviewBrowseComponentsPanel() {
           <PreviewBrowseComponentsPanelUI
             componentsResource={resource}
             onPageChanged={onPageChanged}
+            onRowsPerPageChange={onRowsPerPageChange}
             onDragStart={onDragStart}
             onDragEnd={onDragEnd}
           />

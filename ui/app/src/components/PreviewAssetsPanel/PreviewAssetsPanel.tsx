@@ -23,7 +23,6 @@ import makeStyles from '@mui/styles/makeStyles';
 import SearchBar from '../SearchBar/SearchBar';
 import { useDispatch, useSelector } from 'react-redux';
 import GlobalState, { PagedEntityState } from '../../models/GlobalState';
-import TablePagination from '@mui/material/TablePagination';
 import { fromEvent, interval } from 'rxjs';
 import { filter, mapTo, share, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
@@ -46,6 +45,7 @@ import { useSelection } from '../../hooks/useSelection';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useLogicResource } from '../../hooks/useLogicResource';
 import { useDebouncedInput } from '../../hooks/useDebouncedInput';
+import Pagination from '../Pagination';
 
 const translations = defineMessages({
   previewAssetsPanelTitle: {
@@ -88,30 +88,6 @@ const assetsPanelStyles = makeStyles(() =>
     card: {
       cursor: 'move',
       marginBottom: '16px'
-    },
-    pagination: {
-      borderTop: '1px solid rgba(0, 0, 0, 0.12)',
-      '& p': {
-        padding: 0
-      },
-      '& svg': {
-        top: 'inherit'
-      },
-      '& .hidden': {
-        display: 'none'
-      }
-    },
-    toolbar: {
-      padding: 0,
-      display: 'flex',
-      justifyContent: 'space-between',
-      paddingLeft: '12px',
-      '& .MuiTablePagination-spacer': {
-        display: 'none'
-      },
-      '& .MuiTablePagination-spacer + p': {
-        display: 'none'
-      }
     },
     noResultsImage: {
       width: '150px'
@@ -279,8 +255,12 @@ export default function PreviewAssetsPanel() {
 
   const onSearch$ = useDebouncedInput(onSearch, 400);
 
-  function onPageChanged(event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null, newPage: number) {
+  function onPageChanged(newPage: number) {
     dispatch(fetchAssetsPanelItems({ offset: newPage }));
+  }
+
+  function onRowsPerPageChange(e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) {
+    dispatch(fetchAssetsPanelItems({ offset: 0, limit: e.target.value }));
   }
 
   function handleSearchKeyword(keyword: string) {
@@ -304,6 +284,7 @@ export default function PreviewAssetsPanel() {
             classes={classes}
             assetsResource={resource}
             onPageChanged={onPageChanged}
+            onRowsPerPageChange={onRowsPerPageChange}
             onDragStart={onDragStart}
             onDragEnd={onDragEnd}
             guestBase={guestBase}
@@ -320,36 +301,28 @@ interface AssetsPanelUIProps {
     Record<'assetsPanelWrapper' | 'pagination' | 'toolbar' | 'card' | 'noResultsImage' | 'noResultsTitle', string>
   >;
   assetsResource: Resource<AssetResource>;
-  onPageChanged(e: React.MouseEvent<HTMLButtonElement>, page: number): void;
+  onPageChanged(page: number): void;
+  onRowsPerPageChange(e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>): void;
   onDragStart(mediaItem: MediaItem): void;
   onDragEnd(): void;
 }
 
 export function AssetsPanelUI(props: AssetsPanelUIProps) {
-  const { classes, assetsResource, onPageChanged, onDragStart, onDragEnd, guestBase } = props;
+  const { classes, assetsResource, onPageChanged, onDragStart, onDragEnd, guestBase, onRowsPerPageChange } = props;
   const assets = assetsResource.read();
   const { count, pageNumber, items, limit } = assets;
   const { formatMessage } = useIntl();
 
   return (
     <div className={classes.assetsPanelWrapper}>
-      <TablePagination
-        className={classes.pagination}
-        classes={{ root: classes.pagination, selectRoot: 'hidden', toolbar: classes.toolbar }}
-        component="div"
-        labelRowsPerPage=""
+      <Pagination
+        rowsPerPageOptions={[5, 10, 15]}
+        sx={{ root: { marginRight: 'auto' }, toolbar: { paddingLeft: 0 } }}
         count={count}
         rowsPerPage={limit}
         page={pageNumber}
-        backIconButtonProps={{
-          'aria-label': formatMessage(translations.previousPage),
-          size: 'small'
-        }}
-        nextIconButtonProps={{
-          'aria-label': formatMessage(translations.nextPage),
-          size: 'small'
-        }}
-        onPageChange={(e: React.MouseEvent<HTMLButtonElement>, page: number) => onPageChanged(e, page * limit)}
+        onPageChange={(page: number) => onPageChanged(page * limit)}
+        onRowsPerPageChange={onRowsPerPageChange}
       />
       {items.map((item: MediaItem) => {
         return (

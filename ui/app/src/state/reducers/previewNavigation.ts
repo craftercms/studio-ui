@@ -82,8 +82,14 @@ const reducer = createReducer<GlobalState['previewNavigation']>(
     // - Set navigation type to 'back'
     [goToLastPage.type]: (state) => {
       const stack = [...state.historyBackStack];
-      stack.pop();
-      const path = stack[stack.length - 1];
+      let path;
+      // When there's 404, the page doesn't check in, and it's url doesn't get pushed on to the stack. Hence, in these cases, pop is not required.
+      if (stack[stack.length - 1] !== state.currentUrlPath) {
+        path = stack[stack.length - 1];
+      } else {
+        stack.pop();
+        path = stack[stack.length - 1];
+      }
       return {
         ...state,
         historyBackStack: stack,

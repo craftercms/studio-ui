@@ -132,7 +132,7 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
   };
 
   const onChangeRowsPerPage = (e) => {
-    setSearchParameters({ limit: e.target.value });
+    setSearchParameters({ offset: 0, limit: e.target.value });
   };
 
   const onCheckboxChecked = (path: string, selected: boolean) => {

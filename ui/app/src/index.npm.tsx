@@ -34,7 +34,6 @@ export * from './components/AuthMonitor';
 export * from './components/AwaitingApprovalDashlet';
 export * from './components/AwaitingApprovalDashletGrid';
 export * from './components/BrowseFilesDialog';
-export * from './components/ButtonWithLoadingState';
 export * from './components/ChangeContentTypeDialog';
 export * from './components/CharCountStatus';
 export * from './components/ClusterGrid';

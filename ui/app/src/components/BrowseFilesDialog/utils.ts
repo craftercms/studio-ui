@@ -73,7 +73,7 @@ export const initialParameters: ElasticParams = {
   query: '',
   keywords: '',
   offset: 0,
-  limit: 20,
+  limit: 21,
   sortBy: '_score',
   sortOrder: 'desc',
   filters: {}

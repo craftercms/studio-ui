@@ -17,3 +17,6 @@
 export { default } from './CopyDialog';
 
 export * from './CopyDialog';
+export * from './CopyDialogBody';
+export * from './CopyDialogItemSelectorTree';
+export * from './utils';

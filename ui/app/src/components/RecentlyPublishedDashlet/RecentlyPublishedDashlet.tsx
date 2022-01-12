@@ -274,7 +274,7 @@ export default function RecentlyPublishedDashlet() {
             {Object.keys(itemsLookup).length && (
               <MenuItem value={Object.keys(itemsLookup).length}>
                 <FormattedMessage
-                  id="words.all"
+                  id="recentlyPublishedDashlet.showAll"
                   defaultMessage="All ({total})"
                   values={{
                     total: Object.keys(itemsLookup).length

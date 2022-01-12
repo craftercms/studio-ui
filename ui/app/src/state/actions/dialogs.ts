@@ -19,7 +19,7 @@ import StandardAction from '../../models/StandardAction';
 import { FetchContentVersion } from '../../models/Version';
 import { NewContentDialogStateProps } from '../../components/NewContentDialog/utils';
 import { PathSelectionDialogStateProps } from '../../components/PathSelectionDialog/PathSelectionDialog';
-import { CopyDialogStateProps } from '../../components/CopyDialog/CopyDialog';
+import { CopyDialogStateProps } from '../../components/CopyDialog/utils';
 import { ItemMenuStateProps } from '../../components/ItemActionsMenu';
 import { ItemMegaMenuStateProps } from '../../components/ItemMegaMenu';
 import { LauncherStateProps } from '../../components/Launcher';
@@ -182,6 +182,7 @@ export const updateCreateFileDialog =
 export const showCopyDialog = /*#__PURE__*/ createAction<Partial<CopyDialogStateProps>>('SHOW_COPY_DIALOG');
 export const closeCopyDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_COPY_DIALOG');
 export const copyDialogClosed = /*#__PURE__*/ createAction('COPY_DIALOG_CLOSED');
+export const updateCopyDialog = /*#__PURE__*/ createAction<Partial<CopyDialogStateProps>>('UPDATE_COPY_DIALOG');
 // endregion
 
 // region Upload Dialog

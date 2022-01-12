@@ -232,7 +232,9 @@ const changeCurrentPath = /*#__PURE__*/ createAction<DetailedItem>('CHANGE_SELEC
 
 const setKeyword = /*#__PURE__*/ createAction<string>('SET_KEYWORD');
 
-const changePage = /*#__PURE__*/ createAction<number>('CHANGE_PAGE');
+const changePage = /*#__PURE__*/ createAction<{ offset: number }>('CHANGE_PAGE');
+
+const changeRowsPerPage = /*#__PURE__*/ createAction<{ offset: number; limit: number }>('CHANGE_PAGE');
 
 const fetchChildrenByPathAction = /*#__PURE__*/ createAction<string>('FETCH_CHILDREN_BY_PATH');
 
@@ -282,8 +284,12 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
           );
           break;
         }
+        case changeRowsPerPage.type:
         case changePage.type: {
-          fetchChildrenByPath(site, state.currentPath, { limit: state.limit, offset: payload }).subscribe(
+          fetchChildrenByPath(site, state.currentPath, {
+            limit: payload.limit ?? state.limit,
+            offset: payload.offset ?? state.offset
+          }).subscribe(
             (children) => exec(fetchChildrenByPathComplete({ children })),
             (response) => exec(fetchChildrenByPathFailed(response))
           );
@@ -383,7 +389,11 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
 
   const onPageChanged = (page: number) => {
     const offset = page * state.limit;
-    exec(changePage(offset));
+    exec(changePage({ offset }));
+  };
+
+  const onChangeRowsPerPage = (e) => {
+    exec(changeRowsPerPage({ offset: 0, limit: e.target.value }));
   };
 
   const Wrapper = hideUI ? React.Fragment : Paper;
@@ -461,8 +471,10 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
           />
           <Pagination
             count={state.total}
+            rowsPerPageOptions={[5, 10, 20]}
             rowsPerPage={state.limit}
             page={state && Math.ceil(state.offset / state.limit)}
+            onRowsPerPageChange={onChangeRowsPerPage}
             onPageChange={onPageChanged}
           />
         </SuspenseWithEmptyState>
