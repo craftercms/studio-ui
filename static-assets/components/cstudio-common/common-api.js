@@ -7611,6 +7611,21 @@ var nodeOpen = false,
       },
 
       /**
+       * return true if html render empty string
+       */
+      isEmptyHtml: function (html) {
+        if (html === '') return true;
+        const textarea = document.createElement('textarea');
+        const div = document.createElement('div');
+        textarea.innerHTML = html;
+        // Remove spaces
+        div.innerHTML = textarea.value.replace(/\s/g, '');
+        // Remove empty elements (elements like <img src=""/> are not removed)
+        $(div).find('*:empty').remove();
+        return $(div).is(':empty');
+      },
+
+      /**
        * given a list of content items, return an XML
        */
       createContentItemsXml: function (contentItems) {
@@ -8374,33 +8389,20 @@ var nodeOpen = false,
       isReviewer: function (cb) {
         var callback = {
           success: function (data) {
-            var roles = data,
-              isRev = false,
-              topRoles = false;
-            for (var i = 0; i < roles.length; i++) {
-              if (
-                roles[i].toLocaleLowerCase() == 'admin' ||
-                roles[i].toLocaleLowerCase() == 'developer' ||
-                roles[i].toLocaleLowerCase() == 'publisher' ||
-                roles[i].toLocaleLowerCase() == 'author'
-              ) {
-                topRoles = true;
-              }
-              if (roles[i].toLocaleLowerCase() == 'reviewer' && !topRoles) {
-                isRev = true;
-                break;
-              } else {
-                isRev = false;
-              }
-            }
-            cb(isRev);
+            cb(!CStudioAuthoring.Utils.hasPerm(CStudioAuthoring.Constants.PERMISSION_WRITE, data.permissions));
           },
-          failure: function (response) {
-            console.log(response);
+          failure: function (err) {
+            console.log(err);
           }
         };
 
-        CStudioAuthoring.Service.getUserRoles(callback);
+        var path = '/site'; // default to check permissions on site
+        var selectedContents = CStudioAuthoring.SelectedContent.getSelectedContent();
+        if (selectedContents && selectedContents.length > 0 && selectedContents[0].uri) {
+          path = selectedContents[0].uri;
+        }
+
+        CStudioAuthoring.Service.getUserPermissions(CStudioAuthoringContext.site, path, callback);
       },
 
       /**

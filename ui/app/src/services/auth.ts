@@ -96,14 +96,3 @@ export function validatePasswordResetToken(token: string): Observable<boolean> {
     })
   );
 }
-
-export default {
-  getLogoutInfoURL,
-  logout,
-  login,
-  validateSession,
-  sendPasswordRecovery,
-  me,
-  setPassword,
-  validatePasswordResetToken
-};

@@ -52,6 +52,7 @@
       copiedItem: null,
       cutItem: null,
       instanceCount: 0,
+      instances: {},
       lastSelectedTextNode: null, //used for holding last selected node; to use it to hold hover effect on a text node when cotex menu is open.
       treePaths: [],
       menuOn: false,
@@ -86,6 +87,7 @@
 
         if (config.name == 'wcm-root-folder') {
           var instance = new CStudioAuthoring.ContextualNav.WcmRootFolderInstance(config);
+          this.instances[config.params.path] = instance;
           instance.cannedSearchCache = [];
           instance.excludeCache = [];
           instance.excludeRegexCache = [];
@@ -835,7 +837,7 @@
             if (!treeItems[i].hideInAuthoring) {
               var itemCannedSearch = instance.cannedSearchCache[treeNodeTO.path];
 
-              if (itemCannedSearch && itemCannedSearch.length != 0 && itemCannedSearch[0].insertAs != 'append') {
+              if (itemCannedSearch && itemCannedSearch.length != 0 && (itemCannedSearch[0].insertAs != 'append' && itemCannedSearch[0].insertAs != 'replaceAllChildFolders')) {
                 replaceChildren.push(treeNodeTO.path);
               } else {
                 var treeNode = this.drawTreeItem(treeNodeTO, root, instance);
@@ -1405,8 +1407,7 @@
           return;
         }
 
-        var plainpath = node.treeNodeTO.path,
-          path = encodeURI(plainpath),
+        var path = node.treeNodeTO.path,
           site = node.treeNodeTO.site,
           pathToOpenTo = node.openToPath;
 
@@ -2315,7 +2316,7 @@
                 }
               ]);
             };
-            var publishAllowed = function () {
+            var publishAllowed = function (isWrite) {
               //add publish/request
               var isRelevant = !(oCurrentTextNode.data.lockOwner != '') && !oCurrentTextNode.data.statusObj.live;
 
@@ -2351,7 +2352,7 @@
                       }
                     }
                   ]);
-                } else {
+                } else if (isWrite) {
                   if (
                     oCurrentTextNode.data.status
                       .toLowerCase()
@@ -2522,7 +2523,7 @@
 
               if (oCurrentTextNode.data.contentType != 'folder') {
                 p_aArgs.addItems([menuItems.separator]);
-                publishAllowed();
+                publishAllowed(isWrite);
                 dependenciesAllowed();
               }
 
@@ -2767,7 +2768,7 @@
                       p_aArgs.addItems([menuItems.separator]);
                     }
 
-                    publishAllowed();
+                    publishAllowed(isWrite);
                     dependenciesAllowed();
                   }
 
@@ -2963,9 +2964,9 @@
         var permsCallback = {
           success: function (response) {
             var isWrite = CStudioAuthoring.Service.isWrite(response.permissions);
+            Self.IS_WRITE = isWrite;
 
             if (isWrite) {
-              Self.IS_WRITE = true;
               this._self._renderContextMenu(target, p_aArgs, this.component, menuItems, oCurrentTextNode, true);
             } else {
               this._self._renderContextMenu(target, p_aArgs, this.component, menuItems, oCurrentTextNode, false);
@@ -3866,6 +3867,9 @@
         (highlightVisible = $highlightEl.is(':visible')), (treeExists = $('#pages-tree + div').children().length > 0);
 
         if (!highlightVisible && treeExists && reload) {
+          // destroy current instance's context menu.
+          self.instances[config.params.path].tree.oContextMenu.destroy();
+
           var $container = $(config.containerEl).empty();
           CStudioAuthoring.ContextualNav.WcmRootFolder.initialize(
             Object.assign({}, config, { containerEl: $container[0] })

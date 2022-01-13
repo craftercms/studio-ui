@@ -36,6 +36,9 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard = function (widgetId, pageId) {
   this.defaultSortBy = 'eventDate';
   this.skipComponentSort = true;
   this.tooltipLabels = null;
+  this.showEdit = false;
+  this.totalItems = 0;
+  this.renderedItems = 0;
   WcmDashboardWidgetCommon.init(this);
 
   this.formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
@@ -130,7 +133,7 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard = function (widgetId, pageId) {
       ),
       Common.getSimpleRow('internalName', widgetId, CMgs.format(langBundle, 'dashletGoLiveColPageName'), 'minimize'),
       Common.getSimpleRow('view', widgetId, CMgs.format(langBundle, 'dashletGoLiveColView'), 'minimize'),
-      Common.getSimpleRow('edit', widgetId, CMgs.format(langBundle, 'dashletGoLiveColEdit'), 'minimize'),
+      Common.getSimpleRow('edit', widgetId, CMgs.format(langBundle, 'dashletGoLiveColEdit'), 'minimize hidden'),
       Common.getSortableRow('browserUri', widgetId, CMgs.format(langBundle, 'dashletGoLiveColURL'), 'maximize'),
       '<th id="fullUri" class="width0"></th>',
       Common.getSimpleRow('server', widgetId, this.formatMessage(this.messages.publishingTarget), 'maximize'),
@@ -238,7 +241,7 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard = function (widgetId, pageId) {
         // to resolve page display issue
         displayName = CStudioAuthoring.Utils.replaceWithASCIICharacter(displayName);
 
-        WcmDashboardWidgetCommon.insertEditLink(item, editLinkId);
+        WcmDashboardWidgetCommon.insertEditLink(item, editLinkId, this.widgetId);
         WcmDashboardWidgetCommon.insertViewLink(item, viewLinkId);
 
         var currentDashboard = CStudioAuthoring.Utils.Cookies.readCookie('dashboard-selected'),
@@ -277,7 +280,7 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard = function (widgetId, pageId) {
           '</div>',
           '</td>',
           '<td id="' + viewLinkId + '"></td>',
-          '<td id="' + editLinkId + '"></td>',
+          `<td id="${editLinkId}" class="edit-${widgetId} hidden test"></td>`,
           `<td class='urlCol' title="${browserUri}">`,
           displayBrowserUri,
           '</td>',

@@ -36,6 +36,9 @@ CStudioAuthoringWidgets.RecentlyMadeLiveDashboard = function (widgetId, pageId) 
   this.defaultSortBy = 'eventDate';
   this.defaultSearchNumber = 20;
   this.tooltipLabels = null;
+  this.showEdit = false;
+  this.totalItems = 0;
+  this.renderedItems = 0;
   WcmDashboardWidgetCommon.init(this);
 
   this.formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
@@ -83,7 +86,7 @@ CStudioAuthoringWidgets.RecentlyMadeLiveDashboard = function (widgetId, pageId) 
         'edit',
         widgetId,
         CMgs.format(langBundle, 'dashletRecentDeployColEdit'),
-        'minimize'
+        'minimize hidden'
       ) +
       WcmDashboardWidgetCommon.getSimpleRow(
         'browserUri',
@@ -174,6 +177,7 @@ CStudioAuthoringWidgets.RecentlyMadeLiveDashboard = function (widgetId, pageId) 
       if (isFirst) {
         // Date is returned in ISO_OFFSET_DATE format, first is converted to UTC (add time) to format properly
         // https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#ISO_OFFSET_DATE
+        name = name.replace(/Z$/, '+00:00');
         const match = name.match(/(\d{4}-\d{2}-\d{2})(([+\-])\d{2}:\d{2})/);
         const dateUTC = `${match[1]}T00:00:00${match[2]}`;
         const formattedDate = CStudioAuthoring.Utils.formatDateFromUTC(dateUTC, studioTimeZone, 'date');
@@ -204,7 +208,7 @@ CStudioAuthoringWidgets.RecentlyMadeLiveDashboard = function (widgetId, pageId) 
           ')',
           '</span>',
           '</td>',
-          '<td colspan="1">&nbsp;</td>'
+          `<td colspan="1" class="edit-${widgetId} hidden">&nbsp;</td>`
         ]);
       } else {
         var browserUri = CStudioAuthoring.Operations.getPreviewUrl(item, false, true),
@@ -236,7 +240,7 @@ CStudioAuthoringWidgets.RecentlyMadeLiveDashboard = function (widgetId, pageId) 
         // to resolve page display issue
         displayName = CStudioAuthoring.Utils.replaceWithASCIICharacter(displayName);
 
-        WcmDashboardWidgetCommon.insertEditLink(item, editLinkId);
+        WcmDashboardWidgetCommon.insertEditLink(item, editLinkId, this.widgetId);
 
         var currentDashboard = CStudioAuthoring.Utils.Cookies.readCookie('dashboard-selected'),
           currentCheckItem = CStudioAuthoring.Utils.Cookies.readCookie('dashboard-checked')
@@ -271,7 +275,7 @@ CStudioAuthoringWidgets.RecentlyMadeLiveDashboard = function (widgetId, pageId) 
           '</a>',
           '</div>',
           '</td>',
-          '<td id="' + editLinkId + '"></td>',
+          `<td id="${editLinkId}" class="edit-${widgetId} hidden"></td>`,
           "<td class='urlCol' title='",
           browserUri,
           "'>",

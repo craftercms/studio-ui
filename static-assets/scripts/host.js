@@ -69,7 +69,7 @@
   });
 
   communicator.subscribe(Topics.GUEST_CHECKOUT, function () {
-    // console.log('Guest checked out');
+    CStudioAuthoring.ContextualNav.WcmActiveContent?.disableNav(true);
   });
 
   // Opens studio form on pencil click
@@ -581,7 +581,6 @@
 
     path = path.replace('//', '/');
 
-    CStudioAuthoring.ContextualNav.WcmActiveContent?.disableNav(true);
     CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, path, {
       success: function (content) {
         CStudioAuthoring.SelectedContent.setContent(content.item);
@@ -634,7 +633,6 @@
   }
 
   function selectStudioContent(site, url) {
-    CStudioAuthoring.ContextualNav.WcmActiveContent?.disableNav(true);
     CStudioAuthoring.Service.lookupContentItem(site, url, {
       success: function (content) {
         if (content.item.isPage) {
