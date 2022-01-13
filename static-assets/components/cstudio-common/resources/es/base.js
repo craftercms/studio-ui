@@ -816,7 +816,7 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'es', {
   enableSearchExisting: "Mostrar 'Buscar Existentes'",
   useSearch: 'Usar Búsqueda',
   allowEditWithoutWarning: 'Permitir edición sin advertencia',
-  replaceAccent: 'Convertir acentos/diacríticos en caracteres latinos',
+  allowAccent: 'Permitir acentos y diacríticos',
 
   /*Restrictions*/
   required: 'Requerido',

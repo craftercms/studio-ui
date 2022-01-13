@@ -111,9 +111,3 @@ CStudioAuthoring.Messages.registerBundle('contextnav', 'en', {
 
   logout: 'Log Out'
 });
-
-CStudioAuthoring.Messages.registerBundle('contentTypes', 'sr', {
-  /*Properties*/
-  allowEditWithoutWarning: 'Allow Edit Without Warning',
-  replaceAccent: 'Convert accent/diacritics to latin characters',
-});
