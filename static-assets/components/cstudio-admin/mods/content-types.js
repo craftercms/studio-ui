@@ -1061,6 +1061,7 @@
         divPropertiesEl.appendChild(linkPropertiesEl);
 
         var deleteTypeApp = document.createElement('div');
+        deleteTypeApp.classList.add('delete-type-container');
         deleteTypeApp.style.position = 'absolute';
         deleteTypeApp.style.top = '0';
         deleteTypeApp.style.right = '0';
