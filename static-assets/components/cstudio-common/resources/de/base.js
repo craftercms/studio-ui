@@ -845,7 +845,7 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'de', {
   enableBrowseExisting: "Zeige 'Auswählen'",
   enableSearchExisting: "Zeige 'Suchen'",
   useSearch: 'Suche verwenden',
-  allowEditWithoutWarning: 'Allow Edit Without Warning',
+  allowEditWithoutWarning: 'Bearbeiten ohne Warnung zulassen',
   replaceAccent: 'Konvertieren Sie Akzente/diakritische Zeichen in lateinische Zeichen',
 
   /*Restrictions*/
