@@ -93,8 +93,6 @@ CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/site
               oCurrentTextNode.data.formId +
               '&fileName=' +
               encodeURI(filename) +
-              '&user=' +
-              CStudioAuthoringContext.user +
               '&unlock=true' +
               '&createFolders=true';
 
@@ -650,7 +648,7 @@ CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/site
           if (renderChild && exclude == false) {
             var itemCannedSearch = instance.cannedSearchCache[treeNodeTO.path];
 
-            if (itemCannedSearch && itemCannedSearch.length != 0 && itemCannedSearch[0].insertAs != 'append') {
+            if (itemCannedSearch && itemCannedSearch.length != 0 && (itemCannedSearch[0].insertAs != 'append' && itemCannedSearch[0].insertAs != 'replaceAllChildFolders')) {
               replaceChildren.push(treeNodeTO.path);
             } else {
               var treeNode = LSelf.drawTreeItem(treeNodeTO, root);

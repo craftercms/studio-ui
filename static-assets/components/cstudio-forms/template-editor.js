@@ -683,11 +683,9 @@ CStudioAuthoring.Module.requireModule(
                           CStudioAuthoringContext.site +
                           '&phase=onSave' +
                           '&path=' +
-                          path +
+                          encodeURIComponent(path) +
                           '&fileName=' +
                           encodeURI(filename) +
-                          '&user=' +
-                          CStudioAuthoringContext.user +
                           '&unlock=true';
 
                         fetch(CStudioAuthoring.Service.createServiceUri(writeServiceUrl), {

@@ -41,7 +41,6 @@ import ConfirmDialog from './ConfirmDialog';
 import { Blueprint } from '../models/Blueprint';
 import { MarketplaceSite, Site, SiteState, Views } from '../models/Site';
 import { defineMessages, useIntl } from 'react-intl';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import PluginDetailsView from './PluginDetailsView';
 import EmptyState from './EmptyState';
 import { underscore } from '../utils/string';
@@ -194,7 +193,7 @@ const dialogTitleStyles = () => ({
   }
 });
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     '@keyframes fadeIn': fadeIn,
     fadeIn: {
@@ -448,7 +447,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
     } else if ((reason === 'escapeKeyDown' || reason === 'closeButton') && isFormOnProgress()) {
       setDialog({ inProgress: true });
     } else {
-      //call externalClose fn
+      // call externalClose fn
       props.onClose();
       setDialog({ open: false, inProgress: false });
     }
@@ -559,7 +558,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
     }
     if (site.selectedView === 2) {
       setApiState({ creatingSite: true });
-      //it is a marketplace blueprint
+      // it is a marketplace blueprint
       if (site.blueprint.source === 'GIT') {
         const marketplaceParams: MarketplaceSite = createMarketplaceParams();
         createNewSiteFromMarketplace(marketplaceParams);
@@ -654,7 +653,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
       if (Object.keys(site.blueprintFields).length) params.siteParams = site.blueprintFields;
       params.createOption = site.pushSite ? 'push' : 'clone';
 
-      //TODO# remove this when change to Api2
+      // TODO# remove this when change to Api2
       let _params: any = {};
       Object.keys(params).forEach((key) => {
         _params[underscore(key)] = params[key];
@@ -668,7 +667,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
       () => {
         setApiState({ ...apiState, creatingSite: false });
         handleClose();
-        //TODO# Change to site.siteId when create site is on API2
+        // TODO# Change to site.siteId when create site is on API2
         Cookies.set('crafterSite', site.site_id, {
           domain: window.location.hostname.includes('.') ? window.location.hostname : '',
           path: '/'
@@ -677,7 +676,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
       },
       ({ response }) => {
         if (response) {
-          //TODO# I'm wrapping the API response as a API2 response, change it when create site is on API2
+          // TODO# I'm wrapping the API response as a API2 response, change it when create site is on API2
           const _response = { ...response, code: '', documentationUrl: '', remedialAction: '' };
           setApiState({ ...apiState, creatingSite: false, error: true, errorResponse: _response, global: true });
         }
@@ -768,7 +767,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
           }
         },
         ({ response }) => {
-          //TODO# I'm wrapping the API response as a API2 response, change it when create site is on API2
+          // TODO# I'm wrapping the API response as a API2 response, change it when create site is on API2
           const _response = { ...response, code: '', documentationUrl: '', remedialAction: '' };
           setApiState({ creatingSite: false, error: true, errorResponse: _response });
         }

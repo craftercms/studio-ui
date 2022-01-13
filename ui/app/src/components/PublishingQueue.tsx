@@ -15,8 +15,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import makeStyles from '@material-ui/styles/makeStyles';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
+import { makeStyles } from '@material-ui/core/styles';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -97,7 +96,7 @@ const messages = defineMessages({
   }
 });
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles((theme) => ({
   publishingQueue: {},
   topBar: {
     display: 'flex',
@@ -463,8 +462,8 @@ function PublishingQueue(props: PublishingQueueProps) {
         nextIconButtonProps={{
           'aria-label': formatMessage(messages.next)
         }}
-        onChangePage={handleChangePage}
-        onChangeRowsPerPage={handleChangeRowsPerPage}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
       />
     </div>
   );

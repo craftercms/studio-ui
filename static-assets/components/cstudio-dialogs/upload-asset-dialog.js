@@ -155,7 +155,7 @@ CStudioAuthoring.Dialogs.UploadDialog = CStudioAuthoring.Dialogs.UploadDialog ||
       }
     });
 
-    var serviceUri = CStudioAuthoring.Service.createServiceUri('/asset-upload'),
+    var serviceUri = CStudioAuthoring.Service.createServiceUri('/api/1/services/api/1/content/write-content.json'),
       url = (serviceUri +=
         '&' + CStudioAuthoringContext.xsrfParameterName + '=' + CrafterCMSNext.util.auth.getRequestForgeryToken());
 

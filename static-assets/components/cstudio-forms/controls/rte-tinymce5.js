@@ -229,6 +229,8 @@ CStudioAuthoring.Module.requireModule(
             toolbarConfig2,
             toolbarConfig3,
             toolbarConfig4,
+            styleFormats,
+            styleFormatsMerge,
             templates;
 
           containerEl.id = this.id;
@@ -307,6 +309,14 @@ CStudioAuthoring.Module.requireModule(
 
           rteStyleOverride = rteConfig.rteStyleOverride ? rteConfig.rteStyleOverride : null;
 
+          // use tinymce default if not set
+          styleFormats =
+            rteConfig.styleFormats && rteConfig.styleFormats.length != 0
+            ? Function(`"use strict"; return (${rteConfig.styleFormats})`)()
+            : undefined;
+
+          styleFormatsMerge = rteConfig.styleFormatsMerge === 'true'
+
           const codeEditorWrap = rteConfig.codeEditorWrap ? rteConfig.codeEditorWrap === 'true' : false;
 
           const external = {
@@ -370,6 +380,10 @@ CStudioAuthoring.Module.requireModule(
 
             external_plugins: external,
 
+            style_formats: styleFormats,
+
+            style_formats_merge: styleFormatsMerge,
+
             setup: function (editor) {
               var addPadding = function () {
                 const formHeader = $('#formHeader');
@@ -386,7 +400,7 @@ CStudioAuthoring.Module.requireModule(
                 _thisControl._onChange(null, _thisControl);
               });
 
-              editor.on('keyup paste', function (e) {
+              editor.on('keyup paste undo redo', function (e) {
                 _thisControl.save();
                 _thisControl._onChangeVal(null, _thisControl);
               });
@@ -417,6 +431,7 @@ CStudioAuthoring.Module.requireModule(
                 if (!e.initial) {
                   _thisControl.save();
                 }
+                _thisControl._onChangeVal(null, _thisControl);
               });
 
               editor.on('DblClick', function (e) {
@@ -608,8 +623,7 @@ CStudioAuthoring.Module.requireModule(
               {
                 returnProp: 'browserUri', // to return proper item link (browserUri)
                 insertItem: function (fileData) {
-                  var cleanUrl = fileData;
-                  cb(cleanUrl);
+                  cb(fileData, {});
                 },
                 failure: function (message) {
                   CStudioAuthoring.Operations.showSimpleDialog(
@@ -683,7 +697,7 @@ CStudioAuthoring.Module.requireModule(
           obj.value = this.editor ? this.editor.getContent() : obj.value;
 
           if (obj.required) {
-            if (obj.value == '') {
+            if (CStudioAuthoring.Utils.isEmptyHtml(obj.value)) {
               obj.setError('required', this.formatMessage(this.messages.requiredField));
               obj.renderValidation(true, false);
             } else {

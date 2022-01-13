@@ -19,7 +19,13 @@ static-assets/styles/browse.css
 static-assets/styles/graphiql.css
 static-assets/styles/tinymce-ace.css
 static-assets/styles/fonts.css
+static-assets/components/cstudio-admin/mods/encrypt-tool.js
+static-assets/themes/cstudioTheme/css/global.css
 templates/web/common/js-next-scripts.ftl
+
+ui/app/.bic_cache
+ui/legacy/.bic_cache
+ui/scss/.bic_cache
 
 ui/app/src/translations/src
 ui/app/src/translations/whitelists

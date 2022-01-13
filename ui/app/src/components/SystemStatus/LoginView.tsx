@@ -395,17 +395,8 @@ function RecoverView(props: SubViewProps) {
 }
 
 function ResetView(props: SubViewProps) {
-  const {
-    children,
-    isFetching,
-    onSubmit,
-    classes,
-    formatMessage,
-    onSnack,
-    setMode,
-    token,
-    passwordRequirementsRegex
-  } = props;
+  const { children, isFetching, onSubmit, classes, formatMessage, onSnack, setMode, token, passwordRequirementsRegex } =
+    props;
   const [newPassword, setNewPassword] = useState('');
   const [newPasswordConfirm, setNewPasswordConfirm] = useState('');
   const [isValid, setValid] = useState<boolean>(null);
@@ -646,10 +637,10 @@ function getPrimeMatter(props: Partial<PasswordRequirementsDisplayProps>) {
 
 function PasswordRequirementsDisplay(props: PasswordRequirementsDisplayProps) {
   const { passwordRequirementsRegex, formatMessage, value, classes, onValidStateChanged } = props;
-  const { regEx, conditions } = useMemo(() => getPrimeMatter({ passwordRequirementsRegex, formatMessage }), [
-    passwordRequirementsRegex,
-    formatMessage
-  ]);
+  const { regEx, conditions } = useMemo(
+    () => getPrimeMatter({ passwordRequirementsRegex, formatMessage }),
+    [passwordRequirementsRegex, formatMessage]
+  );
   useEffect(() => {
     onValidStateChanged(isBlank(value) ? null : regEx.test(value));
   }, [onValidStateChanged, regEx, value]);
@@ -683,7 +674,7 @@ function PasswordRequirementsDisplay(props: PasswordRequirementsDisplayProps) {
   );
 }
 
-export default function (props: LoginViewProps) {
+export default function LoginViewContainer(props: LoginViewProps) {
   const { formatMessage } = useIntl();
   const classes = useStyles({});
   const token = parse(window.location.search).token as string;

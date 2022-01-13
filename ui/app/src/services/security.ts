@@ -23,7 +23,3 @@ export function encrypt(text: string, site: string = ''): Observable<string> {
     map(({ response }) => response.item)
   );
 }
-
-export default {
-  encrypt
-};

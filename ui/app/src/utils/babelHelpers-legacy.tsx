@@ -119,7 +119,7 @@ import _createClass from '@babel/runtime/helpers/createClass';
 // import _wrapNativeSuper from '@babel/runtime/helpers/wrapNativeSuper';
 // import _wrapRegExp from '@babel/runtime/helpers/wrapRegExp';
 
-export default {
+export {
   // AsyncGenerator: _AsyncGenerator,
   // AwaitValue: _AwaitValue,
   // applyDecoratedDescriptor: _applyDecoratedDescriptor,
@@ -130,7 +130,7 @@ export default {
   // asyncIterator: _asyncIterator,
   // asyncToGenerator: _asyncToGenerator,
   // awaitAsyncGenerator: _awaitAsyncGenerator,
-  classCallCheck: _classCallCheck,
+  _classCallCheck as classCallCheck,
   // classNameTDZError: _classNameTDZError,
   // classPrivateFieldDestructureSet: _classPrivateFieldDestructureSet,
   // classPrivateFieldGet: _classPrivateFieldGet,
@@ -144,7 +144,7 @@ export default {
   // classStaticPrivateMethodGet: _classStaticPrivateMethodGet,
   // classStaticPrivateMethodSet: _classStaticPrivateMethodSet,
   // construct: _construct,
-  createClass: _createClass
+  _createClass as createClass
   // decorate: _decorate,
   // defaults: _defaults,
   // defineEnumerableProperties: _defineEnumerableProperties,

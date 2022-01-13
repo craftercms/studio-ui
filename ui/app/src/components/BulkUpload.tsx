@@ -50,6 +50,9 @@ import Paper from '@material-ui/core/Paper';
 import { interval, Observable } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
 import { UppyFile } from '@uppy/core';
+import Snackbar from '@material-ui/core/Snackbar';
+import SnackbarContent from '@material-ui/core/SnackbarContent';
+import CloseIcon from '@material-ui/icons/Close';
 
 const translations = defineMessages({
   title: {
@@ -72,6 +75,10 @@ const translations = defineMessages({
     id: 'bulkUpload.dropHere',
     defaultMessage: 'Drop files here or <span>browse</span>'
   },
+  maxFiles: {
+    id: 'bulkUpload.maxFiles',
+    defaultMessage: '{maxFiles} max.'
+  },
   browse: {
     id: 'words.browse',
     defaultMessage: 'Browse'
@@ -88,6 +95,10 @@ const translations = defineMessages({
     id: 'bulkUpload.uploadInProgress',
     defaultMessage:
       'Uploads are still in progress. Leaving this page would stop the pending uploads. Are you sure you wish to leave?'
+  },
+  maxActiveUploadsReached: {
+    id: 'bulkUpload.maxActiveUploadsReached',
+    defaultMessage: '{maxFiles} maximum active uploads reached. Excess has been discarded.'
   }
 });
 
@@ -163,6 +174,9 @@ const useStyles = makeStyles(() =>
     },
     minimized: {
       display: 'none'
+    },
+    maxFilesIndicator: {
+      marginLeft: '5px'
     }
   })
 );
@@ -204,7 +218,11 @@ const useUppyItemStyles = makeStyles(() =>
   })
 );
 
-const uppy = Core({ debug: false, autoProceed: true });
+const maxActiveUploads = 1000;
+const uppy = Core({
+  debug: false,
+  autoProceed: true
+});
 
 type FileWithRelativePath = File & { relativePath?: string };
 
@@ -271,6 +289,7 @@ interface DropZoneProps {
   site: string;
   maxSimultaneousUploads: number;
   cancelRequestObservable$: Observable<any>;
+  dropZoneStatus: DropZoneStatus;
 
   onStatusChange(status: any): void;
 }
@@ -278,13 +297,14 @@ interface DropZoneProps {
 const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
   const classes = useStyles({});
   const dndRef = useRef(null);
-  const { onStatusChange, path, site, maxSimultaneousUploads, cancelRequestObservable$ } = props;
+  const { onStatusChange, dropZoneStatus, path, site, maxSimultaneousUploads, cancelRequestObservable$ } = props;
   const { formatMessage } = useIntl();
   const [filesPerPath, setFilesPerPath] = useState<LookupTable<string[]>>(null);
   const [files, setFiles] = useSpreadState<LookupTable<LocalUppyFile>>(null);
   const [dragOver, setDragOver] = useState(null);
   const [uploadedFiles, setUploadedFiles] = useState(0);
   const [totalFiles, setTotalFiles] = useState(null);
+  const [restrictionNotificationOpen, setRestrictionNotificationOpen] = useState(false);
 
   const retryFileUpload = (file: LocalUppyFile) => {
     uppy.retryUpload(file.id);
@@ -300,7 +320,9 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
   const handleOnDrop = (event: React.DragEvent<HTMLElement>) => {
     event.preventDefault();
     event.stopPropagation();
-    getDroppedFiles(event.dataTransfer).then((files) => addFiles(files));
+    getDroppedFiles(event.dataTransfer).then((files) => {
+      addFiles(files);
+    });
     setDragOver(false);
     removeDragData(event);
   };
@@ -318,8 +340,20 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
   };
 
   function addFiles(files: File[]) {
+    const filesUploading = dropZoneStatus.filesUploading;
+
+    if (files.length + filesUploading > maxActiveUploads) {
+      const availableUploads = maxActiveUploads - filesUploading;
+      files = files.slice(0, availableUploads);
+      setRestrictionNotificationOpen(true);
+    }
+
     setTotalFiles(totalFiles + files.length);
-    onStatusChange({ status: 'adding', files: totalFiles + files.length });
+    onStatusChange({
+      status: 'adding',
+      files: totalFiles + files.length,
+      filesUploading: filesUploading + files.length
+    });
     interval(50)
       .pipe(takeUntil(cancelRequestObservable$), take(files.length))
       .subscribe((index) => {
@@ -447,7 +481,7 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
   useEffect(() => {
     const handleUploadSuccess = () => {
       setUploadedFiles(uploadedFiles + 1);
-      onStatusChange({ uploadedFiles: uploadedFiles + 1 });
+      onStatusChange({ uploadedFiles: uploadedFiles + 1, filesUploading: dropZoneStatus.filesUploading - 1 });
     };
 
     const handleComplete = () => {
@@ -468,7 +502,7 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
       uppy.off('complete', handleComplete);
       uppy.off('error', handleError);
     };
-  }, [onStatusChange, totalFiles, uploadedFiles]);
+  }, [onStatusChange, totalFiles, uploadedFiles, dropZoneStatus]);
 
   useEffect(() => {
     if (files !== null) {
@@ -517,6 +551,13 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
                   </span>
                 )
               })}
+              <span className={classes.maxFilesIndicator}>
+                (
+                {formatMessage(translations.maxFiles, {
+                  maxFiles: maxActiveUploads
+                })}
+                )
+              </span>
             </Typography>
           </>
         )}
@@ -533,6 +574,32 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
       <section className={clsx(classes.generalProgress, !filesPerPath && 'hidden')}>
         <ProgressBar progress={percentageCalculator(uploadedFiles, totalFiles)} />
       </section>
+      <Snackbar
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'right'
+        }}
+        open={restrictionNotificationOpen}
+        autoHideDuration={5000}
+        onClose={() => setRestrictionNotificationOpen(false)}
+      >
+        <SnackbarContent
+          aria-describedby="client-snackbar"
+          message={formatMessage(translations.maxActiveUploadsReached, {
+            maxFiles: maxActiveUploads
+          })}
+          action={[
+            <IconButton
+              key="close"
+              aria-label="close"
+              color="inherit"
+              onClick={() => setRestrictionNotificationOpen(false)}
+            >
+              <CloseIcon />
+            </IconButton>
+          ]}
+        />
+      </Snackbar>
     </>
   );
 });
@@ -562,12 +629,15 @@ const minimizedBarStyles = makeStyles((theme: Theme) =>
 interface MinimizedBarProps {
   title: string;
   subtitle?: string;
-  status?: object;
+  status?: {
+    status: string;
+    progress: number;
+  };
 
   onMaximized(): void;
 }
 
-function MinimizedBar(props: any) {
+function MinimizedBar(props: MinimizedBarProps) {
   const { title, onMaximized, subtitle, status } = props;
   const classes = minimizedBarStyles({});
   return (
@@ -632,6 +702,7 @@ export interface DropZoneStatus {
   files?: number;
   uploadedFiles?: number;
   progress?: number;
+  filesUploading?: number;
 }
 
 export default function BulkUpload(props: any) {
@@ -642,7 +713,8 @@ export default function BulkUpload(props: any) {
     status: 'idle',
     files: null,
     uploadedFiles: 0,
-    progress: 0
+    progress: 0,
+    filesUploading: 0
   });
   const inputRef = useRef(null);
   const cancelRef = useRef(null);
@@ -729,6 +801,7 @@ export default function BulkUpload(props: any) {
         <DialogContent dividers className={classes.dialogContent}>
           <DropZone
             onStatusChange={onStatusChange}
+            dropZoneStatus={dropZoneStatus}
             path={path}
             site={site}
             maxSimultaneousUploads={maxSimultaneousUploads}

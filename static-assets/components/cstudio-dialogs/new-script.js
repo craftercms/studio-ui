@@ -169,11 +169,9 @@ CStudioAuthoring.Dialogs.NewScript = CStudioAuthoring.Dialogs.NewScript || {
       CStudioAuthoringContext.site +
       '&phase=onSave' +
       '&path=' +
-      templatePath +
+      encodeURIComponent(templatePath) +
       '&fileName=' +
       encodeURI(name) +
-      '&user=' +
-      CStudioAuthoringContext.user +
       '&unlock=true';
 
     var saveSvcCb = {
