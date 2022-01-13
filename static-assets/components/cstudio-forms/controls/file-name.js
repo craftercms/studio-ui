@@ -164,6 +164,9 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
         el.selectionEnd = cursorPosition;
       }
     }
+
+    el.value = el.value.normalize('NFD').replace(/\p{Diacritic}/gu, '');
+
     var data = el.value;
 
     if (invalid.exec(data) != null) {
@@ -509,7 +512,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
         defaultValue: '50'
       },
       { label: CMgs.format(langBundle, 'readonly'), name: 'readonly', type: 'boolean' },
-      { label: CMgs.format(langBundle, 'allowEditWithoutWarning'), name: 'allowEditWithoutWarning', type: 'boolean' },
+      { label: CMgs.format(langBundle, 'allowEditWithoutWarning'), name: 'allowEditWithoutWarning', type: 'boolean' }
     ];
   },
 
