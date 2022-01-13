@@ -783,7 +783,7 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'kr', {
   enableSearchExisting: '쇼 기존 검색',
   useSearch: '검색 사용',
   allowEditWithoutWarning: '경고 없이 편집 허용',
-  replaceAccent: 'Convert accent/diacritics to latin characters',
+  replaceAccent: '악센트/분음 부호를 라틴 문자로 변환',
 
   /*Restrictions*/
   required: '필요',
