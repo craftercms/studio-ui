@@ -40,7 +40,12 @@ export const hostCheckIn = /*#__PURE__*/ createAction<{
   editModePadding: boolean;
   rteConfig: GlobalState['preview']['richTextEditor'];
 }>('HOST_CHECK_IN');
-export const guestCheckIn = /*#__PURE__*/ createAction('GUEST_CHECK_IN');
+export const guestCheckIn = /*#__PURE__*/ createAction<{
+  location: Partial<Location>;
+  path: string;
+  site: string;
+  documentDomain?: string;
+}>('GUEST_CHECK_IN');
 export const guestCheckOut = /*#__PURE__*/ createAction('GUEST_CHECK_OUT');
 export const fetchGuestModel = /*#__PURE__*/ createAction('FETCH_GUEST_MODEL');
 export const guestSiteLoad = /*#__PURE__*/ createAction('GUEST_SITE_LOAD'); // Legacy guest check in
@@ -199,15 +204,6 @@ export function fetchContentModelComplete(contentModels: ContentInstance[]): Sta
     payload: contentModels
   };
 }
-
-export const checkInGuest = /*#__PURE__*/ createAction<{
-  location: Partial<Location>;
-  path: string;
-  site: string;
-  documentDomain?: string;
-}>(guestCheckIn.type);
-
-export const checkOutGuest = createAction(guestCheckOut.type);
 
 // This action is meant for the primary Guest model. The reducer
 // should set the guest.modelId of the model that comes in payload.

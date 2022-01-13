@@ -16,7 +16,7 @@
 
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../models/GlobalState';
-import { changeCurrentUrl, checkInGuest, goToLastPage, goToNextPage } from '../actions/preview';
+import { changeCurrentUrl, goToLastPage, goToNextPage, guestCheckIn } from '../actions/preview';
 import { changeSite } from './sites';
 import { emitSystemEvent, itemsDeleted } from '../actions/system';
 import { getPreviewURLFromPath } from '../../utils/path';
@@ -42,7 +42,7 @@ const reducer = createReducer<GlobalState['previewNavigation']>(
     // - Push the url into the back stack (if not already pushed)
     // - Clear the forward stack (if not already pushed)
     // - Update the current url
-    [checkInGuest.type]: (state, { payload }) => {
+    [guestCheckIn.type]: (state, { payload }) => {
       const { location } = payload;
       const href = location.href;
       const url = href.replace(location.origin, '');

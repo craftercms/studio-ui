@@ -17,8 +17,6 @@
 import React, { PropsWithChildren, useEffect, useRef, useState } from 'react';
 import {
   changeCurrentUrl,
-  checkInGuest,
-  checkOutGuest,
   clearSelectedZones,
   clearSelectForEdit,
   contentTypeDropTargetsResponse,
@@ -417,7 +415,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         case guestSiteLoad.type: {
           const { url, location } = payload;
           const path = getPathFromPreviewURL(url);
-          dispatch(checkInGuest({ location, site: siteId, path }));
+          dispatch(guestCheckIn({ location, site: siteId, path }));
           issueDescriptorRequest({
             site: siteId,
             path,
@@ -457,7 +455,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
                 rteConfig: upToDateRefs.current.rteConfig ?? {}
               })
             );
-            dispatch(checkInGuest(payload));
+            dispatch(guestCheckIn(payload));
 
             if (payload.documentDomain) {
               try {
@@ -503,7 +501,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         }
         case guestCheckOut.type: {
           requestedSourceMapPaths.current = {};
-          dispatch(batchActions([conditionallyUnlockItem({ path: upToDateRefs.current.guest.path }), checkOutGuest()]));
+          dispatch(batchActions([conditionallyUnlockItem({ path: upToDateRefs.current.guest.path }), guestCheckOut()]));
           startGuestDetectionTimeout(guestDetectionTimeoutRef, setGuestDetectionSnackbarOpen);
           break;
         }
@@ -912,7 +910,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         // Changing the site will force-reload the iFrame and 'beforeunload'
         // event won't trigger withing; guest won't be submitting it's own checkout
         // in such cases.
-        dispatch(checkOutGuest());
+        dispatch(guestCheckOut());
       }
     }
   }, [siteId, guest, dispatch]);
