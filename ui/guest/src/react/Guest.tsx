@@ -274,11 +274,11 @@ function Guest(props: GuestProps) {
           dispatch(startListening());
           break;
         case reloadRequest.type: {
-          post(guestCheckOut());
+          post(guestCheckOut({ path }));
           return window.location.reload();
         }
         case navigationRequest.type: {
-          post(guestCheckOut());
+          post(guestCheckOut({ path }));
           return (window.location.href = payload.url);
         }
         case contentTypeDropTargetsRequest.type: {
@@ -324,7 +324,7 @@ function Guest(props: GuestProps) {
     return () => {
       sub.unsubscribe();
     };
-  }, [dispatch, scrollElement, status]);
+  }, [dispatch, path, scrollElement, status]);
 
   // Host detection
   useEffect(() => {
@@ -369,10 +369,10 @@ function Guest(props: GuestProps) {
   useEffect(() => {
     // Notice this is not executed when the iFrame url is changed abruptly.
     // This only triggers when navigation occurs from within the guest page.
-    const handler = () => post(guestCheckOut());
+    const handler = () => post(guestCheckOut({ path }));
     window.addEventListener('beforeunload', handler, false);
     return () => {
-      post(guestCheckOut.type);
+      post(guestCheckOut.type, { path });
       window.removeEventListener('beforeunload', handler);
     };
   }, []);
@@ -402,7 +402,7 @@ function Guest(props: GuestProps) {
     post(guestCheckIn.type, { location, path, site, documentDomain });
 
     return () => {
-      post(guestCheckOut.type);
+      post(guestCheckOut.type, { path });
       nnou(iceId) && iceRegistry.deregister(iceId);
       // eslint-disable-next-line react-hooks/exhaustive-deps
       refs.current.contentReady = false;

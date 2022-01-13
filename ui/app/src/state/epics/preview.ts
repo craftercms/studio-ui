@@ -15,9 +15,10 @@
  */
 
 import { ofType, StateObservable } from 'redux-observable';
-import { filter, ignoreElements, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import { filter, ignoreElements, map, tap, withLatestFrom } from 'rxjs/operators';
 import {
   closeToolsPanel,
+  guestCheckOut,
   openToolsPanel,
   popIcePanelPage,
   popToolsPanelPage,
@@ -45,7 +46,6 @@ import GlobalState from '../../models/GlobalState';
 import { conditionallyUnlockItem, setClipboard } from '../actions/content';
 import { CrafterCMSEpic } from '../store';
 import { getSystemLink } from '../../utils/system';
-import { of } from 'rxjs';
 
 export default [
   (action$, state$) =>
@@ -91,7 +91,7 @@ export default [
         }
       }),
       filter(([{ payload }, state]) => !payload.editMode && Boolean(state.preview.guest?.path)),
-      switchMap(([{ payload }, state]) => of(conditionallyUnlockItem({ path: state.preview.guest.path })))
+      map(([{ payload }, state]) => conditionallyUnlockItem({ path: state.preview.guest.path }))
     ),
   // endregion
   // region setHighlightMode
@@ -199,6 +199,13 @@ export default [
         }
       }),
       ignoreElements()
-    )
+    ),
   // endregion
+  // region guestCheckOut
+  (action$, state$) =>
+    action$.pipe(
+      ofType(guestCheckOut.type),
+      map(({ payload }) => conditionallyUnlockItem({ path: payload.path }))
+    )
+  // region
 ] as CrafterCMSEpic[];
