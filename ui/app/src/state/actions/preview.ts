@@ -330,6 +330,14 @@ export const initIcePanelConfig = /*#__PURE__*/ createAction<{
 export const initRichTextEditorConfig =
   /*#__PURE__*/ createAction<{ configXml: string; siteId: string }>('INIT_RICH_TEXT_EDITOR_CONFIG');
 
+export const associateTemplate =
+  /*#__PURE__*/ createAction<{ contentTypeId: string; displayTemplate: string }>('ASSOCIATE_TEMPLATE');
+
+export const associateTemplateComplete =
+  /*#__PURE__*/ createAction<{ contentTypeId: string; displayTemplate: string }>('ASSOCIATE_TEMPLATE_COMPLETE');
+
+export const associateTemplateFailed = /*#__PURE__*/ createAction('ASSOCIATE_TEMPLATE_FAILED');
+
 export const dissociateTemplate = /*#__PURE__*/ createAction<{ contentTypeId: string }>('DISSOCIATE_TEMPLATE');
 
 export const dissociateTemplateComplete =

@@ -95,7 +95,7 @@ export default function RecentActivityDashlet() {
       items.length > 1
         ? !items.some((item) => !item.stateMap.deleted && !selectedLookup[item.path])
         : items[0]
-        ? selectedLookup[items[0].path]
+        ? selectedLookup[items[0].path] ?? false
         : false,
     [items, selectedLookup]
   );
@@ -239,9 +239,10 @@ export default function RecentActivityDashlet() {
     if (option === 'clear') {
       setSelectedLookup({});
     } else {
+      const selected = items.filter((item) => selectedLookup[item.path]);
       itemActionDispatcher({
         site: siteId,
-        item: items.filter((item) => selectedLookup[item.path]),
+        item: selected.length > 1 ? selected : selected[0],
         option: option as AllItemActions,
         authoringBase,
         dispatch,

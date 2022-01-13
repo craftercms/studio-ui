@@ -23,7 +23,7 @@ tinymce.PluginManager.add(PLUGIN_NAME, function (editor, url) {
     fullscreen: null
   };
   const aceConfig = {
-    theme: 'ace/theme/eclipse',
+    theme: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'ace/theme/nord_dark' : 'ace/theme/eclipse',
     mode: 'ace/mode/html',
     options: {
       wrap: editor.getParam('code_editor_wrap'),

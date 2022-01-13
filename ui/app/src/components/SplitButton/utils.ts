@@ -14,8 +14,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './SplitButton';
+import { MutableRefObject } from 'react';
 
-export * from './SplitButton';
+export interface SplitButtonOption {
+  id: string;
+  label: string;
+  callback(e): void;
+}
 
-export * from './SplitButtonUI';
+export interface SplitButtonProps {
+  options: SplitButtonOption[];
+  defaultSelected?: string;
+  disablePortal?: boolean;
+  disabled?: boolean;
+  loading?: boolean;
+  storageKey?: string;
+}
+
+export interface SplitButtonUIProps {
+  options: SplitButtonOption[];
+  disablePortal?: boolean;
+  disabled?: boolean;
+  anchorRef: MutableRefObject<HTMLDivElement>;
+  selectedIndex: number;
+  open: boolean;
+  handleClick(e): void;
+  handleToggle(e): void;
+  handleClose(e): void;
+  handleMenuItemClick(e, index): void;
+}

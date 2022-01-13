@@ -18,6 +18,7 @@ import GlobalState from '../../models/GlobalState';
 import { createEntityState, createLookupTable } from '../../utils/object';
 import { createReducer } from '@reduxjs/toolkit';
 import {
+  associateTemplateComplete,
   dissociateTemplateComplete,
   FETCH_CONTENT_TYPES,
   FETCH_CONTENT_TYPES_COMPLETE,
@@ -42,6 +43,16 @@ const reducer = createReducer<GlobalState['contentTypes']>(createEntityState(), 
     ...state,
     error: payload.response,
     isFetching: false
+  }),
+  [associateTemplateComplete.type]: (state, { payload }) => ({
+    ...state,
+    byId: {
+      ...state.byId,
+      [payload.contentTypeId]: {
+        ...state.byId[payload.contentTypeId],
+        displayTemplate: payload.displayTemplate
+      }
+    }
   }),
   [dissociateTemplateComplete.type]: (state, { payload }) => ({
     ...state,
