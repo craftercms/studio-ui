@@ -565,6 +565,22 @@ var CStudioForms =
         customController.initialize(this);
       }
 
+      // Retrieve additional fields set in controls.
+      const _self = this;
+      const processSection = function(section) {
+        section.fields.forEach((field) => {
+          if (field.type !== 'repeat') {
+            if (field.additionalFields) {
+              const additionalFieldsArray = typeof field.additionalFields.id === 'string' ? [field.additionalFields.id] : field.additionalFields.id;
+              _self.dynamicFields.push(...additionalFieldsArray);
+            }
+          } else {
+            processSection(field);
+          }
+        });
+      }
+      formDefinition.sections.forEach((section) => processSection(section));
+
       return this;
     };
 
