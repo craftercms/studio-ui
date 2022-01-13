@@ -16,7 +16,7 @@
 
 CStudioForms.Controls.FileName =
   CStudioForms.Controls.FileName ||
-  function (id, form, owner, properties, constraints, readonly, allowEditWithoutWarning, replaceAccent) {
+  function (id, form, owner, properties, constraints, readonly, allowEditWithoutWarning, allowAccent) {
     this.owner = owner;
     this.owner.registerField(this);
     this.errors = [];
@@ -31,7 +31,7 @@ CStudioForms.Controls.FileName =
     this.contentAsFolder = form.definition ? form.definition.contentAsFolder : null;
     this.readonly = readonly;
     this.allowEditWithoutWarning = allowEditWithoutWarning;
-    this.replaceAccent = replaceAccent;
+    this.allowAccent = allowAccent;
     this.defaultValue = '';
     this.showWarnOnEdit = true;
     this.messages = {
@@ -152,7 +152,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
   /**
    * don't allow characters which are invalid for file names and check length
    */
-  processKey: function (evt, el, replaceAccent) {
+  processKey: function (evt, el, allowAccent) {
     var invalid = new RegExp('[.!@#$%^&*\\(\\)\\+=\\[\\]\\\\\\\'`;,\\/\\{\\}|":<>\\?~ ]', 'g');
     // Prevent the use of non english characters
     var nonEnglishChar = new RegExp('[^\x00-\x80]', 'g');
@@ -165,7 +165,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
         el.selectionEnd = cursorPosition;
       }
     }
-    if (replaceAccent) {
+    if (allowAccent) {
       el.value = el.value.normalize('NFD').replace(/\p{Diacritic}/gu, '');
     }
     var data = el.value;
@@ -292,8 +292,8 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
         this.allowEditWithoutWarning = true;
       }
 
-      if (prop.name == 'replaceAccent' && prop.value == 'true') {
-        this.replaceAccent = true;
+      if (prop.name == 'allowAccent' && prop.value == 'true') {
+        this.allowAccent = true;
       }
     }
 
@@ -329,7 +329,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
       inputEl,
       'keyup',
       function(evt, el) {
-        me.processKey(evt, el, me.replaceAccent);
+        me.processKey(evt, el, me.allowAccent);
       },
       inputEl
     );
@@ -338,7 +338,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
       'paste',
       function (evt, el) {
         setTimeout(function () {
-          me.processKey(evt, el, me.replaceAccent);
+          me.processKey(evt, el, me.allowAccent);
         }, 100);
       },
       inputEl
@@ -550,7 +550,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
       },
       { label: CMgs.format(langBundle, 'readonly'), name: 'readonly', type: 'boolean' },
       { label: CMgs.format(langBundle, 'allowEditWithoutWarning'), name: 'allowEditWithoutWarning', type: 'boolean' },
-      { label: CMgs.format(langBundle, 'replaceAccent'), name: 'replaceAccent', type: 'boolean' },
+      { label: CMgs.format(langBundle, 'allowAccent'), name: 'allowAccent', type: 'boolean' },
     ];
   },
 

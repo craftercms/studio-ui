@@ -34,8 +34,3 @@ CStudioAuthoring.Messages.registerBundle('siteDashboard', 'fr', {
   dashletGoLiveEdit: 'FR-Edit'
 });
 
-CStudioAuthoring.Messages.registerBundle('contentTypes', 'fr', {
-  /*Properties*/
-  allowEditWithoutWarning: 'Allow Edit Without Warning',
-  replaceAccent: 'Convert accent/diacritics to latin characters',
-});

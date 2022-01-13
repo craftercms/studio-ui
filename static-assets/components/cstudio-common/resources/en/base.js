@@ -842,7 +842,7 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'en', {
   enableSearchExisting: 'Enable Search Existing',
   useSearch: 'Use Search',
   allowEditWithoutWarning: 'Allow Edit Without Warning',
-  replaceAccent: 'Convert accent/diacritics to latin characters',
+  allowAccent: 'Allow accents and diacritics',
 
   /*Restrictions*/
   required: 'Required',
