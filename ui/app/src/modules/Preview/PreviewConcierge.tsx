@@ -298,11 +298,9 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
       const mode = getComputedEditMode({ item, username: user.username, editMode });
       if (mode && !isLockedState(item.state)) {
         dispatch(
-          batchActions([
-            lockItem({
-              path: item.path
-            })
-          ])
+          lockItem({
+            path: item.path
+          })
         );
       }
       getHostToGuestBus().next({

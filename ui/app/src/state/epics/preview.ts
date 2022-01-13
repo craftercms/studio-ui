@@ -15,7 +15,7 @@
  */
 
 import { ofType, StateObservable } from 'redux-observable';
-import { ignoreElements, tap, withLatestFrom } from 'rxjs/operators';
+import { filter, ignoreElements, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import {
   closeToolsPanel,
   openToolsPanel,
@@ -42,9 +42,10 @@ import {
   setStoredShowToolsPanel
 } from '../../utils/state';
 import GlobalState from '../../models/GlobalState';
-import { setClipboard } from '../actions/content';
+import { conditionallyUnlockItem, setClipboard } from '../actions/content';
 import { CrafterCMSEpic } from '../store';
 import { getSystemLink } from '../../utils/system';
+import { of } from 'rxjs';
 
 export default [
   (action$, state$) =>
@@ -89,7 +90,8 @@ export default [
           getHostToGuestBus().next(setHighlightMode(action.payload));
         }
       }),
-      ignoreElements()
+      filter(([{ payload }, state]) => !payload.editMode && Boolean(state.preview.guest?.path)),
+      switchMap(([{ payload }, state]) => of(conditionallyUnlockItem({ path: state.preview.guest.path })))
     ),
   // endregion
   // region setHighlightMode

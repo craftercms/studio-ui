@@ -26,8 +26,6 @@ import { setPreviewEditMode } from '../../state/actions/preview';
 import { useSelection } from '../../hooks/useSelection';
 import { isItemLockedForMe } from '../../utils/content';
 import { useActiveUser } from '../../hooks/useActiveUser';
-import { batchActions } from '../../state/actions/misc';
-import { conditionallyUnlockItem } from '../../state/actions/content';
 
 const EditSwitch = withStyles((theme) => {
   const green = theme.palette.success.main;
@@ -101,9 +99,7 @@ export function EditModeSwitch(props: EditModeSwitchProps) {
   const editMode = useSelection((state) => state.preview.editMode) && !isLocked && write;
 
   const onChange = (e) => {
-    dispatch(
-      batchActions([conditionallyUnlockItem({ path: item.path }), setPreviewEditMode({ editMode: e.target.checked })])
-    );
+    dispatch(setPreviewEditMode({ editMode: e.target.checked }));
   };
 
   return (
