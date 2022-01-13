@@ -203,6 +203,12 @@
         return { flagTemplateError };
       },
 
+      closeEditor: function () {
+        onSetDirty(false);
+        this.renderWorkarea();
+        CStudioAdminConsole.CommandBar.hide();
+      },
+
       openExistingItemRender: function (contentType) {
         var _self = this;
 
@@ -251,16 +257,15 @@
                           'studioDialog'
                         );
                       } else {
-                        onSetDirty(false);
-                        _self.renderWorkarea();
-                        CStudioAdminConsole.CommandBar.hide();
+                        _self.closeEditor();
                       }
                     }
                   },
                   {
                     label: CMgs.format(langBundle, 'save'),
                     class: 'btn-primary',
-                    fn: function () {
+                    multiChoice: true,
+                    fn: function (e, type) {
                       function saveFn() {
                         _self.loadConfig(contentType, {
                           success: function (currentConfig) {
@@ -316,7 +321,8 @@
                                   );
                                   window.top.postMessage(
                                     {
-                                      type: 'CONTENT_TYPES_ON_SAVED'
+                                      type: 'CONTENT_TYPES_ON_SAVED',
+                                      saveType: type
                                     },
                                     '*'
                                   );
@@ -336,7 +342,6 @@
                           }
                         });
                       }
-
                       var validation = _self.componentsValidation(formDef);
                       var istemplate = _self.templateValidation(formDef);
 
@@ -421,6 +426,13 @@
                         } else {
                           // otherwise, save
                           saveFn();
+                          switch (type) {
+                            case 'saveAndClose':
+                              _self.closeEditor();
+                              break;
+                            case 'saveAndMinimize':
+                              break;
+                          }
                         }
                       }
                     }
@@ -703,6 +715,7 @@
                   try {
                     var tool = new moduleClass('fake', {}, fakeComponentOwner, [], [], []),
                       plugin = controls[idx].plugin ? controls[idx].plugin : null;
+                    tool.moduleClass = moduleClass;
                     CStudioAdminConsole.Tool.ContentTypes.types[tool.getName()] = tool;
                     if (plugin) {
                       CStudioAdminConsole.Tool.ContentTypes.types[tool.getName()].plugin = plugin;
@@ -3539,6 +3552,20 @@
        * render a field as xml
        */
       renderFieldToXml: function (field) {
+        // Instantiate control to get its additional fields.
+        const controlClass = CStudioAdminConsole.Tool.ContentTypes.types[field.type].moduleClass;
+        const control = new controlClass(
+          field.id,
+          {},
+          {
+            registerField: function () {}
+          },
+          [],
+          [],
+          []
+        );
+        const additionalFields = control.getAdditionalFields?.() ?? [];
+
         var xml = '';
 
         if (field) {
@@ -3626,7 +3653,15 @@
                 '\t\t\t\t\t\t</constraint>\r\n';
             }
           }
-          xml += '\t\t\t\t\t</constraints>\r\n' + '\t\t\t\t</field>\r\n';
+          xml += '\t\t\t\t\t</constraints>\r\n';
+          if (additionalFields.length > 0) {
+            xml += '\t\t\t\t\t<additionalFields>\r\n';
+            additionalFields.forEach((field) => {
+              xml += '\t\t\t\t\t\t<id>' + field + '</id>\r\n';
+            });
+            xml += '\t\t\t\t\t</additionalFields>\r\n';
+          }
+          xml += '\t\t\t\t</field>\r\n';
         }
         return xml;
       },

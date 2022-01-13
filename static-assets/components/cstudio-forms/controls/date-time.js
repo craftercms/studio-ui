@@ -157,6 +157,10 @@ CStudioForms.Controls.DateTime =
   };
 
 YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
+  getAdditionalFields: function () {
+    return [this.timezoneId];
+  },
+
   formatTime: function (time) {
     const timeMomentObj = moment(time, 'hh:mm:ss a'); // Format used by control
     const format = this.hour12 ? 'hh:mm:ss a' : 'HH:mm:ss';

@@ -421,6 +421,38 @@ export function deleteContentType(site: string, contentTypeId: string): Observab
   }).pipe(mapTo(true));
 }
 
+export function associateTemplate(site: string, contentTypeId: string, displayTemplate: string): Observable<boolean> {
+  const path = stripDuplicateSlashes(`/content-types/${contentTypeId}/form-definition.xml`);
+  const module = 'studio';
+  return fetchConfigurationDOM(site, path, 'studio').pipe(
+    switchMap((doc) => {
+      const properties = doc.querySelectorAll('properties > property');
+      const property = Array.from(properties).find(
+        (node) => node.querySelector('name').innerHTML.trim() === 'display-template'
+      );
+      if (property) {
+        property.querySelector('value').innerHTML = displayTemplate;
+      } else {
+        const property = document.createElement('property');
+        const name = document.createElement('name');
+        const label = document.createElement('label');
+        const value = document.createElement('value');
+        const type = document.createElement('type');
+        name.innerHTML = 'display-template';
+        label.innerHTML = 'Display Template';
+        value.innerHTML = displayTemplate;
+        type.innerHTML = 'template';
+        property.appendChild(name);
+        property.appendChild(label);
+        property.appendChild(value);
+        property.appendChild(type);
+        doc.querySelector('properties').appendChild(property);
+      }
+      return writeConfiguration(site, path, module, beautify(serialize(doc)));
+    })
+  );
+}
+
 export function dissociateTemplate(site: string, contentTypeId: string): Observable<boolean> {
   const path = stripDuplicateSlashes(`/content-types/${contentTypeId}/form-definition.xml`);
   const module = 'studio';

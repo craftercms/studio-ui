@@ -223,6 +223,8 @@ CStudioAuthoring.Module.requireModule(
             toolbarConfig2,
             toolbarConfig3,
             toolbarConfig4,
+            styleFormats,
+            styleFormatsMerge,
             templates;
 
           containerEl.id = this.id;
@@ -300,6 +302,14 @@ CStudioAuthoring.Module.requireModule(
               : null;
 
           rteStyleOverride = rteConfig.rteStyleOverride ? rteConfig.rteStyleOverride : null;
+
+          // use tinymce default if not set
+          styleFormats =
+            rteConfig.styleFormats && rteConfig.styleFormats.length !== 0
+            ? Function(`"use strict"; return (${rteConfig.styleFormats})`)()
+            : undefined;
+
+          styleFormatsMerge = rteConfig.styleFormatsMerge === 'true';
 
           const $editorContainer = $(`#${rteId}`).parent(),
             editorContainerWidth = $editorContainer.width(),
@@ -414,6 +424,10 @@ CStudioAuthoring.Module.requireModule(
             code_editor_inline: true,
 
             external_plugins: external,
+
+            style_formats: styleFormats,
+
+            style_formats_merge: styleFormatsMerge,
 
             setup: function (editor) {
               editor.on('init', function (e) {

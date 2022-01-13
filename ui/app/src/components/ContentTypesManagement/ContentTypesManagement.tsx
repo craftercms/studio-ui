@@ -34,11 +34,14 @@ import {
 interface ContentTypeManagementProps {
   embedded?: boolean;
   showAppsButton?: boolean;
+  mountMode?: 'dialog' | 'page';
+  onClose?: () => void;
+  onMinimize?: () => void;
   onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 export function ContentTypeManagement(props: ContentTypeManagementProps) {
-  const { embedded = false, showAppsButton, onSubmittingAndOrPendingChange } = props;
+  const { embedded = false, showAppsButton, onClose, onMinimize, mountMode, onSubmittingAndOrPendingChange } = props;
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
 
@@ -58,6 +61,14 @@ export function ContentTypeManagement(props: ContentTypeManagementProps) {
         switch (e.data.type) {
           case 'CONTENT_TYPES_ON_SAVED': {
             dispatch(emitSystemEvent(contentTypeUpdated()));
+            switch (e.data.saveType) {
+              case 'saveAndClose':
+                onClose?.();
+                break;
+              case 'saveAndMinimize':
+                onMinimize?.();
+                break;
+            }
             break;
           }
           case 'CONTENT_TYPES_ON_CREATED': {
@@ -77,7 +88,7 @@ export function ContentTypeManagement(props: ContentTypeManagementProps) {
     return () => {
       messagesSubscription.unsubscribe();
     };
-  }, [dispatch, onSubmittingAndOrPendingChange]);
+  }, [dispatch, onSubmittingAndOrPendingChange, embedded, onClose, onMinimize]);
 
   return (
     <Box height="100%" display="flex" flexDirection="column">
@@ -89,7 +100,7 @@ export function ContentTypeManagement(props: ContentTypeManagementProps) {
       )}
       {loading && <LoadingState styles={{ root: { flexGrow: 1 } }} />}
       <LegacyIFrame
-        path="/legacy-site-config?mode=embedded#tool/content-types"
+        path={`/legacy-site-config?mode=embedded${mountMode ? `&mountMode=${mountMode}` : ''}#tool/content-types`}
         iframeProps={{
           style: {
             height: loading ? '0' : '100%'

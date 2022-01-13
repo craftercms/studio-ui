@@ -31,7 +31,6 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { showSystemNotification } from '../../state/actions/system';
 import translations from './translations';
-import SplitButton from '../SplitButton/SplitButton';
 import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
@@ -48,6 +47,7 @@ import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 import { reloadRequest } from '../../state/actions/preview';
 import { CodeEditorDialogContainerProps, getContentModelSnippets } from './utils';
 import { batchActions } from '../../state/actions/misc';
+import { MultiChoiceSaveButton } from '../MultiChoiceSaveButton';
 
 export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps) {
   const { path, onMinimize, onClose, onSaveClose, mode, isSubmitting, readonly, contentType, onFullScreen } = props;
@@ -64,6 +64,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [snippets, setSnippets] = useState<LookupTable<{ label: string; value: string }>>({});
   const [contentModelSnippets, setContentModelSnippets] = useState<Array<{ label: string; value: string }>>(null);
+  const storedId = 'codeEditor';
   const {
     'craftercms.freemarkerCodeSnippets': freemarkerCodeSnippets,
     'craftercms.groovyCodeSnippets': groovyCodeSnippets
@@ -199,6 +200,20 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 
   const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
 
+  const onMultiChoiceSaveButtonClick = (e, type) => {
+    switch (type) {
+      case 'save':
+        onSave();
+        break;
+      case 'saveAndClose':
+        saveAndClose();
+        break;
+      case 'saveAndMinimize':
+        onSaveAndMinimize();
+        break;
+    }
+  };
+
   return (
     <>
       <DialogHeader
@@ -242,14 +257,11 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
           >
             <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
           </SecondaryButton>
-          <SplitButton
+          <MultiChoiceSaveButton
             loading={isSubmitting}
             disabled={disableEdit}
-            options={[
-              { label: formatMessage(translations.save), callback: onSave },
-              { label: formatMessage(translations.saveAndClose), callback: saveAndClose },
-              { label: formatMessage(translations.saveAndMinimize), callback: onSaveAndMinimize }
-            ]}
+            storageKey={storedId}
+            onClick={onMultiChoiceSaveButtonClick}
           />
         </DialogFooter>
       )}

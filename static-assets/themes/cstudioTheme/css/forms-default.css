@@ -1203,10 +1203,9 @@ div.yui-calcontainer.cstudio-form-field-calendar {
 }
 
 .date-time-container .date-control {
-  background: #ffffff url(../images/icons/icon_calendar.gif) no-repeat 99% center;
+  background: url(../images/icons/icon_calendar.gif) no-repeat 99% center;
   width: 103px;
   border: 1px solid #c5d6e2;
-  color: #000000;
   padding: 2px 3px;
   margin-right: 6px;
 }
@@ -1230,10 +1229,8 @@ div.yui-calcontainer.cstudio-form-field-calendar {
 }
 
 .date-time-container .time-control {
-  background-color: #ffffff;
   width: 100px;
   border: 1px solid #c5d6e2;
-  color: #000000;
   margin: 0 2px 0 0;
   padding: 2px 3px;
 }

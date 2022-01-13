@@ -40,15 +40,15 @@ import { useUnmount } from '../../hooks/useUnmount';
 const translations = defineMessages({
   mark: {
     id: 'contentLocalization.mark',
-    defaultMessage: 'Mark for Translation'
+    defaultMessage: 'Mark for translation'
   },
   approveTranslation: {
     id: 'contentLocalization.approve',
-    label: 'Approve Translation'
+    label: 'Approve translation'
   },
   deleteTranslation: {
     id: 'contentLocalization.delete',
-    label: 'Delete Translation'
+    label: 'Delete translation'
   },
   locales: {
     id: 'words.locales',

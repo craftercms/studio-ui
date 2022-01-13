@@ -35,6 +35,8 @@ import { translations } from '../../components/ItemActionsMenu/translations';
 import { showErrorDialog } from '../reducers/dialogs/error';
 import { popTab, pushTab } from '../reducers/dialogs/minimizedTabs';
 import { getFileNameFromPath, getParentPath } from '../../utils/path';
+import { popPiece } from '../../utils/string';
+import { associateTemplate } from '../actions/preview';
 
 const epics = [
   (action$, state$: Observable<GlobalState>) =>
@@ -72,7 +74,13 @@ const epics = [
         let mode;
         let contentType;
         if (editContentTypeTemplate.type === type) {
-          path = state.contentTypes.byId[payload.contentTypeId].displayTemplate;
+          const _contentType = state.contentTypes.byId[payload.contentTypeId];
+          path = _contentType.displayTemplate
+            ? _contentType.displayTemplate
+            : `/templates/web/${_contentType.type === 'page' ? 'pages' : 'components'}/${popPiece(
+                _contentType.id,
+                '/'
+              )}.ftl`;
           mode = 'ftl';
           contentType = payload.contentTypeId;
         } else {
@@ -119,6 +127,7 @@ const epics = [
                 return createFile(state.sites.active, destinationPath, fileName).pipe(
                   map(() =>
                     batchActions([
+                      associateTemplate({ contentTypeId: contentType, displayTemplate: path }),
                       emitSystemEvent(itemCreated({ target: path })),
                       showCodeEditorDialog({
                         site: state.sites.active,
