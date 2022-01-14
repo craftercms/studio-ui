@@ -43,7 +43,7 @@ import {
   setStoredShowToolsPanel
 } from '../../utils/state';
 import GlobalState from '../../models/GlobalState';
-import { conditionallyUnlockItem, lockItem, setClipboard } from '../actions/content';
+import { conditionallyUnlockItem, setClipboard } from '../actions/content';
 import { CrafterCMSEpic } from '../store';
 import { getSystemLink } from '../../utils/system';
 
@@ -90,14 +90,8 @@ export default [
           getHostToGuestBus().next(setHighlightMode(action.payload));
         }
       }),
-      filter(([{ payload }, state]) => Boolean(state.preview.guest?.path)),
-      map(([{ payload }, state]) =>
-        payload.editMode
-          ? lockItem({
-              path: state.preview.guest.path
-            })
-          : conditionallyUnlockItem({ path: state.preview.guest.path })
-      )
+      filter(([{ payload }, state]) => !payload.editMode && Boolean(state.preview.guest?.path)),
+      map(([{ payload }, state]) => conditionallyUnlockItem({ path: state.preview.guest.path }))
     ),
   // endregion
   // region setHighlightMode
