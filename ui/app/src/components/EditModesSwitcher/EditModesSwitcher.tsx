@@ -35,9 +35,7 @@ export function EditModesSwitcher(props: EditModesSwitcherProps) {
   const write = Boolean(item?.availableActionsMap.edit);
   const dispatch = useDispatch();
   const { editMode, highlightMode } = usePreviewState();
-  const onChange = (editMode, highlightMode) => {
-    dispatch(setPreviewEditMode({ editMode, highlightMode }));
-  };
+  const onChange = (editMode, highlightMode) => dispatch(setPreviewEditMode({ editMode, highlightMode }));
   const isDisabled = disabled || !write || isLocked;
   return (
     <EditModesSwitcherUI
