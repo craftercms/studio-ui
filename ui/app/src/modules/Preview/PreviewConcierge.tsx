@@ -297,11 +297,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           })
         );
       }
-      getHostToGuestBus().next({
-        type: setPreviewEditMode.type,
-        payload: { editMode: mode }
-      });
-      // lock
+      getHostToGuestBus().next(setPreviewEditMode({ editMode: mode }));
     }
   }, [item, editMode, user.username, dispatch]);
 
