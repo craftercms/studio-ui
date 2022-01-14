@@ -493,7 +493,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         }
         case guestCheckOut.type: {
           requestedSourceMapPaths.current = {};
-          dispatch(guestCheckOut(payload));
+          dispatch(action);
           startGuestDetectionTimeout(guestDetectionTimeoutRef, setGuestDetectionSnackbarOpen);
           break;
         }
@@ -902,7 +902,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         // Changing the site will force-reload the iFrame and 'beforeunload'
         // event won't trigger withing; guest won't be submitting it's own checkout
         // in such cases.
-        dispatch(guestCheckOut());
+        dispatch(guestCheckOut({ path: guest.path }));
       }
     }
   }, [siteId, guest, dispatch]);

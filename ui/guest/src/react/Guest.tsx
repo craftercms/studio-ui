@@ -372,10 +372,10 @@ function Guest(props: GuestProps) {
     const handler = () => post(guestCheckOut({ path }));
     window.addEventListener('beforeunload', handler, false);
     return () => {
-      post(guestCheckOut.type, { path });
+      post(guestCheckOut({ path }));
       window.removeEventListener('beforeunload', handler);
     };
-  }, []);
+  }, [path]);
 
   // Registers parent zone, check in, checkout (when model is changed), content ready subscription
   useEffect(() => {
@@ -399,10 +399,10 @@ function Guest(props: GuestProps) {
         dispatch(contentReady());
       });
 
-    post(guestCheckIn.type, { location, path, site, documentDomain });
+    post(guestCheckIn({ location, path, site, documentDomain }));
 
     return () => {
-      post(guestCheckOut.type, { path });
+      post(guestCheckOut({ path }));
       nnou(iceId) && iceRegistry.deregister(iceId);
       // eslint-disable-next-line react-hooks/exhaustive-deps
       refs.current.contentReady = false;
