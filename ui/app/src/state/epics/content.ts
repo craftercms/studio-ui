@@ -265,7 +265,7 @@ const content: CrafterCMSEpic[] = [
       ofType(lockItem.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
-        return lock(state.sites.active, payload.path).pipe(
+        return lock(state.sites.active, [payload.path]).pipe(
           map(() =>
             batchActions([
               lockItemCompleted({ path: payload.path, username: state.user.username }),
