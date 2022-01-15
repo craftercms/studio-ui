@@ -310,12 +310,9 @@ CStudioAuthoring.Module.requireModule(
           rteStyleOverride = rteConfig.rteStyleOverride ? rteConfig.rteStyleOverride : null;
 
           // use tinymce default if not set
-          styleFormats =
-            rteConfig.styleFormats && rteConfig.styleFormats.length != 0
-            ? Function(`"use strict"; return (${rteConfig.styleFormats})`)()
-            : undefined;
+          styleFormats = rteConfig.styleFormats ? JSON.parse(rteConfig.styleFormats) : void 0;
 
-          styleFormatsMerge = rteConfig.styleFormatsMerge === 'true'
+          styleFormatsMerge = rteConfig.styleFormatsMerge === 'true';
 
           const codeEditorWrap = rteConfig.codeEditorWrap ? rteConfig.codeEditorWrap === 'true' : false;
 
