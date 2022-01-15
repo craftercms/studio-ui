@@ -21,7 +21,7 @@ import Cookies from 'js-cookie';
 import { fromTopic, post } from './utils/communicator';
 import { v4 as uuid } from 'uuid';
 import { ContentInstance } from '@craftercms/studio-ui/models/ContentInstance';
-import { ContentType, ContentTypeField } from '@craftercms/studio-ui/models/ContentType';
+import { ContentType } from '@craftercms/studio-ui/models/ContentType';
 import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
 import { Operation } from './models/Operations';
 import {
@@ -330,6 +330,35 @@ export function updateField(modelId: string, fieldId: string, index: string | nu
     type: updateFieldValueOperation.type,
     args: { modelId: getModelIdFromInheritedField(modelId, fieldId), fieldId, index, value }
   });
+}
+
+export function createNewRepeatItem(
+  modelId: string,
+  fieldId: string,
+  index: number | string,
+  contentType: ContentType,
+  isEmbedded: boolean
+): void {
+  const instance = {};
+  const targetIndex = null;
+  const models = getCachedModels();
+  Object.entries(contentType.fields[fieldId].fields).forEach(([id, field]) => {
+    if (!systemProps.includes(field.id)) {
+      instance[id] = getDefaultValue(field);
+    }
+  });
+
+  post(insertItemOperation.type, {
+    modelId,
+    fieldId,
+    index,
+    targetIndex,
+    instance,
+    parentModelId: getParentModelId(modelId, models, modelHierarchyMap),
+    shared: !isEmbedded
+  });
+
+  return;
 }
 
 export function insertItem(modelId: string, fieldId: string, index: number | string, item: ContentInstance): void {

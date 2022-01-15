@@ -70,6 +70,7 @@ import {
   fetchContentInstanceDescriptor,
   insertComponent,
   insertInstance,
+  insertItem,
   moveItem,
   sortItem,
   updateField,
@@ -615,6 +616,13 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           break;
         }
         case insertItemOperation.type: {
+          const { modelId, parentModelId, fieldId, targetIndex, instance, shared } = payload;
+          const path = models[modelId ?? parentModelId].craftercms.path;
+
+          insertItem(siteId, modelId, fieldId, targetIndex, instance, path, shared).subscribe(() => {
+            console.log('test');
+          });
+
           enqueueSnackbar(formatMessage(guestMessages.insertItemOperation));
           break;
         }

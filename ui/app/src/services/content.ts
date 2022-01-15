@@ -358,7 +358,17 @@ export function insertInstance(
   );
 }
 
-export function insertItem() {}
+export function insertItem(
+  site: string,
+  modelId: string,
+  fieldId: string,
+  targetIndex: string | number,
+  instance: any,
+  path: string,
+  shared = false
+): Observable<any> {
+  return performMutation(site, path, (element) => {}, modelId);
+}
 
 export function sortItem(
   site: string,
