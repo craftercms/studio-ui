@@ -47,10 +47,10 @@ const messages = defineMessages({
   }
 });
 
-const useStyles = makeStyles(() =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     content: {
-      background: '#fff'
+      background: theme.palette.background.paper
     },
     preListMessageWrapper: {
       padding: '8px 15px'
@@ -59,7 +59,10 @@ const useStyles = makeStyles(() =>
       fontWeight: 600
     },
     confirmationInput: {
-      marginTop: '1em'
+      marginTop: '1em',
+      '& legend': {
+        width: 0
+      }
     },
     topAlert: {
       marginBottom: '1em'
