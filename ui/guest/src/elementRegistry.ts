@@ -435,3 +435,7 @@ export function flush(): void {
   registry = {};
   iceRegistry.flush();
 }
+
+export function getRegistry(): typeof db {
+  return db;
+}

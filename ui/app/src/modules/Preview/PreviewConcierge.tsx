@@ -826,18 +826,9 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           break;
         }
         case requestEdit.type: {
-          const { modelId, parentModelId, fields, type } = payload;
-          const model = models[modelId];
+          const { modelId, parentModelId, fields, typeOfEdit: type } = payload;
+          const model = models[modelId] as ContentInstance;
           const contentType = contentTypes[model.craftercms.contentTypeId];
-          console.log(
-            `Edit ${type}`,
-            modelId,
-            parentModelId,
-            models[parentModelId ? parentModelId : modelId].craftercms.path,
-            fields,
-            model,
-            contentType
-          );
           if (type === 'content') {
             dispatch(
               showEditDialog({

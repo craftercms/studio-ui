@@ -346,10 +346,10 @@ export const dissociateTemplateComplete =
 export const dissociateTemplateFailed = /*#__PURE__*/ createAction('DISSOCIATE_TEMPLATE_FAILED');
 
 export const requestEdit = /*#__PURE__*/ createAction<{
-  type: 'content' | 'controller' | 'template';
+  typeOfEdit: 'content' | 'controller' | 'template';
   modelId: string;
   fields?: string[];
-  parentModelId: string;
+  parentModelId?: string;
 }>('REQUEST_EDIT');
 
 // endregion
