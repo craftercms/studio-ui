@@ -328,6 +328,8 @@ CStudioAuthoring.Messages.registerBundle('siteDropdown', 'en', {
 });
 
 CStudioAuthoring.Messages.registerBundle('forms', 'en', {
+  styleFormatsParseError:
+    "The RTE `styleFormats` configuration is malformed: {0}. Check your RTE configuration styleFormats and make sure it's valid JSON. Configuration content attached below:",
   new: 'New',
   expandAll: 'Expand All',
   collapseAll: 'Collapse All',
