@@ -17,7 +17,7 @@
 import { translations } from '../components/ItemActionsMenu/translations';
 import { AllItemActions, DetailedItem } from '../models/Item';
 import { ContextMenuOption } from '../components/ContextMenu';
-import { getRootPath, withoutIndex } from './path';
+import { getControllerPath, getRootPath, withoutIndex } from './path';
 import {
   closeChangeContentTypeDialog,
   closeCodeEditorDialog,
@@ -754,7 +754,7 @@ export const itemActionDispatcher = ({
       case 'editController': {
         dispatch(
           editController({
-            path: `/scripts/${item.systemType === 'page' ? 'pages' : 'components'}`,
+            path: getControllerPath(item.systemType),
             fileName: `${popPiece(item.contentTypeId, '/')}.groovy`,
             mode: 'groovy',
             contentType: item.contentTypeId

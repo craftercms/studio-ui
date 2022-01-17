@@ -259,12 +259,12 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
       </Tooltip>
       {showCodeEditOptions && (
         <>
-          <Tooltip title="Edit controller">
+          <Tooltip title="Edit template">
             <UltraStyledIconButton size="small" onClick={onEditTemplate}>
               <FreemarkerIcon />
             </UltraStyledIconButton>
           </Tooltip>
-          <Tooltip title="Edit template">
+          <Tooltip title="Edit controller">
             <UltraStyledIconButton size="small" onClick={onEditController}>
               <GroovyIcon />
             </UltraStyledIconButton>

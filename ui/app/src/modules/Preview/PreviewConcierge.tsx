@@ -115,8 +115,8 @@ import { useActiveUser } from '../../hooks/useActiveUser';
 import { useMount } from '../../hooks/useMount';
 import { usePreviewNavigation } from '../../hooks/usePreviewNavigation';
 import { useActiveSite } from '../../hooks/useActiveSite';
-import { getPathFromPreviewURL } from '../../utils/path';
-import { showCodeEditorDialog, showEditDialog } from '../../state/actions/dialogs';
+import { getControllerPath, getPathFromPreviewURL } from '../../utils/path';
+import { showEditDialog } from '../../state/actions/dialogs';
 import { UNDEFINED } from '../../utils/constants';
 import { useCurrentPreviewItem } from '../../hooks/useCurrentPreviewItem';
 import { useSiteUIConfig } from '../../hooks/useSiteUIConfig';
@@ -136,6 +136,7 @@ import {
 import { useUpdateRefs } from '../../hooks';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { popPiece } from '../../utils/string';
+import { editContentTypeTemplate, editController } from '../../state/actions/misc';
 
 const originalDocDomain = document.domain;
 
@@ -839,15 +840,15 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
                 path: models[parentModelId ? parentModelId : modelId].craftercms.path
               })
             );
+          } else if (type === 'template') {
+            dispatch(editContentTypeTemplate({ contentTypeId: contentType.id }));
           } else {
             dispatch(
-              showCodeEditorDialog({
-                path:
-                  type === 'template'
-                    ? contentType.displayTemplate
-                    : `/scripts/pages/${popPiece(contentType.id, '/')}.groovy`,
-                contentType: contentType.id,
-                mode: type === 'template' ? 'ftl' : 'groovy'
+              editController({
+                path: getControllerPath(contentType.type),
+                fileName: `${popPiece(contentType.id, '/')}.groovy`,
+                mode: 'groovy',
+                contentType: contentType.id
               })
             );
           }
