@@ -71,6 +71,7 @@ function getStyles(sx: ZoneMarkerPartialSx): ZoneMarkerFullSx {
     },
     tooltip: {
       transition: 'none',
+      zIndex: 'tooltip',
       ...sx?.tooltip
     },
     menuItemsContainer: {

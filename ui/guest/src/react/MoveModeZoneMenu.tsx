@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -41,11 +41,11 @@ import { clearAndListen$ } from '../store/subjects';
 import { startListening } from '../store/actions';
 import { ElementRecord } from '../models/InContextEditing';
 import { extractCollection } from '@craftercms/studio-ui/utils/model';
-import { popPiece } from '@craftercms/studio-ui/utils/string';
+import { isSimple, popPiece } from '@craftercms/studio-ui/utils/string';
 import { AnyAction } from '@reduxjs/toolkit';
 import useRef from '@craftercms/studio-ui/hooks/useUpdateRefs';
 import * as iceRegistry from '../iceRegistry';
-import { findContainerRecord, getById, runValidation } from '../iceRegistry';
+import { exists, findContainerRecord, getById, runValidation } from '../iceRegistry';
 import { post } from '../utils/communicator';
 import { requestEdit, validationMessage } from '@craftercms/studio-ui/state/actions/preview';
 import Menu from '@mui/material/Menu';
@@ -69,8 +69,6 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
   const trashButtonRef = React.useRef();
   const [showTrashConfirmation, setShowTrashConfirmation] = useState<boolean>(false);
 
-  console.clear();
-
   const iceRecord = getById(record.iceIds[0]);
   const recordType = iceRecord.recordType;
   const collection = useMemo(() => {
@@ -92,15 +90,32 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
       return null;
     }
   }, [modelId, fieldId, index, recordType]);
-  const elementIndex = useMemo(() => (typeof index === 'string' ? parseInt(popPiece(index), 10) : index), [index]);
-  const component =
-    recordType === 'component'
-      ? getCachedModel(modelId)
-      : recordType === 'node-selector-item'
-      ? collection[elementIndex]
-      : null;
+  const elementIndex = useMemo(() => {
+    // If the record is a component, get the index from searching the
+    // model id inside the container collection (previously computed).
+    return recordType === 'component'
+      ? collection.indexOf(modelId)
+      : parseInt(isSimple(index) ? String(index) : popPiece(String(index)));
+  }, [recordType, collection, modelId, index]);
+  const nodeSelectorItemRecord = useMemo(
+    () =>
+      recordType === 'component'
+        ? getById(
+            exists({
+              modelId: modelHierarchyMap[modelId].parentId,
+              fieldId: modelHierarchyMap[modelId].parentContainerFieldPath,
+              index: modelHierarchyMap[modelId].parentContainerFieldIndex
+            })
+          )
+        : null,
+    [modelId, recordType]
+  );
+  const componentId =
+    recordType === 'component' ? modelId : recordType === 'node-selector-item' ? collection[elementIndex] : null;
   const { field, contentType } = iceRegistry.getReferentialEntries(record.iceIds[0]);
-  const isMovable = ['node-selector-item', 'repeat-item', 'component'].includes(recordType);
+  const isMovable =
+    ['node-selector-item', 'repeat-item'].includes(recordType) ||
+    Boolean(recordType === 'component' && nodeSelectorItemRecord);
   const numOfItemsInContainerCollection = collection?.length;
   const isFirstItem = isMovable ? elementIndex === 0 : null;
   const isLastItem = isMovable ? elementIndex === numOfItemsInContainerCollection - 1 : null;
@@ -111,10 +126,6 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
   const showAddItem = recordType === 'field' && field.type === 'repeat'; // for repeat group item
   const showDuplicate = recordType === 'repeat-item'; // could apply to repeat items or components
 
-  console.log(field);
-  console.log(contentType);
-  console.log(isEmbedded);
-
   // region callbacks
 
   const onCancel = () => {
@@ -122,11 +133,16 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
     dispatch(startListening());
   };
 
-  const commonEdit = (e, type) => {
+  const commonEdit = (e, typeOfEdit) => {
     e.stopPropagation();
     e.preventDefault();
     const parentModelId = getParentModelId(modelId, getCachedModels(), modelHierarchyMap);
-    post(requestEdit({ modelId, parentModelId, type, fields: record.fieldId }));
+    if (recordType === 'node-selector-item') {
+      // If it's a node selector item, we transform it into the actual item.
+      post(requestEdit({ typeOfEdit, modelId: componentId, parentModelId }));
+    } else {
+      post(requestEdit({ typeOfEdit, modelId, parentModelId, fields: record.fieldId }));
+    }
     onCancel();
   };
 
@@ -151,20 +167,27 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
   const onMoveUp = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    sortUpItem(modelId, fieldId, index);
+    if (recordType === 'component' && nodeSelectorItemRecord) {
+      sortUpItem(nodeSelectorItemRecord.modelId, nodeSelectorItemRecord.fieldId, nodeSelectorItemRecord.index);
+    } else {
+      sortUpItem(modelId, fieldId, index);
+    }
     onCancel();
   };
 
   const onMoveDown = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    sortDownItem(modelId, fieldId, index);
+    if (recordType === 'component' && nodeSelectorItemRecord) {
+      sortDownItem(nodeSelectorItemRecord.modelId, nodeSelectorItemRecord.fieldId, nodeSelectorItemRecord.index);
+    } else {
+      sortDownItem(modelId, fieldId, index);
+    }
     onCancel();
   };
 
-  const onTrash = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const doTrash = () => {
+    setShowTrashConfirmation(false);
     const minCount = runValidation(findContainerRecord(modelId, fieldId, index).id, 'minCount', [
       numOfItemsInContainerCollection - 1
     ]);
@@ -174,6 +197,12 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
       deleteItem(modelId, fieldId, index);
       onCancel();
     }
+  };
+
+  const onTrash = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setShowTrashConfirmation(true);
   };
 
   const onDragStart = (e) => {
@@ -187,7 +216,7 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
 
   // endregion
 
-  const refs = useRef({ onMoveUp, onMoveDown, onTrash, onCancel, isFirstItem, isLastItem });
+  const refs = useRef({ onMoveUp, onMoveDown, onTrash, doTrash, onCancel, isFirstItem, isLastItem });
 
   // Listen for key input to sort/delete and for clicking outside the zone to dismiss selection.
   useEffect(() => {
@@ -286,7 +315,7 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
         ]}
       {isTrashable && (
         <Tooltip title="Trash (⌫)">
-          <UltraStyledIconButton size="small" onClick={() => setShowTrashConfirmation(true)} ref={trashButtonRef}>
+          <UltraStyledIconButton size="small" onClick={onTrash} ref={trashButtonRef}>
             <DeleteOutlineRoundedIcon />
           </UltraStyledIconButton>
         </Tooltip>
@@ -323,14 +352,7 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
         >
           No
         </MenuItem>
-        <MenuItem
-          onClick={(e) => {
-            setShowTrashConfirmation(false);
-            refs.current.onTrash(e);
-          }}
-        >
-          Yes
-        </MenuItem>
+        <MenuItem onClick={(e) => refs.current.doTrash()}>Yes</MenuItem>
       </Menu>
     </>
   );

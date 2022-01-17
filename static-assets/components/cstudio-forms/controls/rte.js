@@ -303,11 +303,30 @@ CStudioAuthoring.Module.requireModule(
 
           rteStyleOverride = rteConfig.rteStyleOverride ? rteConfig.rteStyleOverride : null;
 
-          // use tinymce default if not set
-          styleFormats =
-            rteConfig.styleFormats && rteConfig.styleFormats.length !== 0
-            ? Function(`"use strict"; return (${rteConfig.styleFormats})`)()
-            : undefined;
+          try {
+            // use tinymce default if not set
+            styleFormats = rteConfig.styleFormats ? JSON.parse(rteConfig.styleFormats) : void 0;
+          } catch (e) {
+            // If there are multiple RTEs on the page, when the form loads, it would show N number
+            // of dialogs. One is sufficient.
+            if (!CStudioForms.Controls.RTE.styleFormatsParseErrorShown) {
+              CStudioForms.Controls.RTE.styleFormatsParseErrorShown = true;
+              let bundle = CStudioAuthoring.Messages.getBundle('forms', CStudioAuthoringContext.lang);
+              CStudioAuthoring.Operations.showSimpleDialog(
+                'message-dialog',
+                CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                CStudioAuthoring.Messages.format(bundle, 'notification'),
+                `<div>${CStudioAuthoring.Messages.format(
+                  bundle,
+                  'styleFormatsParseError',
+                  `<code>${e.message}</code>`
+                )}</div><pre>${rteConfig.styleFormats}</pre>`,
+                null,
+                YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                'studioDialog'
+              );
+            }
+          }
 
           styleFormatsMerge = rteConfig.styleFormatsMerge === 'true';
 
@@ -547,7 +566,7 @@ CStudioAuthoring.Module.requireModule(
 
             var datasourceMap = this.form.datasourceMap,
               datasourceDef = this.form.definition.datasources,
-              addFunction; //video or image add function
+              addFunction; // video or image add function
             switch (type) {
               case 'image':
                 addFunction = _self.addManagedImage;
@@ -617,7 +636,7 @@ CStudioAuthoring.Module.requireModule(
             datasource.insertImageAction(
               {
                 success: function (imageData) {
-                  var cleanUrl = imageData.relativeUrl.replace(/^(.+?\.(png|jpe?g)).*$/i, '$1'); //remove timestamp
+                  var cleanUrl = imageData.relativeUrl.replace(/^(.+?\.(png|jpe?g)).*$/i, '$1'); // remove timestamp
 
                   if (cb.success) {
                     cb.success(cleanUrl, { title: imageData.fileName });
