@@ -34,6 +34,7 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import Divider from '@mui/material/Divider';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import { styled } from '@mui/material/styles';
+import { useContentTypes } from '../../hooks';
 
 interface SiteSearchFiltersProps {
   className: any;
@@ -201,13 +202,26 @@ export default function SiteSearchFilters(props: SiteSearchFiltersProps) {
     sortBy: false,
     path: false
   });
+  const contentTypes = useContentTypes();
 
   let filterKeys: string[] = [];
   let facetsLookupTable: LookupTable = {};
+  const labelsLookupTable: LookupTable = {};
+
+  const addFacetValuesLabels = (facet) => {
+    Object.keys(facet.values).forEach((value) => {
+      let label = value;
+      if (facet.name === 'content-type') {
+        label = contentTypes?.[value]?.name ?? value;
+      }
+      labelsLookupTable[value] = label;
+    });
+  };
 
   facets.forEach((facet) => {
     filterKeys.push(facet.name);
     facetsLookupTable[facet.name] = facet;
+    addFacetValuesLabels(facet);
   });
 
   // Add filters already selected not coming from facets
@@ -299,6 +313,7 @@ export default function SiteSearchFilters(props: SiteSearchFiltersProps) {
               checkedFilters={checkedFilters}
               setCheckedFilters={setCheckedFilters}
               facetsLookupTable={facetsLookupTable}
+              labelsLookupTable={labelsLookupTable}
               handleClearClick={handleClearClick}
             />
           </AccordionDetails>
