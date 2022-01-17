@@ -218,6 +218,7 @@ CStudioAuthoring.Module.requireModule(
             pluginList,
             extendedElements,
             rteStylesheets,
+            rtePasteWordElements,
             rteStyleOverride,
             toolbarConfig1,
             toolbarConfig2,
@@ -301,6 +302,12 @@ CStudioAuthoring.Module.requireModule(
               ? rteConfig.rteStylesheets.link
               : null;
 
+          rtePasteWordElements = rteConfig.rtePasteWordElements
+            ? rteConfig.rtePasteWordElements
+            : '-strong/b,-em/i,-u,-span,-p,-ol,-ul,-li,-h1,-h2,-h3,-h4,-h5,-h6,-h7,-h8,-pre,-p/div,' +
+              '-a[href|name],sub,sup,pre,blockquote,strike,br,del,' +
+              'table[width],tr,td[colspan|rowspan|width],th[colspan|rowspan|width],thead,tfoot,tbody';
+
           rteStyleOverride = rteConfig.rteStyleOverride ? rteConfig.rteStyleOverride : null;
 
           try {
@@ -360,7 +367,8 @@ CStudioAuthoring.Module.requireModule(
 
           const external = {
             acecode: '/studio/static-assets/js/tinymce-plugins/ace/plugin.min.js',
-            paste_cleanup: '/studio/static-assets/js/tinymce-plugins/paste_cleanup/plugin.js'
+            paste_cleanup: '/studio/static-assets/js/tinymce-plugins/paste_cleanup/plugin.js',
+            paste_from_word: '/studio/static-assets/js/tinymce-plugins/paste_from_word/plugin.js'
           };
           if (rteConfig.external_plugins) {
             Object.entries(rteConfig.external_plugins).forEach((entry) => {
@@ -447,6 +455,8 @@ CStudioAuthoring.Module.requireModule(
             style_formats: styleFormats,
 
             style_formats_merge: styleFormatsMerge,
+
+            paste_word_valid_elements: rtePasteWordElements,
 
             setup: function (editor) {
               editor.on('init', function (e) {
