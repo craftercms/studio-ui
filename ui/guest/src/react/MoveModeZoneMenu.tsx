@@ -30,6 +30,7 @@ import ContentCopyRoundedIcon from '@mui/icons-material/ContentCopyRounded';
 import { Tooltip } from '@mui/material';
 import {
   deleteItem,
+  duplicateItem,
   getCachedModel,
   getCachedModels,
   insertItem,
@@ -162,7 +163,9 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
     insertItem(modelId, fieldId, index, contentType, isEmbedded);
   };
 
-  const onDuplicateItem = (e) => {};
+  const onDuplicateItem = (e) => {
+    duplicateItem();
+  };
 
   const onMoveUp = (e) => {
     e.preventDefault();

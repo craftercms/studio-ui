@@ -332,6 +332,8 @@ export function updateField(modelId: string, fieldId: string, index: string | nu
   });
 }
 
+export function duplicateItem(): void {}
+
 export function insertItem(
   modelId: string,
   fieldId: string,
