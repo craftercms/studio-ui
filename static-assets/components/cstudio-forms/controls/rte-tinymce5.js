@@ -205,7 +205,13 @@ CStudioAuthoring.Module.requireModule(
          * get the supported constraints
          */
         getSupportedConstraints: function () {
-          return [{ label: CMgs.format(langBundle, 'required'), name: 'required', type: 'boolean' }];
+          return [
+            {
+              label: CMgs.format(langBundle, 'required'),
+              name: 'required',
+              type: 'boolean'
+            }
+          ];
         },
 
         getSupportedPostFixes: function () {
@@ -309,8 +315,31 @@ CStudioAuthoring.Module.requireModule(
 
           rteStyleOverride = rteConfig.rteStyleOverride ? rteConfig.rteStyleOverride : null;
 
-          // use tinymce default if not set
-          styleFormats = rteConfig.styleFormats ? JSON.parse(rteConfig.styleFormats) : void 0;
+          try {
+            // use tinymce default if not set
+            styleFormats = rteConfig.styleFormats ? JSON.parse(rteConfig.styleFormats) : void 0;
+          } catch (e) {
+            // If there are multiple RTEs on the page, when the form loads, it would show N number
+            // of dialogs. One is sufficient. Also, in 3.1.x, triggering multiple dialogs causes the
+            // backdrop not to get clean out when the dialog is closed.
+            if (!CStudioForms.Controls.RTETINYMCE5.styleFormatsParseErrorShown) {
+              CStudioForms.Controls.RTETINYMCE5.styleFormatsParseErrorShown = true;
+              let bundle = CStudioAuthoring.Messages.getBundle('forms', CStudioAuthoringContext.lang);
+              CStudioAuthoring.Operations.showSimpleDialog(
+                'message-dialog',
+                CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                CStudioAuthoring.Messages.format(bundle, 'notification'),
+                `<div>${CStudioAuthoring.Messages.format(
+                  bundle,
+                  'styleFormatsParseError',
+                  `<code>${e.message}</code>`
+                )}</div><pre>${rteConfig.styleFormats}</pre>`,
+                null,
+                YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                'studioDialog'
+              );
+            }
+          }
 
           styleFormatsMerge = rteConfig.styleFormatsMerge === 'true';
 

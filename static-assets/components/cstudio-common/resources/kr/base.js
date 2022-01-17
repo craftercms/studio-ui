@@ -318,6 +318,8 @@ CStudioAuthoring.Messages.registerBundle('siteDropdown', 'kr', {
 });
 
 CStudioAuthoring.Messages.registerBundle('forms', 'kr', {
+  styleFormatsParseError:
+    'RTE `styleFormats` 구성이 잘못되었습니다: {0}. RTE 구성 styleFormats를 확인하고 유효한 JSON인지 확인하십시오. 아래에 첨부된 구성 내용:',
   new: '새로운',
   expandAll: '모두 확장',
   collapseAll: '모두 축소',

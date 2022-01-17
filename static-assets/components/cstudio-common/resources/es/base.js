@@ -324,6 +324,8 @@ CStudioAuthoring.Messages.registerBundle('siteDropdown', 'es', {
 });
 
 CStudioAuthoring.Messages.registerBundle('forms', 'es', {
+  styleFormatsParseError:
+    'La configuración del editor de texto enriquecido `styleFormats` es inválida: {0}. Verifique que la configuración de styleFormats del editor es JSON válido. Contenido de la configuración se adjunta a continuación:',
   new: 'Nuevo',
   expandAll: 'Expandir Todo',
   collapseAll: 'Collapsar Todo',
