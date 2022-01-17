@@ -37,6 +37,8 @@ import {
   deleteItemOperation,
   insertComponentOperation,
   insertInstanceOperation,
+  insertItemOperation,
+  insertItemOperationComplete,
   insertOperationComplete,
   moveItemOperation,
   sortItemOperation,
@@ -329,6 +331,19 @@ export function GuestProxy() {
             updateElementRegistrations(Array.from($daddy.children()), 'delete', index, null, fieldId);
           });
 
+          break;
+        }
+        case insertItemOperation.type: {
+          message$
+            .pipe(
+              filter((e) => e.type === insertItemOperationComplete.type),
+              take(1)
+            )
+            .subscribe({
+              next() {
+                window.location.reload();
+              }
+            });
           break;
         }
         case insertComponentOperation.type:

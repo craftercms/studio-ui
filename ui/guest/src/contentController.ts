@@ -357,6 +357,11 @@ export function insertItem(
     parentModelId: getParentModelId(modelId, models, modelHierarchyMap),
     shared: !isEmbedded
   });
+
+  operations$.next({
+    type: insertItemOperation.type,
+    args: {}
+  });
 }
 
 const systemProps = ['fileName', 'internalName'];
