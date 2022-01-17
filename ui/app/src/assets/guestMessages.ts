@@ -63,7 +63,7 @@ export const guestMessages = defineMessages({
   },
   insertItemOperation: {
     id: 'operations.insertItemOperation',
-    defaultMessage: 'Insert item operation not implemented.'
+    defaultMessage: 'Insert item operation completed.'
   },
   moveOperationComplete: {
     id: 'operations.moveOperationComplete',

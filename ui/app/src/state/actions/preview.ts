@@ -47,9 +47,17 @@ export const guestSiteLoad = /*#__PURE__*/ createAction('GUEST_SITE_LOAD'); // L
 export const sortItemOperation = /*#__PURE__*/ createAction('SORT_ITEM_OPERATION');
 export const sortItemOperationComplete = /*#__PURE__*/ createAction('SORT_ITEM_OPERATION_COMPLETE');
 export const insertComponentOperation = /*#__PURE__*/ createAction('INSERT_COMPONENT_OPERATION');
-export const insertOperationComplete = /*#__PURE__*/ createAction('INSERT_OPERATION_COMPLETE');
+export const insertOperationComplete = /*#__PURE__*/ createAction<{
+  currentFullUrl: string;
+  modelId: string;
+  index: number;
+  fieldId: string[];
+  instance: ContentInstance;
+}>('INSERT_OPERATION_COMPLETE');
 export const insertInstanceOperation = /*#__PURE__*/ createAction('INSERT_INSTANCE_OPERATION');
 export const insertItemOperation = /*#__PURE__*/ createAction('INSERT_ITEM_OPERATION');
+export const insertItemOperationComplete = /*#__PURE__*/ createAction('INSERT_ITEM_OPERATION_COMPLETE');
+export const insertItemOperationFailed = /*#__PURE__*/ createAction('INSERT_ITEM_OPERATION_FAILED');
 export const moveItemOperation = /*#__PURE__*/ createAction('MOVE_ITEM_OPERATION');
 export const deleteItemOperation = /*#__PURE__*/ createAction('DELETE_ITEM_OPERATION');
 export const deleteItemOperationComplete = /*#__PURE__*/ createAction('DELETE_ITEM_OPERATION_COMPLETE');

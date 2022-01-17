@@ -44,6 +44,7 @@ import {
   insertComponentOperation,
   insertInstanceOperation,
   insertItemOperation,
+  insertItemOperationComplete,
   insertOperationComplete,
   instanceDragBegun,
   instanceDragEnded,
@@ -602,10 +603,12 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
                 completeAction: fetchGuestModelComplete
               });
 
-              hostToGuest$.next({
-                type: insertOperationComplete.type,
-                payload: { ...payload, currentFullUrl: `${guestBase}${upToDateRefs.current.currentUrlPath}` }
-              });
+              hostToGuest$.next(
+                insertOperationComplete({
+                  ...payload,
+                  currentFullUrl: `${guestBase}${upToDateRefs.current.currentUrlPath}`
+                })
+              );
               enqueueSnackbar(formatMessage(guestMessages.insertOperationComplete));
             },
             error(error) {
@@ -617,13 +620,14 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         }
         case insertItemOperation.type: {
           const { modelId, parentModelId, fieldId, targetIndex, instance, shared } = payload;
-          const path = models[modelId ?? parentModelId].craftercms.path;
+          const path = models[parentModelId ?? modelId].craftercms.path;
 
-          insertItem(siteId, modelId, fieldId, targetIndex, instance, path, shared).subscribe(() => {
-            console.log('test');
+          insertItem(siteId, modelId, fieldId, targetIndex, instance, path, shared).subscribe({
+            next() {
+              hostToGuest$.next(insertItemOperationComplete());
+              enqueueSnackbar(formatMessage(guestMessages.insertItemOperation));
+            }
           });
-
-          enqueueSnackbar(formatMessage(guestMessages.insertItemOperation));
           break;
         }
         case moveItemOperation.type: {

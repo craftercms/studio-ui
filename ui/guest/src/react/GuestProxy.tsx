@@ -37,6 +37,7 @@ import {
   deleteItemOperation,
   insertComponentOperation,
   insertInstanceOperation,
+  insertOperationComplete,
   moveItemOperation,
   sortItemOperation,
   updateFieldValueOperation
@@ -349,7 +350,7 @@ export function GuestProxy() {
             .pipe(
               filter(
                 (e) =>
-                  e.type === 'INSERT_OPERATION_COMPLETE' && e.payload.instance.craftercms.id === instance.craftercms.id
+                  e.type === insertOperationComplete.type && e.payload.instance.craftercms.id === instance.craftercms.id
               ),
               take(1)
             )

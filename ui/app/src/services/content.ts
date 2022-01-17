@@ -363,11 +363,21 @@ export function insertItem(
   modelId: string,
   fieldId: string,
   targetIndex: string | number,
-  instance: any,
+  instance: Record<string, string | number | boolean | any[]>,
   path: string,
   shared = false
 ): Observable<any> {
-  return performMutation(site, path, (element) => {}, modelId);
+  return performMutation(
+    site,
+    path,
+    (element) => {
+      let node = extractNode(element, removeLastPiece(fieldId) || fieldId, targetIndex);
+      const newItem = createElement('item');
+      createElements(newItem, instance);
+      node.appendChild(newItem);
+    },
+    modelId
+  );
 }
 
 export function sortItem(

@@ -332,14 +332,14 @@ export function updateField(modelId: string, fieldId: string, index: string | nu
   });
 }
 
-export function createNewRepeatItem(
+export function insertItem(
   modelId: string,
   fieldId: string,
   index: number | string,
   contentType: ContentType,
   isEmbedded: boolean
 ): void {
-  const instance = {};
+  const instance: Record<string, string | number | boolean | any[]> = {};
   const targetIndex = null;
   const models = getCachedModels();
   Object.entries(contentType.fields[fieldId].fields).forEach(([id, field]) => {
@@ -356,36 +356,6 @@ export function createNewRepeatItem(
     instance,
     parentModelId: getParentModelId(modelId, models, modelHierarchyMap),
     shared: !isEmbedded
-  });
-
-  return;
-}
-
-export function insertItem(modelId: string, fieldId: string, index: number | string, item: ContentInstance): void {
-  const models = getCachedModels();
-  const collection = Model.value(models[modelId], fieldId);
-  const result = collection.slice(0);
-
-  // Insert in desired position
-  result.splice(index, 0, item);
-
-  const model = setCollection(
-    models[modelId],
-    fieldId,
-    typeof index === 'string' && index.includes('.') ? removeLastPiece(index) : index,
-    result
-  );
-
-  models$.next({
-    ...models,
-    [modelId]: model
-  });
-
-  post(insertItemOperation.type, { modelId, fieldId, index, item });
-
-  operations$.next({
-    type: 'insert',
-    args: arguments
   });
 }
 
