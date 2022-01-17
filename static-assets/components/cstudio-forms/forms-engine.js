@@ -1892,7 +1892,7 @@ var CStudioForms =
                 const defaultSelected = 'saveAndClose';
 
                 const onMultiChoiceSaveButtonClick = (e, type) => {
-                  saveFn(false, true, null, type);
+                  saveFn(type === 'saveAndPreview', type !== 'saveAndClose', null, type);
                 };
                 CrafterCMSNext.render(buttonsContainer, 'MultiChoiceSaveButton', {
                   defaultSelected,
