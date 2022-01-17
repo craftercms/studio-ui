@@ -29,10 +29,10 @@ import AddCircleOutlineRoundedIcon from '@mui/icons-material/AddCircleOutlineRou
 import ContentCopyRoundedIcon from '@mui/icons-material/ContentCopyRounded';
 import { Tooltip } from '@mui/material';
 import {
-  createNewRepeatItem,
   deleteItem,
   getCachedModel,
   getCachedModels,
+  insertItem,
   modelHierarchyMap,
   sortDownItem,
   sortUpItem
@@ -159,7 +159,7 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
   };
 
   const onAddRepeatItem = (e) => {
-    createNewRepeatItem(modelId, fieldId, index, contentType, isEmbedded);
+    insertItem(modelId, fieldId, index, contentType, isEmbedded);
   };
 
   const onDuplicateItem = (e) => {};
