@@ -589,7 +589,7 @@ $dark-mode-input-border-focus: #007aff;
     .yui-panel,
     .hd,
     .ft,
-    .yui-panel .ft .button-group span {
+    .yui-overlay.yui-panel .ft .button-group span {
       background-color: $dark-mode-background-default !important;
       border-color: $dark-mode-background-default !important;
       color: white !important;
