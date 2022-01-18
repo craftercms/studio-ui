@@ -583,4 +583,22 @@ $dark-mode-input-border-focus: #007aff;
   .cstudio-form-control-asset-picker-preview-block {
     background: none;
   }
+
+  // dialogs
+  .yui-dialog {
+    .yui-panel,
+    .hd,
+    .ft,
+    .yui-panel .ft .button-group span {
+      background-color: $dark-mode-background-default !important;
+      border-color: $dark-mode-background-default !important;
+      color: white !important;
+    }
+
+    .bd {
+      background-color: $dark-mode-background-paper !important;
+      border-color: $dark-mode-background-paper !important;
+      color: white !important;
+    }
+  }
 }
