@@ -35,6 +35,7 @@ import Divider from '@mui/material/Divider';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import { styled } from '@mui/material/styles';
 import { useContentTypes } from '../../hooks';
+import { getMimeTypeTranslation } from '../../utils/mimeTypes';
 
 interface SiteSearchFiltersProps {
   className: any;
@@ -213,6 +214,8 @@ export default function SiteSearchFilters(props: SiteSearchFiltersProps) {
       let label = value;
       if (facet.name === 'content-type') {
         label = contentTypes?.[value]?.name ?? value;
+      } else if (facet.name === 'mime-type') {
+        label = getMimeTypeTranslation(value, formatMessage);
       }
       labelsLookupTable[value] = label;
     });
