@@ -327,6 +327,8 @@ CStudioAuthoring.Messages.registerBundle('siteDropdown', 'de', {
 });
 
 CStudioAuthoring.Messages.registerBundle('forms', 'de', {
+  styleFormatsParseError:
+    'Die RTE-`styleFormats`-Konfiguration ist fehlerhaft: {0}. Überprüfen Sie Ihre RTE-Konfiguration styleFormats und stellen Sie sicher, dass es sich um gültiges JSON handelt. Konfigurationsinhalt unten angehängt:',
   new: 'Neu',
   expandAll: 'Alle aufklappen',
   collapseAll: 'Alle zuklappen',
