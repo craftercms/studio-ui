@@ -380,6 +380,32 @@ export function insertItem(
   );
 }
 
+export function duplicateItem(
+  site: string,
+  modelId: string,
+  fieldId: string,
+  targetIndex: string | number,
+  path: string,
+  shared = false
+): Observable<any> {
+  return performMutation(
+    site,
+    path,
+    (element) => {
+      const item: Element = extractNode(element, removeLastPiece(fieldId) || fieldId, targetIndex).cloneNode(
+        true
+      ) as Element;
+      const field: Element = extractNode(
+        element,
+        removeLastPiece(fieldId) || fieldId,
+        removeLastPiece(`${targetIndex}`)
+      );
+      field.appendChild(item);
+    },
+    modelId
+  );
+}
+
 export function sortItem(
   site: string,
   modelId: string,

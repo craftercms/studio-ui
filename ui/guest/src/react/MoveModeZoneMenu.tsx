@@ -164,7 +164,7 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
   };
 
   const onDuplicateItem = (e) => {
-    duplicateItem();
+    duplicateItem(modelId, fieldId, index, isEmbedded);
   };
 
   const onMoveUp = (e) => {

@@ -65,6 +65,10 @@ export const guestMessages = defineMessages({
     id: 'operations.insertItemOperation',
     defaultMessage: 'Insert item operation completed.'
   },
+  duplicateItemOperation: {
+    id: 'operations.duplicateItemOperation',
+    defaultMessage: 'Duplicate item operation completed.'
+  },
   moveOperationComplete: {
     id: 'operations.moveOperationComplete',
     defaultMessage: 'Move operation completed'

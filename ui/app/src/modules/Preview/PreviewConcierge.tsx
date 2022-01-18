@@ -29,6 +29,8 @@ import {
   desktopAssetUploadComplete,
   desktopAssetUploadProgress,
   desktopAssetUploadStarted,
+  duplicateItemOperation,
+  duplicateItemOperationComplete,
   fetchContentTypes,
   fetchGuestModel,
   fetchGuestModelComplete,
@@ -67,6 +69,7 @@ import {
 } from '../../state/actions/preview';
 import {
   deleteItem,
+  duplicateItem,
   fetchContentInstance,
   fetchContentInstanceDescriptor,
   insertComponent,
@@ -626,6 +629,17 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
             next() {
               hostToGuest$.next(insertItemOperationComplete());
               enqueueSnackbar(formatMessage(guestMessages.insertItemOperation));
+            }
+          });
+          break;
+        }
+        case duplicateItemOperation.type: {
+          const { modelId, parentModelId, fieldId, index, shared } = payload;
+          const path = models[parentModelId ?? modelId].craftercms.path;
+          duplicateItem(siteId, modelId, fieldId, index, path, shared).subscribe({
+            next() {
+              hostToGuest$.next(duplicateItemOperationComplete());
+              enqueueSnackbar(formatMessage(guestMessages.duplicateItemOperation));
             }
           });
           break;

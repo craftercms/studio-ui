@@ -35,6 +35,8 @@ import { message$ } from '../utils/communicator';
 import { Operation } from '../models/Operations';
 import {
   deleteItemOperation,
+  duplicateItemOperation,
+  duplicateItemOperationComplete,
   insertComponentOperation,
   insertInstanceOperation,
   insertItemOperation,
@@ -337,6 +339,19 @@ export function GuestProxy() {
           message$
             .pipe(
               filter((e) => e.type === insertItemOperationComplete.type),
+              take(1)
+            )
+            .subscribe({
+              next() {
+                window.location.reload();
+              }
+            });
+          break;
+        }
+        case duplicateItemOperation.type: {
+          message$
+            .pipe(
+              filter((e) => e.type === duplicateItemOperationComplete.type),
               take(1)
             )
             .subscribe({

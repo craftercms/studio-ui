@@ -27,6 +27,7 @@ import { Operation } from './models/Operations';
 import {
   contentTypesResponse,
   deleteItemOperation,
+  duplicateItemOperation,
   insertComponentOperation,
   insertInstanceOperation,
   insertItemOperation,
@@ -332,7 +333,27 @@ export function updateField(modelId: string, fieldId: string, index: string | nu
   });
 }
 
-export function duplicateItem(): void {}
+export function duplicateItem(
+  modelId: string,
+  fieldId: string,
+  index: number | string,
+  isEmbedded: boolean = false
+): void {
+  const models = getCachedModels();
+
+  post(duplicateItemOperation.type, {
+    modelId,
+    fieldId,
+    index,
+    parentModelId: getParentModelId(modelId, models, modelHierarchyMap),
+    shared: !isEmbedded
+  });
+
+  operations$.next({
+    type: duplicateItemOperation.type,
+    args: {}
+  });
+}
 
 export function insertItem(
   modelId: string,
