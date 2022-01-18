@@ -48,6 +48,7 @@ import {
   instanceDragBegun,
   instanceDragEnded,
   moveItemOperation,
+  requestEdit,
   selectForEdit,
   setContentTypeDropTargets,
   setEditModePadding,
@@ -114,7 +115,7 @@ import { useActiveUser } from '../../hooks/useActiveUser';
 import { useMount } from '../../hooks/useMount';
 import { usePreviewNavigation } from '../../hooks/usePreviewNavigation';
 import { useActiveSite } from '../../hooks/useActiveSite';
-import { getPathFromPreviewURL } from '../../utils/path';
+import { getControllerPath, getPathFromPreviewURL } from '../../utils/path';
 import { showEditDialog } from '../../state/actions/dialogs';
 import { UNDEFINED } from '../../utils/constants';
 import { useCurrentPreviewItem } from '../../hooks/useCurrentPreviewItem';
@@ -134,6 +135,8 @@ import {
 } from '../../state/actions/system';
 import { useUpdateRefs } from '../../hooks';
 import { useHotkeys } from 'react-hotkeys-hook';
+import { popPiece } from '../../utils/string';
+import { editContentTypeTemplate, editController } from '../../state/actions/misc';
 
 const originalDocDomain = document.domain;
 
@@ -822,6 +825,33 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           // @ts-ignore - TODO: type action accordingly
           getHostToGuestBus().next(updateRteConfig({ rteConfig: upToDateRefs.current.rteConfig ?? {} }));
           break;
+        }
+        case requestEdit.type: {
+          const { modelId, parentModelId, fields, typeOfEdit: type } = payload;
+          const model = models[modelId] as ContentInstance;
+          const contentType = contentTypes[model.craftercms.contentTypeId];
+          if (type === 'content') {
+            dispatch(
+              showEditDialog({
+                site: siteId,
+                modelId: parentModelId ? modelId : null,
+                authoringBase,
+                selectedFields: fields,
+                path: models[parentModelId ? parentModelId : modelId].craftercms.path
+              })
+            );
+          } else if (type === 'template') {
+            dispatch(editContentTypeTemplate({ contentTypeId: contentType.id }));
+          } else {
+            dispatch(
+              editController({
+                path: getControllerPath(contentType.type),
+                fileName: `${popPiece(contentType.id, '/')}.groovy`,
+                mode: 'groovy',
+                contentType: contentType.id
+              })
+            );
+          }
         }
       }
     });

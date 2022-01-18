@@ -1188,7 +1188,7 @@ var CStudioForms =
 
         //path in include items is the object id
         if (me.config.isInclude && me.config.isEdit) {
-          let filename = content.getElementsByTagName('file-name')[0].innerHTML;
+          let filename = content.querySelector(':scope > file-name').innerHTML;
           path = `/${filename}`;
         }
 
@@ -2626,7 +2626,7 @@ var CStudioForms =
        * draw the html for the form
        */
       _renderFormLayout: function (form) {
-        // long term even the layout should be delgated to a pluggable module
+        // long term even the layout should be delegated to a pluggable module
         // for now we'll start with delegation of widgets
         var formDef = form.definition;
         var html = '';

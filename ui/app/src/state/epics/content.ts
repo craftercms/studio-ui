@@ -467,9 +467,7 @@ const content: CrafterCMSEpic[] = [
       switchMap(([{ type, payload }, state]) => {
         const { item, onSuccess } = payload;
         const path =
-          type === 'DELETE_CONTROLLER'
-            ? getItemGroovyPath(item, state.contentTypes.byId)
-            : getItemTemplatePath(item, state.contentTypes.byId);
+          type === 'DELETE_CONTROLLER' ? getItemGroovyPath(item) : getItemTemplatePath(item, state.contentTypes.byId);
 
         // path may be empty string if the displayTemplate has not been set for a content type.
         if (isBlank(path)) {
