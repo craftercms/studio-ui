@@ -164,9 +164,6 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
         el.selectionEnd = cursorPosition;
       }
     }
-
-    el.value = el.value.normalize('NFD').replace(/\p{Diacritic}/gu, '');
-
     var data = el.value;
 
     if (invalid.exec(data) != null) {
