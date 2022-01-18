@@ -22,12 +22,14 @@ import { getIndividualPaths, getRootPath } from '../../utils/path';
 import { forkJoin } from 'rxjs';
 import {
   pathNavigatorBackgroundRefresh,
+  pathNavigatorChangeLimit,
   pathNavigatorChangePage,
   pathNavigatorConditionallySetPath,
   pathNavigatorConditionallySetPathComplete,
   pathNavigatorConditionallySetPathFailed,
   pathNavigatorFetchParentItems,
   pathNavigatorFetchParentItemsComplete,
+  pathNavigatorFetchPath,
   pathNavigatorFetchPathComplete,
   pathNavigatorFetchPathFailed,
   pathNavigatorInit,
@@ -92,6 +94,29 @@ export default [
                 return pathNavigatorFetchPathFailed({ error, id });
               }
             })
+          )
+      )
+    ),
+  // endregion
+  // region pathNavigatorFetchPath
+  (action$, state$) =>
+    action$.pipe(
+      ofType(pathNavigatorFetchPath.type),
+      withLatestFrom(state$),
+      mergeMap(
+        ([
+          {
+            type,
+            payload: { id, path }
+          },
+          state
+        ]) =>
+          fetchItemWithChildrenByPath(state.sites.active, path, { excludes: state.pathNavigator[id].excludes }).pipe(
+            map(({ item, children }) => pathNavigatorFetchPathComplete({ id, parent: item, children })),
+            catchAjaxError(
+              (error) => pathNavigatorFetchPathFailed({ id, error }),
+              (error) => showErrorDialog({ error: error.response ?? error })
+            )
           )
       )
     ),
@@ -172,7 +197,7 @@ export default [
   // region pathNavigatorChangePage
   (action$, state$) =>
     action$.pipe(
-      ofType(pathNavigatorChangePage.type),
+      ofType(pathNavigatorChangePage.type, pathNavigatorChangeLimit.type),
       withLatestFrom(state$),
       mergeMap(
         ([

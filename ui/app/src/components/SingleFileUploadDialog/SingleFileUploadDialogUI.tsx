@@ -16,10 +16,10 @@
 
 import React from 'react';
 import { SingleFileUploadDialogUIProps } from './utils';
-import DialogBody from '../Dialogs/DialogBody';
-import SingleFileUpload from '../Controls/SingleFileUpload';
+import DialogBody from '../DialogBody/DialogBody';
+import SingleFileUpload from '../SingleFileUpload/SingleFileUpload';
 
-export default function SingleFileUploadDialogUI(props: SingleFileUploadDialogUIProps) {
+export function SingleFileUploadDialogUI(props: SingleFileUploadDialogUIProps) {
   const { site, path, customFileName, fileTypes, onUploadComplete, onUploadStart, onUploadError } = props;
 
   return (
@@ -38,3 +38,5 @@ export default function SingleFileUploadDialogUI(props: SingleFileUploadDialogUI
     </>
   );
 }
+
+export default SingleFileUploadDialogUI;

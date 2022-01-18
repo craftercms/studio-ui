@@ -24,7 +24,7 @@ import TableBody from '@mui/material/TableBody';
 import React from 'react';
 import { PagedArray } from '../../models/PagedArray';
 import Pagination from '../Pagination';
-import { styles } from './styles';
+import { useStyles } from './styles';
 import Group from '../../models/Group';
 import GlobalAppGridRow from '../GlobalAppGridRow';
 import GlobalAppGridCell from '../GlobalAppGridCell';
@@ -37,9 +37,9 @@ export interface GroupsGridUIProps {
   onRowsPerPageChange?: React.ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
 }
 
-export default function GroupsGridUI(props: GroupsGridUIProps) {
+export function GroupsGridUI(props: GroupsGridUIProps) {
   const { resource, onRowClicked, onPageChange, onRowsPerPageChange } = props;
-  const classes = styles();
+  const classes = useStyles();
   const groups = resource.read();
 
   return (
@@ -84,3 +84,5 @@ export default function GroupsGridUI(props: GroupsGridUIProps) {
     </Box>
   );
 }
+
+export default GroupsGridUI;

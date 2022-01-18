@@ -18,8 +18,8 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { PagedEntityState } from '../../models/GlobalState';
 import { nnou, pluckProps } from '../../utils/object';
-import { ErrorBoundary } from '../SystemStatus/ErrorBoundary';
-import LoadingState from '../SystemStatus/LoadingState';
+import { ErrorBoundary } from '../ErrorBoundary/ErrorBoundary';
+import LoadingState from '../LoadingState/LoadingState';
 import ContentInstance from '../../models/ContentInstance';
 import {
   componentInstanceDragEnded,
@@ -29,18 +29,18 @@ import {
   setPreviewEditMode
 } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
-import SearchBar from '../Controls/SearchBar';
+import SearchBar from '../SearchBar/SearchBar';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import ContentType from '../../models/ContentType';
-import { useSelection } from '../../utils/hooks/useSelection';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import { useSelectorResource } from '../../utils/hooks/useSelectorResource';
-import { useDebouncedInput } from '../../utils/hooks/useDebouncedInput';
+import { useSelection } from '../../hooks/useSelection';
+import { useSelectorResource } from '../../hooks/useSelectorResource';
+import { useDebouncedInput } from '../../hooks/useDebouncedInput';
 import translations from './translations';
 import useStyles from './styles';
 import PreviewBrowseComponentsPanelUI from './PreviewBrowseComponentsPanelUI';
+import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 
 interface ComponentResource {
   count: number;
@@ -50,10 +50,10 @@ interface ComponentResource {
   items: Array<ContentInstance>;
 }
 
-export default function PreviewBrowseComponentsPanel() {
+export function PreviewBrowseComponentsPanel() {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const site = useActiveSiteId();
+  const siteId = useActiveSiteId();
   const initialKeyword = useSelection((state) => state.preview.components.query.keywords);
   const contentTypeFilter = useSelection((state) => state.preview.components.contentTypeFilter);
   const [keyword, setKeyword] = useState(initialKeyword);
@@ -64,13 +64,12 @@ export default function PreviewBrowseComponentsPanel() {
         (contentType) => contentType.type === 'component' && !contentType.id.includes('/level-descriptor')
       )
     : null;
-  const isFetching = useSelection((state) => state.preview.components.isFetching);
 
   useEffect(() => {
-    if (site && isFetching === null) {
+    if (siteId && contentTypesBranch.isFetching === false) {
       dispatch(fetchComponentsByContentType({}));
     }
-  }, [dispatch, site, isFetching]);
+  }, [siteId, contentTypesBranch, dispatch]);
 
   const resource = useSelectorResource<ComponentResource, PagedEntityState<ContentInstance>>(
     (state) => state.preview.components,
@@ -118,8 +117,12 @@ export default function PreviewBrowseComponentsPanel() {
 
   const onSearch$ = useDebouncedInput(onSearch, 600);
 
-  function onPageChanged(event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null, newPage: number) {
+  function onPageChanged(newPage: number) {
     dispatch(fetchComponentsByContentType({ offset: newPage }));
+  }
+
+  function onRowsPerPageChange(e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) {
+    dispatch(fetchComponentsByContentType({ offset: 0, limit: e.target.value }));
   }
 
   function handleSearchKeyword(keyword: string) {
@@ -164,6 +167,7 @@ export default function PreviewBrowseComponentsPanel() {
           <PreviewBrowseComponentsPanelUI
             componentsResource={resource}
             onPageChanged={onPageChanged}
+            onRowsPerPageChange={onRowsPerPageChange}
             onDragStart={onDragStart}
             onDragEnd={onDragEnd}
           />
@@ -172,3 +176,5 @@ export default function PreviewBrowseComponentsPanel() {
     </>
   );
 }
+
+export default PreviewBrowseComponentsPanel;

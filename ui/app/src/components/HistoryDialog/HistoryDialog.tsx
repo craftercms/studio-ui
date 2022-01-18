@@ -68,7 +68,7 @@ export const paginationStyles = makeStyles((theme) =>
   })
 );
 
-export default function HistoryDialog(props: HistoryDialogProps) {
+export function HistoryDialog(props: HistoryDialogProps) {
   const { versionsBranch, ...rest } = props;
   return (
     <EnhancedDialog title={<FormattedMessage id="historyDialog.headerTitle" defaultMessage="Item History" />} {...rest}>
@@ -76,3 +76,5 @@ export default function HistoryDialog(props: HistoryDialogProps) {
     </EnhancedDialog>
   );
 }
+
+export default HistoryDialog;

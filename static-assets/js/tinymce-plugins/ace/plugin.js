@@ -23,7 +23,7 @@ tinymce.PluginManager.add(PLUGIN_NAME, function (editor, url) {
     fullscreen: null
   };
   const aceConfig = {
-    theme: 'ace/theme/eclipse',
+    theme: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'ace/theme/nord_dark' : 'ace/theme/eclipse',
     mode: 'ace/mode/html',
     options: {
       wrap: editor.getParam('code_editor_wrap'),
@@ -31,6 +31,7 @@ tinymce.PluginManager.add(PLUGIN_NAME, function (editor, url) {
       showPrintMargin: false
     }
   };
+  const inlineMode = editor.getParam('code_editor_inline');
   const icons = {
     sourceCode:
       '<svg width="24" height="24" style="fill: rgb(34, 47, 62);"><g fill-rule="nonzero"><path d="M9.8 15.7c.3.3.3.8 0 1-.3.4-.9.4-1.2 0l-4.4-4.1a.8.8 0 010-1.2l4.4-4.2c.3-.3.9-.3 1.2 0 .3.3.3.8 0 1.1L6 12l3.8 3.7zM14.2 15.7c-.3.3-.3.8 0 1 .4.4.9.4 1.2 0l4.4-4.1c.3-.3.3-.9 0-1.2l-4.4-4.2a.8.8 0 00-1.2 0c-.3.3-.3.8 0 1.1L18 12l-3.8 3.7z"></path></g></svg>',
@@ -43,14 +44,22 @@ tinymce.PluginManager.add(PLUGIN_NAME, function (editor, url) {
     icon: 'sourcecode',
     tooltip: BUTTON_TOOL_TIP,
     onAction: function () {
-      toggleCode(this, editor);
+      if (inlineMode) {
+        toggleCode(this, editor);
+      } else {
+        showDialog(editor);
+      }
     }
   });
   editor.ui.registry.addMenuItem(PLUGIN_NAME, {
     icon: 'sourcecode',
     text: 'Code Editor',
     onAction: function () {
-      toggleCode(this, editor);
+      if (inlineMode) {
+        toggleCode(this, editor);
+      } else {
+        showDialog(editor);
+      }
     }
   });
 
@@ -157,9 +166,11 @@ tinymce.PluginManager.add(PLUGIN_NAME, function (editor, url) {
     });
 
     const dialog = document.getElementsByClassName('tox-dialog--width-lg')[0];
-    const dialogCloseIcon = dialog.querySelector('.tox-dialog__header button');
-    dialogCloseIcon.setAttribute('title', 'Exit fullscreen');
-    dialogCloseIcon.querySelector('.tox-icon').innerHTML = icons.resize;
+    if (inlineMode) {
+      const dialogCloseIcon = dialog.querySelector('.tox-dialog__header button');
+      dialogCloseIcon.setAttribute('title', 'Exit fullscreen');
+      dialogCloseIcon.querySelector('.tox-icon').innerHTML = icons.resize;
+    }
     dialog.classList.add('fullscreen');
     dialog.classList.add('acecode');
     const aceEditor = ace.edit('mce-ace-editor-block');
@@ -173,7 +184,12 @@ tinymce.PluginManager.add(PLUGIN_NAME, function (editor, url) {
     aceEditor.on('change', function () {
       editorTextareaEl.value = aceEditor.getValue();
       editor.setContent(aceEditor.getValue());
-      aceModes.inline.getSession().setValue(aceEditor.getValue());
+
+      if (inlineMode) {
+        aceModes.inline.getSession().setValue(aceEditor.getValue());
+      }
+
+      editor.fire('external_change');
     });
   };
 });

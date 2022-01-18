@@ -21,7 +21,7 @@ import React from 'react';
 import { Resource } from '../../models/Resource';
 import StandardAction from '../../models/StandardAction';
 import { EnhancedDialogProps } from '../EnhancedDialog';
-import { EnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
+import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 
 export interface DependenciesDialogBaseProps {
   item?: DetailedItem;

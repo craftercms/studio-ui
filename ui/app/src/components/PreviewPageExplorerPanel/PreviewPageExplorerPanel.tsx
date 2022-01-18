@@ -27,16 +27,16 @@ import MoreVertIcon from '@mui/icons-material/MoreVertRounded';
 import TreeItem from '@mui/lab/TreeItem';
 import MuiBreadcrumbs from '@mui/material/Breadcrumbs';
 import { ContentType, ContentTypeField } from '../../models/ContentType';
-import Page from '../Icons/Page';
-import ContentTypeFieldIcon from '../Icons/ContentTypeField';
-import Component from '../Icons/Component';
-import NodeSelector from '../Icons/NodeSelector';
-import RepeatGroupItem from '../Icons/RepeatGroupItem';
+import Page from '../../icons/Page';
+import ContentTypeFieldIcon from '../../icons/ContentTypeField';
+import Component from '../../icons/Component';
+import NodeSelector from '../../icons/NodeSelector';
+import RepeatGroupItem from '../../icons/RepeatGroupItem';
 import Root from '@mui/icons-material/HomeRounded';
 import NavigateNextIcon from '@mui/icons-material/NavigateNextRounded';
 import { LookupTable } from '../../models/LookupTable';
 import ContentInstance from '../../models/ContentInstance';
-import RepeatGroup from '../Icons/RepeatGroup';
+import RepeatGroup from '../../icons/RepeatGroup';
 import { hierarchicalToLookupTable } from '../../utils/object';
 import {
   clearContentTreeFieldSelected,
@@ -45,7 +45,7 @@ import {
   sortItemOperationComplete
 } from '../../state/actions/preview';
 import { getHostToGuestBus, getHostToHostBus } from '../../modules/Preview/previewContext';
-import Suspencified from '../SystemStatus/Suspencified';
+import Suspencified from '../Suspencified/Suspencified';
 import { Resource } from '../../models/Resource';
 import palette from '../../styles/palette';
 import { useDispatch } from 'react-redux';
@@ -53,17 +53,17 @@ import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
 import ItemActionsMenu from '../ItemActionsMenu';
 import { completeDetailedItem } from '../../state/actions/content';
-import SearchBar from '../Controls/SearchBar';
+import SearchBar from '../SearchBar/SearchBar';
 import Divider from '@mui/material/Divider';
 // @ts-ignore
 import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover/Popover';
 import { showItemMegaMenu } from '../../state/actions/dialogs';
-import { useSelection } from '../../utils/hooks/useSelection';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import { usePreviewGuest } from '../../utils/hooks/usePreviewGuest';
-import { useLogicResource } from '../../utils/hooks/useLogicResource';
-import { useUnmount } from '../../utils/hooks/useUnmount';
-import { useSpreadState } from '../../utils/hooks/useSpreadState';
+import { useSelection } from '../../hooks/useSelection';
+import { useActiveSiteId } from '../../hooks/useActiveSiteId';
+import { usePreviewGuest } from '../../hooks/usePreviewGuest';
+import { useLogicResource } from '../../hooks/useLogicResource';
+import { useUnmount } from '../../hooks/useUnmount';
+import { useSpreadState } from '../../hooks/useSpreadState';
 
 const rootPrefix = '{root}_';
 

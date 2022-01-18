@@ -20,7 +20,7 @@ import { PublishingStatusDialogContainer } from '../PublishingStatusDialog';
 import { clearLock, start, stop } from '../../services/publishing';
 import { fetchPublishingStatus } from '../../state/actions/publishingStatus';
 import { useDispatch } from 'react-redux';
-import { useSelection } from '../../utils/hooks/useSelection';
+import { useSelection } from '../../hooks/useSelection';
 
 type PublishingStatusWidgetProps = {
   siteId: string;

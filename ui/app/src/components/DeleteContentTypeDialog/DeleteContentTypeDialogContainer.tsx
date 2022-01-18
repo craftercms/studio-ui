@@ -15,42 +15,56 @@
  */
 
 import { DeleteContentTypeDialogContainerProps } from './utils';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import { useIntl } from 'react-intl';
+import { useActiveSiteId } from '../../hooks/useActiveSiteId';
+import { defineMessages, useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
 import * as React from 'react';
 import { useMemo } from 'react';
 import { createResource } from '../../utils/resource';
 import { deleteContentType, fetchContentTypeUsage } from '../../services/contentTypes';
 import { showSystemNotification } from '../../state/actions/system';
-import Suspencified from '../SystemStatus/Suspencified';
+import Suspencified from '../Suspencified/Suspencified';
 import DeleteContentTypeDialogBody from './DeleteContentTypeDialogBody';
-import { messages } from './DeleteContentTypeDialog';
+import { useUpdateRefs } from '../../hooks';
+
+const messages = defineMessages({
+  deleteComplete: {
+    id: 'deleteContentTypeDialog.contentTypeDeletedMessage',
+    defaultMessage: 'Content type deleted successfully'
+  },
+  deleteFailed: {
+    id: 'deleteContentTypeDialog.contentTypeDeleteFailedMessage',
+    defaultMessage: 'Error deleting content type'
+  }
+});
 
 export function DeleteContentTypeDialogContainer(props: DeleteContentTypeDialogContainerProps) {
   const { onClose, contentType, onComplete, isSubmitting, onSubmittingAndOrPendingChange } = props;
   const site = useActiveSiteId();
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
+  const functionRefs = useUpdateRefs({
+    onSubmittingAndOrPendingChange
+  });
 
   const resource = useMemo(
     () => createResource(() => fetchContentTypeUsage(site, contentType.id).toPromise()),
     [site, contentType.id]
   );
   const onSubmit = () => {
-    onSubmittingAndOrPendingChange({
+    functionRefs.current.onSubmittingAndOrPendingChange({
       isSubmitting: true
     });
     deleteContentType(site, contentType.id).subscribe({
       next() {
-        onSubmittingAndOrPendingChange({
+        functionRefs.current.onSubmittingAndOrPendingChange({
           isSubmitting: false
         });
         dispatch(showSystemNotification({ message: formatMessage(messages.deleteComplete) }));
         onComplete?.();
       },
       error(e) {
-        onSubmittingAndOrPendingChange({
+        functionRefs.current.onSubmittingAndOrPendingChange({
           isSubmitting: false
         });
         const response = e.response?.response ?? e.response;

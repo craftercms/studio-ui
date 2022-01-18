@@ -19,10 +19,10 @@ import { getZoneMarkerStyle } from '../utils/dom';
 import { Box, Paper, Popper, Theme, Typography } from '@mui/material';
 import { SxProps } from '@mui/system';
 import { FullSxRecord, PartialClassRecord, PartialSxRecord } from '@craftercms/studio-ui/models/CustomRecord';
-import LevelDescriptorIcon from '@craftercms/studio-ui/components/Icons/LevelDescriptor';
-import FieldIcon from '@craftercms/studio-ui/components/Icons/ContentTypeField';
+import LevelDescriptorIcon from '@craftercms/studio-ui/icons/LevelDescriptor';
+import FieldIcon from '@craftercms/studio-ui/icons/ContentTypeField';
 
-export type ZoneMarkerClassKey = 'box' | 'paper' | 'icon' | 'tooltip';
+export type ZoneMarkerClassKey = 'box' | 'paper' | 'icon' | 'tooltip' | 'menuItemsContainer';
 
 export type ZoneMarkerFullSx = FullSxRecord<ZoneMarkerClassKey>;
 
@@ -56,13 +56,13 @@ function getStyles(sx: ZoneMarkerPartialSx): ZoneMarkerFullSx {
     paper: {
       padding: [0.5, 1],
       fontSize: '14px',
-      maxWidth: '300px',
       overflow: 'hidden',
       fontWeight: 700,
       pointerEvents: 'none',
       zIndex: 'tooltip',
       display: 'flex',
       alignItems: 'center',
+      flexDirection: 'column',
       ...sx?.paper
     },
     icon: {
@@ -71,7 +71,13 @@ function getStyles(sx: ZoneMarkerPartialSx): ZoneMarkerFullSx {
     },
     tooltip: {
       transition: 'none',
+      zIndex: 'tooltip',
       ...sx?.tooltip
+    },
+    menuItemsContainer: {
+      pointerEvents: 'all',
+      alignItems: 'center',
+      display: 'flex'
     }
   } as Record<ZoneMarkerClassKey, SxProps<Theme>>;
 }
@@ -89,8 +95,8 @@ export function ZoneMarker(props: ZoneMarkerProps) {
       <Box ref={elRef} style={zoneStyle} sx={sx.box} className={classes?.box} />
       {showZoneTooltip && (
         <Box
-          component={Popper}
           open
+          component={Popper}
           anchorEl={elRef.current}
           placement="top-start"
           onClick={onPopperClick}
@@ -105,13 +111,13 @@ export function ZoneMarker(props: ZoneMarkerProps) {
           ]}
         >
           <Paper className={classes?.paper} sx={sx.paper}>
-            {inherited ? <LevelDescriptorIcon sx={sx.icon} /> : <FieldIcon sx={sx.icon} />}
-            <Typography title={label} noWrap sx={{ pointerEvents: 'all' }}>
-              {label}
-            </Typography>
-            {menuItems && (
-              <Box sx={{ ml: 1, pointerEvents: 'all', alignItems: 'center', display: 'flex' }}>{menuItems}</Box>
-            )}
+            <div style={{ display: 'flex' }}>
+              {inherited ? <LevelDescriptorIcon sx={sx.icon} /> : <FieldIcon sx={sx.icon} />}
+              <Typography title={label} noWrap sx={{ pointerEvents: 'all' }}>
+                {label}
+              </Typography>
+            </div>
+            <div>{menuItems && <Box sx={sx.menuItemsContainer}>{menuItems}</Box>}</div>
           </Paper>
         </Box>
       )}

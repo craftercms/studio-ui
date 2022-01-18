@@ -14,12 +14,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo } from 'react';
-import { useIntl } from 'react-intl';
+import React, { ChangeEvent, useMemo } from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
 import TablePagination from '@mui/material/TablePagination';
 import { DetailedItem } from '../../models/Item';
 import clsx from 'clsx';
-import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
+import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
 import { useStyles } from './styles';
 import { translations } from './translations';
 import Header from './PathNavigatorHeader';
@@ -36,7 +36,7 @@ import GlobalState from '../../models/GlobalState';
 import { PathNavigatorStateProps } from './PathNavigator';
 import { SystemIconDescriptor } from '../SystemIcon';
 import { lookupItemByPath } from '../../utils/content';
-import { useLogicResource } from '../../utils/hooks/useLogicResource';
+import { useLogicResource } from '../../hooks/useLogicResource';
 import { createFakeResource } from '../../utils/resource';
 
 export type PathNavigatorUIClassKey =
@@ -129,6 +129,7 @@ export interface PathNavigatorUIProps {
    *
    **/
   onPageChanged?: (page: number) => void;
+  onRowsPerPageChange?: (e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => void;
 }
 
 const NavLoader = React.memo((props: { numOfItems?: number }) => {
@@ -165,7 +166,8 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
     onOpenItemMenu,
     onItemClicked,
     onPageChanged,
-    computeActiveItems
+    computeActiveItems,
+    onRowsPerPageChange
   } = props;
   // endregion
   const { formatMessage } = useIntl();
@@ -258,13 +260,17 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
         <SuspenseWithEmptyState
           resource={resource}
           errorBoundaryProps={{
-            errorStateProps: { classes: { image: classes.stateGraphics } }
+            errorStateProps: { imageUrl: null }
           }}
           withEmptyStateProps={{
-            /* We don't want an empty state message but SuspenseWithEmptyState
-            is still appropriate for error handling and loading state displaying.
-            So, leaving it and setting isEmpty checker to always return false */
-            isEmpty: () => false
+            /* If there are no children and no level descriptor => empty */
+            isEmpty: (children) => children.length === 0 && !Boolean(levelDescriptor),
+            emptyStateProps: {
+              title: (
+                <FormattedMessage id="pathNavigator.noItemsAtLocation" defaultMessage="No items at this location" />
+              ),
+              image: null
+            }
           }}
           suspenseProps={{
             fallback: <NavLoader numOfItems={state.itemsInPath?.length > 0 ? state.itemsInPath.length : state.limit} />
@@ -307,6 +313,7 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
             page={state && Math.ceil(state.offset / state.limit)}
             backIconButtonProps={{ 'aria-label': formatMessage(translations.previousPage) }}
             nextIconButtonProps={{ 'aria-label': formatMessage(translations.nextPage) }}
+            onRowsPerPageChange={onRowsPerPageChange}
             onPageChange={(e, page: number) => onPageChanged(page)}
           />
         )}

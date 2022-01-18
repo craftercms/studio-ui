@@ -30,11 +30,16 @@ import { ContentTypeDropTarget } from '../../models/ContentTypeDropTarget';
 import { WidgetDescriptor } from '../../components/Widget';
 import LookupTable from '../../models/LookupTable';
 import { DetailedItem } from '../../models/Item';
-import { HighlightMode } from '../../models/GlobalState';
+import GlobalState, { HighlightMode } from '../../models/GlobalState';
 
 // region Accommodation Action Creators
 
-export const hostCheckIn = /*#__PURE__*/ createAction('HOST_CHECK_IN');
+export const hostCheckIn = /*#__PURE__*/ createAction<{
+  editMode: boolean;
+  highlightMode: HighlightMode;
+  editModePadding: boolean;
+  rteConfig: GlobalState['preview']['richTextEditor'];
+}>('HOST_CHECK_IN');
 export const guestCheckIn = /*#__PURE__*/ createAction('GUEST_CHECK_IN');
 export const guestCheckOut = /*#__PURE__*/ createAction('GUEST_CHECK_OUT');
 export const fetchGuestModel = /*#__PURE__*/ createAction('FETCH_GUEST_MODEL');
@@ -52,7 +57,7 @@ export const updateFieldValueOperation = /*#__PURE__*/ createAction('UPDATE_FIEL
 export const iceZoneSelected = /*#__PURE__*/ createAction<{
   modelId: string;
   index: number;
-  fieldId: string;
+  fieldId: string[];
   coordinates: {
     x: number;
     y: number;
@@ -64,7 +69,8 @@ export const assetDragEnded = /*#__PURE__*/ createAction('ASSET_DRAG_ENDED');
 export const componentDragStarted = /*#__PURE__*/ createAction<{ contentType: ContentType }>('COMPONENT_DRAG_STARTED');
 export const componentDragEnded = /*#__PURE__*/ createAction('COMPONENT_DRAG_ENDED');
 export const trashed = /*#__PURE__*/ createAction<{ iceId: number }>('TRASHED');
-export const contentTypesResponse = /*#__PURE__*/ createAction('CONTENT_TYPES_RESPONSE');
+export const contentTypesResponse =
+  /*#__PURE__*/ createAction<{ contentTypes: Array<ContentType> }>('CONTENT_TYPES_RESPONSE');
 export const instanceDragBegun = /*#__PURE__*/ createAction<number>('INSTANCE_DRAG_BEGUN');
 export const instanceDragEnded = /*#__PURE__*/ createAction('INSTANCE_DRAG_ENDED');
 export const navigationRequest = /*#__PURE__*/ createAction('NAVIGATION_REQUEST');
@@ -94,6 +100,7 @@ export const contentTreeFieldSelected =
 export const clearContentTreeFieldSelected = /*#__PURE__*/ createAction('CLEAR_CONTENT_TREE_FIELD_SELECTED');
 export const validationMessage = /*#__PURE__*/ createAction<ValidationResult>('VALIDATION_MESSAGE');
 export const editModeToggleHotkey = /*#__PURE__*/ createAction<{ mode: string }>('EDIT_MODE_TOGGLE_HOTKEY');
+export const hotKey = /*#__PURE__*/ createAction<{ key: string; type: 'keyup' | 'keydown' }>('HOT_KEY');
 export const showEditDialog = /*#__PURE__*/ createAction('SHOW_EDIT_DIALOG');
 export const updateRteConfig = /*#__PURE__*/ createAction('UPDATE_RTE_CONFIG');
 export const highlightModeChanged = /*#__PURE__*/ createAction('HIGHLIGHT_MODE_CHANGED');
@@ -103,7 +110,8 @@ export const childrenMapUpdate = /*#__PURE__*/ createAction('CHILDREN_MAP_UPDATE
 export const contentTreeSwitchFieldInstance = /*#__PURE__*/ createAction<{ type: string; scrollElement: string }>(
   'CONTENT_TREE_SWITCH_FIELD_INSTANCE'
 );
-
+export const setEditModePadding = /*#__PURE__*/ createAction<{ editModePadding: boolean }>('SET_DRAG_HELP_MODE');
+export const toggleEditModePadding = /*#__PURE__*/ createAction('TOGGLE_DRAG_HELP_MODE');
 // endregion
 
 // region Actions
@@ -315,11 +323,20 @@ export const initToolbarConfig = /*#__PURE__*/ createAction<{ configXml: string 
 
 export const initIcePanelConfig = /*#__PURE__*/ createAction<{
   configXml: string;
+  storedPage?: WidgetDescriptor;
   icePanelWidth?: number;
 }>('INIT_ICE_PANEL_CONFIG');
 
 export const initRichTextEditorConfig =
   /*#__PURE__*/ createAction<{ configXml: string; siteId: string }>('INIT_RICH_TEXT_EDITOR_CONFIG');
+
+export const associateTemplate =
+  /*#__PURE__*/ createAction<{ contentTypeId: string; displayTemplate: string }>('ASSOCIATE_TEMPLATE');
+
+export const associateTemplateComplete =
+  /*#__PURE__*/ createAction<{ contentTypeId: string; displayTemplate: string }>('ASSOCIATE_TEMPLATE_COMPLETE');
+
+export const associateTemplateFailed = /*#__PURE__*/ createAction('ASSOCIATE_TEMPLATE_FAILED');
 
 export const dissociateTemplate = /*#__PURE__*/ createAction<{ contentTypeId: string }>('DISSOCIATE_TEMPLATE');
 
@@ -327,6 +344,13 @@ export const dissociateTemplateComplete =
   /*#__PURE__*/ createAction<{ contentTypeId: string }>('DISSOCIATE_TEMPLATE_COMPLETE');
 
 export const dissociateTemplateFailed = /*#__PURE__*/ createAction('DISSOCIATE_TEMPLATE_FAILED');
+
+export const requestEdit = /*#__PURE__*/ createAction<{
+  typeOfEdit: 'content' | 'controller' | 'template';
+  modelId: string;
+  fields?: string[];
+  parentModelId?: string;
+}>('REQUEST_EDIT');
 
 // endregion
 
@@ -346,13 +370,13 @@ export const popIcePanelPage = /*#__PURE__*/ createAction('POP_ICE_PANEL_PAGE');
 
 // endregion
 
-// region settings Mode
+// region Settings/Mode
 
 export const setHighlightMode = /*#__PURE__*/ createAction<{ highlightMode: HighlightMode }>('HIGHLIGHT_MODE_CHANGED');
 
 // endregion
 
-// region navigation stack
+// region Navigation stack
 export const goToLastPage = /*#__PURE__*/ createAction<string>('GO_TO_LAST_PAGE');
 export const goToNextPage = /*#__PURE__*/ createAction('GO_TO_NEXT_PAGE');
 // endregion

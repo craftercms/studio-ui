@@ -22,7 +22,7 @@ import { FormattedMessage } from 'react-intl';
 import TextField from '@mui/material/TextField';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import TextFieldWithMax from '../Controls/TextFieldWithMax';
+import TextFieldWithMax from '../TextFieldWithMax/TextFieldWithMax';
 import Grid from '@mui/material/Grid';
 import { PublishFormData, PublishingTarget, PublishOnDemandMode } from '../../models/Publishing';
 import ApiResponse from '../../models/ApiResponse';
@@ -54,13 +54,15 @@ interface PublishOnDemandFormProps {
   publishingTargetsError: ApiResponse;
   bulkPublishCommentRequired: boolean;
   publishByCommitCommentRequired: boolean;
+  disabled: boolean;
 }
 
 export default function PublishOnDemandForm(props: PublishOnDemandFormProps) {
   const {
-    formData,
-    setFormData,
     mode,
+    formData,
+    disabled,
+    setFormData,
     publishingTargets,
     publishingTargetsError,
     bulkPublishCommentRequired,
@@ -68,7 +70,7 @@ export default function PublishOnDemandForm(props: PublishOnDemandFormProps) {
   } = props;
   const classes = useStyles();
   const handleFormChange = (name: string) => (event: React.ChangeEvent<{ value: unknown }> | SelectChangeEvent) => {
-    setFormData({ [name]: event.target.value });
+    setFormData({ [name]: `/${event.target.value}`.replace(/\/{2,}/g, '/') });
   };
   return (
     <form>
@@ -76,6 +78,7 @@ export default function PublishOnDemandForm(props: PublishOnDemandFormProps) {
         <Grid item xs={12} md={8}>
           <FormControl fullWidth>
             <TextField
+              disabled={disabled}
               value={mode === 'studio' ? formData.path : formData.commitIds}
               label={
                 mode === 'studio' ? (
@@ -99,20 +102,26 @@ export default function PublishOnDemandForm(props: PublishOnDemandFormProps) {
                   />
                 )
               }
-              FormHelperTextProps={{
-                className: classes.formHelperText
-              }}
+              FormHelperTextProps={{ className: classes.formHelperText }}
               onChange={handleFormChange(mode === 'studio' ? 'path' : 'commitIds')}
+              onBlur={
+                mode === 'studio'
+                  ? () => {
+                      setFormData({ path: formData.path.replace(/(.+)(\/$)/, '$1') });
+                    }
+                  : void 0
+              }
             />
           </FormControl>
         </Grid>
         <Grid item xs={12} md={4}>
           {publishingTargets ? (
             <FormControl fullWidth variant="outlined" required>
-              <InputLabel id="publishingTargetLabel">
+              <InputLabel id="publishingTargetLabel" disabled={disabled}>
                 <FormattedMessage id="publishOnDemand.publishingTarget" defaultMessage="Publishing Target" />
               </InputLabel>
               <Select
+                disabled={disabled}
                 labelId="publishingTargetLabel"
                 label={<FormattedMessage id="publishOnDemand.publishingTarget" defaultMessage="Publishing Target" />}
                 value={formData.environment}
@@ -151,6 +160,7 @@ export default function PublishOnDemandForm(props: PublishOnDemandFormProps) {
         <Grid item xs={12}>
           <FormControl fullWidth>
             <TextFieldWithMax
+              disabled={disabled}
               value={formData.comment}
               label={<FormattedMessage id="publishOnDemand.submissionComment" defaultMessage="Submission Comment" />}
               fullWidth

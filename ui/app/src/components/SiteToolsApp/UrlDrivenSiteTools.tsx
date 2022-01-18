@@ -16,20 +16,20 @@
 
 import React, { useState } from 'react';
 import { useHistory } from 'react-router';
-import { useSelection } from '../../utils/hooks/useSelection';
+import { useSelection } from '../../hooks/useSelection';
 import { useGlobalAppState } from '../GlobalApp';
-import { useReference } from '../../utils/hooks/useReference';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import { useEnv } from '../../utils/hooks/useEnv';
+import { useReference } from '../../hooks/useReference';
+import { useActiveSiteId } from '../../hooks/useActiveSiteId';
+import { useEnv } from '../../hooks/useEnv';
 import SiteToolsApp, { Tool } from './SiteToolsApp';
 import { getSystemLink } from '../../utils/system';
-import { useLegacyPreviewPreference } from '../../utils/hooks/useLegacyPreviewPreference';
+import { useLegacyPreviewPreference } from '../../hooks/useLegacyPreviewPreference';
 
 interface UrlDrivenSiteToolsProps {
   footerHtml: string;
 }
 
-export default function UrlDrivenSiteTools(props: UrlDrivenSiteToolsProps) {
+export function UrlDrivenSiteTools(props: UrlDrivenSiteToolsProps) {
   const { footerHtml } = props;
   const [width, setWidth] = useState(240);
   const history = useHistory();
@@ -70,6 +70,9 @@ export default function UrlDrivenSiteTools(props: UrlDrivenSiteToolsProps) {
       openSidebar={openSidebar || !activeToolId}
       tools={tools}
       imageUrl={`${baseUrl}/static-assets/images/choose_option.svg`}
+      mountMode="page"
     />
   );
 }
+
+export default UrlDrivenSiteTools;

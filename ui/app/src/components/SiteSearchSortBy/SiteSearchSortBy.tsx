@@ -73,7 +73,7 @@ interface SortByProps {
   handleFilterChange(filter: FilterType, isFilter?: boolean): any;
 }
 
-export default function SiteSearchSortBy(props: SortByProps) {
+export function SiteSearchSortBy(props: SortByProps) {
   const classes = useStyles({});
   const { formatMessage } = useIntl();
   const { handleFilterChange, filterKeys, sortBy = '_score' } = props;
@@ -96,3 +96,5 @@ export default function SiteSearchSortBy(props: SortByProps) {
     </Select>
   );
 }
+
+export default SiteSearchSortBy;

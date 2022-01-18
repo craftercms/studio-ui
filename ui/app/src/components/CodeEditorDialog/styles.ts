@@ -17,7 +17,7 @@
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 
-export const useStyles = makeStyles(() =>
+const useStyles = makeStyles(() =>
   createStyles({
     dialogBody: {
       height: '60vh',
@@ -28,6 +28,9 @@ export const useStyles = makeStyles(() =>
     },
     addSnippet: {
       marginRight: 'auto'
+    },
+    aceRoot: {
+      position: 'absolute'
     }
   })
 );

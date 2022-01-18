@@ -17,14 +17,14 @@
 import createStyles from '@mui/styles/createStyles';
 
 import makeStyles from '@mui/styles/makeStyles';
-import { useLogicResource } from '../../utils/hooks/useLogicResource';
-import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
+import { useLogicResource } from '../../hooks/useLogicResource';
+import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
 import { FormattedMessage } from 'react-intl';
 import { WorkflowCancellationDialogUI } from './WorkflowCancellationDialogUI';
 import React from 'react';
 import { Return, Source, WorkflowCancellationDialogContainerProps } from './utils';
 
-export const useStyles = makeStyles((theme) =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     suspense: {
       minHeight: '442px',
@@ -40,7 +40,7 @@ export const useStyles = makeStyles((theme) =>
   })
 );
 
-export default function WorkflowCancellationDialogContainer(props: WorkflowCancellationDialogContainerProps) {
+export function WorkflowCancellationDialogContainer(props: WorkflowCancellationDialogContainerProps) {
   const { items, onClose, onContinue } = props;
   const classes = useStyles();
 
@@ -80,3 +80,5 @@ export default function WorkflowCancellationDialogContainer(props: WorkflowCance
     </SuspenseWithEmptyState>
   );
 }
+
+export default WorkflowCancellationDialogContainer;

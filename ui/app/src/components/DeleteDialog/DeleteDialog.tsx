@@ -20,7 +20,7 @@ import { DeleteDialogProps } from './utils';
 import EnhancedDialog from '../EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
 
-export default function DeleteDialog(props: DeleteDialogProps) {
+export function DeleteDialog(props: DeleteDialogProps) {
   const { items, isSubmitting, onSuccess, isFetching, childItems, dependentItems, ...rest } = props;
   return (
     <EnhancedDialog
@@ -47,3 +47,5 @@ export default function DeleteDialog(props: DeleteDialogProps) {
     </EnhancedDialog>
   );
 }
+
+export default DeleteDialog;

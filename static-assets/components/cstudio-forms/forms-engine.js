@@ -552,13 +552,7 @@ var CStudioForms =
       this.id = name;
       this.style = style;
       this.definition = formDefinition;
-      // Initialize dynamicFields with all current keys in model.
-      // This is because if we're opening a form with only some fields and there were already values in the model
-      // set by registering dynamic fields, then the controls are not being initialized (so dynamic fields wont be
-      // registered), and when saving the content id won't save the dynamic fields.
-      // This way we can assure that all original fields (when opening the form) will be saved and no other fields will
-      // unless registering them via `registerDynamicField`.
-      this.dynamicFields = Object.keys(model) ?? [];
+      this.dynamicFields = [];
       this.sections = [];
       this.datasources = [];
       this.model = model;
@@ -571,6 +565,23 @@ var CStudioForms =
       if (customController) {
         customController.initialize(this);
       }
+
+      // Retrieve additional fields set in controls.
+      const _self = this;
+      const processSection = function (section) {
+        section.fields.forEach((field) => {
+          if (field.type !== 'repeat') {
+            if (field.additionalFields) {
+              const additionalFieldsArray =
+                typeof field.additionalFields.id === 'string' ? [field.additionalFields.id] : field.additionalFields.id;
+              _self.dynamicFields.push(...additionalFieldsArray);
+            }
+          } else {
+            processSection(field);
+          }
+        });
+      };
+      formDefinition.sections.forEach((section) => processSection(section));
 
       return this;
     };
@@ -1177,7 +1188,7 @@ var CStudioForms =
 
         //path in include items is the object id
         if (me.config.isInclude && me.config.isEdit) {
-          let filename = content.getElementsByTagName('file-name')[0].innerHTML;
+          let filename = content.querySelector(':scope > file-name').innerHTML;
           path = `/${filename}`;
         }
 
@@ -1874,42 +1885,20 @@ var CStudioForms =
 
             //In Context Edit, the preview button must not be shown
             var iceId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'iceId');
-
             // This is really the right thing to do but previewable doesn't come through
             CStudioAuthoring.Service.lookupContentType(CStudioAuthoringContext.site, contentType, {
               success: function (type) {
-                const options = [
-                  {
-                    label: formatMessage(formEngineMessages.save),
-                    callback: () => {
-                      saveFn(false, true, null, 'save');
-                    }
-                  },
-                  {
-                    label: formatMessage(formEngineMessages.saveAndClose),
-                    callback: () => {
-                      saveFn(false, false, null, 'saveAndClose');
-                    }
-                  },
-                  {
-                    label: formatMessage(formEngineMessages.saveAndMinimize),
-                    callback: () => {
-                      saveFn(false, true, null, 'saveAndMinimize');
-                    }
-                  }
-                ];
-                if (type.previewable) {
-                  options.push({
-                    label: formatMessage(formEngineMessages.saveAndPreview),
-                    callback: () => {
-                      saveFn(true, false, null, 'saveAndPreview');
-                    }
-                  });
-                }
-                CrafterCMSNext.render(buttonsContainer, 'SplitButton', {
-                  options,
-                  defaultSelected: 1,
-                  disablePortal: false
+                const storedId = 'formEditor';
+                const defaultSelected = 'saveAndClose';
+
+                const onMultiChoiceSaveButtonClick = (e, type) => {
+                  saveFn(type === 'saveAndPreview', type !== 'saveAndClose', null, type);
+                };
+                CrafterCMSNext.render(buttonsContainer, 'MultiChoiceSaveButton', {
+                  defaultSelected,
+                  disablePortal: false,
+                  storageKey: storedId,
+                  onClick: onMultiChoiceSaveButtonClick
                 });
               },
               failure: function () {}
@@ -2637,7 +2626,7 @@ var CStudioForms =
        * draw the html for the form
        */
       _renderFormLayout: function (form) {
-        // long term even the layout should be delgated to a pluggable module
+        // long term even the layout should be delegated to a pluggable module
         // for now we'll start with delegation of widgets
         var formDef = form.definition;
         var html = '';

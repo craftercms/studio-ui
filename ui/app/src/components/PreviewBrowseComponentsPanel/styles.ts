@@ -17,7 +17,7 @@
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 
-export const useStyles = makeStyles((theme) =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     browsePanelWrapper: {
       padding: '16px 0 55px 0'
@@ -89,30 +89,6 @@ export const useComponentsPanelUI = makeStyles((theme) =>
     },
     list: {
       padding: 0
-    },
-    pagination: {
-      borderTop: '1px solid rgba(0, 0, 0, 0.12)',
-      '& p': {
-        padding: 0
-      },
-      '& svg': {
-        top: 'inherit'
-      },
-      '& .hidden': {
-        display: 'none'
-      }
-    },
-    toolbar: {
-      padding: 0,
-      display: 'flex',
-      justifyContent: 'space-between',
-      paddingLeft: '12px',
-      '& .MuiTablePagination-spacer': {
-        display: 'none'
-      },
-      '& .MuiTablePagination-spacer + p': {
-        display: 'none'
-      }
     },
     noResultsImage: {
       width: '150px'

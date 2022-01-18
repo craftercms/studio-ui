@@ -15,7 +15,7 @@
  */
 
 import Grid from '@mui/material/Grid';
-import DependencySelection from '../../modules/Content/Dependencies/DependencySelection';
+import DependencySelection from '../DependencySelection/DependencySelection';
 import PublishDialogForm from './PublishDialogForm';
 import React from 'react';
 import { PublishDialogUIProps } from './utils';

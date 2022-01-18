@@ -15,7 +15,7 @@
  */
 
 import useStyles from './styles';
-import ResizeableDrawer from '../../modules/Preview/ResizeableDrawer';
+import ResizeableDrawer from '../ResizeableDrawer/ResizeableDrawer';
 import React from 'react';
 import MenuList from '@mui/material/MenuList';
 import MenuItem from '@mui/material/MenuItem';
@@ -23,8 +23,8 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage, useIntl } from 'react-intl';
 import SystemIcon, { SystemIconDescriptor } from '../SystemIcon';
-import EmptyState from '../SystemStatus/EmptyState';
-import CrafterCMSLogo from '../Icons/CrafterCMSLogo';
+import EmptyState from '../EmptyState/EmptyState';
+import CrafterCMSLogo from '../../icons/CrafterCMSLogo';
 import { getPossibleTranslation } from '../../utils/i18n';
 import Widget, { WidgetDescriptor } from '../Widget';
 import IconButton from '@mui/material/IconButton';
@@ -34,9 +34,9 @@ import Tooltip from '@mui/material/Tooltip';
 import Paper from '@mui/material/Paper';
 import TranslationOrText from '../../models/TranslationOrText';
 import clsx from 'clsx';
-import Suspencified from '../SystemStatus/Suspencified';
+import Suspencified from '../Suspencified/Suspencified';
 import LauncherOpenerButton from '../LauncherOpenerButton';
-import { onSubmittingAndOrPendingChangeProps } from '../../utils/hooks/useEnhancedDialogState';
+import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 
 export interface Tool {
   title: TranslationOrText;
@@ -58,19 +58,23 @@ export interface SiteToolsAppProps {
   hideSidebarSiteSwitcher?: boolean;
   showAppsButton?: boolean;
   classes?: Partial<Record<'root', string>>;
+  // Whether the component is mounted on a dialog or it's the main app on a page (i.e. `/studio/site-tools`)
+  mountMode?: 'dialog' | 'page';
   onBackClick?(): void;
   onWidthChange(width: number): void;
   onNavItemClick(url: string): void;
   onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
+  onMinimize?: () => void;
 }
 
-export default function SiteToolsApp(props: SiteToolsAppProps) {
+export function SiteToolsApp(props: SiteToolsAppProps) {
   const {
     site,
     activeToolId,
     hideSidebarSiteSwitcher = false,
     hideSidebarLogo = false,
     sidebarBelowToolbar = false,
+    mountMode = 'dialog',
     footerHtml,
     onBackClick,
     openSidebar,
@@ -80,7 +84,8 @@ export default function SiteToolsApp(props: SiteToolsAppProps) {
     tools,
     onNavItemClick,
     showAppsButton,
-    onSubmittingAndOrPendingChange
+    onSubmittingAndOrPendingChange,
+    onMinimize
   } = props;
   const classes = useStyles();
   const { formatMessage } = useIntl();
@@ -157,7 +162,16 @@ export default function SiteToolsApp(props: SiteToolsAppProps) {
         {activeToolId ? (
           tool ? (
             <Suspencified>
-              <Widget {...tool} extraProps={{ embedded: false, showAppsButton, onSubmittingAndOrPendingChange }} />
+              <Widget
+                {...tool}
+                extraProps={{
+                  embedded: false,
+                  mountMode,
+                  showAppsButton,
+                  onSubmittingAndOrPendingChange,
+                  onMinimize
+                }}
+              />
             </Suspencified>
           ) : (
             <Box display="flex" flexDirection="column" height="100%">
@@ -196,3 +210,5 @@ export default function SiteToolsApp(props: SiteToolsAppProps) {
     </Paper>
   );
 }
+
+export default SiteToolsApp;

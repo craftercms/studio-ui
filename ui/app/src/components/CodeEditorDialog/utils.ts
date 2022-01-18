@@ -18,7 +18,7 @@ import { LookupTable } from '../../models/LookupTable';
 import { ContentTypeField } from '../../models/ContentType';
 import StandardAction from '../../models/StandardAction';
 import { EnhancedDialogProps } from '../EnhancedDialog';
-import { EnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
+import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import React from 'react';
 
 export interface CodeEditorDialogBaseProps {
@@ -38,12 +38,15 @@ export interface CodeEditorDialogStateProps extends CodeEditorDialogBaseProps, E
   onClosed?: StandardAction;
   onMinimize?: StandardAction;
   onMaximize?: StandardAction;
+  onFullScreen?: StandardAction;
+  onCancelFullScreen?: StandardAction;
 }
 
 export interface CodeEditorDialogContainerProps
   extends CodeEditorDialogBaseProps,
     Pick<CodeEditorDialogProps, 'onMinimize' | 'isSubmitting' | 'onSuccess' | 'onClose'> {
   title: string;
+  onFullScreen(): void;
   onSaveClose?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
 }
 

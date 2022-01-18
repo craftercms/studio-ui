@@ -19,7 +19,7 @@ import { useEffect, useState } from 'react';
 import Paper from '@mui/material/Paper';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import DialogHeader from '../DialogHeader/DialogHeader';
-import DialogFooter from '../Dialogs/DialogFooter';
+import DialogFooter from '../DialogFooter/DialogFooter';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import palette from '../../styles/palette';
@@ -27,7 +27,6 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import Collapse from '@mui/material/Collapse';
-import Button from '@mui/material/Button';
 import ListItemText from '@mui/material/ListItemText';
 import PublishOnDemandForm from '../PublishOnDemandForm';
 import { PublishFormData, PublishOnDemandMode } from '../../models/Publishing';
@@ -39,9 +38,12 @@ import { useDispatch } from 'react-redux';
 import { closeConfirmDialog, showConfirmDialog } from '../../state/actions/dialogs';
 import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
 import Link from '@mui/material/Link';
-import { useSpreadState } from '../../utils/hooks/useSpreadState';
-import { useSelection } from '../../utils/hooks/useSelection';
+import { useSpreadState } from '../../hooks/useSpreadState';
+import { useSelection } from '../../hooks/useSelection';
 import { isBlank } from '../../utils/string';
+import PrimaryButton from '../PrimaryButton';
+import SecondaryButton from '../SecondaryButton';
+import { createCustomDocumentEventListener } from '../../utils/dom';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -127,6 +129,7 @@ export default function PublishOnDemandWidget(props: PublishOnDemandWidgetProps)
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const [mode, setMode] = useState<PublishOnDemandMode>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [publishingTargets, setPublishingTargets] = useState(null);
   const [publishingTargetsError, setPublishingTargetsError] = useState(null);
   const [publishGitFormData, setPublishGitFormData] = useSpreadState<PublishFormData>(initialPublishGitFormData);
@@ -137,34 +140,54 @@ export default function PublishOnDemandWidget(props: PublishOnDemandWidgetProps)
   const { bulkPublishCommentRequired, publishByCommitCommentRequired } = useSelection(
     (state) => state.uiConfig.publishing
   );
-  const idSuccess = 'bulkPublishSuccess';
-  const idCancel = 'bulkPublishCancel';
+
+  const setDefaultPublishingTarget = (targets, clearData?) => {
+    if (targets.length) {
+      const stagingEnv = targets.find((target) => target.name === 'staging');
+      const environment = stagingEnv?.name ?? targets[0].name;
+      setPublishGitFormData({
+        ...(clearData && initialPublishGitFormData),
+        environment
+      });
+      setPublishStudioFormData({
+        ...(clearData && initialPublishStudioFormData),
+        environment
+      });
+    }
+  };
 
   useEffect(() => {
-    fetchPublishingTargets(siteId).subscribe(
-      (targets) => {
+    fetchPublishingTargets(siteId).subscribe({
+      next(targets) {
         setPublishingTargets(targets);
+        // Set pre-selected environment.
+        setDefaultPublishingTarget(targets);
       },
-      (error) => {
+      error(error) {
         setPublishingTargetsError(error);
       }
-    );
+    });
+    // We only want to re-fetch the publishingTargets when the site changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [siteId]);
 
-  const publishBy = () => {
+  const onSubmitPublishBy = () => {
+    setIsSubmitting(true);
     const { commitIds, environment, comment } = publishGitFormData;
     const ids = commitIds.replace(/\s/g, '').split(',');
-
-    publishByCommits(siteId, ids, environment, comment).subscribe(
-      () => {
+    publishByCommits(siteId, ids, environment, comment).subscribe({
+      next() {
+        setIsSubmitting(false);
         dispatch(
           showSystemNotification({
             message: formatMessage(messages.publishSuccess)
           })
         );
         setPublishGitFormData(initialPublishGitFormData);
+        setMode(null);
       },
-      ({ response }) => {
+      error({ response }) {
+        setIsSubmitting(false);
         dispatch(
           showSystemNotification({
             message: response.message,
@@ -172,58 +195,49 @@ export default function PublishOnDemandWidget(props: PublishOnDemandWidgetProps)
           })
         );
       }
-    );
+    });
   };
 
-  const bulkPublish = () => {
-    const { path, environment, comment } = publishStudioFormData;
-    bulkGoLive(siteId, path, environment, comment).subscribe(
-      () => {
-        dispatch(
-          showSystemNotification({
-            message: formatMessage(messages.bulkPublishStarted)
-          })
-        );
-        setPublishStudioFormData(initialPublishStudioFormData);
-      },
-      ({ response }) => {
-        showSystemNotification({
-          message: response.message,
-          options: { variant: 'error' }
-        });
-      }
-    );
-  };
-
-  const bulkPublishConfirmation = () => {
+  const onSubmitBulkPublish = () => {
+    const eventId = 'bulkPublishWidgetSubmit';
     const studioNote = formatMessage(messages.publishStudioNote).replace(/<\/?.*?>/g, '');
-
     dispatch(
       showConfirmDialog({
         body: `${formatMessage(messages.publishStudioWarning)} ${studioNote}`,
-        onCancel: batchActions([closeConfirmDialog(), dispatchDOMEvent({ id: idCancel })]),
-        onOk: batchActions([closeConfirmDialog(), dispatchDOMEvent({ id: idSuccess })])
+        onCancel: batchActions([closeConfirmDialog(), dispatchDOMEvent({ id: eventId, button: 'cancel' })]),
+        onOk: batchActions([closeConfirmDialog(), dispatchDOMEvent({ id: eventId, button: 'ok' })])
       })
     );
-
-    const successCallback = () => {
-      bulkPublish();
-      document.removeEventListener(idSuccess, successCallback, false);
-      document.removeEventListener(idCancel, cancelCallback, false);
-    };
-    const cancelCallback = () => {
-      document.removeEventListener(idCancel, cancelCallback, false);
-      document.removeEventListener(idSuccess, successCallback, false);
-    };
-
-    document.addEventListener(idSuccess, successCallback, false);
-    document.addEventListener(idCancel, cancelCallback, false);
+    createCustomDocumentEventListener<{ button: 'ok' | 'cancel' }>(eventId, ({ button }) => {
+      if (button === 'ok') {
+        setIsSubmitting(true);
+        const { path, environment, comment } = publishStudioFormData;
+        bulkGoLive(siteId, path, environment, comment).subscribe({
+          next() {
+            setIsSubmitting(false);
+            setPublishStudioFormData(initialPublishStudioFormData);
+            setMode(null);
+            dispatch(
+              showSystemNotification({
+                message: formatMessage(messages.bulkPublishStarted)
+              })
+            );
+          },
+          error({ response }) {
+            setIsSubmitting(false);
+            showSystemNotification({
+              message: response.message,
+              options: { variant: 'error' }
+            });
+          }
+        });
+      }
+    });
   };
 
   const onCancel = () => {
     setMode(null);
-    setPublishStudioFormData(initialPublishStudioFormData);
-    setPublishGitFormData(initialPublishGitFormData);
+    setDefaultPublishingTarget(publishingTargets, true);
   };
 
   useEffect(() => {
@@ -251,6 +265,14 @@ export default function PublishOnDemandWidget(props: PublishOnDemandWidgetProps)
     setMode(mode === 'studio' ? 'git' : 'studio');
   };
 
+  const onSubmitForm = () => {
+    if (mode === 'studio') {
+      onSubmitBulkPublish();
+    } else {
+      onSubmitPublishBy();
+    }
+  };
+
   return (
     <Paper elevation={2}>
       <DialogHeader title={<FormattedMessage id="publishOnDemand.title" defaultMessage="Publish on Demand" />} />
@@ -259,6 +281,7 @@ export default function PublishOnDemandWidget(props: PublishOnDemandWidgetProps)
           <form>
             <RadioGroup value={mode} onChange={handleChange}>
               <FormControlLabel
+                disabled={isSubmitting}
                 value="studio"
                 control={<Radio />}
                 label={
@@ -275,6 +298,7 @@ export default function PublishOnDemandWidget(props: PublishOnDemandWidgetProps)
                 className={classes.byPathModeSelector}
               />
               <FormControlLabel
+                disabled={isSubmitting}
                 value="git"
                 control={<Radio />}
                 label={
@@ -294,6 +318,7 @@ export default function PublishOnDemandWidget(props: PublishOnDemandWidgetProps)
         </Paper>
         <Collapse in={nnou(mode)} timeout={300} unmountOnExit className={classes.formContainer}>
           <PublishOnDemandForm
+            disabled={isSubmitting}
             formData={mode === 'studio' ? publishStudioFormData : publishGitFormData}
             setFormData={mode === 'studio' ? setPublishStudioFormData : setPublishGitFormData}
             mode={mode}
@@ -315,20 +340,18 @@ export default function PublishOnDemandWidget(props: PublishOnDemandWidgetProps)
           </div>
         </Collapse>
       </div>
-
       {mode && (
         <DialogFooter>
-          <Button variant="outlined" onClick={onCancel}>
+          <SecondaryButton onClick={onCancel} disabled={isSubmitting}>
             <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
-          </Button>
-          <Button
-            variant="contained"
-            color="primary"
+          </SecondaryButton>
+          <PrimaryButton
+            loading={isSubmitting}
             disabled={!(mode === 'studio' ? publishStudioFormValid : publishGitFormValid)}
-            onClick={mode === 'studio' ? bulkPublishConfirmation : publishBy}
+            onClick={onSubmitForm}
           >
             <FormattedMessage id="words.publish" defaultMessage="Publish" />
-          </Button>
+          </PrimaryButton>
         </DialogFooter>
       )}
     </Paper>

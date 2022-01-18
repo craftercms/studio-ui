@@ -18,17 +18,17 @@ import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import SystemIcon, { SystemIconDescriptor } from '../SystemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import { usePossibleTranslation } from '../../utils/hooks/usePossibleTranslation';
+import { usePossibleTranslation } from '../../hooks/usePossibleTranslation';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import React, { useCallback, useEffect, useState } from 'react';
 import Switch from '@mui/material/Switch';
 import { fetchConfigurationJSON } from '../../services/configuration';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import { usePreviewState } from '../../utils/hooks/usePreviewState';
+import { useActiveSiteId } from '../../hooks/useActiveSiteId';
+import { usePreviewState } from '../../hooks/usePreviewState';
 import { getGuestToHostBus, getHostToGuestBus } from '../../modules/Preview/previewContext';
 import { getStoredLegacyComponentPanel, setStoredLegacyComponentPanel } from '../../utils/state';
-import { useActiveUser } from '../../utils/hooks/useActiveUser';
-import { useEditMode } from '../../utils/hooks/useEditMode';
+import { useActiveUser } from '../../hooks/useActiveUser';
+import { useEditMode } from '../../hooks/useEditMode';
 import { useIntl } from 'react-intl';
 import { translations } from './translations';
 import BrowseFilesDialog from '../BrowseFilesDialog';
@@ -40,15 +40,15 @@ import { dragAndDropMessages } from '../../utils/i18n-legacy';
 import { fetchAndInsertContentInstance, legacyLoadFormDefinition, legacyXmlModelToMap } from './utils';
 import LookupTable from '../../models/LookupTable';
 import { getPathFromPreviewURL } from '../../utils/path';
-import { useContentTypes } from '../../utils/hooks/useContentTypes';
+import { useContentTypes } from '../../hooks/useContentTypes';
 import { filter } from 'rxjs/operators';
 import { showSystemNotification } from '../../state/actions/system';
 import { nou } from '../../utils/object';
 import { forEach } from '../../utils/array';
-import { useEnv } from '../../utils/hooks/useEnv';
+import { useEnv } from '../../hooks/useEnv';
 import { createCustomDocumentEventListener } from '../../utils/dom';
 import { guestMessages } from '../../assets/guestMessages';
-import { useEnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
+import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 
 export interface LegacyComponentsPanelProps {
   title: string;
@@ -80,7 +80,7 @@ interface ComponentDropProps {
   isInsert: boolean;
 }
 
-export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps) {
+export function LegacyComponentsPanel(props: LegacyComponentsPanelProps) {
   const { title, icon } = props;
   const siteId = useActiveSiteId();
   const user = useActiveUser();
@@ -140,7 +140,7 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
           }
         });
 
-        deleteItem(siteId, compPath ? compPath : guestPath, fieldId, index).subscribe(() => {
+        deleteItem(siteId, null, fieldId, index, compPath ? compPath : guestPath).subscribe(() => {
           dispatch(
             showSystemNotification({
               message: formatMessage(guestMessages.deleteOperationComplete)
@@ -380,13 +380,15 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
                 }
               });
 
-              sortItem(siteId, compPath ? compPath : guestPath, fieldId, currentIndex, targetIndex).subscribe(() => {
-                dispatch(
-                  showSystemNotification({
-                    message: formatMessage(guestMessages.sortOperationComplete)
-                  })
-                );
-              });
+              sortItem(siteId, null, fieldId, currentIndex, targetIndex, compPath ? compPath : guestPath).subscribe(
+                () => {
+                  dispatch(
+                    showSystemNotification({
+                      message: formatMessage(guestMessages.sortOperationComplete)
+                    })
+                  );
+                }
+              );
               // endregion
             } else {
               // region delete
@@ -403,7 +405,7 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
                   return 'break';
                 }
               });
-              deleteItem(siteId, compPath ? compPath : guestPath, fieldId, index).subscribe(() => {});
+              deleteItem(siteId, null, fieldId, index, compPath ? compPath : guestPath).subscribe(() => {});
               // endregion
             }
           }
@@ -617,3 +619,5 @@ export default function LegacyComponentsPanel(props: LegacyComponentsPanelProps)
     </>
   );
 }
+
+export default LegacyComponentsPanel;

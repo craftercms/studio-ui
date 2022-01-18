@@ -73,6 +73,9 @@ export const pathNavigatorFetchParentItems = /*#__PURE__*/ createAction<
   PayloadWithId<{ path: string; excludes?: string[]; limit: number; offset?: number; keyword?: string }>
 >('PATH_NAVIGATOR_FETCH_PARENT_ITEMS');
 
+export const pathNavigatorFetchPath =
+  /*#__PURE__*/ createAction<PayloadWithId<{ path: string }>>('PATH_NAVIGATOR_FETCH_PATH');
+
 export const pathNavigatorFetchPathComplete = /*#__PURE__*/ createAction<
   PayloadWithId<{ parent?: DetailedItem; children: GetChildrenResponse }>
 >('PATH_NAVIGATOR_FETCH_PATH_COMPLETE');
@@ -91,3 +94,6 @@ export const pathNavigatorSetKeyword =
 
 export const pathNavigatorChangePage =
   /*#__PURE__*/ createAction<PayloadWithId<{ offset: number }>>('PATH_NAVIGATOR_CHANGE_PAGE');
+
+export const pathNavigatorChangeLimit =
+  /*#__PURE__*/ createAction<PayloadWithId<{ limit: number; offset: number }>>('PATH_NAVIGATOR_CHANGE_LIMIT');

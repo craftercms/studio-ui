@@ -17,7 +17,7 @@
 import React, { useRef } from 'react';
 import { craftercms } from '../../utils/craftercms';
 import { NonReactComponentRecord } from '../../services/plugin';
-import { useMount } from '../../utils/hooks/useMount';
+import { useMount } from '../../hooks/useMount';
 
 interface NonReactWidgetProps {
   widget: NonReactComponentRecord;

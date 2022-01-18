@@ -130,7 +130,7 @@ export function isImage(path: string): boolean {
 }
 
 export function isItemLockedForMe(item: DetailedItem | SandboxItem | LegacyItem, username: string): boolean {
-  return item ? item.lockOwner && item.lockOwner !== username : true;
+  return item ? isLockedState(item.state) && item.lockOwner !== username : true;
 }
 
 export function getComputedEditMode({
@@ -340,7 +340,7 @@ const systemPropsList = [
 ];
 
 export function parseContentXML(
-  doc: Document,
+  doc: XMLDocument,
   path: string = null,
   contentTypesLookup: LookupTable<ContentType>,
   instanceLookup: LookupTable<ContentInstance>
@@ -461,6 +461,7 @@ function parseElementByContentType(
     case 'textarea':
     case 'dropdown':
     case 'date-time':
+    case 'time':
       return getInnerHtml(element);
     case 'boolean':
     case 'page-nav-order':

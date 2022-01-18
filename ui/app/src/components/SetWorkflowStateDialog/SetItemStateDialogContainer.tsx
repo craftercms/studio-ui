@@ -16,22 +16,22 @@
 
 import DialogHeader from '../DialogHeader/DialogHeader';
 import { FormattedMessage } from 'react-intl';
-import DialogBody from '../Dialogs/DialogBody';
+import DialogBody from '../DialogBody/DialogBody';
 import React from 'react';
 import { SetItemStateDialogProps } from './SetItemStateDialog';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { useStyles } from './styles';
-import DialogFooter from '../Dialogs/DialogFooter';
+import DialogFooter from '../DialogFooter/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import Box from '@mui/material/Box';
 import { CSSProperties } from '@mui/styles';
-import { useUnmount } from '../../utils/hooks/useUnmount';
-import { useSpreadState } from '../../utils/hooks/useSpreadState';
+import { useUnmount } from '../../hooks/useUnmount';
+import { useSpreadState } from '../../hooks/useSpreadState';
 
 export function SetItemStateDialogContainer(props: SetItemStateDialogProps) {
   const { onClose, onClosed, title } = props;

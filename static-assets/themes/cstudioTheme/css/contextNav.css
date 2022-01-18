@@ -752,32 +752,38 @@ div[id*='expandComponentError'].yui-dialog {
 
 /* Need to use ID selector or else styles are overriden */
 
-.acnDraftContent {
-  background-color: DARKORANGE;
-  border: 1px solid ORANGE;
-  color: white;
+.acnDraftContent,
+.acnDisabledContent {
   display: block;
   font-weight: bold !important;
-  padding: 1px;
-  position: absolute;
+  padding: 5px;
+  position: fixed;
   text-align: center !important;
-  top: 51px;
-  width: 100%;
-  left: 0;
+  top: 50px;
+  width: 90%;
+  left: 5%;
   z-index: 999;
+  border-radius: 5px;
+}
+
+.acnDraftContent {
+  background-color: rgba(255, 165, 0, 0.7);
+  border: 1px solid rgba(255, 140, 0, 0.9);
+  color: #000;
 }
 
 .acnDisabledContent {
-  background-color: #cc3333;
-  border: 1px solid #ff0000;
-  color: white;
-  display: block;
-  font-weight: bold !important;
-  padding: 1px;
-  position: absolute;
-  text-align: center !important;
-  top: 51px;
-  width: 100%;
+  background-color: rgb(204, 51, 51, 0.7);
+  border: 1px solid rgb(255, 0, 0, 0.9);
+  color: #fff;
+}
+
+.acn-notice--close {
+  border-radius: 50px;
+  margin-left: 10px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(0, 0, 0, 0.8);
+  text-align: center;
 }
 
 /* -- END Create Content Type Overlay -- */

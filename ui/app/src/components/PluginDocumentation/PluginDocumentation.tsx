@@ -14,9 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { MarketplacePlugin } from '../../models/MarketplacePlugin';
+import { MarketplacePlugin } from '../../models';
 import React, { useEffect, useState } from 'react';
-import Marked from 'marked';
+import { marked } from 'marked';
 import hljs from '../../utils/hljs';
 import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
@@ -33,7 +33,7 @@ export default function PluginDocumentation(props: PluginDocumentationProps) {
   const [markdownError, setMarkdownError] = useState<boolean>(null);
   useEffect(() => {
     if (plugin.documentation) {
-      Marked.setOptions({
+      marked.setOptions({
         highlight: function (code, lang) {
           return hljs.highlightAuto(code).value;
         },
@@ -43,7 +43,7 @@ export default function PluginDocumentation(props: PluginDocumentationProps) {
         fetch(plugin.documentation)
           .then((r) => r.text())
           .then((content) => {
-            setMarkdown(Marked(content));
+            setMarkdown(marked(content));
           })
           .catch((error) => {
             setMarkdownError(true);

@@ -152,6 +152,10 @@ CStudioForms.Controls.Time =
   };
 
 YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
+  getAdditionalFields: function () {
+    return [this.timezoneId];
+  },
+
   formatTime: function (time) {
     const timeMomentObj = moment(time, 'hh:mm:ss a'); // Format used by control
     const format = this.hour12 ? 'hh:mm:ss a' : 'HH:mm:ss';
@@ -207,7 +211,8 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
       res;
 
     if (this.validate(null, this)) {
-      if (timeValue != '') {
+      const timeValueExists = Boolean(timeValue);
+      if (timeValueExists) {
         var timeVals = timeValue.split(' ');
         var isPm = timeVals[1] == 'pm' ? true : false;
         var timeFields = timeVals[0].split(':');
@@ -221,7 +226,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
         timeVal = ''; // Default time value if the user doesn't populate the time field
       }
 
-      if (timeValue != '') {
+      if (timeValueExists) {
         res = this.convertDateTime(dateVal, timeValue, this.timezone, true, null).split(' ');
         return res[1];
       } else {
@@ -629,7 +634,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
 
     dl.setAttribute('alt', '');
     dl.setAttribute('href', '#');
-    dl.className = 'date-link';
+    dl.className = 'date-link btn btn-default btn-sm date-time-picker-date-button';
     dl.innerHTML = label;
 
     YAHOO.util.Event.on(
@@ -867,9 +872,14 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
     controlWidgetContainerEl.appendChild(timezoneEl);
     // ---
 
+    const controlsContainer = document.createElement('div');
+    controlsContainer.className = 'controls-container';
+    controlsContainer.style.display = 'flex';
+    controlWidgetContainerEl.appendChild(controlsContainer);
+
     if (this.showNowLink && !this.readonly) {
       // only show the link if the field is editable
-      this._renderDateLink(controlWidgetContainerEl, 'Set Now');
+      this._renderDateLink(controlsContainer, 'Set Now');
     }
 
     var self = this;
@@ -878,7 +888,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
       var clearDateEl = document.createElement('a'),
         clearDateLabel = document.createTextNode(CMgs.format(langBundle, 'clearVal'));
 
-      clearDateEl.className = 'clear-link';
+      clearDateEl.className = 'clear-link btn btn-default btn-sm date-time-picker-clear-button';
       clearDateEl.href = '#';
       clearDateEl.appendChild(clearDateLabel);
 
@@ -895,7 +905,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
         this
       );
 
-      controlWidgetContainerEl.appendChild(clearDateEl);
+      controlsContainer.appendChild(clearDateEl);
     }
 
     this.renderHelp(config, controlWidgetContainerEl);
@@ -1259,7 +1269,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
       dateTime = [date, time];
     }
 
-    this.timeEl.value = this.formatTime(value);
+    this.timeEl.value = Boolean(value) ? this.formatTime(value) : value;
     this.timeEl.dataset.value = value;
     dateTime[1] = value;
 

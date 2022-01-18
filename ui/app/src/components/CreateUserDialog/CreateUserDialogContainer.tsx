@@ -19,13 +19,13 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
 import { create } from '../../services/users';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
-import DialogBody from '../Dialogs/DialogBody';
+import DialogBody from '../DialogBody/DialogBody';
 import TextField from '@mui/material/TextField';
-import PasswordTextField from '../Controls/PasswordTextField';
+import PasswordTextField from '../PasswordTextField/PasswordTextField';
 import Popper from '@mui/material/Popper';
 import Paper from '@mui/material/Paper';
 import PasswordRequirementsDisplay from '../PasswordRequirementsDisplay';
-import DialogFooter from '../Dialogs/DialogFooter';
+import DialogFooter from '../DialogFooter/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import createStyles from '@mui/styles/createStyles';
@@ -36,8 +36,9 @@ import UserGroupMembershipEditor from '../UserGroupMembershipEditor';
 import { mapTo, switchMap } from 'rxjs/operators';
 import { forkJoin, of } from 'rxjs';
 import { addUserToGroup } from '../../services/groups';
-import { useSpreadState } from '../../utils/hooks/useSpreadState';
+import { useSpreadState } from '../../hooks/useSpreadState';
 import { CreateUserDialogContainerProps } from './utils';
+import { useUpdateRefs } from '../../hooks';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -139,13 +140,14 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
   const dispatch = useDispatch();
   const arrowRef = useRef();
   const selectedGroupsRef = useRef([]);
-  const callbacksRef = useRef({ onSubmittingAndOrPendingChange });
-  callbacksRef.current.onSubmittingAndOrPendingChange = onSubmittingAndOrPendingChange;
+  const functionRefs = useUpdateRefs({
+    onSubmittingAndOrPendingChange
+  });
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
     if (submitOk) {
-      onSubmittingAndOrPendingChange({
+      functionRefs.current.onSubmittingAndOrPendingChange({
         isSubmitting: true
       });
       setSubmitted(true);
@@ -163,12 +165,12 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
           .subscribe(
             () => {
               onCreateSuccess?.();
-              callbacksRef.current.onSubmittingAndOrPendingChange({
+              functionRefs.current.onSubmittingAndOrPendingChange({
                 isSubmitting: false
               });
             },
             ({ response: { response } }) => {
-              callbacksRef.current.onSubmittingAndOrPendingChange({
+              functionRefs.current.onSubmittingAndOrPendingChange({
                 isSubmitting: false
               });
               dispatch(showErrorDialog({ error: response }));

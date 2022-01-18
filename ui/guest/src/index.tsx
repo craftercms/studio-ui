@@ -20,9 +20,9 @@ import Guest, { GuestProps } from './react/Guest';
 import GuestProxy from './react/GuestProxy';
 import ContentInstance from '@craftercms/studio-ui/models/ContentInstance';
 import { nnou } from '@craftercms/studio-ui/utils/object';
-import * as elementRegistry from './classes/ElementRegistry';
-import * as iceRegistry from './classes/ICERegistry';
-import * as contentController from './classes/ContentController';
+import * as elementRegistry from './elementRegistry';
+import * as iceRegistry from './iceRegistry';
+import * as contentController from './contentController';
 import { fromTopic } from './utils/communicator';
 import queryString from 'query-string';
 
@@ -36,6 +36,7 @@ export interface ICEAttributes {
   'data-craftercms-field-id'?: string;
   'data-craftercms-index'?: string | number;
   'data-craftercms-label'?: string;
+  'data-craftercms-type'?: 'collection';
 }
 
 export interface ICEConfig {

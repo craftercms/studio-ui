@@ -18,7 +18,7 @@ import { CompareVersionsDialogContainerProps } from './utils';
 import { FormattedMessage } from 'react-intl';
 import React, { useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { useLogicResource } from '../../utils/hooks/useLogicResource';
+import { useLogicResource } from '../../hooks/useLogicResource';
 import { CompareVersionsBranch, LegacyVersion, VersionsStateProps } from '../../models/Version';
 import { CompareVersions, CompareVersionsResource } from './CompareVersions';
 import { EntityState } from '../../models/EntityState';
@@ -30,17 +30,36 @@ import {
   versionsChangePage
 } from '../../state/reducers/versions';
 import VersionList from '../VersionList';
-import DialogBody from '../Dialogs/DialogBody';
+import DialogBody from '../DialogBody/DialogBody';
 import clsx from 'clsx';
 import SingleItemSelector from '../SingleItemSelector';
-import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
-import EmptyState from '../SystemStatus/EmptyState';
+import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
+import EmptyState from '../EmptyState/EmptyState';
 import Typography from '@mui/material/Typography';
-import DialogFooter from '../Dialogs/DialogFooter';
+import DialogFooter from '../DialogFooter/DialogFooter';
 import { Pagination } from '../HistoryDialog';
-import { useStyles } from './CompareVersionsDialog';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 
-export default function CompareVersionsDialogContainer(props: CompareVersionsDialogContainerProps) {
+const useStyles = makeStyles(() =>
+  createStyles({
+    dialogBody: {
+      overflow: 'auto',
+      minHeight: '50vh'
+    },
+    noPadding: {
+      padding: 0
+    },
+    singleItemSelector: {
+      marginBottom: '10px'
+    },
+    typography: {
+      lineHeight: '1.5'
+    }
+  })
+);
+
+export function CompareVersionsDialogContainer(props: CompareVersionsDialogContainerProps) {
   const { selectedA, selectedB, versionsBranch, disableItemSwitching = false, contentTypesBranch } = props;
   const { count, page, limit, selected, compareVersionsBranch, current, item, rootPath } = versionsBranch;
   const classes = useStyles({});
@@ -156,3 +175,5 @@ export default function CompareVersionsDialogContainer(props: CompareVersionsDia
     </>
   );
 }
+
+export default CompareVersionsDialogContainer;

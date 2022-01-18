@@ -34,13 +34,13 @@
     "watch": "babel src -d lib --watch"
   },
   "devDependencies": {
-    "@babel/cli": "*",
-    "@babel/core": "*",
-    "@babel/plugin-transform-object-assign": "^7.12.13",
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "7.12.3",
+    "@babel/plugin-transform-object-assign": "^7.16.5",
     "babel-plugin-inline-package-json": "^2.0.0",
-    "build-if-changed": "*"
+    "build-if-changed": "^1.5.5"
   },
   "peerDependencies": {
-    "uppy": "^2.0.0"
+    "uppy": "^2.2.1"
   }
 }

@@ -16,19 +16,40 @@
 
 import { UploadDialogContainerProps } from './util';
 import { useIntl } from 'react-intl';
-import { useSelection } from '../../utils/hooks/useSelection';
+import { useSelection } from '../../hooks/useSelection';
 import React, { useEffect } from 'react';
 import { Uppy } from '@uppy/core';
 import { translations } from './translations';
 import { XHRUpload } from '@craftercms/uppy';
 import { getBulkUploadUrl } from '../../services/content';
 import { getGlobalHeaders } from '../../utils/ajax';
-import { useUnmount } from '../../utils/hooks/useUnmount';
+import { useUnmount } from '../../hooks/useUnmount';
 import { Button, IconButton } from '@mui/material';
 import CloseIconRounded from '@mui/icons-material/CloseRounded';
-import DialogBody from '../Dialogs/DialogBody';
+import DialogBody from '../DialogBody/DialogBody';
 import UppyDashboard from '../UppyDashboard';
-import { useStyles } from './UploadDialog';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+
+const useStyles = makeStyles(() =>
+  createStyles({
+    rootTitle: {
+      paddingBottom: 0,
+      display: 'none'
+    },
+    subtitleWrapper: {
+      paddingBottom: 0,
+      display: 'flex',
+      alignItems: 'center',
+      width: '100%',
+      justifyContent: 'space-between'
+    },
+    dialogBody: {
+      minHeight: '60vh',
+      padding: 0
+    }
+  })
+);
 
 export function UploadDialogContainer(props: UploadDialogContainerProps) {
   const { formatMessage } = useIntl();

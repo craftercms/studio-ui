@@ -15,7 +15,7 @@
  */
 
 import { FormattedMessage } from 'react-intl';
-import DialogBody from '../Dialogs/DialogBody';
+import DialogBody from '../DialogBody/DialogBody';
 import Table from '@mui/material/Table';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';

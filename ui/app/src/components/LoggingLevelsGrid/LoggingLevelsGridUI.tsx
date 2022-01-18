@@ -36,7 +36,7 @@ export interface LoggingLevelsGridUIProps {
 
 const levels: LoggerLevel[] = ['debug', 'warn', 'info', 'error'];
 
-export default function LoggingLevelsGridUI(props: LoggingLevelsGridUIProps) {
+export function LoggingLevelsGridUI(props: LoggingLevelsGridUIProps) {
   const { resource, onChangeLevel } = props;
   const classes = useStyles();
   const loggers = resource.read();
@@ -87,3 +87,5 @@ export default function LoggingLevelsGridUI(props: LoggingLevelsGridUIProps) {
     </section>
   );
 }
+
+export default LoggingLevelsGridUI;

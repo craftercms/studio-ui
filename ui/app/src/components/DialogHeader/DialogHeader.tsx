@@ -27,7 +27,9 @@ import clsx from 'clsx';
 import Tooltip from '@mui/material/Tooltip';
 import { defineMessages, useIntl } from 'react-intl';
 import StandardAction from '../../models/StandardAction';
-import Action, { ActionIcon } from '../Dialogs/DialogHeaderAction';
+import Action from '../DialogHeaderAction/DialogHeaderAction';
+import OpenInFullIcon from '@mui/icons-material/OpenInFullRounded';
+import { SystemIconDescriptor } from '../SystemIcon';
 
 const dialogTitleStyles = makeStyles((theme) =>
   createStyles({
@@ -71,12 +73,12 @@ const dialogTitleStyles = makeStyles((theme) =>
 );
 
 export interface DialogHeaderAction extends IconButtonProps {
-  icon: ActionIcon | ElementType;
+  icon: SystemIconDescriptor;
   tooltip?: string;
 }
 
 export interface DialogHeaderStateAction {
-  icon: ActionIcon;
+  icon: SystemIconDescriptor;
   'aria-label': string;
   onClick: StandardAction;
   [prop: string]: any;
@@ -94,6 +96,10 @@ const translations = defineMessages({
   minimize: {
     id: 'words.minimize',
     defaultMessage: 'Minimize'
+  },
+  fullScreen: {
+    id: 'dialogHeader.toggleFullScreen',
+    defaultMessage: 'Toggle full screen'
   }
 });
 
@@ -110,17 +116,14 @@ export type DialogHeaderProps<
   rightActions?: DialogHeaderAction[];
   closeIcon?: ElementType;
   minimizeIcon?: ElementType;
+  fullScreenIcon?: ElementType;
   backIcon?: ElementType;
-  classes?: {
-    root?: string;
-    titleWrapper?: string;
-    subtitleWrapper?: string;
-  };
+  classes?: Partial<Record<'root' | 'titleWrapper' | 'subtitleWrapper', string>>;
   className?: string;
-  disableDismiss?: boolean;
-  disableMinimize?: boolean;
+  disabled?: boolean;
   onCloseButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
   onMinimizeButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
+  onFullScreenButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
   onBack?(): void;
 }>;
 
@@ -132,8 +135,8 @@ export function DialogHeader(props: DialogHeaderProps) {
     id,
     onCloseButtonClick,
     onMinimizeButtonClick,
-    disableDismiss = false,
-    disableMinimize = false,
+    onFullScreenButtonClick,
+    disabled = false,
     onBack,
     title,
     children,
@@ -142,6 +145,7 @@ export function DialogHeader(props: DialogHeaderProps) {
     rightActions,
     closeIcon: CloseIcon = CloseIconRounded,
     minimizeIcon: MinimizeIcon = MinimizeIconRounded,
+    fullScreenIcon: FullScreenIcon = OpenInFullIcon,
     backIcon: BackIcon = ArrowBack,
     titleTypographyProps = {
       variant: 'h6',
@@ -160,35 +164,48 @@ export function DialogHeader(props: DialogHeaderProps) {
         {(leftActions || onBack) && (
           <div className={classes.leftActions}>
             {onBack && (
-              <Tooltip title={formatMessage(translations.back)}>
-                <IconButton aria-label="close" onClick={onBack} className={classes.backIcon} size="large">
+              <Tooltip title={disabled ? '' : formatMessage(translations.back)}>
+                <IconButton
+                  aria-label="close"
+                  onClick={onBack}
+                  className={classes.backIcon}
+                  size="large"
+                  disabled={disabled}
+                >
                   <BackIcon />
                 </IconButton>
               </Tooltip>
             )}
             {leftActions?.map(({ icon, 'aria-label': tooltip, ...rest }: DialogHeaderAction, i: number) => (
-              <Action key={i} icon={icon} tooltip={tooltip} {...rest} />
+              <Action key={i} icon={icon} tooltip={tooltip} disabled={disabled} {...rest} />
             ))}
           </div>
         )}
         <Typography className={classes.title} {...titleTypographyProps}>
           {title}
         </Typography>
-        {(rightActions || onCloseButtonClick || onMinimizeButtonClick) && (
+        {(rightActions || onCloseButtonClick || onMinimizeButtonClick || onFullScreenButtonClick) && (
           <div className={classes.rightActions}>
             {rightActions?.map(({ icon, 'aria-label': tooltip, ...rest }: DialogHeaderAction, i: number) => (
-              <Action key={i} icon={icon} tooltip={tooltip} {...rest} />
+              <Action key={i} icon={icon} tooltip={tooltip} disabled={disabled} {...rest} />
             ))}
             {onMinimizeButtonClick && (
-              <Tooltip title={formatMessage(translations.minimize)}>
-                <IconButton aria-label="close" onClick={onMinimizeButtonClick} disabled={disableMinimize}>
+              <Tooltip title={disabled ? '' : formatMessage(translations.minimize)}>
+                <IconButton aria-label="close" onClick={onMinimizeButtonClick} disabled={disabled}>
                   <MinimizeIcon />
                 </IconButton>
               </Tooltip>
             )}
+            {onFullScreenButtonClick && (
+              <Tooltip title={disabled ? '' : formatMessage(translations.fullScreen)}>
+                <IconButton aria-label="close" onClick={onFullScreenButtonClick} disabled={disabled}>
+                  <FullScreenIcon />
+                </IconButton>
+              </Tooltip>
+            )}
             {onCloseButtonClick && (
-              <Tooltip title={formatMessage(translations.dismiss)}>
-                <IconButton aria-label="close" onClick={onCloseButtonClick} disabled={disableDismiss} size="large">
+              <Tooltip title={disabled ? '' : formatMessage(translations.dismiss)}>
+                <IconButton aria-label="close" onClick={onCloseButtonClick} disabled={disabled} size="large">
                   <CloseIcon />
                 </IconButton>
               </Tooltip>

@@ -19,13 +19,9 @@ import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import { useIntl } from 'react-intl';
 import DialogHeader from '../DialogHeader';
-import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
-import LockOpenRoundedIcon from '@mui/icons-material/LockOpenRounded';
-import DialogBody from '../Dialogs/DialogBody';
+import DialogBody from '../DialogBody/DialogBody';
 import * as React from 'react';
 import PublishingStatusDisplay, { publishingStatusMessages } from '../PublishingStatusDisplay';
-import PauseCircleOutlineOutlinedIcon from '@mui/icons-material/PauseCircleOutlineOutlined';
-import PlayCircleOutlineOutlinedIcon from '@mui/icons-material/PlayCircleOutlineOutlined';
 import { PublishingStatusDialogContainerProps } from './utils';
 
 const useStyles = makeStyles(() =>
@@ -62,17 +58,20 @@ export function PublishingStatusDialogContainer(props: PublishingStatusDialogCon
         onCloseButtonClick={(e) => onClose(e, null)}
         rightActions={[
           onUnlock && {
-            icon: LockOpenRoundedIcon,
+            icon: { id: '@mui/icons-material/LockOpenRounded' },
             onClick: onUnlock,
             tooltip: formatMessage(publishingStatusMessages.unlock)
           },
           onStartStop && {
-            icon: status === 'ready' ? PauseCircleOutlineOutlinedIcon : PlayCircleOutlineOutlinedIcon,
+            icon:
+              status === 'ready'
+                ? { id: '@mui/icons-material/PauseCircleOutlineOutlined' }
+                : { id: '@mui/icons-material/PlayCircleOutlineOutlined' },
             onClick: onStartStop,
             tooltip: formatMessage(status === 'ready' ? publishingStatusMessages.stop : publishingStatusMessages.start)
           },
           onRefresh && {
-            icon: RefreshRoundedIcon,
+            icon: { id: '@mui/icons-material/RefreshRounded' },
             onClick: onRefresh,
             tooltip: formatMessage(publishingStatusMessages.refresh)
           }

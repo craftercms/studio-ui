@@ -22,6 +22,7 @@ import { ObtainAuthTokenResponse } from '../../services/auth';
 import User from '../../models/User';
 import { Site } from '../../models/Site';
 import LookupTable from '../../models/LookupTable';
+import { UIBlockerStateProps } from '../../components/UIBlocker';
 
 // region Item Events
 
@@ -99,6 +100,14 @@ export const emitSystemEvent = /*#__PURE__*/ createAction<StandardAction>('SYSTE
 
 export const pluginInstalled = /*#__PURE__*/ createAction<StandardAction>('PLUGIN_INSTALLED');
 
+export const pluginUninstalled = /*#__PURE__*/ createAction<StandardAction>('PLUGIN_UNINSTALLED');
+
+export const contentTypeCreated = /*#__PURE__*/ createAction<StandardAction>('CONTENT_TYPE_CREATED');
+
+export const contentTypeUpdated = /*#__PURE__*/ createAction<StandardAction>('CONTENT_TYPE_UPDATED');
+
+export const contentTypeDeleted = /*#__PURE__*/ createAction<StandardAction>('CONTENT_TYPE_DELETED');
+
 export const storeInitialized = /*#__PURE__*/ createAction<{
   auth: ObtainAuthTokenResponse;
   user: User;
@@ -122,3 +131,6 @@ export const fetchUseLegacyPreviewPreferenceComplete = /*#__PURE__*/ createActio
   useLegacyPreview: boolean;
 }>('FETCH_USE_PREVIEW_3_COMPLETE');
 export const fetchUseLegacyPreviewPreferenceFailed = /*#__PURE__*/ createAction('FETCH_USE_PREVIEW_3_FAILED');
+
+export const blockUI = /*#__PURE__*/ createAction<Partial<UIBlockerStateProps>>('BLOCK_UI');
+export const unblockUI = /*#__PURE__*/ createAction('UNBLOCK_UI');

@@ -19,14 +19,14 @@ import GlobalAppToolbar from '../GlobalAppToolbar';
 import { FormattedMessage } from 'react-intl';
 import Paper from '@mui/material/Paper';
 import useStyles from './styles';
-import CrafterCMSLogo from '../Icons/CrafterCMSLogo';
+import CrafterCMSLogo from '../../icons/CrafterCMSLogo';
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
-import { useSelection } from '../../utils/hooks/useSelection';
-import { useEnv } from '../../utils/hooks/useEnv';
+import { useSelection } from '../../hooks/useSelection';
+import { useEnv } from '../../hooks/useEnv';
 
-export default function AboutCrafterCMSView() {
+export function AboutCrafterCMSView() {
   const env = useEnv();
   const classes = useStyles();
   const localeBranch = useSelection((state) => state.uiConfig.locale);
@@ -87,3 +87,5 @@ export default function AboutCrafterCMSView() {
     </Paper>
   );
 }
+
+export default AboutCrafterCMSView;

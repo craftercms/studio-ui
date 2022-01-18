@@ -15,7 +15,7 @@
  */
 import React from 'react';
 import { HashRouter, Route } from 'react-router-dom';
-import PreviewComponent from '../modules/Preview/Preview';
+import PreviewComponent from '../components/Preview/Preview';
 
 export default function Preview(topProps: any) {
   return (

@@ -44,7 +44,7 @@ interface FilterCheckboxesProps {
   handleCheckboxClick(key: string, checked: boolean, facet: string): any;
 }
 
-export default function SiteSearchFilterCheckboxes(props: FilterCheckboxesProps) {
+export function SiteSearchFilterCheckboxes(props: FilterCheckboxesProps) {
   const { facetData, facet, handleCheckboxClick, checkedFilters } = props;
   const items = facetData.values;
   const classes = useStyles({});
@@ -73,3 +73,5 @@ export default function SiteSearchFilterCheckboxes(props: FilterCheckboxesProps)
     </FormGroup>
   );
 }
+
+export default SiteSearchFilterCheckboxes;

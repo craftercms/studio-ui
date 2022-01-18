@@ -17,7 +17,7 @@
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 
-export const useStyles = makeStyles((theme) =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     root: {
       display: 'flex',
@@ -28,7 +28,6 @@ export const useStyles = makeStyles((theme) =>
     editorRoot: {
       border: '0',
       borderRadius: '0',
-      background: theme.palette.background.default,
       margin: 0
     },
     appBar: {

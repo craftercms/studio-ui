@@ -17,7 +17,7 @@
 import React, { JSXElementConstructor, lazy } from 'react';
 import ReactDOM from 'react-dom';
 
-import CrafterCMSNextBridge from '../components/CrafterCMSNextBridge';
+import CrafterCMSNextBridge from '../components/CrafterCMSNextBridge/CrafterCMSNextBridge';
 import * as string from './string';
 import * as object from './object';
 import { nou } from './object';
@@ -150,12 +150,12 @@ export function createCodebaseBridge() {
     components: {
       ErrorState,
       CrafterCMSNextBridge,
-      AsyncVideoPlayer: lazy(() => import('../components/AsyncVideoPlayer')),
+      AsyncVideoPlayer: lazy(() => import('../components/AsyncVideoPlayer/AsyncVideoPlayer')),
       GraphiQL: lazy(() => import('../components/GraphiQL/GraphiQL')),
-      SingleFileUpload: lazy(() => import('../components/Controls/SingleFileUpload')),
-      DependencySelection: lazy(() => import('../modules/Content/Dependencies/DependencySelection')),
-      CreateSiteDialog: lazy(() => import('../modules/System/Sites/Create/CreateSiteDialog')),
-      PublishingQueue: lazy(() => import('../modules/System/Publishing/Queue/PublishingQueue')),
+      SingleFileUpload: lazy(() => import('../components/SingleFileUpload/SingleFileUpload')),
+      DependencySelection: lazy(() => import('../components/DependencySelection/DependencySelection')),
+      CreateSiteDialog: lazy(() => import('../components/CreateSiteDialog/CreateSiteDialog')),
+      PublishingQueue: lazy(() => import('../components/PublishingQueue/PublishingQueue')),
       SearchPage: lazy(() => import('../pages/Search')),
       SearchComponent: lazy(() => import('../components/Search/Search')),
       Global: lazy(() => import('../pages/Global')),
@@ -167,20 +167,21 @@ export function createCodebaseBridge() {
       LauncherOpenerButton: lazy(() => import('../components/LauncherOpenerButton/LauncherOpenerButton')),
       EncryptTool: lazy(() => import('../components/EncryptTool')),
       SiteEncryptTool: lazy(() => import('../components/SiteEncryptTool')),
-      AuthMonitor: lazy(() => import('../components/SystemStatus/AuthMonitor')),
+      AuthMonitor: lazy(() => import('../components/AuthMonitor')),
       Login: lazy(() => import('../pages/Login')),
       BulkUpload: lazy(() => import('../components/UploadDialog/UploadDialog')),
       ConfirmDialog: lazy(() => import('../components/ConfirmDialog')),
-      GlobalDialogManager: lazy(() => import('../components/SystemStatus/GlobalDialogManager')),
+      GlobalDialogManager: lazy(() => import('../components/GlobalDialogManager/GlobalDialogManager')),
       PagesWidget: lazy(() => import('../components/PathNavigator/PathNavigator')),
       QuickCreateMenu: lazy(() => import('../pages/QuickCreateMenu')),
       NewContentDialog: lazy(() => import('../components/NewContentDialog/NewContentDialog')),
-      PreviewCompatDialog: lazy(() => import('../components/Dialogs/PreviewCompatibilityDialog')),
-      PathSelectionDialog: lazy(() => import('../components/Dialogs/PathSelectionDialog')),
+      PreviewCompatDialog: lazy(() => import('../components/PreviewCompatibilityDialog/PreviewCompatibilityDialog')),
+      PathSelectionDialog: lazy(() => import('../components/PathSelectionDialog/PathSelectionDialog')),
       BrowseFilesDialog: lazy(() => import('../components/BrowseFilesDialog')),
-      SplitButton: lazy(() => import('../components/Controls/SplitButton')),
+      SplitButton: lazy(() => import('../components/SplitButton/SplitButton')),
+      MultiChoiceSaveButton: lazy(() => import('../components/MultiChoiceSaveButton/MultiChoiceSaveButton')),
       CharCountStatusContainer: lazy(() =>
-        import('../components/CharCountStatus').then((module) => ({
+        import('../components/CharCountStatus/CharCountStatus').then((module) => ({
           default: module.CharCountStatusContainer
         }))
       ),
@@ -190,7 +191,7 @@ export function createCodebaseBridge() {
         () => import('../components/PublishingStatusDialog/PublishingStatusDialogContainer')
       ),
       LogoAndMenuBundleButton: lazy(() => import('../components/LogoAndMenuBundleButton')),
-      CrafterIcon: lazy(() => import('../components/Icons/CrafterIcon')),
+      CrafterIcon: lazy(() => import('../icons/CrafterIcon')),
       LauncherGlobalNav: lazy(() => import('../components/LauncherGlobalNav/LauncherGlobalNav')),
       DeleteContentTypeButton: lazy(() => import('../pages/DeleteContentTypeButton')),
       UsersGrid: lazy(() => import('../components/UsersGrid')),

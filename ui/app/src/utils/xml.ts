@@ -111,22 +111,36 @@ export function findDocumentElement(element: Element) {
   return null;
 }
 
-export function createElements(doc: XMLDocument, element: Element, data: object): void {
+export function createElements(element: Element, data: object): void {
   Object.entries(data).forEach(([tag, content]) => {
     if (tag === '@attributes') {
       Object.entries(content).forEach(([attr, value]) => {
         element.setAttribute(attr, `${value}`);
       });
     } else {
-      const elem = doc.createElement(tag);
+      const elem = createElement(tag);
       if (typeof content === 'string' || typeof content === 'number' || typeof content === 'boolean') {
         elem.innerHTML = `${content}`;
       } else if (Array.isArray(content)) {
-        console.error('[utils/xml/createElements] Path not implemented.', content);
+        elem.setAttribute('item-list', 'true');
+        if (content.length) {
+          if (typeof content[0] === 'object') {
+            content.forEach((itemData) => {
+              const item = createElement('item');
+              createElements(item, itemData);
+              elem.appendChild(item);
+            });
+          } else {
+            console.error(
+              `[utils/xml/createElements] Incorrect data supplied. Received an array with items of type ${typeof content[0]}.`,
+              content
+            );
+          }
+        }
       } else if (content instanceof Element) {
         elem.appendChild(content);
       } else if (content !== null && content !== void 0) {
-        createElements(doc, elem, content);
+        createElements(elem, content);
       }
       element.appendChild(elem);
     }
@@ -135,6 +149,18 @@ export function createElements(doc: XMLDocument, element: Element, data: object)
 
 export function wrapElementInAuxDocument(element: Element): XMLDocument {
   return fromString(`<?xml version="1.0" encoding="UTF-8"?>${element.outerHTML}`);
+}
+
+export function newXMLDocument(): XMLDocument {
+  // With the document.implementation.createDocument, new elements then inserted into the xml document
+  // end up with an undesirable namespace and serialization looses the case, so sticking with creating from string.
+  return fromString(`<?xml version="1.0" encoding="UTF-8"?><root />`);
+}
+
+export function createElement(tagName: string): Element;
+export function createElement(tagName: string, options: ElementCreationOptions): Element;
+export function createElement(tagName: string, options?: ElementCreationOptions): Element {
+  return newXMLDocument().createElement(tagName, options);
 }
 
 export function deserialize(xml: string): any;
@@ -154,4 +180,15 @@ export function deserialize(xml: string | Node, options?: X2jOptionsOptional): a
 
 export function cdataWrap(value: string): string {
   return `<![CDATA[${value}]]>`;
+}
+
+export function parseValidateDocument(content: string): XMLDocument | string {
+  const xml = fromString(content);
+  const parseError = xml.querySelector('parsererror');
+
+  if (parseError) {
+    return parseError.querySelector('div').innerText;
+  }
+
+  return xml;
 }

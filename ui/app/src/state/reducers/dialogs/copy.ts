@@ -16,14 +16,16 @@
 
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
-import { closeCopyDialog, copyDialogClosed, showCopyDialog } from '../../actions/dialogs';
-import { CopyDialogStateProps } from '../../../components/Dialogs/CopyDialog';
+import { closeCopyDialog, copyDialogClosed, showCopyDialog, updateCopyDialog } from '../../actions/dialogs';
+import { CopyDialogStateProps } from '../../../components/CopyDialog/utils';
 
 const initialState: CopyDialogStateProps = {
+  hasPendingChanges: false,
+  isMinimized: false,
+  isSubmitting: false,
+  site: null,
   open: false,
-  item: null,
-  title: null,
-  subtitle: null
+  item: null
 };
 
 export default createReducer<GlobalState['dialogs']['copy']>(initialState, {
@@ -31,13 +33,17 @@ export default createReducer<GlobalState['dialogs']['copy']>(initialState, {
     ...state,
     onClose: closeCopyDialog(),
     onClosed: copyDialogClosed(),
-    onOK: closeCopyDialog(),
+    onOk: closeCopyDialog(),
     ...payload,
     open: true
   }),
   [closeCopyDialog.type]: (state) => ({
     ...state,
     open: false
+  }),
+  [updateCopyDialog.type]: (state, { payload }) => ({
+    ...state,
+    ...payload
   }),
   [copyDialogClosed.type]: () => initialState
 });

@@ -26,19 +26,19 @@ import useStyles from './styles';
 import ListSubheader from '@mui/material/ListSubheader';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Skeleton from '@mui/material/Skeleton';
-import EmptyState from '../SystemStatus/EmptyState';
+import EmptyState from '../EmptyState/EmptyState';
 import { translations } from './translations';
 import { getTranslation } from '../../utils/i18n';
-import { ConditionalLoadingState } from '../SystemStatus/LoadingState';
-import AceEditor from '../AceEditor';
+import { ConditionalLoadingState } from '../LoadingState/LoadingState';
+import AceEditor from '../AceEditor/AceEditor';
 import GlobalAppToolbar from '../GlobalAppToolbar';
-import ResizeableDrawer from '../../modules/Preview/ResizeableDrawer';
+import ResizeableDrawer from '../ResizeableDrawer/ResizeableDrawer';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import MenuOpenRoundedIcon from '@mui/icons-material/MenuOpenRounded';
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
 import PrimaryButton from '../PrimaryButton';
-import DialogFooter from '../Dialogs/DialogFooter';
+import DialogFooter from '../DialogFooter/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import HelpOutlineRoundedIcon from '@mui/icons-material/HelpOutlineRounded';
 import Button from '@mui/material/Button';
@@ -50,7 +50,7 @@ import clsx from 'clsx';
 import { useDispatch } from 'react-redux';
 import { fetchItemVersions } from '../../state/reducers/versions';
 import { fetchItemByPath } from '../../services/content';
-import SearchBar from '../Controls/SearchBar';
+import SearchBar from '../SearchBar/SearchBar';
 import Alert from '@mui/material/Alert';
 import { showHistoryDialog } from '../../state/actions/dialogs';
 import { batchActions } from '../../state/actions/misc';
@@ -58,18 +58,20 @@ import { capitalize } from '../../utils/string';
 import { itemReverted, showSystemNotification } from '../../state/actions/system';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { filter, map } from 'rxjs/operators';
-import { fromString, serialize } from '../../utils/xml';
+import { parseValidateDocument, serialize } from '../../utils/xml';
 import { forkJoin } from 'rxjs';
 import { encrypt } from '../../services/security';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import ResizeBar from '../ResizeBar';
 import { useHistory } from 'react-router';
 import { fetchSiteConfig, fetchSiteUiConfig } from '../../state/actions/configuration';
-import { useSelection } from '../../utils/hooks/useSelection';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import { useMount } from '../../utils/hooks/useMount';
+import { useSelection } from '../../hooks/useSelection';
+import { useActiveSiteId } from '../../hooks/useActiveSiteId';
+import { useMount } from '../../hooks/useMount';
 import { ConfirmDialogProps } from '../ConfirmDialog';
-import { onSubmittingAndOrPendingChangeProps } from '../../utils/hooks/useEnhancedDialogState';
+import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
+import { findPendingEncryption } from './utils';
+import { useUpdateRefs } from '../../hooks';
 
 interface SiteConfigurationManagementProps {
   embedded?: boolean;
@@ -102,6 +104,9 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
   const history = useHistory();
   const dispatch = useDispatch();
   const disableBlocking = useRef(false);
+  const functionRefs = useUpdateRefs({
+    onSubmittingAndOrPendingChange
+  });
 
   const editorRef = useRef<any>({
     container: null
@@ -183,8 +188,26 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
     }
   };
 
+  const showXmlParseError = (error: string) => {
+    dispatch(
+      showSystemNotification({
+        message: formatMessage(translations.xmlContainsErrors, {
+          errors: error
+        }),
+        options: {
+          variant: 'error'
+        }
+      })
+    );
+  };
+
   const onEncryptClick = () => {
-    const doc = fromString(editorRef.current.getValue());
+    const content = editorRef.current.getValue();
+    const doc = parseValidateDocument(content);
+    if (typeof doc === 'string') {
+      showXmlParseError(doc);
+      return;
+    }
     const tags = doc.querySelectorAll('[encrypted]');
     const items = findPendingEncryption(tags);
     if (items.length) {
@@ -289,7 +312,7 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
     if (!disabledSaveButton) {
       setDisabledSaveButton(true);
     }
-    onSubmittingAndOrPendingChange?.({ hasPendingChanges: false, isSubmitting: false });
+    functionRefs.current.onSubmittingAndOrPendingChange?.({ hasPendingChanges: false, isSubmitting: false });
   };
 
   const onListItemClick = (file: SiteConfigurationFileWithId) => {
@@ -322,10 +345,10 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
   const onEditorChanges = () => {
     if (selectedConfigFileXml !== editorRef.current.getValue()) {
       setDisabledSaveButton(false);
-      onSubmittingAndOrPendingChange?.({ hasPendingChanges: true });
+      functionRefs.current.onSubmittingAndOrPendingChange?.({ hasPendingChanges: true });
     } else {
       setDisabledSaveButton(true);
-      onSubmittingAndOrPendingChange?.({ hasPendingChanges: false });
+      functionRefs.current.onSubmittingAndOrPendingChange?.({ hasPendingChanges: false });
     }
   };
 
@@ -368,7 +391,11 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
 
   const onSave = () => {
     const content = editorRef.current.getValue();
-    const doc = fromString(content);
+    const doc = parseValidateDocument(content);
+    if (typeof doc === 'string') {
+      showXmlParseError(doc);
+      return;
+    }
     const unencryptedItems = findPendingEncryption(doc.querySelectorAll('[encrypted]'));
     const errors = editorRef.current
       .getSession()
@@ -388,10 +415,10 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
       );
     } else {
       if (unencryptedItems.length === 0) {
-        onSubmittingAndOrPendingChange({ isSubmitting: true });
-        writeConfiguration(site, selectedConfigFile.path, selectedConfigFile.module, content, environment).subscribe(
-          () => {
-            onSubmittingAndOrPendingChange({ isSubmitting: false, hasPendingChanges: false });
+        functionRefs.current.onSubmittingAndOrPendingChange?.({ isSubmitting: true });
+        writeConfiguration(site, selectedConfigFile.path, selectedConfigFile.module, content, environment).subscribe({
+          next: () => {
+            functionRefs.current.onSubmittingAndOrPendingChange?.({ isSubmitting: false, hasPendingChanges: false });
             dispatch(
               showSystemNotification({
                 message: formatMessage(translations.configSaved)
@@ -405,10 +432,11 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
             setDisabledSaveButton(true);
             setSelectedConfigFileXml(content);
           },
-          ({ response: { response } }) => {
+          error: ({ response: { response } }) => {
+            functionRefs.current.onSubmittingAndOrPendingChange?.({ isSubmitting: false });
             dispatch(showErrorDialog({ error: response }));
           }
-        );
+        });
       } else {
         let tags;
         if (unencryptedItems.length > 1) {
@@ -682,12 +710,4 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
       <ConfirmDialog open={false} {...confirmDialogProps} />
     </section>
   );
-}
-
-function findPendingEncryption(tags): { tag: Element; text: string }[] {
-  const items = [];
-  tags.forEach((tag) => {
-    tag.getAttribute('encrypted') === '' && items.push({ tag: tag, text: tag.innerHTML.trim() });
-  });
-  return items;
 }

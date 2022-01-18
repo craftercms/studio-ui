@@ -33,7 +33,7 @@ interface SitesGridUIProps {
   publishingStatusLookup: LookupTable<PublishingStatus>;
 }
 
-export default function SitesGridUI(props: SitesGridUIProps) {
+export function SitesGridUI(props: SitesGridUIProps) {
   const {
     resource,
     onSiteClick,
@@ -65,3 +65,5 @@ export default function SitesGridUI(props: SitesGridUIProps) {
     </section>
   );
 }
+
+export default SitesGridUI;

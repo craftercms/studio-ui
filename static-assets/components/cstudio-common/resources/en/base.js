@@ -326,6 +326,8 @@ CStudioAuthoring.Messages.registerBundle('siteDropdown', 'en', {
 });
 
 CStudioAuthoring.Messages.registerBundle('forms', 'en', {
+  styleFormatsParseError:
+    "The RTE `styleFormats` configuration is malformed: {0}. Check your RTE configuration styleFormats and make sure it's valid JSON. Configuration content attached below:",
   new: 'New',
   expandAll: 'Expand All',
   collapseAll: 'Collapse All',
@@ -361,12 +363,12 @@ CStudioAuthoring.Messages.registerBundle('forms', 'en', {
 
   copy: 'Copy',
   copyDescription:
-    'Please select any of the sub-pages you would like to batch copy.<br/> When pasting, any selected sub-pages and their positional heirarchy will be retained.',
+    'Please select any of the sub-pages you would like to batch copy.<br/> When pasting, any selected sub-pages and their positional hierarchy will be retained.',
   page: 'Page',
   loadingContents: 'Loading items...',
   cut: 'Cut',
   cutDescription:
-    'Please select any of the sub-pages you would like to batch cut.<br/> When pasting, any selected sub-pages and their positional heirarchy will be retained.',
+    'Please select any of the sub-pages you would like to batch cut.<br/> When pasting, any selected sub-pages and their positional hierarchy will be retained.',
 
   create: 'Create',
   newFolderTitle: 'Create a New Folder',

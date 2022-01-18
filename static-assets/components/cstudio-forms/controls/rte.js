@@ -223,6 +223,8 @@ CStudioAuthoring.Module.requireModule(
             toolbarConfig2,
             toolbarConfig3,
             toolbarConfig4,
+            styleFormats,
+            styleFormatsMerge,
             templates;
 
           containerEl.id = this.id;
@@ -300,6 +302,34 @@ CStudioAuthoring.Module.requireModule(
               : null;
 
           rteStyleOverride = rteConfig.rteStyleOverride ? rteConfig.rteStyleOverride : null;
+
+          try {
+            // use tinymce default if not set
+            styleFormats = rteConfig.styleFormats ? JSON.parse(rteConfig.styleFormats) : void 0;
+          } catch (e) {
+            // If there are multiple RTEs on the page, when the form loads, it would show N number
+            // of dialogs. One is sufficient. Also, in 3.1.x, triggering multiple dialogs causes the
+            // backdrop not to get clean out when the dialog is closed.
+            if (!CStudioForms.Controls.RTETINYMCE5.styleFormatsParseErrorShown) {
+              CStudioForms.Controls.RTETINYMCE5.styleFormatsParseErrorShown = true;
+              let bundle = CStudioAuthoring.Messages.getBundle('forms', CStudioAuthoringContext.lang);
+              CStudioAuthoring.Operations.showSimpleDialog(
+                'message-dialog',
+                CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                CStudioAuthoring.Messages.format(bundle, 'notification'),
+                `<div>${CStudioAuthoring.Messages.format(
+                  bundle,
+                  'styleFormatsParseError',
+                  `<code>${e.message}</code>`
+                )}</div><pre>${rteConfig.styleFormats}</pre>`,
+                null,
+                YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                'studioDialog'
+              );
+            }
+          }
+
+          styleFormatsMerge = rteConfig.styleFormatsMerge === 'true';
 
           const $editorContainer = $(`#${rteId}`).parent(),
             editorContainerWidth = $editorContainer.width(),
@@ -403,12 +433,21 @@ CStudioAuthoring.Module.requireModule(
             },
 
             templates: templates,
-
-            content_css: rteStylesheets,
+            skin: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'oxide-dark' : 'oxide',
+            content_css: rteStylesheets
+              ? rteStylesheets
+              : window.matchMedia('(prefers-color-scheme: dark)').matches
+              ? 'dark'
+              : 'default',
             content_style: rteStyleOverride,
             code_editor_wrap: codeEditorWrap,
+            code_editor_inline: true,
 
             external_plugins: external,
+
+            style_formats: styleFormats,
+
+            style_formats_merge: styleFormatsMerge,
 
             setup: function (editor) {
               editor.on('init', function (e) {
@@ -449,6 +488,7 @@ CStudioAuthoring.Module.requireModule(
                 if (!e.initial) {
                   _thisControl.save();
                 }
+                _thisControl._onChangeVal(null, _thisControl);
               });
 
               editor.on('DblClick', function (e) {

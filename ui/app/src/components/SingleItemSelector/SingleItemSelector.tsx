@@ -29,7 +29,7 @@ import PaginationOptions from '../../models/PaginationOptions';
 import { LookupTable } from '../../models/LookupTable';
 import ApiResponse from '../../models/ApiResponse';
 import { createAction } from '@reduxjs/toolkit';
-import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
+import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
 import Breadcrumbs from '../PathNavigator/PathNavigatorBreadcrumbs';
 import PathNavigatorList from '../PathNavigator/PathNavigatorList';
 import { fetchChildrenByPath, fetchItemsByPath, fetchItemWithChildrenByPath } from '../../services/content';
@@ -41,8 +41,8 @@ import { lookupItemByPath, parseSandBoxItemToDetailedItem } from '../../utils/co
 import { GetChildrenResponse } from '../../models/GetChildrenResponse';
 import Pagination from '../Pagination';
 import NavItem from '../PathNavigator/PathNavigatorItem';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import { useLogicResource } from '../../utils/hooks/useLogicResource';
+import { useActiveSiteId } from '../../hooks/useActiveSiteId';
+import { useLogicResource } from '../../hooks/useLogicResource';
 import ItemDisplay from '../ItemDisplay';
 
 const useStyles = makeStyles((theme) => ({
@@ -232,7 +232,9 @@ const changeCurrentPath = /*#__PURE__*/ createAction<DetailedItem>('CHANGE_SELEC
 
 const setKeyword = /*#__PURE__*/ createAction<string>('SET_KEYWORD');
 
-const changePage = /*#__PURE__*/ createAction<number>('CHANGE_PAGE');
+const changePage = /*#__PURE__*/ createAction<{ offset: number }>('CHANGE_PAGE');
+
+const changeRowsPerPage = /*#__PURE__*/ createAction<{ offset: number; limit: number }>('CHANGE_PAGE');
 
 const fetchChildrenByPathAction = /*#__PURE__*/ createAction<string>('FETCH_CHILDREN_BY_PATH');
 
@@ -282,8 +284,12 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
           );
           break;
         }
+        case changeRowsPerPage.type:
         case changePage.type: {
-          fetchChildrenByPath(site, state.currentPath, { limit: state.limit, offset: payload }).subscribe(
+          fetchChildrenByPath(site, state.currentPath, {
+            limit: payload.limit ?? state.limit,
+            offset: payload.offset ?? state.offset
+          }).subscribe(
             (children) => exec(fetchChildrenByPathComplete({ children })),
             (response) => exec(fetchChildrenByPathFailed(response))
           );
@@ -383,7 +389,11 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
 
   const onPageChanged = (page: number) => {
     const offset = page * state.limit;
-    exec(changePage(offset));
+    exec(changePage({ offset }));
+  };
+
+  const onChangeRowsPerPage = (e) => {
+    exec(changeRowsPerPage({ offset: 0, limit: e.target.value }));
   };
 
   const Wrapper = hideUI ? React.Fragment : Paper;
@@ -461,8 +471,10 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
           />
           <Pagination
             count={state.total}
+            rowsPerPageOptions={[5, 10, 20]}
             rowsPerPage={state.limit}
             page={state && Math.ceil(state.offset / state.limit)}
+            onRowsPerPageChange={onChangeRowsPerPage}
             onPageChange={onPageChanged}
           />
         </SuspenseWithEmptyState>

@@ -23,16 +23,16 @@ import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import withStyles from '@mui/styles/withStyles';
 import { PluginRecord } from '../../models/Plugin';
-import { ConditionalLoadingState } from '../SystemStatus/LoadingState';
+import { ConditionalLoadingState } from '../LoadingState/LoadingState';
 import TableContainer from '@mui/material/TableContainer';
 import Table from '@mui/material/Table';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
-import { AsDayMonthDateTime } from '../VersionList/VersionList';
-import EmptyState from '../SystemStatus/EmptyState';
+import { AsDayMonthDateTime } from '../VersionList';
+import EmptyState from '../EmptyState/EmptyState';
 import InstallPluginDialog from '../MarketplaceDialog';
-import { MarketplacePlugin } from '../../models/MarketplacePlugin';
+import { MarketplacePlugin } from '../../models';
 import IconButton from '@mui/material/IconButton';
 import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
 import Popover from '@mui/material/Popover';
@@ -43,13 +43,20 @@ import { useDispatch } from 'react-redux';
 import { fetchInstalledMarketplacePlugins } from '../../services/marketplace';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { getUserPermissions } from '../../services/security';
-import { emitSystemEvent, pluginInstalled, showSystemNotification } from '../../state/actions/system';
+import {
+  emitSystemEvent,
+  pluginInstalled,
+  pluginUninstalled,
+  showSystemNotification
+} from '../../state/actions/system';
 import LookupTable from '../../models/LookupTable';
 import GlobalState from '../../models/GlobalState';
 import GlobalAppToolbar from '../GlobalAppToolbar';
-import { useSelection } from '../../utils/hooks/useSelection';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
-import { useMount } from '../../utils/hooks/useMount';
+import { useSelection } from '../../hooks/useSelection';
+import { useActiveSiteId } from '../../hooks/useActiveSiteId';
+import { useMount } from '../../hooks/useMount';
+import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
+import { useWithPendingChangesCloseRequest } from '../../hooks/useWithPendingChangesCloseRequest';
 import { batchActions } from '../../state/actions/misc';
 import Link from '@mui/material/Link';
 import { createPresenceTable } from '../../utils/array';
@@ -58,13 +65,22 @@ import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import TableBody from '@mui/material/TableBody';
 import DeleteIcon from '@mui/icons-material/DeleteOutline';
-import { useEnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
 import UninstallPluginDialog from '../DeletePluginDialog';
+import SettingsRoundedIcon from '@mui/icons-material/SettingsOutlined';
+import { PluginConfigDialog } from '../PluginConfigDialog';
 
 const messages = defineMessages({
   pluginInstalled: {
-    id: 'PluginManagement.pluginInstalled',
+    id: 'pluginManagement.pluginInstalled',
     defaultMessage: 'Plugin installed successfully'
+  },
+  pluginConfigUpdated: {
+    id: 'pluginManagement.pluginConfigUpdated',
+    defaultMessage: 'Plugin configuration updated successfully'
+  },
+  pluginUninstalled: {
+    id: 'pluginManagement.pluginUninstalled',
+    defaultMessage: 'Plugin uninstalled successfully'
   }
 });
 
@@ -109,7 +125,10 @@ export const PluginManagement = (props: PluginManagementProps) => {
   const [installedPluginsLookup, setInstalledPluginsLookup] = useState<LookupTable<boolean>>();
   const locale = useSelection<GlobalState['uiConfig']['locale']>((state) => state.uiConfig.locale);
   const deletePluginDialogState = useEnhancedDialogState();
+  const configPluginDialogState = useEnhancedDialogState();
+  const onWithPendingChangesCloseRequest = useWithPendingChangesCloseRequest(configPluginDialogState.onResetState);
   const [pluginToDelete, setPluginToDelete] = useState(null);
+  const [pluginToConfig, setPluginToConfig] = useState(null);
 
   useMount(() => {
     getUserPermissions(siteId, '/').subscribe((permissions) => {
@@ -179,8 +198,30 @@ export const PluginManagement = (props: PluginManagementProps) => {
   };
 
   const onDeletePlugin = () => {
-    deletePluginDialogState.onClose();
+    dispatch(
+      batchActions([
+        showSystemNotification({
+          message: formatMessage(messages.pluginUninstalled)
+        }),
+        emitSystemEvent(pluginUninstalled())
+      ])
+    );
+    deletePluginDialogState.onResetState();
     refresh();
+  };
+
+  const onSavedPluginConfig = () => {
+    dispatch(
+      showSystemNotification({
+        message: formatMessage(messages.pluginConfigUpdated)
+      })
+    );
+    configPluginDialogState.onResetState();
+  };
+
+  const onEditPluginConfig = (plugin: PluginRecord) => {
+    setPluginToConfig(plugin.id);
+    configPluginDialogState.onOpen();
   };
 
   return (
@@ -285,6 +326,14 @@ export const PluginManagement = (props: PluginManagementProps) => {
                     <TableCell align="right" className={classes.actions}>
                       <IconButton
                         onClick={() => {
+                          onEditPluginConfig(plugin);
+                        }}
+                        color="primary"
+                      >
+                        <SettingsRoundedIcon />
+                      </IconButton>
+                      <IconButton
+                        onClick={() => {
                           setPluginToDelete(plugin.id);
                           deletePluginDialogState.onOpen();
                         }}
@@ -316,13 +365,29 @@ export const PluginManagement = (props: PluginManagementProps) => {
       />
       <UninstallPluginDialog
         open={deletePluginDialogState.open}
-        onClose={deletePluginDialogState.onClose}
+        onClose={deletePluginDialogState.onResetState}
         isSubmitting={deletePluginDialogState.isSubmitting}
         hasPendingChanges={deletePluginDialogState.hasPendingChanges}
         isMinimized={deletePluginDialogState.isMinimized}
         onSubmittingAndOrPendingChange={deletePluginDialogState.onSubmittingAndOrPendingChange}
         pluginId={pluginToDelete}
         onComplete={onDeletePlugin}
+      />
+      <PluginConfigDialog
+        open={configPluginDialogState.open}
+        onClose={configPluginDialogState.onResetState}
+        isSubmitting={configPluginDialogState.isSubmitting}
+        hasPendingChanges={configPluginDialogState.hasPendingChanges}
+        isMinimized={configPluginDialogState.isMinimized}
+        onMinimize={configPluginDialogState.onMinimize}
+        onMaximize={configPluginDialogState.onMaximize}
+        isFullScreen={configPluginDialogState.isFullScreen}
+        onFullScreen={configPluginDialogState.onFullScreen}
+        onCancelFullScreen={configPluginDialogState.onCancelFullScreen}
+        onSubmittingAndOrPendingChange={configPluginDialogState.onSubmittingAndOrPendingChange}
+        pluginId={pluginToConfig}
+        onSaved={onSavedPluginConfig}
+        onWithPendingChangesCloseRequest={onWithPendingChangesCloseRequest}
       />
       <Popover
         open={Boolean(anchorEl)}

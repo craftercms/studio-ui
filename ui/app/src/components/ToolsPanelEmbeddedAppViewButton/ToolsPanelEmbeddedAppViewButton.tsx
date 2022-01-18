@@ -17,16 +17,16 @@
 import React from 'react';
 import ToolsPanelListItemButton, { ToolsPanelListItemButtonProps } from '../ToolsPanelListItemButton';
 import WidgetDialog from '../WidgetDialog';
-import { usePossibleTranslation } from '../../utils/hooks/usePossibleTranslation';
+import { usePossibleTranslation } from '../../hooks/usePossibleTranslation';
 import { WidgetDescriptor } from '../Widget';
-import { useEnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
-import { useWithPendingChangesCloseRequest } from '../../utils/hooks/useWithPendingChangesCloseRequest';
+import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
+import { useWithPendingChangesCloseRequest } from '../../hooks/useWithPendingChangesCloseRequest';
 
 interface ToolsPanelEmbeddedAppViewButtonProps extends Omit<ToolsPanelListItemButtonProps, 'onClick'> {
   widget: WidgetDescriptor;
 }
 
-export default function ToolsPanelEmbeddedAppViewButton(props: ToolsPanelEmbeddedAppViewButtonProps) {
+export function ToolsPanelEmbeddedAppViewButton(props: ToolsPanelEmbeddedAppViewButtonProps) {
   const {
     open,
     onOpen,
@@ -56,6 +56,11 @@ export default function ToolsPanelEmbeddedAppViewButton(props: ToolsPanelEmbedde
         open={open}
         onClose={onClose}
         widget={props.widget}
+        extraProps={{
+          onMinimize,
+          onMaximize,
+          onClose
+        }}
         hasPendingChanges={hasPendingChanges}
         onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
         onWithPendingChangesCloseRequest={widgetDialogPendingChangesCloseRequest}
@@ -67,3 +72,5 @@ export default function ToolsPanelEmbeddedAppViewButton(props: ToolsPanelEmbedde
     </>
   );
 }
+
+export default ToolsPanelEmbeddedAppViewButton;

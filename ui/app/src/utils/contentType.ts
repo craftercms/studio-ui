@@ -95,35 +95,56 @@ export function getFieldsByType(contentType: ContentType, fieldType): ContentTyp
   return Object.values(contentType.fields).filter((field) => field.type === fieldType);
 }
 
-export function getDefaultValue(field: ContentTypeField): string | number {
+// TODO: See variable.js for additional case items to possibly include here
+export function getDefaultValue(field: ContentTypeField): string | number | any[] {
   if (field.defaultValue) {
     return field.defaultValue;
-  } else if (field.required) {
+  } else if (field.validations.required?.value) {
     switch (field.type) {
-      case 'image':
+      case 'image': {
         const width = field.validations.width?.value ?? field.validations.minWidth?.value ?? 150;
         const height = field.validations.height?.value ?? field.validations.minHeight?.value ?? width;
         return `https://via.placeholder.com/${width}x${height}`;
-      case 'textarea':
-      case 'text': {
+      }
+      case 'text':
+      case 'textarea': {
         let maxLength = parseInt(field.validations.maxLength?.value);
         let textGen = new Jabber();
         return maxLength
           ? `${textGen.createParagraph(50).substring(0, maxLength)}.`.replace(/\.+/, '.')
           : textGen.createParagraph(10);
       }
-      case 'html':
+      case 'html': {
         let textGen = new Jabber();
         return textGen.createParagraph(10);
+      }
       case 'numeric-input': {
         return field.validations.minValue?.value ?? 1;
       }
-      case 'boolean':
+      case 'boolean': {
         return 'false';
-      case 'date-time':
+      }
+      case 'date-time': {
         return new Date().toISOString();
-      default:
+      }
+      case 'repeat': {
+        const repeat = [];
+        if (field.validations.minCount && field.fields) {
+          new Array(field.validations.minCount).fill(null).forEach(() => {
+            const item = {};
+            for (const subFieldId in field.fields) {
+              item[subFieldId] = getDefaultValue(field.fields[subFieldId]);
+            }
+            repeat.push(item);
+          });
+        }
+        return repeat;
+      }
+      case 'node-selector':
+        return [];
+      default: {
         return null;
+      }
     }
   }
 }

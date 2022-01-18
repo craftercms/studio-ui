@@ -20,7 +20,7 @@ import { PagedArray } from '../../models/PagedArray';
 import Box from '@mui/material/Box';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useStyles } from './styles';
-import { DataGrid, GridCellParams, GridColDef, GridComponentProps, GridOverlay, GridSortModel } from '@mui/x-data-grid';
+import { DataGrid, GridCellParams, GridColDef, DataGridProps, GridOverlay, GridSortModel } from '@mui/x-data-grid';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { AuditOptions } from '../../services/audit';
 import { Site } from '../../models/Site';
@@ -33,9 +33,9 @@ import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover/Popover';
 import moment from 'moment-timezone';
 import LookupTable from '../../models/LookupTable';
 import { Button, Typography } from '@mui/material';
-import EmptyState from '../SystemStatus/EmptyState';
+import EmptyState from '../EmptyState/EmptyState';
 import AuditGridFilterPopover from '../AuditGridFilterPopover';
-import { useLocale } from '../../utils/hooks/useLocale';
+import { useLocale } from '../../hooks/useLocale';
 
 export interface AuditGridUIProps {
   page: number;
@@ -49,11 +49,11 @@ export interface AuditGridUIProps {
   hasActiveFilters: boolean;
   timezones: string[];
   siteMode?: boolean;
-  onPageChange: GridComponentProps['onPageChange'];
+  onPageChange: DataGridProps['onPageChange'];
   onResetFilters(): void;
   onResetFilter(id: string | string[]): void;
   onFetchParameters(id: number): void;
-  onPageSizeChange: GridComponentProps['onPageSizeChange'];
+  onPageSizeChange: DataGridProps['onPageSizeChange'];
   onFilterChange(filter: { id: string; value: string | string[] }): void;
 }
 
@@ -396,7 +396,7 @@ export default function AuditGridUI(props: AuditGridUIProps) {
         rows={auditLogs}
         columns={columns}
         page={page}
-        pageSize={10}
+        pageSize={auditLogs.limit}
         onSortModelChange={onTimestampSortChanges}
         onPageSizeChange={onPageSizeChange}
         rowsPerPageOptions={[5, 10, 15]}

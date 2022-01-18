@@ -18,9 +18,9 @@ import React, { PropsWithChildren, useEffect, useMemo, useRef, useState } from '
 import $ from 'jquery';
 import { fromEvent, interval, merge } from 'rxjs';
 import { filter, pluck, take, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
-import * as iceRegistry from '../classes/ICERegistry';
-import { contentTypes$, flushRequestedPaths, operations$ } from '../classes/ContentController';
-import * as elementRegistry from '../classes/ElementRegistry';
+import * as iceRegistry from '../iceRegistry';
+import { contentTypes$, flushRequestedPaths, operations$ } from '../contentController';
+import * as elementRegistry from '../elementRegistry';
 import { GuestContextProvider, GuestReduxContext, useDispatch, useSelector } from './GuestContext';
 import CrafterCMSPortal from './CrafterCMSPortal';
 import ZoneMarker from './ZoneMarker';
@@ -30,7 +30,17 @@ import { fromTopic, message$, post } from '../utils/communicator';
 import Cookies from 'js-cookie';
 import { HighlightData } from '../models/InContextEditing';
 import AssetUploaderMask from './AssetUploaderMask';
-import { EditingStatus, HighlightMode } from '../constants';
+import {
+  EditingStatus,
+  editModeClass,
+  editModePaddingClass,
+  editOnClass,
+  HighlightMode,
+  iceBypassKeyClass,
+  moveModeClass,
+  editModeIceBypassEvent,
+  editModeEvent
+} from '../constants';
 import {
   assetDragEnded,
   assetDragStarted,
@@ -46,14 +56,15 @@ import {
   contentTypeDropTargetsRequest,
   desktopAssetUploadComplete,
   desktopAssetUploadProgress,
-  editModeToggleHotkey,
   guestCheckIn,
   guestCheckOut,
   highlightModeChanged,
   hostCheckIn,
+  hotKey,
   navigationRequest,
   reloadRequest,
   scrollToDropTarget,
+  setEditModePadding,
   setPreviewEditMode,
   trashed,
   updateRteConfig
@@ -62,14 +73,13 @@ import { createGuestStore } from '../store/store';
 import { Provider } from 'react-redux';
 import { clearAndListen$ } from '../store/subjects';
 import { GuestState } from '../store/models/GuestStore';
-import { nullOrUndefined, nnou } from '@craftercms/studio-ui/utils/object';
+import { nnou, nullOrUndefined } from '@craftercms/studio-ui/utils/object';
 import { scrollToDropTargets } from '../utils/dom';
 import { dragOk } from '../store/util';
 import SnackBar, { Snack } from './SnackBar';
 import { createLocationArgument } from '../utils/util';
 import FieldInstanceSwitcher from './FieldInstanceSwitcher';
 import LookupTable from '@craftercms/studio-ui/models/LookupTable';
-import { useHotkeys } from 'react-hotkeys-hook';
 import { ThemeOptions, ThemeProvider } from '@mui/material';
 import { deepmerge } from '@mui/utils';
 import { DeepPartial } from 'redux';
@@ -88,7 +98,7 @@ import {
 } from '../store/actions';
 import DragGhostElement from './DragGhostElement';
 import GuestGlobalStyles from './GuestGlobalStyles';
-import { showKeyboardShortcutsDialog } from '@craftercms/studio-ui/state/actions/dialogs';
+import { useHotkeys } from 'react-hotkeys-hook';
 
 // TODO: add themeOptions and global styles customising
 export type GuestProps = PropsWithChildren<{
@@ -101,10 +111,12 @@ export type GuestProps = PropsWithChildren<{
 }>;
 
 const initialDocumentDomain = document.domain;
-const editModeClass = 'craftercms-ice-on';
 
-export function getEditModeClass() {
-  return editModeClass;
+function bypassKeyStroke(e, refs) {
+  const isKeyDown = e.type === 'keydown';
+  refs.current.keysPressed['z'] = isKeyDown;
+  $('html')[isKeyDown ? 'addClass' : 'removeClass'](iceBypassKeyClass);
+  document.dispatchEvent(new CustomEvent(editModeIceBypassEvent, { detail: isKeyDown }));
 }
 
 function Guest(props: GuestProps) {
@@ -116,7 +128,7 @@ function Guest(props: GuestProps) {
   const [snack, setSnack] = useState<Partial<Snack>>();
   const dispatch = useDispatch();
   const state = useSelector<GuestState>((state) => state);
-  const { editMode, highlightMode, status, hostCheckedIn: hasHost, draggable } = state;
+  const { editMode, highlightMode, editModePadding, status, hostCheckedIn: hasHost, draggable } = state;
   const refs = useRef({
     contentReady: false,
     firstRender: true,
@@ -160,26 +172,44 @@ function Guest(props: GuestProps) {
     return deepmerge(styleSxDefaults, sxOverrides);
   }, [sxOverrides]);
 
-  // Hotkeys propagation to preview
-  useHotkeys('e', () => post(editModeToggleHotkey({ mode: HighlightMode.ALL })));
-  useHotkeys('m', () => post(editModeToggleHotkey({ mode: HighlightMode.MOVE_TARGETS })));
-  useHotkeys('shift+/', () => post(showKeyboardShortcutsDialog()));
+  // region Hotkeys
 
-  // Key press/hold keeper events
+  // This requires maintenance as key shortcuts evolve/change.
+  useHotkeys('m,e,p,shift+/', (e) => {
+    post(hotKey({ key: e.key, type: 'keydown' }));
+  });
+
+  // ICE bypass key
+  useHotkeys(
+    'z',
+    (e) => {
+      bypassKeyStroke(e, refs);
+    },
+    { keyup: true, keydown: true }
+  );
+
+  // endregion
+
   useEffect(() => {
-    const keydown = (e) => {
-      refs.current.keysPressed[e.key] = true;
-    };
-    const keyup = (e) => {
-      refs.current.keysPressed[e.key] = false;
-    };
-    document.addEventListener('keydown', keydown, false);
-    document.addEventListener('keyup', keyup, false);
-    return () => {
-      document.removeEventListener('keydown', keydown, false);
-      document.removeEventListener('keyup', keyup, false);
-    };
-  }, []);
+    const $html = $('html');
+    const cls = highlightMode === HighlightMode.MOVE_TARGETS ? moveModeClass : editModeClass;
+    if (editMode) {
+      $html.addClass(cls);
+      return () => {
+        $html.removeClass(cls);
+      };
+    }
+  }, [editMode, highlightMode]);
+
+  useEffect(() => {
+    const $html = $('html');
+    if (editMode && editModePadding) {
+      $html.addClass(editModePaddingClass);
+      return () => {
+        $html.removeClass(editModePaddingClass);
+      };
+    }
+  }, [editMode, editModePadding]);
 
   // Sets document domain
   useEffect(() => {
@@ -197,15 +227,15 @@ function Guest(props: GuestProps) {
   // Add/remove edit on class
   useEffect(() => {
     if (editMode === false) {
-      $('html').removeClass(editModeClass);
-      document.dispatchEvent(new CustomEvent('craftercms.editMode', { detail: false }));
+      $('html').removeClass(editOnClass);
+      document.dispatchEvent(new CustomEvent(editModeEvent, { detail: false }));
       // Refreshing the page for now. Will revisit on a later release.
       if (!refs.current.firstRender && refs.current.hasChanges) {
         window.location.reload();
       }
     } else {
-      $('html').addClass(editModeClass);
-      document.dispatchEvent(new CustomEvent('craftercms.editMode', { detail: true }));
+      $('html').addClass(editOnClass);
+      document.dispatchEvent(new CustomEvent(editModeEvent, { detail: true }));
     }
     if (refs.current.firstRender) {
       refs.current.firstRender = false;
@@ -219,6 +249,9 @@ function Guest(props: GuestProps) {
       switch (type) {
         case highlightModeChanged.type:
         case setPreviewEditMode.type:
+          if (status === EditingStatus.FIELD_SELECTED && action.payload.highlightMode !== 'move') {
+            clearAndListen$.next();
+          }
           dispatch(action);
           break;
         case assetDragStarted.type:
@@ -232,9 +265,6 @@ function Guest(props: GuestProps) {
           break;
         case componentDragEnded.type:
           dragOk(status) && dispatch(action);
-          break;
-        case componentInstanceDragStarted.type:
-          dispatch(componentInstanceDragStarted(payload));
           break;
         case componentInstanceDragEnded.type:
           dragOk(status) && dispatch(action);
@@ -261,9 +291,6 @@ function Guest(props: GuestProps) {
         case scrollToDropTarget.type:
           scrollToDropTargets([payload], scrollElement, (id: number) => elementRegistry.fromICEId(id).element);
           break;
-        case clearHighlightedDropTargets.type:
-          dispatch(action);
-          break;
         case contentTreeFieldSelected.type: {
           dispatch(
             contentTreeFieldSelected({
@@ -282,14 +309,18 @@ function Guest(props: GuestProps) {
           clearAndListen$.next();
           dispatch({ type });
           break;
+        case componentInstanceDragStarted.type:
+        case clearHighlightedDropTargets.type:
         case desktopAssetUploadProgress.type:
-          dispatch(action);
-          break;
         case desktopAssetUploadComplete.type:
+        case updateRteConfig.type:
+        case setEditModePadding.type:
           dispatch(action);
           break;
-        case updateRteConfig.type:
-          dispatch(action);
+        case hotKey.type:
+          if (payload.key === 'z') {
+            bypassKeyStroke(payload, refs);
+          }
           break;
       }
     });
@@ -392,7 +423,9 @@ function Guest(props: GuestProps) {
         .subscribe((e) => {
           e.preventDefault();
           e.stopPropagation();
-          dispatch(desktopAssetDragStarted({ asset: e.dataTransfer.items[0] }));
+          if (e.dataTransfer.items[0].type.startsWith('image') && e.dataTransfer.items[0].kind === 'file') {
+            dispatch(desktopAssetDragStarted({ asset: e.dataTransfer.items[0] }));
+          }
         });
       return () => subscription.unsubscribe();
     }
@@ -503,11 +536,7 @@ function Guest(props: GuestProps) {
                       : null
                   }
                   menuItems={
-                    isMove && isFieldSelectedMode ? (
-                      <MoveModeZoneMenu record={elementRecord} dispatch={dispatch} />
-                    ) : (
-                      void 0
-                    )
+                    isFieldSelectedMode ? <MoveModeZoneMenu record={elementRecord} dispatch={dispatch} /> : void 0
                   }
                   sx={deepmerge(
                     deepmerge(

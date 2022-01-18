@@ -19,6 +19,19 @@ import { lazy } from 'react';
 
 export const registerComponents = () => {
   Object.entries({
+    '@mui/icons-material/RefreshRounded': lazy(() => import('@mui/icons-material/RefreshRounded')),
+    '@mui/icons-material/PlayCircleOutlineOutlined': lazy(
+      () => import('@mui/icons-material/PlayCircleOutlineOutlined')
+    ),
+    '@mui/icons-material/PauseCircleOutlineOutlined': lazy(
+      () => import('@mui/icons-material/PauseCircleOutlineOutlined')
+    ),
+    '@mui/icons-material/LockOpenRounded': lazy(() => import('@mui/icons-material/LockOpenRounded')),
+    '@mui/icons-material/OpenInFullRounded': lazy(() => import('@mui/icons-material/OpenInFullRounded')),
+    '@mui/icons-material/RemoveRounded': lazy(() => import('@mui/icons-material/RemoveRounded')),
+    '@mui/icons-material/CloseRounded': lazy(() => import('@mui/icons-material/CloseRounded')),
+    '@mui/icons-material/ArrowBackIosRounded': lazy(() => import('@mui/icons-material/ArrowBackIosRounded')),
+    '@mui/icons-material/HistoryRounded': lazy(() => import('@mui/icons-material/HistoryRounded')),
     '@mui/icons-material/SearchRounded': lazy(() => import('@mui/icons-material/SearchRounded')),
     '@mui/icons-material/ExtensionOutlined': lazy(() => import('@mui/icons-material/ExtensionOutlined')),
     '@mui/icons-material/ImageOutlined': lazy(() => import('@mui/icons-material/ImageOutlined')),
@@ -48,20 +61,20 @@ export const registerComponents = () => {
     '@mui/icons-material/FormatAlignLeftRounded': lazy(() => import('@mui/icons-material/FormatAlignLeftRounded')),
     '@mui/icons-material/CloudUploadOutlined': lazy(() => import('@mui/icons-material/CloudUploadOutlined')),
     '@mui/icons-material/PollOutlined': lazy(() => import('@mui/icons-material/PollOutlined')),
-    'craftercms.icons.PageExplorer': lazy(() => import('../components/Icons/PageExplorerRounded')),
-    'craftercms.icons.SiteExplorer': lazy(() => import('../components/Icons/SiteExplorerRounded')),
-    'craftercms.icons.Component': lazy(() => import('../components/Icons/Component')),
-    'craftercms.icons.GraphQL': lazy(() => import('../components/Icons/GraphQL')),
+    'craftercms.icons.PageExplorer': lazy(() => import('../icons/PageExplorerRounded')),
+    'craftercms.icons.SiteExplorer': lazy(() => import('../icons/SiteExplorerRounded')),
+    'craftercms.icons.Component': lazy(() => import('../icons/Component')),
+    'craftercms.icons.GraphQL': lazy(() => import('../icons/GraphQL')),
     'craftercms.components.LauncherLinkTile': lazy(() => import('../components/LauncherLinkTile')),
     'craftercms.components.LauncherPublishingStatusTile': lazy(
       () => import('../components/LauncherPublishingStatusTile')
     ),
     'craftercms.components.LauncherSection': lazy(() => import('../components/LauncherSection')),
     'craftercms.components.LauncherGlobalNav': lazy(() => import('../components/LauncherGlobalNav')),
-    'craftercms.icons.Preview': lazy(() => import('../components/Icons/Preview')),
-    'craftercms.icons.CrafterIcon': lazy(() => import('../components/Icons/About')),
-    'craftercms.icons.Docs': lazy(() => import('../components/Icons/Docs')),
-    'craftercms.icons.Sites': lazy(() => import('../components/Icons/SitesRounded')),
+    'craftercms.icons.Preview': lazy(() => import('../icons/Preview')),
+    'craftercms.icons.CrafterIcon': lazy(() => import('../icons/About')),
+    'craftercms.icons.Docs': lazy(() => import('../icons/Docs')),
+    'craftercms.icons.Sites': lazy(() => import('../icons/SitesRounded')),
     '@mui/icons-material/BuildRounded': lazy(() => import('@mui/icons-material/BuildRounded')),
     '@mui/icons-material/AccountCircleRounded': lazy(() => import('@mui/icons-material/AccountCircleRounded')),
     '@mui/icons-material/PeopleRounded': lazy(() => import('@mui/icons-material/PeopleRounded')),
@@ -102,7 +115,7 @@ export const registerComponents = () => {
     'craftercms.components.LegacyDashboardFrame': lazy(() => import('../components/LegacyDashboardFrame')),
     'craftercms.components.PreviewSettingsPanel': lazy(() => import('../components/PreviewSettingsPanel')),
     'craftercms.components.PluginManagement': lazy(() => import('../components/PluginManagement')),
-    'craftercms.component.EmptyState': lazy(() => import('../components/SystemStatus/EmptyState')),
+    'craftercms.component.EmptyState': lazy(() => import('../components/EmptyState/EmptyState')),
     'craftercms.components.SiteEncryptTool': lazy(() => import('../components/SiteEncryptTool')),
     'craftercms.components.ContentTypeManagement': lazy(() => import('../components/ContentTypesManagement')),
     'craftercms.components.SiteConfigurationManagement': lazy(
@@ -123,7 +136,7 @@ export const registerComponents = () => {
     'craftercms.components.RecentActivityDashlet': lazy(() => import('../components/RecentActivityDashlet')),
     'craftercms.components.IconGuideDashlet': lazy(() => import('../components/IconGuideDashlet')),
     'craftercms.components.PublishingStatusButton': lazy(() => import('../components/PublishingStatusButton')),
-    'craftercms.components.QuickCreate': lazy(() => import('../modules/Preview/QuickCreate')),
+    'craftercms.components.QuickCreate': lazy(() => import('../components/QuickCreate/QuickCreate')),
     'craftercms.components.EditModeSwitch': lazy(() => import('../components/EditModeSwitch')),
     'craftercms.components.PreviewAddressBar': lazy(() => import('../components/PreviewAddressBar')),
     'craftercms.components.SiteSwitcherSelect': lazy(() => import('../components/SiteSwitcherSelect')),

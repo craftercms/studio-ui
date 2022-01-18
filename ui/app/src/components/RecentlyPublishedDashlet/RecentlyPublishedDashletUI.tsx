@@ -30,7 +30,7 @@ import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import GlobalState from '../../models/GlobalState';
 import LookupTable from '../../models/LookupTable';
 import Collapse from '@mui/material/Collapse';
-import { DashboardItem } from './RecentlyPublishedDashlet';
+import { RecentlyPublishedDashletDashboardItem } from './RecentlyPublishedDashlet';
 import { DetailedItem } from '../../models/Item';
 import ItemDisplay from '../ItemDisplay';
 import MoreVertRounded from '@mui/icons-material/MoreVertRounded';
@@ -42,7 +42,7 @@ import Tooltip from '@mui/material/Tooltip';
 import { getDatePublished } from '../../utils/detailedItem';
 
 export interface RecentlyPublishedWidgetUIProps {
-  resource: Resource<DashboardItem[]>;
+  resource: Resource<RecentlyPublishedDashletDashboardItem[]>;
   itemsLookup: LookupTable<DetailedItem>;
   localeBranch: GlobalState['uiConfig']['locale'];
   expandedItems: LookupTable<boolean>;
@@ -126,7 +126,7 @@ export default function RecentlyPublishedDashletUI(props: RecentlyPublishedWidge
                               </Typography>
                             </GlobalAppGridCell>
                             <GlobalAppGridCell className="width20">
-                              {itemsLookup[path].stateMap.submittedToLive ? (
+                              {itemsLookup[path].stateMap.live ? (
                                 <FormattedMessage id="words.live" defaultMessage="Live" />
                               ) : (
                                 <FormattedMessage id="words.staging" defaultMessage="Staging" />

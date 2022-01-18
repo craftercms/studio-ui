@@ -23,7 +23,8 @@ export const useStyles = makeStyles((theme) =>
       minHeight: '60vh'
     },
     searchRoot: {
-      marginBottom: '16px'
+      marginLeft: 'auto',
+      maxWidth: '250px'
     },
     emptyState: {
       flexGrow: 1
@@ -57,6 +58,9 @@ export const useStyles = makeStyles((theme) =>
     },
     treeItemLabel: {
       width: '100%'
+    },
+    bodyEmptyState: {
+      height: '60vh'
     }
   })
 );
@@ -77,5 +81,3 @@ export const useCardStyles = makeStyles(() =>
     }
   })
 );
-
-export default useStyles;

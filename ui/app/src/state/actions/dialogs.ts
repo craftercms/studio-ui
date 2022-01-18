@@ -18,8 +18,8 @@ import { createAction } from '@reduxjs/toolkit';
 import StandardAction from '../../models/StandardAction';
 import { FetchContentVersion } from '../../models/Version';
 import { NewContentDialogStateProps } from '../../components/NewContentDialog/utils';
-import { PathSelectionDialogStateProps } from '../../components/Dialogs/PathSelectionDialog';
-import { CopyDialogStateProps } from '../../components/Dialogs/CopyDialog';
+import { PathSelectionDialogStateProps } from '../../components/PathSelectionDialog/PathSelectionDialog';
+import { CopyDialogStateProps } from '../../components/CopyDialog/utils';
 import { ItemMenuStateProps } from '../../components/ItemActionsMenu';
 import { ItemMegaMenuStateProps } from '../../components/ItemMegaMenu';
 import { LauncherStateProps } from '../../components/Launcher';
@@ -156,7 +156,8 @@ export const showCodeEditorDialog =
   /*#__PURE__*/ createAction<Partial<CodeEditorDialogStateProps>>('SHOW_CODE_EDITOR_DIALOG');
 export const closeCodeEditorDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_CODE_EDITOR_DIALOG');
 export const codeEditorDialogClosed = /*#__PURE__*/ createAction('CODE_EDITOR_DIALOG_CLOSED');
-export const updateCodeEditorDialog = /*#__PURE__*/ createAction<any>('UPDATE_CODE_EDITOR_DIALOG');
+export const updateCodeEditorDialog =
+  /*#__PURE__*/ createAction<Partial<CodeEditorDialogStateProps>>('UPDATE_CODE_EDITOR_DIALOG');
 // endregion
 
 // region Create Folder Dialog
@@ -181,6 +182,7 @@ export const updateCreateFileDialog =
 export const showCopyDialog = /*#__PURE__*/ createAction<Partial<CopyDialogStateProps>>('SHOW_COPY_DIALOG');
 export const closeCopyDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_COPY_DIALOG');
 export const copyDialogClosed = /*#__PURE__*/ createAction('COPY_DIALOG_CLOSED');
+export const updateCopyDialog = /*#__PURE__*/ createAction<Partial<CopyDialogStateProps>>('UPDATE_COPY_DIALOG');
 // endregion
 
 // region Upload Dialog

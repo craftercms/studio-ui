@@ -32,3 +32,15 @@ export enum HighlightMode {
   ALL = 'all',
   MOVE_TARGETS = 'move'
 }
+
+export const editOnClass = 'craftercms-ice-on';
+export const iceBypassKeyClass = 'craftercms-ice-bypass';
+export const eventCaptureOverlayAttribute = 'data-craftercms-event-capture-overlay';
+export const moveModeClass = `craftercms-highlight-${HighlightMode.MOVE_TARGETS}`;
+export const editModeClass = `craftercms-highlight-${HighlightMode.ALL}`;
+export const emptyCollectionClass = 'craftercms-empty-collection';
+export const emptyFieldClass = 'craftercms-empty-field';
+export const dragAndDropActiveClass = 'craftercms-drag-n-drop-active';
+export const editModePaddingClass = 'craftercms-edit-mode-padding';
+export const editModeIceBypassEvent = 'craftercms.iceBypass';
+export const editModeEvent = 'craftercms.editMode';

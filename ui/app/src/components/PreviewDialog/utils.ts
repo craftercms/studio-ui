@@ -16,7 +16,7 @@
 
 import StandardAction from '../../models/StandardAction';
 import { EnhancedDialogProps } from '../EnhancedDialog';
-import { EnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
+import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 
 export interface PreviewDialogBaseProps {
   type: string;
@@ -32,6 +32,10 @@ export interface PreviewDialogProps extends PreviewDialogBaseProps, Omit<Enhance
 export interface PreviewDialogStateProps extends PreviewDialogBaseProps, EnhancedDialogState {
   onClose?: StandardAction;
   onClosed?: StandardAction;
+  onMinimize?: StandardAction;
+  onMaximize?: StandardAction;
+  onFullScreen?: StandardAction;
+  onCancelFullScreen?: StandardAction;
 }
 
 export interface PreviewDialogContainerProps extends PreviewDialogBaseProps, Pick<PreviewDialogProps, 'onClose'> {}

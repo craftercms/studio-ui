@@ -10,9 +10,9 @@
   },
   "dependencies": {
     "ace-builds": "^1.4.13",
-    "js-yaml": "^4.0.0"
+    "js-yaml": "^4.1.0"
   },
   "devDependencies": {
-    "build-if-changed": "*"
+    "build-if-changed": "^1.5.5"
   }
 }

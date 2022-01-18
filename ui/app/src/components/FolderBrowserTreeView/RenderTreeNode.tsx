@@ -21,15 +21,15 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import TreeItem from '@mui/lab/TreeItem';
 import clsx from 'clsx';
 import { useTreeNodeStyles } from './styles';
-import { TreeNode } from './FolderBrowserTreeViewUI';
+import { FolderBrowserTreeViewNode } from './FolderBrowserTreeViewUI';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 
 export interface RenderTreeNodeProps {
-  node: TreeNode;
+  node: FolderBrowserTreeViewNode;
   classes?: Partial<Record<'treeItemLabel', string>>;
-  onIconClick?(event: React.ChangeEvent<{}>, node: TreeNode): void;
-  onLabelClick?(event: React.ChangeEvent<{}>, node: TreeNode): void;
+  onIconClick?(event: React.ChangeEvent<{}>, node: FolderBrowserTreeViewNode): void;
+  onLabelClick?(event: React.ChangeEvent<{}>, node: FolderBrowserTreeViewNode): void;
 }
 
 const translations = defineMessages({

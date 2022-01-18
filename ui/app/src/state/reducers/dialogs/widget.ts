@@ -33,6 +33,8 @@ export default createReducer<GlobalState['dialogs']['widget']>(initialState, {
     ...state,
     onClose: closeWidgetDialog(),
     onClosed: widgetDialogClosed(),
+    onMinimize: updateWidgetDialog({ isMinimized: true }),
+    onMaximize: updateWidgetDialog({ isMinimized: false }),
     ...payload,
     open: true
   }),

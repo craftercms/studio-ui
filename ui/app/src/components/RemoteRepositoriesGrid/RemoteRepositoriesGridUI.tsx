@@ -67,7 +67,7 @@ export function RemoteRepositoriesGridUI(props: RemoteRepositoriesGridUIProps) {
                     </IconButton>
                   </span>
                 </Tooltip>
-                <Tooltip title={<FormattedMessage id="words.pull" defaultMessage="Push" />}>
+                <Tooltip title={<FormattedMessage id="words.push" defaultMessage="Push" />}>
                   <span>
                     <IconButton
                       onClick={() => onPushClick(repository.name, repository.branches)}
@@ -86,7 +86,6 @@ export function RemoteRepositoriesGridUI(props: RemoteRepositoriesGridUIProps) {
                   }
                   iconTooltip={<FormattedMessage id="words.delete" defaultMessage="Delete" />}
                   icon={DeleteRoundedIcon}
-                  iconColor="action"
                   onConfirm={() => {
                     onDeleteRemote(repository.name);
                   }}

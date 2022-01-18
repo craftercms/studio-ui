@@ -15,15 +15,16 @@
  */
 
 import React from 'react';
-import { DeleteDependencies } from '../../modules/Content/Dependencies/DependencySelection';
+import { DeleteDependencies } from '../DependencySelection';
 import { useDeleteDialogUIStyles } from './styles';
 import Grid from '@mui/material/Grid';
-import TextFieldWithMax from '../Controls/TextFieldWithMax';
+import TextFieldWithMax from '../TextFieldWithMax/TextFieldWithMax';
 import { FormattedMessage } from 'react-intl';
-import { SelectionList } from '../../modules/Content/Dependencies/SelectionList';
+import { SelectionList } from '../DependencySelection/SelectionList';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { DeleteDialogContentUIProps } from './utils';
+import Alert from '@mui/material/Alert';
 
 export function DeleteDialogUIBody(props: DeleteDialogContentUIProps) {
   const {
@@ -89,23 +90,25 @@ export function DeleteDialogUIBody(props: DeleteDialogContentUIProps) {
             required={isCommentRequired}
             disabled={isDisabled}
           />
-          <FormControlLabel
-            className={classes.confirmCheck}
-            control={
-              <Checkbox
-                color="primary"
-                checked={isConfirmDeleteChecked}
-                onChange={onConfirmDeleteChange}
-                disabled={isDisabled}
-              />
-            }
-            label={
-              <FormattedMessage
-                id="deleteDialog.confirmDeletion"
-                defaultMessage="By submitting, deleted items will be published immediately."
-              />
-            }
-          />
+          <Alert severity="warning" icon={false}>
+            <FormControlLabel
+              className={classes.confirmCheck}
+              control={
+                <Checkbox
+                  color="primary"
+                  checked={isConfirmDeleteChecked}
+                  onChange={onConfirmDeleteChange}
+                  disabled={isDisabled}
+                />
+              }
+              label={
+                <FormattedMessage
+                  id="deleteDialog.confirmDeletion"
+                  defaultMessage="I understand that deleted items will be published immediately."
+                />
+              }
+            />
+          </Alert>
         </form>
       </Grid>
     </Grid>

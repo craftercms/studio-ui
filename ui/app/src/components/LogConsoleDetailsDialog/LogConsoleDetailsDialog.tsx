@@ -26,7 +26,7 @@ export interface LogConsoleDetailsDialogProps {
   logEvent: LogEvent;
 }
 
-export default function LogConsoleDetailsDialog(props: LogConsoleDetailsDialogProps) {
+export function LogConsoleDetailsDialog(props: LogConsoleDetailsDialogProps) {
   const { open, onClose } = props;
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
@@ -34,3 +34,5 @@ export default function LogConsoleDetailsDialog(props: LogConsoleDetailsDialogPr
     </Dialog>
   );
 }
+
+export default LogConsoleDetailsDialog;

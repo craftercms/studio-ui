@@ -15,11 +15,24 @@
  */
 
 import * as React from 'react';
-import palette from '../styles/palette';
+import palette from '@craftercms/studio-ui/styles/palette';
 import Global from '@mui/material/GlobalStyles';
 import { defaultStyleConfig as config } from '../styles/stylesheet';
+import {
+  editModeClass,
+  editOnClass,
+  eventCaptureOverlayAttribute,
+  iceBypassKeyClass,
+  emptyCollectionClass,
+  moveModeClass,
+  emptyFieldClass,
+  dragAndDropActiveClass,
+  editModePaddingClass
+} from '../constants';
 
 export interface GuestGlobalStylesProps {}
+
+const overlayBackgroundColor = 'rgba(0, 0, 0, .4)';
 
 // Hoist global styles to a static constant to avoid re-rendering.
 const styles = (
@@ -148,7 +161,6 @@ const styles = (
         }
       },
       // Classes
-
       '.craftercms-placeholder-spinner': {
         animation: 'craftercms-placeholder-animation 2s linear infinite',
         '& .path': {
@@ -173,14 +185,81 @@ const styles = (
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap'
       },
-      '.craftercms-ice-on': {
-        '& [data-craftercms-model-id], & [data-craftercms-model-id] a': {
+      // region craftercms-ice-on
+      [`.${editModeClass}`]: {
+        '[data-craftercms-model-id], & [data-craftercms-model-id] a': {
           cursor: 'url("/studio/static-assets/images/cursor-edit@1.5x.png"), pointer !important'
-        },
-        '& [draggable="true"]': {
+        }
+      },
+      [`.${moveModeClass}`]: {
+        '[draggable="true"]': {
           cursor: 'url("/studio/static-assets/images/cursor-drag@1.5x.png"), move !important'
         }
       },
+      [`.${dragAndDropActiveClass}`]: {},
+      [`.${editModePaddingClass}`]: {
+        '[data-craftercms-type="collection"]': {
+          paddingTop: '20px',
+          paddingRight: '20px',
+          paddingBottom: '20px',
+          paddingLeft: '20px'
+        }
+      },
+      [`.${editOnClass}`]: {
+        [`&.${moveModeClass} [${eventCaptureOverlayAttribute}]`]: {
+          background: overlayBackgroundColor,
+          '&::before': {
+            content: '"Content hidden to enable dragging."'
+          },
+          '> *': {
+            visibility: 'hidden'
+          }
+        },
+        [`&.${iceBypassKeyClass} [${eventCaptureOverlayAttribute}]:hover::before`]: {
+          backgroundColor: overlayBackgroundColor,
+          content: '"Turn off edit mode to interact with this element."'
+        },
+        [`[${eventCaptureOverlayAttribute}]`]: {
+          position: 'relative',
+          '&::before': {
+            top: 0,
+            left: 0,
+            right: 0,
+            color: '#fff',
+            bottom: 0,
+            content: '""',
+            padding: '20px',
+            fontWeight: 'bold',
+            position: 'absolute'
+          }
+        },
+        [`.${emptyCollectionClass}`]: {
+          minHeight: '100px',
+          minWidth: '100px',
+          backgroundColor: overlayBackgroundColor,
+          '&::before': {
+            color: '#fff',
+            display: 'inline-block',
+            padding: '10px',
+            content: '"No items on this area."',
+            fontWeight: 'bold'
+          }
+        },
+        [`.${emptyFieldClass}`]: {
+          minHeight: '40px',
+          minWidth: '50px',
+          borderRadius: '5px',
+          backgroundColor: overlayBackgroundColor,
+          '&::before': {
+            color: '#fff',
+            display: 'inline-block',
+            padding: '10px',
+            content: '"Click to add content."',
+            fontWeight: 'bold'
+          }
+        }
+      },
+      // endregion
       '.mce-content-body': {
         outlineOffset: 5,
         outline: `2px solid ${config.inlineTextEditorOutlineColor}`,

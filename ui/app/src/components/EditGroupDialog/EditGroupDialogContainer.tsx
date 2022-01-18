@@ -33,7 +33,7 @@ import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../state/actions/system';
 import Typography from '@mui/material/Typography';
-import { useSpreadState } from '../../utils/hooks/useSpreadState';
+import { useSpreadState } from '../../hooks/useSpreadState';
 import { EditGroupDialogContainerProps } from './utils';
 
 const translations = defineMessages({

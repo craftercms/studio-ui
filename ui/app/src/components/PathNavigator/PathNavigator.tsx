@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ElementType, useCallback, useEffect, useState } from 'react';
+import React, { ChangeEvent, ElementType, useCallback, useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { DetailedItem } from '../../models/Item';
 import ContextMenu, { ContextMenuOption } from '../ContextMenu/ContextMenu';
@@ -24,8 +24,10 @@ import { translations } from './translations';
 import { languages } from '../../utils/i18n-legacy';
 import {
   pathNavigatorBackgroundRefresh,
+  pathNavigatorChangeLimit,
   pathNavigatorChangePage,
   pathNavigatorConditionallySetPath,
+  pathNavigatorFetchPath,
   pathNavigatorInit,
   pathNavigatorItemChecked,
   pathNavigatorItemUnchecked,
@@ -64,17 +66,17 @@ import { SystemIconDescriptor } from '../SystemIcon';
 import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover/Popover';
 import { getNumOfMenuOptionsForItem } from '../../utils/content';
 import { batchActions } from '../../state/actions/misc';
-import { useSelection } from '../../utils/hooks/useSelection';
-import { useEnv } from '../../utils/hooks/useEnv';
-import { useItemsByPath } from '../../utils/hooks/useItemsByPath';
-import { useSubject } from '../../utils/hooks/useSubject';
-import { useSiteLocales } from '../../utils/hooks/useSiteLocales';
-import { useMount } from '../../utils/hooks/useMount';
+import { useSelection } from '../../hooks/useSelection';
+import { useEnv } from '../../hooks/useEnv';
+import { useItemsByPath } from '../../hooks/useItemsByPath';
+import { useSubject } from '../../hooks/useSubject';
+import { useSiteLocales } from '../../hooks/useSiteLocales';
+import { useMount } from '../../hooks/useMount';
 import { getSystemLink } from '../../utils/system';
-import { useLegacyPreviewPreference } from '../../utils/hooks/useLegacyPreviewPreference';
+import { useLegacyPreviewPreference } from '../../hooks/useLegacyPreviewPreference';
 import { getStoredPathNavigator } from '../../utils/state';
-import { useActiveSite } from '../../utils/hooks/useActiveSite';
-import { useActiveUser } from '../../utils/hooks/useActiveUser';
+import { useActiveSite } from '../../hooks/useActiveSite';
+import { useActiveUser } from '../../hooks/useActiveUser';
 
 interface Menu {
   path?: string;
@@ -135,7 +137,7 @@ const menuOptions: Record<'refresh', ContextMenuOptionDescriptor> = {
   }
 };
 
-export default function PathNavigator(props: PathNavigatorProps) {
+export function PathNavigator(props: PathNavigatorProps) {
   const {
     label = '(No name)',
     icon,
@@ -344,7 +346,7 @@ export default function PathNavigator(props: PathNavigatorProps) {
 
   const onPathSelected = (item: DetailedItem) => {
     dispatch(
-      pathNavigatorConditionallySetPath({
+      pathNavigatorFetchPath({
         id,
         path: item.path
       })
@@ -389,6 +391,17 @@ export default function PathNavigator(props: PathNavigatorProps) {
       pathNavigatorChangePage({
         id,
         offset
+      })
+    );
+  };
+
+  const onRowsPerPageChange = (e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+    const limit = Number(e.target.value);
+    dispatch(
+      pathNavigatorChangeLimit({
+        id,
+        limit,
+        offset: 0
       })
     );
   };
@@ -533,6 +546,7 @@ export default function PathNavigator(props: PathNavigatorProps) {
         onOpenItemMenu={onOpenItemMenu}
         onItemClicked={onItemClicked}
         onPageChanged={onPageChanged}
+        onRowsPerPageChange={onRowsPerPageChange}
         computeActiveItems={computeActiveItems}
       />
       <ContextMenu
@@ -546,3 +560,5 @@ export default function PathNavigator(props: PathNavigatorProps) {
     </>
   );
 }
+
+export default PathNavigator;

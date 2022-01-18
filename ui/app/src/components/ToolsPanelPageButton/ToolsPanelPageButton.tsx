@@ -29,7 +29,7 @@ export interface ToolsPanelPageButtonProps {
   icon: SystemIconDescriptor;
 }
 
-export default function ToolsPanelPageButton(props: ToolsPanelPageButtonProps) {
+export function ToolsPanelPageButton(props: ToolsPanelPageButtonProps) {
   const { target = 'toolsPanel' } = props;
   const dispatch = useDispatch();
   const pushPage = target === 'toolsPanel' ? pushToolsPanelPage : pushIcePanelPage;
@@ -46,3 +46,5 @@ export default function ToolsPanelPageButton(props: ToolsPanelPageButtonProps) {
   };
   return <ToolsPanelListItemButton {...props} onClick={turnPage} />;
 }
+
+export default ToolsPanelPageButton;

@@ -20,7 +20,7 @@ import { nanoid as uuid } from 'nanoid';
 import TranslationOrText from '../models/TranslationOrText';
 import { DashboardPreferences } from '../models/Dashboard';
 import ToolsPanelTarget from '../models/ToolsPanelTarget';
-import { EnhancedDialogState } from './hooks/useEnhancedDialogState';
+import { EnhancedDialogState } from '../hooks/useEnhancedDialogState';
 import { HighlightMode } from '../models/GlobalState';
 
 export function setStoredGlobalMenuSiteViewPreference(value: 'grid' | 'list', user: string) {
@@ -67,6 +67,15 @@ export function setStoredHighlightModeChoice(value: HighlightMode, user: string)
 
 export function getStoredHighlightModeChoice(user: string): HighlightMode {
   return window.localStorage.getItem(`craftercms.${user}.highlightModeChoice`) as HighlightMode;
+}
+
+export function setStoredEditModePadding(value: string, user: string): void {
+  window.localStorage.setItem(`craftercms.${user}.editModePadding`, value);
+}
+
+export function getStoredEditModePadding(user: string): boolean {
+  const value = window.localStorage.getItem(`craftercms.${user}.editModePadding`);
+  return value ? value === 'true' : null;
 }
 
 export function setStoredClipboard(siteIdentifier: string, user: string, value: object): void {
@@ -198,6 +207,18 @@ export function getStoredICEToolsPanelWidth(siteIdentifier: string, user: string
   return value === null ? (value as null) : parseInt(value);
 }
 
+export function setStoredICEToolsPanelPage(siteIdentifier: string, user: string, value: WidgetDescriptor): void {
+  window.localStorage.setItem(`craftercms.${user}.ICEToolsPanel.${siteIdentifier}`, JSON.stringify(value));
+}
+
+export function getStoredICEToolsPanelPage(siteIdentifier: string, user: string): WidgetDescriptor {
+  return JSON.parse(window.localStorage.getItem(`craftercms.${user}.ICEToolsPanel.${siteIdentifier}`));
+}
+
+export function removeStoredICEToolsPanelPage(siteIdentifier: string, user: string): void {
+  window.localStorage.removeItem(`craftercms.${user}.ICEToolsPanel.${siteIdentifier}`);
+}
+
 export function commonDialogProps<T>(specificProps: T): EnhancedDialogState & T {
   return {
     open: false,
@@ -206,4 +227,16 @@ export function commonDialogProps<T>(specificProps: T): EnhancedDialogState & T 
     hasPendingChanges: null,
     ...specificProps
   };
+}
+
+export function setStoredSaveButtonSubAction(user: string, id: string, value: string): void {
+  window.localStorage.setItem(`craftercms.${user}.saveButtonSubAction.${id}`, value);
+}
+
+export function getStoredSaveButtonSubAction(user: string, id: string): string {
+  return window.localStorage.getItem(`craftercms.${user}.saveButtonSubAction.${id}`);
+}
+
+export function removeStoredSaveButtonSubAction(user: string, id: string): void {
+  window.localStorage.removeItem(`craftercms.${user}.saveButtonSubAction.${id}`);
 }

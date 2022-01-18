@@ -19,11 +19,11 @@ import { ApiResponse } from '../../models/ApiResponse';
 import StandardAction from '../../models/StandardAction';
 import { GoLiveResponse } from '../../services/publishing';
 import { EnhancedDialogProps } from '../EnhancedDialog';
-import { EnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
+import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { Resource } from '../../models/Resource';
 import React, { ReactNode } from 'react';
 import LookupTable from '../../models/LookupTable';
-import { DependencySelectionProps } from '../../modules/Content/Dependencies/DependencySelection';
+import { DependencySelectionProps } from '../DependencySelection/DependencySelection';
 import { FetchDependenciesResponse } from '../../services/dependencies';
 
 export interface PublishDialogResourceInput {

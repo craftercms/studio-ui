@@ -39,7 +39,7 @@ export const guestMessages = defineMessages({
   },
   registerNotFound: {
     id: 'register.notFound',
-    defaultMessage: '{name} is not visible or was not registered by developers'
+    defaultMessage: "{name} is not visible or was not registered by it's developer"
   },
   dropTargetsNotFound: {
     id: 'register.dropTargetsNotFound',

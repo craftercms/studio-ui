@@ -19,6 +19,7 @@ import { DetailedItem, PasteItem } from '../models/Item';
 import { toQueryString } from './object';
 import LookupTable from '../models/LookupTable';
 import ContentType from '../models/ContentType';
+import { SystemType } from '../models';
 
 // Originally from ComponentPanel.getPreviewPagePath
 export function getPathFromPreviewURL(previewURL: string): string {
@@ -223,11 +224,15 @@ export function stripDuplicateSlashes(str: string): string {
   return str.replace(/\/+/g, '/');
 }
 
-export function getItemGroovyPath(item: DetailedItem, contentTypes: LookupTable<ContentType>): string {
+export function getItemGroovyPath(item: DetailedItem): string {
   const contentTypeName = /[^/]*$/.exec(item.contentTypeId)[0];
-  return `/scripts/${item.systemType}s/${contentTypeName}.groovy`;
+  return `${getControllerPath(item.systemType)}/${contentTypeName}.groovy`;
 }
 
 export function getItemTemplatePath(item: DetailedItem, contentTypes: LookupTable<ContentType>): string {
   return contentTypes[item.contentTypeId].displayTemplate;
+}
+
+export function getControllerPath(type: SystemType): string {
+  return `/scripts/${type === 'page' ? 'pages' : 'components'}`;
 }

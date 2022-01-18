@@ -15,9 +15,9 @@
  */
 
 import { ElementRecord } from '../models/InContextEditing';
-import * as iceRegistry from '../classes/ICERegistry';
+import * as iceRegistry from '../iceRegistry';
 import { Editor } from 'tinymce';
-import * as contentController from '../classes/ContentController';
+import * as contentController from '../contentController';
 import { ContentTypeFieldValidations } from '@craftercms/studio-ui/models/ContentType';
 import { post } from '../utils/communicator';
 import { GuestStandardAction } from '../store/models/GuestStandardAction';
@@ -28,6 +28,7 @@ import { reversePluckProps } from '@craftercms/studio-ui/utils/object';
 import { showEditDialog, validationMessage } from '@craftercms/studio-ui/state/actions/preview';
 import { RteSetup } from '../models/Rte';
 import { editComponentInline, exitComponentInlineEdit } from '../store/actions';
+import { emptyFieldClass } from '../constants';
 
 export function initTinyMCE(
   record: ElementRecord,
@@ -71,6 +72,9 @@ export function initTinyMCE(
     paste_cleanup: '/studio/static-assets/js/tinymce-plugins/paste_cleanup/plugin.js'
   };
 
+  const $element = $(record.element);
+  $element.removeClass(emptyFieldClass);
+
   window.tinymce.init({
     mode: 'none',
     target: record.element,
@@ -88,6 +92,8 @@ export function initTinyMCE(
     base_url: '/studio/static-assets/modules/editors/tinymce/v5/tinymce',
     suffix: '.min',
     external_plugins: external,
+    code_editor_inline: false,
+    skin: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'oxide-dark' : 'oxide',
     setup(editor: Editor) {
       editor.on('init', function () {
         let changed = false;
@@ -119,6 +125,10 @@ export function initTinyMCE(
         });
 
         editor.once('change', () => {
+          changed = true;
+        });
+
+        editor.once('external_change', () => {
           changed = true;
         });
 
@@ -169,15 +179,23 @@ export function initTinyMCE(
           // In case the user did some text bolding or other formatting which won't
           // be honoured on plain text, revert the content to the edited plain text
           // version of the input.
-          changed && type === 'text' && $(record.element).html(content);
+          changed && type === 'text' && $element.html(content);
 
           if (elementDisplay === 'inline') {
-            $(record.element).css('display', '');
+            $element.css('display', '');
           }
 
-          dispatch$.next({ type: exitComponentInlineEdit.type });
-          dispatch$.complete();
-          dispatch$.unsubscribe();
+          if ($element.html().trim() === '') {
+            $element.addClass(emptyFieldClass);
+          }
+
+          // The timeout prevents clicking the edit menu to be shown when clicking out of an RTE
+          // with the intention to exit editing.
+          setTimeout(() => {
+            dispatch$.next({ type: exitComponentInlineEdit.type });
+            dispatch$.complete();
+            dispatch$.unsubscribe();
+          }, 150);
         }
 
         if (type !== 'html') {
@@ -222,7 +240,8 @@ export function initTinyMCE(
             'height', // Height is set to the size of content
             'file_picker_callback', // Files/images handlers currently not supported
             'paste_postprocess',
-            'images_upload_handler'
+            'images_upload_handler',
+            'code_editor_inline'
           )
         }
       : {}),

@@ -16,9 +16,9 @@
 
 import React, { useEffect, useRef } from 'react';
 import { useGuestContext, useSelector } from './GuestContext';
-import * as ElementRegistry from '../classes/ElementRegistry';
-import { getParentElementFromICEProps } from '../classes/ElementRegistry';
-import * as iceRegistry from '../classes/ICERegistry';
+import * as ElementRegistry from '../elementRegistry';
+import { getParentElementFromICEProps } from '../elementRegistry';
+import * as iceRegistry from '../iceRegistry';
 import $ from 'jquery';
 import {
   contentTypes$,
@@ -27,7 +27,7 @@ import {
   models$,
   operations$,
   paths$
-} from '../classes/ContentController';
+} from '../contentController';
 import { zip } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
 import * as ContentType from '@craftercms/studio-ui/utils/contentType';
@@ -44,8 +44,9 @@ import {
 import { GuestState } from '../store/models/GuestStore';
 import { notNullOrUndefined } from '@craftercms/studio-ui/utils/object';
 import { forEach } from '@craftercms/studio-ui/utils/array';
-import { popPiece, removeLastPiece } from '@craftercms/studio-ui/utils/string';
+import { isSimple, popPiece, removeLastPiece } from '@craftercms/studio-ui/utils/string';
 import { addAnimation } from '../utils/dom';
+import { emptyCollectionClass } from '../constants';
 
 export function GuestProxy() {
   const draggable = useSelector<GuestState['draggable']>((state) => state.draggable);
@@ -102,18 +103,45 @@ export function GuestProxy() {
       // Because more than one item may change their index, we need to deregister all items before
       // proceeding to registering again. Registering immediately after de-registering on the same
       // loop causes misjudging ICE records refCounts due to displaced collection items.
+
+      function updateRepeatGroupsItems(element, fieldId, index, newIndex, elements) {
+        element
+          .querySelectorAll(`[data-craftercms-field-id^="${fieldId}."][data-craftercms-index^="${index}"]`)
+          .forEach((element) => {
+            let position = $(element)
+              .attr('data-craftercms-field-id')
+              .split('.')
+              .indexOf(isSimple(fieldId) ? fieldId : popPiece(fieldId));
+            let elementIndex = $(element).attr('data-craftercms-index');
+            let splitIndex = elementIndex.split('.');
+            splitIndex[position] = isSimple(fieldId) ? newIndex.toString() : popPiece(newIndex.toString());
+
+            $(element).attr('data-craftercms-index', splitIndex.join('.'));
+
+            elements.push(element);
+
+            const elementRecord = ElementRegistry.fromElement(element);
+            elementRecord && ElementRegistry.deregister(elementRecord.id);
+          });
+      }
+
       if (type === 'insert' || type === 'delete') {
         const itemsToReRegister = collection.slice(newIndex);
+        const childrenToRegister = [];
         itemsToReRegister.forEach((el, i) => {
+          const currentElementIndex = $(el).attr('data-craftercms-index');
           const elementNewIndex = appendIndex(originalNewIndex, i);
           if (type === 'insert' && String(originalNewIndex) === String(elementNewIndex)) {
             addAnimation($(el), 'craftercms-content-tree-locate');
           }
           $(el).attr('data-craftercms-index', elementNewIndex);
+
+          updateRepeatGroupsItems(el, fieldId, currentElementIndex, elementNewIndex, childrenToRegister);
+
           const elementRecord = ElementRegistry.fromElement(el);
           elementRecord && ElementRegistry.deregister(elementRecord.id);
         });
-        itemsToReRegister.forEach((el) => registerElement(el));
+        itemsToReRegister.concat(childrenToRegister).forEach((el) => registerElement(el));
       } else if (type === 'sort') {
         let from;
         let to;
@@ -135,22 +163,7 @@ export function GuestProxy() {
 
           $(el).attr('data-craftercms-index', elementNewIndex);
 
-          // TODO: Pending to check if fieldId may have dotted notation. (repeat inside repeat)
-          el.querySelectorAll(
-            `[data-craftercms-field-id^="${fieldId}."][data-craftercms-index^="${currentElementIndex}"]`
-          ).forEach((element) => {
-            const position = $(element).attr('data-craftercms-field-id').split('.').indexOf(fieldId);
-            const elementIndex = $(element).attr('data-craftercms-index');
-            const splitIndex = elementIndex.split('.');
-            splitIndex[position] = elementNewIndex.toString();
-
-            $(element).attr('data-craftercms-index', splitIndex.join('.'));
-
-            childrenToRegister.push(element);
-
-            const elementRecord = ElementRegistry.fromElement(element);
-            elementRecord && ElementRegistry.deregister(elementRecord.id);
-          });
+          updateRepeatGroupsItems(el, fieldId, currentElementIndex, elementNewIndex, childrenToRegister);
 
           if (originalOldIndex === elementNewIndex) {
             addAnimation($(el), 'craftercms-content-tree-locate');
@@ -255,6 +268,7 @@ export function GuestProxy() {
           const moveTargetICEId = iceRegistry.exists({ modelId, fieldId, index });
           const moveTargetPhyRecord = ElementRegistry.fromICEId(moveTargetICEId);
 
+          const $sourceDropZone = $(currentDropZonePhyRecord.element);
           const $targetDropZone = $(targetDropZonePhyRecord.element);
 
           if (targetIndexParsed === 0) {
@@ -286,6 +300,11 @@ export function GuestProxy() {
               });
           });
 
+          $targetDropZone.removeClass(emptyCollectionClass);
+          if ($sourceDropZone.children().length === 0) {
+            $sourceDropZone.addClass(emptyCollectionClass);
+          }
+
           addAnimation($(moveTargetPhyRecord.element), 'craftercms-content-tree-locate');
 
           break;
@@ -303,7 +322,10 @@ export function GuestProxy() {
           setTimeout(() => {
             const $daddy: JQuery<Element> = $(phyRecord.element).parent();
             $(phyRecord.element).remove();
-            updateElementRegistrations(Array.from($daddy.children()), 'delete', index);
+            if ($daddy.children().length === 0) {
+              $daddy.addClass(emptyCollectionClass);
+            }
+            updateElementRegistrations(Array.from($daddy.children()), 'delete', index, null, fieldId);
           });
 
           break;
@@ -320,6 +342,7 @@ export function GuestProxy() {
 
           const $daddy = getParentElementFromICEProps(modelId, fieldId, targetIndex);
 
+          $daddy.removeClass(emptyCollectionClass);
           insertElement($spinner, $daddy, targetIndex);
 
           message$
@@ -345,7 +368,7 @@ export function GuestProxy() {
                 );
                 const $component = $(itemElement?.outerHTML);
                 insertElement($component, $daddy, targetIndex);
-                updateElementRegistrations(Array.from($daddy.children()), 'insert', targetIndex);
+                updateElementRegistrations(Array.from($daddy.children()), 'insert', targetIndex, null, fieldId);
                 $component.find('[data-craftercms-model-id]').each((i, el) => registerElement(el));
                 ifrm.remove();
               };

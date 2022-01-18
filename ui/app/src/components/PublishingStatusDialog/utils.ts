@@ -17,7 +17,7 @@
 import StandardAction from '../../models/StandardAction';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 import { PublishingStatus } from '../../models/Publishing';
-import { EnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
+import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 
 export interface PublishingStatusBaseProps extends PublishingStatus {
   isFetching: boolean;

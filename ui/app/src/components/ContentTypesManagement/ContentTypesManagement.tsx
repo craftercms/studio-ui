@@ -19,33 +19,76 @@ import { FormattedMessage } from 'react-intl';
 import React, { useEffect, useState } from 'react';
 import LegacyIFrame from '../LegacyIFrame';
 import Box from '@mui/material/Box';
-import LoadingState from '../SystemStatus/LoadingState';
+import LoadingState from '../LoadingState/LoadingState';
 import { fromEvent } from 'rxjs';
 import { filter } from 'rxjs/operators';
-import { onSubmittingAndOrPendingChangeProps } from '../../utils/hooks/useEnhancedDialogState';
+import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
+import { useDispatch } from 'react-redux';
+import {
+  contentTypeCreated,
+  contentTypeDeleted,
+  contentTypeUpdated,
+  emitSystemEvent
+} from '../../state/actions/system';
 
 interface ContentTypeManagementProps {
   embedded?: boolean;
   showAppsButton?: boolean;
+  mountMode?: 'dialog' | 'page';
+  onClose?: () => void;
+  onMinimize?: () => void;
   onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
-export default function ContentTypeManagement(props: ContentTypeManagementProps) {
-  const { embedded = false, showAppsButton, onSubmittingAndOrPendingChange } = props;
+export function ContentTypeManagement(props: ContentTypeManagementProps) {
+  const { embedded = false, showAppsButton, onClose, onMinimize, mountMode, onSubmittingAndOrPendingChange } = props;
   const [loading, setLoading] = useState(true);
-
-  const messages = fromEvent(window, 'message').pipe(
-    filter((e: any) => e.data?.type === 'CONTENT_TYPES_ON_SUBMITTING_OR_PENDING_CHANGES_MESSAGE')
-  );
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    const messagesSubscription = messages.subscribe((e: any) => {
-      onSubmittingAndOrPendingChange?.(e.data.payload);
-    });
+    const messagesSubscription = fromEvent(window, 'message')
+      .pipe(
+        filter((e: any) =>
+          [
+            'CONTENT_TYPES_ON_SAVED',
+            'CONTENT_TYPES_ON_CREATED',
+            'CONTENT_TYPES_ON_DELETED',
+            'CONTENT_TYPES_ON_SUBMITTING_OR_PENDING_CHANGES_MESSAGE'
+          ].includes(e.data?.type)
+        )
+      )
+      .subscribe((e: any) => {
+        switch (e.data.type) {
+          case 'CONTENT_TYPES_ON_SAVED': {
+            dispatch(emitSystemEvent(contentTypeUpdated()));
+            switch (e.data.saveType) {
+              case 'saveAndClose':
+                onClose?.();
+                break;
+              case 'saveAndMinimize':
+                onMinimize?.();
+                break;
+            }
+            break;
+          }
+          case 'CONTENT_TYPES_ON_CREATED': {
+            dispatch(emitSystemEvent(contentTypeCreated()));
+            break;
+          }
+          case 'CONTENT_TYPES_ON_DELETED': {
+            dispatch(emitSystemEvent(contentTypeDeleted()));
+            break;
+          }
+          case 'CONTENT_TYPES_ON_SUBMITTING_OR_PENDING_CHANGES_MESSAGE': {
+            onSubmittingAndOrPendingChange?.(e.data.payload);
+            break;
+          }
+        }
+      });
     return () => {
       messagesSubscription.unsubscribe();
     };
-  }, [messages, onSubmittingAndOrPendingChange]);
+  }, [dispatch, onSubmittingAndOrPendingChange, embedded, onClose, onMinimize]);
 
   return (
     <Box height="100%" display="flex" flexDirection="column">
@@ -57,7 +100,7 @@ export default function ContentTypeManagement(props: ContentTypeManagementProps)
       )}
       {loading && <LoadingState styles={{ root: { flexGrow: 1 } }} />}
       <LegacyIFrame
-        path="/legacy-site-config?mode=embedded#tool/content-types"
+        path={`/legacy-site-config?mode=embedded${mountMode ? `&mountMode=${mountMode}` : ''}#tool/content-types`}
         iframeProps={{
           style: {
             height: loading ? '0' : '100%'
@@ -70,3 +113,5 @@ export default function ContentTypeManagement(props: ContentTypeManagementProps)
     </Box>
   );
 }
+
+export default ContentTypeManagement;

@@ -67,7 +67,6 @@ export interface ContentTypeField {
   validations: Partial<ContentTypeFieldValidations>;
   properties?: LookupTable;
   defaultValue: any;
-  required?: boolean;
   fields?: LookupTable<ContentTypeField>;
   values?: { label: string; value: string }[];
   helpText?: string;
@@ -134,6 +133,9 @@ export interface LegacyFormDefinitionField {
   fields?: {
     field: LegacyFormDefinitionField | Array<LegacyFormDefinitionField>;
   };
+  // Repeat groups carry these both at the top and inside of "properties" (duplicated)
+  minOccurs?: string;
+  maxOccurs?: string;
 }
 
 export interface LegacyFormDefinitionSection {
@@ -158,7 +160,7 @@ export interface LegacyDataSource {
 export interface LegacyFormDefinition {
   // As returned by `/studio/api/1/services/api/1/site/get-configuration.json?site=${site}&path=/content-types/.../form-definition.xml`
   title: string; // e.g. Page - Home
-  contentType: string; // e.g. /page/home
+  'content-type': string; // e.g. /page/home
   description: string; // e.g. ""
   imageThumbnail: string; // e.g. page-home.png
   objectType: string; // e.g. page

@@ -27,6 +27,7 @@ let current: ObtainAuthTokenResponse = {
   token: null
 };
 let refreshInterval;
+let isRetrieving = false;
 
 const log =
   process.env.PRODUCTION === 'development'
@@ -50,6 +51,7 @@ function onmessage(event) {
         // If an error occurred or auth expired, need to retry/retrieve upon new connections.
         // Otherwise, the worker may end up staying 'dirty' when one tab expires, dies and
         // another comes in later after having logged in properly.
+        clearCurrent();
         retrieve();
       }
       break;
@@ -107,9 +109,11 @@ function retrieve() {
     log(`Skipping token retrieval: local expiration check determined auth is expired`);
     unauthenticated();
     return null;
-  } else {
+  } else if (!isRetrieving) {
+    isRetrieving = true;
     return obtainAuthToken().subscribe({
       next(response) {
+        isRetrieving = false;
         if (response) {
           log('New token received');
           status = 'active';
@@ -129,6 +133,7 @@ function retrieve() {
         return current;
       },
       error(e: AjaxError) {
+        isRetrieving = false;
         clearTimeout(timeout);
         log('Error retrieving token', e);
         if (e.status === 401) {

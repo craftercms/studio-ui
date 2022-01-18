@@ -29,11 +29,11 @@ import Skeleton from '@mui/material/Skeleton';
 import LookupTable from '../../models/LookupTable';
 import { rand } from '../PathNavigator/utils';
 import Typography from '@mui/material/Typography';
-import { DashboardItem } from './RecentlyPublishedDashlet';
+import { RecentlyPublishedDashletDashboardItem } from './RecentlyPublishedDashlet';
 
 export interface RecentlyPublishedWidgetUiSkeletonTableProps {
   numOfItems?: number;
-  items?: DashboardItem[];
+  items?: RecentlyPublishedDashletDashboardItem[];
   expandedLookup?: LookupTable<boolean>;
 }
 

@@ -23,10 +23,9 @@ import EnhancedDialog from '../EnhancedDialog';
 
 export function CodeEditorDialog(props: CodeEditorDialogProps) {
   const { formatMessage } = useIntl();
-  const { mode, isSubmitting, path, readonly, contentType, onSuccess, onClose, onMinimize, ...rest } = props;
-
+  const { mode, isSubmitting, path, readonly, contentType, onSuccess, onClose, onMinimize, onFullScreen, ...rest } =
+    props;
   const title = formatMessage(translations.title);
-
   return (
     <EnhancedDialog
       title={title}
@@ -44,6 +43,8 @@ export function CodeEditorDialog(props: CodeEditorDialogProps) {
         title={title}
         isSubmitting={isSubmitting}
         onMinimize={onMinimize}
+        readonly={readonly}
+        onFullScreen={props.isFullScreen ? props.onCancelFullScreen : props.onFullScreen}
       />
     </EnhancedDialog>
   );

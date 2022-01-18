@@ -18,6 +18,8 @@ import { nnou, nou, retrieveProperty, setProperty } from './object';
 import { removeLastPiece } from './string';
 import ContentInstance from '../models/ContentInstance';
 import LookupTable from '../models/LookupTable';
+import { ModelHierarchyMap } from './content';
+import { forEach } from './array';
 
 const systemPropList = ['id', 'path', 'contentTypeId', 'dateCreated', 'dateModified', 'label'];
 
@@ -90,10 +92,16 @@ function extractCollectionPiece(model: ContentInstance, fieldId: string, index: 
         `is ${indexes} and fields is ${fields}`
     );
   }
+
   indexes.forEach((index, i) => {
     const field = fields[i];
-    aux = aux[field][index];
+    aux = aux[field]?.[index];
   });
+
+  if (nou(aux)) {
+    return aux;
+  }
+
   if (indexes.length === fields.length) {
     return aux;
   } else if (indexes.length < fields.length) {
@@ -117,4 +125,28 @@ export function getModelIdFromInheritedField(
   return model.craftercms.sourceMap?.[fieldId]
     ? modelIdByPath[model.craftercms.sourceMap?.[fieldId]]
     : model.craftercms.id;
+}
+
+export function findParentModelId(
+  modelId: string,
+  hierarchyDescriptorLookup: ModelHierarchyMap,
+  models: LookupTable<ContentInstance>
+): string {
+  const parentId = forEach(
+    Object.entries(hierarchyDescriptorLookup),
+    ([id, children]) => {
+      if (nnou(children) && id !== modelId && children.children.includes(modelId)) {
+        return id;
+      }
+    },
+    null
+  );
+  return nnou(parentId)
+    ? // If it has a path, it is not embedded and hence the parent
+      // Otherwise, need to keep looking.
+      nnou(prop(models[parentId], 'path'))
+      ? parentId
+      : findParentModelId(parentId, hierarchyDescriptorLookup, models)
+    : // No parent found for this model
+      null;
 }

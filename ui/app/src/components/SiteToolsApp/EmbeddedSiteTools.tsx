@@ -15,13 +15,13 @@
  */
 
 import React, { useState } from 'react';
-import { useSelection } from '../../utils/hooks/useSelection';
+import { useSelection } from '../../hooks/useSelection';
 import { GlobalAppContextProvider, useGlobalAppState } from '../GlobalApp';
-import { useReference } from '../../utils/hooks/useReference';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { useReference } from '../../hooks/useReference';
+import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import SiteToolsApp, { Tool } from './SiteToolsApp';
 import { embeddedStyles } from './styles';
-import { onSubmittingAndOrPendingChangeProps } from '../../utils/hooks/useEnhancedDialogState';
+import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 import { useDispatch } from 'react-redux';
 import { updateWidgetDialog } from '../../state/actions/dialogs';
 
@@ -62,14 +62,20 @@ export const EmbeddedSiteToolsContainer = () => {
         root: classes.root
       }}
       onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
+      onMinimize={() => {
+        dispatch(updateWidgetDialog({ isMinimized: true }));
+      }}
+      mountMode="dialog"
     />
   );
 };
 
-export default function EmbeddedSiteTools() {
+export function EmbeddedSiteTools() {
   return (
     <GlobalAppContextProvider>
       <EmbeddedSiteToolsContainer />
     </GlobalAppContextProvider>
   );
 }
+
+export default EmbeddedSiteTools;

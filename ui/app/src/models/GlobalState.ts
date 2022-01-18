@@ -22,7 +22,7 @@ import { WidthAndHeight } from './WidthAndHeight';
 import { ElasticParams, MediaItem } from './Search';
 import ContentInstance from './ContentInstance';
 import { ContentTypeDropTarget } from './ContentTypeDropTarget';
-import { ErrorDialogStateProps } from '../components/SystemStatus/ErrorDialog';
+import { ErrorDialogStateProps } from '../components/ErrorDialog/ErrorDialog';
 import { MinimizedDialogsStateProps } from './MinimizedTab';
 import { NewContentDialogStateProps } from '../components/NewContentDialog/utils';
 import { EntityState } from './EntityState';
@@ -31,8 +31,8 @@ import { VersionsStateProps } from './Version';
 import QuickCreateItem from './content/QuickCreateItem';
 import { PathNavigatorStateProps } from '../components/PathNavigator';
 import { DetailedItem } from './Item';
-import { CopyDialogStateProps } from '../components/Dialogs/CopyDialog';
-import { PathSelectionDialogStateProps } from '../components/Dialogs/PathSelectionDialog';
+import { CopyDialogStateProps } from '../components/CopyDialog/utils';
+import { PathSelectionDialogStateProps } from '../components/PathSelectionDialog/PathSelectionDialog';
 import { WidgetDescriptor } from '../components/Widget';
 import { ItemMenuStateProps } from '../components/ItemActionsMenu';
 import { ItemMegaMenuStateProps } from '../components/ItemMegaMenu';
@@ -63,6 +63,8 @@ import { PreviewDialogStateProps } from '../components/PreviewDialog/utils';
 import { EditSiteDialogStateProps } from '../components/EditSiteDialog/utils';
 import { LegacyFormDialogStateProps } from '../components/LegacyFormDialog/utils';
 import { SingleFileUploadDialogStateProps } from '../components/SingleFileUploadDialog';
+import { ModelHierarchyMap } from '../utils/content';
+import { UIBlockerStateProps } from '../components/UIBlocker';
 
 export type HighlightMode = 'all' | 'move';
 
@@ -84,7 +86,7 @@ export interface GuestData {
   url: string;
   origin: string;
   models: LookupTable<ContentInstance>;
-  childrenMap: LookupTable<string[]>;
+  hierarchyMap: ModelHierarchyMap;
   modelIdByPath: LookupTable<string>;
   modelId: string;
   path: string;
@@ -185,6 +187,7 @@ export interface GlobalState {
       widgets: WidgetDescriptor[];
     };
     richTextEditor: LookupTable;
+    editModePadding: boolean;
   };
   previewNavigation: {
     currentUrlPath: string;
@@ -224,6 +227,7 @@ export interface GlobalState {
     publishingStatus: PublishingStatusDialogStateProps;
     unlockPublisher: UnlockPublisherDialogStateProps;
     widget: WidgetDialogStateProps;
+    uiBlocker: UIBlockerStateProps;
   };
   uiConfig: {
     error: ApiResponse;

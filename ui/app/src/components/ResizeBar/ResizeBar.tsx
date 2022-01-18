@@ -23,7 +23,7 @@ export interface ResizeBarProps {
   element?: HTMLElement;
 }
 
-export default function ResizeBar(props: ResizeBarProps) {
+export function ResizeBar(props: ResizeBarProps) {
   const classes = useStyles();
   const [resizeActive, setResizeActive] = useState(false);
   const { onWidthChange, element } = props;
@@ -59,3 +59,5 @@ export default function ResizeBar(props: ResizeBarProps) {
     />
   );
 }
+
+export default ResizeBar;

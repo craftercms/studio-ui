@@ -24,9 +24,9 @@ import translations from './translations';
 import { useDispatch } from 'react-redux';
 import { setPreviewEditMode } from '../../state/actions/preview';
 import { SwitchProps } from '@mui/material/Switch';
-import { useSelection } from '../../utils/hooks/useSelection';
+import { useSelection } from '../../hooks/useSelection';
 import { isItemLockedForMe } from '../../utils/content';
-import { useActiveUser } from '../../utils/hooks/useActiveUser';
+import { useActiveUser } from '../../hooks/useActiveUser';
 
 const EditSwitch = withStyles((theme) => {
   const green = theme.palette.success.main;
@@ -90,7 +90,7 @@ export interface EditModeSwitchProps extends Partial<SwitchProps> {
   item?: SandboxItem | DetailedItem;
 }
 
-export default function EditModeSwitch(props: EditModeSwitchProps) {
+export function EditModeSwitch(props: EditModeSwitchProps) {
   const { item, disabled, ...rest } = props;
   const user = useActiveUser();
   const isLocked = isItemLockedForMe(item, user.username);
@@ -121,3 +121,5 @@ export default function EditModeSwitch(props: EditModeSwitchProps) {
     </Tooltip>
   );
 }
+
+export default EditModeSwitch;

@@ -46,7 +46,7 @@ export interface AuditGridFilterPopoverProps {
   onFilterChange(fieldId: string, value: any): void;
 }
 
-export default function AuditGridFilterPopover(props: AuditGridFilterPopoverProps) {
+export function AuditGridFilterPopover(props: AuditGridFilterPopoverProps) {
   const { open, anchorPosition, onClose } = props;
   const classes = useStyles();
   return (
@@ -65,3 +65,5 @@ export default function AuditGridFilterPopover(props: AuditGridFilterPopoverProp
     </Popover>
   );
 }
+
+export default AuditGridFilterPopover;

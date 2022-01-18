@@ -17,7 +17,7 @@
 import createStyles from '@mui/styles/createStyles';
 
 import makeStyles from '@mui/styles/makeStyles';
-import { Theme } from '@mui/material';
+import { Slide, Theme } from '@mui/material';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -35,11 +35,11 @@ export interface MinimizedBarProps {
   onMaximize?(): void;
 }
 
-export const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       display: 'flex',
-      padding: '10px 14px',
+      padding: `${theme.spacing(2)} ${theme.spacing(2.5)}`,
       alignItems: 'center',
       marginLeft: '20px',
       position: 'relative',
@@ -56,7 +56,7 @@ export const useStyles = makeStyles((theme: Theme) =>
     },
     indeterminateProgressBar: {
       position: 'absolute',
-      bottom: ' 0px',
+      bottom: '0',
       width: '100%',
       left: '0',
       borderBottomLeftRadius: '3px',
@@ -70,22 +70,24 @@ export function MinimizedBar(props: MinimizedBarProps) {
   const classes = useStyles();
   return open ? (
     <MinimizedBarPortal>
-      <Paper className={classes.root} elevation={4}>
-        <Box>
-          <Typography variant="body1" children={title} />
-          {subtitle && <Typography variant="body2" className={classes.subtitle} children={subtitle} />}
-        </Box>
-        {onMaximize ? (
-          <IconButton aria-label="Maximize" onClick={onMaximize} children={<MaximizeIcon />} size="large" />
-        ) : null}
-        {status && (
-          <LinearProgress
-            className={classes.indeterminateProgressBar}
-            variant={status === 'indeterminate' ? 'indeterminate' : 'determinate'}
-            value={status === 'indeterminate' ? null : status}
-          />
-        )}
-      </Paper>
+      <Slide direction="left" in mountOnEnter unmountOnExit>
+        <Paper className={classes.root} elevation={4}>
+          <Box>
+            <Typography variant="body1" children={title} />
+            {subtitle && <Typography variant="body2" className={classes.subtitle} children={subtitle} />}
+          </Box>
+          {onMaximize ? (
+            <IconButton aria-label="Maximize" onClick={onMaximize} children={<MaximizeIcon />} size="large" />
+          ) : null}
+          {status && (
+            <LinearProgress
+              className={classes.indeterminateProgressBar}
+              variant={status === 'indeterminate' ? 'indeterminate' : 'determinate'}
+              value={status === 'indeterminate' ? null : status}
+            />
+          )}
+        </Paper>
+      </Slide>
     </MinimizedBarPortal>
   ) : null;
 }

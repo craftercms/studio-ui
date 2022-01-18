@@ -15,21 +15,10 @@
  */
 
 import * as React from 'react';
-import { defineMessages, FormattedMessage } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import { DeleteContentTypeDialogProps } from './utils';
 import { DeleteContentTypeDialogContainer } from './DeleteContentTypeDialogContainer';
 import { EnhancedDialog } from '../EnhancedDialog';
-
-export const messages = defineMessages({
-  deleteComplete: {
-    id: 'deleteContentTypeDialog.contentTypeDeletedMessage',
-    defaultMessage: 'Content type deleted successfully'
-  },
-  deleteFailed: {
-    id: 'deleteContentTypeDialog.contentTypeDeleteFailedMessage',
-    defaultMessage: 'Error deleting content type'
-  }
-});
 
 function DeleteContentTypeDialog(props: DeleteContentTypeDialogProps) {
   const { contentType, onSubmittingAndOrPendingChange, isSubmitting, onComplete, ...rest } = props;

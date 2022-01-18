@@ -45,13 +45,16 @@ export interface ItemDisplayProps<LabelTypographyComponent extends React.Element
   labelComponent?: ElementType;
 }
 
-export const useStyles = makeStyles((theme) =>
+const useStyles = makeStyles((theme) =>
   createStyles<ItemDisplayClassKey, ItemDisplayStyles>({
     root: (styles) => ({
       display: 'inline-flex',
       alignItems: 'center',
       placeContent: 'left center',
       maxWidth: '100%',
+      '& .MuiSvgIcon-root': {
+        fontSize: '1.1rem'
+      },
       ...styles.root
     }),
     label: (styles) => ({

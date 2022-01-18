@@ -22,7 +22,7 @@ import IconButton from '@mui/material/IconButton';
 import { defineMessages, useIntl } from 'react-intl';
 import Typography from '@mui/material/Typography';
 import LauncherOpenerButton from '../LauncherOpenerButton/LauncherOpenerButton';
-import SearchBar from '../../components/Controls/SearchBar';
+import SearchBar from '../SearchBar/SearchBar';
 import ListViewIcon from '@mui/icons-material/ViewStreamRounded';
 import GridViewIcon from '@mui/icons-material/GridOnRounded';
 import ViewToolbar from '../ViewToolbar';

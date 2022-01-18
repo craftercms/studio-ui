@@ -21,15 +21,15 @@ import { PagedArray } from '../../models/PagedArray';
 import { ApiResponse } from '../../models/ApiResponse';
 import Group from '../../models/Group';
 import { fetchAll } from '../../services/groups';
-import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
+import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
 import GroupsGridUI, { GroupsGridSkeletonTable } from '../GroupsGrid';
 import EditGroupDialog from '../EditGroupDialog';
 import Button from '@mui/material/Button';
 import GlobalAppToolbar from '../GlobalAppToolbar';
-import { useLogicResource } from '../../utils/hooks/useLogicResource';
+import { useLogicResource } from '../../hooks/useLogicResource';
 import Paper from '@mui/material/Paper';
-import { useEnhancedDialogState } from '../../utils/hooks/useEnhancedDialogState';
-import { useWithPendingChangesCloseRequest } from '../../utils/hooks/useWithPendingChangesCloseRequest';
+import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
+import { useWithPendingChangesCloseRequest } from '../../hooks/useWithPendingChangesCloseRequest';
 
 export default function GroupsManagement() {
   const [offset, setOffset] = useState(0);

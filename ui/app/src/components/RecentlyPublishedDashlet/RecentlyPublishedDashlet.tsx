@@ -19,7 +19,7 @@ import RecentlyPublishedWidgetUI from './RecentlyPublishedDashletUI';
 import ApiResponse from '../../models/ApiResponse';
 import { DashboardPreferences } from '../../models/Dashboard';
 import { fetchLegacyDeploymentHistory } from '../../services/dashboard';
-import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
+import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
 import { FormattedMessage } from 'react-intl';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
@@ -33,21 +33,21 @@ import TextField from '@mui/material/TextField';
 import { itemsApproved, itemsDeleted, itemsRejected, itemsScheduled } from '../../state/actions/system';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { filter } from 'rxjs/operators';
-import { useLogicResource } from '../../utils/hooks/useLogicResource';
-import { useSpreadState } from '../../utils/hooks/useSpreadState';
-import { useLocale } from '../../utils/hooks/useLocale';
+import { useLogicResource } from '../../hooks/useLogicResource';
+import { useSpreadState } from '../../hooks/useSpreadState';
+import { useLocale } from '../../hooks/useLocale';
 import { getStoredDashboardPreferences, setStoredDashboardPreferences } from '../../utils/state';
 import { useDispatch, useSelector } from 'react-redux';
 import GlobalState from '../../models/GlobalState';
 import { completeDetailedItem } from '../../state/actions/content';
 import { showItemMegaMenu } from '../../state/actions/dialogs';
 import { batchActions } from '../../state/actions/misc';
-import { getEmptyStateStyleSet } from '../SystemStatus/EmptyState';
-import { useActiveSite } from '../../utils/hooks/useActiveSite';
+import { getEmptyStateStyleSet } from '../EmptyState';
+import { useActiveSite } from '../../hooks/useActiveSite';
 import { asLocalizedDateTime } from '../../utils/datetime';
 import { reversePluckProps } from '../../utils/object';
 
-export interface DashboardItem {
+export interface RecentlyPublishedDashletDashboardItem {
   label: string;
   children: string[];
 }
@@ -61,7 +61,7 @@ const dashletInitialPreferences: DashboardPreferences = {
 export default function RecentlyPublishedDashlet() {
   const [fetchingHistory, setFetchingHistory] = useState(false);
   const [errorHistory, setErrorHistory] = useState<ApiResponse>();
-  const [parentItems, setParentItems] = useState<DashboardItem[]>();
+  const [parentItems, setParentItems] = useState<RecentlyPublishedDashletDashboardItem[]>();
   const [itemsLookup, setItemsLookup] = useSpreadState<LookupTable<DetailedItem>>({});
   const dashletPreferencesId = 'recentlyPublishedDashlet';
   const currentUser = useSelector<GlobalState, string>((state) => state.user.username);
@@ -130,6 +130,18 @@ export default function RecentlyPublishedDashlet() {
               children: document.children.map((item) => {
                 const key = `${item.uri}:${item.eventDate}`;
                 childrenLookup[key] = parseLegacyItemToDetailedItem(item);
+
+                // For this dashlet we display the environment where the item was published at the moment, and the API
+                // returns the environment at the current time in the props isLive/isStaging. The prop used for the
+                // environment at the moment of publishing is `endpoint`. So we update `childrenLookup` with the endpoint value.
+                if (item.endpoint === 'live') {
+                  childrenLookup[key].stateMap.live = true;
+                  childrenLookup[key].stateMap.staging = true;
+                } else {
+                  childrenLookup[key].stateMap.live = false;
+                  childrenLookup[key].stateMap.staging = true;
+                }
+
                 // For this dashlet, the property needed is eventDate, since we display the published date at the moment
                 // of the publishing, not the current.
                 childrenLookup[key].live.datePublished = item.eventDate;
@@ -186,7 +198,10 @@ export default function RecentlyPublishedDashlet() {
   }, [fetchHistory, itemsLookup]);
   // endregion
 
-  const resource = useLogicResource<DashboardItem[], { items: DashboardItem[]; error: ApiResponse; fetching: boolean }>(
+  const resource = useLogicResource<
+    RecentlyPublishedDashletDashboardItem[],
+    { items: RecentlyPublishedDashletDashboardItem[]; error: ApiResponse; fetching: boolean }
+  >(
     useMemo(
       () => ({ items: parentItems, error: errorHistory, fetching: fetchingHistory }),
       [parentItems, errorHistory, fetchingHistory]
@@ -259,7 +274,7 @@ export default function RecentlyPublishedDashlet() {
             {Object.keys(itemsLookup).length && (
               <MenuItem value={Object.keys(itemsLookup).length}>
                 <FormattedMessage
-                  id="words.all"
+                  id="recentlyPublishedDashlet.showAll"
                   defaultMessage="All ({total})"
                   values={{
                     total: Object.keys(itemsLookup).length

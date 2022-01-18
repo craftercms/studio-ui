@@ -94,6 +94,20 @@ $dark-mode-input-border-focus: #007aff;
     .cstudio-form-control-node-selector-item {
       background: none !important;
     }
+    .cstudio-form-control-input-container.focused {
+      outline: 0;
+      box-shadow: #007aff40 0 0 0 0.2rem;
+      border-color: $dark-mode-input-border-focus;
+    }
+    .cstudio-form-control-input-container.disabled {
+      background: none;
+      opacity: 0.5;
+    }
+    .cstudio-form-control-input-container .cstudio-form-control-file-name {
+      outline: 0;
+      border: 0;
+      box-shadow: none;
+    }
   }
 
   header .page-header {
@@ -122,6 +136,7 @@ $dark-mode-input-border-focus: #007aff;
   }
 
   // Panels
+  #ice-body,
   .panel-heading,
   .panel-default {
     background: $dark-mode-background-paper !important;
@@ -226,7 +241,9 @@ $dark-mode-input-border-focus: #007aff;
   }
   input,
   select,
-  .form-control {
+  textarea,
+  .form-control,
+  .cstudio-form-repeat-container {
     border-color: $dark-mode-input-border;
     background: none;
     color: $dark-mode-font-color;

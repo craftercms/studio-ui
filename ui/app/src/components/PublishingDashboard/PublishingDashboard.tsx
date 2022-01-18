@@ -19,11 +19,11 @@ import PublishingStatusWidget from '../PublishingStatusWidget';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import Grid from '@mui/material/Grid';
-import PublishingQueueWidget from '../PublishingQueueWidget';
+import { PublishingQueueWidget } from '../PublishingQueue';
 import PublishOnDemandWidget from '../PublishOnDemandWidget';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import { FormattedMessage } from 'react-intl';
-import { useActiveSiteId } from '../../utils/hooks/useActiveSiteId';
+import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) =>

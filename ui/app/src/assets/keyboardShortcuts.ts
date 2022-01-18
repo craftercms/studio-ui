@@ -37,6 +37,10 @@ const messages = defineMessages({
   showShortcuts: {
     id: 'shortcuts.showShortcuts',
     defaultMessage: 'Show keyboard shortcuts'
+  },
+  editModePadding: {
+    id: 'shortcuts.editModePadding',
+    defaultMessage: 'Toggle edit mode padding'
   }
 });
 
@@ -55,6 +59,10 @@ export const previewKeyboardShortcuts: KeyboardShortcutsCategory[] = [
       {
         label: messages.disableICE,
         shortcut: 'z'
+      },
+      {
+        label: messages.editModePadding,
+        shortcut: 'p'
       },
       {
         label: messages.showShortcuts,

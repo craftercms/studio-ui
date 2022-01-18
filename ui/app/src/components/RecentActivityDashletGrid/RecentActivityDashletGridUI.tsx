@@ -53,7 +53,7 @@ export interface RecentActivityDashletGridUIProps {
   onClickSelectAll(): void;
 }
 
-export default function RecentActivityDashletGridUI(props: RecentActivityDashletGridUIProps) {
+export function RecentActivityDashletGridUI(props: RecentActivityDashletGridUIProps) {
   const {
     resource,
     onOptionsButtonClick,
@@ -248,3 +248,5 @@ export default function RecentActivityDashletGridUI(props: RecentActivityDashlet
     </TableContainer>
   );
 }
+
+export default RecentActivityDashletGridUI;

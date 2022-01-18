@@ -23,7 +23,7 @@ import useStyles from './styles';
 import { getNumOfMenuOptionsForItem, getSystemTypeFromPath, parseLegacyItemToDetailedItem } from '../../utils/content';
 import Dashlet from '../Dashlet';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
+import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
 import RecentActivityDashletGridUI from '../RecentActivityDashletGrid/RecentActivityDashletGridUI';
 import { useDispatch, useSelector } from 'react-redux';
 import MenuItem from '@mui/material/MenuItem';
@@ -34,22 +34,22 @@ import { itemsApproved, itemsDeleted, itemsRejected, itemsScheduled } from '../.
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { filter } from 'rxjs/operators';
 import TextField from '@mui/material/TextField';
-import { useLogicResource } from '../../utils/hooks/useLogicResource';
-import { useLocale } from '../../utils/hooks/useLocale';
+import { useLogicResource } from '../../hooks/useLogicResource';
+import { useLocale } from '../../hooks/useLocale';
 import { DashboardPreferences } from '../../models/Dashboard';
-import { useSpreadState } from '../../utils/hooks/useSpreadState';
+import { useSpreadState } from '../../hooks/useSpreadState';
 import { getStoredDashboardPreferences, setStoredDashboardPreferences } from '../../utils/state';
 import { createPresenceTable } from '../../utils/array';
 import { completeDetailedItem } from '../../state/actions/content';
 import { showItemMegaMenu } from '../../state/actions/dialogs';
 import { generateMultipleItemOptions, generateSingleItemOptions, itemActionDispatcher } from '../../utils/itemActions';
-import { useEnv } from '../../utils/hooks/useEnv';
-import ActionsBar, { Action } from '../ActionsBar';
-import { useDetailedItems } from '../../utils/hooks/useDetailedItems';
+import { useEnv } from '../../hooks/useEnv';
+import ActionsBar, { ActionsBarAction } from '../ActionsBar';
+import { useDetailedItems } from '../../hooks/useDetailedItems';
 import translations from './translations';
 import { batchActions } from '../../state/actions/misc';
-import { getEmptyStateStyleSet } from '../SystemStatus/EmptyState';
-import { useActiveSite } from '../../utils/hooks/useActiveSite';
+import { getEmptyStateStyleSet } from '../EmptyState/EmptyState';
+import { useActiveSite } from '../../hooks/useActiveSite';
 
 const dashletInitialPreferences: DashboardPreferences = {
   filterBy: 'page',
@@ -95,7 +95,7 @@ export default function RecentActivityDashlet() {
       items.length > 1
         ? !items.some((item) => !item.stateMap.deleted && !selectedLookup[item.path])
         : items[0]
-        ? selectedLookup[items[0].path]
+        ? selectedLookup[items[0].path] ?? false
         : false,
     [items, selectedLookup]
   );
@@ -239,9 +239,10 @@ export default function RecentActivityDashlet() {
     if (option === 'clear') {
       setSelectedLookup({});
     } else {
+      const selected = items.filter((item) => selectedLookup[item.path]);
       itemActionDispatcher({
         site: siteId,
-        item: items.filter((item) => selectedLookup[item.path]),
+        item: selected.length > 1 ? selected : selected[0],
         option: option as AllItemActions,
         authoringBase,
         dispatch,
@@ -361,7 +362,7 @@ export default function RecentActivityDashlet() {
             options={
               selectionOptions?.concat([
                 { id: 'clear', label: formatMessage(translations.clear, { count: selectedItemsLength }) }
-              ]) as Action[]
+              ]) as ActionsBarAction[]
             }
             isIndeterminate={isIndeterminate}
             isChecked={isAllChecked}

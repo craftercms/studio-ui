@@ -23,7 +23,7 @@ interface FieldInstanceSwitcherProps {
   onPrev(): void;
 }
 
-export default function FieldInstanceSwitcher(props: FieldInstanceSwitcherProps) {
+export function FieldInstanceSwitcher(props: FieldInstanceSwitcherProps) {
   const { onNext, onPrev, registryEntryIds, currentElement } = props;
   return (
     <craftercms-field-instance-switcher>
@@ -43,3 +43,5 @@ export default function FieldInstanceSwitcher(props: FieldInstanceSwitcherProps)
     </craftercms-field-instance-switcher>
   );
 }
+
+export default FieldInstanceSwitcher;

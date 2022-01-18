@@ -17,7 +17,7 @@
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 
-export const useStyles = makeStyles(() =>
+const useStyles = makeStyles(() =>
   createStyles({
     menu: {
       padding: '10px 10px'

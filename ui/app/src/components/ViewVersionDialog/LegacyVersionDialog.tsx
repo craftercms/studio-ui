@@ -15,7 +15,7 @@
  */
 
 import { VersionViewProps } from './utils';
-import { useSelection } from '../../utils/hooks/useSelection';
+import { useSelection } from '../../hooks/useSelection';
 import React from 'react';
 import { getLegacyDialogStyles } from './ViewVersionDialog';
 

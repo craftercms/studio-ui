@@ -15,12 +15,12 @@
  */
 
 import { FormattedMessage } from 'react-intl';
-import DialogBody from '../Dialogs/DialogBody';
+import DialogBody from '../DialogBody/DialogBody';
 import Grid from '@mui/material/Grid';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
-import DialogFooter from '../Dialogs/DialogFooter';
+import DialogFooter from '../DialogFooter/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import React from 'react';

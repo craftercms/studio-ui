@@ -18,11 +18,11 @@ import React from 'react';
 import useStyles from './styles';
 import { WidgetDialogProps } from './utils';
 import EnhancedDialog from '../EnhancedDialog';
-import Suspencified from '../SystemStatus/Suspencified';
+import Suspencified from '../Suspencified/Suspencified';
 import { Widget } from '../Widget/Widget';
 
-export default function WidgetDialog(props: WidgetDialogProps) {
-  const { title, widget, onSubmittingAndOrPendingChange, isSubmitting, ...rest } = props;
+export function WidgetDialog(props: WidgetDialogProps) {
+  const { title, widget, onSubmittingAndOrPendingChange, isSubmitting, extraProps, ...rest } = props;
   const classes = useStyles();
 
   return (
@@ -35,9 +35,14 @@ export default function WidgetDialog(props: WidgetDialogProps) {
     >
       <section className={classes.toolPanelBody}>
         <Suspencified>
-          <Widget {...widget} extraProps={{ onSubmittingAndOrPendingChange, isSubmitting }} />
+          <Widget
+            {...widget}
+            extraProps={{ onSubmittingAndOrPendingChange, isSubmitting, mountMode: 'dialog', ...extraProps }}
+          />
         </Suspencified>
       </section>
     </EnhancedDialog>
   );
 }
+
+export default WidgetDialog;

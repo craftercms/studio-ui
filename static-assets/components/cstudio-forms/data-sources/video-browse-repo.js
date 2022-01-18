@@ -22,10 +22,13 @@ CStudioForms.Datasources.VideoBrowseRepo =
     this.properties = properties;
     this.constraints = constraints;
     this.selectItemsCount = -1;
+    this.useSearch = false;
 
     for (var i = 0; i < properties.length; i++) {
       if (properties[i].name == 'repoPath') {
         this.repoPath = properties[i].value;
+      } else if (properties[i].name === 'useSearch') {
+        this.useSearch = properties[i].value === 'true';
       }
     }
 
@@ -36,23 +39,67 @@ YAHOO.extend(CStudioForms.Datasources.VideoBrowseRepo, CStudioForms.CStudioFormD
   insertVideoAction: function (callback) {
     var _self = this;
 
-    const multiSelect = _self.selectItemsCount === -1 || _self.selectItemsCount > 1;
-    CStudioAuthoring.Operations.openBrowseFilesDialog({
-      path: _self.processPathsForMacros(_self.repoPath),
-      multiSelect,
-      onSuccess: (result) => {
-        const items = Array.isArray(result) ? result : [result];
-        items.forEach(({ path }) => {
-          const url = CStudioAuthoringContext.previewAppBaseUri + path;
-          const videoData = {
-            previewUrl: url,
-            relativeUrl: path,
-            fileExtension: url.substring(url.lastIndexOf('.') + 1)
-          };
-          callback.success(videoData);
-        });
+    if (this.useSearch) {
+      const searchContext = {
+        keywords: '',
+        filters: {
+          // map with video-picker.js validExtensions
+          'mime-type': ['video/quicktime', 'video/mp4', 'video/x-ms-wmv', 'video/webm']
+        },
+        sortBy: 'internalName',
+        sortOrder: 'asc',
+        mode: 'select' // open search not in default but in select mode
+      };
+
+      if (this.repoPath) {
+        searchContext.path = this.repoPath.endsWith('/') ? `${this.repoPath}.+` : `${this.repoPath}/.+`;
       }
-    });
+
+      CStudioAuthoring.Operations.openSearch(
+        searchContext,
+        true,
+        {
+          success(searchId, selectedTOs) {
+            const path = selectedTOs[0].path;
+            const url = this.context.createPreviewUrl(path);
+            const videoData = {
+              previewUrl: url,
+              relativeUrl: path,
+              fileExtension: path.substring(path.lastIndexOf('.') + 1)
+            };
+            callback.success(videoData);
+          },
+          failure() {},
+          context: _self
+        },
+        null
+      );
+    } else {
+      const multiSelect = _self.selectItemsCount === -1 || _self.selectItemsCount > 1;
+      CStudioAuthoring.Operations.openBrowseFilesDialog({
+        path: _self.processPathsForMacros(_self.repoPath),
+        multiSelect,
+        onSuccess: (result) => {
+          const items = Array.isArray(result) ? result : [result];
+          items.forEach(({ path }) => {
+            const url = CStudioAuthoringContext.previewAppBaseUri + path;
+            const videoData = {
+              previewUrl: url,
+              relativeUrl: path,
+              fileExtension: url.substring(url.lastIndexOf('.') + 1)
+            };
+            callback.success(videoData);
+          });
+        }
+      });
+    }
+  },
+
+  /**
+   * create preview URL
+   */
+  createPreviewUrl(videoPath) {
+    return CStudioAuthoringContext.previewAppBaseUri + videoPath + '';
   },
 
   // remove edit because edit is not supported
@@ -71,11 +118,19 @@ YAHOO.extend(CStudioForms.Datasources.VideoBrowseRepo, CStudioForms.CStudioFormD
   },
 
   getSupportedProperties: function () {
-    return [{ label: CMgs.format(langBundle, 'repositoryPath'), name: 'repoPath', type: 'string' }];
+    return [
+      { label: CMgs.format(langBundle, 'repositoryPath'), name: 'repoPath', type: 'string' },
+      {
+        label: CMgs.format(langBundle, 'useSearch'),
+        name: 'useSearch',
+        type: 'boolean',
+        defaultValue: 'false'
+      }
+    ];
   },
 
   getSupportedConstraints: function () {
-    return [];
+    return [{ label: CMgs.format(langBundle, 'required'), name: 'required', type: 'boolean' }];
   }
 });
 

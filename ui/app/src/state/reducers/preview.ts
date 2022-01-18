@@ -55,8 +55,10 @@ import {
   SET_HOST_SIZE,
   SET_HOST_WIDTH,
   SET_ITEM_BEING_DRAGGED,
+  setEditModePadding,
   setHighlightMode,
   setPreviewEditMode,
+  toggleEditModePadding,
   UPDATE_AUDIENCES_PANEL_MODEL,
   updateIcePanelWidth,
   updateToolsPanelWidth
@@ -152,7 +154,8 @@ const initialState: GlobalState['preview'] = {
     rightSection: null
   },
   icePanel: null,
-  richTextEditor: null
+  richTextEditor: null,
+  editModePadding: false
 };
 
 const minDrawerWidth = 240;
@@ -173,9 +176,9 @@ const fetchGuestModelsCompleteHandler = (state, { type, payload }) => {
           ...state.guest.modelIdByPath,
           ...payload.modelIdByPath
         },
-        childrenMap: {
-          ...state.guest?.childrenMap,
-          ...payload.childrenMap
+        hierarchyMap: {
+          ...state.guest?.hierarchyMap,
+          ...payload.hierarchyMap
         }
       }
     };
@@ -258,7 +261,7 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
         modelId,
         path,
         models: null,
-        childrenMap: null,
+        hierarchyMap: null,
         modelIdByPath: null,
         selected: null,
         itemBeingDragged: null
@@ -676,6 +679,7 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
 
     return {
       ...state,
+      ...(payload.storedPage && { icePanelStack: [payload.storedPage] }),
       icePanel: icePanelConfig,
       icePanelWidth: icePanelWidth ?? state.icePanelWidth
     };
@@ -709,7 +713,15 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
       ...state,
       richTextEditor: rteConfig
     };
-  }
+  },
+  [setEditModePadding.type]: (state, { payload }) => ({
+    ...state,
+    editModePadding: payload.editModePadding
+  }),
+  [toggleEditModePadding.type]: (state) => ({
+    ...state,
+    editModePadding: !state.editModePadding
+  })
 });
 
 function minFrameSize(suggestedSize: number): number {

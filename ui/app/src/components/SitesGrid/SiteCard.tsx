@@ -59,7 +59,7 @@ const translations = defineMessages({
   }
 });
 
-export default function SiteCard(props: SiteCardProps) {
+export function SiteCard(props: SiteCardProps) {
   const {
     site,
     onSiteClick,
@@ -131,12 +131,9 @@ export default function SiteCard(props: SiteCardProps) {
             size={compact ? 'small' : 'medium'}
             cancelText={formatMessage(translations.confirmCancel)}
             confirmText={formatMessage(translations.confirmOk)}
-            confirmHelperText={formatMessage(translations.confirmHelperText, {
-              site: site.name
-            })}
+            confirmHelperText={formatMessage(translations.confirmHelperText, { site: site.name })}
             iconTooltip={<FormattedMessage id="words.delete" defaultMessage="Delete" />}
             icon={DeleteRoundedIcon}
-            iconColor="action"
             onConfirm={() => {
               onDeleteSiteClick(site);
             }}
@@ -146,3 +143,5 @@ export default function SiteCard(props: SiteCardProps) {
     </Card>
   );
 }
+
+export default SiteCard;

@@ -22,7 +22,7 @@ import { LookupTable } from '../../models/LookupTable';
 import ContentType from '../../models/ContentType';
 import React from 'react';
 import { Resource } from '../../models/Resource';
-import { useSelection } from '../../utils/hooks/useSelection';
+import { useSelection } from '../../hooks/useSelection';
 
 // declare const monaco: any;
 

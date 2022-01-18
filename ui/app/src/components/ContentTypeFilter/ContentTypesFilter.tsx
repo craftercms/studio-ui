@@ -56,7 +56,7 @@ interface ContentTypesFilterProps {
   onFilterChange(filter: string): void;
 }
 
-export default function ContentTypesFilter(props: ContentTypesFilterProps) {
+export function ContentTypesFilter(props: ContentTypesFilterProps) {
   const { onFilterChange, selected, disabled, filters } = props;
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
@@ -107,3 +107,5 @@ export default function ContentTypesFilter(props: ContentTypesFilterProps) {
     </>
   );
 }
+
+export default ContentTypesFilter;
