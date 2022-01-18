@@ -308,9 +308,10 @@ CStudioAuthoring.Module.requireModule(
             styleFormats = rteConfig.styleFormats ? JSON.parse(rteConfig.styleFormats) : void 0;
           } catch (e) {
             // If there are multiple RTEs on the page, when the form loads, it would show N number
-            // of dialogs. One is sufficient.
-            if (!CStudioForms.Controls.RTE.styleFormatsParseErrorShown) {
-              CStudioForms.Controls.RTE.styleFormatsParseErrorShown = true;
+            // of dialogs. One is sufficient. Also, in 3.1.x, triggering multiple dialogs causes the
+            // backdrop not to get clean out when the dialog is closed.
+            if (!CStudioForms.Controls.RTETINYMCE5.styleFormatsParseErrorShown) {
+              CStudioForms.Controls.RTETINYMCE5.styleFormatsParseErrorShown = true;
               let bundle = CStudioAuthoring.Messages.getBundle('forms', CStudioAuthoringContext.lang);
               CStudioAuthoring.Operations.showSimpleDialog(
                 'message-dialog',
@@ -566,7 +567,7 @@ CStudioAuthoring.Module.requireModule(
 
             var datasourceMap = this.form.datasourceMap,
               datasourceDef = this.form.definition.datasources,
-              addFunction; // video or image add function
+              addFunction; //video or image add function
             switch (type) {
               case 'image':
                 addFunction = _self.addManagedImage;
@@ -636,7 +637,7 @@ CStudioAuthoring.Module.requireModule(
             datasource.insertImageAction(
               {
                 success: function (imageData) {
-                  var cleanUrl = imageData.relativeUrl.replace(/^(.+?\.(png|jpe?g)).*$/i, '$1'); // remove timestamp
+                  var cleanUrl = imageData.relativeUrl.replace(/^(.+?\.(png|jpe?g)).*$/i, '$1'); //remove timestamp
 
                   if (cb.success) {
                     cb.success(cleanUrl, { title: imageData.fileName });

@@ -3301,7 +3301,7 @@
           definition.contentType +
           '</content-type>\r\n' +
           '\t<imageThumbnail>' +
-          definition.imageThumbnail +
+          (definition.imageThumbnail ?? '') +
           '</imageThumbnail>\r\n' +
           '\t<quickCreate>' +
           quickCreate +
