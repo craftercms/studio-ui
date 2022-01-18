@@ -634,9 +634,9 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           break;
         }
         case duplicateItemOperation.type: {
-          const { modelId, parentModelId, fieldId, index, shared } = payload;
+          const { modelId, parentModelId, fieldId, index, recordType } = payload;
           const path = models[parentModelId ?? modelId].craftercms.path;
-          duplicateItem(siteId, modelId, fieldId, index, path, shared).subscribe({
+          duplicateItem(siteId, modelId, fieldId, index, path, recordType).subscribe({
             next() {
               hostToGuest$.next(duplicateItemOperationComplete());
               enqueueSnackbar(formatMessage(guestMessages.duplicateItemOperation));

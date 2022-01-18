@@ -47,6 +47,8 @@ import { StandardAction } from '../models/StandardAction';
 import { GetChildrenResponse } from '../models/GetChildrenResponse';
 import { GetItemWithChildrenResponse } from '../models/GetItemWithChildrenResponse';
 import { FetchItemsByPathOptions } from '../models/FetchItemsByPath';
+import { v4 as uuid } from 'uuid';
+import { RecordTypes } from '@craftercms/experience-builder/build_tsc/models/InContextEditing';
 
 export function fetchComponentInstanceHTML(path: string): Observable<string> {
   return getText(`/crafter-controller/component.html?path=${path}`).pipe(pluck('response'));
@@ -386,7 +388,7 @@ export function duplicateItem(
   fieldId: string,
   targetIndex: string | number,
   path: string,
-  shared = false
+  recordType: RecordTypes
 ): Observable<any> {
   return performMutation(
     site,
@@ -395,6 +397,12 @@ export function duplicateItem(
       const item: Element = extractNode(element, removeLastPiece(fieldId) || fieldId, targetIndex).cloneNode(
         true
       ) as Element;
+      if (recordType === 'repeat-item') {
+      } else {
+      }
+
+      updateElementComponentsId(item);
+
       const field: Element = extractNode(
         element,
         removeLastPiece(fieldId) || fieldId,
@@ -657,6 +665,26 @@ interface LegacyContentDocumentProps {
 
 interface AnyObject {
   [key: string]: any;
+}
+
+function updateItemId(item: Element): void {
+  const component = item.querySelector('component');
+  if (component) {
+    const key = item.querySelector('key');
+    const objectId = item.querySelector('objectId');
+    const fileName = item.querySelector('file-name');
+    const id = uuid();
+    component.id = id;
+    key.innerHTML = id;
+    fileName.innerHTML = `${id}.ftl`;
+    objectId.innerHTML = id;
+  }
+}
+
+function updateElementComponentsId(element: Element): void {
+  element.querySelectorAll('item').forEach((item) => {
+    updateItemId(item);
+  });
 }
 
 function extractNode(doc: XMLDocument | Element, fieldId: string, index: string | number) {

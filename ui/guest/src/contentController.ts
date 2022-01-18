@@ -43,6 +43,7 @@ import { parseDescriptor, preParseSearchResults } from '@craftercms/content';
 import { crafterConf } from '@craftercms/classes';
 import { getDefaultValue } from '@craftercms/studio-ui/utils/contentType';
 import { ModelHierarchyDescriptor, ModelHierarchyMap, modelsToLookup } from '@craftercms/studio-ui/utils/content';
+import { RecordTypes } from './models/InContextEditing';
 
 // if (process.env.NODE_ENV === 'development') {
 // TODO: Notice
@@ -333,12 +334,7 @@ export function updateField(modelId: string, fieldId: string, index: string | nu
   });
 }
 
-export function duplicateItem(
-  modelId: string,
-  fieldId: string,
-  index: number | string,
-  isEmbedded: boolean = false
-): void {
+export function duplicateItem(modelId: string, fieldId: string, index: number | string, recordType: RecordTypes): void {
   const models = getCachedModels();
 
   post(duplicateItemOperation.type, {
@@ -346,7 +342,7 @@ export function duplicateItem(
     fieldId,
     index,
     parentModelId: getParentModelId(modelId, models, modelHierarchyMap),
-    shared: !isEmbedded
+    recordType: recordType
   });
 
   operations$.next({

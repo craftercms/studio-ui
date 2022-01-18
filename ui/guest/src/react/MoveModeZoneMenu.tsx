@@ -125,7 +125,7 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
   const showCodeEditOptions = ['component', 'page', 'node-selector-item'].includes(recordType);
   const isTrashable = recordType !== 'field' && recordType !== 'page';
   const showAddItem = recordType === 'field' && field.type === 'repeat'; // for repeat group item
-  const showDuplicate = recordType === 'repeat-item'; // could apply to repeat items or components
+  const showDuplicate = ['repeat-item', 'component', 'node-selector-item'].includes(recordType); // could apply to repeat items or components
 
   // region callbacks
 
@@ -164,7 +164,7 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
   };
 
   const onDuplicateItem = (e) => {
-    duplicateItem(modelId, fieldId, index, isEmbedded);
+    duplicateItem(modelId, fieldId, index, recordType);
   };
 
   const onMoveUp = (e) => {
