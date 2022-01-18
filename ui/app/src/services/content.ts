@@ -48,7 +48,6 @@ import { GetChildrenResponse } from '../models/GetChildrenResponse';
 import { GetItemWithChildrenResponse } from '../models/GetItemWithChildrenResponse';
 import { FetchItemsByPathOptions } from '../models/FetchItemsByPath';
 import { v4 as uuid } from 'uuid';
-import { RecordTypes } from '@craftercms/experience-builder/build_tsc/models/InContextEditing';
 
 export function fetchComponentInstanceHTML(path: string): Observable<string> {
   return getText(`/crafter-controller/component.html?path=${path}`).pipe(pluck('response'));
@@ -388,26 +387,25 @@ export function duplicateItem(
   fieldId: string,
   targetIndex: string | number,
   path: string,
-  recordType: RecordTypes
+  recordType: 'page' | 'component' | 'field' | 'repeat-item' | 'node-selector-item'
 ): Observable<any> {
   return performMutation(
     site,
     path,
     (element) => {
-      const item: Element = extractNode(element, removeLastPiece(fieldId) || fieldId, targetIndex).cloneNode(
-        true
-      ) as Element;
-      if (recordType === 'node-selector-item') {
-        updateItemId(item);
-      }
-
-      updateElementComponentsId(item);
-
       const field: Element = extractNode(
         element,
         removeLastPiece(fieldId) || fieldId,
         removeLastPiece(`${targetIndex}`)
       );
+      const item: Element = extractNode(element, removeLastPiece(fieldId) || fieldId, targetIndex).cloneNode(
+        true
+      ) as Element;
+
+      if (recordType === 'node-selector-item') {
+        updateItemId(item);
+      }
+      updateElementComponentsId(item);
       field.appendChild(item);
     },
     modelId
@@ -668,11 +666,11 @@ interface AnyObject {
 }
 
 function updateItemId(item: Element): void {
-  const component = item.querySelector('component');
+  const component = item.querySelector(':scope > component');
   if (component) {
-    const key = item.querySelector('key');
-    const objectId = item.querySelector('objectId');
-    const fileName = item.querySelector('file-name');
+    const key = item.querySelector(':scope > key');
+    const objectId = component.querySelector(':scope > objectId');
+    const fileName = component.querySelector(':scope > file-name');
     const id = uuid();
     component.id = id;
     key.innerHTML = id;

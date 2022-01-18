@@ -164,7 +164,16 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
   };
 
   const onDuplicateItem = (e) => {
-    duplicateItem(modelId, fieldId, index, recordType);
+    if (recordType === 'component' && nodeSelectorItemRecord) {
+      duplicateItem(
+        nodeSelectorItemRecord.modelId,
+        nodeSelectorItemRecord.fieldId,
+        nodeSelectorItemRecord.index,
+        'node-selector-item'
+      );
+    } else {
+      duplicateItem(modelId, fieldId, index, recordType);
+    }
   };
 
   const onMoveUp = (e) => {
