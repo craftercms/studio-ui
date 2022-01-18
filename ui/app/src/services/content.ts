@@ -397,8 +397,8 @@ export function duplicateItem(
       const item: Element = extractNode(element, removeLastPiece(fieldId) || fieldId, targetIndex).cloneNode(
         true
       ) as Element;
-      if (recordType === 'repeat-item') {
-      } else {
+      if (recordType === 'node-selector-item') {
+        updateItemId(item);
       }
 
       updateElementComponentsId(item);

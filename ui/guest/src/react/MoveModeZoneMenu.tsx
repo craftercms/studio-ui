@@ -45,8 +45,8 @@ import { extractCollection } from '@craftercms/studio-ui/utils/model';
 import { isSimple, popPiece } from '@craftercms/studio-ui/utils/string';
 import { AnyAction } from '@reduxjs/toolkit';
 import useRef from '@craftercms/studio-ui/hooks/useUpdateRefs';
-import { exists, findContainerRecord, getById, runValidation } from '../iceRegistry';
 import * as iceRegistry from '../iceRegistry';
+import { exists, findContainerRecord, getById, runValidation } from '../iceRegistry';
 import { post } from '../utils/communicator';
 import { requestEdit, validationMessage } from '@craftercms/studio-ui/state/actions/preview';
 import Menu from '@mui/material/Menu';
@@ -124,8 +124,8 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
   const isEmbedded = useMemo(() => !Boolean(getCachedModel(modelId)?.craftercms.path), [modelId]);
   const showCodeEditOptions = ['component', 'page', 'node-selector-item'].includes(recordType);
   const isTrashable = recordType !== 'field' && recordType !== 'page';
-  const showAddItem = false; // for repeat group item
-  const showDuplicate = false; // could apply to repeat items or components
+  const showAddItem = recordType === 'field' && field.type === 'repeat'; // for repeat group item
+  const showDuplicate = ['repeat-item', 'component', 'node-selector-item'].includes(recordType); // could apply to repeat items or components
 
   // region callbacks
 
