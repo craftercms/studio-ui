@@ -23,7 +23,7 @@ import { createLookupTable, nnou, nou, reversePluckProps, toQueryString } from '
 import { LookupTable } from '../models/LookupTable';
 import $ from 'jquery/dist/jquery.slim';
 import { dataUriToBlob, isBlank, popPiece, removeLastPiece } from '../utils/string';
-import ContentInstance from '../models/ContentInstance';
+import ContentInstance, { InstanceRecord } from '../models/ContentInstance';
 import { AjaxError, AjaxResponse } from 'rxjs/ajax';
 import { ComponentsContentTypeParams, ContentInstancePage } from '../models/Search';
 import Core from '@uppy/core';
@@ -363,16 +363,15 @@ export function insertItem(
   site: string,
   modelId: string,
   fieldId: string,
-  targetIndex: string | number,
-  instance: Record<string, string | number | boolean | any[]>,
-  path: string,
-  shared = false
+  index: string | number,
+  instance: InstanceRecord,
+  path: string
 ): Observable<any> {
   return performMutation(
     site,
     path,
     (element) => {
-      let node = extractNode(element, removeLastPiece(fieldId) || fieldId, targetIndex);
+      let node = extractNode(element, removeLastPiece(fieldId) || fieldId, index);
       const newItem = createElement('item');
       createElements(newItem, instance);
       node.appendChild(newItem);
@@ -386,8 +385,7 @@ export function duplicateItem(
   modelId: string,
   fieldId: string,
   targetIndex: string | number,
-  path: string,
-  recordType: 'page' | 'component' | 'field' | 'repeat-item' | 'node-selector-item'
+  path: string
 ): Observable<any> {
   return performMutation(
     site,
@@ -401,10 +399,7 @@ export function duplicateItem(
       const item: Element = extractNode(element, removeLastPiece(fieldId) || fieldId, targetIndex).cloneNode(
         true
       ) as Element;
-
-      if (recordType === 'node-selector-item') {
-        updateItemId(item);
-      }
+      updateItemId(item);
       updateElementComponentsId(item);
       field.appendChild(item);
     },

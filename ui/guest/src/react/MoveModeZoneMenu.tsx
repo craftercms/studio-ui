@@ -160,19 +160,14 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
   };
 
   const onAddRepeatItem = (e) => {
-    insertItem(modelId, fieldId, index, contentType, isEmbedded);
+    insertItem(modelId, fieldId, index, contentType);
   };
 
   const onDuplicateItem = (e) => {
     if (recordType === 'component' && nodeSelectorItemRecord) {
-      duplicateItem(
-        nodeSelectorItemRecord.modelId,
-        nodeSelectorItemRecord.fieldId,
-        nodeSelectorItemRecord.index,
-        'node-selector-item'
-      );
+      duplicateItem(nodeSelectorItemRecord.modelId, nodeSelectorItemRecord.fieldId, nodeSelectorItemRecord.index);
     } else {
-      duplicateItem(modelId, fieldId, index, recordType);
+      duplicateItem(modelId, fieldId, index);
     }
   };
 

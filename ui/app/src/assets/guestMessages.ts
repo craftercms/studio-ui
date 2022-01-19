@@ -61,13 +61,21 @@ export const guestMessages = defineMessages({
     id: 'operations.insertOperationFailed',
     defaultMessage: 'Insert component operation failed.'
   },
-  insertItemOperation: {
-    id: 'operations.insertItemOperation',
-    defaultMessage: 'Insert item operation completed.'
+  insertItemOperationComplete: {
+    id: 'operations.insertItemOperationComplete',
+    defaultMessage: 'Item created successfully.'
   },
-  duplicateItemOperation: {
-    id: 'operations.duplicateItemOperation',
-    defaultMessage: 'Duplicate item operation completed.'
+  insertItemOperationFailed: {
+    id: 'operations.insertItemOperationFailed',
+    defaultMessage: 'Item creation failed.'
+  },
+  duplicateItemOperationComplete: {
+    id: 'operations.duplicateItemOperationComplete',
+    defaultMessage: 'Item duplicated successfully.'
+  },
+  duplicateItemOperationFailed: {
+    id: 'operations.duplicateItemOperationFailed',
+    defaultMessage: 'Item duplication failed.'
   },
   moveOperationComplete: {
     id: 'operations.moveOperationComplete',

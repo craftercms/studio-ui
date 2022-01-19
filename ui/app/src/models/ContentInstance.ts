@@ -29,6 +29,8 @@ export interface ContentInstance {
   [fieldId: string]: any;
 }
 
+export type InstanceRecord = Record<string, string | number | boolean | any[]>;
+
 // TODO: ContentInstance typing is too loose.
 //  Something like this may be more suitable. Some compilation issues would arise, though.
 //  export type ContentInstance = { craftercms: ContentInstanceSystemProps } & {
