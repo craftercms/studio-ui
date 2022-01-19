@@ -29,6 +29,7 @@
 
   <#include "/templates/web/common/page-fragments/head.ftl" />
   <#include "/templates/web/common/page-fragments/studio-context.ftl" />
+  <link rel="stylesheet" type="text/css" href="/studio/static-assets/styles/dark-mode.css?version=${UIBuildId!.now?string('Mddyyyy')}" />
 
   <script src="/studio/static-assets/components/cstudio-common/resources/en/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
   <script src="/studio/static-assets/components/cstudio-common/resources/kr/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
