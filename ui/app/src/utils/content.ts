@@ -974,3 +974,18 @@ export function createPathIdMap(models: LookupTable<ContentInstance>): LookupTab
   });
   return map;
 }
+
+export function getEditorMode(mimeType: string): 'ftl' | 'groovy' | 'javascript' | 'css' | 'text' {
+  switch (mimeType) {
+    case 'text/x-freemarker':
+      return 'ftl';
+    case 'text/x-groovy':
+      return 'groovy';
+    case 'application/javascript':
+      return 'javascript';
+    case 'text/css':
+      return 'css';
+    default:
+      return 'text';
+  }
+}

@@ -182,23 +182,30 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
             renderingTemplate = selectedContent.renderingTemplates[0].uri,
             contentType = selectedContent.contentType;
 
-          // if(CStudioAuthoringContext.channel && CStudioAuthoringContext.channel != "web") {
-          // 		contentType = contentType.substring(0, contentType.lastIndexOf(".ftl")) +
-          // 			"-" + CStudioAuthoringContext.channel + ".ftl";
-          // }
+          const customEventId = 'showCodeEditorDialogEventId';
+          CrafterCMSNext.system.store.dispatch({
+            type: 'SHOW_CODE_EDITOR_DIALOG',
+            payload: {
+              path: renderingTemplate,
+              contentType,
+              mode: 'ftl',
+              onSuccess: {
+                type: 'BATCH_ACTIONS',
+                payload: [
+                  {
+                    type: 'DISPATCH_DOM_EVENT',
+                    payload: { id: customEventId, type: 'onSuccess' }
+                  }
+                ]
+              }
+            }
+          });
 
-          CStudioAuthoring.Operations.openTemplateEditor(
-            renderingTemplate,
-            'default',
-            {
-              success: function () {
-                CStudioAuthoring.Operations.refreshPreview();
-              },
-              failure: function () {}
-            },
-            contentType,
-            null
-          );
+          CrafterCMSNext.createLegacyCallbackListener(customEventId, ({ type }) => {
+            if (type === 'onSuccess') {
+              CStudioAuthoring.Operations.refreshPreview();
+            }
+          });
         } else {
           var dialogEl = document.getElementById('errNoTemplAssoc');
           if (!dialogEl) {
@@ -251,8 +258,27 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
                 }
 
                 (function (flag) {
-                  CStudioAuthoring.Operations.openTemplateEditor(path, 'default', {
-                    success: function () {
+                  const customEventId = 'showCodeEditorDialogEventId';
+                  CrafterCMSNext.system.store.dispatch({
+                    type: 'SHOW_CODE_EDITOR_DIALOG',
+                    payload: {
+                      path,
+                      contentType,
+                      mode: 'groovy',
+                      onSuccess: {
+                        type: 'BATCH_ACTIONS',
+                        payload: [
+                          {
+                            type: 'DISPATCH_DOM_EVENT',
+                            payload: { id: customEventId, type: 'onSuccess' }
+                          }
+                        ]
+                      }
+                    }
+                  });
+
+                  CrafterCMSNext.createLegacyCallbackListener(customEventId, ({ type }) => {
+                    if (type === 'onSuccess') {
                       if (CStudioAuthoringContext.isPreview) {
                         CStudioAuthoring.Operations.refreshPreview();
                       }
@@ -275,8 +301,7 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
                           false
                         );
                       }
-                    },
-                    failure: function () {}
+                    }
                   });
                 })(flag);
               },

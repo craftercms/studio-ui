@@ -2322,24 +2322,34 @@ var nodeOpen = false,
               isFlattenedInclude
             );
           } else if (CStudioAuthoring.Utils.isEditableFormAsset(mimeType)) {
-            CStudioAuthoring.Operations.openTemplateEditor(
-              uri,
-              'default',
-              {
-                success: function () {
-                  if (CStudioAuthoringContext.isPreview) {
-                    CStudioAuthoring.Operations.refreshPreview();
-                  } else {
-                    CStudioAuthoring.SelectedContent.init();
-                  }
-                  callback.success && callback.success(nodeRef);
-                },
-                failure: function () {},
-                callingWindow: window
-              },
-              null,
-              mode
-            );
+            const customEventId = 'showCodeEditorDialogEventId';
+            CrafterCMSNext.system.store.dispatch({
+              type: 'SHOW_CODE_EDITOR_DIALOG',
+              payload: {
+                path: uri,
+                mode: CrafterCMSNext.util.content.getEditorMode(mimeType),
+                onSuccess: {
+                  type: 'BATCH_ACTIONS',
+                  payload: [
+                    {
+                      type: 'DISPATCH_DOM_EVENT',
+                      payload: { id: customEventId, type: 'onSuccess' }
+                    }
+                  ]
+                }
+              }
+            });
+
+            CrafterCMSNext.createLegacyCallbackListener(customEventId, ({ type }) => {
+              if (type === 'onSuccess') {
+                if (CStudioAuthoringContext.isPreview) {
+                  CStudioAuthoring.Operations.refreshPreview();
+                } else {
+                  CStudioAuthoring.SelectedContent.init();
+                }
+                callback.success && callback.success(nodeRef);
+              }
+            });
           }
         }
 
@@ -2411,50 +2421,6 @@ var nodeOpen = false,
         auxParams[auxParams.length] = { name: 'readonly', value: 'true' };
 
         CStudioAuthoring.Operations.openContentWebForm(formId, id, noderef, path, true, asPopup, callback, auxParams);
-      },
-
-      /**
-       * create new template
-       */
-      createNewTemplate: function (path, templateSaveCb) {
-        var createTemplateDialogCb = {
-          moduleLoaded: function (moduleName, dialogClass, moduleConfig) {
-            dialogClass.showDialog(templateSaveCb, path);
-          }
-        };
-
-        var createModuleConfig = {
-          createTemplateCb: templateSaveCb,
-          path: path
-        };
-
-        CStudioAuthoring.Module.requireModule(
-          'new-template-dialog',
-          '/static-assets/components/cstudio-dialogs/new-template.js',
-          createModuleConfig,
-          createTemplateDialogCb
-        );
-      },
-
-      /**
-       * open template
-       */
-      openTemplateEditor: function (displayTemplate, channel, templateSaveCb, contentType, mode) {
-        var loadTemplateEditorCb = {
-          moduleLoaded: function (moduleName, moduleClass, moduleConfig) {
-            var editor = new moduleClass();
-            editor.render(moduleConfig.displayTemplate, moduleConfig.channel, moduleConfig.cb, contentType, mode);
-          }
-        };
-
-        CStudioAuthoring.Module.requireModule(
-          'cstudio-forms-template-editor',
-          '/static-assets/components/cstudio-forms/template-editor.js',
-          { displayTemplate: displayTemplate, channel: channel, cb: templateSaveCb },
-          loadTemplateEditorCb,
-          contentType,
-          mode
-        );
       },
 
       /* submit content moved up, next to approveCommon */
@@ -7862,17 +7828,35 @@ CStudioAuthoring.InContextEdit = {
         };
 
         editTemplateControlEl.onclick = function () {
-          var contentType = contentTO.item.renderingTemplates[0].uri;
+          let path = contentTO.item.renderingTemplates[0].uri;
 
           if (CStudioAuthoringContext.channel && CStudioAuthoringContext.channel != 'web') {
-            contentType =
-              contentType.substring(0, contentType.lastIndexOf('.ftl')) +
-              '-' +
-              CStudioAuthoringContext.channel +
-              '.ftl';
+            path = path.substring(0, path.lastIndexOf('.ftl')) + '-' + CStudioAuthoringContext.channel + '.ftl';
           }
 
-          CStudioAuthoring.Operations.openTemplateEditor(contentType, 'default', onSaveCb, null, null);
+          const customEventId = 'showCodeEditorDialogEventId';
+          CrafterCMSNext.system.store.dispatch({
+            type: 'SHOW_CODE_EDITOR_DIALOG',
+            payload: {
+              path,
+              mode: CrafterCMSNext.util.content.getEditorMode(contentTO.item.mimeType),
+              onSuccess: {
+                type: 'BATCH_ACTIONS',
+                payload: [
+                  {
+                    type: 'DISPATCH_DOM_EVENT',
+                    payload: { id: customEventId, type: 'onSuccess' }
+                  }
+                ]
+              }
+            }
+          });
+
+          CrafterCMSNext.createLegacyCallbackListener(customEventId, ({ type }) => {
+            if (type === 'onSuccess') {
+              onSaveCb.success();
+            }
+          });
         };
 
         controlBoxEl.appendChild(editControlEl);
