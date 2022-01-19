@@ -141,6 +141,7 @@ export function getDefaultValue(field: ContentTypeField): string | number | bool
         return repeat;
       }
       case 'node-selector':
+        // TODO: CHECK MIN/MAX COUNT
         return [];
       default: {
         return null;
