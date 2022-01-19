@@ -102,68 +102,68 @@
   Loader.addModule({
     type: 'js',
     name: 'component-dialogue',
-    path: 'components/cstudio-components/dialogue.js?version=' + CStudioAuthoring.UIBuildId,
+    path: 'components/cstudio-components/dialogue.js',
     requires: emptyArray
   });
 
   Loader.addModule({
     type: 'js',
     name: 'component-templateagent',
-    path: 'components/cstudio-components/template-agent.js?version=' + CStudioAuthoring.UIBuildId,
+    path: 'components/cstudio-components/template-agent.js',
     requires: emptyArray
   });
 
   Loader.addModule({
     type: 'js',
     name: 'template-incontextedit',
-    path: 'components/cstudio-templates/in-context-edit.js?version=' + CStudioAuthoring.UIBuildId,
+    path: 'components/cstudio-templates/in-context-edit.js',
     requires: emptyArray
   });
 
   Loader.addModule({
     type: 'js',
     name: 'viewcontroller-base',
-    path: 'components/cstudio-view-controllers/base.js?version=' + CStudioAuthoring.UIBuildId,
+    path: 'components/cstudio-view-controllers/base.js',
     requires: emptyArray
   });
 
   Loader.addModule({
     type: 'js',
     name: 'viewcontroller-in-context-edit',
-    path: 'components/cstudio-view-controllers/in-context-edit.js?version=' + CStudioAuthoring.UIBuildId,
+    path: 'components/cstudio-view-controllers/in-context-edit.js',
     requires: ['viewcontroller-base', 'component-templateagent', 'template-incontextedit']
   });
 
   Loader.addModule({
     type: 'js',
     name: 'template-cancel-workflow',
-    path: 'components/cstudio-templates/cancel-workflow.js?version=' + CStudioAuthoring.UIBuildId,
+    path: 'components/cstudio-templates/cancel-workflow.js',
     requires: ['component-templateagent']
   });
 
   Loader.addModule({
     type: 'js',
     name: 'jquery-datetimepicker',
-    path: 'libs/datetimepicker/jquery.datetimepicker.js?version=' + CStudioAuthoring.UIBuildId,
+    path: 'libs/datetimepicker/jquery.datetimepicker.js',
     requires: ['jquery-datetimepicker-css']
   });
 
   Loader.addModule({
     type: 'js',
     name: 'jquery',
-    path: 'libs/jquery/dist/jquery.js?version=' + CStudioAuthoring.UIBuildId
+    path: 'libs/jquery/dist/jquery.js'
   });
 
   Loader.addModule({
     type: 'css',
     name: 'jquery-datetimepicker-css',
-    path: 'libs/datetimepicker/jquery.datetimepicker.css?version=' + CStudioAuthoring.UIBuildId,
+    path: 'libs/datetimepicker/jquery.datetimepicker.css',
     requires: emptyArray
   });
 
   Loader.addModule({
     type: 'js',
     name: 'jquery-momentjs',
-    path: 'jquery/timezones/timezones.full.js?version=' + CStudioAuthoring.UIBuildId
+    path: 'jquery/timezones/timezones.full.js'
   });
 })();

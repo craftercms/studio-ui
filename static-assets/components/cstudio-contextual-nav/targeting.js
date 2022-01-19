@@ -414,8 +414,6 @@ CStudioAuthoring.ContextualNav.TargetingMod = {
             }
           }
 
-          serviceUri += 'nocache=' + new Date();
-
           YConnect.asyncRequest('GET', CStudioAuthoring.Service.createEngineServiceUri(encodeURI(serviceUri)), {
             success: function () {
               document.body.removeChild(reportContainerEl);

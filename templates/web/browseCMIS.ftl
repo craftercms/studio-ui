@@ -42,10 +42,10 @@
     <link href="/studio/static-assets/themes/cstudioTheme/css/icons.css" type="text/css" rel="stylesheet">
 
     <#assign path="/studio/static-assets/components/cstudio-common/resources/" />
-    <script src="${path}en/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-    <script src="${path}kr/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-    <script src="${path}es/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-    <script src="${path}de/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+    <script src="${path}en/base.js"></script>
+    <script src="${path}kr/base.js"></script>
+    <script src="${path}es/base.js"></script>
+    <script src="${path}de/base.js"></script>
 
     <script>
         var CMgs = CStudioAuthoring.Messages,
@@ -127,7 +127,7 @@
       <div id="submission-controls" class="cstudio-form-controls-button-container">
         <input id="formCancelButton" type="button" class="cstudio-search-btn cstudio-button btn btn-default" value="Cancel">
 
-        
+
       </div>
     </div>
 
@@ -205,7 +205,7 @@
       {{/if}}
       <a class="cstudio-search-btn btn btn-default cstudio-search-clear-selection results-btn" href="#" role="button" style="margin-bottom: 20px;">{{labelClearAll}}</a>
     </script>
-    
+
     <script type="text/javascript">
       Handlebars.registerHelper('equal', function(lvalue, rvalue, options) {
         if (arguments.length < 3)
@@ -224,7 +224,7 @@
         });
 
     </script>
-  
+
    </body>
 
 </html>

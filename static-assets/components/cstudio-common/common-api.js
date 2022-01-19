@@ -82,8 +82,6 @@ var nodeOpen = false,
       processing: false,
       compConfProcessing: false,
 
-      UIBuildId: window.UIBuildId,
-
       /**
        * Registers 1 or more namespaces under the CStudioAuthoring Object and returns the last registered namespace object.
        * Note:
@@ -2982,8 +2980,7 @@ var nodeOpen = false,
       _formatURL: function (url) {
         return CStudioAuthoring.StringUtils.keyFormat(url, {
           site: CStudioAuthoringContext.site,
-          base: CStudioAuthoringContext.baseUri,
-          version: CStudioAuthoring.UIBuildId
+          base: CStudioAuthoringContext.baseUri
         });
       },
 
@@ -3122,7 +3119,6 @@ var nodeOpen = false,
       createServiceUri: function (service) {
         var uri = CStudioAuthoringContext.baseUri + service;
         uri += uri.indexOf('?') == -1 ? '?' : '&';
-        uri += 'nocache=' + new Date();
 
         return uri;
       },
@@ -3457,9 +3453,7 @@ var nodeOpen = false,
           encodeURI(path) +
           '&edit=false' +
           '&ticket=' +
-          CStudioAuthoring.Utils.Cookies.readCookie('ccticket') +
-          '&nocache=' +
-          new Date()
+          CStudioAuthoring.Utils.Cookies.readCookie('ccticket')
         );
       },
 
@@ -4586,12 +4580,7 @@ var nodeOpen = false,
 
           if (script.indexOf('http') == -1) {
             script = CStudioAuthoringContext.baseUri + script;
-            script = this.addURLParameter(script, 'version', CStudioAuthoring.UIBuildId);
           }
-
-          /*script = (script.indexOf("?")==-1)
-                        ? script + "?nocache="+new Date()
-                        : script + "&nocache="+new Date();*/
 
           var headID = document.getElementsByTagName('head')[0];
           var newScript = document.createElement('script');
@@ -4636,10 +4625,8 @@ var nodeOpen = false,
           this.addedCss.push(css);
 
           if (css.indexOf('http') == -1) {
-            css = CStudioAuthoringContext.baseUri + css + '?version=' + CStudioAuthoring.UIBuildId;
+            css = CStudioAuthoringContext.baseUri + css;
           }
-
-          css = css.indexOf('?') == -1 ? css + '?nocache=' + new Date() : css + '&nocache=' + new Date();
 
           var headID = document.getElementsByTagName('head')[0];
           var cssNode = document.createElement('link');

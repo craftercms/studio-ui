@@ -2054,7 +2054,6 @@ var CStudioForms =
 
             if (pluginInfo.path != '') {
               script = CStudioAuthoringContext.baseUri + pluginInfo.path;
-              script = CStudioAuthoring.Utils.addURLParameter(script, 'version', CStudioAuthoring.UIBuildId);
 
               var onDone = (function (datasourceDef, pluginInfo) {
                 return function (script, textStatus) {
