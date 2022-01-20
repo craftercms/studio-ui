@@ -226,9 +226,9 @@ function PublishingQueue(props: PublishingQueueProps) {
 
   useEffect(() => {
     fetchPublishingTargets(siteId).subscribe(
-      (response) => {
+      ({ targets }) => {
         let channels: string[] = [];
-        response.forEach((channel) => {
+        targets.forEach((channel) => {
           channels.push(channel.name);
         });
         setFilters({ environments: channels });

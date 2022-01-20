@@ -68,6 +68,7 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
     error: null,
     fetchingDependencies: false
   });
+  const [published, setPublished] = useState<boolean>(null);
   const [publishingTargets, setPublishingTargets] = useState<PublishingTarget[]>(null);
   const [publishingTargetsStatus, setPublishingTargetsStatus] = useState('Loading');
   const [selectedItems, setSelectedItems] = useState<LookupTable<boolean>>({});
@@ -158,7 +159,8 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
     (success?: (channels) => any, error?: (error) => any) => {
       setPublishingTargetsStatus('Loading');
       fetchPublishingTargets(siteId).subscribe({
-        next(targets) {
+        next({ targets, published }) {
+          setPublished(published);
           setPublishingTargets(targets);
           setPublishingTargetsStatus('Success');
           success?.(targets);
@@ -371,6 +373,7 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 
   return (
     <PublishDialogUI
+      published={published}
       resource={resource}
       publishingTargetsStatus={publishingTargetsStatus}
       onPublishingChannelsFailRetry={getPublishingChannels}

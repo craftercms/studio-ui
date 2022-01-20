@@ -66,15 +66,16 @@ export function cancelPackage(siteId: string, packageIds: any) {
 }
 
 export type FetchPublishingTargetsResponse = Api2ResponseFormat<{
-  availablePublishChannels: Array<PublishingTarget>;
+  publishingTargets: {
+    published: boolean;
+    targets: Array<PublishingTarget>;
+  };
 }>;
 
-export function fetchPublishingTargets(
-  site: string
-): Observable<FetchPublishingTargetsResponse['availablePublishChannels']> {
-  return get<FetchPublishingTargetsResponse>(
-    `/studio/api/1/services/api/1/deployment/get-available-publishing-channels.json?site_id=${site}`
-  ).pipe(pluck('response', 'availablePublishChannels'));
+export function fetchPublishingTargets(site: string): Observable<FetchPublishingTargetsResponse['publishingTargets']> {
+  return get<FetchPublishingTargetsResponse>(`/studio/api/2/publish/available_targets?siteId=${site}`).pipe(
+    pluck('response', 'publishingTargets')
+  );
 }
 
 export interface GoLiveResponse {
