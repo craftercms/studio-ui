@@ -207,7 +207,7 @@ export default function SiteSearchFilters(props: SiteSearchFiltersProps) {
 
   let filterKeys: string[] = [];
   let facetsLookupTable: LookupTable = {};
-  const labelsLookupTable: LookupTable = {};
+  const facetLabelLookup: LookupTable = {};
 
   const addFacetValuesLabels = (facet) => {
     Object.keys(facet.values).forEach((value) => {
@@ -217,7 +217,7 @@ export default function SiteSearchFilters(props: SiteSearchFiltersProps) {
       } else if (facet.name === 'mime-type') {
         label = getMimeTypeTranslation(value, formatMessage);
       }
-      labelsLookupTable[value] = label;
+      facetLabelLookup[value] = label;
     });
   };
 
@@ -316,7 +316,7 @@ export default function SiteSearchFilters(props: SiteSearchFiltersProps) {
               checkedFilters={checkedFilters}
               setCheckedFilters={setCheckedFilters}
               facetsLookupTable={facetsLookupTable}
-              labelsLookupTable={labelsLookupTable}
+              facetLabelLookup={facetLabelLookup}
               handleClearClick={handleClearClick}
             />
           </AccordionDetails>

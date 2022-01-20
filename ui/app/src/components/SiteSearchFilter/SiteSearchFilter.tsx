@@ -48,7 +48,7 @@ const messages = defineMessages({
 interface FilterProps {
   facet: string;
   facetsLookupTable: LookupTable;
-  labelsLookupTable: LookupTable;
+  facetLabelLookup: LookupTable;
   checkedFilters: LookupTable;
   handleFilterChange(filter: FilterType, isFilter: boolean): any;
   handleClearClick(filter: string): void;
@@ -62,7 +62,7 @@ export default function SiteSearchFilter(props: FilterProps) {
     facet,
     handleFilterChange,
     facetsLookupTable,
-    labelsLookupTable,
+    facetLabelLookup,
     checkedFilters,
     setCheckedFilters,
     handleClearClick
@@ -113,7 +113,7 @@ export default function SiteSearchFilter(props: FilterProps) {
           <SiteSearchFilterCheckboxes
             facetData={facetsLookupTable[facet]}
             facet={facet}
-            labelsLookupTable={labelsLookupTable}
+            facetLabelLookup={facetLabelLookup}
             handleCheckboxClick={handleCheckboxClick}
             checkedFilters={checkedFilters}
           />
