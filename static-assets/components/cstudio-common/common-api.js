@@ -2984,10 +2984,7 @@ var nodeOpen = false,
         });
       },
 
-      getViewCommon: function (url, callback, version, site) {
-        if (version) {
-          url += '?version={version}';
-        }
+      getViewCommon: function (url, callback, site) {
         if (site) {
           url += '&site={site}';
         }
@@ -3006,7 +3003,7 @@ var nodeOpen = false,
       },
 
       getImageRequest: function (data) {
-        CSA.Service.getViewCommon(data.url, data.callback, false, false);
+        CSA.Service.getViewCommon(data.url, data.callback, false);
       },
 
       // constants
