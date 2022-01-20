@@ -28,7 +28,6 @@ const useStyles = makeStyles((theme) =>
     editorRoot: {
       border: '0',
       borderRadius: '0',
-      background: theme.palette.background.default,
       margin: 0
     },
     appBar: {

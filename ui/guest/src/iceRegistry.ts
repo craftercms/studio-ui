@@ -160,6 +160,7 @@ export function exists(data: Partial<ICEProps>): number {
 }
 
 export function getById(id: number | string): ICERecord {
+  if (nou(id)) return null;
   id = typeof id === 'string' ? parseInt(id) : id;
   return registry.get(id);
 }
@@ -575,18 +576,17 @@ export function findContainerRecord(modelId: string, fieldId: string, index: str
   if (isSimple(fieldId)) {
     recordId = exists({
       modelId: modelId,
-      fieldId: fieldId,
+      fieldId: fieldId ?? null,
       index: null
     });
   } else {
     recordId = exists({
       modelId: modelId,
-      fieldId: fieldId,
+      fieldId: fieldId ?? null,
       index: parseInt(removeLastPiece(index as string))
     });
   }
-
-  return recordId ? getById(recordId) : null;
+  return notNullOrUndefined(recordId) ? getById(recordId) : null;
 }
 
 export function findChildRecord(modelId: string, fieldId: string, index: string | number): ICERecord {
@@ -606,4 +606,8 @@ export function findChildRecord(modelId: string, fieldId: string, index: string 
     }
   }
   return null;
+}
+
+export function getRegistry() {
+  return registry;
 }
