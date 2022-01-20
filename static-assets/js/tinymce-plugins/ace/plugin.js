@@ -145,7 +145,7 @@ tinymce.PluginManager.add(PLUGIN_NAME, function (editor, url) {
   };
 
   const showDialog = function(editor, fullscreenMode) {
-    const dialog = editor.windowManager.open({
+    editor.windowManager.open({
       title: 'Code Editor',
       size: 'large',
       body: {
