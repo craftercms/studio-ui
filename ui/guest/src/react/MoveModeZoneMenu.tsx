@@ -201,7 +201,11 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
     if (minCount) {
       post(validationMessage(minCount));
     } else {
-      deleteItem(modelId, fieldId, index);
+      if (recordType === 'component' && nodeSelectorItemRecord) {
+        deleteItem(nodeSelectorItemRecord.modelId, nodeSelectorItemRecord.fieldId, nodeSelectorItemRecord.index);
+      } else {
+        deleteItem(modelId, fieldId, index);
+      }
       onCancel();
     }
   };
