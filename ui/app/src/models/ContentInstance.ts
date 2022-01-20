@@ -29,6 +29,7 @@ export interface ContentInstance {
   [fieldId: string]: any;
 }
 
+// An InstanceRecord is a ContentInstance without ContentInstanceSystemProps
 export type InstanceRecord = Record<string, string | number | boolean | any[]>;
 
 // TODO: ContentInstance typing is too loose.

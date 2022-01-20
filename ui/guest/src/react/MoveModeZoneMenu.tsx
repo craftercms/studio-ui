@@ -45,7 +45,6 @@ import { extractCollection } from '@craftercms/studio-ui/utils/model';
 import { isSimple, popPiece } from '@craftercms/studio-ui/utils/string';
 import { AnyAction } from '@reduxjs/toolkit';
 import useRef from '@craftercms/studio-ui/hooks/useUpdateRefs';
-import * as iceRegistry from '../iceRegistry';
 import { exists, findContainerRecord, getById, runValidation } from '../iceRegistry';
 import { post } from '../utils/communicator';
 import { requestEdit, validationMessage } from '@craftercms/studio-ui/state/actions/preview';
@@ -53,6 +52,7 @@ import Menu from '@mui/material/Menu';
 import Typography from '@mui/material/Typography';
 import MenuItem from '@mui/material/MenuItem';
 import { getParentModelId } from '../utils/ice';
+import { iceRegistry } from '../index';
 
 export interface MoveModeZoneMenuProps {
   record: ElementRecord;
@@ -113,7 +113,7 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
   );
   const componentId =
     recordType === 'component' ? modelId : recordType === 'node-selector-item' ? collection[elementIndex] : null;
-  const { field, contentType } = iceRegistry.getReferentialEntries(record.iceIds[0]);
+  const { field, contentType } = useMemo(() => iceRegistry.getReferentialEntries(record.iceIds[0]), [record.iceIds]);
   const isMovable =
     ['node-selector-item', 'repeat-item'].includes(recordType) ||
     Boolean(recordType === 'component' && nodeSelectorItemRecord);
@@ -124,8 +124,8 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
   const isEmbedded = useMemo(() => !Boolean(getCachedModel(modelId)?.craftercms.path), [modelId]);
   const showCodeEditOptions = ['component', 'page', 'node-selector-item'].includes(recordType);
   const isTrashable = recordType !== 'field' && recordType !== 'page';
-  const showAddItem = recordType === 'field' && field.type === 'repeat'; // for repeat group item
-  const showDuplicate = ['repeat-item', 'component', 'node-selector-item'].includes(recordType); // could apply to repeat items or components
+  const showAddItem = recordType === 'field' && field.type === 'repeat';
+  const showDuplicate = ['repeat-item', 'component', 'node-selector-item'].includes(recordType);
 
   // region callbacks
 

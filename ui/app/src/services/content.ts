@@ -391,14 +391,13 @@ export function duplicateItem(
     site,
     path,
     (element) => {
+      // removing last piece to get the parent of the item
       const field: Element = extractNode(
         element,
         removeLastPiece(fieldId) || fieldId,
         removeLastPiece(`${targetIndex}`)
       );
-      const item: Element = extractNode(element, removeLastPiece(fieldId) || fieldId, targetIndex).cloneNode(
-        true
-      ) as Element;
+      const item: Element = extractNode(element, fieldId, targetIndex).cloneNode(true) as Element;
       updateItemId(item);
       updateElementComponentsId(item);
       field.appendChild(item);
@@ -669,7 +668,7 @@ function updateItemId(item: Element): void {
     const id = uuid();
     component.id = id;
     key.innerHTML = id;
-    fileName.innerHTML = `${id}.ftl`;
+    fileName.innerHTML = `${id}.xml`;
     objectId.innerHTML = id;
   }
 }
