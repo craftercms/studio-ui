@@ -16,7 +16,7 @@
 
 import { StandardAction } from '../../models/StandardAction';
 import ContentType, { ContentTypeField, ValidationResult } from '../../models/ContentType';
-import ContentInstance from '../../models/ContentInstance';
+import ContentInstance, { InstanceRecord } from '../../models/ContentInstance';
 import { WidthAndHeight } from '../../models/WidthAndHeight';
 import { createAction } from '@reduxjs/toolkit';
 import {
@@ -32,6 +32,12 @@ import LookupTable from '../../models/LookupTable';
 import { DetailedItem } from '../../models/Item';
 import GlobalState, { HighlightMode } from '../../models/GlobalState';
 
+interface CommonOperationProps {
+  modelId: string;
+  parentModelId: string;
+  fieldId: string;
+}
+
 // region Accommodation Action Creators
 
 export const hostCheckIn = /*#__PURE__*/ createAction<{
@@ -40,28 +46,84 @@ export const hostCheckIn = /*#__PURE__*/ createAction<{
   editModePadding: boolean;
   rteConfig: GlobalState['preview']['richTextEditor'];
 }>('HOST_CHECK_IN');
-export const guestCheckIn = /*#__PURE__*/ createAction('GUEST_CHECK_IN');
-export const guestCheckOut = /*#__PURE__*/ createAction('GUEST_CHECK_OUT');
+export const guestCheckIn = /*#__PURE__*/ createAction<{
+  location: Partial<Location>;
+  path: string;
+  site: string;
+  documentDomain?: string;
+}>('GUEST_CHECK_IN');
+export const guestCheckOut = /*#__PURE__*/ createAction<{ path: string }>('GUEST_CHECK_OUT');
 export const fetchGuestModel = /*#__PURE__*/ createAction('FETCH_GUEST_MODEL');
 export const guestSiteLoad = /*#__PURE__*/ createAction('GUEST_SITE_LOAD'); // Legacy guest check in
-export const sortItemOperation = /*#__PURE__*/ createAction('SORT_ITEM_OPERATION');
-export const sortItemOperationComplete = /*#__PURE__*/ createAction('SORT_ITEM_OPERATION_COMPLETE');
-export const insertComponentOperation = /*#__PURE__*/ createAction('INSERT_COMPONENT_OPERATION');
-export const insertOperationComplete = /*#__PURE__*/ createAction('INSERT_OPERATION_COMPLETE');
-export const insertInstanceOperation = /*#__PURE__*/ createAction('INSERT_INSTANCE_OPERATION');
-export const insertItemOperation = /*#__PURE__*/ createAction('INSERT_ITEM_OPERATION');
-export const moveItemOperation = /*#__PURE__*/ createAction('MOVE_ITEM_OPERATION');
-export const deleteItemOperation = /*#__PURE__*/ createAction('DELETE_ITEM_OPERATION');
-export const deleteItemOperationComplete = /*#__PURE__*/ createAction('DELETE_ITEM_OPERATION_COMPLETE');
-export const updateFieldValueOperation = /*#__PURE__*/ createAction('UPDATE_FIELD_VALUE_OPERATION');
+export const sortItemOperation = /*#__PURE__*/ createAction<
+  {
+    targetIndex: string | number;
+    currentIndex: string | number;
+  } & CommonOperationProps
+>('SORT_ITEM_OPERATION');
+export const sortItemOperationComplete = /*#__PURE__*/ createAction<{ index: string | number } & CommonOperationProps>(
+  'SORT_ITEM_OPERATION_COMPLETE'
+);
+export const sortItemOperationFailed = /*#__PURE__*/ createAction('SORT_ITEM_OPERATION_FAILED');
+export const insertComponentOperation = /*#__PURE__*/ createAction<
+  {
+    targetIndex: string | number;
+    contentType: ContentType;
+    instance: InstanceRecord;
+    shared: boolean;
+  } & CommonOperationProps
+>('INSERT_COMPONENT_OPERATION');
+export const insertInstanceOperation = /*#__PURE__*/ createAction<
+  { targetIndex: string | number; instance: InstanceRecord } & CommonOperationProps
+>('INSERT_INSTANCE_OPERATION');
+export const insertOperationComplete = /*#__PURE__*/ createAction<
+  {
+    currentFullUrl: string;
+    index: number;
+    instance: ContentInstance;
+  } & CommonOperationProps
+>('INSERT_COMPONENT_OPERATION_COMPLETE');
+export const insertOperationFailed = /*#__PURE__*/ createAction('INSERT_COMPONENT_OPERATION_FAILED');
+export const insertItemOperation = /*#__PURE__*/ createAction<
+  { index: string | number; instance: InstanceRecord } & CommonOperationProps
+>('INSERT_ITEM_OPERATION');
+export const insertItemOperationComplete = /*#__PURE__*/ createAction('INSERT_ITEM_OPERATION_COMPLETE');
+export const insertItemOperationFailed = /*#__PURE__*/ createAction('INSERT_ITEM_OPERATION_FAILED');
+export const duplicateItemOperation = /*#__PURE__*/ createAction<{ index: string | number } & CommonOperationProps>(
+  'DUPLICATE_ITEM_OPERATION'
+);
+export const duplicateItemOperationComplete = /*#__PURE__*/ createAction('DUPLICATE_ITEM_OPERATION_COMPLETE');
+export const duplicateItemOperationFailed = /*#__PURE__*/ createAction('DUPLICATE_ITEM_OPERATION_FAILED');
+export const moveItemOperation = /*#__PURE__*/ createAction<{
+  originalModelId: string;
+  originalFieldId: string;
+  originalIndex: string | number;
+  targetModelId: string;
+  targetFieldId: string;
+  targetIndex: string | number;
+  originalParentModelId: string;
+  targetParentModelId: string;
+}>('MOVE_ITEM_OPERATION');
+export const moveItemOperationComplete = /*#__PURE__*/ createAction('MOVE_ITEM_OPERATION_COMPLETE');
+export const moveItemOperationFailed = /*#__PURE__*/ createAction('MOVE_ITEM_OPERATION_FAILED');
+export const deleteItemOperation = /*#__PURE__*/ createAction<{ index: string | number } & CommonOperationProps>(
+  'DELETE_ITEM_OPERATION'
+);
+export const deleteItemOperationComplete = /*#__PURE__*/ createAction<
+  { index: string | number } & CommonOperationProps
+>('DELETE_ITEM_OPERATION_COMPLETE');
+export const deleteItemOperationFailed = /*#__PURE__*/ createAction('DELETE_ITEM_OPERATION_FAILED');
+export const updateFieldValueOperation = /*#__PURE__*/ createAction<
+  { index: string | number; value: unknown } & CommonOperationProps
+>('UPDATE_FIELD_VALUE_OPERATION');
+export const updateFieldValueOperationComplete = /*#__PURE__*/ createAction('UPDATE_FIELD_VALUE_OPERATION_COMPLETE');
+export const updateFieldValueOperationFailed = /*#__PURE__*/ createAction('UPDATE_FIELD_VALUE_OPERATION_FAILED');
 export const iceZoneSelected = /*#__PURE__*/ createAction<{
-  modelId: string;
   index: number;
-  fieldId: string[];
   coordinates: {
     x: number;
     y: number;
-  };
+  } & CommonOperationProps;
 }>('ICE_ZONE_SELECTED');
 export const clearSelectedZones = /*#__PURE__*/ createAction('CLEAR_SELECTED_ZONES');
 export const assetDragStarted = /*#__PURE__*/ createAction<{ asset: SearchItem }>('ASSET_DRAG_STARTED');
@@ -197,19 +259,6 @@ export function fetchContentModelComplete(contentModels: ContentInstance[]): Sta
   return {
     type: FETCH_CONTENT_MODEL_COMPLETE,
     payload: contentModels
-  };
-}
-
-export const checkInGuest = /*#__PURE__*/ createAction<{
-  location: Partial<Location>;
-  path: string;
-  site: string;
-  documentDomain?: string;
-}>(guestCheckIn.type);
-
-export function checkOutGuest(): StandardAction {
-  return {
-    type: guestCheckOut.type
   };
 }
 

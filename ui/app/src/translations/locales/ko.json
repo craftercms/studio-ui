@@ -1256,7 +1256,7 @@
   "repositories.mergeStrategyTheirs": "수락",
   "repositories.messageLabel": "충돌 해결 메시지",
   "repositories.newRemoteDialogTitle": "새 원격 저장소",
-  "repositories.newRepository": "커밋 해결",
+  "repositories.newRepository": "원격 저장소 추가",
   "repositories.noConflicts": "로컬 저장소에 충돌이 없습니다.",
   "repositories.pendingCommit": "Repo는 커밋 보류중인 파일을 포함합니다. 자세한 내용은 아래 리포지토리 상태를 참조하십시오.",
   "repositories.pullSuccessMessage": "성공적으로 당겼습니다.",

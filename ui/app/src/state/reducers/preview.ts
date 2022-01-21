@@ -249,7 +249,7 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
     };
   },
   [guestCheckIn.type]: (state, { payload }) => {
-    const { location, modelId, path } = payload;
+    const { location, path } = payload;
     const href = location.href;
     const origin = location.origin;
     const url = href.replace(location.origin, '');
@@ -258,7 +258,7 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
       guest: {
         url,
         origin,
-        modelId,
+        modelId: null,
         path,
         models: null,
         hierarchyMap: null,

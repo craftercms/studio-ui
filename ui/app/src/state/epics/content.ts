@@ -35,10 +35,13 @@ import {
   fetchSandboxItemComplete,
   fetchSandboxItemFailed,
   FetchSandboxItemPayload,
+  lockItem,
+  lockItemCompleted,
   pasteItem,
   pasteItemWithPolicyValidation,
   reloadDetailedItem,
-  unlockItem
+  unlockItem,
+  unlockItemCompleted
 } from '../actions/content';
 import { catchAjaxError } from '../../utils/ajax';
 import {
@@ -47,6 +50,7 @@ import {
   fetchItemByPath,
   fetchQuickCreateList,
   fetchSandboxItem as fetchSandboxItemService,
+  lock,
   paste,
   unlock
 } from '../../services/content';
@@ -64,6 +68,7 @@ import {
   blockUI,
   emitSystemEvent,
   itemDuplicated,
+  itemlocked,
   itemsPasted,
   itemUnlocked,
   showDeleteItemSuccessNotification,
@@ -242,12 +247,30 @@ const content: CrafterCMSEpic[] = [
       switchMap(([{ payload }, state]) => {
         return unlock(state.sites.active, payload.path).pipe(
           map(() =>
-            payload.notify === false
-              ? emitSystemEvent(itemUnlocked({ target: payload.path }))
-              : batchActions([
-                  emitSystemEvent(itemUnlocked({ target: payload.path })),
-                  showUnlockItemSuccessNotification()
-                ])
+            batchActions(
+              [
+                unlockItemCompleted({ path: payload.path }),
+                emitSystemEvent(itemUnlocked({ target: payload.path })),
+                payload.notify === false && showUnlockItemSuccessNotification()
+              ].filter(Boolean)
+            )
+          )
+        );
+      })
+    ),
+  // endregion
+  // region lockItem
+  (action$, state$) =>
+    action$.pipe(
+      ofType(lockItem.type),
+      withLatestFrom(state$),
+      switchMap(([{ payload }, state]) => {
+        return lock(state.sites.active, [payload.path]).pipe(
+          map(() =>
+            batchActions([
+              lockItemCompleted({ path: payload.path, username: state.user.username }),
+              emitSystemEvent(itemlocked({ target: payload.path }))
+            ])
           )
         );
       })
@@ -262,12 +285,13 @@ const content: CrafterCMSEpic[] = [
       switchMap(([{ payload }, state]) =>
         unlock(state.sites.active, payload.path).pipe(
           map(() =>
-            payload.notify
-              ? batchActions([
-                  emitSystemEvent(itemUnlocked({ target: payload.path })),
-                  showUnlockItemSuccessNotification()
-                ])
-              : emitSystemEvent(itemUnlocked({ target: payload.path }))
+            batchActions(
+              [
+                unlockItemCompleted({ path: payload.path }),
+                emitSystemEvent(itemUnlocked({ target: payload.path })),
+                payload.notify === false && showUnlockItemSuccessNotification()
+              ].filter(Boolean)
+            )
           )
         )
       )

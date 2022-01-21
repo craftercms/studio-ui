@@ -17,18 +17,20 @@
 import React, { PropsWithChildren, useEffect, useRef, useState } from 'react';
 import {
   changeCurrentUrl,
-  checkInGuest,
-  checkOutGuest,
   clearSelectedZones,
   clearSelectForEdit,
   contentTypeDropTargetsResponse,
   contentTypesResponse,
   deleteItemOperation,
   deleteItemOperationComplete,
+  deleteItemOperationFailed,
   desktopAssetDrop,
   desktopAssetUploadComplete,
   desktopAssetUploadProgress,
   desktopAssetUploadStarted,
+  duplicateItemOperation,
+  duplicateItemOperationComplete,
+  duplicateItemOperationFailed,
   fetchContentTypes,
   fetchGuestModel,
   fetchGuestModelComplete,
@@ -44,10 +46,15 @@ import {
   insertComponentOperation,
   insertInstanceOperation,
   insertItemOperation,
+  insertItemOperationComplete,
+  insertItemOperationFailed,
   insertOperationComplete,
+  insertOperationFailed,
   instanceDragBegun,
   instanceDragEnded,
   moveItemOperation,
+  moveItemOperationComplete,
+  moveItemOperationFailed,
   requestEdit,
   selectForEdit,
   setContentTypeDropTargets,
@@ -58,18 +65,23 @@ import {
   showEditDialog as showEditDialogAction,
   sortItemOperation,
   sortItemOperationComplete,
+  sortItemOperationFailed,
   toggleEditModePadding,
   trashed,
   updateFieldValueOperation,
+  updateFieldValueOperationComplete,
+  updateFieldValueOperationFailed,
   updateRteConfig,
   validationMessage
 } from '../../state/actions/preview';
 import {
   deleteItem,
+  duplicateItem,
   fetchContentInstance,
   fetchContentInstanceDescriptor,
   insertComponent,
   insertInstance,
+  insertItem,
   moveItem,
   sortItem,
   updateField,
@@ -91,13 +103,14 @@ import {
   getStoredHighlightModeChoice,
   removeStoredClipboard
 } from '../../utils/state';
-import { fetchSandboxItem, restoreClipboard } from '../../state/actions/content';
+import { fetchSandboxItem, lockItem, reloadDetailedItem, restoreClipboard } from '../../state/actions/content';
 import EditFormPanel from '../../components/EditFormPanel/EditFormPanel';
 import {
   createModelHierarchyDescriptorMap,
   getComputedEditMode,
   hasEditAction,
   isItemLockedForMe,
+  isLockedState,
   normalizeModel,
   normalizeModelsLookup,
   parseContentXML
@@ -135,6 +148,7 @@ import {
 } from '../../state/actions/system';
 import { useUpdateRefs } from '../../hooks';
 import { useHotkeys } from 'react-hotkeys-hook';
+import { batchActions } from '../../state/actions/misc';
 import { popPiece } from '../../utils/string';
 import { editContentTypeTemplate, editController } from '../../state/actions/misc';
 
@@ -292,12 +306,17 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   useEffect(() => {
     // FYI. Path navigator refresh triggers this effect too due to item changing.
     if (item) {
-      getHostToGuestBus().next({
-        type: setPreviewEditMode.type,
-        payload: { editMode: getComputedEditMode({ item, username: user.username, editMode }) }
-      });
+      const mode = getComputedEditMode({ item, username: user.username, editMode });
+      if (mode && !isLockedState(item.state)) {
+        dispatch(
+          lockItem({
+            path: item.path
+          })
+        );
+      }
+      getHostToGuestBus().next(setPreviewEditMode({ editMode: mode }));
     }
-  }, [item, editMode, user.username]);
+  }, [item, editMode, user.username, dispatch]);
 
   // Fetch active item
   useEffect(() => {
@@ -368,6 +387,13 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
     const hostToGuest$ = getHostToGuestBus();
     const guestToHost$ = getGuestToHostBus();
     const hostToHost$ = getHostToHostBus();
+    const updatedModifiedItem = (path: string) => {
+      upToDateRefs.current.dispatch(
+        reloadDetailedItem({
+          path
+        })
+      );
+    };
     const guestToHostSubscription = guestToHost$.subscribe((action) => {
       const {
         siteId,
@@ -394,7 +420,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         case guestSiteLoad.type: {
           const { url, location } = payload;
           const path = getPathFromPreviewURL(url);
-          dispatch(checkInGuest({ location, site: siteId, path }));
+          dispatch(guestCheckIn({ location, site: siteId, path }));
           issueDescriptorRequest({
             site: siteId,
             path,
@@ -434,7 +460,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
                 rteConfig: upToDateRefs.current.rteConfig ?? {}
               })
             );
-            dispatch(checkInGuest(payload));
+            dispatch(guestCheckIn(payload));
 
             if (payload.documentDomain) {
               try {
@@ -480,7 +506,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         }
         case guestCheckOut.type: {
           requestedSourceMapPaths.current = {};
-          dispatch(checkOutGuest());
+          dispatch(action);
           startGuestDetectionTimeout(guestDetectionTimeoutRef, setGuestDetectionSnackbarOpen);
           break;
         }
@@ -519,12 +545,13 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
                 dispatch,
                 completeAction: fetchGuestModelComplete
               });
-              // @ts-ignore - TODO: type action accordingly
               hostToHost$.next(sortItemOperationComplete(payload));
+              updatedModifiedItem(path);
               enqueueSnackbar(formatMessage(guestMessages.sortOperationComplete));
             },
             error(error) {
               console.error(`${type} failed`, error);
+              hostToHost$.next(sortItemOperationFailed());
               enqueueSnackbar(formatMessage(guestMessages.sortOperationFailed));
             }
           });
@@ -559,15 +586,18 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
                 dispatch,
                 completeAction: fetchGuestModelComplete
               });
-
-              hostToGuest$.next({
-                type: insertOperationComplete.type,
-                payload: { ...payload, currentFullUrl: `${guestBase}${upToDateRefs.current.currentUrlPath}` }
-              });
+              hostToGuest$.next(
+                insertOperationComplete({
+                  ...payload,
+                  currentFullUrl: `${guestBase}${upToDateRefs.current.currentUrlPath}`
+                })
+              );
+              updatedModifiedItem(path);
               enqueueSnackbar(formatMessage(guestMessages.insertOperationComplete));
             },
             error(error) {
               console.error(`${type} failed`, error);
+              hostToGuest$.next(insertOperationFailed());
               enqueueSnackbar(formatMessage(guestMessages.insertOperationFailed));
             }
           });
@@ -601,26 +631,58 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
                 completeAction: fetchGuestModelComplete
               });
 
-              hostToGuest$.next({
-                type: insertOperationComplete.type,
-                payload: { ...payload, currentFullUrl: `${guestBase}${upToDateRefs.current.currentUrlPath}` }
-              });
+              hostToGuest$.next(
+                insertOperationComplete({
+                  ...payload,
+                  currentFullUrl: `${guestBase}${upToDateRefs.current.currentUrlPath}`
+                })
+              );
+              updatedModifiedItem(path);
               enqueueSnackbar(formatMessage(guestMessages.insertOperationComplete));
             },
             error(error) {
               console.error(`${type} failed`, error);
+              hostToGuest$.next(insertOperationFailed());
               enqueueSnackbar(formatMessage(guestMessages.insertOperationFailed));
             }
           });
           break;
         }
         case insertItemOperation.type: {
-          enqueueSnackbar(formatMessage(guestMessages.insertItemOperation));
+          const { modelId, parentModelId, fieldId, index, instance } = payload;
+          const path = models[parentModelId ?? modelId].craftercms.path;
+          insertItem(siteId, modelId, fieldId, index, instance, path).subscribe({
+            next() {
+              hostToGuest$.next(insertItemOperationComplete());
+              enqueueSnackbar(formatMessage(guestMessages.insertItemOperationComplete));
+            },
+            error() {
+              hostToGuest$.next(insertItemOperationFailed());
+              enqueueSnackbar(formatMessage(guestMessages.insertItemOperationFailed));
+            }
+          });
+          break;
+        }
+        case duplicateItemOperation.type: {
+          const { modelId, parentModelId, fieldId, index } = payload;
+          const path = models[parentModelId ?? modelId].craftercms.path;
+          duplicateItem(siteId, modelId, fieldId, index, path).subscribe({
+            next() {
+              hostToGuest$.next(duplicateItemOperationComplete());
+              enqueueSnackbar(formatMessage(guestMessages.duplicateItemOperationComplete));
+            },
+            error() {
+              hostToGuest$.next(duplicateItemOperationFailed());
+              enqueueSnackbar(formatMessage(guestMessages.duplicateItemOperationFailed));
+            }
+          });
           break;
         }
         case moveItemOperation.type: {
           const { originalFieldId, originalIndex, targetFieldId, targetIndex } = payload;
           let { originalModelId, originalParentModelId, targetModelId, targetParentModelId } = payload;
+          const originPath = models[originalParentModelId ? originalParentModelId : originalModelId].craftercms.path;
+          const targetPath = models[targetParentModelId ? targetParentModelId : targetModelId].craftercms.path;
 
           if (isInheritedField(models[originalModelId], originalFieldId)) {
             originalModelId = getModelIdFromInheritedField(models[originalModelId], originalFieldId, modelIdByPath);
@@ -640,14 +702,26 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
             targetModelId,
             targetFieldId,
             targetIndex,
-            models[originalParentModelId ? originalParentModelId : originalModelId].craftercms.path,
-            models[targetParentModelId ? targetParentModelId : targetModelId].craftercms.path
+            originPath,
+            targetPath
           ).subscribe({
             next() {
+              hostToGuest$.next(moveItemOperationComplete());
+              dispatch(
+                batchActions([
+                  reloadDetailedItem({
+                    path: originPath
+                  }),
+                  reloadDetailedItem({
+                    path: targetPath
+                  })
+                ])
+              );
               enqueueSnackbar(formatMessage(guestMessages.moveOperationComplete));
             },
             error(error) {
               console.error(`${type} failed`, error);
+              hostToGuest$.next(moveItemOperationFailed());
               enqueueSnackbar(formatMessage(guestMessages.moveOperationFailed));
             }
           });
@@ -680,14 +754,13 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
                 completeAction: fetchGuestModelComplete
               });
 
-              hostToHost$.next({
-                type: deleteItemOperationComplete.type,
-                payload
-              });
+              hostToHost$.next(deleteItemOperationComplete(payload));
+              updatedModifiedItem(path);
               enqueueSnackbar(formatMessage(guestMessages.deleteOperationComplete));
             },
             error: (error) => {
               console.error(`${type} failed`, error);
+              hostToHost$.next(deleteItemOperationFailed());
               enqueueSnackbar(formatMessage(guestMessages.deleteOperationFailed));
             }
           });
@@ -696,6 +769,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         case updateFieldValueOperation.type: {
           const { fieldId, index, value } = payload;
           let { modelId, parentModelId } = payload;
+          const path = models[parentModelId ? parentModelId : modelId].craftercms.path;
 
           if (isInheritedField(models[modelId], fieldId)) {
             modelId = getModelIdFromInheritedField(models[modelId], fieldId, modelIdByPath);
@@ -707,14 +781,17 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
             modelId,
             fieldId,
             index,
-            models[parentModelId ? parentModelId : modelId].craftercms.path,
+            path,
             value,
             upToDateRefs.current.cdataEscapedFieldPatterns.some((pattern) => Boolean(fieldId.match(pattern)))
           ).subscribe({
             next() {
+              hostToGuest$.next(updateFieldValueOperationComplete());
+              updatedModifiedItem(path);
               enqueueSnackbar(formatMessage(guestMessages.updateOperationComplete));
             },
             error() {
+              hostToGuest$.next(updateFieldValueOperationFailed());
               enqueueSnackbar(formatMessage(guestMessages.updateOperationFailed));
             }
           });
@@ -898,7 +975,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         // Changing the site will force-reload the iFrame and 'beforeunload'
         // event won't trigger withing; guest won't be submitting it's own checkout
         // in such cases.
-        dispatch(checkOutGuest());
+        dispatch(guestCheckOut({ path: guest.path }));
       }
     }
   }, [siteId, guest, dispatch]);

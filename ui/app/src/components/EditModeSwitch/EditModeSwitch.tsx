@@ -15,7 +15,7 @@
  */
 
 import withStyles from '@mui/styles/withStyles';
-import Switch from '@mui/material/Switch';
+import Switch, { SwitchProps } from '@mui/material/Switch';
 import Tooltip from '@mui/material/Tooltip';
 import React from 'react';
 import { DetailedItem, SandboxItem } from '../../models/Item';
@@ -23,7 +23,6 @@ import { useIntl } from 'react-intl';
 import translations from './translations';
 import { useDispatch } from 'react-redux';
 import { setPreviewEditMode } from '../../state/actions/preview';
-import { SwitchProps } from '@mui/material/Switch';
 import { useSelection } from '../../hooks/useSelection';
 import { isItemLockedForMe } from '../../utils/content';
 import { useActiveUser } from '../../hooks/useActiveUser';

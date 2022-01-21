@@ -247,10 +247,14 @@ function parseLegacyFormDefinitionFields(
         parseLegacyFormDefinitionFields(legacyField.fields.field, field.fields, dropTargetsLookup);
         break;
       case 'node-selector':
-        // TODO: check min & max count for node selector
         field.validations = {
           ...field.validations,
           ...getFieldValidations(legacyField.properties.property, dropTargetsLookup)
+        };
+        field.validations.required = {
+          id: 'required',
+          value: Boolean(field.validations.minCount),
+          level: 'required'
         };
         break;
       case 'input':

@@ -23,18 +23,18 @@
   <#include "/templates/web/common/page-fragments/head.ftl" />
 
   <title>Crafter Studio</title>
-  <link rel="stylesheet" type="text/css" href="/studio/static-assets/themes/cstudioTheme/css/global.css?version=${UIBuildId!.now?string('Mddyyyy')}" />
-  <link rel="stylesheet" type="text/css" href="/studio/static-assets/themes/cstudioTheme/css/forms-default.css?version=${UIBuildId!.now?string('Mddyyyy')}" />
-  <link rel="stylesheet" type="text/css" href="/studio/static-assets/styles/forms-engine.css?version=${UIBuildId!.now?string('Mddyyyy')}" />
+  <link rel="stylesheet" type="text/css" href="/studio/static-assets/themes/cstudioTheme/css/global.css" />
+  <link rel="stylesheet" type="text/css" href="/studio/static-assets/themes/cstudioTheme/css/forms-default.css" />
+  <link rel="stylesheet" type="text/css" href="/studio/static-assets/styles/forms-engine.css" />
 
-  <link href="/studio/static-assets/themes/cstudioTheme/css/icons.css?version=${UIBuildId!.now?string('Mddyyyy')}" type="text/css" rel="stylesheet">
-  <link href="/studio/static-assets/yui/container/assets/container.css?version=${UIBuildId!.now?string('Mddyyyy')}" type="text/css" rel="stylesheet">
+  <link href="/studio/static-assets/themes/cstudioTheme/css/icons.css" type="text/css" rel="stylesheet">
+  <link href="/studio/static-assets/yui/container/assets/container.css" type="text/css" rel="stylesheet">
 
   <#assign path="/studio/static-assets/components/cstudio-common/resources/" />
-  <script src="${path}en/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="${path}kr/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="${path}es/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="${path}de/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+  <script src="${path}en/base.js"></script>
+  <script src="${path}kr/base.js"></script>
+  <script src="${path}es/base.js"></script>
+  <script src="${path}de/base.js"></script>
 
   <#include "/templates/web/common/page-fragments/studio-context.ftl" />
 
@@ -52,7 +52,7 @@
     }
   </script>
 
-  <link rel="stylesheet" type="text/css" href="/studio/static-assets/css/diff.css?version=${UIBuildId!.now?string('Mddyyyy')}" />
+  <link rel="stylesheet" type="text/css" href="/studio/static-assets/css/diff.css" />
 
 </head>
 <body class="yui-skin-cstudioTheme skin-diff">

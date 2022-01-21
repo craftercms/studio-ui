@@ -84,3 +84,7 @@ export const UNDEFINED: undefined = void 0;
 export const PREVIEW_URL_PATH = '/next/preview';
 
 export const LEGACY_PREVIEW_URL_PATH = '/preview';
+
+// The `scripts_o` field id has a special mapping in Engine. People use the node-selector control to include
+// groovy scripts. These aren't actually components and should be treated differently.
+export const pageControllersFieldId = 'scripts_o';
