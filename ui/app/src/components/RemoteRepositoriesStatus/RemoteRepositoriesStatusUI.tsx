@@ -109,7 +109,7 @@ export function RemoteRepositoriesStatusUI(props: RemoteRepositoriesStatusUIProp
                 onConfirm={onRevertPull}
               />
               <Button variant="outlined" className={classes.commitButton} onClick={onClickCommit}>
-                <FormattedMessage id="repositories.newRepository" defaultMessage="Commit Resolution" />
+                <FormattedMessage id="repositories.commitResolution" defaultMessage="Commit Resolution" />
               </Button>
             </>
           }

@@ -1256,7 +1256,7 @@
   "repositories.mergeStrategyTheirs": "Accept Theirs",
   "repositories.messageLabel": "Conflict resolution message",
   "repositories.newRemoteDialogTitle": "New Remote Repository",
-  "repositories.newRepository": "Commit Resolution",
+  "repositories.newRepository": "Add Remote Repository",
   "repositories.noConflicts": "Local repository is free of conflicts.",
   "repositories.pendingCommit": "Repo contains files pending commit. See Repository status below for details.",
   "repositories.pullSuccessMessage": "Successfully pulled.",

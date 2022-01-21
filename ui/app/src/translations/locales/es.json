@@ -1256,7 +1256,7 @@
   "repositories.mergeStrategyTheirs": "Aceptar el suyo",
   "repositories.messageLabel": "Mensaje de resolución de conflictos",
   "repositories.newRemoteDialogTitle": "Nuevo repositorio remoto",
-  "repositories.newRepository": "Comprometer resolución",
+  "repositories.newRepository": "Agregar repositorio remoto",
   "repositories.noConflicts": "El repositorio local está libre de conflictos.",
   "repositories.pendingCommit": "Repo contiene archivos pendientes de confirmación. Consulte el estado del repositorio a continuación para obtener más detalles.",
   "repositories.pullSuccessMessage": "Tirado con éxito.",
