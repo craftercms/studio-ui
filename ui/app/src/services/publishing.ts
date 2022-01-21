@@ -66,15 +66,13 @@ export function cancelPackage(siteId: string, packageIds: any) {
 }
 
 export type FetchPublishingTargetsResponse = Api2ResponseFormat<{
-  publishingTargets: {
-    published: boolean;
-    targets: Array<PublishingTarget>;
-  };
+  published: boolean;
+  publishingTargets: Array<PublishingTarget>;
 }>;
 
-export function fetchPublishingTargets(site: string): Observable<FetchPublishingTargetsResponse['publishingTargets']> {
+export function fetchPublishingTargets(site: string): Observable<FetchPublishingTargetsResponse> {
   return get<FetchPublishingTargetsResponse>(`/studio/api/2/publish/available_targets?siteId=${site}`).pipe(
-    pluck('response', 'publishingTargets')
+    pluck('response')
   );
 }
 

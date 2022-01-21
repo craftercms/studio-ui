@@ -159,7 +159,7 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
     (success?: (channels) => any, error?: (error) => any) => {
       setPublishingTargetsStatus('Loading');
       fetchPublishingTargets(siteId).subscribe({
-        next({ targets, published }) {
+        next({ publishingTargets: targets, published }) {
           setPublished(published);
           setPublishingTargets(targets);
           setPublishingTargetsStatus('Success');
