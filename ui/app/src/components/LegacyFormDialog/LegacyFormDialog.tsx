@@ -33,11 +33,19 @@ export function LegacyFormDialog(props: LegacyFormDialogProps) {
 
   const title = formatMessage(translations.title);
 
-  const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    if (inProgress) {
-      props?.onClose();
+  const onClose = (e, reason?) => {
+    // The form engine is too expensive to load to lose it with an unintentional
+    // backdrop click. Disabling backdrop click until form engine 2.
+    if ('backdropClick' !== reason) {
+      if (inProgress) {
+        props?.onClose();
+      }
+      iframeRef.current.contentWindow.postMessage({ type: 'LEGACY_FORM_DIALOG_CANCEL_REQUEST' }, '*');
     }
-    iframeRef.current.contentWindow.postMessage({ type: 'LEGACY_FORM_DIALOG_CANCEL_REQUEST' }, '*');
+  };
+
+  const onCloseButtonClick = (e) => {
+    onClose(e);
   };
 
   return (
@@ -48,7 +56,7 @@ export function LegacyFormDialog(props: LegacyFormDialogProps) {
         fullWidth
         maxWidth="xl"
         classes={{ paper: classes.dialog }}
-        onClose={onCloseButtonClick}
+        onClose={onClose}
       >
         <DialogHeader
           title={title}

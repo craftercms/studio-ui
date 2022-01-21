@@ -368,7 +368,15 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
               break;
             }
             default: {
-              return iceZoneSelected();
+              return merge(
+                escape$.pipe(
+                  takeUntil(clearAndListen$),
+                  tap(() => post(clearSelectedZones.type)),
+                  map(() => startListening()),
+                  take(1)
+                ),
+                of(setEditingStatus({ status: EditingStatus.FIELD_SELECTED }))
+              );
             }
           }
         } else if (state.highlightMode === HighlightMode.MOVE_TARGETS && state.status === EditingStatus.LISTENING) {

@@ -207,7 +207,7 @@ function BlueprintForm(props: BlueprintFormProps) {
 
   function getSiteId(siteName: string): string {
     let siteId = siteName
-      .replace(/[^a-zA-Z0-9_\s]/g, '')
+      .replace(/[^a-zA-Z0-9_\s-]/g, '')
       .replace(/[_\s]/g, '-')
       .toLowerCase();
     if (siteId.startsWith('0') || siteId.startsWith('-') || siteId.startsWith('_')) {
