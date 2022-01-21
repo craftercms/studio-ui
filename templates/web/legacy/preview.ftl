@@ -23,10 +23,10 @@
   <title>${contentModel['internal-name']} - ${contentModel['common-title']!''}</title>
 
   <#include "/templates/web/common/page-fragments/head.ftl" />
-  <script src="/studio/static-assets/components/cstudio-common/resources/en/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="/studio/static-assets/components/cstudio-common/resources/kr/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="/studio/static-assets/components/cstudio-common/resources/es/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="/studio/static-assets/components/cstudio-common/resources/de/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+  <script src="/studio/static-assets/components/cstudio-common/resources/en/base.js"></script>
+  <script src="/studio/static-assets/components/cstudio-common/resources/kr/base.js"></script>
+  <script src="/studio/static-assets/components/cstudio-common/resources/es/base.js"></script>
+  <script src="/studio/static-assets/components/cstudio-common/resources/de/base.js"></script>
 
   <#include "/templates/web/common/page-fragments/studio-context.ftl" />
   <script>CStudioAuthoringContext.isPreview = true</script>
@@ -42,14 +42,14 @@
 
   <script>window.entitlementValidator = '${applicationContext.get("crafter.entitlementValidator").getDescription()}';</script>
 
-  <script src="/studio/static-assets/scripts/crafter.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="/studio/static-assets/libs/amplify/lib/amplify.core.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="/studio/static-assets/libs/js-cache/cache.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="/studio/static-assets/scripts/communicator.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="/studio/static-assets/scripts/animator.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="/studio/static-assets/scripts/host.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="/studio/static-assets/libs/momentjs/moment.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="/studio/static-assets/libs/momentjs/moment-timezone-with-data-2012-2022.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+  <script src="/studio/static-assets/scripts/crafter.js"></script>
+  <script src="/studio/static-assets/libs/amplify/lib/amplify.core.js"></script>
+  <script src="/studio/static-assets/libs/js-cache/cache.js"></script>
+  <script src="/studio/static-assets/scripts/communicator.js"></script>
+  <script src="/studio/static-assets/scripts/animator.js"></script>
+  <script src="/studio/static-assets/scripts/host.js"></script>
+  <script src="/studio/static-assets/libs/momentjs/moment.min.js"></script>
+  <script src="/studio/static-assets/libs/momentjs/moment-timezone-with-data-2012-2022.min.js"></script>
 
 </head>
 <body>

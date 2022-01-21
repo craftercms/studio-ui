@@ -40,12 +40,13 @@ interface FilterCheckboxesProps {
   facetData: Facet;
   facet: string;
   checkedFilters: LookupTable;
+  facetLabelLookup: LookupTable;
 
   handleCheckboxClick(key: string, checked: boolean, facet: string): any;
 }
 
 export function SiteSearchFilterCheckboxes(props: FilterCheckboxesProps) {
-  const { facetData, facet, handleCheckboxClick, checkedFilters } = props;
+  const { facetData, facet, handleCheckboxClick, checkedFilters, facetLabelLookup } = props;
   const items = facetData.values;
   const classes = useStyles({});
 
@@ -64,7 +65,7 @@ export function SiteSearchFilterCheckboxes(props: FilterCheckboxesProps) {
                 onChange={(e) => handleCheckboxClick(key, e.target.checked, facet)}
               />
             }
-            label={`${key} (${items[key]})`}
+            label={`${facetLabelLookup[key] ?? key} (${items[key]})`}
             labelPlacement="start"
             classes={{ root: classes.checkboxRoot, label: classes.checkboxLabel }}
           />

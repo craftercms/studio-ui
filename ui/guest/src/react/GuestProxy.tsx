@@ -35,8 +35,13 @@ import { message$ } from '../utils/communicator';
 import { Operation } from '../models/Operations';
 import {
   deleteItemOperation,
+  duplicateItemOperation,
+  duplicateItemOperationComplete,
   insertComponentOperation,
   insertInstanceOperation,
+  insertItemOperation,
+  insertItemOperationComplete,
+  insertOperationComplete,
   moveItemOperation,
   sortItemOperation,
   updateFieldValueOperation
@@ -330,6 +335,32 @@ export function GuestProxy() {
 
           break;
         }
+        case insertItemOperation.type: {
+          message$
+            .pipe(
+              filter((e) => e.type === insertItemOperationComplete.type),
+              take(1)
+            )
+            .subscribe({
+              next() {
+                window.location.reload();
+              }
+            });
+          break;
+        }
+        case duplicateItemOperation.type: {
+          message$
+            .pipe(
+              filter((e) => e.type === duplicateItemOperationComplete.type),
+              take(1)
+            )
+            .subscribe({
+              next() {
+                window.location.reload();
+              }
+            });
+          break;
+        }
         case insertComponentOperation.type:
         case insertInstanceOperation.type: {
           const { modelId, fieldId, targetIndex, instance } = op.args;
@@ -349,7 +380,7 @@ export function GuestProxy() {
             .pipe(
               filter(
                 (e) =>
-                  e.type === 'INSERT_OPERATION_COMPLETE' && e.payload.instance.craftercms.id === instance.craftercms.id
+                  e.type === insertOperationComplete.type && e.payload.instance.craftercms.id === instance.craftercms.id
               ),
               take(1)
             )

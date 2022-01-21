@@ -96,7 +96,7 @@ export function getFieldsByType(contentType: ContentType, fieldType): ContentTyp
 }
 
 // TODO: See variable.js for additional case items to possibly include here
-export function getDefaultValue(field: ContentTypeField): string | number | any[] {
+export function getDefaultValue(field: ContentTypeField): string | number | boolean | any[] {
   if (field.defaultValue) {
     return field.defaultValue;
   } else if (field.validations.required?.value) {
@@ -141,6 +141,7 @@ export function getDefaultValue(field: ContentTypeField): string | number | any[
         return repeat;
       }
       case 'node-selector':
+        // TODO: CHECK MIN/MAX COUNT
         return [];
       default: {
         return null;

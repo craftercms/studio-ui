@@ -25,11 +25,15 @@ import GroovyIcon from '@craftercms/studio-ui/icons/Groovy';
 import FreemarkerIcon from '@craftercms/studio-ui/icons/Freemarker';
 import UltraStyledIconButton from './UltraStyledIconButton';
 import HighlightOffRoundedIcon from '@mui/icons-material/HighlightOffRounded';
+import AddCircleOutlineRoundedIcon from '@mui/icons-material/AddCircleOutlineRounded';
+import ContentCopyRoundedIcon from '@mui/icons-material/ContentCopyRounded';
 import { Tooltip } from '@mui/material';
 import {
   deleteItem,
+  duplicateItem,
   getCachedModel,
   getCachedModels,
+  insertItem,
   modelHierarchyMap,
   sortDownItem,
   sortUpItem
@@ -48,6 +52,7 @@ import Menu from '@mui/material/Menu';
 import Typography from '@mui/material/Typography';
 import MenuItem from '@mui/material/MenuItem';
 import { getParentModelId } from '../utils/ice';
+import { iceRegistry } from '../index';
 
 export interface MoveModeZoneMenuProps {
   record: ElementRecord;
@@ -108,6 +113,7 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
   );
   const componentId =
     recordType === 'component' ? modelId : recordType === 'node-selector-item' ? collection[elementIndex] : null;
+  const { field, contentType } = useMemo(() => iceRegistry.getReferentialEntries(record.iceIds[0]), [record.iceIds]);
   const isMovable =
     ['node-selector-item', 'repeat-item'].includes(recordType) ||
     Boolean(recordType === 'component' && nodeSelectorItemRecord);
@@ -118,8 +124,8 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
   const isEmbedded = useMemo(() => !Boolean(getCachedModel(modelId)?.craftercms.path), [modelId]);
   const showCodeEditOptions = ['component', 'page', 'node-selector-item'].includes(recordType);
   const isTrashable = recordType !== 'field' && recordType !== 'page';
-  const showAddItem = false; // for repeat group item
-  const showDuplicate = false; // could apply to repeat items or components
+  const showAddItem = recordType === 'field' && field.type === 'repeat';
+  const showDuplicate = ['repeat-item', 'component', 'node-selector-item'].includes(recordType);
 
   // region callbacks
 
@@ -153,6 +159,18 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
     commonEdit(e, 'template');
   };
 
+  const onAddRepeatItem = (e) => {
+    insertItem(modelId, fieldId, index, contentType);
+  };
+
+  const onDuplicateItem = (e) => {
+    if (recordType === 'component' && nodeSelectorItemRecord) {
+      duplicateItem(nodeSelectorItemRecord.modelId, nodeSelectorItemRecord.fieldId, nodeSelectorItemRecord.index);
+    } else {
+      duplicateItem(modelId, fieldId, index);
+    }
+  };
+
   const onMoveUp = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -183,7 +201,11 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
     if (minCount) {
       post(validationMessage(minCount));
     } else {
-      deleteItem(modelId, fieldId, index);
+      if (recordType === 'component' && nodeSelectorItemRecord) {
+        deleteItem(nodeSelectorItemRecord.modelId, nodeSelectorItemRecord.fieldId, nodeSelectorItemRecord.index);
+      } else {
+        deleteItem(modelId, fieldId, index);
+      }
       onCancel();
     }
   };
@@ -270,6 +292,20 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
             </UltraStyledIconButton>
           </Tooltip>
         </>
+      )}
+      {showAddItem && (
+        <Tooltip title="Add new item">
+          <UltraStyledIconButton size="small" onClick={onAddRepeatItem}>
+            <AddCircleOutlineRoundedIcon />
+          </UltraStyledIconButton>
+        </Tooltip>
+      )}
+      {showDuplicate && (
+        <Tooltip title="Duplicate item">
+          <UltraStyledIconButton size="small" onClick={onDuplicateItem}>
+            <ContentCopyRoundedIcon />
+          </UltraStyledIconButton>
+        </Tooltip>
       )}
       {isMovable &&
         !isOnlyItem && [

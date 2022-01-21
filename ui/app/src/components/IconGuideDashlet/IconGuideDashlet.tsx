@@ -74,7 +74,8 @@ const states = {
   deleted: { stateMap: { deleted: true } },
   locked: { stateMap: { locked: true } },
   systemProcessing: { stateMap: { systemProcessing: true } },
-  submitted: { stateMap: { submitted: true } },
+  submitted: { stateMap: { submitted: true, submittedToLive: true } },
+  submittedStaging: { stateMap: { submitted: true, submittedToStaging: true } },
   scheduled: { stateMap: { scheduled: true } },
   publishing: { stateMap: { publishing: true } },
   disabled: { stateMap: { disabled: true } }
