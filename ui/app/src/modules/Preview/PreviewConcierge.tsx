@@ -25,10 +25,14 @@ import {
   contentTypesResponse,
   deleteItemOperation,
   deleteItemOperationComplete,
+  deleteItemOperationFailed,
   desktopAssetDrop,
   desktopAssetUploadComplete,
   desktopAssetUploadProgress,
   desktopAssetUploadStarted,
+  duplicateItemOperation,
+  duplicateItemOperationComplete,
+  duplicateItemOperationFailed,
   fetchContentTypes,
   fetchGuestModel,
   fetchGuestModelComplete,
@@ -44,10 +48,15 @@ import {
   insertComponentOperation,
   insertInstanceOperation,
   insertItemOperation,
+  insertItemOperationComplete,
+  insertItemOperationFailed,
   insertOperationComplete,
+  insertOperationFailed,
   instanceDragBegun,
   instanceDragEnded,
   moveItemOperation,
+  moveItemOperationComplete,
+  moveItemOperationFailed,
   requestEdit,
   selectForEdit,
   setContentTypeDropTargets,
@@ -58,18 +67,23 @@ import {
   showEditDialog as showEditDialogAction,
   sortItemOperation,
   sortItemOperationComplete,
+  sortItemOperationFailed,
   toggleEditModePadding,
   trashed,
   updateFieldValueOperation,
+  updateFieldValueOperationComplete,
+  updateFieldValueOperationFailed,
   updateRteConfig,
   validationMessage
 } from '../../state/actions/preview';
 import {
   deleteItem,
+  duplicateItem,
   fetchContentInstance,
   fetchContentInstanceDescriptor,
   insertComponent,
   insertInstance,
+  insertItem,
   moveItem,
   sortItem,
   updateField,
@@ -519,12 +533,12 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
                 dispatch,
                 completeAction: fetchGuestModelComplete
               });
-              // @ts-ignore - TODO: type action accordingly
               hostToHost$.next(sortItemOperationComplete(payload));
               enqueueSnackbar(formatMessage(guestMessages.sortOperationComplete));
             },
             error(error) {
               console.error(`${type} failed`, error);
+              hostToHost$.next(sortItemOperationFailed());
               enqueueSnackbar(formatMessage(guestMessages.sortOperationFailed));
             }
           });
@@ -559,15 +573,17 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
                 dispatch,
                 completeAction: fetchGuestModelComplete
               });
-
-              hostToGuest$.next({
-                type: insertOperationComplete.type,
-                payload: { ...payload, currentFullUrl: `${guestBase}${upToDateRefs.current.currentUrlPath}` }
-              });
+              hostToGuest$.next(
+                insertOperationComplete({
+                  ...payload,
+                  currentFullUrl: `${guestBase}${upToDateRefs.current.currentUrlPath}`
+                })
+              );
               enqueueSnackbar(formatMessage(guestMessages.insertOperationComplete));
             },
             error(error) {
               console.error(`${type} failed`, error);
+              hostToGuest$.next(insertOperationFailed());
               enqueueSnackbar(formatMessage(guestMessages.insertOperationFailed));
             }
           });
@@ -601,21 +617,50 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
                 completeAction: fetchGuestModelComplete
               });
 
-              hostToGuest$.next({
-                type: insertOperationComplete.type,
-                payload: { ...payload, currentFullUrl: `${guestBase}${upToDateRefs.current.currentUrlPath}` }
-              });
+              hostToGuest$.next(
+                insertOperationComplete({
+                  ...payload,
+                  currentFullUrl: `${guestBase}${upToDateRefs.current.currentUrlPath}`
+                })
+              );
               enqueueSnackbar(formatMessage(guestMessages.insertOperationComplete));
             },
             error(error) {
               console.error(`${type} failed`, error);
+              hostToGuest$.next(insertOperationFailed());
               enqueueSnackbar(formatMessage(guestMessages.insertOperationFailed));
             }
           });
           break;
         }
         case insertItemOperation.type: {
-          enqueueSnackbar(formatMessage(guestMessages.insertItemOperation));
+          const { modelId, parentModelId, fieldId, index, instance } = payload;
+          const path = models[parentModelId ?? modelId].craftercms.path;
+          insertItem(siteId, modelId, fieldId, index, instance, path).subscribe({
+            next() {
+              hostToGuest$.next(insertItemOperationComplete());
+              enqueueSnackbar(formatMessage(guestMessages.insertItemOperationComplete));
+            },
+            error() {
+              hostToGuest$.next(insertItemOperationFailed());
+              enqueueSnackbar(formatMessage(guestMessages.insertItemOperationFailed));
+            }
+          });
+          break;
+        }
+        case duplicateItemOperation.type: {
+          const { modelId, parentModelId, fieldId, index } = payload;
+          const path = models[parentModelId ?? modelId].craftercms.path;
+          duplicateItem(siteId, modelId, fieldId, index, path).subscribe({
+            next() {
+              hostToGuest$.next(duplicateItemOperationComplete());
+              enqueueSnackbar(formatMessage(guestMessages.duplicateItemOperationComplete));
+            },
+            error() {
+              hostToGuest$.next(duplicateItemOperationFailed());
+              enqueueSnackbar(formatMessage(guestMessages.duplicateItemOperationFailed));
+            }
+          });
           break;
         }
         case moveItemOperation.type: {
@@ -644,10 +689,12 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
             models[targetParentModelId ? targetParentModelId : targetModelId].craftercms.path
           ).subscribe({
             next() {
+              hostToGuest$.next(moveItemOperationComplete());
               enqueueSnackbar(formatMessage(guestMessages.moveOperationComplete));
             },
             error(error) {
               console.error(`${type} failed`, error);
+              hostToGuest$.next(moveItemOperationFailed());
               enqueueSnackbar(formatMessage(guestMessages.moveOperationFailed));
             }
           });
@@ -680,14 +727,12 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
                 completeAction: fetchGuestModelComplete
               });
 
-              hostToHost$.next({
-                type: deleteItemOperationComplete.type,
-                payload
-              });
+              hostToHost$.next(deleteItemOperationComplete(payload));
               enqueueSnackbar(formatMessage(guestMessages.deleteOperationComplete));
             },
             error: (error) => {
               console.error(`${type} failed`, error);
+              hostToHost$.next(deleteItemOperationFailed());
               enqueueSnackbar(formatMessage(guestMessages.deleteOperationFailed));
             }
           });
@@ -712,9 +757,11 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
             upToDateRefs.current.cdataEscapedFieldPatterns.some((pattern) => Boolean(fieldId.match(pattern)))
           ).subscribe({
             next() {
+              hostToGuest$.next(updateFieldValueOperationComplete());
               enqueueSnackbar(formatMessage(guestMessages.updateOperationComplete));
             },
             error() {
+              hostToGuest$.next(updateFieldValueOperationFailed());
               enqueueSnackbar(formatMessage(guestMessages.updateOperationFailed));
             }
           });
