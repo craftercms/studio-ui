@@ -231,6 +231,7 @@ CStudioAuthoring.Module.requireModule(
             extendedElements,
             rteStylesheets,
             rteStyleOverride,
+            rtePasteWordElements,
             toolbarConfig1,
             toolbarConfig2,
             toolbarConfig3,
@@ -315,6 +316,12 @@ CStudioAuthoring.Module.requireModule(
 
           rteStyleOverride = rteConfig.rteStyleOverride ? rteConfig.rteStyleOverride : null;
 
+          rtePasteWordElements = rteConfig.rtePasteWordElements
+            ? rteConfig.rtePasteWordElements
+            : '-strong/b,-em/i,-u,-span,-p,-ol,-ul,-li,-h1,-h2,-h3,-h4,-h5,-h6,-h7,-h8,-pre,-p/div,' +
+              '-a[href|name],sub,sup,pre,blockquote,strike,br,del,' +
+              'table[width],tr,td[colspan|rowspan|width],th[colspan|rowspan|width],thead,tfoot,tbody';
+
           try {
             // use tinymce default if not set
             styleFormats = rteConfig.styleFormats ? JSON.parse(rteConfig.styleFormats) : void 0;
@@ -346,7 +353,8 @@ CStudioAuthoring.Module.requireModule(
           const codeEditorWrap = rteConfig.codeEditorWrap ? rteConfig.codeEditorWrap === 'true' : false;
 
           const external = {
-            acecode: '/studio/static-assets/js/tinymce-plugins/ace/plugin.min.js'
+            acecode: '/studio/static-assets/js/tinymce-plugins/ace/plugin.min.js',
+            paste_from_word: '/studio/static-assets/js/tinymce-plugins/paste-from-word/plugin.min.js'
           };
           if (rteConfig.external_plugins) {
             Object.entries(rteConfig.external_plugins).forEach((entry) => {
@@ -388,7 +396,8 @@ CStudioAuthoring.Module.requireModule(
             contextmenu: !this.enableSpellCheck,
 
             menu: {
-              tools: { title: 'Tools', items: 'tinymcespellchecker code acecode wordcount' }
+              tools: { title: 'Tools', items: 'tinymcespellchecker code acecode wordcount' },
+              edit: { title: 'Edit', items: 'undo redo | cut copy paste paste_as_text | selectall | searchreplace' }
             },
 
             automatic_uploads: true,
@@ -409,6 +418,8 @@ CStudioAuthoring.Module.requireModule(
             style_formats: styleFormats,
 
             style_formats_merge: styleFormatsMerge,
+
+            paste_word_valid_elements: rtePasteWordElements,
 
             setup: function (editor) {
               var addPadding = function () {
