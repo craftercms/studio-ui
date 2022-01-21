@@ -1256,7 +1256,7 @@
   "repositories.mergeStrategyTheirs": "Akzeptiere ihre",
   "repositories.messageLabel": "Nachricht zur Konfliktlösung",
   "repositories.newRemoteDialogTitle": "Neues Remote-Repository",
-  "repositories.newRepository": "Auflösung festlegen",
+  "repositories.newRepository": "Remote-Repository hinzufügen",
   "repositories.noConflicts": "Das lokale Repository ist konfliktfrei.",
   "repositories.pendingCommit": "Repo enthält Dateien, für die ein Commit aussteht. Weitere Informationen finden Sie unter Repository-Status.",
   "repositories.pullSuccessMessage": "Erfolgreich gezogen.",

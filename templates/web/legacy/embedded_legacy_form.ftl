@@ -19,25 +19,25 @@
   <script>
     document.domain = "${Request.serverName}";
   </script>
-  <script src="/studio/static-assets/libs/amplify/lib/amplify.core.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="/studio/static-assets/yui/utilities/utilities.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="/studio/static-assets/yui/container/container-min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="/studio/static-assets/yui/json/json-min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="/studio/static-assets/yui/yahoo/yahoo-min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+  <script src="/studio/static-assets/libs/amplify/lib/amplify.core.js"></script>
+  <script src="/studio/static-assets/yui/utilities/utilities.js"></script>
+  <script src="/studio/static-assets/yui/container/container-min.js"></script>
+  <script src="/studio/static-assets/yui/json/json-min.js"></script>
+  <script src="/studio/static-assets/yui/yahoo/yahoo-min.js"></script>
   <script src="/studio/static-assets/libs/jquery/dist/jquery-3.4.1.min.js"></script>
   <#include "/templates/web/common/page-fragments/studio-context.ftl" />
-  <script src="/studio/static-assets/components/cstudio-common/common-api.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="/studio/static-assets/scripts/crafter.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="/studio/static-assets/scripts/animator.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="/studio/static-assets/components/cstudio-components/loader.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="/studio/static-assets/libs/bootstrap/js/bootstrap.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="/studio/static-assets/libs/notify/notify.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+  <script src="/studio/static-assets/components/cstudio-common/common-api.js"></script>
+  <script src="/studio/static-assets/scripts/crafter.js"></script>
+  <script src="/studio/static-assets/scripts/animator.js"></script>
+  <script src="/studio/static-assets/components/cstudio-components/loader.js"></script>
+  <script src="/studio/static-assets/libs/bootstrap/js/bootstrap.min.js"></script>
+  <script src="/studio/static-assets/libs/notify/notify.min.js"></script>
   <#-- Lang resources -->
   <#assign path="/studio/static-assets/components/cstudio-common/resources/" />
-  <script src="${path}en/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="${path}kr/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="${path}es/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="${path}de/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+  <script src="${path}en/base.js"></script>
+  <script src="${path}kr/base.js"></script>
+  <script src="${path}es/base.js"></script>
+  <script src="${path}de/base.js"></script>
 
   <script>
     window.IS_LEGACY_TOP_WINDOW = true;

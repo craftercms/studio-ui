@@ -27,6 +27,7 @@ import { Operation } from './models/Operations';
 import {
   contentTypesResponse,
   deleteItemOperation,
+  duplicateItemOperation,
   insertComponentOperation,
   insertInstanceOperation,
   insertItemOperation,
@@ -318,13 +319,15 @@ export function updateField(modelId: string, fieldId: string, index: string | nu
   });
 
   // Post the update to studio to persist it
-  post(updateFieldValueOperation.type, {
-    modelId,
-    fieldId,
-    index,
-    value,
-    parentModelId
-  });
+  post(
+    updateFieldValueOperation({
+      modelId,
+      fieldId,
+      index,
+      value,
+      parentModelId
+    })
+  );
 
   operations$.next({
     type: updateFieldValueOperation.type,
@@ -332,31 +335,46 @@ export function updateField(modelId: string, fieldId: string, index: string | nu
   });
 }
 
-export function insertItem(modelId: string, fieldId: string, index: number | string, item: ContentInstance): void {
+export function duplicateItem(modelId: string, fieldId: string, index: number | string): void {
   const models = getCachedModels();
-  const collection = Model.value(models[modelId], fieldId);
-  const result = collection.slice(0);
 
-  // Insert in desired position
-  result.splice(index, 0, item);
-
-  const model = setCollection(
-    models[modelId],
-    fieldId,
-    typeof index === 'string' && index.includes('.') ? removeLastPiece(index) : index,
-    result
+  post(
+    duplicateItemOperation({
+      modelId,
+      fieldId,
+      index,
+      parentModelId: getParentModelId(modelId, models, modelHierarchyMap)
+    })
   );
 
-  models$.next({
-    ...models,
-    [modelId]: model
+  operations$.next({
+    type: duplicateItemOperation.type,
+    args: {}
+  });
+}
+
+export function insertItem(modelId: string, fieldId: string, index: number | string, contentType: ContentType): void {
+  const instance: Record<string, string | number | boolean | any[]> = {};
+  const models = getCachedModels();
+  Object.entries(contentType.fields[fieldId].fields).forEach(([id, field]) => {
+    if (!systemProps.includes(field.id)) {
+      instance[id] = getDefaultValue(field);
+    }
   });
 
-  post(insertItemOperation.type, { modelId, fieldId, index, item });
+  post(
+    insertItemOperation({
+      modelId,
+      fieldId,
+      index,
+      instance,
+      parentModelId: getParentModelId(modelId, models, modelHierarchyMap)
+    })
+  );
 
   operations$.next({
-    type: 'insert',
-    args: arguments
+    type: insertItemOperation.type,
+    args: {}
   });
 }
 
@@ -423,15 +441,17 @@ export function insertComponent(
 
   updateHierarchyMapIndexesFromCollection(result);
 
-  post(insertComponentOperation.type, {
-    modelId,
-    fieldId,
-    targetIndex,
-    contentType,
-    instance,
-    parentModelId: getParentModelId(modelId, models, modelHierarchyMap),
-    shared
-  });
+  post(
+    insertComponentOperation({
+      modelId,
+      fieldId,
+      targetIndex,
+      contentType,
+      instance,
+      parentModelId: getParentModelId(modelId, models, modelHierarchyMap),
+      shared
+    })
+  );
 
   operations$.next({
     type: insertComponentOperation.type,
@@ -479,13 +499,15 @@ export function insertInstance(
 
   updateHierarchyMapIndexesFromCollection(result);
 
-  post(insertInstanceOperation.type, {
-    modelId,
-    fieldId,
-    targetIndex,
-    instance,
-    parentModelId: getParentModelId(modelId, models, modelHierarchyMap)
-  });
+  post(
+    insertInstanceOperation({
+      modelId,
+      fieldId,
+      targetIndex,
+      instance,
+      parentModelId: getParentModelId(modelId, models, modelHierarchyMap)
+    })
+  );
 
   operations$.next({
     type: insertInstanceOperation.type,
@@ -578,13 +600,15 @@ export function sortItem(
     [modelId]: model
   });
 
-  post(sortItemOperation.type, {
-    modelId,
-    fieldId,
-    currentIndex,
-    targetIndex,
-    parentModelId: getParentModelId(modelId, models, modelHierarchyMap)
-  });
+  post(
+    sortItemOperation({
+      modelId,
+      fieldId,
+      currentIndex,
+      targetIndex,
+      parentModelId: getParentModelId(modelId, models, modelHierarchyMap)
+    })
+  );
 
   operations$.next({
     type: sortItemOperation.type,
@@ -690,16 +714,18 @@ export function moveItem(
         }
   );
 
-  post(moveItemOperation.type, {
-    originalModelId,
-    originalFieldId,
-    originalIndex,
-    targetModelId,
-    targetFieldId,
-    targetIndex,
-    originalParentModelId: getParentModelId(originalModelId, models, modelHierarchyMap),
-    targetParentModelId: getParentModelId(targetModelId, models, modelHierarchyMap)
-  });
+  post(
+    moveItemOperation({
+      originalModelId,
+      originalFieldId,
+      originalIndex,
+      targetModelId,
+      targetFieldId,
+      targetIndex,
+      originalParentModelId: getParentModelId(originalModelId, models, modelHierarchyMap),
+      targetParentModelId: getParentModelId(targetModelId, models, modelHierarchyMap)
+    })
+  );
 
   operations$.next({
     type: moveItemOperation.type,
@@ -751,12 +777,14 @@ export function deleteItem(modelId: string, fieldId: string, index: number | str
     [modelId]: model
   });
 
-  post(deleteItemOperation.type, {
-    modelId,
-    fieldId,
-    index,
-    parentModelId: getParentModelId(modelId, models, modelHierarchyMap)
-  });
+  post(
+    deleteItemOperation({
+      modelId,
+      fieldId,
+      index,
+      parentModelId: getParentModelId(modelId, models, modelHierarchyMap)
+    })
+  );
 
   operations$.next({
     type: deleteItemOperation.type,

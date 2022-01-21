@@ -64,7 +64,8 @@ import {
   STATE_SYSTEM_PROCESSING_MASK,
   STATE_TRANSLATION_IN_PROGRESS_MASK,
   STATE_TRANSLATION_PENDING_MASK,
-  STATE_TRANSLATION_UP_TO_DATE_MASK
+  STATE_TRANSLATION_UP_TO_DATE_MASK,
+  pageControllersFieldId
 } from './constants';
 import { SystemType } from '../models/SystemType';
 import { getStateBitmap } from '../components/ItemStatesManagement/utils';
@@ -432,21 +433,31 @@ function parseElementByContentType(
     }
     case 'node-selector': {
       const array = [];
-      element.querySelectorAll(':scope > item').forEach((item) => {
-        let path = getInnerHtml(item.querySelector(':scope > include'));
-        const component = item.querySelector(':scope > component');
-        if (!path && !component) {
-          // TODO: Groovy Controller Issue;
-          path = getInnerHtml(item.querySelector(':scope > key'));
-        }
-        const instance = parseContentXML(
-          component ? wrapElementInAuxDocument(component) : null,
-          path,
-          contentTypesLookup,
-          instanceLookup
-        );
-        array.push(instance);
-      });
+      const items = element.querySelectorAll(':scope > item');
+      if (field.id === pageControllersFieldId) {
+        items.forEach((item) => {
+          array.push({
+            key: getInnerHtml(item.querySelector(':scope > key')),
+            value: getInnerHtml(item.querySelector(':scope > value'))
+          });
+        });
+      } else {
+        items.forEach((item) => {
+          let path = getInnerHtml(item.querySelector(':scope > include'));
+          const component = item.querySelector(':scope > component');
+          if (!path && !component) {
+            // TODO: Groovy Controller Issue;
+            path = getInnerHtml(item.querySelector(':scope > key'));
+          }
+          const instance = parseContentXML(
+            component ? wrapElementInAuxDocument(component) : null,
+            path,
+            contentTypesLookup,
+            instanceLookup
+          );
+          array.push(instance);
+        });
+      }
       return array;
     }
     case 'html':
@@ -476,101 +487,6 @@ function parseElementByContentType(
       return getInnerHtml(element);
   }
 }
-
-// Code disabled temporarily
-// noinspection DuplicatedCode
-/* function parseContentXMLWithoutContentTypes(
-  doc: XMLDocument,
-  path: string = null,
-  instanceLookup: LookupTable<ContentInstance> = {}
-): LookupTable<ContentInstance> {
-  const id = nnou(doc)
-    ? getInnerHtml(doc.querySelector(':scope > objectId'))
-    : fileNameFromPath(path);
-  const contentType = nnou(doc) ? getInnerHtml(doc.querySelector(':scope > content-type')) : null;
-  instanceLookup[id] = {
-    craftercms: {
-      id,
-      path,
-      label: nnou(doc) ? getInnerHtml(doc.querySelector(':scope > internal-name')) : null,
-      locale: null,
-      dateCreated: nnou(doc) ? getInnerHtml(doc.querySelector(':scope > createdDate_dt')) : null,
-      dateModified: nnou(doc)
-        ? getInnerHtml(doc.querySelector(':scope > lastModifiedDate_dt'))
-        : null,
-      contentTypeId: contentType
-    }
-  };
-  if (nnou(doc)) {
-    parseContentXMLWithoutContentTypes_processFields(
-      doc.documentElement,
-      instanceLookup[id],
-      instanceLookup
-    );
-  }
-  return instanceLookup;
-}
-
-function parseContentXMLWithoutContentTypes_processFields(
-  element: Element,
-  instance: LookupTable<any>,
-  instanceLookup: LookupTable<ContentInstance>
-): void {
-  Array.from(element.children).forEach((elem: Element) => {
-    const fieldId = elem.tagName;
-    if (!systemPropsList.includes(fieldId)) {
-      if (fieldId.endsWith('_o')) {
-        const parentId = getInnerHtml(element.querySelector('objectId'));
-        const isNodeSelector =
-          Boolean(elem.querySelector(':scope > item > component')) ||
-          Boolean(
-            elem.querySelector(':scope > item > key') &&
-              elem.querySelector(':scope > item > value') &&
-              elem.querySelector(':scope > item > include')
-          );
-        if (isNodeSelector) {
-          // component
-          instanceLookup[parentId][fieldId] = Array.from(
-            elem.querySelectorAll(':scope > item')
-          ).map((item) => {
-            const component = item.querySelector(':scope > component');
-            const isEmbedded = Boolean(component);
-            return {
-              craftercms: {
-                id: isEmbedded ? getInnerHtml(component.querySelector(':scope > objectId')) : null,
-                path: isEmbedded ? null : getInnerHtml(item.querySelector(':scope > include')),
-                dateCreated: isEmbedded
-                  ? getInnerHtml(component.querySelector(':scope > createdDate_dt'))
-                  : null,
-                dateModified: isEmbedded
-                  ? getInnerHtml(component.querySelector(':scope > lastModifiedDate_dt'))
-                  : null,
-                contentTypeId: isEmbedded
-                  ? getInnerHtml(component.querySelector(':scope > content-type'))
-                  : null,
-                label: isEmbedded
-                  ? getInnerHtml(component.querySelector(':scope > internal-name'))
-                  : getInnerHtml(item.querySelector(':scope > value')),
-                locale: null
-              }
-            };
-          });
-        } else {
-          // repeat group
-          instanceLookup[parentId][fieldId] = Array.from(
-            elem.querySelectorAll(':scope > item')
-          ).map((item) => {
-            const groupItem = {};
-            parseContentXMLWithoutContentTypes_processFields(item, groupItem, instanceLookup);
-            return groupItem;
-          });
-        }
-      } else {
-        instance[fieldId] = getInnerHtml(elem);
-      }
-    }
-  });
-} */
 
 export interface ModelHierarchyDescriptor {
   modelId: string;
@@ -642,29 +558,30 @@ export function createModelHierarchyDescriptorMap(
         (field.type === 'node-selector' || field.type === 'repeat')
       ) {
         if (field.type === 'node-selector') {
-          source[field.id].forEach((component, index) => {
-            lookup[currentModelId].children.push(component);
-            if (lookup[component]) {
-              if (lookup[component].parentId !== null && lookup[component].parentId !== model.craftercms.id) {
-                console.error(
-                  `Model ${component} was found in multiple parents (${lookup[component].parentId} and ${model.craftercms.id}). ` +
-                    `Same model twice on a single page may have unexpected behaviours for in-context editing.`
-                );
+          field.id !== pageControllersFieldId &&
+            source[field.id].forEach((component, index) => {
+              lookup[currentModelId].children.push(component);
+              if (lookup[component]) {
+                if (lookup[component].parentId !== null && lookup[component].parentId !== model.craftercms.id) {
+                  console.error(
+                    `Model ${component} was found in multiple parents (${lookup[component].parentId} and ${model.craftercms.id}). ` +
+                      `Same model twice on a single page may have unexpected behaviours for in-context editing.`
+                  );
+                }
+              } else {
+                // This assignment it's to avoid having to optionally chain multiple times
+                // the access to `lookup[component]` below.
+                lookup[component] = lookup[component] ?? ({} as any);
               }
-            } else {
-              // This assignment it's to avoid having to optionally chain multiple times
-              // the access to `lookup[component]` below.
-              lookup[component] = lookup[component] ?? ({} as any);
-            }
-            // Because there's no real warranty that the parent of a model will be processed first
-            lookup[component] = createModelHierarchyDescriptor(
-              component,
-              model.craftercms.id,
-              lookup[component].parentContainerFieldPath ?? cleanCarryOver(`${fieldCarryOver}.${field.id}`),
-              lookup[component].parentContainerFieldIndex ?? cleanCarryOver(`${indexCarryOver}.${index}`),
-              lookup[component].children
-            );
-          });
+              // Because there's no real warranty that the parent of a model will be processed first
+              lookup[component] = createModelHierarchyDescriptor(
+                component,
+                model.craftercms.id,
+                lookup[component].parentContainerFieldPath ?? cleanCarryOver(`${fieldCarryOver}.${field.id}`),
+                lookup[component].parentContainerFieldIndex ?? cleanCarryOver(`${indexCarryOver}.${index}`),
+                lookup[component].children
+              );
+            });
         } else if (field.type === 'repeat') {
           source[field.id].forEach((repeatItem: ContentInstance, index) => {
             process(
@@ -769,7 +686,9 @@ export function normalizeModelsLookup(models: LookupTable<ContentInstance>) {
 export function normalizeModel(model: ContentInstance): ContentInstance {
   const normalized = { ...model };
   Object.entries(model).forEach(([prop, value]) => {
-    if (prop.endsWith('_o')) {
+    if (prop === pageControllersFieldId) {
+      normalized[prop] = value;
+    } else if (prop.endsWith('_o')) {
       const collection: ContentInstance[] = value;
       if (Array.isArray(collection) && collection.length) {
         const isNodeSelector = Boolean(collection[0]?.craftercms?.id);
