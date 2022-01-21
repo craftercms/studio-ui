@@ -240,7 +240,6 @@ export function PathNavigator(props: PathNavigatorProps) {
     const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
       switch (type) {
         case itemCreated.type:
-        case itemUnlocked.type:
         case itemUpdated.type:
         case folderRenamed.type: {
           const parentPath = getParentPath(payload.target);

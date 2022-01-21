@@ -46,8 +46,13 @@ export const hostCheckIn = /*#__PURE__*/ createAction<{
   editModePadding: boolean;
   rteConfig: GlobalState['preview']['richTextEditor'];
 }>('HOST_CHECK_IN');
-export const guestCheckIn = /*#__PURE__*/ createAction('GUEST_CHECK_IN');
-export const guestCheckOut = /*#__PURE__*/ createAction('GUEST_CHECK_OUT');
+export const guestCheckIn = /*#__PURE__*/ createAction<{
+  location: Partial<Location>;
+  path: string;
+  site: string;
+  documentDomain?: string;
+}>('GUEST_CHECK_IN');
+export const guestCheckOut = /*#__PURE__*/ createAction<{ path: string }>('GUEST_CHECK_OUT');
 export const fetchGuestModel = /*#__PURE__*/ createAction('FETCH_GUEST_MODEL');
 export const guestSiteLoad = /*#__PURE__*/ createAction('GUEST_SITE_LOAD'); // Legacy guest check in
 export const sortItemOperation = /*#__PURE__*/ createAction<
@@ -254,19 +259,6 @@ export function fetchContentModelComplete(contentModels: ContentInstance[]): Sta
   return {
     type: FETCH_CONTENT_MODEL_COMPLETE,
     payload: contentModels
-  };
-}
-
-export const checkInGuest = /*#__PURE__*/ createAction<{
-  location: Partial<Location>;
-  path: string;
-  site: string;
-  documentDomain?: string;
-}>(guestCheckIn.type);
-
-export function checkOutGuest(): StandardAction {
-  return {
-    type: guestCheckOut.type
   };
 }
 

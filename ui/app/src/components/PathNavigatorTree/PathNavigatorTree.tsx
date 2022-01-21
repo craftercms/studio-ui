@@ -64,7 +64,6 @@ import {
   itemsDeleted,
   itemsPasted,
   itemsUploaded,
-  itemUnlocked,
   itemUpdated,
   pluginInstalled
 } from '../../state/actions/system';
@@ -279,7 +278,6 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   useEffect(() => {
     const events = [
       itemsPasted.type,
-      itemUnlocked.type,
       itemUpdated.type,
       folderCreated.type,
       folderRenamed.type,
@@ -334,7 +332,6 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
         }
         case folderRenamed.type:
         case itemDuplicated.type:
-        case itemUnlocked.type:
         case itemUpdated.type:
         case itemCreated.type: {
           const parentPath = getParentPath(payload.target);
