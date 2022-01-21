@@ -182,27 +182,11 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
             renderingTemplate = selectedContent.renderingTemplates[0].uri,
             contentType = selectedContent.contentType;
 
-          const customEventId = 'showCodeEditorDialogEventId';
-          CrafterCMSNext.system.store.dispatch({
-            type: 'SHOW_CODE_EDITOR_DIALOG',
-            payload: {
-              path: renderingTemplate,
-              contentType,
-              mode: 'ftl',
-              onSuccess: {
-                type: 'BATCH_ACTIONS',
-                payload: [
-                  {
-                    type: 'DISPATCH_DOM_EVENT',
-                    payload: { id: customEventId, type: 'onSuccess' }
-                  }
-                ]
-              }
-            }
-          });
-
-          CrafterCMSNext.createLegacyCallbackListener(customEventId, ({ type }) => {
-            if (type === 'onSuccess') {
+          CStudioAuthoring.Operations.openCodeEditor({
+            path: renderingTemplate,
+            contentType,
+            mode: 'ftl',
+            onSuccess: () => {
               CStudioAuthoring.Operations.refreshPreview();
             }
           });
@@ -258,49 +242,28 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
                 }
 
                 (function (flag) {
-                  const customEventId = 'showCodeEditorDialogEventId';
-                  CrafterCMSNext.system.store.dispatch({
-                    type: 'SHOW_CODE_EDITOR_DIALOG',
-                    payload: {
-                      path,
-                      contentType,
-                      mode: 'groovy',
-                      onSuccess: {
-                        type: 'BATCH_ACTIONS',
-                        payload: [
-                          {
-                            type: 'DISPATCH_DOM_EVENT',
-                            payload: { id: customEventId, type: 'onSuccess' }
-                          }
-                        ]
-                      }
+                  CStudioAuthoring.Operations.openCodeEditor(path, contentType, 'groovy', () => {
+                    if (CStudioAuthoringContext.isPreview) {
+                      CStudioAuthoring.Operations.refreshPreview();
                     }
-                  });
+                    if (flag) {
+                      var callback = {
+                        success: function (contentTOItem) {
+                          eventYS.parent = false;
+                          eventYS.data = contentTOItem.item;
+                          eventYS.typeAction = '';
+                          document.dispatchEvent(eventYS);
+                        },
+                        failure: function () {}
+                      };
 
-                  CrafterCMSNext.createLegacyCallbackListener(customEventId, ({ type }) => {
-                    if (type === 'onSuccess') {
-                      if (CStudioAuthoringContext.isPreview) {
-                        CStudioAuthoring.Operations.refreshPreview();
-                      }
-                      if (flag) {
-                        var callback = {
-                          success: function (contentTOItem) {
-                            eventYS.parent = false;
-                            eventYS.data = contentTOItem.item;
-                            eventYS.typeAction = '';
-                            document.dispatchEvent(eventYS);
-                          },
-                          failure: function () {}
-                        };
-
-                        CStudioAuthoring.Service.lookupContentItem(
-                          CStudioAuthoringContext.site,
-                          '/scripts/pages/',
-                          callback,
-                          false,
-                          false
-                        );
-                      }
+                      CStudioAuthoring.Service.lookupContentItem(
+                        CStudioAuthoringContext.site,
+                        '/scripts/pages/',
+                        callback,
+                        false,
+                        false
+                      );
                     }
                   });
                 })(flag);

@@ -2320,26 +2320,10 @@ var nodeOpen = false,
               isFlattenedInclude
             );
           } else if (CStudioAuthoring.Utils.isEditableFormAsset(mimeType)) {
-            const customEventId = 'showCodeEditorDialogEventId';
-            CrafterCMSNext.system.store.dispatch({
-              type: 'SHOW_CODE_EDITOR_DIALOG',
-              payload: {
-                path: uri,
-                mode: CrafterCMSNext.util.content.getEditorMode(mimeType),
-                onSuccess: {
-                  type: 'BATCH_ACTIONS',
-                  payload: [
-                    {
-                      type: 'DISPATCH_DOM_EVENT',
-                      payload: { id: customEventId, type: 'onSuccess' }
-                    }
-                  ]
-                }
-              }
-            });
-
-            CrafterCMSNext.createLegacyCallbackListener(customEventId, ({ type }) => {
-              if (type === 'onSuccess') {
+            CStudioAuthoring.Operations.openCodeEditor({
+              path: uri,
+              mode: CrafterCMSNext.util.content.getEditorMode(mimeType),
+              onSuccess: () => {
                 if (CStudioAuthoringContext.isPreview) {
                   CStudioAuthoring.Operations.refreshPreview();
                 } else {
@@ -2419,6 +2403,35 @@ var nodeOpen = false,
         auxParams[auxParams.length] = { name: 'readonly', value: 'true' };
 
         CStudioAuthoring.Operations.openContentWebForm(formId, id, noderef, path, true, asPopup, callback, auxParams);
+      },
+
+      /**
+       * open code editor
+       */
+      openCodeEditor: function (payload) {
+        const customEventId = 'codeEditorDialogEventId';
+
+        CrafterCMSNext.system.store.dispatch({
+          type: 'SHOW_CODE_EDITOR_DIALOG',
+          payload: {
+            ...payload,
+            onSuccess: {
+              type: 'BATCH_ACTIONS',
+              payload: [
+                {
+                  type: 'DISPATCH_DOM_EVENT',
+                  payload: { id: customEventId, type: 'onSuccess' }
+                }
+              ]
+            }
+          }
+        });
+
+        CrafterCMSNext.createLegacyCallbackListener(customEventId, ({ type }) => {
+          if (type === 'onSuccess') {
+            payload.onSuccess?.();
+          }
+        });
       },
 
       /* submit content moved up, next to approveCommon */
@@ -7818,26 +7831,10 @@ CStudioAuthoring.InContextEdit = {
             path = path.substring(0, path.lastIndexOf('.ftl')) + '-' + CStudioAuthoringContext.channel + '.ftl';
           }
 
-          const customEventId = 'showCodeEditorDialogEventId';
-          CrafterCMSNext.system.store.dispatch({
-            type: 'SHOW_CODE_EDITOR_DIALOG',
-            payload: {
-              path,
-              mode: CrafterCMSNext.util.content.getEditorMode(contentTO.item.mimeType),
-              onSuccess: {
-                type: 'BATCH_ACTIONS',
-                payload: [
-                  {
-                    type: 'DISPATCH_DOM_EVENT',
-                    payload: { id: customEventId, type: 'onSuccess' }
-                  }
-                ]
-              }
-            }
-          });
-
-          CrafterCMSNext.createLegacyCallbackListener(customEventId, ({ type }) => {
-            if (type === 'onSuccess') {
+          CStudioAuthoring.Operations.openCodeEditor({
+            path,
+            mode: CrafterCMSNext.util.content.getEditorMode(contentTO.item.mimeType),
+            onSuccess: () => {
               onSaveCb.success();
             }
           });

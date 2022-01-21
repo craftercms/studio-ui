@@ -96,17 +96,6 @@ YAHOO.extend(
           const contentType = _self.currentContenType.contentType;
           const customEventId = 'createFileDialogEventId';
 
-          const showCodeEditor = (path, contentType) => {
-            CrafterCMSNext.system.store.dispatch({
-              type: 'SHOW_CODE_EDITOR_DIALOG',
-              payload: {
-                path,
-                contentType,
-                mode: 'ftl'
-              }
-            });
-          };
-
           if (path === '') {
             CrafterCMSNext.system.store.dispatch({
               type: 'SHOW_CREATE_FILE_DIALOG',
@@ -144,12 +133,12 @@ YAHOO.extend(
                 _self.value = templatePath;
                 _self.updateFn(null, _self.valueEl);
                 if (openOnSuccess) {
-                  showCodeEditor(templatePath, contentType);
+                  CStudioAuthoring.Operations.openCodeEditor({ path, contentType, mode: 'ftl' });
                 }
               }
             });
           } else {
-            showCodeEditor(path, contentType);
+            CStudioAuthoring.Operations.openCodeEditor({ path, contentType, mode: 'ftl' });
           }
         };
 

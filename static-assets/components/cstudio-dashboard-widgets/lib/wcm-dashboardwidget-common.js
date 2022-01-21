@@ -989,15 +989,7 @@ WcmDashboardWidgetCommon.editItem = function (matchedElement, isChecked) {
       });
     });
   } else if (['unknown', 'template', 'asset', 'script', 'renderingTemplate'].includes(type)) {
-    CrafterCMSNext.system.store.dispatch({
-      type: 'SHOW_CODE_EDITOR_DIALOG',
-      payload: {
-        site,
-        path,
-        type: 'asset',
-        authoringBase
-      }
-    });
+    CStudioAuthoring.Operations.openCodeEditor({ path, contentType: 'asset' });
   } else {
     console.error(`[WcmDashboardWidgetCommon.editItem] Unable to find a edit method for type: ${type}`);
   }
@@ -1019,17 +1011,8 @@ WcmDashboardWidgetCommon.viewItem = function (matchedElement, isChecked) {
         readonly: true
       }
     });
-  } else if (['config', 'template', 'asset', 'script'].includes(type)) {
-    CrafterCMSNext.system.store.dispatch({
-      type: 'SHOW_CODE_EDITOR_DIALOG',
-      payload: {
-        site,
-        path,
-        authoringBase,
-        type: 'asset',
-        readonly: true
-      }
-    });
+  } else if (['config', 'template', 'asset', 'script', 'renderingTemplate'].includes(type)) {
+    CStudioAuthoring.Operations.openCodeEditor({ path, contentType: 'asset', readonly: true });
   } else {
     console.error(`[WcmDashboardWidgetCommon.viewItem] Unable to find a view method for type: ${type}`);
   }
