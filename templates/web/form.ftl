@@ -24,35 +24,35 @@
   <title>Crafter CMS - Content Form</title>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
 
-  <link rel="stylesheet" href="/studio/static-assets/themes/cstudioTheme/css/forms-default.css?version=${UIBuildId!.now?string('Mddyyyy')}"/>
-  <link rel="stylesheet" href="/studio/static-assets/styles/forms-engine.css?version=${UIBuildId!.now?string('Mddyyyy')}"/>
+  <link rel="stylesheet" href="/studio/static-assets/themes/cstudioTheme/css/forms-default.css"/>
+  <link rel="stylesheet" href="/studio/static-assets/styles/forms-engine.css"/>
 
   <#include "/templates/web/common/page-fragments/head.ftl" />
   <#include "/templates/web/common/page-fragments/studio-context.ftl" />
 
-  <script src="/studio/static-assets/components/cstudio-common/resources/en/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="/studio/static-assets/components/cstudio-common/resources/kr/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="/studio/static-assets/components/cstudio-common/resources/es/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="/studio/static-assets/components/cstudio-common/resources/de/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+  <script src="/studio/static-assets/components/cstudio-common/resources/en/base.js"></script>
+  <script src="/studio/static-assets/components/cstudio-common/resources/kr/base.js"></script>
+  <script src="/studio/static-assets/components/cstudio-common/resources/es/base.js"></script>
+  <script src="/studio/static-assets/components/cstudio-common/resources/de/base.js"></script>
 
-  <link rel="stylesheet" type="text/css" href="/studio/static-assets/themes/cstudioTheme/yui/assets/rte.css?version=${UIBuildId!.now?string('Mddyyyy')}" />
-  <link rel="stylesheet" type="text/css" href="/studio/static-assets/styles/tinymce-ace.css?version=${UIBuildId!.now?string('Mddyyyy')}" />
+  <link rel="stylesheet" type="text/css" href="/studio/static-assets/themes/cstudioTheme/yui/assets/rte.css" />
+  <link rel="stylesheet" type="text/css" href="/studio/static-assets/styles/tinymce-ace.css" />
 
-  <script src="/studio/static-assets/libs/ace/ace.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="/studio/static-assets/modules/editors/tinymce/v5/tinymce/tinymce.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="/studio/static-assets/modules/editors/tinymce/v2/tiny_mce/tiny_mce.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="/studio/static-assets/libs/amplify/lib/amplify.core.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="/studio/static-assets/libs/notify/notify.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+  <script src="/studio/static-assets/libs/ace/ace.js"></script>
+  <script src="/studio/static-assets/modules/editors/tinymce/v5/tinymce/tinymce.min.js"></script>
+  <script src="/studio/static-assets/modules/editors/tinymce/v2/tiny_mce/tiny_mce.js"></script>
+  <script src="/studio/static-assets/libs/amplify/lib/amplify.core.js"></script>
+  <script src="/studio/static-assets/libs/notify/notify.min.js"></script>
   <script>CStudioAuthoring.Module.moduleLoaded("publish-subscribe", {});</script>
 
-  <script src="/studio/static-assets/scripts/crafter.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="/studio/static-assets/components/cstudio-forms/forms-engine.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+  <script src="/studio/static-assets/scripts/crafter.js"></script>
+  <script src="/studio/static-assets/components/cstudio-forms/forms-engine.js"></script>
 
-  <script src="/studio/static-assets/scripts/animator.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="/studio/static-assets/components/cstudio-components/loader.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+  <script src="/studio/static-assets/scripts/animator.js"></script>
+  <script src="/studio/static-assets/components/cstudio-components/loader.js"></script>
 
-  <script src="/studio/static-assets/libs/momentjs/moment.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="/studio/static-assets/libs/momentjs/moment-timezone-with-data-2012-2022.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+  <script src="/studio/static-assets/libs/momentjs/moment.min.js"></script>
+  <script src="/studio/static-assets/libs/momentjs/moment-timezone-with-data-2012-2022.min.js"></script>
 
   <script>document.domain = "${Request.serverName}";</script>
 
