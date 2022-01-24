@@ -297,7 +297,7 @@ export function fetchCannedMessages(site: string): Observable<CannedMessage[]> {
     map((dom) => {
       const cannedMessages = [];
 
-      dom.querySelectorAll('lang > cannedMessages > content').forEach((tag) => {
+      dom.querySelectorAll('cannedMessages > content').forEach((tag) => {
         cannedMessages.push({
           key: tag.getAttribute('key'),
           title: tag.getAttribute('title'),
