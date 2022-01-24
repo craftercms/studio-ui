@@ -237,6 +237,7 @@ CStudioAuthoring.Module.requireModule(
             toolbarConfig4,
             styleFormats,
             styleFormatsMerge,
+            previewStyles,
             templates;
 
           containerEl.id = this.id;
@@ -345,6 +346,11 @@ CStudioAuthoring.Module.requireModule(
 
           const codeEditorWrap = rteConfig.codeEditorWrap ? rteConfig.codeEditorWrap === 'true' : false;
 
+          previewStyles = rteConfig.previewStyles
+            ? rteConfig.previewStyles
+            : 'font-family font-size font-weight font-style text-decoration text-transform color' +
+              ' background-color border border-radius outline text-shadow';
+
           const external = {
             acecode: '/studio/static-assets/js/tinymce-plugins/ace/plugin.min.js'
           };
@@ -409,6 +415,8 @@ CStudioAuthoring.Module.requireModule(
             style_formats: styleFormats,
 
             style_formats_merge: styleFormatsMerge,
+
+            preview_styles: previewStyles === 'false' ? false : previewStyles,
 
             setup: function (editor) {
               var addPadding = function () {
