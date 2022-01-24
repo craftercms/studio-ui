@@ -40,8 +40,25 @@ export function initTinyMCE(
   const type = field?.type;
   const plugins = 'paste';
   const elementDisplay = $(record.element).css('display');
-  if (elementDisplay === 'inline') {
-    $(record.element).css('display', 'inline-block');
+  const inlineElsRegex =
+    /B|BIG|I|SMALL|TT|ABBR|ACRINYM|CITE|CODE|DFN|EM|KBD|STRONG|SAMP|VAR|A|BDO|BR|IMG|MAP|OBJECT|Q|SCRIPT|SPAN|SUB|SUP|BUTTON|INPUT|LABEL|SELECT|TEXTAREA/;
+  let rteEl = record.element;
+
+  // If record element is of type inline (doesn't matter the display prop), replace it by a block element (div).
+  if (record.element.tagName.match(inlineElsRegex)) {
+    const blockEl = document.createElement('div');
+    blockEl.innerHTML = record.element.innerHTML;
+    blockEl.style.display = 'inline-block';
+
+    // @ts-ignore
+    blockEl.style.minHeight = record.element.offsetHeight + 'px';
+    blockEl.style.minWidth = '10px';
+    rteEl = blockEl;
+
+    // Hide original element
+    // @ts-ignore
+    record.element.style.display = 'none';
+    record.element.parentNode.insertBefore(rteEl, record.element);
   }
 
   const openEditForm = () => {
@@ -77,7 +94,7 @@ export function initTinyMCE(
 
   window.tinymce.init({
     mode: 'none',
-    target: record.element,
+    target: rteEl,
     // For some reason this is not working.
     // body_class: 'craftercms-rich-text-editor',
     plugins: plugins + ' editform', // edit form will always be loaded
@@ -87,6 +104,7 @@ export function initTinyMCE(
       window.tinymce.activeEditor.plugins.paste_cleanup.cleanup(args.node);
     },
     toolbar: type === 'html',
+    forced_root_block: type === 'html',
     menubar: false,
     inline: true,
     base_url: '/studio/static-assets/modules/editors/tinymce/v5/tinymce',
@@ -182,6 +200,9 @@ export function initTinyMCE(
           changed && type === 'text' && $element.html(content);
 
           if (elementDisplay === 'inline') {
+            // Update original element and remove created blockElement
+            record.element.innerHTML = rteEl.innerHTML;
+            rteEl.remove();
             $element.css('display', '');
           }
 
