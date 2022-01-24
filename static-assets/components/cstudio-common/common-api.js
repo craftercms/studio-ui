@@ -1152,8 +1152,18 @@ var nodeOpen = false,
       openSearch: function (searchContext, newWindow, callback, searchId) {
         var openInSameWindow = newWindow ? false : true;
 
-        var searchUrl =
-          CStudioAuthoringContext.authoringAppBaseUri + '/search?site=' + CStudioAuthoringContext.site + '#/';
+        var searchUrl = CStudioAuthoringContext.authoringAppBaseUri + '/search?site=' + CStudioAuthoringContext.site;
+
+        if (!CStudioAuthoring.Utils.isEmpty(searchContext.mode)) {
+          searchUrl += '&mode=' + searchContext.mode;
+          if (searchContext.mode === 'select') {
+            searchUrl += '&embedded=' + true;
+          }
+        }
+
+        searchUrl += '&searchId=';
+
+        searchUrl += '#/';
 
         const filters = searchContext.filters;
         if (!jQuery.isEmptyObject(searchContext.filters)) {
@@ -1178,13 +1188,6 @@ var nodeOpen = false,
           searchUrl += '&offset=' + searchContext.offset;
         }
 
-        if (!CStudioAuthoring.Utils.isEmpty(searchContext.mode)) {
-          searchUrl += '&mode=' + searchContext.mode;
-          if (searchContext.mode === 'select') {
-            searchUrl += '&embedded=' + true;
-          }
-        }
-
         if (!CStudioAuthoring.Utils.isEmpty(searchContext.query)) {
           searchUrl += '&query=' + searchContext.query;
         }
@@ -1192,8 +1195,6 @@ var nodeOpen = false,
         if (!CStudioAuthoring.Utils.isEmpty(searchContext.path)) {
           searchUrl += '&path=' + encodeURIComponent(searchContext.path);
         }
-
-        searchUrl += '&searchId=';
 
         var childSearch = null;
 
