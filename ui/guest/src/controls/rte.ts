@@ -43,20 +43,19 @@ export function initTinyMCE(
   const inlineElsRegex =
     /B|BIG|I|SMALL|TT|ABBR|ACRINYM|CITE|CODE|DFN|EM|KBD|STRONG|SAMP|VAR|A|BDO|BR|IMG|MAP|OBJECT|Q|SCRIPT|SPAN|SUB|SUP|BUTTON|INPUT|LABEL|SELECT|TEXTAREA/;
   let rteEl = record.element;
+  const isRecordElInline = record.element.tagName.match(inlineElsRegex);
 
-  // If record element is of type inline (doesn't matter the display prop), replace it by a block element (div).
-  if (record.element.tagName.match(inlineElsRegex)) {
+  // If record element is of type inline (doesn't matter the display prop), replace it with a block element (div).
+  if (isRecordElInline) {
     const blockEl = document.createElement('div');
     blockEl.innerHTML = record.element.innerHTML;
     blockEl.style.display = 'inline-block';
 
-    // @ts-ignore
     blockEl.style.minHeight = record.element.offsetHeight + 'px';
     blockEl.style.minWidth = '10px';
     rteEl = blockEl;
 
     // Hide original element
-    // @ts-ignore
     record.element.style.display = 'none';
     record.element.parentNode.insertBefore(rteEl, record.element);
   }
@@ -199,7 +198,7 @@ export function initTinyMCE(
           // version of the input.
           changed && type === 'text' && $element.html(content);
 
-          if (elementDisplay === 'inline') {
+          if (isRecordElInline) {
             // Update original element and remove created blockElement
             record.element.innerHTML = rteEl.innerHTML;
             rteEl.remove();
