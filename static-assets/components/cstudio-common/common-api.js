@@ -9383,13 +9383,13 @@ CStudioAuthoring.Messages = CStudioAuthoring.Messages || {
       formattedMessage = bundle.fallbackBundle[key];
     }
 
-    if (a) formattedMessage = formattedMessage.replace('{0}', a);
-    if (b) formattedMessage = formattedMessage.replace('{1}', b);
-    if (c) formattedMessage = formattedMessage.replace('{2}', c);
-    if (d) formattedMessage = formattedMessage.replace('{3}', d);
-    if (e) formattedMessage = formattedMessage.replace('{4}', e);
-    if (f) formattedMessage = formattedMessage.replace('{5}', f);
-    if (g) formattedMessage = formattedMessage.replace('{6}', g);
+    if (a) formattedMessage = formattedMessage.replaceAll('{0}', a);
+    if (b) formattedMessage = formattedMessage.replaceAll('{1}', b);
+    if (c) formattedMessage = formattedMessage.replaceAll('{2}', c);
+    if (d) formattedMessage = formattedMessage.replaceAll('{3}', d);
+    if (e) formattedMessage = formattedMessage.replaceAll('{4}', e);
+    if (f) formattedMessage = formattedMessage.replaceAll('{5}', f);
+    if (g) formattedMessage = formattedMessage.replaceAll('{6}', g);
 
     return formattedMessage;
   },

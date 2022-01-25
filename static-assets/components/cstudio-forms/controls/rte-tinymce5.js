@@ -219,6 +219,70 @@ CStudioAuthoring.Module.requireModule(
         },
 
         /**
+         * Tinymce extended options from config `extendedOptions` in the config file
+         */
+        _getTinymceExtendedOptions: function (rteConfig) {
+          const rteReadonlyOptions = [
+            'target', // Target can't be changed
+            'inline', // Not using inline view doesn't behave well on pageBuilder, this setting shouldn't be changed.
+            'setup',
+            'base_url',
+            'encoding',
+            'autosave_ask_before_unload', // Autosave options are removed since it is not supported in control.
+            'autosave_interval',
+            'autosave_prefix',
+            'autosave_restore_when_empty',
+            'autosave_retention',
+            'file_picker_callback', // No file picker is set by default, and functions are not supported in config file.
+            'height', // Height is set to the size of content
+            'file_picker_callback', // Files/images handlers currently not supported
+            'paste_postprocess',
+            'images_upload_handler',
+            'code_editor_inline'
+          ];
+
+          let extendedOptions = {};
+          try {
+            // extend options
+            extendedOptions = rteConfig.extendedOptions ? JSON.parse(rteConfig.extendedOptions) : {};
+          } catch (e) {
+            // If there are multiple RTEs on the page, when the form loads, it would show N number
+            // of dialogs. One is sufficient. Also, in 3.1.x, triggering multiple dialogs causes the
+            // backdrop not to get clean out when the dialog is closed.
+            if (!CStudioForms.Controls.RTETINYMCE5.extendedOptionsParseErrorShown) {
+              CStudioForms.Controls.RTETINYMCE5.extendedOptionsParseErrorShown = true;
+              let bundle = CStudioAuthoring.Messages.getBundle('forms', CStudioAuthoringContext.lang);
+              CStudioAuthoring.Operations.showSimpleDialog(
+                'message-dialog',
+                CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                CStudioAuthoring.Messages.format(bundle, 'notification'),
+                `<div>${CStudioAuthoring.Messages.format(
+                  bundle,
+                  'rteConfigJSONParseError',
+                  'extendedOptions',
+                  `<code>${e.message}</code>`
+                )}</div><pre>${rteConfig.extendedOptions}</pre>`,
+                null,
+                YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                'studioDialog'
+              );
+            }
+
+            return {};
+          }
+
+          const options = {};
+          const keys = Object.keys(extendedOptions);
+          for (let i = 0; i < keys.length; i += 1) {
+            if (rteReadonlyOptions.indexOf(keys[i]) === -1) {
+              options[keys[i]] = extendedOptions[keys[i]];
+            }
+          }
+
+          return options;
+        },
+
+        /**
          * render and initialization of editor
          */
         _initializeRte: function (config, rteConfig, containerEl) {
@@ -331,7 +395,8 @@ CStudioAuthoring.Module.requireModule(
                 CStudioAuthoring.Messages.format(bundle, 'notification'),
                 `<div>${CStudioAuthoring.Messages.format(
                   bundle,
-                  'styleFormatsParseError',
+                  'rteConfigJSONParseError',
+                  'styleFormats',
                   `<code>${e.message}</code>`
                 )}</div><pre>${rteConfig.styleFormats}</pre>`,
                 null,
@@ -356,7 +421,7 @@ CStudioAuthoring.Module.requireModule(
             });
           }
 
-          editor = tinymce.init({
+          const options = {
             selector: '#' + rteId,
             width: _thisControl.rteWidth,
             // As of 3.1.14, the toolbar is moved to be part of the editor text field (not stuck/floating at the top of the window).
@@ -466,7 +531,9 @@ CStudioAuthoring.Module.requireModule(
                 }
               });
             }
-          });
+          };
+
+          editor = tinymce.init({ ...options, ...this._getTinymceExtendedOptions(rteConfig) });
 
           // Update all content before saving the form (all content is automatically updated on focusOut)
           callback = {};
