@@ -1313,6 +1313,7 @@ var nodeOpen = false,
       openBrowseFilesDialog: function (props) {
         let unmount;
         const dialogContainer = document.createElement('div');
+        window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_DISABLE_ON_CLOSE' }, '*');
         CrafterCMSNext.render(dialogContainer, 'BrowseFilesDialog', {
           ...props,
           open: true,
@@ -1321,6 +1322,7 @@ var nodeOpen = false,
             unmount();
           },
           onClose: () => {
+            window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_ENABLE_ON_CLOSE' }, '*');
             props.onClose?.();
             unmount();
           }

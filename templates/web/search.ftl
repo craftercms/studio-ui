@@ -50,7 +50,11 @@
     const openerChildSearchMgr = opener.CStudioAuthoring.ChildSearchManager;
     const searchConfig = openerChildSearchMgr.searches[searchId];
     const callback = searchConfig.saveCallback;
+
+    window.top.postMessage({ type:'EMBEDDED_LEGACY_FORM_DISABLE_HEADER' }, '*');
+
     const closeSearch = () => {
+      window.top.postMessage({ type:'EMBEDDED_LEGACY_FORM_ENABLE_HEADER' }, '*');
       window.close();
       $(window.frameElement.parentElement)
         .closest('.studio-ice-dialog')
