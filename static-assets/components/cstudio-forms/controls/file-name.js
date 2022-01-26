@@ -80,8 +80,6 @@ var slugify = (function () {
   return replace;
 })();
 
-slugify.extend({ '&': '' });
-
 CStudioForms.Controls.FileName =
   CStudioForms.Controls.FileName ||
   function (id, form, owner, properties, constraints, readonly, allowEditWithoutWarning) {
