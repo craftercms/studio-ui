@@ -2588,16 +2588,6 @@ var nodeOpen = false,
                   type: 'CLOSE_SINGLE_FILE_UPLOAD_DIALOG'
                 }
               ]
-            },
-            onClosed: {
-              type: 'BATCH_ACTIONS',
-              payload: [
-                {
-                  type: 'DISPATCH_DOM_EVENT',
-                  payload: { id: eventId, type: 'uploadComplete' }
-                },
-                { type: 'SINGLE_FILE_UPLOAD_DIALOG_CLOSED' }
-              ]
             }
           }
         });
