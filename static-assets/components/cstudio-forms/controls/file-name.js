@@ -233,7 +233,6 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
       }
     }
 
-    // TODO: HERE
     el.value = window.slugify(el.value, {
       lower: true,
       strict: true,
