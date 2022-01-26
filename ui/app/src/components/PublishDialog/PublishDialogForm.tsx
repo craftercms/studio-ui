@@ -225,7 +225,7 @@ export function PublishDialogForm(props: PublishFormProps) {
   return (
     <form className={classes.root}>
       <section className={classes.checkboxes}>
-        {showRequestApproval && published && (
+        {showRequestApproval && (
           <FormControlLabel
             control={
               <Checkbox
@@ -239,7 +239,7 @@ export function PublishDialogForm(props: PublishFormProps) {
             label={<FormattedMessage id="publishForm.requestApproval" defaultMessage="Request approval" />}
           />
         )}
-        {showEmailCheckbox && published && (
+        {showEmailCheckbox && (
           <FormControlLabel
             label={formatMessage(messages.emailLabel)}
             control={

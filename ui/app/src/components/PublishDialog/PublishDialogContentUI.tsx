@@ -70,15 +70,7 @@ export function PublishDialogContentUI(props: PublishDialogContentUIProps) {
     <>
       <Grid container spacing={3}>
         <Grid item xs={12} sm={7} md={7} lg={7} xl={7}>
-          {!published && (
-            <Alert severity="warning">
-              <FormattedMessage
-                id="publishDialog.firstPublish"
-                defaultMessage="The entire site will be published since this is the first publish request"
-              />
-            </Alert>
-          )}
-          {published && (
+          {published ? (
             <DependencySelection
               items={items}
               selectedItems={selectedItems}
@@ -88,6 +80,13 @@ export function PublishDialogContentUI(props: PublishDialogContentUIProps) {
               onSelectAllSoftClicked={onSelectAllSoftDependencies}
               disabled={isSubmitting}
             />
+          ) : (
+            <Alert severity="warning">
+              <FormattedMessage
+                id="publishDialog.firstPublish"
+                defaultMessage="The entire site will be published since this is the first publish request"
+              />
+            </Alert>
           )}
         </Grid>
         <Grid item xs={12} sm={5} md={5} lg={5} xl={5}>
