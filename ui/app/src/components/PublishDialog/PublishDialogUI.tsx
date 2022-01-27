@@ -28,6 +28,7 @@ export function PublishDialogUI(props: PublishDialogUIProps) {
   // region const { ... } = props
   const {
     resource,
+    published,
     publishingTargetsStatus,
     onPublishingChannelsFailRetry,
     onCloseButtonClick,
@@ -67,6 +68,7 @@ export function PublishDialogUI(props: PublishDialogUIProps) {
         >
           <PublishDialogContentUI
             resource={resource}
+            published={published}
             selectedItems={selectedItems}
             onItemClicked={onItemClicked}
             dependencies={dependencies}
@@ -86,15 +88,17 @@ export function PublishDialogUI(props: PublishDialogUIProps) {
         </SuspenseWithEmptyState>
       </DialogBody>
       <DialogFooter>
-        <SecondaryButton
-          color="primary"
-          onClick={onClickShowAllDeps}
-          className={classes.leftAlignedAction}
-          disabled={isSubmitting || state.fetchingDependencies}
-          loading={state.fetchingDependencies}
-        >
-          <FormattedMessage id="publishDialog.showAllDependencies" defaultMessage="Show All Dependencies" />
-        </SecondaryButton>
+        {published && (
+          <SecondaryButton
+            color="primary"
+            onClick={onClickShowAllDeps}
+            className={classes.leftAlignedAction}
+            disabled={isSubmitting || state.fetchingDependencies}
+            loading={state.fetchingDependencies}
+          >
+            <FormattedMessage id="publishDialog.showAllDependencies" defaultMessage="Show All Dependencies" />
+          </SecondaryButton>
+        )}
         <SecondaryButton onClick={onCloseButtonClick} disabled={isSubmitting}>
           <FormattedMessage id="requestPublishDialog.cancel" defaultMessage="Cancel" />
         </SecondaryButton>

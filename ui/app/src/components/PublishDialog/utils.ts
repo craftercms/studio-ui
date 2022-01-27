@@ -77,6 +77,7 @@ export interface InternalDialogState {
 
 export interface PublishDialogUIProps {
   resource: Resource<PublishDialogResourceBody>;
+  published: boolean;
   publishingTargetsStatus: string;
   onPublishingChannelsFailRetry(): void;
   onCloseButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
