@@ -369,7 +369,6 @@
         }
         const saveContainer = document.createElement('span');
         CrafterCMSNext.render(saveContainer, 'MultiChoiceSaveButton', {
-          defaultSelected: 'save',
           disablePortal: false,
           storageKey: 'contentTypeEditor',
           onClick: action.fn,
