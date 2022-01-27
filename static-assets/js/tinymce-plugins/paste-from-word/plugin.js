@@ -23,6 +23,7 @@
   const PASTE_TEXT_ICON = 'paste-text';
   const PASTE_TEXT_TOOLTIP = 'Paste as text';
   const DEFAULT_VALID_ELEMENTS = '-strong/b,-em/i,-u,-span,-p,-ol,-ul,-li,-h1,-h2,-h3,-h4,-h5,-h6,-h7,-h8,-pre,-p/div,-a[href|name],sub,sup,pre,blockquote,strike,br,del,table[width],tr,td[colspan|rowspan|width],th[colspan|rowspan|width],thead,tfoot,tbody';
+  const POST_PROCESS_EVENT = 'PluginPasteFromWordPostProcess';
 
   const nbsp = '\u00A0';
 
@@ -50,11 +51,16 @@
       return block;
     },
     getForcedRootBlockAttrs: (editor) => {
-      const rootBlockAttrs = editor.getParam('forced_root_block_attrs');
-      return rootBlockAttrs;
+      return editor.getParam('forced_root_block_attrs');
     },
     isCollapsibleWhitespace: (c) => {
       return ' \f\t\v'.indexOf(c) !== -1
+    },
+    getPasteWordValidElements: (editor) => {
+      return editor.getParam('paste_word_valid_elements') || DEFAULT_VALID_ELEMENTS;
+    },
+    getPostProcess: (editor) => {
+      return editor.getParam('paste_postprocess_ext');
     }
   };
 
@@ -127,6 +133,18 @@
 
   const convert = (text, rootTag, rootAttrs) => {
     return rootTag ? toBlockElements(text, rootTag === true ? 'p' : rootTag, rootAttrs) : toBRs(text);
+  };
+
+  const firePastePostProcess = (editor, node) => {
+    return editor.fire(POST_PROCESS_EVENT, {
+      node: node,
+    });
+  };
+
+  const postProcessFilter = (editor, html) => {
+    const tempBody = editor.dom.create('div', { style: 'display:none' }, html);
+    const postProcessArgs = firePastePostProcess(editor, tempBody);
+    return postProcessArgs.node.innerHTML;
   };
 
   const filterStyles = (editor, node, styleValue) => {
@@ -345,8 +363,11 @@
 
     return content;
   };
-  const filterHtmlContent = (editor, content) => {
-    const validElements = editor.settings.paste_word_valid_elements || DEFAULT_VALID_ELEMENTS;
+  /**
+   * Default filter rules.
+   */
+  const defaultFilterContent = (editor, content) => {
+    const validElements = Utils.getPasteWordValidElements(editor);
 
     const schema = new tinymce.html.Schema({
       valid_elements: validElements,
@@ -406,6 +427,18 @@
     return content;
   };
 
+  /**
+   * Extra filter rules by users
+   */
+  const extraFilterContent = (editor, content) => {
+    if (editor.hasEventListeners(POST_PROCESS_EVENT)) {
+      return postProcessFilter(editor, content);
+    } else {
+      return content;
+    }
+  };
+
+
   const getDataTransferItems = (dataTransfer) => {
     const items = {};
     const mceInternalUrlPrefix = 'data:text/mce-internal,';
@@ -449,7 +482,9 @@
       content = filterWordContent(editor, content);
     }
 
-    content = filterHtmlContent(editor, content);
+    content = defaultFilterContent(editor, content);
+
+    content = extraFilterContent(editor, content);
 
     editor.execCommand('mceInsertContent', false, content);
   };
@@ -499,6 +534,13 @@
         pasteAsText(data, editor);
       }
     });
+
+    const postProcess = Utils.getPostProcess(editor);
+    if (postProcess) {
+      editor.on(POST_PROCESS_EVENT, function (e) {
+        postProcess.call(null, PLUGIN_LABEL, e);
+      });
+    }
   });
 
   return {

@@ -486,6 +486,12 @@ CStudioAuthoring.Module.requireModule(
 
             paste_word_valid_elements: rtePasteWordElements,
 
+            paste_postprocess_ext: function (plugin, args) {
+              if (CStudioForms.Controls.RTETINYMCE5.pasteFromWordPostProcess) {
+                CStudioForms.Controls.RTETINYMCE5.pasteFromWordPostProcess(plugin, args);
+              }
+            },
+
             setup: function (editor) {
               var addPadding = function () {
                 const formHeader = $('#formHeader');
