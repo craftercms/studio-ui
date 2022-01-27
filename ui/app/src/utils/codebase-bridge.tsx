@@ -178,7 +178,6 @@ export function createCodebaseBridge() {
       PreviewCompatDialog: lazy(() => import('../components/PreviewCompatibilityDialog/PreviewCompatibilityDialog')),
       PathSelectionDialog: lazy(() => import('../components/PathSelectionDialog/PathSelectionDialog')),
       BrowseFilesDialog: lazy(() => import('../components/BrowseFilesDialog')),
-      BrowseFilesDialogContainer: lazy(() => import('../components/BrowseFilesDialog/BrowseFilesDialogContainer')),
       SplitButton: lazy(() => import('../components/SplitButton/SplitButton')),
       MultiChoiceSaveButton: lazy(() => import('../components/MultiChoiceSaveButton/MultiChoiceSaveButton')),
       CharCountStatusContainer: lazy(() =>
