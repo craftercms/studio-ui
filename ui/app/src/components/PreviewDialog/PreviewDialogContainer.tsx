@@ -22,25 +22,37 @@ import { nou } from '../../utils/object';
 import AceEditor from '../AceEditor/AceEditor';
 import { PreviewDialogContainerProps } from './utils';
 import { useStyles } from './styles';
+import DialogFooter from '../DialogFooter';
+import SecondaryButton from '../SecondaryButton';
+import { FormattedMessage, useIntl } from 'react-intl';
+import PrimaryButton from '../PrimaryButton';
+import { useActiveSite, useActiveSiteId, usePermissionsBySite } from '../../hooks';
+import { Tooltip } from '@mui/material';
+import { DialogBody } from '../DialogBody';
 
 export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
+  const { title, content, mode, url, onClose, type } = props;
   const classes = useStyles();
+  const siteId = useActiveSiteId();
+  const permissionsBySite = usePermissionsBySite();
+  const myPermissions = permissionsBySite[siteId];
+  const hasContentWritePermission = myPermissions?.includes('content_write');
 
   const [isLoading, setIsLoading] = useState(true);
 
   const renderPreview = () => {
-    switch (props.type) {
+    switch (type) {
       case 'image':
-        return <img src={props.url} alt="" />;
+        return <img src={url} alt="" />;
       case 'video':
-        return <AsyncVideoPlayer playerOptions={{ src: props.url, autoplay: true }} />;
+        return <AsyncVideoPlayer playerOptions={{ src: url, autoplay: true }} />;
       case 'page':
         return (
           <>
             {isLoading && <LoadingState />}
             <IFrame
-              url={props.url}
-              title={props.title}
+              url={url}
+              title={title}
               width={isLoading ? 0 : 960}
               height={isLoading ? 0 : 600}
               onLoadComplete={() => setIsLoading(false)}
@@ -49,13 +61,8 @@ export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
         );
       case 'editor': {
         return (
-          <ConditionalLoadingState isLoading={nou(props.content)}>
-            <AceEditor
-              value={props.content}
-              classes={{ editorRoot: classes.editor }}
-              mode={`ace/mode/${props.mode}`}
-              readOnly
-            />
+          <ConditionalLoadingState isLoading={nou(content)}>
+            <AceEditor value={content} classes={{ editorRoot: classes.editor }} mode={`ace/mode/${mode}`} readOnly />
           </ConditionalLoadingState>
         );
       }
@@ -63,9 +70,41 @@ export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
         break;
     }
   };
+
+  const onEdit = () => {};
+
+  const ButtonWrapper = () => (
+    <div>
+      <PrimaryButton sx={{ marginLeft: '15px' }} disabled={!hasContentWritePermission} onClick={onEdit}>
+        <FormattedMessage id="words.edit" defaultMessage="Edit" />
+      </PrimaryButton>
+    </div>
+  );
+
   return (
     <>
-      <section className={classes.container}>{renderPreview()}</section>
+      <DialogBody className={classes.container}>{renderPreview()}</DialogBody>
+      {type === 'editor' && (
+        <DialogFooter>
+          <SecondaryButton onClick={(e) => onClose(e, null)}>
+            <FormattedMessage id="words.close" defaultMessage="Close" />
+          </SecondaryButton>
+          <Tooltip
+            title={
+              hasContentWritePermission ? (
+                ''
+              ) : (
+                <FormattedMessage
+                  id="formEngine.contentWritePermission"
+                  defaultMessage="The current user doesn't have the necessary permissions to edit this content item"
+                />
+              )
+            }
+          >
+            <ButtonWrapper />
+          </Tooltip>
+        </DialogFooter>
+      )}
     </>
   );
 }
