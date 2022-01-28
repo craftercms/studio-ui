@@ -30,10 +30,12 @@ import PrimaryButton from '../PrimaryButton';
 import React from 'react';
 import { RejectDialogContentUI } from './RejectDialogContentUI';
 import Typography from '@mui/material/Typography';
+import Alert from '@mui/material/Alert';
 
 export function RejectDialogUI(props: RejectDialogUIProps) {
   const {
     resource,
+    published,
     checkedItems,
     rejectionReason,
     rejectionComment,
@@ -63,12 +65,21 @@ export function RejectDialogUI(props: RejectDialogUIProps) {
                 isEmpty: ({ items }) => items.length === 0
               }}
             >
-              <RejectDialogContentUI
-                items={items}
-                checkedItems={checkedItems}
-                onUpdateChecked={onUpdateChecked}
-                classes={classes}
-              />
+              {published ? (
+                <RejectDialogContentUI
+                  items={items}
+                  checkedItems={checkedItems}
+                  onUpdateChecked={onUpdateChecked}
+                  classes={classes}
+                />
+              ) : (
+                <Alert severity="warning">
+                  <FormattedMessage
+                    id="reject.firstPublish"
+                    defaultMessage="The entire site publish will be rejected since this is the first publish request"
+                  />
+                </Alert>
+              )}
             </SuspenseWithEmptyState>
           </Grid>
 

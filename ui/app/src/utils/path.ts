@@ -182,7 +182,6 @@ export function getEditFormSrc({
     site,
     path,
     selectedFields,
-    type: 'form',
     readonly,
     isHidden,
     modelId,

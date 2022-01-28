@@ -158,7 +158,7 @@ export default function PublishOnDemandWidget(props: PublishOnDemandWidgetProps)
 
   useEffect(() => {
     fetchPublishingTargets(siteId).subscribe({
-      next(targets) {
+      next({ publishingTargets: targets }) {
         setPublishingTargets(targets);
         // Set pre-selected environment.
         setDefaultPublishingTarget(targets);

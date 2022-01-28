@@ -53,7 +53,7 @@ export function MultiChoiceSaveButton(props: MultiChoiceSaveButtonProps) {
     disabled,
     disablePortal,
     loading,
-    defaultSelected,
+    defaultSelected = 'saveAndClose',
     onClick
   } = props;
   const { formatMessage } = useIntl();
