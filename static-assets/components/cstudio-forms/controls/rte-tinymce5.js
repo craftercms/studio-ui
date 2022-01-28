@@ -50,6 +50,7 @@ CStudioAuthoring.Module.requireModule(
   {
     moduleLoaded: function () {
       const YDom = YAHOO.util.Dom;
+      const tinymce = window.tinymce;
       YAHOO.extend(CStudioForms.Controls.RTETINYMCE5, CStudioForms.CStudioFormField, {
         getLabel: function () {
           return CMgs.format(langBundle, 'rteTinyMCE5');
@@ -287,15 +288,12 @@ CStudioAuthoring.Module.requireModule(
          */
         _initializeRte: function (config, rteConfig, containerEl) {
           var _thisControl = this,
-            editor,
             callback,
             rteId = CStudioAuthoring.Utils.generateUUID(),
             inputEl,
             pluginList,
-            extendedElements,
             rteStylesheets,
             rteStyleOverride,
-            rtePasteWordElements,
             toolbarConfig1,
             toolbarConfig2,
             toolbarConfig3,
@@ -357,8 +355,7 @@ CStudioAuthoring.Module.requireModule(
           templates = rteConfig.templates && rteConfig.templates.template ? rteConfig.templates.template : null;
 
           // https://www.tiny.cloud/docs/plugins/
-          pluginList = rteConfig.plugins;
-          pluginList = this.autoGrow ? pluginList + ' autoresize' : pluginList;
+          pluginList = [rteConfig.plugins, this.autoGrow && 'autoresize'].filter(Boolean).join(' ');
 
           extendedValidElements = rteConfig.extendedElements ? rteConfig.extendedElements : '';
 
@@ -379,12 +376,6 @@ CStudioAuthoring.Module.requireModule(
               : null;
 
           rteStyleOverride = rteConfig.rteStyleOverride ? rteConfig.rteStyleOverride : null;
-
-          rtePasteWordElements = rteConfig.rtePasteWordElements
-            ? rteConfig.rtePasteWordElements
-            : '-strong/b,-em/i,-u,-span,-p,-ol,-ul,-li,-h1,-h2,-h3,-h4,-h5,-h6,-h7,-h8,-pre,-p/div,' +
-              '-a[href|name],sub,sup,pre,blockquote,strike,br,del,' +
-              'table[width],tr,td[colspan|rowspan|width],th[colspan|rowspan|width],thead,tfoot,tbody';
 
           try {
             // use tinymce default if not set
@@ -419,8 +410,9 @@ CStudioAuthoring.Module.requireModule(
 
           const external = {
             acecode: '/studio/static-assets/js/tinymce-plugins/ace/plugin.min.js',
-            paste_from_word: '/studio/static-assets/js/tinymce-plugins/paste-from-word/plugin.min.js'
+            craftercms_paste_extension: '/studio/static-assets/js/tinymce-plugins/craftercms_paste_extension/plugin.js'
           };
+
           if (rteConfig.external_plugins) {
             Object.entries(rteConfig.external_plugins).forEach((entry) => {
               external[entry[0]] = CStudioAuthoring.StringUtils.keyFormat(entry[1], {
@@ -429,7 +421,7 @@ CStudioAuthoring.Module.requireModule(
             });
           }
 
-          const options = {
+          tinymce.init({
             selector: '#' + rteId,
             width: _thisControl.rteWidth,
             // As of 3.1.14, the toolbar is moved to be part of the editor text field (not stuck/floating at the top of the window).
@@ -459,10 +451,10 @@ CStudioAuthoring.Module.requireModule(
             extended_valid_elements: extendedValidElements,
             browser_spellcheck: this.enableSpellCheck,
             contextmenu: !this.enableSpellCheck,
+            craftercms_paste_cleanup: rteConfig.craftercmsPasteCleanup?.trim() !== 'false',
 
             menu: {
-              tools: { title: 'Tools', items: 'tinymcespellchecker code acecode wordcount' },
-              edit: { title: 'Edit', items: 'undo redo | cut copy paste paste_as_text | selectall | searchreplace' }
+              tools: { title: 'Tools', items: 'tinymcespellchecker code acecode wordcount' }
             },
 
             automatic_uploads: true,
@@ -484,17 +476,11 @@ CStudioAuthoring.Module.requireModule(
 
             style_formats_merge: styleFormatsMerge,
 
-            paste_word_valid_elements: rtePasteWordElements,
+            ...this._getTinymceExtendedOptions(rteConfig),
 
             setup: function (editor) {
-              var addPadding = function () {
-                const formHeader = $('#formHeader');
-                if (formHeader.is(':visible')) {
-                  formHeader.addClass('padded-top');
-                } else {
-                  $('#formContainer').addClass('padded-top');
-                }
-              };
+              var pluginManager = tinymce.util.Tools.resolve('tinymce.PluginManager');
+
               editor.on('init', function (e) {
                 amplify.publish('/field/init/completed');
                 _thisControl.editorId = editor.id;
@@ -541,10 +527,32 @@ CStudioAuthoring.Module.requireModule(
                   tinyMCE.activeEditor.execCommand('mceImage');
                 }
               });
-            }
-          };
 
-          editor = tinymce.init({ ...options, ...this._getTinymceExtendedOptions(rteConfig) });
+              // No point in waiting for `craftercms_tinymce_hooks` if the hook won't be loaded at all.
+              external.craftercms_tinymce_hooks &&
+                pluginManager.waitFor(
+                  'craftercms_tinymce_hooks',
+                  () => {
+                    const hooks = pluginManager.get('craftercms_tinymce_hooks');
+                    if (hooks) {
+                      pluginManager.get('craftercms_tinymce_hooks').setup?.(editor);
+                    } else {
+                      console.error(
+                        "The `craftercms_tinymce_hooks` was configured to be loaded but didn't load. Check the path is correct in the rte configuration file."
+                      );
+                    }
+                  },
+                  'loaded'
+                );
+            },
+
+            paste_preprocess(plugin, args) {
+              _thisControl.editor.plugins.craftercms_paste_extension?.paste_preprocess(plugin, args);
+            },
+            paste_postprocess(plugin, args) {
+              _thisControl.editor.plugins.craftercms_paste_extension?.paste_postprocess(plugin, args);
+            }
+          });
 
           // Update all content before saving the form (all content is automatically updated on focusOut)
           callback = {};
