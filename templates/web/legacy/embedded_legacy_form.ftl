@@ -174,6 +174,9 @@
                                 renderFailed(error) {
                                   window.parent.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDER_FAILED', payload: { error } }, '*');
                                 },
+                                changeToEditMode() {
+                                  window.parent.postMessage({ type: 'EMBEDDED_LEGACY_CHANGE_TO_EDIT_MODE' }, '*');
+                                },
                                 minimize: () => {
                                   window.parent.postMessage({
                                     type: 'EMBEDDED_LEGACY_MINIMIZE_REQUEST'

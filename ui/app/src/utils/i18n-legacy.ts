@@ -723,6 +723,10 @@ export const formEngineMessages = defineMessages({
   useMVS: {
     id: 'formEngine.useMVS',
     defaultMessage: 'Use _mvs postfix (backward compat)'
+  },
+  contentWritePermission: {
+    id: 'formEngine.contentWritePermission',
+    defaultMessage: "Current user don't have edit permission"
   }
 });
 

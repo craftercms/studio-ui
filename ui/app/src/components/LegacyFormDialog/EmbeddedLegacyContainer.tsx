@@ -24,6 +24,7 @@ import { fromEvent } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { emitSystemEvent, itemCreated, itemUpdated } from '../../state/actions/system';
 import {
+  EMBEDDED_LEGACY_CHANGE_TO_EDIT_MODE,
   EMBEDDED_LEGACY_FORM_CLOSE,
   EMBEDDED_LEGACY_FORM_FAILURE,
   EMBEDDED_LEGACY_FORM_PENDING_CHANGES,
@@ -198,6 +199,11 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
         }
         case EMBEDDED_LEGACY_MINIMIZE_REQUEST: {
           onMinimize();
+          break;
+        }
+        case EMBEDDED_LEGACY_CHANGE_TO_EDIT_MODE: {
+          dispatch(updateEditConfig({ readonly: false }));
+          break;
         }
       }
     });

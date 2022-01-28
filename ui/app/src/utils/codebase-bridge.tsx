@@ -73,6 +73,7 @@ import {
 import { getHostToHostBus } from '../modules/Preview/previewContext';
 import { StandardAction } from '../models/StandardAction';
 import { createCustomDocumentEventListener } from './dom';
+import PrimaryButton from '../components/PrimaryButton';
 
 const ErrorState = lazy(() => import('../components/ErrorState/ErrorState'));
 
@@ -179,7 +180,6 @@ export function createCodebaseBridge() {
       PathSelectionDialog: lazy(() => import('../components/PathSelectionDialog/PathSelectionDialog')),
       BrowseFilesDialog: lazy(() => import('../components/BrowseFilesDialog')),
       SplitButton: lazy(() => import('../components/SplitButton/SplitButton')),
-      MultiChoiceSaveButton: lazy(() => import('../components/MultiChoiceSaveButton/MultiChoiceSaveButton')),
       CharCountStatusContainer: lazy(() =>
         import('../components/CharCountStatus/CharCountStatus').then((module) => ({
           default: module.CharCountStatusContainer
