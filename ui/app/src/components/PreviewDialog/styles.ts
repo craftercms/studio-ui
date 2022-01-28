@@ -22,7 +22,7 @@ export const useStyles = makeStyles(() => ({
     display: 'flex',
     maxWidth: '100%',
     minWidth: '500px',
-    minHeight: '600px',
+    minHeight: '60vh',
     position: 'relative',
     justifyContent: 'center',
     alignItems: 'center',

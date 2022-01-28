@@ -24,11 +24,15 @@ import { PreviewDialogContainerProps } from './utils';
 import { useStyles } from './styles';
 import DialogFooter from '../DialogFooter';
 import SecondaryButton from '../SecondaryButton';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import PrimaryButton from '../PrimaryButton';
-import { useActiveSite, useActiveSiteId, usePermissionsBySite } from '../../hooks';
+import { useActiveSiteId, usePermissionsBySite } from '../../hooks';
 import { Tooltip } from '@mui/material';
 import { DialogBody } from '../DialogBody';
+import { useDispatch } from 'react-redux';
+import { closeCodeEditorDialog, closePreviewDialog, showCodeEditorDialog } from '../../state/actions/dialogs';
+import { batchActions } from '../../state/actions/misc';
+import { conditionallyUnlockItem } from '../../state/actions/content';
 
 export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
   const { title, content, mode, url, onClose, type } = props;
@@ -37,6 +41,7 @@ export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
   const permissionsBySite = usePermissionsBySite();
   const myPermissions = permissionsBySite[siteId];
   const hasContentWritePermission = myPermissions?.includes('content_write');
+  const dispatch = useDispatch();
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -71,15 +76,18 @@ export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
     }
   };
 
-  const onEdit = () => {};
-
-  const ButtonWrapper = () => (
-    <div>
-      <PrimaryButton sx={{ marginLeft: '15px' }} disabled={!hasContentWritePermission} onClick={onEdit}>
-        <FormattedMessage id="words.edit" defaultMessage="Edit" />
-      </PrimaryButton>
-    </div>
-  );
+  const onEdit = () => {
+    dispatch(
+      batchActions([
+        closePreviewDialog(),
+        showCodeEditorDialog({
+          path: url,
+          mode,
+          onClose: batchActions([closeCodeEditorDialog(), conditionallyUnlockItem({ path: url })])
+        })
+      ])
+    );
+  };
 
   return (
     <>
@@ -101,7 +109,11 @@ export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
               )
             }
           >
-            <ButtonWrapper />
+            <span>
+              <PrimaryButton sx={{ marginLeft: '15px' }} disabled={!hasContentWritePermission} onClick={onEdit}>
+                <FormattedMessage id="words.edit" defaultMessage="Edit" />
+              </PrimaryButton>
+            </span>
           </Tooltip>
         </DialogFooter>
       )}
