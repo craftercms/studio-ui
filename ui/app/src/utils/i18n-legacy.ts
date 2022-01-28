@@ -726,7 +726,7 @@ export const formEngineMessages = defineMessages({
   },
   contentWritePermission: {
     id: 'formEngine.contentWritePermission',
-    defaultMessage: "Current user don't have edit permission"
+    defaultMessage: "The current user doesn't have the necessary permissions to edit this content item."
   }
 });
 
