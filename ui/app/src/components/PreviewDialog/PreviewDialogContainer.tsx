@@ -26,21 +26,18 @@ import DialogFooter from '../DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import { FormattedMessage } from 'react-intl';
 import PrimaryButton from '../PrimaryButton';
-import { useActiveSiteId, usePermissionsBySite } from '../../hooks';
-import { Tooltip } from '@mui/material';
+import { useDetailedItem } from '../../hooks';
 import { DialogBody } from '../DialogBody';
 import { useDispatch } from 'react-redux';
 import { closeCodeEditorDialog, closePreviewDialog, showCodeEditorDialog } from '../../state/actions/dialogs';
 import { batchActions } from '../../state/actions/misc';
 import { conditionallyUnlockItem } from '../../state/actions/content';
+import { hasEditAction } from '../../utils/content';
 
 export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
   const { title, content, mode, url, onClose, type } = props;
   const classes = useStyles();
-  const siteId = useActiveSiteId();
-  const permissionsBySite = usePermissionsBySite();
-  const myPermissions = permissionsBySite[siteId];
-  const hasContentWritePermission = myPermissions?.includes('content_write');
+  const item = useDetailedItem(url);
   const dispatch = useDispatch();
 
   const [isLoading, setIsLoading] = useState(true);
@@ -97,24 +94,11 @@ export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
           <SecondaryButton onClick={(e) => onClose(e, null)}>
             <FormattedMessage id="words.close" defaultMessage="Close" />
           </SecondaryButton>
-          <Tooltip
-            title={
-              hasContentWritePermission ? (
-                ''
-              ) : (
-                <FormattedMessage
-                  id="formEngine.contentWritePermission"
-                  defaultMessage="The current user doesn't have the necessary permissions to edit this content item"
-                />
-              )
-            }
-          >
-            <span>
-              <PrimaryButton sx={{ marginLeft: '15px' }} disabled={!hasContentWritePermission} onClick={onEdit}>
-                <FormattedMessage id="words.edit" defaultMessage="Edit" />
-              </PrimaryButton>
-            </span>
-          </Tooltip>
+          {hasEditAction(item.availableActions) && (
+            <PrimaryButton sx={{ marginLeft: '15px' }} onClick={onEdit}>
+              <FormattedMessage id="words.edit" defaultMessage="Edit" />
+            </PrimaryButton>
+          )}
         </DialogFooter>
       )}
     </>

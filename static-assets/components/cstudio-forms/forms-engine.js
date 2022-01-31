@@ -1917,19 +1917,18 @@ var CStudioForms =
             YAHOO.util.Event.addListener(window, 'beforeunload', unloadFn, me);
             YAHOO.util.Event.addListener(closeButtonEl, 'click', cancelFn, me);
 
-            const canEdit = CrafterCMSNext.system.store
-              .getState()
-              .user.permissionsBySite[CrafterCMSNext.system.store.getState().sites.active].includes('content_write');
-            var editButtonEl = document.createElement('input');
-            YDom.addClass(editButtonEl, 'btn btn-primary');
-            editButtonEl.type = 'button';
-            editButtonEl.style.marginLeft = '15px';
-            editButtonEl.value = CMgs.format(formsLangBundle, 'edit');
-
-            formButtonContainerEl.appendChild(editButtonEl);
-            YDom.setStyle(formButtonContainerEl, 'text-align', 'center');
+            const canEdit = CStudioAuthoring.Utils.getQueryVariable(queryString, 'canEdit');
 
             if (canEdit) {
+              var editButtonEl = document.createElement('input');
+              YDom.addClass(editButtonEl, 'btn btn-primary');
+              editButtonEl.type = 'button';
+              editButtonEl.style.marginLeft = '15px';
+              editButtonEl.value = formatMessage(formEngineMessages.edit);
+
+              formButtonContainerEl.appendChild(editButtonEl);
+              YDom.setStyle(formButtonContainerEl, 'text-align', 'center');
+
               YAHOO.util.Event.addListener(
                 editButtonEl,
                 'click',
@@ -1942,9 +1941,6 @@ var CStudioForms =
                 },
                 me
               );
-            } else {
-              editButtonEl.disabled = true;
-              editButtonEl.title = formatMessage(formEngineMessages.contentWritePermission);
             }
 
             var focusEl = window;

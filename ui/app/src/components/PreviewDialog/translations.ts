@@ -16,13 +16,9 @@
 
 import { defineMessages } from 'react-intl';
 
-export const messages = defineMessages({
-  revertPullSuccessMessage: {
-    id: 'repositories.revertPullSuccessMessage',
-    defaultMessage: 'Successfully reverted repository.'
-  },
-  commitSuccessMessage: {
-    id: 'repositories.commitSuccessMessage',
-    defaultMessage: 'Successfully committed.'
+export const translations = defineMessages({
+  edit: {
+    id: 'words.edit',
+    defaultMessage: 'Edit'
   }
 });

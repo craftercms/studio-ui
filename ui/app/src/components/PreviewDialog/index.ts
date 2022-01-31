@@ -19,3 +19,5 @@ export { default } from './PreviewDialog';
 export * from './PreviewDialog';
 
 export * from './PreviewDialogContainer';
+
+export * from './utils';

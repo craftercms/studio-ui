@@ -724,9 +724,9 @@ export const formEngineMessages = defineMessages({
     id: 'formEngine.useMVS',
     defaultMessage: 'Use _mvs postfix (backward compat)'
   },
-  contentWritePermission: {
-    id: 'formEngine.contentWritePermission',
-    defaultMessage: "The current user doesn't have the necessary permissions to edit this content item."
+  edit: {
+    id: 'words.edit',
+    defaultMessage: 'Edit'
   }
 });
 
