@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -14,17 +14,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-tinymce.PluginManager.add('paste_cleanup', function (editor, url) {
-  const removeElAttributes = (element) => {
+(function () {
+  'use strict';
+
+  var pluginManager = tinymce.util.Tools.resolve('tinymce.PluginManager');
+  var hookPluginName = 'craftercms_tinymce_hooks';
+
+  function removeElAttributes(element) {
     element.getAttributeNames().forEach((attrName) => {
       element.removeAttribute(attrName);
     });
-  };
+  }
 
   // There's an issue in tinymce when pasting lists where it doesn't wrap the 'li' elements property in their own 'ol' or 'ul'.
-  // This function joins all of the ol|ul elements with the issue (groups of 'ol' or 'ul')
+  // This function joins all the ol|ul elements with the issue (groups of 'ol' or 'ul')
   // @listType: 'UL' | 'OL'
-  const fixLists = (element, listType) => {
+  function fixLists(element, listType) {
     const lists = Array.from(element.getElementsByTagName(listType)).filter((list) => {
       // First item of lists will always be in a separate ul|ol.
       return list.childElementCount === 1;
@@ -38,21 +43,35 @@ tinymce.PluginManager.add('paste_cleanup', function (editor, url) {
           });
           list.nextElementSibling.remove();
         }
-        // getting next ol sibling (may not exists) so it can continue checking/joining the lists.
+        // getting next ol sibling (may not exist) so it can continue checking/joining the lists.
         haveListSiblings = list.nextElementSibling?.tagName === listType;
       }
     });
+  }
+
+  function cleanup(parentNode) {
+    removeElAttributes(parentNode);
+    fixLists(parentNode, 'OL');
+    fixLists(parentNode, 'UL');
+    parentNode.querySelectorAll('*').forEach((node) => {
+      removeElAttributes(node);
+    });
+  }
+
+  var shouldCleanup = function (editor) {
+    return editor.getParam('craftercms_paste_cleanup', true);
   };
 
-  return {
-    cleanup: function (parentNode) {
-      removeElAttributes(parentNode);
-      fixLists(parentNode, 'OL');
-      fixLists(parentNode, 'UL');
-
-      parentNode.querySelectorAll('*').forEach((node) => {
-        removeElAttributes(node);
-      });
-    },
-  };
-});
+  pluginManager.add('craftercms_paste_extension', function (editor) {
+    return {
+      paste_preprocess(plugin, args) {
+        editor.plugins[hookPluginName]?.paste_preprocess?.(plugin, args);
+      },
+      paste_postprocess(plugin, args) {
+        debugger;
+        shouldCleanup(editor) && cleanup(args.node);
+        editor.plugins[hookPluginName]?.paste_postprocess?.(plugin, args);
+      }
+    };
+  });
+})();
