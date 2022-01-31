@@ -160,7 +160,6 @@ YAHOO.extend(
                 }
                 image.addEventListener('load', imageLoaded, false);
                 image.addEventListener('error', function (e) {
-                  console.log(e);
                   message = CMgs.format(langBundle, 'loadImageError');
                   CStudioAuthoring.Operations.showSimpleDialog(
                     'error-dialog',
