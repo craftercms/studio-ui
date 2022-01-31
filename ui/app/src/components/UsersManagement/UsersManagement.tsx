@@ -55,9 +55,9 @@ export default function UsersManagement(props: UsersManagementProps) {
   const classes = useStyles();
 
   const fetchUsers = useCallback(
-    (keyword = '') => {
+    (keyword = '', _offset = offset) => {
       setFetching(true);
-      fetchAll({ limit, offset, keyword }).subscribe(
+      fetchAll({ limit, offset: _offset, keyword }).subscribe(
         (users) => {
           setUsers(users);
           setFetching(false);
@@ -126,7 +126,7 @@ export default function UsersManagement(props: UsersManagementProps) {
 
   const onSearch = useCallback(
     (keyword) => {
-      fetchUsers(keyword);
+      fetchUsers(keyword, 0);
     },
     [fetchUsers]
   );
