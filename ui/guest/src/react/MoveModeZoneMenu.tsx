@@ -57,10 +57,11 @@ import { iceRegistry } from '../index';
 export interface MoveModeZoneMenuProps {
   record: ElementRecord;
   dispatch: Dispatch<AnyAction>;
+  isHeadlessMode: boolean;
 }
 
 export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
-  const { record, dispatch } = props;
+  const { record, dispatch, isHeadlessMode } = props;
   const {
     modelId,
     fieldId: [fieldId],
@@ -122,7 +123,7 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
   const isLastItem = isMovable ? elementIndex === numOfItemsInContainerCollection - 1 : null;
   const isOnlyItem = isMovable ? isFirstItem && isLastItem : null;
   const isEmbedded = useMemo(() => !Boolean(getCachedModel(modelId)?.craftercms.path), [modelId]);
-  const showCodeEditOptions = ['component', 'page', 'node-selector-item'].includes(recordType);
+  const showCodeEditOptions = ['component', 'page', 'node-selector-item'].includes(recordType) && !isHeadlessMode;
   const isTrashable = recordType !== 'field' && recordType !== 'page';
   const showAddItem = recordType === 'field' && field.type === 'repeat';
   const showDuplicate = ['repeat-item', 'component', 'node-selector-item'].includes(recordType);
