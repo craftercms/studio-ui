@@ -19,7 +19,7 @@ import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 
 export interface PreviewDialogBaseProps {
-  type: string;
+  type: 'image' | 'editor' | 'video' | 'page';
   title: string;
   subtitle?: string;
   mode?: string;

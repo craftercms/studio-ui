@@ -24,6 +24,7 @@ import { fromEvent } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { emitSystemEvent, itemCreated, itemUpdated } from '../../state/actions/system';
 import {
+  EMBEDDED_LEGACY_CHANGE_TO_EDIT_MODE,
   EMBEDDED_LEGACY_FORM_CLOSE,
   EMBEDDED_LEGACY_FORM_FAILURE,
   EMBEDDED_LEGACY_FORM_PENDING_CHANGES,
@@ -43,6 +44,8 @@ import clsx from 'clsx';
 import ErrorDialog from '../ErrorDialog/ErrorDialog';
 import { translations } from './translations';
 import { useStyles } from './styles';
+import { useDetailedItem } from '../../hooks';
+import { hasEditAction } from '../../utils/content';
 
 export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyEditor(
   props: LegacyFormDialogContainerProps,
@@ -68,6 +71,13 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
     newEmbedded
   } = props;
 
+  const { formatMessage } = useIntl();
+  const classes = useStyles({});
+  const iframeRef = useRef(null);
+  const dispatch = useDispatch();
+  const [error, setError] = useState<ApiResponse>(null);
+  const item = useDetailedItem(path);
+
   const src = useMemo(
     () =>
       getEditFormSrc({
@@ -81,6 +91,7 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
         contentTypeId,
         isNewContent,
         iceGroupId,
+        canEdit: hasEditAction(item.availableActions),
         ...(selectedFields && selectedFields.length ? { selectedFields: JSON.stringify(selectedFields) } : {}),
         ...(newEmbedded ? { newEmbedded: JSON.stringify(newEmbedded) } : {})
       }),
@@ -96,15 +107,10 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
       isNewContent,
       iceGroupId,
       selectedFields,
-      newEmbedded
+      newEmbedded,
+      item.availableActions
     ]
   );
-
-  const { formatMessage } = useIntl();
-  const classes = useStyles({});
-  const iframeRef = useRef(null);
-  const dispatch = useDispatch();
-  const [error, setError] = useState<ApiResponse>(null);
 
   const messages = fromEvent(window, 'message').pipe(filter((e: any) => e.data && e.data.type));
 
@@ -198,6 +204,11 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
         }
         case EMBEDDED_LEGACY_MINIMIZE_REQUEST: {
           onMinimize();
+          break;
+        }
+        case EMBEDDED_LEGACY_CHANGE_TO_EDIT_MODE: {
+          dispatch(updateEditConfig({ readonly: false }));
+          break;
         }
       }
     });
@@ -210,7 +221,7 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
 
   return (
     <>
-      {inProgress && (
+      {(inProgress || !item) && (
         <LoadingState title={formatMessage(translations.loadingForm)} classes={{ root: classes.loadingRoot }} />
       )}
       <iframe
