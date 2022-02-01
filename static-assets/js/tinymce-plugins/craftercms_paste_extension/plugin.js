@@ -68,7 +68,6 @@
         editor.plugins[hookPluginName]?.paste_preprocess?.(plugin, args);
       },
       paste_postprocess(plugin, args) {
-        debugger;
         shouldCleanup(editor) && cleanup(args.node);
         editor.plugins[hookPluginName]?.paste_postprocess?.(plugin, args);
       }
