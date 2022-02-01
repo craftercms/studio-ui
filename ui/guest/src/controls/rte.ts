@@ -106,7 +106,7 @@ export function initTinyMCE(
         // In some cases the 'blur' event is getting caught somewhere along
         // the way. Focusout seems to be more reliable.
         editor.on('focusout', (e) => {
-          if (!e.relatedTarget) {
+          if (!e.relatedTarget?.closest('.tox-tinymce')) {
             if (validations?.required && !getContent().trim()) {
               post(
                 validationMessage({
