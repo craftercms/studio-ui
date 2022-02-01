@@ -33,13 +33,13 @@ import AssetUploaderMask from './AssetUploaderMask';
 import {
   EditingStatus,
   editModeClass,
-  editModeEvent,
-  editModeIceBypassEvent,
   editModePaddingClass,
   editOnClass,
   HighlightMode,
   iceBypassKeyClass,
-  moveModeClass
+  moveModeClass,
+  editModeIceBypassEvent,
+  editModeEvent
 } from '../constants';
 import {
   assetDragEnded,
@@ -108,7 +108,6 @@ export type GuestProps = PropsWithChildren<{
   sxOverrides?: DeepPartial<GuestStylesSx>;
   isAuthoring?: boolean; // boolean | Promise<boolean> | () => boolean | Promise<boolean>
   scrollElement?: string;
-  isHeadlessMode?: boolean;
 }>;
 
 const initialDocumentDomain = document.domain;
@@ -123,15 +122,7 @@ function bypassKeyStroke(e, refs) {
 function Guest(props: GuestProps) {
   // TODO: support path driven Guest.
   // TODO: consider supporting developer to provide the data source (promise/observable?)
-  const {
-    path,
-    themeOptions,
-    sxOverrides,
-    children,
-    documentDomain,
-    scrollElement = 'html, body',
-    isHeadlessMode = false
-  } = props;
+  const { path, themeOptions, sxOverrides, children, documentDomain, scrollElement = 'html, body' } = props;
 
   const theme = useGuestTheme(themeOptions);
   const [snack, setSnack] = useState<Partial<Snack>>();
@@ -545,11 +536,7 @@ function Guest(props: GuestProps) {
                       : null
                   }
                   menuItems={
-                    isFieldSelectedMode ? (
-                      <MoveModeZoneMenu record={elementRecord} dispatch={dispatch} isHeadlessMode={isHeadlessMode} />
-                    ) : (
-                      void 0
-                    )
+                    isFieldSelectedMode ? <MoveModeZoneMenu record={elementRecord} dispatch={dispatch} /> : void 0
                   }
                   sx={deepmerge(
                     deepmerge(
