@@ -26,6 +26,10 @@ import { emitSystemEvent, itemCreated, itemUpdated } from '../../state/actions/s
 import {
   EMBEDDED_LEGACY_CHANGE_TO_EDIT_MODE,
   EMBEDDED_LEGACY_FORM_CLOSE,
+  EMBEDDED_LEGACY_FORM_DISABLE_HEADER,
+  EMBEDDED_LEGACY_FORM_DISABLE_ON_CLOSE,
+  EMBEDDED_LEGACY_FORM_ENABLE_HEADER,
+  EMBEDDED_LEGACY_FORM_ENABLE_ON_CLOSE,
   EMBEDDED_LEGACY_FORM_FAILURE,
   EMBEDDED_LEGACY_FORM_PENDING_CHANGES,
   EMBEDDED_LEGACY_FORM_RENDER_FAILED,
@@ -167,6 +171,22 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
           if (inProgress) {
             dispatch(updateEditConfig({ inProgress: false }));
           }
+          break;
+        }
+        case EMBEDDED_LEGACY_FORM_ENABLE_ON_CLOSE: {
+          dispatch(updateEditConfig({ disableOnClose: false }));
+          break;
+        }
+        case EMBEDDED_LEGACY_FORM_DISABLE_ON_CLOSE: {
+          dispatch(updateEditConfig({ disableOnClose: true }));
+          break;
+        }
+        case EMBEDDED_LEGACY_FORM_ENABLE_HEADER: {
+          dispatch(updateEditConfig({ disableHeader: false }));
+          break;
+        }
+        case EMBEDDED_LEGACY_FORM_DISABLE_HEADER: {
+          dispatch(updateEditConfig({ disableHeader: true }));
           break;
         }
         case EMBEDDED_LEGACY_FORM_RENDER_FAILED: {
