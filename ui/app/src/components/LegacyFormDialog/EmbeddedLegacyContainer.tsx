@@ -95,7 +95,7 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
         contentTypeId,
         isNewContent,
         iceGroupId,
-        canEdit: hasEditAction(item.availableActions),
+        ...(!isNewContent ? { canEdit: hasEditAction(item.availableActions) } : {}),
         ...(selectedFields && selectedFields.length ? { selectedFields: JSON.stringify(selectedFields) } : {}),
         ...(newEmbedded ? { newEmbedded: JSON.stringify(newEmbedded) } : {})
       }),
@@ -112,7 +112,7 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
       iceGroupId,
       selectedFields,
       newEmbedded,
-      item.availableActions
+      item
     ]
   );
 
@@ -241,7 +241,7 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
 
   return (
     <>
-      {(inProgress || !item) && (
+      {(inProgress || !item) && !isNewContent && (
         <LoadingState title={formatMessage(translations.loadingForm)} classes={{ root: classes.loadingRoot }} />
       )}
       <iframe
