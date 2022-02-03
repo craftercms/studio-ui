@@ -24,6 +24,7 @@ import {
   setStoredSaveButtonSubAction
 } from '../../utils/state';
 import { useActiveUser } from '../../hooks';
+import { FormattedMessage } from 'react-intl';
 
 export function SplitButton(props: SplitButtonProps) {
   const { options, defaultSelected = options[0].id, disablePortal = true, disabled, loading, storageKey } = props;
@@ -81,7 +82,9 @@ export function SplitButton(props: SplitButtonProps) {
   return (
     <>
       {loading ? (
-        <PrimaryButton loading disabled />
+        <PrimaryButton loading disabled>
+          <FormattedMessage id="words.loading" defaultMessage="Loading" />
+        </PrimaryButton>
       ) : (
         <SplitButtonUI
           options={options}
