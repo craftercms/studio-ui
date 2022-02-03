@@ -23,6 +23,7 @@ import SubmittedStateIcon from '../../icons/PlanePaperOutline';
 import ScheduledStateIcon from '@mui/icons-material/AccessTimeRounded';
 import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined';
 import BlockRoundedIcon from '@mui/icons-material/BlockRounded';
+import ModeStandbyIcon from '@mui/icons-material/ModeStandby';
 import Tooltip from '@mui/material/Tooltip';
 import clsx from 'clsx';
 import * as React from 'react';
@@ -33,6 +34,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import palette from '../../styles/palette';
 import { CSSProperties } from '@mui/styles';
 import { DetailedItem, ItemStates, SandboxItem } from '../../models/Item';
+import { FormattedMessage } from 'react-intl';
 
 export type ItemStateIconClassKey =
   | 'root'
@@ -46,7 +48,8 @@ export type ItemStateIconClassKey =
   | 'stateSubmittedToLiveIcon'
   | 'stateScheduledIcon'
   | 'statePublishingIcon'
-  | 'stateDisabledIcon';
+  | 'stateDisabledIcon'
+  | 'stateStandby';
 
 export type ItemStateIconStyles = Partial<Record<ItemStateIconClassKey, CSSProperties>>;
 
@@ -106,6 +109,10 @@ const useStyles = makeStyles(() =>
     stateDisabledIcon: (styles) => ({
       color: palette.pink.main,
       ...styles.stateDisabledIcon
+    }),
+    stateStandby: (styles) => ({
+      color: palette.gray.medium4,
+      ...styles.stateStandby
     })
   })
 );
@@ -139,7 +146,7 @@ export function ItemStateIcon(props: ItemStateIconProps) {
       translationPending: null,
       translationInProgress: null
     };
-    return map[getItemStateId(item.stateMap)] ?? { Icon: null, stateSpecificClass: null };
+    return map[getItemStateId(item.stateMap)] ?? { Icon: ModeStandbyIcon, stateSpecificClass: classes.stateStandby };
   }, [
     classes.stateDeletedIcon,
     classes.stateLockedIcon,
@@ -152,10 +159,20 @@ export function ItemStateIcon(props: ItemStateIconProps) {
     classes.stateSubmittedToStagingIcon,
     classes.stateSubmittedToLiveIcon,
     classes.stateDisabledIcon,
-    item.stateMap
+    classes.stateStandby,
+    item
   ]);
   return Icon === null ? null : (
-    <Tooltip title={displayTooltip ? getItemStateText(item.stateMap) : ''} open={displayTooltip ? void 0 : false}>
+    <Tooltip
+      title={
+        displayTooltip ? (
+          getItemStateText(item.stateMap)
+        ) : (
+          <FormattedMessage id="words.unknown" defaultMessage="Unknown" />
+        )
+      }
+      open={displayTooltip ? void 0 : false}
+    >
       <Icon className={clsx(classes.root, propClasses?.root, className, stateSpecificClass)} />
     </Tooltip>
   );

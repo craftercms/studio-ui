@@ -51,14 +51,18 @@ export function getItemStateText(stateMap: ItemStateMap) {
       ) : (
         <FormattedMessage id="itemState.scheduledToGoLive" defaultMessage="Scheduled for live" />
       ),
-    staged: () => '',
-    live: () => '',
+    staged: () => undefined,
+    live: () => undefined,
     disabled: () => <FormattedMessage id="itemState.disabled" defaultMessage="Disabled" />,
     translationUpToDate: null,
     translationPending: null,
     translationInProgress: null
   };
-  return map[getItemStateId(stateMap)]?.() ?? <FormattedMessage id="words.unknown" defaultMessage="Unknown" />;
+  return (
+    map[getItemStateId(stateMap)]?.() ?? (
+      <FormattedMessage id="itemState.notInWorkflow" defaultMessage="Not in workflow" />
+    )
+  );
 }
 
 export function getItemStateId(stateMap: ItemStateMap): ItemStates {
