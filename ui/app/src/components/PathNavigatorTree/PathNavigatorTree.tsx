@@ -177,9 +177,11 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   }, [hasActiveSession, resetBackgroundRefreshInterval]);
 
   useEffect(() => {
+    // setting nodeByPathRef to undefined when the siteId changes
     // Adding uiConfig as means to stop navigator from trying to
     // initialize with previous state information when switching sites
     if (!state && uiConfig.currentSite === siteId && rootPath) {
+      nodesByPathRef.current[rootPath] = undefined;
       const { expanded, collapsed, keywordByPath } = storedState;
       dispatch(
         pathNavigatorTreeInit({
