@@ -47,12 +47,12 @@ export default function LogConsoleGridUI(props: LogConsoleGridUIProps) {
                 <FormattedMessage id="words.level" defaultMessage="Level" />
               </Typography>
             </GlobalAppGridCell>
-            <GlobalAppGridCell align="left" className="width25">
+            <GlobalAppGridCell align="left" className="width15">
               <Typography variant="subtitle2">
                 <FormattedMessage id="words.timestamp" defaultMessage="Timestamp" />
               </Typography>
             </GlobalAppGridCell>
-            <GlobalAppGridCell align="left" className="width25">
+            <GlobalAppGridCell align="left" className="width15">
               <Typography variant="subtitle2">
                 <FormattedMessage id="words.thread" defaultMessage="Thread" />
               </Typography>
@@ -62,7 +62,7 @@ export default function LogConsoleGridUI(props: LogConsoleGridUIProps) {
                 <FormattedMessage id="words.site" defaultMessage="Site" />
               </Typography>
             </GlobalAppGridCell>
-            <GlobalAppGridCell align="left" className="width60">
+            <GlobalAppGridCell align="left" className="width70">
               <Typography variant="subtitle2">
                 <FormattedMessage id="words.message" defaultMessage="Message" />
               </Typography>
