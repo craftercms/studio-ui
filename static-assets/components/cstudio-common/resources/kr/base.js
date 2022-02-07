@@ -350,6 +350,11 @@ CStudioAuthoring.Messages.registerBundle('forms', 'kr', {
   notification: '공고',
   previewLoaded: '미리로드 됨.',
 
+  chooseContentType: '콘텐츠 유형 선택',
+  chooseContentTypeBody: '이 섹션에서 사용할 수 있는 시작 템플릿은 다음과 같습니다.',
+  chooseContentTypeLabel: '컨텐츠 타입:',
+  chooseContentTypePreview: '시사:',
+
   cancelDialogHeader: '크래프터 스튜디오',
   cancelDialogBody: '변경 사항을 저장하지 않고이 양식을 닫습니다?',
   noContentTypes: '경로에서 콘텐츠를 사용할 수있는 콘텐츠 유형 없음:',
