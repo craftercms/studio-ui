@@ -23,12 +23,9 @@ import { nnou } from '@craftercms/studio-ui/utils/object';
 import * as elementRegistry from './elementRegistry';
 import * as iceRegistry from './iceRegistry';
 import * as contentController from './contentController';
-import { fromTopic } from './utils/communicator';
+import { fromTopic, post } from './utils/communicator';
 import queryString from 'query-string';
-
-export interface BaseCrafterConfig {
-  baseUrl?: string;
-}
+import { fetchIsAuthoring } from '@craftercms/ice';
 
 export interface ICEAttributes {
   'data-craftercms-model-path': string;
@@ -68,17 +65,13 @@ export function getICEAttributes(config: ICEConfig): ICEAttributes {
   return attributes;
 }
 
-export function fetchIsAuthoring(config?: BaseCrafterConfig): Promise<boolean> {
-  config = { baseUrl: '', ...(config || {}) };
-  return fetch(`${config.baseUrl}/api/1/config/preview.json`)
-    .then((response) => response.json())
-    .then((response) => response.preview);
-}
+export { fetchIsAuthoring };
 
 export function initInContextEditing(props: GuestProps) {
   const guestProxyElement = document.createElement('craftercms-guest-proxy');
   const { crafterCMSGuestDisabled } = queryString.parse(window.location.search);
   ReactDOM.render(
+    // @ts-ignore - typing system is not playing nice with the {path} | {model} options of GuestProps
     <Guest isAuthoring={crafterCMSGuestDisabled !== 'true'} {...props}>
       <GuestProxy />
     </Guest>,
@@ -86,4 +79,4 @@ export function initInContextEditing(props: GuestProps) {
   );
 }
 
-export { elementRegistry, iceRegistry, contentController, fromTopic };
+export { elementRegistry, iceRegistry, contentController, fromTopic, post };

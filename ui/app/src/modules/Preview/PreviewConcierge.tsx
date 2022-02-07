@@ -448,6 +448,11 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           getHostToGuestBus().next({ type: 'REPAINT_PENCILS' });
           break;
         }
+        case 'CHECK_OUT_GUEST': {
+          const path = getPathFromPreviewURL(payload.url);
+          dispatch(guestCheckOut({ path }));
+          break;
+        }
         // endregion
         case guestCheckIn.type:
         case fetchGuestModel.type: {

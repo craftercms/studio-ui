@@ -336,7 +336,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
             selected.fieldId = record.fieldId;
           }
           const iceZoneSelected = () => {
-            post(iceZoneSelectedAction(selected));
+            post(iceZoneSelectedAction(selected as any));
             return merge(
               escape$.pipe(
                 takeUntil(clearAndListen$),
