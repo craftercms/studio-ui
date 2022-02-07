@@ -25,6 +25,8 @@ import MenuList from '@mui/material/MenuList';
 import MenuItem from '@mui/material/MenuItem';
 import Popper from '@mui/material/Popper';
 import { SplitButtonUIProps } from './utils';
+import PrimaryButton from '../PrimaryButton';
+import { FormattedMessage } from 'react-intl';
 
 export function SplitButtonUI(props: SplitButtonUIProps) {
   const {
@@ -37,10 +39,15 @@ export function SplitButtonUI(props: SplitButtonUIProps) {
     open,
     handleToggle,
     handleClose,
-    handleMenuItemClick
+    handleMenuItemClick,
+    loading
   } = props;
 
-  return (
+  return loading ? (
+    <PrimaryButton loading disabled>
+      <FormattedMessage id="words.loading" defaultMessage="Loading" />
+    </PrimaryButton>
+  ) : (
     <>
       <ButtonGroup disabled={disabled} variant="contained" color="primary" ref={anchorRef} aria-label="split button">
         <Button onClick={handleClick}>{options[selectedIndex].label}</Button>
@@ -56,7 +63,6 @@ export function SplitButtonUI(props: SplitButtonUIProps) {
           <ArrowDropDownIcon />
         </Button>
       </ButtonGroup>
-
       <Popper open={open} anchorEl={anchorRef.current} role={undefined} transition disablePortal={disablePortal}>
         {({ TransitionProps, placement }) => (
           <Grow

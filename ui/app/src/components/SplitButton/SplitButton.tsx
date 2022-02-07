@@ -15,7 +15,6 @@
  */
 
 import React, { useEffect } from 'react';
-import PrimaryButton from '../PrimaryButton';
 import SplitButtonUI from './SplitButtonUI';
 import { SplitButtonProps } from './utils';
 import {
@@ -24,7 +23,6 @@ import {
   setStoredSaveButtonSubAction
 } from '../../utils/state';
 import { useActiveUser } from '../../hooks';
-import { FormattedMessage } from 'react-intl';
 
 export function SplitButton(props: SplitButtonProps) {
   const { options, defaultSelected = options[0].id, disablePortal = true, disabled, loading, storageKey } = props;
@@ -80,26 +78,19 @@ export function SplitButton(props: SplitButtonProps) {
   };
 
   return (
-    <>
-      {loading ? (
-        <PrimaryButton loading disabled>
-          <FormattedMessage id="words.loading" defaultMessage="Loading" />
-        </PrimaryButton>
-      ) : (
-        <SplitButtonUI
-          options={options}
-          disablePortal={disablePortal}
-          disabled={disabled}
-          anchorRef={anchorRef}
-          selectedIndex={selectedIndex}
-          handleClick={handleClick}
-          open={open}
-          handleToggle={handleToggle}
-          handleClose={handleClose}
-          handleMenuItemClick={handleMenuItemClick}
-        />
-      )}
-    </>
+    <SplitButtonUI
+      options={options}
+      loading={loading}
+      disablePortal={disablePortal}
+      disabled={disabled}
+      anchorRef={anchorRef}
+      selectedIndex={selectedIndex}
+      handleClick={handleClick}
+      open={open}
+      handleToggle={handleToggle}
+      handleClose={handleClose}
+      handleMenuItemClick={handleMenuItemClick}
+    />
   );
 }
 
