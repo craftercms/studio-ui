@@ -34,7 +34,6 @@ import makeStyles from '@mui/styles/makeStyles';
 import palette from '../../styles/palette';
 import { CSSProperties } from '@mui/styles';
 import { DetailedItem, ItemStates, SandboxItem } from '../../models/Item';
-import { FormattedMessage } from 'react-intl';
 
 export type ItemStateIconClassKey =
   | 'root'
@@ -49,7 +48,7 @@ export type ItemStateIconClassKey =
   | 'stateScheduledIcon'
   | 'statePublishingIcon'
   | 'stateDisabledIcon'
-  | 'stateStandby';
+  | 'stateNotInWorkflow';
 
 export type ItemStateIconStyles = Partial<Record<ItemStateIconClassKey, CSSProperties>>;
 
@@ -110,9 +109,9 @@ const useStyles = makeStyles(() =>
       color: palette.pink.main,
       ...styles.stateDisabledIcon
     }),
-    stateStandby: (styles) => ({
+    stateNotInWorkflow: (styles) => ({
       color: palette.gray.medium4,
-      ...styles.stateStandby
+      ...styles.stateNotInWorkflow
     })
   })
 );
@@ -146,7 +145,9 @@ export function ItemStateIcon(props: ItemStateIconProps) {
       translationPending: null,
       translationInProgress: null
     };
-    return map[getItemStateId(item.stateMap)] ?? { Icon: ModeStandbyIcon, stateSpecificClass: classes.stateStandby };
+    return (
+      map[getItemStateId(item.stateMap)] ?? { Icon: ModeStandbyIcon, stateSpecificClass: classes.stateNotInWorkflow }
+    );
   }, [
     classes.stateDeletedIcon,
     classes.stateLockedIcon,
@@ -159,20 +160,11 @@ export function ItemStateIcon(props: ItemStateIconProps) {
     classes.stateSubmittedToStagingIcon,
     classes.stateSubmittedToLiveIcon,
     classes.stateDisabledIcon,
-    classes.stateStandby,
+    classes.stateNotInWorkflow,
     item
   ]);
   return Icon === null ? null : (
-    <Tooltip
-      title={
-        displayTooltip ? (
-          getItemStateText(item.stateMap)
-        ) : (
-          <FormattedMessage id="words.unknown" defaultMessage="Unknown" />
-        )
-      }
-      open={displayTooltip ? void 0 : false}
-    >
+    <Tooltip title={displayTooltip ? getItemStateText(item.stateMap) : ''} open={displayTooltip ? void 0 : false}>
       <Icon className={clsx(classes.root, propClasses?.root, className, stateSpecificClass)} />
     </Tooltip>
   );
