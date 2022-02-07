@@ -50,11 +50,10 @@ export function SplitButtonUI(props: SplitButtonUIProps) {
         <LoadingButton color="primary" variant="contained" loading={loading} onClick={handleClick}>
           {options[selectedIndex].label}
         </LoadingButton>
-        <LoadingButton
-          loading={loading}
+        <Button
+          disabled={loading}
           color="primary"
           size="small"
-          variant="contained"
           aria-controls={open ? 'split-button-menu' : undefined}
           aria-expanded={open ? 'true' : undefined}
           aria-label="select option"
@@ -62,7 +61,7 @@ export function SplitButtonUI(props: SplitButtonUIProps) {
           onClick={handleToggle}
         >
           <ArrowDropDownIcon />
-        </LoadingButton>
+        </Button>
       </ButtonGroup>
       <Popper open={open} anchorEl={anchorRef.current} role={undefined} transition disablePortal={disablePortal}>
         {({ TransitionProps, placement }) => (
