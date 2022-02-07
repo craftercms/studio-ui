@@ -378,7 +378,7 @@ CStudioAuthoring.Messages.registerBundle('forms', 'en', {
 
   chooseContentType: 'Choose Content Type',
   chooseContentTypeBody: 'The following starter templates are available for use within this section.',
-  chooseContentTypeLabel: 'Template Name:',
+  chooseContentTypeLabel: 'Content Type:',
   chooseContentTypePreview: 'Preview:',
 
   cancelDialogHeader: 'Crafter Studio',

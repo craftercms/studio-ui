@@ -266,7 +266,7 @@
                     class: 'btn-primary',
                     multiChoice: true,
                     fn: function (e, type) {
-                      function saveFn() {
+                      function saveFn(type) {
                         _self.loadConfig(contentType, {
                           success: function (currentConfig) {
                             var xmlFormDef =
@@ -326,6 +326,9 @@
                                     },
                                     '*'
                                   );
+                                  if (type === 'saveAndClose') {
+                                    _self.closeEditor();
+                                  }
                                 },
                                 () => {
                                   CStudioAuthoring.Operations.showSimpleDialog(
@@ -425,14 +428,7 @@
                           dialogEl.dialog.show();
                         } else {
                           // otherwise, save
-                          saveFn();
-                          switch (type) {
-                            case 'saveAndClose':
-                              _self.closeEditor();
-                              break;
-                            case 'saveAndMinimize':
-                              break;
-                          }
+                          saveFn(type);
                         }
                       }
                     }

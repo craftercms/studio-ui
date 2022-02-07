@@ -14,23 +14,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 
-export const useStyles = makeStyles(() => ({
-  container: {
-    height: '100%',
-    display: 'flex',
-    maxWidth: '100%',
-    minWidth: '500px',
-    minHeight: '60vh',
-    position: 'relative',
-    justifyContent: 'center',
-    alignItems: 'center',
-    '& img': {
-      maxWidth: '100%'
+const useStyles = makeStyles(() =>
+  createStyles({
+    searchBarRoot: {
+      transition: 'width 500ms',
+      width: '210px',
+      '&.hidden': {
+        width: '50px',
+        border: '0',
+        background: 'none',
+        '& input': {
+          visibility: 'hidden'
+        }
+      }
     }
-  },
-  editor: {
-    position: 'absolute'
-  }
-}));
+  })
+);
+
+export default useStyles;

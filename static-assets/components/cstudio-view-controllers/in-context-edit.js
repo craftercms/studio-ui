@@ -142,6 +142,7 @@
       var formId = contentType.form;
       var readOnly = false;
       let parentPath = null;
+      let canEdit = false;
 
       for (var j = 0; j < auxParams.length; j++) {
         if (auxParams[j].name == 'changeTemplate') {
@@ -154,6 +155,10 @@
 
         if (auxParams[j].name == 'parentPath') {
           parentPath = auxParams[j].value;
+        }
+
+        if (auxParams[j].name == 'canEdit') {
+          canEdit = auxParams[j].value;
         }
       }
 
@@ -185,12 +190,16 @@
         windowUrl += '&iceComponent=true';
       }
 
-      if (isEdit == true || isEdit == 'true') {
+      if (isEdit === true || isEdit === 'true') {
         windowUrl += '&edit=' + isEdit;
       }
 
-      if (readOnly == true) {
+      if (readOnly === true) {
         windowUrl += '&readonly=true';
+      }
+
+      if (canEdit === true) {
+        windowUrl += '&canEdit=true';
       }
 
       windowUrl += '&editorId=' + editorId;

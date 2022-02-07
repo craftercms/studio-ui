@@ -64,11 +64,11 @@ export function initTinyMCE(
     }
   });
 
-  const external = {
+  const external: { [id: string]: string } = {
     ...rteSetup?.tinymceOptions?.external_plugins,
     acecode: '/studio/static-assets/js/tinymce-plugins/ace/plugin.min.js',
     editform: '/studio/static-assets/js/tinymce-plugins/editform/plugin.js',
-    paste_cleanup: '/studio/static-assets/js/tinymce-plugins/paste_cleanup/plugin.js'
+    craftercms_paste_extension: '/studio/static-assets/js/tinymce-plugins/craftercms_paste_extension/plugin.js'
   };
 
   const $element = $(record.element);
@@ -82,8 +82,11 @@ export function initTinyMCE(
     plugins: ['paste editform', rteSetup?.tinymceOptions?.plugins].filter(Boolean).join(' '), // 'editform' & 'paste' plugins will always be loaded
     paste_as_text: type !== 'html',
     paste_data_images: type === 'html',
-    paste_postprocess: function (plugin, args) {
-      window.tinymce.activeEditor.plugins.paste_cleanup.cleanup(args.node);
+    paste_preprocess(plugin, args) {
+      window.tinymce.activeEditor.plugins.craftercms_paste_extension?.paste_preprocess(plugin, args);
+    },
+    paste_postprocess(plugin, args) {
+      window.tinymce.activeEditor.plugins.craftercms_paste_extension?.paste_postprocess(plugin, args);
     },
     toolbar: type === 'html',
     menubar: false,
@@ -94,6 +97,8 @@ export function initTinyMCE(
     code_editor_inline: false,
     skin: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'oxide-dark' : 'oxide',
     setup(editor: Editor) {
+      const pluginManager = window.tinymce.util.Tools.resolve('tinymce.PluginManager');
+
       editor.on('init', function () {
         let changed = false;
         let originalContent = getContent();
@@ -105,7 +110,7 @@ export function initTinyMCE(
         // In some cases the 'blur' event is getting caught somewhere along
         // the way. Focusout seems to be more reliable.
         editor.on('focusout', (e) => {
-          if (!e.relatedTarget) {
+          if (!e.relatedTarget?.closest('.tox-tinymce')) {
             if (validations?.required && !getContent().trim()) {
               post(
                 validationMessage({
@@ -220,6 +225,22 @@ export function initTinyMCE(
       editor.on('click', (e) => {
         e.stopPropagation();
       });
+      // No point in waiting for `craftercms_tinymce_hooks` if the hook won't be loaded at all.
+      external.craftercms_tinymce_hooks &&
+        pluginManager.waitFor(
+          'craftercms_tinymce_hooks',
+          () => {
+            const hooks = pluginManager.get('craftercms_tinymce_hooks');
+            if (hooks) {
+              pluginManager.get('craftercms_tinymce_hooks').setup?.(editor);
+            } else {
+              console.error(
+                "The `craftercms_tinymce_hooks` was configured to be loaded but didn't load. Check the path is correct in the rte configuration file."
+              );
+            }
+          },
+          'loaded'
+        );
     },
     ...(rteSetup?.tinymceOptions
       ? {

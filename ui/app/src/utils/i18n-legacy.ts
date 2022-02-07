@@ -723,6 +723,10 @@ export const formEngineMessages = defineMessages({
   useMVS: {
     id: 'formEngine.useMVS',
     defaultMessage: 'Use _mvs postfix (backward compat)'
+  },
+  edit: {
+    id: 'words.edit',
+    defaultMessage: 'Edit'
   }
 });
 

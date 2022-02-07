@@ -33,13 +33,13 @@ import AssetUploaderMask from './AssetUploaderMask';
 import {
   EditingStatus,
   editModeClass,
+  editModeEvent,
+  editModeIceBypassEvent,
   editModePaddingClass,
   editOnClass,
   HighlightMode,
   iceBypassKeyClass,
-  moveModeClass,
-  editModeIceBypassEvent,
-  editModeEvent
+  moveModeClass
 } from '../constants';
 import {
   assetDragEnded,
@@ -141,7 +141,15 @@ function bypassKeyStroke(e, refs) {
 function Guest(props: InternalGuestProps) {
   // TODO: support path driven Guest.
   // TODO: consider supporting developer to provide the data source (promise/observable?)
-  const { path, themeOptions, sxOverrides, children, documentDomain, scrollElement = 'html, body' } = props;
+  const {
+    path,
+    themeOptions,
+    sxOverrides,
+    children,
+    documentDomain,
+    scrollElement = 'html, body',
+    isHeadlessMode = false
+  } = props;
 
   const theme = useGuestTheme(themeOptions);
   const [snack, setSnack] = useState<Partial<Snack>>();
@@ -555,7 +563,11 @@ function Guest(props: InternalGuestProps) {
                       : null
                   }
                   menuItems={
-                    isFieldSelectedMode ? <MoveModeZoneMenu record={elementRecord} dispatch={dispatch} /> : void 0
+                    isFieldSelectedMode ? (
+                      <MoveModeZoneMenu record={elementRecord} dispatch={dispatch} isHeadlessMode={isHeadlessMode} />
+                    ) : (
+                      void 0
+                    )
                   }
                   sx={deepmerge(
                     deepmerge(

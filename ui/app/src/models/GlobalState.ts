@@ -239,6 +239,11 @@ export interface GlobalState {
       localeCodes: string[];
       defaultLocaleCode: string;
     };
+    upload: {
+      timeout: number;
+      maxActiveUploads: number;
+      maxSimultaneousUploads: number;
+    };
     locale: {
       localeCode: string;
       dateTimeFormatOptions: Intl.DateTimeFormatOptions;
