@@ -233,6 +233,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
         <ConditionalLoadingState isLoading={loading} classes={{ root: classes.loadingState }}>
           <AceEditor
             ref={editorRef}
+            autoFocus
             mode={`ace/mode/${mode}`}
             value={content ?? ''}
             onChange={onEditorChanges}
