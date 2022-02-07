@@ -248,6 +248,11 @@ export interface StudioSiteConfig {
   site: string;
   usePreview3: boolean;
   cdataEscapedFieldPatterns: string[];
+  upload: {
+    timeout: number;
+    maxActiveUploads: number;
+    maxSimultaneousUploads: number;
+  };
   locale: {
     localeCode: string;
     dateTimeFormatOptions: Intl.DateTimeFormatOptions;
@@ -268,6 +273,7 @@ export function fetchSiteConfig(site: string): Observable<StudioSiteConfig> {
       cdataEscapedFieldPatterns: Array.from(dom.querySelectorAll('cdata-escaped-field-patterns > pattern'))
         .map(getInnerHtml as (node) => string)
         .filter(Boolean),
+      upload: ((node) => (node ? deserialize(node).upload : {}))(dom.querySelector(':scope > upload')),
       locale: ((node) => (node ? deserialize(node).locale : {}))(dom.querySelector(':scope > locale')),
       publishing: ((node) => {
         const commentSettings = Object.assign({ required: false }, deserialize(node)?.publishing?.comments);
