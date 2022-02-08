@@ -28,4 +28,6 @@ export * from './hooks';
 export * from './UltraStyledIconButton';
 export * from './GuestGlobalStyles';
 export * from './RenderField';
+export * from './RenderRepeat';
+export * from './RenderComponents';
 export * from './Model';

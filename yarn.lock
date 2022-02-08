@@ -3786,26 +3786,27 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@craftercms/classes@npm:2.0.1, @craftercms/classes@npm:^2.0.1":
-  version: 2.0.1
-  resolution: "@craftercms/classes@npm:2.0.1"
+"@craftercms/classes@npm:2.0.4, @craftercms/classes@npm:^2.0.4":
+  version: 2.0.4
+  resolution: "@craftercms/classes@npm:2.0.4"
   dependencies:
-    "@craftercms/models": 2.0.1
-    "@craftercms/utils": 2.0.1
+    "@craftercms/models": 2.0.4
+    "@craftercms/utils": 2.0.4
+    query-string: ^7.1.0
     url-search-params-polyfill: ^5.0.0
-  checksum: 1fa37a22cdac65f9c53686d89d8762c4935b2a0803f745ae8b51648ca6ece94628c61c7308ac3b84b57732c9c2350dcb3231fb666b6d24008d92832ab3c316dd
+  checksum: 1cbabc938d69ff00c3171eb3e683d1289047c9fee2456a10b542ad997273d75ae3ecc194f93de1cfea9c9714cc608ef10c6e43cd7e7044b4cfdeb6dacfccf0e5
   languageName: node
   linkType: hard
 
-"@craftercms/content@npm:^2.0.1":
-  version: 2.0.1
-  resolution: "@craftercms/content@npm:2.0.1"
+"@craftercms/content@npm:^2.0.4":
+  version: 2.0.4
+  resolution: "@craftercms/content@npm:2.0.4"
   dependencies:
-    "@craftercms/classes": 2.0.1
-    "@craftercms/models": 2.0.1
-    "@craftercms/utils": 2.0.1
+    "@craftercms/classes": 2.0.4
+    "@craftercms/models": 2.0.4
+    "@craftercms/utils": 2.0.4
     rxjs: ^7.0.0
-  checksum: 1ed4ce5cd306f95ee5d975ce1b02e40c6cd432c5f67687902ed76e45361782259a690f21b6fa8e600e35d213b8bbdc9bdb4712ae96979b5b67d24bc3d7ab9901
+  checksum: 67b73f710749e949a5ad3ac4e08b7acfa6b8a64ccdad839d76842328eb568e1002ebeba841acfad95ca322848aca8190ff3b9d1a650c51b1bd200839c0f74b43
   languageName: node
   linkType: hard
 
@@ -3816,9 +3817,10 @@ __metadata:
     "@babel/cli": ^7.8.4
     "@babel/core": 7.12.3
     "@babel/preset-typescript": ^7.16.5
-    "@craftercms/classes": ^2.0.1
-    "@craftercms/content": ^2.0.1
-    "@craftercms/search": ^2.0.1
+    "@craftercms/classes": ^2.0.4
+    "@craftercms/content": ^2.0.4
+    "@craftercms/ice": ^2.0.4
+    "@craftercms/search": ^2.0.4
     "@craftercms/studio-ui": "workspace:^"
     "@emotion/react": ^11.5.0
     "@emotion/styled": ^11.3.0
@@ -3827,12 +3829,14 @@ __metadata:
     "@reduxjs/toolkit": ^1.7.0
     "@types/jquery": ^3.5.11
     "@types/js-cookie": ^3
+    "@types/prop-types": ^15
     "@types/react-redux": ^7.1.20
     "@types/tinymce": ^4.6.4
     build-if-changed: ^1.5.5
     jquery: ^3.6.0
     js-cookie: ^3.0.1
     npm-run-all: ^4.1.5
+    prop-types: ^15.7.2
     react: ^17.0.2
     react-dom: ^17.0.2
     react-hotkeys-hook: ^3.4.4
@@ -3847,10 +3851,21 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@craftercms/models@npm:2.0.1":
-  version: 2.0.1
-  resolution: "@craftercms/models@npm:2.0.1"
-  checksum: 69c2ab8e1d22d0392dc29cfb7651684b9271e9456873f42dd6c35e760f7e0954603ef07ea49d2bc45b1b031141c603257ccc2a719a4142f5721994f70c6d907b
+"@craftercms/ice@npm:^2.0.4":
+  version: 2.0.4
+  resolution: "@craftercms/ice@npm:2.0.4"
+  dependencies:
+    "@craftercms/models": 2.0.4
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0
+  checksum: a94e9edbf3e9e40343fdf3b52a2bdf445e2effabbf06fdfa5209d6c4be77be1edbb62429b51028173c0b9566e7250e3b785cf2560f27d92c1103d3a158856b9d
+  languageName: node
+  linkType: hard
+
+"@craftercms/models@npm:2.0.4":
+  version: 2.0.4
+  resolution: "@craftercms/models@npm:2.0.4"
+  checksum: b99338185f9256fdacf034b29a39bf9069660cec136df50c71bc94b6df92e789171cd37cf23675742dd927a4a9cdd6df5cc91d8d60937bc38412b839305a8966
   languageName: node
   linkType: hard
 
@@ -3866,17 +3881,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@craftercms/search@npm:^2.0.1":
-  version: 2.0.1
-  resolution: "@craftercms/search@npm:2.0.1"
+"@craftercms/search@npm:^2.0.4":
+  version: 2.0.4
+  resolution: "@craftercms/search@npm:2.0.4"
   dependencies:
-    "@craftercms/classes": 2.0.1
-    "@craftercms/models": 2.0.1
-    "@craftercms/utils": 2.0.1
+    "@craftercms/classes": 2.0.4
+    "@craftercms/models": 2.0.4
+    "@craftercms/utils": 2.0.4
     rxjs: ^7.0.0
     url-search-params-polyfill: ^5.0.0
     uuid: ^3.4.0
-  checksum: 16617861aec55cb6adf901dbc932f9bb90102943f6c7aea827e8c4b8245d1ae04ef4672d59c88296820801e26243950500750be3e36a426cb103d10a1d04c43a
+  checksum: 98c06989a86cb6390d7d2dea87b590a540724fdb99de40f23f4933f12a0147cbe33111836c20cf8ce97c5cb82d3ab7048e46a4cf7e95ab37832c96990a86bef2
   languageName: node
   linkType: hard
 
@@ -4037,10 +4052,10 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@craftercms/utils@npm:2.0.1":
-  version: 2.0.1
-  resolution: "@craftercms/utils@npm:2.0.1"
-  checksum: 11cc077345fdad5add60efb6b3f7b5d3e2e5bbedd5cb02cc2051e7431fdcb18b6185204325cb8e8dea749152969fcd68ba38c59e2cadf40046531d1af548a31b
+"@craftercms/utils@npm:2.0.4":
+  version: 2.0.4
+  resolution: "@craftercms/utils@npm:2.0.4"
+  checksum: 8bf2bcd92e744ec368d82cbe9dea4a9c4ce81abf6b73eaf4a89a6d0a634cab274267f3923759b856c4cbddda85cbae632f3654fe8994c2d85574682c9d89dca5
   languageName: node
   linkType: hard
 
@@ -5860,7 +5875,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/prop-types@npm:*, @types/prop-types@npm:^15.7.4":
+"@types/prop-types@npm:*, @types/prop-types@npm:^15, @types/prop-types@npm:^15.7.4":
   version: 15.7.4
   resolution: "@types/prop-types@npm:15.7.4"
   checksum: ef6e1899e59b876c273811b1bd845022fc66d5a3d11cb38a25b6c566b30514ae38fe20a40f67622f362a4f4f7f9224e22d8da101cff3d6e97e11d7b4c307cfc1
@@ -18149,6 +18164,18 @@ __metadata:
     split-on-first: ^1.0.0
     strict-uri-encode: ^2.0.0
   checksum: f2c7347578fa0f3fd4eaace506470cb4e9dc52d409a7ddbd613f614b9a594d750877e193b5d5e843c7477b3b295b857ec328903c943957adc41a3efb6c929449
+  languageName: node
+  linkType: hard
+
+"query-string@npm:^7.1.0":
+  version: 7.1.0
+  resolution: "query-string@npm:7.1.0"
+  dependencies:
+    decode-uri-component: ^0.2.0
+    filter-obj: ^1.1.0
+    split-on-first: ^1.0.0
+    strict-uri-encode: ^2.0.0
+  checksum: 4594a0a092772eb6854310feea85e34f8dcf70df494776a45b9e5be53621ffbcf930ae669974e4e171ce5e0f29a837e9821d48db843106dd94ee390f6f5ac857
   languageName: node
   linkType: hard
 

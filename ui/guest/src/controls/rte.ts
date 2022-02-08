@@ -38,7 +38,6 @@ export function initTinyMCE(
   const dispatch$ = new Subject<GuestStandardAction>();
   const { field } = iceRegistry.getReferentialEntries(record.iceIds[0]);
   const type = field?.type;
-  const plugins = 'paste';
   const elementDisplay = $(record.element).css('display');
   if (elementDisplay === 'inline') {
     $(record.element).css('display', 'inline-block');
@@ -80,7 +79,7 @@ export function initTinyMCE(
     target: record.element,
     // For some reason this is not working.
     // body_class: 'craftercms-rich-text-editor',
-    plugins: plugins + ' editform', // edit form will always be loaded
+    plugins: ['paste editform', rteSetup?.tinymceOptions?.plugins].filter(Boolean).join(' '), // 'editform' & 'paste' plugins will always be loaded
     paste_as_text: type !== 'html',
     paste_data_images: type === 'html',
     paste_preprocess(plugin, args) {
@@ -262,7 +261,8 @@ export function initTinyMCE(
             'file_picker_callback', // Files/images handlers currently not supported
             'paste_postprocess',
             'images_upload_handler',
-            'code_editor_inline'
+            'code_editor_inline',
+            'plugins' // Considered/used above, mixed with our options
           )
         }
       : {}),

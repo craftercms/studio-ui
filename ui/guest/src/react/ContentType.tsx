@@ -14,15 +14,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ComponentType, PropsWithChildren } from 'react';
-import LookupTable from '@craftercms/studio-ui/models/LookupTable';
+import React, { ComponentType, ElementType, PropsWithChildren } from 'react';
 import ContentInstance from '@craftercms/studio-ui/models/ContentInstance';
 
 export type PropsWithModel = PropsWithChildren<{ model: ContentInstance }>;
 
 export interface ContentTypeProps<P extends PropsWithModel = PropsWithModel> {
   model: ContentInstance;
-  contentTypeMap: LookupTable<ComponentType<P>>;
+  contentTypeMap: Record<string, ElementType<P>>;
   notFoundComponent?: ComponentType<P>;
   notMappedComponent?: ComponentType<P>;
 }
