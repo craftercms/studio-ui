@@ -50,6 +50,7 @@ import { translations } from './translations';
 import { useStyles } from './styles';
 import { useDetailedItem } from '../../hooks';
 import { hasEditAction } from '../../utils/content';
+import { nnou } from '../../utils/object';
 
 export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyEditor(
   props: LegacyFormDialogContainerProps,
@@ -81,6 +82,7 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
   const dispatch = useDispatch();
   const [error, setError] = useState<ApiResponse>(null);
   const item = useDetailedItem(path);
+  const availableActions = item?.availableActions;
 
   const src = useMemo(
     () =>
@@ -95,7 +97,7 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
         contentTypeId,
         isNewContent,
         iceGroupId,
-        ...(!isNewContent ? { canEdit: hasEditAction(item.availableActions) } : {}),
+        ...(nnou(availableActions) && !isNewContent ? { canEdit: hasEditAction(availableActions) } : {}),
         ...(selectedFields && selectedFields.length ? { selectedFields: JSON.stringify(selectedFields) } : {}),
         ...(newEmbedded ? { newEmbedded: JSON.stringify(newEmbedded) } : {})
       }),
@@ -112,7 +114,7 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
       iceGroupId,
       selectedFields,
       newEmbedded,
-      item
+      availableActions
     ]
   );
 
@@ -244,17 +246,19 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
       {(inProgress || !item) && !isNewContent && (
         <LoadingState title={formatMessage(translations.loadingForm)} classes={{ root: classes.loadingRoot }} />
       )}
-      <iframe
-        ref={(e) => {
-          iframeRef.current = e;
-          if (ref) {
-            typeof ref === 'function' ? ref(e) : (ref.current = e);
-          }
-        }}
-        src={src}
-        title="Embedded Legacy Form"
-        className={clsx(classes.iframe, !inProgress && 'complete')}
-      />
+      {(item || isNewContent) && (
+        <iframe
+          ref={(e) => {
+            iframeRef.current = e;
+            if (ref) {
+              typeof ref === 'function' ? ref(e) : (ref.current = e);
+            }
+          }}
+          src={src}
+          title="Embedded Legacy Form"
+          className={clsx(classes.iframe, !inProgress && 'complete')}
+        />
+      )}
       <ErrorDialog open={Boolean(error)} error={error} onDismiss={onErrorClose} />
     </>
   );
