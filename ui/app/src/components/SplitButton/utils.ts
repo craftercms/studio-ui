@@ -34,6 +34,7 @@ export interface SplitButtonProps {
 export interface SplitButtonUIProps {
   options: SplitButtonOption[];
   disablePortal?: boolean;
+  loading?: boolean;
   disabled?: boolean;
   anchorRef: MutableRefObject<HTMLDivElement>;
   selectedIndex: number;
