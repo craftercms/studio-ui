@@ -62,7 +62,6 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
     onUpload
   } = props;
   const classes = useStyles();
-
   return (
     <>
       <DialogBody className={classes.dialogBody}>

@@ -51,10 +51,12 @@ crafterDefine(
     window.studioICERepaint = iceRepaint;
 
     return {
-      init: init,
-      iceRepaint: iceRepaint,
-      repaintPencils: repaintPencils,
-      reportNavigation: reportNavigation
+      init,
+      iceRepaint,
+      repaintPencils,
+      reportNavigation,
+      initICERegions,
+      version: '4'
     };
 
     function reportNavigation(location, url) {
@@ -140,6 +142,14 @@ crafterDefine(
       communicator.on('RELOAD_REQUEST', function () {
         window.location.reload();
       });
+
+      window.addEventListener(
+        'beforeunload',
+        () => {
+          checkout(communicator);
+        },
+        false
+      );
 
       function iceToolsToggle(on) {
         iceToolsOn = Boolean(on);
@@ -437,6 +447,12 @@ crafterDefine(
     function resizeProcess() {
       // When window.top == window, communicator is not initialized
       communicator && communicator.publish(Topics.IS_REVIEWER, true);
+    }
+
+    function checkout(communicator) {
+      communicator.publish('CHECK_OUT_GUEST', {
+        url: window.location.href.replace(window.location.origin, '')
+      });
     }
   }
 );

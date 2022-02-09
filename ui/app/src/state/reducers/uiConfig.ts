@@ -40,6 +40,11 @@ const initialState: GlobalState['uiConfig'] = {
     localeCodes: null,
     defaultLocaleCode: null
   },
+  upload: {
+    timeout: 30000,
+    maxActiveUploads: 1000,
+    maxSimultaneousUploads: 1
+  },
   locale: {
     localeCode: getUserLocaleCode(),
     dateTimeFormatOptions: {
@@ -148,9 +153,13 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
   }),
   [fetchSiteConfig.type]: (state) => ({ ...state }),
   [fetchSiteConfigComplete.type]: (state, { payload }) => {
-    const { cdataEscapedFieldPatterns, locale, publishing, site, usePreview3 } = payload;
+    const { cdataEscapedFieldPatterns, locale, publishing, site, usePreview3, upload } = payload;
     return {
       ...state,
+      upload: {
+        ...state.upload,
+        ...upload
+      },
       cdataEscapedFieldPatterns,
       locale: {
         ...state.locale,

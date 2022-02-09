@@ -23,6 +23,7 @@ import SubmittedStateIcon from '../../icons/PlanePaperOutline';
 import ScheduledStateIcon from '@mui/icons-material/AccessTimeRounded';
 import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined';
 import BlockRoundedIcon from '@mui/icons-material/BlockRounded';
+import ModeStandbyIcon from '@mui/icons-material/ModeStandby';
 import Tooltip from '@mui/material/Tooltip';
 import clsx from 'clsx';
 import * as React from 'react';
@@ -46,7 +47,8 @@ export type ItemStateIconClassKey =
   | 'stateSubmittedToLiveIcon'
   | 'stateScheduledIcon'
   | 'statePublishingIcon'
-  | 'stateDisabledIcon';
+  | 'stateDisabledIcon'
+  | 'stateNotInWorkflow';
 
 export type ItemStateIconStyles = Partial<Record<ItemStateIconClassKey, CSSProperties>>;
 
@@ -106,6 +108,10 @@ const useStyles = makeStyles(() =>
     stateDisabledIcon: (styles) => ({
       color: palette.pink.main,
       ...styles.stateDisabledIcon
+    }),
+    stateNotInWorkflow: (styles) => ({
+      color: palette.gray.medium4,
+      ...styles.stateNotInWorkflow
     })
   })
 );
@@ -139,7 +145,9 @@ export function ItemStateIcon(props: ItemStateIconProps) {
       translationPending: null,
       translationInProgress: null
     };
-    return map[getItemStateId(item.stateMap)] ?? { Icon: null, stateSpecificClass: null };
+    return (
+      map[getItemStateId(item.stateMap)] ?? { Icon: ModeStandbyIcon, stateSpecificClass: classes.stateNotInWorkflow }
+    );
   }, [
     classes.stateDeletedIcon,
     classes.stateLockedIcon,
@@ -152,7 +160,8 @@ export function ItemStateIcon(props: ItemStateIconProps) {
     classes.stateSubmittedToStagingIcon,
     classes.stateSubmittedToLiveIcon,
     classes.stateDisabledIcon,
-    item.stateMap
+    classes.stateNotInWorkflow,
+    item
   ]);
   return Icon === null ? null : (
     <Tooltip title={displayTooltip ? getItemStateText(item.stateMap) : ''} open={displayTooltip ? void 0 : false}>
