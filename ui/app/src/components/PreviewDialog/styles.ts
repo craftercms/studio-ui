@@ -16,7 +16,7 @@
 
 import makeStyles from '@mui/styles/makeStyles';
 
-export const useStyles = makeStyles(() => ({
+export const useStyles = makeStyles((theme) => ({
   container: {
     height: '100%',
     display: 'flex',
@@ -31,6 +31,7 @@ export const useStyles = makeStyles(() => ({
     }
   },
   editor: {
-    position: 'absolute'
+    position: 'absolute',
+    backgroundColor: theme.palette.grey.A100
   }
 }));
