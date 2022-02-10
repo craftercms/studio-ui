@@ -96,8 +96,8 @@ export default [
     external,
     plugins,
     output: {
-      name: 'craftercms.guest',
-      file: 'build/craftercms-guest.umd.js',
+      name: 'craftercms.xb',
+      file: 'build/craftercms-xb.umd.js',
       format: 'umd',
       amd: { id: pkg.craftercms.id },
       globals

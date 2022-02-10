@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import ReactDOM from 'react-dom';
+import ReactDOM, { unmountComponentAtNode } from 'react-dom';
 import Guest, { GuestProps } from './react/Guest';
 import GuestProxy from './react/GuestProxy';
 import ContentInstance from '@craftercms/studio-ui/models/ContentInstance';
@@ -25,7 +25,8 @@ import * as iceRegistry from './iceRegistry';
 import * as contentController from './contentController';
 import { fromTopic, post } from './utils/communicator';
 import queryString from 'query-string';
-import { fetchIsAuthoring } from '@craftercms/ice';
+import { crafterConf } from '@craftercms/classes';
+import { fetchIsAuthoring, BaseCrafterConfig } from '@craftercms/ice';
 
 export interface ICEAttributes {
   'data-craftercms-model-path': string;
@@ -67,6 +68,19 @@ export function getICEAttributes(config: ICEConfig): ICEAttributes {
 
 export { fetchIsAuthoring };
 
+export function addAuthoringSupport(config?: Partial<BaseCrafterConfig>): Promise<any> {
+  config = crafterConf.mix(config);
+  return new Promise((resolve) => {
+    const script = document.createElement('script');
+    script.src = `${config.baseUrl}/studio/static-assets/scripts/craftercms-xb.umd.js`;
+    script.addEventListener('load', () => {
+      // @ts-ignore
+      resolve(window.craftercms?.xb);
+    });
+    document.head.appendChild(script);
+  });
+}
+
 export function initInContextEditing(props: GuestProps) {
   const guestProxyElement = document.createElement('craftercms-guest-proxy');
   const { crafterCMSGuestDisabled } = queryString.parse(window.location.search);
@@ -77,6 +91,7 @@ export function initInContextEditing(props: GuestProps) {
     </Guest>,
     guestProxyElement
   );
+  return { unmount: () => unmountComponentAtNode(guestProxyElement) };
 }
 
 export { elementRegistry, iceRegistry, contentController, fromTopic, post };
