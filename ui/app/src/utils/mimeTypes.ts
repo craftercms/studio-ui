@@ -59,7 +59,7 @@ const messages = defineMessages({
   },
   'image/gif': {
     id: 'mimeTypes.image/gif',
-    defaultMessage: 'Graphics Interchange Format (GIF)'
+    defaultMessage: 'GIF images'
   },
   'image/vnd.microsoft.icon': {
     id: 'mimeTypes.image/vnd.microsoft.icon',
@@ -71,11 +71,11 @@ const messages = defineMessages({
   },
   'image/png': {
     id: 'mimeTypes.image/png',
-    defaultMessage: 'Portable Network Graphics'
+    defaultMessage: 'PNG images'
   },
   'image/svg+xml': {
     id: 'mimeTypes.image/svg+xml',
-    defaultMessage: 'Scalable Vector Graphics (SVG)'
+    defaultMessage: 'SVG images'
   },
   'image/webp': {
     id: 'mimeTypes.image/webp',
@@ -95,15 +95,15 @@ const messages = defineMessages({
   },
   'text/css': {
     id: 'mimeTypes.text/css',
-    defaultMessage: 'Cascading Style Sheets (CSS)'
+    defaultMessage: 'CSS stylesheet'
   },
   'text/x-sass': {
     id: 'mimeTypes.text/x-sass',
-    defaultMessage: 'Sass style sheet'
+    defaultMessage: 'SASS stylesheet'
   },
   'text/x-scss': {
     id: 'mimeTypes.text/x-scss',
-    defaultMessage: 'Scss stylesheet'
+    defaultMessage: 'SCSS stylesheet'
   },
   'text/x-groovy': {
     id: 'mimeTypes.text/x-groovy',
