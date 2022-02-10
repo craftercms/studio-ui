@@ -39,8 +39,7 @@ import {
   pathNavigatorUpdate
 } from '../../state/actions/pathNavigator';
 import { completeDetailedItem } from '../../state/actions/content';
-import { showEditDialog, showItemMegaMenu, showPreviewDialog, updatePreviewDialog } from '../../state/actions/dialogs';
-import { fetchContentXML } from '../../services/content';
+import { showEditDialog, showItemMegaMenu, showPreviewDialog } from '../../state/actions/dialogs';
 import { getEditorMode, isEditableViaFormEditor, isFolder, isImage, isNavigable, isPreviewable } from './utils';
 import { StateStylingProps } from '../../models/UiConfig';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
@@ -373,13 +372,6 @@ export function PathNavigator(props: PathNavigatorProps) {
           mode
         })
       );
-      fetchContentXML(siteId, item.path).subscribe((content) => {
-        dispatch(
-          updatePreviewDialog({
-            content
-          })
-        );
-      });
     }
   };
 

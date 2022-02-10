@@ -64,7 +64,15 @@ export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
       case 'editor': {
         return (
           <ConditionalLoadingState isLoading={nou(content)}>
-            <AceEditor value={content} classes={{ editorRoot: classes.editor }} mode={`ace/mode/${mode}`} readOnly />
+            <AceEditor
+              value={content}
+              classes={{ editorRoot: classes.editor }}
+              mode={`ace/mode/${mode}`}
+              readOnly
+              highlightActiveLine={false}
+              highlightGutterLine={false}
+              highlightSelectedWord={false}
+            />
           </ConditionalLoadingState>
         );
       }
