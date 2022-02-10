@@ -14,8 +14,8 @@
       <excludeFolder url="file://$MODULE_DIR$/ui/app/build_tsc" />
       <excludeFolder url="file://$MODULE_DIR$/ui/guest/build" />
       <excludeFolder url="file://$MODULE_DIR$/ui/guest/build_tsc" />
-      <excludeFolder url="file://$MODULE_DIR$/target" />
       <excludeFolder url="file://$MODULE_DIR$/.yarn" />
+      <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

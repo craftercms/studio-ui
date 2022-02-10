@@ -99,19 +99,37 @@ import {
 import DragGhostElement from './DragGhostElement';
 import GuestGlobalStyles from './GuestGlobalStyles';
 import { useHotkeys } from 'react-hotkeys-hook';
+import { ContentInstance } from '@craftercms/studio-ui/models';
+import { prop } from '@craftercms/studio-ui/utils/model';
 
 // TODO: add themeOptions and global styles customising
-export type GuestProps = PropsWithChildren<{
+interface BaseGuestProps {
   documentDomain?: string;
-  path?: string;
   themeOptions?: ThemeOptions;
   sxOverrides?: DeepPartial<GuestStylesSx>;
-  isAuthoring?: boolean; // boolean | Promise<boolean> | () => boolean | Promise<boolean>
+  isAuthoring: boolean; // boolean | Promise<boolean> | () => boolean | Promise<boolean>
   scrollElement?: string;
-  isHeadlessMode?: boolean;
-}>;
+  isHeadlessMode?: boolean; // Templates & controllers become irrelevant
+}
 
-const initialDocumentDomain = document.domain;
+type InternalGuestProps = PropsWithChildren<
+  BaseGuestProps & {
+    path: string;
+  }
+>;
+
+type CompleteGuestProps = PropsWithChildren<
+  BaseGuestProps & {
+    path?: string;
+    model?: ContentInstance;
+  }
+>;
+
+type GenericGuestProps<T> = PropsWithChildren<BaseGuestProps & T>;
+
+export type GuestProps = GenericGuestProps<{ model: ContentInstance } | { path: string }>;
+
+const initialDocumentDomain = typeof document === 'undefined' ? void 0 : document.domain;
 
 function bypassKeyStroke(e, refs) {
   const isKeyDown = e.type === 'keydown';
@@ -120,7 +138,7 @@ function bypassKeyStroke(e, refs) {
   document.dispatchEvent(new CustomEvent(editModeIceBypassEvent, { detail: isKeyDown }));
 }
 
-function Guest(props: GuestProps) {
+function ExperienceBuilderInternal(props: InternalGuestProps) {
   // TODO: support path driven Guest.
   // TODO: consider supporting developer to provide the data source (promise/observable?)
   const {
@@ -593,18 +611,24 @@ function Guest(props: GuestProps) {
   );
 }
 
-function CrafterCMSGuest(props: GuestProps) {
-  const { isAuthoring, children } = props;
-  const store = useMemo(() => isAuthoring && createGuestStore(), [isAuthoring]);
-  return isAuthoring ? (
+function ExperienceBuilder(props: GenericGuestProps<{ path: string }>);
+function ExperienceBuilder(props: GenericGuestProps<{ model: ContentInstance }>);
+function ExperienceBuilder(props: GuestProps) {
+  let { children, isAuthoring = false, path, model } = props as CompleteGuestProps;
+  let store = useMemo(() => isAuthoring && createGuestStore(), [isAuthoring]);
+  path = path || prop(model, 'path');
+  return isAuthoring && path ? (
     <Provider store={store} context={GuestReduxContext}>
-      <Guest {...props} />
+      <ExperienceBuilderInternal {...props} path={path} />
     </Provider>
   ) : (
     (children as JSX.Element)
   );
 }
 
-export { CrafterCMSGuest as Guest };
+/** @deprecated Use "ExperienceBuilder" instead. */
+const Guest = ExperienceBuilder;
 
-export default CrafterCMSGuest;
+export { ExperienceBuilder, Guest };
+
+export default ExperienceBuilder;

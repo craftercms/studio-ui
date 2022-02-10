@@ -3,15 +3,15 @@
   "compilerOptions": {
     "baseUrl": "src",
     "rootDir": "src",
-    "outDir": "build_tsc",
-    "module": "esnext",
+    "outDir": "./build_tsc/node",
+    "module": "CommonJS",
     "target": "ES6",
     "removeComments": true,
     "sourceMap": false,
     "noEmit": false,
-    "declaration": true,
+    "declaration": false,
     "declarationMap": false,
-    "composite": true,
+    "composite": false,
     "jsx": "react"
   },
   "include": [

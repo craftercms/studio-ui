@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -25,6 +25,7 @@ import MenuList from '@mui/material/MenuList';
 import MenuItem from '@mui/material/MenuItem';
 import Popper from '@mui/material/Popper';
 import { SplitButtonUIProps } from './utils';
+import LoadingButton from '@mui/lab/LoadingButton';
 
 export function SplitButtonUI(props: SplitButtonUIProps) {
   const {
@@ -37,14 +38,18 @@ export function SplitButtonUI(props: SplitButtonUIProps) {
     open,
     handleToggle,
     handleClose,
-    handleMenuItemClick
+    handleMenuItemClick,
+    loading
   } = props;
 
   return (
     <>
       <ButtonGroup disabled={disabled} variant="contained" color="primary" ref={anchorRef} aria-label="split button">
-        <Button onClick={handleClick}>{options[selectedIndex].label}</Button>
+        <LoadingButton color="primary" variant="contained" loading={loading} onClick={handleClick}>
+          {options[selectedIndex].label}
+        </LoadingButton>
         <Button
+          disabled={loading}
           color="primary"
           size="small"
           aria-controls={open ? 'split-button-menu' : undefined}
@@ -56,7 +61,6 @@ export function SplitButtonUI(props: SplitButtonUIProps) {
           <ArrowDropDownIcon />
         </Button>
       </ButtonGroup>
-
       <Popper open={open} anchorEl={anchorRef.current} role={undefined} transition disablePortal={disablePortal}>
         {({ TransitionProps, placement }) => (
           <Grow
