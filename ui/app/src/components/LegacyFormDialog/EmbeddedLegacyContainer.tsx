@@ -206,6 +206,10 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
             case 'save': {
               break;
             }
+            case 'saveAndMinimize': {
+              onMinimize();
+              break;
+            }
             case 'saveAndClose':
             case 'saveAndPreview': {
               onClose();
