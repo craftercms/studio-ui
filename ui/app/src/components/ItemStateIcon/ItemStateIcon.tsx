@@ -23,7 +23,7 @@ import SubmittedStateIcon from '../../icons/PlanePaperOutline';
 import ScheduledStateIcon from '@mui/icons-material/AccessTimeRounded';
 import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined';
 import BlockRoundedIcon from '@mui/icons-material/BlockRounded';
-import NotInWorkflowIcon from '../../icons/Sleep';
+import NotInWorkflowIcon from '@mui/icons-material/PanoramaFishEyeRounded';
 import Tooltip from '@mui/material/Tooltip';
 import clsx from 'clsx';
 import * as React from 'react';

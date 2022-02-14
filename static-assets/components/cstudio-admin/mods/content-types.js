@@ -3758,6 +3758,9 @@
             if (datasource.plugin.filename) {
               xml += '\t\t\t\t\t\t<filename>' + datasource.plugin.filename + '</filename>\r\n';
             }
+            if (datasource.plugin.pluginId) {
+              xml += '\t\t\t\t\t\t<pluginId>' + datasource.plugin.pluginId + '</pluginId>\r\n';
+            }
             xml += '\t\t\t\t\t</plugin>\r\n';
           }
           xml += '\t\t\t\t\t<properties>\r\n';

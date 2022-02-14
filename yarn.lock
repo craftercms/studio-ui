@@ -3830,6 +3830,7 @@ __metadata:
     "@types/jquery": ^3.5.11
     "@types/js-cookie": ^3
     "@types/prop-types": ^15
+    "@types/react-is": ^17
     "@types/react-redux": ^7.1.20
     "@types/tinymce": ^4.6.4
     build-if-changed: ^1.5.5
@@ -3840,6 +3841,7 @@ __metadata:
     react: ^17.0.2
     react-dom: ^17.0.2
     react-hotkeys-hook: ^3.4.4
+    react-is: ^17.0.2
     react-redux: ^7.2.6
     redux: ^4.1.2
     redux-observable: ^2.0.0
@@ -5895,6 +5897,15 @@ __metadata:
   dependencies:
     "@types/react": "*"
   checksum: ecd4f59e66858ebf13988c13de32e0f1753e9f0ec9a330bbf99c7c8ec75d3b52ad01965a7912c463615c0498965c1f17ea8a1a06606cf8edeb4b723f7ab74879
+  languageName: node
+  linkType: hard
+
+"@types/react-is@npm:^17":
+  version: 17.0.3
+  resolution: "@types/react-is@npm:17.0.3"
+  dependencies:
+    "@types/react": "*"
+  checksum: 6abb7c47d54f012272650df8a962a28bd82f219291e5ef8b4dfa7fe0bb98ae243b060bf9fbe8ceff6213141794855a006db194b490b00ffd15842ae19d0ce1f0
   languageName: node
   linkType: hard
 

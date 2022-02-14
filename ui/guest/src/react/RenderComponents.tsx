@@ -15,7 +15,7 @@
  */
 
 import * as React from 'react';
-import { ElementType } from 'react';
+import { ElementType, forwardRef } from 'react';
 import ContentType from './ContentType';
 import RenderRepeat, { RenderRepeatProps } from './RenderRepeat';
 import { ContentInstance } from '@craftercms/studio-ui/models';
@@ -31,18 +31,25 @@ export interface RenderComponentsProps<
   > {
   contentTypeMap: Record<string, ElementType>;
   renderItem?: RenderRepeatProps<RootProps, ItemProps, ItemType>['renderItem'];
+  contentTypeProps?: Record<string, any>;
+  nthContentTypeProps?: Record<number, any>;
 }
 
-export function RenderComponents<RootProps = {}, ItemProps = {}, ItemType extends ContentInstance = ContentInstance>(
-  props: RenderComponentsProps<RootProps, ItemProps, ItemType>
-) {
+export const RenderComponents = forwardRef<any, RenderComponentsProps>((props, ref) => {
   const {
     contentTypeMap,
-    renderItem = (component) => <ContentType model={component as ContentInstance} contentTypeMap={contentTypeMap} />
+    contentTypeProps = {},
+    nthContentTypeProps = {},
+    renderItem = (component, index) => (
+      <ContentType
+        model={component as ContentInstance}
+        contentTypeMap={contentTypeMap}
+        {...{ ...contentTypeProps, ...nthContentTypeProps[index] }}
+      />
+    )
   } = props;
-  // @ts-ignore - types aren't working quite well (RenderComponents vs RenderRepeat types aren't matching)
-  return <RenderRepeat {...props} renderItem={renderItem} />;
-}
+  return <RenderRepeat {...props} ref={ref} renderItem={renderItem} />;
+});
 
 RenderComponents.propTypes = { ...RenderRepeat.propTypes, renderItem: PropTypes.func };
 

@@ -711,7 +711,8 @@ export function denormalizeModel(
   Object.entries(model).forEach(([prop, value]) => {
     if (prop.endsWith('_o')) {
       const collection: any[] = value;
-      if (collection.length) {
+      // Cover cases (collection?.length) where the xml has an empty tag corresponding to the `someField_o` without content.
+      if (collection?.length) {
         const isNodeSelector = typeof collection[0] === 'string';
         if (isNodeSelector) {
           model[prop] = collection.map((item) => denormalizeModel(modelLookup[item], modelLookup));
