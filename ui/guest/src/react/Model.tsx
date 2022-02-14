@@ -14,23 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ComponentType, ElementType, Fragment, PropsWithChildren } from 'react';
-import { useICE } from './hooks';
-import ContentInstance from '@craftercms/studio-ui/models/ContentInstance';
+import React, { forwardRef } from 'react';
+import Field, { FieldProps } from './Field';
 
-export type ModelProps<P = {}> = PropsWithChildren<
-  P & {
-    model: ContentInstance;
-    component?: ElementType<P>;
-  }
->;
+export type ModelProps<P = {}> = Omit<FieldProps<P>, 'fieldId'>;
 
-export function Model<P = {}>(props: ModelProps<P>) {
-  const { model, component = Fragment, ...other } = props;
-  useICE({ model, fieldId: null, index: null, noRef: true });
-  const Component = component as ComponentType<P>;
-  const passDownProps = other as P;
-  return <Component {...passDownProps} />;
-}
+export const Model = forwardRef<any, ModelProps>((props, ref) => {
+  return <Field {...(props as FieldProps)} ref={ref} fieldId="__CRAFTERCMS_FAKE_FIELD__" />;
+});
+
+Model.propTypes = (({ fieldId, ...propTypes }) => propTypes)(Field.propTypes);
 
 export default Model;

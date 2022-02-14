@@ -9,7 +9,7 @@
     "removeComments": true,
     "sourceMap": false,
     "noEmit": false,
-    "declaration": false,
+    "declaration": true,
     "declarationMap": false,
     "composite": false,
     "jsx": "react"
