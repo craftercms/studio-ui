@@ -16,7 +16,7 @@
 
 import React from 'react';
 import ReactDOM, { unmountComponentAtNode } from 'react-dom';
-import ExperienceBuilder, { GuestProps } from './react/ExperienceBuilder';
+import ExperienceBuilder, { ExperienceBuilderProps } from './react/ExperienceBuilder';
 import GuestProxy from './react/GuestProxy';
 import ContentInstance from '@craftercms/studio-ui/models/ContentInstance';
 import { nnou } from '@craftercms/studio-ui/utils/object';
@@ -81,7 +81,7 @@ export function addAuthoringSupport(config?: Partial<BaseCrafterConfig>): Promis
   });
 }
 
-export function initExperienceBuilder(props: GuestProps) {
+export function initExperienceBuilder(props: ExperienceBuilderProps) {
   const guestProxyElement = document.createElement('craftercms-guest-proxy');
   const { crafterCMSGuestDisabled } = queryString.parse(window.location.search);
   ReactDOM.render(
