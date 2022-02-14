@@ -25,7 +25,11 @@ import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDial
 import { useDispatch } from 'react-redux';
 import { updateWidgetDialog } from '../../state/actions/dialogs';
 
-export const EmbeddedSiteToolsContainer = (props: any) => {
+interface EmbeddedSiteToolsProps {
+  onMinimize?: () => void;
+}
+
+export const EmbeddedSiteToolsContainer = (props: EmbeddedSiteToolsProps) => {
   const [width, setWidth] = useState(240);
   const [activeToolId, setActiveToolId] = useState<string>();
   const baseUrl = useSelection<string>((state) => state.env.authoringBase);
@@ -74,7 +78,7 @@ export const EmbeddedSiteToolsContainer = (props: any) => {
   );
 };
 
-export function EmbeddedSiteTools(props: any) {
+export function EmbeddedSiteTools(props: EmbeddedSiteToolsProps) {
   return (
     <GlobalAppContextProvider>
       <EmbeddedSiteToolsContainer {...props} />
