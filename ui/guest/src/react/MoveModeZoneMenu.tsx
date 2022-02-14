@@ -270,24 +270,24 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
 
   return (
     <>
-      <Tooltip title="Cancel (Esc)">
+      <Tooltip title="Cancel (Esc)" key="cancel">
         <UltraStyledIconButton size="small" onClick={onCancel}>
           <HighlightOffRoundedIcon />
         </UltraStyledIconButton>
       </Tooltip>
-      <Tooltip title="Edit">
+      <Tooltip title="Edit" key="edit">
         <UltraStyledIconButton size="small" onClick={onEdit}>
           <PencilIcon />
         </UltraStyledIconButton>
       </Tooltip>
       {showCodeEditOptions && (
         <>
-          <Tooltip title="Edit template">
+          <Tooltip title="Edit template" key="editTemplate">
             <UltraStyledIconButton size="small" onClick={onEditTemplate}>
               <FreemarkerIcon />
             </UltraStyledIconButton>
           </Tooltip>
-          <Tooltip title="Edit controller">
+          <Tooltip title="Edit controller" key="editController">
             <UltraStyledIconButton size="small" onClick={onEditController}>
               <GroovyIcon />
             </UltraStyledIconButton>
@@ -295,14 +295,14 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
         </>
       )}
       {showAddItem && (
-        <Tooltip title="Add new item">
+        <Tooltip title="Add new item" key="addNewItem">
           <UltraStyledIconButton size="small" onClick={onAddRepeatItem}>
             <AddCircleOutlineRoundedIcon />
           </UltraStyledIconButton>
         </Tooltip>
       )}
       {showDuplicate && (
-        <Tooltip title="Duplicate item">
+        <Tooltip title="Duplicate item" key="duplicateItem">
           <UltraStyledIconButton size="small" onClick={onDuplicateItem}>
             <ContentCopyRoundedIcon />
           </UltraStyledIconButton>
@@ -311,14 +311,14 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
       {isMovable &&
         !isOnlyItem && [
           !isFirstItem && (
-            <Tooltip title="Move up/left (← or ↑)">
+            <Tooltip title="Move up/left (← or ↑)" key="moveUp">
               <UltraStyledIconButton size="small" onClick={onMoveUp}>
                 <ArrowUpwardRoundedIcon />
               </UltraStyledIconButton>
             </Tooltip>
           ),
           !isLastItem && (
-            <Tooltip title="Move down/right (→ or ↓)">
+            <Tooltip title="Move down/right (→ or ↓)" key="moveDown">
               <UltraStyledIconButton size="small" onClick={onMoveDown}>
                 <ArrowDownwardRoundedIcon />
               </UltraStyledIconButton>
@@ -326,14 +326,14 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
           )
         ]}
       {isTrashable && (
-        <Tooltip title="Trash (⌫)">
+        <Tooltip title="Trash (⌫)" key="trash">
           <UltraStyledIconButton size="small" onClick={onTrash} ref={trashButtonRef}>
             <DeleteOutlineRoundedIcon />
           </UltraStyledIconButton>
         </Tooltip>
       )}
       {isMovable && (
-        <Tooltip title="Move">
+        <Tooltip title="Move" key="move">
           <UltraStyledIconButton size="small" draggable sx={{ cursor: 'grab' }} onDragStart={onDragStart}>
             <DragIndicatorRounded />
           </UltraStyledIconButton>

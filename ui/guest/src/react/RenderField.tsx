@@ -14,10 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ComponentType } from 'react';
+import React, { ComponentType, forwardRef } from 'react';
 import PropTypes from 'prop-types';
 import { useICE } from './hooks';
-import { FieldProps, fieldPropTypesWithoutChildren } from './Field';
+import { FieldProps, Field } from './Field';
 import { nnou, setProperty } from '@craftercms/studio-ui/utils/object';
 import { extractCollectionItem, value as getModelValue } from '@craftercms/studio-ui/utils/model';
 
@@ -28,7 +28,8 @@ export type RenderFieldProps<P, V = any, F = V> = Omit<FieldProps<P>, 'children'
   format?: (value: V, fieldId: string) => F;
 };
 
-export function RenderField<P = {}>(props: RenderFieldProps<P>) {
+export const RenderField = forwardRef<any, RenderFieldProps<{}>>(function <P = {}>(props, ref) {
+  // region const { ... } = props
   const {
     model: modelProp,
     fieldId,
@@ -41,12 +42,13 @@ export function RenderField<P = {}>(props: RenderFieldProps<P>) {
     render = props.format ?? ((value) => value),
     ...other
   } = props;
+  // endregion
   if (props.format) {
     console.error(
       'RenderField component prop `format` was renamed to `render`. Support for `format` will be removed in later versions. Please use `render` instead.'
     );
   }
-  const { props: ice, model } = useICE({ model: modelProp, fieldId, index });
+  const { props: ice, model } = useICE({ model: modelProp, fieldId, index, ref });
   const Component = component as ComponentType<P>;
   const passDownProps = Object.assign({}, other as unknown, ice, componentProps) as P;
   const fields = fieldId.replace(/\s/g, '').split(',');
@@ -60,18 +62,12 @@ export function RenderField<P = {}>(props: RenderFieldProps<P>) {
     );
   });
   return <Component {...passDownProps} />;
-}
+});
 
 RenderField.propTypes = {
-  ...fieldPropTypesWithoutChildren,
-  format: PropTypes.func,
+  ...Field.propTypes,
+  render: PropTypes.func,
   renderTarget: PropTypes.string
 };
-
-/*
-- PropTypes model, fieldId are required,
-- add ref to RenderField & Field
-- Create RenderRepeat & RenderComponents
-*/
 
 export default RenderField;

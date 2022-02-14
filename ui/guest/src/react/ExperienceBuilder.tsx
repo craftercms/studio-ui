@@ -103,7 +103,7 @@ import { ContentInstance } from '@craftercms/studio-ui/models';
 import { prop } from '@craftercms/studio-ui/utils/model';
 
 // TODO: add themeOptions and global styles customising
-interface BaseGuestProps {
+interface BaseXBProps {
   documentDomain?: string;
   themeOptions?: ThemeOptions;
   sxOverrides?: DeepPartial<GuestStylesSx>;
@@ -113,21 +113,21 @@ interface BaseGuestProps {
 }
 
 type InternalGuestProps = PropsWithChildren<
-  BaseGuestProps & {
+  BaseXBProps & {
     path: string;
   }
 >;
 
 type CompleteGuestProps = PropsWithChildren<
-  BaseGuestProps & {
+  BaseXBProps & {
     path?: string;
     model?: ContentInstance;
   }
 >;
 
-type GenericGuestProps<T> = PropsWithChildren<BaseGuestProps & T>;
+type GenericXBProps<T> = PropsWithChildren<BaseXBProps & T>;
 
-export type GuestProps = GenericGuestProps<{ model: ContentInstance } | { path: string }>;
+export type ExperienceBuilderProps = GenericXBProps<{ model: ContentInstance } | { path: string }>;
 
 const initialDocumentDomain = typeof document === 'undefined' ? void 0 : document.domain;
 
@@ -138,7 +138,7 @@ function bypassKeyStroke(e, refs) {
   document.dispatchEvent(new CustomEvent(editModeIceBypassEvent, { detail: isKeyDown }));
 }
 
-function Guest(props: InternalGuestProps) {
+function ExperienceBuilderInternal(props: InternalGuestProps) {
   // TODO: support path driven Guest.
   // TODO: consider supporting developer to provide the data source (promise/observable?)
   const {
@@ -611,21 +611,22 @@ function Guest(props: InternalGuestProps) {
   );
 }
 
-function CrafterCMSGuest(props: GenericGuestProps<{ path: string }>);
-function CrafterCMSGuest(props: GenericGuestProps<{ model: ContentInstance }>);
-function CrafterCMSGuest(props: GuestProps) {
+export function ExperienceBuilder(props: GenericXBProps<{ model: ContentInstance }>);
+export function ExperienceBuilder(props: GenericXBProps<{ path: string }>);
+export function ExperienceBuilder(props: ExperienceBuilderProps) {
   let { children, isAuthoring = false, path, model } = props as CompleteGuestProps;
   let store = useMemo(() => isAuthoring && createGuestStore(), [isAuthoring]);
   path = path || prop(model, 'path');
   return isAuthoring && path ? (
     <Provider store={store} context={GuestReduxContext}>
-      <Guest {...props} path={path} />
+      <ExperienceBuilderInternal {...props} path={path} />
     </Provider>
   ) : (
     (children as JSX.Element)
   );
 }
 
-export { CrafterCMSGuest as Guest };
+/** @deprecated Use "ExperienceBuilder" instead. */
+export const Guest = ExperienceBuilder;
 
-export default CrafterCMSGuest;
+export default ExperienceBuilder;

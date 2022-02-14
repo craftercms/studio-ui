@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export * from './Guest';
+export * from './ExperienceBuilder';
 export * from './GuestProxy';
 export * from './DropMarker';
 export * from './CrafterCMSPortal';

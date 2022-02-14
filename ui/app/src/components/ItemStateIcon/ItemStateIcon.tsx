@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -23,7 +23,7 @@ import SubmittedStateIcon from '../../icons/PlanePaperOutline';
 import ScheduledStateIcon from '@mui/icons-material/AccessTimeRounded';
 import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined';
 import BlockRoundedIcon from '@mui/icons-material/BlockRounded';
-import ModeStandbyIcon from '@mui/icons-material/ModeStandby';
+import NotInWorkflowIcon from '@mui/icons-material/PanoramaFishEyeRounded';
 import Tooltip from '@mui/material/Tooltip';
 import clsx from 'clsx';
 import * as React from 'react';
@@ -146,7 +146,7 @@ export function ItemStateIcon(props: ItemStateIconProps) {
       translationInProgress: null
     };
     return (
-      map[getItemStateId(item.stateMap)] ?? { Icon: ModeStandbyIcon, stateSpecificClass: classes.stateNotInWorkflow }
+      map[getItemStateId(item.stateMap)] ?? { Icon: NotInWorkflowIcon, stateSpecificClass: classes.stateNotInWorkflow }
     );
   }, [
     classes.stateDeletedIcon,
