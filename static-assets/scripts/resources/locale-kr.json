@@ -74,7 +74,7 @@
         "USE_REMOTE_GIT":"빌트인 청사진 대신 원격 Git 저장소 사용",
         "VERSION":"번역",
         "LICENSE":"특허",
-        "CRAFTERVERSIONSSUPPORTED":"Crafter CMS 지원 버전",
+        "CRAFTERVERSIONSSUPPORTED":"CrafterCMS 지원 버전",
         "WEBSITE":"웹 사이트",
         "SELECT":"고르다",
         "BASIC_INFORMATION":"기본 정보",
