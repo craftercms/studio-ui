@@ -25,11 +25,15 @@ import GroovyIcon from '@craftercms/studio-ui/icons/Groovy';
 import FreemarkerIcon from '@craftercms/studio-ui/icons/Freemarker';
 import UltraStyledIconButton from './UltraStyledIconButton';
 import HighlightOffRoundedIcon from '@mui/icons-material/HighlightOffRounded';
+import AddCircleOutlineRoundedIcon from '@mui/icons-material/AddCircleOutlineRounded';
+import ContentCopyRoundedIcon from '@mui/icons-material/ContentCopyRounded';
 import { Tooltip } from '@mui/material';
 import {
   deleteItem,
+  duplicateItem,
   getCachedModel,
   getCachedModels,
+  insertItem,
   modelHierarchyMap,
   sortDownItem,
   sortUpItem
@@ -48,14 +52,16 @@ import Menu from '@mui/material/Menu';
 import Typography from '@mui/material/Typography';
 import MenuItem from '@mui/material/MenuItem';
 import { getParentModelId } from '../utils/ice';
+import { iceRegistry } from '../index';
 
 export interface MoveModeZoneMenuProps {
   record: ElementRecord;
   dispatch: Dispatch<AnyAction>;
+  isHeadlessMode: boolean;
 }
 
 export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
-  const { record, dispatch } = props;
+  const { record, dispatch, isHeadlessMode } = props;
   const {
     modelId,
     fieldId: [fieldId],
@@ -108,6 +114,7 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
   );
   const componentId =
     recordType === 'component' ? modelId : recordType === 'node-selector-item' ? collection[elementIndex] : null;
+  const { field, contentType } = useMemo(() => iceRegistry.getReferentialEntries(record.iceIds[0]), [record.iceIds]);
   const isMovable =
     ['node-selector-item', 'repeat-item'].includes(recordType) ||
     Boolean(recordType === 'component' && nodeSelectorItemRecord);
@@ -116,10 +123,10 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
   const isLastItem = isMovable ? elementIndex === numOfItemsInContainerCollection - 1 : null;
   const isOnlyItem = isMovable ? isFirstItem && isLastItem : null;
   const isEmbedded = useMemo(() => !Boolean(getCachedModel(modelId)?.craftercms.path), [modelId]);
-  const showCodeEditOptions = ['component', 'page', 'node-selector-item'].includes(recordType);
+  const showCodeEditOptions = ['component', 'page', 'node-selector-item'].includes(recordType) && !isHeadlessMode;
   const isTrashable = recordType !== 'field' && recordType !== 'page';
-  const showAddItem = false; // for repeat group item
-  const showDuplicate = false; // could apply to repeat items or components
+  const showAddItem = recordType === 'field' && field.type === 'repeat';
+  const showDuplicate = ['repeat-item', 'component', 'node-selector-item'].includes(recordType);
 
   // region callbacks
 
@@ -153,6 +160,18 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
     commonEdit(e, 'template');
   };
 
+  const onAddRepeatItem = (e) => {
+    insertItem(modelId, fieldId, index, contentType);
+  };
+
+  const onDuplicateItem = (e) => {
+    if (recordType === 'component' && nodeSelectorItemRecord) {
+      duplicateItem(nodeSelectorItemRecord.modelId, nodeSelectorItemRecord.fieldId, nodeSelectorItemRecord.index);
+    } else {
+      duplicateItem(modelId, fieldId, index);
+    }
+  };
+
   const onMoveUp = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -183,7 +202,11 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
     if (minCount) {
       post(validationMessage(minCount));
     } else {
-      deleteItem(modelId, fieldId, index);
+      if (recordType === 'component' && nodeSelectorItemRecord) {
+        deleteItem(nodeSelectorItemRecord.modelId, nodeSelectorItemRecord.fieldId, nodeSelectorItemRecord.index);
+      } else {
+        deleteItem(modelId, fieldId, index);
+      }
       onCancel();
     }
   };
@@ -247,41 +270,55 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
 
   return (
     <>
-      <Tooltip title="Cancel (Esc)">
+      <Tooltip title="Cancel (Esc)" key="cancel">
         <UltraStyledIconButton size="small" onClick={onCancel}>
           <HighlightOffRoundedIcon />
         </UltraStyledIconButton>
       </Tooltip>
-      <Tooltip title="Edit">
+      <Tooltip title="Edit" key="edit">
         <UltraStyledIconButton size="small" onClick={onEdit}>
           <PencilIcon />
         </UltraStyledIconButton>
       </Tooltip>
       {showCodeEditOptions && (
         <>
-          <Tooltip title="Edit template">
+          <Tooltip title="Edit template" key="editTemplate">
             <UltraStyledIconButton size="small" onClick={onEditTemplate}>
               <FreemarkerIcon />
             </UltraStyledIconButton>
           </Tooltip>
-          <Tooltip title="Edit controller">
+          <Tooltip title="Edit controller" key="editController">
             <UltraStyledIconButton size="small" onClick={onEditController}>
               <GroovyIcon />
             </UltraStyledIconButton>
           </Tooltip>
         </>
       )}
+      {showAddItem && (
+        <Tooltip title="Add new item" key="addNewItem">
+          <UltraStyledIconButton size="small" onClick={onAddRepeatItem}>
+            <AddCircleOutlineRoundedIcon />
+          </UltraStyledIconButton>
+        </Tooltip>
+      )}
+      {showDuplicate && (
+        <Tooltip title="Duplicate item" key="duplicateItem">
+          <UltraStyledIconButton size="small" onClick={onDuplicateItem}>
+            <ContentCopyRoundedIcon />
+          </UltraStyledIconButton>
+        </Tooltip>
+      )}
       {isMovable &&
         !isOnlyItem && [
           !isFirstItem && (
-            <Tooltip title="Move up/left (← or ↑)">
+            <Tooltip title="Move up/left (← or ↑)" key="moveUp">
               <UltraStyledIconButton size="small" onClick={onMoveUp}>
                 <ArrowUpwardRoundedIcon />
               </UltraStyledIconButton>
             </Tooltip>
           ),
           !isLastItem && (
-            <Tooltip title="Move down/right (→ or ↓)">
+            <Tooltip title="Move down/right (→ or ↓)" key="moveDown">
               <UltraStyledIconButton size="small" onClick={onMoveDown}>
                 <ArrowDownwardRoundedIcon />
               </UltraStyledIconButton>
@@ -289,14 +326,14 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
           )
         ]}
       {isTrashable && (
-        <Tooltip title="Trash (⌫)">
+        <Tooltip title="Trash (⌫)" key="trash">
           <UltraStyledIconButton size="small" onClick={onTrash} ref={trashButtonRef}>
             <DeleteOutlineRoundedIcon />
           </UltraStyledIconButton>
         </Tooltip>
       )}
       {isMovable && (
-        <Tooltip title="Move">
+        <Tooltip title="Move" key="move">
           <UltraStyledIconButton size="small" draggable sx={{ cursor: 'grab' }} onDragStart={onDragStart}>
             <DragIndicatorRounded />
           </UltraStyledIconButton>

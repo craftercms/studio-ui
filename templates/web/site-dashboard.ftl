@@ -25,23 +25,23 @@
   <#include "/templates/web/common/page-fragments/head.ftl" />
 
   <#assign path="/studio/static-assets/components/cstudio-common/resources/" />
-  <script src="${path}en/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="${path}kr/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="${path}es/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="${path}de/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+  <script src="${path}en/base.js"></script>
+  <script src="${path}kr/base.js"></script>
+  <script src="${path}es/base.js"></script>
+  <script src="${path}de/base.js"></script>
 
   <#assign path="/studio/static-assets/components/cstudio-dashboard-widgets/" />
-  <script src="${path}lib/wcm-dashboardwidget-common.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="${path}go-live-queue.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="${path}recently-made-live.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="${path}my-recent-activity.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="${path}my-notifications.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="${path}icon-guide.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="${path}approved-scheduled-items.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+  <script src="${path}lib/wcm-dashboardwidget-common.js"></script>
+  <script src="${path}go-live-queue.js"></script>
+  <script src="${path}recently-made-live.js"></script>
+  <script src="${path}my-recent-activity.js"></script>
+  <script src="${path}my-notifications.js"></script>
+  <script src="${path}icon-guide.js"></script>
+  <script src="${path}approved-scheduled-items.js"></script>
 
   <#assign path="/studio/static-assets/libs/" />
-  <script src="${path}momentjs/moment.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="${path}momentjs/moment-timezone-with-data-2012-2022.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+  <script src="${path}momentjs/moment.min.js"></script>
+  <script src="${path}momentjs/moment-timezone-with-data-2012-2022.min.js"></script>
 
   <#include "/templates/web/common/page-fragments/studio-context.ftl" />
   <#include "/templates/web/common/page-fragments/context-nav.ftl" />
@@ -57,10 +57,10 @@
 
   <script>window.entitlementValidator = '${applicationContext.get("crafter.entitlementValidator").getDescription()}';</script>
 
-  <script src="/studio/static-assets/libs/amplify/lib/amplify.core.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="/studio/static-assets/libs/js-cache/cache.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="/studio/static-assets/scripts/crafter.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="/studio/static-assets/scripts/animator.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+  <script src="/studio/static-assets/libs/amplify/lib/amplify.core.js"></script>
+  <script src="/studio/static-assets/libs/js-cache/cache.js"></script>
+  <script src="/studio/static-assets/scripts/crafter.js"></script>
+  <script src="/studio/static-assets/scripts/animator.js"></script>
 
 </head>
 

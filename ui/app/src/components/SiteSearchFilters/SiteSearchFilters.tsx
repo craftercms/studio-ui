@@ -34,6 +34,8 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import Divider from '@mui/material/Divider';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import { styled } from '@mui/material/styles';
+import { useContentTypes } from '../../hooks';
+import { getMimeTypeTranslation } from '../../utils/mimeTypes';
 
 interface SiteSearchFiltersProps {
   className: any;
@@ -167,8 +169,8 @@ const filterToFacet = (filterKey, filterValue) => {
 
     values[id] = {
       count: 0,
-      from: rangeStart ?? '-Infinity',
-      to: rangeEnd ?? 'Infinity'
+      from: rangeStart ?? null,
+      to: rangeEnd ?? null
     };
   }
 
@@ -201,13 +203,28 @@ export default function SiteSearchFilters(props: SiteSearchFiltersProps) {
     sortBy: false,
     path: false
   });
+  const contentTypes = useContentTypes();
 
   let filterKeys: string[] = [];
   let facetsLookupTable: LookupTable = {};
+  const facetLabelLookup: LookupTable = {};
+
+  const addFacetValuesLabels = (facet) => {
+    Object.keys(facet.values).forEach((value) => {
+      let label = value;
+      if (facet.name === 'content-type') {
+        label = contentTypes?.[value]?.name ?? value;
+      } else if (facet.name === 'mime-type') {
+        label = getMimeTypeTranslation(value, formatMessage);
+      }
+      facetLabelLookup[value] = label;
+    });
+  };
 
   facets.forEach((facet) => {
     filterKeys.push(facet.name);
     facetsLookupTable[facet.name] = facet;
+    addFacetValuesLabels(facet);
   });
 
   // Add filters already selected not coming from facets
@@ -299,6 +316,7 @@ export default function SiteSearchFilters(props: SiteSearchFiltersProps) {
               checkedFilters={checkedFilters}
               setCheckedFilters={setCheckedFilters}
               facetsLookupTable={facetsLookupTable}
+              facetLabelLookup={facetLabelLookup}
               handleClearClick={handleClearClick}
             />
           </AccordionDetails>

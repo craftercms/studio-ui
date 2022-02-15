@@ -14,15 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ComponentType, PropsWithChildren } from 'react';
-import LookupTable from '@craftercms/studio-ui/models/LookupTable';
+import React, { ComponentType, ElementType, forwardRef, PropsWithChildren } from 'react';
 import ContentInstance from '@craftercms/studio-ui/models/ContentInstance';
+import { isForwardRef } from 'react-is';
 
 export type PropsWithModel = PropsWithChildren<{ model: ContentInstance }>;
 
 export interface ContentTypeProps<P extends PropsWithModel = PropsWithModel> {
   model: ContentInstance;
-  contentTypeMap: LookupTable<ComponentType<P>>;
+  contentTypeMap: Record<string, ElementType<P>>;
   notFoundComponent?: ComponentType<P>;
   notMappedComponent?: ComponentType<P>;
 }
@@ -39,7 +39,7 @@ export function NotDevelopedDefault() {
   return <section>The page you've selected needs to be created by the site developers.</section>;
 }
 
-export function ContentType(props: ContentTypeProps) {
+export const ContentType = forwardRef<any, ContentTypeProps>(function (props, ref) {
   if (!props.contentTypeMap) {
     console.error(
       `The content type map was not supplied to ContentType component. ${
@@ -56,11 +56,19 @@ export function ContentType(props: ContentTypeProps) {
     notFoundComponent: NotFound = NotFoundDefault,
     ...rest
   } = props;
-  // prettier-ignore
-  const Component = (model === null) ? NotFound : (
-    contentTypeMap[model.craftercms.contentTypeId] ?? NotDeveloped
-  );
-  return <Component model={model} {...rest} />;
-}
+
+  const Component = model === null ? NotFound : contentTypeMap[model.craftercms.contentTypeId] ?? NotDeveloped;
+
+  const finalProps: any = { ...rest };
+  if (typeof Component !== 'string') {
+    // Avoid <div model="[Object object]">
+    finalProps.model = model;
+  }
+  if (isForwardRef(Component) || typeof Component === 'string') {
+    finalProps.ref = ref;
+  }
+
+  return <Component {...finalProps} />;
+});
 
 export default ContentType;

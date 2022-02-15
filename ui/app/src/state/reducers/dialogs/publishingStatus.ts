@@ -34,6 +34,7 @@ const initialState: PublishingStatusDialogStateProps = commonDialogProps({
   open: false,
   enabled: null,
   status: null,
+  published: null,
   message: null,
   lockOwner: null,
   lockTTL: null,

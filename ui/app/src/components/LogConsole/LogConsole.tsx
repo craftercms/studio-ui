@@ -134,7 +134,11 @@ export function LogConsole(props: LogConsoleManagementProps) {
         showAppsButton={showAppsButton}
       />
       <ConditionalLoadingState isLoading={!logEvents}>
-        <LogConsoleGridUI logEvents={logEvents} onLogEventDetails={onLogEventDetails} />
+        <LogConsoleGridUI
+          showSiteColumn={logType !== 'studio'}
+          logEvents={logEvents}
+          onLogEventDetails={onLogEventDetails}
+        />
       </ConditionalLoadingState>
       {logEvents?.length === 0 && (
         <EmptyState title={<FormattedMessage id="logConsoleManagement.noLogs" defaultMessage="No logs found" />} />

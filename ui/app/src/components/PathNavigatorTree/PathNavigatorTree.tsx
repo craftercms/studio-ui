@@ -39,14 +39,13 @@ import { defineMessages, useIntl } from 'react-intl';
 import { previewItem } from '../../state/actions/preview';
 // @ts-ignore
 import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover/Popover';
-import { showEditDialog, showItemMegaMenu, showPreviewDialog, updatePreviewDialog } from '../../state/actions/dialogs';
+import { showEditDialog, showItemMegaMenu, showPreviewDialog } from '../../state/actions/dialogs';
 import { getStoredPathNavigatorTree } from '../../utils/state';
 import GlobalState from '../../models/GlobalState';
 import { nnou } from '../../utils/object';
 import PathNavigatorSkeletonTree from './PathNavigatorTreeSkeleton';
 import { getParentPath, withIndex, withoutIndex } from '../../utils/path';
 import { DetailedItem } from '../../models/Item';
-import { fetchContentXML } from '../../services/content';
 import { SystemIconDescriptor } from '../SystemIcon';
 import { completeDetailedItem } from '../../state/actions/content';
 import { useSelection } from '../../hooks/useSelection';
@@ -64,7 +63,6 @@ import {
   itemsDeleted,
   itemsPasted,
   itemsUploaded,
-  itemUnlocked,
   itemUpdated,
   pluginInstalled
 } from '../../state/actions/system';
@@ -178,9 +176,11 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   }, [hasActiveSession, resetBackgroundRefreshInterval]);
 
   useEffect(() => {
+    // setting nodeByPathRef to undefined when the siteId changes
     // Adding uiConfig as means to stop navigator from trying to
     // initialize with previous state information when switching sites
     if (!state && uiConfig.currentSite === siteId && rootPath) {
+      nodesByPathRef.current[rootPath] = undefined;
       const { expanded, collapsed, keywordByPath } = storedState;
       dispatch(
         pathNavigatorTreeInit({
@@ -279,7 +279,6 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   useEffect(() => {
     const events = [
       itemsPasted.type,
-      itemUnlocked.type,
       itemUpdated.type,
       folderCreated.type,
       folderRenamed.type,
@@ -334,7 +333,6 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
         }
         case folderRenamed.type:
         case itemDuplicated.type:
-        case itemUnlocked.type:
         case itemUpdated.type:
         case itemCreated.type: {
           const parentPath = getParentPath(payload.target);
@@ -547,13 +545,6 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
           mode
         })
       );
-      fetchContentXML(siteId, item.path).subscribe((content) => {
-        dispatch(
-          updatePreviewDialog({
-            content
-          })
-        );
-      });
     }
   };
 

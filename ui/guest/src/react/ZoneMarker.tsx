@@ -93,7 +93,7 @@ export function ZoneMarker(props: ZoneMarkerProps) {
   return (
     <>
       <Box ref={elRef} style={zoneStyle} sx={sx.box} className={classes?.box} />
-      {showZoneTooltip && (
+      {showZoneTooltip && elRef.current && (
         <Box
           open
           component={Popper}

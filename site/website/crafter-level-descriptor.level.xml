@@ -22,5 +22,5 @@
     <css>/static-assets/css/style.css</css>
   </css-group>
   <content-type>/craftercms/component/level-descriptor</content-type>
-  <common-title>Crafter CMS</common-title>
+  <common-title>CrafterCMS</common-title>
 </levelDescriptor>

@@ -7,7 +7,7 @@
  * License: http://tinymce2.moxiecode.com/license
  * Contributing: http://tinymce2.moxiecode.com/contributing
  *
- * Modified by: Crafter Software
+ * Modified by: CrafterCMS
  *
  */
 
@@ -26,9 +26,9 @@
 		getInfo : function() {
 			return {
 				longname: 'Crafter Studio Inline Popups Customization',
-                author: 'Crafter Software',
-                authorurl: 'http://www.craftercms.org',
-                infourl: 'http://www.craftercms.org',
+                author: 'CrafterCMS',
+                authorurl: 'https://craftercms.org',
+                infourl: 'https://craftercms.org',
                 version: "1.0"
 			};
 		}

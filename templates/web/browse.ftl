@@ -23,8 +23,8 @@
     <#include "/templates/web/common/page-fragments/head.ftl" />
     <#include "/templates/web/common/page-fragments/studio-context.ftl" />
 
-    <link rel="stylesheet" type="text/css" href="/studio/static-assets/styles/browse.css?version=${UIBuildId!.now?string('Mddyyyy')}" />
-    <link rel="stylesheet" type="text/css" href="/studio/static-assets/themes/cstudioTheme/base.css?version=${UIBuildId!.now?string('Mddyyyy')}" />
+    <link rel="stylesheet" type="text/css" href="/studio/static-assets/styles/browse.css" />
+    <link rel="stylesheet" type="text/css" href="/studio/static-assets/themes/cstudioTheme/base.css" />
 
     <link rel="stylesheet" href="/studio/static-assets/libs/jQuery-contextMenu-master/dist/jquery.contextMenu.css" type="text/css">
 
@@ -39,10 +39,10 @@
     <link href="/studio/static-assets/themes/cstudioTheme/css/icons.css" type="text/css" rel="stylesheet">
 
     <#assign path="/studio/static-assets/components/cstudio-common/resources/" />
-    <script src="${path}en/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-    <script src="${path}kr/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-    <script src="${path}es/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-    <script src="${path}de/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+    <script src="${path}en/base.js"></script>
+    <script src="${path}kr/base.js"></script>
+    <script src="${path}es/base.js"></script>
+    <script src="${path}de/base.js"></script>
 
     <script>
         var CMgs = CStudioAuthoring.Messages,
@@ -100,7 +100,7 @@
          <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
              <div class="container-fluid">
                      <a class="navbar-brand" href="/studio/site-dashboard">
-                         <img src="/studio/static-assets/images/logo.svg" alt="Crafter CMS">
+                         <img src="/studio/static-assets/images/logo.svg" alt="CrafterCMS">
                      </a>
                  </div>
              </div>

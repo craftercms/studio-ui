@@ -22,25 +22,39 @@ import { nou } from '../../utils/object';
 import AceEditor from '../AceEditor/AceEditor';
 import { PreviewDialogContainerProps } from './utils';
 import { useStyles } from './styles';
+import DialogFooter from '../DialogFooter';
+import SecondaryButton from '../SecondaryButton';
+import { FormattedMessage } from 'react-intl';
+import PrimaryButton from '../PrimaryButton';
+import { useDetailedItem } from '../../hooks';
+import { DialogBody } from '../DialogBody';
+import { useDispatch } from 'react-redux';
+import { closeCodeEditorDialog, closePreviewDialog, showCodeEditorDialog } from '../../state/actions/dialogs';
+import { batchActions } from '../../state/actions/misc';
+import { conditionallyUnlockItem } from '../../state/actions/content';
+import { hasEditAction } from '../../utils/content';
 
 export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
+  const { title, content, mode, url, onClose, type } = props;
   const classes = useStyles();
+  const item = useDetailedItem(url);
+  const dispatch = useDispatch();
 
   const [isLoading, setIsLoading] = useState(true);
 
   const renderPreview = () => {
-    switch (props.type) {
+    switch (type) {
       case 'image':
-        return <img src={props.url} alt="" />;
+        return <img src={url} alt="" />;
       case 'video':
-        return <AsyncVideoPlayer playerOptions={{ src: props.url, autoplay: true }} />;
+        return <AsyncVideoPlayer playerOptions={{ src: url, autoplay: true }} />;
       case 'page':
         return (
           <>
             {isLoading && <LoadingState />}
             <IFrame
-              url={props.url}
-              title={props.title}
+              url={url}
+              title={title}
               width={isLoading ? 0 : 960}
               height={isLoading ? 0 : 600}
               onLoadComplete={() => setIsLoading(false)}
@@ -49,12 +63,15 @@ export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
         );
       case 'editor': {
         return (
-          <ConditionalLoadingState isLoading={nou(props.content)}>
+          <ConditionalLoadingState isLoading={nou(content)}>
             <AceEditor
-              value={props.content}
+              value={content}
               classes={{ editorRoot: classes.editor }}
-              mode={`ace/mode/${props.mode}`}
+              mode={`ace/mode/${mode}`}
               readOnly
+              highlightActiveLine={false}
+              highlightGutterLine={false}
+              highlightSelectedWord={false}
             />
           </ConditionalLoadingState>
         );
@@ -63,9 +80,35 @@ export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
         break;
     }
   };
+
+  const onEdit = () => {
+    dispatch(
+      batchActions([
+        closePreviewDialog(),
+        showCodeEditorDialog({
+          path: url,
+          mode,
+          onClose: batchActions([closeCodeEditorDialog(), conditionallyUnlockItem({ path: url })])
+        })
+      ])
+    );
+  };
+
   return (
     <>
-      <section className={classes.container}>{renderPreview()}</section>
+      <DialogBody className={classes.container}>{renderPreview()}</DialogBody>
+      {type === 'editor' && (
+        <DialogFooter>
+          <SecondaryButton onClick={(e) => onClose(e, null)}>
+            <FormattedMessage id="words.close" defaultMessage="Close" />
+          </SecondaryButton>
+          {hasEditAction(item.availableActions) && (
+            <PrimaryButton sx={{ marginLeft: '15px' }} onClick={onEdit}>
+              <FormattedMessage id="words.edit" defaultMessage="Edit" />
+            </PrimaryButton>
+          )}
+        </DialogFooter>
+      )}
     </>
   );
 }

@@ -164,7 +164,7 @@
         contentTypes: [contentType],
         multiSelect,
         onSuccess: (result) => {
-          result.forEach(({ name, path }) => {
+          (Array.isArray(result) ? result : [result]).forEach(({ name, path }) => {
             const value = name && name !== '' ? name : path;
             control.newInsertItem(path, value, 'shared');
             control._renderItems();

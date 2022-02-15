@@ -23,7 +23,7 @@ import { createLookupTable, nnou, nou, reversePluckProps, toQueryString } from '
 import { LookupTable } from '../models/LookupTable';
 import $ from 'jquery/dist/jquery.slim';
 import { dataUriToBlob, isBlank, popPiece, removeLastPiece } from '../utils/string';
-import ContentInstance from '../models/ContentInstance';
+import ContentInstance, { InstanceRecord } from '../models/ContentInstance';
 import { AjaxError, AjaxResponse } from 'rxjs/ajax';
 import { ComponentsContentTypeParams, ContentInstancePage } from '../models/Search';
 import Core from '@uppy/core';
@@ -47,6 +47,8 @@ import { StandardAction } from '../models/StandardAction';
 import { GetChildrenResponse } from '../models/GetChildrenResponse';
 import { GetItemWithChildrenResponse } from '../models/GetItemWithChildrenResponse';
 import { FetchItemsByPathOptions } from '../models/FetchItemsByPath';
+import { v4 as uuid } from 'uuid';
+import { asArray } from '../utils/array';
 
 export function fetchComponentInstanceHTML(path: string): Observable<string> {
   return getText(`/crafter-controller/component.html?path=${path}`).pipe(pluck('response'));
@@ -358,7 +360,52 @@ export function insertInstance(
   );
 }
 
-export function insertItem() {}
+export function insertItem(
+  site: string,
+  modelId: string,
+  fieldId: string,
+  index: string | number,
+  instance: InstanceRecord,
+  path: string
+): Observable<any> {
+  return performMutation(
+    site,
+    path,
+    (element) => {
+      let node = extractNode(element, removeLastPiece(fieldId) || fieldId, index);
+      const newItem = createElement('item');
+      createElements(newItem, instance);
+      node.appendChild(newItem);
+    },
+    modelId
+  );
+}
+
+export function duplicateItem(
+  site: string,
+  modelId: string,
+  fieldId: string,
+  targetIndex: string | number,
+  path: string
+): Observable<any> {
+  return performMutation(
+    site,
+    path,
+    (element) => {
+      // removing last piece to get the parent of the item
+      const field: Element = extractNode(
+        element,
+        removeLastPiece(fieldId) || fieldId,
+        removeLastPiece(`${targetIndex}`)
+      );
+      const item: Element = extractNode(element, fieldId, targetIndex).cloneNode(true) as Element;
+      updateItemId(item);
+      updateElementComponentsId(item);
+      field.appendChild(item);
+    },
+    modelId
+  );
+}
 
 export function sortItem(
   site: string,
@@ -611,6 +658,26 @@ interface LegacyContentDocumentProps {
 
 interface AnyObject {
   [key: string]: any;
+}
+
+function updateItemId(item: Element): void {
+  const component = item.querySelector(':scope > component');
+  if (component) {
+    const key = item.querySelector(':scope > key');
+    const objectId = component.querySelector(':scope > objectId');
+    const fileName = component.querySelector(':scope > file-name');
+    const id = uuid();
+    component.id = id;
+    key.innerHTML = id;
+    fileName.innerHTML = `${id}.xml`;
+    objectId.innerHTML = id;
+  }
+}
+
+function updateElementComponentsId(element: Element): void {
+  element.querySelectorAll('item').forEach((item) => {
+    updateItemId(item);
+  });
 }
 
 function extractNode(doc: XMLDocument | Element, fieldId: string, index: string | number) {
@@ -1102,12 +1169,14 @@ export function deleteItems(
   }).pipe(mapTo(true));
 }
 
-export function lock(site: string, path: string): Observable<boolean> {
-  return fetchContentXML(site, path, { lock: true }).pipe(mapTo(true));
+export function lock(siteId: string, path: string): Observable<boolean>;
+export function lock(siteId: string, paths: string[]): Observable<boolean>;
+export function lock(siteId: string, paths: string[] | string): Observable<boolean> {
+  return postJSON('/studio/api/2/content/items_lock_by_path', { siteId, paths: asArray(paths) }).pipe(mapTo(true));
 }
 
-export function unlock(site: string, path: string): Observable<boolean> {
-  return get(`/studio/api/1/services/api/1/content/unlock-content.json?site=${site}&path=${path}`).pipe(mapTo(true));
+export function unlock(siteId: string, path: string): Observable<boolean> {
+  return postJSON('/studio/api/2/content/item_unlock_by_path', { siteId, path }).pipe(mapTo(true));
 }
 
 export function fetchWorkflowAffectedItems(site: string, path: string): Observable<SandboxItem[]> {

@@ -22,6 +22,7 @@ import EnhancedDialog from '../EnhancedDialog';
 function PublishingStatusDialog(props: PublishingStatusDialogProps) {
   const {
     status,
+    published,
     enabled,
     lockOwner,
     lockTTL,

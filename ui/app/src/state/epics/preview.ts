@@ -15,9 +15,10 @@
  */
 
 import { ofType, StateObservable } from 'redux-observable';
-import { ignoreElements, tap, withLatestFrom } from 'rxjs/operators';
+import { filter, ignoreElements, map, tap, withLatestFrom } from 'rxjs/operators';
 import {
   closeToolsPanel,
+  guestCheckOut,
   openToolsPanel,
   popIcePanelPage,
   popToolsPanelPage,
@@ -42,11 +43,12 @@ import {
   setStoredShowToolsPanel
 } from '../../utils/state';
 import GlobalState from '../../models/GlobalState';
-import { setClipboard } from '../actions/content';
+import { conditionallyUnlockItem, setClipboard } from '../actions/content';
 import { CrafterCMSEpic } from '../store';
 import { getSystemLink } from '../../utils/system';
 
 export default [
+  // region pushToolsPanelPage
   (action$, state$) =>
     action$.pipe(
       ofType(pushToolsPanelPage.type),
@@ -59,6 +61,8 @@ export default [
       }),
       ignoreElements()
     ),
+  // endregion
+  // region popToolsPanelPage
   (action$, state$) =>
     action$.pipe(
       ofType(popToolsPanelPage.type),
@@ -77,6 +81,7 @@ export default [
       }),
       ignoreElements()
     ),
+  // endregion
   // region setPreviewEditMode
   (action$, state$) =>
     action$.pipe(
@@ -89,7 +94,8 @@ export default [
           getHostToGuestBus().next(setHighlightMode(action.payload));
         }
       }),
-      ignoreElements()
+      filter(([{ payload }, state]) => !payload.editMode && Boolean(state.preview.guest?.path)),
+      map(([{ payload }, state]) => conditionallyUnlockItem({ path: state.preview.guest.path }))
     ),
   // endregion
   // region setHighlightMode
@@ -178,6 +184,7 @@ export default [
       ignoreElements()
     ),
   // endregion
+  // region popIcePanelPage
   (action$, state$) =>
     action$.pipe(
       ofType(popIcePanelPage.type),
@@ -196,5 +203,14 @@ export default [
         }
       }),
       ignoreElements()
+    ),
+  // endregion
+  // region guestCheckOut
+  (action$, state$) =>
+    action$.pipe(
+      ofType(guestCheckOut.type),
+      filter(({ payload }) => Boolean(payload?.path)),
+      map(({ payload }) => conditionallyUnlockItem({ path: payload.path }))
     )
+  // endregion
 ] as CrafterCMSEpic[];

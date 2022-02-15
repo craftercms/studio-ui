@@ -1917,6 +1917,32 @@ var CStudioForms =
             YAHOO.util.Event.addListener(window, 'beforeunload', unloadFn, me);
             YAHOO.util.Event.addListener(closeButtonEl, 'click', cancelFn, me);
 
+            const canEdit = CStudioAuthoring.Utils.getQueryVariable(queryString, 'canEdit');
+
+            if (canEdit) {
+              var editButtonEl = document.createElement('input');
+              YDom.addClass(editButtonEl, 'btn btn-primary');
+              editButtonEl.type = 'button';
+              editButtonEl.style.marginLeft = '15px';
+              editButtonEl.value = formatMessage(formEngineMessages.edit);
+
+              formButtonContainerEl.appendChild(editButtonEl);
+              YDom.setStyle(formButtonContainerEl, 'text-align', 'center');
+
+              YAHOO.util.Event.addListener(
+                editButtonEl,
+                'click',
+                () => {
+                  const editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
+                  const iceWindowCallback = CStudioAuthoring.InContextEdit.getIceCallback(editorId);
+                  if (iceWindowCallback.changeToEditMode) {
+                    getCustomCallback(iceWindowCallback.changeToEditMode)();
+                  }
+                },
+                me
+              );
+            }
+
             var focusEl = window;
             setTimeout(function () {
               focusEl.focus();
@@ -2054,7 +2080,6 @@ var CStudioForms =
 
             if (pluginInfo.path != '') {
               script = CStudioAuthoringContext.baseUri + pluginInfo.path;
-              script = CStudioAuthoring.Utils.addURLParameter(script, 'version', CStudioAuthoring.UIBuildId);
 
               var onDone = (function (datasourceDef, pluginInfo) {
                 return function (script, textStatus) {

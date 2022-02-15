@@ -27,7 +27,6 @@ import Collapse from '@mui/material/Collapse';
 import FormControl from '@mui/material/FormControl';
 import Link from '@mui/material/Link';
 import DateTimePicker from '../DateTimePicker/DateTimePicker';
-import palette from '../../styles/palette';
 import TextFieldWithMax from '../TextFieldWithMax/TextFieldWithMax';
 import GlobalState from '../../models/GlobalState';
 import FormLabel from '@mui/material/FormLabel';
@@ -52,6 +51,10 @@ const messages = defineMessages({
   schedulingLater: {
     id: 'publishForm.schedulingLater',
     defaultMessage: 'Later'
+  },
+  schedulingLaterDisabled: {
+    id: 'publishForm.schedulingLaterDisabled',
+    defaultMessage: 'Later (disabled on first publish)'
   },
   publishingTarget: {
     id: 'common.publishingTarget',
@@ -136,7 +139,7 @@ const useStyles = makeStyles((theme) =>
         height: '100%',
         top: '0',
         left: '7px',
-        backgroundColor: theme.palette.mode === 'dark' ? theme.palette.background.paper : palette.gray.light2,
+        backgroundColor: theme.palette.background.paper,
         borderRadius: '5px'
       }
     },
@@ -164,6 +167,7 @@ const useStyles = makeStyles((theme) =>
 export type PublishFormProps = Pick<
   PublishDialogUIProps,
   | 'state'
+  | 'published'
   | 'showEmailCheckbox'
   | 'showRequestApproval'
   | 'publishingTargetsStatus'
@@ -183,6 +187,7 @@ export function PublishDialogForm(props: PublishFormProps) {
   const { formatMessage } = useIntl();
   const {
     state,
+    published,
     showEmailCheckbox,
     showRequestApproval,
     publishingChannels,
@@ -271,9 +276,11 @@ export function PublishDialogForm(props: PublishFormProps) {
           <FormControlLabel
             value="custom"
             control={<Radio color="primary" className={classes.radioInput} />}
-            label={formatMessage(messages.schedulingLater)}
+            label={
+              published ? formatMessage(messages.schedulingLater) : formatMessage(messages.schedulingLaterDisabled)
+            }
             classes={{ label: classes.formInputs }}
-            disabled={disabled}
+            disabled={!published || disabled}
           />
         </RadioGroup>
         <Collapse

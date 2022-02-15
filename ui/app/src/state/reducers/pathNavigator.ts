@@ -49,7 +49,7 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
   {
     [pathNavigatorInit.type]: (
       state,
-      { payload: { id, path, currentPath, locale = 'en', collapsed = false, limit, keyword, offset, excludes } }
+      { payload: { id, path, currentPath, locale = 'en', collapsed = true, limit, keyword, offset, excludes } }
     ) => {
       return {
         ...state,

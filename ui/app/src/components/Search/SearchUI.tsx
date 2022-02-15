@@ -445,7 +445,9 @@ export function SearchUI(props: SearchUIProps) {
                               : void 0
                           }
                           item={item}
-                          onPreview={onPreview}
+                          onPreview={(item) =>
+                            mode === 'select' ? handleSelect(item.path, !selected.includes(item.path)) : onPreview(item)
+                          }
                           onSelect={handleSelect}
                           selected={selected}
                           previewAppBaseUri={guestBase}

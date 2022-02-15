@@ -33,13 +33,13 @@ import AssetUploaderMask from './AssetUploaderMask';
 import {
   EditingStatus,
   editModeClass,
+  editModeEvent,
+  editModeIceBypassEvent,
   editModePaddingClass,
   editOnClass,
   HighlightMode,
   iceBypassKeyClass,
-  moveModeClass,
-  editModeIceBypassEvent,
-  editModeEvent
+  moveModeClass
 } from '../constants';
 import {
   assetDragEnded,
@@ -99,18 +99,37 @@ import {
 import DragGhostElement from './DragGhostElement';
 import GuestGlobalStyles from './GuestGlobalStyles';
 import { useHotkeys } from 'react-hotkeys-hook';
+import { ContentInstance } from '@craftercms/studio-ui/models';
+import { prop } from '@craftercms/studio-ui/utils/model';
 
 // TODO: add themeOptions and global styles customising
-export type GuestProps = PropsWithChildren<{
+interface BaseXBProps {
   documentDomain?: string;
-  path?: string;
   themeOptions?: ThemeOptions;
   sxOverrides?: DeepPartial<GuestStylesSx>;
-  isAuthoring?: boolean; // boolean | Promise<boolean> | () => boolean | Promise<boolean>
+  isAuthoring: boolean; // boolean | Promise<boolean> | () => boolean | Promise<boolean>
   scrollElement?: string;
-}>;
+  isHeadlessMode?: boolean; // Templates & controllers become irrelevant
+}
 
-const initialDocumentDomain = document.domain;
+type InternalGuestProps = PropsWithChildren<
+  BaseXBProps & {
+    path: string;
+  }
+>;
+
+type CompleteGuestProps = PropsWithChildren<
+  BaseXBProps & {
+    path?: string;
+    model?: ContentInstance;
+  }
+>;
+
+type GenericXBProps<T> = PropsWithChildren<BaseXBProps & T>;
+
+export type ExperienceBuilderProps = GenericXBProps<{ model: ContentInstance } | { path: string }>;
+
+const initialDocumentDomain = typeof document === 'undefined' ? void 0 : document.domain;
 
 function bypassKeyStroke(e, refs) {
   const isKeyDown = e.type === 'keydown';
@@ -119,10 +138,18 @@ function bypassKeyStroke(e, refs) {
   document.dispatchEvent(new CustomEvent(editModeIceBypassEvent, { detail: isKeyDown }));
 }
 
-function Guest(props: GuestProps) {
+function ExperienceBuilderInternal(props: InternalGuestProps) {
   // TODO: support path driven Guest.
   // TODO: consider supporting developer to provide the data source (promise/observable?)
-  const { path, themeOptions, sxOverrides, children, documentDomain, scrollElement = 'html, body' } = props;
+  const {
+    path,
+    themeOptions,
+    sxOverrides,
+    children,
+    documentDomain,
+    scrollElement = 'html, body',
+    isHeadlessMode = false
+  } = props;
 
   const theme = useGuestTheme(themeOptions);
   const [snack, setSnack] = useState<Partial<Snack>>();
@@ -154,9 +181,14 @@ function Guest(props: GuestProps) {
             }
             // Click & dblclick require stopping as early as possible to avoid
             // navigation or other click defaults.
-            if (type === 'click' || 'dblclick' === type) {
+            if (['click', 'dblclick'].includes(type)) {
               event.preventDefault();
               event.stopPropagation();
+            }
+            // Doing a dblclick already do two clicks, one for start editing and another one for leave editing
+            // returning false on dblclick prevents issues related to normal editing flow
+            if (type === 'dblclick') {
+              return false;
             }
             dispatch({ type, payload: { event, record } });
             return true;
@@ -277,11 +309,11 @@ function Guest(props: GuestProps) {
           dispatch(startListening());
           break;
         case reloadRequest.type: {
-          post(guestCheckOut());
+          post(guestCheckOut({ path }));
           return window.location.reload();
         }
         case navigationRequest.type: {
-          post(guestCheckOut());
+          post(guestCheckOut({ path }));
           return (window.location.href = payload.url);
         }
         case contentTypeDropTargetsRequest.type: {
@@ -327,7 +359,7 @@ function Guest(props: GuestProps) {
     return () => {
       sub.unsubscribe();
     };
-  }, [dispatch, scrollElement, status]);
+  }, [dispatch, path, scrollElement, status]);
 
   // Host detection
   useEffect(() => {
@@ -343,7 +375,7 @@ function Guest(props: GuestProps) {
         take(1)
       ).subscribe(() => setSnack({
         duration: 8000,
-        message: 'In-context editing is disabled: page running out of Crafter CMS frame.'
+        message: 'In-context editing is disabled: page running out of CrafterCMS frame.'
       }));
     }
   }, [dispatch, hasHost]);
@@ -372,13 +404,13 @@ function Guest(props: GuestProps) {
   useEffect(() => {
     // Notice this is not executed when the iFrame url is changed abruptly.
     // This only triggers when navigation occurs from within the guest page.
-    const handler = () => post(guestCheckOut());
+    const handler = () => post(guestCheckOut({ path }));
     window.addEventListener('beforeunload', handler, false);
     return () => {
-      post(guestCheckOut.type);
+      post(guestCheckOut({ path }));
       window.removeEventListener('beforeunload', handler);
     };
-  }, []);
+  }, [path]);
 
   // Registers parent zone, check in, checkout (when model is changed), content ready subscription
   useEffect(() => {
@@ -402,10 +434,10 @@ function Guest(props: GuestProps) {
         dispatch(contentReady());
       });
 
-    post(guestCheckIn.type, { location, path, site, documentDomain });
+    post(guestCheckIn({ location, path, site, documentDomain }));
 
     return () => {
-      post(guestCheckOut.type);
+      post(guestCheckOut({ path }));
       nnou(iceId) && iceRegistry.deregister(iceId);
       // eslint-disable-next-line react-hooks/exhaustive-deps
       refs.current.contentReady = false;
@@ -536,7 +568,11 @@ function Guest(props: GuestProps) {
                       : null
                   }
                   menuItems={
-                    isFieldSelectedMode ? <MoveModeZoneMenu record={elementRecord} dispatch={dispatch} /> : void 0
+                    isFieldSelectedMode ? (
+                      <MoveModeZoneMenu record={elementRecord} dispatch={dispatch} isHeadlessMode={isHeadlessMode} />
+                    ) : (
+                      void 0
+                    )
                   }
                   sx={deepmerge(
                     deepmerge(
@@ -580,18 +616,22 @@ function Guest(props: GuestProps) {
   );
 }
 
-function CrafterCMSGuest(props: GuestProps) {
-  const { isAuthoring, children } = props;
-  const store = useMemo(() => isAuthoring && createGuestStore(), [isAuthoring]);
-  return isAuthoring ? (
+export function ExperienceBuilder(props: GenericXBProps<{ model: ContentInstance }>);
+export function ExperienceBuilder(props: GenericXBProps<{ path: string }>);
+export function ExperienceBuilder(props: ExperienceBuilderProps) {
+  let { children, isAuthoring = false, path, model } = props as CompleteGuestProps;
+  let store = useMemo(() => isAuthoring && createGuestStore(), [isAuthoring]);
+  path = path || prop(model, 'path');
+  return isAuthoring && path ? (
     <Provider store={store} context={GuestReduxContext}>
-      <Guest {...props} />
+      <ExperienceBuilderInternal {...props} path={path} />
     </Provider>
   ) : (
     (children as JSX.Element)
   );
 }
 
-export { CrafterCMSGuest as Guest };
+/** @deprecated Use "ExperienceBuilder" instead. */
+export const Guest = ExperienceBuilder;
 
-export default CrafterCMSGuest;
+export default ExperienceBuilder;

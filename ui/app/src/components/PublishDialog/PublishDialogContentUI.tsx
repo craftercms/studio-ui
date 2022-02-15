@@ -19,10 +19,13 @@ import DependencySelection from '../DependencySelection/DependencySelection';
 import PublishDialogForm from './PublishDialogForm';
 import React from 'react';
 import { PublishDialogUIProps } from './utils';
+import Alert from '@mui/material/Alert';
+import { FormattedMessage } from 'react-intl';
 
 export type PublishDialogContentUIProps = Pick<
   PublishDialogUIProps,
   | 'resource'
+  | 'published'
   | 'selectedItems'
   | 'onItemClicked'
   | 'dependencies'
@@ -44,6 +47,7 @@ export function PublishDialogContentUI(props: PublishDialogContentUIProps) {
   // region { ... } = props
   const {
     resource,
+    published,
     selectedItems,
     onItemClicked,
     dependencies,
@@ -66,19 +70,29 @@ export function PublishDialogContentUI(props: PublishDialogContentUIProps) {
     <>
       <Grid container spacing={3}>
         <Grid item xs={12} sm={7} md={7} lg={7} xl={7}>
-          <DependencySelection
-            items={items}
-            selectedItems={selectedItems}
-            onItemClicked={onItemClicked}
-            dependencies={dependencies}
-            onSelectAllClicked={onSelectAll}
-            onSelectAllSoftClicked={onSelectAllSoftDependencies}
-            disabled={isSubmitting}
-          />
+          {published ? (
+            <DependencySelection
+              items={items}
+              selectedItems={selectedItems}
+              onItemClicked={onItemClicked}
+              dependencies={dependencies}
+              onSelectAllClicked={onSelectAll}
+              onSelectAllSoftClicked={onSelectAllSoftDependencies}
+              disabled={isSubmitting}
+            />
+          ) : (
+            <Alert severity="warning">
+              <FormattedMessage
+                id="publishDialog.firstPublish"
+                defaultMessage="The entire site will be published since this is the first publish request"
+              />
+            </Alert>
+          )}
         </Grid>
         <Grid item xs={12} sm={5} md={5} lg={5} xl={5}>
           <PublishDialogForm
             state={state}
+            published={published}
             showEmailCheckbox={showEmailCheckbox}
             showRequestApproval={showRequestApproval}
             publishingChannels={publishingTargets}

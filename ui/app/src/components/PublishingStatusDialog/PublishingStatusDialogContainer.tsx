@@ -37,6 +37,7 @@ export function PublishingStatusDialogContainer(props: PublishingStatusDialogCon
   const {
     status,
     enabled,
+    published,
     lockOwner,
     lockTTL,
     numberOfItems,
@@ -82,6 +83,7 @@ export function PublishingStatusDialogContainer(props: PublishingStatusDialogCon
           enabled={enabled}
           isFetching={isFetching}
           status={status}
+          published={published}
           lockOwner={lockOwner}
           lockTTL={lockTTL}
           numberOfItems={numberOfItems}

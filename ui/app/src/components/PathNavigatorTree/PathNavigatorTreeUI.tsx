@@ -83,6 +83,7 @@ const useStyles = makeStyles(() =>
 
 export function PathNavigatorTreeUI(props: PathNavigatorTreeUIProps) {
   const classes = useStyles();
+  // region const { ... } = props
   const {
     icon,
     container,
@@ -102,9 +103,14 @@ export function PathNavigatorTreeUI(props: PathNavigatorTreeUIProps) {
     isCollapsed,
     expandedNodes
   } = props;
+  // endregion
 
   return (
     <Accordion
+      square
+      disableGutters
+      elevation={0}
+      TransitionProps={{ unmountOnExit: true }}
       expanded={!isCollapsed}
       onChange={() => onChangeCollapsed(!isCollapsed)}
       className={clsx(

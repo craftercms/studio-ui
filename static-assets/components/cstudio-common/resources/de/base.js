@@ -239,7 +239,7 @@ CStudioAuthoring.Messages.registerBundle('previewTools', 'de', {
   sites: 'Projekte',
   help: 'Hilfe',
   documentation: 'Dokumentation',
-  about: 'Über Crafter CMS',
+  about: 'Über CrafterCMS',
   settings: 'Einstellungen',
   signOut: 'Abmelden',
   mainMenu: 'Hauptmenü',

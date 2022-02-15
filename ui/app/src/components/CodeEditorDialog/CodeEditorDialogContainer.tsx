@@ -184,6 +184,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
   const onSnippetSelected = (snippet: { label: string; value: string }) => {
     const cursorPosition = editorRef.current.getCursorPosition();
     editorRef.current.session.insert(cursorPosition, snippet.value);
+    editorRef.current.focus();
     closeSnippets();
   };
 
@@ -233,6 +234,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
         <ConditionalLoadingState isLoading={loading} classes={{ root: classes.loadingState }}>
           <AceEditor
             ref={editorRef}
+            autoFocus={!readonly}
             mode={`ace/mode/${mode}`}
             value={content ?? ''}
             onChange={onEditorChanges}

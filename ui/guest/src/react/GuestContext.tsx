@@ -44,6 +44,11 @@ export function useGuestContext(): GuestContextProps {
   return useContext(GuestContext);
 }
 
+export function useIsAuthoring(): boolean {
+  const context = useGuestContext();
+  return Boolean(context?.editMode && context.hasHost);
+}
+
 export function GuestContextProvider(props): JSX.Element {
   const value = useMemo(() => props.value, [props.value]);
   return <GuestContext.Provider {...props} value={value} />;

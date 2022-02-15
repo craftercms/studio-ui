@@ -165,7 +165,7 @@ const messages = defineMessages({
   },
   craftercms: {
     id: 'common.craftercms',
-    defaultMessage: 'Crafter CMS'
+    defaultMessage: 'CrafterCMS'
   },
   searchEngine: {
     id: 'common.searchEngine',
@@ -312,7 +312,7 @@ export default function PluginDetailsView(props: PluginDetailsViewProps) {
               <Alert severity="error" className={classes.detailsNotCompatible}>
                 <FormattedMessage
                   id="pluginDetails.notCompatible"
-                  defaultMessage="This blueprint is not compatible with your current version of Crafter CMS."
+                  defaultMessage="This blueprint is not compatible with your current version of CrafterCMS."
                 />
               </Alert>
             )}
