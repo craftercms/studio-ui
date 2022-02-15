@@ -30,12 +30,12 @@ import { useSelection } from '../../hooks/useSelection';
 
 interface LogConsoleGridUIProps {
   logEvents: LogEvent[];
-  showSite?: boolean;
+  showSiteColumn?: boolean;
   onLogEventDetails(logEvent: LogEvent): void;
 }
 
 export default function LogConsoleGridUI(props: LogConsoleGridUIProps) {
-  const { logEvents, onLogEventDetails, showSite } = props;
+  const { logEvents, onLogEventDetails, showSiteColumn } = props;
   const localeBranch = useSelection((state) => state.uiConfig.locale);
 
   return (
@@ -58,8 +58,8 @@ export default function LogConsoleGridUI(props: LogConsoleGridUIProps) {
                 <FormattedMessage id="words.thread" defaultMessage="Thread" />
               </Typography>
             </GlobalAppGridCell>
-            {showSite && (
-              <GlobalAppGridCell align="left" className="width30">
+            {showSiteColumn && (
+              <GlobalAppGridCell align="left">
                 <Typography variant="subtitle2">
                   <FormattedMessage id="words.site" defaultMessage="Site" />
                 </Typography>
@@ -89,9 +89,9 @@ export default function LogConsoleGridUI(props: LogConsoleGridUIProps) {
               <GlobalAppGridCell align="left" className="ellipsis">
                 {logEvent.thread}
               </GlobalAppGridCell>
-              {showSite && (
-                <GlobalAppGridCell align="left" className="ellipsis">
-                  {logEvent.site}
+              {showSiteColumn && (
+                <GlobalAppGridCell title={logEvent.site} align="left" className="ellipsis">
+                  {logEvent.site.replace(/(.{30})..+/, '$1…')}
                 </GlobalAppGridCell>
               )}
               <GlobalAppGridCell title={logEvent.message} align="left" className="ellipsis maxWidth300">
