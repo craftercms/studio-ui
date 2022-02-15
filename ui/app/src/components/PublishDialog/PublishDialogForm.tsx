@@ -53,6 +53,10 @@ const messages = defineMessages({
     id: 'publishForm.schedulingLater',
     defaultMessage: 'Later'
   },
+  schedulingLaterDisabled: {
+    id: 'publishForm.schedulingLaterDisabled',
+    defaultMessage: 'Later (disabled on first publish)'
+  },
   publishingTarget: {
     id: 'common.publishingTarget',
     defaultMessage: 'Publishing Target'
@@ -164,6 +168,7 @@ const useStyles = makeStyles((theme) =>
 export type PublishFormProps = Pick<
   PublishDialogUIProps,
   | 'state'
+  | 'published'
   | 'showEmailCheckbox'
   | 'showRequestApproval'
   | 'publishingTargetsStatus'
@@ -183,6 +188,7 @@ export function PublishDialogForm(props: PublishFormProps) {
   const { formatMessage } = useIntl();
   const {
     state,
+    published,
     showEmailCheckbox,
     showRequestApproval,
     publishingChannels,
@@ -271,9 +277,11 @@ export function PublishDialogForm(props: PublishFormProps) {
           <FormControlLabel
             value="custom"
             control={<Radio color="primary" className={classes.radioInput} />}
-            label={formatMessage(messages.schedulingLater)}
+            label={
+              published ? formatMessage(messages.schedulingLater) : formatMessage(messages.schedulingLaterDisabled)
+            }
             classes={{ label: classes.formInputs }}
-            disabled={disabled}
+            disabled={!published || disabled}
           />
         </RadioGroup>
         <Collapse

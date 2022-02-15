@@ -97,14 +97,7 @@ YAHOO.extend(
           var contentType = _self.contentType,
             path = '/config/studio/content-types' + contentType + '/controller.groovy';
 
-          CrafterCMSNext.system.store.dispatch({
-            type: 'SHOW_CODE_EDITOR_DIALOG',
-            payload: {
-              path,
-              contentType,
-              mode: 'groovy'
-            }
-          });
+          CStudioAuthoring.Operations.openCodeEditor({ path, contentType, mode: 'groovy' });
         };
       }
     }

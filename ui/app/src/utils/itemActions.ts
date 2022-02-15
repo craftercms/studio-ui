@@ -817,11 +817,13 @@ export const itemActionDispatcher = ({
         break;
       }
       case 'viewCode': {
+        const mode = getEditorMode(item);
         dispatch(
-          showCodeEditorDialog({
-            path: item.path,
-            mode: getEditorMode(item),
-            readonly: true
+          showPreviewDialog({
+            type: 'editor',
+            title: item.label,
+            url: item.path,
+            mode
           })
         );
         break;

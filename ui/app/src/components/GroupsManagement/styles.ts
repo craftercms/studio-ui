@@ -14,33 +14,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { MutableRefObject } from 'react';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 
-export interface SplitButtonOption {
-  id: string;
-  label: string;
-  callback(e): void;
-}
+const useStyles = makeStyles(() =>
+  createStyles({
+    searchBarRoot: {
+      transition: 'width 500ms',
+      width: '210px',
+      '&.hidden': {
+        width: '50px',
+        border: '0',
+        background: 'none',
+        '& input': {
+          visibility: 'hidden'
+        }
+      }
+    }
+  })
+);
 
-export interface SplitButtonProps {
-  options: SplitButtonOption[];
-  defaultSelected?: string;
-  disablePortal?: boolean;
-  disabled?: boolean;
-  loading?: boolean;
-  storageKey?: string;
-}
-
-export interface SplitButtonUIProps {
-  options: SplitButtonOption[];
-  disablePortal?: boolean;
-  loading?: boolean;
-  disabled?: boolean;
-  anchorRef: MutableRefObject<HTMLDivElement>;
-  selectedIndex: number;
-  open: boolean;
-  handleClick(e): void;
-  handleToggle(e): void;
-  handleClose(e): void;
-  handleMenuItemClick(e, index): void;
-}
+export default useStyles;

@@ -27,6 +27,7 @@ export const registerComponents = () => {
       () => import('@mui/icons-material/PauseCircleOutlineOutlined')
     ),
     '@mui/icons-material/LockOpenRounded': lazy(() => import('@mui/icons-material/LockOpenRounded')),
+    '@mui/icons-material/EditRounded': lazy(() => import('@mui/icons-material/EditRounded')),
     '@mui/icons-material/OpenInFullRounded': lazy(() => import('@mui/icons-material/OpenInFullRounded')),
     '@mui/icons-material/RemoveRounded': lazy(() => import('@mui/icons-material/RemoveRounded')),
     '@mui/icons-material/CloseRounded': lazy(() => import('@mui/icons-material/CloseRounded')),

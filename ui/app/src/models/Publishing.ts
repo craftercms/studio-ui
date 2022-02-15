@@ -47,6 +47,7 @@ export interface PublishingStatus {
   status: 'ready' | 'processing' | 'publishing' | 'queued' | 'stopped' | 'error';
   lockOwner: string;
   lockTTL: string;
+  published: boolean;
   publishingTarget: string;
   submissionId: string;
   numberOfItems: number;
@@ -65,8 +66,6 @@ export type PublishOnDemandMode = 'studio' | 'git';
 export interface PublishingTarget {
   name: string;
   order: number;
-  publish: boolean;
-  updateStatus: boolean;
 }
 
 export interface PublishingParams {

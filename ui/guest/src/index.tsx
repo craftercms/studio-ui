@@ -15,20 +15,18 @@
  */
 
 import React from 'react';
-import ReactDOM from 'react-dom';
-import Guest, { GuestProps } from './react/Guest';
+import ReactDOM, { unmountComponentAtNode } from 'react-dom';
+import ExperienceBuilder, { ExperienceBuilderProps } from './react/ExperienceBuilder';
 import GuestProxy from './react/GuestProxy';
 import ContentInstance from '@craftercms/studio-ui/models/ContentInstance';
 import { nnou } from '@craftercms/studio-ui/utils/object';
 import * as elementRegistry from './elementRegistry';
 import * as iceRegistry from './iceRegistry';
 import * as contentController from './contentController';
-import { fromTopic } from './utils/communicator';
+import { fromTopic, post } from './utils/communicator';
 import queryString from 'query-string';
-
-export interface BaseCrafterConfig {
-  baseUrl?: string;
-}
+import { crafterConf } from '@craftercms/classes';
+import { fetchIsAuthoring, BaseCrafterConfig } from '@craftercms/ice';
 
 export interface ICEAttributes {
   'data-craftercms-model-path': string;
@@ -68,22 +66,35 @@ export function getICEAttributes(config: ICEConfig): ICEAttributes {
   return attributes;
 }
 
-export function fetchIsAuthoring(config?: BaseCrafterConfig): Promise<boolean> {
-  config = { baseUrl: '', ...(config || {}) };
-  return fetch(`${config.baseUrl}/api/1/config/preview.json`)
-    .then((response) => response.json())
-    .then((response) => response.preview);
+export { fetchIsAuthoring };
+
+export function addAuthoringSupport(config?: Partial<BaseCrafterConfig>): Promise<any> {
+  config = crafterConf.mix(config);
+  return new Promise((resolve) => {
+    const script = document.createElement('script');
+    script.src = `${config.baseUrl}/studio/static-assets/scripts/craftercms-xb.umd.js`;
+    script.addEventListener('load', () => {
+      // @ts-ignore
+      resolve(window.craftercms?.xb);
+    });
+    document.head.appendChild(script);
+  });
 }
 
-export function initInContextEditing(props: GuestProps) {
+export function initExperienceBuilder(props: ExperienceBuilderProps) {
   const guestProxyElement = document.createElement('craftercms-guest-proxy');
   const { crafterCMSGuestDisabled } = queryString.parse(window.location.search);
   ReactDOM.render(
-    <Guest isAuthoring={crafterCMSGuestDisabled !== 'true'} {...props}>
+    // @ts-ignore - typing system is not playing nice with the {path} | {model} options of GuestProps
+    <ExperienceBuilder isAuthoring={crafterCMSGuestDisabled !== 'true'} {...props}>
       <GuestProxy />
-    </Guest>,
+    </ExperienceBuilder>,
     guestProxyElement
   );
+  return { unmount: () => unmountComponentAtNode(guestProxyElement) };
 }
 
-export { elementRegistry, iceRegistry, contentController, fromTopic };
+/** @deprecated Use `initExperienceBuilder` instead. */
+export const initInContextEditing = initExperienceBuilder;
+
+export { elementRegistry, iceRegistry, contentController, fromTopic, post };

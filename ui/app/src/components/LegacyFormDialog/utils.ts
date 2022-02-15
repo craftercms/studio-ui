@@ -31,6 +31,8 @@ export interface LegacyFormDialogBaseProps {
   isNewContent?: boolean;
   inProgress?: boolean;
   pendingChanges?: boolean;
+  disableOnClose?: boolean;
+  disableHeader?: boolean;
   iceGroupId?: string;
   newEmbedded?: {
     contentType: string;

@@ -21,6 +21,7 @@ export interface TinymceOptions extends Settings {
   paste_postprocess?(plugin: string, args?: {}): void;
   code_editor_inline?: boolean;
   code_editor_wrap?: boolean;
+  craftercms_paste_cleanup?: boolean;
 }
 
 export interface RteSetup {

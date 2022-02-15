@@ -3,11 +3,12 @@
   "compilerOptions": {
     "baseUrl": "./src",
     "rootDir": "./src",
-    "outDir": "./build_tsc",
-    "module": "esnext",
+    "outDir": "./build_tsc/node",
+    "module": "CommonJS",
     "target": "ES6",
     "importHelpers": true,
-    "composite": true,
+    "composite": false,
+    "declaration": true,
     "downlevelIteration": true,
     "paths": {
       "react": ["../../../node_modules/react"],

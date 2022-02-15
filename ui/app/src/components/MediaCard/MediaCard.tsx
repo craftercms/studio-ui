@@ -54,8 +54,9 @@ const useStyles = makeStyles((theme: Theme) =>
       '& .cardSubtitle': {
         overflow: 'hidden',
         display: '-webkit-box',
-        '-webkit-line-clamp': 1,
-        '-webkit-box-orient': 'vertical'
+        '-webkit-line-clamp': 2,
+        '-webkit-box-orient': 'vertical',
+        wordBreak: 'break-all'
       },
       position: 'relative'
     },
@@ -249,11 +250,14 @@ function MediaCard(props: MediaCardProps) {
         <CardHeader
           title={name}
           subheader={
-            hasSubheader
-              ? `${type}, ${formatMessage(translations.itemLastEdition, {
+            hasSubheader ? (
+              <>
+                {`${type}, ${formatMessage(translations.itemLastEdition, {
                   time: moment(item.lastModified).fromNow()
-                })}`
-              : null
+                })}`}
+                <div title={item.path}>{item.path}</div>
+              </>
+            ) : null
           }
           avatar={Avatar ? <Avatar /> : null}
           classes={{ root: classes.cardHeaderRoot, avatar: classes.avatar }}
