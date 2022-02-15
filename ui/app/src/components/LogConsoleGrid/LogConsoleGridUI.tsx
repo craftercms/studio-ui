@@ -91,7 +91,7 @@ export default function LogConsoleGridUI(props: LogConsoleGridUIProps) {
               </GlobalAppGridCell>
               {showSiteColumn && (
                 <GlobalAppGridCell title={logEvent.site} align="left" className="ellipsis">
-                  {logEvent.site.replace(/(.{30})..+/, '$1…')}
+                  {logEvent.site.replace(/(.{30})..+/, '$1...')}
                 </GlobalAppGridCell>
               )}
               <GlobalAppGridCell title={logEvent.message} align="left" className="ellipsis maxWidth300">
