@@ -73,9 +73,6 @@ export const defaultThemeOptions: ThemeOptions = (function () {
           root: {
             '&:before': {
               display: 'none'
-            },
-            '&$expanded': {
-              margin: '0'
             }
           }
         }
@@ -83,10 +80,7 @@ export const defaultThemeOptions: ThemeOptions = (function () {
       MuiAccordionSummary: {
         styleOverrides: {
           root: {
-            '&$expanded': {
-              minHeight: 'auto'
-            },
-            '&:hover:not($disabled)': {
+            '&:hover:not(.Mui-disabled)': {
               background: defaultTheme.palette.action.hover
             }
           },
@@ -94,13 +88,6 @@ export const defaultThemeOptions: ThemeOptions = (function () {
             '&$expanded': {
               margin: '12px 0'
             }
-          }
-        }
-      },
-      MuiAccordionDetails: {
-        styleOverrides: {
-          root: {
-            display: 'block'
           }
         }
       },

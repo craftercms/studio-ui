@@ -48,6 +48,7 @@ import { CrafterCMSEpic } from '../store';
 import { getSystemLink } from '../../utils/system';
 
 export default [
+  // region pushToolsPanelPage
   (action$, state$) =>
     action$.pipe(
       ofType(pushToolsPanelPage.type),
@@ -60,6 +61,8 @@ export default [
       }),
       ignoreElements()
     ),
+  // endregion
+  // region popToolsPanelPage
   (action$, state$) =>
     action$.pipe(
       ofType(popToolsPanelPage.type),
@@ -78,6 +81,7 @@ export default [
       }),
       ignoreElements()
     ),
+  // endregion
   // region setPreviewEditMode
   (action$, state$) =>
     action$.pipe(
@@ -205,7 +209,8 @@ export default [
   (action$, state$) =>
     action$.pipe(
       ofType(guestCheckOut.type),
+      filter(({ payload }) => Boolean(payload?.path)),
       map(({ payload }) => conditionallyUnlockItem({ path: payload.path }))
     )
-  // region
+  // endregion
 ] as CrafterCMSEpic[];
