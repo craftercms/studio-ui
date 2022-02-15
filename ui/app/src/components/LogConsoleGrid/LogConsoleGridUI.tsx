@@ -30,12 +30,11 @@ import { useSelection } from '../../hooks/useSelection';
 
 interface LogConsoleGridUIProps {
   logEvents: LogEvent[];
-  showSite?: boolean;
   onLogEventDetails(logEvent: LogEvent): void;
 }
 
 export default function LogConsoleGridUI(props: LogConsoleGridUIProps) {
-  const { logEvents, onLogEventDetails, showSite } = props;
+  const { logEvents, onLogEventDetails } = props;
   const localeBranch = useSelection((state) => state.uiConfig.locale);
 
   return (
@@ -58,13 +57,11 @@ export default function LogConsoleGridUI(props: LogConsoleGridUIProps) {
                 <FormattedMessage id="words.thread" defaultMessage="Thread" />
               </Typography>
             </GlobalAppGridCell>
-            {showSite && (
-              <GlobalAppGridCell align="left" className="width30">
-                <Typography variant="subtitle2">
-                  <FormattedMessage id="words.site" defaultMessage="Site" />
-                </Typography>
-              </GlobalAppGridCell>
-            )}
+            <GlobalAppGridCell align="left" className="width20">
+              <Typography variant="subtitle2">
+                <FormattedMessage id="words.site" defaultMessage="Site" />
+              </Typography>
+            </GlobalAppGridCell>
             <GlobalAppGridCell align="left" className="width70">
               <Typography variant="subtitle2">
                 <FormattedMessage id="words.message" defaultMessage="Message" />
@@ -89,11 +86,9 @@ export default function LogConsoleGridUI(props: LogConsoleGridUIProps) {
               <GlobalAppGridCell align="left" className="ellipsis">
                 {logEvent.thread}
               </GlobalAppGridCell>
-              {showSite && (
-                <GlobalAppGridCell align="left" className="ellipsis">
-                  {logEvent.site}
-                </GlobalAppGridCell>
-              )}
+              <GlobalAppGridCell align="left" className="ellipsis">
+                {logEvent.site}
+              </GlobalAppGridCell>
               <GlobalAppGridCell title={logEvent.message} align="left" className="ellipsis maxWidth300">
                 {logEvent.message}
               </GlobalAppGridCell>
