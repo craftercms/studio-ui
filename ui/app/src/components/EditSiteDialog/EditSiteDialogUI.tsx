@@ -62,7 +62,7 @@ export function EditSiteDialogUI(props: EditSiteDialogUIProps) {
                   fullWidth
                   id="name"
                   name="name"
-                  label={<FormattedMessage id="editSiteDialog.siteName" defaultMessage="Site Name" />}
+                  label={<FormattedMessage id="editSiteDialog.siteName" defaultMessage="Project Name" />}
                   onChange={(event) => onSiteNameChange(event)}
                   onKeyPress={onKeyPress}
                   value={siteName}
@@ -82,12 +82,12 @@ export function EditSiteDialogUI(props: EditSiteDialogUIProps) {
                 <TextField
                   id="siteId"
                   name="id"
-                  label={<FormattedMessage id="editSiteDialog.siteId" defaultMessage="Site ID" />}
+                  label={<FormattedMessage id="editSiteDialog.siteId" defaultMessage="Project ID" />}
                   fullWidth
                   value={siteId}
                   disabled
                   helperText={
-                    <FormattedMessage id="editSiteDialog.notEditable" defaultMessage="The site id is not editable" />
+                    <FormattedMessage id="editSiteDialog.notEditable" defaultMessage="The project id is not editable" />
                   }
                 />
               </Grid>
@@ -95,7 +95,7 @@ export function EditSiteDialogUI(props: EditSiteDialogUIProps) {
                 <TextField
                   id="description"
                   name="description"
-                  label={<FormattedMessage id="editSiteDialog.siteDescription" defaultMessage="Site Description" />}
+                  label={<FormattedMessage id="editSiteDialog.siteDescription" defaultMessage="Project Description" />}
                   fullWidth
                   multiline
                   onChange={(event) => onSiteDescriptionChange(event.target.value)}

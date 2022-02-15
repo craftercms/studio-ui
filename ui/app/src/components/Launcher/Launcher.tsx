@@ -81,7 +81,7 @@ export interface LauncherStateProps {
 const messages = defineMessages({
   mySites: {
     id: 'globalMenu.mySites',
-    defaultMessage: 'My Sites'
+    defaultMessage: 'My Projects'
   },
   preview: {
     id: 'words.preview',
@@ -304,7 +304,7 @@ const SitesRail = ({ classes, formatMessage, sites, site, onSiteCardClick, optio
           </List>
         ) : (
           <EmptyState
-            title={<FormattedMessage id="globalMenu.noSitesMessage" defaultMessage="No sites to display." />}
+            title={<FormattedMessage id="globalMenu.noSitesMessage" defaultMessage="No projects to display." />}
           />
         )}
       </div>

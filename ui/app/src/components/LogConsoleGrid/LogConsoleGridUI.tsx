@@ -59,7 +59,7 @@ export default function LogConsoleGridUI(props: LogConsoleGridUIProps) {
             </GlobalAppGridCell>
             <GlobalAppGridCell align="left" className="width20">
               <Typography variant="subtitle2">
-                <FormattedMessage id="words.site" defaultMessage="Site" />
+                <FormattedMessage id="words.project" defaultMessage="Project" />
               </Typography>
             </GlobalAppGridCell>
             <GlobalAppGridCell align="left" className="width70">

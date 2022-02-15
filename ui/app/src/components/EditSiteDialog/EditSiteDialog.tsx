@@ -24,7 +24,7 @@ export function EditSiteDialog(props: EditSiteDialogProps) {
   const { site, onSaveSuccess, onSiteImageChange, isSubmitting, ...rest } = props;
   return (
     <EnhancedDialog
-      title={<FormattedMessage id="editSiteDialog.title" defaultMessage="Edit Site" />}
+      title={<FormattedMessage id="editSiteDialog.title" defaultMessage="Edit Project" />}
       maxWidth="md"
       isSubmitting={isSubmitting}
       {...rest}

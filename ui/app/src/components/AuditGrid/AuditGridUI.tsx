@@ -72,7 +72,7 @@ export const translations = defineMessages({
   },
   siteName: {
     id: 'auditGrid.siteName',
-    defaultMessage: 'Site'
+    defaultMessage: 'Project'
   },
   operation: {
     id: 'auditGrid.operation',

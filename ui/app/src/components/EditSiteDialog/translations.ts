@@ -19,7 +19,7 @@ import { defineMessages } from 'react-intl';
 export const translations = defineMessages({
   siteNameRequired: {
     id: 'editSiteDialog.siteNameRequired',
-    defaultMessage: 'Site Name is required.'
+    defaultMessage: 'Project Name is required.'
   },
   siteNameExists: {
     id: 'editSiteDialog.sitenameExists',

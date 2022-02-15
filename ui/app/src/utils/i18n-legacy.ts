@@ -822,8 +822,8 @@ export const transcodedVideoPickerControlMessages = defineMessages({
 
 export const globalMenuMessages = defineMessages({
   'home.globalMenu.sites': {
-    id: 'words.sites',
-    defaultMessage: 'Sites'
+    id: 'words.projects',
+    defaultMessage: 'Projects'
   },
   'home.globalMenu.users': {
     id: 'words.users',

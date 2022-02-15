@@ -58,11 +58,11 @@ interface BlueprintFormProps {
 const messages = defineMessages({
   siteId: {
     id: 'createSiteDialog.siteId',
-    defaultMessage: 'Site ID'
+    defaultMessage: 'Project ID'
   },
   siteName: {
     id: 'createSiteDialog.siteName',
-    defaultMessage: 'Site Name'
+    defaultMessage: 'Project Name'
   },
   description: {
     id: 'createSiteDialog.description',
@@ -90,7 +90,7 @@ const messages = defineMessages({
   },
   cantStart: {
     id: 'createSiteDialog.cantStart',
-    defaultMessage: 'Site names may not start with zeros, dashes (-) or underscores (_).'
+    defaultMessage: 'Project names may not start with zeros, dashes (-) or underscores (_).'
   },
   sandboxBranch: {
     id: 'createSiteDialog.sandboxBranch',

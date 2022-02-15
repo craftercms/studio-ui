@@ -259,7 +259,7 @@ CStudioAuthoring.Messages.registerBundle('siteDropdown', 'es', {
   templates: 'Plantillas',
   scripts: 'Scripts',
   adminConsole: 'Consola de Administración',
-  siteconfig: 'Configuración del sitio',
+  siteconfig: 'Configuración del proyecto',
   previewSync: 'Vista previa de Sincronización',
   syncrepo: 'Sincronizar del Repositorio',
   allSites: 'Todos los Sitios',

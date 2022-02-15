@@ -133,7 +133,7 @@ export function SiteToolsApp(props: SiteToolsAppProps) {
                 title={
                   <FormattedMessage
                     id="siteTools.toolListingNotConfigured"
-                    defaultMessage="The site tools list has not been set"
+                    defaultMessage="The project tools list has not been set"
                   />
                 }
                 subtitle={

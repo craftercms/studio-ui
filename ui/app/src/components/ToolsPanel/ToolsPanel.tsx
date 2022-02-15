@@ -42,7 +42,7 @@ import { useActiveSite } from '../../hooks/useActiveSite';
 defineMessages({
   previewSiteExplorerPanelTitle: {
     id: 'previewSiteExplorerPanel.title',
-    defaultMessage: 'Site Explorer'
+    defaultMessage: 'Project Explorer'
   }
 });
 
