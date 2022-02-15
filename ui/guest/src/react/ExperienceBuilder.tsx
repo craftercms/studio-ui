@@ -375,7 +375,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
         take(1)
       ).subscribe(() => setSnack({
         duration: 8000,
-        message: 'In-context editing is disabled: page running out of Crafter CMS frame.'
+        message: 'In-context editing is disabled: page running out of CrafterCMS frame.'
       }));
     }
   }, [dispatch, hasHost]);

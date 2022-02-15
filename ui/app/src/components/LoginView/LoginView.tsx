@@ -90,7 +90,7 @@ type SubViewProps = React.PropsWithChildren<{
 const translations = defineMessages({
   loginDialogTitle: {
     id: 'loginView.dialogTitleText',
-    defaultMessage: 'Login to Crafter CMS'
+    defaultMessage: 'Login to CrafterCMS'
   },
   incorrectCredentialsMessage: {
     id: 'loginView.incorrectCredentialsMessage',
