@@ -69,7 +69,7 @@ crafterDefine(
           console &&
           console.warn &&
           console.warn(
-            "[Crafter CMS] Host is not running inside of Studio as it's parent window. " +
+            "[CrafterCMS] Host is not running inside of Studio as it's parent window. " +
               'ICE mechanics will be disabled. Configure your authoring Environment to point to ' +
               `'${window.origin}' if you wish to enable In Context Editing.`
           )

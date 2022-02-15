@@ -63,7 +63,7 @@
       <div class="container-fluid">
         <div class="navbar-header">
           <a class="navbar-brand" href="/studio/site-dashboard">
-            <img src="/studio/static-assets/images/logo.svg" alt="Crafter CMS">
+            <img src="/studio/static-assets/images/logo.svg" alt="CrafterCMS">
           </a>
         </div>
       </div>

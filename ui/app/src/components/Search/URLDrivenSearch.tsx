@@ -178,8 +178,8 @@ export function URLDrivenSearch(props: URLDrivenSearchProps) {
         } else if (formatParameters.filters[key].includes('TO')) {
           let range = formatParameters.filters[key].split('TO');
           formatParameters.filters[key] = {
-            min: range[0] !== '-Infinity' && range[0] !== '' ? range[0] : null,
-            max: range[1] !== 'Infinity' && range[1] !== '' ? range[1] : null
+            min: range[0] !== null && range[0] !== '' ? range[0] : null,
+            max: range[1] !== null && range[1] !== '' ? range[1] : null
           };
         }
       });

@@ -64,7 +64,7 @@ export function AboutCrafterCMSView() {
               <Typography variant="body2">
                 <FormattedMessage
                   id="aboutView.attribution"
-                  defaultMessage="Crafter CMS is made possible by these other <a>open source software projects</a>."
+                  defaultMessage="CrafterCMS is made possible by these other <a>open source software projects</a>."
                   values={{
                     a: (msg) => (
                       <Link

@@ -184,6 +184,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
   const onSnippetSelected = (snippet: { label: string; value: string }) => {
     const cursorPosition = editorRef.current.getCursorPosition();
     editorRef.current.session.insert(cursorPosition, snippet.value);
+    editorRef.current.focus();
     closeSnippets();
   };
 

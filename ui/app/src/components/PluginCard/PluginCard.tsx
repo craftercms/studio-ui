@@ -167,7 +167,7 @@ const messages = defineMessages({
   },
   crafterCms: {
     id: 'plugin.crafterCMS',
-    defaultMessage: 'Crafter CMS'
+    defaultMessage: 'CrafterCMS'
   },
   by: {
     id: 'plugin.by',

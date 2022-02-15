@@ -169,8 +169,8 @@ const filterToFacet = (filterKey, filterValue) => {
 
     values[id] = {
       count: 0,
-      from: rangeStart ?? '-Infinity',
-      to: rangeEnd ?? 'Infinity'
+      from: rangeStart ?? null,
+      to: rangeEnd ?? null
     };
   }
 
