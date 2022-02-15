@@ -70,7 +70,7 @@ import {
   intl$,
   setStoredLanguage
 } from './i18n';
-import { getHostToHostBus, getHostToGuestBus, getGuestToHostBus } from '../modules/Preview/previewContext';
+import { getHostToHostBus } from '../modules/Preview/previewContext';
 import { StandardAction } from '../models/StandardAction';
 import { createCustomDocumentEventListener } from './dom';
 
@@ -122,8 +122,6 @@ interface CodebaseBridge {
     palette: any;
     store: CrafterCMSStore;
     getHostToHostBus(): Subject<StandardAction>;
-    getHostToGuestBus(): Subject<StandardAction>;
-    getGuestToHostBus(): Subject<StandardAction>;
     getStore(): Observable<CrafterCMSStore>;
   };
 }
@@ -223,8 +221,6 @@ export function createCodebaseBridge() {
       palette,
       store: null,
       getHostToHostBus,
-      getHostToGuestBus,
-      getGuestToHostBus,
       getStore
     },
 
