@@ -123,7 +123,7 @@ export const define = function (id, deps, factory) {
       console.error(
         `${
           id ? `The "${id}" plugin` : 'A plugin'
-        } requires "${dep}" which is not provided by Crafter CMS. You should bundle this dependency with your plugin.`
+        } requires "${dep}" which is not provided by CrafterCMS. You should bundle this dependency with your plugin.`
       );
     return libs[dep];
   });

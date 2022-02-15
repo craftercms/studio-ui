@@ -111,7 +111,7 @@ const messages = defineMessages({
   },
   gitBlueprintDescription: {
     id: 'createSiteDialog.gitBlueprintDescription',
-    defaultMessage: 'Create a new site based on a Crafter CMS project in an existing, remote git repository.'
+    defaultMessage: 'Create a new site based on a CrafterCMS project in an existing, remote git repository.'
   },
   createSite: {
     id: 'createSiteDialog.createSite',

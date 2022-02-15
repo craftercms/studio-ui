@@ -16,7 +16,7 @@
   -->
 
 <page>
-  <internal-name>Crafter CMS Preview</internal-name>
+  <internal-name>CrafterCMS Preview</internal-name>
   <content-type>/page/preview-landing</content-type>
   <display-template>/templates/web/preview-landing.ftl</display-template>
   <merge-strategy>inherit-levels</merge-strategy>
