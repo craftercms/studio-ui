@@ -32,6 +32,6 @@ export const useStyles = makeStyles((theme) => ({
   },
   editor: {
     position: 'absolute',
-    backgroundColor: theme.palette.grey.A100
+    backgroundColor: theme.palette.grey['300']
   }
 }));
