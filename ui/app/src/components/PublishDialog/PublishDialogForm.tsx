@@ -27,7 +27,6 @@ import Collapse from '@mui/material/Collapse';
 import FormControl from '@mui/material/FormControl';
 import Link from '@mui/material/Link';
 import DateTimePicker from '../DateTimePicker/DateTimePicker';
-import palette from '../../styles/palette';
 import TextFieldWithMax from '../TextFieldWithMax/TextFieldWithMax';
 import GlobalState from '../../models/GlobalState';
 import FormLabel from '@mui/material/FormLabel';
@@ -140,7 +139,7 @@ const useStyles = makeStyles((theme) =>
         height: '100%',
         top: '0',
         left: '7px',
-        backgroundColor: theme.palette.mode === 'dark' ? theme.palette.background.paper : palette.gray.light2,
+        backgroundColor: theme.palette.background.paper,
         borderRadius: '5px'
       }
     },

@@ -213,6 +213,10 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
 
   return (
     <Accordion
+      square
+      disableGutters
+      elevation={0}
+      TransitionProps={{ unmountOnExit: true }}
       expanded={!state.collapsed}
       onChange={() => onChangeCollapsed(!state.collapsed)}
       className={clsx(
@@ -303,7 +307,6 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
           <TablePagination
             classes={{
               root: clsx(classes.pagination, props.classes?.paginationRoot),
-              selectRoot: 'hidden',
               toolbar: clsx(classes.paginationToolbar, classes.widgetSection)
             }}
             component="div"

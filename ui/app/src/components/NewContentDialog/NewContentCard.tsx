@@ -88,7 +88,12 @@ const CompactCardContent = (props) => {
   return (
     <>
       <CardMedia className={classes.compactMedia} image={src} title={imgTitle} />
-      <CardHeader title={headerTitle} subheader={subheader} titleTypographyProps={{ variant: 'body1' }} />
+      <CardHeader
+        title={headerTitle}
+        subheader={subheader}
+        titleTypographyProps={{ variant: 'body1' }}
+        subheaderTypographyProps={{ noWrap: true }}
+      />
     </>
   );
 };
