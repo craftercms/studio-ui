@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -300,7 +300,7 @@ export const contentTypesMessages = defineMessages({
   contenTypeWarningMessage: {
     id: 'contentType.contentTypeWarningMessage',
     defaultMessage:
-      'Please note Child Content datasource is being phased out of Crafter CMS. For components that need to be shared across pages or components, please use Shared Content instead. For components that belong exclusively to this content object, please use Embedded Content.'
+      'Please note Child Content datasource is being phased out of CrafterCMS. For components that need to be shared across pages or components, please use Shared Content instead. For components that belong exclusively to this content object, please use Embedded Content.'
   },
   useSharedContent: {
     id: 'contentType.useSharedContent',
@@ -947,7 +947,7 @@ export const rteControlMessages = defineMessages({
 export const ossAttribution = defineMessages({
   attribution: {
     id: 'aboutView.attribution',
-    defaultMessage: 'Crafter CMS is made possible by these other <a>open source software projects</a>.'
+    defaultMessage: 'CrafterCMS is made possible by these other <a>open source software projects</a>.'
   }
 });
 

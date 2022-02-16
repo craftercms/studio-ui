@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -111,7 +111,7 @@ const messages = defineMessages({
   },
   gitBlueprintDescription: {
     id: 'createSiteDialog.gitBlueprintDescription',
-    defaultMessage: 'Create a new site based on a Crafter CMS project in an existing, remote git repository.'
+    defaultMessage: 'Create a new site based on a CrafterCMS project in an existing, remote git repository.'
   },
   createSite: {
     id: 'createSiteDialog.createSite',
@@ -174,6 +174,11 @@ const siteInitialState: SiteState = {
     key: false
   },
   showIncompatible: true
+};
+
+const searchInitialState = {
+  searchKey: '',
+  searchSelected: false
 };
 
 const CustomTabs = withStyles({
@@ -317,10 +322,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
     global: false,
     errorResponse: null
   });
-  const [search, setSearch] = useState({
-    searchKey: '',
-    searchSelected: false
-  });
+  const [search, setSearch] = useState(searchInitialState);
   const [site, setSite] = useSpreadState(siteInitialState);
   const classes = useStyles();
   const finishRef = useRef(null);
@@ -443,6 +445,13 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
     site.showIncompatible
   ]);
 
+  function cleanDialogState() {
+    setDialog({ open: false, inProgress: false });
+    setSite(siteInitialState);
+    setSearch(searchInitialState);
+    setTab(0);
+  }
+
   function handleClose(event?: any, reason?: string) {
     if (reason === 'escapeKeyDown' && site.details.blueprint) {
       setSite({ details: { blueprint: null, index: null } });
@@ -452,7 +461,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
       return false;
     } else {
       // call externalClose fn
-      setDialog({ open: false, inProgress: false });
+      cleanDialogState();
       props.onClose?.();
     }
   }

@@ -112,9 +112,9 @@
 		getInfo : function() {
 			return {
 				longname : 'CStudioContextmenu',
-				author : 'Crafter Software',
-				authorurl : 'http://www.craftercms.org',
-				infourl : 'http://www.craftercms.org',
+				author : 'CrafterCMS',
+				authorurl : 'https://craftercms.org',
+				infourl : 'https://craftercms.org',
 				version : "1.0"
 			};
 		},

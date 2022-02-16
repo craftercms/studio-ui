@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -17,7 +17,7 @@
 import { Facet } from '../../models/Search';
 import { LookupTable } from '../../models/LookupTable';
 import { defineMessages, useIntl } from 'react-intl';
-import { formatBytes } from '../../utils/string';
+import { capitalize, formatBytes } from '../../utils/string';
 import RadioGroup from '@mui/material/RadioGroup';
 import { nnou } from '../../utils/object';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     width: '100%',
     overflow: 'hidden',
     display: '-webkit-box',
-    '-webkit-line-clamp': 2,
+    '-webkit-line-clamp': 1,
     '-webkit-box-orient': 'vertical'
   },
   checkboxRoot: {
@@ -68,7 +68,7 @@ export default function SiteSearchFilterRadios(props: FilterRadiosProps) {
     if (facetData.date) {
       return `${value.from}TODATE${value.to}ID${facet}${key}`;
     } else if (facetData.range) {
-      return `${value.from !== '-Infinity' ? value.from : ''}TO${value.to !== 'Infinity' ? value.to : ''}`;
+      return `${value.from !== null ? value.from : ''}TO${value.to !== null ? value.to : ''}`;
     } else {
       return key;
     }
@@ -76,21 +76,23 @@ export default function SiteSearchFilterRadios(props: FilterRadiosProps) {
 
   const formatLabel = (facet: string, key: string, value: any) => {
     if (facet === 'size') {
-      if (value.from === '-Infinity') {
+      if (value.from === null) {
         return `${formatMessage(messages.under, { value: formatBytes(value.to), unit: '' })}`;
-      } else if (value.to === 'Infinity') {
+      } else if (value.to === null) {
         return `${formatMessage(messages.above, { value: formatBytes(value.from), unit: '' })}`;
       } else {
         return `${formatBytes(value.from)} - ${formatBytes(value.to)}`;
       }
     } else if (facet === 'width' || facet === 'height') {
-      if (value.from === '-Infinity') {
+      if (value.from === null) {
         return `${formatMessage(messages.under, { value: value.to, unit: 'px' })}`;
-      } else if (value.to === 'Infinity') {
+      } else if (value.to === null) {
         return `${formatMessage(messages.above, { value: value.from, unit: 'px' })}`;
       } else {
         return `${value.from}px - ${value.to}px`;
       }
+    } else if (facet === 'last-edit-date') {
+      return capitalize(key.replace(/-/g, ' '));
     }
     return key;
   };
