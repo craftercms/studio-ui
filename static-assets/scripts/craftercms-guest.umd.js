@@ -21492,7 +21492,7 @@
   var api = init(defaultConverter, { path: '/' });
 
   /*
-   * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+   * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
    *
    * This program is free software: you can redistribute it and/or modify
    * it under the terms of the GNU General Public License version 3 as published by
@@ -23244,7 +23244,7 @@
   createAction('GO_TO_NEXT_PAGE');
 
   /*
-   * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+   * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
    *
    * This program is free software: you can redistribute it and/or modify
    * it under the terms of the GNU General Public License version 3 as published by
@@ -23346,7 +23346,7 @@
   }
 
   /*
-   * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+   * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
    *
    * This program is free software: you can redistribute it and/or modify
    * it under the terms of the GNU Lesser General Public License version 3
@@ -23464,7 +23464,7 @@
   };
 
   /*
-   * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+   * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
    *
    * This program is free software: you can redistribute it and/or modify
    * it under the terms of the GNU Lesser General Public License version 3
@@ -23506,7 +23506,7 @@
   }(Query);
 
   /*
-   * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+   * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
    *
    * This program is free software: you can redistribute it and/or modify
    * it under the terms of the GNU Lesser General Public License version 3
@@ -23555,7 +23555,7 @@
   }
 
   /*
-   * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+   * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
    *
    * This program is free software: you can redistribute it and/or modify
    * it under the terms of the GNU Lesser General Public License version 3
@@ -23584,7 +23584,7 @@
   })(log || (log = {}));
 
   /*
-   * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+   * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
    *
    * This program is free software: you can redistribute it and/or modify
    * it under the terms of the GNU Lesser General Public License version 3
@@ -24565,7 +24565,7 @@
   }(queryString));
 
   /*
-   * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+   * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
    *
    * This program is free software: you can redistribute it and/or modify
    * it under the terms of the GNU Lesser General Public License version 3
@@ -24671,7 +24671,7 @@
   var crafterConf = new ConfigManager();
 
   /*
-   * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+   * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
    *
    * This program is free software: you can redistribute it and/or modify
    * it under the terms of the GNU Lesser General Public License version 3
@@ -25244,7 +25244,7 @@
   })(typeof commonjsGlobal !== 'undefined' ? commonjsGlobal : typeof window !== 'undefined' ? window : commonjsGlobal);
 
   /*
-   * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+   * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
    *
    * This program is free software: you can redistribute it and/or modify
    * it under the terms of the GNU Lesser General Public License version 3
@@ -25284,7 +25284,7 @@
   }
 
   /*
-   * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+   * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
    *
    * This program is free software: you can redistribute it and/or modify
    * it under the terms of the GNU Lesser General Public License version 3
@@ -27296,7 +27296,7 @@
   }
 
   /*
-   * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+   * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
    *
    * This program is free software: you can redistribute it and/or modify
    * it under the terms of the GNU General Public License version 3 as published by
@@ -27978,7 +27978,7 @@
   });
 
   /*
-   * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+   * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
    *
    * This program is free software: you can redistribute it and/or modify
    * it under the terms of the GNU General Public License version 3 as published by
@@ -28017,7 +28017,7 @@
   }
 
   /*
-   * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+   * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
    *
    * This program is free software: you can redistribute it and/or modify
    * it under the terms of the GNU General Public License version 3 as published by
@@ -28639,7 +28639,7 @@
   });
 
   /*
-   * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+   * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
    *
    * This program is free software: you can redistribute it and/or modify
    * it under the terms of the GNU General Public License version 3 as published by
@@ -28961,7 +28961,7 @@
   }
 
   /*
-   * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+   * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
    *
    * This program is free software: you can redistribute it and/or modify
    * it under the terms of the GNU General Public License version 3 as published by
@@ -30127,7 +30127,7 @@
   }
 
   /*
-   * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+   * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
    *
    * This program is free software: you can redistribute it and/or modify
    * it under the terms of the GNU General Public License version 3 as published by
@@ -41939,7 +41939,7 @@
   })), 'ContentTypeField');
 
   /*
-   * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+   * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
    *
    * This program is free software: you can redistribute it and/or modify
    * it under the terms of the GNU General Public License version 3 as published by
@@ -42052,7 +42052,7 @@
   }
 
   /*
-   * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+   * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
    *
    * This program is free software: you can redistribute it and/or modify
    * it under the terms of the GNU General Public License version 3 as published by
@@ -42303,7 +42303,7 @@
   };
 
   /*
-   * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+   * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
    *
    * This program is free software: you can redistribute it and/or modify
    * it under the terms of the GNU General Public License version 3 as published by
@@ -42393,7 +42393,7 @@
   };
 
   /*
-   * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+   * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
    *
    * This program is free software: you can redistribute it and/or modify
    * it under the terms of the GNU General Public License version 3 as published by
@@ -42426,7 +42426,7 @@
   }
 
   /*
-   * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+   * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
    *
    * This program is free software: you can redistribute it and/or modify
    * it under the terms of the GNU General Public License version 3 as published by
@@ -42683,7 +42683,7 @@
   }
 
   /*
-   * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+   * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
    *
    * This program is free software: you can redistribute it and/or modify
    * it under the terms of the GNU General Public License version 3 as published by
@@ -42708,7 +42708,7 @@
   }
 
   /*
-   * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+   * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
    *
    * This program is free software: you can redistribute it and/or modify
    * it under the terms of the GNU General Public License version 3 as published by
@@ -42744,7 +42744,7 @@
   const setEditingStatus = /*#__PURE__*/createAction('set_editing_status');
 
   /*
-   * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+   * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
    *
    * This program is free software: you can redistribute it and/or modify
    * it under the terms of the GNU General Public License version 3 as published by
@@ -42800,7 +42800,7 @@
   }
 
   /*
-   * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+   * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
    *
    * This program is free software: you can redistribute it and/or modify
    * it under the terms of the GNU General Public License version 3 as published by
@@ -43047,7 +43047,7 @@
   }
 
   /*
-   * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+   * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
    *
    * This program is free software: you can redistribute it and/or modify
    * it under the terms of the GNU General Public License version 3 as published by
@@ -43633,7 +43633,7 @@
   };
 
   /*
-   * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+   * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
    *
    * This program is free software: you can redistribute it and/or modify
    * it under the terms of the GNU General Public License version 3 as published by
@@ -44339,7 +44339,7 @@
   });
 
   /*
-   * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+   * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
    *
    * This program is free software: you can redistribute it and/or modify
    * it under the terms of the GNU General Public License version 3 as published by
@@ -44390,7 +44390,7 @@
   state$.pipe(pluck('contentTypes'), distinctUntilChanged());
 
   /*
-   * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+   * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
    *
    * This program is free software: you can redistribute it and/or modify
    * it under the terms of the GNU General Public License version 3 as published by
@@ -44426,7 +44426,7 @@
   }
 
   /*
-   * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+   * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
    *
    * This program is free software: you can redistribute it and/or modify
    * it under the terms of the GNU General Public License version 3 as published by
@@ -44607,7 +44607,7 @@
   }), 'GroovyIcon');
 
   /*
-   * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+   * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
    *
    * This program is free software: you can redistribute it and/or modify
    * it under the terms of the GNU General Public License version 3 as published by
@@ -45029,7 +45029,7 @@
   } // Could use a more generic version...
 
   /*
-   * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+   * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
    *
    * This program is free software: you can redistribute it and/or modify
    * it under the terms of the GNU General Public License version 3 as published by
@@ -45065,7 +45065,7 @@
   }
 
   /*
-   * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+   * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
    *
    * This program is free software: you can redistribute it and/or modify
    * it under the terms of the GNU General Public License version 3 as published by
@@ -45100,7 +45100,7 @@
   };
 
   /*
-   * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+   * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
    *
    * This program is free software: you can redistribute it and/or modify
    * it under the terms of the GNU General Public License version 3 as published by
@@ -46540,7 +46540,7 @@
   }
 
   /*
-   * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+   * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
    *
    * This program is free software: you can redistribute it and/or modify
    * it under the terms of the GNU General Public License version 3 as published by
@@ -46957,7 +46957,7 @@
   }
 
   /*
-   * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+   * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
    *
    * This program is free software: you can redistribute it and/or modify
    * it under the terms of the GNU Lesser General Public License version 3
