@@ -127,26 +127,33 @@ const reducer = createReducer(initialState, {
     const { record } = action.payload as { record: ElementRecord };
     if (state.status === EditingStatus.LISTENING) {
       const { highlightMode } = state;
+      const iceId = record.iceIds[0];
+      const movableRecordId = iceRegistry.getMovableParentRecord(iceId);
       if (highlightMode === HighlightMode.ALL) {
         const highlight = getHoverData(record.id);
-        return { ...state, highlighted: { [record.id]: highlight } };
-      } else if (highlightMode === HighlightMode.MOVE_TARGETS) {
-        const iceId = record.iceIds[0];
-        const movableRecordId = iceRegistry.getMovableParentRecord(iceId);
         if (notNullOrUndefined(movableRecordId)) {
           const elementId = iceId === movableRecordId ? record.id : fromICEId(movableRecordId).id;
           const draggable = getDraggable(elementId);
-          const highlight = getHoverData(
-            // If (iceId == movableRecordId) the current record is already
-            // the one to show the highlight on.
-            elementId
-          );
           return {
             ...state,
-            highlighted: { [movableRecordId]: highlight },
+            highlighted: { [record.id]: highlight },
             draggable: draggable ? { [elementId]: draggable } : state.draggable
           };
         }
+        return { ...state, highlighted: { [record.id]: highlight } };
+      } else if (highlightMode === HighlightMode.MOVE_TARGETS && notNullOrUndefined(movableRecordId)) {
+        const elementId = iceId === movableRecordId ? record.id : fromICEId(movableRecordId).id;
+        const draggable = getDraggable(elementId);
+        const highlight = getHoverData(
+          // If (iceId == movableRecordId) the current record is already
+          // the one to show the highlight on.
+          elementId
+        );
+        return {
+          ...state,
+          highlighted: { [movableRecordId]: highlight },
+          draggable: draggable ? { [elementId]: draggable } : state.draggable
+        };
       }
     }
     return state;
