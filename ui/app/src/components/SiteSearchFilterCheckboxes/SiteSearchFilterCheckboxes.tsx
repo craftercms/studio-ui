@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     width: '100%',
     overflow: 'hidden',
     display: '-webkit-box',
-    '-webkit-line-clamp': 2,
+    '-webkit-line-clamp': 1,
     '-webkit-box-orient': 'vertical'
   },
   checkboxRoot: {

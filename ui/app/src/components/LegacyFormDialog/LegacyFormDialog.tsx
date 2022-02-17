@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -27,7 +27,7 @@ import { translations } from './translations';
 export function LegacyFormDialog(props: LegacyFormDialogProps) {
   const { formatMessage } = useIntl();
   const classes = useStyles();
-  const { open, inProgress, isMinimized, onMaximize, onMinimize, ...rest } = props;
+  const { open, inProgress, disableOnClose, disableHeader, isMinimized, onMaximize, onMinimize, ...rest } = props;
 
   const iframeRef = useRef<HTMLIFrameElement>();
 
@@ -58,16 +58,19 @@ export function LegacyFormDialog(props: LegacyFormDialogProps) {
         classes={{ paper: classes.dialog }}
         onClose={onClose}
       >
-        <DialogHeader
-          title={title}
-          onCloseButtonClick={onCloseButtonClick}
-          rightActions={[
-            {
-              icon: { id: '@mui/icons-material/RemoveRounded' },
-              onClick: onMinimize
-            }
-          ]}
-        />
+        {!disableHeader && (
+          <DialogHeader
+            title={title}
+            disabled={disableOnClose}
+            onCloseButtonClick={onCloseButtonClick}
+            rightActions={[
+              {
+                icon: { id: '@mui/icons-material/RemoveRounded' },
+                onClick: onMinimize
+              }
+            ]}
+          />
+        )}
         <EmbeddedLegacyContainer ref={iframeRef} inProgress={inProgress} onMinimize={onMinimize} {...rest} />
       </Dialog>
       <MinimizedBar open={isMinimized} onMaximize={onMaximize} title={title} />

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -437,6 +437,11 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         }
         case 'IS_REVIEWER': {
           getHostToGuestBus().next({ type: 'REPAINT_PENCILS' });
+          break;
+        }
+        case 'CHECK_OUT_GUEST': {
+          const path = getPathFromPreviewURL(payload.url);
+          dispatch(guestCheckOut({ path }));
           break;
         }
         // endregion

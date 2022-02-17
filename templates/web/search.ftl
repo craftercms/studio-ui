@@ -3,7 +3,7 @@
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <!--
-  ~ Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+  ~ Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
   ~
   ~ This program is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License version 3 as published by
@@ -50,7 +50,11 @@
     const openerChildSearchMgr = opener.CStudioAuthoring.ChildSearchManager;
     const searchConfig = openerChildSearchMgr.searches[searchId];
     const callback = searchConfig.saveCallback;
+
+    window.top.postMessage({ type:'EMBEDDED_LEGACY_FORM_DISABLE_HEADER' }, '*');
+
     const closeSearch = () => {
+      window.top.postMessage({ type:'EMBEDDED_LEGACY_FORM_ENABLE_HEADER' }, '*');
       window.close();
       $(window.frameElement.parentElement)
         .closest('.studio-ice-dialog')

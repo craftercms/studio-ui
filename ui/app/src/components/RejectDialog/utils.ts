@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -24,7 +24,7 @@ import React from 'react';
 import { CannedMessage } from '../../services/configuration';
 
 export type ApiState = { error: ApiResponse };
-export type Source = { items: SandboxItem[]; cannedMessages: CannedMessage[]; error: ApiResponse };
+export type Source = { items: SandboxItem[]; published: boolean; cannedMessages: CannedMessage[]; error: ApiResponse };
 export type Return = Partial<Source>;
 
 export interface RejectDialogContentUIProps {
@@ -41,6 +41,7 @@ export interface RejectDialogUIProps {
   rejectionComment: string;
   isSubmitDisabled: boolean;
   isSubmitting: boolean;
+  published: boolean;
   onRejectionReasonChange?(value: string): void;
   onCommentChange?(value: string): void;
   onUpdateChecked?(value?: string): void;

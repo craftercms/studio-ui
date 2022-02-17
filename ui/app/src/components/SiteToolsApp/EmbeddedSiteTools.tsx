@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -25,7 +25,11 @@ import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDial
 import { useDispatch } from 'react-redux';
 import { updateWidgetDialog } from '../../state/actions/dialogs';
 
-export const EmbeddedSiteToolsContainer = () => {
+interface EmbeddedSiteToolsProps {
+  onMinimize?: () => void;
+}
+
+export const EmbeddedSiteToolsContainer = (props: EmbeddedSiteToolsProps) => {
   const [width, setWidth] = useState(240);
   const [activeToolId, setActiveToolId] = useState<string>();
   const baseUrl = useSelection<string>((state) => state.env.authoringBase);
@@ -50,11 +54,11 @@ export const EmbeddedSiteToolsContainer = () => {
       sidebarWidth={width}
       onWidthChange={setWidth}
       onNavItemClick={onNavItemClick}
-      sidebarBelowToolbar={true}
-      hideSidebarLogo={true}
+      sidebarBelowToolbar
+      hideSidebarLogo
       showAppsButton={false}
       imageUrl={`${baseUrl}/static-assets/images/choose_option.svg`}
-      hideSidebarSiteSwitcher={true}
+      hideSidebarSiteSwitcher
       activeToolId={activeToolId}
       openSidebar={openSidebar || !activeToolId}
       tools={tools}
@@ -63,17 +67,21 @@ export const EmbeddedSiteToolsContainer = () => {
       }}
       onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
       onMinimize={() => {
-        dispatch(updateWidgetDialog({ isMinimized: true }));
+        if (props.onMinimize) {
+          props.onMinimize();
+        } else {
+          dispatch(updateWidgetDialog({ isMinimized: true }));
+        }
       }}
       mountMode="dialog"
     />
   );
 };
 
-export function EmbeddedSiteTools() {
+export function EmbeddedSiteTools(props: EmbeddedSiteToolsProps) {
   return (
     <GlobalAppContextProvider>
-      <EmbeddedSiteToolsContainer />
+      <EmbeddedSiteToolsContainer {...props} />
     </GlobalAppContextProvider>
   );
 }

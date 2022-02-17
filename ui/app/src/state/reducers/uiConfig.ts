@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -39,6 +39,11 @@ const initialState: GlobalState['uiConfig'] = {
     isFetching: false,
     localeCodes: null,
     defaultLocaleCode: null
+  },
+  upload: {
+    timeout: 30000,
+    maxActiveUploads: 1000,
+    maxSimultaneousUploads: 1
   },
   locale: {
     localeCode: getUserLocaleCode(),
@@ -148,9 +153,13 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
   }),
   [fetchSiteConfig.type]: (state) => ({ ...state }),
   [fetchSiteConfigComplete.type]: (state, { payload }) => {
-    const { cdataEscapedFieldPatterns, locale, publishing, site, usePreview3 } = payload;
+    const { cdataEscapedFieldPatterns, locale, publishing, site, usePreview3, upload } = payload;
     return {
       ...state,
+      upload: {
+        ...state.upload,
+        ...upload
+      },
       cdataEscapedFieldPatterns,
       locale: {
         ...state.locale,

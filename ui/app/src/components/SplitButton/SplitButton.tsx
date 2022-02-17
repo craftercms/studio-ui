@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -15,7 +15,6 @@
  */
 
 import React, { useEffect } from 'react';
-import PrimaryButton from '../PrimaryButton';
 import SplitButtonUI from './SplitButtonUI';
 import { SplitButtonProps } from './utils';
 import {
@@ -79,24 +78,19 @@ export function SplitButton(props: SplitButtonProps) {
   };
 
   return (
-    <>
-      {loading ? (
-        <PrimaryButton loading disabled />
-      ) : (
-        <SplitButtonUI
-          options={options}
-          disablePortal={disablePortal}
-          disabled={disabled}
-          anchorRef={anchorRef}
-          selectedIndex={selectedIndex}
-          handleClick={handleClick}
-          open={open}
-          handleToggle={handleToggle}
-          handleClose={handleClose}
-          handleMenuItemClick={handleMenuItemClick}
-        />
-      )}
-    </>
+    <SplitButtonUI
+      options={options}
+      loading={loading}
+      disablePortal={disablePortal}
+      disabled={disabled}
+      anchorRef={anchorRef}
+      selectedIndex={selectedIndex}
+      handleClick={handleClick}
+      open={open}
+      handleToggle={handleToggle}
+      handleClose={handleClose}
+      handleMenuItemClick={handleMenuItemClick}
+    />
   );
 }
 

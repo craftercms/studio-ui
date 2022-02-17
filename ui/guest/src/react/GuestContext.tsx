@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -42,6 +42,11 @@ const GuestContext = React.createContext<GuestContextProps>(null);
 
 export function useGuestContext(): GuestContextProps {
   return useContext(GuestContext);
+}
+
+export function useIsAuthoring(): boolean {
+  const context = useGuestContext();
+  return Boolean(context?.editMode && context.hasHost);
 }
 
 export function GuestContextProvider(props): JSX.Element {

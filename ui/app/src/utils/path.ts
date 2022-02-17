@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -163,7 +163,8 @@ export function getEditFormSrc({
   contentTypeId,
   isNewContent,
   iceGroupId,
-  newEmbedded
+  newEmbedded,
+  canEdit
 }: {
   path: string;
   selectedFields?: string;
@@ -177,12 +178,12 @@ export function getEditFormSrc({
   isNewContent?: boolean;
   iceGroupId?: string;
   newEmbedded?: string;
+  canEdit?: boolean;
 }): string {
   const qs = toQueryString({
     site,
     path,
     selectedFields,
-    type: 'form',
     readonly,
     isHidden,
     modelId,
@@ -190,7 +191,8 @@ export function getEditFormSrc({
     contentTypeId,
     isNewContent,
     iceId: iceGroupId,
-    newEmbedded
+    newEmbedded,
+    canEdit
   });
   return `${authoringBase}/legacy/form${qs}`;
 }

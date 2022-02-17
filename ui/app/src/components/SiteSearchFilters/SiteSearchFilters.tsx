@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -169,8 +169,8 @@ const filterToFacet = (filterKey, filterValue) => {
 
     values[id] = {
       count: 0,
-      from: rangeStart ?? '-Infinity',
-      to: rangeEnd ?? 'Infinity'
+      from: rangeStart ?? null,
+      to: rangeEnd ?? null
     };
   }
 

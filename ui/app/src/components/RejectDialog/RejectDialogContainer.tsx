@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -28,7 +28,8 @@ import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { batchActions } from '../../state/actions/misc';
 import { reject } from '../../services/workflow';
 import { useSpreadState } from '../../hooks/useSpreadState';
-import { pluckProps } from '../../utils/object';
+import { nnou, pluckProps } from '../../utils/object';
+import { fetchStatus } from '../../services/publishing';
 
 export function RejectDialogContainer(props: RejectDialogContainerProps) {
   const typeCustomReason = 'typeCustomReason';
@@ -37,6 +38,7 @@ export function RejectDialogContainer(props: RejectDialogContainerProps) {
   const [rejectionReason, setRejectionReason] = useState(typeCustomReason);
   const [rejectionComment, setRejectionComment] = useState('');
   const [cannedMessages, setCannedMessages] = useState<CannedMessage[]>(null);
+  const [published, setPublished] = useState<boolean>(null);
   const [apiState, setApiState] = useSpreadState({
     error: false,
     errorResponse: null
@@ -67,6 +69,12 @@ export function RejectDialogContainer(props: RejectDialogContainerProps) {
       }
     });
   }, [siteId, setApiState]);
+
+  useEffect(() => {
+    fetchStatus(siteId).subscribe(({ published }) => {
+      setPublished(published);
+    });
+  }, [siteId]);
 
   const updateChecked = (value) => {
     const itemExist = checkedItems.includes(value);
@@ -115,13 +123,14 @@ export function RejectDialogContainer(props: RejectDialogContainerProps) {
     () => ({
       items,
       cannedMessages,
+      published,
       error: apiState.errorResponse
     }),
-    [items, cannedMessages, apiState]
+    [items, cannedMessages, published, apiState.errorResponse]
   );
 
   const resource = useLogicResource<Return, Source>(rejectSource, {
-    shouldResolve: (source) => Boolean(source.items && source.cannedMessages),
+    shouldResolve: (source) => Boolean(source.items && nnou(source.published) && source.cannedMessages),
     shouldReject: (source) => false,
     shouldRenew: (source, resource) => resource.complete,
     resultSelector: (source) => pluckProps(source, 'items', 'cannedMessages'),
@@ -132,6 +141,7 @@ export function RejectDialogContainer(props: RejectDialogContainerProps) {
 
   return (
     <RejectDialogUI
+      published={published}
       resource={resource}
       checkedItems={checkedItems}
       rejectionReason={rejectionReason}

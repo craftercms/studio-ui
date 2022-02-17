@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -30,11 +30,12 @@ import { useSelection } from '../../hooks/useSelection';
 
 interface LogConsoleGridUIProps {
   logEvents: LogEvent[];
+  showSiteColumn?: boolean;
   onLogEventDetails(logEvent: LogEvent): void;
 }
 
 export default function LogConsoleGridUI(props: LogConsoleGridUIProps) {
-  const { logEvents, onLogEventDetails } = props;
+  const { logEvents, onLogEventDetails, showSiteColumn } = props;
   const localeBranch = useSelection((state) => state.uiConfig.locale);
 
   return (
@@ -47,22 +48,24 @@ export default function LogConsoleGridUI(props: LogConsoleGridUIProps) {
                 <FormattedMessage id="words.level" defaultMessage="Level" />
               </Typography>
             </GlobalAppGridCell>
-            <GlobalAppGridCell align="left" className="width25">
+            <GlobalAppGridCell align="left" className="width15">
               <Typography variant="subtitle2">
                 <FormattedMessage id="words.timestamp" defaultMessage="Timestamp" />
               </Typography>
             </GlobalAppGridCell>
-            <GlobalAppGridCell align="left" className="width25">
+            <GlobalAppGridCell align="left" className="width15">
               <Typography variant="subtitle2">
                 <FormattedMessage id="words.thread" defaultMessage="Thread" />
               </Typography>
             </GlobalAppGridCell>
-            <GlobalAppGridCell align="left" className="width20">
-              <Typography variant="subtitle2">
-                <FormattedMessage id="words.site" defaultMessage="Site" />
-              </Typography>
-            </GlobalAppGridCell>
-            <GlobalAppGridCell align="left" className="width60">
+            {showSiteColumn && (
+              <GlobalAppGridCell align="left">
+                <Typography variant="subtitle2">
+                  <FormattedMessage id="words.site" defaultMessage="Site" />
+                </Typography>
+              </GlobalAppGridCell>
+            )}
+            <GlobalAppGridCell align="left" className="width70">
               <Typography variant="subtitle2">
                 <FormattedMessage id="words.message" defaultMessage="Message" />
               </Typography>
@@ -86,9 +89,11 @@ export default function LogConsoleGridUI(props: LogConsoleGridUIProps) {
               <GlobalAppGridCell align="left" className="ellipsis">
                 {logEvent.thread}
               </GlobalAppGridCell>
-              <GlobalAppGridCell align="left" className="ellipsis">
-                {logEvent.site}
-              </GlobalAppGridCell>
+              {showSiteColumn && (
+                <GlobalAppGridCell title={logEvent.site} align="left" className="ellipsis">
+                  {logEvent.site.replace(/(.{30})..+/, '$1...')}
+                </GlobalAppGridCell>
+              )}
               <GlobalAppGridCell title={logEvent.message} align="left" className="ellipsis maxWidth300">
                 {logEvent.message}
               </GlobalAppGridCell>

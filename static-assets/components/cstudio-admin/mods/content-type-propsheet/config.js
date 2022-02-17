@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -97,14 +97,7 @@ YAHOO.extend(
           var contentType = _self.contentType,
             path = '/config/studio/content-types' + contentType + '/config.xml';
 
-          CrafterCMSNext.system.store.dispatch({
-            type: 'SHOW_CODE_EDITOR_DIALOG',
-            payload: {
-              path,
-              contentType,
-              mode: 'xml'
-            }
-          });
+          CStudioAuthoring.Operations.openCodeEditor({ path, contentType, mode: 'xml' });
         };
       }
     }

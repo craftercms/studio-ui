@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -66,15 +66,14 @@ export function cancelPackage(siteId: string, packageIds: any) {
 }
 
 export type FetchPublishingTargetsResponse = Api2ResponseFormat<{
-  availablePublishChannels: Array<PublishingTarget>;
+  published: boolean;
+  publishingTargets: Array<PublishingTarget>;
 }>;
 
-export function fetchPublishingTargets(
-  site: string
-): Observable<FetchPublishingTargetsResponse['availablePublishChannels']> {
-  return get<FetchPublishingTargetsResponse>(
-    `/studio/api/1/services/api/1/deployment/get-available-publishing-channels.json?site_id=${site}`
-  ).pipe(pluck('response', 'availablePublishChannels'));
+export function fetchPublishingTargets(site: string): Observable<FetchPublishingTargetsResponse> {
+  return get<FetchPublishingTargetsResponse>(`/studio/api/2/publish/available_targets?siteId=${site}`).pipe(
+    pluck('response')
+  );
 }
 
 export interface GoLiveResponse {

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -18,7 +18,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import useStyles from './styles';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { fetchLegacyGetGoLiveItems } from '../../services/dashboard';
-import { AllItemActions, DetailedItem } from '../../models/Item';
+import { AllItemActions, DetailedItem, LegacyItem } from '../../models/Item';
 import AwaitingApprovalDashletGridUI from '../AwaitingApprovalDashletGrid';
 import { SuspenseWithEmptyState } from '../Suspencified';
 import LookupTable from '../../models/LookupTable';
@@ -104,13 +104,26 @@ export default function AwaitingApprovalDashlet() {
         const itemsLookup = {};
         const publishingTargetLookup = {};
         const expandedLookup = {};
+
+        function getSubmittedItems(items: LegacyItem[], children: LegacyItem[]) {
+          items.forEach((item) => {
+            if (item.contentType === 'folder') {
+              getSubmittedItems(item.children, children);
+            } else {
+              children.push(item);
+            }
+          });
+        }
+
         response.documents.forEach((item) => {
           if (item.children.length) {
             expandedLookup[item.uri] = true;
+            const children = [];
+            getSubmittedItems(item.children, children);
             parentItems.push({
               label: item.name,
               path: item.uri,
-              children: item.children.map((item) => {
+              children: children.map((item) => {
                 publishingTargetLookup[item.uri] = item.submittedToEnvironment;
                 itemsLookup[item.uri] = parseLegacyItemToDetailedItem(item);
                 return item.uri;

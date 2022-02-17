@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -50,6 +50,7 @@ CStudioAuthoring.Module.requireModule(
   {
     moduleLoaded: function () {
       const YDom = YAHOO.util.Dom;
+      const tinymce = window.tinymce;
       YAHOO.extend(CStudioForms.Controls.RTE, CStudioForms.CStudioFormField, {
         getLabel: function () {
           return CMgs.format(langBundle, 'rte');
@@ -211,12 +212,10 @@ CStudioAuthoring.Module.requireModule(
          */
         _initializeRte: function (config, rteConfig, containerEl) {
           var _thisControl = this,
-            editor,
             callback,
             rteId = CStudioAuthoring.Utils.generateUUID(),
             inputEl,
             pluginList,
-            extendedElements,
             rteStylesheets,
             rteStyleOverride,
             toolbarConfig1,
@@ -279,8 +278,7 @@ CStudioAuthoring.Module.requireModule(
           // https://www.tiny.cloud/docs/plugins/
           // paste plugin is hardcoded in order to enable drag and drop functionality (and avoid it being removed from
           // configuration file).
-          pluginList = rteConfig.plugins + ' paste';
-          pluginList = this.autoGrow ? pluginList + ' autoresize' : pluginList;
+          pluginList = [rteConfig.plugins, 'paste', this.autoGrow && 'autoresize'].filter(Boolean).join(' ');
 
           extendedValidElements = rteConfig.extendedElements ? rteConfig.extendedElements : '';
           validChildren = rteConfig.validChildren ? rteConfig.validChildren : '';
@@ -360,7 +358,7 @@ CStudioAuthoring.Module.requireModule(
 
           const external = {
             acecode: '/studio/static-assets/js/tinymce-plugins/ace/plugin.min.js',
-            paste_cleanup: '/studio/static-assets/js/tinymce-plugins/paste_cleanup/plugin.js'
+            craftercms_paste_extension: '/studio/static-assets/js/tinymce-plugins/craftercms_paste_extension/plugin.js'
           };
           if (rteConfig.external_plugins) {
             Object.entries(rteConfig.external_plugins).forEach((entry) => {
@@ -400,6 +398,7 @@ CStudioAuthoring.Module.requireModule(
             contextmenu: !this.enableSpellCheck,
             valid_children: validChildren,
             image_uploadtab: this.editorImageDatasources.length > 0,
+            craftercms_paste_cleanup: rteConfig.craftercmsPasteCleanup?.trim() !== 'false',
 
             menu: {
               tools: { title: 'Tools', items: 'tinymcespellchecker code acecode wordcount' }
@@ -413,20 +412,6 @@ CStudioAuthoring.Module.requireModule(
             },
 
             paste_data_images: true,
-            paste_postprocess: function (plugin, args) {
-              // If no text, and external it means that is dragged
-              // text validation is because it can be text copied from outside the editor
-              if (args.node.outerText === '' && !args.internal && !_thisControl.editorImageDatasources.length) {
-                args.preventDefault();
-                _thisControl.editor.notificationManager.open({
-                  text: _thisControl.formatMessage(_thisControl.messages.noDatasourcesConfigured),
-                  timeout: 3000,
-                  type: 'error'
-                });
-              } else {
-                _thisControl.editor.plugins.paste_cleanup.cleanup(args.node);
-              }
-            },
             images_upload_handler: function (blobInfo, success, failure) {
               _thisControl.addDndImage(blobInfo, success, failure);
             },
@@ -449,6 +434,8 @@ CStudioAuthoring.Module.requireModule(
             style_formats_merge: styleFormatsMerge,
 
             setup: function (editor) {
+              var pluginManager = tinymce.util.Tools.resolve('tinymce.PluginManager');
+
               editor.on('init', function (e) {
                 amplify.publish('/field/init/completed');
                 _thisControl.editorId = editor.id;
@@ -495,6 +482,41 @@ CStudioAuthoring.Module.requireModule(
                   tinyMCE.activeEditor.execCommand('mceImage');
                 }
               });
+
+              // No point in waiting for `craftercms_tinymce_hooks` if the hook won't be loaded at all.
+              external.craftercms_tinymce_hooks &&
+                pluginManager.waitFor(
+                  'craftercms_tinymce_hooks',
+                  () => {
+                    const hooks = pluginManager.get('craftercms_tinymce_hooks');
+                    if (hooks) {
+                      pluginManager.get('craftercms_tinymce_hooks').setup?.(editor);
+                    } else {
+                      console.error(
+                        "The `craftercms_tinymce_hooks` was configured to be loaded but didn't load. Check the path is correct in the rte configuration file."
+                      );
+                    }
+                  },
+                  'loaded'
+                );
+            },
+
+            paste_preprocess(plugin, args) {
+              _thisControl.editor.plugins.craftercms_paste_extension?.paste_preprocess(plugin, args);
+            },
+            paste_postprocess: function (plugin, args) {
+              // If no text, and external it means that is dragged
+              // text validation is because it can be text copied from outside the editor
+              if (args.node.outerText === '' && !args.internal && !_thisControl.editorImageDatasources.length) {
+                args.preventDefault();
+                _thisControl.editor.notificationManager.open({
+                  text: _thisControl.formatMessage(_thisControl.messages.noDatasourcesConfigured),
+                  timeout: 3000,
+                  type: 'error'
+                });
+              } else {
+                _thisControl.editor.plugins.craftercms_paste_extension?.paste_postprocess(plugin, args);
+              }
             }
           });
           _thisControl.editor = editor;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -35,6 +35,7 @@ import { useDispatch } from 'react-redux';
 import Typography from '@mui/material/Typography';
 import clsx from 'clsx';
 import Button from '@mui/material/Button';
+import { useSiteUIConfig } from '../../hooks';
 
 const messages = defineMessages({
   chooseFile: {
@@ -117,6 +118,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
   const [file, setFile] = useState<UppyFile>(null);
   const [fileNameErrorClass, setFileNameErrorClass] = useState<string>();
   const [disableInput, setDisableInput] = useState(false);
+  const { upload } = useSiteUIConfig();
   const [confirm, setConfirm] = useState<{
     body: string;
     error?: boolean;
@@ -163,7 +165,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
         endpoint: url,
         formData: true,
         fieldName: 'file',
-        timeout: 0,
+        timeout: upload.timeout,
         headers: getGlobalHeaders(),
         getResponseData: (responseText, response) => response
       });
@@ -173,7 +175,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
       instance.reset();
       instance.close();
     };
-  }, [uppy, formTarget, url]);
+  }, [uppy, formTarget, url, upload.timeout]);
 
   useEffect(() => {
     const onUploadSuccess = (file) => {

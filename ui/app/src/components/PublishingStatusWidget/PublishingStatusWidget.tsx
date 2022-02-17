@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -29,7 +29,8 @@ type PublishingStatusWidgetProps = {
 export default function PublishingStatusWidget(props: PublishingStatusWidgetProps) {
   const { siteId } = props;
   const state = useSelection((state) => state.dialogs.publishingStatus);
-  const { enabled, status, lockOwner, lockTTL, numberOfItems, publishingTarget, submissionId, totalItems } = state;
+  const { enabled, status, lockOwner, published, lockTTL, numberOfItems, publishingTarget, submissionId, totalItems } =
+    state;
   const dispatch = useDispatch();
 
   const onStartStop = () => {
@@ -54,6 +55,7 @@ export default function PublishingStatusWidget(props: PublishingStatusWidgetProp
     <Paper elevation={2}>
       <PublishingStatusDialogContainer
         enabled={enabled}
+        published={published}
         status={status}
         lockOwner={lockOwner}
         lockTTL={lockTTL}

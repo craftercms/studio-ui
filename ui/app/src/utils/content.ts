@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -711,7 +711,8 @@ export function denormalizeModel(
   Object.entries(model).forEach(([prop, value]) => {
     if (prop.endsWith('_o')) {
       const collection: any[] = value;
-      if (collection.length) {
+      // Cover cases (collection?.length) where the xml has an empty tag corresponding to the `someField_o` without content.
+      if (collection?.length) {
         const isNodeSelector = typeof collection[0] === 'string';
         if (isNodeSelector) {
           model[prop] = collection.map((item) => denormalizeModel(modelLookup[item], modelLookup));
@@ -892,4 +893,19 @@ export function createPathIdMap(models: LookupTable<ContentInstance>): LookupTab
     }
   });
   return map;
+}
+
+export function getEditorMode(mimeType: string): 'ftl' | 'groovy' | 'javascript' | 'css' | 'text' {
+  switch (mimeType) {
+    case 'text/x-freemarker':
+      return 'ftl';
+    case 'text/x-groovy':
+      return 'groovy';
+    case 'application/javascript':
+      return 'javascript';
+    case 'text/css':
+      return 'css';
+    default:
+      return 'text';
+  }
 }

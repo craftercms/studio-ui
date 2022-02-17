@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -34,23 +34,78 @@ const validateBoolOption = (name, value, defaultValue) => {
 };
 
 const babelHelperList = [
-  'AsyncGenerator', 'AwaitValue', 'applyDecoratedDescriptor', 'arrayWithHoles', 'arrayWithoutHoles',
-  'assertThisInitialized', 'asyncGeneratorDelegate', 'asyncIterator', 'asyncToGenerator',
-  'awaitAsyncGenerator', 'classCallCheck', 'classNameTDZError', 'classPrivateFieldDestructureSet',
-  'classPrivateFieldGet', 'classPrivateFieldLooseBase', 'classPrivateFieldLooseKey',
-  'classPrivateFieldSet', 'classPrivateMethodGet', 'classPrivateMethodSet',
-  'classStaticPrivateFieldSpecGet', 'classStaticPrivateFieldSpecSet', 'classStaticPrivateMethodGet',
-  'classStaticPrivateMethodSet', 'construct', 'createClass', 'decorate', 'defaults',
-  'defineEnumerableProperties', 'defineProperty', 'esm', 'extends', 'get',
-  'getPrototypeOf', 'inherits', 'inheritsLoose', 'initializerDefineProperty',
-  'initializerWarningHelper', 'instanceof', 'interopRequireDefault', 'interopRequireWildcard',
-  'isNativeFunction', 'iterableToArray', 'iterableToArrayLimit', 'iterableToArrayLimitLoose',
-  'jsx', 'newArrowCheck', 'nonIterableRest', 'nonIterableSpread', 'objectDestructuringEmpty',
-  'objectSpread', 'objectSpread2', 'objectWithoutProperties', 'objectWithoutPropertiesLoose',
-  'possibleConstructorReturn', 'readOnlyError', 'set', 'setPrototypeOf', 'skipFirstGeneratorNext',
-  'slicedToArray', 'slicedToArrayLoose', 'superPropBase', 'taggedTemplateLiteral',
-  'taggedTemplateLiteralLoose', 'tdz', 'temporalRef', 'temporalUndefined', 'toArray',
-  'toConsumableArray', 'toPrimitive', 'toPropertyKey', 'typeof', 'wrapAsyncGenerator',
+  'AsyncGenerator',
+  'AwaitValue',
+  'applyDecoratedDescriptor',
+  'arrayWithHoles',
+  'arrayWithoutHoles',
+  'assertThisInitialized',
+  'asyncGeneratorDelegate',
+  'asyncIterator',
+  'asyncToGenerator',
+  'awaitAsyncGenerator',
+  'classCallCheck',
+  'classNameTDZError',
+  'classPrivateFieldDestructureSet',
+  'classPrivateFieldGet',
+  'classPrivateFieldLooseBase',
+  'classPrivateFieldLooseKey',
+  'classPrivateFieldSet',
+  'classPrivateMethodGet',
+  'classPrivateMethodSet',
+  'classStaticPrivateFieldSpecGet',
+  'classStaticPrivateFieldSpecSet',
+  'classStaticPrivateMethodGet',
+  'classStaticPrivateMethodSet',
+  'construct',
+  'createClass',
+  'decorate',
+  'defaults',
+  'defineEnumerableProperties',
+  'defineProperty',
+  'esm',
+  'extends',
+  'get',
+  'getPrototypeOf',
+  'inherits',
+  'inheritsLoose',
+  'initializerDefineProperty',
+  'initializerWarningHelper',
+  'instanceof',
+  'interopRequireDefault',
+  'interopRequireWildcard',
+  'isNativeFunction',
+  'iterableToArray',
+  'iterableToArrayLimit',
+  'iterableToArrayLimitLoose',
+  'jsx',
+  'newArrowCheck',
+  'nonIterableRest',
+  'nonIterableSpread',
+  'objectDestructuringEmpty',
+  'objectSpread',
+  'objectSpread2',
+  'objectWithoutProperties',
+  'objectWithoutPropertiesLoose',
+  'possibleConstructorReturn',
+  'readOnlyError',
+  'set',
+  'setPrototypeOf',
+  'skipFirstGeneratorNext',
+  'slicedToArray',
+  'slicedToArrayLoose',
+  'superPropBase',
+  'taggedTemplateLiteral',
+  'taggedTemplateLiteralLoose',
+  'tdz',
+  'temporalRef',
+  'temporalUndefined',
+  'toArray',
+  'toConsumableArray',
+  'toPrimitive',
+  'toPropertyKey',
+  'typeof',
+  'wrapAsyncGenerator',
   'wrapNativeSuper',
   'wrapRegExp'
 ];
@@ -60,7 +115,6 @@ function TransformImports(babel) {
   return {
     visitor: {
       ImportDeclaration(path, state) {
-
         const source = path.node.source.value;
         if (!source.startsWith('/') || !source.includes('@babel/runtime')) {
           return;
@@ -69,16 +123,15 @@ function TransformImports(babel) {
         const url = source.match(/^(.*)(@babel\/runtime.*)/)[2];
         const helper = url.replace('@babel/runtime/helpers/', '');
         const name = path.node.specifiers.flatMap((specifier) =>
-          (specifier.type === 'ImportDefaultSpecifier')
-            ? [specifier.local.name]
-            : []
-        ) [0];
+          specifier.type === 'ImportDefaultSpecifier' ? [specifier.local.name] : []
+        )[0];
 
         path.remove();
-
       },
       ReferencedIdentifier(path) {
-        const { node: { name } } = path;
+        const {
+          node: { name }
+        } = path;
         const cleanName = name.substr(1);
         if (babelHelperList.includes(cleanName)) {
           /* Use this console.log to identify which babel helpers are required
@@ -102,38 +155,24 @@ module.exports = function (api, opts) {
   var isEnvProduction = env === 'production';
   var isEnvTest = env === 'test';
 
-  var useESModules = validateBoolOption(
-    'useESModules',
-    opts.useESModules,
-    isEnvDevelopment || isEnvProduction
-  );
+  var useESModules = validateBoolOption('useESModules', opts.useESModules, isEnvDevelopment || isEnvProduction);
   var isFlowEnabled = validateBoolOption('flow', opts.flow, true);
-  var isTypeScriptEnabled = validateBoolOption(
-    'typescript',
-    opts.typescript,
-    true
-  );
+  var isTypeScriptEnabled = validateBoolOption('typescript', opts.typescript, true);
   var areHelpersEnabled = validateBoolOption('helpers', opts.helpers, true);
-  var useAbsoluteRuntime = validateBoolOption(
-    'absoluteRuntime',
-    opts.absoluteRuntime,
-    true
-  );
+  var useAbsoluteRuntime = validateBoolOption('absoluteRuntime', opts.absoluteRuntime, true);
 
   var absoluteRuntimePath = undefined;
   if (useAbsoluteRuntime) {
-    absoluteRuntimePath = path.dirname(
-      require.resolve('@babel/runtime/package.json')
-    );
+    absoluteRuntimePath = path.dirname(require.resolve('@babel/runtime/package.json'));
   }
 
   if (!isEnvDevelopment && !isEnvProduction && !isEnvTest) {
     throw new Error(
       'Using `babel-preset-react-app` requires that you specify `NODE_ENV` or ' +
-      '`BABEL_ENV` environment variables. Valid values are "development", ' +
-      '"test", and "production". Instead, received: ' +
-      JSON.stringify(env) +
-      '.'
+        '`BABEL_ENV` environment variables. Valid values are "development", ' +
+        '"test", and "production". Instead, received: ' +
+        JSON.stringify(env) +
+        '.'
     );
   }
 
@@ -145,6 +184,7 @@ module.exports = function (api, opts) {
         // Latest stable ECMAScript features
         require('@babel/preset-env').default,
         {
+          loose: true,
           // Allow importing core-js in entrypoint and use browserlist to select polyfills
           useBuiltIns: 'entry',
           // Set the corejs version we are using to avoid warnings in console
@@ -153,8 +193,8 @@ module.exports = function (api, opts) {
           // Do not transform modules to CJS
           modules: false,
           // Exclude transforms that make all code slower
-          exclude: ['transform-typeof-symbol'],
-        },
+          exclude: ['transform-typeof-symbol']
+        }
       ],
       [
         require('@babel/preset-react').default,
@@ -164,8 +204,8 @@ module.exports = function (api, opts) {
           development: isEnvDevelopment || isEnvTest,
           // Will use the native built-in instead of trying to polyfill
           // behavior for any plugins that require one.
-          useBuiltIns: true,
-        },
+          useBuiltIns: true
+        }
       ]
     ],
     plugins: [
@@ -186,23 +226,23 @@ module.exports = function (api, opts) {
             'useRef',
             'useImperativeHandle',
             'useLayoutEffect',
-            'useDebugValue',
-          ],
-        },
+            'useDebugValue'
+          ]
+        }
       ],
       [
         require('@babel/plugin-proposal-class-properties').default,
         {
-          loose: true,
-        },
+          loose: true
+        }
       ],
       // Adds Numeric Separators
       require('@babel/plugin-proposal-numeric-separator').default,
       [
         require('@babel/plugin-proposal-object-rest-spread').default,
         {
-          useBuiltIns: true,
-        },
+          useBuiltIns: true
+        }
       ],
       [
         require('@babel/plugin-transform-runtime').default,
@@ -221,16 +261,16 @@ module.exports = function (api, opts) {
           // Undocumented option that lets us encapsulate our runtime, ensuring
           // the correct version is used
           // https://github.com/babel/babel/blob/090c364a90fe73d36a30707fc612ce037bdbbb24/packages/babel-plugin-transform-runtime/src/index.js#L35-L42
-          absoluteRuntime: absoluteRuntimePath,
-        },
+          absoluteRuntime: absoluteRuntimePath
+        }
       ],
       TransformImports,
       [
         // Remove PropTypes from production build
         require('babel-plugin-transform-react-remove-prop-types').default,
         {
-          removeImport: true,
-        },
+          removeImport: true
+        }
       ],
       // Adds syntax support for import()
       require('@babel/plugin-syntax-dynamic-import').default,
@@ -240,5 +280,4 @@ module.exports = function (api, opts) {
       require('@babel/plugin-proposal-nullish-coalescing-operator').default
     ]
   };
-
 };

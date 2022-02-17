@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -374,7 +374,7 @@ CStudioAuthoring.Messages.registerBundle('forms', 'es', {
 
   chooseContentType: 'Elige un tipo de contenido',
   chooseContentTypeBody: 'Las siguientes plantillas de inicio están disponibles para su uso dentro de esta sección.',
-  chooseContentTypeLabel: 'Nombre de la Plantilla:',
+  chooseContentTypeLabel: 'Tipo de Contenido:',
   chooseContentTypePreview: 'Vista Previa:',
 
   cancelDialogHeader: 'Crafter Studio',

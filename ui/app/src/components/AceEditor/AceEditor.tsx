@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -192,7 +192,7 @@ const useStyles = makeStyles(() =>
 );
 
 function AceEditorComp(props: AceEditorProps, ref: MutableRef<AceAjax.Editor>) {
-  const { value = '', autoFocus = false, onChange } = props;
+  const { value = '', autoFocus = false, onChange, readOnly } = props;
   const classes = useStyles(props.styles);
   const editorRootClasses = props.classes?.editorRoot;
   const refs = useRef({
@@ -224,7 +224,12 @@ function AceEditorComp(props: AceEditorProps, ref: MutableRef<AceAjax.Editor>) {
         refs.current.elem.appendChild(pre);
         // @ts-ignore - Ace types are incorrect; they don't implement the constructor that receives options.
         aceEditor = window.ace.edit(pre, options);
-        autoFocus && aceEditor.focus();
+        if (readOnly) {
+          // @ts-ignore - TS don't recognize $cursorLayer prop
+          aceEditor.renderer.$cursorLayer.element.style.display = 'none';
+        } else {
+          autoFocus && aceEditor.focus();
+        }
         refs.current.ace = aceEditor;
         if (ref) {
           typeof ref === 'function' ? ref(aceEditor) : (ref.current = aceEditor);

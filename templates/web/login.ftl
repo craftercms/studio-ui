@@ -1,5 +1,5 @@
 <!--
-~ Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+~ Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
 ~
 ~ This program is free software: you can redistribute it and/or modify
 ~ it under the terms of the GNU General Public License version 3 as published by
@@ -21,7 +21,7 @@
   <link rel="shortcut icon" href="/studio/static-assets/img/favicon.ico">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#000000" />
-  <title>${contentModel['internal-name']} - ${contentModel['common-title']!'Crafter CMS'}</title>
+  <title>${contentModel['internal-name']} - ${contentModel['common-title']!'CrafterCMS'}</title>
   <style>
     html, body, #root {
       margin: 0;

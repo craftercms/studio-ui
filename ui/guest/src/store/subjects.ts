@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -24,7 +24,10 @@ import { computedDragOver, scrolling, scrollingStopped } from './actions';
 
 export const clearAndListen$ = new Subject<void>();
 
-export const escape$ = fromEvent<KeyboardEvent>(document, 'keydown').pipe(filter((e) => e.key === 'Escape'));
+export const escape$ =
+  typeof document === 'undefined'
+    ? new Subject<KeyboardEvent>()
+    : fromEvent<KeyboardEvent>(document, 'keydown').pipe(filter((e) => e.key === 'Escape'));
 
 let active = false;
 

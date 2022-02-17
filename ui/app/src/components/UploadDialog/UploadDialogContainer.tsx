@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -30,6 +30,7 @@ import DialogBody from '../DialogBody/DialogBody';
 import UppyDashboard from '../UppyDashboard';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
+import { useSiteUIConfig } from '../../hooks';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -54,18 +55,10 @@ const useStyles = makeStyles(() =>
 export function UploadDialogContainer(props: UploadDialogContainerProps) {
   const { formatMessage } = useIntl();
   const expiresAt = useSelection((state) => state.auth.expiresAt);
+  const { upload } = useSiteUIConfig();
   const classes = useStyles({});
-  const maxActiveUploads = 1000;
-  const {
-    site,
-    path,
-    onClose,
-    onClosed,
-    maxSimultaneousUploads = 1,
-    onMinimized,
-    hasPendingChanges,
-    setPendingChanges
-  } = props;
+  const { site, path, onClose, onClosed, maxSimultaneousUploads, onMinimized, hasPendingChanges, setPendingChanges } =
+    props;
 
   const uppy = React.useMemo(() => {
     return new Uppy({
@@ -79,10 +72,11 @@ export function UploadDialogContainer(props: UploadDialogContainerProps) {
       endpoint: getBulkUploadUrl(site, path),
       formData: true,
       fieldName: 'file',
-      limit: maxSimultaneousUploads,
+      limit: maxSimultaneousUploads ? maxSimultaneousUploads : upload.maxSimultaneousUploads,
+      timeout: upload.timeout,
       headers: getGlobalHeaders()
     });
-  }, [formatMessage, maxSimultaneousUploads, path, site]);
+  }, [formatMessage, maxSimultaneousUploads, path, site, upload]);
 
   useUnmount(() => {
     uppy.close();
@@ -125,7 +119,7 @@ export function UploadDialogContainer(props: UploadDialogContainerProps) {
           onPendingChanges={setPendingChanges}
           onClose={onClose}
           title={formatMessage(translations.title)}
-          maxActiveUploads={maxActiveUploads}
+          maxActiveUploads={upload.maxActiveUploads}
         />
       </DialogBody>
     </>

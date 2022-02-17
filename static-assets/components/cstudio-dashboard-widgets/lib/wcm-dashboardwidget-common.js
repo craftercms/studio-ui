@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -988,16 +988,8 @@ WcmDashboardWidgetCommon.editItem = function (matchedElement, isChecked) {
         unsubscribe();
       });
     });
-  } else if (['unknown', 'template', 'asset', 'script'].includes(type)) {
-    CrafterCMSNext.system.store.dispatch({
-      type: 'SHOW_CODE_EDITOR_DIALOG',
-      payload: {
-        site,
-        path,
-        type: 'asset',
-        authoringBase
-      }
-    });
+  } else if (['unknown', 'template', 'asset', 'script', 'renderingTemplate'].includes(type)) {
+    CStudioAuthoring.Operations.openCodeEditor({ path, contentType: 'asset' });
   } else {
     console.error(`[WcmDashboardWidgetCommon.editItem] Unable to find a edit method for type: ${type}`);
   }
@@ -1019,17 +1011,8 @@ WcmDashboardWidgetCommon.viewItem = function (matchedElement, isChecked) {
         readonly: true
       }
     });
-  } else if (['config', 'template', 'asset', 'script'].includes(type)) {
-    CrafterCMSNext.system.store.dispatch({
-      type: 'SHOW_CODE_EDITOR_DIALOG',
-      payload: {
-        site,
-        path,
-        authoringBase,
-        type: 'asset',
-        readonly: true
-      }
-    });
+  } else if (['config', 'template', 'asset', 'script', 'renderingTemplate'].includes(type)) {
+    CStudioAuthoring.Operations.openCodeEditor({ path, contentType: 'asset', readonly: true });
   } else {
     console.error(`[WcmDashboardWidgetCommon.viewItem] Unable to find a view method for type: ${type}`);
   }

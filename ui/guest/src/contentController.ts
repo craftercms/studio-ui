@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -48,7 +48,8 @@ import { ModelHierarchyDescriptor, ModelHierarchyMap, modelsToLookup } from '@cr
 // TODO: Notice
 // Not so sure about this assumption. Maybe best to just leave it up to the consumer
 // app to set the crafter URL via `crafterConf` if it wants something different?
-crafterConf.getConfig().baseUrl === '' &&
+typeof window !== 'undefined' &&
+  crafterConf.getConfig().baseUrl === '' &&
   crafterConf.configure({
     baseUrl: window.location.hostname === 'localhost' ? 'http://localhost:8080' : window.location.origin,
     site: Cookies.get('crafterSite')

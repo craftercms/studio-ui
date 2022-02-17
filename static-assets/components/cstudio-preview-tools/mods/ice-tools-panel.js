@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -182,23 +182,14 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
             renderingTemplate = selectedContent.renderingTemplates[0].uri,
             contentType = selectedContent.contentType;
 
-          // if(CStudioAuthoringContext.channel && CStudioAuthoringContext.channel != "web") {
-          // 		contentType = contentType.substring(0, contentType.lastIndexOf(".ftl")) +
-          // 			"-" + CStudioAuthoringContext.channel + ".ftl";
-          // }
-
-          CStudioAuthoring.Operations.openTemplateEditor(
-            renderingTemplate,
-            'default',
-            {
-              success: function () {
-                CStudioAuthoring.Operations.refreshPreview();
-              },
-              failure: function () {}
-            },
+          CStudioAuthoring.Operations.openCodeEditor({
+            path: renderingTemplate,
             contentType,
-            null
-          );
+            mode: 'ftl',
+            onSuccess: () => {
+              CStudioAuthoring.Operations.refreshPreview();
+            }
+          });
         } else {
           var dialogEl = document.getElementById('errNoTemplAssoc');
           if (!dialogEl) {
@@ -251,32 +242,29 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
                 }
 
                 (function (flag) {
-                  CStudioAuthoring.Operations.openTemplateEditor(path, 'default', {
-                    success: function () {
-                      if (CStudioAuthoringContext.isPreview) {
-                        CStudioAuthoring.Operations.refreshPreview();
-                      }
-                      if (flag) {
-                        var callback = {
-                          success: function (contentTOItem) {
-                            eventYS.parent = false;
-                            eventYS.data = contentTOItem.item;
-                            eventYS.typeAction = '';
-                            document.dispatchEvent(eventYS);
-                          },
-                          failure: function () {}
-                        };
+                  CStudioAuthoring.Operations.openCodeEditor(path, contentType, 'groovy', () => {
+                    if (CStudioAuthoringContext.isPreview) {
+                      CStudioAuthoring.Operations.refreshPreview();
+                    }
+                    if (flag) {
+                      var callback = {
+                        success: function (contentTOItem) {
+                          eventYS.parent = false;
+                          eventYS.data = contentTOItem.item;
+                          eventYS.typeAction = '';
+                          document.dispatchEvent(eventYS);
+                        },
+                        failure: function () {}
+                      };
 
-                        CStudioAuthoring.Service.lookupContentItem(
-                          CStudioAuthoringContext.site,
-                          '/scripts/pages/',
-                          callback,
-                          false,
-                          false
-                        );
-                      }
-                    },
-                    failure: function () {}
+                      CStudioAuthoring.Service.lookupContentItem(
+                        CStudioAuthoringContext.site,
+                        '/scripts/pages/',
+                        callback,
+                        false,
+                        false
+                      );
+                    }
                   });
                 })(flag);
               },

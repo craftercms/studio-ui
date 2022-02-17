@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -213,6 +213,10 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
 
   return (
     <Accordion
+      square
+      disableGutters
+      elevation={0}
+      TransitionProps={{ unmountOnExit: true }}
       expanded={!state.collapsed}
       onChange={() => onChangeCollapsed(!state.collapsed)}
       className={clsx(
@@ -303,7 +307,6 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
           <TablePagination
             classes={{
               root: clsx(classes.pagination, props.classes?.paginationRoot),
-              selectRoot: 'hidden',
               toolbar: clsx(classes.paginationToolbar, classes.widgetSection)
             }}
             component="div"

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -378,7 +378,7 @@ CStudioAuthoring.Messages.registerBundle('forms', 'en', {
 
   chooseContentType: 'Choose Content Type',
   chooseContentTypeBody: 'The following starter templates are available for use within this section.',
-  chooseContentTypeLabel: 'Template Name:',
+  chooseContentTypeLabel: 'Content Type:',
   chooseContentTypePreview: 'Preview:',
 
   cancelDialogHeader: 'Crafter Studio',

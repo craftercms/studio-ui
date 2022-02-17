@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -194,9 +194,9 @@ CStudioForms.Controls.RTE.ImageInsert = CStudioForms.Controls.RTE.ImageInsert ||
   getInfo: function () {
     return {
       longname: 'Crafter Studio Insert Image',
-      author: 'Crafter Software',
-      authorurl: 'http://www.craftercms.org',
-      infourl: 'http://www.craftercms.org',
+      author: 'CrafterCMS',
+      authorurl: 'https://craftercms.org',
+      infourl: 'https://craftercms.org',
       version: '1.0'
     };
   }

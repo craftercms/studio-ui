@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -349,6 +349,11 @@ CStudioAuthoring.Messages.registerBundle('forms', 'kr', {
   continueEditing: '편집을 계속',
   notification: '공고',
   previewLoaded: '미리로드 됨.',
+
+  chooseContentType: '콘텐츠 유형 선택',
+  chooseContentTypeBody: '이 섹션에서 사용할 수 있는 시작 템플릿은 다음과 같습니다.',
+  chooseContentTypeLabel: '컨텐츠 타입:',
+  chooseContentTypePreview: '시사:',
 
   cancelDialogHeader: '크래프터 스튜디오',
   cancelDialogBody: '변경 사항을 저장하지 않고이 양식을 닫습니다?',

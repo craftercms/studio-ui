@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -51,14 +51,18 @@ export function getItemStateText(stateMap: ItemStateMap) {
       ) : (
         <FormattedMessage id="itemState.scheduledToGoLive" defaultMessage="Scheduled for live" />
       ),
-    staged: () => '',
-    live: () => '',
+    staged: () => void 0,
+    live: () => void 0,
     disabled: () => <FormattedMessage id="itemState.disabled" defaultMessage="Disabled" />,
     translationUpToDate: null,
     translationPending: null,
     translationInProgress: null
   };
-  return map[getItemStateId(stateMap)]?.() ?? <FormattedMessage id="words.unknown" defaultMessage="Unknown" />;
+  return (
+    map[getItemStateId(stateMap)]?.() ?? (
+      <FormattedMessage id="itemState.notInWorkflow" defaultMessage="Not in workflow" />
+    )
+  );
 }
 
 export function getItemStateId(stateMap: ItemStateMap): ItemStates {

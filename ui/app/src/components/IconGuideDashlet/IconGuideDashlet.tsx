@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -74,9 +74,10 @@ const states = {
   deleted: { stateMap: { deleted: true } },
   locked: { stateMap: { locked: true } },
   systemProcessing: { stateMap: { systemProcessing: true } },
-  submitted: { stateMap: { submitted: true, submittedToLive: true } },
+  submittedToLive: { stateMap: { submitted: true, submittedToLive: true } },
   submittedStaging: { stateMap: { submitted: true, submittedToStaging: true } },
-  scheduled: { stateMap: { scheduled: true } },
+  scheduledToLive: { stateMap: { scheduled: true, submittedToLive: true } },
+  scheduledStaging: { stateMap: { scheduled: true, submittedToStaging: true } },
   publishing: { stateMap: { publishing: true } },
   disabled: { stateMap: { disabled: true } }
 };

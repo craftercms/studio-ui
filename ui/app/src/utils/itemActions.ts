@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -817,11 +817,13 @@ export const itemActionDispatcher = ({
         break;
       }
       case 'viewCode': {
+        const mode = getEditorMode(item);
         dispatch(
-          showCodeEditorDialog({
-            path: item.path,
-            mode: getEditorMode(item),
-            readonly: true
+          showPreviewDialog({
+            type: 'editor',
+            title: item.label,
+            url: item.path,
+            mode
           })
         );
         break;

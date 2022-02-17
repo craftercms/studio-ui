@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -27,6 +27,7 @@ export const registerComponents = () => {
       () => import('@mui/icons-material/PauseCircleOutlineOutlined')
     ),
     '@mui/icons-material/LockOpenRounded': lazy(() => import('@mui/icons-material/LockOpenRounded')),
+    '@mui/icons-material/EditRounded': lazy(() => import('@mui/icons-material/EditRounded')),
     '@mui/icons-material/OpenInFullRounded': lazy(() => import('@mui/icons-material/OpenInFullRounded')),
     '@mui/icons-material/RemoveRounded': lazy(() => import('@mui/icons-material/RemoveRounded')),
     '@mui/icons-material/CloseRounded': lazy(() => import('@mui/icons-material/CloseRounded')),

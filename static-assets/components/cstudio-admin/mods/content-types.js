@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -266,7 +266,7 @@
                     class: 'btn-primary',
                     multiChoice: true,
                     fn: function (e, type) {
-                      function saveFn() {
+                      function saveFn(type) {
                         _self.loadConfig(contentType, {
                           success: function (currentConfig) {
                             var xmlFormDef =
@@ -326,6 +326,9 @@
                                     },
                                     '*'
                                   );
+                                  if (type === 'saveAndClose') {
+                                    _self.closeEditor();
+                                  }
                                 },
                                 () => {
                                   CStudioAuthoring.Operations.showSimpleDialog(
@@ -425,14 +428,7 @@
                           dialogEl.dialog.show();
                         } else {
                           // otherwise, save
-                          saveFn();
-                          switch (type) {
-                            case 'saveAndClose':
-                              _self.closeEditor();
-                              break;
-                            case 'saveAndMinimize':
-                              break;
-                          }
+                          saveFn(type);
                         }
                       }
                     }
@@ -3761,6 +3757,9 @@
             }
             if (datasource.plugin.filename) {
               xml += '\t\t\t\t\t\t<filename>' + datasource.plugin.filename + '</filename>\r\n';
+            }
+            if (datasource.plugin.pluginId) {
+              xml += '\t\t\t\t\t\t<pluginId>' + datasource.plugin.pluginId + '</pluginId>\r\n';
             }
             xml += '\t\t\t\t\t</plugin>\r\n';
           }

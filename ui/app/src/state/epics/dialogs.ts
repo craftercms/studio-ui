@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -39,11 +39,13 @@ import {
   showCodeEditorDialog,
   showConfirmDialog,
   showEditDialog,
+  showPreviewDialog,
   updateCodeEditorDialog,
-  updateEditConfig
+  updateEditConfig,
+  updatePreviewDialog
 } from '../actions/dialogs';
 import { fetchDeleteDependencies as fetchDeleteDependenciesService } from '../../services/dependencies';
-import { fetchItemVersion } from '../../services/content';
+import { fetchContentXML, fetchItemVersion } from '../../services/content';
 import { catchAjaxError } from '../../utils/ajax';
 import { batchActions } from '../actions/misc';
 import StandardAction from '../../models/StandardAction';
@@ -190,6 +192,17 @@ const dialogEpics: CrafterCMSEpic[] = [
           );
         }
       })
+    ),
+  // endregion
+  // region showPreviewDialog
+  (action$, state$) =>
+    action$.pipe(
+      ofType(showPreviewDialog.type),
+      filter(({ payload }) => payload.type === 'editor'),
+      withLatestFrom(state$),
+      switchMap(([{ payload }, state]) =>
+        fetchContentXML(state.sites.active, payload.url).pipe(map((content) => updatePreviewDialog({ content })))
+      )
     )
   // endregion
 ] as Epic[];

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -104,10 +104,9 @@ YAHOO.extend(
           var uploadCb = {
             success: function (to) {
               var imageData = to;
-              _self.createImageData(
-                imageData,
-                configFilesPath + '/content-types' + CStudioAdminConsole.contentTypeSelected + '/' + to.fileName
-              );
+              const url =
+                configFilesPath + '/content-types' + CStudioAdminConsole.contentTypeSelected + '/' + to.fileName;
+              imageData.relativeUrl = url;
 
               var valid = false,
                 message = '';
@@ -160,7 +159,7 @@ YAHOO.extend(
                   }
                 }
                 image.addEventListener('load', imageLoaded, false);
-                image.addEventListener('error', function () {
+                image.addEventListener('error', function (e) {
                   message = CMgs.format(langBundle, 'loadImageError');
                   CStudioAuthoring.Operations.showSimpleDialog(
                     'error-dialog',
@@ -173,9 +172,11 @@ YAHOO.extend(
                   );
                 });
 
-                CStudioAuthoring.Operations.getImageRequest({
-                  url: imageData.previewUrl,
-                  image: image
+                _self.getImage(url).subscribe((response) => {
+                  imageData.previewUrl = URL.createObjectURL(
+                    new Blob([response.response], { type: `image/${to.fileExtension}` })
+                  );
+                  image.src = imageData.previewUrl;
                 });
               } else {
                 CStudioAuthoring.Operations.showSimpleDialog(
@@ -221,14 +222,22 @@ YAHOO.extend(
 
     createImageData: function (imageData, path) {
       var url = this.createPreviewUrl(
-        CStudioAuthoringContext.baseUri +
-          '/api/1/services/api/1/content/get-content-at-path.bin?site=' +
+        '/studio/api/1/services/api/1/content/get-content-at-path.bin?site=' +
           CStudioAuthoringContext.site +
           '&path=' +
           path
       );
       imageData.previewUrl = url;
       imageData.relativeUrl = path;
+    },
+
+    getImage(path) {
+      const qs = CrafterCMSNext.util.object.toQueryString({
+        site: CStudioAuthoringContext.site,
+        path
+      });
+
+      return CrafterCMSNext.util.ajax.getBinary(`/studio/api/1/services/api/1/content/get-content-at-path.bin${qs}`);
     },
 
     isImageValid: function (width, originalWidth, height, originalHeight) {

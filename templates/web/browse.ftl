@@ -1,6 +1,6 @@
 <#assign mode = RequestParameters["mode"] />
 <!--
-  ~ Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+  ~ Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
   ~
   ~ This program is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License version 3 as published by
@@ -100,7 +100,7 @@
          <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
              <div class="container-fluid">
                      <a class="navbar-brand" href="/studio/site-dashboard">
-                         <img src="/studio/static-assets/images/logo.svg" alt="Crafter CMS">
+                         <img src="/studio/static-assets/images/logo.svg" alt="CrafterCMS">
                      </a>
                  </div>
              </div>

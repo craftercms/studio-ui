@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -30,6 +30,10 @@ import { useLogicResource } from '../../hooks/useLogicResource';
 import Paper from '@mui/material/Paper';
 import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { useWithPendingChangesCloseRequest } from '../../hooks/useWithPendingChangesCloseRequest';
+import SearchBar from '../SearchBar';
+import clsx from 'clsx';
+import useStyles from '../UsersManagement/styles';
+import { useDebouncedInput } from '../../hooks';
 
 export default function GroupsManagement() {
   const [offset, setOffset] = useState(0);
@@ -38,20 +42,26 @@ export default function GroupsManagement() {
   const [groups, setGroups] = useState<PagedArray<Group>>(null);
   const [error, setError] = useState<ApiResponse>();
   const [selectedGroup, setSelectedGroup] = useState<Group>(null);
+  const [showSearchBox, setShowSearchBox] = useState(false);
+  const [keyword, setKeyword] = useState('');
+  const classes = useStyles();
 
-  const fetchGroups = useCallback(() => {
-    setFetching(true);
-    fetchAll({ limit, offset }).subscribe(
-      (users) => {
-        setGroups(users);
-        setFetching(false);
-      },
-      ({ response }) => {
-        setError(response);
-        setFetching(false);
-      }
-    );
-  }, [limit, offset]);
+  const fetchGroups = useCallback(
+    (keyword = '', _offset = offset) => {
+      setFetching(true);
+      fetchAll({ limit, offset: _offset, keyword }).subscribe(
+        (users) => {
+          setGroups(users);
+          setFetching(false);
+        },
+        ({ response }) => {
+          setError(response);
+          setFetching(false);
+        }
+      );
+    },
+    [limit, offset]
+  );
 
   useEffect(() => {
     fetchGroups();
@@ -101,6 +111,24 @@ export default function GroupsManagement() {
     setSelectedGroup(null);
   };
 
+  const onShowSearchBox = () => {
+    setShowSearchBox(!showSearchBox);
+  };
+
+  const onSearch = useCallback(
+    (keyword) => {
+      fetchGroups(keyword, 0);
+    },
+    [fetchGroups]
+  );
+
+  const onSearch$ = useDebouncedInput(onSearch, 400);
+
+  function handleSearchKeyword(keyword: string) {
+    setKeyword(keyword);
+    onSearch$.next(keyword);
+  }
+
   return (
     <Paper elevation={0}>
       <GlobalAppToolbar
@@ -114,6 +142,15 @@ export default function GroupsManagement() {
           >
             <FormattedMessage id="sites.createGroup" defaultMessage="Create Group" />
           </Button>
+        }
+        rightContent={
+          <SearchBar
+            classes={{ root: clsx(classes.searchBarRoot, !showSearchBox && 'hidden') }}
+            keyword={keyword}
+            onChange={handleSearchKeyword}
+            onDecoratorButtonClick={onShowSearchBox}
+            showActionButton={Boolean(keyword)}
+          />
         }
       />
       <SuspenseWithEmptyState

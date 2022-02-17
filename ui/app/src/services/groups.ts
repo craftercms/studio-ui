@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -28,7 +28,7 @@ const paginationDefault = {
   offset: 0
 };
 
-export function fetchAll(options?: Partial<PaginationOptions>): Observable<PagedArray<Group>> {
+export function fetchAll(options?: Partial<PaginationOptions> & { keyword?: string }): Observable<PagedArray<Group>> {
   const mergedOptions = {
     ...paginationDefault,
     ...options

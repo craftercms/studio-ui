@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -16,13 +16,13 @@
 
 import makeStyles from '@mui/styles/makeStyles';
 
-export const useStyles = makeStyles(() => ({
+export const useStyles = makeStyles((theme) => ({
   container: {
     height: '100%',
     display: 'flex',
     maxWidth: '100%',
     minWidth: '500px',
-    minHeight: '600px',
+    minHeight: '60vh',
     position: 'relative',
     justifyContent: 'center',
     alignItems: 'center',
@@ -31,6 +31,7 @@ export const useStyles = makeStyles(() => ({
     }
   },
   editor: {
-    position: 'absolute'
+    position: 'absolute',
+    backgroundColor: theme.palette.grey['300']
   }
 }));

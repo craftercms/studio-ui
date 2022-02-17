@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -51,10 +51,12 @@ crafterDefine(
     window.studioICERepaint = iceRepaint;
 
     return {
-      init: init,
-      iceRepaint: iceRepaint,
-      repaintPencils: repaintPencils,
-      reportNavigation: reportNavigation
+      init,
+      iceRepaint,
+      repaintPencils,
+      reportNavigation,
+      initICERegions,
+      version: '4'
     };
 
     function reportNavigation(location, url) {
@@ -67,7 +69,7 @@ crafterDefine(
           console &&
           console.warn &&
           console.warn(
-            "[Crafter CMS] Host is not running inside of Studio as it's parent window. " +
+            "[CrafterCMS] Host is not running inside of Studio as it's parent window. " +
               'ICE mechanics will be disabled. Configure your authoring Environment to point to ' +
               `'${window.origin}' if you wish to enable In Context Editing.`
           )
@@ -140,6 +142,14 @@ crafterDefine(
       communicator.on('RELOAD_REQUEST', function () {
         window.location.reload();
       });
+
+      window.addEventListener(
+        'beforeunload',
+        () => {
+          checkout(communicator);
+        },
+        false
+      );
 
       function iceToolsToggle(on) {
         iceToolsOn = Boolean(on);
@@ -437,6 +447,12 @@ crafterDefine(
     function resizeProcess() {
       // When window.top == window, communicator is not initialized
       communicator && communicator.publish(Topics.IS_REVIEWER, true);
+    }
+
+    function checkout(communicator) {
+      communicator.publish('CHECK_OUT_GUEST', {
+        url: window.location.href.replace(window.location.origin, '')
+      });
     }
   }
 );

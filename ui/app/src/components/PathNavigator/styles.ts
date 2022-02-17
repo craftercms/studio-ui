@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -52,25 +52,15 @@ export const useStyles = makeStyles(
         fontSize: '1.2em'
       },
       accordion: {
-        boxShadow: 'none',
-        backgroundColor: 'inherit',
-        '&.Mui-expanded': {
-          margin: 'inherit'
-        }
+        background: 'none'
       },
       accordionSummary: {
-        background: theme.palette.background.default,
-        padding: '0 0 0 10px',
-        minHeight: 0,
-        '&.Mui-expanded': {
-          minHeight: 0
-        }
+        padding: '0 0 0 10px'
       },
       accordionSummaryContent: {
         alignItems: 'center',
         placeContent: 'center space-between',
-        margin: 0,
-        '&.Mui-expanded': {
+        '&, &.Mui-expanded': {
           margin: 0
         }
       },
@@ -165,20 +155,8 @@ export const useStyles = makeStyles(
         }
       },
       paginationToolbar: {
-        minHeight: '30px !important',
         justifyContent: 'space-between',
-        margin: '0 5px',
-        background: theme.palette.background.default,
-        borderRadius: 50,
-        '& .MuiTablePagination-spacer': {
-          display: 'none'
-        },
-        '& .MuiTablePagination-spacer + p': {
-          display: 'none'
-        },
-        '& .MuiButtonBase-root': {
-          padding: 0
-        }
+        borderBottom: `1px solid ${theme.palette.divider}`
       },
       // endregion
       menuPaper: {
@@ -204,7 +182,7 @@ export const useStyles = makeStyles(
           paddingLeft: 0
         },
         '&:hover': {
-          backgroundColor: theme.palette.action.hover
+          backgroundColor: theme.palette.grey['A200']
         }
       },
       currentPathItem: {

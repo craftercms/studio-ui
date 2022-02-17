@@ -12,7 +12,7 @@ promptForCrafterHome() {
   fi
   if [[ ! -d "$crafterHome/crafter-authoring" ]]; then
     echo ""
-    echo "Oops. That directory doesn't appear to be a Crafter CMS. Here's what's on '$crafterHome':"
+    echo "Oops. That directory doesn't appear to be a CrafterCMS. Here's what's on '$crafterHome':"
     ls -1 "$crafterHome"
     echo "Please check and re-run this script. Bye."
     echo ""
@@ -90,6 +90,7 @@ if [[ $LINK_ONLY != true ]]; then
   rm -rf "$DEFAULT_SITE/site"
   rm -rf "$STATIC_ASSETS/yui"
   rm -rf "$STATIC_ASSETS/css"
+  rm -rf "$STATIC_ASSETS/js"
 fi
 
 if [[ $REMOVE_ONLY != true ]]; then
@@ -106,6 +107,7 @@ if [[ $REMOVE_ONLY != true ]]; then
   ln -s "$SRC/site" "$DEFAULT_SITE/site"
   ln -s "$SRC/static-assets/yui" "$STATIC_ASSETS/yui"
   ln -s "$SRC/static-assets/css" "$STATIC_ASSETS/css"
+  ln -s "$SRC/static-assets/js" "$STATIC_ASSETS/js"
 fi
 
 cd "$currentDir" || exit 1

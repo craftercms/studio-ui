@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -1152,8 +1152,18 @@ var nodeOpen = false,
       openSearch: function (searchContext, newWindow, callback, searchId) {
         var openInSameWindow = newWindow ? false : true;
 
-        var searchUrl =
-          CStudioAuthoringContext.authoringAppBaseUri + '/search?site=' + CStudioAuthoringContext.site + '#/';
+        var searchUrl = CStudioAuthoringContext.authoringAppBaseUri + '/search?site=' + CStudioAuthoringContext.site;
+
+        if (!CStudioAuthoring.Utils.isEmpty(searchContext.mode)) {
+          searchUrl += '&mode=' + searchContext.mode;
+          if (searchContext.mode === 'select') {
+            searchUrl += '&embedded=' + true;
+          }
+        }
+
+        searchUrl += '&searchId=';
+
+        searchUrl += '#/';
 
         const filters = searchContext.filters;
         if (!jQuery.isEmptyObject(searchContext.filters)) {
@@ -1178,13 +1188,6 @@ var nodeOpen = false,
           searchUrl += '&offset=' + searchContext.offset;
         }
 
-        if (!CStudioAuthoring.Utils.isEmpty(searchContext.mode)) {
-          searchUrl += '&mode=' + searchContext.mode;
-          if (searchContext.mode === 'select') {
-            searchUrl += '&embedded=' + true;
-          }
-        }
-
         if (!CStudioAuthoring.Utils.isEmpty(searchContext.query)) {
           searchUrl += '&query=' + searchContext.query;
         }
@@ -1192,8 +1195,6 @@ var nodeOpen = false,
         if (!CStudioAuthoring.Utils.isEmpty(searchContext.path)) {
           searchUrl += '&path=' + encodeURIComponent(searchContext.path);
         }
-
-        searchUrl += '&searchId=';
 
         var childSearch = null;
 
@@ -1312,6 +1313,7 @@ var nodeOpen = false,
       openBrowseFilesDialog: function (props) {
         let unmount;
         const dialogContainer = document.createElement('div');
+        window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_DISABLE_ON_CLOSE' }, '*');
         CrafterCMSNext.render(dialogContainer, 'BrowseFilesDialog', {
           ...props,
           open: true,
@@ -1320,6 +1322,7 @@ var nodeOpen = false,
             unmount();
           },
           onClose: () => {
+            window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_ENABLE_ON_CLOSE' }, '*');
             props.onClose?.();
             unmount();
           }
@@ -2320,24 +2323,18 @@ var nodeOpen = false,
               isFlattenedInclude
             );
           } else if (CStudioAuthoring.Utils.isEditableFormAsset(mimeType)) {
-            CStudioAuthoring.Operations.openTemplateEditor(
-              uri,
-              'default',
-              {
-                success: function () {
-                  if (CStudioAuthoringContext.isPreview) {
-                    CStudioAuthoring.Operations.refreshPreview();
-                  } else {
-                    CStudioAuthoring.SelectedContent.init();
-                  }
-                  callback.success && callback.success(nodeRef);
-                },
-                failure: function () {},
-                callingWindow: window
-              },
-              null,
-              mode
-            );
+            CStudioAuthoring.Operations.openCodeEditor({
+              path: uri,
+              mode: CrafterCMSNext.util.content.getEditorMode(mimeType),
+              onSuccess: () => {
+                if (CStudioAuthoringContext.isPreview) {
+                  CStudioAuthoring.Operations.refreshPreview();
+                } else {
+                  CStudioAuthoring.SelectedContent.init();
+                }
+                callback.success && callback.success(nodeRef);
+              }
+            });
           }
         }
 
@@ -2412,47 +2409,32 @@ var nodeOpen = false,
       },
 
       /**
-       * create new template
+       * open code editor
        */
-      createNewTemplate: function (path, templateSaveCb) {
-        var createTemplateDialogCb = {
-          moduleLoaded: function (moduleName, dialogClass, moduleConfig) {
-            dialogClass.showDialog(templateSaveCb, path);
+      openCodeEditor: function (payload) {
+        const customEventId = 'codeEditorDialogEventId';
+
+        CrafterCMSNext.system.store.dispatch({
+          type: 'SHOW_CODE_EDITOR_DIALOG',
+          payload: {
+            ...payload,
+            onSuccess: {
+              type: 'BATCH_ACTIONS',
+              payload: [
+                {
+                  type: 'DISPATCH_DOM_EVENT',
+                  payload: { id: customEventId, type: 'onSuccess' }
+                }
+              ]
+            }
           }
-        };
+        });
 
-        var createModuleConfig = {
-          createTemplateCb: templateSaveCb,
-          path: path
-        };
-
-        CStudioAuthoring.Module.requireModule(
-          'new-template-dialog',
-          '/static-assets/components/cstudio-dialogs/new-template.js',
-          createModuleConfig,
-          createTemplateDialogCb
-        );
-      },
-
-      /**
-       * open template
-       */
-      openTemplateEditor: function (displayTemplate, channel, templateSaveCb, contentType, mode) {
-        var loadTemplateEditorCb = {
-          moduleLoaded: function (moduleName, moduleClass, moduleConfig) {
-            var editor = new moduleClass();
-            editor.render(moduleConfig.displayTemplate, moduleConfig.channel, moduleConfig.cb, contentType, mode);
+        CrafterCMSNext.createLegacyCallbackListener(customEventId, ({ type }) => {
+          if (type === 'onSuccess') {
+            payload.onSuccess?.();
           }
-        };
-
-        CStudioAuthoring.Module.requireModule(
-          'cstudio-forms-template-editor',
-          '/static-assets/components/cstudio-forms/template-editor.js',
-          { displayTemplate: displayTemplate, channel: channel, cb: templateSaveCb },
-          loadTemplateEditorCb,
-          contentType,
-          mode
-        );
+        });
       },
 
       /* submit content moved up, next to approveCommon */
@@ -2586,16 +2568,6 @@ var nodeOpen = false,
                 {
                   type: 'CLOSE_SINGLE_FILE_UPLOAD_DIALOG'
                 }
-              ]
-            },
-            onClosed: {
-              type: 'BATCH_ACTIONS',
-              payload: [
-                {
-                  type: 'DISPATCH_DOM_EVENT',
-                  payload: { id: eventId, type: 'uploadComplete' }
-                },
-                { type: 'SINGLE_FILE_UPLOAD_DIALOG_CLOSED' }
               ]
             }
           }
@@ -7846,17 +7818,19 @@ CStudioAuthoring.InContextEdit = {
         };
 
         editTemplateControlEl.onclick = function () {
-          var contentType = contentTO.item.renderingTemplates[0].uri;
+          let path = contentTO.item.renderingTemplates[0].uri;
 
           if (CStudioAuthoringContext.channel && CStudioAuthoringContext.channel != 'web') {
-            contentType =
-              contentType.substring(0, contentType.lastIndexOf('.ftl')) +
-              '-' +
-              CStudioAuthoringContext.channel +
-              '.ftl';
+            path = path.substring(0, path.lastIndexOf('.ftl')) + '-' + CStudioAuthoringContext.channel + '.ftl';
           }
 
-          CStudioAuthoring.Operations.openTemplateEditor(contentType, 'default', onSaveCb, null, null);
+          CStudioAuthoring.Operations.openCodeEditor({
+            path,
+            mode: CrafterCMSNext.util.content.getEditorMode(contentTO.item.mimeType),
+            onSuccess: () => {
+              onSaveCb.success();
+            }
+          });
         };
 
         controlBoxEl.appendChild(editControlEl);

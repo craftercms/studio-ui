@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -55,9 +55,9 @@ export default function UsersManagement(props: UsersManagementProps) {
   const classes = useStyles();
 
   const fetchUsers = useCallback(
-    (keyword = '') => {
+    (keyword = '', _offset = offset) => {
       setFetching(true);
-      fetchAll({ limit, offset, keyword }).subscribe(
+      fetchAll({ limit, offset: _offset, keyword }).subscribe(
         (users) => {
           setUsers(users);
           setFetching(false);
@@ -126,7 +126,7 @@ export default function UsersManagement(props: UsersManagementProps) {
 
   const onSearch = useCallback(
     (keyword) => {
-      fetchUsers(keyword);
+      fetchUsers(keyword, 0);
     },
     [fetchUsers]
   );
