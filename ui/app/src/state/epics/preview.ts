@@ -15,9 +15,10 @@
  */
 
 import { ofType, StateObservable } from 'redux-observable';
-import { ignoreElements, tap, withLatestFrom } from 'rxjs/operators';
+import { filter, ignoreElements, map, tap, withLatestFrom } from 'rxjs/operators';
 import {
   closeToolsPanel,
+  guestCheckOut,
   openToolsPanel,
   popIcePanelPage,
   popToolsPanelPage,
@@ -42,7 +43,7 @@ import {
   setStoredShowToolsPanel
 } from '../../utils/state';
 import GlobalState from '../../models/GlobalState';
-import { setClipboard } from '../actions/content';
+import { conditionallyUnlockItem, setClipboard } from '../actions/content';
 import { CrafterCMSEpic } from '../store';
 import { getSystemLink } from '../../utils/system';
 
@@ -201,7 +202,7 @@ export default [
         }
       }),
       ignoreElements()
-    )
+    ),
   // endregion
   // region guestCheckOut
   (action$, state$) =>
