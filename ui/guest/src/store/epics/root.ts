@@ -23,7 +23,7 @@ import * as iceRegistry from '../../iceRegistry';
 import { getById } from '../../iceRegistry';
 import { dragOk, unwrapEvent } from '../util';
 import * as contentController from '../../contentController';
-import { getCachedModel } from '../../contentController';
+import { getCachedModel, getCachedModels, modelHierarchyMap } from '../../contentController';
 import { interval, merge, NEVER, Observable, of, Subject } from 'rxjs';
 import { clearAndListen$, destroyDragSubjects, dragover$, escape$, initializeDragSubjects } from '../subjects';
 import { initTinyMCE } from '../../controls/rte';
@@ -73,6 +73,8 @@ import {
 } from '../actions';
 import $ from 'jquery';
 import { extractCollectionItem } from '@craftercms/studio-ui/utils/model';
+import { getParentModelId } from '../../utils/ice';
+import { fetchSandboxItem } from '@craftercms/studio-ui/services/content';
 
 const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
   // region mouseover, mouseleave
@@ -363,6 +365,16 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
                 const setupId = field.properties?.rteConfiguration?.value ?? 'generic';
                 const setup = state.rteConfig[setupId] ?? Object.values(state.rteConfig)[0] ?? {};
                 // Only pass rte setup to html type, text/textarea (plaintext) controls won't show full rich-text-editing.
+
+                const models = getCachedModels();
+                const modelId = action.payload.record.modelId;
+                const parentModelId = getParentModelId(modelId, models, modelHierarchyMap);
+                const path = models[parentModelId ?? modelId].craftercms.path;
+
+                fetchSandboxItem(state.activeSite, path).subscribe((item) => {
+                  console.log(item);
+                });
+
                 return initTinyMCE(record, validations, type === 'html' ? setup : {});
               }
               break;
