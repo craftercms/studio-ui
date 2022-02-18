@@ -72,7 +72,7 @@
         "USE_REMOTE_GIT":"Use a remote Git repository instead of a built-in blueprint",
         "VERSION":"Version",
         "LICENSE":"License",
-        "CRAFTERVERSIONSSUPPORTED":"Crafter CMS Versions Supported",
+        "CRAFTERVERSIONSSUPPORTED":"CrafterCMS Versions Supported",
         "WEBSITE":"Website",
         "SELECT":"Select",
         "BASIC_INFORMATION":"Basic Information",

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -79,8 +79,8 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
                 <div id="acn-dropdown-menu" style="height:100%" class="acn-dropdown-menu">
                   <div id="acn-dropdown-menu-inner" class="acn-dropdown-menu-inner unselectable"></div>
                   <div class="craftercms-entitlement">
-                    <img class="craftercms-entitlement-logo craftercms-logo" src="/studio/static-assets/images/logo.svg" alt="Crafter CMS">
-                    <img class="craftercms-entitlement-logo craftercms-logo-dark" src="/studio/static-assets/images/logo-dark.svg" alt="Crafter CMS">
+                    <img class="craftercms-entitlement-logo craftercms-logo" src="/studio/static-assets/images/logo.svg" alt="CrafterCMS">
+                    <img class="craftercms-entitlement-logo craftercms-logo-dark" src="/studio/static-assets/images/logo-dark.svg" alt="CrafterCMS">
                     <p class="craftercms-entitlement-copy">${entitlementValidator}</p>
                   </div>
                 </div>

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -48,6 +48,7 @@ import { CrafterCMSEpic } from '../store';
 import { getSystemLink } from '../../utils/system';
 
 export default [
+  // region pushToolsPanelPage
   (action$, state$) =>
     action$.pipe(
       ofType(pushToolsPanelPage.type),
@@ -60,6 +61,8 @@ export default [
       }),
       ignoreElements()
     ),
+  // endregion
+  // region popToolsPanelPage
   (action$, state$) =>
     action$.pipe(
       ofType(popToolsPanelPage.type),
@@ -78,6 +81,7 @@ export default [
       }),
       ignoreElements()
     ),
+  // endregion
   // region setPreviewEditMode
   (action$, state$) =>
     action$.pipe(
@@ -205,7 +209,8 @@ export default [
   (action$, state$) =>
     action$.pipe(
       ofType(guestCheckOut.type),
+      filter(({ payload }) => Boolean(payload?.path)),
       map(({ payload }) => conditionallyUnlockItem({ path: payload.path }))
     )
-  // region
+  // endregion
 ] as CrafterCMSEpic[];
