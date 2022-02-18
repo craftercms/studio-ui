@@ -19,7 +19,7 @@ import { defineMessages } from 'react-intl';
 defineMessages({
   siteTools: {
     id: 'siteTools.title',
-    defaultMessage: 'Site Tools'
+    defaultMessage: 'Project Tools'
   },
   siteDashboard: {
     id: 'words.dashboard',
@@ -47,6 +47,6 @@ defineMessages({
   },
   site: {
     id: 'launcher.siteSectionTitle',
-    defaultMessage: 'Site <muted>• {siteName}</muted>'
+    defaultMessage: 'Project <muted>• {siteName}</muted>'
   }
 });
