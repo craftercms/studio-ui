@@ -47,7 +47,7 @@ interface SiteCardProps {
 const translations = defineMessages({
   confirmHelperText: {
     id: 'siteCard.helperText',
-    defaultMessage: 'Delete "{site}" site?'
+    defaultMessage: 'Delete "{site}" project?'
   },
   confirmOk: {
     id: 'words.yes',

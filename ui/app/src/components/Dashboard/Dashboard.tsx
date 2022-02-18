@@ -53,7 +53,7 @@ export function Dashboard(props: DashboardAppProps) {
             subtitle={
               <FormattedMessage
                 id="dashboard.emptyStateMessageSubtitle"
-                defaultMessage="Add widgets at your site's User Interface Configuration"
+                defaultMessage="Add widgets at your project's User Interface Configuration"
               />
             }
           />

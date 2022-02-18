@@ -61,11 +61,11 @@ const messages = defineMessages({
   createPolicy: {
     id: 'fileUpload.createPolicy',
     defaultMessage:
-      'The upload file name goes against site policies. Suggested modified file name is: "{name}". Would you like to use the suggested name?'
+      'The upload file name goes against project policies. Suggested modified file name is: "{name}". Would you like to use the suggested name?'
   },
   policyError: {
     id: 'fileUpload.policyError',
-    defaultMessage: 'The upload file name goes against site policies.'
+    defaultMessage: 'The upload file name goes against project policies.'
   }
 });
 

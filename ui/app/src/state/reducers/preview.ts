@@ -95,7 +95,7 @@ const messages = defineMessages({
   },
   noUiConfigMessageSubtitle: {
     id: 'noUiConfigMessageTitle.subtitle',
-    defaultMessage: 'Add & configure `ui.xml` on your site to show content here.'
+    defaultMessage: 'Add & configure `ui.xml` on your project to show content here.'
   }
 });
 

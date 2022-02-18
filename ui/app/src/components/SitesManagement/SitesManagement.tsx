@@ -61,7 +61,7 @@ import { createCustomDocumentEventListener } from '../../utils/dom';
 const translations = defineMessages({
   siteDeleted: {
     id: 'sitesGrid.siteDeleted',
-    defaultMessage: 'Site deleted successfully'
+    defaultMessage: 'Project deleted successfully'
   }
 });
 
@@ -233,7 +233,7 @@ export default function SitesManagement() {
           }}
           withEmptyStateProps={{
             emptyStateProps: {
-              title: <FormattedMessage id="sitesGrid.emptyStateMessage" defaultMessage="No Sites Found" />
+              title: <FormattedMessage id="sitesGrid.emptyStateMessage" defaultMessage="No Projects Found" />
             }
           }}
         >
