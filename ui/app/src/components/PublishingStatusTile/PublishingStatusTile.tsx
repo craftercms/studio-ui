@@ -54,7 +54,6 @@ const usePublishingStatusTileStyles = makeStyles((theme) =>
       borderTop: 'none',
       background: theme.palette.background.paper,
       margin: 5,
-      padding: 5,
       'button&': {
         cursor: 'pointer',
         '&:hover, &:focus': {
@@ -65,7 +64,7 @@ const usePublishingStatusTileStyles = makeStyles((theme) =>
       ...styles.root
     }),
     avatar: (styles) => ({
-      marginBottom: theme.spacing(1),
+      margin: 5,
       ...styles.avatar
     }),
     text: (styles) => ({
