@@ -180,6 +180,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
           }
           case EditingStatus.SORTING_COMPONENT: {
             if (notNullOrUndefined(dragContext.targetIndex)) {
+              post(instanceDragEnded());
               moveComponent(dragContext);
               // return of({ type: 'move_component' });
             }
