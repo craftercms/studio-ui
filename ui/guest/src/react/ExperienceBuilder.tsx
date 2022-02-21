@@ -101,6 +101,12 @@ import GuestGlobalStyles from './GuestGlobalStyles';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { ContentInstance } from '@craftercms/studio-ui/models';
 import { prop } from '@craftercms/studio-ui/utils/model';
+import {
+  sharedWorkerConnect,
+  sharedWorkerDisconnect,
+  sharedWorkerToken
+} from '@craftercms/studio-ui/state/actions/auth';
+import { setJwt } from '@craftercms/studio-ui/utils/auth';
 
 // TODO: add themeOptions and global styles customising
 interface BaseXBProps {
@@ -155,7 +161,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
   const [snack, setSnack] = useState<Partial<Snack>>();
   const dispatch = useDispatch();
   const state = useSelector<GuestState>((state) => state);
-  const { editMode, highlightMode, editModePadding, status, hostCheckedIn: hasHost, draggable } = state;
+  const { editMode, highlightMode, editModePadding, status, hostCheckedIn: hasHost, draggable, authoringBase } = state;
   const refs = useRef({
     contentReady: false,
     firstRender: true,
@@ -199,6 +205,30 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
     }),
     [dispatch, hasHost, draggable, editMode, highlightMode]
   );
+
+  useEffect(() => {
+    if (hasHost && authoringBase) {
+      const worker = new SharedWorker(`${authoringBase}/static-assets/next/shared-worker.js`, {
+        name: 'authWorker',
+        credentials: 'same-origin'
+      });
+      worker.port.start();
+      worker.port.postMessage(sharedWorkerConnect());
+      window.addEventListener('beforeunload', function () {
+        worker.port.postMessage(sharedWorkerDisconnect());
+      });
+
+      fromEvent<MessageEvent>(worker.port, 'message').subscribe((event) => {
+        const { type, payload } = event.data;
+        switch (type) {
+          case sharedWorkerToken.type: {
+            setJwt(payload.token);
+            break;
+          }
+        }
+      });
+    }
+  }, [authoringBase, hasHost]);
 
   const sxStylesConfig = useMemo(() => {
     return deepmerge(styleSxDefaults, sxOverrides);

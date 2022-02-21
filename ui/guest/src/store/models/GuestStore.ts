@@ -53,6 +53,7 @@ export interface GuestState {
   status: EditingStatus;
   editMode: boolean;
   highlightMode: string;
+  authoringBase: string;
   editModePadding: boolean;
   editable: T;
   draggable: T;
@@ -67,6 +68,7 @@ export interface GuestState {
   };
   rteConfig: RteConfig;
   activeSite: string;
+  username: string;
 }
 
 export type GuestStateObservable = StateObservable<GuestState>;

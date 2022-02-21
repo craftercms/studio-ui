@@ -108,5 +108,9 @@ export const guestMessages = defineMessages({
   assetUploadFailed: {
     id: 'operations.assetUploadFailed',
     defaultMessage: 'Asset Upload failed.'
+  },
+  itemLocked: {
+    id: 'validations.itemLocked',
+    defaultMessage: 'The item is already locked by {lockOwner}. Please try again later'
   }
 });

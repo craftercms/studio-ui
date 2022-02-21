@@ -46,7 +46,8 @@ export type ValidationKeys =
   | 'minValue'
   | 'maxValue'
   | 'dropTargetsNotFound'
-  | 'registerNotFound';
+  | 'registerNotFound'
+  | 'itemLocked';
 
 export type ContentTypeFieldValidations = {
   [key in ValidationKeys]: ContentTypeFieldValidation;

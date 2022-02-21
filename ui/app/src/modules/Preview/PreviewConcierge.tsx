@@ -63,6 +63,7 @@ import {
   setItemBeingDragged,
   setPreviewEditMode,
   showEditDialog as showEditDialogAction,
+  showWorkflowCancellationDialog,
   sortItemOperation,
   sortItemOperationComplete,
   sortItemOperationFailed,
@@ -269,6 +270,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   const upToDateRefs = useUpdateRefs({
     guest,
     models,
+    user,
     siteId,
     dispatch,
     guestBase,
@@ -451,7 +453,10 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
             getHostToGuestBus().next(
               hostCheckIn({
                 editMode: false,
+                username: upToDateRefs.current.user.username,
                 highlightMode: upToDateRefs.current.highlightMode,
+                authoringBase: upToDateRefs.current.authoringBase,
+                site: upToDateRefs.current.siteId,
                 editModePadding: upToDateRefs.current.editModePadding,
                 rteConfig: upToDateRefs.current.rteConfig ?? {}
               })
@@ -925,6 +930,11 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
               })
             );
           }
+          break;
+        }
+        case showWorkflowCancellationDialog.type: {
+          console.log('showWorkflowCancellationDialog', payload);
+          break;
         }
       }
     });
