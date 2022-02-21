@@ -61,7 +61,7 @@ export default function LogConsoleGridUI(props: LogConsoleGridUIProps) {
             {showSiteColumn && (
               <GlobalAppGridCell align="left">
                 <Typography variant="subtitle2">
-                  <FormattedMessage id="words.site" defaultMessage="Site" />
+                  <FormattedMessage id="words.project" defaultMessage="Project" />
                 </Typography>
               </GlobalAppGridCell>
             )}

@@ -41,8 +41,8 @@ export const urlMapping = {
 
 export const messages = defineMessages({
   site: {
-    id: 'words.site',
-    defaultMessage: 'Site'
+    id: 'words.project',
+    defaultMessage: 'Project'
   },
   global: {
     id: 'words.global',

@@ -35,8 +35,12 @@ export interface PluginFormEngineProps {
 const useStyles = makeStyles(() => ({
   container: {
     width: '100%',
+    paddingLeft: '24px',
     '& .MuiGrid-item': {
-      padding: '12px'
+      paddingTop: '24px',
+      '&:last-child': {
+        paddingBottom: '12px'
+      }
     }
   }
 }));

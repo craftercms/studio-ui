@@ -70,7 +70,7 @@ interface BlueprintReviewProps {
 const messages = defineMessages({
   siteInfo: {
     id: 'createSiteDialog.siteInfo',
-    defaultMessage: 'Site Info'
+    defaultMessage: 'Project Info'
   },
   blueprintStrategy: {
     id: 'createSiteDialog.blueprintStrategy',
@@ -102,11 +102,11 @@ const messages = defineMessages({
   },
   siteId: {
     id: 'createSiteDialog.siteId',
-    defaultMessage: 'Site ID'
+    defaultMessage: 'Project ID'
   },
   siteName: {
     id: 'createSiteDialog.siteName',
-    defaultMessage: 'Site Name'
+    defaultMessage: 'Project Name'
   },
   sandboxBranch: {
     id: 'createSiteDialog.sandboxBranch',

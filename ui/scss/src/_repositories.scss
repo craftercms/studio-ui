@@ -1,5 +1,5 @@
 $diff-modal-size: 350px;
-$split-view-size: $diff-modal-size / 2;
+$split-view-size: $diff-modal-size * 0.5;
 
 .repositories {
   padding-top: 34px;

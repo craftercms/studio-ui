@@ -125,13 +125,13 @@ export const translations = defineMessages({
   },
   confTabSiteConfiguration: {
     id: 'siteConfigurationManagement.confTabSiteConfiguration',
-    defaultMessage: 'Site Configuration'
+    defaultMessage: 'Project Configuration'
   },
   confTabSiteConfigurationDesc: {
     id: 'siteConfigurationManagement.confTabSiteConfigurationDesc',
-    defaultMessage: 'Defines the general site configuration'
+    defaultMessage: 'Defines the general project configuration'
   },
-  confTabSiteConf: { id: 'siteConfigurationManagement.confTabSiteConf', defaultMessage: 'Site Config Tools' },
+  confTabSiteConf: { id: 'siteConfigurationManagement.confTabSiteConf', defaultMessage: 'Project Config Tools' },
   confTabSiteConfDesc: {
     id: 'siteConfigurationManagement.confTabSiteConfDesc',
     defaultMessage: 'Defines the list of admin tools available'

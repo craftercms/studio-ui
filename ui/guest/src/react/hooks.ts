@@ -101,17 +101,19 @@ export function useICE(props: UseICEProps): ICEMaterials {
 
   // Register
   useEffect(() => {
-    elementRegistryId.current = register({
-      element: elementRef.current,
-      modelId: modelId,
-      fieldId: props.fieldId,
-      index: props.index
-    });
-    return () => {
-      // Deregister
-      deregister(elementRegistryId.current);
-    };
-  }, [props.index, props.fieldId, modelId]);
+    if (inAuthoring) {
+      elementRegistryId.current = register({
+        element: elementRef.current,
+        modelId: modelId,
+        fieldId: props.fieldId,
+        index: props.index
+      });
+      return () => {
+        // Deregister
+        deregister(elementRegistryId.current);
+      };
+    }
+  }, [props.index, props.fieldId, modelId, inAuthoring]);
 
   const ref: ICEMaterials['props']['ref'] = (node) => {
     // During React update cycles, it may momentarily set the ref to

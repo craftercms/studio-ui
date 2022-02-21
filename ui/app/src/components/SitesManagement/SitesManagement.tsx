@@ -204,7 +204,7 @@ export default function SitesManagement() {
   return (
     <Paper elevation={0}>
       <GlobalAppToolbar
-        title={<FormattedMessage id="GlobalMenu.Sites" defaultMessage="Sites" />}
+        title={<FormattedMessage id="GlobalMenu.Sites" defaultMessage="Projects" />}
         leftContent={
           permissionsLookup['create-site'] && (
             <Button
@@ -213,7 +213,7 @@ export default function SitesManagement() {
               color="primary"
               onClick={() => setOpenCreateSiteDialog(true)}
             >
-              <FormattedMessage id="sites.createSite" defaultMessage="Create Site" />
+              <FormattedMessage id="sites.createSite" defaultMessage="Create Project" />
             </Button>
           )
         }
