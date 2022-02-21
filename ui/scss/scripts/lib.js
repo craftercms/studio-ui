@@ -14,11 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-const
-
-  fs = require('fs'),
-  sass = require('node-sass'),
-
+const fs = require('fs'),
+  sass = require('sass'),
   OUT_DIR = '../../static-assets/styles',
   FILES = [
     'temp',
@@ -43,20 +40,23 @@ function processFile(data, devMode = false) {
     input = data.input;
     output = data.output;
   }
-  sass.render({
-    file: `./src/${input}.scss`,
-    outputStyle: 'compressed',
-    sourceMap: devMode === true,
-    sourceMapEmbed: devMode === true,
-    sourceMapContents: devMode === true,
-    outFile: `${OUT_DIR}/${output}.css`
-  }, function (error, result) {
-    if (!error) {
-      write({ file: output, content: result.css.toString(), map: result.map, devMode });
-    } else {
-      console.log(`Error compiling ${input}.scss`, error);
+  sass.render(
+    {
+      file: `./src/${input}.scss`,
+      outputStyle: 'compressed',
+      sourceMap: devMode === true,
+      sourceMapEmbed: devMode === true,
+      sourceMapContents: devMode === true,
+      outFile: `${OUT_DIR}/${output}.css`
+    },
+    function (error, result) {
+      if (!error) {
+        write({ file: output, content: result.css.toString(), map: result.map, devMode });
+      } else {
+        console.log(`Error compiling ${input}.scss`, error);
+      }
     }
-  });
+  );
 }
 
 function processFileDevMode(data) {
@@ -68,12 +68,9 @@ function write({ file, content, devMode }) {
     fs.mkdirSync(OUT_DIR);
   }
 
-  const
-    regExp = /\/\*[^*]*\*+([^\/][^*]*)(Crafter Software)[^*]*\*+([^\/][^*]*\*+)*\//g,
+  const regExp = /\/\*[^*]*\*+([^\/][^*]*)(Crafter Software)[^*]*\*+([^\/][^*]*\*+)*\//g,
     copyright = content.match(regExp),
-    withoutCopyrights = content
-      .replace(regExp, '')
-      .replace(String.fromCharCode(65279), ''),
+    withoutCopyrights = content.replace(regExp, '').replace(String.fromCharCode(65279), ''),
     css = copyright ? `${copyright[0]}\n\n${withoutCopyrights}` : content;
 
   fs.writeFile(`${OUT_DIR}/${file}.css`, devMode ? content : css, function (error) {
@@ -84,7 +81,6 @@ function write({ file, content, devMode }) {
       console.log(error);
     }
   });
-
 }
 
 module.exports = { processFile, write, FILES, OUT_DIR, processFileDevMode };
