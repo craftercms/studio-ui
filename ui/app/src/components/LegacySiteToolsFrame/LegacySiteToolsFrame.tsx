@@ -28,7 +28,7 @@ function LegacySiteToolsFrame(props: LegacySiteToolsFrameProps) {
   const path = `/legacy-site-config${[workAreaOnly && '?mode=embedded', tool && `#tool/${tool}`]
     .filter(Boolean)
     .join('')}`;
-  return <LegacyIFrame path={path} title="Site Tools" iframeProps={iframeProps} />;
+  return <LegacyIFrame path={path} title="Project Tools" iframeProps={iframeProps} />;
 }
 
 export default LegacySiteToolsFrame;

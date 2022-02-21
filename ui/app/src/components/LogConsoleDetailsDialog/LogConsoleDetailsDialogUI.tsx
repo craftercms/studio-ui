@@ -69,7 +69,7 @@ export function LogConsoleDetailsDialogUI(props: LogConsoleDetailsDialogProps) {
         </Box>
         <Box display="flex" p="10px 0" alignItems="center">
           <Typography color="textSecondary" className={classes.label}>
-            <FormattedMessage id="words.site" defaultMessage="Site" />
+            <FormattedMessage id="words.project" defaultMessage="Project" />
           </Typography>
           <Box display="flex" width="100%" alignItems="center">
             <Typography>{logEvent.site}</Typography>
