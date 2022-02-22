@@ -15,7 +15,7 @@
  */
 
 import { Epic, ofType } from 'redux-observable';
-import { filter, map, switchMap, withLatestFrom } from 'rxjs/operators';
+import { filter, ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { NEVER, of } from 'rxjs';
 import GlobalState from '../../models/GlobalState';
 import { camelize, dasherize } from '../../utils/string';
@@ -50,11 +50,12 @@ import { catchAjaxError } from '../../utils/ajax';
 import { batchActions } from '../actions/misc';
 import StandardAction from '../../models/StandardAction';
 import { asArray } from '../../utils/array';
-import { changeCurrentUrl } from '../actions/preview';
+import { changeCurrentUrl, requestWorkflowCancellationDialogOnResult } from '../actions/preview';
 import { CrafterCMSEpic } from '../store';
 import { formEngineMessages } from '../../utils/i18n-legacy';
 import infoGraphic from '../../assets/information.svg';
 import { nou } from '../../utils/object';
+import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 
 function getDialogNameFromType(type: string): string {
   let name = getDialogActionNameFromType(type);
@@ -203,6 +204,17 @@ const dialogEpics: CrafterCMSEpic[] = [
       switchMap(([{ payload }, state]) =>
         fetchContentXML(state.sites.active, payload.url).pipe(map((content) => updatePreviewDialog({ content })))
       )
+    ),
+  // endregion
+  // region showSystemNotification
+  (action$) =>
+    action$.pipe(
+      ofType(requestWorkflowCancellationDialogOnResult.type),
+      tap((action) => {
+        const hostToGuest$ = getHostToGuestBus();
+        hostToGuest$.next(action);
+      }),
+      ignoreElements()
     )
   // endregion
 ] as Epic[];

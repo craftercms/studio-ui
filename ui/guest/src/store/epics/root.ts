@@ -18,7 +18,7 @@ import { combineEpics, ofType } from 'redux-observable';
 import { GuestStandardAction } from '../models/GuestStandardAction';
 import { filter, ignoreElements, map, mapTo, switchMap, take, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 import { not } from '../../utils/util';
-import { post } from '../../utils/communicator';
+import { message$, post } from '../../utils/communicator';
 import * as iceRegistry from '../../iceRegistry';
 import { getById } from '../../iceRegistry';
 import { dragOk, unwrapEvent } from '../util';
@@ -46,7 +46,8 @@ import {
   desktopAssetUploadStarted,
   instanceDragBegun,
   instanceDragEnded,
-  showWorkflowCancellationDialog,
+  requestWorkflowCancellationDialog,
+  requestWorkflowCancellationDialogOnResult,
   trashed,
   validationMessage
 } from '@craftercms/studio-ui/state/actions/preview';
@@ -73,7 +74,7 @@ import {
 import $ from 'jquery';
 import { extractCollectionItem } from '@craftercms/studio-ui/utils/model';
 import { getParentModelId } from '../../utils/ice';
-import { fetchSandboxItem, fetchWorkflowAffectedItems } from '@craftercms/studio-ui/services/content';
+import { fetchSandboxItem } from '@craftercms/studio-ui/services/content';
 
 const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
   // region mouseover, mouseleave
@@ -361,7 +362,6 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 
                 return fetchSandboxItem(state.activeSite, path).pipe(
                   switchMap((item) => {
-                    console.log(item.stateMap);
                     if (
                       !item.stateMap.submitted &&
                       !item.stateMap.scheduled &&
@@ -370,22 +370,30 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
                       return initTinyMCE(record, validations, type === 'html' ? setup : {});
                     } else {
                       if (!item.stateMap.submitted || !item.stateMap.scheduled) {
-                        fetchWorkflowAffectedItems(state.activeSite, path).subscribe((items) => {
-                          console.log(items);
-                          if (items?.length > 0) {
-                            post(showWorkflowCancellationDialog({ items }));
-                          }
-                        });
+                        post(
+                          requestWorkflowCancellationDialog({
+                            siteId: state.activeSite,
+                            path
+                          })
+                        );
+                        return message$.pipe(
+                          filter((e) => e.type === requestWorkflowCancellationDialogOnResult.type),
+                          take(1),
+                          filter((e) => e.payload.type === 'onContinue'),
+                          switchMap(() => {
+                            return initTinyMCE(record, validations, type === 'html' ? setup : {});
+                          })
+                        );
                       } else {
                         post(
                           validationMessage({
                             id: 'itemLocked',
-                            level: 'required',
+                            level: 'suggestion',
                             values: { lockOwner: item.lockOwner }
                           })
                         );
+                        return NEVER;
                       }
-                      return NEVER;
                     }
                   })
                 );

@@ -56,6 +56,8 @@ import {
   moveItemOperationComplete,
   moveItemOperationFailed,
   requestEdit,
+  requestWorkflowCancellationDialog,
+  requestWorkflowCancellationDialogOnResult,
   selectForEdit,
   setContentTypeDropTargets,
   setEditModePadding,
@@ -63,7 +65,6 @@ import {
   setItemBeingDragged,
   setPreviewEditMode,
   showEditDialog as showEditDialogAction,
-  showWorkflowCancellationDialog,
   sortItemOperation,
   sortItemOperationComplete,
   sortItemOperationFailed,
@@ -80,6 +81,7 @@ import {
   duplicateItem,
   fetchContentInstance,
   fetchContentInstanceDescriptor,
+  fetchWorkflowAffectedItems,
   insertComponent,
   insertInstance,
   insertItem,
@@ -129,7 +131,11 @@ import { useMount } from '../../hooks/useMount';
 import { usePreviewNavigation } from '../../hooks/usePreviewNavigation';
 import { useActiveSite } from '../../hooks/useActiveSite';
 import { getControllerPath, getPathFromPreviewURL } from '../../utils/path';
-import { showEditDialog } from '../../state/actions/dialogs';
+import {
+  showEditDialog,
+  showWorkflowCancellationDialog,
+  workflowCancellationDialogClosed
+} from '../../state/actions/dialogs';
 import { UNDEFINED } from '../../utils/constants';
 import { useCurrentPreviewItem } from '../../hooks/useCurrentPreviewItem';
 import { useSiteUIConfig } from '../../hooks/useSiteUIConfig';
@@ -932,8 +938,19 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           }
           break;
         }
-        case showWorkflowCancellationDialog.type: {
-          console.log('showWorkflowCancellationDialog', payload);
+        case requestWorkflowCancellationDialog.type: {
+          fetchWorkflowAffectedItems(payload.siteId, payload.path).subscribe((items) => {
+            dispatch(
+              showWorkflowCancellationDialog({
+                items,
+                onClosed: batchActions([
+                  workflowCancellationDialogClosed(),
+                  requestWorkflowCancellationDialogOnResult({ type: 'onClosed' })
+                ]),
+                onContinue: requestWorkflowCancellationDialogOnResult({ type: 'onContinue' })
+              })
+            );
+          });
           break;
         }
       }

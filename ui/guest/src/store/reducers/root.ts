@@ -91,7 +91,8 @@ const initialState: GuestState = {
   hostCheckedIn: false,
   rteConfig: {},
   activeSite: '',
-  editModePadding: false
+  editModePadding: false,
+  username: null
 };
 
 function createReducer<S, CR extends CaseReducers<S>>(initialState: S, actionsMap: CR): Reducer<S> {
