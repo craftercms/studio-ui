@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -24,7 +24,7 @@ export function EditSiteDialog(props: EditSiteDialogProps) {
   const { site, onSaveSuccess, onSiteImageChange, isSubmitting, ...rest } = props;
   return (
     <EnhancedDialog
-      title={<FormattedMessage id="editSiteDialog.title" defaultMessage="Edit Site" />}
+      title={<FormattedMessage id="editSiteDialog.title" defaultMessage="Edit Project" />}
       maxWidth="md"
       isSubmitting={isSubmitting}
       {...rest}

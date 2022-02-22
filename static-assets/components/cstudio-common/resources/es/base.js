@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -259,7 +259,7 @@ CStudioAuthoring.Messages.registerBundle('siteDropdown', 'es', {
   templates: 'Plantillas',
   scripts: 'Scripts',
   adminConsole: 'Consola de Administración',
-  siteconfig: 'Configuración del sitio',
+  siteconfig: 'Configuración del proyecto',
   previewSync: 'Vista previa de Sincronización',
   syncrepo: 'Sincronizar del Repositorio',
   allSites: 'Todos los Sitios',

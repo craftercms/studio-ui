@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -81,7 +81,7 @@ export interface LauncherStateProps {
 const messages = defineMessages({
   mySites: {
     id: 'globalMenu.mySites',
-    defaultMessage: 'My Sites'
+    defaultMessage: 'My Projects'
   },
   preview: {
     id: 'words.preview',
@@ -304,7 +304,7 @@ const SitesRail = ({ classes, formatMessage, sites, site, onSiteCardClick, optio
           </List>
         ) : (
           <EmptyState
-            title={<FormattedMessage id="globalMenu.noSitesMessage" defaultMessage="No sites to display." />}
+            title={<FormattedMessage id="globalMenu.noSitesMessage" defaultMessage="No projects to display." />}
           />
         )}
       </div>
