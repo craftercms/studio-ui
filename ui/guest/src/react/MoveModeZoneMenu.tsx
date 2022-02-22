@@ -223,8 +223,6 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
     if (recordType === 'component' && nodeSelectorItemRecord) {
       _record = get(fromICEId(nodeSelectorItemRecord.id).id);
     }
-    console.log(_record);
-
     e.stopPropagation();
     e.dataTransfer.setData('text/plain', `${_record.id}`);
     e.dataTransfer.setDragImage(document.querySelector('.craftercms-dragged-element'), 20, 20);
@@ -274,8 +272,6 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
       document.removeEventListener('click', onClickOut, false);
     };
   }, []);
-
-  // console.log(get(16));
 
   return (
     <>
