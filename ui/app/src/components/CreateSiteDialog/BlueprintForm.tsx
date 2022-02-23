@@ -98,12 +98,12 @@ const messages = defineMessages({
   },
   createAsOrphan: {
     id: 'createSiteDialog.createAsOrphan',
-    defaultMessage: 'Create the site from a remote repository as orphan (no git history)'
+    defaultMessage: 'Create the project from a remote repository as orphan (no git history)'
   },
   createAsOrphanHelpText: {
     id: 'createSiteDialog.createAsOrphanHelpText',
     defaultMessage:
-      'Creating the site as an orphan will dissociate the site from the source git repository and remove all history.'
+      'Creating the project as an orphan will dissociate the project from the source git repository and remove all history.'
   }
 });
 

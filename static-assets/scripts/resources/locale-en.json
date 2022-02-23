@@ -58,7 +58,7 @@
         "CLONE": "Create project based on remote Git repository",
         "PUSH": "Create project based on a blueprint then push to remote bare Git repository",
         "BLUEPRINT": "Blueprint",
-        "CREATING_SITE": "Creating Site",
+        "CREATING_SITE": "Creating Project",
         "CREATE_ERROR": "Unable to create project. Please contact your system administrator.",
         "SITE_ID_VALIDATION": "(Max length: 50 characters, consisting of: lowercase letters, numbers, dash (-) and underscore (_), can't starts with: dash (-) nor underscore (_) )",
         "LENGTH_VALIDATION_4000": "(Max length: 4000 characters)",

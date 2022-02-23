@@ -120,7 +120,7 @@ export default function ToolsPanel() {
             title: siteId ? (
               <FormattedMessage id="previewTools.noWidgetsMessage" defaultMessage="No tools have been configured" />
             ) : (
-              <FormattedMessage id="previewTools.choseSiteMessage" defaultMessage="Please choose site" />
+              <FormattedMessage id="previewTools.choseSiteMessage" defaultMessage="Please choose project" />
             ),
             ...(!siteId && { image: `${baseUrl}/static-assets/images/choose_option.svg` }),
             classes: { root: classes.emptyState, image: classes.emptyStateImage }

@@ -105,11 +105,11 @@ export const sitePolicyMessages = defineMessages({
   itemPastePolicyConfirm: {
     id: 'pastePolicy.confirm',
     defaultMessage:
-      'The selected {action} target goes against site policies for the destination directory. • Original path: "{path}", • Suggested path is: "{modifiedPath}". Would you like to use the suggested path?'
+      'The selected {action} target goes against project policies for the destination directory. • Original path: "{path}", • Suggested path is: "{modifiedPath}". Would you like to use the suggested path?'
   },
   itemPastePolicyError: {
     id: 'pastePolicy.error',
-    defaultMessage: 'The selected {action} target goes against site policies for the destination directory.'
+    defaultMessage: 'The selected {action} target goes against project policies for the destination directory.'
   },
   itemPasteValidating: {
     id: 'words.validating',

@@ -418,7 +418,7 @@ export const contentTypesMessages = defineMessages({
   },
   loadModuleError: {
     id: 'siteConfig.loadModuleError',
-    defaultMessage: 'Unable to load "{tool}". Check Site tools configuration.'
+    defaultMessage: 'Unable to load "{tool}". Check project tools configuration.'
   },
   toolNotFound: {
     id: 'siteConfig.toolNotFound',
@@ -547,7 +547,7 @@ export const siteComponentDSMessages = defineMessages({
   },
   siteComponent: {
     id: 'siteComponentDS.siteComponent',
-    defaultMessage: 'Site Component'
+    defaultMessage: 'Project Component'
   }
 });
 
@@ -710,11 +710,11 @@ export const formEngineMessages = defineMessages({
   createPolicy: {
     id: 'formEngine.createPolicy',
     defaultMessage:
-      'The {originalPath} path goes against site policies. Suggested modified path is: "{path}". Would you like to use the suggested path?'
+      'The {originalPath} path goes against project policies. Suggested modified path is: "{path}". Would you like to use the suggested path?'
   },
   policyError: {
     id: 'formEngine.policyError',
-    defaultMessage: 'The {path} path goes against site policies.'
+    defaultMessage: 'The {path} path goes against project policies.'
   },
   formNotReadyForSaving: {
     id: 'formEngine.formNotReadyForSaving',
@@ -1057,7 +1057,7 @@ export const adminDashboardMessages = defineMessages({
   },
   siteUpdated: {
     id: 'sitesAdmin.siteUpdated',
-    defaultMessage: 'Site Updated.'
+    defaultMessage: 'Project Updated.'
   }
 });
 
@@ -1416,6 +1416,6 @@ export const itemSuccessMessages = defineMessages({
 export const siteSuccessMessages = defineMessages({
   siteDeleted: {
     id: 'site.deleted',
-    defaultMessage: 'Site deleted successfully'
+    defaultMessage: 'Project deleted successfully'
   }
 });

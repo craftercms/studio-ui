@@ -43,6 +43,6 @@ export const translations = defineMessages({
   },
   noLocales: {
     id: 'craftercms.pages.option.noLocales',
-    defaultMessage: 'The site has no locales declared.'
+    defaultMessage: 'The project has no locales declared.'
   }
 });

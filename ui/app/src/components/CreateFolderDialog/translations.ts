@@ -24,11 +24,11 @@ export const translations = defineMessages({
   createPolicy: {
     id: 'createFolder.createPolicy',
     defaultMessage:
-      'The supplied name goes against site policies. Suggested modified name is: "{name}". Would you like to use the suggested name?'
+      'The supplied name goes against project policies. Suggested modified name is: "{name}". Would you like to use the suggested name?'
   },
   policyError: {
     id: 'createFolder.policyError',
-    defaultMessage: 'The supplied name goes against site policies.'
+    defaultMessage: 'The supplied name goes against project policies.'
   }
 });
 
