@@ -168,7 +168,6 @@
   "common.privateKey": "Private Key",
   "common.publishingTarget": "Publishing Target",
   "common.remoteName": "Git Remote Name",
-  "common.searchEngine": "Search Engine",
   "common.selectAll": "Select All",
   "common.toggleSidebarTooltip": "Toggle sidebar",
   "common.token": "Token",
