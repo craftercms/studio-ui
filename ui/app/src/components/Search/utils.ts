@@ -77,6 +77,7 @@ export interface URLDrivenSearchProps {
 export interface SearchProps {
   mode?: 'default' | 'select';
   embedded?: boolean;
+  searchParameters?: Partial<ElasticParams>;
   onClose?(): void;
   onSelect?(path: string, selected: boolean): any;
   onAcceptSelection?(items: DetailedItem[]): any;
@@ -89,22 +90,34 @@ export interface CheckedFilter {
 
 export const setCheckedParameterFromURL = (queryParams: Partial<ElasticParams>) => {
   if (queryParams['filters']) {
-    let checked: any = {};
     let parseQP = JSON.parse(queryParams['filters']);
-    Object.keys(parseQP).forEach((facet) => {
-      if (Array.isArray(parseQP[facet])) {
-        checked[facet] = {};
-        parseQP[facet].forEach((name: string) => {
-          checked[facet][name] = true;
-        });
-      } else {
-        checked[facet] = parseQP[facet];
-      }
-    });
-    return checked;
+    return getFiltersFromParameters(parseQP);
   } else {
     return {};
   }
+};
+
+export const setCheckedParameterFromParameters = (queryParams: Partial<ElasticParams>) => {
+  if (queryParams.filters) {
+    return getFiltersFromParameters(queryParams.filters);
+  } else {
+    return {};
+  }
+};
+
+const getFiltersFromParameters = (filters: any) => {
+  let checked: any = {};
+  Object.keys(filters).forEach((facet) => {
+    if (Array.isArray(filters[facet])) {
+      checked[facet] = {};
+      filters[facet].forEach((name: string) => {
+        checked[facet][name] = true;
+      });
+    } else {
+      checked[facet] = filters[facet];
+    }
+  });
+  return checked;
 };
 
 interface useSearchStateProps {

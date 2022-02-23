@@ -832,7 +832,12 @@
             if (!treeItems[i].hideInAuthoring) {
               var itemCannedSearch = instance.cannedSearchCache[treeNodeTO.path];
 
-              if (itemCannedSearch && itemCannedSearch.length != 0 && itemCannedSearch[0].insertAs != 'append') {
+              if (
+                itemCannedSearch &&
+                itemCannedSearch.length != 0 &&
+                itemCannedSearch[0].insertAs != 'append' &&
+                itemCannedSearch[0].insertAs != 'replaceAllChildFolders'
+              ) {
                 replaceChildren.push(treeNodeTO.path);
               } else {
                 var treeNode = this.drawTreeItem(treeNodeTO, root, instance);
@@ -902,26 +907,31 @@
         var searchId = CStudioAuthoring.Utils.generateUUID();
         var newId = CStudioAuthoring.Utils.generateUUID();
         if (searchConfig.newPath && !window.pasteFlag) {
-          var label =
-            "<a style='display: inline; padding-right:5px;' id='ID' href='#' class='canned-search-el'>LABEL</a><a style='display: inline; border-left: 1px solid grey; padding-left: 5px;' id='NEWID' href='#'>+add</a>";
+          if (!/^<a.*>.*<\/a><a.*>\+add<\/a>/.test(searchConfig.label)) {
+            var label =
+              "<a style='display: inline; padding-right:5px;' id='ID' href='#' class='canned-search-el'>LABEL</a><a style='display: inline; border-left: 1px solid grey; padding-left: 5px;' id='NEWID' href='#'>+add</a>";
 
-          label = label.replace('ID', searchId);
-          label = label.replace('LABEL', searchConfig.label);
-          label = label.replace('NEWID', newId);
-
-          searchConfig.label = label;
-
-          treeNode = new YAHOO.widget.TextNode(searchConfig, root, false);
-          Self.searchesToWire.push(treeNode);
+            label = label.replace('ID', searchId);
+            label = label.replace('LABEL', searchConfig.label);
+            label = label.replace('NEWID', newId);
+            searchConfig.label = label;
+          } else {
+            const doc = document.createElement('div');
+            doc.innerHTML = searchConfig.label;
+            const elms = doc.getElementsByTagName('a');
+            if (elms.length >= 2) {
+              elms[0].id = searchId;
+              elms[1].id = newId;
+              searchConfig.label = `${elms[0].outerHTML}${elms[1].outerHTML}`.replaceAll('"', "'");
+            }
+          }
         } else {
           searchConfig.label =
             "<a style='display: inline;' id='" + searchId + "' href='#'>" + searchConfig.label + '</a>';
-
-          treeNode = new YAHOO.widget.TextNode(searchConfig, root, false);
-
-          Self.searchesToWire.push(treeNode);
         }
 
+        treeNode = new YAHOO.widget.TextNode(searchConfig, root, false);
+        Self.searchesToWire.push(treeNode);
         treeNode.nodeType = 'SEARCH';
         treeNode.searchTO = searchConfig;
         treeNode.searchTO.newId = newId;
@@ -1423,16 +1433,36 @@
           }
 
           searchEl.onclick = function () {
-            var url =
-              CStudioAuthoringContext.authoringAppBaseUri + '/search?site=' + CStudioAuthoringContext.site + '&s=';
-
             var queryParams = this.searchTO.queryParams.queryParam;
+            const searchParameters = {};
 
-            for (var i = 0; i < queryParams.length; i++) {
-              url += '&' + encodeURIComponent(queryParams[i].name) + '=' + encodeURIComponent(queryParams[i].value);
-            }
+            queryParams.forEach((queryParam) => {
+              // 'csf' = crafter studio filter
+              if (queryParam.name.includes('csf_')) {
+                if (!searchParameters.filters) {
+                  searchParameters.filters = {};
+                }
+                const filterName = queryParam.name.replace('csf_', '');
+                searchParameters.filters[filterName] = [queryParam.value];
+              } else {
+                searchParameters[queryParam.name] = queryParam.value;
+              }
+            });
 
-            window.location = url;
+            CrafterCMSNext.system.store.dispatch({
+              type: 'SHOW_WIDGET_DIALOG',
+              payload: {
+                id: 'siteSearchDialog',
+                title: CrafterCMSNext.i18n.intl.formatMessage(CrafterCMSNext.i18n.messages.words.search),
+                widget: {
+                  id: 'craftercms.components.Search',
+                  configuration: {
+                    embedded: true,
+                    searchParameters
+                  }
+                }
+              }
+            });
           };
         }
         /* free up once current ones registered */

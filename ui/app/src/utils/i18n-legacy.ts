@@ -501,6 +501,10 @@ export const words = defineMessages({
   view: {
     id: 'words.view',
     defaultMessage: 'View'
+  },
+  search: {
+    id: 'words.search',
+    defaultValue: 'Search'
   }
 });
 

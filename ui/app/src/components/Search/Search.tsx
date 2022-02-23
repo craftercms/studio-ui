@@ -14,7 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { CheckedFilter, initialSearchParameters, SearchProps, useSearchState } from './utils';
+import {
+  CheckedFilter,
+  initialSearchParameters,
+  SearchProps,
+  setCheckedParameterFromParameters,
+  useSearchState
+} from './utils';
 import SearchUI from './SearchUI';
 import React, { useEffect, useMemo, useState } from 'react';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -27,7 +33,14 @@ import { reversePluckProps } from '../../utils/object';
 import LookupTable from '../../models/LookupTable';
 
 export function Search(props: SearchProps) {
-  const { mode = 'default', onSelect, embedded = false, onAcceptSelection, onClose } = props;
+  const {
+    mode = 'default',
+    onSelect,
+    embedded = false,
+    onAcceptSelection,
+    onClose,
+    searchParameters: searchParametersProp = {}
+  } = props;
 
   // region State
   const [filters, setFilters] = useSpreadState({
@@ -36,7 +49,10 @@ export function Search(props: SearchProps) {
   });
   const [keyword, setKeyword] = useState('');
   const [checkedFilters, setCheckedFilters] = useState<LookupTable<CheckedFilter>>({});
-  const [searchParameters, setSearchParameters] = useSpreadState({ ...initialSearchParameters });
+  const [searchParameters, setSearchParameters] = useSpreadState({
+    ...initialSearchParameters,
+    ...searchParametersProp
+  });
   // endregion
 
   // region Hooks
@@ -148,6 +164,12 @@ export function Search(props: SearchProps) {
     });
     return () => subscription.unsubscribe();
   }, [onSearch$, setSearchParameters]);
+
+  useEffect(() => {
+    if (searchParameters.filters) {
+      setCheckedFilters(setCheckedParameterFromParameters(searchParameters));
+    }
+  }, [searchParameters]);
   // endregion
 
   return (
