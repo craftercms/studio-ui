@@ -371,6 +371,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
           clearAndListen$.next();
           dispatch({ type });
           break;
+        // region actions whitelisted
         case componentInstanceDragStarted.type:
         case clearHighlightedDropTargets.type:
         case desktopAssetUploadProgress.type:
@@ -379,6 +380,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
         case setEditModePadding.type:
           dispatch(action);
           break;
+        // endregion
         case hotKey.type:
           if (payload.key === 'z') {
             bypassKeyStroke(payload, refs);

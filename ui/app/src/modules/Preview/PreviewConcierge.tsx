@@ -106,7 +106,13 @@ import {
   getStoredHighlightModeChoice,
   removeStoredClipboard
 } from '../../utils/state';
-import { fetchSandboxItem, reloadDetailedItem, restoreClipboard } from '../../state/actions/content';
+import {
+  fetchSandboxItem,
+  localItemLock,
+  reloadDetailedItem,
+  restoreClipboard,
+  unlockItem
+} from '../../state/actions/content';
 import EditFormPanel from '../../components/EditFormPanel/EditFormPanel';
 import {
   createModelHierarchyDescriptorMap,
@@ -953,6 +959,13 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           });
           break;
         }
+        // region actions whitelisted
+        case unlockItem.type:
+        case localItemLock.type: {
+          dispatch(action);
+          break;
+        }
+        // endregion
       }
     });
     return () => {

@@ -68,13 +68,15 @@ import {
   documentDrop,
   dropzoneEnter,
   dropzoneLeave,
+  exitComponentInlineEdit,
   setEditingStatus,
   startListening
 } from '../actions';
 import $ from 'jquery';
 import { extractCollectionItem } from '@craftercms/studio-ui/utils/model';
 import { getParentModelId } from '../../utils/ice';
-import { fetchSandboxItem } from '@craftercms/studio-ui/services/content';
+import { fetchSandboxItem, lock } from '@craftercms/studio-ui/services/content';
+import { localItemLock, unlockItem } from '@craftercms/studio-ui/state/actions/content';
 
 const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
   // region mouseover, mouseleave
@@ -359,42 +361,61 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
                 const modelId = action.payload.record.modelId;
                 const parentModelId = getParentModelId(modelId, models, modelHierarchyMap);
                 const path = models[parentModelId ?? modelId].craftercms.path;
+                const dateModified = models[parentModelId ?? modelId].craftercms.dateModified;
 
                 return fetchSandboxItem(state.activeSite, path).pipe(
                   switchMap((item) => {
-                    if (
-                      !item.stateMap.submitted &&
-                      !item.stateMap.scheduled &&
-                      (!item.stateMap.locked || item.lockOwner === state.username)
-                    ) {
-                      return initTinyMCE(record, validations, type === 'html' ? setup : {});
-                    } else {
-                      if (!item.stateMap.submitted || !item.stateMap.scheduled) {
-                        post(
-                          requestWorkflowCancellationDialog({
-                            siteId: state.activeSite,
-                            path
-                          })
-                        );
-                        return message$.pipe(
-                          filter((e) => e.type === requestWorkflowCancellationDialogOnResult.type),
-                          take(1),
-                          filter((e) => e.payload.type === 'onContinue'),
-                          switchMap(() => {
-                            return initTinyMCE(record, validations, type === 'html' ? setup : {});
-                          })
-                        );
-                      } else {
-                        post(
-                          validationMessage({
-                            id: 'itemLocked',
-                            level: 'suggestion',
-                            values: { lockOwner: item.lockOwner }
-                          })
-                        );
-                        return NEVER;
-                      }
+                    const currentDate = new Date(dateModified);
+                    const fetchedDate = new Date(item.dateModified);
+                    currentDate.setMilliseconds(0);
+                    fetchedDate.setMilliseconds(0);
+
+                    if (item.stateMap.submitted || item.stateMap.scheduled) {
+                      post(
+                        requestWorkflowCancellationDialog({
+                          siteId: state.activeSite,
+                          path
+                        })
+                      );
+                      return message$.pipe(
+                        filter((e) => e.type === requestWorkflowCancellationDialogOnResult.type),
+                        take(1),
+                        filter((e) => e.payload.type === 'onContinue'),
+                        switchMap(() => {
+                          return lock(state.activeSite, path).pipe(
+                            switchMap(() => {
+                              post(localItemLock({ path, username: state.username }));
+                              return initTinyMCE(path, record, validations, type === 'html' ? setup : {});
+                            })
+                          );
+                        })
+                      );
+                    } else if (item.stateMap.locked && item.lockOwner !== state.username) {
+                      post(
+                        validationMessage({
+                          id: 'itemLocked',
+                          level: 'suggestion',
+                          values: { lockOwner: item.lockOwner }
+                        })
+                      );
+                      return NEVER;
+                      // TODO: craftercms.dateModified is different for items who are not submitted for new sites
+                    } else if (currentDate.getTime() !== fetchedDate.getTime()) {
+                      post(
+                        validationMessage({
+                          id: 'outOfSyncContent',
+                          level: 'suggestion'
+                        })
+                      );
+                      return NEVER;
                     }
+
+                    return lock(state.activeSite, path).pipe(
+                      switchMap(() => {
+                        post(localItemLock({ path, username: state.username }));
+                        return initTinyMCE(path, record, validations, type === 'html' ? setup : {});
+                      })
+                    );
                   })
                 );
               }
@@ -691,6 +712,19 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
         const { scrollElement } = action.payload;
         let registryEntryId = state.fieldSwitcher.registryEntryIds[state.fieldSwitcher.currentElement];
         scrollToElement(get(registryEntryId).element, scrollElement);
+      }),
+      ignoreElements()
+    );
+  },
+  // endregion
+  // region exitComponentInlineEdit
+  (action$: Observable<GuestStandardAction<{ path: string }>>, state$) => {
+    return action$.pipe(
+      ofType(exitComponentInlineEdit.type),
+      withLatestFrom(state$),
+      tap(([action, state]) => {
+        const { path } = action.payload;
+        post(unlockItem({ path }));
       }),
       ignoreElements()
     );

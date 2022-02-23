@@ -47,7 +47,8 @@ export type ValidationKeys =
   | 'maxValue'
   | 'dropTargetsNotFound'
   | 'registerNotFound'
-  | 'itemLocked';
+  | 'itemLocked'
+  | 'outOfSyncContent';
 
 export type ContentTypeFieldValidations = {
   [key in ValidationKeys]: ContentTypeFieldValidation;
@@ -56,7 +57,7 @@ export type ContentTypeFieldValidations = {
 export interface ValidationResult {
   id: ValidationKeys;
   level: 'required' | 'suggestion' | 'info';
-  values: object;
+  values?: object;
 }
 
 export interface ContentTypeField {
