@@ -223,8 +223,7 @@ YAHOO.extend(
 
     createImageData: function (imageData, path) {
       var url = this.createPreviewUrl(
-        CStudioAuthoringContext.baseUri +
-          '/api/1/services/api/1/content/get-content-at-path.bin?site=' +
+          '/studio/api/1/services/api/1/content/get-content-at-path.bin?site=' +
           CStudioAuthoringContext.site +
           '&path=' +
           path
