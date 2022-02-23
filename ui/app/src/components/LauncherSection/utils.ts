@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -41,8 +41,8 @@ export const urlMapping = {
 
 export const messages = defineMessages({
   site: {
-    id: 'words.site',
-    defaultMessage: 'Site'
+    id: 'words.project',
+    defaultMessage: 'Project'
   },
   global: {
     id: 'words.global',

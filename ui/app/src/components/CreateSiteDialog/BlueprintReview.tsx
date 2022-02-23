@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -70,7 +70,7 @@ interface BlueprintReviewProps {
 const messages = defineMessages({
   siteInfo: {
     id: 'createSiteDialog.siteInfo',
-    defaultMessage: 'Site Info'
+    defaultMessage: 'Project Info'
   },
   blueprintStrategy: {
     id: 'createSiteDialog.blueprintStrategy',
@@ -102,11 +102,11 @@ const messages = defineMessages({
   },
   siteId: {
     id: 'createSiteDialog.siteId',
-    defaultMessage: 'Site ID'
+    defaultMessage: 'Project ID'
   },
   siteName: {
     id: 'createSiteDialog.siteName',
-    defaultMessage: 'Site Name'
+    defaultMessage: 'Project Name'
   },
   sandboxBranch: {
     id: 'createSiteDialog.sandboxBranch',

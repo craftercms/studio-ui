@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -61,7 +61,7 @@ export default function LogConsoleGridUI(props: LogConsoleGridUIProps) {
             {showSiteColumn && (
               <GlobalAppGridCell align="left">
                 <Typography variant="subtitle2">
-                  <FormattedMessage id="words.site" defaultMessage="Site" />
+                  <FormattedMessage id="words.project" defaultMessage="Project" />
                 </Typography>
               </GlobalAppGridCell>
             )}

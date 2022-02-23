@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -58,11 +58,11 @@ interface BlueprintFormProps {
 const messages = defineMessages({
   siteId: {
     id: 'createSiteDialog.siteId',
-    defaultMessage: 'Site ID'
+    defaultMessage: 'Project ID'
   },
   siteName: {
     id: 'createSiteDialog.siteName',
-    defaultMessage: 'Site Name'
+    defaultMessage: 'Project Name'
   },
   description: {
     id: 'createSiteDialog.description',
@@ -90,7 +90,7 @@ const messages = defineMessages({
   },
   cantStart: {
     id: 'createSiteDialog.cantStart',
-    defaultMessage: 'Site names may not start with zeros, dashes (-) or underscores (_).'
+    defaultMessage: 'Project names may not start with zeros, dashes (-) or underscores (_).'
   },
   sandboxBranch: {
     id: 'createSiteDialog.sandboxBranch',
@@ -98,12 +98,12 @@ const messages = defineMessages({
   },
   createAsOrphan: {
     id: 'createSiteDialog.createAsOrphan',
-    defaultMessage: 'Create the site from a remote repository as orphan (no git history)'
+    defaultMessage: 'Create the project from a remote repository as orphan (no git history)'
   },
   createAsOrphanHelpText: {
     id: 'createSiteDialog.createAsOrphanHelpText',
     defaultMessage:
-      'Creating the site as an orphan will dissociate the site from the source git repository and remove all history.'
+      'Creating the project as an orphan will dissociate the project from the source git repository and remove all history.'
   }
 });
 

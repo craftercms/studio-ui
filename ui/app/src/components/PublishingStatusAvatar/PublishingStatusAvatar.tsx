@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -78,7 +78,7 @@ const targets: { [prop in PublishingStatusAvatarProps['variant']]: 'backgroundCo
 };
 
 export const PublishingStatusAvatar = React.forwardRef<HTMLDivElement, PublishingStatusAvatarProps>((props, ref) => {
-  const { status, styles, variant = 'background' } = props;
+  const { status, styles, variant = 'icon' } = props;
   const classes = useStyles({ styles, stylingTarget: targets[variant] });
   return (
     <Avatar ref={ref} variant="circular" className={clsx(classes.root, props.className, props.classes?.root, status)}>

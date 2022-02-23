@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -47,7 +47,7 @@ const translations = defineMessages({
   },
   siteName: {
     id: 'userInfoDialog.siteName',
-    defaultMessage: 'Site name'
+    defaultMessage: 'Project name'
   },
   roles: {
     id: 'words.roles',
@@ -239,7 +239,7 @@ export function EditUserDialogUI(props: EditUserDialogUIProps) {
         <Divider />
         <section className={classes.section}>
           <Typography variant="subtitle1" className={classes.sectionTitle}>
-            <FormattedMessage id="userInfoDialog.siteRoles" defaultMessage="Roles per site" />
+            <FormattedMessage id="userInfoDialog.siteRoles" defaultMessage="Roles per project" />
           </Typography>
           <Grid container spacing={2}>
             <Grid item xs={4}>

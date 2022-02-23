@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -47,7 +47,7 @@ export default function NewRemoteRepositoryDialogContainer(props: NewRemoteRepos
           : inputs.repoAuthentication === 'token'
           ? { remoteUsername: inputs.repoUsername, remoteToken: inputs.repoToken }
           : inputs.repoAuthentication === 'key'
-          ? { remotePrivateKey: inputs.repoToken }
+          ? { remotePrivateKey: inputs.repoKey }
           : {})
       }).subscribe({
         next: () => {

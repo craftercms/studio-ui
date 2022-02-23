@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -61,7 +61,7 @@ import { createCustomDocumentEventListener } from '../../utils/dom';
 const translations = defineMessages({
   siteDeleted: {
     id: 'sitesGrid.siteDeleted',
-    defaultMessage: 'Site deleted successfully'
+    defaultMessage: 'Project deleted successfully'
   }
 });
 
@@ -204,7 +204,7 @@ export default function SitesManagement() {
   return (
     <Paper elevation={0}>
       <GlobalAppToolbar
-        title={<FormattedMessage id="GlobalMenu.Sites" defaultMessage="Sites" />}
+        title={<FormattedMessage id="GlobalMenu.Sites" defaultMessage="Projects" />}
         leftContent={
           permissionsLookup['create-site'] && (
             <Button
@@ -213,7 +213,7 @@ export default function SitesManagement() {
               color="primary"
               onClick={() => setOpenCreateSiteDialog(true)}
             >
-              <FormattedMessage id="sites.createSite" defaultMessage="Create Site" />
+              <FormattedMessage id="sites.createSite" defaultMessage="Create Project" />
             </Button>
           )
         }
@@ -233,7 +233,7 @@ export default function SitesManagement() {
           }}
           withEmptyStateProps={{
             emptyStateProps: {
-              title: <FormattedMessage id="sitesGrid.emptyStateMessage" defaultMessage="No Sites Found" />
+              title: <FormattedMessage id="sitesGrid.emptyStateMessage" defaultMessage="No Projects Found" />
             }
           }}
         >

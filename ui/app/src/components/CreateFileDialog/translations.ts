@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -24,11 +24,11 @@ export const translations = defineMessages({
   createPolicy: {
     id: 'createFileDialog.createPolicy',
     defaultMessage:
-      'The supplied name goes against site policies. Suggested modified name is: "{name}". Would you like to use the suggested name?'
+      'The supplied name goes against project policies. Suggested modified name is: "{name}". Would you like to use the suggested name?'
   },
   policyError: {
     id: 'createFileDialog.policyError',
-    defaultMessage: 'The supplied name goes against site policies.'
+    defaultMessage: 'The supplied name goes against project policies.'
   },
   openOnSuccess: {
     id: 'createFileDialog.openOnSuccess',

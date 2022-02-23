@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -261,7 +261,7 @@ CStudioAuthoring.Messages.registerBundle('siteDropdown', 'en', {
   templates: 'Templates',
   scripts: 'Scripts',
   adminConsole: 'Admin Console',
-  siteconfig: 'Site Config',
+  siteconfig: 'Project Config',
   previewSync: 'Preview Sync',
   syncrepo: 'Sync From Repository',
   allSites: 'All Sites',
@@ -753,7 +753,7 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'en', {
   videoCMISRepository: 'Video From CMIS Repository',
   staticKeyValuePairs: 'Static Key Value Pairs',
   configuredListOfPairs: 'Configured List of Pairs',
-  siteComponent: 'Site Component',
+  siteComponent: 'Project Component',
   fileBrowse: 'File Browse',
   hubspotForms: 'Hubspot Forms',
   imageFromRepository: 'Image From Repository',
@@ -902,7 +902,7 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'en', {
   confTabConfigurations: 'Configurations',
   confTabConfDesc: 'Defines this list of configurations',
   confTabContextualNavigationConf: 'Contextual Navigation Configuration',
-  confTabContextualNavigationConfDesc: 'Defines modules on the site contextual navigation bar',
+  confTabContextualNavigationConfDesc: 'Defines modules on the project contextual navigation bar',
   confTabSidebarConf: 'Sidebar Configuration',
   confTabSidebarConfDesc: 'Defines modules on the sidebar',
   confTabEndpointsConf: 'Endpoints Configuration',
@@ -965,7 +965,7 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'en', {
   confTabMimeTypes: 'Mime Types',
   confTabMimeTypesDesc: 'This file configures the mime types icons overrides for this site/blueprint.',
   confTabEngineUrlRewriteConf: 'Engine URL Rewrite Configuration (XML Style)',
-  confTabEngineUrlRewriteConfDesc: 'This file configures site properties used by Crafter Engine',
+  confTabEngineUrlRewriteConfDesc: 'This file configures project properties used by Crafter Engine',
   confTabEngineUrlRewriteConfPreview: 'Engine URL Rewrite Configuration (XML Style) - Preview',
   confTabEngineUrlRewriteConfStaging: 'Engine URL Rewrite Configuration (XML Style) - Staging',
   confTabEngineUrlRewriteConfLive: 'Engine URL Rewrite Configuration (XML Style) - Live',

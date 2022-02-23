@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -42,7 +42,7 @@ import { useActiveSite } from '../../hooks/useActiveSite';
 defineMessages({
   previewSiteExplorerPanelTitle: {
     id: 'previewSiteExplorerPanel.title',
-    defaultMessage: 'Site Explorer'
+    defaultMessage: 'Project Explorer'
   }
 });
 
@@ -120,7 +120,7 @@ export default function ToolsPanel() {
             title: siteId ? (
               <FormattedMessage id="previewTools.noWidgetsMessage" defaultMessage="No tools have been configured" />
             ) : (
-              <FormattedMessage id="previewTools.choseSiteMessage" defaultMessage="Please choose site" />
+              <FormattedMessage id="previewTools.choseSiteMessage" defaultMessage="Please choose project" />
             ),
             ...(!siteId && { image: `${baseUrl}/static-assets/images/choose_option.svg` }),
             classes: { root: classes.emptyState, image: classes.emptyStateImage }

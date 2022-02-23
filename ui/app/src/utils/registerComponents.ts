@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -92,6 +92,7 @@ export const registerComponents = () => {
     '@mui/icons-material/VpnKeyRounded': lazy(() => import('@mui/icons-material/VpnKeyRounded')),
     '@mui/icons-material/PublicRounded': lazy(() => import('@mui/icons-material/PublicRounded')),
     '@mui/icons-material/VideocamOutlined': lazy(() => import('@mui/icons-material/VideocamOutlined')),
+    '@mui/icons-material/ConstructionRounded': lazy(() => import('@mui/icons-material/ConstructionRounded')),
     'craftercms.components.ToolsPanelEmbeddedAppViewButton': lazy(
       () => import('../components/ToolsPanelEmbeddedAppViewButton')
     ),
