@@ -70,7 +70,7 @@ const translations = defineMessages({
   },
   retrieveAssets: {
     id: 'previewAssetsPanel.retrieveAssets',
-    defaultMessage: 'Retrieving Site Assets'
+    defaultMessage: 'Retrieving Project Assets'
   }
 });
 

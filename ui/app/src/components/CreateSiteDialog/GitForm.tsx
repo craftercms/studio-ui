@@ -55,7 +55,7 @@ const cloneMessages = defineMessages({
   clone_remoteBranch_label: {
     id: 'createSiteDialog.clone_remoteBranch_label',
     defaultMessage:
-      'The site will get created cloning that branch of the repo. You may switch between branches later too.'
+      'The project will get created cloning that branch of the repo. You may switch between branches later too.'
   },
   clone_remoteName_label: {
     id: 'createSiteDialog.clone_remoteName_label',

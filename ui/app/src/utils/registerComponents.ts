@@ -92,6 +92,7 @@ export const registerComponents = () => {
     '@mui/icons-material/VpnKeyRounded': lazy(() => import('@mui/icons-material/VpnKeyRounded')),
     '@mui/icons-material/PublicRounded': lazy(() => import('@mui/icons-material/PublicRounded')),
     '@mui/icons-material/VideocamOutlined': lazy(() => import('@mui/icons-material/VideocamOutlined')),
+    '@mui/icons-material/ConstructionRounded': lazy(() => import('@mui/icons-material/ConstructionRounded')),
     'craftercms.components.ToolsPanelEmbeddedAppViewButton': lazy(
       () => import('../components/ToolsPanelEmbeddedAppViewButton')
     ),
