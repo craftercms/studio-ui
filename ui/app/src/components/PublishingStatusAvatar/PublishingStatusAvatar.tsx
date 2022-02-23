@@ -78,7 +78,7 @@ const targets: { [prop in PublishingStatusAvatarProps['variant']]: 'backgroundCo
 };
 
 export const PublishingStatusAvatar = React.forwardRef<HTMLDivElement, PublishingStatusAvatarProps>((props, ref) => {
-  const { status, styles, variant = 'background' } = props;
+  const { status, styles, variant = 'icon' } = props;
   const classes = useStyles({ styles, stylingTarget: targets[variant] });
   return (
     <Avatar ref={ref} variant="circular" className={clsx(classes.root, props.className, props.classes?.root, status)}>
