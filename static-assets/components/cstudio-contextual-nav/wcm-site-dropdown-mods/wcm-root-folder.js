@@ -902,31 +902,36 @@
       /**
        * draw a canned search element
        */
-      drawCannedSearch: function (searchConfig, root) {
+       drawCannedSearch: function (searchConfig, root) {
         var treeNode = null;
         var searchId = CStudioAuthoring.Utils.generateUUID();
         var newId = CStudioAuthoring.Utils.generateUUID();
         if (searchConfig.newPath && !window.pasteFlag) {
-          var label =
+          if (!(/^<a.*>.*<\/a><a.*>\+add<\/a>/.test(searchConfig.label))) {
+            var label =
             "<a style='display: inline; padding-right:5px;' id='ID' href='#' class='canned-search-el'>LABEL</a><a style='display: inline; border-left: 1px solid grey; padding-left: 5px;' id='NEWID' href='#'>+add</a>";
 
-          label = label.replace('ID', searchId);
-          label = label.replace('LABEL', searchConfig.label);
-          label = label.replace('NEWID', newId);
-
-          searchConfig.label = label;
-
-          treeNode = new YAHOO.widget.TextNode(searchConfig, root, false);
-          Self.searchesToWire.push(treeNode);
+            label = label.replace('ID', searchId);
+            label = label.replace('LABEL', searchConfig.label);
+            label = label.replace('NEWID', newId);
+            searchConfig.label = label;
+          } else {
+            const doc = document.createElement('div');
+            doc.innerHTML = searchConfig.label;
+            const elms = doc.getElementsByTagName('a');
+            if (elms.length >= 2) {
+              elms[0].id = searchId;
+              elms[1].id = newId;
+              searchConfig.label = `${elms[0].outerHTML}${elms[1].outerHTML}`.replaceAll('"', '\'');
+            }
+          }
         } else {
           searchConfig.label =
             "<a style='display: inline;' id='" + searchId + "' href='#'>" + searchConfig.label + '</a>';
-
-          treeNode = new YAHOO.widget.TextNode(searchConfig, root, false);
-
-          Self.searchesToWire.push(treeNode);
         }
 
+        treeNode = new YAHOO.widget.TextNode(searchConfig, root, false);
+        Self.searchesToWire.push(treeNode);
         treeNode.nodeType = 'SEARCH';
         treeNode.searchTO = searchConfig;
         treeNode.searchTO.newId = newId;
