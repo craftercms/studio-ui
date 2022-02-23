@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -251,7 +251,7 @@ CStudioAuthoring.Messages.registerBundle('siteDropdown', 'kr', {
   templates: '템플릿',
   scripts: '스크립트',
   adminConsole: '관리 콘솔',
-  siteconfig: '사이트 구성',
+  siteconfig: '프로젝트 구성',
   previewSync: '미리 동기화',
   syncrepo: '저장소에서 동기화',
   allSites: '모든 사이트',

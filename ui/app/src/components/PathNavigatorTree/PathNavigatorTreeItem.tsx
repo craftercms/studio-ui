@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -104,7 +104,7 @@ const useStyles = makeStyles((theme) =>
       alignItems: 'center',
       minHeight: '23.5px',
       '&:hover': {
-        backgroundColor: `${theme.palette.action.hover} !important`
+        backgroundColor: theme.palette.grey['A200']
       }
     },
     filterSection: {

@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+  ~ Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
   ~
   ~ This program is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License version 3 as published by
@@ -21,7 +21,7 @@
 <head>
 
   <meta charset="utf-8"/>
-  <title>Crafter CMS - Content Form</title>
+  <title>CrafterCMS - Content Form</title>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
 
   <link rel="stylesheet" href="/studio/static-assets/themes/cstudioTheme/css/forms-default.css"/>

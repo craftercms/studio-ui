@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -37,7 +37,7 @@ import { useDebouncedInput } from '../../hooks/useDebouncedInput';
 const translations = defineMessages({
   siteId: {
     id: 'auditGridFilterPopover.filterBySite',
-    defaultMessage: 'Filter by Site'
+    defaultMessage: 'Filter by Project'
   },
   user: {
     id: 'auditGridFilterPopover.filterByUser',
@@ -84,7 +84,7 @@ export default function AuditGridFilterPopoverBody(props: AuditGridFilterPopover
           {
             id: 'all',
             value: 'all',
-            name: <FormattedMessage id="auditGrid.allSites" defaultMessage="All Sites" />
+            name: <FormattedMessage id="auditGrid.allSites" defaultMessage="All Projects" />
           },
           {
             id: 'studio_root',

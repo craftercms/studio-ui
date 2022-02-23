@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -28,7 +28,7 @@ function LegacySiteToolsFrame(props: LegacySiteToolsFrameProps) {
   const path = `/legacy-site-config${[workAreaOnly && '?mode=embedded', tool && `#tool/${tool}`]
     .filter(Boolean)
     .join('')}`;
-  return <LegacyIFrame path={path} title="Site Tools" iframeProps={iframeProps} />;
+  return <LegacyIFrame path={path} title="Project Tools" iframeProps={iframeProps} />;
 }
 
 export default LegacySiteToolsFrame;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -311,8 +311,10 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
             }
 
             this.videoPicker.addEl.value = CMgs.format(langBundle, 'replace');
-            this.videoPicker.delEl.disabled = false;
-            YAHOO.util.Dom.removeClass(this.videoPicker.delEl, 'cstudio-button-disabled');
+            if (!this.readonly) {
+              this.videoPicker.delEl.disabled = false;
+              YAHOO.util.Dom.removeClass(this.videoPicker.delEl, 'cstudio-button-disabled');
+            }
 
             this.videoPicker._onChangeVal(null, this.videoPicker);
 
@@ -589,9 +591,11 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
           _self.createVideoContainer(video);
         });
 
-        YAHOO.util.Dom.addClass(this.addEl, 'cstudio-button-disabled');
-        YAHOO.util.Dom.removeClass(this.delEl, 'cstudio-button-disabled');
-        this.delEl.disabled = false;
+        if (!this.readonly) {
+          YAHOO.util.Dom.addClass(this.addEl, 'cstudio-button-disabled');
+          YAHOO.util.Dom.removeClass(this.delEl, 'cstudio-button-disabled');
+          this.delEl.disabled = false;
+        }
       } else {
         if (this.external) {
           this.previewEl.src = value;
@@ -609,8 +613,10 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
 
       this.noPreviewEl.style.display = 'none';
       this.addEl.value = CMgs.format(langBundle, 'replace');
-      this.delEl.disabled = false;
-      YAHOO.util.Dom.removeClass(this.delEl, 'cstudio-button-disabled');
+      if (!this.readonly) {
+        this.delEl.disabled = false;
+        YAHOO.util.Dom.removeClass(this.delEl, 'cstudio-button-disabled');
+      }
     }
 
     this._onChange(null, this);

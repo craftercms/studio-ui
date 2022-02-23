@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -181,9 +181,14 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
             }
             // Click & dblclick require stopping as early as possible to avoid
             // navigation or other click defaults.
-            if (type === 'click' || 'dblclick' === type) {
+            if (['click', 'dblclick'].includes(type)) {
               event.preventDefault();
               event.stopPropagation();
+            }
+            // Doing a dblclick already do two clicks, one for start editing and another one for leave editing
+            // returning false on dblclick prevents issues related to normal editing flow
+            if (type === 'dblclick') {
+              return false;
             }
             dispatch({ type, payload: { event, record } });
             return true;
@@ -370,7 +375,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
         take(1)
       ).subscribe(() => setSnack({
         duration: 8000,
-        message: 'In-context editing is disabled: page running out of Crafter CMS frame.'
+        message: 'In-context editing is disabled: page running out of CrafterCMS frame.'
       }));
     }
   }, [dispatch, hasHost]);

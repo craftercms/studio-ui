@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -300,7 +300,7 @@ export const contentTypesMessages = defineMessages({
   contenTypeWarningMessage: {
     id: 'contentType.contentTypeWarningMessage',
     defaultMessage:
-      'Please note Child Content datasource is being phased out of Crafter CMS. For components that need to be shared across pages or components, please use Shared Content instead. For components that belong exclusively to this content object, please use Embedded Content.'
+      'Please note Child Content datasource is being phased out of CrafterCMS. For components that need to be shared across pages or components, please use Shared Content instead. For components that belong exclusively to this content object, please use Embedded Content.'
   },
   useSharedContent: {
     id: 'contentType.useSharedContent',
@@ -418,7 +418,7 @@ export const contentTypesMessages = defineMessages({
   },
   loadModuleError: {
     id: 'siteConfig.loadModuleError',
-    defaultMessage: 'Unable to load "{tool}". Check Site tools configuration.'
+    defaultMessage: 'Unable to load "{tool}". Check project tools configuration.'
   },
   toolNotFound: {
     id: 'siteConfig.toolNotFound',
@@ -547,7 +547,7 @@ export const siteComponentDSMessages = defineMessages({
   },
   siteComponent: {
     id: 'siteComponentDS.siteComponent',
-    defaultMessage: 'Site Component'
+    defaultMessage: 'Project Component'
   }
 });
 
@@ -710,11 +710,11 @@ export const formEngineMessages = defineMessages({
   createPolicy: {
     id: 'formEngine.createPolicy',
     defaultMessage:
-      'The {originalPath} path goes against site policies. Suggested modified path is: "{path}". Would you like to use the suggested path?'
+      'The {originalPath} path goes against project policies. Suggested modified path is: "{path}". Would you like to use the suggested path?'
   },
   policyError: {
     id: 'formEngine.policyError',
-    defaultMessage: 'The {path} path goes against site policies.'
+    defaultMessage: 'The {path} path goes against project policies.'
   },
   formNotReadyForSaving: {
     id: 'formEngine.formNotReadyForSaving',
@@ -822,8 +822,8 @@ export const transcodedVideoPickerControlMessages = defineMessages({
 
 export const globalMenuMessages = defineMessages({
   'home.globalMenu.sites': {
-    id: 'words.sites',
-    defaultMessage: 'Sites'
+    id: 'words.projects',
+    defaultMessage: 'Projects'
   },
   'home.globalMenu.users': {
     id: 'words.users',
@@ -947,7 +947,7 @@ export const rteControlMessages = defineMessages({
 export const ossAttribution = defineMessages({
   attribution: {
     id: 'aboutView.attribution',
-    defaultMessage: 'Crafter CMS is made possible by these other <a>open source software projects</a>.'
+    defaultMessage: 'CrafterCMS is made possible by these other <a>open source software projects</a>.'
   }
 });
 
@@ -1057,7 +1057,7 @@ export const adminDashboardMessages = defineMessages({
   },
   siteUpdated: {
     id: 'sitesAdmin.siteUpdated',
-    defaultMessage: 'Site Updated.'
+    defaultMessage: 'Project Updated.'
   }
 });
 
@@ -1416,6 +1416,6 @@ export const itemSuccessMessages = defineMessages({
 export const siteSuccessMessages = defineMessages({
   siteDeleted: {
     id: 'site.deleted',
-    defaultMessage: 'Site deleted successfully'
+    defaultMessage: 'Project deleted successfully'
   }
 });

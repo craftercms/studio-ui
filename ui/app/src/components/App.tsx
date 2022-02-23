@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -84,7 +84,7 @@ function Intro() {
   return (
     <section className={classes.container}>
       <img className={classes.logo} src={crafterIconUrl} alt="" />
-      <h1>Crafter CMS Codebase Next</h1>
+      <h1>CrafterCMS Codebase Next</h1>
       <p className={classes.hint}>
         Create a <em>.env.local</em> file and add the content below. Point the <em>REACT_APP_COMPONENT</em> variable to
         the component you'd like to see in your local dev server.

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -54,7 +54,6 @@ const usePublishingStatusTileStyles = makeStyles((theme) =>
       borderTop: 'none',
       background: theme.palette.background.paper,
       margin: 5,
-      padding: 5,
       'button&': {
         cursor: 'pointer',
         '&:hover, &:focus': {
@@ -65,7 +64,7 @@ const usePublishingStatusTileStyles = makeStyles((theme) =>
       ...styles.root
     }),
     avatar: (styles) => ({
-      marginBottom: theme.spacing(1),
+      margin: 5,
       ...styles.avatar
     }),
     text: (styles) => ({

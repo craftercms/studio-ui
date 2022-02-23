@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@craftercms/uppy",
-  "description": "Crafter CMS UI Uppy extensions.",
+  "description": "CrafterCMS UI Uppy extensions.",
   "version": "1.0.0",
   "license": "MIT",
   "main": "lib/index.js",

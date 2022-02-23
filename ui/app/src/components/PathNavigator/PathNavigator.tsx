@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -95,6 +95,7 @@ export interface PathNavigatorProps {
   excludes?: string[];
   locale?: string;
   limit?: number;
+  initialCollapsed?: boolean;
   backgroundRefreshTimeoutMs?: number;
   icon?: SystemIconDescriptor;
   expandedIcon?: SystemIconDescriptor;
@@ -149,6 +150,7 @@ export function PathNavigator(props: PathNavigatorProps) {
     backgroundRefreshTimeoutMs = 60000,
     locale,
     excludes,
+    initialCollapsed,
     onItemClicked: onItemClickedProp,
     createItemClickedHandler = (defaultHandler) => defaultHandler,
     computeActiveItems: computeActiveItemsProp
@@ -191,9 +193,22 @@ export function PathNavigator(props: PathNavigatorProps) {
       if (storedState?.keyword) {
         setKeyword(storedState.keyword);
       }
-      dispatch(pathNavigatorInit({ id, path, locale, excludes, limit, ...storedState }));
+      dispatch(pathNavigatorInit({ id, path, locale, excludes, limit, collapsed: initialCollapsed, ...storedState }));
     }
-  }, [dispatch, excludes, id, limit, locale, path, siteId, state, uiConfig.currentSite, user.username, uuid]);
+  }, [
+    dispatch,
+    excludes,
+    id,
+    limit,
+    locale,
+    path,
+    siteId,
+    state,
+    initialCollapsed,
+    uiConfig.currentSite,
+    user.username,
+    uuid
+  ]);
 
   useMount(() => {
     if (state) {

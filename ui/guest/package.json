@@ -1,6 +1,6 @@
 {
   "name": "@craftercms/experience-builder",
-  "description": "Crafter CMS' Experience Builder integration sdk.",
+  "description": "CrafterCMS' Experience Builder integration sdk.",
   "version": "1.0.0-beta.3",
   "private": true,
   "main": "build_tsc/node/index.js",

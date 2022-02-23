@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -105,11 +105,11 @@ export const sitePolicyMessages = defineMessages({
   itemPastePolicyConfirm: {
     id: 'pastePolicy.confirm',
     defaultMessage:
-      'The selected {action} target goes against site policies for the destination directory. • Original path: "{path}", • Suggested path is: "{modifiedPath}". Would you like to use the suggested path?'
+      'The selected {action} target goes against project policies for the destination directory. • Original path: "{path}", • Suggested path is: "{modifiedPath}". Would you like to use the suggested path?'
   },
   itemPastePolicyError: {
     id: 'pastePolicy.error',
-    defaultMessage: 'The selected {action} target goes against site policies for the destination directory.'
+    defaultMessage: 'The selected {action} target goes against project policies for the destination directory.'
   },
   itemPasteValidating: {
     id: 'words.validating',

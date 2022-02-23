@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -19,7 +19,7 @@ import { defineMessages } from 'react-intl';
 defineMessages({
   siteTools: {
     id: 'siteTools.title',
-    defaultMessage: 'Site Tools'
+    defaultMessage: 'Project Tools'
   },
   siteDashboard: {
     id: 'words.dashboard',
@@ -47,6 +47,6 @@ defineMessages({
   },
   site: {
     id: 'launcher.siteSectionTitle',
-    defaultMessage: 'Site <muted>• {siteName}</muted>'
+    defaultMessage: 'Project <muted>• {siteName}</muted>'
   }
 });
