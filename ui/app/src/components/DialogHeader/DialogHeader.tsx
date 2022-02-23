@@ -121,7 +121,7 @@ export type DialogHeaderProps<
   classes?: Partial<Record<'root' | 'titleWrapper' | 'subtitleWrapper', string>>;
   className?: string;
   disabled?: boolean;
-  onCloseButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
+  onCloseButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>, reason: string): void;
   onMinimizeButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
   onFullScreenButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
   onBack?(): void;
@@ -205,7 +205,12 @@ export function DialogHeader(props: DialogHeaderProps) {
             )}
             {onCloseButtonClick && (
               <Tooltip title={disabled ? '' : formatMessage(translations.dismiss)}>
-                <IconButton aria-label="close" onClick={onCloseButtonClick} disabled={disabled} size="large">
+                <IconButton
+                  aria-label="close"
+                  onClick={(event) => onCloseButtonClick(event, 'closeButton')}
+                  disabled={disabled}
+                  size="large"
+                >
                   <CloseIcon />
                 </IconButton>
               </Tooltip>
