@@ -166,10 +166,6 @@ const messages = defineMessages({
   craftercms: {
     id: 'common.craftercms',
     defaultMessage: 'CrafterCMS'
-  },
-  searchEngine: {
-    id: 'common.searchEngine',
-    defaultMessage: 'Search Engine'
   }
 });
 
@@ -206,7 +202,7 @@ export default function PluginDetailsView(props: PluginDetailsViewProps) {
     useLabel
   } = props;
   const [index, setIndex] = useState(selectedImageSlideIndex);
-  const { media, name, description, version, license, developer, website, searchEngine, compatible } = plugin;
+  const { media, name, description, version, license, developer, website, compatible } = plugin;
   const fullVersion = version ? `${version.major}.${version.minor}.${version.patch}` : null;
 
   const { formatMessage } = useIntl();
@@ -343,14 +339,6 @@ export default function PluginDetailsView(props: PluginDetailsViewProps) {
                 </Typography>
               )}
             </div>
-            {searchEngine && (
-              <div className={classes.section}>
-                <Typography variant="subtitle2">{formatMessage(messages.searchEngine)}</Typography>
-                <Typography variant="subtitle2" color={'textSecondary'}>
-                  {searchEngine}
-                </Typography>
-              </div>
-            )}
             <div className={classes.sectionChips}>
               <div className={classes.chip}>
                 <label>{formatMessage(messages.version)}</label>
