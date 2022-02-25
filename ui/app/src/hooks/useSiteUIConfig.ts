@@ -20,11 +20,11 @@ import { useDispatch } from 'react-redux';
 import { useSelection } from './useSelection';
 import { useEffect } from 'react';
 import { fetchSiteUiConfig } from '../state/actions/configuration';
-import { useSiteList } from './useSiteList';
+import { useSiteLookup } from './useSiteLookup';
 
 export function useSiteUIConfig(): GlobalState['uiConfig'] {
   const site = useActiveSiteId();
-  const sites = useSiteList();
+  const sites = useSiteLookup();
   const dispatch = useDispatch();
   const config = useSelection((state) => state.uiConfig);
   useEffect(() => {
