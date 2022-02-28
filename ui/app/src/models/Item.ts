@@ -65,7 +65,7 @@ export type ItemActions =
   | 'rejectPublish';
 // endregion
 
-export type VirtualItemActions = 'preview';
+export type VirtualItemActions = 'preview' | 'lock';
 
 // region export type AssessRemovalItemActions =
 export type AssessRemovalItemActions =

@@ -85,6 +85,7 @@ export const unlockItemCompleted = /*#__PURE__*/ createAction<{ path: string }>(
 
 export const lockItem = /*#__PURE__*/ createAction<{ path: string }>('LOCK_ITEM');
 export const lockItemCompleted = /*#__PURE__*/ createAction<{ path: string; username: string }>('LOCK_ITEM_COMPLETED');
+export const lockItemFailed = /*#__PURE__*/ createAction('LOCK_ITEM_FAILED');
 
 // This action is intended to lock the item "locally" (the store) without a backend call since the lock has been already performed elsehow on the back.
 export const localItemLock = /*#__PURE__*/ createAction<{ path: string; username: string }>('LOCAL_LOCK_ITEM');

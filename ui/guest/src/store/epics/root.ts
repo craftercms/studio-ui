@@ -16,7 +16,18 @@
 
 import { combineEpics, ofType } from 'redux-observable';
 import { GuestStandardAction } from '../models/GuestStandardAction';
-import { filter, ignoreElements, map, mapTo, switchMap, take, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
+import {
+  catchError,
+  filter,
+  ignoreElements,
+  map,
+  mapTo,
+  switchMap,
+  take,
+  takeUntil,
+  tap,
+  withLatestFrom
+} from 'rxjs/operators';
 import { not } from '../../utils/util';
 import { message$, post } from '../../utils/communicator';
 import * as iceRegistry from '../../iceRegistry';
@@ -363,59 +374,109 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
                 const path = models[parentModelId ?? modelId].craftercms.path;
                 const cachedSandboxItem = getCachedSandboxItem(path);
 
-                return fetchSandboxItem(state.activeSite, path).pipe(
-                  switchMap((item) => {
-                    console.log(item.commitId);
-                    console.log(cachedSandboxItem.commitId);
+                return lock(state.activeSite, path).pipe(
+                  switchMap(() => {
+                    post(localItemLock({ path, username: state.username }));
+                    return fetchSandboxItem(state.activeSite, path).pipe(
+                      switchMap((item) => {
+                        if (item.stateMap.submitted || item.stateMap.scheduled) {
+                          console.log('requestWorkflowCancellationDialog');
 
-                    if (item.stateMap.submitted || item.stateMap.scheduled) {
-                      post(
-                        requestWorkflowCancellationDialog({
-                          siteId: state.activeSite,
-                          path
-                        })
-                      );
-                      return message$.pipe(
-                        filter((e) => e.type === requestWorkflowCancellationDialogOnResult.type),
-                        take(1),
-                        filter((e) => e.payload.type === 'onContinue'),
-                        switchMap(() => {
-                          return lock(state.activeSite, path).pipe(
+                          post(
+                            requestWorkflowCancellationDialog({
+                              siteId: state.activeSite,
+                              path
+                            })
+                          );
+                          return message$.pipe(
+                            filter((e) => e.type === requestWorkflowCancellationDialogOnResult.type),
+                            take(1),
+                            filter((e) => e.payload.type === 'onContinue'),
                             switchMap(() => {
-                              post(localItemLock({ path, username: state.username }));
+                              console.log('requestWorkflowCancellationDialogOnResult');
                               return initTinyMCE(path, record, validations, type === 'html' ? setup : {});
                             })
                           );
-                        })
-                      );
-                    } else if (item.stateMap.locked && item.lockOwner !== state.username) {
+                        } else if (item.commitId !== cachedSandboxItem.commitId) {
+                          post(
+                            validationMessage({
+                              id: 'outOfSyncContent',
+                              level: 'suggestion'
+                            })
+                          );
+                          return NEVER;
+                        } else {
+                          return initTinyMCE(path, record, validations, type === 'html' ? setup : {});
+                        }
+                      })
+                    );
+                  }),
+                  catchError(({ response, status }) => {
+                    if (status === 409) {
                       post(
                         validationMessage({
                           id: 'itemLocked',
                           level: 'suggestion',
-                          values: { lockOwner: item.lockOwner }
+                          values: { lockOwner: response.person }
                         })
                       );
-                      return NEVER;
-                      // TODO: craftercms.dateModified is different for items who are not submitted for new sites
-                    } else if (item.commitId !== cachedSandboxItem.commitId) {
-                      post(
-                        validationMessage({
-                          id: 'outOfSyncContent',
-                          level: 'suggestion'
-                        })
-                      );
-                      return NEVER;
                     }
-
-                    return lock(state.activeSite, path).pipe(
-                      switchMap(() => {
-                        post(localItemLock({ path, username: state.username }));
-                        return initTinyMCE(path, record, validations, type === 'html' ? setup : {});
-                      })
-                    );
+                    return NEVER;
                   })
                 );
+                // return fetchSandboxItem(state.activeSite, path).pipe(
+                //   switchMap((item) => {
+                //     console.log(item.commitId);
+                //     console.log(cachedSandboxItem.commitId);
+                //
+                //     if (item.stateMap.submitted || item.stateMap.scheduled) {
+                //       post(
+                //         requestWorkflowCancellationDialog({
+                //           siteId: state.activeSite,
+                //           path
+                //         })
+                //       );
+                //       return message$.pipe(
+                //         filter((e) => e.type === requestWorkflowCancellationDialogOnResult.type),
+                //         take(1),
+                //         filter((e) => e.payload.type === 'onContinue'),
+                //         switchMap(() => {
+                //           return lock(state.activeSite, path).pipe(
+                //             switchMap(() => {
+                //               post(localItemLock({ path, username: state.username }));
+                //               return initTinyMCE(path, record, validations, type === 'html' ? setup : {});
+                //             })
+                //           );
+                //         })
+                //       );
+                //     } else if (item.stateMap.locked && item.lockOwner !== state.username) {
+                //       post(
+                //         validationMessage({
+                //           id: 'itemLocked',
+                //           level: 'suggestion',
+                //           values: { lockOwner: item.lockOwner }
+                //         })
+                //       );
+                //       return NEVER;
+                //       // TODO: craftercms.dateModified is different for items who are not submitted for new sites
+                //     } else if (item.commitId !== cachedSandboxItem.commitId) {
+                //       post(
+                //         validationMessage({
+                //           id: 'outOfSyncContent',
+                //           level: 'suggestion'
+                //         })
+                //       );
+                //       return NEVER;
+                //     }
+                //
+                //     return lock(state.activeSite, path).pipe(
+                //       switchMap(() => {
+                //         post(localItemLock({ path, username: state.username }));
+                //         return initTinyMCE(path, record, validations, type === 'html' ? setup : {});
+                //       })
+                //     );
+                //   })
+                // );
               }
               break;
             }
