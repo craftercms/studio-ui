@@ -81,6 +81,7 @@ import {
   duplicateItem,
   fetchContentInstance,
   fetchContentInstanceDescriptor,
+  fetchSandboxItem as fetchSandboxItemService,
   fetchWorkflowAffectedItems,
   insertComponent,
   insertInstance,
@@ -162,6 +163,7 @@ import { useUpdateRefs } from '../../hooks';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { batchActions, editContentTypeTemplate, editController } from '../../state/actions/misc';
 import { popPiece } from '../../utils/string';
+import { SandboxItem } from '../../models';
 
 const originalDocDomain = document.domain;
 
@@ -215,12 +217,22 @@ const issueDescriptorRequest = (props) => {
       const hierarchyMap = createModelHierarchyDescriptorMap(normalizedModels, contentTypes);
       const normalizedModel = normalizedModels[model.craftercms.id];
       const modelIdByPath = {};
+      const requests: Array<Observable<SandboxItem>> = [];
       Object.values(modelLookup).forEach((model) => {
         // Embedded components don't have a path.
         if (model.craftercms.path) {
+          requests.push(fetchSandboxItemService(site, model.craftercms.path));
           modelIdByPath[model.craftercms.path] = model.craftercms.id;
         }
       });
+
+      forkJoin(requests).subscribe((responses) => {
+        hostToGuest$.next({
+          type: 'FETCH_GUEST_SANDBOX_ITEM_COMPLETE',
+          payload: responses
+        });
+      });
+
       dispatch(
         completeAction({
           model: normalizedModel,

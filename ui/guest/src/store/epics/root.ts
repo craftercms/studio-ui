@@ -23,7 +23,7 @@ import * as iceRegistry from '../../iceRegistry';
 import { getById } from '../../iceRegistry';
 import { dragOk, unwrapEvent } from '../util';
 import * as contentController from '../../contentController';
-import { getCachedModel, getCachedModels, modelHierarchyMap } from '../../contentController';
+import { getCachedModel, getCachedModels, getCachedSandboxItem, modelHierarchyMap } from '../../contentController';
 import { interval, merge, NEVER, Observable, of, Subject } from 'rxjs';
 import { clearAndListen$, destroyDragSubjects, dragover$, escape$, initializeDragSubjects } from '../subjects';
 import { initTinyMCE } from '../../controls/rte';
@@ -361,14 +361,12 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
                 const modelId = action.payload.record.modelId;
                 const parentModelId = getParentModelId(modelId, models, modelHierarchyMap);
                 const path = models[parentModelId ?? modelId].craftercms.path;
-                const dateModified = models[parentModelId ?? modelId].craftercms.dateModified;
+                const cachedSandboxItem = getCachedSandboxItem(path);
 
                 return fetchSandboxItem(state.activeSite, path).pipe(
                   switchMap((item) => {
-                    const currentDate = new Date(dateModified);
-                    const fetchedDate = new Date(item.dateModified);
-                    currentDate.setMilliseconds(0);
-                    fetchedDate.setMilliseconds(0);
+                    console.log(item.commitId);
+                    console.log(cachedSandboxItem.commitId);
 
                     if (item.stateMap.submitted || item.stateMap.scheduled) {
                       post(
@@ -400,7 +398,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
                       );
                       return NEVER;
                       // TODO: craftercms.dateModified is different for items who are not submitted for new sites
-                    } else if (currentDate.getTime() !== fetchedDate.getTime()) {
+                    } else if (item.commitId !== cachedSandboxItem.commitId) {
                       post(
                         validationMessage({
                           id: 'outOfSyncContent',
