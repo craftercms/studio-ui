@@ -29,7 +29,7 @@ export const translations = defineMessages({
   },
   confTabContextualNavigationConfDesc: {
     id: 'siteConfigurationManagement.confTabContextualNavigationConfDesc',
-    defaultMessage: 'Defines modules on the site contextual navigation bar'
+    defaultMessage: 'Defines modules on the project contextual navigation bar'
   },
   confTabSidebarConf: { id: 'siteConfigurationManagement.confTabSidebarConf', defaultMessage: 'Sidebar Configuration' },
   confTabSidebarConfDesc: {
@@ -121,7 +121,7 @@ export const translations = defineMessages({
   confTabRoleMappings: { id: 'siteConfigurationManagement.confTabRoleMappings', defaultMessage: 'Role Mappings' },
   confTabRoleMappingsDesc: {
     id: 'siteConfigurationManagement.confTabRoleMappingsDesc',
-    defaultMessage: 'Defines a list of roles available in site'
+    defaultMessage: 'Defines a list of roles available in project'
   },
   confTabSiteConfiguration: {
     id: 'siteConfigurationManagement.confTabSiteConfiguration',
@@ -172,43 +172,43 @@ export const translations = defineMessages({
   },
   confTabEngineSiteConfiguration: {
     id: 'siteConfigurationManagement.confTabEngineSiteConfiguration',
-    defaultMessage: 'Engine Site Configuration'
+    defaultMessage: 'Engine Project Configuration'
   },
   confTabEngineSiteConfigurationDesc: {
     id: 'siteConfigurationManagement.confTabEngineSiteConfigurationDesc',
-    defaultMessage: 'Site configuration used by Crafter Engine'
+    defaultMessage: 'Project configuration used by Crafter Engine'
   },
   confTabEngineSiteConfigurationPreview: {
     id: 'siteConfigurationManagement.confTabEngineSiteConfigurationPreview',
-    defaultMessage: 'Engine Site Configuration - Preview'
+    defaultMessage: 'Engine Project Configuration - Preview'
   },
   confTabEngineSiteConfigurationStaging: {
     id: 'siteConfigurationManagement.confTabEngineSiteConfigurationStaging',
-    defaultMessage: 'Engine Site Configuration - Staging'
+    defaultMessage: 'Engine Project Configuration - Staging'
   },
   confTabEngineSiteConfigurationLive: {
     id: 'siteConfigurationManagement.confTabEngineSiteConfigurationLive',
-    defaultMessage: 'Engine Site Configuration - Live'
+    defaultMessage: 'Engine Project Configuration - Live'
   },
   confTabEngineSiteAppContextConfiguration: {
     id: 'siteConfigurationManagement.confTabEngineSiteAppContextConfiguration',
-    defaultMessage: 'Engine Site Application Context'
+    defaultMessage: 'Engine Project Application Context'
   },
   confTabEngineSiteAppContextConfigurationDesc: {
     id: 'siteConfigurationManagement.confTabEngineSiteAppContextConfigurationDesc',
-    defaultMessage: 'Site application context used by Crafter Engine'
+    defaultMessage: 'Project application context used by Crafter Engine'
   },
   confTabEngineSiteAppContextConfigurationPreview: {
     id: 'siteConfigurationManagement.confTabEngineSiteAppContextConfigurationPreview',
-    defaultMessage: 'Engine Site Application Context - Preview'
+    defaultMessage: 'Engine Project Application Context - Preview'
   },
   confTabEngineSiteAppContextConfigurationStaging: {
     id: 'siteConfigurationManagement.confTabEngineSiteAppContextConfigurationStaging',
-    defaultMessage: 'Engine Site Application Context - Staging'
+    defaultMessage: 'Engine Project Application Context - Staging'
   },
   confTabEngineSiteAppContextConfigurationLive: {
     id: 'siteConfigurationManagement.confTabEngineSiteAppContextConfigurationLive',
-    defaultMessage: 'Engine Site Application Context - Live'
+    defaultMessage: 'Engine Project Application Context - Live'
   },
   confTabTranslationConf: {
     id: 'siteConfigurationManagement.confTabTranslationConf',
@@ -220,7 +220,7 @@ export const translations = defineMessages({
   },
   confTabSitePolicyConf: {
     id: 'siteConfigurationManagement.confTabSitePolicyConf',
-    defaultMessage: 'Site Policy Configuration'
+    defaultMessage: 'Project Policy Configuration'
   },
   confTabSitePolicyConfDesc: {
     id: 'siteConfigurationManagement.confTabSitePolicyConfDesc',
@@ -234,7 +234,7 @@ export const translations = defineMessages({
   confTabMimeTypes: { id: 'siteConfigurationManagement.confTabMimeTypes', defaultMessage: 'Mime Types' },
   confTabMimeTypesDesc: {
     id: 'siteConfigurationManagement.confTabMimeTypesDesc',
-    defaultMessage: 'This file configures the mime types icons overrides for this site/blueprint.'
+    defaultMessage: 'This file configures the mime types icons overrides for this project/blueprint.'
   },
   confTabEngineUrlRewriteConf: {
     id: 'siteConfigurationManagement.confTabEngineUrlRewriteConf',
@@ -242,7 +242,7 @@ export const translations = defineMessages({
   },
   confTabEngineUrlRewriteConfDesc: {
     id: 'siteConfigurationManagement.confTabEngineUrlRewriteConfDesc',
-    defaultMessage: 'This file configures site properties used by Crafter Engine'
+    defaultMessage: 'This file configures project properties used by Crafter Engine'
   },
   confTabEngineUrlRewriteConfPreview: {
     id: 'siteConfigurationManagement.confTabEngineUrlRewriteConfPreview',

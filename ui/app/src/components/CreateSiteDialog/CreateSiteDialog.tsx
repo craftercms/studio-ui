@@ -87,11 +87,11 @@ const messages = defineMessages({
   },
   creatingSite: {
     id: 'createSiteDialog.creatingSite',
-    defaultMessage: 'Creating Site'
+    defaultMessage: 'Creating Project'
   },
   pleaseWait: {
     id: 'createSiteDialog.pleaseWait',
-    defaultMessage: 'Please wait while your site is being created.'
+    defaultMessage: 'Please wait while your project is being created.'
   },
   createInBackground: {
     id: 'createSiteDialog.createInBackground',
@@ -131,7 +131,7 @@ const messages = defineMessages({
   },
   reviewSite: {
     id: 'createSiteDialog.reviewSite',
-    defaultMessage: 'Review set up summary and create your site'
+    defaultMessage: 'Review set up summary and create your project'
   },
   chooseCreationStrategy: {
     id: 'createSiteDialog.chooseCreationStrategy',

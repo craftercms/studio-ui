@@ -58,6 +58,10 @@ div.yui-calcontainer.cstudio-form-field-calendar {
   cursor: move;
 }
 
+.cstudio-form-control-node-selector-item.disabled {
+  cursor: default;
+}
+
 .cstudio-form-control-video-selector-item {
   padding-right: 30px;
   position: relative;
@@ -685,8 +689,13 @@ div.yui-calcontainer.cstudio-form-field-calendar {
 }
 
 .cstudio-form-repeat-control-disabled {
-  color: #a0a0a0;
-  cursor: default;
+  color: #a0a0a0 !important;
+  pointer-events: none;
+  cursor: default !important;
+}
+
+.cstudio-form-repeat-control-disabled:hover {
+  background-color: #fff !important;
 }
 
 .cstudio-form-repeat-container {

@@ -53,6 +53,7 @@ import Typography from '@mui/material/Typography';
 import MenuItem from '@mui/material/MenuItem';
 import { getParentModelId } from '../utils/ice';
 import { iceRegistry } from '../index';
+import { fromICEId, get } from '../elementRegistry';
 
 export interface MoveModeZoneMenuProps {
   record: ElementRecord;
@@ -218,11 +219,15 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
   };
 
   const onDragStart = (e) => {
+    let _record = record;
+    if (recordType === 'component' && nodeSelectorItemRecord) {
+      _record = get(fromICEId(nodeSelectorItemRecord.id).id);
+    }
     e.stopPropagation();
-    e.dataTransfer.setData('text/plain', `${record.id}`);
+    e.dataTransfer.setData('text/plain', `${_record.id}`);
     e.dataTransfer.setDragImage(document.querySelector('.craftercms-dragged-element'), 20, 20);
     setTimeout(() => {
-      dispatch({ type: 'dragstart', payload: { event: null, record } });
+      dispatch({ type: 'dragstart', payload: { event: null, record: _record } });
     });
   };
 

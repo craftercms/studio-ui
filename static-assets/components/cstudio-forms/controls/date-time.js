@@ -1051,6 +1051,8 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
           timezoneEl,
           this
         );
+
+        timezoneEl.disabled = this.readonly ?? false;
       } else {
         timezoneEl = document.createElement('span');
       }
