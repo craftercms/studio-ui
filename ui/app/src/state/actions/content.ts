@@ -45,6 +45,8 @@ export const fetchSandboxItemComplete =
 export const fetchSandboxItemFailed = /*#__PURE__*/ createAction<AjaxError>('FETCH_SANDBOX_ITEM_FAILED');
 // endregion
 
+export const updateItemsByPath = /*#__PURE__*/ createAction<{ items: SandboxItem[] }>('UPDATE_ITEMS_BY_PATH');
+
 // region Clipboard
 
 export const setClipboard = /*#__PURE__*/ createAction<{

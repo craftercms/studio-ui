@@ -112,7 +112,8 @@ import {
   localItemLock,
   reloadDetailedItem,
   restoreClipboard,
-  unlockItem
+  unlockItem,
+  updateItemsByPath
 } from '../../state/actions/content';
 import EditFormPanel from '../../components/EditFormPanel/EditFormPanel';
 import {
@@ -226,7 +227,14 @@ const issueDescriptorRequest = (props) => {
         }
       });
 
+      // TODO: Request array contains repeated items
+
       forkJoin(requests).subscribe((responses) => {
+        dispatch(
+          updateItemsByPath({
+            items: responses
+          })
+        );
         hostToGuest$.next({
           type: 'FETCH_GUEST_SANDBOX_ITEM_COMPLETE',
           payload: responses

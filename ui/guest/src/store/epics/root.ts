@@ -401,6 +401,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
                               level: 'suggestion'
                             })
                           );
+                          window.location.reload();
                           return NEVER;
                         } else {
                           return initTinyMCE(path, record, validations, type === 'html' ? setup : {});
@@ -421,59 +422,6 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
                     return NEVER;
                   })
                 );
-                // return fetchSandboxItem(state.activeSite, path).pipe(
-                //   switchMap((item) => {
-                //     console.log(item.commitId);
-                //     console.log(cachedSandboxItem.commitId);
-                //
-                //     if (item.stateMap.submitted || item.stateMap.scheduled) {
-                //       post(
-                //         requestWorkflowCancellationDialog({
-                //           siteId: state.activeSite,
-                //           path
-                //         })
-                //       );
-                //       return message$.pipe(
-                //         filter((e) => e.type === requestWorkflowCancellationDialogOnResult.type),
-                //         take(1),
-                //         filter((e) => e.payload.type === 'onContinue'),
-                //         switchMap(() => {
-                //           return lock(state.activeSite, path).pipe(
-                //             switchMap(() => {
-                //               post(localItemLock({ path, username: state.username }));
-                //               return initTinyMCE(path, record, validations, type === 'html' ? setup : {});
-                //             })
-                //           );
-                //         })
-                //       );
-                //     } else if (item.stateMap.locked && item.lockOwner !== state.username) {
-                //       post(
-                //         validationMessage({
-                //           id: 'itemLocked',
-                //           level: 'suggestion',
-                //           values: { lockOwner: item.lockOwner }
-                //         })
-                //       );
-                //       return NEVER;
-                //       // TODO: craftercms.dateModified is different for items who are not submitted for new sites
-                //     } else if (item.commitId !== cachedSandboxItem.commitId) {
-                //       post(
-                //         validationMessage({
-                //           id: 'outOfSyncContent',
-                //           level: 'suggestion'
-                //         })
-                //       );
-                //       return NEVER;
-                //     }
-                //
-                //     return lock(state.activeSite, path).pipe(
-                //       switchMap(() => {
-                //         post(localItemLock({ path, username: state.username }));
-                //         return initTinyMCE(path, record, validations, type === 'html' ? setup : {});
-                //       })
-                //     );
-                //   })
-                // );
               }
               break;
             }
