@@ -380,8 +380,6 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
                     return fetchSandboxItem(state.activeSite, path).pipe(
                       switchMap((item) => {
                         if (item.stateMap.submitted || item.stateMap.scheduled) {
-                          console.log('requestWorkflowCancellationDialog');
-
                           post(
                             requestWorkflowCancellationDialog({
                               siteId: state.activeSite,
@@ -393,7 +391,6 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
                             take(1),
                             filter((e) => e.payload.type === 'onContinue'),
                             switchMap(() => {
-                              console.log('requestWorkflowCancellationDialogOnResult');
                               return initTinyMCE(path, record, validations, type === 'html' ? setup : {});
                             })
                           );
