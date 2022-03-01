@@ -81,7 +81,7 @@ import {
   duplicateItem,
   fetchContentInstance,
   fetchContentInstanceDescriptor,
-  fetchSandboxItem as fetchSandboxItemService,
+  fetchItemsByPath,
   fetchWorkflowAffectedItems,
   insertComponent,
   insertInstance,
@@ -164,7 +164,6 @@ import { useUpdateRefs } from '../../hooks';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { batchActions, editContentTypeTemplate, editController } from '../../state/actions/misc';
 import { popPiece } from '../../utils/string';
-import { SandboxItem } from '../../models';
 
 const originalDocDomain = document.domain;
 
@@ -186,68 +185,68 @@ const issueDescriptorRequest = (props) => {
       takeUntil(guestToHost$.pipe(filter(({ type }) => [guestCheckIn.type, guestCheckOut.type].includes(type)))),
       switchMap((obj: { model: ContentInstance; modelLookup: LookupTable<ContentInstance> }) => {
         let requests: Array<Observable<ContentInstance>> = [];
+        let sandboxItemPaths = [];
+        Object.values(obj.modelLookup).forEach((model) => {
+          if (model.craftercms.path) {
+            sandboxItemPaths.push(model.craftercms.path);
+          }
+        });
+
         Object.values(obj.model.craftercms.sourceMap).forEach((path) => {
           if (!requestedSourceMapPaths.current[path]) {
             requestedSourceMapPaths.current[path] = true;
             requests.push(fetchContentInstance(site, path, contentTypes));
           }
         });
-        if (requests.length) {
-          return forkJoin(requests).pipe(
-            map((response) => {
-              let lookup = obj.modelLookup;
-              response.forEach((contentInstance) => {
-                lookup = {
-                  ...lookup,
-                  [contentInstance.craftercms.id]: contentInstance
-                };
-              });
-              return {
-                ...obj,
-                modelLookup: lookup
-              };
-            })
-          );
-        } else {
-          return of(obj);
-        }
+
+        return forkJoin({
+          sandboxItems: fetchItemsByPath(site, sandboxItemPaths),
+          models: requests.length
+            ? forkJoin(requests).pipe(
+                map((response) => {
+                  let lookup = obj.modelLookup;
+                  response.forEach((contentInstance) => {
+                    lookup = {
+                      ...lookup,
+                      [contentInstance.craftercms.id]: contentInstance
+                    };
+                  });
+                  return {
+                    ...obj,
+                    modelLookup: lookup
+                  };
+                })
+              )
+            : of(obj)
+        });
       })
     )
-    .subscribe(({ model, modelLookup }) => {
+    .subscribe(({ sandboxItems, models: { model, modelLookup } }) => {
       const normalizedModels = normalizeModelsLookup(modelLookup);
       const hierarchyMap = createModelHierarchyDescriptorMap(normalizedModels, contentTypes);
       const normalizedModel = normalizedModels[model.craftercms.id];
       const modelIdByPath = {};
-      const requests: Array<Observable<SandboxItem>> = [];
       Object.values(modelLookup).forEach((model) => {
         // Embedded components don't have a path.
         if (model.craftercms.path) {
-          requests.push(fetchSandboxItemService(site, model.craftercms.path));
           modelIdByPath[model.craftercms.path] = model.craftercms.id;
         }
       });
 
-      // TODO: Request array contains repeated items
-
-      forkJoin(requests).subscribe((responses) => {
-        dispatch(
-          updateItemsByPath({
-            items: responses
-          })
-        );
-        hostToGuest$.next({
-          type: 'FETCH_GUEST_SANDBOX_ITEM_COMPLETE',
-          payload: responses
-        });
-      });
-
       dispatch(
-        completeAction({
-          model: normalizedModel,
-          modelLookup: normalizedModels,
-          modelIdByPath: modelIdByPath,
-          hierarchyMap
-        })
+        batchActions([
+          completeAction({
+            model: normalizedModel,
+            modelLookup: normalizedModels,
+            modelIdByPath: modelIdByPath,
+            hierarchyMap
+          }),
+          dispatch(
+            updateItemsByPath({
+              items: sandboxItems
+            })
+          )
+        ])
       );
       hostToGuest$.next({
         type: 'FETCH_GUEST_MODEL_COMPLETE',
@@ -256,7 +255,8 @@ const issueDescriptorRequest = (props) => {
           model: normalizedModel,
           modelLookup: normalizedModels,
           hierarchyMap,
-          modelIdByPath: modelIdByPath
+          modelIdByPath: modelIdByPath,
+          sandboxItems
         }
       });
     });

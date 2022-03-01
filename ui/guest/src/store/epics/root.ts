@@ -389,9 +389,13 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
                           return message$.pipe(
                             filter((e) => e.type === requestWorkflowCancellationDialogOnResult.type),
                             take(1),
-                            filter((e) => e.payload.type === 'onContinue'),
-                            switchMap(() => {
-                              return initTinyMCE(path, record, validations, type === 'html' ? setup : {});
+                            switchMap(({ payload }) => {
+                              if (payload.type === 'onContinue') {
+                                return initTinyMCE(path, record, validations, type === 'html' ? setup : {});
+                              } else {
+                                post(unlockItem({ path }));
+                                return NEVER;
+                              }
                             })
                           );
                         } else if (item.commitId !== cachedSandboxItem.commitId) {
@@ -401,6 +405,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
                               level: 'suggestion'
                             })
                           );
+                          post(unlockItem({ path }));
                           window.location.reload();
                           return NEVER;
                         } else {

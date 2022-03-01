@@ -823,21 +823,17 @@ interface FetchGuestModelCompletePayload {
   modelLookup: LookupTable<ContentInstance>;
   modelIdByPath: LookupTable<string>;
   hierarchyMap: ModelHierarchyMap;
+  sandboxItems: SandboxItem[];
 }
 
 fromTopic('FETCH_GUEST_MODEL_COMPLETE')
   .pipe(pluck('payload'))
-  .subscribe(({ modelLookup, hierarchyMap, modelIdByPath }: FetchGuestModelCompletePayload) => {
+  .subscribe(({ modelLookup, hierarchyMap, modelIdByPath, sandboxItems }: FetchGuestModelCompletePayload) => {
     Object.keys(modelIdByPath).forEach((path) => {
       requestedPaths[path] = true;
     });
     Object.assign(modelHierarchyMap, hierarchyMap);
     models$.next({ ...models$.value, ...modelLookup });
     paths$.next({ ...paths$.value, ...modelIdByPath });
-  });
-
-fromTopic('FETCH_GUEST_SANDBOX_ITEM_COMPLETE')
-  .pipe(pluck('payload'))
-  .subscribe((response: SandboxItem[]) => {
-    items$.next({ ...items$.value, ...createLookupTable(response, 'path') });
+    items$.next({ ...items$.value, ...createLookupTable(sandboxItems, 'path') });
   });
