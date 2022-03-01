@@ -20,15 +20,18 @@ import { useDispatch } from 'react-redux';
 import { useSelection } from './useSelection';
 import { useEffect } from 'react';
 import { fetchSiteUiConfig } from '../state/actions/configuration';
+import { useSiteLookup } from './useSiteLookup';
 
 export function useSiteUIConfig(): GlobalState['uiConfig'] {
   const site = useActiveSiteId();
+  const sites = useSiteLookup();
   const dispatch = useDispatch();
   const config = useSelection((state) => state.uiConfig);
   useEffect(() => {
-    if (config.currentSite !== site && !config.isFetching) {
+    const isActiveSiteAvailable = Boolean(sites?.[site]);
+    if (isActiveSiteAvailable && config.currentSite !== site && !config.isFetching) {
       dispatch(fetchSiteUiConfig({ site }));
     }
-  }, [dispatch, site, config.isFetching, config.currentSite]);
+  }, [dispatch, site, sites, config.isFetching, config.currentSite]);
   return config;
 }
