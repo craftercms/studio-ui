@@ -32,6 +32,9 @@ export const useStyles = makeStyles((theme) => ({
   },
   editor: {
     position: 'absolute',
-    backgroundColor: theme.palette.grey['300']
+    backgroundColor: theme.palette.mode === 'dark' ? theme.palette.background.paper : theme.palette.grey['300'],
+    '& .ace_gutter': {
+      backgroundColor: theme.palette.mode === 'dark' ? theme.palette.background.paper : null
+    }
   }
 }));
