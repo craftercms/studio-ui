@@ -176,7 +176,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
       ofType('drop'),
       withLatestFrom(state$),
       filter(([, state]) => dragOk(state.status) && !state.dragContext.invalidDrop),
-      switchMap((([action, state]) => {
+      switchMap(([action, state]) => {
         const {
           payload: { event, record }
         } = action;
@@ -184,86 +184,153 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
         event.stopPropagation();
         const status = state.status;
         const dragContext = state.dragContext;
-        switch (status) {
-          case EditingStatus.PLACING_DETACHED_ASSET: {
-            const { dropZone } = dragContext;
-            if (dropZone && dragContext.inZone) {
-              const record = iceRegistry.getById(dropZone.iceId);
-              contentController.updateField(record.modelId, record.fieldId, record.index, dragContext.dragged.path);
+
+        const checkStatus = () => {
+          switch (status) {
+            case EditingStatus.PLACING_DETACHED_ASSET: {
+              const { dropZone } = dragContext;
+              if (dropZone && dragContext.inZone) {
+                const record = iceRegistry.getById(dropZone.iceId);
+                contentController.updateField(record.modelId, record.fieldId, record.index, dragContext.dragged.path);
+              }
+              break;
             }
-            break;
-          }
-          case EditingStatus.SORTING_COMPONENT: {
-            if (notNullOrUndefined(dragContext.targetIndex)) {
-              post(instanceDragEnded());
-              moveComponent(dragContext);
-              // return of({ type: 'move_component' });
+            case EditingStatus.SORTING_COMPONENT: {
+              if (notNullOrUndefined(dragContext.targetIndex)) {
+                post(instanceDragEnded());
+                moveComponent(dragContext);
+                // return of({ type: 'move_component' });
+              }
+              break;
             }
-            break;
-          }
-          case EditingStatus.PLACING_NEW_COMPONENT: {
-            if (notNullOrUndefined(dragContext.targetIndex)) {
-              const { targetIndex, contentType, dropZone } = dragContext;
-              const record = iceRegistry.getById(dropZone.iceId);
-              setTimeout(() => {
-                contentController.insertComponent(
-                  record.modelId,
-                  record.fieldId,
-                  record.fieldId.includes('.') ? `${record.index}.${targetIndex}` : targetIndex,
-                  contentType
-                );
-              });
-              // return of({ type: 'insert_component' });
-            }
-            break;
-          }
-          case EditingStatus.PLACING_DETACHED_COMPONENT: {
-            if (notNullOrUndefined(dragContext.targetIndex)) {
-              const { targetIndex, instance, dropZone } = dragContext;
-              const record = iceRegistry.getById(dropZone.iceId);
-              setTimeout(() => {
-                contentController.insertInstance(
-                  record.modelId,
-                  record.fieldId,
-                  record.fieldId.includes('.') ? `${record.index}.${targetIndex}` : targetIndex,
-                  instance
-                );
-              });
-              // return of({ type: 'insert_instance' });
-            }
-            break;
-          }
-          case EditingStatus.UPLOAD_ASSET_FROM_DESKTOP: {
-            if (dragContext.inZone) {
-              const file = unwrapEvent<DragEvent>(event).dataTransfer.files[0];
-              const stream$ = new Subject();
-              const reader = new FileReader();
-              reader.onload = ((aImg: HTMLImageElement) => (event) => {
-                post(desktopAssetDrop.type, {
-                  dataUrl: event.target.result,
-                  name: file.name,
-                  type: file.type,
-                  record: reversePluckProps(record, 'element')
-                });
-                aImg.src = event.target.result;
-                // Timeout gives the browser a chance to render the image so later rect
-                // calculations are working with the updated paint.
+            case EditingStatus.PLACING_NEW_COMPONENT: {
+              if (notNullOrUndefined(dragContext.targetIndex)) {
+                const { targetIndex, contentType, dropZone } = dragContext;
+                const record = iceRegistry.getById(dropZone.iceId);
                 setTimeout(() => {
-                  stream$.next({ type: desktopAssetUploadStarted.type, payload: { record } });
-                  stream$.next({ type: desktopAssetDragEnded.type });
-                  stream$.complete();
-                  stream$.unsubscribe();
+                  contentController.insertComponent(
+                    record.modelId,
+                    record.fieldId,
+                    record.fieldId.includes('.') ? `${record.index}.${targetIndex}` : targetIndex,
+                    contentType
+                  );
                 });
-              })(record.element as HTMLImageElement);
-              reader.readAsDataURL(file);
-              return stream$;
-            } else {
-              return of(desktopAssetDragEnded());
+              }
+              break;
+            }
+            case EditingStatus.PLACING_DETACHED_COMPONENT: {
+              if (notNullOrUndefined(dragContext.targetIndex)) {
+                const { targetIndex, instance, dropZone } = dragContext;
+                const record = iceRegistry.getById(dropZone.iceId);
+                setTimeout(() => {
+                  contentController.insertInstance(
+                    record.modelId,
+                    record.fieldId,
+                    record.fieldId.includes('.') ? `${record.index}.${targetIndex}` : targetIndex,
+                    instance
+                  );
+                });
+                // return of({ type: 'insert_instance' });
+              }
+              break;
+            }
+            case EditingStatus.UPLOAD_ASSET_FROM_DESKTOP: {
+              if (dragContext.inZone) {
+                const file = unwrapEvent<DragEvent>(event).dataTransfer.files[0];
+                const stream$ = new Subject();
+                const reader = new FileReader();
+                reader.onload = ((aImg: HTMLImageElement) => (event) => {
+                  post(desktopAssetDrop.type, {
+                    dataUrl: event.target.result,
+                    name: file.name,
+                    type: file.type,
+                    record: reversePluckProps(record, 'element')
+                  });
+                  aImg.src = event.target.result;
+                  // Timeout gives the browser a chance to render the image so later rect
+                  // calculations are working with the updated paint.
+                  setTimeout(() => {
+                    stream$.next({ type: desktopAssetUploadStarted.type, payload: { record } });
+                    stream$.next({ type: desktopAssetDragEnded.type });
+                    stream$.complete();
+                    stream$.unsubscribe();
+                  });
+                })(record.element as HTMLImageElement);
+                reader.readAsDataURL(file);
+                return stream$;
+              } else {
+                return of(desktopAssetDragEnded());
+              }
             }
           }
-        }
-        return NEVER;
-      }) as () => Observable<GuestStandardAction>)
+        };
+
+        const models = getCachedModels();
+        const modelId = action.payload.record.modelId;
+        const parentModelId = getParentModelId(modelId, models, modelHierarchyMap);
+        const path = models[parentModelId ?? modelId].craftercms.path;
+        const cachedSandboxItem = getCachedSandboxItem(path);
+
+        // The item unlock happens with write content API
+        return lock(state.activeSite, path).pipe(
+          switchMap(() => {
+            // TODO: Remove when websocket is ready
+            post(localItemLock({ path, username: state.username }));
+            return fetchSandboxItem(state.activeSite, path).pipe(
+              switchMap((item) => {
+                if (item.stateMap.submitted || item.stateMap.scheduled) {
+                  post(
+                    requestWorkflowCancellationDialog({
+                      siteId: state.activeSite,
+                      path
+                    })
+                  );
+                  return message$.pipe(
+                    filter((e) => e.type === requestWorkflowCancellationDialogOnResult.type),
+                    take(1),
+                    switchMap(({ payload }) => {
+                      if (payload.type === 'onContinue') {
+                        // DOING NORMAL STUFF
+                        checkStatus();
+                        return NEVER;
+                      } else {
+                        post(unlockItem({ path }));
+                        return NEVER;
+                      }
+                    })
+                  );
+                } else if (item.commitId !== cachedSandboxItem.commitId) {
+                  post(
+                    validationMessage({
+                      id: 'outOfSyncContent',
+                      level: 'suggestion'
+                    })
+                  );
+                  post(unlockItem({ path }));
+                  window.location.reload();
+                  return NEVER;
+                } else {
+                  checkStatus();
+                  // DOING NORMAL STUFF
+                  return NEVER;
+                }
+              })
+            );
+          }),
+          catchError(({ response, status }) => {
+            if (status === 409) {
+              post(
+                validationMessage({
+                  id: 'itemLocked',
+                  level: 'suggestion',
+                  values: { lockOwner: response.person }
+                })
+              );
+            }
+            return NEVER;
+          })
+        );
+      })
     );
   },
   (action$, state$) =>
@@ -277,6 +344,9 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
         const status = state.status;
         event.preventDefault();
         event.stopPropagation();
+
+        console.log('documentDrop');
+
         switch (status) {
           case EditingStatus.UPLOAD_ASSET_FROM_DESKTOP:
             return of(desktopAssetDragEnded());
@@ -376,6 +446,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 
                 return lock(state.activeSite, path).pipe(
                   switchMap(() => {
+                    // TODO: Remove when websocket is ready
                     post(localItemLock({ path, username: state.username }));
                     return fetchSandboxItem(state.activeSite, path).pipe(
                       switchMap((item) => {

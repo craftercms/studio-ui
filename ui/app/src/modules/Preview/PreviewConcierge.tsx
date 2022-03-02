@@ -585,6 +585,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
             error(error) {
               console.error(`${type} failed`, error);
               hostToHost$.next(sortItemOperationFailed());
+              // If write operation fails the items remains locked, so we need to dispatch unlockItem
+              dispatch(unlockItem({ path }));
               enqueueSnackbar(formatMessage(guestMessages.sortOperationFailed));
             }
           });
@@ -631,6 +633,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
             error(error) {
               console.error(`${type} failed`, error);
               hostToGuest$.next(insertOperationFailed());
+              // If write operation fails the items remains locked, so we need to dispatch unlockItem
+              dispatch(unlockItem({ path }));
               enqueueSnackbar(formatMessage(guestMessages.insertOperationFailed));
             }
           });
@@ -676,6 +680,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
             error(error) {
               console.error(`${type} failed`, error);
               hostToGuest$.next(insertOperationFailed());
+              // If write operation fails the items remains locked, so we need to dispatch unlockItem
+              dispatch(unlockItem({ path }));
               enqueueSnackbar(formatMessage(guestMessages.insertOperationFailed));
             }
           });
@@ -691,6 +697,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
             },
             error() {
               hostToGuest$.next(insertItemOperationFailed());
+              // If write operation fails the items remains locked, so we need to dispatch unlockItem
+              dispatch(unlockItem({ path }));
               enqueueSnackbar(formatMessage(guestMessages.insertItemOperationFailed));
             }
           });
@@ -706,6 +714,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
             },
             error() {
               hostToGuest$.next(duplicateItemOperationFailed());
+              // If write operation fails the items remains locked, so we need to dispatch unlockItem
+              dispatch(unlockItem({ path }));
               enqueueSnackbar(formatMessage(guestMessages.duplicateItemOperationFailed));
             }
           });
@@ -755,6 +765,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
             error(error) {
               console.error(`${type} failed`, error);
               hostToGuest$.next(moveItemOperationFailed());
+              // If write operation fails the items remains locked, so we need to dispatch unlockItem
+              dispatch(batchActions([unlockItem({ path: originPath }), unlockItem({ path: targetPath })]));
               enqueueSnackbar(formatMessage(guestMessages.moveOperationFailed));
             }
           });
@@ -794,6 +806,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
             error: (error) => {
               console.error(`${type} failed`, error);
               hostToHost$.next(deleteItemOperationFailed());
+              // If write operation fails the items remains locked, so we need to dispatch unlockItem
+              dispatch(unlockItem({ path }));
               enqueueSnackbar(formatMessage(guestMessages.deleteOperationFailed));
             }
           });
