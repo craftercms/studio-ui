@@ -301,6 +301,14 @@ export function PathNavigator(props: PathNavigatorProps) {
             if (withoutIndex(payload.target) === withoutIndex(state.currentPath)) {
               dispatch(pathNavigatorRefresh({ id }));
             }
+          }
+          if (type === itemsPasted.type && payload.clipboard.type === 'CUT') {
+            const parentPath = getParentPath(payload.target);
+            if (parentPath === withoutIndex(state.currentPath)) {
+              dispatch(pathNavigatorRefresh({ id }));
+            }
+          }
+          if (payload.clipboard.type === 'COPY' || payload.clipboard.type === 'CUT') {
             if (state.leaves.some((path) => withoutIndex(path) === withoutIndex(payload.target))) {
               dispatch(
                 pathNavigatorUpdate({
@@ -308,12 +316,6 @@ export function PathNavigator(props: PathNavigatorProps) {
                   leaves: state.leaves.filter((path) => withoutIndex(path) !== withoutIndex(payload.target))
                 })
               );
-            }
-          }
-          if (type === itemsPasted.type && payload.clipboard.type === 'CUT') {
-            const parentPath = getParentPath(payload.target);
-            if (parentPath === withoutIndex(state.currentPath)) {
-              dispatch(pathNavigatorRefresh({ id }));
             }
           }
           break;
