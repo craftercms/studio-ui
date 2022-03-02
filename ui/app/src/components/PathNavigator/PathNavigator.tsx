@@ -308,15 +308,13 @@ export function PathNavigator(props: PathNavigatorProps) {
               dispatch(pathNavigatorRefresh({ id }));
             }
           }
-          if (payload.clipboard.type === 'COPY' || payload.clipboard.type === 'CUT') {
-            if (state.leaves.some((path) => withoutIndex(path) === withoutIndex(payload.target))) {
-              dispatch(
-                pathNavigatorUpdate({
-                  id,
-                  leaves: state.leaves.filter((path) => withoutIndex(path) !== withoutIndex(payload.target))
-                })
-              );
-            }
+          if (state.leaves.some((path) => withoutIndex(path) === withoutIndex(payload.target))) {
+            dispatch(
+              pathNavigatorUpdate({
+                id,
+                leaves: state.leaves.filter((path) => withoutIndex(path) !== withoutIndex(payload.target))
+              })
+            );
           }
           break;
         }
