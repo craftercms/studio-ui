@@ -38,7 +38,7 @@ import {
   pathNavigatorSetLocaleCode,
   pathNavigatorUpdate
 } from '../../state/actions/pathNavigator';
-import { completeDetailedItem } from '../../state/actions/content';
+import { completeDetailedItem, fetchSandboxItem } from '../../state/actions/content';
 import { showEditDialog, showItemMegaMenu, showPreviewDialog } from '../../state/actions/dialogs';
 import { getEditorMode, isEditableViaFormEditor, isFolder, isImage, isNavigable, isPreviewable } from './utils';
 import { StateStylingProps } from '../../models/UiConfig';
@@ -268,6 +268,8 @@ export function PathNavigator(props: PathNavigatorProps) {
                 pathNavigatorRefresh({ id })
               ])
             );
+          } else if (getParentPath(parentPath) === withoutIndex(state.currentPath)) {
+            dispatch(fetchSandboxItem({ path: parentPath, force: true }));
           }
           break;
         }
@@ -283,6 +285,8 @@ export function PathNavigator(props: PathNavigatorProps) {
           if (type === folderCreated.type || payload.clipboard.type === 'COPY') {
             if (withoutIndex(payload.target) === withoutIndex(state.currentPath)) {
               dispatch(pathNavigatorRefresh({ id }));
+            } else if (getParentPath(payload.target) === withoutIndex(state.currentPath)) {
+              dispatch(fetchSandboxItem({ path: withoutIndex(payload.target), force: true }));
             }
           }
           if (type === itemsPasted.type && payload.clipboard.type === 'CUT') {
