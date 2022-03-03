@@ -31,7 +31,6 @@ import ItemDisplay from '../ItemDisplay';
 export interface NavItemProps {
   item: DetailedItem;
   locale: string;
-  isLeaf?: boolean;
   isActive?: boolean;
   isCurrentPath?: boolean;
   isLevelDescriptor?: boolean;
@@ -72,7 +71,6 @@ function PathNavigatorItem(props: NavItemProps) {
     isSelectMode,
     onItemChecked,
     onOpenItemMenu,
-    isLeaf = false,
     isLevelDescriptor = false,
     showItemNavigateToButton = true
   } = props;
@@ -90,6 +88,7 @@ function PathNavigatorItem(props: NavItemProps) {
   const navigable = isNavigable(item);
   const previewable = isPreviewable(item);
   const folder = isFolder(item);
+  const isLeaf = item.childrenCount === 0;
 
   return (
     <ListItem

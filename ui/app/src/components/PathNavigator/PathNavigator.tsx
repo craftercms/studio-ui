@@ -120,7 +120,6 @@ export interface PathNavigatorStateProps {
   itemsInPath: string[];
   breadcrumb: string[];
   selectedItems: string[];
-  leaves: string[];
   total: number; // Number of items in the current path
   limit: number;
   offset: number;
@@ -270,28 +269,12 @@ export function PathNavigator(props: PathNavigatorProps) {
               ])
             );
           }
-          if (state.leaves.some((path) => withoutIndex(path) === parentPath)) {
-            dispatch(
-              pathNavigatorUpdate({
-                id,
-                leaves: state.leaves.filter((path) => withoutIndex(path) !== parentPath)
-              })
-            );
-          }
           break;
         }
         case itemDuplicated.type: {
           const parentPath = getParentPath(payload.target);
           if (parentPath === withoutIndex(state.currentPath)) {
             dispatch(pathNavigatorRefresh({ id }));
-          }
-          if (state.leaves.some((path) => withoutIndex(path) === parentPath)) {
-            dispatch(
-              pathNavigatorUpdate({
-                id,
-                leaves: state.leaves.filter((path) => withoutIndex(path) !== parentPath)
-              })
-            );
           }
           break;
         }
@@ -307,14 +290,6 @@ export function PathNavigator(props: PathNavigatorProps) {
             if (parentPath === withoutIndex(state.currentPath)) {
               dispatch(pathNavigatorRefresh({ id }));
             }
-          }
-          if (state.leaves.some((path) => withoutIndex(path) === withoutIndex(payload.target))) {
-            dispatch(
-              pathNavigatorUpdate({
-                id,
-                leaves: state.leaves.filter((path) => withoutIndex(path) !== withoutIndex(payload.target))
-              })
-            );
           }
           break;
         }
