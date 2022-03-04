@@ -1292,7 +1292,7 @@
           .getPermissions(siteId, '/', $scope.user.username || $scope.user)
           .success(function (data) {
             for (var i = 0; i < data.permissions.length; i++) {
-              if (data.permissions[i] == 'site_delete') {
+              if (data.permissions[i] === 'site_delete') {
                 addingRemoveProperty(siteId);
               }
             }
