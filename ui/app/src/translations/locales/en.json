@@ -247,8 +247,6 @@
   "createFileDialog.fileName": "File Name",
   "createFileDialog.fileNameRequired": "File name is required.",
   "createFileDialog.helperText": "Consisting of letters, numbers, dot (.), dash (-) and underscore (_).",
-  "createFileDialog.openOnSuccess": "Open file",
-  "createFileDialog.openOnSuccessTip": "Open for edit after creation",
   "createFileDialog.placeholder": "Please type a name",
   "createFileDialog.policyError": "The supplied name goes against project policies.",
   "createFileDialog.template": "New Template",

@@ -247,8 +247,6 @@
   "createFileDialog.fileName": "Dateiname",
   "createFileDialog.fileNameRequired": "Dateiname ist erforderlich.",
   "createFileDialog.helperText": "Bestehend aus Buchstaben, Zahlen, Punkt (.), Bindestrich (-) und Unterstrich (_).",
-  "createFileDialog.openOnSuccess": "Datei öffnen",
-  "createFileDialog.openOnSuccessTip": "Nach der Erstellung zum Bearbeiten öffnen",
   "createFileDialog.placeholder": "Bitte geben Sie einen Namen ein",
   "createFileDialog.policyError": "Der angegebene Name verstößt gegen Projektrichtlinien.",
   "createFileDialog.template": "Neue Vorlage",

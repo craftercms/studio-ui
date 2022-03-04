@@ -247,8 +247,6 @@
   "createFileDialog.fileName": "Nombre del archivo",
   "createFileDialog.fileNameRequired": "Se requiere el nombre del archivo.",
   "createFileDialog.helperText": "Consta de letras, números, punto (.), Guión (-) y guión bajo (_).",
-  "createFileDialog.openOnSuccess": "Abrir documento",
-  "createFileDialog.openOnSuccessTip": "Abrir para editar después de la creación",
   "createFileDialog.placeholder": "Por favor escriba un nombre",
   "createFileDialog.policyError": "El nombre proporcionado va en contra de las políticas del sitio.",
   "createFileDialog.template": "Nueva Plantilla",
