@@ -39,16 +39,14 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
   const { onClose, onCreated, type, path, allowBraces, isSubmitting } = props;
   const [name, setName] = useState('');
   const [confirm, setConfirm] = useState(null);
-  const [openOnSuccess, setOpenOnSuccess] = useState(true);
   const dispatch = useDispatch();
   const site = useActiveSiteId();
   const { formatMessage } = useIntl();
 
   const onCreateFile = (site: string, path: string, fileName: string) => {
-    createFile(site, path, fileName).subscribe(
-      () => {
-        onCreated?.({ path, fileName, mode: getExtension(type), openOnSuccess });
-
+    createFile(site, path, fileName).subscribe({
+      next() {
+        onCreated?.({ path, fileName, mode: getExtension(type), openOnSuccess: true });
         dispatch(
           batchActions([
             updateCreateFileDialog({
@@ -59,7 +57,7 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
           ])
         );
       },
-      (response) => {
+      error(response) {
         dispatch(
           batchActions([
             showErrorDialog({ error: response }),
@@ -69,7 +67,7 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
           ])
         );
       }
-    );
+    });
   };
 
   const onCreate = () => {
@@ -173,14 +171,6 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
         </form>
       </DialogBody>
       <DialogFooter>
-        <FormControlLabel
-          style={{ marginRight: 'auto' }}
-          label={formatMessage(translations.openOnSuccess)}
-          title={formatMessage(translations.openOnSuccessTitle)}
-          control={
-            <Checkbox checked={openOnSuccess} onChange={(e) => setOpenOnSuccess(e.target.checked)} color="primary" />
-          }
-        />
         <SecondaryButton onClick={(e) => onClose(e, null)} disabled={isSubmitting}>
           <FormattedMessage id="words.close" defaultMessage="Close" />
         </SecondaryButton>

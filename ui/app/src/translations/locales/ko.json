@@ -247,8 +247,6 @@
   "createFileDialog.fileName": "파일 이름",
   "createFileDialog.fileNameRequired": "파일 이름은 필수 항목입니다.",
   "createFileDialog.helperText": "문자, 숫자, 점(.), 대시(-) 및 밑줄(_)로 구성됩니다.",
-  "createFileDialog.openOnSuccess": "파일 열기",
-  "createFileDialog.openOnSuccessTip": "생성 후 편집을 위해 열기",
   "createFileDialog.placeholder": "이름을 입력하세요",
   "createFileDialog.policyError": "제공된 이름은 프로젝트 정책에 위배됩니다.",
   "createFileDialog.template": "새 템플릿",
