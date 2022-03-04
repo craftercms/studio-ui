@@ -50,6 +50,8 @@ import { SingleFileUploadDialogStateProps } from '../../components/SingleFileUpl
 export const showHistoryDialog = /*#__PURE__*/ createAction<Partial<HistoryDialogStateProps>>('SHOW_HISTORY_DIALOG');
 export const closeHistoryDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_HISTORY_DIALOG');
 export const historyDialogClosed = /*#__PURE__*/ createAction('HISTORY_DIALOG_CLOSED');
+export const historyDialogUpdate =
+  /*#__PURE__*/ createAction<Partial<HistoryDialogStateProps>>('HISTORY_DIALOG_UPDATE');
 // endregion
 
 // region View Versions
