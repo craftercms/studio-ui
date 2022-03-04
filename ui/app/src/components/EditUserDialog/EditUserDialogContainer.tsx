@@ -26,7 +26,7 @@ import { EditUserDialogUI } from './EditUserDialogUI';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import { useSitesBranch } from '../../hooks/useSitesBranch';
 import { EditUserDialogContainerProps } from './utils';
-import { useUpdateRefs } from '../../hooks';
+import useUpdateRefs from '../../hooks/useUpdateRefs';
 
 const translations = defineMessages({
   userDeleted: {
