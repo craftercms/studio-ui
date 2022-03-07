@@ -398,44 +398,41 @@ export function duplicateItem(
 
       const item: Element = extractNode(elementToDuplicate, fieldId, targetIndex).cloneNode(true) as Element;
       const isEmbedded = Boolean(item.querySelector(':scope > component'));
+      // removing last piece to get the parent of the item
+      const field: Element = extractNode(
+        elementToDuplicate,
+        removeLastPiece(fieldId) || fieldId,
+        removeLastPiece(`${targetIndex}`)
+      );
 
       if (isEmbedded) {
-        return performMutation(
-          site,
-          path,
-          (element) => {
-            // removing last piece to get the parent of the item
-            const field: Element = extractNode(
-              element,
-              removeLastPiece(fieldId) || fieldId,
-              removeLastPiece(`${targetIndex}`)
-            );
+        updateItemId(item);
+        updateElementComponentsId(item);
+        field.appendChild(item);
+        updateModifiedDateElement(elementToDuplicate);
 
-            const item: Element = extractNode(element, fieldId, targetIndex).cloneNode(true) as Element;
-            updateItemId(item);
-            updateElementComponentsId(item);
-            field.appendChild(item);
-          },
-          modelId
-        );
+        return post(
+          writeContentUrl({
+            site,
+            path: path,
+            unlock: 'true',
+            fileName: getInnerHtml(doc.querySelector(':scope > file-name'))
+          }),
+          serialize(doc)
+        ).pipe(mapTo({ updatedDocument: doc }));
       } else {
-        // removing last piece to get the parent of the item
-        const field: Element = extractNode(
-          elementToDuplicate,
-          removeLastPiece(fieldId) || fieldId,
-          removeLastPiece(`${targetIndex}`)
-        );
-
         const item: Element = extractNode(elementToDuplicate, fieldId, targetIndex).cloneNode(true) as Element;
         const itemPath = item.querySelector(':scope > key').textContent;
 
         const newItemData = updateItemId(item);
         updateElementComponentsId(item);
+        updateModifiedDateElement(elementToDuplicate);
         field.appendChild(item);
         return fetchContentDOM(site, itemPath).pipe(
           switchMap((componentDoc) => {
             updateComponentId(componentDoc.documentElement, newItemData.id);
             updateElementComponentsId(componentDoc.documentElement);
+            updateModifiedDateElement(componentDoc.documentElement);
 
             return forkJoin([
               post(
