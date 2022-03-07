@@ -29,13 +29,5 @@ export const translations = defineMessages({
   policyError: {
     id: 'createFileDialog.policyError',
     defaultMessage: 'The supplied name goes against project policies.'
-  },
-  openOnSuccess: {
-    id: 'createFileDialog.openOnSuccess',
-    defaultMessage: 'Open file'
-  },
-  openOnSuccessTitle: {
-    id: 'createFileDialog.openOnSuccessTip',
-    defaultMessage: 'Open for edit after creation'
   }
 });
