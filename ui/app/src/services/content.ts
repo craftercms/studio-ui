@@ -388,22 +388,79 @@ export function duplicateItem(
   targetIndex: string | number,
   path: string
 ): Observable<any> {
-  return performMutation(
-    site,
-    path,
-    (element) => {
-      // removing last piece to get the parent of the item
-      const field: Element = extractNode(
-        element,
-        removeLastPiece(fieldId) || fieldId,
-        removeLastPiece(`${targetIndex}`)
-      );
-      const item: Element = extractNode(element, fieldId, targetIndex).cloneNode(true) as Element;
-      updateItemId(item);
-      updateElementComponentsId(item);
-      field.appendChild(item);
-    },
-    modelId
+  return fetchContentDOM(site, path).pipe(
+    switchMap((doc) => {
+      const documentModelId = doc.querySelector(':scope > objectId').innerHTML.trim();
+      let elementToDuplicate = doc.documentElement;
+      if (nnou(modelId) && documentModelId !== modelId) {
+        elementToDuplicate = doc.querySelector(`[id="${modelId}"]`);
+      }
+
+      const item: Element = extractNode(elementToDuplicate, fieldId, targetIndex).cloneNode(true) as Element;
+      const isEmbedded = Boolean(item.querySelector(':scope > component'));
+
+      if (isEmbedded) {
+        return performMutation(
+          site,
+          path,
+          (element) => {
+            // removing last piece to get the parent of the item
+            const field: Element = extractNode(
+              element,
+              removeLastPiece(fieldId) || fieldId,
+              removeLastPiece(`${targetIndex}`)
+            );
+
+            const item: Element = extractNode(element, fieldId, targetIndex).cloneNode(true) as Element;
+            updateItemId(item);
+            updateElementComponentsId(item);
+            field.appendChild(item);
+          },
+          modelId
+        );
+      } else {
+        // removing last piece to get the parent of the item
+        const field: Element = extractNode(
+          elementToDuplicate,
+          removeLastPiece(fieldId) || fieldId,
+          removeLastPiece(`${targetIndex}`)
+        );
+
+        const item: Element = extractNode(elementToDuplicate, fieldId, targetIndex).cloneNode(true) as Element;
+        const itemPath = item.querySelector(':scope > key').textContent;
+
+        const newItemData = updateItemId(item);
+        updateElementComponentsId(item);
+        field.appendChild(item);
+        return fetchContentDOM(site, itemPath).pipe(
+          switchMap((componentDoc) => {
+            updateComponentId(componentDoc.documentElement, newItemData.id);
+            updateElementComponentsId(componentDoc.documentElement);
+
+            return forkJoin([
+              post(
+                writeContentUrl({
+                  site,
+                  path,
+                  unlock: 'true',
+                  fileName: getInnerHtml(doc.querySelector(':scope > file-name'))
+                }),
+                serialize(doc)
+              ),
+              post(
+                writeContentUrl({
+                  site,
+                  path: newItemData.path,
+                  unlock: 'true',
+                  fileName: getInnerHtml(componentDoc.querySelector(':scope > file-name'))
+                }),
+                serialize(componentDoc)
+              )
+            ]).pipe(mapTo({ updatedDocument: doc }));
+          })
+        );
+      }
+    })
   );
 }
 
@@ -660,18 +717,39 @@ interface AnyObject {
   [key: string]: any;
 }
 
-function updateItemId(item: Element): void {
+function updateItemId(item: Element): { id: string; path?: string } {
   const component = item.querySelector(':scope > component');
+  const key = item.querySelector(':scope > key');
+  const id = uuid();
   if (component) {
-    const key = item.querySelector(':scope > key');
-    const objectId = component.querySelector(':scope > objectId');
-    const fileName = component.querySelector(':scope > file-name');
-    const id = uuid();
-    component.id = id;
+    // embedded component
+    updateComponentId(component, id);
     key.innerHTML = id;
-    fileName.innerHTML = `${id}.xml`;
-    objectId.innerHTML = id;
+    return {
+      id
+    };
+  } else {
+    // shared component
+    const originalPath = key.textContent;
+    const basePath = originalPath.split('/').slice(0, -1).join('/');
+    const newPath = `${basePath}/${id}.xml`;
+
+    const include = item.querySelector(':scope > include');
+    key.innerHTML = newPath;
+    include.innerHTML = newPath;
+    return {
+      id,
+      path: basePath
+    };
   }
+}
+
+function updateComponentId(component: Element, id: string): void {
+  const objectId = component.querySelector(':scope > objectId');
+  const fileName = component.querySelector(':scope > file-name');
+  component.id = id;
+  fileName.innerHTML = `${id}.xml`;
+  objectId.innerHTML = id;
 }
 
 function updateElementComponentsId(element: Element): void {
