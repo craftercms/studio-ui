@@ -123,28 +123,38 @@ export function getIndividualPaths(path: string, rootPath?: string): string[] {
 }
 
 export function getPasteItemFromPath(path: string, paths: string[]): PasteItem {
-  const sourcePath = withoutIndex(path);
-  let lookup = {
-    [sourcePath]: {
+  // create PasteItem with base path
+  let pasteItem = {
+    path,
+    children: []
+  };
+
+  paths.forEach((path) => addToPasteItem(pasteItem, path));
+  return pasteItem;
+}
+
+function addToPasteItem(pasteItem: PasteItem, path: string) {
+  const parentPath = getParentPath(path);
+
+  if (pasteItem.path === path) {
+    // path already added as pasteItem's root.
+    return;
+  } else if (withoutIndex(pasteItem.path) === parentPath) {
+    // if current path is direct children of pasteItem's root path
+    pasteItem.children.push({
       path,
       children: []
-    }
-  };
-  paths.forEach((path) => {
-    lookup[path] = {
-      path: path,
-      children: []
-    };
-    const parentPath = getParentPath(path);
-    if (!lookup[parentPath]) {
-      lookup[parentPath] = {
-        path: parentPath,
-        children: []
-      };
-    }
-    lookup[parentPath].children.push(lookup[path]);
-  });
-  return lookup[sourcePath];
+    });
+    return;
+  } else {
+    // neither root nor direct children - look in which of the children the item belongs to
+    const pasteItemParent = pasteItem.children.filter((item) => {
+      return withoutIndex(path).includes(withoutIndex(item.path));
+    })[0]; // will always be only one
+
+    // add item to the children
+    addToPasteItem(pasteItemParent, path);
+  }
 }
 
 export function isValidCutPastePath(targetPath, sourcePath): boolean {
