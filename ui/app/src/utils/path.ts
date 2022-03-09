@@ -133,20 +133,16 @@ export function getPasteItemFromPath(path: string, paths: string[]): PasteItem {
   return pasteItem;
 }
 
-function addToPasteItem(pasteItem: PasteItem, path: string) {
+function addToPasteItem(pasteItem: PasteItem, path: string): void {
   const parentPath = getParentPath(path);
 
-  if (pasteItem.path === path) {
-    // path already added as pasteItem's root.
-    return;
-  } else if (withoutIndex(pasteItem.path) === parentPath) {
+  if (withoutIndex(pasteItem.path) === parentPath) {
     // if current path is direct children of pasteItem's root path
     pasteItem.children.push({
       path,
       children: []
     });
-    return;
-  } else {
+  } else if (pasteItem.path !== path) {
     // neither root nor direct children - look in which of the children the item belongs to
     const pasteItemParent = pasteItem.children.filter((item) => {
       return withoutIndex(path).includes(withoutIndex(item.path));
