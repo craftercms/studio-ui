@@ -391,26 +391,26 @@ export function duplicateItem(
   return fetchContentDOM(site, path).pipe(
     switchMap((doc) => {
       const documentModelId = doc.querySelector(':scope > objectId').innerHTML.trim();
-      let elementToDuplicate = doc.documentElement;
+      let parentElement = doc.documentElement;
       if (nnou(modelId) && documentModelId !== modelId) {
-        elementToDuplicate = doc.querySelector(`[id="${modelId}"]`);
+        parentElement = doc.querySelector(`[id="${modelId}"]`);
       }
 
-      const item: Element = extractNode(elementToDuplicate, fieldId, targetIndex).cloneNode(true) as Element;
+      const item: Element = extractNode(parentElement, fieldId, targetIndex).cloneNode(true) as Element;
+      const itemPath = item.querySelector(':scope > key').textContent;
       const isEmbedded = Boolean(item.querySelector(':scope > component'));
       // removing last piece to get the parent of the item
       const field: Element = extractNode(
-        elementToDuplicate,
+        parentElement,
         removeLastPiece(fieldId) || fieldId,
         removeLastPiece(`${targetIndex}`)
       );
 
-      if (isEmbedded) {
-        updateItemId(item);
-        updateElementComponentsId(item);
-        field.appendChild(item);
-        updateModifiedDateElement(elementToDuplicate);
+      const newItemData = updateItemId(item);
+      updateModifiedDateElement(parentElement);
+      field.appendChild(item);
 
+      if (isEmbedded) {
         return post(
           writeContentUrl({
             site,
@@ -421,17 +421,10 @@ export function duplicateItem(
           serialize(doc)
         ).pipe(mapTo({ updatedDocument: doc }));
       } else {
-        const item: Element = extractNode(elementToDuplicate, fieldId, targetIndex).cloneNode(true) as Element;
-        const itemPath = item.querySelector(':scope > key').textContent;
-
-        const newItemData = updateItemId(item);
-        updateElementComponentsId(item);
-        updateModifiedDateElement(elementToDuplicate);
-        field.appendChild(item);
         return fetchContentDOM(site, itemPath).pipe(
           switchMap((componentDoc) => {
+            // update new shared component info  (ids/date)
             updateComponentId(componentDoc.documentElement, newItemData.id);
-            updateElementComponentsId(componentDoc.documentElement);
             updateModifiedDateElement(componentDoc.documentElement);
 
             return forkJoin([
@@ -714,7 +707,10 @@ interface AnyObject {
   [key: string]: any;
 }
 
-function updateItemId(item: Element): { id: string; path?: string } {
+// Updates a component's parent id (the item that contains the component).
+// If the component is embedded, update its ids too. When shared it needs to be done separately because the item
+// needs to be fetched.
+function updateItemId(item: Element, skipShared: boolean = false): { id: string; path?: string } {
   const component = item.querySelector(':scope > component');
   const key = item.querySelector(':scope > key');
   const id = uuid();
@@ -725,7 +721,7 @@ function updateItemId(item: Element): { id: string; path?: string } {
     return {
       id
     };
-  } else {
+  } else if (!skipShared) {
     // shared component
     const originalPath = key.textContent;
     const basePath = originalPath.split('/').slice(0, -1).join('/');
@@ -741,17 +737,22 @@ function updateItemId(item: Element): { id: string; path?: string } {
   }
 }
 
+// Updates the ids of a component (shared/embedded)
 function updateComponentId(component: Element, id: string): void {
   const objectId = component.querySelector(':scope > objectId');
   const fileName = component.querySelector(':scope > file-name');
   component.id = id;
   fileName.innerHTML = `${id}.xml`;
   objectId.innerHTML = id;
+
+  updateElementComponentsId(component);
 }
 
+// Updates the ids of the embedded components inside an element
+// It looks for items inside a component and update its ids (skipping shared).
 function updateElementComponentsId(element: Element): void {
   element.querySelectorAll('item').forEach((item) => {
-    updateItemId(item);
+    updateItemId(item, true);
   });
 }
 
