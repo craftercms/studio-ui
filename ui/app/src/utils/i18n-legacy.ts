@@ -949,4 +949,3 @@ export const controlsCommonMessages = defineMessages({
     defaultMessage: 'Escape Content'
   }
 });
-
