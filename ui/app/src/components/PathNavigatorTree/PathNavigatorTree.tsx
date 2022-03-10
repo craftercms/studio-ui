@@ -68,6 +68,8 @@ import {
 } from '../../state/actions/system';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { useActiveSite } from '../../hooks/useActiveSite';
+import { fetchDetailedItem } from '../../services/content';
+import { ApiResponse } from '../../models';
 
 export interface PathNavigatorTreeProps {
   id: string;
@@ -93,6 +95,7 @@ export interface PathNavigatorTreeStateProps {
   totalByPath: LookupTable<number>;
   offsetByPath: LookupTable<number>;
   excludes?: string[];
+  error: ApiResponse;
 }
 
 interface Menu {
@@ -126,7 +129,8 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     icon,
     expandedIcon,
     collapsedIcon,
-    container
+    container,
+    rootPath
   } = props;
   const state = useSelection((state) => state.pathNavigatorTree)[id];
   const { id: siteId, uuid } = useActiveSite();
@@ -153,11 +157,10 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   );
   const fetchingByPath = useMemo(() => state?.fetchingByPath ?? {}, [state?.fetchingByPath]);
   const rootItem = useDetailedItem(props.rootPath);
-  const rootPath = rootItem?.path;
   const [rootNode, setRootNode] = useState(null);
-
   const hasActiveSession = useSelection((state) => state.auth.active);
   const intervalRef = useRef<any>();
+  const [error, setError] = useState<ApiResponse>();
 
   const resetBackgroundRefreshInterval = useCallback(() => {
     clearInterval(intervalRef.current);
@@ -195,6 +198,15 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
       );
     }
   }, [siteId, user.username, id, dispatch, rootPath, excludes, limit, state, uiConfig.currentSite, storedState]);
+
+  useEffect(() => {
+    fetchDetailedItem(siteId, rootPath).subscribe({
+      next() {},
+      error({ response }) {
+        setError(response.response);
+      }
+    });
+  }, [rootPath, siteId]);
 
   useEffect(() => {
     if (rootItem && nodesByPathRef.current[rootItem.path] === undefined) {
@@ -399,7 +411,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   }, [id, rootPath, dispatch, totalByPath, limit, childrenByParentPath, state?.expanded]);
   // endregion
 
-  if (!rootItem || !Boolean(state) || !rootNode) {
+  if ((!rootItem || !Boolean(state) || !rootNode) && !error) {
     return (
       <PathNavigatorSkeletonTree
         numOfItems={
@@ -558,6 +570,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
         container={container}
         isCollapsed={state?.collapsed}
         rootNode={rootNode}
+        error={error}
         itemsByPath={itemsByPath}
         keywordByPath={keywordByPath}
         totalByPath={totalByPath}

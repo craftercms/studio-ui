@@ -27,6 +27,8 @@ import PathNavigatorTreeItem from './PathNavigatorTreeItem';
 import LookupTable from '../../models/LookupTable';
 import { DetailedItem } from '../../models/Item';
 import { SystemIconDescriptor } from '../SystemIcon';
+import { ApiResponse } from '../../models';
+import { ApiResponseErrorState } from '../ApiResponseErrorState';
 
 export interface PathNavigatorTreeNode {
   id: string;
@@ -39,6 +41,7 @@ export interface PathNavigatorTreeUIProps {
   icon?: SystemIconDescriptor;
   container?: Partial<StateStylingProps>;
   rootNode: PathNavigatorTreeNode;
+  error: ApiResponse;
   itemsByPath: LookupTable<DetailedItem>;
   keywordByPath: LookupTable<string>;
   totalByPath: LookupTable<number>;
@@ -89,6 +92,7 @@ export function PathNavigatorTreeUI(props: PathNavigatorTreeUIProps) {
     container,
     title,
     rootNode,
+    error,
     itemsByPath,
     keywordByPath,
     childrenByParentPath,
@@ -133,22 +137,26 @@ export function PathNavigatorTreeUI(props: PathNavigatorTreeUIProps) {
           onHeaderButtonClick(element);
         }}
       />
-      <AccordionDetails className={clsx(classes.accordionDetails, props.classes?.body)}>
-        <TreeView className={classes.root} expanded={expandedNodes} disableSelection>
-          <PathNavigatorTreeItem
-            node={rootNode}
-            itemsByPath={itemsByPath}
-            keywordByPath={keywordByPath}
-            totalByPath={totalByPath}
-            childrenByParentPath={childrenByParentPath}
-            onIconClick={onIconClick}
-            onLabelClick={onLabelClick}
-            onFilterChange={onFilterChange}
-            onOpenItemMenu={onOpenItemMenu}
-            onMoreClick={onMoreClick}
-          />
-        </TreeView>
-      </AccordionDetails>
+      {error ? (
+        <ApiResponseErrorState error={error} imageUrl={null} />
+      ) : (
+        <AccordionDetails className={clsx(classes.accordionDetails, props.classes?.body)}>
+          <TreeView className={classes.root} expanded={expandedNodes} disableSelection>
+            <PathNavigatorTreeItem
+              node={rootNode}
+              itemsByPath={itemsByPath}
+              keywordByPath={keywordByPath}
+              totalByPath={totalByPath}
+              childrenByParentPath={childrenByParentPath}
+              onIconClick={onIconClick}
+              onLabelClick={onLabelClick}
+              onFilterChange={onFilterChange}
+              onOpenItemMenu={onOpenItemMenu}
+              onMoreClick={onMoreClick}
+            />
+          </TreeView>
+        </AccordionDetails>
+      )}
     </Accordion>
   );
 }
