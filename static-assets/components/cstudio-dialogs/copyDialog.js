@@ -25,6 +25,9 @@ CStudioAuthoring.Dialogs.DialogCopy =
   (function () {
     // Internal variables
     var context, item, flatMap, dialog;
+    const i18n = CrafterCMSNext.i18n,
+      formatMessage = i18n.intl.formatMessage,
+      messages = i18n.messages.copyDialogMessages;
 
     // Internal functions
     function getDialogContent(content) {
@@ -35,6 +38,7 @@ CStudioAuthoring.Dialogs.DialogCopy =
 
       content.item.parent = null;
       popupHTML = [
+        `<div style="padding: 5px 20px 0"><a href="#" data-selected="true" id="selectDeselectAll">${formatMessage(messages.deselectAll)}</a></div>`,
         '<div id="copyCheckBoxItems" style="padding-left:5px;">',
         traverse(content.item, flatMap, aURIs),
         '</div>'
@@ -120,7 +124,7 @@ CStudioAuthoring.Dialogs.DialogCopy =
 
         while (selectedItem.parent != null) {
           selectedItem = selectedItem.parent;
-          inputElement = YDom.get(selectedItem.uri);
+          inputElement = YDom.get(encodeURIComponent(selectedItem.uri));
           inputElement.checked = checked;
         }
       }
@@ -136,7 +140,7 @@ CStudioAuthoring.Dialogs.DialogCopy =
         }
         for (var i = 0; i < children.length; i++) {
           uri = children[i]['uri'];
-          inputChild = YDom.get(uri);
+          inputChild = YDom.get(encodeURIComponent(uri));
           inputChild.checked = checked;
           selectedChild = flatMap[uri];
           selectChildren(selectedChild, checked);
@@ -145,6 +149,7 @@ CStudioAuthoring.Dialogs.DialogCopy =
 
       if (id === item.uri) {
         matchedEl.checked = true;
+        updateCopyButtonDisableState(false);
         return;
       }
 
@@ -154,6 +159,33 @@ CStudioAuthoring.Dialogs.DialogCopy =
         selectParents(selectedItem, true);
       } else {
         selectChildren(selectedItem, false);
+      }
+
+      const someChecked = $('.copyContent #copyCheckBoxItems input').toArray().some((checkbox) => checkbox.checked);
+      updateCopyButtonDisableState(!someChecked);
+    }
+
+    function updateSelectDeselectAllAction(select) {
+      const $button = $('#selectDeselectAll');
+      $button.data('selected', select);
+      $button.text(select ? formatMessage(messages.deselectAll) : formatMessage(messages.selectAll));
+    }
+
+    function onSelectDeselectAll(event) {
+      const $el = $(event.target);
+      const select = !$el.data('selected');
+      $('.copyContent #copyCheckBoxItems input').each((index, element) => {
+        $(element).prop('checked', select);
+      });
+      updateCopyButtonDisableState(!select);
+      updateSelectDeselectAllAction(select);
+    }
+
+    function updateCopyButtonDisableState(disable) {
+      if (disable) {
+        $('#copyButton').addClass('disabled');
+      } else {
+        $('#copyButton').removeClass('disabled');
       }
     }
 
@@ -333,6 +365,7 @@ CStudioAuthoring.Dialogs.DialogCopy =
       }
       YAHOO.util.Event.addListener('copyButton', 'click', onCopySubmit);
       YAHOO.util.Event.addListener('copyCancelButton', 'click', closeDialog);
+      YAHOO.util.Event.addListener('selectDeselectAll', 'click', onSelectDeselectAll);
 
       //set focus on Copy button
       var copyButton = YDom.get('copyButton');
