@@ -38,7 +38,7 @@ import {
   pathNavigatorSetLocaleCode,
   pathNavigatorUpdate
 } from '../../state/actions/pathNavigator';
-import { completeDetailedItem } from '../../state/actions/content';
+import { completeDetailedItem, fetchSandboxItem } from '../../state/actions/content';
 import { showEditDialog, showItemMegaMenu, showPreviewDialog } from '../../state/actions/dialogs';
 import { getEditorMode, isEditableViaFormEditor, isFolder, isImage, isNavigable, isPreviewable } from './utils';
 import { StateStylingProps } from '../../models/UiConfig';
@@ -120,7 +120,6 @@ export interface PathNavigatorStateProps {
   itemsInPath: string[];
   breadcrumb: string[];
   selectedItems: string[];
-  leaves: string[];
   total: number; // Number of items in the current path
   limit: number;
   offset: number;
@@ -269,14 +268,8 @@ export function PathNavigator(props: PathNavigatorProps) {
                 pathNavigatorRefresh({ id })
               ])
             );
-          }
-          if (state.leaves.some((path) => withoutIndex(path) === parentPath)) {
-            dispatch(
-              pathNavigatorUpdate({
-                id,
-                leaves: state.leaves.filter((path) => withoutIndex(path) !== parentPath)
-              })
-            );
+          } else if (getParentPath(parentPath) === withoutIndex(state.currentPath)) {
+            dispatch(fetchSandboxItem({ path: parentPath, force: true }));
           }
           break;
         }
@@ -285,14 +278,6 @@ export function PathNavigator(props: PathNavigatorProps) {
           if (parentPath === withoutIndex(state.currentPath)) {
             dispatch(pathNavigatorRefresh({ id }));
           }
-          if (state.leaves.some((path) => withoutIndex(path) === parentPath)) {
-            dispatch(
-              pathNavigatorUpdate({
-                id,
-                leaves: state.leaves.filter((path) => withoutIndex(path) !== parentPath)
-              })
-            );
-          }
           break;
         }
         case folderCreated.type:
@@ -300,14 +285,8 @@ export function PathNavigator(props: PathNavigatorProps) {
           if (type === folderCreated.type || payload.clipboard.type === 'COPY') {
             if (withoutIndex(payload.target) === withoutIndex(state.currentPath)) {
               dispatch(pathNavigatorRefresh({ id }));
-            }
-            if (state.leaves.some((path) => withoutIndex(path) === withoutIndex(payload.target))) {
-              dispatch(
-                pathNavigatorUpdate({
-                  id,
-                  leaves: state.leaves.filter((path) => withoutIndex(path) !== withoutIndex(payload.target))
-                })
-              );
+            } else if (getParentPath(payload.target) === withoutIndex(state.currentPath)) {
+              dispatch(fetchSandboxItem({ path: withoutIndex(payload.target), force: true }));
             }
           }
           if (type === itemsPasted.type && payload.clipboard.type === 'CUT') {

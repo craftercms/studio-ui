@@ -54,8 +54,8 @@ export default [
       withLatestFrom(state$),
       tap(([{ type, payload }, state]) => {
         if (payload) {
-          const uuid = state.sites.byId[state.sites.active].uuid;
-          setStoredPreviewToolsPanelPage(uuid, state.user.username, payload);
+          const uuid = state.sites.byId?.[state.sites.active].uuid;
+          uuid && setStoredPreviewToolsPanelPage(uuid, state.user.username, payload);
         }
       }),
       ignoreElements()
@@ -67,8 +67,8 @@ export default [
       ofType(popToolsPanelPage.type),
       withLatestFrom(state$),
       tap(([, state]) => {
-        const uuid = state.sites.byId[state.sites.active].uuid;
-        if (state.preview.toolsPanelPageStack.length) {
+        const uuid = state.sites.byId?.[state.sites.active].uuid;
+        if (state.preview.toolsPanelPageStack.length && uuid) {
           setStoredPreviewToolsPanelPage(
             uuid,
             state.user.username,
@@ -128,8 +128,8 @@ export default [
       ofType(setClipboard.type),
       withLatestFrom(state$),
       tap(([{ payload }, state]) => {
-        const uuid = state.sites.byId[state.sites.active].uuid;
-        setStoredClipboard(uuid, state.user.username, payload);
+        const uuid = state.sites.byId?.[state.sites.active].uuid;
+        uuid && setStoredClipboard(uuid, state.user.username, payload);
       }),
       ignoreElements()
     ),
@@ -162,8 +162,8 @@ export default [
       ofType(openToolsPanel.type, closeToolsPanel.type),
       withLatestFrom(state$),
       tap(([, state]) => {
-        const uuid = state.sites.byId[state.sites.active].uuid;
-        setStoredShowToolsPanel(uuid, state.user.username, state.preview.showToolsPanel);
+        const uuid = state.sites.byId?.[state.sites.active]?.uuid;
+        uuid && setStoredShowToolsPanel(uuid, state.user.username, state.preview.showToolsPanel);
       }),
       ignoreElements()
     ),
@@ -175,8 +175,8 @@ export default [
       withLatestFrom(state$),
       tap(([{ payload }, state]) => {
         if (payload) {
-          const uuid = state.sites.byId[state.sites.active].uuid;
-          setStoredICEToolsPanelPage(uuid, state.user.username, payload);
+          const uuid = state.sites.byId?.[state.sites.active].uuid;
+          uuid && setStoredICEToolsPanelPage(uuid, state.user.username, payload);
         }
       }),
       ignoreElements()
@@ -188,9 +188,9 @@ export default [
       ofType(popIcePanelPage.type),
       withLatestFrom(state$),
       tap(([, state]) => {
-        const uuid = state.sites.byId[state.sites.active].uuid;
+        const uuid = state.sites.byId?.[state.sites.active].uuid;
 
-        if (state.preview.icePanelStack.length) {
+        if (state.preview.icePanelStack.length && uuid) {
           setStoredICEToolsPanelPage(
             uuid,
             state.user.username,

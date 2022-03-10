@@ -61,7 +61,7 @@ export function EnhancedDialog(props: EnhancedDialogProps) {
   const onClose = useOnClose({
     onClose(e, reason) {
       if (hasPendingChanges) {
-        onWithPendingChangesCloseRequest(e, reason);
+        onWithPendingChangesCloseRequest?.(e, reason);
       } else {
         dialogProps.onClose?.(e, reason);
       }
