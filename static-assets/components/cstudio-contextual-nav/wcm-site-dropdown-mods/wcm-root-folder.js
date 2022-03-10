@@ -1093,7 +1093,7 @@
           if (el) {
             num = el.getAttribute('num');
             if (!num) {
-              while ((el = el.parentElement) && !el.hasAttribute('num'));
+              while ((el = el.parentElement) && !el.hasAttribute('num')) {}
             }
             try {
               num = el.getAttribute('num') ? el.getAttribute('num') : null;
