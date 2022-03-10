@@ -569,7 +569,7 @@ CStudioAuthoring.Messages.registerBundle('forms', 'de', {
   control: 'Steuerung: ',
   datasource: 'Datenquelle: ',
   propertyMessage: ' Eigenschaft fehlt.',
-  propertiesMessage: ' Eigenschaften fehlen.',
+  propertiesMessage: ' Eigenschaften fehlen.'
 });
 
 CStudioAuthoring.Messages.registerBundle('search', 'de', {
