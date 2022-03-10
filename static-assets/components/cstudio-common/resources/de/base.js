@@ -467,6 +467,7 @@ CStudioAuthoring.Messages.registerBundle('forms', 'de', {
 
   itemsForPublish: 'Zu veröffentlichende Elemente',
   selectAll: 'Wählen Sie Alle',
+  deselectAll: 'Alle abwählen',
   hardDependencies: 'Harte Abhängigkeiten',
   submissionMandatory: 'Vorlage obligatorisch',
   softDependencies: 'Weiche Abhängigkeiten',
@@ -568,7 +569,7 @@ CStudioAuthoring.Messages.registerBundle('forms', 'de', {
   control: 'Steuerung: ',
   datasource: 'Datenquelle: ',
   propertyMessage: ' Eigenschaft fehlt.',
-  propertiesMessage: ' Eigenschaften fehlen.'
+  propertiesMessage: ' Eigenschaften fehlen.',
 });
 
 CStudioAuthoring.Messages.registerBundle('search', 'de', {

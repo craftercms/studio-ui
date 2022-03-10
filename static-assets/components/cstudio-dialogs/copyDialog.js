@@ -25,9 +25,6 @@ CStudioAuthoring.Dialogs.DialogCopy =
   (function () {
     // Internal variables
     var context, item, flatMap, dialog;
-    const i18n = CrafterCMSNext.i18n,
-      formatMessage = i18n.intl.formatMessage,
-      messages = i18n.messages.copyDialogMessages;
 
     // Internal functions
     function getDialogContent(content) {
@@ -38,7 +35,7 @@ CStudioAuthoring.Dialogs.DialogCopy =
 
       content.item.parent = null;
       popupHTML = [
-        `<div class="copy-dialog-select-action"><a href="#" data-selected="true" id="selectDeselectAll">${formatMessage(messages.deselectAll)}</a></div>`,
+        `<div class="copy-dialog-select-action"><a href="#" data-selected="true" id="selectDeselectAll">${CMgs.format(formsLangBundle, 'deselectAll')}</a></div>`,
         '<div id="copyCheckBoxItems" style="padding-left:5px;">',
         traverse(content.item, flatMap, aURIs),
         '</div>'
@@ -168,7 +165,7 @@ CStudioAuthoring.Dialogs.DialogCopy =
     function updateSelectDeselectAllAction(select) {
       const $button = $('#selectDeselectAll');
       $button.data('selected', select);
-      $button.text(select ? formatMessage(messages.deselectAll) : formatMessage(messages.selectAll));
+      $button.text(select ? CMgs.format(formsLangBundle, 'deselectAll') : CMgs.format(formsLangBundle, 'selectAll'));
     }
 
     function onSelectDeselectAll(event) {

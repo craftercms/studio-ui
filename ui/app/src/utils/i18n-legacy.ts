@@ -950,13 +950,3 @@ export const controlsCommonMessages = defineMessages({
   }
 });
 
-export const copyDialogMessages = defineMessages({
-  selectAll: {
-    id: 'copyDialogMessages.selectAll',
-    defaultMessage: 'Select All'
-  },
-  deselectAll: {
-    id: 'copyDialogMessages.deselectAll',
-    defaultMessage: 'Deselect All'
-  }
-});
