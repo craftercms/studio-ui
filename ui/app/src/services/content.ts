@@ -387,7 +387,13 @@ export function duplicateItem(
   fieldId: string,
   targetIndex: string | number,
   path: string
-): Observable<any> {
+): Observable<{
+  updatedDocument: XMLDocument;
+  newItem: {
+    modelId: string;
+    path: string;
+  };
+}> {
   return fetchContentDOM(site, path).pipe(
     switchMap((doc) => {
       const documentModelId = doc.querySelector(':scope > objectId').innerHTML.trim();
@@ -403,8 +409,14 @@ export function duplicateItem(
       const field: Element = extractNode(parentElement, fieldId, removeLastPiece(`${targetIndex}`));
 
       const newItemData = updateItemId(item);
+      newItemData.path = newItemData.path ?? path;
       updateModifiedDateElement(parentElement);
       field.appendChild(item);
+
+      const returnValue = {
+        updatedDocument: doc,
+        newItem: newItemData
+      };
 
       if (isEmbedded) {
         return post(
@@ -415,12 +427,12 @@ export function duplicateItem(
             fileName: getInnerHtml(doc.querySelector(':scope > file-name'))
           }),
           serialize(doc)
-        ).pipe(mapTo({ updatedDocument: doc }));
+        ).pipe(mapTo(returnValue));
       } else {
         return fetchContentDOM(site, itemPath).pipe(
           switchMap((componentDoc) => {
             // update new shared component info  (ids/date)
-            updateComponentId(componentDoc.documentElement, newItemData.id);
+            updateComponentId(componentDoc.documentElement, newItemData.modelId);
             updateModifiedDateElement(componentDoc.documentElement);
 
             return forkJoin([
@@ -442,7 +454,7 @@ export function duplicateItem(
                 }),
                 serialize(componentDoc)
               )
-            ]).pipe(mapTo({ updatedDocument: doc }));
+            ]).pipe(mapTo(returnValue));
           })
         );
       }
@@ -706,7 +718,7 @@ interface AnyObject {
 // Updates a component's parent id (the item that contains the component).
 // If the component is embedded, update its ids too. When shared it needs to be done separately because the item
 // needs to be fetched.
-function updateItemId(item: Element, skipShared: boolean = false): { id: string; path?: string } {
+function updateItemId(item: Element, skipShared: boolean = false): { modelId: string; path: string } {
   const component = item.querySelector(':scope > component');
   const key = item.querySelector(':scope > key');
   const id = uuid();
@@ -715,7 +727,8 @@ function updateItemId(item: Element, skipShared: boolean = false): { id: string;
     updateComponentId(component, id);
     key.innerHTML = id;
     return {
-      id
+      modelId: id,
+      path: null
     };
   } else if (!skipShared) {
     // shared component
@@ -727,7 +740,7 @@ function updateItemId(item: Element, skipShared: boolean = false): { id: string;
     key.innerHTML = newPath;
     include.innerHTML = newPath;
     return {
-      id,
+      modelId: id,
       path: basePath
     };
   }

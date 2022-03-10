@@ -28,6 +28,7 @@ import {
   contentTypesResponse,
   deleteItemOperation,
   duplicateItemOperation,
+  duplicateItemOperationComplete,
   insertComponentOperation,
   insertInstanceOperation,
   insertItemOperation,
@@ -43,6 +44,7 @@ import { parseDescriptor, preParseSearchResults } from '@craftercms/content';
 import { crafterConf } from '@craftercms/classes';
 import { getDefaultValue } from '@craftercms/studio-ui/utils/contentType';
 import { ModelHierarchyDescriptor, ModelHierarchyMap, modelsToLookup } from '@craftercms/studio-ui/utils/content';
+import { message$ } from './utils/communicator';
 
 // if (process.env.NODE_ENV === 'development') {
 // TODO: Notice
@@ -338,6 +340,22 @@ export function updateField(modelId: string, fieldId: string, index: string | nu
 
 export function duplicateItem(modelId: string, fieldId: string, index: number | string): void {
   const models = getCachedModels();
+
+  message$
+    .pipe(
+      filter((e) => e.type === duplicateItemOperationComplete.type),
+      take(1)
+    )
+    .subscribe({
+      next({ payload }) {
+        const modelId = payload.model.craftercms.id;
+        // Update the model cache
+        models$.next({
+          ...models,
+          [modelId]: payload.model
+        });
+      }
+    });
 
   post(
     duplicateItemOperation({

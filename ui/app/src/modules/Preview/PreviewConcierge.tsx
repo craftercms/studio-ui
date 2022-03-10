@@ -662,16 +662,18 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         case duplicateItemOperation.type: {
           const { modelId, parentModelId, fieldId, index } = payload;
           const path = models[parentModelId ?? modelId].craftercms.path;
-          duplicateItem(siteId, modelId, fieldId, index, path).subscribe({
-            next() {
-              hostToGuest$.next(duplicateItemOperationComplete());
-              enqueueSnackbar(formatMessage(guestMessages.duplicateItemOperationComplete));
-            },
-            error() {
-              hostToGuest$.next(duplicateItemOperationFailed());
-              enqueueSnackbar(formatMessage(guestMessages.duplicateItemOperationFailed));
-            }
-          });
+          duplicateItem(siteId, modelId, fieldId, index, path)
+            .pipe(switchMap(({ newItem }) => fetchContentInstanceDescriptor(siteId, newItem.path, { flatten: true })))
+            .subscribe({
+              next({ model }) {
+                hostToGuest$.next(duplicateItemOperationComplete({ model }));
+                enqueueSnackbar(formatMessage(guestMessages.duplicateItemOperationComplete));
+              },
+              error() {
+                hostToGuest$.next(duplicateItemOperationFailed());
+                enqueueSnackbar(formatMessage(guestMessages.duplicateItemOperationFailed));
+              }
+            });
           break;
         }
         case moveItemOperation.type: {
