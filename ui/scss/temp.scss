@@ -2648,6 +2648,10 @@ span.acn-canned-search {
 .copyContent .copy-content-container {
   width: auto;
   border-bottom: 1px solid #7F9BD9;
+
+  .copy-dialog-select-action {
+    padding: 5px 20px 0;
+  }
 }
 
 .copy-content-container h5 {

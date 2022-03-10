@@ -38,7 +38,7 @@ CStudioAuthoring.Dialogs.DialogCopy =
 
       content.item.parent = null;
       popupHTML = [
-        `<div style="padding: 5px 20px 0"><a href="#" data-selected="true" id="selectDeselectAll">${formatMessage(messages.deselectAll)}</a></div>`,
+        `<div class="copy-dialog-select-action"><a href="#" data-selected="true" id="selectDeselectAll">${formatMessage(messages.deselectAll)}</a></div>`,
         '<div id="copyCheckBoxItems" style="padding-left:5px;">',
         traverse(content.item, flatMap, aURIs),
         '</div>'
