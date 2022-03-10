@@ -199,7 +199,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
               if (notNullOrUndefined(dragContext.targetIndex)) {
                 post(instanceDragEnded());
                 moveComponent(dragContext);
-              return of(computedDragEnd());
+                return of(computedDragEnd());
               }
               break;
             }
