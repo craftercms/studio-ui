@@ -19,6 +19,7 @@ import GlobalState from '../../../models/GlobalState';
 import {
   closeHistoryDialog,
   historyDialogClosed,
+  historyDialogUpdate,
   showCompareVersionsDialog,
   showHistoryDialog,
   showViewVersionDialog
@@ -52,5 +53,9 @@ export default createReducer<GlobalState['dialogs']['history']>(initialState, {
   [showCompareVersionsDialog.type]: (state) => ({
     ...state,
     open: false
+  }),
+  [historyDialogUpdate.type]: (state, { payload }) => ({
+    ...state,
+    ...payload
   })
 });

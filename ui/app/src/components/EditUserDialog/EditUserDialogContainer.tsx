@@ -26,6 +26,7 @@ import { EditUserDialogUI } from './EditUserDialogUI';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import { useSitesBranch } from '../../hooks/useSitesBranch';
 import { EditUserDialogContainerProps } from './utils';
+import useUpdateRefs from '../../hooks/useUpdateRefs';
 
 const translations = defineMessages({
   userDeleted: {
@@ -67,6 +68,7 @@ export function EditUserDialogContainer(props: EditUserDialogContainerProps) {
   const [rolesBySite, setRolesBySite] = useState<LookupTable<string[]>>({});
   const [dirty, setDirty] = useState(false);
   const [openResetPassword, setOpenResetPassword] = useState(false);
+  const fnRefs = useUpdateRefs({ onSubmittingAndOrPendingChange, onUserEdited });
 
   const editMode = !props.user?.externallyManaged;
 
@@ -101,31 +103,31 @@ export function EditUserDialogContainer(props: EditUserDialogContainerProps) {
   const onEnableChange = (value) => {
     setUser(value);
     if (value.enabled) {
-      enable(user.username).subscribe(
-        () => {
+      enable(user.username).subscribe({
+        next() {
           dispatch(
             showSystemNotification({
               message: formatMessage(translations.userEnabled)
             })
           );
         },
-        ({ response: { response } }) => {
+        error({ response: { response } }) {
           dispatch(showErrorDialog({ error: response }));
         }
-      );
+      });
     } else {
-      disable(user.username).subscribe(
-        () => {
+      disable(user.username).subscribe({
+        next() {
           dispatch(
             showSystemNotification({
               message: formatMessage(translations.userDisabled)
             })
           );
         },
-        ({ response: { response } }) => {
+        error({ response: { response } }) {
           dispatch(showErrorDialog({ error: response }));
         }
-      );
+      });
     }
   };
 
@@ -136,8 +138,8 @@ export function EditUserDialogContainer(props: EditUserDialogContainerProps) {
     onSubmittingAndOrPendingChange({
       isSubmitting: true
     });
-    update(user).subscribe(
-      () => {
+    update(user).subscribe({
+      next() {
         dispatch(
           showSystemNotification({
             message: formatMessage(translations.userUpdated)
@@ -145,32 +147,35 @@ export function EditUserDialogContainer(props: EditUserDialogContainerProps) {
         );
         setDirty(false);
         setLastSavedUser(user);
-        onUserEdited();
-        onSubmittingAndOrPendingChange({
+        fnRefs.current.onUserEdited();
+        fnRefs.current.onSubmittingAndOrPendingChange({
           isSubmitting: false
         });
       },
-      ({ response: { response } }) => {
+      error({ response: { response } }) {
         dispatch(showErrorDialog({ error: response }));
+        fnRefs.current.onSubmittingAndOrPendingChange({
+          isSubmitting: false
+        });
       }
-    );
+    });
   };
 
   const onDelete = (username: string) => {
-    trash(username).subscribe(
-      () => {
+    trash(username).subscribe({
+      next() {
         onClose(null, null);
         dispatch(
           showSystemNotification({
             message: formatMessage(translations.userDeleted)
           })
         );
-        onUserEdited();
+        fnRefs.current.onUserEdited();
       },
-      ({ response: { response } }) => {
+      error({ response: { response } }) {
         dispatch(showErrorDialog({ error: response }));
       }
-    );
+    });
   };
 
   const onCloseResetPasswordDialog = () => {

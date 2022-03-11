@@ -56,7 +56,7 @@ export function PublishingStatusDialogContainer(props: PublishingStatusDialogCon
     <>
       <DialogHeader
         title={formatMessage(publishingStatusMessages.publishingStatus)}
-        onCloseButtonClick={(e) => onClose(e, null)}
+        onCloseButtonClick={onClose}
         rightActions={[
           onUnlock && {
             icon: { id: '@mui/icons-material/LockOpenRounded' },

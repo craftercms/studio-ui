@@ -292,7 +292,6 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
           <ItemList
             classes={{ root: classes.childrenList }}
             isSelectMode={false}
-            leaves={state.leaves}
             locale={state.localeCode}
             resource={itemsResource}
             onSelectItem={onSelectItem}

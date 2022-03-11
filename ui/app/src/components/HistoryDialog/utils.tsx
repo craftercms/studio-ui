@@ -49,6 +49,7 @@ export interface PaginationProps {
   page: number;
   rowsPerPage: number;
   onPageChanged(nextPage: number): void;
+  onRowsPerPageChange?(nextRowsPerPage: number, e: React.ChangeEvent): void;
 }
 
 export const menuOptions: LookupTable<{ id: string; label: MessageDescriptor; values?: any }> = {

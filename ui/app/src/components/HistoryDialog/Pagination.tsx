@@ -26,7 +26,7 @@ import { PaginationProps } from './utils';
 export function Pagination(props: PaginationProps) {
   const classes = paginationStyles({});
   const { formatMessage } = useIntl();
-  const { count, page, rowsPerPage } = props;
+  const { count, page, rowsPerPage, onRowsPerPageChange } = props;
   return (
     <TablePagination
       className={classes.pagination}
@@ -43,7 +43,12 @@ export function Pagination(props: PaginationProps) {
       nextIconButtonProps={{
         'aria-label': formatMessage(translations.nextPage)
       }}
-      onPageChange={(e: React.MouseEvent<HTMLButtonElement>, nextPage: number) => props.onPageChanged(nextPage)}
+      onPageChange={(e: React.MouseEvent<HTMLButtonElement>, nextPage: number) => {
+        props.onPageChanged(nextPage);
+      }}
+      onRowsPerPageChange={(e) => {
+        onRowsPerPageChange(parseInt(e.target.value), e);
+      }}
     />
   );
 }

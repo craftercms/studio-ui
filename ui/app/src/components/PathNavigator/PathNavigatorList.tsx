@@ -24,7 +24,6 @@ export interface NavProps {
   locale?: string;
   resource: Resource<DetailedItem[]>;
   isSelectMode?: boolean;
-  leaves: string[];
   computeActiveItems?: (items: DetailedItem[]) => string[];
   showItemNavigateToButton?: boolean;
   classes?: Partial<Record<'root', string>>;
@@ -47,7 +46,6 @@ function PathNavigatorList(props: NavProps) {
     onSelectItem,
     onOpenItemMenu,
     onItemClicked,
-    leaves = [],
     showItemNavigateToButton
   } = props;
   const items = resource.read();
@@ -58,7 +56,6 @@ function PathNavigatorList(props: NavProps) {
         <NavItem
           item={item}
           key={item.id}
-          isLeaf={leaves.includes(item.path)}
           isActive={active.includes(item.path)}
           locale={locale}
           onChangeParent={onPathSelected}

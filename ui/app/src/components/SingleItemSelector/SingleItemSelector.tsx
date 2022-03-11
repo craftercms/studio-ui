@@ -107,7 +107,6 @@ interface SingleItemSelectorState extends PaginationOptions {
   isFetching: boolean;
   error: ApiResponse;
   items: string[];
-  leaves: string[];
   rootPath: string;
   currentPath: string;
   keywords: string;
@@ -123,7 +122,6 @@ const init: (props: SingleItemSelectorProps) => SingleItemSelectorState = (props
   isFetching: null,
   error: null,
   items: [],
-  leaves: [],
   keywords: '',
   pageNumber: 0,
   breadcrumb: [],
@@ -163,13 +161,12 @@ const reducer: SingleItemSelectorReducer = (state, { type, payload }) => {
       };
     }
     case fetchChildrenByPathComplete.type: {
-      const { currentPath, rootPath, leaves, byId } = state;
+      const { currentPath, rootPath, byId } = state;
       const { children, parent } = payload;
       if (children.length === 0 && withoutIndex(currentPath) !== withoutIndex(rootPath)) {
         return {
           ...state,
           currentPath: getNextPath(currentPath, byId),
-          leaves: leaves.concat(currentPath),
           total: children.total,
           isFetching: false
         };
@@ -463,7 +460,6 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
         )}
         <SuspenseWithEmptyState resource={itemsResource}>
           <PathNavigatorList
-            leaves={state?.leaves ?? []}
             locale={'en_US'}
             resource={itemsResource}
             onPathSelected={onPathSelected}

@@ -63,7 +63,7 @@ export function GuestProxy() {
   // Initial registration of elements.
   useEffect(() => {
     // Registers a single element
-    const registerElement = (element: Element): void => {
+    const registerElement = (element: HTMLElement): void => {
       let path = element.getAttribute('data-craftercms-model-path');
       let modelId = element.getAttribute('data-craftercms-model-id');
       let fieldId = element.getAttribute('data-craftercms-field-id');
@@ -94,7 +94,7 @@ export function GuestProxy() {
     };
 
     const updateElementRegistrations = (
-      collection: Element[],
+      collection: HTMLElement[],
       type: string,
       newIndex: string | number,
       oldIndex?: string | number,
@@ -193,7 +193,7 @@ export function GuestProxy() {
     zip(models$, contentTypes$, paths$)
       .pipe(take(1))
       .subscribe(() => {
-        document.querySelectorAll('[data-craftercms-model-id]').forEach(registerElement);
+        document.querySelectorAll<HTMLElement>('[data-craftercms-model-id]').forEach(registerElement);
       });
 
     const handler: JQuery.EventHandlerBase<any, any> = (e: Event): void => {

@@ -104,7 +104,7 @@ const useStyles = makeStyles((theme) =>
       alignItems: 'center',
       minHeight: '23.5px',
       '&:hover': {
-        backgroundColor: theme.palette.grey['A200']
+        backgroundColor: theme.palette.mode === 'dark' ? theme.palette.action.hover : theme.palette.grey['A200']
       }
     },
     filterSection: {

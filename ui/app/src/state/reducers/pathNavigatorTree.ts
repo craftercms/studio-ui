@@ -41,7 +41,7 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
   {
     [pathNavigatorTreeInit.type]: (
       state,
-      { payload: { id, path, collapsed = false, limit, expanded = [], keywordByPath = {}, excludes } }
+      { payload: { id, path, collapsed = true, limit, expanded = [], keywordByPath = {}, excludes } }
     ) => {
       return {
         ...state,
