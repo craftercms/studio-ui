@@ -68,7 +68,7 @@ import {
 } from '../../state/actions/system';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { useActiveSite } from '../../hooks/useActiveSite';
-import { fetchDetailedItem } from '../../services/content';
+import { fetchSandboxItem } from '../../services/content';
 import { ApiResponse } from '../../models';
 
 export interface PathNavigatorTreeProps {
@@ -200,7 +200,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   }, [siteId, user.username, id, dispatch, rootPath, excludes, limit, state, uiConfig.currentSite, storedState]);
 
   useEffect(() => {
-    fetchDetailedItem(siteId, rootPath).subscribe({
+    fetchSandboxItem(siteId, rootPath).subscribe({
       next() {},
       error({ response }) {
         setError(response.response);
