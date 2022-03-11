@@ -144,9 +144,7 @@ function addToPasteItem(pasteItem: PasteItem, path: string): void {
     });
   } else if (pasteItem.path !== path) {
     // neither root nor direct children - look in which of the children the item belongs to
-    const pasteItemParent = pasteItem.children.filter((item) => {
-      return withoutIndex(path).includes(withoutIndex(item.path));
-    })[0]; // will always be only one
+    const pasteItemParent = pasteItem.children.find((item) => withoutIndex(path).includes(withoutIndex(item.path)));
 
     // add item to the children
     addToPasteItem(pasteItemParent, path);
