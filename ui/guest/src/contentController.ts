@@ -340,23 +340,6 @@ export function updateField(modelId: string, fieldId: string, index: string | nu
 
 export function duplicateItem(modelId: string, fieldId: string, index: number | string): void {
   const models = getCachedModels();
-
-  message$
-    .pipe(
-      filter((e) => e.type === duplicateItemOperationComplete.type),
-      take(1)
-    )
-    .subscribe({
-      next({ payload }) {
-        const modelId = payload.model.craftercms.id;
-        // Update the model cache
-        models$.next({
-          ...models,
-          [modelId]: payload.model
-        });
-      }
-    });
-
   post(
     duplicateItemOperation({
       modelId,

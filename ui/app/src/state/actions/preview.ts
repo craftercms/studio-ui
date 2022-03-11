@@ -92,9 +92,7 @@ export const insertItemOperationFailed = /*#__PURE__*/ createAction('INSERT_ITEM
 export const duplicateItemOperation = /*#__PURE__*/ createAction<{ index: string | number } & CommonOperationProps>(
   'DUPLICATE_ITEM_OPERATION'
 );
-export const duplicateItemOperationComplete = /*#__PURE__*/ createAction<{ model: ContentInstance }>(
-  'DUPLICATE_ITEM_OPERATION_COMPLETE'
-);
+export const duplicateItemOperationComplete = /*#__PURE__*/ createAction('DUPLICATE_ITEM_OPERATION_COMPLETE');
 export const duplicateItemOperationFailed = /*#__PURE__*/ createAction('DUPLICATE_ITEM_OPERATION_FAILED');
 export const moveItemOperation = /*#__PURE__*/ createAction<{
   originalModelId: string;
