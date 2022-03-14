@@ -46,16 +46,14 @@ export type ValidationKeys =
   | 'minValue'
   | 'maxValue'
   | 'dropTargetsNotFound'
-  | 'registerNotFound'
-  | 'itemLocked'
-  | 'outOfSyncContent';
+  | 'registerNotFound';
 
 export type ContentTypeFieldValidations = {
   [key in ValidationKeys]: ContentTypeFieldValidation;
 };
 
 export interface ValidationResult {
-  id: ValidationKeys;
+  id: ValidationKeys | 'outOfSyncContent' | 'itemLocked';
   level: 'required' | 'suggestion' | 'info';
   values?: object;
 }
