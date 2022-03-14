@@ -241,11 +241,7 @@ const issueDescriptorRequest = (props) => {
             modelIdByPath: modelIdByPath,
             hierarchyMap
           }),
-          dispatch(
-            updateItemsByPath({
-              items: sandboxItems
-            })
-          )
+          updateItemsByPath({ items: sandboxItems })
         ])
       );
       hostToGuest$.next({
