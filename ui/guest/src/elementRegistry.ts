@@ -25,7 +25,6 @@ import {
   model$
 } from './contentController';
 import { take } from 'rxjs/operators';
-import * as ContentType from '@craftercms/studio-ui/utils/contentType';
 import * as Model from '@craftercms/studio-ui/utils/model';
 import {
   DropZone,

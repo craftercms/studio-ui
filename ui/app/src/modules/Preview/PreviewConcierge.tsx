@@ -56,6 +56,8 @@ import {
   moveItemOperationComplete,
   moveItemOperationFailed,
   requestEdit,
+  requestWorkflowCancellationDialog,
+  requestWorkflowCancellationDialogOnResult,
   selectForEdit,
   setContentTypeDropTargets,
   setEditModePadding,
@@ -79,6 +81,8 @@ import {
   duplicateItem,
   fetchContentInstance,
   fetchContentInstanceDescriptor,
+  fetchItemsByPath,
+  fetchWorkflowAffectedItems,
   insertComponent,
   insertInstance,
   insertItem,
@@ -103,7 +107,14 @@ import {
   getStoredHighlightModeChoice,
   removeStoredClipboard
 } from '../../utils/state';
-import { fetchSandboxItem, reloadDetailedItem, restoreClipboard } from '../../state/actions/content';
+import {
+  fetchSandboxItem,
+  localItemLock,
+  reloadDetailedItem,
+  restoreClipboard,
+  unlockItem,
+  updateItemsByPath
+} from '../../state/actions/content';
 import EditFormPanel from '../../components/EditFormPanel/EditFormPanel';
 import {
   createModelHierarchyDescriptorMap,
@@ -128,7 +139,11 @@ import { useMount } from '../../hooks/useMount';
 import { usePreviewNavigation } from '../../hooks/usePreviewNavigation';
 import { useActiveSite } from '../../hooks/useActiveSite';
 import { getControllerPath, getPathFromPreviewURL } from '../../utils/path';
-import { showEditDialog } from '../../state/actions/dialogs';
+import {
+  showEditDialog,
+  showWorkflowCancellationDialog,
+  workflowCancellationDialogClosed
+} from '../../state/actions/dialogs';
 import { UNDEFINED } from '../../utils/constants';
 import { useCurrentPreviewItem } from '../../hooks/useCurrentPreviewItem';
 import { useSiteUIConfig } from '../../hooks/useSiteUIConfig';
@@ -170,34 +185,43 @@ const issueDescriptorRequest = (props) => {
       takeUntil(guestToHost$.pipe(filter(({ type }) => [guestCheckIn.type, guestCheckOut.type].includes(type)))),
       switchMap((obj: { model: ContentInstance; modelLookup: LookupTable<ContentInstance> }) => {
         let requests: Array<Observable<ContentInstance>> = [];
+        let sandboxItemPaths = [];
+        Object.values(obj.modelLookup).forEach((model) => {
+          if (model.craftercms.path) {
+            sandboxItemPaths.push(model.craftercms.path);
+          }
+        });
+
         Object.values(obj.model.craftercms.sourceMap).forEach((path) => {
           if (!requestedSourceMapPaths.current[path]) {
             requestedSourceMapPaths.current[path] = true;
             requests.push(fetchContentInstance(site, path, contentTypes));
           }
         });
-        if (requests.length) {
-          return forkJoin(requests).pipe(
-            map((response) => {
-              let lookup = obj.modelLookup;
-              response.forEach((contentInstance) => {
-                lookup = {
-                  ...lookup,
-                  [contentInstance.craftercms.id]: contentInstance
-                };
-              });
-              return {
-                ...obj,
-                modelLookup: lookup
-              };
-            })
-          );
-        } else {
-          return of(obj);
-        }
+
+        return forkJoin({
+          sandboxItems: fetchItemsByPath(site, sandboxItemPaths),
+          models: requests.length
+            ? forkJoin(requests).pipe(
+                map((response) => {
+                  let lookup = obj.modelLookup;
+                  response.forEach((contentInstance) => {
+                    lookup = {
+                      ...lookup,
+                      [contentInstance.craftercms.id]: contentInstance
+                    };
+                  });
+                  return {
+                    ...obj,
+                    modelLookup: lookup
+                  };
+                })
+              )
+            : of(obj)
+        });
       })
     )
-    .subscribe(({ model, modelLookup }) => {
+    .subscribe(({ sandboxItems, models: { model, modelLookup } }) => {
       const normalizedModels = normalizeModelsLookup(modelLookup);
       const hierarchyMap = createModelHierarchyDescriptorMap(normalizedModels, contentTypes);
       const normalizedModel = normalizedModels[model.craftercms.id];
@@ -208,13 +232,17 @@ const issueDescriptorRequest = (props) => {
           modelIdByPath[model.craftercms.path] = model.craftercms.id;
         }
       });
+
       dispatch(
-        completeAction({
-          model: normalizedModel,
-          modelLookup: normalizedModels,
-          modelIdByPath: modelIdByPath,
-          hierarchyMap
-        })
+        batchActions([
+          completeAction({
+            model: normalizedModel,
+            modelLookup: normalizedModels,
+            modelIdByPath: modelIdByPath,
+            hierarchyMap
+          }),
+          updateItemsByPath({ items: sandboxItems })
+        ])
       );
       hostToGuest$.next({
         type: 'FETCH_GUEST_MODEL_COMPLETE',
@@ -223,7 +251,8 @@ const issueDescriptorRequest = (props) => {
           model: normalizedModel,
           modelLookup: normalizedModels,
           hierarchyMap,
-          modelIdByPath: modelIdByPath
+          modelIdByPath: modelIdByPath,
+          sandboxItems
         }
       });
     });
@@ -269,6 +298,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   const upToDateRefs = useUpdateRefs({
     guest,
     models,
+    user,
     siteId,
     dispatch,
     guestBase,
@@ -451,7 +481,10 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
             getHostToGuestBus().next(
               hostCheckIn({
                 editMode: false,
+                username: upToDateRefs.current.user.username,
                 highlightMode: upToDateRefs.current.highlightMode,
+                authoringBase: upToDateRefs.current.authoringBase,
+                site: upToDateRefs.current.siteId,
                 editModePadding: upToDateRefs.current.editModePadding,
                 rteConfig: upToDateRefs.current.rteConfig ?? {}
               })
@@ -548,6 +581,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
             error(error) {
               console.error(`${type} failed`, error);
               hostToHost$.next(sortItemOperationFailed());
+              // If write operation fails the items remains locked, so we need to dispatch unlockItem
+              dispatch(unlockItem({ path }));
               enqueueSnackbar(formatMessage(guestMessages.sortOperationFailed));
             }
           });
@@ -594,6 +629,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
             error(error) {
               console.error(`${type} failed`, error);
               hostToGuest$.next(insertOperationFailed());
+              // If write operation fails the items remains locked, so we need to dispatch unlockItem
+              dispatch(unlockItem({ path }));
               enqueueSnackbar(formatMessage(guestMessages.insertOperationFailed));
             }
           });
@@ -639,6 +676,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
             error(error) {
               console.error(`${type} failed`, error);
               hostToGuest$.next(insertOperationFailed());
+              // If write operation fails the items remains locked, so we need to dispatch unlockItem
+              dispatch(unlockItem({ path }));
               enqueueSnackbar(formatMessage(guestMessages.insertOperationFailed));
             }
           });
@@ -654,6 +693,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
             },
             error() {
               hostToGuest$.next(insertItemOperationFailed());
+              // If write operation fails the items remains locked, so we need to dispatch unlockItem
+              dispatch(unlockItem({ path }));
               enqueueSnackbar(formatMessage(guestMessages.insertItemOperationFailed));
             }
           });
@@ -669,6 +710,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
             },
             error() {
               hostToGuest$.next(duplicateItemOperationFailed());
+              // If write operation fails the items remains locked, so we need to dispatch unlockItem
+              dispatch(unlockItem({ path }));
               enqueueSnackbar(formatMessage(guestMessages.duplicateItemOperationFailed));
             }
           });
@@ -718,6 +761,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
             error(error) {
               console.error(`${type} failed`, error);
               hostToGuest$.next(moveItemOperationFailed());
+              // If write operation fails the items remains locked, so we need to dispatch unlockItem
+              dispatch(batchActions([unlockItem({ path: originPath }), unlockItem({ path: targetPath })]));
               enqueueSnackbar(formatMessage(guestMessages.moveOperationFailed));
             }
           });
@@ -757,6 +802,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
             error: (error) => {
               console.error(`${type} failed`, error);
               hostToHost$.next(deleteItemOperationFailed());
+              // If write operation fails the items remains locked, so we need to dispatch unlockItem
+              dispatch(unlockItem({ path }));
               enqueueSnackbar(formatMessage(guestMessages.deleteOperationFailed));
             }
           });
@@ -925,7 +972,30 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
               })
             );
           }
+          break;
         }
+        case requestWorkflowCancellationDialog.type: {
+          fetchWorkflowAffectedItems(payload.siteId, payload.path).subscribe((items) => {
+            dispatch(
+              showWorkflowCancellationDialog({
+                items,
+                onClosed: batchActions([
+                  workflowCancellationDialogClosed(),
+                  requestWorkflowCancellationDialogOnResult({ type: 'close' })
+                ]),
+                onContinue: requestWorkflowCancellationDialogOnResult({ type: 'continue' })
+              })
+            );
+          });
+          break;
+        }
+        // region actions whitelisted
+        case unlockItem.type:
+        case localItemLock.type: {
+          dispatch(action);
+          break;
+        }
+        // endregion
       }
     });
     return () => {

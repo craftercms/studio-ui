@@ -43,6 +43,7 @@ import { parseDescriptor, preParseSearchResults } from '@craftercms/content';
 import { crafterConf } from '@craftercms/classes';
 import { getDefaultValue } from '@craftercms/studio-ui/utils/contentType';
 import { ModelHierarchyDescriptor, ModelHierarchyMap, modelsToLookup } from '@craftercms/studio-ui/utils/content';
+import { SandboxItem } from '@craftercms/studio-ui/models';
 
 // if (process.env.NODE_ENV === 'development') {
 // TODO: Notice
@@ -74,6 +75,10 @@ const models$ = new BehaviorSubject<LookupTable<ContentInstance>>({
   /* 'modelId': { ...modelData } */
 });
 
+const items$ = new BehaviorSubject<LookupTable<SandboxItem>>({
+  /* 'path': { ...sandboxItem } */
+});
+
 const contentTypes$ = new BehaviorSubject<LookupTable<ContentType>>({
   /* 'contentTypeId': { ...contentTypeData } */
 });
@@ -85,6 +90,7 @@ const notEmpty = (objects) => Object.keys(objects).length > 0;
 const modelsObs$ = models$.pipe(filter(notEmpty));
 const contentTypesObs$ = contentTypes$.pipe(filter(notEmpty));
 const pathsObs$ = paths$.pipe(filter(notEmpty));
+const itemsObs$ = items$.pipe(filter(notEmpty));
 
 export { operationsObs$ as operations$, modelsObs$ as models$, contentTypesObs$ as contentTypes$, pathsObs$ as paths$ };
 
@@ -107,6 +113,14 @@ export function getCachedModel(modelId: string): ContentInstance {
 
 export function getCachedModels(): LookupTable<ContentInstance> {
   return models$.value;
+}
+
+export function getCachedSandboxItems(): LookupTable<SandboxItem> {
+  return items$.value;
+}
+
+export function getCachedSandboxItem(path: string): SandboxItem {
+  return items$.value[path];
 }
 
 export function fetchById(id: string): Observable<LookupTable<ContentInstance>> {
@@ -809,15 +823,17 @@ interface FetchGuestModelCompletePayload {
   modelLookup: LookupTable<ContentInstance>;
   modelIdByPath: LookupTable<string>;
   hierarchyMap: ModelHierarchyMap;
+  sandboxItems: SandboxItem[];
 }
 
 fromTopic('FETCH_GUEST_MODEL_COMPLETE')
   .pipe(pluck('payload'))
-  .subscribe(({ modelLookup, hierarchyMap, modelIdByPath }: FetchGuestModelCompletePayload) => {
+  .subscribe(({ modelLookup, hierarchyMap, modelIdByPath, sandboxItems }: FetchGuestModelCompletePayload) => {
     Object.keys(modelIdByPath).forEach((path) => {
       requestedPaths[path] = true;
     });
     Object.assign(modelHierarchyMap, hierarchyMap);
     models$.next({ ...models$.value, ...modelLookup });
     paths$.next({ ...paths$.value, ...modelIdByPath });
+    items$.next({ ...items$.value, ...createLookupTable(sandboxItems, 'path') });
   });

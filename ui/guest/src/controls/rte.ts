@@ -31,6 +31,7 @@ import { editComponentInline, exitComponentInlineEdit } from '../store/actions';
 import { emptyFieldClass } from '../constants';
 
 export function initTinyMCE(
+  path: string,
   record: ElementRecord,
   validations: Partial<ContentTypeFieldValidations>,
   rteSetup?: RteSetup
@@ -216,7 +217,7 @@ export function initTinyMCE(
           // The timeout prevents clicking the edit menu to be shown when clicking out of an RTE
           // with the intention to exit editing.
           setTimeout(() => {
-            dispatch$.next({ type: exitComponentInlineEdit.type });
+            dispatch$.next(exitComponentInlineEdit({ path }));
             dispatch$.complete();
             dispatch$.unsubscribe();
           }, 150);

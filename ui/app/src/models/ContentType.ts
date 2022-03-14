@@ -53,9 +53,9 @@ export type ContentTypeFieldValidations = {
 };
 
 export interface ValidationResult {
-  id: ValidationKeys;
+  id: ValidationKeys | 'outOfSyncContent' | 'itemLocked';
   level: 'required' | 'suggestion' | 'info';
-  values: object;
+  values?: object;
 }
 
 export interface ContentTypeField {

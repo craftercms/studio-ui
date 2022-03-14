@@ -45,6 +45,8 @@ export const fetchSandboxItemComplete =
 export const fetchSandboxItemFailed = /*#__PURE__*/ createAction<AjaxError>('FETCH_SANDBOX_ITEM_FAILED');
 // endregion
 
+export const updateItemsByPath = /*#__PURE__*/ createAction<{ items: SandboxItem[] }>('UPDATE_ITEMS_BY_PATH');
+
 // region Clipboard
 
 export const setClipboard = /*#__PURE__*/ createAction<{
@@ -85,6 +87,7 @@ export const unlockItemCompleted = /*#__PURE__*/ createAction<{ path: string }>(
 
 export const lockItem = /*#__PURE__*/ createAction<{ path: string }>('LOCK_ITEM');
 export const lockItemCompleted = /*#__PURE__*/ createAction<{ path: string; username: string }>('LOCK_ITEM_COMPLETED');
+export const lockItemFailed = /*#__PURE__*/ createAction('LOCK_ITEM_FAILED');
 
 // This action is intended to lock the item "locally" (the store) without a backend call since the lock has been already performed elsehow on the back.
 export const localItemLock = /*#__PURE__*/ createAction<{ path: string; username: string }>('LOCAL_LOCK_ITEM');
