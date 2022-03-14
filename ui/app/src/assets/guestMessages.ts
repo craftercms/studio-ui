@@ -111,10 +111,11 @@ export const guestMessages = defineMessages({
   },
   itemLocked: {
     id: 'validations.itemLocked',
-    defaultMessage: 'The item is already locked by {lockOwner}. Please try again later'
+    defaultMessage: 'The item is already locked by {lockOwner}. Please try again later.'
   },
   outOfSyncContent: {
     id: 'validations.outOfSyncContent',
-    defaultMessage: 'A automatically reload is happening because the item is out of sync. Please try again'
+    defaultMessage:
+      'An automatic reload was performed because the item was changed in the background. Please try again.'
   }
 });
