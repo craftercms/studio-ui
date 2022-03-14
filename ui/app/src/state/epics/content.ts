@@ -37,6 +37,7 @@ import {
   FetchSandboxItemPayload,
   lockItem,
   lockItemCompleted,
+  lockItemFailed,
   pasteItem,
   pasteItemWithPolicyValidation,
   reloadDetailedItem,
@@ -264,16 +265,20 @@ const content: CrafterCMSEpic[] = [
     action$.pipe(
       ofType(lockItem.type),
       withLatestFrom(state$),
-      switchMap(([{ payload }, state]) => {
-        return lock(state.sites.active, [payload.path]).pipe(
+      switchMap(([{ payload }, state]) =>
+        lock(state.sites.active, payload.path).pipe(
           map(() =>
             batchActions([
               lockItemCompleted({ path: payload.path, username: state.user.username }),
               emitSystemEvent(itemlocked({ target: payload.path }))
             ])
-          )
-        );
-      })
+          ),
+          catchAjaxError((r) => {
+            console.error(r);
+            return lockItemFailed();
+          })
+        )
+      )
     ),
   // endregion
   // region conditionallyUnlockItem

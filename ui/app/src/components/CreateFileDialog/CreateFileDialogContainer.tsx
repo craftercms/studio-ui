@@ -25,8 +25,6 @@ import { validateActionPolicy } from '../../services/sites';
 import DialogBody from '../DialogBody/DialogBody';
 import TextField from '@mui/material/TextField';
 import DialogFooter from '../DialogFooter/DialogFooter';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import ConfirmDialog from '../ConfirmDialog';

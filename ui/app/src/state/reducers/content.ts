@@ -31,7 +31,8 @@ import {
   reloadDetailedItem,
   restoreClipboard,
   setClipboard,
-  unlockItemCompleted
+  unlockItemCompleted,
+  updateItemsByPath
 } from '../actions/content';
 import QuickCreateItem from '../../models/content/QuickCreateItem';
 import StandardAction from '../../models/StandardAction';
@@ -259,6 +260,9 @@ const reducer = createReducer<ContentState>(initialState, {
   },
   [localItemLock.type]: (state, { payload }) => {
     return updateItemLockState(state, { path: payload.path, username: payload.username, locked: true });
+  },
+  [updateItemsByPath.type]: (state, { payload }) => {
+    return updateItemByPath(state, { payload: { parent: null, children: payload.items } });
   },
   [changeSite.type]: () => initialState
 });

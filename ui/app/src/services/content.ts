@@ -48,7 +48,6 @@ import { GetChildrenResponse } from '../models/GetChildrenResponse';
 import { GetItemWithChildrenResponse } from '../models/GetItemWithChildrenResponse';
 import { FetchItemsByPathOptions } from '../models/FetchItemsByPath';
 import { v4 as uuid } from 'uuid';
-import { asArray } from '../utils/array';
 
 export function fetchComponentInstanceHTML(path: string): Observable<string> {
   return getText(`/crafter-controller/component.html?path=${path}`).pipe(pluck('response'));
@@ -1254,10 +1253,8 @@ export function deleteItems(
   }).pipe(mapTo(true));
 }
 
-export function lock(siteId: string, path: string): Observable<boolean>;
-export function lock(siteId: string, paths: string[]): Observable<boolean>;
-export function lock(siteId: string, paths: string[] | string): Observable<boolean> {
-  return postJSON('/studio/api/2/content/items_lock_by_path', { siteId, paths: asArray(paths) }).pipe(mapTo(true));
+export function lock(siteId: string, path: string): Observable<boolean> {
+  return postJSON('/studio/api/2/content/item_lock_by_path', { siteId, path }).pipe(mapTo(true));
 }
 
 export function unlock(siteId: string, path: string): Observable<boolean> {
