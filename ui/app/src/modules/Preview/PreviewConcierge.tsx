@@ -985,9 +985,9 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
                 items,
                 onClosed: batchActions([
                   workflowCancellationDialogClosed(),
-                  requestWorkflowCancellationDialogOnResult({ type: 'onClosed' })
+                  requestWorkflowCancellationDialogOnResult({ type: 'close' })
                 ]),
-                onContinue: requestWorkflowCancellationDialogOnResult({ type: 'onContinue' })
+                onContinue: requestWorkflowCancellationDialogOnResult({ type: 'continue' })
               })
             );
           });

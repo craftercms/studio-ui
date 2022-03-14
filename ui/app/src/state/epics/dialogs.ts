@@ -206,7 +206,7 @@ const dialogEpics: CrafterCMSEpic[] = [
       )
     ),
   // endregion
-  // region showSystemNotification
+  // region requestWorkflowCancellationDialogOnResult
   (action$) =>
     action$.pipe(
       ofType(requestWorkflowCancellationDialogOnResult.type),

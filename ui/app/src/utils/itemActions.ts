@@ -226,10 +226,6 @@ const unparsedMenuOptions: Record<AllItemActions, ContextMenuOptionDescriptor<Al
     id: 'revert',
     label: translations.revert
   },
-  lock: {
-    id: 'lock',
-    label: translations.unlock
-  },
   // endregion
   // region AssessRemovalItemActions
   viewImage: {
@@ -367,8 +363,6 @@ export function generateSingleItemOptions(
       sectionA.push(menuOptions.viewCode);
     }
   }
-
-  sectionA.push({ label: 'lock', id: 'lock' });
 
   // endregion
 
@@ -857,23 +851,11 @@ export const itemActionDispatcher = ({
         break;
       }
       case 'unlock': {
-        dispatch(
-          unlockItem({
-            path: item.path
-          })
-        );
+        dispatch(unlockItem({ path: item.path }));
         break;
       }
       case 'preview': {
         dispatch(previewItem({ item: item, newTab: event.ctrlKey || event.metaKey }));
-        break;
-      }
-      case 'lock': {
-        dispatch(
-          lockItem({
-            path: item.path
-          })
-        );
         break;
       }
       default:

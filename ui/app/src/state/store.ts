@@ -55,7 +55,7 @@ export function getStore(): Observable<CrafterCMSStore> {
     );
   } else {
     store$ = new BehaviorSubject(null);
-    return registerSharedWorker(process.env.PUBLIC_URL).pipe(
+    return registerSharedWorker().pipe(
       tap(({ token }) => setJwt(token)),
       switchMap(({ worker, ...auth }) =>
         of(createStoreSync({ dependencies: { worker } })).pipe(
@@ -79,9 +79,9 @@ export function getStore(): Observable<CrafterCMSStore> {
   }
 }
 
-function registerSharedWorker(authoringBase: string): Observable<ObtainAuthTokenResponse & { worker: SharedWorker }> {
+function registerSharedWorker(): Observable<ObtainAuthTokenResponse & { worker: SharedWorker }> {
   if ('SharedWorker' in window) {
-    const worker = new SharedWorker(`${authoringBase}/shared-worker.js`, {
+    const worker = new SharedWorker(`${process.env.PUBLIC_URL}/shared-worker.js`, {
       name: 'authWorker',
       credentials: 'same-origin'
     });

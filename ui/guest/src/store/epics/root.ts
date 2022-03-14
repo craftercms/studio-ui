@@ -344,9 +344,6 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
         const status = state.status;
         event.preventDefault();
         event.stopPropagation();
-
-        console.log('documentDrop');
-
         switch (status) {
           case EditingStatus.UPLOAD_ASSET_FROM_DESKTOP:
             return of(desktopAssetDragEnded());
