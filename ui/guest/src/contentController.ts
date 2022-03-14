@@ -28,7 +28,6 @@ import {
   contentTypesResponse,
   deleteItemOperation,
   duplicateItemOperation,
-  duplicateItemOperationComplete,
   insertComponentOperation,
   insertInstanceOperation,
   insertItemOperation,
@@ -44,7 +43,6 @@ import { parseDescriptor, preParseSearchResults } from '@craftercms/content';
 import { crafterConf } from '@craftercms/classes';
 import { getDefaultValue } from '@craftercms/studio-ui/utils/contentType';
 import { ModelHierarchyDescriptor, ModelHierarchyMap, modelsToLookup } from '@craftercms/studio-ui/utils/content';
-import { message$ } from './utils/communicator';
 import { SandboxItem } from '@craftercms/studio-ui/models';
 
 // if (process.env.NODE_ENV === 'development') {
