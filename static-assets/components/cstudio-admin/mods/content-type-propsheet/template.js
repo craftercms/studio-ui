@@ -133,7 +133,7 @@ YAHOO.extend(
                 _self.value = templatePath;
                 _self.updateFn(null, _self.valueEl);
                 if (openOnSuccess) {
-                  CStudioAuthoring.Operations.openCodeEditor({ path, contentType, mode: 'ftl' });
+                  CStudioAuthoring.Operations.openCodeEditor({ path: templatePath, contentType, mode: 'ftl' });
                 }
               }
             });

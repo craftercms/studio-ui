@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
@@ -27,6 +27,7 @@ import { hasRevertAction } from '../../utils/content';
 import {
   closeConfirmDialog,
   fetchContentVersion,
+  historyDialogUpdate,
   showCompareVersionsDialog,
   showConfirmDialog,
   showHistoryDialog,
@@ -45,6 +46,7 @@ import {
   revertContent,
   revertToPreviousVersion,
   versionsChangeItem,
+  versionsChangeLimit,
   versionsChangePage
 } from '../../state/reducers/versions';
 import { asDayMonthDateTime } from '../../utils/datetime';
@@ -65,6 +67,7 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
   const classes = historyStyles({});
   const dispatch = useDispatch();
   const site = useActiveSiteId();
+  const timeoutRef = useRef(null);
 
   const [menu, setMenu] = useSpreadState<Menu>(menuInitialState);
 
@@ -261,13 +264,31 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
     }
   };
 
+  // A user clicking too eagerly to jump to a much later page may end up clicking
+  // the backdrop by mistake when the number of versions goes from pushing the height
+  // of the dialog away from its minimum and then on the next page back to the minimum.
+  // The timeout gives the user a chance to catch up with the change in the position of
+  // the pagination button and/or realise he's reached the last page without closing the
+  // dialog unintentionally.
+  const temporaryBackdropClickDisable = () => {
+    clearTimeout(timeoutRef.current);
+    dispatch(historyDialogUpdate({ hasPendingChanges: true }));
+    timeoutRef.current = setTimeout(() => dispatch(historyDialogUpdate({ hasPendingChanges: false })), 700);
+  };
+
   const onPageChanged = (nextPage: number) => {
+    temporaryBackdropClickDisable();
     dispatch(versionsChangePage({ page: nextPage }));
+  };
+
+  const onRowsPerPageChange = (limit: number) => {
+    temporaryBackdropClickDisable();
+    dispatch(versionsChangeLimit({ limit }));
   };
 
   return (
     <>
-      <DialogBody className={classes.dialogBody}>
+      <DialogBody className={classes.dialogBody} minHeight>
         <SingleItemSelector
           classes={{ root: classes.singleItemSelector }}
           label={<FormattedMessage id="words.item" defaultMessage="Item" />}
@@ -292,11 +313,19 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
         </SuspenseWithEmptyState>
       </DialogBody>
       <DialogFooter classes={{ root: classes.dialogFooter }}>
-        {count > 0 && <Pagination count={count} page={page} rowsPerPage={limit} onPageChanged={onPageChanged} />}
+        {count > 0 && (
+          <Pagination
+            count={count}
+            page={page}
+            rowsPerPage={limit}
+            onPageChanged={onPageChanged}
+            onRowsPerPageChange={onRowsPerPageChange}
+          />
+        )}
       </DialogFooter>
       {Boolean(menu.anchorEl) && (
         <ContextMenu
-          open={true}
+          open
           anchorEl={menu.anchorEl}
           onClose={handleContextMenuClose}
           options={menu.sections}

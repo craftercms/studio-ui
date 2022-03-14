@@ -1638,6 +1638,10 @@ body.yui-skin-cstudioTheme.masked {
   backface-visibility: hidden;
 }
 
+.form-engine-body div[data-popper-placement] {
+  z-index: 2;
+}
+
 .panel-default > .panel-heading {
   cursor: pointer;
   padding: 10px 0 10px 15px;

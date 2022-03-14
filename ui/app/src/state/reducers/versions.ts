@@ -37,6 +37,8 @@ export const fetchItemVersionsFailed = /*#__PURE__*/ createAction<AjaxError>('FE
 
 export const versionsChangePage = /*#__PURE__*/ createAction<{ page: number }>('VERSIONS_CHANGE_PAGE');
 
+export const versionsChangeLimit = /*#__PURE__*/ createAction<{ limit: number }>('VERSIONS_CHANGE_LIMIT');
+
 export const versionsChangeItem = /*#__PURE__*/ createAction<{ item: DetailedItem }>('VERSIONS_CHANGE_ITEM');
 
 export const compareVersion = /*#__PURE__*/ createAction<{ id: string }>('COMPARE_VERSIONS');
@@ -105,6 +107,12 @@ const reducer = createReducer<GlobalState['versions']>(initialState, {
     ...state,
     page: payload.page,
     versions: state.allVersions.slice(payload.page * state.limit, (payload.page + 1) * state.limit)
+  }),
+  [versionsChangeLimit.type]: (state, { payload: { limit = 10 } }) => ({
+    ...state,
+    limit,
+    page: 0,
+    versions: state.allVersions.slice(0, limit)
   }),
   [versionsChangeItem.type]: (state, { payload }) => ({
     ...state,
