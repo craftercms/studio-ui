@@ -704,7 +704,15 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           const { modelId, parentModelId, fieldId, index } = payload;
           const path = models[parentModelId ?? modelId].craftercms.path;
           duplicateItem(siteId, modelId, fieldId, index, path).subscribe({
-            next() {
+            next({ newItem }) {
+              issueDescriptorRequest({
+                site: siteId,
+                path: newItem.path,
+                contentTypes,
+                requestedSourceMapPaths,
+                dispatch,
+                completeAction: fetchPrimaryGuestModelComplete
+              });
               hostToGuest$.next(duplicateItemOperationComplete());
               enqueueSnackbar(formatMessage(guestMessages.duplicateItemOperationComplete));
             },
