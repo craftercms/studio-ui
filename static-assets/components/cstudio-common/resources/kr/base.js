@@ -431,6 +431,7 @@ CStudioAuthoring.Messages.registerBundle('forms', 'kr', {
 
   itemsForPublish: '게시 할 항목',
   selectAll: '모두 선택',
+  deselectAll: '모두 선택 해제',
   hardDependencies: '어려운 의존성',
   submissionMandatory: '제출 필수',
   softDependencies: '소프트 종속성',
