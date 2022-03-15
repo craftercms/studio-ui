@@ -68,6 +68,10 @@ var CStudioForms =
     var pluginError = {};
     pluginError.control = [];
     pluginError.datasource = [];
+    // lookup to check the controls with default values
+    const defaultValuesLookup = {};
+    // lookup to check the fields that have the `no-default` attribute set
+    const noDefaultLookup = {};
 
     // private methods
 
@@ -2510,11 +2514,8 @@ var CStudioForms =
                 value = form.model[moduleConfig.config.field.id];
               }
 
-              if (
-                !value &&
-                moduleConfig.config.field.defaultValue &&
-                typeof moduleConfig.config.field.defaultValue === 'string'
-              ) {
+              const defaultValue = moduleConfig.config.field.defaultValue;
+              if (!value && defaultValue && typeof defaultValue === 'string' && !noDefaultLookup[formField.id]) {
                 value = moduleConfig.config.field.defaultValue;
               }
 
@@ -2522,6 +2523,11 @@ var CStudioForms =
                 formField.setValue(value, CStudioRemote[formField.id]);
               } else {
                 formField.setValue('');
+              }
+
+              // if the field has a default value set, set it to the defaultValuesLookup
+              if (defaultValue && typeof defaultValue === 'string') {
+                defaultValuesLookup[formField.id] = defaultValue;
               }
 
               formField.fieldDef = this.fieldDef;
@@ -3021,6 +3027,11 @@ var CStudioForms =
                 this.xmlModelToMapArray(node, child);
               } else {
                 node[child.nodeName] = this.getModelItemValue(child);
+
+                // while parsing the xml, if a `no-default` attribute is found, add it to the lookup
+                if (child.getAttribute('no-default')) {
+                  noDefaultLookup[child.nodeName] = true;
+                }
               }
             }
           } catch (err) {}
@@ -3062,6 +3073,11 @@ var CStudioForms =
                       //  repeatField.firstChild.wholeText : repeatField.wholeText;
                       value = this.getModelItemValue(repeatField);
                     } catch (noValue) {}
+
+                    // while parsing the xml (in repeating group), if a `no-default` attribute is found, add it to the lookup
+                    if (repeatField.getAttribute('no-default')) {
+                      noDefaultLookup[`${child.nodeName}|${repeatCount}|${repeatField.nodeName}`] = true;
+                    }
 
                     node[child.nodeName][repeatCount][repeatField.nodeName] = this.unEscapeXml(value);
                   }
@@ -3233,6 +3249,10 @@ var CStudioForms =
             if (CStudioRemote[key] && !isModelItemArray) {
               attributes.push('remote="true"');
             }
+            // If item has a default value and current value is empty, add the `no-default` attribute.
+            if (defaultValuesLookup[key] && modelItem.replace(/\s+/g, '') === '') {
+              attributes.push('no-default="true"');
+            }
           } catch (err) {
             CStudioAuthoring.Operations.showSimpleDialog(
               'error-dialog',
@@ -3285,7 +3305,7 @@ var CStudioForms =
       },
 
       recursiveRetrieveItemValues: function (item, output, key, fieldInstructions) {
-        item.forEach((repeatItem) => {
+        item.forEach((repeatItem, index) => {
           let attributes;
           attributes = repeatItem.datasource ? `datasource=\"${repeatItem.datasource}\"` : '';
           if (repeatItem.inline) {
@@ -3303,7 +3323,18 @@ var CStudioForms =
                 repeatAttr = `${isRemote ? 'remote="true"' : ''} ${isArray ? 'item-list="true"' : ''} ${
                   isTokenized ? 'tokenized="true"' : ''
                 }`;
-              output += `\t<${fieldName} ${repeatAttr} >`;
+
+              // using `${parentFieldName}|${repeatItemIndex}|${fieldName}` as the fieldId. That's how the forms-engine
+              // handles the repeating groups ids.
+              const fieldId = `${key}|${index}|${fieldName}`;
+              const attributes = [];
+
+              // Validating to add `no-default` in repeating group items
+              if (defaultValuesLookup[fieldId] && repeatValue.replace(/\s+/g, '') === '') {
+                attributes.push('no-default="true"');
+              }
+
+              output += `\t<${fieldName} ${repeatAttr} ${attributes.join(' ')}>`;
               if (isArray) {
                 output = this.recursiveRetrieveItemValues(repeatValue, output, key, fieldInstructions);
               } else {
