@@ -43,7 +43,10 @@ interface CommonOperationProps {
 export const hostCheckIn = /*#__PURE__*/ createAction<{
   editMode: boolean;
   highlightMode: HighlightMode;
+  authoringBase: string;
   editModePadding: boolean;
+  site: string;
+  username: string;
   rteConfig: GlobalState['preview']['richTextEditor'];
 }>('HOST_CHECK_IN');
 export const guestCheckIn = /*#__PURE__*/ createAction<{
@@ -164,6 +167,13 @@ export const validationMessage = /*#__PURE__*/ createAction<ValidationResult>('V
 export const editModeToggleHotkey = /*#__PURE__*/ createAction<{ mode: string }>('EDIT_MODE_TOGGLE_HOTKEY');
 export const hotKey = /*#__PURE__*/ createAction<{ key: string; type: 'keyup' | 'keydown' }>('HOT_KEY');
 export const showEditDialog = /*#__PURE__*/ createAction('SHOW_EDIT_DIALOG');
+export const requestWorkflowCancellationDialog = /*#__PURE__*/ createAction<{
+  siteId: string;
+  path: string;
+}>('REQUEST_WORKFLOW_CANCELLATION_DIALOG');
+export const requestWorkflowCancellationDialogOnResult = /*#__PURE__*/ createAction<{
+  type: 'continue' | 'close';
+}>('REQUEST_WORKFLOW_CANCELLATION_DIALOG_ON_RESULT');
 export const updateRteConfig = /*#__PURE__*/ createAction('UPDATE_RTE_CONFIG');
 export const highlightModeChanged = /*#__PURE__*/ createAction('HIGHLIGHT_MODE_CHANGED');
 export const contentTypesRequest = /*#__PURE__*/ createAction('CONTENT_TYPES_REQUEST');

@@ -16,14 +16,25 @@
 
 import { combineEpics, ofType } from 'redux-observable';
 import { GuestStandardAction } from '../models/GuestStandardAction';
-import { filter, ignoreElements, map, mapTo, switchMap, take, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
+import {
+  catchError,
+  filter,
+  ignoreElements,
+  map,
+  mapTo,
+  switchMap,
+  take,
+  takeUntil,
+  tap,
+  withLatestFrom
+} from 'rxjs/operators';
 import { not } from '../../utils/util';
-import { post } from '../../utils/communicator';
+import { message$, post } from '../../utils/communicator';
 import * as iceRegistry from '../../iceRegistry';
 import { getById } from '../../iceRegistry';
 import { dragOk, unwrapEvent } from '../util';
 import * as contentController from '../../contentController';
-import { getCachedModel } from '../../contentController';
+import { getCachedModel, getCachedModels, getCachedSandboxItem, modelHierarchyMap } from '../../contentController';
 import { interval, merge, NEVER, Observable, of, Subject } from 'rxjs';
 import { clearAndListen$, destroyDragSubjects, dragover$, escape$, initializeDragSubjects } from '../subjects';
 import { initTinyMCE } from '../../controls/rte';
@@ -44,9 +55,10 @@ import {
   desktopAssetDrop,
   desktopAssetUploadComplete,
   desktopAssetUploadStarted,
-  iceZoneSelected as iceZoneSelectedAction,
   instanceDragBegun,
   instanceDragEnded,
+  requestWorkflowCancellationDialog,
+  requestWorkflowCancellationDialogOnResult,
   trashed,
   validationMessage
 } from '@craftercms/studio-ui/state/actions/preview';
@@ -67,12 +79,15 @@ import {
   documentDrop,
   dropzoneEnter,
   dropzoneLeave,
-  iceZoneSelected as iceZoneSelectedActionGuest,
+  exitComponentInlineEdit,
   setEditingStatus,
   startListening
 } from '../actions';
 import $ from 'jquery';
 import { extractCollectionItem } from '@craftercms/studio-ui/utils/model';
+import { getParentModelId } from '../../utils/ice';
+import { fetchSandboxItem, lock } from '@craftercms/studio-ui/services/content';
+import { localItemLock, unlockItem } from '@craftercms/studio-ui/state/actions/content';
 
 const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
   // region mouseover, mouseleave
@@ -161,7 +176,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
       ofType('drop'),
       withLatestFrom(state$),
       filter(([, state]) => dragOk(state.status) && !state.dragContext.invalidDrop),
-      switchMap((([action, state]) => {
+      switchMap(([action, state]) => {
         const {
           payload: { event, record }
         } = action;
@@ -169,86 +184,153 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
         event.stopPropagation();
         const status = state.status;
         const dragContext = state.dragContext;
-        switch (status) {
-          case EditingStatus.PLACING_DETACHED_ASSET: {
-            const { dropZone } = dragContext;
-            if (dropZone && dragContext.inZone) {
-              const record = iceRegistry.getById(dropZone.iceId);
-              contentController.updateField(record.modelId, record.fieldId, record.index, dragContext.dragged.path);
+
+        const checkStatus = () => {
+          switch (status) {
+            case EditingStatus.PLACING_DETACHED_ASSET: {
+              const { dropZone } = dragContext;
+              if (dropZone && dragContext.inZone) {
+                const record = iceRegistry.getById(dropZone.iceId);
+                contentController.updateField(record.modelId, record.fieldId, record.index, dragContext.dragged.path);
+              }
+              break;
             }
-            break;
-          }
-          case EditingStatus.SORTING_COMPONENT: {
-            if (notNullOrUndefined(dragContext.targetIndex)) {
-              post(instanceDragEnded());
-              moveComponent(dragContext);
-              return of(computedDragEnd());
+            case EditingStatus.SORTING_COMPONENT: {
+              if (notNullOrUndefined(dragContext.targetIndex)) {
+                post(instanceDragEnded());
+                moveComponent(dragContext);
+                return of(computedDragEnd());
+              }
+              break;
             }
-            break;
-          }
-          case EditingStatus.PLACING_NEW_COMPONENT: {
-            if (notNullOrUndefined(dragContext.targetIndex)) {
-              const { targetIndex, contentType, dropZone } = dragContext;
-              const record = iceRegistry.getById(dropZone.iceId);
-              setTimeout(() => {
-                contentController.insertComponent(
-                  record.modelId,
-                  record.fieldId,
-                  record.fieldId.includes('.') ? `${record.index}.${targetIndex}` : targetIndex,
-                  contentType
-                );
-              });
-              // return of({ type: 'insert_component' });
-            }
-            break;
-          }
-          case EditingStatus.PLACING_DETACHED_COMPONENT: {
-            if (notNullOrUndefined(dragContext.targetIndex)) {
-              const { targetIndex, instance, dropZone } = dragContext;
-              const record = iceRegistry.getById(dropZone.iceId);
-              setTimeout(() => {
-                contentController.insertInstance(
-                  record.modelId,
-                  record.fieldId,
-                  record.fieldId.includes('.') ? `${record.index}.${targetIndex}` : targetIndex,
-                  instance
-                );
-              });
-              // return of({ type: 'insert_instance' });
-            }
-            break;
-          }
-          case EditingStatus.UPLOAD_ASSET_FROM_DESKTOP: {
-            if (dragContext.inZone) {
-              const file = unwrapEvent<DragEvent>(event).dataTransfer.files[0];
-              const stream$ = new Subject();
-              const reader = new FileReader();
-              reader.onload = ((aImg: HTMLImageElement) => (event) => {
-                post(desktopAssetDrop.type, {
-                  dataUrl: event.target.result,
-                  name: file.name,
-                  type: file.type,
-                  record: reversePluckProps(record, 'element')
-                });
-                aImg.src = event.target.result;
-                // Timeout gives the browser a chance to render the image so later rect
-                // calculations are working with the updated paint.
+            case EditingStatus.PLACING_NEW_COMPONENT: {
+              if (notNullOrUndefined(dragContext.targetIndex)) {
+                const { targetIndex, contentType, dropZone } = dragContext;
+                const record = iceRegistry.getById(dropZone.iceId);
                 setTimeout(() => {
-                  stream$.next({ type: desktopAssetUploadStarted.type, payload: { record } });
-                  stream$.next({ type: desktopAssetDragEnded.type });
-                  stream$.complete();
-                  stream$.unsubscribe();
+                  contentController.insertComponent(
+                    record.modelId,
+                    record.fieldId,
+                    record.fieldId.includes('.') ? `${record.index}.${targetIndex}` : targetIndex,
+                    contentType
+                  );
                 });
-              })(record.element as HTMLImageElement);
-              reader.readAsDataURL(file);
-              return stream$;
-            } else {
-              return of(desktopAssetDragEnded());
+              }
+              break;
+            }
+            case EditingStatus.PLACING_DETACHED_COMPONENT: {
+              if (notNullOrUndefined(dragContext.targetIndex)) {
+                const { targetIndex, instance, dropZone } = dragContext;
+                const record = iceRegistry.getById(dropZone.iceId);
+                setTimeout(() => {
+                  contentController.insertInstance(
+                    record.modelId,
+                    record.fieldId,
+                    record.fieldId.includes('.') ? `${record.index}.${targetIndex}` : targetIndex,
+                    instance
+                  );
+                });
+                // return of({ type: 'insert_instance' });
+              }
+              break;
+            }
+            case EditingStatus.UPLOAD_ASSET_FROM_DESKTOP: {
+              if (dragContext.inZone) {
+                const file = unwrapEvent<DragEvent>(event).dataTransfer.files[0];
+                const stream$ = new Subject();
+                const reader = new FileReader();
+                reader.onload = ((aImg: HTMLImageElement) => (event) => {
+                  post(desktopAssetDrop.type, {
+                    dataUrl: event.target.result,
+                    name: file.name,
+                    type: file.type,
+                    record: reversePluckProps(record, 'element')
+                  });
+                  aImg.src = event.target.result;
+                  // Timeout gives the browser a chance to render the image so later rect
+                  // calculations are working with the updated paint.
+                  setTimeout(() => {
+                    stream$.next({ type: desktopAssetUploadStarted.type, payload: { record } });
+                    stream$.next({ type: desktopAssetDragEnded.type });
+                    stream$.complete();
+                    stream$.unsubscribe();
+                  });
+                })(record.element as HTMLImageElement);
+                reader.readAsDataURL(file);
+                return stream$;
+              } else {
+                return of(desktopAssetDragEnded());
+              }
             }
           }
-        }
-        return NEVER;
-      }) as () => Observable<GuestStandardAction>)
+        };
+
+        const models = getCachedModels();
+        const modelId = action.payload.record.modelId;
+        const parentModelId = getParentModelId(modelId, models, modelHierarchyMap);
+        const path = models[parentModelId ?? modelId].craftercms.path;
+        const cachedSandboxItem = getCachedSandboxItem(path);
+
+        // The item unlock happens with write content API
+        return lock(state.activeSite, path).pipe(
+          switchMap(() => {
+            // TODO: Remove when websocket is ready
+            post(localItemLock({ path, username: state.username }));
+            return fetchSandboxItem(state.activeSite, path).pipe(
+              switchMap((item) => {
+                if (item.stateMap.submitted || item.stateMap.scheduled) {
+                  post(
+                    requestWorkflowCancellationDialog({
+                      siteId: state.activeSite,
+                      path
+                    })
+                  );
+                  return message$.pipe(
+                    filter((e) => e.type === requestWorkflowCancellationDialogOnResult.type),
+                    take(1),
+                    switchMap(({ payload }) => {
+                      if (payload.type === 'onContinue') {
+                        // DOING NORMAL STUFF
+                        checkStatus();
+                        return NEVER;
+                      } else {
+                        post(unlockItem({ path }));
+                        return NEVER;
+                      }
+                    })
+                  );
+                } else if (item.commitId !== cachedSandboxItem.commitId) {
+                  post(
+                    validationMessage({
+                      id: 'outOfSyncContent',
+                      level: 'suggestion'
+                    })
+                  );
+                  post(unlockItem({ path }));
+                  window.location.reload();
+                  return NEVER;
+                } else {
+                  checkStatus();
+                  // DOING NORMAL STUFF
+                  return NEVER;
+                }
+              })
+            );
+          }),
+          catchError(({ response, status }) => {
+            if (status === 409) {
+              post(
+                validationMessage({
+                  id: 'itemLocked',
+                  level: 'suggestion',
+                  values: { lockOwner: response.person }
+                })
+              );
+            }
+            return NEVER;
+          })
+        );
+      })
     );
   },
   (action$, state$) =>
@@ -336,18 +418,6 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
             selected.index = record.index;
             selected.fieldId = record.fieldId;
           }
-          const iceZoneSelected = () => {
-            post(iceZoneSelectedAction(selected as any));
-            return merge(
-              escape$.pipe(
-                takeUntil(clearAndListen$),
-                tap(() => post(clearSelectedZones.type)),
-                map(() => startListening()),
-                take(1)
-              ),
-              of(iceZoneSelectedActionGuest(action.payload))
-            );
-          };
           const { field } = iceRegistry.getReferentialEntries(record.iceIds[0]);
           const validations = field?.validations;
           const type = field?.type;
@@ -364,7 +434,67 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
                 const setupId = field.properties?.rteConfiguration?.value ?? 'generic';
                 const setup = state.rteConfig[setupId] ?? Object.values(state.rteConfig)[0] ?? {};
                 // Only pass rte setup to html type, text/textarea (plaintext) controls won't show full rich-text-editing.
-                return initTinyMCE(record, validations, type === 'html' ? setup : {});
+
+                const models = getCachedModels();
+                const modelId = action.payload.record.modelId;
+                const parentModelId = getParentModelId(modelId, models, modelHierarchyMap);
+                const path = models[parentModelId ?? modelId].craftercms.path;
+                const cachedSandboxItem = getCachedSandboxItem(path);
+
+                return lock(state.activeSite, path).pipe(
+                  switchMap(() => {
+                    // TODO: Remove when websocket is ready
+                    post(localItemLock({ path, username: state.username }));
+                    return fetchSandboxItem(state.activeSite, path).pipe(
+                      switchMap((item) => {
+                        if (item.stateMap.submitted || item.stateMap.scheduled) {
+                          post(
+                            requestWorkflowCancellationDialog({
+                              siteId: state.activeSite,
+                              path
+                            })
+                          );
+                          return message$.pipe(
+                            filter((e) => e.type === requestWorkflowCancellationDialogOnResult.type),
+                            take(1),
+                            switchMap(({ payload }) => {
+                              if (payload.type === 'onContinue') {
+                                return initTinyMCE(path, record, validations, type === 'html' ? setup : {});
+                              } else {
+                                post(unlockItem({ path }));
+                                return NEVER;
+                              }
+                            })
+                          );
+                        } else if (item.commitId !== cachedSandboxItem.commitId) {
+                          post(
+                            validationMessage({
+                              id: 'outOfSyncContent',
+                              level: 'suggestion'
+                            })
+                          );
+                          post(unlockItem({ path }));
+                          window.location.reload();
+                          return NEVER;
+                        } else {
+                          return initTinyMCE(path, record, validations, type === 'html' ? setup : {});
+                        }
+                      })
+                    );
+                  }),
+                  catchError(({ response, status }) => {
+                    if (status === 409) {
+                      post(
+                        validationMessage({
+                          id: 'itemLocked',
+                          level: 'suggestion',
+                          values: { lockOwner: response.person }
+                        })
+                      );
+                    }
+                    return NEVER;
+                  })
+                );
               }
               break;
             }
@@ -659,6 +789,19 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
         const { scrollElement } = action.payload;
         let registryEntryId = state.fieldSwitcher.registryEntryIds[state.fieldSwitcher.currentElement];
         scrollToElement(get(registryEntryId).element, scrollElement);
+      }),
+      ignoreElements()
+    );
+  },
+  // endregion
+  // region exitComponentInlineEdit
+  (action$: Observable<GuestStandardAction<{ path: string }>>, state$) => {
+    return action$.pipe(
+      ofType(exitComponentInlineEdit.type),
+      withLatestFrom(state$),
+      tap(([action, state]) => {
+        const { path } = action.payload;
+        post(unlockItem({ path }));
       }),
       ignoreElements()
     );

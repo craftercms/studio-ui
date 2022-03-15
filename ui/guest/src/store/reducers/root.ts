@@ -84,13 +84,15 @@ const initialState: GuestState = {
   status: EditingStatus.LISTENING,
   editMode: false,
   highlightMode: HighlightMode.ALL,
+  authoringBase: null,
   uploading: {},
   models: {},
   contentTypes: {},
   hostCheckedIn: false,
   rteConfig: {},
   activeSite: '',
-  editModePadding: false
+  editModePadding: false,
+  username: null
 };
 
 function createReducer<S, CR extends CaseReducers<S>>(initialState: S, actionsMap: CR): Reducer<S> {
@@ -709,11 +711,13 @@ const reducer = createReducer(initialState, {
   [hostCheckIn.type]: (state, action) => ({
     ...state,
     hostCheckedIn: true,
+    authoringBase: action.payload.authoringBase,
     editModePadding: action.payload.editModePadding,
     highlightMode: action.payload.highlightMode,
     editMode: action.payload.editMode,
     rteConfig: action.payload.rteConfig,
-    activeSite: action.payload.site
+    activeSite: action.payload.site,
+    username: action.payload.username
   }),
   // endregion
   // region updateRteConfig

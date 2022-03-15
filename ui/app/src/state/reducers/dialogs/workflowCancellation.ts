@@ -35,7 +35,6 @@ export default createReducer<GlobalState['dialogs']['workflowCancellation']>(ini
     ...state,
     onClose: closeWorkflowCancellationDialog(),
     onClosed: workflowCancellationDialogClosed(),
-    onDismiss: closeWorkflowCancellationDialog(),
     ...payload,
     open: true
   }),

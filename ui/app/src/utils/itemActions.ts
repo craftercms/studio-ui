@@ -73,6 +73,7 @@ import {
   deleteController,
   deleteTemplate,
   duplicateWithPolicyValidation,
+  lockItem,
   pasteItem,
   pasteItemWithPolicyValidation,
   reloadDetailedItem,
@@ -362,6 +363,7 @@ export function generateSingleItemOptions(
       sectionA.push(menuOptions.viewCode);
     }
   }
+
   // endregion
 
   // region Section B
@@ -849,11 +851,7 @@ export const itemActionDispatcher = ({
         break;
       }
       case 'unlock': {
-        dispatch(
-          unlockItem({
-            path: item.path
-          })
-        );
+        dispatch(unlockItem({ path: item.path }));
         break;
       }
       case 'preview': {

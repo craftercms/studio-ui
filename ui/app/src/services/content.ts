@@ -48,7 +48,6 @@ import { GetChildrenResponse } from '../models/GetChildrenResponse';
 import { GetItemWithChildrenResponse } from '../models/GetItemWithChildrenResponse';
 import { FetchItemsByPathOptions } from '../models/FetchItemsByPath';
 import { v4 as uuid } from 'uuid';
-import { asArray } from '../utils/array';
 
 export function fetchComponentInstanceHTML(path: string): Observable<string> {
   return getText(`/crafter-controller/component.html?path=${path}`).pipe(pluck('response'));
@@ -387,23 +386,78 @@ export function duplicateItem(
   fieldId: string,
   targetIndex: string | number,
   path: string
-): Observable<any> {
-  return performMutation(
-    site,
-    path,
-    (element) => {
+): Observable<{
+  updatedDocument: XMLDocument;
+  newItem: {
+    modelId: string;
+    path: string;
+  };
+}> {
+  return fetchContentDOM(site, path).pipe(
+    switchMap((doc) => {
+      const documentModelId = doc.querySelector(':scope > objectId').innerHTML.trim();
+      let parentElement = doc.documentElement;
+      if (nnou(modelId) && documentModelId !== modelId) {
+        parentElement = doc.querySelector(`[id="${modelId}"]`);
+      }
+
+      const item: Element = extractNode(parentElement, fieldId, targetIndex).cloneNode(true) as Element;
+      const itemPath = item.querySelector(':scope > key').textContent;
+      const isEmbedded = Boolean(item.querySelector(':scope > component'));
       // removing last piece to get the parent of the item
-      const field: Element = extractNode(
-        element,
-        removeLastPiece(fieldId) || fieldId,
-        removeLastPiece(`${targetIndex}`)
-      );
-      const item: Element = extractNode(element, fieldId, targetIndex).cloneNode(true) as Element;
-      updateItemId(item);
-      updateElementComponentsId(item);
+      const field: Element = extractNode(parentElement, fieldId, removeLastPiece(`${targetIndex}`));
+
+      const newItemData = updateItemId(item);
+      newItemData.path = newItemData.path ?? path;
+      updateModifiedDateElement(parentElement);
       field.appendChild(item);
-    },
-    modelId
+
+      const returnValue = {
+        updatedDocument: doc,
+        newItem: newItemData
+      };
+
+      if (isEmbedded) {
+        return post(
+          writeContentUrl({
+            site,
+            path: path,
+            unlock: 'true',
+            fileName: getInnerHtml(doc.querySelector(':scope > file-name'))
+          }),
+          serialize(doc)
+        ).pipe(mapTo(returnValue));
+      } else {
+        return fetchContentDOM(site, itemPath).pipe(
+          switchMap((componentDoc) => {
+            // update new shared component info  (ids/date)
+            updateComponentId(componentDoc.documentElement, newItemData.modelId);
+            updateModifiedDateElement(componentDoc.documentElement);
+
+            return forkJoin([
+              post(
+                writeContentUrl({
+                  site,
+                  path,
+                  unlock: 'true',
+                  fileName: getInnerHtml(doc.querySelector(':scope > file-name'))
+                }),
+                serialize(doc)
+              ),
+              post(
+                writeContentUrl({
+                  site,
+                  path: newItemData.path,
+                  unlock: 'true',
+                  fileName: getInnerHtml(componentDoc.querySelector(':scope > file-name'))
+                }),
+                serialize(componentDoc)
+              )
+            ]).pipe(mapTo(returnValue));
+          })
+        );
+      }
+    })
   );
 }
 
@@ -660,23 +714,53 @@ interface AnyObject {
   [key: string]: any;
 }
 
-function updateItemId(item: Element): void {
+// Updates a component's parent id (the item that contains the component).
+// If the component is embedded, update its ids too. When shared it needs to be done separately because the item
+// needs to be fetched.
+function updateItemId(item: Element, skipShared: boolean = false): { modelId: string; path: string } {
   const component = item.querySelector(':scope > component');
+  const key = item.querySelector(':scope > key');
+  const id = uuid();
   if (component) {
-    const key = item.querySelector(':scope > key');
-    const objectId = component.querySelector(':scope > objectId');
-    const fileName = component.querySelector(':scope > file-name');
-    const id = uuid();
-    component.id = id;
+    // embedded component
+    updateComponentId(component, id);
     key.innerHTML = id;
-    fileName.innerHTML = `${id}.xml`;
-    objectId.innerHTML = id;
+    return {
+      modelId: id,
+      path: null
+    };
+  } else if (!skipShared) {
+    // shared component
+    const originalPath = key.textContent;
+    const basePath = originalPath.split('/').slice(0, -1).join('/');
+    const newPath = `${basePath}/${id}.xml`;
+
+    const include = item.querySelector(':scope > include');
+    key.innerHTML = newPath;
+    include.innerHTML = newPath;
+    return {
+      modelId: id,
+      path: basePath
+    };
   }
 }
 
+// Updates the ids of a component (shared/embedded)
+function updateComponentId(component: Element, id: string): void {
+  const objectId = component.querySelector(':scope > objectId');
+  const fileName = component.querySelector(':scope > file-name');
+  component.id = id;
+  fileName.innerHTML = `${id}.xml`;
+  objectId.innerHTML = id;
+
+  updateElementComponentsId(component);
+}
+
+// Updates the ids of the embedded components inside an element
+// It looks for items inside a component and update its ids (skipping shared).
 function updateElementComponentsId(element: Element): void {
   element.querySelectorAll('item').forEach((item) => {
-    updateItemId(item);
+    updateItemId(item, true);
   });
 }
 
@@ -1169,10 +1253,8 @@ export function deleteItems(
   }).pipe(mapTo(true));
 }
 
-export function lock(siteId: string, path: string): Observable<boolean>;
-export function lock(siteId: string, paths: string[]): Observable<boolean>;
-export function lock(siteId: string, paths: string[] | string): Observable<boolean> {
-  return postJSON('/studio/api/2/content/items_lock_by_path', { siteId, paths: asArray(paths) }).pipe(mapTo(true));
+export function lock(siteId: string, path: string): Observable<boolean> {
+  return postJSON('/studio/api/2/content/item_lock_by_path', { siteId, path }).pipe(mapTo(true));
 }
 
 export function unlock(siteId: string, path: string): Observable<boolean> {
