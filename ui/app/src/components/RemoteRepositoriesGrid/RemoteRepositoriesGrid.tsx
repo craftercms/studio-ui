@@ -122,7 +122,7 @@ export function RemoteRepositoriesGrid(props: RemoteRepositoriesGridProps) {
   };
 
   const onPushSuccess = () => {
-    pushToRemoteDialogState.onClose();
+    pushToRemoteDialogState.onResetState();
     dispatch(
       showSystemNotification({
         message: formatMessage(messages.pushSuccessMessage)
@@ -182,6 +182,7 @@ export function RemoteRepositoriesGrid(props: RemoteRepositoriesGridProps) {
         isMinimized={pushToRemoteDialogState.isMinimized}
         isSubmitting={pushToRemoteDialogState.isSubmitting}
         hasPendingChanges={pushToRemoteDialogState.hasPendingChanges}
+        onSubmittingChange={pushToRemoteDialogState.onSubmittingChange}
       />
     </>
   );

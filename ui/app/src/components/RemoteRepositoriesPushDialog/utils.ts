@@ -24,8 +24,11 @@ export interface PushToRemoteBaseProps {
 export interface PushToRemoteDialogProps extends PushToRemoteBaseProps, EnhancedDialogProps {
   onPushSuccess?(): void;
   onPushError?(response: ApiResponse): void;
+  onSubmittingChange?(isSubmitting: boolean): void;
 }
 
 export interface PushToRemoteDialogContainerProps
   extends PushToRemoteBaseProps,
-    Pick<PushToRemoteDialogProps, 'onClose' | 'onPushSuccess' | 'onPushError'> {}
+    Pick<PushToRemoteDialogProps, 'onClose' | 'onPushSuccess' | 'onPushError' | 'onSubmittingChange'> {
+  isSubmitting: boolean;
+}

@@ -30,6 +30,8 @@ import PrimaryButton from '../PrimaryButton';
 import { isBlank } from '../../utils/string';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { PushToRemoteDialogContainerProps } from './utils';
+import { Checkbox, FormControlLabel } from '@mui/material';
+import { useUpdateRefs } from '../../hooks';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -40,10 +42,12 @@ const useStyles = makeStyles(() =>
 );
 
 export function PushToRemoteDialogContainer(props: PushToRemoteDialogContainerProps) {
-  const { branches, remoteName, onClose, onPushSuccess, onPushError } = props;
+  const { branches, remoteName, onClose, onPushSuccess, onPushError, onSubmittingChange, isSubmitting } = props;
   const [selectedBranch, setSelectedBranch] = useState(branches?.[0] ?? '');
   const classes = useStyles();
   const siteId = useActiveSiteId();
+  const [forcePush, setForcePush] = useState(false);
+  const fnRefs = useUpdateRefs({ onSubmittingChange, onPushSuccess, onPushError });
 
   const onChange = (e: any) => {
     setSelectedBranch(e.target.value);
@@ -54,21 +58,24 @@ export function PushToRemoteDialogContainer(props: PushToRemoteDialogContainerPr
   const onSubmit = (e) => {
     e.preventDefault();
     if (!isBlank(selectedBranch)) {
-      push(siteId, remoteName, selectedBranch, true).subscribe(
-        () => {
-          onPushSuccess?.();
+      onSubmittingChange(true);
+      push(siteId, remoteName, selectedBranch, forcePush).subscribe({
+        next() {
+          fnRefs.current.onPushSuccess?.();
+          fnRefs.current.onSubmittingChange(false);
         },
-        ({ response }) => {
+        error({ response }) {
           onPushError?.(response.response);
+          fnRefs.current.onSubmittingChange(false);
         }
-      );
+      });
     }
   };
 
   return (
     <form onSubmit={onSubmit}>
       <DialogBody>
-        <FormControl variant="outlined" fullWidth className={classes.formControl}>
+        <FormControl variant="outlined" fullWidth className={classes.formControl} disabled={isSubmitting}>
           <InputLabel id="remoteBranchToPushLabel">
             <FormattedMessage id="repositories.remoteBranchToPush" defaultMessage="Remote Branch to Push" />
           </InputLabel>
@@ -87,13 +94,18 @@ export function PushToRemoteDialogContainer(props: PushToRemoteDialogContainerPr
             ))}
           </Select>
         </FormControl>
+        <FormControlLabel
+          disabled={isSubmitting}
+          control={<Checkbox checked={forcePush} onChange={(e) => setForcePush(e.target.checked)} color="primary" />}
+          label={<FormattedMessage id="pushToRemoteDialog.forcePush" defaultMessage="Force push" />}
+        />
       </DialogBody>
       <DialogFooter>
-        <SecondaryButton onClick={onCloseButtonClick}>
+        <SecondaryButton onClick={onCloseButtonClick} disabled={isSubmitting}>
           <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
         </SecondaryButton>
-        <PrimaryButton type="submit" disabled={isBlank(selectedBranch)}>
-          <FormattedMessage id="words.ok" defaultMessage="Ok" />
+        <PrimaryButton type="submit" disabled={isBlank(selectedBranch)} loading={isSubmitting}>
+          <FormattedMessage id="words.push" defaultMessage="Push" />
         </PrimaryButton>
       </DialogFooter>
     </form>
