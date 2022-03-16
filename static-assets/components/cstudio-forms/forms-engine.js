@@ -3249,8 +3249,9 @@ var CStudioForms =
             if (CStudioRemote[key] && !isModelItemArray) {
               attributes.push('remote="true"');
             }
-            // If item has a default value and current value is empty, add the `no-default` attribute.
-            if (defaultValuesLookup[key] && modelItem.replace(/\s+/g, '') === '') {
+            // If item has a default value and current value is empty or doesn't exist, add the `no-default` attribute.
+            // model Item may be an array (repeating group item) so we're only considering string values.
+            if (defaultValuesLookup[key] && typeof modelItem === 'string' && modelItem?.replace(/\s+/g, '') === '') {
               attributes.push('no-default="true"');
             }
           } catch (err) {
