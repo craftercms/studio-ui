@@ -306,6 +306,11 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
     }
   },
 
+  // dynamically adjust the input size according to its character count
+  adjustInputWidth: function (inputEl) {
+    inputEl.style.width = inputEl.value.length + 'ch';
+  },
+
   render: function (config, containerEl) {
     // we need to make the general layout of a control inherit from common
     // you should be able to override it -- but most of the time it wil be the same
@@ -346,6 +351,10 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
     YAHOO.util.Dom.addClass(inputEl, 'datum');
     YAHOO.util.Dom.addClass(inputEl, 'cstudio-form-control-input');
     YAHOO.util.Dom.addClass(inputEl, 'cstudio-form-control-file-name');
+
+    inputEl.onkeydown = () => this.adjustInputWidth(inputEl);
+    inputEl.onfocusout = () => this.adjustInputWidth(inputEl);
+
     inputEl.id = 'studioFileName';
     inputContainer.appendChild(inputEl);
 
@@ -394,7 +403,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
     for (var i = 0; i < config.properties.length; i++) {
       var prop = config.properties[i];
       if (prop.name == 'size') {
-        inputEl.size = prop.value;
+        // inputEl.size = prop.value;
       } else if (prop.name == 'maxlength') {
         inputEl.maxlength = prop.value;
       }
@@ -552,6 +561,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
     this.count(null, this.countEl, this.inputEl);
     this._onChange(null, this);
     this.edited = false;
+    this.adjustInputWidth(this.inputEl);
   },
 
   _getValue: function () {
