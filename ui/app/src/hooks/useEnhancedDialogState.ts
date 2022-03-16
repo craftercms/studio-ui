@@ -26,6 +26,10 @@ export interface EnhancedDialogState {
   isSubmitting: boolean;
 }
 
+// TODO: Should type all the callbacks. At the moment the callbacks
+//  are only auto-typed by the return value of the useEnhancedDialogState hook
+// export interface EnhancedDialogCallbacks {}
+
 export interface onSubmittingAndOrPendingChangeProps {
   hasPendingChanges?: boolean;
   isSubmitting?: boolean;
