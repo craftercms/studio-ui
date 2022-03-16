@@ -30,8 +30,10 @@ import PrimaryButton from '../PrimaryButton';
 import { isBlank } from '../../utils/string';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { PushToRemoteDialogContainerProps } from './utils';
-import { Checkbox, FormControlLabel } from '@mui/material';
+import { Checkbox, FormControlLabel, Switch } from '@mui/material';
 import { useUpdateRefs } from '../../hooks';
+import FormHelperText from '@mui/material/FormHelperText';
+import { useTheme } from '@mui/material/styles';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -48,6 +50,7 @@ export function PushToRemoteDialogContainer(props: PushToRemoteDialogContainerPr
   const siteId = useActiveSiteId();
   const [forcePush, setForcePush] = useState(false);
   const fnRefs = useUpdateRefs({ onSubmittingChange, onPushSuccess, onPushError });
+  const theme = useTheme();
 
   const onChange = (e: any) => {
     setSelectedBranch(e.target.value);
@@ -94,11 +97,21 @@ export function PushToRemoteDialogContainer(props: PushToRemoteDialogContainerPr
             ))}
           </Select>
         </FormControl>
-        <FormControlLabel
-          disabled={isSubmitting}
-          control={<Checkbox checked={forcePush} onChange={(e) => setForcePush(e.target.checked)} color="primary" />}
-          label={<FormattedMessage id="pushToRemoteDialog.forcePush" defaultMessage="Force push" />}
-        />
+        <FormControl component="fieldset" variant="standard">
+          <FormControlLabel
+            disabled={isSubmitting}
+            control={<Switch checked={forcePush} onChange={(e) => setForcePush(e.target.checked)} color="primary" />}
+            label={<FormattedMessage id="pushToRemoteDialog.forcePush" defaultMessage="Force push" />}
+          />
+          <FormHelperText
+            sx={{ color: forcePush ? `error.${theme.palette.mode === 'light' ? 'dark' : 'light'}` : void 0 }}
+          >
+            <FormattedMessage
+              id="repositories.forcePushWarning"
+              defaultMessage="Force push will overwrite what's in the remote repository branch."
+            />
+          </FormHelperText>
+        </FormControl>
       </DialogBody>
       <DialogFooter>
         <SecondaryButton onClick={onCloseButtonClick} disabled={isSubmitting}>
