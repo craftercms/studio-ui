@@ -30,7 +30,7 @@ import PrimaryButton from '../PrimaryButton';
 import { isBlank } from '../../utils/string';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { PushToRemoteDialogContainerProps } from './utils';
-import { Checkbox, FormControlLabel, Switch } from '@mui/material';
+import { FormControlLabel, Switch } from '@mui/material';
 import { useUpdateRefs } from '../../hooks';
 import FormHelperText from '@mui/material/FormHelperText';
 import { useTheme } from '@mui/material/styles';
