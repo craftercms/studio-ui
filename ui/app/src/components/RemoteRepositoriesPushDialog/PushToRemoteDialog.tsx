@@ -21,8 +21,7 @@ import { EnhancedDialog } from '../EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
 
 export function PushToRemoteDialog(props: PushToRemoteDialogProps) {
-  const { branches, remoteName, onPushSuccess, onPushError, ...rest } = props;
-
+  const { branches, remoteName, onPushSuccess, onPushError, onSubmittingChange, ...rest } = props;
   return (
     <EnhancedDialog title={<FormattedMessage id="words.push" defaultMessage="Push" />} maxWidth="xs" {...rest}>
       <PushToRemoteDialogContainer
@@ -30,6 +29,8 @@ export function PushToRemoteDialog(props: PushToRemoteDialogProps) {
         remoteName={remoteName}
         onPushSuccess={onPushSuccess}
         onPushError={onPushError}
+        isSubmitting={rest.isSubmitting}
+        onSubmittingChange={onSubmittingChange}
       />
     </EnhancedDialog>
   );

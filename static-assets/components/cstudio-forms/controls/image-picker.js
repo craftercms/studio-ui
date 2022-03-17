@@ -237,6 +237,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
     imagePicker.$addBtn.text(CMgs.format(langBundle, 'replace'));
 
     imagePicker.noPreviewEl.style.display = 'none';
+    imagePicker.noPreviewEl.parentElement.classList.remove('no-selection');
     imagePicker.previewEl.style.display = 'inline';
     YAHOO.util.Dom.addClass(imagePicker.previewEl, 'cstudio-form-control-asset-picker-preview-content');
 
@@ -418,6 +419,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
       this.previewEl.style.display = 'none';
       this.previewEl.src = '';
       this.noPreviewEl.style.display = 'inline';
+      this.noPreviewEl.parentElement.classList.add('no-selection');
       this.$addBtn.text(CMgs.format(langBundle, 'add'));
       this.remote = false;
 
@@ -806,6 +808,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
 
     if (value === null || value === '') {
       this.noPreviewEl.style.display = 'inline';
+      this.noPreviewEl.parentElement.classList.add('no-selection');
     } else {
       if (this.external) {
         this.previewEl.src = value.replace(/ /g, '%20');
@@ -814,6 +817,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
       }
       this.previewEl.style.display = 'inline';
       this.noPreviewEl.style.display = 'none';
+      this.noPreviewEl.parentElement.classList.remove('no-selection');
       this.urlEl.textContent = this.external ? value.replace('?crafterCMIS=true', '') : value;
       this.downloadEl.href = this.external ? value.replace('?crafterCMIS=true', '') : value;
 
