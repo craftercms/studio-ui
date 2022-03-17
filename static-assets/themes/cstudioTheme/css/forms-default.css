@@ -1350,12 +1350,23 @@ body.yui-skin-cstudioTheme.masked {
   align-items: center;
 }
 
+.cstudio-form-control-input.cstudio-form-control-file-name,
+.cstudio-form-control-input-container.input-wrapper .input-path {
+  font-family: monospace;
+  font-size: 14px;
+}
+
 .cstudio-form-control-input.cstudio-form-control-file-name {
   border: 0;
   background: none;
   padding: 0;
   outline: none;
   width: auto;
+}
+
+.cstudio-form-control-input-container.input-wrapper .input-path {
+  overflow: hidden;
+  direction: rtl;
 }
 
 .cstudio-form-control-video-picker-container .url {
@@ -1386,10 +1397,6 @@ body.yui-skin-cstudioTheme.masked {
   border: 1px solid #ced4da;
   border-radius: 4px;
   padding: 10px 12px;
-}
-
-.cstudio-form-control-input-container.input-wrapper .input-path {
-  overflow: hidden;
 }
 
 .cstudio-form-control-input-container.disabled {

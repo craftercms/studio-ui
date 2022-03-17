@@ -306,9 +306,12 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
     }
   },
 
-  // dynamically adjust the input size according to its character count
-  adjustInputWidth: function (inputEl) {
-    inputEl.style.width = inputEl.value.length + 'ch';
+  // Dynamically adjust the input and the pathEl width according to the input's character count
+  adjustInputsWidth: function (inputEl, pathEl) {
+    const newLength = inputEl.value.length > 0 ? inputEl.value.length : 1;
+    inputEl.style.width = `${newLength}ch`;
+
+    pathEl.style.maxWidth = `calc(100% - ${newLength}ch)`;
   },
 
   render: function (config, containerEl) {
@@ -339,6 +342,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
     var pathEl = document.createElement('span');
     YAHOO.util.Dom.addClass(pathEl, 'input-path');
     pathEl.innerHTML = path + ' ';
+    this.pathEl = pathEl;
 
     var inputContainer = document.createElement('div');
     YAHOO.util.Dom.addClass(inputContainer, 'cstudio-form-control-input-container no-wrap input-wrapper');
@@ -347,13 +351,15 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
     controlWidgetContainerEl.appendChild(inputContainer);
 
     var inputEl = document.createElement('input');
+    inputEl.setAttribute('autocomplete', 'off');
     this.inputEl = inputEl;
     YAHOO.util.Dom.addClass(inputEl, 'datum');
     YAHOO.util.Dom.addClass(inputEl, 'cstudio-form-control-input');
     YAHOO.util.Dom.addClass(inputEl, 'cstudio-form-control-file-name');
 
-    inputEl.onkeydown = () => this.adjustInputWidth(inputEl);
-    inputEl.onfocusout = () => this.adjustInputWidth(inputEl);
+    inputEl.onkeyup = () => this.adjustInputsWidth(inputEl, pathEl);
+    inputEl.onchange = () => this.adjustInputsWidth(inputEl, pathEl);
+    pathEl.onclick = () => inputEl.focus();
 
     inputEl.id = 'studioFileName';
     inputContainer.appendChild(inputEl);
@@ -561,7 +567,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
     this.count(null, this.countEl, this.inputEl);
     this._onChange(null, this);
     this.edited = false;
-    this.adjustInputWidth(this.inputEl);
+    this.adjustInputsWidth(this.inputEl, this.pathEl);
   },
 
   _getValue: function () {
