@@ -170,7 +170,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
       )
     ),
   // endregion
-  // region drop, documentDrop
+  // region drop
   (action$: MouseEventActionObservable, state$) => {
     return action$.pipe(
       ofType('drop'),
@@ -185,7 +185,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
         const status = state.status;
         const dragContext = state.dragContext;
 
-        const checkStatus = () => {
+        const processDrop = () => {
           switch (status) {
             case EditingStatus.PLACING_DETACHED_ASSET: {
               const { dropZone } = dragContext;
@@ -271,12 +271,15 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
         const path = models[parentModelId ?? modelId].craftercms.path;
         const cachedSandboxItem = getCachedSandboxItem(path);
 
+        // TODO: In the case of "move", only locking the source dropzone currently.
         // The item unlock happens with write content API
         return lock(state.activeSite, path).pipe(
-          switchMap(() => {
+          tap(() => {
             // TODO: Remove when websocket is ready
             post(localItemLock({ path, username: state.username }));
-            return fetchSandboxItem(state.activeSite, path).pipe(
+          }),
+          switchMap(() =>
+            fetchSandboxItem(state.activeSite, path).pipe(
               switchMap((item) => {
                 if (item.stateMap.submitted || item.stateMap.scheduled) {
                   post(
@@ -288,35 +291,35 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
                   return message$.pipe(
                     filter((e) => e.type === requestWorkflowCancellationDialogOnResult.type),
                     take(1),
-                    switchMap(({ payload }) => {
+                    tap(({ payload }) => {
                       if (payload.type === 'onContinue') {
-                        // DOING NORMAL STUFF
-                        checkStatus();
-                        return NEVER;
+                        processDrop();
                       } else {
                         post(unlockItem({ path }));
-                        return NEVER;
                       }
-                    })
+                    }),
+                    ignoreElements()
                   );
-                } else if (item.commitId !== cachedSandboxItem.commitId) {
-                  post(
-                    validationMessage({
-                      id: 'outOfSyncContent',
-                      level: 'suggestion'
-                    })
-                  );
-                  post(unlockItem({ path }));
-                  window.location.reload();
-                  return NEVER;
                 } else {
-                  checkStatus();
-                  // DOING NORMAL STUFF
+                  if (item.commitId !== cachedSandboxItem.commitId) {
+                    post(
+                      validationMessage({
+                        id: 'outOfSyncContent',
+                        level: 'suggestion'
+                      })
+                    );
+                    post(unlockItem({ path }));
+                    setTimeout(() => {
+                      window.location.reload();
+                    });
+                  } else {
+                    processDrop();
+                  }
                   return NEVER;
                 }
               })
-            );
-          }),
+            )
+          ),
           catchError(({ response, status }) => {
             if (status === 409) {
               post(
@@ -333,6 +336,8 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
       })
     );
   },
+  // endregion
+  // region documentDrop
   (action$, state$) =>
     action$.pipe(
       ofType(documentDrop.type),
