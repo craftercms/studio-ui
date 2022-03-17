@@ -338,7 +338,7 @@ export default function AuditGridUI(props: AuditGridUIProps) {
         cellClassName: classes.cellRoot
       },
       {
-        field: 'clusterNode',
+        field: 'clusterNodeId',
         headerName: formatMessage(translations.clusterNode),
         width: 200,
         sortable: false,
