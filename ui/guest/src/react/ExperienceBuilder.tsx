@@ -218,7 +218,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
       const unload = () => worker.port.postMessage(sharedWorkerDisconnect());
       window.addEventListener('beforeunload', unload);
 
-      fromEvent<MessageEvent>(worker.port, 'message').subscribe((event) => {
+      const subscription = fromEvent<MessageEvent>(worker.port, 'message').subscribe((event) => {
         const { type, payload } = event.data;
         switch (type) {
           case sharedWorkerToken.type: {
@@ -229,6 +229,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
       });
       return () => {
         unload();
+        subscription.unsubscribe();
         window.removeEventListener('beforeunload', unload);
         worker.port.close();
       };
