@@ -215,9 +215,8 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
       });
       worker.port.start();
       worker.port.postMessage(sharedWorkerConnect());
-      window.addEventListener('beforeunload', function () {
-        worker.port.postMessage(sharedWorkerDisconnect());
-      });
+      const unload = () => worker.port.postMessage(sharedWorkerDisconnect());
+      window.addEventListener('beforeunload', unload);
 
       fromEvent<MessageEvent>(worker.port, 'message').subscribe((event) => {
         const { type, payload } = event.data;
@@ -229,7 +228,8 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
         }
       });
       return () => {
-        worker.port.postMessage(sharedWorkerDisconnect());
+        unload();
+        window.removeEventListener('beforeunload', unload);
         worker.port.close();
       };
     }
