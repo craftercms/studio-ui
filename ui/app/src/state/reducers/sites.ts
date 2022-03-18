@@ -43,7 +43,7 @@ export const initialState: GlobalState['sites'] = {
   isFetching: false
 };
 
-const reducer = createReducer<GlobalState['sites']>(initialState, {
+const reducer = /*#__PURE__*/ createReducer<GlobalState['sites']>(initialState, {
   [storeInitialized.type]: (state, { payload }) => ({
     ...state,
     byId: createLookupTable(payload.sites),

@@ -16,10 +16,7 @@
 
 import Cookies from 'js-cookie';
 import { setGlobalHeaders } from './ajax';
-
-const SITE_COOKIE_NAME = 'crafterSite';
-const XSRF_TOKEN_HEADER_NAME = 'X-XSRF-TOKEN';
-const XSRF_TOKEN_COOKIE_NAME = 'XSRF-TOKEN';
+import { SITE_COOKIE_NAME, XSRF_TOKEN_COOKIE_NAME, XSRF_TOKEN_HEADER_NAME } from './constants';
 
 export function getRequestForgeryToken(cookieName = XSRF_TOKEN_COOKIE_NAME): string {
   return Cookies.get(cookieName);
@@ -44,6 +41,10 @@ export function setJwt(token: string): void {
 
 export function getJwtHeaders(token: string): object {
   return { Authorization: `Bearer ${token}` };
+}
+
+export function getXSRFToken(): string {
+  return Cookies.get(XSRF_TOKEN_COOKIE_NAME);
 }
 
 export function getCookieDomain(): string {
