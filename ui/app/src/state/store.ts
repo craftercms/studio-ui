@@ -38,6 +38,7 @@ import {
   sharedWorkerToken,
   sharedWorkerUnauthenticated
 } from './actions/auth';
+import { SHARED_WORKER_NAME } from '../utils/constants';
 
 export type EpicMiddlewareDependencies = { getIntl: () => IntlShape; worker: SharedWorker };
 
@@ -82,7 +83,7 @@ export function getStore(): Observable<CrafterCMSStore> {
 function registerSharedWorker(): Observable<ObtainAuthTokenResponse & { worker: SharedWorker }> {
   if ('SharedWorker' in window) {
     const worker = new SharedWorker(`${process.env.PUBLIC_URL}/shared-worker.js`, {
-      name: 'authWorker',
+      name: SHARED_WORKER_NAME,
       credentials: 'same-origin'
     });
     worker.port.start();

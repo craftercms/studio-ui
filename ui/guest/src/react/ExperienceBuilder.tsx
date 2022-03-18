@@ -107,6 +107,7 @@ import {
   sharedWorkerToken
 } from '@craftercms/studio-ui/state/actions/auth';
 import { setJwt } from '@craftercms/studio-ui/utils/auth';
+import { SHARED_WORKER_NAME } from '@craftercms/studio-ui/utils/constants';
 
 // TODO: add themeOptions and global styles customising
 interface BaseXBProps {
@@ -209,16 +210,15 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
   useEffect(() => {
     if (hasHost && authoringBase) {
       const worker = new SharedWorker(`${authoringBase}/static-assets/next/shared-worker.js`, {
-        name: 'authWorker',
+        name: SHARED_WORKER_NAME,
         credentials: 'same-origin'
       });
       worker.port.start();
       worker.port.postMessage(sharedWorkerConnect());
-      window.addEventListener('beforeunload', function () {
-        worker.port.postMessage(sharedWorkerDisconnect());
-      });
+      const unload = () => worker.port.postMessage(sharedWorkerDisconnect());
+      window.addEventListener('beforeunload', unload);
 
-      fromEvent<MessageEvent>(worker.port, 'message').subscribe((event) => {
+      const subscription = fromEvent<MessageEvent>(worker.port, 'message').subscribe((event) => {
         const { type, payload } = event.data;
         switch (type) {
           case sharedWorkerToken.type: {
@@ -227,6 +227,12 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
           }
         }
       });
+      return () => {
+        unload();
+        subscription.unsubscribe();
+        window.removeEventListener('beforeunload', unload);
+        worker.port.close();
+      };
     }
   }, [authoringBase, hasHost]);
 

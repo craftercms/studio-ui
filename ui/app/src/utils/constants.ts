@@ -88,3 +88,8 @@ export const LEGACY_PREVIEW_URL_PATH = '/preview';
 // The `scripts_o` field id has a special mapping in Engine. People use the node-selector control to include
 // groovy scripts. These aren't actually components and should be treated differently.
 export const pageControllersFieldId = 'scripts_o';
+
+export const SHARED_WORKER_NAME = 'CrafterCMS-Worker';
+export const SITE_COOKIE_NAME = 'crafterSite';
+export const XSRF_TOKEN_HEADER_NAME = 'X-XSRF-TOKEN';
+export const XSRF_TOKEN_COOKIE_NAME = 'XSRF-TOKEN';
