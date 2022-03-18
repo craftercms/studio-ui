@@ -81,6 +81,7 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
   const [filtersLookup, setFiltersLookup] = useSpreadState<LookupTable<boolean>>(createPresenceTable(states, false));
   const [pathRegex, setPathRegex] = useState('');
   const [debouncePathRegex, setDebouncePathRegex] = useState('');
+  const [invalidPathRegex, setInvalidPathRegex] = useState(false);
   const [offset, setOffset] = useState(0);
   const [limit, setLimit] = useState(10);
   const [selectedItems, setSelectedItems] = useState<LookupTable<SandboxItem>>({});
@@ -140,7 +141,15 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
     useCallback(
       (keyword: string) => {
         clearSelectedItems();
-        setDebouncePathRegex(keyword);
+
+        try {
+          new RegExp(keyword);
+          setDebouncePathRegex(keyword);
+          setInvalidPathRegex(false);
+        } catch (e) {
+          // Not a valid regex
+          setInvalidPathRegex(true);
+        }
       },
       [setDebouncePathRegex]
     ),
@@ -378,11 +387,19 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
               label={<FormattedMessage id="itemStates.pathRegex" defaultMessage="Path (regex)" />}
               fullWidth
               variant="outlined"
+              error={invalidPathRegex}
               FormHelperTextProps={{
                 className: classes.helperText
               }}
               helperText={
-                <FormattedMessage id="itemStates.pathRegexHelperText" defaultMessage="Use a path-matching regex" />
+                invalidPathRegex ? (
+                  <FormattedMessage
+                    id="itemStates.invalidPathRegexHelperText"
+                    defaultMessage="The regular expression is invalid"
+                  />
+                ) : (
+                  <FormattedMessage id="itemStates.pathRegexHelperText" defaultMessage="Use a path-matching regex" />
+                )
               }
             />
             <FormControl component="fieldset" className={classes.formControl}>
