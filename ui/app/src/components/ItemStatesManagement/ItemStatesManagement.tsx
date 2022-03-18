@@ -395,7 +395,7 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
                 invalidPathRegex ? (
                   <FormattedMessage
                     id="itemStates.invalidPathRegexHelperText"
-                    defaultMessage="Not a valid regular expression"
+                    defaultMessage="The regular expression is invalid"
                   />
                 ) : (
                   <FormattedMessage id="itemStates.pathRegexHelperText" defaultMessage="Use a path-matching regex" />
