@@ -408,9 +408,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
 
     for (var i = 0; i < config.properties.length; i++) {
       var prop = config.properties[i];
-      if (prop.name == 'size') {
-        // inputEl.size = prop.value;
-      } else if (prop.name == 'maxlength') {
+      if (prop.name == 'maxlength') {
         inputEl.maxlength = prop.value;
       }
 
@@ -621,7 +619,6 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
 
   getSupportedProperties: function () {
     return [
-      { label: CMgs.format(langBundle, 'size'), name: 'size', type: 'int', defaultValue: '50' },
       {
         label: CMgs.format(langBundle, 'maxLength'),
         name: 'maxlength',
