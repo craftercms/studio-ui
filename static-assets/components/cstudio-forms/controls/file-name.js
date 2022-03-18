@@ -306,6 +306,14 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
     }
   },
 
+  // Dynamically adjust the input and the pathEl width according to the input's character count
+  adjustInputsWidth: function (inputEl, pathEl) {
+    const newLength = inputEl.value.length > 0 ? inputEl.value.length : 1;
+    inputEl.style.width = `${newLength}ch`;
+
+    pathEl.style.maxWidth = `calc(100% - ${newLength}ch)`;
+  },
+
   render: function (config, containerEl) {
     // we need to make the general layout of a control inherit from common
     // you should be able to override it -- but most of the time it wil be the same
@@ -334,6 +342,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
     var pathEl = document.createElement('span');
     YAHOO.util.Dom.addClass(pathEl, 'input-path');
     pathEl.innerHTML = path + ' ';
+    this.pathEl = pathEl;
 
     var inputContainer = document.createElement('div');
     YAHOO.util.Dom.addClass(inputContainer, 'cstudio-form-control-input-container no-wrap input-wrapper');
@@ -342,10 +351,16 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
     controlWidgetContainerEl.appendChild(inputContainer);
 
     var inputEl = document.createElement('input');
+    inputEl.setAttribute('autocomplete', 'off');
     this.inputEl = inputEl;
     YAHOO.util.Dom.addClass(inputEl, 'datum');
     YAHOO.util.Dom.addClass(inputEl, 'cstudio-form-control-input');
     YAHOO.util.Dom.addClass(inputEl, 'cstudio-form-control-file-name');
+
+    inputEl.onkeyup = () => this.adjustInputsWidth(inputEl, pathEl);
+    inputEl.onchange = () => this.adjustInputsWidth(inputEl, pathEl);
+    pathEl.onclick = () => inputEl.focus();
+
     inputEl.id = 'studioFileName';
     inputContainer.appendChild(inputEl);
 
@@ -393,9 +408,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
 
     for (var i = 0; i < config.properties.length; i++) {
       var prop = config.properties[i];
-      if (prop.name == 'size') {
-        inputEl.size = prop.value;
-      } else if (prop.name == 'maxlength') {
+      if (prop.name == 'maxlength') {
         inputEl.maxlength = prop.value;
       }
 
@@ -552,6 +565,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
     this.count(null, this.countEl, this.inputEl);
     this._onChange(null, this);
     this.edited = false;
+    this.adjustInputsWidth(this.inputEl, this.pathEl);
   },
 
   _getValue: function () {
@@ -605,7 +619,6 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
 
   getSupportedProperties: function () {
     return [
-      { label: CMgs.format(langBundle, 'size'), name: 'size', type: 'int', defaultValue: '50' },
       {
         label: CMgs.format(langBundle, 'maxLength'),
         name: 'maxlength',
