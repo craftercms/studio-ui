@@ -115,7 +115,7 @@ body {
 			padding: 20px 20px 20px 0;
 			border-radius: 5px;
 			float: left;
-			height: calc(100vh - 95px);
+			height: calc(100vh - 117px);
 
 			.jstree-default {
 				.jstree-node > .jstree-icon {
@@ -427,6 +427,7 @@ body {
 
 	::-webkit-scrollbar {
 	    width: 8px;
+      height: 10px;
 	}
 
 	::-webkit-scrollbar-thumb:hover {
