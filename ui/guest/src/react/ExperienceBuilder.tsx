@@ -228,6 +228,10 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
           }
         }
       });
+      return () => {
+        worker.port.postMessage(sharedWorkerDisconnect());
+        worker.port.close();
+      };
     }
   }, [authoringBase, hasHost]);
 
