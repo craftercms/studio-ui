@@ -49,13 +49,36 @@ export const itemDuplicated = /*#__PURE__*/ createAction<{ target: string; resul
 
 export const itemUnlocked = /*#__PURE__*/ createAction<{ target: string }>('ITEM_UNLOCKED');
 
-export const itemlocked = /*#__PURE__*/ createAction<{ target: string }>('ITEM_LOCKED');
+export const itemLocked = /*#__PURE__*/ createAction<{ target: string }>('ITEM_LOCKED');
 
 export const itemsRejected = /*#__PURE__*/ createAction<{ targets: string[] }>('ITEMS_REJECTED');
 
 export const itemsScheduled = /*#__PURE__*/ createAction<{ targets: string[] }>('ITEMS_SCHEDULED');
 
 export const itemsApproved = /*#__PURE__*/ createAction<{ targets: string[] }>('ITEMS_APPROVED');
+
+interface Person {
+  username: string;
+  firstName: string;
+  lastName: string;
+}
+
+interface SocketEventBase {
+  targetPath: string;
+  user: Person;
+}
+
+export const lockContentEvent = /*#__PURE__*/ createAction<SocketEventBase & { locked: boolean }>('LOCK_CONTENT_EVENT');
+
+export const contentEvent = /*#__PURE__*/ createAction<SocketEventBase>('CONTENT_EVENT');
+
+export const configurationEvent = /*#__PURE__*/ createAction<SocketEventBase>('CONFIGURATION_EVENT');
+
+export const publishEvent = /*#__PURE__*/ createAction('PUBLISH_EVENT');
+
+export const repositoryEvent = /*#__PURE__*/ createAction('REPOSITORY_EVENT');
+
+export const workflowEvent = /*#__PURE__*/ createAction('WORKFLOW_EVENT');
 
 // endregion
 
@@ -136,3 +159,5 @@ export const fetchUseLegacyPreviewPreferenceFailed = /*#__PURE__*/ createAction(
 
 export const blockUI = /*#__PURE__*/ createAction<Partial<UIBlockerStateProps>>('BLOCK_UI');
 export const unblockUI = /*#__PURE__*/ createAction('UNBLOCK_UI');
+
+export const openSiteSocket = /*#__PURE__*/ createAction<{ site: string; xsrfToken: string }>('OPEN_SITE_SOCKET');

@@ -107,6 +107,7 @@ import {
   sharedWorkerToken
 } from '@craftercms/studio-ui/state/actions/auth';
 import { setJwt } from '@craftercms/studio-ui/utils/auth';
+import { SHARED_WORKER_NAME } from '@craftercms/studio-ui/utils/constants';
 
 // TODO: add themeOptions and global styles customising
 interface BaseXBProps {
@@ -209,7 +210,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
   useEffect(() => {
     if (hasHost && authoringBase) {
       const worker = new SharedWorker(`${authoringBase}/static-assets/next/shared-worker.js`, {
-        name: 'authWorker',
+        name: SHARED_WORKER_NAME,
         credentials: 'same-origin'
       });
       worker.port.start();

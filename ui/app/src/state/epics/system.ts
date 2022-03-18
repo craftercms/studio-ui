@@ -38,6 +38,7 @@ import {
   fetchUseLegacyPreviewPreferenceComplete,
   fetchUseLegacyPreviewPreferenceFailed,
   messageSharedWorker,
+  openSiteSocket,
   showCopyItemSuccessNotification,
   showCreateFolderSuccessNotification,
   showCreateItemSuccessNotification,
@@ -75,6 +76,7 @@ import {
 import { fetchSiteConfig } from '../actions/configuration';
 import { getStoredShowToolsPanel } from '../../utils/state';
 import { closeToolsPanel, openToolsPanel } from '../actions/preview';
+import { getXSRFToken } from '../../utils/auth';
 
 const systemEpics: CrafterCMSEpic[] = [
   // region storeInitialized
@@ -95,6 +97,7 @@ const systemEpics: CrafterCMSEpic[] = [
             ? [
                 startPublishingStatusFetcher(),
                 fetchSiteConfig(),
+                messageSharedWorker(openSiteSocket({ site: state.sites.active, xsrfToken: getXSRFToken() })),
                 showToolsPanel === null || state.preview.showToolsPanel === showToolsPanel
                   ? false
                   : state.preview.showToolsPanel
@@ -110,7 +113,11 @@ const systemEpics: CrafterCMSEpic[] = [
   (action$) =>
     action$.pipe(
       ofType(changeSite.type),
-      switchMap(() => [startPublishingStatusFetcher(), fetchSiteConfig()])
+      switchMap(({ payload: { nextSite } }) => [
+        startPublishingStatusFetcher(),
+        fetchSiteConfig(),
+        messageSharedWorker(openSiteSocket({ site: nextSite, xsrfToken: getXSRFToken() }))
+      ])
     ),
   // endregion
   // region emitSystemEvent
