@@ -115,7 +115,7 @@ export const fieldIdMapping = {
   origin: 'origin',
   operation: 'operations',
   primaryTargetValue: 'target',
-  clusterNode: 'clusterNodeId'
+  clusterNodeId: 'clusterNodeId'
 };
 
 export default function AuditGridUI(props: AuditGridUIProps) {
@@ -338,12 +338,12 @@ export default function AuditGridUI(props: AuditGridUIProps) {
         cellClassName: classes.cellRoot
       },
       {
-        field: 'clusterNode',
+        field: 'clusterNodeId',
         headerName: formatMessage(translations.clusterNode),
         width: 200,
         sortable: false,
         cellClassName: classes.cellRoot,
-        headerClassName: filters[fieldIdMapping['clusterNode']] && classes.activeFilter,
+        headerClassName: filters[fieldIdMapping['clusterNodeId']] && classes.activeFilter,
         renderCell: (params: GridCellParams) => {
           return (
             <Typography variant="body2" className={classes.ellipsis} title={params.value?.toString()}>
