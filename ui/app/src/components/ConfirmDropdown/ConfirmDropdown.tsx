@@ -109,11 +109,12 @@ export function ConfirmDropdown(props: ConfirmDropdownProps) {
 
   // Not memoizing causes the menu to get misplaced upon opening.
   const iconButton = useMemo(
-    () => (
-      <IconButton color={iconColor} onClick={(e) => setAnchorEl(e.currentTarget)} size={size} disabled={disabled}>
-        <Icon />
-      </IconButton>
-    ),
+    () =>
+      Icon ? (
+        <IconButton color={iconColor} onClick={(e) => setAnchorEl(e.currentTarget)} size={size} disabled={disabled}>
+          <Icon />
+        </IconButton>
+      ) : null,
     [Icon, disabled, iconColor, size]
   );
 

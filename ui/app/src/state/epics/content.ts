@@ -69,7 +69,7 @@ import {
   blockUI,
   emitSystemEvent,
   itemDuplicated,
-  itemlocked,
+  itemLocked,
   itemsPasted,
   itemUnlocked,
   showDeleteItemSuccessNotification,
@@ -270,7 +270,7 @@ const content: CrafterCMSEpic[] = [
           map(() =>
             batchActions([
               lockItemCompleted({ path: payload.path, username: state.user.username }),
-              emitSystemEvent(itemlocked({ target: payload.path }))
+              emitSystemEvent(itemLocked({ target: payload.path }))
             ])
           ),
           catchAjaxError((r) => {

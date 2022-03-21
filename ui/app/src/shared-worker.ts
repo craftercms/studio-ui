@@ -13,6 +13,9 @@ import {
   sharedWorkerUnauthenticated
 } from './state/actions/auth';
 import { AjaxError } from 'rxjs/ajax';
+import { SHARED_WORKER_NAME, XSRF_TOKEN_HEADER_NAME } from './utils/constants';
+import { Client, StompSubscription } from '@stomp/stompjs';
+import { emitSystemEvent, openSiteSocket } from './state/actions/system';
 
 declare const self: SharedWorkerGlobalScope;
 
@@ -28,15 +31,16 @@ let current: ObtainAuthTokenResponse = {
 };
 let refreshInterval;
 let isRetrieving = false;
+let isProduction = process.env.PRODUCTION !== 'development';
+let socketClient: Client;
 
-const log =
-  process.env.PRODUCTION === 'development'
-    ? (message, ...args) => console.log(`%c[SharedWorker] ${message}.`, 'color: #0071A4', ...args)
-    : () => void 0;
+const log = !isProduction
+  ? (message, ...args) => console.log(`%c[SharedWorker] ${message}.`, 'color: #0071A4', ...args)
+  : () => void 0;
 
 function onmessage(event) {
   log('Message received from page', event.data);
-  if (self.name !== 'authWorker') {
+  if (self.name !== SHARED_WORKER_NAME) {
     // Using name as an additional security mechanism
     return;
   }
@@ -80,6 +84,9 @@ function onmessage(event) {
       log('Client disconnected');
       clients = clients.filter((client) => client !== event.target);
       break;
+    case openSiteSocket.type:
+      openSocket(event.data.payload);
+      break;
     default:
       log(`Received unknown action: "${type}"`);
       break;
@@ -105,11 +112,7 @@ function unauthenticated(excludeClient?: MessagePort) {
 
 function retrieve() {
   clearTimeout(timeout);
-  if (isExpired()) {
-    log(`Skipping token retrieval: local expiration check determined auth is expired`);
-    unauthenticated();
-    return null;
-  } else if (!isRetrieving) {
+  if (!isRetrieving) {
     isRetrieving = true;
     return obtainAuthToken().subscribe({
       next(response) {
@@ -155,6 +158,41 @@ function broadcast(message: StandardAction, excludedClient?: MessagePort) {
   (excludedClient ? clients.filter((client) => client !== excludedClient) : clients).forEach((client) => {
     client.postMessage(message);
   });
+}
+
+function openSocket({ site, xsrfToken }) {
+  if (socketClient) {
+    // noinspection JSIgnoredPromiseFromCall
+    socketClient.deactivate();
+  }
+  let subscription: StompSubscription;
+  socketClient = new Client({
+    brokerURL: `ws://${isProduction ? self.location.host : 'localhost:8080'}/studio/events`,
+    ...(!isProduction && { debug: log }),
+    connectHeaders: { [XSRF_TOKEN_HEADER_NAME]: xsrfToken },
+    onConnect() {
+      subscription = socketClient.subscribe(`/topic/studio/${site}`, (message) => {
+        if (message.body) {
+          if (message.headers['content-type'] === 'application/json') {
+            const payload = JSON.parse(message.body);
+            const action = { type: payload.eventType, payload };
+            broadcast(emitSystemEvent(action));
+          } else {
+            log(
+              `Received an non-json message from websocket. Content type header value was ${message.headers['content-type']}`
+            );
+          }
+        } else {
+          log('Received an empty message from websocket.');
+        }
+      });
+    },
+    onDisconnect() {
+      // TODO: When site is changed, subscription is terminated?
+      subscription?.unsubscribe();
+    }
+  });
+  socketClient.activate();
 }
 
 self.onconnect = (e) => {

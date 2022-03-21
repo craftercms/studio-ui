@@ -73,7 +73,6 @@ import {
   deleteController,
   deleteTemplate,
   duplicateWithPolicyValidation,
-  lockItem,
   pasteItem,
   pasteItemWithPolicyValidation,
   reloadDetailedItem,
