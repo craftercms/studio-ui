@@ -24,7 +24,7 @@ import { getParentPath, getRootPath, withoutIndex } from '../../utils/path';
 import { createFolder, renameFolder } from '../../services/content';
 import { batchActions } from '../../state/actions/misc';
 import { updateCreateFolderDialog } from '../../state/actions/dialogs';
-import { emitSystemEvent, folderCreated, folderRenamed } from '../../state/actions/system';
+import { emitSystemEvent, folderCreated } from '../../state/actions/system';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { validateActionPolicy } from '../../services/sites';
 import { translations } from './translations';
@@ -65,8 +65,7 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
             updateCreateFolderDialog({
               isSubmitting: false,
               hasPendingChanges: false
-            }),
-            emitSystemEvent(folderRenamed({ target: path, oldName: value, newName: name }))
+            })
           ])
         );
       },

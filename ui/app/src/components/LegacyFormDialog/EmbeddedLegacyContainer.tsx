@@ -22,7 +22,6 @@ import { useDispatch } from 'react-redux';
 import { ApiResponse } from '../../models/ApiResponse';
 import { fromEvent } from 'rxjs';
 import { filter } from 'rxjs/operators';
-import { emitSystemEvent, itemCreated, itemUpdated } from '../../state/actions/system';
 import {
   EMBEDDED_LEGACY_CHANGE_TO_EDIT_MODE,
   EMBEDDED_LEGACY_FORM_CLOSE,
@@ -128,13 +127,8 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
   const onSave = useCallback(
     (data) => {
       onSaveSuccess?.(data);
-      if (data.isNew) {
-        dispatch(emitSystemEvent(itemCreated({ target: data.item.uri })));
-      } else {
-        dispatch(emitSystemEvent(itemUpdated({ target: path })));
-      }
     },
-    [dispatch, onSaveSuccess, path]
+    [onSaveSuccess]
   );
 
   useEffect(() => {

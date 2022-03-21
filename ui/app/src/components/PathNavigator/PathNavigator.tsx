@@ -45,15 +45,13 @@ import { StateStylingProps } from '../../models/UiConfig';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { debounceTime, filter } from 'rxjs/operators';
 import {
+  contentEvent,
   folderCreated,
-  folderRenamed,
-  itemCreated,
   itemDuplicated,
   itemsDeleted,
   itemsPasted,
   itemsUploaded,
   itemUnlocked,
-  itemUpdated,
   pluginInstalled
 } from '../../state/actions/system';
 import PathNavigatorUI from './PathNavigatorUI';
@@ -238,50 +236,41 @@ export function PathNavigator(props: PathNavigatorProps) {
   // Item Updates Propagation
   useEffect(() => {
     const events = [
+      contentEvent.type,
       itemsPasted.type,
-      itemUpdated.type,
       itemUnlocked.type,
       folderCreated.type,
-      folderRenamed.type,
       itemsDeleted.type,
       itemDuplicated.type,
-      itemCreated.type,
       pluginInstalled.type,
       itemsUploaded.type
     ];
     const hostToHost$ = getHostToHostBus();
     const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
       switch (type) {
-        case itemCreated.type:
-        case itemUpdated.type:
-        case folderRenamed.type: {
-          const parentPath = getParentPath(payload.target);
+        // itemCreated, itemUpdated, folderRenamed, itemDuplicated (not coming as contentEvent)
+        case itemDuplicated.type:
+        case contentEvent.type: {
+          console.log('contentEvent', type, payload);
+          const parentPath = getParentPath(payload.targetPath);
           if (parentPath === withoutIndex(state.currentPath)) {
+            // If item is direct children of root (in current pathNavigator view)
             dispatch(pathNavigatorRefresh({ id }));
-          } else if (withoutIndex(payload.target) === withoutIndex(state.currentPath)) {
-            dispatch(
-              batchActions([
-                pathNavigatorUpdate({
-                  id,
-                  currentPath: payload.target.replace(payload.oldName, payload.newName)
-                }),
-                pathNavigatorRefresh({ id })
-              ])
-            );
+          } else if (withoutIndex(payload.targetPath) === withoutIndex(state.currentPath)) {
+            // If item is root (in current pathNavigator view)
+            // If the action is a deletion (targetPath doesn't exist, then this case would require to set parentPath
+            // as the currentPath
+            // TODO: how to determine that item doesn't exist
+
+            dispatch(pathNavigatorRefresh({ id }));
           } else if (getParentPath(parentPath) === withoutIndex(state.currentPath)) {
+            // if item just belongs to parent item
             dispatch(fetchSandboxItem({ path: parentPath, force: true }));
           }
           break;
         }
-        case itemDuplicated.type: {
-          const parentPath = getParentPath(payload.target);
-          if (parentPath === withoutIndex(state.currentPath)) {
-            dispatch(pathNavigatorRefresh({ id }));
-          }
-          break;
-        }
-        case folderCreated.type:
-        case itemsPasted.type: {
+        // TODO: not coming from contentEvent, but it seems like it can be added in the same case
+        case folderCreated.type: {
           if (type === folderCreated.type || payload.clipboard.type === 'COPY') {
             if (withoutIndex(payload.target) === withoutIndex(state.currentPath)) {
               dispatch(pathNavigatorRefresh({ id }));
@@ -317,6 +306,7 @@ export function PathNavigator(props: PathNavigatorProps) {
           break;
         }
         case itemsUploaded.type: {
+          // TODO: I see no upload in pathNavigator, is this still valid?
           if (withoutIndex(payload.target) === withoutIndex(state.currentPath)) {
             dispatch(pathNavigatorRefresh({ id }));
           }

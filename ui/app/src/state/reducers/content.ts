@@ -26,12 +26,9 @@ import {
   fetchQuickCreateListFailed,
   fetchSandboxItem,
   fetchSandboxItemComplete,
-  localItemLock,
-  lockItemCompleted,
   reloadDetailedItem,
   restoreClipboard,
   setClipboard,
-  unlockItemCompleted,
   updateItemsByPath
 } from '../actions/content';
 import QuickCreateItem from '../../models/content/QuickCreateItem';
@@ -55,6 +52,7 @@ import {
 import { GetChildrenResponse } from '../../models/GetChildrenResponse';
 import LookupTable from '../../models/LookupTable';
 import { STATE_LOCKED_MASK } from '../../utils/constants';
+import { emitSystemEvent, lockContentEvent } from '../actions/system';
 
 type ContentState = GlobalState['content'];
 
@@ -252,19 +250,23 @@ const reducer = createReducer<ContentState>(initialState, {
     });
     return { ...state, itemsByPath: { ...state.itemsByPath, ...nextByPath } };
   },
-  [unlockItemCompleted.type]: (state, { payload }) => {
-    return updateItemLockState(state, { path: payload.path, username: payload.username, locked: false });
-  },
-  [lockItemCompleted.type]: (state, { payload }) => {
-    return updateItemLockState(state, { path: payload.path, username: payload.username, locked: true });
-  },
-  [localItemLock.type]: (state, { payload }) => {
-    return updateItemLockState(state, { path: payload.path, username: payload.username, locked: true });
-  },
   [updateItemsByPath.type]: (state, { payload }) => {
     return updateItemByPath(state, { payload: { parent: null, children: payload.items } });
   },
-  [changeSite.type]: () => initialState
+  [changeSite.type]: () => initialState,
+  [emitSystemEvent.type]: (state, { payload: event }) => {
+    const { type, payload } = event;
+
+    if (type === lockContentEvent.type) {
+      return updateItemLockState(state, {
+        path: payload.targetPath,
+        username: payload.user.username,
+        locked: payload.locked
+      });
+    } else {
+      return state;
+    }
+  }
 });
 
 export default reducer;

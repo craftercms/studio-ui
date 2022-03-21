@@ -56,6 +56,7 @@ import { useSubject } from '../../hooks/useSubject';
 import { useDetailedItem } from '../../hooks/useDetailedItem';
 import { debounceTime, filter } from 'rxjs/operators';
 import {
+  contentEvent,
   folderCreated,
   folderRenamed,
   itemCreated,
@@ -290,6 +291,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   // region Item Updates Propagation
   useEffect(() => {
     const events = [
+      contentEvent.type,
       itemsPasted.type,
       itemUpdated.type,
       folderCreated.type,
@@ -303,6 +305,22 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     const hostToHost$ = getHostToHostBus();
     const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
       switch (type) {
+        case itemDuplicated.type:
+        case contentEvent.type: {
+          // item updated, itemCreated, folderRenamed
+          const parentPath = getParentPath(payload.targetPath);
+          const node = lookupItemByPath(parentPath, nodesByPathRef.current);
+          const path = node?.id;
+          if (path) {
+            dispatch(
+              pathNavigatorTreeFetchPathChildren({
+                id,
+                path
+              })
+            );
+          }
+          break;
+        }
         case itemsPasted.type:
         case folderCreated.type: {
           if (payload.clipboard?.type === 'CUT') {
@@ -340,23 +358,6 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
                 })
               );
             }
-          }
-          break;
-        }
-        case folderRenamed.type:
-        case itemDuplicated.type:
-        case itemUpdated.type:
-        case itemCreated.type: {
-          const parentPath = getParentPath(payload.target);
-          const node = lookupItemByPath(parentPath, nodesByPathRef.current);
-          const path = node?.id;
-          if (path) {
-            dispatch(
-              pathNavigatorTreeFetchPathChildren({
-                id,
-                path
-              })
-            );
           }
           break;
         }

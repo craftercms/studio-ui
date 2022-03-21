@@ -37,7 +37,6 @@ import Menu from '@mui/material/Menu';
 import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
 import LookupTable from '../../models/LookupTable';
 import { isItemLockedForMe, isLockedState } from '../../utils/content';
-import { localItemLock } from '../../state/actions/content';
 import { useContentTypes } from '../../hooks/useContentTypes';
 import { useActiveUser } from '../../hooks/useActiveUser';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
@@ -105,9 +104,6 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
       fetchContentXML(site, item.path, { ...(!isLockedState(item.state) && { lock: !readonly }) }).subscribe((xml) => {
         setContent(xml);
         setLoading(false);
-        if (!readonly) {
-          dispatch(localItemLock({ path: item.path, username: user.username }));
-        }
         dispatch(
           updateCodeEditorDialog({
             isSubmitting: false
