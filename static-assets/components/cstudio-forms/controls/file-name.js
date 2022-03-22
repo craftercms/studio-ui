@@ -359,7 +359,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
 
     inputEl.onkeyup = () => this.adjustInputsWidth(inputEl, pathEl);
     inputEl.onchange = () => this.adjustInputsWidth(inputEl, pathEl);
-    pathEl.onclick = () => inputEl.focus();
+    inputContainer.onclick = () => inputEl.focus();
 
     inputEl.id = 'studioFileName';
     inputContainer.appendChild(inputEl);
