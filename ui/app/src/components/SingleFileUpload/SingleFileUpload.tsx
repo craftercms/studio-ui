@@ -30,7 +30,6 @@ import { getGlobalHeaders } from '../../utils/ajax';
 import { validateActionPolicy } from '../../services/sites';
 import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
 import { UppyFile } from '@uppy/utils';
-import { emitSystemEvent, itemCreated } from '../../state/actions/system';
 import { useDispatch } from 'react-redux';
 import Typography from '@mui/material/Typography';
 import clsx from 'clsx';
@@ -179,7 +178,6 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 
   useEffect(() => {
     const onUploadSuccess = (file) => {
-      dispatch(emitSystemEvent(itemCreated({ target: path + file.name })));
       setDescription(`${formatMessage(messages.uploadedFile)}:`);
     };
 

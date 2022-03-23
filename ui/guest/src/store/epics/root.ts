@@ -87,7 +87,7 @@ import $ from 'jquery';
 import { extractCollectionItem } from '@craftercms/studio-ui/utils/model';
 import { getParentModelId } from '../../utils/ice';
 import { fetchSandboxItem, lock } from '@craftercms/studio-ui/services/content';
-import { localItemLock, unlockItem } from '@craftercms/studio-ui/state/actions/content';
+import { unlockItem } from '@craftercms/studio-ui/state/actions/content';
 
 const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
   // region mouseover, mouseleave
@@ -274,10 +274,6 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
         // TODO: In the case of "move", only locking the source dropzone currently.
         // The item unlock happens with write content API
         return lock(state.activeSite, path).pipe(
-          tap(() => {
-            // TODO: Remove when websocket is ready
-            post(localItemLock({ path, username: state.username }));
-          }),
           switchMap(() =>
             fetchSandboxItem(state.activeSite, path).pipe(
               switchMap((item) => {
@@ -448,8 +444,6 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 
                 return lock(state.activeSite, path).pipe(
                   switchMap(() => {
-                    // TODO: Remove when websocket is ready
-                    post(localItemLock({ path, username: state.username }));
                     return fetchSandboxItem(state.activeSite, path).pipe(
                       switchMap((item) => {
                         if (item.stateMap.submitted || item.stateMap.scheduled) {

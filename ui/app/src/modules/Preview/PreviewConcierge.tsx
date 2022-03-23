@@ -109,7 +109,6 @@ import {
 } from '../../utils/state';
 import {
   fetchSandboxItem,
-  localItemLock,
   reloadDetailedItem,
   restoreClipboard,
   unlockItem,
@@ -998,8 +997,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           break;
         }
         // region actions whitelisted
-        case unlockItem.type:
-        case localItemLock.type: {
+        case unlockItem.type: {
           dispatch(action);
           break;
         }

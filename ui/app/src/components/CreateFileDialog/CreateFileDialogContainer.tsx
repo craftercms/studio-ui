@@ -19,7 +19,6 @@ import { useDispatch } from 'react-redux';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { createFile } from '../../services/content';
-import { emitSystemEvent, itemCreated } from '../../state/actions/system';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { validateActionPolicy } from '../../services/sites';
 import DialogBody from '../DialogBody/DialogBody';
@@ -46,13 +45,10 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
       next() {
         onCreated?.({ path, fileName, mode: getExtension(type), openOnSuccess: true });
         dispatch(
-          batchActions([
-            updateCreateFileDialog({
-              hasPendingChanges: false,
-              isSubmitting: false
-            }),
-            emitSystemEvent(itemCreated({ target: `${path}/${fileName}` }))
-          ])
+          updateCreateFileDialog({
+            hasPendingChanges: false,
+            isSubmitting: false
+          })
         );
       },
       error(response) {

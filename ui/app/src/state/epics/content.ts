@@ -41,8 +41,7 @@ import {
   pasteItem,
   pasteItemWithPolicyValidation,
   reloadDetailedItem,
-  unlockItem,
-  unlockItemCompleted
+  unlockItem
 } from '../actions/content';
 import { catchAjaxError } from '../../utils/ajax';
 import {
@@ -69,9 +68,6 @@ import {
   blockUI,
   emitSystemEvent,
   itemDuplicated,
-  itemLocked,
-  itemsPasted,
-  itemUnlocked,
   showDeleteItemSuccessNotification,
   showDuplicatedItemSuccessNotification,
   showPasteItemSuccessNotification,
@@ -247,15 +243,7 @@ const content: CrafterCMSEpic[] = [
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
         return unlock(state.sites.active, payload.path).pipe(
-          map(() =>
-            batchActions(
-              [
-                unlockItemCompleted({ path: payload.path }),
-                emitSystemEvent(itemUnlocked({ target: payload.path })),
-                payload.notify === false && showUnlockItemSuccessNotification()
-              ].filter(Boolean)
-            )
-          )
+          map(() => batchActions([payload.notify === false && showUnlockItemSuccessNotification()].filter(Boolean)))
         );
       })
     ),
@@ -267,12 +255,7 @@ const content: CrafterCMSEpic[] = [
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) =>
         lock(state.sites.active, payload.path).pipe(
-          map(() =>
-            batchActions([
-              lockItemCompleted({ path: payload.path, username: state.user.username }),
-              emitSystemEvent(itemLocked({ target: payload.path }))
-            ])
-          ),
+          map(() => lockItemCompleted({ path: payload.path, username: state.user.username })),
           catchAjaxError((r) => {
             console.error(r);
             return lockItemFailed();
@@ -289,15 +272,7 @@ const content: CrafterCMSEpic[] = [
       filter(([{ payload }, state]) => state.content.itemsByPath[payload.path].lockOwner === state.user.username),
       switchMap(([{ payload }, state]) =>
         unlock(state.sites.active, payload.path).pipe(
-          map(() =>
-            batchActions(
-              [
-                unlockItemCompleted({ path: payload.path }),
-                emitSystemEvent(itemUnlocked({ target: payload.path })),
-                payload.notify === false && showUnlockItemSuccessNotification()
-              ].filter(Boolean)
-            )
-          )
+          map(() => batchActions([payload.notify === false && showUnlockItemSuccessNotification()].filter(Boolean)))
         )
       )
     ),
@@ -414,14 +389,7 @@ const content: CrafterCMSEpic[] = [
             })
           ),
           paste(state.sites.active, payload.path, state.content.clipboard).pipe(
-            map(() =>
-              batchActions([
-                emitSystemEvent(itemsPasted({ target: payload.path, clipboard: state.content.clipboard })),
-                clearClipboard(),
-                showPasteItemSuccessNotification(),
-                unblockUI()
-              ])
-            )
+            map(() => batchActions([clearClipboard(), showPasteItemSuccessNotification(), unblockUI()]))
           )
         );
       })

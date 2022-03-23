@@ -257,6 +257,8 @@ const reducer = createReducer<ContentState>(initialState, {
   [emitSystemEvent.type]: (state, { payload: event }) => {
     const { type, payload } = event;
 
+    console.log('type', type, payload);
+
     if (type === lockContentEvent.type) {
       return updateItemLockState(state, {
         path: payload.targetPath,
