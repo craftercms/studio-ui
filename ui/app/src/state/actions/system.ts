@@ -72,6 +72,8 @@ export const lockContentEvent = /*#__PURE__*/ createAction<SocketEventBase & { l
 
 export const contentEvent = /*#__PURE__*/ createAction<SocketEventBase>('CONTENT_EVENT');
 
+export const deleteContentEvent = /*#__PURE__*/ createAction<SocketEventBase>('DELETE_CONTENT_EVENT');
+
 export const configurationEvent = /*#__PURE__*/ createAction<SocketEventBase>('CONFIGURATION_EVENT');
 
 export const publishEvent = /*#__PURE__*/ createAction('PUBLISH_EVENT');

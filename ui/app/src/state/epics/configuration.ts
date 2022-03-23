@@ -30,7 +30,7 @@ import {
   fetchSiteUiConfig as fetchSiteUiConfigService
 } from '../../services/configuration';
 import { CrafterCMSEpic } from '../store';
-import { showSystemNotification } from '../actions/system';
+import { configurationEvent, emitSystemEvent, showSystemNotification } from '../actions/system';
 import { defineMessages } from 'react-intl';
 
 const configurationMessages = defineMessages({
@@ -87,5 +87,21 @@ export default [
           catchAjaxError(fetchSiteConfigFailed)
         )
       )
+    ),
+  (action$) =>
+    action$.pipe(
+      ofType(emitSystemEvent.type),
+      filter((e) => {
+        return (
+          e.payload.type === configurationEvent.type &&
+          (e.payload.payload.targetPath === '/config/studio/ui.xml' ||
+            e.payload.payload.targetPath === '/config/studio/site-config.xml')
+        );
+      }),
+      switchMap(({ payload }) => [
+        payload.payload.targetPath === '/config/studio/ui.xml'
+          ? fetchSiteUiConfig({ site: payload.payload.siteId })
+          : fetchSiteConfig()
+      ])
     )
 ] as CrafterCMSEpic[];

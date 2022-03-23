@@ -38,6 +38,9 @@ import palette from '../../styles/palette';
 import ApiResponseErrorState from '../ApiResponseErrorState';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import ConfirmDropdown from '../ConfirmDropdown';
+import { publishEvent, workflowEvent } from '../../state/actions/system';
+import { getHostToHostBus } from '../../modules/Preview/previewContext';
+import { filter } from 'rxjs/operators';
 
 const messages = defineMessages({
   selectAll: {
@@ -246,6 +249,18 @@ function PublishingQueue(props: PublishingQueueProps) {
   useEffect(() => {
     setCount(renderCount(selected).length);
   }, [selected]);
+
+  useEffect(() => {
+    const events = [workflowEvent.type, publishEvent.type];
+    const hostToHost$ = getHostToHostBus();
+    const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
+      getPackages(siteId);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [siteId, getPackages]);
 
   function renderPackages() {
     return packages.map((item: Package, index: number) => (

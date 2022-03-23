@@ -35,8 +35,7 @@ import {
   pathNavigatorSetCollapsed,
   pathNavigatorSetCurrentPath,
   pathNavigatorSetKeyword,
-  pathNavigatorSetLocaleCode,
-  pathNavigatorUpdate
+  pathNavigatorSetLocaleCode
 } from '../../state/actions/pathNavigator';
 import { completeDetailedItem, fetchSandboxItem } from '../../state/actions/content';
 import { showEditDialog, showItemMegaMenu, showPreviewDialog } from '../../state/actions/dialogs';
@@ -46,13 +45,10 @@ import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { debounceTime, filter } from 'rxjs/operators';
 import {
   contentEvent,
-  folderCreated,
-  itemDuplicated,
-  itemsDeleted,
-  itemsPasted,
-  itemsUploaded,
-  itemUnlocked,
-  pluginInstalled
+  deleteContentEvent,
+  pluginInstalled,
+  publishEvent,
+  workflowEvent
 } from '../../state/actions/system';
 import PathNavigatorUI from './PathNavigatorUI';
 import { ContextMenuOptionDescriptor, toContextMenuOptionsLookup } from '../../utils/itemActions';
@@ -94,7 +90,6 @@ export interface PathNavigatorProps {
   locale?: string;
   limit?: number;
   initialCollapsed?: boolean;
-  backgroundRefreshTimeoutMs?: number;
   icon?: SystemIconDescriptor;
   expandedIcon?: SystemIconDescriptor;
   collapsedIcon?: SystemIconDescriptor;
@@ -144,7 +139,6 @@ export function PathNavigator(props: PathNavigatorProps) {
     rootPath: path,
     id = label.replace(/\s/g, ''),
     limit = 10,
-    backgroundRefreshTimeoutMs = 60000,
     locale,
     excludes,
     initialCollapsed,
@@ -168,19 +162,7 @@ export function PathNavigator(props: PathNavigatorProps) {
   const onSearch$ = useSubject<string>();
   const uiConfig = useSelection<GlobalState['uiConfig']>((state) => state.uiConfig);
   const siteLocales = useSiteLocales();
-  const hasActiveSession = useSelection((state) => state.auth.active);
   const useLegacy = useLegacyPreviewPreference();
-
-  useEffect(() => {
-    if (backgroundRefreshTimeoutMs && hasActiveSession) {
-      let interval = setInterval(() => {
-        dispatch(pathNavigatorBackgroundRefresh({ id }));
-      }, backgroundRefreshTimeoutMs);
-      return () => {
-        clearInterval(interval);
-      };
-    }
-  }, [backgroundRefreshTimeoutMs, dispatch, id, hasActiveSession]);
 
   useEffect(() => {
     // Adding uiConfig as means to stop navigator from trying to
@@ -237,31 +219,22 @@ export function PathNavigator(props: PathNavigatorProps) {
   useEffect(() => {
     const events = [
       contentEvent.type,
-      itemsPasted.type,
-      itemUnlocked.type,
-      folderCreated.type,
-      itemsDeleted.type,
-      itemDuplicated.type,
+      deleteContentEvent.type,
       pluginInstalled.type,
-      itemsUploaded.type
+      workflowEvent.type,
+      publishEvent.type
     ];
     const hostToHost$ = getHostToHostBus();
     const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
       switch (type) {
-        // itemCreated, itemUpdated, folderRenamed, itemDuplicated (not coming as contentEvent)
-        case itemDuplicated.type:
         case contentEvent.type: {
-          console.log('contentEvent', type, payload);
-          const parentPath = getParentPath(payload.targetPath);
+          const targetPath = payload.targetPath;
+          const parentPath = getParentPath(targetPath);
           if (parentPath === withoutIndex(state.currentPath)) {
             // If item is direct children of root (in current pathNavigator view)
             dispatch(pathNavigatorRefresh({ id }));
-          } else if (withoutIndex(payload.targetPath) === withoutIndex(state.currentPath)) {
+          } else if (withoutIndex(targetPath) === withoutIndex(state.currentPath)) {
             // If item is root (in current pathNavigator view)
-            // If the action is a deletion (targetPath doesn't exist, then this case would require to set parentPath
-            // as the currentPath
-            // TODO: how to determine that item doesn't exist
-
             dispatch(pathNavigatorRefresh({ id }));
           } else if (getParentPath(parentPath) === withoutIndex(state.currentPath)) {
             // if item just belongs to parent item
@@ -269,48 +242,28 @@ export function PathNavigator(props: PathNavigatorProps) {
           }
           break;
         }
-        // TODO: not coming from contentEvent, but it seems like it can be added in the same case
-        case folderCreated.type: {
-          if (type === folderCreated.type || payload.clipboard.type === 'COPY') {
-            if (withoutIndex(payload.target) === withoutIndex(state.currentPath)) {
-              dispatch(pathNavigatorRefresh({ id }));
-            } else if (getParentPath(payload.target) === withoutIndex(state.currentPath)) {
-              dispatch(fetchSandboxItem({ path: withoutIndex(payload.target), force: true }));
-            }
+        case deleteContentEvent.type: {
+          const targetPath = payload.targetPath;
+
+          if (withoutIndex(targetPath) === withoutIndex(state.currentPath)) {
+            dispatch(
+              pathNavigatorSetCurrentPath({
+                id,
+                path: getParentPath(withoutIndex(targetPath))
+              })
+            );
+          } else if (state.itemsInPath.includes(targetPath)) {
+            dispatch(pathNavigatorRefresh({ id }));
           }
-          if (type === itemsPasted.type && payload.clipboard.type === 'CUT') {
-            const parentPath = getParentPath(payload.target);
-            if (parentPath === withoutIndex(state.currentPath)) {
-              dispatch(pathNavigatorRefresh({ id }));
-            }
-          }
-          break;
-        }
-        case itemsDeleted.type: {
-          payload.targets.forEach((path) => {
-            if (withoutIndex(path) === withoutIndex(state.currentPath)) {
-              dispatch(
-                pathNavigatorSetCurrentPath({
-                  id,
-                  path: getParentPath(withoutIndex(path))
-                })
-              );
-            } else if (state.itemsInPath.includes(path)) {
-              dispatch(pathNavigatorRefresh({ id }));
-            }
-          });
           break;
         }
         case pluginInstalled.type: {
           dispatch(pathNavigatorBackgroundRefresh({ id }));
           break;
         }
-        case itemsUploaded.type: {
-          // TODO: I see no upload in pathNavigator, is this still valid?
-          if (withoutIndex(payload.target) === withoutIndex(state.currentPath)) {
-            dispatch(pathNavigatorRefresh({ id }));
-          }
-          break;
+        case workflowEvent.type:
+        case publishEvent.type: {
+          dispatch(pathNavigatorBackgroundRefresh({ id }));
         }
       }
     });
