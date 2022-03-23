@@ -396,7 +396,7 @@ export function UppyDashboard(props: UppyDashboardProps) {
   // then next time onItemsUploaded will be called with a new list of targetsRef.current
   const onItemsUploaded = useCallback(() => {
     targetsRef.current = [];
-  }, [dispatch, path]);
+  }, []);
 
   const functionsRef = useRef({ onItemsUploaded: null, onPendingChanges: null, onMinimized: null, onClose: null });
   functionsRef.current.onItemsUploaded = onItemsUploaded;
