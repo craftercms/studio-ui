@@ -451,12 +451,10 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     nodesByPathRef.current[path].children.pop();
     nodesByPathRef.current[path].children.push({ id: 'loading' });
     dispatch(
-      batchActions([
-        pathNavigatorTreeFetchPathPage({
-          id,
-          path
-        })
-      ])
+      pathNavigatorTreeFetchPathPage({
+        id,
+        path
+      })
     );
   };
 
