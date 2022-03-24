@@ -1446,7 +1446,7 @@
 
         if (parentCannedSearch) {
           for (let i = 0; i < parentCannedSearch.length; i++) {
-            if (parentCannedSearch[i].insertAs == 'replaceAllChildFolders') {
+            if (parentCannedSearch[i].insertAs === 'replaceAllChildFolders') {
               replaceAllChildFolders = true;
               break;
             }
