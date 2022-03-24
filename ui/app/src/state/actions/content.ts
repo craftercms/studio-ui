@@ -83,6 +83,8 @@ export const pasteItemWithPolicyValidation = /*#__PURE__*/ createAction<{ path: 
 );
 
 export const unlockItem = /*#__PURE__*/ createAction<{ path: string; notify?: boolean }>('UNLOCK_ITEM');
+export const unlockItemCompleted = /*#__PURE__*/ createAction<{ path: string }>('UNLOCK_ITEM_COMPLETED');
+export const unlockItemFailed = /*#__PURE__*/ createAction('LOCK_ITEM_FAILED');
 
 export const lockItem = /*#__PURE__*/ createAction<{ path: string }>('LOCK_ITEM');
 export const lockItemCompleted = /*#__PURE__*/ createAction<{ path: string; username: string }>('LOCK_ITEM_COMPLETED');
