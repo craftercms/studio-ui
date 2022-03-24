@@ -30,16 +30,6 @@ export const itemReverted = /*#__PURE__*/ createAction<{ target: string }>('ITEM
 
 export const itemCut = /*#__PURE__*/ createAction<{ target: string }>('ITEM_CUT');
 
-export const itemsDeleted = /*#__PURE__*/ createAction<{ targets: string[] }>('ITEMS_DELETED');
-
-export const itemDuplicated = /*#__PURE__*/ createAction<{ target: string; resultPath: string }>('ITEM_DUPLICATED');
-
-export const itemsRejected = /*#__PURE__*/ createAction<{ targets: string[] }>('ITEMS_REJECTED');
-
-export const itemsScheduled = /*#__PURE__*/ createAction<{ targets: string[] }>('ITEMS_SCHEDULED');
-
-export const itemsApproved = /*#__PURE__*/ createAction<{ targets: string[] }>('ITEMS_APPROVED');
-
 interface Person {
   username: string;
   firstName: string;

@@ -30,7 +30,7 @@ import Dashlet from '../Dashlet';
 import useStyles from './styles';
 import RecentlyPublishedDashletUISkeletonTable from './RecentlyPublishedDashletUISkeletonTable';
 import TextField from '@mui/material/TextField';
-import { itemsApproved, itemsDeleted, itemsRejected, itemsScheduled } from '../../state/actions/system';
+import { deleteContentEvent, publishEvent, workflowEvent } from '../../state/actions/system';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { filter } from 'rxjs/operators';
 import { useLogicResource } from '../../hooks/useLogicResource';
@@ -177,17 +177,16 @@ export default function RecentlyPublishedDashlet() {
 
   // region Item Updates Propagation
   useEffect(() => {
-    const events = [itemsDeleted.type, itemsRejected.type, itemsApproved.type, itemsScheduled.type];
+    const events = [deleteContentEvent.type, publishEvent.type];
     const hostToHost$ = getHostToHostBus();
     const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
       switch (type) {
-        case itemsApproved.type:
-        case itemsScheduled.type:
-        case itemsDeleted.type:
-        case itemsRejected.type: {
-          if (payload.targets.some((path) => itemsLookup[path])) {
-            fetchHistory();
-          }
+        case deleteContentEvent.type:
+        case workflowEvent.type:
+        case publishEvent.type: {
+          // if (payload.targets.some((path) => itemsLookup[path])) {
+          fetchHistory();
+          // }
           break;
         }
       }

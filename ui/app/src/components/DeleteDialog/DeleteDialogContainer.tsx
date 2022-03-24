@@ -26,7 +26,6 @@ import {
   updateDeleteDialog
 } from '../../state/actions/dialogs';
 import { deleteItems } from '../../services/content';
-import { emitSystemEvent, itemsDeleted } from '../../state/actions/system';
 import { DeleteDialogUI } from './DeleteDialogUI';
 import { DeleteDialogContainerProps } from './utils';
 import { useSelection } from '../../hooks/useSelection';
@@ -36,7 +35,6 @@ import LookupTable from '../../models/LookupTable';
 import { createPresenceTable } from '../../utils/array';
 import { DetailedItem } from '../../models/Item';
 import { isBlank } from '../../utils/string';
-import { batchActions } from '../../state/actions/misc';
 
 function createCheckedList(selectedItems: LookupTable<boolean>, excludedPaths?: string[]) {
   return Object.entries(selectedItems)
@@ -76,12 +74,7 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
     dispatch(updateDeleteDialog({ isSubmitting: true }));
     deleteItems(site, paths, comment).subscribe({
       next() {
-        dispatch(
-          batchActions([
-            updateDeleteDialog({ isSubmitting: false, hasPendingChanges: false }),
-            emitSystemEvent(itemsDeleted({ targets: paths.concat(childItems ?? []) }))
-          ])
-        );
+        dispatch(updateDeleteDialog({ isSubmitting: false, hasPendingChanges: false }));
         onSuccess?.({
           items: paths.map((path) => items.find((item) => item.path === path))
         });

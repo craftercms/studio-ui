@@ -57,7 +57,6 @@ import { debounceTime, filter } from 'rxjs/operators';
 import {
   contentEvent,
   deleteContentEvent,
-  itemDuplicated,
   pluginInstalled,
   publishEvent,
   workflowEvent
@@ -271,7 +270,6 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     const events = [
       contentEvent.type,
       deleteContentEvent.type,
-      itemDuplicated.type,
       pluginInstalled.type,
       workflowEvent.type,
       publishEvent.type
@@ -279,8 +277,6 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     const hostToHost$ = getHostToHostBus();
     const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
       switch (type) {
-        // TODO: itemDuplicated not coming from websocket event yet.
-        case itemDuplicated.type:
         case contentEvent.type: {
           const targetPath = payload.targetPath ?? payload.target;
           const parentPath = getParentPath(targetPath);

@@ -17,7 +17,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useDispatch } from 'react-redux';
-import { emitSystemEvent, itemsRejected } from '../../state/actions/system';
 import { CannedMessage, fetchCannedMessages } from '../../services/configuration';
 import { useLogicResource } from '../../hooks/useLogicResource';
 import { useStyles } from './RejectDialog';
@@ -25,7 +24,6 @@ import { RejectDialogContainerProps, Return, Source } from './utils';
 import { RejectDialogUI } from './RejectDialogUI';
 import { updateRejectDialog } from '../../state/actions/dialogs';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
-import { batchActions } from '../../state/actions/misc';
 import { reject } from '../../services/workflow';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import { nnou, pluckProps } from '../../utils/object';
@@ -94,12 +92,7 @@ export function RejectDialogContainer(props: RejectDialogContainerProps) {
 
     reject(siteId, checkedItems, rejectionComment).subscribe({
       next: () => {
-        dispatch(
-          batchActions([
-            updateRejectDialog({ hasPendingChanges: false, isSubmitting: false }),
-            emitSystemEvent(itemsRejected({ targets: checkedItems }))
-          ])
-        );
+        dispatch(updateRejectDialog({ hasPendingChanges: false, isSubmitting: false }));
         onRejectSuccess?.();
       },
       error: (error) => {

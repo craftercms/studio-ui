@@ -66,8 +66,6 @@ import {
 import { isEditableAsset } from '../../utils/content';
 import {
   blockUI,
-  emitSystemEvent,
-  itemDuplicated,
   showDeleteItemSuccessNotification,
   showDuplicatedItemSuccessNotification,
   showPasteItemSuccessNotification,
@@ -222,15 +220,12 @@ const content: CrafterCMSEpic[] = [
       switchMap(([{ payload }, state]) => {
         return duplicate(state.sites.active, payload.path).pipe(
           map(({ item: path }) =>
-            batchActions([
-              emitSystemEvent(itemDuplicated({ target: payload.path, resultPath: path })),
-              showEditDialog({
-                site: state.sites.active,
-                path,
-                authoringBase: state.env.authoringBase,
-                onSaveSuccess: payload.onSuccess
-              })
-            ])
+            showEditDialog({
+              site: state.sites.active,
+              path,
+              authoringBase: state.env.authoringBase,
+              onSaveSuccess: payload.onSuccess
+            })
           )
         );
       })
@@ -287,18 +282,13 @@ const content: CrafterCMSEpic[] = [
           map(({ item: path }) => {
             const editableAsset = isEditableAsset(payload.path);
             if (editableAsset) {
-              return batchActions([
-                emitSystemEvent(itemDuplicated({ target: payload.path, resultPath: path })),
-                showCodeEditorDialog({
-                  authoringBase: state.env.authoringBase,
-                  site: state.sites.active,
-                  path,
-                  type: 'asset',
-                  onSuccess: payload.onSuccess
-                })
-              ]);
-            } else {
-              return emitSystemEvent(itemDuplicated({ target: payload.path, resultPath: path }));
+              return showCodeEditorDialog({
+                authoringBase: state.env.authoringBase,
+                site: state.sites.active,
+                path,
+                type: 'asset',
+                onSuccess: payload.onSuccess
+              });
             }
           })
         );
