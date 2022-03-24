@@ -68,7 +68,11 @@ const initialState: ContentState = {
 };
 
 const updateItemLockState = (state: ContentState, { path, username, locked }) => {
-  if ((locked && state.itemsByPath[path].stateMap.locked) || (!locked && !state.itemsByPath[path].stateMap.locked)) {
+  if (
+    !state.itemsByPath[path] ||
+    (locked && state.itemsByPath[path].stateMap.locked) ||
+    (!locked && !state.itemsByPath[path].stateMap.locked)
+  ) {
     return state;
   }
   return {
