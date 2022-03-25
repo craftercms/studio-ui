@@ -29,7 +29,7 @@ import {
 import { ContentTypeDropTarget } from '../../models/ContentTypeDropTarget';
 import { WidgetDescriptor } from '../../components/Widget';
 import LookupTable from '../../models/LookupTable';
-import { DetailedItem } from '../../models/Item';
+import { DetailedItem, SandboxItem } from '../../models/Item';
 import GlobalState, { HighlightMode } from '../../models/GlobalState';
 
 interface CommonOperationProps {
@@ -119,7 +119,9 @@ export const deleteItemOperationFailed = /*#__PURE__*/ createAction('DELETE_ITEM
 export const updateFieldValueOperation = /*#__PURE__*/ createAction<
   { index: string | number; value: unknown } & CommonOperationProps
 >('UPDATE_FIELD_VALUE_OPERATION');
-export const updateFieldValueOperationComplete = /*#__PURE__*/ createAction('UPDATE_FIELD_VALUE_OPERATION_COMPLETE');
+export const updateFieldValueOperationComplete = /*#__PURE__*/ createAction<{ item: SandboxItem }>(
+  'UPDATE_FIELD_VALUE_OPERATION_COMPLETE'
+);
 export const updateFieldValueOperationFailed = /*#__PURE__*/ createAction('UPDATE_FIELD_VALUE_OPERATION_FAILED');
 export const iceZoneSelected = /*#__PURE__*/ createAction<{
   index: number;
