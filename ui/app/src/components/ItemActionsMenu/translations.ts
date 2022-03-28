@@ -89,6 +89,10 @@ export const translations = defineMessages({
     id: 'words.copy',
     defaultMessage: 'Copy'
   },
+  copyWithChildren: {
+    id: 'words.copyWithChildren',
+    defaultMessage: 'Copy With Children'
+  },
   paste: {
     id: 'words.paste',
     defaultMessage: 'Paste'

@@ -173,6 +173,10 @@ const unparsedMenuOptions: Record<AllItemActions, ContextMenuOptionDescriptor<Al
     id: 'copy',
     label: translations.copy
   },
+  copyWithChildren: {
+    id: 'copyWithChildren',
+    label: translations.copyWithChildren
+  },
   paste: {
     id: 'paste',
     label: translations.paste
@@ -371,6 +375,7 @@ export function generateSingleItemOptions(
   }
   if (hasCopyAction(item.availableActions) && actionsToInclude.copy) {
     sectionB.push(menuOptions.copy);
+    sectionB.push(menuOptions.copyWithChildren);
   }
   if (hasPasteAction(item.availableActions) && options?.hasClipboard && actionsToInclude.paste) {
     sectionB.push(menuOptions.paste);
@@ -625,6 +630,37 @@ export const itemActionDispatcher = ({
         break;
       }
       case 'copy': {
+        dispatch(
+          blockUI({
+            progress: 'indeterminate',
+            message: `${formatMessage(translations.processing)}...`
+          })
+        );
+        fetchSandboxItem(site, item.path).subscribe({
+          next(item) {
+            dispatch(
+              batchActions([
+                unblockUI(),
+                setClipboard({
+                  type: 'COPY',
+                  paths: [item.path],
+                  sourcePath: item.path
+                }),
+                showCopyItemSuccessNotification()
+              ])
+            );
+          },
+          error(response) {
+            dispatch(
+              showErrorDialog({
+                error: response
+              })
+            );
+          }
+        });
+        break;
+      }
+      case 'copyWithChildren': {
         dispatch(
           blockUI({
             progress: 'indeterminate',

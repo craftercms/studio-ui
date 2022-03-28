@@ -814,6 +814,7 @@ export const hasUnlockAction = (value: number) => Boolean(value & CONTENT_ITEM_U
 export const createItemActionMap: (availableActions: number) => ItemActionsMap = (value: number) => ({
   view: hasReadAction(value),
   copy: hasCopyAction(value),
+  copyWithChildren: hasCopyAction(value),
   history: hasReadHistoryAction(value),
   dependencies: hasGetDependenciesAction(value),
   requestPublish: hasPublishRequestAction(value),

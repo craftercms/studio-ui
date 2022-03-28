@@ -40,6 +40,7 @@ export type ItemStates =
 export type ItemActions =
   | 'view'
   | 'copy'
+  | 'copyWithChildren'
   | 'history'
   | 'dependencies'
   | 'requestPublish'
