@@ -170,9 +170,7 @@ export default function RecentActivityDashlet() {
         case deleteContentEvent.type:
         case workflowEvent.type:
         case publishEvent.type: {
-          // if (payload.targets.some((path) => selectedLookup[path])) {
           fetchActivity();
-          // }
           break;
         }
       }

@@ -159,10 +159,7 @@ export default function AwaitingApprovalDashlet() {
         case deleteContentEvent.type:
         case workflowEvent.type:
         case publishEvent.type: {
-          // if (payload.targets.some((path) => state.itemsLookup[path])) {
           refresh();
-          // setSelectedLookup({ ...selectedLookup, ...createPresenceTable(payload.targets, false) });
-          // }
           break;
         }
       }

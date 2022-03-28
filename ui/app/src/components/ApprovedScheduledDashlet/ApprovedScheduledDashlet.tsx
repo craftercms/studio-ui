@@ -175,9 +175,7 @@ export function ApprovedScheduledDashlet() {
         case deleteContentEvent.type:
         case workflowEvent.type:
         case publishEvent.type: {
-          // if (payload.targets.some((path) => state.itemsLookup[path])) {
           refresh();
-          // }
           break;
         }
       }

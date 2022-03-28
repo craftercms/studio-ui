@@ -184,9 +184,7 @@ export default function RecentlyPublishedDashlet() {
         case deleteContentEvent.type:
         case workflowEvent.type:
         case publishEvent.type: {
-          // if (payload.targets.some((path) => itemsLookup[path])) {
           fetchHistory();
-          // }
           break;
         }
       }
