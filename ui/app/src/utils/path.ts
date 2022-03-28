@@ -144,9 +144,11 @@ function addToPasteItem(pasteItem: PasteItem, path: string): void {
     });
   } else if (pasteItem.path !== path) {
     // neither root nor direct children - look in which of the children the item belongs to
-    const pasteItemParent = pasteItem.children.find((item) => withoutIndex(path).includes(withoutIndex(item.path)));
-
-    // add item to the children
+    const pasteItemParent = pasteItem.children.find((item) =>
+      // includes parameter ends with a '/' to make it sure that it's a complete path and not part of a name in a path
+      // (it may match with another path that starts with the same chars)
+      withoutIndex(path).includes(`${withoutIndex(item.path)}/`)
+    );
     addToPasteItem(pasteItemParent, path);
   }
 }
