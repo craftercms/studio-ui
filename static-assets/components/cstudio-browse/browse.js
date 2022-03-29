@@ -21,6 +21,7 @@
 
   if (typeof window.CStudioBrowse == 'undefined' || !window.CStudioBrowse) {
     var CStudioBrowse = {};
+    CStudioBrowse.treeDataLookup = {}; // Lookup for loaded data by path
     window.CStudioBrowse = CStudioBrowse;
   }
 
@@ -468,16 +469,26 @@
         data: function (node, cb) {
           var notRoot = typeof node.a_attr !== 'undefined' && typeof node.a_attr['data-path'] !== 'undefined';
           var currentPath = notRoot ? node.a_attr['data-path'] : path; // use node path or root path
-          var foldersPromise = me._lookupSiteFolders(site, currentPath);
-          foldersPromise.then(function (treeData) {
-            var items = new Array(treeData.item);
+
+          function setItems(treeData) {
+            var items = [treeData.item];
             items = me.parseObjForTree(items);
             if (notRoot) {
               // do this when it is not root level
               items = items[0].children;
             }
             cb(items);
-          });
+          }
+
+          if (CStudioBrowse.treeDataLookup[currentPath]) {
+            // If content already exists in treeDataLookup
+            setItems(CStudioBrowse.treeDataLookup[currentPath]);
+          } else {
+            var foldersPromise = me._lookupSiteFolders(site, currentPath);
+            foldersPromise.then(function (treeData) {
+              setItems(treeData);
+            });
+          }
         }
       },
       types: {
@@ -492,9 +503,9 @@
   CStudioBrowse._lookupSiteFolders = function (site, path) {
     var d = new $.Deferred();
 
-    CStudioAuthoring.Service.lookupSiteFolders(site, path, 2, 'default', {
+    CStudioAuthoring.Service.lookupSiteContent(site, path, 1, 'default', {
       success: function (treeData) {
-        //done (?)
+        CStudioBrowse.treeDataLookup[path] = treeData;
         d.resolve(treeData);
       },
       failure: function () {
@@ -508,24 +519,13 @@
   CStudioBrowse.renderSiteContent = function (site, path) {
     var me = this,
       $resultsContainer = $('#cstudio-wcm-search-result .results'),
-      $resultsActions = $('#cstudio-wcm-search-result .cstudio-results-actions'),
-      contentPromise = this._lookupSiteContent(site, path);
-
-    activePromise = contentPromise;
+      $resultsActions = $('#cstudio-wcm-search-result .cstudio-results-actions');
 
     $resultsContainer.empty();
     $resultsActions.empty();
-
     $resultsContainer.html('<span class="cstudio-spinner"></span>' + CMgs.format(browseLangBundle, 'loading') + '...');
 
-    contentPromise.then(function (results) {
-      if (activePromise != contentPromise) {
-        return;
-      }
-
-      $resultsContainer.empty();
-      $resultsActions.empty();
-
+    function setResults(results) {
       if (results) {
         var filesPresent = false;
         var currentResults = results.item.children;
@@ -555,7 +555,25 @@
 
         me.currentResultsPath = path;
       }
-    });
+    }
+
+    $resultsContainer.empty();
+    $resultsActions.empty();
+
+    // If content already exists in treeDataLookup
+    if (CStudioBrowse.treeDataLookup[path]) {
+      setResults(CStudioBrowse.treeDataLookup[path]);
+      delete CStudioBrowse.treeDataLookup[path];
+    } else {
+      const contentPromise = this._lookupSiteContent(site, path);
+      activePromise = contentPromise;
+      contentPromise.then(function (results) {
+        if (activePromise != contentPromise) {
+          return;
+        }
+        setResults(results);
+      });
+    }
   };
 
   CStudioBrowse._lookupSiteContent = function (site, path) {
