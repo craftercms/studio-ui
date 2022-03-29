@@ -15,14 +15,13 @@
  */
 
 import { translations } from '../components/ItemActionsMenu/translations';
-import { AllItemActions, DetailedItem } from '../models/Item';
+import { AllItemActions, DetailedItem, LegacyItem } from '../models/Item';
 import { ContextMenuOption } from '../components/ContextMenu';
 import { getControllerPath, getRootPath, withoutIndex } from './path';
 import {
   closeChangeContentTypeDialog,
   closeCodeEditorDialog,
   closeConfirmDialog,
-  closeCopyDialog,
   closeCreateFileDialog,
   closeCreateFolderDialog,
   closeDeleteDialog,
@@ -32,7 +31,6 @@ import {
   showChangeContentTypeDialog,
   showCodeEditorDialog,
   showConfirmDialog,
-  showCopyDialog,
   showCreateFileDialog,
   showCreateFolderDialog,
   showDeleteDialog,
@@ -46,7 +44,7 @@ import {
   showUploadDialog,
   showWorkflowCancellationDialog
 } from '../state/actions/dialogs';
-import { fetchSandboxItem, fetchWorkflowAffectedItems } from '../services/content';
+import { fetchLegacyItemsTree, fetchSandboxItem, fetchWorkflowAffectedItems } from '../services/content';
 import {
   batchActions,
   changeContentType,
@@ -107,8 +105,7 @@ import {
   hasRenameAction,
   hasSchedulePublishAction,
   hasUnlockAction,
-  hasUploadAction,
-  parseSandBoxItemToDetailedItem
+  hasUploadAction
 } from './content';
 import { getEditorMode, isNavigable } from '../components/PathNavigator/utils';
 import React from 'react';
@@ -667,42 +664,36 @@ export const itemActionDispatcher = ({
             message: `${formatMessage(translations.processing)}...`
           })
         );
-        fetchSandboxItem(site, item.path).subscribe({
-          next(item) {
-            dispatch(unblockUI());
-            if (item.childrenCount) {
-              dispatch(
-                showCopyDialog({
-                  site,
-                  item: parseSandBoxItemToDetailedItem(item),
-                  onOk: batchActions([
-                    closeCopyDialog(),
-                    setClipboard({
-                      type: 'COPY',
-                      sourcePath: item.path
-                    }),
-                    showCopyItemSuccessNotification()
-                  ])
-                })
-              );
-            } else {
-              dispatch(
-                batchActions([
-                  setClipboard({
-                    type: 'COPY',
-                    paths: [item.path],
-                    sourcePath: item.path
-                  }),
-                  showCopyItemSuccessNotification()
-                ])
-              );
+        const itemPath = item.path;
+        fetchLegacyItemsTree(site, itemPath, { depth: 1000, order: 'default' }).subscribe({
+          next(item: LegacyItem) {
+            let paths = [];
+            let children = {};
+            let parents = {};
+            function process(parent: LegacyItem) {
+              paths.push(parent.uri);
+              if (parent.children.length) {
+                children[parent.uri] = [];
+                parent.children.forEach((item: LegacyItem) => {
+                  parents[item.uri] = parent.uri;
+                  children[parent.uri].push(item.uri);
+                  if (item.children) {
+                    process(item);
+                  }
+                });
+              }
             }
-          },
-          error(response) {
+            process(item);
+
             dispatch(
-              showErrorDialog({
-                error: response
-              })
+              batchActions([
+                unblockUI(),
+                setClipboard({
+                  type: 'COPY',
+                  sourcePath: itemPath,
+                  paths
+                })
+              ])
             );
           }
         });
