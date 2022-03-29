@@ -28,7 +28,7 @@ import {
 import { changeContentType, createFile, fetchWorkflowAffectedItems } from '../../services/content';
 import { showCodeEditorDialog, showEditDialog, showWorkflowCancellationDialog } from '../actions/dialogs';
 import { reloadDetailedItem } from '../actions/content';
-import { emitSystemEvent, itemCreated, showEditItemSuccessNotification } from '../actions/system';
+import { showEditItemSuccessNotification } from '../actions/system';
 import { CrafterCMSEpic } from '../store';
 import { nanoid as uuid } from 'nanoid';
 import { translations } from '../../components/ItemActionsMenu/translations';
@@ -128,7 +128,6 @@ const epics = [
                   map(() =>
                     batchActions([
                       associateTemplate({ contentTypeId: contentType, displayTemplate: path }),
-                      emitSystemEvent(itemCreated({ target: path })),
                       showCodeEditorDialog({
                         site: state.sites.active,
                         path,

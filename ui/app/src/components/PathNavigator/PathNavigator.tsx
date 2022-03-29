@@ -35,8 +35,7 @@ import {
   pathNavigatorSetCollapsed,
   pathNavigatorSetCurrentPath,
   pathNavigatorSetKeyword,
-  pathNavigatorSetLocaleCode,
-  pathNavigatorUpdate
+  pathNavigatorSetLocaleCode
 } from '../../state/actions/pathNavigator';
 import { completeDetailedItem, fetchSandboxItem } from '../../state/actions/content';
 import { showEditDialog, showItemMegaMenu, showPreviewDialog } from '../../state/actions/dialogs';
@@ -45,16 +44,11 @@ import { StateStylingProps } from '../../models/UiConfig';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { debounceTime, filter } from 'rxjs/operators';
 import {
-  folderCreated,
-  folderRenamed,
-  itemCreated,
-  itemDuplicated,
-  itemsDeleted,
-  itemsPasted,
-  itemsUploaded,
-  itemUnlocked,
-  itemUpdated,
-  pluginInstalled
+  contentEvent,
+  deleteContentEvent,
+  pluginInstalled,
+  publishEvent,
+  workflowEvent
 } from '../../state/actions/system';
 import PathNavigatorUI from './PathNavigatorUI';
 import { ContextMenuOptionDescriptor, toContextMenuOptionsLookup } from '../../utils/itemActions';
@@ -96,7 +90,6 @@ export interface PathNavigatorProps {
   locale?: string;
   limit?: number;
   initialCollapsed?: boolean;
-  backgroundRefreshTimeoutMs?: number;
   icon?: SystemIconDescriptor;
   expandedIcon?: SystemIconDescriptor;
   collapsedIcon?: SystemIconDescriptor;
@@ -146,7 +139,6 @@ export function PathNavigator(props: PathNavigatorProps) {
     rootPath: path,
     id = label.replace(/\s/g, ''),
     limit = 10,
-    backgroundRefreshTimeoutMs = 60000,
     locale,
     excludes,
     initialCollapsed,
@@ -170,19 +162,7 @@ export function PathNavigator(props: PathNavigatorProps) {
   const onSearch$ = useSubject<string>();
   const uiConfig = useSelection<GlobalState['uiConfig']>((state) => state.uiConfig);
   const siteLocales = useSiteLocales();
-  const hasActiveSession = useSelection((state) => state.auth.active);
   const useLegacy = useLegacyPreviewPreference();
-
-  useEffect(() => {
-    if (backgroundRefreshTimeoutMs && hasActiveSession) {
-      let interval = setInterval(() => {
-        dispatch(pathNavigatorBackgroundRefresh({ id }));
-      }, backgroundRefreshTimeoutMs);
-      return () => {
-        clearInterval(interval);
-      };
-    }
-  }, [backgroundRefreshTimeoutMs, dispatch, id, hasActiveSession]);
 
   useEffect(() => {
     // Adding uiConfig as means to stop navigator from trying to
@@ -238,89 +218,52 @@ export function PathNavigator(props: PathNavigatorProps) {
   // Item Updates Propagation
   useEffect(() => {
     const events = [
-      itemsPasted.type,
-      itemUpdated.type,
-      itemUnlocked.type,
-      folderCreated.type,
-      folderRenamed.type,
-      itemsDeleted.type,
-      itemDuplicated.type,
-      itemCreated.type,
+      contentEvent.type,
+      deleteContentEvent.type,
       pluginInstalled.type,
-      itemsUploaded.type
+      workflowEvent.type,
+      publishEvent.type
     ];
     const hostToHost$ = getHostToHostBus();
     const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
       switch (type) {
-        case itemCreated.type:
-        case itemUpdated.type:
-        case folderRenamed.type: {
-          const parentPath = getParentPath(payload.target);
+        case contentEvent.type: {
+          const targetPath = payload.targetPath;
+          const parentPath = getParentPath(targetPath);
           if (parentPath === withoutIndex(state.currentPath)) {
+            // If item is direct children of root (in current pathNavigator view)
             dispatch(pathNavigatorRefresh({ id }));
-          } else if (withoutIndex(payload.target) === withoutIndex(state.currentPath)) {
-            dispatch(
-              batchActions([
-                pathNavigatorUpdate({
-                  id,
-                  currentPath: payload.target.replace(payload.oldName, payload.newName)
-                }),
-                pathNavigatorRefresh({ id })
-              ])
-            );
+          } else if (withoutIndex(targetPath) === withoutIndex(state.currentPath)) {
+            // If item is root (in current pathNavigator view)
+            dispatch(pathNavigatorRefresh({ id }));
           } else if (getParentPath(parentPath) === withoutIndex(state.currentPath)) {
+            // if item just belongs to parent item
             dispatch(fetchSandboxItem({ path: parentPath, force: true }));
           }
           break;
         }
-        case itemDuplicated.type: {
-          const parentPath = getParentPath(payload.target);
-          if (parentPath === withoutIndex(state.currentPath)) {
+        case deleteContentEvent.type: {
+          const targetPath = payload.targetPath;
+
+          if (withoutIndex(targetPath) === withoutIndex(state.currentPath)) {
+            dispatch(
+              pathNavigatorSetCurrentPath({
+                id,
+                path: getParentPath(withoutIndex(targetPath))
+              })
+            );
+          } else if (state.itemsInPath.includes(targetPath)) {
             dispatch(pathNavigatorRefresh({ id }));
           }
-          break;
-        }
-        case folderCreated.type:
-        case itemsPasted.type: {
-          if (type === folderCreated.type || payload.clipboard.type === 'COPY') {
-            if (withoutIndex(payload.target) === withoutIndex(state.currentPath)) {
-              dispatch(pathNavigatorRefresh({ id }));
-            } else if (getParentPath(payload.target) === withoutIndex(state.currentPath)) {
-              dispatch(fetchSandboxItem({ path: withoutIndex(payload.target), force: true }));
-            }
-          }
-          if (type === itemsPasted.type && payload.clipboard.type === 'CUT') {
-            const parentPath = getParentPath(payload.target);
-            if (parentPath === withoutIndex(state.currentPath)) {
-              dispatch(pathNavigatorRefresh({ id }));
-            }
-          }
-          break;
-        }
-        case itemsDeleted.type: {
-          payload.targets.forEach((path) => {
-            if (withoutIndex(path) === withoutIndex(state.currentPath)) {
-              dispatch(
-                pathNavigatorSetCurrentPath({
-                  id,
-                  path: getParentPath(withoutIndex(path))
-                })
-              );
-            } else if (state.itemsInPath.includes(path)) {
-              dispatch(pathNavigatorRefresh({ id }));
-            }
-          });
           break;
         }
         case pluginInstalled.type: {
           dispatch(pathNavigatorBackgroundRefresh({ id }));
           break;
         }
-        case itemsUploaded.type: {
-          if (withoutIndex(payload.target) === withoutIndex(state.currentPath)) {
-            dispatch(pathNavigatorRefresh({ id }));
-          }
-          break;
+        case workflowEvent.type:
+        case publishEvent.type: {
+          dispatch(pathNavigatorBackgroundRefresh({ id }));
         }
       }
     });

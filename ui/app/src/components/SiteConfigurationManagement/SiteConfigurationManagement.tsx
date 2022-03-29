@@ -64,7 +64,6 @@ import { encrypt } from '../../services/security';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import ResizeBar from '../ResizeBar';
 import { useHistory } from 'react-router';
-import { fetchSiteConfig, fetchSiteUiConfig } from '../../state/actions/configuration';
 import { useSelection } from '../../hooks/useSelection';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useMount } from '../../hooks/useMount';
@@ -424,11 +423,7 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
                 message: formatMessage(translations.configSaved)
               })
             );
-            if (selectedConfigFile.id === 'studio/ui.xml') {
-              dispatch(fetchSiteUiConfig({ site }));
-            } else if (selectedConfigFile.id === 'studio/site-config.xml') {
-              dispatch(fetchSiteConfig());
-            }
+
             setDisabledSaveButton(true);
             setSelectedConfigFileXml(content);
           },

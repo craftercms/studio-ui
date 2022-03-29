@@ -22,7 +22,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import palette from '../../styles/palette';
 import { validateActionPolicy } from '../../services/sites';
 import { defineMessages, useIntl } from 'react-intl';
-import { emitSystemEvent, itemsUploaded, showSystemNotification } from '../../state/actions/system';
+import { showSystemNotification } from '../../state/actions/system';
 import { useDispatch } from 'react-redux';
 import { DashboardOptions } from '@uppy/dashboard';
 import { alpha } from '@mui/material';
@@ -395,9 +395,8 @@ export function UppyDashboard(props: UppyDashboardProps) {
   // onItemsUploaded will be called every 1000ms and it will use the targetsRef.current list to dispatch itemsUploaded system event
   // then next time onItemsUploaded will be called with a new list of targetsRef.current
   const onItemsUploaded = useCallback(() => {
-    dispatch(emitSystemEvent(itemsUploaded({ target: path, targets: targetsRef.current })));
     targetsRef.current = [];
-  }, [dispatch, path]);
+  }, []);
 
   const functionsRef = useRef({ onItemsUploaded: null, onPendingChanges: null, onMinimized: null, onClose: null });
   functionsRef.current.onItemsUploaded = onItemsUploaded;

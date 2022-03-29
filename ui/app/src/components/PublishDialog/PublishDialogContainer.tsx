@@ -29,7 +29,6 @@ import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { usePermissionsBySite } from '../../hooks/usePermissionsBySite';
 import { useDispatch } from 'react-redux';
 import { fetchPublishingTargets } from '../../services/publishing';
-import { emitSystemEvent, itemsApproved, itemsScheduled } from '../../state/actions/system';
 import { getComputedPublishingTarget, getDateScheduled } from '../../utils/detailedItem';
 import { FormattedMessage } from 'react-intl';
 import { useLogicResource } from '../../hooks/useLogicResource';
@@ -45,7 +44,6 @@ import { DateChangeData } from '../DateTimePicker/DateTimePicker';
 import { pluckProps } from '../../utils/object';
 import moment from 'moment-timezone';
 import { updatePublishDialog } from '../../state/actions/dialogs';
-import { batchActions } from '../../state/actions/misc';
 import { approve, publish, requestPublish } from '../../services/workflow';
 
 export function PublishDialogContainer(props: PublishDialogContainerProps) {
@@ -83,7 +81,6 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
   const submissionCommentRequired = useSelection((state) => state.uiConfig.publishing.publishCommentRequired);
   const isApprove = hasPublishPermission && items.every((item) => item.stateMap.submitted);
   const submit = !hasPublishPermission || state.requestApproval ? requestPublish : isApprove ? approve : publish;
-  const propagateAction = !hasPublishPermission || state.requestApproval ? itemsScheduled : itemsApproved;
   const { mixedPublishingTargets, mixedPublishingDates, dateScheduled, publishingTarget } = useMemo(() => {
     const state = {
       mixedPublishingTargets: false,
@@ -268,12 +265,7 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 
     submit(siteId, data).subscribe(
       () => {
-        dispatch(
-          batchActions([
-            updatePublishDialog({ isSubmitting: false, hasPendingChanges: false }),
-            emitSystemEvent(propagateAction({ targets: items }))
-          ])
-        );
+        dispatch(updatePublishDialog({ isSubmitting: false, hasPendingChanges: false }));
         onSuccess?.({
           schedule: schedule,
           publishingTarget,

@@ -105,12 +105,12 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
         fetchingByPath: { ...state[id].fetchingByPath, ...createPresenceTable(Object.keys(paths)) }
       };
     },
-    [pathNavigatorTreeFetchPathChildren.type]: (state, { payload: { id, path } }) => {
+    [pathNavigatorTreeFetchPathChildren.type]: (state, { payload: { id, path, expand = true } }) => {
       return {
         ...state,
         [id]: {
           ...state[id],
-          ...(!state[id].expanded.includes(path) && { expanded: [...state[id].expanded, path] }),
+          ...(expand && !state[id].expanded.includes(path) && { expanded: [...state[id].expanded, path] }),
           fetchingByPath: { ...state[id].fetchingByPath, [path]: true }
         }
       };

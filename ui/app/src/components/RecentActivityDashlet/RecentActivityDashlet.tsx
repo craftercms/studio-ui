@@ -30,7 +30,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
 import RecentActivityDashletUiSkeleton from '../RecentActivityDashletGrid/RecentActivityDashletUISkeleton';
 import GlobalState from '../../models/GlobalState';
-import { itemsApproved, itemsDeleted, itemsRejected, itemsScheduled } from '../../state/actions/system';
+import { deleteContentEvent, publishEvent, workflowEvent } from '../../state/actions/system';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { filter } from 'rxjs/operators';
 import TextField from '@mui/material/TextField';
@@ -163,20 +163,10 @@ export default function RecentActivityDashlet() {
 
   // region Item Updates Propagation
   useEffect(() => {
-    const events = [itemsDeleted.type, itemsRejected.type, itemsApproved.type, itemsScheduled.type];
+    const events = [deleteContentEvent.type, workflowEvent.type, publishEvent.type];
     const hostToHost$ = getHostToHostBus();
     const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
-      switch (type) {
-        case itemsApproved.type:
-        case itemsScheduled.type:
-        case itemsDeleted.type:
-        case itemsRejected.type: {
-          if (payload.targets.some((path) => selectedLookup[path])) {
-            fetchActivity();
-          }
-          break;
-        }
-      }
+      fetchActivity();
     });
     return () => {
       subscription.unsubscribe();
