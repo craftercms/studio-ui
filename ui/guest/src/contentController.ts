@@ -33,7 +33,8 @@ import {
   insertItemOperation,
   moveItemOperation,
   sortItemOperation,
-  updateFieldValueOperation
+  updateFieldValueOperation,
+  updateFieldValueOperationComplete
 } from '@craftercms/studio-ui/state/actions/preview';
 import { createLookupTable, nnou, nou } from '@craftercms/studio-ui/utils/object';
 import { isSimple, popPiece, removeLastPiece } from '@craftercms/studio-ui/utils/string';
@@ -836,4 +837,13 @@ fromTopic('FETCH_GUEST_MODEL_COMPLETE')
     models$.next({ ...models$.value, ...modelLookup });
     paths$.next({ ...paths$.value, ...modelIdByPath });
     items$.next({ ...items$.value, ...createLookupTable(sandboxItems, 'path') });
+  });
+
+fromTopic(updateFieldValueOperationComplete.type)
+  .pipe(pluck('payload'))
+  .subscribe(({ item }) => {
+    items$.next({
+      ...items$.value,
+      [item.path]: item
+    });
   });

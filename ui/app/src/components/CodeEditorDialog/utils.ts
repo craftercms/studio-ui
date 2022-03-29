@@ -62,9 +62,11 @@ export function getContentModelSnippets(
 ): { label: string; value: string }[] {
   return Object.keys(fields).map((key) => ({
     label: fields[key].name,
-    value: contentModel.value.replace(
-      'VARIABLE_NAME',
-      contentTypePropsMap[fields[key].id] ? `"${contentTypePropsMap[fields[key].id]}"` : fields[key].id
-    )
+    value: contentModel.value
+      .replace(
+        'VARIABLE_NAME',
+        contentTypePropsMap[fields[key].id] ? `["${contentTypePropsMap[fields[key].id]}"]` : fields[key].id
+      )
+      .replace('.[', '[')
   }));
 }
