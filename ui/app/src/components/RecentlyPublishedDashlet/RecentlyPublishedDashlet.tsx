@@ -30,7 +30,7 @@ import Dashlet from '../Dashlet';
 import useStyles from './styles';
 import RecentlyPublishedDashletUISkeletonTable from './RecentlyPublishedDashletUISkeletonTable';
 import TextField from '@mui/material/TextField';
-import { deleteContentEvent, publishEvent, workflowEvent } from '../../state/actions/system';
+import { deleteContentEvent, publishEvent } from '../../state/actions/system';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { filter } from 'rxjs/operators';
 import { useLogicResource } from '../../hooks/useLogicResource';
