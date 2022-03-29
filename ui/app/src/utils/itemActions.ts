@@ -372,7 +372,9 @@ export function generateSingleItemOptions(
   }
   if (hasCopyAction(item.availableActions) && actionsToInclude.copy) {
     sectionB.push(menuOptions.copy);
-    sectionB.push(menuOptions.copyWithChildren);
+    if (item.childrenCount > 0) {
+      sectionB.push(menuOptions.copyWithChildren);
+    }
   }
   if (hasPasteAction(item.availableActions) && options?.hasClipboard && actionsToInclude.paste) {
     sectionB.push(menuOptions.paste);
