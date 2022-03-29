@@ -15,7 +15,7 @@
  */
 
 import { ofType } from 'redux-observable';
-import { filter, map, mergeMap, switchMap, withLatestFrom } from 'rxjs/operators';
+import { catchError, filter, map, mergeMap, switchMap, withLatestFrom } from 'rxjs/operators';
 import {
   clearClipboard,
   completeDetailedItem,
@@ -55,7 +55,7 @@ import {
   paste,
   unlock
 } from '../../services/content';
-import { merge, Observable, of } from 'rxjs';
+import { merge, NEVER, Observable, of } from 'rxjs';
 import {
   closeConfirmDialog,
   closeDeleteDialog,
@@ -255,7 +255,8 @@ const content: CrafterCMSEpic[] = [
                 payload.notify === false && showUnlockItemSuccessNotification()
               ].filter(Boolean)
             )
-          )
+          ),
+          catchError(() => NEVER)
         );
       })
     ),

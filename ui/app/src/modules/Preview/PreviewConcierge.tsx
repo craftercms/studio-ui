@@ -164,6 +164,7 @@ import { useUpdateRefs } from '../../hooks';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { batchActions, editContentTypeTemplate, editController } from '../../state/actions/misc';
 import { popPiece } from '../../utils/string';
+import { fetchSandboxItem as fetchSandboxItemService } from '../../services/content';
 
 const originalDocDomain = document.domain;
 
@@ -835,17 +836,19 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
             path,
             value,
             upToDateRefs.current.cdataEscapedFieldPatterns.some((pattern) => Boolean(fieldId.match(pattern)))
-          ).subscribe({
-            next() {
-              hostToGuest$.next(updateFieldValueOperationComplete());
-              updatedModifiedItem(path);
-              enqueueSnackbar(formatMessage(guestMessages.updateOperationComplete));
-            },
-            error() {
-              hostToGuest$.next(updateFieldValueOperationFailed());
-              enqueueSnackbar(formatMessage(guestMessages.updateOperationFailed));
-            }
-          });
+          )
+            .pipe(switchMap(() => fetchSandboxItemService(siteId, path)))
+            .subscribe({
+              next(item) {
+                hostToGuest$.next(updateFieldValueOperationComplete({ item }));
+                updatedModifiedItem(path);
+                enqueueSnackbar(formatMessage(guestMessages.updateOperationComplete));
+              },
+              error() {
+                hostToGuest$.next(updateFieldValueOperationFailed());
+                enqueueSnackbar(formatMessage(guestMessages.updateOperationFailed));
+              }
+            });
           break;
         }
         case iceZoneSelected.type: {
