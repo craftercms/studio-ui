@@ -384,7 +384,7 @@ export const useSearchState = ({ searchParameters, onSelect }: useSearchStatePro
   useEffect(() => {
     const eventsThatNeedReaction = [contentEvent.type, deleteContentEvent.type];
     const hostToHost$ = getHostToHostBus();
-    const subscription = hostToHost$.pipe(filter((e) => eventsThatNeedReaction.includes(e.type))).subscribe((e) => {
+    const subscription = hostToHost$.pipe(filter((e) => eventsThatNeedReaction.includes(e.type))).subscribe(() => {
       handleClearSelected();
       refreshSearch();
     });

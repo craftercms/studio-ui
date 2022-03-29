@@ -424,12 +424,9 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     onCloseWidgetOptions();
     if (option === 'refresh') {
       dispatch(
-        batchActions([
-          pathNavigatorTreeRefresh({
-            id
-          }),
-          pathNavigatorTreeBackgroundRefresh({ id })
-        ])
+        pathNavigatorTreeRefresh({
+          id
+        })
       );
     }
   };

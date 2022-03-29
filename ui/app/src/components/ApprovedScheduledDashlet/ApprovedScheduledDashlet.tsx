@@ -171,14 +171,7 @@ export function ApprovedScheduledDashlet() {
     const events = [deleteContentEvent.type, workflowEvent.type, publishEvent.type];
     const hostToHost$ = getHostToHostBus();
     const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
-      switch (type) {
-        case deleteContentEvent.type:
-        case workflowEvent.type:
-        case publishEvent.type: {
-          refresh();
-          break;
-        }
-      }
+      refresh();
     });
     return () => {
       subscription.unsubscribe();

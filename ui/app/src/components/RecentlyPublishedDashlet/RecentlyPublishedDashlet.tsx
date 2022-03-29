@@ -180,14 +180,7 @@ export default function RecentlyPublishedDashlet() {
     const events = [deleteContentEvent.type, publishEvent.type];
     const hostToHost$ = getHostToHostBus();
     const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
-      switch (type) {
-        case deleteContentEvent.type:
-        case workflowEvent.type:
-        case publishEvent.type: {
-          fetchHistory();
-          break;
-        }
-      }
+      fetchHistory();
     });
     return () => {
       subscription.unsubscribe();
