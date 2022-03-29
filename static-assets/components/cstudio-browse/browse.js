@@ -454,15 +454,6 @@
     });
   };
 
-  // get-items-tree returns parent item as one of the children of the item. This function is to remove that child.
-  CStudioBrowse.getDataRemoveParentFromChildren = function (data) {
-    if (data) {
-      const childrenWithoutParent = data.item.children.filter((item) => item.browserUri !== data.item.browserUri);
-      data.item.children = childrenWithoutParent;
-    }
-    return data;
-  };
-
   //Services
 
   CStudioBrowse.renderSiteFolders = function (site, path) {
@@ -480,7 +471,7 @@
           var currentPath = notRoot ? node.a_attr['data-path'] : path; // use node path or root path
 
           function setItems(treeData) {
-            var items = new Array(CStudioBrowse.getDataRemoveParentFromChildren(treeData).item);
+            var items = [treeData.item];
             items = me.parseObjForTree(items);
             if (notRoot) {
               // do this when it is not root level
