@@ -145,7 +145,6 @@ export function ItemStateIcon(props: ItemStateIconProps) {
       translationPending: null,
       translationInProgress: null
     };
-
     if (item.systemType === 'folder') {
       return { Icon: NotInWorkflowIcon, stateSpecificClass: classes.stateNotInWorkflow };
     } else {
