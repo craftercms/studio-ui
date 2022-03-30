@@ -66,6 +66,8 @@ import {
 import { isEditableAsset } from '../../utils/content';
 import {
   blockUI,
+  emitSystemEvent,
+  lockContentEvent,
   showDeleteItemSuccessNotification,
   showDuplicatedItemSuccessNotification,
   showPasteItemSuccessNotification,
@@ -508,8 +510,21 @@ const content: CrafterCMSEpic[] = [
           );
         }
       })
-    )
+    ),
   // endregion
+  // region Emit System Event
+  (action$, state$) =>
+    action$.pipe(
+      ofType(emitSystemEvent.type),
+      withLatestFrom(state$),
+      filter(([{ payload }]) => payload.type === lockContentEvent.type),
+      switchMap(([{ payload }, state]) =>
+        fetchSandboxItemService(state.sites.active, payload.payload.targetPath).pipe(
+          map((item) => fetchSandboxItemComplete({ item })),
+          catchAjaxError(fetchSandboxItemFailed)
+        )
+      )
+    )
 ];
 
 export default content;
