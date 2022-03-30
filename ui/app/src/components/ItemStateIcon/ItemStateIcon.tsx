@@ -145,9 +145,16 @@ export function ItemStateIcon(props: ItemStateIconProps) {
       translationPending: null,
       translationInProgress: null
     };
-    return (
-      map[getItemStateId(item.stateMap)] ?? { Icon: NotInWorkflowIcon, stateSpecificClass: classes.stateNotInWorkflow }
-    );
+    if (item.systemType === 'folder') {
+      return { Icon: NotInWorkflowIcon, stateSpecificClass: classes.stateNotInWorkflow };
+    } else {
+      return (
+        map[getItemStateId(item.stateMap)] ?? {
+          Icon: NotInWorkflowIcon,
+          stateSpecificClass: classes.stateNotInWorkflow
+        }
+      );
+    }
   }, [
     classes.stateDeletedIcon,
     classes.stateLockedIcon,
