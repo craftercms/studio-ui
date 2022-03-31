@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import PathNavigatorTreeUI, { PathNavigatorTreeNode } from './PathNavigatorTreeUI';
 import { useDispatch } from 'react-redux';
 import {
@@ -57,6 +57,7 @@ import { debounceTime, filter } from 'rxjs/operators';
 import {
   contentEvent,
   deleteContentEvent,
+  folderRenamed,
   pluginInstalled,
   publishEvent,
   workflowEvent
@@ -154,6 +155,15 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   const [rootNode, setRootNode] = useState(null);
   const [error, setError] = useState<ApiResponse>();
 
+  const rootPathExists = useCallback(() => {
+    fetchSandboxItem(siteId, rootPath).subscribe({
+      next() {},
+      error({ response }) {
+        setError(response.response);
+      }
+    });
+  }, [siteId, rootPath]);
+
   useEffect(() => {
     // setting nodeByPathRef to undefined when the siteId changes
     // Adding uiConfig as means to stop navigator from trying to
@@ -176,13 +186,8 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   }, [siteId, user.username, id, dispatch, rootPath, excludes, limit, state, uiConfig.currentSite, storedState]);
 
   useEffect(() => {
-    fetchSandboxItem(siteId, rootPath).subscribe({
-      next() {},
-      error({ response }) {
-        setError(response.response);
-      }
-    });
-  }, [rootPath, siteId]);
+    rootPathExists();
+  }, [rootPathExists]);
 
   useEffect(() => {
     if (rootItem && nodesByPathRef.current[rootItem.path] === undefined) {
@@ -270,6 +275,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     const events = [
       contentEvent.type,
       deleteContentEvent.type,
+      folderRenamed.type,
       pluginInstalled.type,
       workflowEvent.type,
       publishEvent.type
@@ -281,16 +287,18 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
           const targetPath = payload.targetPath ?? payload.target;
           const parentPath = getParentPath(targetPath);
 
-          let node = lookupItemByPath(targetPath, nodesByPathRef.current);
-          if (!node || node.children.length === 0) {
-            node = lookupItemByPath(parentPath, nodesByPathRef.current);
-          }
-          const path = node?.id;
-          if (path) {
+          if (withoutIndex(targetPath) === rootPath) {
+            // If item is root
+            dispatch(
+              pathNavigatorTreeRefresh({
+                id
+              })
+            );
+          } else {
             dispatch(
               pathNavigatorTreeFetchPathChildren({
                 id,
-                path,
+                path: parentPath,
                 expand: user.username === payload.user.username
               })
             );
@@ -304,11 +312,39 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
           const path = node?.id;
           if (path) {
             dispatch(
-              pathNavigatorTreeFetchPathChildren({
+              batchActions([
+                ...(state.expanded.includes(targetPath)
+                  ? [
+                      pathNavigatorTreeCollapsePath({
+                        id,
+                        path: targetPath
+                      })
+                    ]
+                  : []),
+                pathNavigatorTreeFetchPathChildren({
+                  id,
+                  path
+                })
+              ])
+            );
+          }
+          if (targetPath === rootPath) {
+            rootPathExists();
+          }
+          break;
+        }
+        case folderRenamed.type: {
+          const targetPath = payload.target;
+          if (state.expanded.includes(targetPath)) {
+            dispatch(
+              pathNavigatorTreeCollapsePath({
                 id,
-                path
+                path: targetPath
               })
             );
+          }
+          if (targetPath === rootPath) {
+            rootPathExists();
           }
           break;
         }
@@ -329,7 +365,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     return () => {
       subscription.unsubscribe();
     };
-  }, [id, rootPath, dispatch, totalByPath, limit, childrenByParentPath, state?.expanded, user]);
+  }, [id, rootPath, dispatch, totalByPath, limit, childrenByParentPath, state?.expanded, user, rootPathExists]);
   // endregion
 
   if ((!rootItem || !Boolean(state) || !rootNode) && !error) {

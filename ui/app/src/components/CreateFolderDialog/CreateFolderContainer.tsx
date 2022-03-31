@@ -34,6 +34,7 @@ import DialogFooter from '../DialogFooter/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
+import { emitSystemEvent, folderRenamed } from '../../state/actions/system';
 
 export function CreateFolderContainer(props: CreateFolderContainerProps) {
   const { onClose, isSubmitting, onCreated, onRenamed, rename = false, value = '', allowBraces = false } = props;
@@ -64,7 +65,8 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
             updateCreateFolderDialog({
               isSubmitting: false,
               hasPendingChanges: false
-            })
+            }),
+            emitSystemEvent(folderRenamed({ target: path, oldName: value, newName: name }))
           ])
         );
       },
