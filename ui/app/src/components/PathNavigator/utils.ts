@@ -55,6 +55,20 @@ export function getEditorMode(item: DetailedItem | SandboxItem): 'ftl' | 'groovy
   }
 }
 
+export function getEditorModeFromExtension(extension: string): 'ftl' | 'groovy' | 'javascript' | 'css' | 'text' {
+  if (extension === 'ftl') {
+    return 'ftl';
+  } else if (extension === 'groovy') {
+    return 'groovy';
+  } else if (extension === 'js') {
+    return 'javascript';
+  } else if (extension === 'css') {
+    return 'css';
+  } else {
+    return 'text';
+  }
+}
+
 export function rand(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }

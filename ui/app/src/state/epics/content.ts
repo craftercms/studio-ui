@@ -56,6 +56,7 @@ import {
 } from '../../services/content';
 import { merge, NEVER, Observable, of } from 'rxjs';
 import {
+  closeCodeEditorDialog,
   closeConfirmDialog,
   closeDeleteDialog,
   showCodeEditorDialog,
@@ -95,6 +96,8 @@ import { showErrorDialog } from '../reducers/dialogs/error';
 import { dissociateTemplate } from '../actions/preview';
 import { isBlank } from '../../utils/string';
 import { popTab, pushTab } from '../reducers/dialogs/minimizedTabs';
+import { getFileExtensionFromPath } from '../../components/CreateFileDialog';
+import { getEditorModeFromExtension } from '../../components/PathNavigator/utils';
 
 export const sitePolicyMessages = defineMessages({
   itemPastePolicyConfirm: {
@@ -283,12 +286,14 @@ const content: CrafterCMSEpic[] = [
           map(({ item: path }) => {
             const editableAsset = isEditableAsset(payload.path);
             if (editableAsset) {
+              const extension = getFileExtensionFromPath(path);
               return showCodeEditorDialog({
                 authoringBase: state.env.authoringBase,
                 site: state.sites.active,
                 path,
-                type: 'asset',
-                onSuccess: payload.onSuccess
+                mode: getEditorModeFromExtension(extension),
+                onSuccess: payload.onSuccess,
+                onClose: batchActions([closeCodeEditorDialog(), conditionallyUnlockItem({ path })])
               });
             }
           })
