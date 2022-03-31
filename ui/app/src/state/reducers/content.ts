@@ -52,7 +52,7 @@ import {
 import { GetChildrenResponse } from '../../models/GetChildrenResponse';
 import LookupTable from '../../models/LookupTable';
 import { STATE_LOCKED_MASK } from '../../utils/constants';
-import { emitSystemEvent, lockContentEvent } from '../actions/system';
+import { lockContentEvent } from '../actions/system';
 
 type ContentState = GlobalState['content'];
 
@@ -258,19 +258,12 @@ const reducer = createReducer<ContentState>(initialState, {
     return updateItemByPath(state, { payload: { parent: null, children: payload.items } });
   },
   [changeSite.type]: () => initialState,
-  [emitSystemEvent.type]: (state, { payload: event }) => {
-    const { type, payload } = event;
-
-    if (type === lockContentEvent.type) {
-      return updateItemLockState(state, {
-        path: payload.targetPath,
-        username: payload.user.username,
-        locked: payload.locked
-      });
-    } else {
-      return state;
-    }
-  }
+  [lockContentEvent.type]: (state, { payload }) =>
+    updateItemLockState(state, {
+      path: payload.targetPath,
+      username: payload.user.username,
+      locked: payload.locked
+    })
 });
 
 export default reducer;

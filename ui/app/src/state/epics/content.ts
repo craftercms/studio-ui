@@ -66,7 +66,6 @@ import {
 import { isEditableAsset } from '../../utils/content';
 import {
   blockUI,
-  emitSystemEvent,
   lockContentEvent,
   showDeleteItemSuccessNotification,
   showDuplicatedItemSuccessNotification,
@@ -512,14 +511,13 @@ const content: CrafterCMSEpic[] = [
       })
     ),
   // endregion
-  // region Emit System Event
+  // region Lock Content Event
   (action$, state$) =>
     action$.pipe(
-      ofType(emitSystemEvent.type),
+      ofType(lockContentEvent.type),
       withLatestFrom(state$),
-      filter(([{ payload }]) => payload.type === lockContentEvent.type),
       switchMap(([{ payload }, state]) =>
-        fetchSandboxItemService(state.sites.active, payload.payload.targetPath).pipe(
+        fetchSandboxItemService(state.sites.active, payload.targetPath).pipe(
           map((item) => fetchSandboxItemComplete({ item })),
           catchAjaxError(fetchSandboxItemFailed)
         )
