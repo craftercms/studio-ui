@@ -670,15 +670,10 @@ export const itemActionDispatcher = ({
         fetchLegacyItemsTree(site, itemPath, { depth: 1000, order: 'default' }).subscribe({
           next(item: LegacyItem) {
             let paths = [];
-            let children = {};
-            let parents = {};
             function process(parent: LegacyItem) {
               paths.push(parent.uri);
               if (parent.children.length) {
-                children[parent.uri] = [];
                 parent.children.forEach((item: LegacyItem) => {
-                  parents[item.uri] = parent.uri;
-                  children[parent.uri].push(item.uri);
                   if (item.children) {
                     process(item);
                   }
