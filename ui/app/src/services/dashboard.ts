@@ -16,9 +16,12 @@
 
 import { get } from '../utils/ajax';
 import { toQueryString } from '../utils/object';
-import { pluck } from 'rxjs/operators';
+import { map, pluck } from 'rxjs/operators';
 import { LegacyDashboardItem, LegacyDeploymentHistoryResponse } from '../models/Dashboard';
 import { Observable } from 'rxjs';
+import { PagedArray } from '../models';
+import { Activity } from '../models/Activity';
+import PaginationOptions from '../models/PaginationOptions';
 
 export function fetchLegacyGetGoLiveItems(
   site: string,
@@ -94,4 +97,39 @@ export function fetchLegacyDeploymentHistory(
     ...(filterBy && { filterType: filterBy })
   });
   return get(`/studio/api/2/publish/history.json${qs}`).pipe(pluck('response'));
+}
+
+interface FetchActivityOptions extends PaginationOptions {
+  actions?: string[];
+  usernames?: string[];
+  dateFrom?: string;
+  dateTo?: string;
+}
+
+export function fetchActivity(siteId: string, options?: FetchActivityOptions): Observable<PagedArray<Activity>> {
+  const qs = toQueryString({ siteId, ...options }, { arrayFormat: 'comma' });
+  return get(`/studio/api/2/dashboard/activity${qs}`).pipe(
+    map(({ response: { activities, total, offset, limit } }) =>
+      Object.assign(activities, {
+        total,
+        offset,
+        limit
+      })
+    )
+  );
+}
+
+interface FetchMyActivityOptions extends Omit<FetchActivityOptions, 'usernames'> {}
+
+export function fetchMyActivity(siteId: string, options?: FetchMyActivityOptions): Observable<PagedArray<Activity>> {
+  const qs = toQueryString({ siteId, ...options });
+  return get(`/studio/api/2/dashboard/activity/me${qs}`).pipe(
+    map(({ response: { activities, total, offset, limit } }) =>
+      Object.assign(activities, {
+        total,
+        offset,
+        limit
+      })
+    )
+  );
 }

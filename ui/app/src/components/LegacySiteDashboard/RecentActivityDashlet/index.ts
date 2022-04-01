@@ -14,6 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './RecentlyPublishedDashlet';
+export { default } from './RecentActivityDashlet';
 
-export * from './RecentlyPublishedDashlet';
+export * from './RecentActivityDashlet';
+
+export * from '../RecentActivityDashletGrid/RecentActivityDashletGridUI';
+
+export * from '../RecentActivityDashletGrid/RecentActivityDashletUISkeleton';
+export { useDetailedItems } from '../../../hooks/useDetailedItems';

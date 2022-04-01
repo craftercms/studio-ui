@@ -17,3 +17,4 @@
 export { default } from './ItemTypeIcon';
 
 export * from './ItemTypeIcon';
+export { messages } from './translations';

@@ -56,7 +56,7 @@ export function asDayMonthDateTime(date: string): string {
 }
 
 export function asLocalizedDateTime(
-  date: string | Date,
+  date: string | number | Date,
   localeCode: string,
   dateTimeFormatOptions?: GlobalState['uiConfig']['locale']['dateTimeFormatOptions']
 ): string {

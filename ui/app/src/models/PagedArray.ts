@@ -19,3 +19,5 @@ export interface PagedArray<T = unknown> extends Array<T> {
   total: number;
   offset: number;
 }
+
+export default PagedArray;

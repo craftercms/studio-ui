@@ -14,6 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './RecentlyPublishedDashlet';
+import { UNDEFINED } from '../../utils/constants';
 
-export * from './RecentlyPublishedDashlet';
+export interface CommonDashletProps {
+  contentHeight?: number | string;
+  borderLeftColor?: string;
+}
+
+export function parseDashletContentHeight(contentHeight: string | number): number {
+  return contentHeight ? parseInt(`${contentHeight}`.replace('px', '')) : UNDEFINED;
+}

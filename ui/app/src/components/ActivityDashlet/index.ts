@@ -14,6 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './RecentlyPublishedDashlet';
+export { default } from './ActivityDashlet';
 
-export * from './RecentlyPublishedDashlet';
+export * from './ActivityDashlet';
+
+export * from './utils';

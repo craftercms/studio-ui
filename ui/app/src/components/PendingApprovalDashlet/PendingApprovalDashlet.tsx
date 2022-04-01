@@ -14,24 +14,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { CommonDashletProps, DashletTemplate } from '../SiteDashboard';
-import palette from '../../styles/palette';
-import { FormattedMessage } from 'react-intl';
 import React from 'react';
+import { CommonDashletProps, DashletTemplate } from '../SiteDashboard';
+import { FormattedMessage } from 'react-intl';
+import palette from '../../styles/palette';
 
-interface RecentlyPublishedDashletProps extends CommonDashletProps {}
+interface PendingApprovalDashletProps extends CommonDashletProps {}
 
-export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
-  const { borderLeftColor = palette.blue.tint } = props;
+export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
+  const { borderLeftColor = palette.purple.tint } = props;
   return (
     <DashletTemplate
       {...props}
       borderLeftColor={borderLeftColor}
-      title={<FormattedMessage id="recentlyPublishedDashlet.widgetTitle" defaultMessage="Recently Published" />}
+      title={<FormattedMessage id="pendingApprovalDashlet.widgetTitle" defaultMessage="Pending Approval" />}
     >
       ...
     </DashletTemplate>
   );
 }
 
-export default RecentlyPublishedDashlet;
+export default PendingApprovalDashlet;

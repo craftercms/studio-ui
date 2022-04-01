@@ -19,19 +19,19 @@ import palette from '../../styles/palette';
 import { FormattedMessage } from 'react-intl';
 import React from 'react';
 
-interface RecentlyPublishedDashletProps extends CommonDashletProps {}
+interface DevContentOpsDashletProps extends CommonDashletProps {}
 
-export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
-  const { borderLeftColor = palette.blue.tint } = props;
+export function DevContentOpsDashlet(props: DevContentOpsDashletProps) {
+  const { borderLeftColor = palette.teal.main } = props;
   return (
     <DashletTemplate
       {...props}
       borderLeftColor={borderLeftColor}
-      title={<FormattedMessage id="recentlyPublishedDashlet.widgetTitle" defaultMessage="Recently Published" />}
+      title={<FormattedMessage id="devContentOpsDashlet.widgetTitle" defaultMessage="DevContentOps" />}
     >
       ...
     </DashletTemplate>
   );
 }
 
-export default RecentlyPublishedDashlet;
+export default DevContentOpsDashlet;

@@ -14,6 +14,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './RecentlyPublishedDashlet';
+import { SandboxItem } from './Item';
 
-export * from './RecentlyPublishedDashlet';
+// Omitting 'UNKNOWN' for now.
+export type Activities =
+  | 'CREATE'
+  | 'UPDATE'
+  | 'DELETE'
+  | 'MOVE'
+  | 'REQUEST_PUBLISH'
+  | 'APPROVE'
+  | 'APPROVE_SCHEDULED'
+  | 'REJECT'
+  | 'REVERT'
+  | 'PUBLISH'
+  | 'PUBLISHED'
+  | 'INITIAL_PUBLISH';
+
+export interface Activity {
+  id: number;
+  person: {
+    username: string;
+    firstName: string;
+    lastName: string;
+    avatar: string;
+  };
+  actionType: Activities;
+  actionTimestamp: string;
+  item: Pick<SandboxItem, 'path' | 'label' | 'previewUrl' | 'systemType'>;
+  package: any; // TODO: Type package
+}
+
+export default Activity;

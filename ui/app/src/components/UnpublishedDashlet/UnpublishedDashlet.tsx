@@ -14,24 +14,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { CommonDashletProps, DashletTemplate } from '../SiteDashboard';
+import { CommonDashletProps, DashletTemplate, parseDashletContentHeight } from '../SiteDashboard';
 import palette from '../../styles/palette';
+import Card from '@mui/material/Card';
+import CardHeader from '@mui/material/CardHeader';
 import { FormattedMessage } from 'react-intl';
+import CardContent from '@mui/material/CardContent';
 import React from 'react';
 
-interface RecentlyPublishedDashletProps extends CommonDashletProps {}
+interface UnpublishedDashletProps extends CommonDashletProps {}
 
-export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
+export function UnpublishedDashlet(props: UnpublishedDashletProps) {
   const { borderLeftColor = palette.blue.tint } = props;
   return (
     <DashletTemplate
       {...props}
       borderLeftColor={borderLeftColor}
-      title={<FormattedMessage id="recentlyPublishedDashlet.widgetTitle" defaultMessage="Recently Published" />}
+      title={<FormattedMessage id="unpublishedDashlet.widgetTitle" defaultMessage="Unpublished Work" />}
     >
       ...
     </DashletTemplate>
   );
 }
 
-export default RecentlyPublishedDashlet;
+export default UnpublishedDashlet;

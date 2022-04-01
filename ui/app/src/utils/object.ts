@@ -194,7 +194,7 @@ export function extend(
   return target;
 }
 
-export function toQueryString<T extends {} = {}>(args: T, options?: StringifyOptions & { prefix: string }): string {
+export function toQueryString<T extends {} = {}>(args: T, options?: StringifyOptions & { prefix?: string }): string {
   if (!args) {
     return '';
   }
