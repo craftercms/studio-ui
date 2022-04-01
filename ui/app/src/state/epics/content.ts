@@ -56,6 +56,7 @@ import {
 } from '../../services/content';
 import { merge, NEVER, Observable, of } from 'rxjs';
 import {
+  closeCodeEditorDialog,
   closeConfirmDialog,
   closeDeleteDialog,
   showCodeEditorDialog,
@@ -63,7 +64,7 @@ import {
   showDeleteDialog,
   showEditDialog
 } from '../actions/dialogs';
-import { isEditableAsset } from '../../utils/content';
+import { getEditorMode, isEditableAsset } from '../../utils/content';
 import {
   blockUI,
   showDeleteItemSuccessNotification,
@@ -281,14 +282,16 @@ const content: CrafterCMSEpic[] = [
       switchMap(([{ payload }, state]) => {
         return duplicate(state.sites.active, payload.path).pipe(
           map(({ item: path }) => {
+            const mode = getEditorMode(state.content.itemsByPath[payload.path].mimeType);
             const editableAsset = isEditableAsset(payload.path);
             if (editableAsset) {
               return showCodeEditorDialog({
                 authoringBase: state.env.authoringBase,
                 site: state.sites.active,
                 path,
-                type: 'asset',
-                onSuccess: payload.onSuccess
+                mode,
+                onSuccess: payload.onSuccess,
+                onClose: batchActions([closeCodeEditorDialog(), conditionallyUnlockItem({ path })])
               });
             }
           })
