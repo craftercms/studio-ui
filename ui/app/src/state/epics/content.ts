@@ -64,7 +64,7 @@ import {
   showDeleteDialog,
   showEditDialog
 } from '../actions/dialogs';
-import { isEditableAsset } from '../../utils/content';
+import { getEditorMode, isEditableAsset } from '../../utils/content';
 import {
   blockUI,
   showDeleteItemSuccessNotification,
@@ -96,8 +96,6 @@ import { showErrorDialog } from '../reducers/dialogs/error';
 import { dissociateTemplate } from '../actions/preview';
 import { isBlank } from '../../utils/string';
 import { popTab, pushTab } from '../reducers/dialogs/minimizedTabs';
-import { getFileExtensionFromPath } from '../../components/CreateFileDialog';
-import { getEditorModeFromExtension } from '../../components/PathNavigator/utils';
 
 export const sitePolicyMessages = defineMessages({
   itemPastePolicyConfirm: {
@@ -284,14 +282,14 @@ const content: CrafterCMSEpic[] = [
       switchMap(([{ payload }, state]) => {
         return duplicate(state.sites.active, payload.path).pipe(
           map(({ item: path }) => {
+            const mode = getEditorMode(state.content.itemsByPath[payload.path].mimeType);
             const editableAsset = isEditableAsset(payload.path);
             if (editableAsset) {
-              const extension = getFileExtensionFromPath(path);
               return showCodeEditorDialog({
                 authoringBase: state.env.authoringBase,
                 site: state.sites.active,
                 path,
-                mode: getEditorModeFromExtension(extension),
+                mode,
                 onSuccess: payload.onSuccess,
                 onClose: batchActions([closeCodeEditorDialog(), conditionallyUnlockItem({ path })])
               });

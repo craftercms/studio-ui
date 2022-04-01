@@ -40,9 +40,5 @@ export interface CreateFileContainerProps
 
 export const getExtension = (type: string) => (type === 'controller' ? `groovy` : `ftl`);
 
-export const getFileExtensionFromPath = (path: string): string => {
-  return path.match(/(?:\.([^.]+))?$/)[1];
-};
-
 export const getName = (type: string, name: string) =>
   `${name}.${getExtension(type)}`.replace(/(\.groovy)(\.groovy)|(\.ftl)(\.ftl)/g, '$1$3').replace(/\.{2,}/g, '.');
