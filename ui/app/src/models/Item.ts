@@ -65,7 +65,7 @@ export type ItemActions =
   | 'rejectPublish';
 // endregion
 
-export type VirtualItemActions = 'preview';
+export type VirtualItemActions = 'preview' | 'copyWithChildren';
 
 // region export type AssessRemovalItemActions =
 export type AssessRemovalItemActions =

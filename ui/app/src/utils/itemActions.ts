@@ -15,14 +15,13 @@
  */
 
 import { translations } from '../components/ItemActionsMenu/translations';
-import { AllItemActions, DetailedItem } from '../models/Item';
+import { AllItemActions, DetailedItem, LegacyItem } from '../models/Item';
 import { ContextMenuOption } from '../components/ContextMenu';
 import { getControllerPath, getRootPath, withoutIndex } from './path';
 import {
   closeChangeContentTypeDialog,
   closeCodeEditorDialog,
   closeConfirmDialog,
-  closeCopyDialog,
   closeCreateFileDialog,
   closeCreateFolderDialog,
   closeDeleteDialog,
@@ -32,7 +31,6 @@ import {
   showChangeContentTypeDialog,
   showCodeEditorDialog,
   showConfirmDialog,
-  showCopyDialog,
   showCreateFileDialog,
   showCreateFolderDialog,
   showDeleteDialog,
@@ -46,7 +44,7 @@ import {
   showUploadDialog,
   showWorkflowCancellationDialog
 } from '../state/actions/dialogs';
-import { fetchSandboxItem, fetchWorkflowAffectedItems } from '../services/content';
+import { fetchLegacyItemsTree, fetchSandboxItem, fetchWorkflowAffectedItems } from '../services/content';
 import {
   batchActions,
   changeContentType,
@@ -107,8 +105,7 @@ import {
   hasRenameAction,
   hasSchedulePublishAction,
   hasUnlockAction,
-  hasUploadAction,
-  parseSandBoxItemToDetailedItem
+  hasUploadAction
 } from './content';
 import { getEditorMode, isNavigable } from '../components/PathNavigator/utils';
 import React from 'react';
@@ -172,6 +169,10 @@ const unparsedMenuOptions: Record<AllItemActions, ContextMenuOptionDescriptor<Al
   copy: {
     id: 'copy',
     label: translations.copy
+  },
+  copyWithChildren: {
+    id: 'copyWithChildren',
+    label: translations.copyWithChildren
   },
   paste: {
     id: 'paste',
@@ -371,6 +372,9 @@ export function generateSingleItemOptions(
   }
   if (hasCopyAction(item.availableActions) && actionsToInclude.copy) {
     sectionB.push(menuOptions.copy);
+    if (item.childrenCount > 0) {
+      sectionB.push(menuOptions.copyWithChildren);
+    }
   }
   if (hasPasteAction(item.availableActions) && options?.hasClipboard && actionsToInclude.paste) {
     sectionB.push(menuOptions.paste);
@@ -633,40 +637,60 @@ export const itemActionDispatcher = ({
         );
         fetchSandboxItem(site, item.path).subscribe({
           next(item) {
-            dispatch(unblockUI());
-            if (item.childrenCount) {
-              dispatch(
-                showCopyDialog({
-                  site,
-                  item: parseSandBoxItemToDetailedItem(item),
-                  onOk: batchActions([
-                    closeCopyDialog(),
-                    setClipboard({
-                      type: 'COPY',
-                      sourcePath: item.path
-                    }),
-                    showCopyItemSuccessNotification()
-                  ])
-                })
-              );
-            } else {
-              dispatch(
-                batchActions([
-                  setClipboard({
-                    type: 'COPY',
-                    paths: [item.path],
-                    sourcePath: item.path
-                  }),
-                  showCopyItemSuccessNotification()
-                ])
-              );
-            }
+            dispatch(
+              batchActions([
+                unblockUI(),
+                setClipboard({
+                  type: 'COPY',
+                  paths: [item.path],
+                  sourcePath: item.path
+                }),
+                showCopyItemSuccessNotification()
+              ])
+            );
           },
           error(response) {
             dispatch(
               showErrorDialog({
                 error: response
               })
+            );
+          }
+        });
+        break;
+      }
+      case 'copyWithChildren': {
+        dispatch(
+          blockUI({
+            progress: 'indeterminate',
+            message: `${formatMessage(translations.processing)}...`
+          })
+        );
+        const itemPath = item.path;
+        fetchLegacyItemsTree(site, itemPath, { depth: 1000, order: 'default' }).subscribe({
+          next(item: LegacyItem) {
+            let paths = [];
+            function process(parent: LegacyItem) {
+              paths.push(parent.uri);
+              if (parent.children.length) {
+                parent.children.forEach((item: LegacyItem) => {
+                  if (item.children) {
+                    process(item);
+                  }
+                });
+              }
+            }
+            process(item);
+
+            dispatch(
+              batchActions([
+                unblockUI(),
+                setClipboard({
+                  type: 'COPY',
+                  sourcePath: itemPath,
+                  paths
+                })
+              ])
             );
           }
         });
