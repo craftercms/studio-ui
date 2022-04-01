@@ -107,3 +107,12 @@ export const pathNavigatorTreeFetchPathsChildrenFailed = /*#__PURE__*/ createAct
   id: string;
   error: Omit<AjaxError, 'request' | 'xhr'>;
 }>('PATH_NAVIGATOR_TREE_FETCH_PATHS_CHILDREN_FAILED');
+
+export const pathNavigatorTreeUpdate = /*#__PURE__*/ createAction<
+  PayloadWithId<{
+    expanded?: string[];
+    collapsed?: boolean;
+    items?: DetailedItem[];
+    data?: LookupTable<GetChildrenResponse>;
+  }>
+>('PATH_NAVIGATOR_TREE_UPDATE');

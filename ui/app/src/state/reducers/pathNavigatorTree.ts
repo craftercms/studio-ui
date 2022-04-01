@@ -30,11 +30,13 @@ import {
   pathNavigatorTreeRefresh,
   pathNavigatorTreeRestoreComplete,
   pathNavigatorTreeSetKeyword,
-  pathNavigatorTreeToggleExpanded
+  pathNavigatorTreeToggleExpanded,
+  pathNavigatorTreeUpdate
 } from '../actions/pathNavigatorTree';
 import { changeSite } from './sites';
 import { createPresenceTable } from '../../utils/array';
 import { fetchSiteUiConfig } from '../actions/configuration';
+import { reversePluckProps } from '../../utils/object';
 
 const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
   {},
@@ -215,6 +217,15 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
           childrenByParentPath,
           totalByPath,
           offsetByPath
+        }
+      };
+    },
+    [pathNavigatorTreeUpdate.type]: (state, { payload }) => {
+      return {
+        ...state,
+        [payload.id]: {
+          ...state[payload.id],
+          ...reversePluckProps(payload, 'id')
         }
       };
     },

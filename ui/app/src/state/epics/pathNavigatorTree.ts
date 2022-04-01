@@ -35,7 +35,8 @@ import {
   pathNavigatorTreeRestoreComplete,
   pathNavigatorTreeRestoreFailed,
   pathNavigatorTreeSetKeyword,
-  pathNavigatorTreeToggleExpanded
+  pathNavigatorTreeToggleExpanded,
+  pathNavigatorTreeUpdate
 } from '../actions/pathNavigatorTree';
 import { fetchChildrenByPath, fetchChildrenByPaths, fetchItemsByPath } from '../../services/content';
 import { catchAjaxError } from '../../utils/ajax';
@@ -43,6 +44,7 @@ import { setStoredPathNavigatorTree } from '../../utils/state';
 import { forkJoin } from 'rxjs';
 import { createPresenceTable } from '../../utils/array';
 import { getIndividualPaths, withoutIndex } from '../../utils/path';
+import { batchActions } from '../actions/misc';
 
 export default [
   // region pathNavigatorTreeInit
@@ -83,7 +85,18 @@ export default [
           )
         ]).pipe(
           map(([items, data]) => pathNavigatorTreeRestoreComplete({ id, expanded, collapsed, items, data })),
-          catchAjaxError((error) => pathNavigatorTreeRestoreFailed({ error, id }))
+          catchAjaxError((error) => {
+            if (error.status === 404) {
+              const uuid = state.sites.byId[state.sites.active].uuid;
+              setStoredPathNavigatorTree(uuid, state.user.username, id, {
+                collapsed: state.pathNavigatorTree[id].collapsed,
+                keywordByPath: state.pathNavigatorTree[id].keywordByPath
+              });
+              return batchActions([pathNavigatorTreeUpdate({ id, expanded: [] }), pathNavigatorTreeRefresh({ id })]);
+            } else {
+              return pathNavigatorTreeRestoreFailed({ error, id });
+            }
+          })
         );
       })
     ),
