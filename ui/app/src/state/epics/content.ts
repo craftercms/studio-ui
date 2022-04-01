@@ -516,7 +516,7 @@ const content: CrafterCMSEpic[] = [
     action$.pipe(
       ofType(lockContentEvent.type),
       withLatestFrom(state$),
-      filter(([{ payload, type }, state]) => Boolean(state.content.itemsByPath[payload.targetPath])),
+      filter(([{ payload }, state]) => Boolean(state.content.itemsByPath[payload.targetPath])),
       switchMap(([{ payload }, state]) =>
         fetchSandboxItemService(state.sites.active, payload.targetPath).pipe(
           map((item) => fetchSandboxItemComplete({ item })),
