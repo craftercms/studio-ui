@@ -1,10 +1,9 @@
 import Link from '@mui/material/Link';
-import { defineMessages, FormattedMessage, IntlShape } from 'react-intl';
+import { FormattedMessage, IntlShape } from 'react-intl';
 import React, { useMemo, useState } from 'react';
 import { Activities, Activity } from '../../models/Activity';
 import GlobalState from '../../models/GlobalState';
 import { asLocalizedDateTime } from '../../utils/datetime';
-import Typography from '@mui/material/Typography';
 import moment from 'moment';
 import { messages } from '../ItemTypeIcon/translations';
 

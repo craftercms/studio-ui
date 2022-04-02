@@ -158,7 +158,10 @@ export const registerComponents = () => {
     'craftercms.components.EditModesSwitcher': lazy(() => import('../components/EditModesSwitcher')),
     'craftercms.components.EmbeddedSearchIframe': lazy(() => import('../components/EmbeddedSearchIframe')),
     'craftercms.components.WidgetDialogIconButton': lazy(() => import('../components/WidgetDialogIconButton')),
-    'craftercms.components.Search': lazy(() => import('../components/Search/Search'))
+    'craftercms.components.Search': lazy(() => import('../components/Search/Search')),
+    'craftercms.components.SiteDashboard': lazy(() => import('../components/SiteDashboard/SiteDashboard')),
+    // TODO: Remove when blueprints are updated
+    'craftercms.components.Dashboard': lazy(() => import('../components/SiteDashboard/SiteDashboard'))
   }).forEach(([id, component]) => {
     components.set(id, component);
   });

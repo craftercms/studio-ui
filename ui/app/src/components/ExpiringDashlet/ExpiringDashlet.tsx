@@ -74,6 +74,7 @@ export function ExpiringDashlet(props: ExpiringDashletProps) {
   });
   const onRefresh = () => setState({ refresh: ++state.refresh });
   useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const foo = state.refresh + 1;
     const oneDay = 8.64e7;
     const now = new Date();

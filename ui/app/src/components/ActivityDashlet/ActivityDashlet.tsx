@@ -69,7 +69,7 @@ const Timeline = styled(MuiTimeline)({ margin: 0, padding: 0 });
 
 const CustomTimelineItem = styled(TimelineItem)({
   minHeight: 0,
-  ['&.MuiTimelineItem-missingOppositeContent::before']: {
+  '&.MuiTimelineItem-missingOppositeContent::before': {
     display: 'none',
     content: 'none'
   }
