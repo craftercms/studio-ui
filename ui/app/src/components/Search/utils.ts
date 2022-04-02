@@ -35,7 +35,7 @@ import { search } from '../../services/search';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { translations } from './translations';
 import { ApiResponse } from '../../models/ApiResponse';
-import { itemCreated, itemDuplicated, itemsDeleted, itemsPasted, itemUpdated } from '../../state/actions/system';
+import { contentEvent, deleteContentEvent } from '../../state/actions/system';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { filter } from 'rxjs/operators';
 import { getPreviewURLFromPath } from '../../utils/path';
@@ -382,13 +382,7 @@ export const useSearchState = ({ searchParameters, onSelect }: useSearchStatePro
   };
 
   useEffect(() => {
-    const eventsThatNeedReaction = [
-      itemDuplicated.type,
-      itemsDeleted.type,
-      itemCreated.type,
-      itemUpdated.type,
-      itemsPasted.type
-    ];
+    const eventsThatNeedReaction = [contentEvent.type, deleteContentEvent.type];
     const hostToHost$ = getHostToHostBus();
     const subscription = hostToHost$.pipe(filter((e) => eventsThatNeedReaction.includes(e.type))).subscribe(() => {
       handleClearSelected();

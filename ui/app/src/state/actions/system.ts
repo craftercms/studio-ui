@@ -17,7 +17,7 @@
 import { createAction } from '@reduxjs/toolkit';
 import StandardAction from '../../models/StandardAction';
 import { OptionsObject } from 'notistack';
-import GlobalState, { Clipboard } from '../../models/GlobalState';
+import GlobalState from '../../models/GlobalState';
 import { ObtainAuthTokenResponse } from '../../services/auth';
 import User from '../../models/User';
 import { Site } from '../../models/Site';
@@ -26,36 +26,12 @@ import { UIBlockerStateProps } from '../../components/UIBlocker';
 
 // region Item Events
 
-export const itemUpdated = /*#__PURE__*/ createAction<{ target: string }>('ITEM_UPDATED');
-
 export const itemReverted = /*#__PURE__*/ createAction<{ target: string }>('ITEM_REVERTED');
-
-export const itemCreated = /*#__PURE__*/ createAction<{ target: string }>('ITEM_CREATED');
 
 export const itemCut = /*#__PURE__*/ createAction<{ target: string }>('ITEM_CUT');
 
-export const folderCreated = /*#__PURE__*/ createAction<{ target: string; name: string }>('FOLDER_CREATED');
-
 export const folderRenamed =
   /*#__PURE__*/ createAction<{ target: string; oldName: string; newName: string }>('FOLDER_RENAMED');
-
-export const itemsUploaded = /*#__PURE__*/ createAction<{ target: string; targets: string[] }>('ITEM_UPLOADED');
-
-export const itemsPasted = /*#__PURE__*/ createAction<{ target: string; clipboard: Clipboard }>('ITEMS_PASTED');
-
-export const itemsDeleted = /*#__PURE__*/ createAction<{ targets: string[] }>('ITEMS_DELETED');
-
-export const itemDuplicated = /*#__PURE__*/ createAction<{ target: string; resultPath: string }>('ITEM_DUPLICATED');
-
-export const itemUnlocked = /*#__PURE__*/ createAction<{ target: string }>('ITEM_UNLOCKED');
-
-export const itemLocked = /*#__PURE__*/ createAction<{ target: string }>('ITEM_LOCKED');
-
-export const itemsRejected = /*#__PURE__*/ createAction<{ targets: string[] }>('ITEMS_REJECTED');
-
-export const itemsScheduled = /*#__PURE__*/ createAction<{ targets: string[] }>('ITEMS_SCHEDULED');
-
-export const itemsApproved = /*#__PURE__*/ createAction<{ targets: string[] }>('ITEMS_APPROVED');
 
 interface Person {
   username: string;
@@ -71,6 +47,8 @@ interface SocketEventBase {
 export const lockContentEvent = /*#__PURE__*/ createAction<SocketEventBase & { locked: boolean }>('LOCK_CONTENT_EVENT');
 
 export const contentEvent = /*#__PURE__*/ createAction<SocketEventBase>('CONTENT_EVENT');
+
+export const deleteContentEvent = /*#__PURE__*/ createAction<SocketEventBase>('DELETE_CONTENT_EVENT');
 
 export const configurationEvent = /*#__PURE__*/ createAction<SocketEventBase>('CONFIGURATION_EVENT');
 

@@ -357,8 +357,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
     YAHOO.util.Dom.addClass(inputEl, 'cstudio-form-control-input');
     YAHOO.util.Dom.addClass(inputEl, 'cstudio-form-control-file-name');
 
-    inputEl.onkeyup = () => this.adjustInputsWidth(inputEl, pathEl);
-    inputEl.onchange = () => this.adjustInputsWidth(inputEl, pathEl);
+    inputEl.oninput = () => this.adjustInputsWidth(inputEl, pathEl);
     inputContainer.onclick = () => inputEl.focus();
 
     inputEl.id = 'studioFileName';

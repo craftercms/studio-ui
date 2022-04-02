@@ -83,7 +83,7 @@ export const pathNavigatorTreeFetchPathPageFailed = /*#__PURE__*/ createAction<{
 }>('PATH_NAVIGATOR_TREE_FETCH_PATH_PAGE_FAILED');
 
 export const pathNavigatorTreeFetchPathChildren = /*#__PURE__*/ createAction<
-  PayloadWithId<{ path: string; options?: Partial<GetChildrenOptions> }>
+  PayloadWithId<{ path: string; options?: Partial<GetChildrenOptions>; expand?: boolean }>
 >('PATH_NAVIGATOR_TREE_FETCH_PATH_CHILDREN');
 
 export const pathNavigatorTreeFetchPathChildrenComplete = /*#__PURE__*/ createAction<
@@ -107,3 +107,12 @@ export const pathNavigatorTreeFetchPathsChildrenFailed = /*#__PURE__*/ createAct
   id: string;
   error: Omit<AjaxError, 'request' | 'xhr'>;
 }>('PATH_NAVIGATOR_TREE_FETCH_PATHS_CHILDREN_FAILED');
+
+export const pathNavigatorTreeUpdate = /*#__PURE__*/ createAction<
+  PayloadWithId<{
+    expanded?: string[];
+    collapsed?: boolean;
+    items?: DetailedItem[];
+    data?: LookupTable<GetChildrenResponse>;
+  }>
+>('PATH_NAVIGATOR_TREE_UPDATE');

@@ -23,7 +23,6 @@ import {
   pathNavigatorTreeExpandPath,
   pathNavigatorTreeFetchPathChildren,
   pathNavigatorTreeFetchPathPage,
-  pathNavigatorTreeFetchPathsChildren,
   pathNavigatorTreeInit,
   pathNavigatorTreeRefresh,
   pathNavigatorTreeSetKeyword,
@@ -56,20 +55,18 @@ import { useSubject } from '../../hooks/useSubject';
 import { useDetailedItem } from '../../hooks/useDetailedItem';
 import { debounceTime, filter } from 'rxjs/operators';
 import {
-  folderCreated,
+  contentEvent,
+  deleteContentEvent,
   folderRenamed,
-  itemCreated,
-  itemDuplicated,
-  itemsDeleted,
-  itemsPasted,
-  itemsUploaded,
-  itemUpdated,
-  pluginInstalled
+  pluginInstalled,
+  publishEvent,
+  workflowEvent
 } from '../../state/actions/system';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { useActiveSite } from '../../hooks/useActiveSite';
 import { fetchSandboxItem } from '../../services/content';
 import { ApiResponse } from '../../models';
+import { batchActions } from '../../state/actions/misc';
 
 export interface PathNavigatorTreeProps {
   id: string;
@@ -77,7 +74,6 @@ export interface PathNavigatorTreeProps {
   rootPath: string;
   excludes?: string[];
   limit?: number;
-  backgroundRefreshTimeoutMs?: number;
   icon?: SystemIconDescriptor;
   expandedIcon?: SystemIconDescriptor;
   collapsedIcon?: SystemIconDescriptor;
@@ -125,7 +121,6 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     id = props.label.replace(/\s/g, ''),
     excludes,
     limit = 10,
-    backgroundRefreshTimeoutMs = 60000,
     icon,
     expandedIcon,
     collapsedIcon,
@@ -158,25 +153,16 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   const fetchingByPath = useMemo(() => state?.fetchingByPath ?? {}, [state?.fetchingByPath]);
   const rootItem = useDetailedItem(props.rootPath);
   const [rootNode, setRootNode] = useState(null);
-  const hasActiveSession = useSelection((state) => state.auth.active);
-  const intervalRef = useRef<any>();
   const [error, setError] = useState<ApiResponse>();
 
-  const resetBackgroundRefreshInterval = useCallback(() => {
-    clearInterval(intervalRef.current);
-    intervalRef.current = setInterval(() => {
-      dispatch(pathNavigatorTreeBackgroundRefresh({ id }));
-    }, backgroundRefreshTimeoutMs);
-  }, [backgroundRefreshTimeoutMs, dispatch, id]);
-
-  useEffect(() => {
-    if (hasActiveSession) {
-      resetBackgroundRefreshInterval();
-      return () => {
-        clearInterval(intervalRef.current);
-      };
-    }
-  }, [hasActiveSession, resetBackgroundRefreshInterval]);
+  const rootPathExists = useCallback(() => {
+    fetchSandboxItem(siteId, rootPath).subscribe({
+      next() {},
+      error({ response }) {
+        setError(response.response);
+      }
+    });
+  }, [siteId, rootPath]);
 
   useEffect(() => {
     // setting nodeByPathRef to undefined when the siteId changes
@@ -200,13 +186,8 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   }, [siteId, user.username, id, dispatch, rootPath, excludes, limit, state, uiConfig.currentSite, storedState]);
 
   useEffect(() => {
-    fetchSandboxItem(siteId, rootPath).subscribe({
-      next() {},
-      error({ response }) {
-        setError(response.response);
-      }
-    });
-  }, [rootPath, siteId]);
+    rootPathExists();
+  }, [rootPathExists]);
 
   useEffect(() => {
     if (rootItem && nodesByPathRef.current[rootItem.path] === undefined) {
@@ -274,111 +255,96 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   useEffect(() => {
     const subscription = onSearch$.pipe(debounceTime(400)).subscribe(({ keyword, path }) => {
       dispatch(
-        pathNavigatorTreeSetKeyword({
-          id,
-          path,
-          keyword
-        })
+        batchActions([
+          pathNavigatorTreeSetKeyword({
+            id,
+            path,
+            keyword
+          }),
+          pathNavigatorTreeBackgroundRefresh({ id })
+        ])
       );
-      resetBackgroundRefreshInterval();
     });
     return () => {
       subscription.unsubscribe();
     };
-  }, [resetBackgroundRefreshInterval, dispatch, id, onSearch$, rootPath]);
+  }, [dispatch, id, onSearch$, rootPath]);
 
   // region Item Updates Propagation
   useEffect(() => {
     const events = [
-      itemsPasted.type,
-      itemUpdated.type,
-      folderCreated.type,
+      contentEvent.type,
+      deleteContentEvent.type,
       folderRenamed.type,
-      itemsDeleted.type,
-      itemDuplicated.type,
-      itemCreated.type,
       pluginInstalled.type,
-      itemsUploaded.type
+      workflowEvent.type,
+      publishEvent.type
     ];
     const hostToHost$ = getHostToHostBus();
     const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
       switch (type) {
-        case itemsPasted.type:
-        case folderCreated.type: {
-          if (payload.clipboard?.type === 'CUT') {
-            const parentPath = getParentPath(payload.clipboard.sourcePath);
-            const sourceNode = lookupItemByPath(parentPath, nodesByPathRef.current);
-            const targetNode = lookupItemByPath(payload.target, nodesByPathRef.current);
+        case contentEvent.type: {
+          const targetPath = payload.targetPath ?? payload.target;
+          const parentPath = getParentPath(targetPath);
 
-            const paths = {};
-            if (sourceNode) {
-              paths[sourceNode.id] = {
-                limit: childrenByParentPath[sourceNode.id]?.length ?? limit
-              };
-            }
-            if (targetNode) {
-              paths[targetNode.id] = {
-                limit: childrenByParentPath[targetNode.id] ? childrenByParentPath[targetNode.id].length + 1 : limit
-              };
-            }
-            if (sourceNode || targetNode) {
-              dispatch(
-                pathNavigatorTreeFetchPathsChildren({
-                  id,
-                  paths
-                })
-              );
-            }
+          if (withoutIndex(targetPath) === rootPath) {
+            // If item is root
+            dispatch(
+              pathNavigatorTreeRefresh({
+                id
+              })
+            );
           } else {
-            const node = lookupItemByPath(payload.target, nodesByPathRef.current);
-            const path = node?.id;
-            if (path) {
-              dispatch(
-                pathNavigatorTreeFetchPathChildren({
-                  id,
-                  path
-                })
-              );
-            }
+            dispatch(
+              pathNavigatorTreeFetchPathChildren({
+                id,
+                path: parentPath,
+                expand: user.username === payload.user.username
+              })
+            );
           }
           break;
         }
-        case folderRenamed.type:
-        case itemDuplicated.type:
-        case itemUpdated.type:
-        case itemCreated.type: {
-          const parentPath = getParentPath(payload.target);
+        case deleteContentEvent.type: {
+          const targetPath = payload.targetPath;
+          const parentPath = getParentPath(targetPath);
           const node = lookupItemByPath(parentPath, nodesByPathRef.current);
           const path = node?.id;
           if (path) {
             dispatch(
-              pathNavigatorTreeFetchPathChildren({
-                id,
-                path
-              })
+              batchActions([
+                ...(state.expanded.includes(targetPath)
+                  ? [
+                      pathNavigatorTreeCollapsePath({
+                        id,
+                        path: targetPath
+                      })
+                    ]
+                  : []),
+                pathNavigatorTreeFetchPathChildren({
+                  id,
+                  path
+                })
+              ])
             );
+          }
+          if (targetPath === rootPath) {
+            rootPathExists();
           }
           break;
         }
-        case itemsDeleted.type: {
-          const paths = {};
-          payload.targets.forEach((target) => {
-            const parentPath = getParentPath(target);
-            const node = lookupItemByPath(parentPath, nodesByPathRef.current);
-            const path = node?.id;
-            if (path) {
-              paths[path] = {
-                limit: childrenByParentPath[path]?.length ?? limit
-              };
-            }
-          });
-          if (Object.keys(paths).length) {
+        case folderRenamed.type: {
+          const targetPath = payload.target;
+          if (state.expanded.includes(targetPath)) {
             dispatch(
-              pathNavigatorTreeFetchPathsChildren({
+              pathNavigatorTreeCollapsePath({
                 id,
-                paths
+                path: targetPath
               })
             );
+          }
+          if (targetPath === rootPath) {
+            rootPathExists();
           }
           break;
         }
@@ -386,18 +352,9 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
           dispatch(pathNavigatorTreeBackgroundRefresh({ id }));
           break;
         }
-        case itemsUploaded.type: {
-          const parentPath = payload.target;
-          const node = lookupItemByPath(parentPath, nodesByPathRef.current);
-          const path = node?.id;
-          if (path) {
-            dispatch(
-              pathNavigatorTreeFetchPathChildren({
-                id,
-                path
-              })
-            );
-          }
+        case workflowEvent.type:
+        case publishEvent.type: {
+          dispatch(pathNavigatorTreeBackgroundRefresh({ id }));
           break;
         }
         default: {
@@ -408,7 +365,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     return () => {
       subscription.unsubscribe();
     };
-  }, [id, rootPath, dispatch, totalByPath, limit, childrenByParentPath, state?.expanded]);
+  }, [id, rootPath, dispatch, totalByPath, limit, childrenByParentPath, state?.expanded, user, rootPathExists]);
   // endregion
 
   if ((!rootItem || !Boolean(state) || !rootNode) && !error) {
@@ -472,7 +429,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
         );
       }
     }
-    resetBackgroundRefreshInterval();
+    dispatch(pathNavigatorTreeBackgroundRefresh({ id }));
   };
 
   const onHeaderButtonClick = (element: Element) => {
@@ -507,7 +464,6 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
           id
         })
       );
-      resetBackgroundRefreshInterval();
     }
   };
 
@@ -533,7 +489,6 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
         path
       })
     );
-    resetBackgroundRefreshInterval();
   };
 
   const onPreview = (item: DetailedItem) => {

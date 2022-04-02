@@ -128,7 +128,7 @@ const systemEpics: CrafterCMSEpic[] = [
         const hostToHost$ = getHostToHostBus();
         hostToHost$.next(payload);
       }),
-      ignoreElements()
+      map(({ payload: action }) => action)
     ),
   // endregion
   // region showDeleteItemSuccessNotification

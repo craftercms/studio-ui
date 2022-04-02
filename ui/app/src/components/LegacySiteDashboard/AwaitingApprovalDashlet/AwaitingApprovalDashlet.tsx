@@ -31,7 +31,7 @@ import Dashlet from '../../Dashlet';
 import ApiResponse from '../../../models/ApiResponse';
 import AwaitingApprovalDashletSkeletonTable from '../AwaitingApprovalDashletGrid/AwaitingApprovalDashletSkeletonTable';
 import Button from '@mui/material/Button';
-import { itemsApproved, itemsDeleted, itemsRejected, itemsScheduled } from '../../../state/actions/system';
+import { deleteContentEvent, publishEvent, workflowEvent } from '../../../state/actions/system';
 import { getHostToHostBus } from '../../../modules/Preview/previewContext';
 import { filter } from 'rxjs/operators';
 import { useLogicResource } from '../../../hooks/useLogicResource';
@@ -156,18 +156,14 @@ export default function AwaitingApprovalDashlet() {
 
   // region Item Updates Propagation
   useEffect(() => {
-    const events = [itemsDeleted.type, itemsRejected.type, itemsApproved.type, itemsScheduled.type];
+    const events = [deleteContentEvent.type, workflowEvent.type, publishEvent.type];
     const hostToHost$ = getHostToHostBus();
     const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
       switch (type) {
-        case itemsApproved.type:
-        case itemsScheduled.type:
-        case itemsDeleted.type:
-        case itemsRejected.type: {
-          if (payload.targets.some((path) => state.itemsLookup[path])) {
-            refresh();
-            setSelectedLookup({ ...selectedLookup, ...createPresenceTable(payload.targets, false) });
-          }
+        case deleteContentEvent.type:
+        case workflowEvent.type:
+        case publishEvent.type: {
+          refresh();
           break;
         }
       }
