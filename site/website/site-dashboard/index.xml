@@ -17,7 +17,7 @@
 
 <page>
   <internal-name>Site Dashboard</internal-name>
-  <content-type>/page/site-dashboard</content-type>	
-  <display-template>/templates/web/site-dashboard.ftl</display-template>
+  <content-type>/page/site-dashboard</content-type>
+  <display-template>/templates/web/next/site-dashboard.ftl</display-template>
   <merge-strategy>inherit-levels</merge-strategy>
 </page>

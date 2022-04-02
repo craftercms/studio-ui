@@ -40,7 +40,7 @@ import { filter } from 'rxjs/operators';
 import TextField from '@mui/material/TextField';
 import { useLogicResource } from '../../../hooks/useLogicResource';
 import { useLocale } from '../../../hooks/useLocale';
-import { DashboardPreferences } from '../../../models/Dashboard';
+import { LegacyDashboardPreferences } from '../../../models/Dashboard';
 import { useSpreadState } from '../../../hooks/useSpreadState';
 import { getStoredDashboardPreferences, setStoredDashboardPreferences } from '../../../utils/state';
 import { createPresenceTable } from '../../../utils/array';
@@ -59,7 +59,7 @@ import { batchActions } from '../../../state/actions/misc';
 import { getEmptyStateStyleSet } from '../../EmptyState/EmptyState';
 import { useActiveSite } from '../../../hooks/useActiveSite';
 
-const dashletInitialPreferences: DashboardPreferences = {
+const dashletInitialPreferences: LegacyDashboardPreferences = {
   filterBy: 'page',
   numItems: 10,
   expanded: true,

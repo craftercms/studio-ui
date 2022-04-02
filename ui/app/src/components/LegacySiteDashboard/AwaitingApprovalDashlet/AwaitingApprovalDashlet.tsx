@@ -36,7 +36,7 @@ import { getHostToHostBus } from '../../../modules/Preview/previewContext';
 import { filter } from 'rxjs/operators';
 import { useLogicResource } from '../../../hooks/useLogicResource';
 import { useSpreadState } from '../../../hooks/useSpreadState';
-import { DashboardPreferences } from '../../../models/Dashboard';
+import { LegacyDashboardPreferences } from '../../../models/Dashboard';
 import { useDispatch, useSelector } from 'react-redux';
 import GlobalState from '../../../models/GlobalState';
 import { getStoredDashboardPreferences, setStoredDashboardPreferences } from '../../../utils/state';
@@ -57,7 +57,7 @@ export interface AwaitingApprovalDashletDashboardItem {
   children: string[];
 }
 
-const dashletInitialPreferences: DashboardPreferences = {
+const dashletInitialPreferences: LegacyDashboardPreferences = {
   expanded: true,
   showUnpublished: false
 };

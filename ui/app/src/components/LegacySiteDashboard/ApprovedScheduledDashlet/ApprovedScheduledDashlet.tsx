@@ -41,7 +41,7 @@ import { getHostToHostBus } from '../../../modules/Preview/previewContext';
 import { filter } from 'rxjs/operators';
 import { useLogicResource } from '../../../hooks/useLogicResource';
 import { useSpreadState } from '../../../hooks/useSpreadState';
-import { DashboardPreferences } from '../../../models/Dashboard';
+import { LegacyDashboardPreferences } from '../../../models/Dashboard';
 import { getStoredDashboardPreferences, setStoredDashboardPreferences } from '../../../utils/state';
 import { useDispatch, useSelector } from 'react-redux';
 import GlobalState from '../../../models/GlobalState';
@@ -59,7 +59,7 @@ import { asLocalizedDateTime } from '../../../utils/datetime';
 import { reversePluckProps } from '../../../utils/object';
 import { useLocale } from '../../../hooks/useLocale';
 
-const dashletInitialPreferences: DashboardPreferences = {
+const dashletInitialPreferences: LegacyDashboardPreferences = {
   filterBy: 'all',
   expanded: true
 };

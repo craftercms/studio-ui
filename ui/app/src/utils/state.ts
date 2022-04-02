@@ -18,7 +18,7 @@ import { ItemStateMap, LegacyItem } from '../models/Item';
 import { WidgetDescriptor } from '../components/Widget';
 import { nanoid as uuid } from 'nanoid';
 import TranslationOrText from '../models/TranslationOrText';
-import { DashboardPreferences } from '../models/Dashboard';
+import { LegacyDashboardPreferences } from '../models/Dashboard';
 import ToolsPanelTarget from '../models/ToolsPanelTarget';
 import { EnhancedDialogState } from '../hooks/useEnhancedDialogState';
 import { HighlightMode } from '../models/GlobalState';
@@ -155,7 +155,7 @@ export function createWidgetDescriptor(widget: WidgetDescriptor): WidgetDescript
 }
 
 export function setStoredDashboardPreferences(
-  value: DashboardPreferences,
+  value: LegacyDashboardPreferences,
   user: string,
   siteIdentifier: string,
   dashletId: string
@@ -167,10 +167,10 @@ export function getStoredDashboardPreferences(
   user: string,
   siteIdentifier: string,
   dashletId: string
-): DashboardPreferences {
+): LegacyDashboardPreferences {
   return JSON.parse(
     window.localStorage.getItem(`craftercms.dashboard.${dashletId}.${siteIdentifier}.${user}`)
-  ) as DashboardPreferences;
+  ) as LegacyDashboardPreferences;
 }
 
 export function setStoredLegacyComponentPanel(value: object, user: string): void {

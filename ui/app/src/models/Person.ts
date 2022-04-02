@@ -14,8 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './SiteDashboard';
+export interface Person {
+  username: string;
+  firstName: string;
+  lastName: string;
+  avatar: string;
+}
 
-export * from './SiteDashboard';
-
-export * from './utils';
+export default Person;

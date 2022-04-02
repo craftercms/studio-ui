@@ -17,11 +17,13 @@
 import { get } from '../utils/ajax';
 import { toQueryString } from '../utils/object';
 import { map, pluck } from 'rxjs/operators';
-import { LegacyDashboardItem, LegacyDeploymentHistoryResponse } from '../models/Dashboard';
+import { DashboardPublishingPackage, LegacyDashboardItem, LegacyDeploymentHistoryResponse } from '../models/Dashboard';
 import { Observable } from 'rxjs';
-import { PagedArray } from '../models';
+import { PagedArray, PublishingStats, PublishingTargets, SandboxItem } from '../models';
 import { Activity } from '../models/Activity';
 import PaginationOptions from '../models/PaginationOptions';
+import { createPagedArray } from '../utils/array';
+import { prepareVirtualItemProps } from '../utils/content';
 
 export function fetchLegacyGetGoLiveItems(
   site: string,
@@ -132,4 +134,106 @@ export function fetchMyActivity(siteId: string, options?: FetchMyActivityOptions
       })
     )
   );
+}
+
+export function fetchPendingApproval(
+  siteId: string,
+  options?: PaginationOptions
+): Observable<PagedArray<DashboardPublishingPackage>> {
+  const qs = toQueryString({ siteId, ...options });
+  return get(`/studio/api/2/dashboard/content/pending_approval${qs}`).pipe(
+    map(({ response }) =>
+      createPagedArray(
+        response.publishingPackages
+          // TODO: Remove when backend fixes id = null
+          .map((i, index) => ({ ...i, id: i.id ?? index })),
+        response
+      )
+    )
+  );
+}
+
+export function fetchPendingApprovalPackageItems(siteId: string, packageId: number): Observable<SandboxItem[]> {
+  const qs = toQueryString({ siteId });
+  return get(`/studio/api/2/dashboard/content/pending_approval/${packageId}${qs}`).pipe(
+    pluck('response', 'publishingPackageItems'),
+    map((items) => items.map((item) => prepareVirtualItemProps(item)))
+  );
+}
+
+export function fetchUnpublished(siteId: string, options: PaginationOptions): Observable<PagedArray<SandboxItem>> {
+  const qs = toQueryString({ siteId, ...options });
+  return get(`/studio/api/2/dashboard/content/unpublished${qs}`).pipe(
+    map(({ response }) =>
+      createPagedArray(
+        response.unpublishedItems.map((item) => prepareVirtualItemProps(item)),
+        response
+      )
+    )
+  );
+}
+
+export interface FetchScheduledOptions extends PaginationOptions {
+  publishingTarget?: PublishingTargets;
+  approver?: string;
+  dateFrom: string;
+  dateTo: string;
+}
+
+export function fetchScheduled(
+  siteId: string,
+  options: FetchScheduledOptions
+): Observable<PagedArray<DashboardPublishingPackage>> {
+  const qs = toQueryString({ siteId, ...options });
+  return get(`/studio/api/2/dashboard/publishing/scheduled${qs}`).pipe(pluck('response', 'publishingPackages'));
+}
+
+export function fetchScheduledPackageItems(siteId: string, packageId: number): Observable<SandboxItem[]> {
+  const qs = toQueryString({ siteId });
+  return get(`/studio/api/2/dashboard/publishing/scheduled/${packageId}${qs}`).pipe(
+    pluck('response', 'publishingPackageItems'),
+    map((items) => items.map((item) => prepareVirtualItemProps(item)))
+  );
+}
+
+export function fetchPublishingHistory(
+  siteId: string,
+  options: Partial<FetchScheduledOptions>
+): Observable<PagedArray<DashboardPublishingPackage>> {
+  const qs = toQueryString({ siteId, ...options });
+  return get(`/studio/api/2/dashboard/publishing/history${qs}`).pipe(pluck('response', 'publishingPackages'));
+}
+
+export function fetchPublishingHistoryPackageItems(siteId: string, packageId: number): Observable<SandboxItem[]> {
+  const qs = toQueryString({ siteId });
+  return get(`/studio/api/2/dashboard/publishing/history/${packageId}${qs}`).pipe(
+    pluck('response', 'publishingPackageItems'),
+    map((items) => items.map((item) => prepareVirtualItemProps(item)))
+  );
+}
+
+export interface ExpiredItem {
+  itemName: string;
+  itemPath: string;
+  expireDateTime: string;
+}
+
+export function fetchExpired(siteId: string, options?: PaginationOptions): Observable<ExpiredItem[]> {
+  const qs = toQueryString({ siteId, ...options });
+  return get(`/studio/api/2/dashboard/content/expired${qs}`).pipe(pluck('response', 'items'));
+}
+
+interface FetchExpiringOptions extends PaginationOptions {
+  dateFrom: string;
+  dateTo: string;
+}
+
+export function fetchExpiring(siteId: string, options: FetchExpiringOptions): Observable<ExpiredItem[]> {
+  const qs = toQueryString({ siteId, ...options });
+  return get(`/studio/api/2/dashboard/content/expiring${qs}`).pipe(pluck('response', 'items'));
+}
+
+export function fetchPublishingStats(siteId: string, days: number): Observable<PublishingStats> {
+  const qs = toQueryString({ siteId, days });
+  return get(`/studio/api/2/dashboard/publishing/stats${qs}`).pipe(pluck('response', 'publishingStats'));
 }

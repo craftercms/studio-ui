@@ -15,6 +15,7 @@
  */
 
 import LookupTable from '../models/LookupTable';
+import { PagedArray } from '../models';
 
 export function forEach<T = any, R = undefined>(
   array: T[],
@@ -77,4 +78,12 @@ export function mergeArraysAlternatively(a: string[], b: string[]): string[] {
     (acc, cur, i) => (a[i] && b[i] ? [...acc, a[i], b[i]] : [...acc, cur]),
     []
   );
+}
+
+export function createPagedArray<T = any>(array: T[], response): PagedArray<T> {
+  return Object.assign(array, {
+    total: response.total,
+    offset: response.offset,
+    limit: response.limit
+  });
 }

@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
   ~
@@ -15,9 +14,21 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<page>
-  <internal-name>Preview</internal-name>
-  <content-type>/page/browse</content-type>
-  <display-template>/templates/web/next/preview.ftl</display-template>
-  <merge-strategy>inherit-levels</merge-strategy>
-</page>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <link rel="shortcut icon" href="/studio/static-assets/img/favicon.ico">
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="theme-color" content="#000000"/>
+  <title>${contentModel['internal-name']} - ${contentModel['common-title']!''}</title>
+</head>
+<body>
+<div id="root"></div>
+<#include "/templates/web/common/js-next-scripts.ftl" />
+<script src="/studio/static-assets/libs/monaco/monaco.0.20.0.js" async defer></script>
+<script>
+  CrafterCMSNext.render('#root', 'SiteDashboard', {}, false);
+</script>
+</body>
+</html>

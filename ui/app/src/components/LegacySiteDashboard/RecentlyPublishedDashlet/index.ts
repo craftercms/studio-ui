@@ -14,8 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './SiteDashboard';
+export { default } from './RecentlyPublishedDashlet';
 
-export * from './SiteDashboard';
+export * from './RecentlyPublishedDashlet';
 
-export * from './utils';
+export * from './RecentlyPublishedDashletUI';
+
+export * from './RecentlyPublishedDashletUISkeletonTable';

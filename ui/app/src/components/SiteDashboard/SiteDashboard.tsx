@@ -15,10 +15,10 @@
  */
 
 import Box from '@mui/material/Box';
-import { ActivityDashlet } from '../ActivityDashlet';
 import React from 'react';
 import { useTheme } from '@mui/material/styles';
 import Grid from '@mui/material/Grid';
+import ActivityDashlet from '../ActivityDashlet/ActivityDashlet';
 import PendingApprovalDashlet from '../PendingApprovalDashlet/PendingApprovalDashlet';
 import ExpiringDashlet from '../ExpiringDashlet/ExpiringDashlet';
 import UnpublishedDashlet from '../UnpublishedDashlet/UnpublishedDashlet';
@@ -29,32 +29,33 @@ import DevContentOpsDashlet from '../DevContentOpsDashlet/DevContentOpsDashlet';
 export interface DashboardProps {}
 
 export function Dashboard(props: DashboardProps) {
+  const height = 300;
   const {
     palette: { mode }
   } = useTheme();
   return (
     <Box sx={{ p: 2, bgcolor: `grey.${mode === 'light' ? 100 : 800}` }}>
-      <Grid container spacing={1}>
-        <Grid item>
-          <ActivityDashlet contentHeight="300" />
+      <Grid container spacing={2}>
+        <Grid item md={4}>
+          <ActivityDashlet contentHeight={height} />
         </Grid>
-        <Grid item>
-          <PendingApprovalDashlet contentHeight={300} />
+        <Grid item md={4}>
+          <PendingApprovalDashlet contentHeight={height} />
         </Grid>
-        <Grid item>
-          <ExpiringDashlet contentHeight="300" />
+        <Grid item md={4}>
+          <ExpiringDashlet contentHeight={height} />
         </Grid>
-        <Grid item>
-          <UnpublishedDashlet contentHeight="300" />
+        <Grid item md={4}>
+          <UnpublishedDashlet contentHeight={height} />
         </Grid>
-        <Grid item>
-          <ScheduledDashlet contentHeight="300" />
+        <Grid item md={4}>
+          <ScheduledDashlet contentHeight={height} />
         </Grid>
-        <Grid item>
-          <RecentlyPublishedDashlet contentHeight="300" />
+        <Grid item md={4}>
+          <RecentlyPublishedDashlet contentHeight={height} />
         </Grid>
-        <Grid item>
-          <DevContentOpsDashlet contentHeight="300" />
+        <Grid item md={4}>
+          <DevContentOpsDashlet contentHeight={height} />
         </Grid>
       </Grid>
     </Box>

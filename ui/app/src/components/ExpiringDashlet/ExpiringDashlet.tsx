@@ -14,22 +14,132 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { CommonDashletProps, DashletTemplate } from '../SiteDashboard';
+import React, { useEffect } from 'react';
+import { CommonDashletProps } from '../SiteDashboard/utils';
+import DashletTemplate from '../SiteDashboard/DashletTemplate';
+import { DashletEmptyMessage, getItemSkeleton, List, ListItem, ListSubheader } from '../SiteDashboard/dashletCommons';
 import palette from '../../styles/palette';
 import { FormattedMessage } from 'react-intl';
-import React from 'react';
+import Typography from '@mui/material/Typography';
+import ListItemText from '@mui/material/ListItemText';
+import { ExpiredItem, fetchExpired, fetchExpiring } from '../../services/dashboard';
+import { useActiveSiteId, useLocale, useSpreadState } from '../../hooks';
+import { RefreshRounded } from '@mui/icons-material';
+import IconButton from '@mui/material/IconButton';
+import { asLocalizedDateTime } from '../../utils/datetime';
+import Divider from '@mui/material/Divider';
+import GlobalState from '../../models/GlobalState';
+import { forkJoin } from 'rxjs';
 
-interface ExpiringDashletProps extends CommonDashletProps {}
+interface ExpiringDashletProps extends CommonDashletProps {
+  days?: number;
+}
+
+interface ExpiringDashletState {
+  loading: boolean;
+  expired: ExpiredItem[];
+  expiring: ExpiredItem[];
+  refresh: number;
+}
+
+const renderExpiredItems = (items: ExpiredItem[], locale: GlobalState['uiConfig']['locale']) =>
+  items.map((item, index) => (
+    <ListItem key={index}>
+      <ListItemText
+        primary={item.itemName}
+        secondary={
+          <Typography color="text.error" variant="body2">
+            <FormattedMessage
+              id="expiringDashlet.expiredOn"
+              defaultMessage="Expiration on {date}"
+              values={{
+                date: asLocalizedDateTime(item.expireDateTime, locale.localeCode, locale.dateTimeFormatOptions)
+              }}
+            />
+          </Typography>
+        }
+      />
+    </ListItem>
+  ));
 
 export function ExpiringDashlet(props: ExpiringDashletProps) {
-  const { borderLeftColor = palette.purple.tint } = props;
+  const { borderLeftColor = palette.purple.tint, days = 30 } = props;
+  const site = useActiveSiteId();
+  const locale = useLocale();
+  const [state, setState] = useSpreadState<ExpiringDashletState>({
+    expiring: null,
+    expired: null,
+    refresh: 0,
+    loading: false
+  });
+  const onRefresh = () => setState({ refresh: ++state.refresh });
+  useEffect(() => {
+    const foo = state.refresh + 1;
+    const oneDay = 8.64e7;
+    const now = new Date();
+    setState({ loading: true, expiring: null, expired: null });
+    forkJoin({
+      expiring: fetchExpiring(site, {
+        dateFrom: now.toISOString(),
+        dateTo: new Date(now.getTime() + oneDay * days).toISOString()
+      }),
+      expired: fetchExpired(site, { limit: 10 })
+    }).subscribe(({ expiring, expired }) => {
+      setState({ expiring, expired, loading: false });
+    });
+  }, [setState, site, days, state.refresh]);
   return (
     <DashletTemplate
       {...props}
       borderLeftColor={borderLeftColor}
       title={<FormattedMessage id="words.expiring" defaultMessage="Expiring" />}
+      headerAction={
+        <IconButton onClick={onRefresh}>
+          <RefreshRounded />
+        </IconButton>
+      }
     >
-      ...
+      {state.loading && <List>{getItemSkeleton({ numOfItems: 5, showAvatar: false, showCheckbox: false })}</List>}
+      {state.expired &&
+        (state.expired.length === 0 ? (
+          <DashletEmptyMessage>
+            <FormattedMessage
+              id="expiringDashlet.noExpiredItems"
+              defaultMessage="There are no expired items to display at this time"
+            />
+          </DashletEmptyMessage>
+        ) : (
+          <List
+            subheader={
+              <ListSubheader>
+                <FormattedMessage id="words.expired" defaultMessage="Expired" />
+              </ListSubheader>
+            }
+          >
+            {renderExpiredItems(state.expired, locale)}
+          </List>
+        ))}
+      <Divider sx={{ mt: 1, mb: 1 }} />
+      {state.expiring &&
+        (state.expiring.length === 0 ? (
+          <DashletEmptyMessage sx={{ mt: 0 }}>
+            <FormattedMessage
+              id="expiringDashlet.noExpiringItems"
+              defaultMessage="There are no items expiring in the next {days} days"
+              values={{ days }}
+            />
+          </DashletEmptyMessage>
+        ) : (
+          <List
+            subheader={
+              <ListSubheader>
+                <FormattedMessage id="words.expiring" defaultMessage="Expiring (next {days} days)" values={{ days }} />
+              </ListSubheader>
+            }
+          >
+            {renderExpiredItems(state.expiring, locale)}
+          </List>
+        ))}
     </DashletTemplate>
   );
 }

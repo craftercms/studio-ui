@@ -85,14 +85,13 @@ export function renderActivity(activity: Activity, dependencies: { formatMessage
       return item.label === null ? (
         <FormattedMessage
           id="activityDashlet.deletedItemRequestPublishActivityMessage"
-          defaultMessage="Requested publishing for an item that no longer exists as part of <pack>a package</pack>"
-          values={{ pack }}
+          defaultMessage="Requested publishing for an item that no longer exists"
         />
       ) : (
         <FormattedMessage
           id="activityDashlet.requestPublishActivityMessage"
-          defaultMessage="Requested publishing for <anchor>{item}</anchor> {systemType} as part of <pack>a package</pack>"
-          values={{ item, anchor, pack, systemType }}
+          defaultMessage="Requested publishing for <anchor>{item}</anchor> {systemType}"
+          values={{ item, anchor, systemType }}
         />
       );
     case 'APPROVE':
@@ -192,12 +191,9 @@ export function renderActivity(activity: Activity, dependencies: { formatMessage
 export function renderActivityTimestamp(timestamp: string, locale: GlobalState['uiConfig']['locale']) {
   const now = Date.now();
   const date = new Date(timestamp).getTime();
-  const localizedString = asLocalizedDateTime(date, locale.localeCode, locale.dateTimeFormatOptions);
-  return (
-    <Typography variant="caption" title={localizedString}>
-      {now - date < 3.6e7 ? moment(date).fromNow() : localizedString}
-    </Typography>
-  );
+  return now - date < 3.6e7
+    ? moment(date).fromNow()
+    : asLocalizedDateTime(date, locale.localeCode, locale.dateTimeFormatOptions);
 }
 
 export const activityNameLookup: Record<Activities | 'ALL', any> = {

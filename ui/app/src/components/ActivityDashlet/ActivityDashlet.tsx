@@ -16,23 +16,20 @@
 
 import { Activity } from '../../models/Activity';
 import React, { useEffect, useMemo } from 'react';
-import { InfoRounded, MoreVertRounded, RefreshRounded } from '@mui/icons-material';
+import { MoreVertRounded, RefreshRounded } from '@mui/icons-material';
 import { UNDEFINED } from '../../utils/constants';
-import { useLocale, useSpreadState } from '../../hooks';
+import { useActiveSiteId, useLocale, useSpreadState } from '../../hooks';
 import { fetchActivity } from '../../services/dashboard';
 import IconButton from '@mui/material/IconButton';
-import Box from '@mui/material/Box';
 import { FormattedMessage, useIntl } from 'react-intl';
-import Timeline from '@mui/lab/Timeline';
+import MuiTimeline from '@mui/lab/Timeline';
 import TimelineItem from '@mui/lab/TimelineItem';
 import TimelineSeparator from '@mui/lab/TimelineSeparator';
 import TimelineDot from '@mui/lab/TimelineDot';
 import TimelineContent from '@mui/lab/TimelineContent';
 import TimelineConnector from '@mui/lab/TimelineConnector';
-import Avatar from '@mui/material/Avatar';
-import { getInitials } from '../../utils/string';
 import Typography from '@mui/material/Typography';
-import { CommonDashletProps, DashletTemplate, parseDashletContentHeight } from '../SiteDashboard';
+import { CommonDashletProps } from '../SiteDashboard/utils';
 import DropDownMenu from '../DropDownMenuButton/DropDownMenuButton';
 import {
   ActivitiesAndAll,
@@ -43,9 +40,12 @@ import {
 } from './utils';
 import { AuthorFilter } from './AuthorFilter';
 import Skeleton from '@mui/material/Skeleton';
-import { styled, useTheme } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 import { RangePickerModal } from './RangePickerModal';
 import Tooltip from '@mui/material/Tooltip';
+import DashletTemplate from '../SiteDashboard/DashletTemplate';
+import { asLocalizedDateTime } from '../../utils/datetime';
+import { DashletAvatar, DashletEmptyMessage, PersonAvatar, PersonFullName } from '../SiteDashboard/dashletCommons';
 
 export interface ActivityDashletProps extends CommonDashletProps {}
 
@@ -65,6 +65,8 @@ interface ActivityDashletState {
 
 type FeedTypes = 'timeline' | 'range';
 
+const Timeline = styled(MuiTimeline)({ margin: 0, padding: 0 });
+
 const CustomTimelineItem = styled(TimelineItem)({
   minHeight: 0,
   ['&.MuiTimelineItem-missingOppositeContent::before']: {
@@ -77,8 +79,6 @@ const TimelineDotWithAvatar = styled(TimelineDot)({ padding: 0, border: 'none', 
 
 const TimelineDotWithoutAvatar = styled(TimelineDot)({ alignSelf: 'auto' });
 
-const SizedAvatar = styled(Avatar)({ width: 40, height: 40 });
-
 const SizedTimelineSeparator = styled(TimelineSeparator)({
   width: 40,
   minWidth: 40,
@@ -88,13 +88,15 @@ const SizedTimelineSeparator = styled(TimelineSeparator)({
   justifyContent: 'center'
 });
 
+const emptyTimelineContentSx = { pt: 0, pb: 0 };
+
 const getSkeletonTimelineItems = ({ items = 1 }: { items?: number }) =>
   new Array(items).fill(null).map((nothing, index) => (
     <CustomTimelineItem key={index}>
       <SizedTimelineSeparator>
         <TimelineConnector />
         <TimelineDotWithAvatar>
-          <SizedAvatar />
+          <DashletAvatar />
         </TimelineDotWithAvatar>
         <TimelineConnector />
       </SizedTimelineSeparator>
@@ -113,14 +115,11 @@ const getSkeletonTimelineItems = ({ items = 1 }: { items?: number }) =>
   ));
 
 export function ActivityDashlet(props: ActivityDashletProps) {
-  const { contentHeight: contentHeightProp, borderLeftColor = 'success.main' } = props;
+  const { borderLeftColor = 'success.main' } = props;
   const locale = useLocale();
-  const theme = useTheme();
+  // const theme = useTheme(); // bgcolor: `grey.${theme.palette.mode === 'light' ? 100 : 900}`,
+  const site = useActiveSiteId();
   const { formatMessage } = useIntl();
-  const contentHeight = contentHeightProp
-    ? // Subtract toolbar height to avoid misalignment with other widgets
-      parseDashletContentHeight(contentHeightProp) - 50
-    : UNDEFINED;
   const [
     { feed, feedType, usernames, dateFrom, dateTo, limit, offset, total, openRangePicker, loadingChunk, loadingFeed },
     setState
@@ -174,26 +173,27 @@ export function ActivityDashlet(props: ActivityDashletProps) {
     [feedType]
   );
   // endregion
-  // region fetchFeed
-  const fetchFeed = useMemo(
+  // region onRefresh
+  const onRefresh = useMemo(
     () => () => {
-      fetchActivity('editorial-neue', {
+      setState({ feed: null, total: null, offset: 0, loadingFeed: true });
+      fetchActivity(site, {
         actions: activities.filter((key) => key !== 'ALL'),
         usernames,
         dateTo,
         dateFrom,
         limit
       }).subscribe((feed) => {
-        setState({ feed, total: feed.total, offset: 0, loadingFeed: false });
+        setState({ feed, total: feed.total, loadingFeed: false });
       });
     },
-    [activities, dateFrom, dateTo, limit, setState, usernames]
+    [site, activities, dateFrom, dateTo, limit, setState, usernames]
   );
   // endregion
   const loadNextPage = () => {
     let newOffset = offset + limit;
     setState({ loadingChunk: true });
-    fetchActivity('editorial-neue', {
+    fetchActivity(site, {
       actions: activities.filter((key) => key !== 'ALL'),
       usernames,
       dateTo,
@@ -209,136 +209,183 @@ export function ActivityDashlet(props: ActivityDashletProps) {
       });
     });
   };
+  const hasMoreItemsToLoad = total > 0 && limit + offset < total;
   useEffect(() => {
-    setState({ feed: null, loadingFeed: true });
-    fetchFeed();
-  }, [fetchFeed, setState]);
+    onRefresh();
+  }, [onRefresh, setState]);
   return (
     <DashletTemplate
       {...props}
-      contentHeight={contentHeight}
       borderLeftColor={borderLeftColor}
       title={<FormattedMessage id="words.activity" defaultMessage="Activity" />}
+      headerAction={
+        <IconButton onClick={onRefresh}>
+          <RefreshRounded />
+        </IconButton>
+      }
       actionsBar={
-        <Box
-          sx={{ bgcolor: `grey.${theme.palette.mode === 'light' ? 100 : 900}`, p: 1 }}
-          display="flex"
-          justifyContent="space-between"
-        >
-          <Box display="flex">
-            <DropDownMenu
-              size="small"
-              variant="text"
-              onMenuItemClick={(e, id: ActivitiesAndAll) => setSelectedActivities(id)}
-              options={activityFilterOptions}
-              closeOnSelection={false}
-              menuProps={{ sx: { minWidth: 180 } }}
-              listItemProps={{ dense: true }}
-            >
-              {selectedActivities.ALL ? (
-                <FormattedMessage id="activityDashlet.showActivityByEveryone" defaultMessage="All activities" />
-              ) : (
-                <FormattedMessage
-                  id="activityDashlet.showActivityByEveryone"
-                  defaultMessage="Selected activities ({count})"
-                  values={{ count: activities.length }}
-                />
-              )}
-            </DropDownMenu>
-            <AuthorFilter onChange={(users) => setState({ usernames: users.map(({ username }) => username) })} />
-            <DropDownMenu
-              size="small"
-              variant="text"
-              onMenuItemClick={(e, feedType: FeedTypes) => {
-                const state = { feedType, dateTo, dateFrom, openRangePicker: feedType === 'range' };
-                if (feedType === 'timeline') {
-                  state.dateTo = null;
-                  state.dateFrom = null;
-                }
-                setState(state);
-              }}
-              options={feedTypeOptions}
-              menuProps={{ sx: { minWidth: 200 } }}
-              listItemProps={{ dense: true }}
-              onClick={() => {
-                if (feedType === 'range') {
-                  setState({ openRangePicker: true });
-                  return false;
-                }
-              }}
-            >
-              <FormattedMessage id="words.Timeline" defaultMessage="Timeline" />
-            </DropDownMenu>
-          </Box>
-          <IconButton size="small" onClick={() => fetchFeed()}>
-            <RefreshRounded />
-          </IconButton>
-        </Box>
+        <>
+          <DropDownMenu
+            size="small"
+            variant="text"
+            onMenuItemClick={(e, id: ActivitiesAndAll) => setSelectedActivities(id)}
+            options={activityFilterOptions}
+            closeOnSelection={false}
+            menuProps={{ sx: { minWidth: 180 } }}
+            listItemProps={{ dense: true }}
+          >
+            {selectedActivities.ALL ? (
+              <FormattedMessage id="activityDashlet.showActivityByEveryone" defaultMessage="All activities" />
+            ) : (
+              <FormattedMessage
+                id="activityDashlet.showActivityByEveryone"
+                defaultMessage="Selected activities ({count})"
+                values={{ count: activities.length }}
+              />
+            )}
+          </DropDownMenu>
+          <AuthorFilter onChange={(users) => setState({ usernames: users.map(({ username }) => username) })} />
+          <DropDownMenu
+            size="small"
+            variant="text"
+            onMenuItemClick={(e, feedType: FeedTypes) => {
+              const state = { feedType, dateTo, dateFrom, openRangePicker: feedType === 'range' };
+              if (feedType === 'timeline') {
+                state.dateTo = null;
+                state.dateFrom = null;
+              }
+              setState(state);
+            }}
+            options={feedTypeOptions}
+            menuProps={{ sx: { minWidth: 200 } }}
+            listItemProps={{ dense: true }}
+            onClick={() => {
+              if (feedType === 'range') {
+                setState({ openRangePicker: true });
+                return false;
+              }
+            }}
+          >
+            <FormattedMessage id="words.Timeline" defaultMessage="Timeline" />
+          </DropDownMenu>
+        </>
       }
     >
-      <Timeline position="right" sx={{ m: 0, p: 0 }}>
-        <CustomTimelineItem>
-          <SizedTimelineSeparator>
-            <TimelineDotWithoutAvatar />
-          </SizedTimelineSeparator>
-          <TimelineContent sx={{ pt: 0, pb: 0 }} />
-        </CustomTimelineItem>
-        {feed &&
-          (feed.length ? (
-            feed.map((activity) => (
-              <CustomTimelineItem key={activity.id}>
-                <SizedTimelineSeparator>
-                  <TimelineConnector />
-                  <TimelineDotWithAvatar>
-                    <SizedAvatar
-                      src={activity.person.avatar ?? UNDEFINED}
-                      children={activity.person.avatar ? UNDEFINED : getInitials(activity.person)}
-                    />
-                  </TimelineDotWithAvatar>
-                  <TimelineConnector />
-                </SizedTimelineSeparator>
-                <TimelineContent sx={{ py: '12px', px: 2 }}>
-                  <Typography variant="h6">
-                    [{activity.id}] {activity.person.firstName} {activity.person.lastName}
-                  </Typography>
-                  <Typography>{renderActivity(activity, { formatMessage })}</Typography>
-                  {renderActivityTimestamp(activity.actionTimestamp, locale)}
-                </TimelineContent>
-              </CustomTimelineItem>
-            ))
-          ) : (
-            <CustomTimelineItem>
+      {loadingFeed && (
+        <Timeline position="right">
+          <CustomTimelineItem>
+            <SizedTimelineSeparator>
+              <TimelineDotWithoutAvatar />
+            </SizedTimelineSeparator>
+            <TimelineContent sx={emptyTimelineContentSx} />
+          </CustomTimelineItem>
+          {getSkeletonTimelineItems({ items: 3 })}
+          <CustomTimelineItem>
+            <SizedTimelineSeparator>
+              {hasMoreItemsToLoad ? (
+                <TimelineDotWithAvatar sx={{ bgcolor: 'unset' }}>
+                  <Tooltip
+                    title={
+                      <FormattedMessage
+                        id="activityDashlet.loadMore"
+                        defaultMessage="Load {limit} more"
+                        values={{ limit }}
+                      />
+                    }
+                  >
+                    <IconButton color="primary" size="small" onClick={loadNextPage}>
+                      <MoreVertRounded />
+                    </IconButton>
+                  </Tooltip>
+                </TimelineDotWithAvatar>
+              ) : (
+                <TimelineDotWithoutAvatar />
+              )}
+            </SizedTimelineSeparator>
+            <TimelineContent sx={emptyTimelineContentSx} />
+          </CustomTimelineItem>
+        </Timeline>
+      )}
+      {Boolean(feed?.length) && (
+        <Timeline position="right">
+          <CustomTimelineItem>
+            <SizedTimelineSeparator>
+              <TimelineDotWithoutAvatar />
+            </SizedTimelineSeparator>
+            <TimelineContent sx={emptyTimelineContentSx} />
+          </CustomTimelineItem>
+          {feed.map((activity) => (
+            <CustomTimelineItem key={activity.id}>
               <SizedTimelineSeparator>
                 <TimelineConnector />
-                <TimelineDotWithoutAvatar />
+                <TimelineDotWithAvatar>
+                  <PersonAvatar person={activity.person} />
+                </TimelineDotWithAvatar>
                 <TimelineConnector />
               </SizedTimelineSeparator>
-              <TimelineContent display="flex" alignItems="center">
-                <Typography display="flex">
-                  <InfoRounded sx={{ mr: 1 }} />
-                  <FormattedMessage id="activityDashlet.noEntriesFound" defaultMessage="No activity was found." />
+              <TimelineContent sx={{ py: '12px', px: 2 }}>
+                <PersonFullName person={activity.person} />
+                <Typography>{renderActivity(activity, { formatMessage })}</Typography>
+                <Typography
+                  variant="caption"
+                  title={asLocalizedDateTime(activity.actionTimestamp, locale.localeCode, locale.dateTimeFormatOptions)}
+                >
+                  {renderActivityTimestamp(activity.actionTimestamp, locale)}
                 </Typography>
               </TimelineContent>
             </CustomTimelineItem>
           ))}
-        {(loadingChunk || loadingFeed) && getSkeletonTimelineItems({ items: 3 })}
-        <CustomTimelineItem>
-          <SizedTimelineSeparator>
-            {total > 0 && limit + offset < total ? (
-              <TimelineDotWithAvatar>
-                <Tooltip title={<FormattedMessage id="activityDashlet.loadMore" defaultMessage="Load more" />}>
-                  <IconButton size="small" onClick={loadNextPage}>
-                    <MoreVertRounded />
-                  </IconButton>
-                </Tooltip>
-              </TimelineDotWithAvatar>
-            ) : (
-              <TimelineDotWithoutAvatar />
-            )}
-          </SizedTimelineSeparator>
-          <TimelineContent sx={{ pt: 0, pb: 0 }} />
-        </CustomTimelineItem>
-      </Timeline>
+          {loadingChunk ? (
+            getSkeletonTimelineItems({ items: 3 })
+          ) : (
+            <CustomTimelineItem>
+              <SizedTimelineSeparator>
+                {hasMoreItemsToLoad ? (
+                  <TimelineDotWithAvatar sx={{ bgcolor: 'unset' }}>
+                    <Tooltip
+                      title={
+                        <FormattedMessage
+                          id="activityDashlet.loadMore"
+                          defaultMessage="Load {limit} more"
+                          values={{ limit }}
+                        />
+                      }
+                    >
+                      <IconButton color="primary" size="small" onClick={loadNextPage}>
+                        <MoreVertRounded />
+                      </IconButton>
+                    </Tooltip>
+                  </TimelineDotWithAvatar>
+                ) : (
+                  <TimelineDotWithoutAvatar />
+                )}
+              </SizedTimelineSeparator>
+              <TimelineContent
+                sx={
+                  hasMoreItemsToLoad
+                    ? { py: '12px', px: 2, display: 'flex', alignItems: 'center' }
+                    : emptyTimelineContentSx
+                }
+              >
+                {hasMoreItemsToLoad && (
+                  <Typography variant="body2" color="text.secondary">
+                    <FormattedMessage
+                      id="activityDashlet.hasMoreItemsToLoadMessage"
+                      defaultMessage="{count} more {count, plural, one {activity} other {activities}} available"
+                      values={{ count: total - (limit + offset) }}
+                    />
+                  </Typography>
+                )}
+              </TimelineContent>
+            </CustomTimelineItem>
+          )}
+        </Timeline>
+      )}
+      {total === 0 && (
+        <DashletEmptyMessage>
+          <FormattedMessage id="activityDashlet.noEntriesFound" defaultMessage="No activity was found." />
+        </DashletEmptyMessage>
+      )}
       <RangePickerModal
         open={openRangePicker}
         onClose={() => setState({ openRangePicker: false })}
