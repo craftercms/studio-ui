@@ -278,12 +278,13 @@ function parseLegacyFormDefinition(definition: LegacyFormDefinition): Partial<Co
 
   const fields: LookupTable<ContentTypeField> = {};
   const sections = [];
-  // const dataSources = {};
+  const dataSources = {};
   const dropTargetsLookup: LookupTable<LegacyDataSource> = {};
 
   // get receptacles dataSources
   asArray(definition.datasources?.datasource).forEach((datasource: LegacyDataSource) => {
     if (datasource.type === 'dropTargets') dropTargetsLookup[datasource.id] = datasource;
+    dataSources[datasource.id] = datasource;
   });
 
   // Parse Sections & Fields
@@ -304,7 +305,7 @@ function parseLegacyFormDefinition(definition: LegacyFormDefinition): Partial<Co
     // Find display template
     displayTemplate: topLevelProps.find((prop) => prop.name === 'display-template')?.value,
     mergeStrategy: topLevelProps.find((prop) => prop.name === 'merge-strategy')?.value,
-    // dataSources: Object.values(dataSources),
+    dataSources: Object.values(dataSources),
     sections,
     fields
   };
