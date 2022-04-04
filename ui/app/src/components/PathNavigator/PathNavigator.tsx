@@ -37,7 +37,7 @@ import {
   pathNavigatorSetKeyword,
   pathNavigatorSetLocaleCode
 } from '../../state/actions/pathNavigator';
-import { completeDetailedItem, fetchSandboxItem } from '../../state/actions/content';
+import { fetchSandboxItem } from '../../state/actions/content';
 import { showEditDialog, showItemMegaMenu, showPreviewDialog } from '../../state/actions/dialogs';
 import { getEditorMode, isEditableViaFormEditor, isFolder, isImage, isNavigable, isPreviewable } from './utils';
 import { StateStylingProps } from '../../models/UiConfig';
@@ -58,7 +58,6 @@ import { SystemIconDescriptor } from '../SystemIcon';
 // @ts-ignore
 import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover/Popover';
 import { getNumOfMenuOptionsForItem } from '../../utils/content';
-import { batchActions } from '../../state/actions/misc';
 import { useSelection } from '../../hooks/useSelection';
 import { useEnv } from '../../hooks/useEnv';
 import { useItemsByPath } from '../../hooks/useItemsByPath';
@@ -354,15 +353,12 @@ export function PathNavigator(props: PathNavigatorProps) {
       path = withIndex(state.currentPath);
     }
     dispatch(
-      batchActions([
-        completeDetailedItem({ path }),
-        showItemMegaMenu({
-          path: path,
-          anchorReference: 'anchorPosition',
-          anchorPosition: { top, left },
-          loaderItems: getNumOfMenuOptionsForItem(itemsByPath[path])
-        })
-      ])
+      showItemMegaMenu({
+        path: path,
+        anchorReference: 'anchorPosition',
+        anchorPosition: { top, left },
+        loaderItems: getNumOfMenuOptionsForItem(itemsByPath[path])
+      })
     );
   };
 
@@ -371,7 +367,6 @@ export function PathNavigator(props: PathNavigatorProps) {
     const top = anchorRect.top + getOffsetTop(anchorRect, 'top');
     const left = anchorRect.left + getOffsetLeft(anchorRect, 'left');
 
-    dispatch(completeDetailedItem({ path: item.path }));
     dispatch(
       showItemMegaMenu({
         path: item.path,

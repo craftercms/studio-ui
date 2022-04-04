@@ -52,7 +52,6 @@ import { useDispatch } from 'react-redux';
 import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
 import ItemActionsMenu from '../ItemActionsMenu';
-import { completeDetailedItem } from '../../state/actions/content';
 import SearchBar from '../SearchBar/SearchBar';
 import Divider from '@mui/material/Divider';
 // @ts-ignore
@@ -698,7 +697,6 @@ export default function PreviewPageExplorerPanel() {
     const left = anchorRect.left + getOffsetLeft(anchorRect, 'left');
 
     if (path) {
-      dispatch(completeDetailedItem({ path }));
       dispatch(
         showItemMegaMenu({
           path: path,
