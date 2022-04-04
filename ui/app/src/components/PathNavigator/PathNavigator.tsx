@@ -245,7 +245,11 @@ export function PathNavigator(props: PathNavigatorProps) {
         case deleteContentEvent.type: {
           const targetPath = payload.targetPath;
 
-          if (withoutIndex(targetPath) === withoutIndex(state.currentPath)) {
+          if (withoutIndex(targetPath) === withoutIndex(path)) {
+            // if path being deleted is the rootPath
+            dispatch(pathNavigatorRefresh({ id }));
+          } else if (withoutIndex(targetPath) === withoutIndex(state.currentPath)) {
+            // if path is currentPath (current root path)
             dispatch(
               pathNavigatorSetCurrentPath({
                 id,
@@ -270,7 +274,7 @@ export function PathNavigator(props: PathNavigatorProps) {
     return () => {
       subscription.unsubscribe();
     };
-  }, [state, id, dispatch]);
+  }, [state, id, dispatch, path]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const computeActiveItems = useCallback(computeActiveItemsProp ?? (() => []), [computeActiveItemsProp]);
