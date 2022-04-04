@@ -14,319 +14,154 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import RecentlyPublishedWidgetUI from './RecentlyPublishedDashletUI';
-import ApiResponse from '../../models/ApiResponse';
-import { DashboardPreferences } from '../../models/Dashboard';
-import { fetchLegacyDeploymentHistory } from '../../services/dashboard';
-import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
-import { FormattedMessage } from 'react-intl';
-import Button from '@mui/material/Button';
-import MenuItem from '@mui/material/MenuItem';
-import { DetailedItem } from '../../models/Item';
-import { getNumOfMenuOptionsForItem, getSystemTypeFromPath, parseLegacyItemToDetailedItem } from '../../utils/content';
-import LookupTable from '../../models/LookupTable';
-import Dashlet from '../Dashlet';
-import useStyles from './styles';
-import RecentlyPublishedDashletUISkeletonTable from './RecentlyPublishedDashletUISkeletonTable';
-import TextField from '@mui/material/TextField';
-import { deleteContentEvent, publishEvent } from '../../state/actions/system';
-import { getHostToHostBus } from '../../modules/Preview/previewContext';
-import { filter } from 'rxjs/operators';
-import { useLogicResource } from '../../hooks/useLogicResource';
-import { useSpreadState } from '../../hooks/useSpreadState';
-import { useLocale } from '../../hooks/useLocale';
-import { getStoredDashboardPreferences, setStoredDashboardPreferences } from '../../utils/state';
-import { useDispatch, useSelector } from 'react-redux';
-import GlobalState from '../../models/GlobalState';
-import { completeDetailedItem } from '../../state/actions/content';
-import { showItemMegaMenu } from '../../state/actions/dialogs';
-import { batchActions } from '../../state/actions/misc';
-import { getEmptyStateStyleSet } from '../EmptyState';
-import { useActiveSite } from '../../hooks/useActiveSite';
+import { CommonDashletProps } from '../SiteDashboard/utils';
+import DashletTemplate from '../SiteDashboard/DashletTemplate';
+import palette from '../../styles/palette';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import React, { useEffect, useMemo } from 'react';
+import {
+  DashletEmptyMessage,
+  getItemSkeleton,
+  List,
+  ListItem,
+  ListItemAvatar,
+  PersonAvatar
+} from '../SiteDashboard/dashletCommons';
+import ListItemText from '@mui/material/ListItemText';
+import Typography from '@mui/material/Typography';
+import { LIVE_COLOUR, STAGING_COLOUR } from '../ItemPublishingTargetIcon/styles';
+import { useActiveSiteId, useLocale, useSpreadState } from '../../hooks';
+import { fetchPublishingHistory } from '../../services/dashboard';
+import { DashboardPublishingPackage } from '../../models';
 import { asLocalizedDateTime } from '../../utils/datetime';
-import { reversePluckProps } from '../../utils/object';
+import IconButton from '@mui/material/IconButton';
+import { RefreshRounded } from '@mui/icons-material';
 
-export interface RecentlyPublishedDashletDashboardItem {
-  label: string;
-  children: string[];
+interface RecentlyPublishedDashletProps extends CommonDashletProps {}
+
+interface RecentlyPublishedDashletState {
+  items: DashboardPublishingPackage[];
+  loading: boolean;
+  total: number;
 }
 
-const dashletInitialPreferences: DashboardPreferences = {
-  filterBy: 'page',
-  numItems: 20,
-  expanded: true
-};
+const messages = defineMessages({
+  staging: { id: 'words.staging', defaultMessage: 'Staging' },
+  live: { id: 'words.live', defaultMessage: 'Live' }
+});
 
-export default function RecentlyPublishedDashlet() {
-  const [fetchingHistory, setFetchingHistory] = useState(false);
-  const [errorHistory, setErrorHistory] = useState<ApiResponse>();
-  const [parentItems, setParentItems] = useState<RecentlyPublishedDashletDashboardItem[]>();
-  const [itemsLookup, setItemsLookup] = useSpreadState<LookupTable<DetailedItem>>({});
-  const dashletPreferencesId = 'recentlyPublishedDashlet';
-  const currentUser = useSelector<GlobalState, string>((state) => state.user.username);
-  const { id: siteId, uuid } = useActiveSite();
-  const [preferences, setPreferences] = useSpreadState(
-    getStoredDashboardPreferences(currentUser, uuid, dashletPreferencesId) ?? dashletInitialPreferences
-  );
-  const [expandedItems, setExpandedItems] = useSpreadState<LookupTable<boolean>>({});
-  const localeBranch = useLocale();
-  const classes = useStyles();
-  const dispatch = useDispatch();
-
-  const allCollapsed = useMemo(
-    () => Object.keys(expandedItems).every((key) => !Boolean(expandedItems[key])),
-    [expandedItems]
-  );
-
-  const toggleCollapseAllItems = useCallback(
-    (documents, expanded) => {
-      documents.forEach((document) => {
-        setExpandedItems({
-          [document.label]: expanded
-        });
+export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
+  const { borderLeftColor = palette.blue.tint } = props;
+  const [{ items, total, loading }, setState] = useSpreadState<RecentlyPublishedDashletState>({
+    items: null,
+    total: null,
+    loading: false
+  });
+  const locale = useLocale();
+  const site = useActiveSiteId();
+  const { formatMessage } = useIntl();
+  const onRefresh = useMemo(
+    () => () => {
+      setState({ items: null, loading: true });
+      fetchPublishingHistory(site, {
+        limit: 10,
+        offset: 0,
+        dateFrom: '2022-03-28T22:00:00.000Z',
+        dateTo: '2022-04-28T22:00:00.000Z'
+      }).subscribe((packages) => {
+        setState({ items: packages, total: packages.total, loading: false });
       });
     },
-    [setExpandedItems]
+    [setState, site]
   );
-
-  const onFilterChange = (e) => {
-    e.stopPropagation();
-    setPreferences({
-      filterBy: e.target.value
-    });
-  };
-
-  const onNumItemsChange = (e) => {
-    e.stopPropagation();
-    setPreferences({
-      numItems: e.target.value
-    });
-  };
-
   useEffect(() => {
-    setStoredDashboardPreferences(preferences, currentUser, uuid, dashletPreferencesId);
-  }, [preferences, currentUser, uuid]);
-
-  const onCollapseAll = (e) => {
-    e.stopPropagation();
-    toggleCollapseAllItems(parentItems, allCollapsed);
-  };
-
-  const fetchHistory = useCallback(() => {
-    setFetchingHistory(true);
-    fetchLegacyDeploymentHistory(siteId, 30, preferences.numItems, preferences.filterBy).subscribe({
-      next(history) {
-        const parentItems = [];
-        const childrenLookup = {};
-        history.documents.forEach((document) => {
-          if (document.children.length) {
-            parentItems.push({
-              label: asLocalizedDateTime(
-                document.internalName,
-                localeBranch.localeCode,
-                reversePluckProps(localeBranch.dateTimeFormatOptions, 'hour', 'minute', 'second')
-              ),
-              children: document.children.map((item) => {
-                const key = `${item.uri}:${item.eventDate}`;
-                childrenLookup[key] = parseLegacyItemToDetailedItem(item);
-
-                // For this dashlet we display the environment where the item was published at the moment, and the API
-                // returns the environment at the current time in the props isLive/isStaging. The prop used for the
-                // environment at the moment of publishing is `endpoint`. So we update `childrenLookup` with the endpoint value.
-                if (item.endpoint === 'live') {
-                  childrenLookup[key].stateMap.live = true;
-                  childrenLookup[key].stateMap.staging = true;
-                } else {
-                  childrenLookup[key].stateMap.live = false;
-                  childrenLookup[key].stateMap.staging = true;
-                }
-
-                // For this dashlet, the property needed is eventDate, since we display the published date at the moment
-                // of the publishing, not the current.
-                childrenLookup[key].live.datePublished = item.eventDate;
-                childrenLookup[key].staging.datePublished = item.eventDate;
-                return key;
-              })
-            });
-          }
-          setItemsLookup(childrenLookup);
-        });
-        setParentItems(parentItems);
-        toggleCollapseAllItems(parentItems, true);
-        setFetchingHistory(false);
-      },
-      error(e) {
-        setErrorHistory(e);
-        setFetchingHistory(false);
-      }
-    });
-  }, [
-    siteId,
-    preferences.numItems,
-    preferences.filterBy,
-    toggleCollapseAllItems,
-    setItemsLookup,
-    localeBranch.localeCode,
-    localeBranch.dateTimeFormatOptions
-  ]);
-
-  useEffect(() => {
-    fetchHistory();
-  }, [fetchHistory]);
-
-  // region Item Updates Propagation
-  useEffect(() => {
-    const events = [deleteContentEvent.type, publishEvent.type];
-    const hostToHost$ = getHostToHostBus();
-    const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
-      fetchHistory();
-    });
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [fetchHistory, itemsLookup]);
-  // endregion
-
-  const resource = useLogicResource<
-    RecentlyPublishedDashletDashboardItem[],
-    { items: RecentlyPublishedDashletDashboardItem[]; error: ApiResponse; fetching: boolean }
-  >(
-    useMemo(
-      () => ({ items: parentItems, error: errorHistory, fetching: fetchingHistory }),
-      [parentItems, errorHistory, fetchingHistory]
-    ),
-    {
-      shouldResolve: (source) => Boolean(source.items) && !fetchingHistory,
-      shouldReject: ({ error }) => Boolean(error),
-      shouldRenew: (source, resource) => fetchingHistory && resource.complete,
-      resultSelector: (source) => source.items,
-      errorSelector: () => errorHistory
-    }
-  );
-
-  const onItemMenuClick = (event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, item: DetailedItem) => {
-    const path = item.path;
-    dispatch(
-      batchActions([
-        completeDetailedItem({ path }),
-        showItemMegaMenu({
-          path,
-          anchorReference: 'anchorPosition',
-          anchorPosition: { top: event.clientY, left: event.clientX },
-          numOfLoaderItems: getNumOfMenuOptionsForItem({
-            path: item.path,
-            systemType: getSystemTypeFromPath(item.path)
-          } as DetailedItem)
-        })
-      ])
-    );
-  };
-
+    onRefresh();
+  }, [onRefresh]);
   return (
-    <Dashlet
-      title={
-        <FormattedMessage
-          id="recentlyPublishedDashlet.dashletTitle"
-          defaultMessage="RecentlyPublished ({total})"
-          values={{
-            total: Object.keys(itemsLookup).length
-          }}
-        />
-      }
-      onToggleExpanded={() => setPreferences({ expanded: !preferences.expanded })}
-      expanded={preferences.expanded}
-      refreshDisabled={fetchingHistory}
-      onRefresh={fetchHistory}
-      headerRightSection={
-        <>
-          <Button onClick={onCollapseAll} className={classes.rightAction} disabled={fetchingHistory}>
-            {!allCollapsed ? (
-              <FormattedMessage id="recentlyPublishedDashlet.collapseAll" defaultMessage="Collapse All" />
-            ) : (
-              <FormattedMessage id="recentlyPublishedDashlet.expandAll" defaultMessage="Expand All" />
-            )}
-          </Button>
-
-          <TextField
-            label={<FormattedMessage id="words.show" defaultMessage="Show" />}
-            select
-            size="small"
-            value={preferences.numItems}
-            disabled={fetchingHistory}
-            onChange={onNumItemsChange}
-            className={classes.rightAction}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <MenuItem value={10}>10</MenuItem>
-            <MenuItem value={20}>20</MenuItem>
-            <MenuItem value={50}>50</MenuItem>
-            {Object.keys(itemsLookup).length && (
-              <MenuItem value={Object.keys(itemsLookup).length}>
-                <FormattedMessage
-                  id="recentlyPublishedDashlet.showAll"
-                  defaultMessage="All ({total})"
-                  values={{
-                    total: Object.keys(itemsLookup).length
-                  }}
-                />
-              </MenuItem>
-            )}
-          </TextField>
-          <TextField
-            label={<FormattedMessage id="recentlyPublishedDashlet.filterBy" defaultMessage="Filter by" />}
-            select
-            size="small"
-            value={preferences.filterBy}
-            disabled={fetchingHistory}
-            onChange={onFilterChange}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <MenuItem value="page">
-              <FormattedMessage id="words.pages" defaultMessage="Pages" />
-            </MenuItem>
-            <MenuItem value="component">
-              <FormattedMessage id="words.components" defaultMessage="Components" />
-            </MenuItem>
-            <MenuItem value="asset">
-              <FormattedMessage id="words.assets" defaultMessage="Assets" />
-            </MenuItem>
-            <MenuItem value="all">
-              <FormattedMessage id="words.all" defaultMessage="All" />
-            </MenuItem>
-          </TextField>
-        </>
+    <DashletTemplate
+      {...props}
+      borderLeftColor={borderLeftColor}
+      title={<FormattedMessage id="recentlyPublishedDashlet.widgetTitle" defaultMessage="Recently Published" />}
+      headerAction={
+        <IconButton onClick={onRefresh}>
+          <RefreshRounded />
+        </IconButton>
       }
     >
-      <SuspenseWithEmptyState
-        resource={resource}
-        suspenseProps={{
-          fallback: <RecentlyPublishedDashletUISkeletonTable items={parentItems} expandedLookup={expandedItems} />
-        }}
-        withEmptyStateProps={{
-          emptyStateProps: {
-            title: (
-              <FormattedMessage
-                id="recentlyPublishedDashlet.emptyMessage"
-                defaultMessage="No items published recently"
+      {/*
+      TODO: Stats bar not possible to implement under current API
+      <Stack direction="row" spacing={2}>
+        <Box>
+          <Typography variant="h2" component="p" children="2" lineHeight={1} />
+          <Typography component="span" children="Pending" />
+        </Box>
+        <Box>
+          <div>
+            <Typography variant="h2" component="span" children="14" lineHeight={1} />
+            <Typography component="span" children="days" />
+          </div>
+          <Typography component="span" children="Oldest request" />
+        </Box>
+      </Stack>
+      */}
+      {loading && getItemSkeleton({ numOfItems: 3, showAvatar: true })}
+      {items && (
+        <List>
+          {items.map((item) => (
+            <ListItem key={item.id}>
+              <ListItemAvatar>
+                <PersonAvatar person={item.submitter} />
+              </ListItemAvatar>
+              <ListItemText
+                primary={
+                  <FormattedMessage
+                    id="recentlyPublishedDashlet.entryPrimaryText"
+                    defaultMessage="{name} published {count} {count, plural, one {package} other {packages}} to <render_target>{publishingTarget}</render_target> <render_date>{date}</render_date>"
+                    values={{
+                      count: item.size,
+                      name: item.submitter.firstName,
+                      publishingTarget: item.publishingTarget,
+                      date: item.schedule,
+                      render_target(target) {
+                        return (
+                          <Typography
+                            component="span"
+                            fontWeight="bold"
+                            color={target === 'live' ? LIVE_COLOUR : STAGING_COLOUR}
+                          >
+                            {messages[target] ? formatMessage(messages[target]).toLowerCase() : target}
+                          </Typography>
+                        );
+                      },
+                      render_date(date) {
+                        return asLocalizedDateTime(date, locale.localeCode, locale.dateTimeFormatOptions);
+                      }
+                    }}
+                  />
+                }
+                secondary={
+                  <Typography color="text.secondary" variant="body2">
+                    <FormattedMessage
+                      id="recentlyPublishedDashlet.noSubmissionCommentAvailable"
+                      defaultMessage="Submission comment not provided"
+                    />
+                  </Typography>
+                }
               />
-            ),
-            styles: {
-              ...getEmptyStateStyleSet('horizontal'),
-              ...getEmptyStateStyleSet('image-sm')
-            }
-          }
-        }}
-      >
-        <RecentlyPublishedWidgetUI
-          resource={resource}
-          itemsLookup={itemsLookup}
-          localeBranch={localeBranch}
-          expandedItems={expandedItems}
-          setExpandedItems={setExpandedItems}
-          onItemMenuClick={onItemMenuClick}
-        />
-      </SuspenseWithEmptyState>
-    </Dashlet>
+            </ListItem>
+          ))}
+        </List>
+      )}
+      {total === 0 && (
+        <DashletEmptyMessage>
+          <FormattedMessage
+            id="recentlyPublishedDashlet.noRecentlyPublishedItems"
+            defaultMessage="There are no items have been published recently"
+          />
+        </DashletEmptyMessage>
+      )}
+    </DashletTemplate>
   );
 }
+
+export default RecentlyPublishedDashlet;

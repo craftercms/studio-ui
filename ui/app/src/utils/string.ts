@@ -71,9 +71,19 @@ export function hasUppercaseChars(str: string) {
   return /[A-Z]/.test(str);
 }
 
-export function getInitials(str: string) {
-  const pieces = (str ?? '').split(' ');
-  return `${pieces[0].substr(0, 1)}${pieces[1] ? pieces[1].substr(0, 1) : ''}`.toUpperCase();
+interface Person {
+  firstName: string;
+  lastName: string;
+}
+export function getInitials(str: string): string;
+export function getInitials(person: Person): string;
+export function getInitials(str: string | Person): string {
+  if (typeof str === 'string') {
+    const pieces = (str ?? '').split(' ');
+    return `${pieces[0].substr(0, 1)}${pieces[1] ? pieces[1].substr(0, 1) : ''}`.toUpperCase();
+  } else {
+    return `${str.firstName.substr(0, 1)}${str.lastName.substr(0, 1)}`.toUpperCase();
+  }
 }
 
 export function formatBytes(bytes: number, decimals: number = 2) {

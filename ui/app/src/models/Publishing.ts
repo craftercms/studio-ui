@@ -14,6 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+export type PublishingTargets = 'live' | 'staging';
+
 export interface Package {
   id: string;
   siteId: string;
@@ -75,4 +77,10 @@ export interface PublishingParams {
   schedule?: string;
   comment?: string;
   sendEmailNotifications?: boolean;
+}
+
+export interface PublishingStats {
+  numberOfPublishes: number;
+  numberOfNewAndPublishedItems: number;
+  numberOfEditedAndPublishedItems: number;
 }

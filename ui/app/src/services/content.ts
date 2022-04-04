@@ -32,12 +32,7 @@ import { getRequestForgeryToken } from '../utils/auth';
 import { DetailedItem, LegacyItem, SandboxItem } from '../models/Item';
 import { VersionsResponse } from '../models/Version';
 import { GetChildrenOptions } from '../models/GetChildrenOptions';
-import {
-  createItemActionMap,
-  createItemStateMap,
-  parseContentXML,
-  parseSandBoxItemToDetailedItem
-} from '../utils/content';
+import { parseContentXML, parseSandBoxItemToDetailedItem, prepareVirtualItemProps } from '../utils/content';
 import QuickCreateItem from '../models/content/QuickCreateItem';
 import ApiResponse from '../models/ApiResponse';
 import { fetchContentTypes } from './contentTypes';
@@ -101,11 +96,7 @@ export function fetchDetailedItem(
   const qs = toQueryString({ siteId, path, preferContent });
   return get(`/studio/api/2/content/item_by_path${qs}`).pipe(
     pluck('response', 'item'),
-    map((item: DetailedItem) => ({
-      ...item,
-      stateMap: createItemStateMap(item.state),
-      availableActionsMap: createItemActionMap(item.availableActions)
-    }))
+    map((item: DetailedItem) => prepareVirtualItemProps(item))
   );
 }
 
@@ -1083,27 +1074,12 @@ export function fetchChildrenByPath(
   }).pipe(
     pluck('response'),
     map(({ children, levelDescriptor, total, offset, limit }) =>
-      Object.assign(
-        children
-          ? children.map((child) => ({
-              ...child,
-              stateMap: createItemStateMap(child.state),
-              availableActionsMap: createItemActionMap(child.availableActions)
-            }))
-          : [],
-        {
-          ...(levelDescriptor && {
-            levelDescriptor: {
-              ...levelDescriptor,
-              stateMap: createItemStateMap(levelDescriptor.state),
-              availableActionsMap: createItemActionMap(levelDescriptor.availableActions)
-            }
-          }),
-          total,
-          offset,
-          limit
-        }
-      )
+      Object.assign(children ? children.map((child) => prepareVirtualItemProps(child)) : [], {
+        levelDescriptor: levelDescriptor ? prepareVirtualItemProps(levelDescriptor) : null,
+        total,
+        offset,
+        limit
+      })
     )
   );
 }
@@ -1159,11 +1135,9 @@ export function fetchItemsByPath(
     pluck('response', 'items'),
     map(
       (items: SandboxItem[]) =>
-        items.map((item) => ({
-          ...(castAsDetailedItem ? parseSandBoxItemToDetailedItem(item) : item),
-          stateMap: createItemStateMap(item.state),
-          availableActionsMap: createItemActionMap(item.availableActions)
-        })) as SandboxItem[] | DetailedItem[]
+        items.map((item) =>
+          prepareVirtualItemProps(castAsDetailedItem ? parseSandBoxItemToDetailedItem(item) : item)
+        ) as SandboxItem[] | DetailedItem[]
     )
   );
 }

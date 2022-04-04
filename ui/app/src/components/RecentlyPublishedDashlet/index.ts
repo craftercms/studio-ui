@@ -17,7 +17,3 @@
 export { default } from './RecentlyPublishedDashlet';
 
 export * from './RecentlyPublishedDashlet';
-
-export * from './RecentlyPublishedDashletUI';
-
-export * from './RecentlyPublishedDashletUISkeletonTable';

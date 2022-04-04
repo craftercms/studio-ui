@@ -35,46 +35,8 @@ import FolderIcon from '@mui/icons-material/FolderOpenRounded';
 import TaxonomyIcon from '@mui/icons-material/LocalOfferOutlined';
 import { DetailedItem, SandboxItem } from '../../models/Item';
 import clsx from 'clsx';
-import { defineMessages, IntlFormatters, useIntl } from 'react-intl';
-
-const messages = defineMessages({
-  asset: {
-    id: 'systemType.asset',
-    defaultMessage: 'Asset'
-  },
-  component: {
-    id: 'systemType.component',
-    defaultMessage: 'Component'
-  },
-  page: {
-    id: 'systemType.page',
-    defaultMessage: 'Page'
-  },
-  folder: {
-    id: 'systemType.folder',
-    defaultMessage: 'Folder'
-  },
-  levelDescriptor: {
-    id: 'systemType.levelDescriptor',
-    defaultMessage: 'Level Descriptor'
-  },
-  renderingTemplate: {
-    id: 'systemType.renderingTemplate',
-    defaultMessage: 'Rendering Template'
-  },
-  script: {
-    id: 'systemType.script',
-    defaultMessage: 'Script'
-  },
-  taxonomy: {
-    id: 'systemType.taxonomy',
-    defaultMessage: 'Taxonomy'
-  },
-  unknown: {
-    id: 'words.unknown',
-    defaultMessage: 'Unknown'
-  }
-});
+import { IntlFormatters, useIntl } from 'react-intl';
+import { messages } from './translations';
 
 export interface ItemTypeIconProps {
   item: DetailedItem | SandboxItem;

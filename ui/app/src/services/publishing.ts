@@ -19,7 +19,7 @@ import { Observable } from 'rxjs';
 import { map, mapTo, pluck } from 'rxjs/operators';
 import { LegacyItem } from '../models/Item';
 import { pluckProps, toQueryString } from '../utils/object';
-import { PublishingStatus, PublishingTarget } from '../models/Publishing';
+import { PublishingStatus, PublishingTarget, PublishingTargets } from '../models/Publishing';
 import { Api2BulkResponseFormat, Api2ResponseFormat } from '../models/ApiResponse';
 import { PagedArray } from '../models/PagedArray';
 
@@ -41,7 +41,7 @@ export function fetchPackages(
 export interface PublishingPackage {
   approver: string;
   comment: string;
-  environment: 'live' | 'staging';
+  environment: PublishingTargets;
   id: string;
   items: Array<{
     contentTypeClass: string;

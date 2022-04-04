@@ -19,11 +19,9 @@ import PublishingTargetIcon from '@mui/icons-material/FiberManualRecordRounded';
 import clsx from 'clsx';
 import * as React from 'react';
 import { getItemPublishingTargetText } from '../ItemDisplay/utils';
-import makeStyles from '@mui/styles/makeStyles';
-import createStyles from '@mui/styles/createStyles';
-import palette from '../../styles/palette';
 import { CSSProperties } from '@mui/styles';
 import { DetailedItem, SandboxItem } from '../../models/Item';
+import { useStyles } from './styles';
 
 export type ItemPublishingTargetIconClassKey =
   | 'root'
@@ -39,26 +37,6 @@ export interface ItemPublishingTargetIconProps {
   styles?: ItemPublishingTargetIconStyles;
   displayTooltip?: boolean;
 }
-
-const useStyles = makeStyles(() =>
-  createStyles<ItemPublishingTargetIconClassKey, ItemPublishingTargetIconStyles>({
-    root: (styles) => ({
-      color: palette.gray.medium2,
-      ...styles.root
-    }),
-    publishingTargetLive: (styles) => ({
-      color: palette.green.main,
-      ...styles.publishingTargetLive
-    }),
-    publishingTargetStaged: (styles) => ({
-      color: palette.blue.main,
-      ...styles.publishingTargetStaged
-    }),
-    publishingIcon: (styles) => ({
-      ...styles.publishingIcon
-    })
-  })
-);
 
 export function ItemPublishingTargetIcon(props: ItemPublishingTargetIconProps) {
   const { item, classes: propClasses, styles, className, displayTooltip = true } = props;

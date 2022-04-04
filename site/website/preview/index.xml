@@ -18,6 +18,6 @@
 <page>
   <internal-name>Preview</internal-name>
   <content-type>/page/browse</content-type>
-  <display-template>/templates/web/legacy/preview.ftl</display-template>
+  <display-template>/templates/web/next/preview.ftl</display-template>
   <merge-strategy>inherit-levels</merge-strategy>
 </page>

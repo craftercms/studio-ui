@@ -15,8 +15,8 @@
  */
 
 export interface PaginationOptions {
-  limit: number;
-  offset: number;
+  limit?: number;
+  offset?: number;
 }
 
 export default PaginationOptions;

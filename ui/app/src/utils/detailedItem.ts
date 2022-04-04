@@ -15,6 +15,7 @@
  */
 
 import { DetailedItem } from '../models/Item';
+import { PublishingTargets } from '../models';
 
 export function getDateScheduled(item: DetailedItem): string {
   return item.live?.dateScheduled ?? item.staging?.dateScheduled ?? null;
@@ -24,7 +25,7 @@ export function getDatePublished(item: DetailedItem): string {
   return item.live?.datePublished ?? item.staging?.datePublished ?? null;
 }
 
-export function getComputedPublishingTarget(item: DetailedItem): 'live' | 'staging' | null {
+export function getComputedPublishingTarget(item: DetailedItem): PublishingTargets | null {
   // prettier-ignore
   return item.stateMap.submittedToLive
     ? 'live'

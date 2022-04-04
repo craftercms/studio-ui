@@ -15,6 +15,18 @@
  */
 
 import { LegacyItem } from './Item';
+import Person from './Person';
+import { PublishingTargets } from './Publishing';
+
+export interface DashboardPublishingPackage {
+  id: string;
+  label: string;
+  comment: string;
+  submitter: Person;
+  size: number;
+  publishingTarget: PublishingTargets;
+  schedule: string;
+}
 
 interface LegacyDeploymentHistoryDocument {
   children: LegacyItem[];
@@ -39,7 +51,7 @@ export interface LegacyDeploymentHistoryResponse {
 
 export type LegacyDeploymentHistoryType = 'page' | 'component' | 'document' | 'all';
 
-export interface DashboardPreferences {
+export interface LegacyDashboardPreferences {
   filterBy?: string;
   numItems?: number;
   expanded?: boolean;

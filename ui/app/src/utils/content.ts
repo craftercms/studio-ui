@@ -909,3 +909,14 @@ export function getEditorMode(mimeType: string): 'ftl' | 'groovy' | 'javascript'
       return 'text';
   }
 }
+
+export function prepareVirtualItemProps(item: SandboxItem): SandboxItem;
+export function prepareVirtualItemProps(item: DetailedItem): DetailedItem;
+export function prepareVirtualItemProps(item: SandboxItem | DetailedItem): SandboxItem | DetailedItem;
+export function prepareVirtualItemProps(item: SandboxItem | DetailedItem): SandboxItem | DetailedItem {
+  return {
+    ...item,
+    stateMap: createItemStateMap(item.state),
+    availableActionsMap: createItemActionMap(item.availableActions)
+  };
+}

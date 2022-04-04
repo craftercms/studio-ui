@@ -132,23 +132,36 @@ export const registerComponents = () => {
       () => import('../components/RemoteRepositoriesManagement')
     ),
     'craftercms.components.ItemStatesManagement': lazy(() => import('../components/ItemStatesManagement')),
-    'craftercms.components.AwaitingApprovalDashlet': lazy(() => import('../components/AwaitingApprovalDashlet')),
-    'craftercms.components.RecentlyPublishedDashlet': lazy(() => import('../components/RecentlyPublishedDashlet')),
-    'craftercms.components.ApprovedScheduledDashlet': lazy(() => import('../components/ApprovedScheduledDashlet')),
-    'craftercms.components.RecentActivityDashlet': lazy(() => import('../components/RecentActivityDashlet')),
+    'craftercms.components.LegacySiteDashboard': lazy(
+      () => import('../components/LegacySiteDashboard/LegacySiteDashboard')
+    ),
+    'craftercms.components.LegacyAwaitingApprovalDashlet': lazy(
+      () => import('../components/LegacySiteDashboard/AwaitingApprovalDashlet/AwaitingApprovalDashlet')
+    ),
+    'craftercms.components.LegacyRecentlyPublishedDashlet': lazy(
+      () => import('../components/LegacySiteDashboard/RecentlyPublishedDashlet/RecentlyPublishedDashlet')
+    ),
+    'craftercms.components.LegacyApprovedScheduledDashlet': lazy(
+      () => import('../components/LegacySiteDashboard/ApprovedScheduledDashlet/ApprovedScheduledDashlet')
+    ),
+    'craftercms.components.LegacyRecentActivityDashlet': lazy(
+      () => import('../components/LegacySiteDashboard/RecentActivityDashlet/RecentActivityDashlet')
+    ),
     'craftercms.components.IconGuideDashlet': lazy(() => import('../components/IconGuideDashlet')),
     'craftercms.components.PublishingStatusButton': lazy(() => import('../components/PublishingStatusButton')),
     'craftercms.components.QuickCreate': lazy(() => import('../components/QuickCreate/QuickCreate')),
     'craftercms.components.EditModeSwitch': lazy(() => import('../components/EditModeSwitch')),
     'craftercms.components.PreviewAddressBar': lazy(() => import('../components/PreviewAddressBar')),
     'craftercms.components.SiteSwitcherSelect': lazy(() => import('../components/SiteSwitcherSelect')),
-    'craftercms.components.Dashboard': lazy(() => import('../components/Dashboard')),
     'craftercms.components.SiteToolsPanel': lazy(() => import('../components/SiteToolsPanel')),
     'craftercms.components.LegacyComponentsPanel': lazy(() => import('../components/LegacyComponentsPanel')),
     'craftercms.components.EditModesSwitcher': lazy(() => import('../components/EditModesSwitcher')),
     'craftercms.components.EmbeddedSearchIframe': lazy(() => import('../components/EmbeddedSearchIframe')),
     'craftercms.components.WidgetDialogIconButton': lazy(() => import('../components/WidgetDialogIconButton')),
-    'craftercms.components.Search': lazy(() => import('../components/Search/Search'))
+    'craftercms.components.Search': lazy(() => import('../components/Search/Search')),
+    'craftercms.components.SiteDashboard': lazy(() => import('../components/SiteDashboard/SiteDashboard')),
+    // TODO: Remove when blueprints are updated
+    'craftercms.components.Dashboard': lazy(() => import('../components/SiteDashboard/SiteDashboard'))
   }).forEach(([id, component]) => {
     components.set(id, component);
   });
