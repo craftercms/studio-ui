@@ -27,7 +27,7 @@ import ItemTypeIcon from '../ItemTypeIcon';
 import ItemPublishingTargetIcon from '../ItemPublishingTargetIcon';
 
 export interface IconGuideDashletProps {
-  contentHeight: number | string;
+  contentHeight?: number | string;
 }
 
 const useStyles = makeStyles((theme) =>
