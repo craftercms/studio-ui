@@ -17,6 +17,9 @@
 <script>
 (function (origin) {
 
+  const urlParams = new URLSearchParams(window.location.hash);
+  const siteId = urlParams.get('site') ?? "${envConfig.site}";
+
   /**
    * contextual variables
    * note: these are all fixed at the moment but will be dynamic
@@ -24,8 +27,8 @@
   CStudioAuthoringContext = {
     user: "${envConfig.user}",
     role: "${envConfig.role}",
-    site: "${envConfig.site}",
-    siteId: "${envConfig.site}",
+    site: siteId,
+    siteId,
     authenticationType: "${envConfig.authenticationType}",
     baseUri: `${'$'}{origin}/studio`,
     authoringAppBaseUri: `${'$'}{origin}/studio`,
