@@ -26,6 +26,7 @@ import { EnhancedDialogContext } from './useEnhancedDialogContext';
 
 export interface EnhancedDialogProps extends Omit<MuiDialogProps, 'title'>, EnhancedDialogState {
   title?: ReactNode;
+  subtitle?: ReactNode;
   onMinimize?(): void;
   onMaximize?(): void;
   onClosed?(): void;
@@ -41,11 +42,12 @@ export function EnhancedDialog(props: EnhancedDialogProps) {
   const {
     id,
     open,
-    isSubmitting,
-    hasPendingChanges,
-    isMinimized,
+    isSubmitting = false,
+    hasPendingChanges = false,
+    isMinimized = false,
     isFullScreen = false,
     title,
+    subtitle,
     onClosed,
     onMinimize,
     onMaximize,
@@ -94,6 +96,7 @@ export function EnhancedDialog(props: EnhancedDialogProps) {
           <DialogHeader
             {...dialogHeaderProps}
             title={title ?? dialogHeaderProps?.title}
+            subtitle={subtitle}
             disabled={isSubmitting}
             onMinimizeButtonClick={onMinimize}
             onFullScreenButtonClick={isFullScreen ? onCancelFullScreen : onFullScreen}

@@ -362,7 +362,7 @@ export default function RecentActivityDashlet() {
             isLoading={isFetching}
             numOfSkeletonItems={selectedItemsLength > 1 ? 3 : 7}
             onOptionClicked={onActionBarOptionClicked}
-            toggleSelectAll={onToggleCheckedAll}
+            onCheckboxChange={onToggleCheckedAll}
           />
         )}
         <RecentActivityDashletGridUI

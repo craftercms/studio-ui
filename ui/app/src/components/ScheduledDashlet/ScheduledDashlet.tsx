@@ -61,7 +61,8 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
       items: null,
       total: null,
       selected: {},
-      isAllSelected: false
+      isAllSelected: false,
+      hasSelected: false
     });
   const onRefresh = useMemo(
     () => () => {

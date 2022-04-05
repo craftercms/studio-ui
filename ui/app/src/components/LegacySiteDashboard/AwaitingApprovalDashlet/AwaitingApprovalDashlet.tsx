@@ -323,7 +323,7 @@ export default function AwaitingApprovalDashlet() {
             isIndeterminate={isIndeterminate}
             isChecked={isAllChecked}
             onOptionClicked={onActionBarOptionClicked}
-            toggleSelectAll={onToggleCheckedAll}
+            onCheckboxChange={onToggleCheckedAll}
           />
         )}
         <AwaitingApprovalDashletGridUI

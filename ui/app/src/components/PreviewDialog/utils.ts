@@ -27,7 +27,7 @@ export interface PreviewDialogBaseProps {
   content?: string;
 }
 
-export interface PreviewDialogProps extends PreviewDialogBaseProps, Omit<EnhancedDialogProps, 'title'> {}
+export interface PreviewDialogProps extends PreviewDialogBaseProps, Omit<EnhancedDialogProps, 'title' | 'subtitle'> {}
 
 export interface PreviewDialogStateProps extends PreviewDialogBaseProps, EnhancedDialogState {
   onClose?: StandardAction;

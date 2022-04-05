@@ -58,7 +58,7 @@ export function DevContentOpsDashlet(props: DevContentOpsDashletProps) {
   return (
     <DashletTemplate
       {...props}
-      sx={{ content: { pt: 2 } }}
+      sxs={{ content: { pt: 2 } }}
       borderLeftColor={borderLeftColor}
       title={<FormattedMessage id="devContentOpsDashlet.widgetTitle" defaultMessage="DevContentOps" />}
       headerAction={

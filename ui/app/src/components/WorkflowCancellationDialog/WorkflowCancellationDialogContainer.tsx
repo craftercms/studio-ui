@@ -62,7 +62,12 @@ export function WorkflowCancellationDialogContainer(props: WorkflowCancellationD
       resource={resource}
       withEmptyStateProps={{
         emptyStateProps: {
-          title: <FormattedMessage id="publishDialog.noItemsSelected" defaultMessage="There are no affected files" />
+          title: (
+            <FormattedMessage
+              id="workflowCancellationDialog.noAffectedFiles"
+              defaultMessage="There are no affected files"
+            />
+          )
         }
       }}
       loadingStateProps={{

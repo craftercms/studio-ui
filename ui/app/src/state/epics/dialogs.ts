@@ -55,7 +55,7 @@ import { changeCurrentUrl, requestWorkflowCancellationDialogOnResult } from '../
 import { CrafterCMSEpic } from '../store';
 import { formEngineMessages } from '../../utils/i18n-legacy';
 import infoGraphic from '../../assets/information.svg';
-import { nou } from '../../utils/object';
+import { nnou, nou } from '../../utils/object';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 import { fetchDetailedItems } from '../actions/content';
 
@@ -201,8 +201,10 @@ const dialogEpics: CrafterCMSEpic[] = [
   (action$, state$) =>
     action$.pipe(
       ofType(showPreviewDialog.type),
-      filter(({ payload }) => payload.type === 'editor'),
       withLatestFrom(state$),
+      filter(
+        ([{ payload }, state]) => payload.type === 'editor' && nnou(payload.url) && nou(state.dialogs.preview.content)
+      ),
       switchMap(([{ payload }, state]) =>
         fetchContentXML(state.sites.active, payload.url).pipe(map((content) => updatePreviewDialog({ content })))
       )

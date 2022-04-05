@@ -17,26 +17,25 @@
 import { CommonDashletProps, useSpreadStateWithSelected, WithSelectedState } from '../SiteDashboard/utils';
 import DashletTemplate from '../SiteDashboard/DashletTemplate';
 import palette from '../../styles/palette';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import React, { useEffect, useMemo } from 'react';
 import IconButton from '@mui/material/IconButton';
 import { RefreshRounded } from '@mui/icons-material';
-import { useActiveSiteId, useLocale } from '../../hooks';
+import { useActiveSiteId, useEnv, useLocale } from '../../hooks';
 import { fetchUnpublished } from '../../services/dashboard';
-import {
-  DashletEmptyMessage,
-  DenseCheckbox,
-  getItemSkeleton,
-  List,
-  ListItem,
-  ListItemIcon
-} from '../SiteDashboard/dashletCommons';
+import { DashletEmptyMessage, getItemSkeleton, List, ListItem, ListItemIcon } from '../SiteDashboard/dashletCommons';
 import Checkbox from '@mui/material/Checkbox';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import { asLocalizedDateTime } from '../../utils/datetime';
 import ItemDisplay from '../ItemDisplay';
 import { SandboxItem } from '../../models';
+import ActionsBar from '../ActionsBar';
+import { UNDEFINED } from '../../utils/constants';
+import { translations } from '../ItemActionsMenu/translations';
+import { itemActionDispatcher } from '../../utils/itemActions';
+import { useDispatch } from 'react-redux';
+import { parseSandBoxItemToDetailedItem } from '../../utils/content';
 
 interface UnpublishedDashletProps extends CommonDashletProps {}
 
@@ -49,14 +48,19 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
   const { borderLeftColor = palette.blue.tint } = props;
   const site = useActiveSiteId();
   const locale = useLocale();
-  const [{ loading, total, items, isAllSelected }, setState, onSelectItem, onSelectAll, isSelected] =
-    useSpreadStateWithSelected<UnpublishedDashletState>({
-      loading: false,
-      items: null,
-      total: null,
-      selected: {},
-      isAllSelected: false
-    });
+  const { formatMessage } = useIntl();
+  const { authoringBase } = useEnv();
+  const dispatch = useDispatch();
+  const [
+    { loading, total, items, isAllSelected, hasSelected, selected, selectedCount },
+    setState,
+    onSelectItem,
+    onSelectAll,
+    isSelected
+  ] = useSpreadStateWithSelected<UnpublishedDashletState>({
+    loading: false,
+    total: null
+  });
   const onRefresh = useMemo(
     () => () => {
       setState({ loading: true, items: null, selected: {}, isAllSelected: false });
@@ -66,6 +70,15 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
     },
     [setState, site]
   );
+  const onOptionClicked = (option) =>
+    itemActionDispatcher({
+      site,
+      authoringBase,
+      dispatch,
+      formatMessage,
+      option,
+      item: items.filter((item) => selected[item.id]).map((item) => parseSandBoxItemToDetailedItem(item))
+    });
   useEffect(() => {
     onRefresh();
   }, [onRefresh]);
@@ -79,10 +92,29 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
           <RefreshRounded />
         </IconButton>
       }
+      sxs={{ actionsBar: { padding: 0 } }}
       actionsBar={
-        <>
-          <DenseCheckbox disabled={loading} checked={isAllSelected} onChange={onSelectAll} />
-        </>
+        <ActionsBar
+          disabled={loading}
+          isChecked={isAllSelected}
+          isIndeterminate={hasSelected && !isAllSelected}
+          onCheckboxChange={onSelectAll}
+          onOptionClicked={onOptionClicked}
+          options={
+            hasSelected
+              ? [
+                  selectedCount === 1 && { id: 'edit', label: formatMessage(translations.edit) },
+                  { id: 'approvePublish', label: formatMessage(translations.publish) }
+                ].filter(Boolean)
+              : []
+          }
+          buttonProps={{ size: 'small' }}
+          sxs={{
+            root: { flexGrow: 1 },
+            container: { bgcolor: hasSelected ? 'action.selected' : UNDEFINED },
+            checkbox: { padding: '5px', borderRadius: 0 }
+          }}
+        />
       }
     >
       {loading && getItemSkeleton({ numOfItems: 3, showAvatar: true, showCheckbox: true })}

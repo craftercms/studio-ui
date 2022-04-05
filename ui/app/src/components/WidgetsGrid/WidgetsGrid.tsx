@@ -14,16 +14,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export type SystemType =
-  | 'renderingTemplate'
-  | 'script'
-  | 'folder'
-  | 'asset'
-  | 'component'
-  | 'page'
-  | 'taxonomy'
-  | 'levelDescriptor'
-  | 'file'
-  | 'unknown';
+import Grid, { GridProps } from '@mui/material/Grid';
+import React from 'react';
+import { renderWidgets, WidgetDescriptor } from '../Widget';
+import { useActiveSiteId, useActiveUser } from '../../hooks';
 
-export default SystemType;
+export interface WidgetsGridProps extends GridProps {
+  widgets: WidgetDescriptor[];
+}
+
+export function WidgetsGrid(props: WidgetsGridProps) {
+  const { widgets } = props;
+  const site = useActiveSiteId();
+  const user = useActiveUser();
+  const userRoles = user.rolesBySite[site];
+  return <Grid {...props}>{renderWidgets(widgets, { userRoles })}</Grid>;
+}
+
+export default WidgetsGrid;

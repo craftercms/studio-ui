@@ -164,7 +164,7 @@ export function SiteToolsApp(props: SiteToolsAppProps) {
             <Suspencified>
               <Widget
                 {...tool}
-                extraProps={{
+                overrideProps={{
                   embedded: false,
                   mountMode,
                   showAppsButton,

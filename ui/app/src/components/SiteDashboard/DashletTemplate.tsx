@@ -30,7 +30,7 @@ export function DashletTemplate(
       actionsBar?: React.ReactNode;
       actionsBarHeight?: number;
       headerAction?: React.ReactNode;
-      sx?: Partial<{
+      sxs?: Partial<{
         card: BoxProps['sx'];
         content: BoxProps['sx'];
         header: BoxProps['sx'];
@@ -40,7 +40,7 @@ export function DashletTemplate(
   >
 ) {
   const {
-    sx,
+    sxs,
     children,
     actionsBar,
     title,
@@ -54,26 +54,33 @@ export function DashletTemplate(
       parseDashletContentHeight(contentHeightProp) - (actionsBar ? actionsBarHeight : 0)
     : UNDEFINED;
   return (
-    <Card sx={{ borderLeft: 5, borderLeftColor, ...sx?.card }}>
+    <Card sx={{ borderLeft: 5, borderLeftColor, ...sxs?.card }}>
       {/* region Header */}
       <CardHeader
         title={title}
         titleTypographyProps={{ variant: 'h6', component: 'h2' }}
         action={headerAction}
-        sx={sx?.header}
+        sx={sxs?.header}
       />
       {/* endregion */}
       <Divider />
       {actionsBar && (
         <Box
-          display="flex"
-          sx={{ borderBottom: '1px solid', borderBottomColor: 'divider', pr: 1, pl: 1, ...sx?.actionsBar }}
+          sx={{
+            display: 'flex',
+            position: 'relative',
+            borderBottom: '1px solid',
+            borderBottomColor: 'divider',
+            pr: 1,
+            pl: 1,
+            ...sxs?.actionsBar
+          }}
         >
           {actionsBar}
         </Box>
       )}
       {/* region Body */}
-      <CardContent sx={{ overflow: 'auto', height: parseDashletContentHeight(contentHeight), pt: 0, ...sx?.content }}>
+      <CardContent sx={{ overflow: 'auto', height: parseDashletContentHeight(contentHeight), pt: 0, ...sxs?.content }}>
         {children}
       </CardContent>
       {/* endregion */}
