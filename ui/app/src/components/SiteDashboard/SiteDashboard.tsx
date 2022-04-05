@@ -22,17 +22,17 @@ import React from 'react';
 // import { renderWidgets } from '../Widget';
 // import EmptyState from '../EmptyState';
 // import { FormattedMessage } from 'react-intl';
+// import Skeleton from '@mui/material/Skeleton';
 import Box from '@mui/material/Box';
 import { useTheme } from '@mui/material/styles';
-import Skeleton from '@mui/material/Skeleton';
 import Grid from '@mui/material/Grid';
-import ActivityDashlet from '../ActivityDashlet';
-import PendingDashlet from '../PendingApprovalDashlet';
-import ExpiringDashlet from '../ExpiringDashlet';
-import UnpublishedDashlet from '../UnpublishedDashlet';
-import ScheduledDashlet from '../ScheduledDashlet';
-import RecentlyPublishedDashlet from '../RecentlyPublishedDashlet';
-import DevContentOpsDashlet from '../DevContentOpsDashlet';
+import ActivityDashlet from '../ActivityDashlet/ActivityDashlet';
+import PendingApprovalDashlet from '../PendingApprovalDashlet/PendingApprovalDashlet';
+import ExpiringDashlet from '../ExpiringDashlet/ExpiringDashlet';
+import UnpublishedDashlet from '../UnpublishedDashlet/UnpublishedDashlet';
+import ScheduledDashlet from '../ScheduledDashlet/ScheduledDashlet';
+import RecentlyPublishedDashlet from '../RecentlyPublishedDashlet/RecentlyPublishedDashlet';
+import DevContentOpsDashlet from '../DevContentOpsDashlet/DevContentOpsDashlet';
 
 export interface DashboardProps {}
 
@@ -60,7 +60,7 @@ export function Dashboard(props: DashboardProps) {
           <ActivityDashlet contentHeight={height} />
         </Grid>
         <Grid item md={4}>
-          <PendingDashlet contentHeight={height} />
+          <PendingApprovalDashlet contentHeight={height} />
         </Grid>
         <Grid item md={4}>
           <ExpiringDashlet contentHeight={height} />
