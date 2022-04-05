@@ -17,8 +17,12 @@
 <script>
 (function (origin) {
 
-  const urlParams = new URLSearchParams(window.location.hash);
-  const siteId = urlParams.get('site') ?? "${envConfig.site}";
+  function getSiteId() {
+    const urlParams = new URLSearchParams(window.location.hash);
+    return urlParams.get('site') ?? "${envConfig.site}";
+  }
+
+  const siteId = getSiteId();
 
   /**
    * contextual variables
@@ -84,6 +88,17 @@
       );
     }
   });
+
+  window.addEventListener(
+    'hashchange',
+    function (e) {
+      e.preventDefault();
+      const newSiteId = getSiteId();
+      CStudioAuthoringContext.site = newSiteId;
+      CStudioAuthoringContext.siteId = newSiteId;
+    },
+    false
+  );
 
 })(window.location.origin);
 </script>
