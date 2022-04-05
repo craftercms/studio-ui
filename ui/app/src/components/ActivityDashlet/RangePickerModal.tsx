@@ -65,13 +65,8 @@ export function RangePickerModal(props: RangePickerModalProps) {
     }
   };
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      aria-labelledby="range-modal-modal-title"
-      aria-describedby="range-modal-modal-description"
-    >
-      <DialogTitle id="range-modal-modal-title">
+    <Dialog open={open} onClose={onClose} aria-labelledby="rangePickerModalTitle">
+      <DialogTitle id="rangePickerModalTitle">
         <FormattedMessage id="activityDashlet.selectRangeModalTitle" defaultMessage="Select Date Range" />
       </DialogTitle>
       <DialogContent>

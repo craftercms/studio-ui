@@ -17,8 +17,8 @@
 import { Activity } from '../../models/Activity';
 import React, { useEffect, useMemo } from 'react';
 import { MoreVertRounded, RefreshRounded } from '@mui/icons-material';
-import { UNDEFINED } from '../../utils/constants';
-import { useActiveSiteId, useLocale, useSpreadState } from '../../hooks';
+import { LEGACY_PREVIEW_URL_PATH, PREVIEW_URL_PATH, UNDEFINED } from '../../utils/constants';
+import { useActiveSiteId, useEnv, useLegacyPreviewPreference, useLocale, useSpreadState } from '../../hooks';
 import { fetchActivity } from '../../services/dashboard';
 import IconButton from '@mui/material/IconButton';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -46,11 +46,18 @@ import Tooltip from '@mui/material/Tooltip';
 import DashletTemplate from '../SiteDashboard/DashletTemplate';
 import { asLocalizedDateTime } from '../../utils/datetime';
 import { DashletAvatar, DashletEmptyMessage, PersonAvatar, PersonFullName } from '../SiteDashboard/dashletCommons';
+import { getSystemLink } from '../../utils/system';
+import { useDispatch } from 'react-redux';
+import { changeCurrentUrl } from '../../state/actions/preview';
+import { useWidgetDialogContext } from '../WidgetDialog';
+import PackageDetailsDialog from '../PackageDetailsDialog/PackageDetailsDialog';
 
 export interface ActivityDashletProps extends CommonDashletProps {}
 
 interface ActivityDashletState {
   openRangePicker: boolean;
+  openPackageDetailsDialog: boolean;
+  selectedPackageId: string;
   feed: Activity[];
   usernames: string[];
   feedType: FeedTypes;
@@ -117,16 +124,35 @@ const getSkeletonTimelineItems = ({ items = 1 }: { items?: number }) =>
 export function ActivityDashlet(props: ActivityDashletProps) {
   const { borderLeftColor = 'success.main' } = props;
   const locale = useLocale();
-  // const theme = useTheme(); // bgcolor: `grey.${theme.palette.mode === 'light' ? 100 : 900}`,
   const site = useActiveSiteId();
+  const useLegacy = useLegacyPreviewPreference();
+  const { authoringBase } = useEnv();
   const { formatMessage } = useIntl();
+  const dispatch = useDispatch();
+  const widgetDialogContext = useWidgetDialogContext();
   const [
-    { feed, feedType, usernames, dateFrom, dateTo, limit, offset, total, openRangePicker, loadingChunk, loadingFeed },
+    {
+      feed,
+      feedType,
+      usernames,
+      dateFrom,
+      dateTo,
+      limit,
+      offset,
+      total,
+      openRangePicker,
+      loadingChunk,
+      loadingFeed,
+      selectedPackageId,
+      openPackageDetailsDialog
+    },
     setState
   ] = useSpreadState<ActivityDashletState>({
     loadingChunk: false,
     loadingFeed: false,
     openRangePicker: false,
+    openPackageDetailsDialog: false,
+    selectedPackageId: null,
     feed: null,
     usernames: null,
     feedType: 'timeline',
@@ -208,6 +234,24 @@ export function ActivityDashlet(props: ActivityDashletProps) {
         loadingChunk: false
       });
     });
+  };
+  const onItemClick = ({ previewUrl }, e) => {
+    const pathname = window.location.pathname;
+    if (pathname.includes(PREVIEW_URL_PATH) && !pathname.includes(LEGACY_PREVIEW_URL_PATH)) {
+      dispatch(changeCurrentUrl(previewUrl));
+      widgetDialogContext?.onClose(e, null);
+    } else {
+      window.location.href = getSystemLink({
+        page: previewUrl,
+        systemLinkId: 'preview',
+        site,
+        authoringBase,
+        useLegacy
+      });
+    }
+  };
+  const onPackageClick = (pkg) => {
+    setState({ openPackageDetailsDialog: true, selectedPackageId: pkg.id });
   };
   const hasMoreItemsToLoad = total > 0 && limit + offset < total;
   useEffect(() => {
@@ -325,7 +369,7 @@ export function ActivityDashlet(props: ActivityDashletProps) {
               </SizedTimelineSeparator>
               <TimelineContent sx={{ py: '12px', px: 2 }}>
                 <PersonFullName person={activity.person} />
-                <Typography>{renderActivity(activity, { formatMessage })}</Typography>
+                <Typography>{renderActivity(activity, { formatMessage, onPackageClick, onItemClick })}</Typography>
                 <Typography
                   variant="caption"
                   title={asLocalizedDateTime(activity.actionTimestamp, locale.localeCode, locale.dateTimeFormatOptions)}
@@ -399,6 +443,12 @@ export function ActivityDashlet(props: ActivityDashletProps) {
               }
             : UNDEFINED
         }
+      />
+      <PackageDetailsDialog
+        open={openPackageDetailsDialog}
+        onClose={() => setState({ openPackageDetailsDialog: false })}
+        onClosed={() => setState({ selectedPackageId: null })}
+        packageId={selectedPackageId}
       />
     </DashletTemplate>
   );

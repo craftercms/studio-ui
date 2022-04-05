@@ -185,7 +185,9 @@ export function fetchScheduled(
   options: FetchScheduledOptions
 ): Observable<PagedArray<DashboardPublishingPackage>> {
   const qs = toQueryString({ siteId, ...options });
-  return get(`/studio/api/2/dashboard/publishing/scheduled${qs}`).pipe(pluck('response', 'publishingPackages'));
+  return get(`/studio/api/2/dashboard/publishing/scheduled${qs}`).pipe(
+    map(({ response }) => createPagedArray(response.publishingPackages, response))
+  );
 }
 
 export function fetchScheduledPackageItems(siteId: string, packageId: number): Observable<SandboxItem[]> {
@@ -201,10 +203,12 @@ export function fetchPublishingHistory(
   options: Partial<FetchScheduledOptions>
 ): Observable<PagedArray<DashboardPublishingPackage>> {
   const qs = toQueryString({ siteId, ...options });
-  return get(`/studio/api/2/dashboard/publishing/history${qs}`).pipe(pluck('response', 'publishingPackages'));
+  return get(`/studio/api/2/dashboard/publishing/history${qs}`).pipe(
+    map(({ response }) => createPagedArray(response.publishingPackages, response))
+  );
 }
 
-export function fetchPublishingHistoryPackageItems(siteId: string, packageId: number): Observable<SandboxItem[]> {
+export function fetchPublishingHistoryPackageItems(siteId: string, packageId: string): Observable<SandboxItem[]> {
   const qs = toQueryString({ siteId });
   return get(`/studio/api/2/dashboard/publishing/history/${packageId}${qs}`).pipe(
     pluck('response', 'publishingPackageItems'),

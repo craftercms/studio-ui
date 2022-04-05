@@ -338,7 +338,7 @@ export function ApprovedScheduledDashlet() {
             isIndeterminate={isIndeterminate}
             isChecked={isAllChecked}
             onOptionClicked={onActionBarOptionClicked}
-            toggleSelectAll={onToggleCheckedAll}
+            onCheckboxChange={onToggleCheckedAll}
           />
         )}
         <ApprovedScheduledDashletGridUI

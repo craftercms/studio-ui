@@ -57,6 +57,7 @@ export function ItemTypeIcon(props: ItemTypeIconProps) {
   const { formatMessage } = useIntl();
   let TheIcon = UnknownStateIcon;
   switch (item.systemType) {
+    case 'file':
     case 'asset':
       if (item.mimeType.includes('image/')) {
         TheIcon = ImageIcon;

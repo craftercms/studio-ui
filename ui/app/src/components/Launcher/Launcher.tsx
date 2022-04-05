@@ -247,7 +247,7 @@ const AppsRail = ({
   <Grid item xs={12} md={8} className={classes.appsRail}>
     <div className={clsx(classes.railTop, closeButtonPosition === 'left' && classes.railTopExtraPadded)}>
       {globalNavigationPosition === 'before' && <LauncherGlobalNav />}
-      {renderWidgets(widgets, userRoles)}
+      {renderWidgets(widgets, { userRoles })}
       {/* Using != 'before' (instead of == 'after') to avoid config hiding away the global nav */}
       {globalNavigationPosition !== 'before' && <LauncherGlobalNav />}
     </div>

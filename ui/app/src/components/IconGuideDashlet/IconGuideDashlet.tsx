@@ -26,6 +26,10 @@ import { getItemPublishingTargetText, getItemStateText } from '../ItemDisplay/ut
 import ItemTypeIcon from '../ItemTypeIcon';
 import ItemPublishingTargetIcon from '../ItemPublishingTargetIcon';
 
+export interface IconGuideDashletProps {
+  contentHeight?: number | string;
+}
+
 const useStyles = makeStyles((theme) =>
   createStyles({
     iconGuideContainer: {
@@ -106,18 +110,18 @@ const types = {
   icon: { systemType: 'asset', mimeType: 'image/vnd.microsoft.icon' }
 };
 
-export default function IconGuideDashlet() {
+export default function IconGuideDashlet(props: IconGuideDashletProps) {
+  const { contentHeight } = props;
   const [expanded, setExpanded] = useState(true);
   const classes = useStyles();
   const { formatMessage } = useIntl();
-
   return (
     <Dashlet
       title={<FormattedMessage id="iconGuide.title" defaultMessage="Icon Guide" />}
       expanded={expanded}
       onToggleExpanded={() => setExpanded(!expanded)}
     >
-      <div className={classes.iconGuideContainer}>
+      <div className={classes.iconGuideContainer} style={{ overflow: 'auto', height: contentHeight }}>
         <Typography variant="subtitle2" className={classes.guideSectionTitle}>
           <FormattedMessage id="iconGuide.publishingStatusTarget" defaultMessage="Publishing Status/Target" />
         </Typography>

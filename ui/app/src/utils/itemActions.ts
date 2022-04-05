@@ -110,7 +110,7 @@ import {
 import { getEditorMode, isNavigable } from '../components/PathNavigator/utils';
 import React from 'react';
 import { previewItem } from '../state/actions/preview';
-import { asArray, createPresenceTable } from './array';
+import { createPresenceTable } from './array';
 import { fetchPublishingStatus } from '../state/actions/publishingStatus';
 import { Clipboard } from '../models/GlobalState';
 
@@ -493,7 +493,7 @@ export function generateMultipleItemOptions(
 
 export const itemActionDispatcher = ({
   site,
-  item,
+  item: itemOrItems,
   option,
   authoringBase,
   dispatch,
@@ -512,8 +512,16 @@ export const itemActionDispatcher = ({
   onActionSuccess?: any;
   event?: React.MouseEvent<Element, MouseEvent>;
 }) => {
+  let item: DetailedItem;
+  let items: DetailedItem[];
+  if (Array.isArray(itemOrItems)) {
+    items = itemOrItems;
+  } else {
+    item = itemOrItems;
+    items = [itemOrItems];
+  }
   // actions that support only one item
-  if (!Array.isArray(item)) {
+  if (item) {
     switch (option) {
       case 'view': {
         const path = item.path;
@@ -886,9 +894,9 @@ export const itemActionDispatcher = ({
     }
   }
   // actions that support multiple items
+  // TODO: some actions below aren't really well covered for multiple actions (e.g. deleting controller or template)
   switch (option) {
     case 'delete': {
-      let items = asArray(item);
       dispatch(
         showDeleteDialog({
           items,
@@ -902,18 +910,17 @@ export const itemActionDispatcher = ({
       break;
     }
     case 'deleteController': {
-      dispatch(deleteController({ item: item as DetailedItem, onSuccess: onActionSuccess }));
+      dispatch(deleteController({ item, onSuccess: onActionSuccess }));
       break;
     }
     case 'deleteTemplate': {
-      dispatch(deleteTemplate({ item: item as DetailedItem, onSuccess: onActionSuccess }));
+      dispatch(deleteTemplate({ item, onSuccess: onActionSuccess }));
       break;
     }
     case 'approvePublish':
     case 'publish':
     case 'schedulePublish':
     case 'requestPublish': {
-      const items = Array.isArray(item) ? item : [item];
       const schedulingMap = {
         approvePublish: null,
         schedulePublish: 'custom',
@@ -936,7 +943,6 @@ export const itemActionDispatcher = ({
       break;
     }
     case 'rejectPublish': {
-      let items = Array.isArray(item) ? item : [item];
       dispatch(
         showRejectDialog({
           items,

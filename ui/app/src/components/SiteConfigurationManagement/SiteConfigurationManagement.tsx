@@ -71,6 +71,7 @@ import { ConfirmDialogProps } from '../ConfirmDialog';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 import { findPendingEncryption } from './utils';
 import { useUpdateRefs } from '../../hooks';
+import { UNDEFINED } from '../../utils/constants';
 
 interface SiteConfigurationManagementProps {
   embedded?: boolean;
@@ -146,7 +147,7 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
   });
 
   useEffect(() => {
-    if (site && environment) {
+    if (site && environment !== UNDEFINED) {
       fetchSiteConfigurationFiles(site, environment).subscribe((files) => {
         setFiles(files.map((file) => ({ ...file, id: `${file.module}/${file.path}` })));
       });
