@@ -102,7 +102,7 @@ export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
           <SecondaryButton onClick={(e) => onClose(e, null)}>
             <FormattedMessage id="words.close" defaultMessage="Close" />
           </SecondaryButton>
-          {hasEditAction(item.availableActions) && (
+          {item && hasEditAction(item.availableActions) && (
             <PrimaryButton sx={{ marginLeft: '15px' }} onClick={onEdit}>
               <FormattedMessage id="words.edit" defaultMessage="Edit" />
             </PrimaryButton>
