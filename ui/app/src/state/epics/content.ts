@@ -65,8 +65,7 @@ import {
   showCodeEditorDialog,
   showConfirmDialog,
   showDeleteDialog,
-  showEditDialog,
-  showItemMegaMenu
+  showEditDialog
 } from '../actions/dialogs';
 import { getEditorMode, isEditableAsset } from '../../utils/content';
 import {
@@ -542,14 +541,6 @@ const content: CrafterCMSEpic[] = [
           catchAjaxError(fetchSandboxItemFailed)
         )
       )
-    ),
-  // endregion
-  // region Show Item Mega Menu
-  (action$, state$) =>
-    action$.pipe(
-      ofType(showItemMegaMenu.type),
-      withLatestFrom(state$),
-      switchMap(([{ payload }]) => [completeDetailedItem({ path: payload.path, force: true })])
     )
   // endregion
 ];
