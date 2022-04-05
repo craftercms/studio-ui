@@ -14,6 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import Box from '@mui/material/Box';
 import React from 'react';
 // import { useEffect, Suspense } from 'react';
 // import { useActiveSiteId, useActiveUser, useDashboardState, useSiteUIConfig } from '../../hooks';
@@ -23,7 +24,6 @@ import React from 'react';
 // import EmptyState from '../EmptyState';
 // import { FormattedMessage } from 'react-intl';
 // import Skeleton from '@mui/material/Skeleton';
-import Box from '@mui/material/Box';
 import { useTheme } from '@mui/material/styles';
 import Grid from '@mui/material/Grid';
 import ActivityDashlet from '../ActivityDashlet/ActivityDashlet';
