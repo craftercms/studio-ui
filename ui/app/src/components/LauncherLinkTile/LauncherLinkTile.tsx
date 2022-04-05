@@ -47,8 +47,9 @@ const LauncherLinkTile = (props: LauncherLinkTileProps) => {
     ? (e) => {
         if (!e.metaKey) {
           e.preventDefault();
+          // TODO: Re-id craftercms.components.Dashboard => craftercms.components.SiteDashboard when switching to new dashboard
           // prettier-ignore
-          const id = systemLinkId === 'siteDashboardDialog' ? 'craftercms.components.SiteDashboard' : (
+          const id = systemLinkId === 'siteDashboardDialog' ? 'craftercms.components.Dashboard' : (
             systemLinkId === 'siteToolsDialog'
               ? 'craftercms.components.EmbeddedSiteTools'
               : 'craftercms.components.Search'
