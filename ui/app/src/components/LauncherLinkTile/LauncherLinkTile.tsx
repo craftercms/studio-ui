@@ -48,7 +48,7 @@ const LauncherLinkTile = (props: LauncherLinkTileProps) => {
         if (!e.metaKey) {
           e.preventDefault();
           // prettier-ignore
-          const id = systemLinkId === 'siteDashboardDialog' ? 'craftercms.components.Dashboard' : (
+          const id = systemLinkId === 'siteDashboardDialog' ? 'craftercms.components.SiteDashboard' : (
             systemLinkId === 'siteToolsDialog'
               ? 'craftercms.components.EmbeddedSiteTools'
               : 'craftercms.components.Search'

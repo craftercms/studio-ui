@@ -50,6 +50,7 @@ const reducer = createReducer<GlobalState['dashboard']>(null, {
     };
     const arrays = ['widgets', 'permittedRoles'];
     const configDOM = fromString(payload.configXml);
+    // TODO: 4.0.1 update selector to craftercms.components.SiteDashboard
     const dashboard = configDOM.querySelector('[id="craftercms.components.Dashboard"] > configuration');
 
     if (dashboard) {

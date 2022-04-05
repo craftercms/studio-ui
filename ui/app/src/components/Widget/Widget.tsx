@@ -31,7 +31,10 @@ export interface WidgetDescriptor {
 }
 
 interface WidgetProps extends WidgetDescriptor {
-  extraProps?: any;
+  /** Props applied to all widgets; supersedes widget props. */
+  overrideProps?: object;
+  /** Props applied to all widgets. Widget props supersede defaultProps. */
+  defaultProps?: object;
 }
 
 const messages = defineMessages({
@@ -64,9 +67,14 @@ const Widget = memo(function (props: WidgetProps) {
   if (record) {
     if (isComponent(record)) {
       const Component = record;
-      return <Component {...configuration} {...props.extraProps} />;
+      return <Component {...{ ...props.defaultProps, ...configuration, ...props.overrideProps }} />;
     } else {
-      return <NonReactWidget widget={record} configuration={{ ...configuration, ...props.extraProps }} />;
+      return (
+        <NonReactWidget
+          widget={record}
+          configuration={{ ...props.defaultProps, ...configuration, ...props.overrideProps }}
+        />
+      );
     }
   } else if (!plugin) {
     return (
@@ -121,16 +129,28 @@ const Widget = memo(function (props: WidgetProps) {
 
 export { Widget };
 
-export function renderWidgets(widgets: WidgetDescriptor[], userRoles: string[], extraProps?: any): JSX.Element[] {
-  return widgets
+export function renderWidgets(
+  widgets: WidgetDescriptor[],
+  options?: Pick<WidgetProps, 'overrideProps' | 'defaultProps'> & {
+    userRoles?: string[];
+  }
+): JSX.Element[] {
+  if (!Array.isArray(widgets)) {
+    return [];
+  }
+  const { userRoles, overrideProps, defaultProps } = options;
+  const mapperFn = (widget, index) => (
+    <Widget key={widget.uiKey ?? index} {...widget} overrideProps={overrideProps} defaultProps={defaultProps} />
+  );
+  return Array.isArray(userRoles)
     ? widgets
         .filter(
           (widget) =>
             (widget.permittedRoles ?? []).length === 0 ||
             (userRoles ?? []).some((role) => widget.permittedRoles.includes(role))
         )
-        .map((widget) => <Widget key={widget.uiKey} {...widget} extraProps={extraProps} />)
-    : [];
+        .map(mapperFn)
+    : widgets.map(mapperFn);
 }
 
 export default Widget;

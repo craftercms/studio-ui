@@ -6,26 +6,48 @@ import GlobalState from '../../models/GlobalState';
 import { asLocalizedDateTime } from '../../utils/datetime';
 import moment from 'moment';
 import { messages } from '../ItemTypeIcon/translations';
+import SystemType from '../../models/SystemType';
+import { DashboardPublishingPackage } from '../../models';
+
+export interface ActivityItem {
+  id: number;
+  label: string;
+  previewUrl: string;
+  systemType: SystemType;
+}
 
 export type ActivitiesAndAll = Activities | 'ALL';
 
-export function renderActivity(activity: Activity, dependencies: { formatMessage: IntlShape['formatMessage'] }) {
-  const { formatMessage } = dependencies;
+export function renderActivity(
+  activity: Activity,
+  dependencies: {
+    formatMessage: IntlShape['formatMessage'];
+    onItemClick: (item: ActivityItem, e) => void;
+    onPackageClick: (pkg: DashboardPublishingPackage, e) => void;
+  }
+) {
+  const { formatMessage, onItemClick, onPackageClick } = dependencies;
   let item = activity.item;
   let systemType: string = activity.item?.systemType;
   if (messages[systemType]) {
     systemType = formatMessage(messages[systemType]).toLowerCase();
   }
-  let { id } = activity.package ?? {};
-  const anchor = ({ label, previewUrl, systemType }) => {
+  const anchor = (item) => {
+    const { label, systemType } = item;
     return systemType !== 'page' && systemType !== 'component' ? (
       <em>{label}</em>
     ) : (
-      <Link onClick={() => console.log(previewUrl)}>{label}</Link>
+      <Link sx={{ cursor: 'pointer' }} onClick={(e) => onItemClick(item, e)}>
+        {label}
+      </Link>
     );
   };
-  const pack = (message) => {
-    return <Link onClick={() => console.log(id)}>{message}</Link>;
+  const render_package_link = (message) => {
+    return (
+      <Link sx={{ cursor: 'pointer' }} onClick={(e) => onPackageClick(activity.package, e)}>
+        {message}
+      </Link>
+    );
   };
   switch (activity.actionType) {
     case 'CREATE':
@@ -93,31 +115,18 @@ export function renderActivity(activity: Activity, dependencies: { formatMessage
           values={{ item, anchor, systemType }}
         />
       );
-    case 'APPROVE':
+    case 'PUBLISH':
       return item.label === null ? (
         <FormattedMessage
-          id="activityDashlet.deletedItemRequestApproveActivityMessage"
-          defaultMessage="Approved an item that no longer exists"
-          values={{}}
+          id="activityDashlet.deletedItemApproveActivityMessage"
+          defaultMessage="Approved an item that no longer exists as part of <render_package_link>a package</render_package_link>"
+          values={{ render_package_link }}
         />
       ) : (
         <FormattedMessage
           id="activityDashlet.approveActivityMessage"
-          defaultMessage="Approved <anchor>{item}</anchor>"
-          values={{ anchor, item }}
-        />
-      );
-    case 'APPROVE_SCHEDULED':
-      return item.label === null ? (
-        <FormattedMessage
-          id="activityDashlet.deletedItemApproveScheduleActivityMessage"
-          defaultMessage="Approved scheduled an item that no longer exists"
-        />
-      ) : (
-        <FormattedMessage
-          id="activityDashlet.approveScheduleActivityMessage"
-          defaultMessage="Approved scheduled <anchor>{item}</anchor> {systemType}"
-          values={{ item, anchor, systemType }}
+          defaultMessage="Approved <anchor>{item}</anchor> {systemType} as part of <render_package_link>a package</render_package_link>"
+          values={{ item, anchor, render_package_link, systemType }}
         />
       );
     case 'REJECT':
@@ -146,26 +155,12 @@ export function renderActivity(activity: Activity, dependencies: { formatMessage
           values={{ item, anchor, systemType }}
         />
       );
-    case 'PUBLISH':
-      return item.label === null ? (
-        <FormattedMessage
-          id="activityDashlet.deletedItemPublishedActivityMessage"
-          defaultMessage="Published an item that no longer exists as part of <pack>a package</pack>"
-          values={{ pack }}
-        />
-      ) : (
-        <FormattedMessage
-          id="activityDashlet.publishedActivityMessage"
-          defaultMessage="Published <anchor>{item}</anchor> {systemType} as part of <pack>a package</pack>"
-          values={{ item, anchor, pack, systemType }}
-        />
-      );
     case 'PUBLISHED':
       return (
         <FormattedMessage
           id="activityDashlet.publishedActivityMessage"
-          defaultMessage="Published <pack>a package</pack>"
-          values={{ pack }}
+          defaultMessage="Published <render_package_link>a package</render_package_link>"
+          values={{ render_package_link }}
         />
       );
     case 'INITIAL_PUBLISH':
@@ -197,14 +192,12 @@ export function renderActivityTimestamp(timestamp: string, locale: GlobalState['
 
 export const activityNameLookup: Record<Activities | 'ALL', any> = {
   ALL: <FormattedMessage id="activityDashlet.showActivityByEveryone" defaultMessage="All activities" />,
-  APPROVE: <FormattedMessage id="words.approve" defaultMessage="Approve" />,
-  APPROVE_SCHEDULED: <FormattedMessage id="operations.approveScheduled" defaultMessage="Approve Scheduled" />,
   CREATE: <FormattedMessage id="words.create" defaultMessage="Create" />,
   DELETE: <FormattedMessage id="words.delete" defaultMessage="Delete" />,
   INITIAL_PUBLISH: <FormattedMessage id="operations.initialPublish" defaultMessage="Initial Publish" />,
   MOVE: <FormattedMessage id="words.move" defaultMessage="Move" />,
-  PUBLISH: <FormattedMessage id="words.publish" defaultMessage="Publish" />,
-  PUBLISHED: <FormattedMessage id="words.published" defaultMessage="Published" />,
+  PUBLISH: <FormattedMessage id="words.approve" defaultMessage="Approve" />,
+  PUBLISHED: <FormattedMessage id="words.published" defaultMessage="Publish" />,
   REJECT: <FormattedMessage id="words.reject" defaultMessage="Reject" />,
   REQUEST_PUBLISH: <FormattedMessage id="operations.requestPublish" defaultMessage="Request Publish" />,
   REVERT: <FormattedMessage id="words.revert" defaultMessage="Revert" />,

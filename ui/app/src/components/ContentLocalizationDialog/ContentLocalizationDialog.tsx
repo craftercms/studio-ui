@@ -303,7 +303,7 @@ function ContentLocalizationDialogUI(props: ContentLocalizationDialogProps) {
               onOptionClicked={onOptionClicked}
               options={menuOptions}
               isChecked={selected.length === locales.length}
-              toggleSelectAll={toggleSelectAll}
+              onCheckboxChange={toggleSelectAll}
             />
           ) : (
             <header className={classes.flex}>

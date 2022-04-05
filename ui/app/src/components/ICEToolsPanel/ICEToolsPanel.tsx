@@ -65,10 +65,9 @@ export function ICEToolsPanel() {
       <Suspense fallback={<LoadingState />}>
         <ConditionalLoadingState isLoading={!Boolean(icePanel)}>
           {icePanel?.widgets && icePanel.widgets.length > 0 ? (
-            renderWidgets(
-              icePanelStack.length ? icePanelStack.slice(icePanelStack.length - 1) : icePanel.widgets,
-              rolesBySite[site]
-            )
+            renderWidgets(icePanelStack.length ? icePanelStack.slice(icePanelStack.length - 1) : icePanel.widgets, {
+              userRoles: rolesBySite[site]
+            })
           ) : (
             <EmptyState
               title={<FormattedMessage id="icePanel.noWidgetsMessage" defaultMessage="No tools have been configured" />}

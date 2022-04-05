@@ -94,6 +94,13 @@ function registerSharedWorker(): Observable<ObtainAuthTokenResponse & { worker: 
     return fromEvent<MessageEvent>(worker.port, 'message').pipe(
       tap((e) => {
         if (e.data?.type === sharedWorkerUnauthenticated.type) {
+          const elem = document.createElement('div');
+          elem.style.textAlign = 'center';
+          elem.style.margin = '20px 0';
+          elem.innerHTML = 'User not authenticated.';
+          setTimeout(() => {
+            window.location.reload();
+          }, 800);
           throw new Error('User not authenticated.');
         }
       }),

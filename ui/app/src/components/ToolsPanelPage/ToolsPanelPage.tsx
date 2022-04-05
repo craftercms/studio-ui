@@ -41,7 +41,7 @@ export default function ToolsPanelPage(props: ToolsPanelPageProps) {
   const pop = () => dispatch(popPage());
   return (
     <ToolPanel title={usePossibleTranslation(props.title)} onBack={pop}>
-      {renderWidgets(props.widgets, rolesBySite[site])}
+      {renderWidgets(props.widgets, { userRoles: rolesBySite[site] })}
     </ToolPanel>
   );
 }

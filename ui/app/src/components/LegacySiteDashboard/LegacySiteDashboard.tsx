@@ -45,14 +45,16 @@ export function LegacySiteDashboard(props: DashboardAppProps) {
 
   return (
     <section className={classes.root}>
-      {dashboard && renderWidgets(dashboard.widgets, userRoles)}
+      {dashboard && renderWidgets(dashboard.widgets, { userRoles })}
       {!Boolean(dashboard?.widgets?.length) && (
         <>
           <EmptyState
-            title={<FormattedMessage id="dashboard.emptyStateMessageTitle" defaultMessage="No widgets to display" />}
+            title={
+              <FormattedMessage id="siteDashboard.emptyStateMessageTitle" defaultMessage="No widgets to display" />
+            }
             subtitle={
               <FormattedMessage
-                id="dashboard.emptyStateMessageSubtitle"
+                id="siteDashboard.emptyStateMessageSubtitle"
                 defaultMessage="Add widgets at your project's User Interface Configuration"
               />
             }

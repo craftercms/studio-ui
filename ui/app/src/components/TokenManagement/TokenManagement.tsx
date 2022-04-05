@@ -338,7 +338,7 @@ export default function TokenManagement() {
                 options={options}
                 isIndeterminate={checkedCount > 0 && checkedCount < tokens.length}
                 isChecked={checkedCount === tokens.length}
-                toggleSelectAll={() => onToggleSelectAll(checkedCount !== tokens.length)}
+                onCheckboxChange={() => onToggleSelectAll(checkedCount !== tokens.length)}
                 classes={{
                   root: classes.actionsBar
                 }}
