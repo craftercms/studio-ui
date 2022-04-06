@@ -71,9 +71,8 @@ const validationChecks: { [key in ValidationKeys]: Function } = {
   maxHeight() {},
   dropTargetsNotFound() {},
   registerNotFound() {},
-  // TODO: pending
-  imgRepositoryUpload() {},
-  imgDesktopUpload() {}
+  allowImagesFromRepo() {},
+  allowImageUpload() {}
 };
 
 let rid = 0;

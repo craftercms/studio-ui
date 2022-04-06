@@ -79,8 +79,8 @@ const systemValidationsKeysMap = {
   maxHeight: 'maxHeight',
   minValue: 'minValue',
   maxValue: 'maxValue',
-  imgRepositoryUpload: 'imgRepositoryUpload',
-  imgDesktopUpload: 'imgDesktopUpload'
+  imgRepositoryUpload: 'allowImagesFromRepo',
+  imgDesktopUpload: 'allowImageUpload'
 };
 
 function bestGuessParse(value: any) {
@@ -177,10 +177,9 @@ function getFieldDataSourceValidations(
         if (dataSourcesNames) {
           dataSourcesNames.forEach((name) => {
             const dataSource = dataSources.find((datasource) => datasource.id === name);
-            if (dataSource) {
-              table[camelize(dataSource.type)] = {
-                name: camelize(dataSource.type),
-                type: prop.type,
+            if (dataSource && systemValidationsNames.includes(camelize(dataSource.type))) {
+              table[systemValidationsKeysMap[camelize(dataSource.type)]] = {
+                id: systemValidationsKeysMap[camelize(dataSource.type)],
                 // @ts-ignore
                 value:
                   dataSource.type === 'img-desktop-upload'

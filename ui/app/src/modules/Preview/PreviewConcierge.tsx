@@ -918,9 +918,12 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           break;
         }
         case validationMessage.type: {
-          enqueueSnackbar(formatMessage(guestMessages[payload.id], payload.values ?? {}), {
-            variant: payload.level === 'required' ? 'error' : payload.level === 'suggestion' ? 'warning' : 'info'
-          });
+          enqueueSnackbar(
+            payload.id in guestMessages ? formatMessage(guestMessages[payload.id], payload.values ?? {}) : payload.id,
+            {
+              variant: payload.level === 'required' ? 'error' : payload.level === 'suggestion' ? 'warning' : 'info'
+            }
+          );
           break;
         }
         case hotKey.type: {
