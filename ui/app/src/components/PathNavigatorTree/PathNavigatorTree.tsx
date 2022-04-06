@@ -433,10 +433,12 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   };
 
   const onHeaderButtonClick = (element: Element) => {
-    setWidgetMenu({
-      sections: [[toContextMenuOptionsLookup(menuOptions, formatMessage).refresh]],
-      anchorEl: element
-    });
+    // @see https://github.com/craftercms/craftercms/issues/5360
+    onWidgetOptionsClick('refresh');
+    // setWidgetMenu({
+    //   sections: [[toContextMenuOptionsLookup(menuOptions, formatMessage).refresh]],
+    //   anchorEl: element
+    // });
   };
 
   const onOpenItemMenu = (element: Element, path: string) => {
@@ -535,7 +537,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
         onLabelClick={onNodeLabelClick}
         onChangeCollapsed={onChangeCollapsed}
         onOpenItemMenu={onOpenItemMenu}
-        onHeaderButtonClick={onHeaderButtonClick}
+        onHeaderButtonClick={state.collapsed ? void 0 : onHeaderButtonClick}
         onFilterChange={onFilterChange}
         onMoreClick={onMoreClick}
       />

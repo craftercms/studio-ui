@@ -398,10 +398,12 @@ export function PathNavigator(props: PathNavigatorProps) {
         emptyState: { message: formatMessage(translations.noLocales) }
       });
     } else {
-      setWidgetMenu({
-        sections: [[toContextMenuOptionsLookup(menuOptions, formatMessage).refresh]],
-        anchorEl
-      });
+      // @see https://github.com/craftercms/craftercms/issues/5360
+      onSimpleMenuClick('refresh');
+      // setWidgetMenu({
+      //   sections: [[toContextMenuOptionsLookup(menuOptions, formatMessage).refresh]],
+      //   anchorEl
+      // });
     }
   };
 
@@ -466,7 +468,7 @@ export function PathNavigator(props: PathNavigatorProps) {
         container={container}
         title={label}
         onChangeCollapsed={onChangeCollapsed}
-        onHeaderButtonClick={onHeaderButtonClick}
+        onHeaderButtonClick={state.collapsed ? void 0 : onHeaderButtonClick}
         onCurrentParentMenu={onCurrentParentMenu}
         siteLocales={siteLocales}
         keyword={keyword}
