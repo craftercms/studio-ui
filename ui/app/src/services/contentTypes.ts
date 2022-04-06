@@ -282,7 +282,7 @@ function parseLegacyFormDefinitionFields(
             value: max,
             level: 'required'
           });
-        parseLegacyFormDefinitionFields(legacyField.fields.field, field.fields, dropTargetsLookup);
+        parseLegacyFormDefinitionFields(legacyField.fields.field, field.fields, dropTargetsLookup, null, dataSources);
         break;
       case 'node-selector':
         field.validations = {
