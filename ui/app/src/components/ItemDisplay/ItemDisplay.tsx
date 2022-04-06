@@ -94,9 +94,11 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
   const classes = useStyles(props.styles);
   return (
     <span ref={ref} {...rest} className={clsx(classes.root, propClasses?.root, rest?.className)}>
+      {/* @see https://github.com/craftercms/craftercms/issues/5442
       {showPublishingTarget && (
         <ItemPublishingTargetIcon item={item} className={clsx(classes.icon, propClasses?.icon)} />
       )}
+      */}
       {showWorkflowState && <ItemStateIcon item={item} className={clsx(classes.icon, propClasses?.icon)} />}
       {showItemType && <ItemTypeIcon item={item} className={clsx(classes.icon, propClasses?.icon)} />}
       <Typography

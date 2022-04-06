@@ -236,10 +236,12 @@ export default function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
           <Skeleton animation="wave" />
         ) : (
           <div className={classes.itemState}>
+            {/* @see https://github.com/craftercms/craftercms/issues/5442
             <ItemPublishingTargetIcon item={item} className={classes.icon} />
             <Typography variant="body2" component="span">
               {getItemPublishingTargetText(item?.stateMap)}
             </Typography>
+            */}
             <ItemStateIcon item={item} className={classes.icon} />
             <Typography variant="body2" component="span">
               {getItemStateText(item?.stateMap)}
