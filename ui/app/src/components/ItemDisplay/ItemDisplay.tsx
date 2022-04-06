@@ -24,7 +24,6 @@ import clsx from 'clsx';
 import palette from '../../styles/palette';
 import Typography, { TypographyProps } from '@mui/material/Typography';
 import { isPreviewable } from '../PathNavigator/utils';
-import ItemPublishingTargetIcon from '../ItemPublishingTargetIcon';
 import ItemStateIcon from '../ItemStateIcon';
 import ItemTypeIcon from '../ItemTypeIcon';
 
@@ -82,7 +81,8 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
     item,
     styles,
     classes: propClasses,
-    showPublishingTarget = true,
+    // @see https://github.com/craftercms/craftercms/issues/5442
+    // showPublishingTarget = true,
     showWorkflowState = true,
     showItemType = true,
     showNavigableAsLinks = true,
@@ -94,9 +94,11 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
   const classes = useStyles(props.styles);
   return (
     <span ref={ref} {...rest} className={clsx(classes.root, propClasses?.root, rest?.className)}>
+      {/* @see https://github.com/craftercms/craftercms/issues/5442
       {showPublishingTarget && (
         <ItemPublishingTargetIcon item={item} className={clsx(classes.icon, propClasses?.icon)} />
       )}
+      */}
       {showWorkflowState && <ItemStateIcon item={item} className={clsx(classes.icon, propClasses?.icon)} />}
       {showItemType && <ItemTypeIcon item={item} className={clsx(classes.icon, propClasses?.icon)} />}
       <Typography
