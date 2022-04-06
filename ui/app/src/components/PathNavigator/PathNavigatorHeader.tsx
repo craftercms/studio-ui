@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { useStyles } from './styles';
 import LanguageRounded from '@mui/icons-material/LanguageRounded';
 import Typography from '@mui/material/Typography';
@@ -29,13 +29,22 @@ interface HeaderProps {
   icon?: SystemIconDescriptor & Partial<{ expandedStyle: {}; collapsedStyle: {} }>;
   collapsed: boolean;
   onLanguageMenu?(anchor: Element): void;
-  onContextMenu?(anchor: Element): void;
+  onMenuButtonClick?(anchor: Element): void;
+  menuButtonIcon?: ReactNode;
 }
 
 // PathNavigatorHeader
 export function PathNavigatorHeader(props: HeaderProps) {
   const classes = useStyles();
-  const { title, icon, locale, onLanguageMenu, onContextMenu, collapsed = false } = props;
+  const {
+    title,
+    icon,
+    locale,
+    onLanguageMenu,
+    onMenuButtonClick,
+    menuButtonIcon = <MoreVertIcon />,
+    collapsed = false
+  } = props;
   const currentFlag = (locale: string) => <LanguageRounded />;
   return (
     <AccordionSummary classes={{ root: classes.accordionSummary, content: classes.accordionSummaryContent }}>
@@ -53,27 +62,25 @@ export function PathNavigatorHeader(props: HeaderProps) {
         {onLanguageMenu && (
           <IconButton
             aria-label="language select"
-            className={classes.iconButton}
             onClick={(e) => {
               e.stopPropagation();
               onLanguageMenu(e.currentTarget);
             }}
-            size="large"
+            size="small"
           >
             {currentFlag(locale)}
           </IconButton>
         )}
-        {onContextMenu && (
+        {onMenuButtonClick && (
           <IconButton
             aria-label="options"
-            className={classes.iconButton}
             onClick={(e) => {
               e.stopPropagation();
-              onContextMenu(e.currentTarget);
+              onMenuButtonClick(e.currentTarget);
             }}
-            size="large"
+            size="small"
           >
-            <MoreVertIcon />
+            {menuButtonIcon}
           </IconButton>
         )}
       </div>

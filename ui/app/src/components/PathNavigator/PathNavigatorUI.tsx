@@ -38,6 +38,7 @@ import { SystemIconDescriptor } from '../SystemIcon';
 import { lookupItemByPath } from '../../utils/content';
 import { useLogicResource } from '../../hooks/useLogicResource';
 import { createFakeResource } from '../../utils/resource';
+import RefreshRounded from '@mui/icons-material/RefreshRounded';
 
 export type PathNavigatorUIClassKey =
   | 'root'
@@ -234,7 +235,9 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
         icon={icon}
         title={title}
         locale={state.localeCode}
-        onContextMenu={onHeaderButtonClick ? (anchor) => onHeaderButtonClick(anchor, 'options') : null}
+        // @see https://github.com/craftercms/craftercms/issues/5360
+        menuButtonIcon={<RefreshRounded />}
+        onMenuButtonClick={onHeaderButtonClick ? (anchor) => onHeaderButtonClick(anchor, 'options') : null}
         onLanguageMenu={
           onHeaderButtonClick && siteLocales?.localeCodes?.length
             ? (anchor) => onHeaderButtonClick(anchor, 'language')

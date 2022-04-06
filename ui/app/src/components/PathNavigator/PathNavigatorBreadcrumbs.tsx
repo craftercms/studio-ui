@@ -67,7 +67,7 @@ function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
             autoFocus={!forceSearch}
             onChange={onChange}
             keyword={keyword}
-            placeholder={formatMessage(messages.filter, { name: breadcrumb[0]?.label })}
+            placeholder={formatMessage(messages.filter, { name: breadcrumb[breadcrumb.length - 1]?.label })}
             showActionButton={Boolean(keyword)}
             classes={{
               root: clsx(classes.searchRoot, props.classes?.searchRoot),
@@ -125,12 +125,7 @@ function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
           </MuiBreadcrumbs>
           <div className={clsx(classes.breadcrumbActionsWrapper)}>
             {onSearch && (
-              <IconButton
-                aria-label="search"
-                className={clsx(classes.iconButton)}
-                onClick={() => setShowSearch(true)}
-                size="large"
-              >
+              <IconButton size="small" aria-label="search" onClick={() => setShowSearch(true)}>
                 <SearchRoundedIcon />
               </IconButton>
             )}

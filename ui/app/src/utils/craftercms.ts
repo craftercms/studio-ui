@@ -26,6 +26,7 @@ import { CrafterCMSStore, getStoreSync } from '../state/store';
 import { getCurrentIntl } from './i18n';
 import { ComponentRecord, components, PluginDescriptor, plugins, registerPlugin } from '../services/plugin';
 import { Observable, from } from 'rxjs';
+import { lazy } from 'react';
 
 // TODO:
 //  To avoid pre-loading all services and utils and ending up with a large app
@@ -51,6 +52,7 @@ export interface CrafterCMSGlobal {
     ReactRedux: typeof ReactRedux;
     ReactIntl: typeof ReactIntl;
     createEmotion: typeof createEmotion;
+    StudioUI: any;
     // Include also package name aliases for builds that might use those
     // when invoking require('...') or define([...], factory).
     react: typeof React;
@@ -90,6 +92,10 @@ export const libs: CrafterCMSGlobal['libs'] = {
   ReactRedux,
   createEmotion,
   react: React,
+  StudioUI: {
+    PathNavigator: lazy(() => import('../components/PathNavigator/PathNavigator')),
+    PathNavigatorTree: lazy(() => import('../components/PathNavigatorTree/PathNavigatorTree'))
+  },
   'react-dom': ReactDOM,
   'react-redux': ReactRedux,
   'react-intl': ReactIntl,
