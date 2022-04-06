@@ -55,7 +55,7 @@
       );
     }
     CrafterCMSNext.render('#toolbar', DashboardImprovisedToolbar, {}, false);
-    CrafterCMSNext.render('#root', ${next?then('SiteDashboard', 'LegacySiteDashboard')}, {}, false);
+    CrafterCMSNext.render('#root', "${next?then('SiteDashboard', 'LegacySiteDashboard')}", {}, false);
   })(CrafterCMSNext);
 </script>
 </body>

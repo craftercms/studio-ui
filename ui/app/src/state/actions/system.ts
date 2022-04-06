@@ -23,6 +23,7 @@ import User from '../../models/User';
 import { Site } from '../../models/Site';
 import LookupTable from '../../models/LookupTable';
 import { UIBlockerStateProps } from '../../components/UIBlocker';
+import SocketEventBase from '../../models/SocketEvent';
 
 // region Item Events
 
@@ -32,17 +33,6 @@ export const itemCut = /*#__PURE__*/ createAction<{ target: string }>('ITEM_CUT'
 
 export const folderRenamed =
   /*#__PURE__*/ createAction<{ target: string; oldName: string; newName: string }>('FOLDER_RENAMED');
-
-interface Person {
-  username: string;
-  firstName: string;
-  lastName: string;
-}
-
-interface SocketEventBase {
-  targetPath: string;
-  user: Person;
-}
 
 export const lockContentEvent = /*#__PURE__*/ createAction<SocketEventBase & { locked: boolean }>('LOCK_CONTENT_EVENT');
 
