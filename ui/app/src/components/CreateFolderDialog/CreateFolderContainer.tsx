@@ -35,6 +35,7 @@ import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
 import { emitSystemEvent, folderRenamed } from '../../state/actions/system';
+import slugify from 'slugify';
 
 export function CreateFolderContainer(props: CreateFolderContainerProps) {
   const { onClose, isSubmitting, onCreated, onRenamed, rename = false, value = '', allowBraces = false } = props;
@@ -167,6 +168,17 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
 
   const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
 
+  const cleanupName = (name: string) => {
+    let cleanedUpName = slugify(name, {
+      // Setting `strict: true` would disallow `_`, which we don't want.
+      strict: false,
+      // Because of the moment where the library trims, `trim: true` caused undesired replacement of `-`
+      // at the beginning or end of the slug.
+      trim: false
+    });
+    return cleanedUpName.replace(allowBraces ? /[^a-zA-Z0-9-_{}]/g : /[^a-zA-Z0-9-_]/g, '');
+  };
+
   return (
     <>
       <DialogBody>
@@ -221,9 +233,7 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
             InputLabelProps={{
               shrink: true
             }}
-            onChange={(event) =>
-              onInputChanges(event.target.value.replace(allowBraces ? /[^a-zA-Z0-9-_{}]/g : /[^a-zA-Z0-9-_]/g, ''))
-            }
+            onChange={(event) => onInputChanges(cleanupName(event.target.value))}
           />
         </form>
       </DialogBody>
