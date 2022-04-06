@@ -117,5 +117,13 @@ export const guestMessages = defineMessages({
     id: 'validations.outOfSyncContent',
     defaultMessage:
       'An automatic reload was performed because the item was changed in the background. Please try again.'
+  },
+  contentWasChangedByAnotherUser: {
+    id: 'previewConcierge.contentWasChangedByAnotherUser',
+    defaultMessage: '{name} has changed the current page. Reload?'
+  },
+  contentWasLockedByAnotherUser: {
+    id: 'previewConcierge.contentWasLockedByAnotherUser',
+    defaultMessage: 'The item was locked by {name}. Edit mode disabled until lock is released.'
   }
 });
