@@ -45,9 +45,11 @@ import { pluckProps } from '../../utils/object';
 import moment from 'moment-timezone';
 import { updatePublishDialog } from '../../state/actions/dialogs';
 import { approve, publish, requestPublish } from '../../services/workflow';
+import { useDetailedItems } from '../../hooks';
 
 export function PublishDialogContainer(props: PublishDialogContainerProps) {
   const { items, scheduling = 'now', onSuccess, onClose, isSubmitting } = props;
+  const detailedItems = useDetailedItems(items.map((item) => item.path));
   const {
     dateTimeFormatOptions: { timeZone = getUserTimeZone() }
   } = useLocale();
@@ -173,13 +175,13 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 
   const publishSource = useMemo(
     () => ({
-      items,
+      items: !detailedItems.isFetching ? Object.values(detailedItems.itemsByPath) : null,
       error: state.error,
       submitting: isSubmitting,
       publishingTargets,
       myPermissions
     }),
-    [items, state.error, isSubmitting, publishingTargets, myPermissions]
+    [detailedItems, state.error, isSubmitting, publishingTargets, myPermissions]
   );
 
   const resource = useLogicResource<PublishDialogResourceBody, PublishDialogResourceInput>(publishSource, {

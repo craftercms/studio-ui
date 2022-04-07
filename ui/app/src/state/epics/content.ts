@@ -50,6 +50,7 @@ import { catchAjaxError } from '../../utils/ajax';
 import {
   duplicate,
   fetchDetailedItem as fetchDetailedItemService,
+  fetchDetailedItems as fetchDetailedItemsService,
   fetchItemByPath,
   fetchQuickCreateList,
   fetchSandboxItem as fetchSandboxItemService,
@@ -187,7 +188,7 @@ const content: CrafterCMSEpic[] = [
       ofType(fetchDetailedItems.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) =>
-        forkJoin(payload.paths.map((path) => fetchDetailedItemService(state.sites.active, path))).pipe(
+        fetchDetailedItemsService(state.sites.active, payload.paths).pipe(
           map((items) => fetchDetailedItemsComplete(items as DetailedItem[])),
           catchAjaxError(fetchDetailedItemsFailed)
         )

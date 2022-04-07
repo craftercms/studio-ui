@@ -225,6 +225,10 @@ const dialogEpics: CrafterCMSEpic[] = [
   (action$) =>
     action$.pipe(
       ofType(showPublishDialog.type),
+      filter(({ payload }) => {
+        const length = payload.items.map((item) => item.path).length;
+        return length && length > 0;
+      }),
       map(({ payload }) => fetchDetailedItems({ paths: payload.items.map((item) => item.path) }))
     )
   // endregion

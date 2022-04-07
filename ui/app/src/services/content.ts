@@ -100,6 +100,10 @@ export function fetchDetailedItem(
   );
 }
 
+export function fetchDetailedItems(site: string, paths: string[]): Observable<DetailedItem[]> {
+  return forkJoin(paths.map((path) => fetchDetailedItem(site, path)));
+}
+
 export function fetchContentInstanceLookup(
   site: string,
   path: string,
