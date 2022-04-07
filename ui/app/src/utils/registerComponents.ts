@@ -76,6 +76,7 @@ export const registerComponents = () => {
     'craftercms.icons.CrafterIcon': lazy(() => import('../icons/About')),
     'craftercms.icons.Docs': lazy(() => import('../icons/Docs')),
     'craftercms.icons.Sites': lazy(() => import('../icons/SitesRounded')),
+    'craftercms.icons.Git': lazy(() => import('../icons/GitIcon')),
     '@mui/icons-material/BuildRounded': lazy(() => import('@mui/icons-material/BuildRounded')),
     '@mui/icons-material/AccountCircleRounded': lazy(() => import('@mui/icons-material/AccountCircleRounded')),
     '@mui/icons-material/PeopleRounded': lazy(() => import('@mui/icons-material/PeopleRounded')),
@@ -128,9 +129,7 @@ export const registerComponents = () => {
     'craftercms.components.PublishingDashboard': lazy(() => import('../components/PublishingDashboard')),
     'craftercms.components.SiteGraphiQL': lazy(() => import('../components/SiteGraphiQL')),
     'craftercms.components.EmbeddedSiteTools': lazy(() => import('../components/SiteToolsApp/EmbeddedSiteTools')),
-    'craftercms.components.RemoteRepositoriesManagement': lazy(
-      () => import('../components/RemoteRepositoriesManagement')
-    ),
+    'craftercms.components.GitManagement': lazy(() => import('../components/GitManagement/GitManagement')),
     'craftercms.components.ItemStatesManagement': lazy(() => import('../components/ItemStatesManagement')),
     'craftercms.components.IconGuideDashlet': lazy(() => import('../components/IconGuideDashlet')),
     'craftercms.components.PublishingStatusButton': lazy(() => import('../components/PublishingStatusButton')),

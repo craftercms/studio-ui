@@ -15,8 +15,8 @@
  */
 
 import React, { useState } from 'react';
-import DialogBody from '../DialogBody/DialogBody';
-import DialogFooter from '../DialogFooter/DialogFooter';
+import DialogBody from '../../DialogBody/DialogBody';
+import DialogFooter from '../../DialogFooter/DialogFooter';
 import { FormattedMessage } from 'react-intl';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
@@ -24,14 +24,14 @@ import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
-import { push } from '../../services/repositories';
-import SecondaryButton from '../SecondaryButton';
-import PrimaryButton from '../PrimaryButton';
-import { isBlank } from '../../utils/string';
-import { useActiveSiteId } from '../../hooks/useActiveSiteId';
-import { PushToRemoteDialogContainerProps } from './utils';
+import { push } from '../../../services/repositories';
+import SecondaryButton from '../../SecondaryButton';
+import PrimaryButton from '../../PrimaryButton';
+import { isBlank } from '../../../utils/string';
+import { useActiveSiteId } from '../../../hooks/useActiveSiteId';
+import { PushDialogContainerProps } from './utils';
 import { FormControlLabel, Switch } from '@mui/material';
-import { useUpdateRefs } from '../../hooks';
+import { useUpdateRefs } from '../../../hooks';
 import FormHelperText from '@mui/material/FormHelperText';
 import { useTheme } from '@mui/material/styles';
 
@@ -43,7 +43,7 @@ const useStyles = makeStyles(() =>
   })
 );
 
-export function PushToRemoteDialogContainer(props: PushToRemoteDialogContainerProps) {
+export function PushDialogContainer(props: PushDialogContainerProps) {
   const { branches, remoteName, onClose, onPushSuccess, onPushError, onSubmittingChange, isSubmitting } = props;
   const [selectedBranch, setSelectedBranch] = useState(branches?.[0] ?? '');
   const classes = useStyles();
@@ -125,4 +125,4 @@ export function PushToRemoteDialogContainer(props: PushToRemoteDialogContainerPr
   );
 }
 
-export default PushToRemoteDialogContainer;
+export default PushDialogContainer;

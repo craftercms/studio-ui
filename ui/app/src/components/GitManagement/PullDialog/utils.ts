@@ -14,9 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { EnhancedDialogProps } from '../EnhancedDialog';
-import { MergeStrategy } from '../../models/Repository';
-import ApiResponse from '../../models/ApiResponse';
+import { EnhancedDialogProps } from '../../EnhancedDialog';
+import { MergeStrategy } from '../../../models/Repository';
+import ApiResponse from '../../../models/ApiResponse';
+import { PullResponse } from '../../../services/repositories';
 
 export interface PullFromRemoteBaseProps {
   branches: string[];
@@ -25,7 +26,7 @@ export interface PullFromRemoteBaseProps {
 }
 
 export interface PullFromRemoteDialogProps extends PullFromRemoteBaseProps, EnhancedDialogProps {
-  onPullSuccess?(): void;
+  onPullSuccess?(result: PullResponse): void;
   onPullError?(response: ApiResponse): void;
 }
 

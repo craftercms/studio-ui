@@ -33,8 +33,13 @@ export function deleteRemote(siteId: string, remoteName: string): Observable<tru
   return postJSON(`${repositoryEndpointUrl}/remove_remote`, { siteId, remoteName }).pipe(mapTo(true));
 }
 
-export function pull(remote: Partial<Remote>): Observable<true> {
-  return postJSON(`${repositoryEndpointUrl}/pull_from_remote`, remote).pipe(mapTo(true));
+export interface PullResponse {
+  commitsMerged: number;
+  mergeCommitId: string;
+}
+
+export function pull(remote: Partial<Remote>): Observable<PullResponse> {
+  return postJSON(`${repositoryEndpointUrl}/pull_from_remote`, remote).pipe(pluck('response', 'result'));
 }
 
 export function push(siteId: string, remoteName: string, remoteBranch: string, force: boolean): Observable<true> {

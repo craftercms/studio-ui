@@ -20,14 +20,14 @@ import DialogHeader from '../DialogHeader';
 import DialogBody from '../DialogBody/DialogBody';
 import DialogFooter from '../DialogFooter/DialogFooter';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { diffConflictedFile as diffConflictedFileService } from '../../services/repositories';
+import { diffConflictedFile } from '../../services/repositories';
 import ApiResponse from '../../models/ApiResponse';
 import { FileDiff } from '../../models/Repository';
 import { SuspenseWithEmptyState } from '../Suspencified';
-import RemoteRepositoriesDiffDialogUI from './RemoteRepositoriesDiffDialogUI';
+import ConflictedPathDiffDialogUI from './ConflictedPathDiffDialogUI';
 import SecondaryButton from '../SecondaryButton';
 import ConfirmDropdown from '../ConfirmDropdown';
-import { messages } from '../RemoteRepositoriesStatus/translations';
+import { messages } from '../GitManagement/RepoStatus/translations';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import Tab from '@mui/material/Tab';
@@ -73,7 +73,7 @@ const useStyles = makeStyles((theme) =>
   })
 );
 
-export function RemoteRepositoriesDiffDialog(props: RemoteRepositoriesDiffDialogProps) {
+export function ConflictedPathDiffDialog(props: RemoteRepositoriesDiffDialogProps) {
   const { open, path, onResolveConflict, onClose } = props;
   const siteId = useActiveSiteId();
   const [tab, setTab] = useState(0);
@@ -86,16 +86,16 @@ export function RemoteRepositoriesDiffDialog(props: RemoteRepositoriesDiffDialog
   useEffect(() => {
     if (path) {
       setFetching(true);
-      diffConflictedFileService(siteId, path).subscribe(
-        (fileDiff) => {
+      diffConflictedFile(siteId, path).subscribe({
+        next(fileDiff) {
           setFileDiff(fileDiff);
           setFetching(false);
         },
-        ({ response }) => {
+        error({ response }) {
           setError(response);
           setFetching(false);
         }
-      );
+      });
     }
   }, [path, siteId]);
 
@@ -146,7 +146,7 @@ export function RemoteRepositoriesDiffDialog(props: RemoteRepositoriesDiffDialog
       </DialogHeader>
       <DialogBody className={classes.dialogContent}>
         <SuspenseWithEmptyState resource={resource}>
-          <RemoteRepositoriesDiffDialogUI resource={resource} tab={tab} />
+          <ConflictedPathDiffDialogUI resource={resource} tab={tab} />
         </SuspenseWithEmptyState>
       </DialogBody>
       <DialogFooter>
@@ -174,4 +174,4 @@ export function RemoteRepositoriesDiffDialog(props: RemoteRepositoriesDiffDialog
   );
 }
 
-export default RemoteRepositoriesDiffDialog;
+export default ConflictedPathDiffDialog;

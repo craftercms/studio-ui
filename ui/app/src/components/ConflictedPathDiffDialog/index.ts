@@ -14,10 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './PullFromRemoteDialog';
+export { default } from './ConflictedPathDiffDialog';
 
-export * from './PullFromRemoteDialog';
+export * from './ConflictedPathDiffDialog';
 
-export * from './PullFromRemoteDialogContainer';
+export * from './ConflictedPathDiffDialogUI';
 
-export * from './utils';
+export * from './ConflictedPathDiffDialogSplitView';

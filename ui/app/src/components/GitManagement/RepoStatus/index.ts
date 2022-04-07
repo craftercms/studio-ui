@@ -13,22 +13,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import ApiResponse from '../../models/ApiResponse';
-import { EnhancedDialogProps } from '../EnhancedDialog';
 
-export interface PushToRemoteBaseProps {
-  branches: string[];
-  remoteName: string;
-}
+export { default } from './RepoStatus';
 
-export interface PushToRemoteDialogProps extends PushToRemoteBaseProps, EnhancedDialogProps {
-  onPushSuccess?(): void;
-  onPushError?(response: ApiResponse): void;
-  onSubmittingChange?(isSubmitting: boolean): void;
-}
+export * from './RepoStatus';
 
-export interface PushToRemoteDialogContainerProps
-  extends PushToRemoteBaseProps,
-    Pick<PushToRemoteDialogProps, 'onClose' | 'onPushSuccess' | 'onPushError' | 'onSubmittingChange'> {
-  isSubmitting: boolean;
-}
+export * from './RepoStatusUI';
+
+export * from './RepoStatusSkeleton';

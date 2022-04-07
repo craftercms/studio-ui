@@ -45,3 +45,7 @@ export function getSystemLink({
     siteDashboard: `${authoringBase}/site-dashboard`
   }[systemLinkId];
 }
+
+export function copyToClipboard(textToCopy: string): Promise<void> {
+  return navigator.clipboard.writeText(textToCopy);
+}

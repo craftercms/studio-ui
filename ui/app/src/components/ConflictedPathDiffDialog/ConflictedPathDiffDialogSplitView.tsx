@@ -24,7 +24,7 @@ export interface SplitViewProps {
   className?: string;
 }
 
-export function RemoteRepositoriesDiffDialogSplitView(props: SplitViewProps) {
+export function ConflictedPathDiffDialogSplitView(props: SplitViewProps) {
   const { diff, className } = props;
   const ref = useRef();
 
@@ -48,4 +48,4 @@ export function RemoteRepositoriesDiffDialogSplitView(props: SplitViewProps) {
   return <div ref={ref} className={className} />;
 }
 
-export default RemoteRepositoriesDiffDialogSplitView;
+export default ConflictedPathDiffDialogSplitView;

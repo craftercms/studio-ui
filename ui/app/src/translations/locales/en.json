@@ -1179,7 +1179,6 @@
   "repositories.newRepository": "New Remote",
   "repositories.noConflicts": "Local repository is free of conflicts.",
   "repositories.pendingCommit": "Repo contains files pending commit. See Repository status below for details.",
-  "repositories.pullSuccessMessage": "Successfully pulled.",
   "repositories.pushSuccessMessage": "Successfully pushed.",
   "repositories.pushUrl": "Push URL",
   "repositories.remoteBranchToPull": "Remote Branch to Pull",

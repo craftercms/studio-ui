@@ -14,21 +14,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Resource } from '../../models/Resource';
-import { MergeStrategy, Repository } from '../../models/Repository';
-import RemoteRepositoriesGridUI from './RemoteRepositoriesGridUI';
+import { Resource } from '../../../models/Resource';
+import { MergeStrategy, Repository } from '../../../models/Repository';
+import RepoGridUI from './RepoGridUI';
 import React, { useState } from 'react';
-import PullFromRemoteDialog from '../RemoteRepositoriesPullDialog';
-import { defineMessages, useIntl } from 'react-intl';
-import PushToRemoteDialog from '../RemoteRepositoriesPushDialog';
-import { deleteRemote as deleteRemoteService } from '../../services/repositories';
-import { showSystemNotification } from '../../state/actions/system';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
+import PullDialog from '../PullDialog';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import PushDialog from '../PushDialog';
+import { deleteRemote as deleteRemoteService, PullResponse } from '../../../services/repositories';
+import { showSystemNotification } from '../../../state/actions/system';
+import { showErrorDialog } from '../../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';
-import { useActiveSiteId } from '../../hooks/useActiveSiteId';
-import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
+import { useActiveSiteId } from '../../../hooks/useActiveSiteId';
+import { useEnhancedDialogState } from '../../../hooks/useEnhancedDialogState';
+import SnackbarContent, { snackbarContentClasses } from '@mui/material/SnackbarContent';
+import InputBase from '@mui/material/InputBase';
+import Button from '@mui/material/Button';
+import Snackbar from '@mui/material/Snackbar';
+import { useSnackbar } from 'notistack';
+import { copyToClipboard } from '../../../utils/system';
+import { PublishCommitDialog } from '../PublishCommitDialog';
+import { useSpreadState } from '../../../hooks';
 
-export interface RemoteRepositoriesGridProps {
+export interface RepoGridProps {
   resource: Resource<Array<Repository>>;
   disableActions: boolean;
   fetchStatus(): void;
@@ -54,7 +62,12 @@ const messages = defineMessages({
   },
   pullSuccessMessage: {
     id: 'repositories.pullSuccessMessage',
-    defaultMessage: 'Successfully pulled.'
+    defaultMessage:
+      'Successfully pulled {numberOfCommits} commits. Merge commit id was copied to clipboard. Would you like to publish this now?'
+  },
+  pullSuccessNoChangesMessage: {
+    id: 'repositories.pullSuccessNoChangesMessage',
+    defaultMessage: 'Pull successful: already up to date.'
   },
   pushSuccessMessage: {
     id: 'repositories.pushSuccessMessage',
@@ -62,7 +75,7 @@ const messages = defineMessages({
   }
 });
 
-export function RemoteRepositoriesGrid(props: RemoteRepositoriesGridProps) {
+export function RepoGrid(props: RepoGridProps) {
   const { resource, disableActions, fetchStatus, fetchRepositories } = props;
   const [repositoriesPullDialogBranches, setRepositoriesPullDialogBranches] = useState([]);
   const [repositoriesPushDialogBranches, setRepositoriesPushDialogBranches] = useState([]);
@@ -87,6 +100,13 @@ export function RemoteRepositoriesGrid(props: RemoteRepositoriesGridProps) {
   const dispatch = useDispatch();
   const pushToRemoteDialogState = useEnhancedDialogState();
   const pullFromRemoteDialogState = useEnhancedDialogState();
+  const { enqueueSnackbar } = useSnackbar();
+  const [postPullState, setPostPullState] = useSpreadState({
+    openPublishCommitDialog: false,
+    openPostPullSnack: false,
+    mergeCommitId: '',
+    commitsMerged: 0
+  });
 
   const onClickPull = (remoteName: string, branches: string[]) => {
     setRepositoriesPullDialogBranches(branches);
@@ -100,14 +120,18 @@ export function RemoteRepositoriesGrid(props: RemoteRepositoriesGridProps) {
     pushToRemoteDialogState.onOpen();
   };
 
-  const onPullSuccess = () => {
+  const onPullSuccess = (result: PullResponse) => {
     fetchStatus();
     pullFromRemoteDialogState.onClose();
-    dispatch(
-      showSystemNotification({
-        message: formatMessage(messages.pullSuccessMessage)
-      })
-    );
+    if (result.mergeCommitId) {
+      setPostPullState({ openPostPullSnack: true, ...result });
+    } else {
+      dispatch(
+        showSystemNotification({
+          message: formatMessage(messages.pullSuccessNoChangesMessage)
+        })
+      );
+    }
   };
 
   const onPullError = (response) => {
@@ -151,16 +175,59 @@ export function RemoteRepositoriesGrid(props: RemoteRepositoriesGridProps) {
     );
   };
 
+  const onClosePostPullSnack = () =>
+    setPostPullState({ openPostPullSnack: false, commitsMerged: null, mergeCommitId: null });
+
   return (
     <>
-      <RemoteRepositoriesGridUI
+      <RepoGridUI
         resource={resource}
         disableActions={disableActions}
         onPullClick={onClickPull}
         onPushClick={onClickPush}
         onDeleteRemote={deleteRemote}
       />
-      <PullFromRemoteDialog
+      <Snackbar
+        autoHideDuration={10000}
+        onClose={onClosePostPullSnack}
+        open={postPullState.openPostPullSnack}
+        sx={{ maxWidth: '500px' }}
+      >
+        <SnackbarContent
+          sx={{ [`.${snackbarContentClasses.message}`]: { width: '100%' } }}
+          message={
+            <>
+              {formatMessage(messages.pullSuccessMessage, { numberOfCommits: postPullState.commitsMerged })}
+              <InputBase
+                sx={{ display: 'block', mt: 1, borderRadius: 1, pr: 0.5, pl: 0.5 }}
+                autoFocus
+                value={postPullState.mergeCommitId}
+                readOnly
+                onClick={(e) => {
+                  (e.target as HTMLInputElement).select();
+                  copyToClipboard(postPullState.mergeCommitId).then(function () {
+                    enqueueSnackbar('Copied');
+                  });
+                }}
+              />
+            </>
+          }
+          action={
+            <>
+              <Button
+                size="small"
+                onClick={() => setPostPullState({ openPublishCommitDialog: true, openPostPullSnack: false })}
+              >
+                <FormattedMessage id="words.yes" defaultMessage="Yes" />
+              </Button>
+              <Button size="small" onClick={onClosePostPullSnack}>
+                <FormattedMessage id="words.no" defaultMessage="No" />
+              </Button>
+            </>
+          }
+        />
+      </Snackbar>
+      <PullDialog
         open={pullFromRemoteDialogState.open}
         onClose={pullFromRemoteDialogState.onClose}
         branches={repositoriesPullDialogBranches}
@@ -172,7 +239,7 @@ export function RemoteRepositoriesGrid(props: RemoteRepositoriesGridProps) {
         isSubmitting={pullFromRemoteDialogState.isSubmitting}
         hasPendingChanges={pullFromRemoteDialogState.hasPendingChanges}
       />
-      <PushToRemoteDialog
+      <PushDialog
         open={pushToRemoteDialogState.open}
         branches={repositoriesPushDialogBranches}
         remoteName={pushRemoteName}
@@ -184,8 +251,15 @@ export function RemoteRepositoriesGrid(props: RemoteRepositoriesGridProps) {
         hasPendingChanges={pushToRemoteDialogState.hasPendingChanges}
         onSubmittingChange={pushToRemoteDialogState.onSubmittingChange}
       />
+      <PublishCommitDialog
+        commitId={postPullState.mergeCommitId}
+        open={postPullState.openPublishCommitDialog}
+        onClose={() => {
+          setPostPullState({ openPublishCommitDialog: false });
+        }}
+      />
     </>
   );
 }
 
-export default RemoteRepositoriesGrid;
+export default RepoGrid;

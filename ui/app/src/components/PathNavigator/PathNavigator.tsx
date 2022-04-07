@@ -51,7 +51,6 @@ import {
   workflowEvent
 } from '../../state/actions/system';
 import PathNavigatorUI from './PathNavigatorUI';
-import { ContextMenuOptionDescriptor, toContextMenuOptionsLookup } from '../../utils/itemActions';
 import PathNavigatorSkeleton from './PathNavigatorSkeleton';
 import GlobalState from '../../models/GlobalState';
 import { SystemIconDescriptor } from '../SystemIcon';
@@ -122,12 +121,13 @@ export interface PathNavigatorStateProps {
   error: any;
 }
 
-const menuOptions: Record<'refresh', ContextMenuOptionDescriptor> = {
-  refresh: {
-    id: 'refresh',
-    label: translations.refresh
-  }
-};
+// @see https://github.com/craftercms/craftercms/issues/5360
+// const menuOptions: Record<'refresh', ContextMenuOptionDescriptor> = {
+//   refresh: {
+//     id: 'refresh',
+//     label: translations.refresh
+//   }
+// };
 
 export function PathNavigator(props: PathNavigatorProps) {
   const {

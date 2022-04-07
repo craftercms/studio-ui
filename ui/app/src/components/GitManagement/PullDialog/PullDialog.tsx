@@ -15,17 +15,16 @@
  */
 
 import React from 'react';
-import PullFromRemoteDialogContainer from './PullFromRemoteDialogContainer';
-import { EnhancedDialog } from '../EnhancedDialog';
+import PullDialogContainer from './PullDialogContainer';
+import { EnhancedDialog } from '../../EnhancedDialog';
 import { PullFromRemoteDialogProps } from './utils';
 import { FormattedMessage } from 'react-intl';
 
-export function PullFromRemoteDialog(props: PullFromRemoteDialogProps) {
+export function PullDialog(props: PullFromRemoteDialogProps) {
   const { branches, remoteName, mergeStrategies, onPullSuccess, onPullError, ...rest } = props;
-
   return (
     <EnhancedDialog title={<FormattedMessage id="words.pull" defaultMessage="Pull" />} maxWidth="xs" {...rest}>
-      <PullFromRemoteDialogContainer
+      <PullDialogContainer
         branches={branches}
         mergeStrategies={mergeStrategies}
         remoteName={remoteName}
@@ -36,4 +35,4 @@ export function PullFromRemoteDialog(props: PullFromRemoteDialogProps) {
   );
 }
 
-export default PullFromRemoteDialog;
+export default PullDialog;

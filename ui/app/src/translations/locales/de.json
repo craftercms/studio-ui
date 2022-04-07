@@ -1179,7 +1179,6 @@
   "repositories.newRepository": "Remote-Repository hinzufügen",
   "repositories.noConflicts": "Das lokale Repository ist konfliktfrei.",
   "repositories.pendingCommit": "Repo enthält Dateien, für die ein Commit aussteht. Weitere Informationen finden Sie unter Repository-Status.",
-  "repositories.pullSuccessMessage": "Erfolgreich gezogen.",
   "repositories.pushSuccessMessage": "Erfolgreich geschoben.",
   "repositories.pushUrl": "Push-URL",
   "repositories.remoteBranchToPull": "Remote-Zweig zum Pull",

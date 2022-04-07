@@ -15,8 +15,8 @@
  */
 
 import React, { useState } from 'react';
-import DialogBody from '../DialogBody/DialogBody';
-import DialogFooter from '../DialogFooter/DialogFooter';
+import DialogBody from '../../DialogBody/DialogBody';
+import DialogFooter from '../../DialogFooter/DialogFooter';
 import { FormattedMessage } from 'react-intl';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
@@ -24,11 +24,11 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
-import { pull } from '../../services/repositories';
-import SecondaryButton from '../SecondaryButton';
-import PrimaryButton from '../PrimaryButton';
-import { isBlank } from '../../utils/string';
-import { useActiveSiteId } from '../../hooks/useActiveSiteId';
+import { pull } from '../../../services/repositories';
+import SecondaryButton from '../../SecondaryButton';
+import PrimaryButton from '../../PrimaryButton';
+import { isBlank } from '../../../utils/string';
+import { useActiveSiteId } from '../../../hooks/useActiveSiteId';
 import { PullFromRemoteDialogContainerProps } from './utils';
 
 const useStyles = makeStyles(() =>
@@ -39,7 +39,7 @@ const useStyles = makeStyles(() =>
   })
 );
 
-export function PullFromRemoteDialogContainer(props: PullFromRemoteDialogContainerProps) {
+export function PullDialogContainer(props: PullFromRemoteDialogContainerProps) {
   const { branches, remoteName, mergeStrategies, onClose, onPullSuccess, onPullError } = props;
   const [selectedBranch, setSelectedBranch] = useState(branches?.[0] ?? '');
   const [selectedMergeStrategy, setSelectedMergeStrategy] = useState(mergeStrategies[0].key);
@@ -64,14 +64,14 @@ export function PullFromRemoteDialogContainer(props: PullFromRemoteDialogContain
         remoteName,
         remoteBranch: selectedBranch,
         mergeStrategy: selectedMergeStrategy
-      }).subscribe(
-        () => {
-          onPullSuccess?.();
+      }).subscribe({
+        next(result) {
+          onPullSuccess?.(result);
         },
-        ({ response }) => {
+        error({ response }) {
           onPullError?.(response.response);
         }
-      );
+      });
     }
   };
 
@@ -129,4 +129,4 @@ export function PullFromRemoteDialogContainer(props: PullFromRemoteDialogContain
   );
 }
 
-export default PullFromRemoteDialogContainer;
+export default PullDialogContainer;

@@ -62,13 +62,6 @@ import { PREVIEW_URL_PATH } from '../../utils/constants';
 import { useLegacyPreviewPreference } from '../../hooks/useLegacyPreviewPreference';
 import { fetchUseLegacyPreviewPreference } from '../../services/configuration';
 
-export interface LauncherProps {
-  open: boolean;
-  anchor: Element;
-  sitesRailPosition?: 'left' | 'right' | 'hidden';
-  closeButtonPosition?: 'left' | 'right';
-}
-
 export interface LauncherStateProps {
   open: boolean;
   anchor: string;

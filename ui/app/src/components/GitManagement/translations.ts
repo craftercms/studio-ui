@@ -36,6 +36,10 @@ export const translations = defineMessages({
   unstagedFiles: {
     id: 'repositories.unstagedFiles',
     defaultMessage: 'There are unstaged files in your repository.'
+  },
+  fetchingStatus: {
+    id: 'repositories.fetching',
+    defaultMessage: 'Fetching repository status.'
   }
 });
 

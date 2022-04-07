@@ -19,16 +19,16 @@ import TableContainer from '@mui/material/TableContainer';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import Skeleton from '@mui/material/Skeleton';
-import GlobalAppGridRow from '../GlobalAppGridRow';
-import GlobalAppGridCell from '../GlobalAppGridCell';
-import { rand } from '../PathNavigator/utils';
-import { RepositoriesGridTableHead } from './RemoteRepositoriesGridUI';
+import GlobalAppGridRow from '../../GlobalAppGridRow';
+import GlobalAppGridCell from '../../GlobalAppGridCell';
+import { rand } from '../../PathNavigator/utils';
+import { RepositoriesGridTableHead } from './RepoGridUI';
 
-export interface RemoteRepositoriesGridSkeletonTableProps {
+export interface RepoGridSkeletonProps {
   numOfItems?: number;
 }
 
-export function RemoteRepositoriesGridSkeletonTable(props: RemoteRepositoriesGridSkeletonTableProps) {
+export function RepoGridSkeleton(props: RepoGridSkeletonProps) {
   const { numOfItems = 2 } = props;
   const items = new Array(numOfItems).fill(null);
 
@@ -59,4 +59,4 @@ export function RemoteRepositoriesGridSkeletonTable(props: RemoteRepositoriesGri
   );
 }
 
-export default RemoteRepositoriesGridSkeletonTable;
+export default RepoGridSkeleton;

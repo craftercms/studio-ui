@@ -15,26 +15,26 @@
  */
 
 import React, { useState } from 'react';
-import { Resource } from '../../models/Resource';
-import { RepositoryStatus } from '../../models/Repository';
-import RemoteRepositoriesStatusUI from './RemoteRepositoriesStatusUI';
-import CommitResolutionDialog from '../CommitResolutionDialog/CommitResolutionDialog';
-import { cancelFailedPull, resolveConflict as resolveConflictService } from '../../services/repositories';
+import { Resource } from '../../../models/Resource';
+import { RepositoryStatus } from '../../../models/Repository';
+import RepoStatusUI from './RepoStatusUI';
+import CommitResolutionDialog from '../../CommitResolutionDialog/CommitResolutionDialog';
+import { cancelFailedPull, resolveConflict as resolveConflictService } from '../../../services/repositories';
 import { useDispatch } from 'react-redux';
-import { showSystemNotification } from '../../state/actions/system';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
+import { showSystemNotification } from '../../../state/actions/system';
+import { showErrorDialog } from '../../../state/reducers/dialogs/error';
 import { useIntl } from 'react-intl';
-import RemoteRepositoriesDiffDialog from '../RemoteRepositoriesDiffDialog';
-import { useActiveSiteId } from '../../hooks/useActiveSiteId';
+import ConflictedPathDiffDialog from '../../ConflictedPathDiffDialog';
+import { useActiveSiteId } from '../../../hooks/useActiveSiteId';
 import { messages } from './translations';
 
-export interface StudioRepositoryStatusProps {
+export interface RepoStatusProps {
   resource: Resource<RepositoryStatus>;
   setFetching(fetching): void;
   onActionSuccess?(status): void;
 }
 
-export default function StudioRepositoryStatus(props: StudioRepositoryStatusProps) {
+export default function RepoStatus(props: RepoStatusProps) {
   const { resource, setFetching, onActionSuccess } = props;
   const status = resource.read();
   const siteId = useActiveSiteId();
@@ -46,8 +46,8 @@ export default function StudioRepositoryStatus(props: StudioRepositoryStatusProp
 
   const revertPull = () => {
     setFetching(true);
-    cancelFailedPull(siteId).subscribe(
-      (status) => {
+    cancelFailedPull(siteId).subscribe({
+      next(status) {
         onActionSuccess?.(status);
         setFetching(false);
         dispatch(
@@ -56,10 +56,10 @@ export default function StudioRepositoryStatus(props: StudioRepositoryStatusProp
           })
         );
       },
-      ({ response }) => {
+      error({ response }) {
         dispatch(showErrorDialog({ error: response }));
       }
-    );
+    });
   };
 
   const onCommitSuccess = (status) => {
@@ -98,7 +98,7 @@ export default function StudioRepositoryStatus(props: StudioRepositoryStatusProp
 
   return (
     <>
-      <RemoteRepositoriesStatusUI
+      <RepoStatusUI
         status={status}
         onRevertPull={revertPull}
         onClickCommit={() => setOpenCommitResolutionDialog(true)}
@@ -112,7 +112,7 @@ export default function StudioRepositoryStatus(props: StudioRepositoryStatusProp
         onCommitSuccess={onCommitSuccess}
         onCommitError={onCommitError}
       />
-      <RemoteRepositoriesDiffDialog
+      <ConflictedPathDiffDialog
         open={openRemoteRepositoriesDiffDialog}
         path={diffPath}
         onResolveConflict={resolveConflict}

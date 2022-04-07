@@ -23,10 +23,10 @@ import { Repository, RepositoryStatus } from '../../models/Repository';
 import ApiResponse from '../../models/ApiResponse';
 import { fetchRepositories as fetchRepositoriesService, fetchStatus } from '../../services/repositories';
 import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
-import RemoteRepositoriesGridSkeletonTable from '../RemoteRepositoriesGrid/RemoteRepositoriesGridSkeletonTable';
-import RemoteRepositoriesGrid from '../RemoteRepositoriesGrid';
-import StudioRepositoryStatus from '../RemoteRepositoriesStatus/StudioRepositoryStatus';
-import RemoteRepositoriesStatusSkeleton from '../RemoteRepositoriesStatus/RemoteRepositoriesStatusSkeleton';
+import RepoGridSkeleton from './RepoGrid/RepoGridSkeleton';
+import RepoGrid from './RepoGrid';
+import RepoStatus from './RepoStatus/RepoStatus';
+import RepoStatusSkeleton from './RepoStatus/RepoStatusSkeleton';
 import NewRemoteRepositoryDialog from '../NewRemoteRepositoryDialog';
 import { showSystemNotification } from '../../state/actions/system';
 import { useDispatch } from 'react-redux';
@@ -39,13 +39,24 @@ import { useLogicResource } from '../../hooks/useLogicResource';
 import Paper from '@mui/material/Paper';
 import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { useWithPendingChangesCloseRequest } from '../../hooks/useWithPendingChangesCloseRequest';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import Box from '@mui/material/Box';
+import { WarningRounded } from '@mui/icons-material';
 
-interface RemoteRepositoriesManagementProps {
+export interface GitManagementProps {
   embedded?: boolean;
   showAppsButton?: boolean;
 }
 
-export default function RemoteRepositoriesManagement(props: RemoteRepositoriesManagementProps) {
+function a11yProps(index: number) {
+  return {
+    id: `simple-tab-${index}`,
+    'aria-controls': `git-repos-tabpanel-${index}`
+  };
+}
+
+export default function GitManagement(props: GitManagementProps) {
   const { embedded, showAppsButton = !embedded } = props;
   const [fetchingRepositories, setFetchingRepositories] = useState(false);
   const [errorRepositories, setErrorRepositories] = useState<ApiResponse>();
@@ -58,6 +69,10 @@ export default function RemoteRepositoriesManagement(props: RemoteRepositoriesMa
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
   const classes = useStyles();
+  const [activeTab, setActiveTab] = useState(0);
+  const hasConflictsOrUncommitted = Boolean(
+    repositoriesStatus?.conflicting.length > 0 && repositoriesStatus?.uncommittedChanges.length > 0
+  );
 
   const setCurrentStatus = (status) => {
     if (status.clean) {
@@ -89,17 +104,17 @@ export default function RemoteRepositoriesManagement(props: RemoteRepositoriesMa
 
   const fetchRepositoriesStatus = useCallback(() => {
     setFetchingStatus(true);
-    fetchStatus(siteId).subscribe(
-      (status) => {
+    fetchStatus(siteId).subscribe({
+      next(status) {
         setRepositoriesStatus(status);
         setCurrentStatus(status);
         setFetchingStatus(false);
       },
-      ({ response }) => {
+      error({ response }) {
         setErrorStatus(response);
         setFetchingStatus(false);
       }
-    );
+    });
   }, [siteId]);
 
   const updateRepositoriesStatus = (status) => {
@@ -124,6 +139,10 @@ export default function RemoteRepositoriesManagement(props: RemoteRepositoriesMa
         options: { variant: 'error' }
       })
     );
+  };
+
+  const onTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setActiveTab(newValue);
   };
 
   useEffect(() => {
@@ -174,9 +193,9 @@ export default function RemoteRepositoriesManagement(props: RemoteRepositoriesMa
   );
 
   return (
-    <Paper className={classes.root} elevation={0}>
+    <Paper elevation={0}>
       <GlobalAppToolbar
-        title={!embedded && <FormattedMessage id="repositories.title" defaultMessage="Remote Repositories" />}
+        title={!embedded && <FormattedMessage id="words.git" defaultMessage="Git" />}
         leftContent={
           <Button
             startIcon={<AddIcon />}
@@ -190,53 +209,62 @@ export default function RemoteRepositoriesManagement(props: RemoteRepositoriesMa
         showHamburgerMenuButton={!embedded}
         showAppsButton={showAppsButton}
       />
-      <section className={classes.wrapper}>
-        {currentStatusValue && (
-          <Alert
-            severity={currentStatusValue === 'noConflicts' ? 'success' : 'warning'}
-            className={classes.statusAlert}
-          >
-            {formatMessage(translations[currentStatusValue])}
-          </Alert>
-        )}
-        <SuspenseWithEmptyState
-          resource={resource}
-          suspenseProps={{
-            fallback: <RemoteRepositoriesGridSkeletonTable />
-          }}
-        >
-          <RemoteRepositoriesGrid
-            resource={resource}
-            fetchStatus={fetchRepositoriesStatus}
-            fetchRepositories={fetchRepositories}
-            disableActions={repositoriesStatus?.conflicting.length > 0}
+      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <Tabs value={activeTab} onChange={onTabChange}>
+          <Tab
+            label={<FormattedMessage id="remoteRepositories.title" defaultMessage="Remote Repositories" />}
+            {...a11yProps(0)}
           />
-        </SuspenseWithEmptyState>
-
-        {repositoriesStatus &&
-          repositoriesStatus.conflicting.length < 1 &&
-          repositoriesStatus.uncommittedChanges.length < 1 && (
+          <Tab
+            sx={{ flexDirection: 'row', color: hasConflictsOrUncommitted ? 'error.main' : void 0 }}
+            label={
+              <>
+                <FormattedMessage id="repository.repositoryStatusLabel" defaultMessage="Repository Status" />
+                {hasConflictsOrUncommitted && <WarningRounded sx={{ ml: 1 }} color="error" />}
+              </>
+            }
+            {...a11yProps(1)}
+          />
+        </Tabs>
+      </Box>
+      <section>
+        {activeTab === 0 && (
+          <Box padding={2}>
+            <Alert
+              severity={currentStatusValue ? (currentStatusValue === 'noConflicts' ? 'success' : 'warning') : 'info'}
+            >
+              {formatMessage(translations[currentStatusValue ?? 'fetchingStatus'])}
+            </Alert>
+            <SuspenseWithEmptyState resource={resource} suspenseProps={{ fallback: <RepoGridSkeleton /> }}>
+              <RepoGrid
+                resource={resource}
+                fetchStatus={fetchRepositoriesStatus}
+                fetchRepositories={fetchRepositories}
+                disableActions={!repositoriesStatus || repositoriesStatus.conflicting.length > 0}
+              />
+            </SuspenseWithEmptyState>
             <Typography variant="caption" className={classes.statusNote}>
               <FormattedMessage
                 id="repository.statusNote"
                 defaultMessage="Do not use Studio as a git merge and conflict resolution platform. All merge conflicts should be resolved upstream before getting pulled into Studio."
               />
             </Typography>
-          )}
-
-        <SuspenseWithEmptyState
-          resource={statusResource}
-          suspenseProps={{
-            fallback: <RemoteRepositoriesStatusSkeleton />
-          }}
-        >
-          <StudioRepositoryStatus
+          </Box>
+        )}
+        {activeTab === 1 && (
+          <SuspenseWithEmptyState
             resource={statusResource}
-            setFetching={setFetchingStatus}
-            onActionSuccess={updateRepositoriesStatus}
-          />
-        </SuspenseWithEmptyState>
-
+            suspenseProps={{
+              fallback: <RepoStatusSkeleton />
+            }}
+          >
+            <RepoStatus
+              resource={statusResource}
+              setFetching={setFetchingStatus}
+              onActionSuccess={updateRepositoriesStatus}
+            />
+          </SuspenseWithEmptyState>
+        )}
         <NewRemoteRepositoryDialog
           open={newRemoteRepositoryDialogState.open}
           isMinimized={newRemoteRepositoryDialogState.isMinimized}

@@ -1179,7 +1179,6 @@
   "repositories.newRepository": "Agregar repositorio remoto",
   "repositories.noConflicts": "El repositorio local está libre de conflictos.",
   "repositories.pendingCommit": "Repo contiene archivos pendientes de confirmación. Consulte el estado del repositorio a continuación para obtener más detalles.",
-  "repositories.pullSuccessMessage": "Tirado con éxito.",
   "repositories.pushSuccessMessage": "Empujado con éxito.",
   "repositories.pushUrl": "URL de inserción",
   "repositories.remoteBranchToPull": "Rama remota para tirar",
