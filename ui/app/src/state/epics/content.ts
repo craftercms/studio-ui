@@ -58,7 +58,7 @@ import {
   paste,
   unlock
 } from '../../services/content';
-import { merge, NEVER, Observable, of, forkJoin } from 'rxjs';
+import { merge, NEVER, Observable, of } from 'rxjs';
 import {
   closeCodeEditorDialog,
   closeConfirmDialog,
