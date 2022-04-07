@@ -106,7 +106,7 @@ export function PublishCommitDialog(props: PublishCommitDialogProps) {
     <EnhancedDialog
       {...dialogProps}
       onClosed={() => {
-        setState({ ...initialState, environment: state.environment });
+        setState({ ...initialState, environment: state.environment, publishingTargets: publishingTargets });
       }}
       isSubmitting={isSubmitting}
       title={<FormattedMessage id="publishCommitDialog.title" defaultMessage="Publish Commit" />}

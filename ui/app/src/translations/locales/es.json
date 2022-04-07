@@ -1192,7 +1192,6 @@
   "repositories.revertAll": "Revertir todo",
   "repositories.revertPullSuccessMessage": "Repositorio revertido con éxito.",
   "repositories.splitView": "Vista dividida",
-  "repositories.title": "Repositorios remotos",
   "repositories.unstagedFiles": "Hay archivos sin clasificar en su repositorio.",
   "repository.conflictedFiles": "Archivos en conflicto",
   "repository.pendingCommit": "Compromiso pendiente",
