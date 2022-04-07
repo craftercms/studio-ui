@@ -1130,6 +1130,9 @@ export function fetchItemsByPath(
   paths: string[],
   options?: FetchItemsByPathOptions
 ): Observable<SandboxItem[] | DetailedItem[]> {
+  if (!paths?.length) {
+    return of([]);
+  }
   const { castAsDetailedItem = false, preferContent = true } = options ?? {};
   return postJSON('/studio/api/2/content/sandbox_items_by_path', { siteId, paths, preferContent }).pipe(
     pluck('response', 'items'),

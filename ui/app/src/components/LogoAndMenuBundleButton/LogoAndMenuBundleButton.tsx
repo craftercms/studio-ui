@@ -38,6 +38,7 @@ const useStyles = makeStyles(() =>
 export type LogoAndMenuBundleButtonProps = ButtonProps & {
   classes?: ButtonProps['classes'] & Partial<Record<'crafterIcon' | 'menuIcon', string>>;
   showCrafterIcon?: boolean;
+  showMenuIcon?: boolean;
 };
 
 const LogoAndMenuBundleButton = React.forwardRef<HTMLButtonElement, LogoAndMenuBundleButtonProps>(function (
@@ -45,15 +46,13 @@ const LogoAndMenuBundleButton = React.forwardRef<HTMLButtonElement, LogoAndMenuB
   ref
 ) {
   const classes = useStyles();
-  const { showCrafterIcon = true, ...buttonProps } = props;
+  const { showCrafterIcon = true, showMenuIcon = true, ...buttonProps } = props;
   return (
     <Button ref={ref} {...buttonProps}>
       {showCrafterIcon && (
-        <>
-          <CrafterIcon className={clsx(classes.crafterIcon, props.classes?.crafterIcon)} />{' '}
-        </>
+        <CrafterIcon sx={{ mr: 0.5 }} className={clsx(classes.crafterIcon, props.classes?.crafterIcon)} />
       )}
-      <MenuRounded className={props.classes?.menuIcon} />
+      {showMenuIcon && <MenuRounded className={props.classes?.menuIcon} />}
     </Button>
   );
 });

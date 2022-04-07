@@ -14,12 +14,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Resource } from '../../models/Resource';
-import { Repository } from '../../models/Repository';
+import { Resource } from '../../../models/Resource';
+import { Repository } from '../../../models/Repository';
 import Table from '@mui/material/Table';
 import TableHead from '@mui/material/TableHead';
-import GlobalAppGridRow from '../GlobalAppGridRow';
-import GlobalAppGridCell from '../GlobalAppGridCell';
+import GlobalAppGridRow from '../../GlobalAppGridRow';
+import GlobalAppGridCell from '../../GlobalAppGridCell';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 import TableBody from '@mui/material/TableBody';
@@ -30,9 +30,9 @@ import ArrowUpwardRoundedIcon from '@mui/icons-material/ArrowUpwardRounded';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
-import ConfirmDropdown from '../ConfirmDropdown';
+import ConfirmDropdown from '../../ConfirmDropdown';
 
-export interface RemoteRepositoriesGridUIProps {
+export interface RepoGridUIProps {
   resource: Resource<Array<Repository>>;
   disableActions: boolean;
   onPullClick(remoteName: string, branches: string[]): void;
@@ -40,7 +40,7 @@ export interface RemoteRepositoriesGridUIProps {
   onDeleteRemote(remoteName: string): void;
 }
 
-export function RemoteRepositoriesGridUI(props: RemoteRepositoriesGridUIProps) {
+export function RepoGridUI(props: RepoGridUIProps) {
   const { resource, disableActions, onDeleteRemote, onPullClick, onPushClick } = props;
   const repositories = resource.read();
 
@@ -130,4 +130,4 @@ export function RepositoriesGridTableHead() {
   );
 }
 
-export default RemoteRepositoriesGridUI;
+export default RepoGridUI;

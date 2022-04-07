@@ -14,36 +14,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Typography from '@mui/material/Typography';
-import Toolbar from '@mui/material/Toolbar';
-import React from 'react';
-import Skeleton from '@mui/material/Skeleton';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
-    toolbar: {
-      paddingLeft: 0,
-      paddingRight: 0,
-      alignItems: 'center'
+    statusNote: {
+      display: 'flex',
+      justifyContent: 'center',
+      color: theme.palette.text.secondary,
+      marginTop: theme.spacing(2)
     }
   })
 );
 
-export default function RemoteRepositoriesStatusSkeleton() {
-  const classes = useStyles();
-
-  return (
-    <>
-      <Toolbar className={classes.toolbar}>
-        <section style={{ width: '100%' }}>
-          <Typography variant="h5">
-            <Skeleton variant="text" width="30%" />
-          </Typography>
-          <Skeleton variant="text" width="20%" />
-        </section>
-      </Toolbar>
-    </>
-  );
-}
+export default useStyles;

@@ -15,16 +15,16 @@
  */
 
 import React from 'react';
-import PushToRemoteDialogContainer from './PushToRemoteDialogContainer';
-import { PushToRemoteDialogProps } from './utils';
-import { EnhancedDialog } from '../EnhancedDialog';
+import PushDialogContainer from './PushDialogContainer';
+import { PushDialogProps } from './utils';
+import { EnhancedDialog } from '../../EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
 
-export function PushToRemoteDialog(props: PushToRemoteDialogProps) {
+export function PushDialog(props: PushDialogProps) {
   const { branches, remoteName, onPushSuccess, onPushError, onSubmittingChange, ...rest } = props;
   return (
     <EnhancedDialog title={<FormattedMessage id="words.push" defaultMessage="Push" />} maxWidth="xs" {...rest}>
-      <PushToRemoteDialogContainer
+      <PushDialogContainer
         branches={branches}
         remoteName={remoteName}
         onPushSuccess={onPushSuccess}
@@ -36,4 +36,4 @@ export function PushToRemoteDialog(props: PushToRemoteDialogProps) {
   );
 }
 
-export default PushToRemoteDialog;
+export default PushDialog;

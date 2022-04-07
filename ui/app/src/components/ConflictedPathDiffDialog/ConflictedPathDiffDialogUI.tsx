@@ -20,7 +20,7 @@ import React from 'react';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import AceEditor from '../AceEditor/AceEditor';
-import RemoteRepositoriesDiffDialogSplitView from './RemoteRepositoriesDiffDialogSplitView';
+import ConflictedPathDiffDialogSplitView from './ConflictedPathDiffDialogSplitView';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
@@ -60,7 +60,7 @@ export interface RemoteRepositoriesDiffDialogUIProps {
   tab: number;
 }
 
-export function RemoteRepositoriesDiffDialogUI(props: RemoteRepositoriesDiffDialogUIProps) {
+export function ConflictedPathDiffDialogUI(props: RemoteRepositoriesDiffDialogUIProps) {
   const { resource, tab } = props;
   const fileDiff = resource.read();
   const classes = useStyles();
@@ -87,11 +87,11 @@ export function RemoteRepositoriesDiffDialogUI(props: RemoteRepositoriesDiffDial
               </Typography>
             </Grid>
           </Grid>
-          <RemoteRepositoriesDiffDialogSplitView diff={fileDiff} className={classes.splitView} />
+          <ConflictedPathDiffDialogSplitView diff={fileDiff} className={classes.splitView} />
         </div>
       )}
     </>
   );
 }
 
-export default RemoteRepositoriesDiffDialogUI;
+export default ConflictedPathDiffDialogUI;
