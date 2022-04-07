@@ -158,10 +158,4 @@ export function PublishCommitDialog(props: PublishCommitDialogProps) {
   );
 }
 
-// function PublishCommitDialogContainer() {
-//   return (
-//
-//   )
-// }
-
 export default PublishCommitDialog;
