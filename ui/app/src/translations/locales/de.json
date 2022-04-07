@@ -1192,7 +1192,6 @@
   "repositories.revertAll": "Alles rückgängig machen",
   "repositories.revertPullSuccessMessage": "Repository erfolgreich zurückgesetzt.",
   "repositories.splitView": "Geteilte Sicht",
-  "repositories.title": "Remote-Repositorys",
   "repositories.unstagedFiles": "In Ihrem Repository befinden sich nicht bereitgestellte Dateien.",
   "repository.conflictedFiles": "In Konflikt stehende Dateien",
   "repository.pendingCommit": "Ausstehendes Commit",

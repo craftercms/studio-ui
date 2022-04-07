@@ -175,8 +175,7 @@ export function RepoGrid(props: RepoGridProps) {
     );
   };
 
-  const onClosePostPullSnack = () =>
-    setPostPullState({ openPostPullSnack: false, commitsMerged: null, mergeCommitId: null });
+  const onClosePostPullSnack = () => setPostPullState({ openPostPullSnack: false });
 
   return (
     <>
