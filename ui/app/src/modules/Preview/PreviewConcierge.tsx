@@ -1122,7 +1122,11 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           if (dataSourcesKeys.length === 1) {
             // determine if upload or browse
             const key = dataSourcesKeys[0];
-            const processedPath = processPathMacros({ path: payload.datasources[key].value, model: payload.model });
+            const processedPath = processPathMacros({
+              path: payload.datasources[key].value,
+              objectId: payload.model.craftercms.id,
+              objectGroupId: payload.model.objectGroupId
+            });
             if (key === 'allowImageUpload' || key === 'allowVideoUpload') {
               onShowSingleFileUploadDialog(processedPath, payload.type);
             } else {
@@ -1134,7 +1138,11 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
             dataSourcesKeys.forEach((dataSourceKey) => {
               dataSourcesItems.push({
                 label: formatMessage(guestMessages[dataSourceKey]),
-                path: processPathMacros({ path: payload.datasources[dataSourceKey].value, model: payload.model }),
+                path: processPathMacros({
+                  path: payload.datasources[dataSourceKey].value,
+                  objectId: payload.model.objectId,
+                  objectGroupId: payload.model.objectGroupId
+                }),
                 action:
                   dataSourceKey === 'allowImageUpload' || dataSourceKey === 'allowVideoUpload'
                     ? onShowSingleFileUploadDialog

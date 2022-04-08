@@ -20,8 +20,6 @@ import { toQueryString } from './object';
 import LookupTable from '../models/LookupTable';
 import ContentType from '../models/ContentType';
 import { SystemType } from '../models';
-import { parseDescriptor } from '@craftercms/content';
-import { ContentInstance } from '@craftercms/models';
 import { v4 as uuid } from 'uuid';
 
 // Originally from ComponentPanel.getPreviewPagePath
@@ -251,48 +249,48 @@ export function getControllerPath(type: SystemType): string {
 
 export function processPathMacros(dependencies: {
   path: string;
-  model: any | ContentInstance;
+  objectId: string;
+  objectGroupId: string;
   useUUID?: boolean;
   fullParentPath?: string;
 }): string {
-  const { path, model, useUUID, fullParentPath } = dependencies;
-  const descriptor = model.craftercms?.descriptor ?? parseDescriptor(model);
+  const { path, objectId, objectGroupId, useUUID, fullParentPath } = dependencies;
   let processedPath = path;
 
-  if (processedPath.indexOf('{objectId}') !== -1) {
+  if (processedPath.includes('{objectId}')) {
     if (useUUID) {
       processedPath = processedPath.replace('{objectId}', uuid());
     } else {
-      processedPath = path.replace('{objectId}', descriptor.craftercms.id);
+      processedPath = path.replace('{objectId}', objectId);
     }
   }
 
-  if (processedPath.indexOf('{objectGroupId}') !== -1) {
-    processedPath = processedPath.replace('{objectGroupId}', descriptor['objectGroupId']);
+  if (processedPath.includes('{objectGroupId}')) {
+    processedPath = processedPath.replace('{objectGroupId}', objectGroupId);
   }
 
-  if (processedPath.indexOf('{objectGroupId2}') !== -1) {
-    processedPath = processedPath.replace('{objectGroupId2}', descriptor['objectGroupId'].substring(0, 2));
+  if (processedPath.includes('{objectGroupId2}')) {
+    processedPath = processedPath.replace('{objectGroupId2}', objectGroupId.substring(0, 2));
   }
 
   const currentDate = new Date();
-  if (processedPath.indexOf('{year}') !== -1) {
+  if (processedPath.includes('{year}')) {
     processedPath = processedPath.replace('{year}', `${currentDate.getFullYear()}`);
   }
 
-  if (processedPath.indexOf('{month}') !== -1) {
+  if (processedPath.includes('{month}')) {
     processedPath = processedPath.replace('{month}', ('0' + (currentDate.getMonth() + 1)).slice(-2));
   }
 
-  if (processedPath.indexOf('{yyyy}') !== -1) {
+  if (processedPath.includes('{yyyy}')) {
     processedPath = processedPath.replace('{yyyy}', `${currentDate.getFullYear()}`);
   }
 
-  if (processedPath.indexOf('{mm}') !== -1) {
+  if (processedPath.includes('{mm}')) {
     processedPath = processedPath.replace('{mm}', ('0' + (currentDate.getMonth() + 1)).slice(-2));
   }
 
-  if (processedPath.indexOf('{dd}') !== -1) {
+  if (processedPath.includes('{dd}')) {
     processedPath = processedPath.replace('{dd}', ('0' + currentDate.getDate()).slice(-2));
   }
 
