@@ -349,14 +349,11 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
     keyboardShortcutsDialogState
   });
 
-  const onRtePickerResult = (path: string, name: string) => {
+  const onRtePickerResult = (payload?: { path: string; name: string }) => {
     const hostToGuest$ = getHostToGuestBus();
     hostToGuest$.next({
       type: rtePickerActionResult.type,
-      payload: {
-        path,
-        name
-      }
+      payload
     });
   };
 
@@ -1072,11 +1069,12 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
             unsubscribe = createCustomDocumentEventListener('fileUploaded', ({ successful: response }) => {
               const file = response[0];
               const filePath = `${file.meta.path}${file.meta.path.endsWith('/') ? '' : '/'}${file.meta.name}`;
-              onRtePickerResult(filePath, file.meta.name);
+              onRtePickerResult({ path: filePath, name: file.meta.name });
               cancelUnsubscribe();
             });
 
             cancelUnsubscribe = createCustomDocumentEventListener('fileUploadCanceled', () => {
+              onRtePickerResult();
               unsubscribe();
             });
           };
@@ -1115,7 +1113,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
             const dataSourcesItems = [];
             dataSourcesKeys.forEach((dataSourceKey) => {
               dataSourcesItems.push({
-                label: dataSourceKey, // TODO: Add translations
+                label: formatMessage(guestMessages[dataSourceKey]),
                 path: processPathMacros({ path: payload.datasources[dataSourceKey].value, model: payload.model }),
                 action:
                   dataSourceKey === 'allowImageUpload' || dataSourceKey === 'allowVideoUpload'
@@ -1293,10 +1291,13 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         open={browseFilesDialogState.open}
         path={browseFilesDialogPath}
         mimeTypes={browseFilesDialogMimeTypes}
-        onClose={browseFilesDialogState.onClose}
         onSuccess={(response: MediaItem) => {
           browseFilesDialogState.onClose();
-          onRtePickerResult(response.path, response.name);
+          onRtePickerResult({ path: response.path, name: response.name });
+        }}
+        onClose={() => {
+          browseFilesDialogState.onClose();
+          onRtePickerResult();
         }}
         hasPendingChanges={browseFilesDialogState.hasPendingChanges}
         isMinimized={browseFilesDialogState.isMinimized}

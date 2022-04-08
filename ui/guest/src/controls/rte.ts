@@ -148,7 +148,9 @@ export function initTinyMCE(
           take(1)
         )
         .subscribe(({ payload }) => {
-          cb(payload.path, { alt: payload.name });
+          if (payload) {
+            cb(payload.path, { alt: payload.name });
+          }
         });
     },
 
