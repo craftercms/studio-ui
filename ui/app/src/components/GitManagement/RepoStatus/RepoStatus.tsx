@@ -15,11 +15,11 @@
  */
 
 import React, { useState } from 'react';
-import { Resource } from '../../../models/Resource';
+import RepoStatusSkeleton from './RepoStatusSkeleton';
 import { RepositoryStatus } from '../../../models/Repository';
 import RepoStatusUI from './RepoStatusUI';
 import CommitResolutionDialog from '../../CommitResolutionDialog/CommitResolutionDialog';
-import { cancelFailedPull, resolveConflict as resolveConflictService } from '../../../services/repositories';
+import { cancelFailedPull, resolveConflict } from '../../../services/repositories';
 import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../../state/actions/system';
 import { showErrorDialog } from '../../../state/reducers/dialogs/error';
@@ -29,26 +29,31 @@ import { useActiveSiteId } from '../../../hooks/useActiveSiteId';
 import { messages } from './translations';
 
 export interface RepoStatusProps {
-  resource: Resource<RepositoryStatus>;
-  setFetching(fetching): void;
-  onActionSuccess?(status): void;
+  status: RepositoryStatus;
+  onCommitSuccess?(status: RepositoryStatus): void;
+  onConflictResolved?(status: RepositoryStatus): void;
+  onFailedPullCancelled?(status: RepositoryStatus): void;
 }
 
 export default function RepoStatus(props: RepoStatusProps) {
-  const { resource, setFetching, onActionSuccess } = props;
-  const status = resource.read();
+  const { status, onCommitSuccess: onCommitSuccessProp, onFailedPullCancelled, onConflictResolved } = props;
   const siteId = useActiveSiteId();
   const [openCommitResolutionDialog, setOpenCommitResolutionDialog] = useState(false);
   const [openRemoteRepositoriesDiffDialog, setOpenRemoteRepositoriesDiffDialog] = useState(false);
   const [diffPath, setDiffPath] = useState(null);
   const dispatch = useDispatch();
+  const [fetching, setFetching] = useState(false);
   const { formatMessage } = useIntl();
 
-  const revertPull = () => {
+  if (!props.status || fetching) {
+    return <RepoStatusSkeleton />;
+  }
+
+  const onRevertPull = () => {
     setFetching(true);
     cancelFailedPull(siteId).subscribe({
       next(status) {
-        onActionSuccess?.(status);
+        onFailedPullCancelled?.(status);
         setFetching(false);
         dispatch(
           showSystemNotification({
@@ -62,8 +67,8 @@ export default function RepoStatus(props: RepoStatusProps) {
     });
   };
 
-  const onCommitSuccess = (status) => {
-    onActionSuccess?.(status);
+  const onCommitSuccess = (status: RepositoryStatus) => {
+    onCommitSuccessProp?.(status);
     setFetching(false);
     setOpenCommitResolutionDialog(false);
     dispatch(
@@ -73,22 +78,22 @@ export default function RepoStatus(props: RepoStatusProps) {
     );
   };
 
-  const onCommitError = (response) => {
-    dispatch(showErrorDialog({ error: response }));
-  };
-
-  const resolveConflict = (resolution: string, path: string) => {
+  const onResolveConflict = (resolution: string, path: string) => {
     setFetching(true);
-    resolveConflictService(siteId, path, resolution).subscribe(
-      (status) => {
-        onActionSuccess?.(status);
+    resolveConflict(siteId, path, resolution).subscribe({
+      next(status) {
+        onConflictResolved?.(status);
         setFetching(false);
         setOpenRemoteRepositoriesDiffDialog(false);
       },
-      ({ response }) => {
+      error({ response }) {
         dispatch(showErrorDialog({ error: response }));
       }
-    );
+    });
+  };
+
+  const onCommitError = (response) => {
+    dispatch(showErrorDialog({ error: response }));
   };
 
   const openDiffDialog = (path) => {
@@ -100,22 +105,22 @@ export default function RepoStatus(props: RepoStatusProps) {
     <>
       <RepoStatusUI
         status={status}
-        onRevertPull={revertPull}
-        onClickCommit={() => setOpenCommitResolutionDialog(true)}
-        onResolveConflict={resolveConflict}
+        onRevertPull={onRevertPull}
+        onCommitClick={() => setOpenCommitResolutionDialog(true)}
+        onResolveConflict={onResolveConflict}
         onDiffClick={openDiffDialog}
       />
       <CommitResolutionDialog
         open={openCommitResolutionDialog}
         onClose={() => setOpenCommitResolutionDialog(false)}
-        onCommit={() => setFetching(true)}
+        onCommitRequestSent={() => setFetching(true)}
         onCommitSuccess={onCommitSuccess}
         onCommitError={onCommitError}
       />
       <ConflictedPathDiffDialog
         open={openRemoteRepositoriesDiffDialog}
         path={diffPath}
-        onResolveConflict={resolveConflict}
+        onResolveConflict={onResolveConflict}
         onClose={() => setOpenRemoteRepositoriesDiffDialog(false)}
       />
     </>

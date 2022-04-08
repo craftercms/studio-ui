@@ -39,7 +39,7 @@ export const translations = defineMessages({
   },
   fetchingStatus: {
     id: 'repositories.fetching',
-    defaultMessage: 'Fetching repository status.'
+    defaultMessage: 'Fetching repository status...'
   }
 });
 

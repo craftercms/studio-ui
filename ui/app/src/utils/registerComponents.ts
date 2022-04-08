@@ -76,7 +76,7 @@ export const registerComponents = () => {
     'craftercms.icons.CrafterIcon': lazy(() => import('../icons/About')),
     'craftercms.icons.Docs': lazy(() => import('../icons/Docs')),
     'craftercms.icons.Sites': lazy(() => import('../icons/SitesRounded')),
-    'craftercms.icons.Git': lazy(() => import('../icons/GitIcon')),
+    'craftercms.icons.Git': lazy(() => import('../icons/GitIconOutlined')),
     '@mui/icons-material/BuildRounded': lazy(() => import('@mui/icons-material/BuildRounded')),
     '@mui/icons-material/AccountCircleRounded': lazy(() => import('@mui/icons-material/AccountCircleRounded')),
     '@mui/icons-material/PeopleRounded': lazy(() => import('@mui/icons-material/PeopleRounded')),

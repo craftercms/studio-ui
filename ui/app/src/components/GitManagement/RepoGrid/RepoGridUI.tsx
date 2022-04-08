@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Resource } from '../../../models/Resource';
 import { Repository } from '../../../models/Repository';
 import Table from '@mui/material/Table';
 import TableHead from '@mui/material/TableHead';
@@ -33,7 +32,7 @@ import Tooltip from '@mui/material/Tooltip';
 import ConfirmDropdown from '../../ConfirmDropdown';
 
 export interface RepoGridUIProps {
-  resource: Resource<Array<Repository>>;
+  repositories: Array<Repository>;
   disableActions: boolean;
   onPullClick(remoteName: string, branches: string[]): void;
   onPushClick(remoteName: string, branches: string[]): void;
@@ -41,15 +40,13 @@ export interface RepoGridUIProps {
 }
 
 export function RepoGridUI(props: RepoGridUIProps) {
-  const { resource, disableActions, onDeleteRemote, onPullClick, onPushClick } = props;
-  const repositories = resource.read();
-
+  const { repositories, disableActions, onDeleteRemote, onPullClick, onPushClick } = props;
   return (
     <TableContainer>
       <Table>
         <RepositoriesGridTableHead />
         <TableBody>
-          {repositories.map((repository) => (
+          {repositories?.map((repository) => (
             <GlobalAppGridRow key={repository.name} className="hoverDisabled">
               <GlobalAppGridCell align="left">{repository.name}</GlobalAppGridCell>
               <GlobalAppGridCell align="left">{repository.url}</GlobalAppGridCell>
