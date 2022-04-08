@@ -17,6 +17,7 @@
 import {
   ContentType,
   ContentTypeField,
+  ContentTypeFieldValidation,
   ContentTypeFieldValidations,
   LegacyContentType,
   LegacyDataSource,
@@ -61,7 +62,9 @@ const systemValidationsNames = [
   'minValue',
   'maxValue',
   'imgRepositoryUpload',
-  'imgDesktopUpload'
+  'imgDesktopUpload',
+  'videoDesktopUpload',
+  'videoBrowseRepo'
 ];
 
 const systemValidationsKeysMap = {
@@ -80,7 +83,9 @@ const systemValidationsKeysMap = {
   minValue: 'minValue',
   maxValue: 'maxValue',
   imgRepositoryUpload: 'allowImagesFromRepo',
-  imgDesktopUpload: 'allowImageUpload'
+  imgDesktopUpload: 'allowImageUpload',
+  videoDesktopUpload: 'allowVideoUpload',
+  videoBrowseRepo: 'allowVideosFromRepo'
 };
 
 function bestGuessParse(value: any) {
@@ -168,30 +173,35 @@ function getFieldDataSourceValidations(
   dataSources: LegacyDataSource[]
 ): Partial<ContentTypeFieldValidations> {
   let validations = {};
-  if (dataSources && dataSources.length > 0 && asArray(fieldProperty).find((prop) => prop.name === 'imageManager')) {
-    validations = asArray<LegacyFormDefinitionProperty>(fieldProperty).reduce<
-      LookupTable<LegacyFormDefinitionProperty>
-    >((table, prop) => {
-      if (prop.name === 'imageManager') {
-        const dataSourcesNames = prop.value !== '' ? prop.value.split(',') : null;
-        if (dataSourcesNames) {
-          dataSourcesNames.forEach((name) => {
-            const dataSource = dataSources.find((datasource) => datasource.id === name);
-            if (dataSource && systemValidationsNames.includes(camelize(dataSource.type))) {
-              table[systemValidationsKeysMap[camelize(dataSource.type)]] = {
-                id: systemValidationsKeysMap[camelize(dataSource.type)],
-                // @ts-ignore
-                value:
-                  dataSource.type === 'img-desktop-upload'
-                    ? asArray(dataSource.properties.property).find((prop) => prop.name === 'repoPath').value
-                    : true
-              };
-            }
-          });
+  if (
+    dataSources &&
+    dataSources.length > 0 &&
+    asArray(fieldProperty).find((prop) => ['imageManager', 'videoManager'].includes(prop.name))
+  ) {
+    validations = asArray<LegacyFormDefinitionProperty>(fieldProperty).reduce<LookupTable<ContentTypeFieldValidation>>(
+      (table, prop) => {
+        if (prop.name === 'imageManager' || prop.name === 'videoManager') {
+          if (prop.name === 'videoManager') {
+            debugger;
+          }
+          const dataSourcesNames = prop.value !== '' ? prop.value.split(',') : null;
+          if (dataSourcesNames) {
+            dataSourcesNames.forEach((name) => {
+              const dataSource = dataSources.find((datasource) => datasource.id === name);
+              if (dataSource && systemValidationsNames.includes(camelize(dataSource.type))) {
+                table[systemValidationsKeysMap[camelize(dataSource.type)]] = {
+                  id: systemValidationsKeysMap[camelize(dataSource.type)],
+                  value: asArray(dataSource.properties.property).find((prop) => prop.name === 'repoPath').value,
+                  level: 'required'
+                };
+              }
+            });
+          }
         }
-      }
-      return table;
-    }, {});
+        return table;
+      },
+      {}
+    );
   }
   return validations;
 }
@@ -304,6 +314,12 @@ function parseLegacyFormDefinitionFields(
           ...getFieldDataSourceValidations(legacyField.properties.property, dataSources)
         };
         break;
+      case 'video-picker':
+      case 'rte':
+        field.validations = {
+          ...field.validations,
+          ...getFieldDataSourceValidations(legacyField.properties.property, dataSources)
+        };
     }
 
     currentFieldLookup[fieldId] = field;

@@ -137,9 +137,13 @@ import { useActiveUser } from '../../hooks/useActiveUser';
 import { useMount } from '../../hooks/useMount';
 import { usePreviewNavigation } from '../../hooks/usePreviewNavigation';
 import { useActiveSite } from '../../hooks/useActiveSite';
-import { getControllerPath, getPathFromPreviewURL } from '../../utils/path';
+import { getControllerPath, getPathFromPreviewURL, processPathMacros } from '../../utils/path';
 import {
+  closeSingleFileUploadDialog,
+  rtePickerActionResult,
   showEditDialog,
+  showRtePickerActions,
+  showSingleFileUploadDialog,
   showWorkflowCancellationDialog,
   workflowCancellationDialogClosed
 } from '../../state/actions/dialogs';
@@ -159,11 +163,17 @@ import {
   pluginInstalled,
   pluginUninstalled
 } from '../../state/actions/system';
-import { useUpdateRefs } from '../../hooks';
+import { useSpreadState, useUpdateRefs } from '../../hooks';
 import { useHotkeys } from 'react-hotkeys-hook';
-import { batchActions, editContentTypeTemplate, editController } from '../../state/actions/misc';
+import { batchActions, dispatchDOMEvent, editContentTypeTemplate, editController } from '../../state/actions/misc';
 import { popPiece } from '../../utils/string';
 import { fetchSandboxItem as fetchSandboxItemService } from '../../services/content';
+import { createCustomDocumentEventListener } from '../../utils/dom';
+import BrowseFilesDialog from '../../components/BrowseFilesDialog';
+import { MediaItem } from '../../models';
+import DataSourcesActionsList, {
+  DataSourcesActionsListProps
+} from '../../components/DataSourcesActionsList/DataSourcesActionsList';
 
 const originalDocDomain = document.domain;
 
@@ -259,6 +269,12 @@ const issueDescriptorRequest = (props) => {
 };
 // endregion
 
+const dataSourceActionsListInitialState = {
+  show: false,
+  rect: null,
+  items: []
+};
+
 export function PreviewConcierge(props: PropsWithChildren<{}>) {
   const dispatch = useDispatch();
   const { id: siteId, uuid } = useActiveSite();
@@ -283,6 +299,12 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   const { cdataEscapedFieldPatterns } = uiConfig;
   const rteConfig = useRTEConfig();
   const keyboardShortcutsDialogState = useEnhancedDialogState();
+  const browseFilesDialogState = useEnhancedDialogState();
+  const [browseFilesDialogPath, setBrowseFilesDialogPath] = useState('/');
+  const [browseFilesDialogMimeTypes, setBrowseFilesDialogMimeTypes] = useState([]);
+  const [dataSourceActionsListState, setDataSourceActionsListState] = useSpreadState<DataSourcesActionsListProps>(
+    dataSourceActionsListInitialState
+  );
   const conditionallyToggleEditMode = (nextHighlightMode?: HighlightMode) => {
     if (item && !isItemLockedForMe(item, user.username) && hasEditAction(item.availableActions)) {
       dispatch(
@@ -317,6 +339,17 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
     conditionallyToggleEditMode,
     keyboardShortcutsDialogState
   });
+
+  const onRtePickerResult = (path: string, name: string) => {
+    const hostToGuest$ = getHostToGuestBus();
+    hostToGuest$.next({
+      type: rtePickerActionResult.type,
+      payload: {
+        path,
+        name
+      }
+    });
+  };
 
   // Legacy Guest pencil repaint - When the guest screen size changes, pencils need to be repainted.
   useEffect(() => {
@@ -867,6 +900,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           enqueueSnackbar(formatMessage(guestMessages.assetUploadStarted));
           // @ts-ignore - TODO: type action accordingly
           hostToHost$.next(desktopAssetUploadStarted(payload));
+
+          // TODO: path should be updated here according to validation value
           const uppySubscription = uploadDataUrl(
             siteId,
             pluckProps(payload, 'name', 'type', 'dataUrl'),
@@ -1008,12 +1043,97 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           break;
         }
         // endregion
+        case showRtePickerActions.type: {
+          const onShowSingleFileUploadDialog = (path: string, type: 'image' | 'media') => {
+            setDataSourceActionsListState(dataSourceActionsListInitialState);
+            dispatch(
+              showSingleFileUploadDialog({
+                site: siteId,
+                path,
+                fileTypes: type === 'image' ? ['image/*'] : ['video/*'],
+                onClose: batchActions([closeSingleFileUploadDialog(), dispatchDOMEvent({ id: 'fileUploadCanceled' })]),
+                onUploadComplete: batchActions([
+                  closeSingleFileUploadDialog(),
+                  dispatchDOMEvent({ id: 'fileUploaded' })
+                ])
+              })
+            );
+
+            let unsubscribe, cancelUnsubscribe;
+            unsubscribe = createCustomDocumentEventListener('fileUploaded', ({ successful: response }) => {
+              const file = response[0];
+              const filePath = `${file.meta.path}${file.meta.name}`;
+              onRtePickerResult(filePath, file.meta.name);
+              cancelUnsubscribe();
+            });
+
+            cancelUnsubscribe = createCustomDocumentEventListener('fileUploadCanceled', () => {
+              unsubscribe();
+            });
+          };
+
+          const onShowBrowseFilesDialog = (path: string, type: 'image' | 'media') => {
+            const mimeTypes = type === 'image' ? ['image/png', 'image/jpeg', 'image/gif', 'image/jpg'] : ['video/mp4'];
+            setDataSourceActionsListState(dataSourceActionsListInitialState);
+            setBrowseFilesDialogPath(path);
+            setBrowseFilesDialogMimeTypes(mimeTypes);
+            browseFilesDialogState.onOpen();
+          };
+
+          const dataSourcesByType = {
+            image: ['allowImageUpload', 'allowImagesFromRepo'],
+            media: ['allowVideoUpload', 'allowVideosFromRepo']
+          };
+
+          // filter data sources to only the ones that match the type
+          const dataSourcesKeys = Object.keys(payload.datasources).filter((datasourceId) =>
+            dataSourcesByType[payload.type].includes(datasourceId)
+          );
+
+          // directly open corresponding dialog
+          if (dataSourcesKeys.length === 1) {
+            // determine if upload or browse
+            const key = dataSourcesKeys[0];
+            // TODO: validate if value exists, otherwise cancel (show an error?)
+            const processedPath = processPathMacros(payload.datasources[key].value, payload.model);
+            if (key === 'allowImageUpload' || key === 'allowVideoUpload') {
+              onShowSingleFileUploadDialog(processedPath, payload.type);
+            } else {
+              onShowBrowseFilesDialog(processedPath, payload.type);
+            }
+          } else if (dataSourcesKeys.length > 1) {
+            // create items for DataSourcesActionsList
+            const dataSourcesItems = [];
+            dataSourcesKeys.forEach((dataSourceKey) => {
+              dataSourcesItems.push({
+                label: dataSourceKey, // Add a translation for that one?
+                path: processPathMacros(payload.datasources[dataSourceKey].value, payload.model),
+                action:
+                  dataSourceKey === 'allowImageUpload' || dataSourceKey === 'allowVideoUpload'
+                    ? onShowSingleFileUploadDialog
+                    : onShowBrowseFilesDialog,
+                type: payload.type
+              });
+            });
+
+            const { left, top, width, height } = payload.btnRect;
+            setDataSourceActionsListState({
+              show: true,
+              rect: {
+                ...payload.btnRect,
+                left: left + (showToolsPanel ? toolsPanelWidth : 0) - width,
+                top: top + height * 2 // To position correctly under the button
+              },
+              items: dataSourcesItems
+            });
+          }
+        }
       }
     });
     return () => {
       guestToHostSubscription.unsubscribe();
     };
-  }, [upToDateRefs]);
+  }, [upToDateRefs, setDataSourceActionsListState, showToolsPanel, toolsPanelWidth, browseFilesDialogState]);
 
   // hostToHost$ subscription
   useEffect(() => {
@@ -1132,6 +1252,23 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         hasPendingChanges={keyboardShortcutsDialogState.hasPendingChanges}
         shortcuts={previewKeyboardShortcuts}
         isSubmitting={keyboardShortcutsDialogState.isSubmitting}
+      />
+      <BrowseFilesDialog
+        open={browseFilesDialogState.open}
+        path={browseFilesDialogPath}
+        mimeTypes={browseFilesDialogMimeTypes}
+        onClose={browseFilesDialogState.onClose}
+        onSuccess={(response: MediaItem) => {
+          browseFilesDialogState.onClose();
+          onRtePickerResult(response.path, response.name);
+        }}
+        hasPendingChanges={browseFilesDialogState.hasPendingChanges}
+        isMinimized={browseFilesDialogState.isMinimized}
+        isSubmitting={browseFilesDialogState.isSubmitting}
+      />
+      <DataSourcesActionsList
+        {...dataSourceActionsListState}
+        onClose={() => setDataSourceActionsListState({ show: false })}
       />
     </>
   );

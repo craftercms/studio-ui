@@ -2816,60 +2816,7 @@ var nodeOpen = false,
        * handle macros in file paths
        */
       processPathsForMacros: function (path, model, useUUID) {
-        if (path.indexOf('{objectId}') != -1) {
-          if (useUUID) {
-            path = path.replace('{objectId}', CStudioAuthoring.Utils.generateUUID());
-          } else {
-            path = path.replace('{objectId}', model['objectId']);
-          }
-        }
-
-        if (path.indexOf('{objectGroupId}') != -1) {
-          path = path.replace('{objectGroupId}', model['objectGroupId']);
-        }
-
-        if (path.indexOf('{objectGroupId2}') != -1) {
-          path = path.replace('{objectGroupId2}', model['objectGroupId'].substring(0, 2));
-        }
-
-        /* Date macros */
-        var currentDate = new Date();
-        if (path.indexOf('{year}') != -1) {
-          path = path.replace('{year}', currentDate.getFullYear());
-        }
-
-        if (path.indexOf('{month}') != -1) {
-          path = path.replace('{month}', ('0' + (currentDate.getMonth() + 1)).slice(-2));
-        }
-
-        const fullParentPath =
-          CStudioAuthoring.Utils.getQueryParameterByName('path') !== ''
-            ? CStudioAuthoring.Utils.getQueryParameterByName('path')
-            : CStudioAuthoring.Utils.getQueryParameterByName('parentPath');
-        const parentPathPieces = fullParentPath.substr(1).split('/');
-        path = path.replace(/{parentPath(\[\s*?(\d+)\s*?])?}/g, function (fullMatch, indexExp, index) {
-          if (indexExp === void 0) {
-            // Handle simple exp `{parentPath}`
-            return fullParentPath.replace(/\/[^\/]*\/[^\/]*\/([^.]*)(\/[^\/]*\.xml)?$/, '$1');
-          } else {
-            // Handle indexed exp `{parentPath[i]}`
-            return parentPathPieces[parseInt(index) + 2];
-          }
-        });
-
-        if (path.indexOf('{yyyy}') != -1) {
-          path = path.replace('{yyyy}', currentDate.getFullYear());
-        }
-
-        if (path.indexOf('{mm}') != -1) {
-          path = path.replace('{mm}', ('0' + (currentDate.getMonth() + 1)).slice(-2));
-        }
-
-        if (path.indexOf('{dd}') != -1) {
-          path = path.replace('{dd}', ('0' + currentDate.getDate()).slice(-2));
-        }
-
-        return path;
+        return CrafterCMSNext.util.path.processPathMacros(path, model, useUUID);
       },
 
       /**

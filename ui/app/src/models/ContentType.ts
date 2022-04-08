@@ -48,7 +48,9 @@ export type ValidationKeys =
   | 'dropTargetsNotFound'
   | 'registerNotFound'
   | 'allowImagesFromRepo'
-  | 'allowImageUpload';
+  | 'allowImageUpload'
+  | 'allowVideosFromRepo'
+  | 'allowVideoUpload';
 
 export type ContentTypeFieldValidations = {
   [key in ValidationKeys]: ContentTypeFieldValidation;

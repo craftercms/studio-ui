@@ -184,6 +184,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
         event.stopPropagation();
         const status = state.status;
         const dragContext = state.dragContext;
+        const file = unwrapEvent<DragEvent>(event).dataTransfer.files[0];
 
         const processDrop = () => {
           switch (status) {
@@ -236,7 +237,6 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
             }
             case EditingStatus.UPLOAD_ASSET_FROM_DESKTOP: {
               if (dragContext.inZone) {
-                const file = unwrapEvent<DragEvent>(event).dataTransfer.files[0];
                 const stream$ = new Subject();
                 const reader = new FileReader();
                 reader.onload = ((aImg: HTMLImageElement) => (event) => {

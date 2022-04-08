@@ -20,6 +20,8 @@ import { toQueryString } from './object';
 import LookupTable from '../models/LookupTable';
 import ContentType from '../models/ContentType';
 import { SystemType } from '../models';
+import { parseDescriptor } from '@craftercms/content';
+import { ContentInstance } from '@craftercms/models';
 
 // Originally from ComponentPanel.getPreviewPagePath
 export function getPathFromPreviewURL(previewURL: string): string {
@@ -244,4 +246,64 @@ export function getItemTemplatePath(item: DetailedItem, contentTypes: LookupTabl
 
 export function getControllerPath(type: SystemType): string {
   return `/scripts/${type === 'page' ? 'pages' : 'components'}`;
+}
+
+export function processPathMacros(path: string, model: any | ContentInstance, useUUID?: boolean): string {
+  const descriptor = model.craftercms?.descriptor ?? parseDescriptor(model);
+  let processedPath = path;
+
+  if (processedPath.indexOf('{objectId}') !== -1) {
+    if (useUUID) {
+      // TODO: generateUUID function
+      // processedPath = processedPath.replace('{objectId}', CStudioAuthoring.Utils.generateUUID());
+    } else {
+      processedPath = path.replace('{objectId}', descriptor.craftercms.id);
+    }
+  }
+
+  if (processedPath.indexOf('{objectGroupId}') !== -1) {
+    processedPath = processedPath.replace('{objectGroupId}', descriptor['objectGroupId']);
+  }
+
+  if (processedPath.indexOf('{objectGroupId2}') !== -1) {
+    processedPath = processedPath.replace('{objectGroupId2}', descriptor['objectGroupId'].substring(0, 2));
+  }
+
+  const currentDate = new Date();
+  if (processedPath.indexOf('{year}') !== -1) {
+    processedPath = processedPath.replace('{year}', `${currentDate.getFullYear()}`);
+  }
+
+  if (processedPath.indexOf('{month}') !== -1) {
+    processedPath = processedPath.replace('{month}', ('0' + (currentDate.getMonth() + 1)).slice(-2));
+  }
+
+  if (processedPath.indexOf('{yyyy}') !== -1) {
+    processedPath = processedPath.replace('{yyyy}', `${currentDate.getFullYear()}`);
+  }
+
+  if (processedPath.indexOf('{mm}') !== -1) {
+    processedPath = processedPath.replace('{mm}', ('0' + (currentDate.getMonth() + 1)).slice(-2));
+  }
+
+  if (processedPath.indexOf('{dd}') !== -1) {
+    processedPath = processedPath.replace('{dd}', ('0' + currentDate.getDate()).slice(-2));
+  }
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const fullParentPath = urlParams.get('path') ?? urlParams.get('parentPath');
+  if (fullParentPath) {
+    const parentPathPieces = fullParentPath.substr(1).split('/');
+    processedPath = processedPath.replace(/{parentPath(\[\s*?(\d+)\s*?])?}/g, function (fullMatch, indexExp, index) {
+      if (indexExp === void 0) {
+        // Handle simple exp `{parentPath}`
+        return fullParentPath.replace(/\/[^/]*\/[^/]*\/([^.]*)(\/[^/]*\.xml)?$/, '$1');
+      } else {
+        // Handle indexed exp `{parentPath[i]}`
+        return parentPathPieces[parseInt(index) + 2];
+      }
+    });
+  }
+
+  return processedPath;
 }
