@@ -76,9 +76,6 @@ export const useStyles = makeStyles(
       pagesIcon: {
         fontSize: '1.1rem'
       },
-      iconButton: {
-        padding: '6px'
-      },
       itemIconButton: {
         padding: '2px 3px',
         '&.Mui-disabled': {

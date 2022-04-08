@@ -14,6 +14,12 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
+<#if RequestParameters.mode?? && RequestParameters.mode == "next">
+    <#assign next = true />
+<#else>
+    <#assign next = false />
+</#if>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,11 +30,33 @@
   <title>${contentModel['internal-name']} - ${contentModel['common-title']!''}</title>
 </head>
 <body>
+<div id="toolbar"></div>
 <div id="root"></div>
 <#include "/templates/web/common/js-next-scripts.ftl" />
 <script src="/studio/static-assets/libs/monaco/monaco.0.20.0.js" async defer></script>
 <script>
-  CrafterCMSNext.render('#root', 'SiteDashboard', {}, false);
+  (function (CrafterCMSNext) {
+    const { createElement } = craftercms.libs.React;
+    const { AppBar, Typography, Toolbar, Box } = craftercms.libs.MaterialUI;
+    const { LauncherOpenerButton, CrafterIcon } = CrafterCMSNext.components;
+    function DashboardImprovisedToolbar() {
+      return createElement(
+        AppBar,
+        { position: 'static', color: 'transparent' },
+        createElement(
+          Toolbar,
+          { sx: { display: 'flex', justifyContent: 'space-between' } },
+          createElement(Box, { sx: { display: 'flex', alignItems: 'center' } },
+            createElement(CrafterIcon, { style: { marginRight: '5px' } }, 'Site Dashboard'),
+            createElement(Typography, { variant: 'h5' }, 'Site Dashboard')
+          ),
+          createElement(LauncherOpenerButton, { siteRailPosition: 'left', icon: 'apps' })
+        )
+      );
+    }
+    CrafterCMSNext.render('#toolbar', DashboardImprovisedToolbar, {}, false);
+    CrafterCMSNext.render('#root', "${next?then('SiteDashboard', 'LegacySiteDashboard')}", {}, false);
+  })(CrafterCMSNext);
 </script>
 </body>
 </html>

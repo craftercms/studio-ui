@@ -107,7 +107,7 @@ export function ConfirmDropdown(props: ConfirmDropdownProps) {
     onCancel?.();
   };
 
-  // Not memoizing causes the menu to get misplaced upon opening.
+  // Not memorizing causes the menu to get misplaced upon opening.
   const iconButton = useMemo(
     () =>
       Icon ? (
@@ -122,7 +122,7 @@ export function ConfirmDropdown(props: ConfirmDropdownProps) {
     <>
       {Icon ? (
         iconTooltip ? (
-          <Tooltip title={iconTooltip}>{iconButton}</Tooltip>
+          <Tooltip title={disabled ? '' : iconTooltip}>{iconButton}</Tooltip>
         ) : (
           iconButton
         )

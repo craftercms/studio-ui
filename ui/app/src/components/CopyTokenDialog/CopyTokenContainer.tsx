@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import { FormattedMessage } from 'react-intl';
 import DialogBody from '../DialogBody/DialogBody';
 import FormHelperText from '@mui/material/FormHelperText';
@@ -25,6 +25,8 @@ import PrimaryButton from '../PrimaryButton';
 import { CopyTokenContainerProps } from './utils';
 import makeStyles from '@mui/styles/makeStyles';
 import createStyles from '@mui/styles/createStyles';
+import { copyToClipboard } from '../../utils/system';
+import useMount from '../../hooks/useMount';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -45,22 +47,15 @@ export function CopyTokenContainer(props: CopyTokenContainerProps) {
   const classes = useStyles();
   const inputRef = useRef<HTMLInputElement>();
 
-  const copyToken = useCallback(() => {
-    const el = inputRef.current;
-    el.select();
-    document.execCommand('copy');
-  }, []);
+  const copyToken = () => {
+    copyToClipboard(token.token).then(() => onCopy());
+  };
 
-  const onCopyToken = useCallback(() => {
-    copyToken();
-    onCopy();
-  }, [copyToken, onCopy]);
-
-  useEffect(() => {
-    if (inputRef.current && token) {
+  useMount(() => {
+    if (token) {
       copyToken();
     }
-  }, [copyToken, onCopyToken, token]);
+  });
 
   return (
     <>
@@ -71,10 +66,20 @@ export function CopyTokenContainer(props: CopyTokenContainerProps) {
             defaultMessage="Token created successfully. Please copy the token and store it securely as you won’t be able to see it’s value again."
           />
         </FormHelperText>
-        <InputBase inputRef={inputRef} autoFocus value={token?.token ?? ''} readOnly className={classes.input} />
+        <InputBase
+          inputRef={inputRef}
+          autoFocus
+          value={token?.token ?? ''}
+          readOnly
+          className={classes.input}
+          onClick={(e) => {
+            (e.target as HTMLInputElement).select();
+            copyToken();
+          }}
+        />
       </DialogBody>
       <DialogFooter className={classes.footer}>
-        <SecondaryButton onClick={onCopyToken}>
+        <SecondaryButton onClick={() => copyToken()}>
           <FormattedMessage id="words.copy" defaultMessage="Copy" />
         </SecondaryButton>
         <PrimaryButton onClick={(e) => onClose(e, null)}>

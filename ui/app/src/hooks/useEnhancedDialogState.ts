@@ -20,10 +20,10 @@ import { nnou } from '../utils/object';
 
 export interface EnhancedDialogState {
   open: boolean;
-  isMinimized: boolean;
+  isMinimized?: boolean;
   isFullScreen?: boolean;
-  hasPendingChanges: boolean;
-  isSubmitting: boolean;
+  hasPendingChanges?: boolean;
+  isSubmitting?: boolean;
 }
 
 // TODO: Should type all the callbacks. At the moment the callbacks

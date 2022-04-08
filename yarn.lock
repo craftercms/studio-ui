@@ -4006,6 +4006,7 @@ __metadata:
     rimraf: ^3.0.2
     rollup: ^2.59.0
     rxjs: ^7.4.0
+    slugify: ^1.6.5
     typescript: ^4.1.2
     uppy: ^2.3.3
     video.js: ^7.16.0
@@ -19426,6 +19427,13 @@ resolve@^2.0.0-next.3:
     astral-regex: ^2.0.0
     is-fullwidth-code-point: ^3.0.0
   checksum: 4a82d7f085b0e1b070e004941ada3c40d3818563ac44766cca4ceadd2080427d337554f9f99a13aaeb3b4a94d9964d9466c807b3d7b7541d1ec37ee32d308756
+  languageName: node
+  linkType: hard
+
+"slugify@npm:^1.6.5":
+  version: 1.6.5
+  resolution: "slugify@npm:1.6.5"
+  checksum: a955a1b600201030f4c1daa9bb74a17d4402a0693fc40978bbd17e44e64fd72dad3bac4037422aa8aed55b5170edd57f3f4cd8f59ba331f5cf0f10f1a7795609
   languageName: node
   linkType: hard
 

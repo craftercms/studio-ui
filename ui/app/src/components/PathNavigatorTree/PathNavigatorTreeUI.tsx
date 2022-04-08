@@ -29,6 +29,7 @@ import { DetailedItem } from '../../models/Item';
 import { SystemIconDescriptor } from '../SystemIcon';
 import { ApiResponse } from '../../models';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
+import RefreshRounded from '@mui/icons-material/RefreshRounded';
 
 export interface PathNavigatorTreeNode {
   id: string;
@@ -132,10 +133,10 @@ export function PathNavigatorTreeUI(props: PathNavigatorTreeUIProps) {
         icon={icon}
         title={title}
         locale={null}
+        // @see https://github.com/craftercms/craftercms/issues/5360
+        menuButtonIcon={<RefreshRounded />}
         collapsed={isCollapsed}
-        onContextMenu={(element) => {
-          onHeaderButtonClick(element);
-        }}
+        onMenuButtonClick={onHeaderButtonClick}
       />
       {error ? (
         <ApiResponseErrorState error={error} imageUrl={null} />

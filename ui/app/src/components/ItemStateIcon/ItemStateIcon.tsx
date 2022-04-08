@@ -34,6 +34,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import palette from '../../styles/palette';
 import { CSSProperties } from '@mui/styles';
 import { DetailedItem, ItemStates, SandboxItem } from '../../models/Item';
+import { FormattedMessage } from 'react-intl';
 
 export type ItemStateIconClassKey =
   | 'root'
@@ -171,7 +172,20 @@ export function ItemStateIcon(props: ItemStateIconProps) {
     item
   ]);
   return Icon === null ? null : (
-    <Tooltip title={displayTooltip ? getItemStateText(item.stateMap) : ''} open={displayTooltip ? void 0 : false}>
+    <Tooltip
+      title={
+        displayTooltip ? (
+          item.systemType === 'folder' ? (
+            <FormattedMessage id="itemState.notInWorkflow" defaultMessage="Not in workflow" />
+          ) : (
+            getItemStateText(item.stateMap)
+          )
+        ) : (
+          ''
+        )
+      }
+      open={displayTooltip ? void 0 : false}
+    >
       <Icon className={clsx(classes.root, propClasses?.root, className, stateSpecificClass)} />
     </Tooltip>
   );

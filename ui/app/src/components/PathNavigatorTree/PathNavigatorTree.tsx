@@ -33,8 +33,6 @@ import LookupTable from '../../models/LookupTable';
 import { getEditorMode, isEditableViaFormEditor, isImage, isNavigable, isPreviewable } from '../PathNavigator/utils';
 import ContextMenu, { ContextMenuOption } from '../ContextMenu/ContextMenu';
 import { getNumOfMenuOptionsForItem, lookupItemByPath } from '../../utils/content';
-import { ContextMenuOptionDescriptor, toContextMenuOptionsLookup } from '../../utils/itemActions';
-import { defineMessages, useIntl } from 'react-intl';
 import { previewItem } from '../../state/actions/preview';
 // @ts-ignore
 import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover/Popover';
@@ -101,19 +99,20 @@ interface Menu {
   loaderItems?: number;
 }
 
-const translations = defineMessages({
-  refresh: {
-    id: 'words.refresh',
-    defaultMessage: 'Refresh'
-  }
-});
-
-const menuOptions: LookupTable<ContextMenuOptionDescriptor> = {
-  refresh: {
-    id: 'refresh',
-    label: translations.refresh
-  }
-};
+// @see https://github.com/craftercms/craftercms/issues/5360
+// const translations = defineMessages({
+//   refresh: {
+//     id: 'words.refresh',
+//     defaultMessage: 'Refresh'
+//   }
+// });
+//
+// const menuOptions: LookupTable<ContextMenuOptionDescriptor> = {
+//   refresh: {
+//     id: 'refresh',
+//     label: translations.refresh
+//   }
+// };
 
 export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   const {
@@ -142,7 +141,6 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   });
   const { authoringBase } = useEnv();
   const dispatch = useDispatch();
-  const { formatMessage } = useIntl();
   const itemsByPath = useItemsByPath();
   const keywordByPath = useMemo(() => state?.keywordByPath ?? {}, [state?.keywordByPath]);
   const totalByPath = useMemo(() => state?.totalByPath ?? {}, [state?.totalByPath]);
@@ -433,10 +431,12 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   };
 
   const onHeaderButtonClick = (element: Element) => {
-    setWidgetMenu({
-      sections: [[toContextMenuOptionsLookup(menuOptions, formatMessage).refresh]],
-      anchorEl: element
-    });
+    // @see https://github.com/craftercms/craftercms/issues/5360
+    onWidgetOptionsClick('refresh');
+    // setWidgetMenu({
+    //   sections: [[toContextMenuOptionsLookup(menuOptions, formatMessage).refresh]],
+    //   anchorEl: element
+    // });
   };
 
   const onOpenItemMenu = (element: Element, path: string) => {
@@ -535,7 +535,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
         onLabelClick={onNodeLabelClick}
         onChangeCollapsed={onChangeCollapsed}
         onOpenItemMenu={onOpenItemMenu}
-        onHeaderButtonClick={onHeaderButtonClick}
+        onHeaderButtonClick={state.collapsed ? void 0 : onHeaderButtonClick}
         onFilterChange={onFilterChange}
         onMoreClick={onMoreClick}
       />

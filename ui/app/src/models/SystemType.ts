@@ -23,4 +23,7 @@ export type SystemType =
   | 'page'
   | 'taxonomy'
   | 'levelDescriptor'
+  | 'file'
   | 'unknown';
+
+export default SystemType;

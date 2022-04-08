@@ -51,7 +51,6 @@ import {
   workflowEvent
 } from '../../state/actions/system';
 import PathNavigatorUI from './PathNavigatorUI';
-import { ContextMenuOptionDescriptor, toContextMenuOptionsLookup } from '../../utils/itemActions';
 import PathNavigatorSkeleton from './PathNavigatorSkeleton';
 import GlobalState from '../../models/GlobalState';
 import { SystemIconDescriptor } from '../SystemIcon';
@@ -122,12 +121,13 @@ export interface PathNavigatorStateProps {
   error: any;
 }
 
-const menuOptions: Record<'refresh', ContextMenuOptionDescriptor> = {
-  refresh: {
-    id: 'refresh',
-    label: translations.refresh
-  }
-};
+// @see https://github.com/craftercms/craftercms/issues/5360
+// const menuOptions: Record<'refresh', ContextMenuOptionDescriptor> = {
+//   refresh: {
+//     id: 'refresh',
+//     label: translations.refresh
+//   }
+// };
 
 export function PathNavigator(props: PathNavigatorProps) {
   const {
@@ -245,7 +245,11 @@ export function PathNavigator(props: PathNavigatorProps) {
         case deleteContentEvent.type: {
           const targetPath = payload.targetPath;
 
-          if (withoutIndex(targetPath) === withoutIndex(state.currentPath)) {
+          if (withoutIndex(targetPath) === withoutIndex(path)) {
+            // if path being deleted is the rootPath
+            dispatch(pathNavigatorRefresh({ id }));
+          } else if (withoutIndex(targetPath) === withoutIndex(state.currentPath)) {
+            // if path is currentPath (current root path)
             dispatch(
               pathNavigatorSetCurrentPath({
                 id,
@@ -270,7 +274,7 @@ export function PathNavigator(props: PathNavigatorProps) {
     return () => {
       subscription.unsubscribe();
     };
-  }, [state, id, dispatch]);
+  }, [state, id, dispatch, path]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const computeActiveItems = useCallback(computeActiveItemsProp ?? (() => []), [computeActiveItemsProp]);
@@ -394,10 +398,12 @@ export function PathNavigator(props: PathNavigatorProps) {
         emptyState: { message: formatMessage(translations.noLocales) }
       });
     } else {
-      setWidgetMenu({
-        sections: [[toContextMenuOptionsLookup(menuOptions, formatMessage).refresh]],
-        anchorEl
-      });
+      // @see https://github.com/craftercms/craftercms/issues/5360
+      onSimpleMenuClick('refresh');
+      // setWidgetMenu({
+      //   sections: [[toContextMenuOptionsLookup(menuOptions, formatMessage).refresh]],
+      //   anchorEl
+      // });
     }
   };
 
@@ -462,7 +468,7 @@ export function PathNavigator(props: PathNavigatorProps) {
         container={container}
         title={label}
         onChangeCollapsed={onChangeCollapsed}
-        onHeaderButtonClick={onHeaderButtonClick}
+        onHeaderButtonClick={state.collapsed ? void 0 : onHeaderButtonClick}
         onCurrentParentMenu={onCurrentParentMenu}
         siteLocales={siteLocales}
         keyword={keyword}

@@ -59,7 +59,8 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
       total: null,
       loading: false,
       selected: {},
-      isAllSelected: false
+      isAllSelected: false,
+      hasSelected: false
     });
   const site = useActiveSiteId();
   const { formatMessage } = useIntl();

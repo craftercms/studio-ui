@@ -24,10 +24,13 @@ export default function RejectDialog(props: RejectDialogProps) {
   const { items, onRejectSuccess, isSubmitting, ...rest } = props;
   return (
     <EnhancedDialog
-      title={<FormattedMessage id="reject.title" defaultMessage="Reject" />}
+      title={<FormattedMessage id="rejectDialog.title" defaultMessage="Reject" />}
       dialogHeaderProps={{
         subtitle: (
-          <FormattedMessage id="reject.subtitle" defaultMessage="The following checked item(s) will be rejected." />
+          <FormattedMessage
+            id="rejectDialog.subtitle"
+            defaultMessage="The following checked item(s) will be rejected."
+          />
         )
       }}
       isSubmitting={isSubmitting}

@@ -59,7 +59,7 @@ export function RejectDialogUI(props: RejectDialogUIProps) {
               withEmptyStateProps={{
                 emptyStateProps: {
                   title: (
-                    <FormattedMessage id="publishDialog.noItemsSelected" defaultMessage="There are no affected files" />
+                    <FormattedMessage id="rejectDialog.noItemsSelected" defaultMessage="There are no files to reject" />
                   )
                 },
                 isEmpty: ({ items }) => items.length === 0
@@ -75,7 +75,7 @@ export function RejectDialogUI(props: RejectDialogUIProps) {
               ) : (
                 <Alert severity="warning">
                   <FormattedMessage
-                    id="reject.firstPublish"
+                    id="rejectDialog.firstPublish"
                     defaultMessage="The entire site publish will be rejected since this is the first publish request"
                   />
                 </Alert>

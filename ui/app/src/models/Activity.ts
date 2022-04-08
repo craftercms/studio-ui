@@ -16,20 +16,21 @@
 
 import { SandboxItem } from './Item';
 
-// Omitting 'UNKNOWN' for now.
+// Omitting UNKNOWN, APPROVE & APPROVE_SCHEDULED for now.
 export type Activities =
   | 'CREATE'
   | 'UPDATE'
   | 'DELETE'
   | 'MOVE'
   | 'REQUEST_PUBLISH'
-  | 'APPROVE'
-  | 'APPROVE_SCHEDULED'
   | 'REJECT'
   | 'REVERT'
-  | 'PUBLISH'
   | 'PUBLISHED'
-  | 'INITIAL_PUBLISH';
+  | 'INITIAL_PUBLISH'
+  // TODO - Change when backend is updated
+  //  PUBLISH is what the backend sends for APPROVE & APPROVE_SCHEDULED.
+  //  The latter are never sent back currently.
+  | 'PUBLISH';
 
 export interface Activity {
   id: number;

@@ -55,6 +55,7 @@ import {
   moveItemOperation,
   moveItemOperationComplete,
   moveItemOperationFailed,
+  reloadRequest,
   requestEdit,
   requestWorkflowCancellationDialog,
   requestWorkflowCancellationDialogOnResult,
@@ -157,9 +158,11 @@ import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import KeyboardShortcutsDialog from '../../components/KeyboardShortcutsDialog';
 import { previewKeyboardShortcuts } from '../../assets/keyboardShortcuts';
 import {
+  contentEvent,
   contentTypeCreated,
   contentTypeDeleted,
   contentTypeUpdated,
+  lockContentEvent,
   pluginInstalled,
   pluginUninstalled
 } from '../../state/actions/system';
@@ -168,6 +171,10 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import { batchActions, dispatchDOMEvent, editContentTypeTemplate, editController } from '../../state/actions/misc';
 import { popPiece } from '../../utils/string';
 import { fetchSandboxItem as fetchSandboxItemService } from '../../services/content';
+import SocketEventBase from '../../models/SocketEvent';
+import { RefreshRounded } from '@mui/icons-material';
+import { getPersonFullName } from '../../components/SiteDashboard';
+import { useTheme } from '@mui/material/styles';
 import { createCustomDocumentEventListener } from '../../utils/dom';
 import BrowseFilesDialog from '../../components/BrowseFilesDialog';
 import { MediaItem } from '../../models';
@@ -299,6 +306,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   const { cdataEscapedFieldPatterns } = uiConfig;
   const rteConfig = useRTEConfig();
   const keyboardShortcutsDialogState = useEnhancedDialogState();
+  const theme = useTheme();
   const browseFilesDialogState = useEnhancedDialogState();
   const [browseFilesDialogPath, setBrowseFilesDialogPath] = useState('/');
   const [browseFilesDialogMimeTypes, setBrowseFilesDialogMimeTypes] = useState([]);
@@ -318,6 +326,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   };
 
   const upToDateRefs = useUpdateRefs({
+    theme,
     guest,
     models,
     user,
@@ -1138,31 +1147,58 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   // hostToHost$ subscription
   useEffect(() => {
     const hostToHost$ = getHostToHostBus();
-    const events = [
-      pluginInstalled.type,
-      pluginUninstalled.type,
-      contentTypeCreated.type,
-      contentTypeUpdated.type,
-      contentTypeDeleted.type
-    ];
-    const hostToHostSubscription = hostToHost$
-      .pipe(filter((e) => events.includes(e.type)))
-      .subscribe(({ type, payload }) => {
-        switch (type) {
-          case pluginUninstalled.type:
-          case contentTypeCreated.type:
-          case contentTypeUpdated.type:
-          case contentTypeDeleted.type:
-          case pluginInstalled.type: {
-            dispatch(fetchContentTypes());
-            break;
-          }
+    const hostToGuest$ = getHostToGuestBus();
+    const hostToHostSubscription = hostToHost$.subscribe(({ type, payload }) => {
+      const { guest, user, enqueueSnackbar, formatMessage } = upToDateRefs.current;
+      switch (type) {
+        case pluginUninstalled.type:
+        case contentTypeCreated.type:
+        case contentTypeUpdated.type:
+        case contentTypeDeleted.type:
+        case pluginInstalled.type: {
+          dispatch(fetchContentTypes());
+          break;
         }
-      });
+        case contentEvent.type: {
+          const { user: person, targetPath } = payload as SocketEventBase;
+          const { theme } = upToDateRefs.current;
+          if (guest?.path === targetPath && person.username !== user.username) {
+            enqueueSnackbar(
+              formatMessage(guestMessages.contentWasChangedByAnotherUser, {
+                name: getPersonFullName(person)
+              }),
+              {
+                action: (
+                  <IconButton
+                    size="small"
+                    onClick={() => hostToGuest$.next(reloadRequest())}
+                    sx={{ color: `common.${theme.palette.mode === 'light' ? 'white' : 'black'}` }}
+                  >
+                    <RefreshRounded />
+                  </IconButton>
+                )
+              }
+            );
+          }
+          break;
+        }
+        case lockContentEvent.type: {
+          const { user: person, targetPath, locked } = payload as SocketEventBase & { locked: boolean };
+          if (locked && guest?.path === targetPath && person.username !== user.username) {
+            enqueueSnackbar(
+              formatMessage(guestMessages.contentWasLockedByAnotherUser, {
+                name: getPersonFullName(person)
+              })
+            );
+          }
+          break;
+        }
+      }
+    });
     return () => {
       hostToHostSubscription.unsubscribe();
     };
-  }, [dispatch]);
+  }, [dispatch, upToDateRefs]);
 
   // Guest detection
   useEffect(() => {

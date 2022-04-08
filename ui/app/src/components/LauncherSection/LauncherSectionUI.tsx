@@ -73,7 +73,7 @@ export function LauncherSectionUI(props: LauncherSectionUIProps) {
         </Typography>
       )}
       <nav className={clsx(classes.nav, props.classes?.nav)}>
-        {children ? children : renderWidgets(props.widgets, props.user.rolesBySite[props.site])}
+        {children ? children : renderWidgets(props.widgets, { userRoles: props.user.rolesBySite[props.site] })}
       </nav>
     </>
   );

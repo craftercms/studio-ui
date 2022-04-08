@@ -17,6 +17,12 @@
 <script>
 (function (origin) {
 
+  function getSiteId() {
+    const urlParams = new URLSearchParams(window.location.hash);
+    return urlParams.get('site') ?? "${envConfig.site}";
+  }
+  const siteId = getSiteId();
+
   /**
    * contextual variables
    * note: these are all fixed at the moment but will be dynamic
@@ -24,8 +30,8 @@
   CStudioAuthoringContext = {
     user: "${envConfig.user}",
     role: "${envConfig.role}",
-    site: "${envConfig.site}",
-    siteId: "${envConfig.site}",
+    site: siteId,
+    siteId,
     authenticationType: "${envConfig.authenticationType}",
     baseUri: `${'$'}{origin}/studio`,
     authoringAppBaseUri: `${'$'}{origin}/studio`,
@@ -43,6 +49,17 @@
     xsrfParameterName: "${_csrf.parameterName}",
     passwordRequirementsRegex: "${envConfig.passwordRequirementsRegex?js_string}"
   };
+
+  window.addEventListener(
+    'hashchange',
+    function (e) {
+      e.preventDefault();
+      const newSiteId = getSiteId();
+      CStudioAuthoringContext.site = newSiteId;
+      CStudioAuthoringContext.siteId = newSiteId;
+    },
+    false
+  );
 
   if (CStudioAuthoringContext.role === '') {
     document.location = CStudioAuthoringContext.baseUri;

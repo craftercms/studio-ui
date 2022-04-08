@@ -74,11 +74,11 @@ export default function ToolBar() {
             onClick={() => dispatch(showToolsPanel ? closeToolsPanel() : openToolsPanel())}
           />
         </Tooltip>
-        {renderWidgets(toolbar.leftSection?.widgets, userRoles, { site, item })}
+        {renderWidgets(toolbar.leftSection?.widgets, { userRoles, overrideProps: { site, item } })}
       </section>
-      <section>{renderWidgets(toolbar.middleSection?.widgets, userRoles, { site, item })}</section>
+      <section>{renderWidgets(toolbar.middleSection?.widgets, { userRoles, overrideProps: { site, item } })}</section>
       <section>
-        {renderWidgets(toolbar.rightSection?.widgets, userRoles, { site, item })}
+        {renderWidgets(toolbar.rightSection?.widgets, { userRoles, overrideProps: { site, item } })}
         <LauncherOpenerButton sitesRailPosition="left" icon="apps" />
       </section>
     </ViewToolbar>

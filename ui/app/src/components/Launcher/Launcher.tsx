@@ -62,13 +62,6 @@ import { PREVIEW_URL_PATH } from '../../utils/constants';
 import { useLegacyPreviewPreference } from '../../hooks/useLegacyPreviewPreference';
 import { fetchUseLegacyPreviewPreference } from '../../services/configuration';
 
-export interface LauncherProps {
-  open: boolean;
-  anchor: Element;
-  sitesRailPosition?: 'left' | 'right' | 'hidden';
-  closeButtonPosition?: 'left' | 'right';
-}
-
 export interface LauncherStateProps {
   open: boolean;
   anchor: string;
@@ -247,7 +240,7 @@ const AppsRail = ({
   <Grid item xs={12} md={8} className={classes.appsRail}>
     <div className={clsx(classes.railTop, closeButtonPosition === 'left' && classes.railTopExtraPadded)}>
       {globalNavigationPosition === 'before' && <LauncherGlobalNav />}
-      {renderWidgets(widgets, userRoles)}
+      {renderWidgets(widgets, { userRoles })}
       {/* Using != 'before' (instead of == 'after') to avoid config hiding away the global nav */}
       {globalNavigationPosition !== 'before' && <LauncherGlobalNav />}
     </div>

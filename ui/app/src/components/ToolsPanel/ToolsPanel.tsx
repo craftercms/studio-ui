@@ -143,5 +143,11 @@ function ToolsPaneBody(props: ToolsPaneBodyProps) {
   const site = useActiveSiteId();
   const { pageStack } = props;
   const { rolesBySite } = useActiveUser();
-  return <>{renderWidgets(pageStack.length ? pageStack.slice(props.pageStack.length - 1) : root, rolesBySite[site])}</>;
+  return (
+    <>
+      {renderWidgets(pageStack.length ? pageStack.slice(props.pageStack.length - 1) : root, {
+        userRoles: rolesBySite[site]
+      })}
+    </>
+  );
 }

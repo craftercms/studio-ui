@@ -18,7 +18,7 @@ import * as React from 'react';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import FormControl from '@mui/material/FormControl';
-import { FormattedMessage } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import TextField from '@mui/material/TextField';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
@@ -46,10 +46,15 @@ const useStyles = makeStyles((theme) =>
   })
 );
 
+const messages = defineMessages({
+  staging: { id: 'words.staging', defaultMessage: 'Staging' },
+  live: { id: 'words.live', defaultMessage: 'Live' }
+});
+
 interface PublishOnDemandFormProps {
   mode: PublishOnDemandMode;
   formData: PublishFormData;
-  setFormData(data): void;
+  setFormData(data: Partial<{ path: string; commitIds: string; environment: string; comment: string }>): void;
   publishingTargets: PublishingTarget[];
   publishingTargetsError: ApiResponse;
   bulkPublishCommentRequired: boolean;
@@ -69,8 +74,10 @@ export default function PublishOnDemandForm(props: PublishOnDemandFormProps) {
     publishByCommitCommentRequired
   } = props;
   const classes = useStyles();
+  const { formatMessage } = useIntl();
   const handleFormChange = (name: string) => (event: React.ChangeEvent<{ value: unknown }> | SelectChangeEvent) => {
-    setFormData({ [name]: `/${event.target.value}`.replace(/\/{2,}/g, '/') });
+    const value = event.target.value as string;
+    setFormData({ [name]: (name === 'path' ? `/${value}`.replace(/\/{2,}/g, '/') : value).trim() });
   };
   return (
     <form>
@@ -116,21 +123,20 @@ export default function PublishOnDemandForm(props: PublishOnDemandFormProps) {
         </Grid>
         <Grid item xs={12} md={4}>
           {publishingTargets ? (
-            <FormControl fullWidth variant="outlined" required>
-              <InputLabel id="publishingTargetLabel" disabled={disabled}>
+            <FormControl fullWidth variant="outlined" required disabled={disabled}>
+              <InputLabel id="publishingTargetLabel">
                 <FormattedMessage id="publishOnDemand.publishingTarget" defaultMessage="Publishing Target" />
               </InputLabel>
               <Select
-                disabled={disabled}
+                id="publishingTargetDropdown"
                 labelId="publishingTargetLabel"
                 label={<FormattedMessage id="publishOnDemand.publishingTarget" defaultMessage="Publishing Target" />}
                 value={formData.environment}
-                required
                 onChange={handleFormChange('environment')}
               >
                 {publishingTargets.map((target) => (
                   <MenuItem key={target.name} value={target.name}>
-                    {target.name}
+                    {formatMessage(messages[target.name])}
                   </MenuItem>
                 ))}
               </Select>

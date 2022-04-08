@@ -791,19 +791,6 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
       }),
       ignoreElements()
     );
-  },
-  // endregion
-  // region exitComponentInlineEdit
-  (action$: Observable<GuestStandardAction<{ path: string }>>, state$) => {
-    return action$.pipe(
-      ofType(exitComponentInlineEdit.type),
-      withLatestFrom(state$),
-      tap(([action, state]) => {
-        const { path } = action.payload;
-        post(unlockItem({ path }));
-      }),
-      ignoreElements()
-    );
   }
   // endregion
 );

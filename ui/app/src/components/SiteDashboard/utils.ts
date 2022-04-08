@@ -39,11 +39,13 @@ export interface WithSelectedStateItem {
 export interface WithSelectedState<ItemType extends WithSelectedStateItem = { id: string | number }> {
   items: ItemType[];
   isAllSelected: boolean;
+  hasSelected: boolean;
   selected: Record<string | number, boolean>;
+  selectedCount: number;
 }
 
 export function useSpreadStateWithSelected<S extends WithSelectedState>(
-  initialState: S
+  initialState: Omit<S, keyof WithSelectedState> & Partial<WithSelectedState>
 ): [
   S,
   Dispatch<SetStateAction<Partial<S>>>,
@@ -51,36 +53,46 @@ export function useSpreadStateWithSelected<S extends WithSelectedState>(
   (e) => void,
   <T extends WithSelectedStateItem>(item: T) => boolean
 ] {
-  const [state, setState] = useSpreadState<S>(initialState);
+  // @ts-ignore - Unsure how to make the compiler happy. Probably due to the generic ItemType of WithSelectedState.
+  const [state, setState] = useSpreadState<S>({
+    items: null,
+    isAllSelected: false,
+    hasSelected: false,
+    selected: {},
+    selectedCount: 0,
+    ...initialState
+  });
   const { items, selected } = state;
   const onSelectAll = (e) => {
-    const nextState: Partial<S> = {};
-    if (e.target.checked) {
-      // Check all
-      nextState.selected = items.reduce((state, item) => {
-        state[item.id] = true;
-        return state;
-      }, {});
-      nextState.isAllSelected = true;
-    } else {
-      // Uncheck all
-      nextState.selected = {};
-      nextState.isAllSelected = false;
+    if (items.length > 0) {
+      const nextState: Partial<S> = {};
+      if (e.target.checked) {
+        // Check all
+        nextState.hasSelected = true;
+        nextState.selectedCount = items.length;
+        nextState.selected = items.reduce((state, item) => {
+          state[item.id] = true;
+          return state;
+        }, {});
+        nextState.isAllSelected = true;
+      } else {
+        // Uncheck all
+        nextState.selected = {};
+        nextState.hasSelected = false;
+        nextState.isAllSelected = false;
+        nextState.selectedCount = 0;
+      }
+      setState(nextState);
     }
-    setState(nextState);
   };
   const onSelectItem = (e, item) => {
     let isChecked = e.target.checked;
-    // @ts-ignore
-    let nextState: Partial<S> = { selected: { ...selected, [item.id]: isChecked } };
-    if (isChecked) {
-      let checkedOnly = Object.values(nextState.selected).filter(Boolean);
-      if (checkedOnly.length === items.length) {
-        nextState.isAllSelected = true;
-      }
-    } else {
-      nextState.isAllSelected = false;
-    }
+    let nextState: Partial<S> = {};
+    nextState.selected = { ...selected, [item.id]: isChecked };
+    let checkedOnly = Object.values(nextState.selected).filter(Boolean);
+    nextState.hasSelected = checkedOnly.length > 0;
+    nextState.isAllSelected = items.length && checkedOnly.length === items.length;
+    nextState.selectedCount = isChecked ? state.selectedCount + 1 : state.selectedCount - 1;
     setState(nextState);
   };
   const isSelected = (item) => {

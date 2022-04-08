@@ -14,34 +14,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import createStyles from '@mui/styles/createStyles';
-
-import makeStyles from '@mui/styles/makeStyles';
 import { useIntl } from 'react-intl';
-import Checkbox from '@mui/material/Checkbox';
+import Checkbox, { CheckboxProps } from '@mui/material/Checkbox';
 import React from 'react';
 import { getPossibleTranslation } from '../../utils/i18n';
 import clsx from 'clsx';
-import Button from '@mui/material/Button';
+import Button, { ButtonProps } from '@mui/material/Button';
 import TranslationOrText from '../../models/TranslationOrText';
 import Skeleton from '@mui/material/Skeleton';
 import { rand } from '../PathNavigator/utils';
-
-const styles = makeStyles((theme) =>
-  createStyles({
-    root: {
-      background: theme.palette.background.paper
-    },
-    itemHeader: {
-      display: 'flex',
-      background: theme.palette.action.selected
-    },
-    checkbox: {
-      color: theme.palette.primary.main,
-      width: '48px'
-    }
-  })
-);
+import Box, { BoxProps } from '@mui/material/Box';
 
 export interface ActionsBarAction {
   id: string;
@@ -54,47 +36,74 @@ interface ActionsBarProps {
   isLoading?: boolean;
   isIndeterminate: boolean;
   isChecked: boolean;
-  classes?: Partial<Record<'root' | 'header' | 'checkbox', string>>;
-  onOptionClicked(option: string): void;
-  toggleSelectAll(): void;
+  classes?: Partial<Record<'root' | 'container' | 'checkbox' | 'button', string>>;
+  onOptionClicked(optionId: string): void;
+  onCheckboxChange: CheckboxProps['onChange'];
+  buttonProps?: Omit<ButtonProps, 'onClick'>;
+  sxs?: Partial<{
+    root: BoxProps['sx'];
+    checkbox: BoxProps['sx'];
+    button: BoxProps['sx'];
+    container: BoxProps['sx'];
+  }>;
+  disabled?: boolean;
 }
 
 export function ActionsBar(props: ActionsBarProps) {
-  const classes = styles({});
   const { formatMessage } = useIntl();
   const {
     options,
     onOptionClicked,
     isIndeterminate,
-    toggleSelectAll,
+    onCheckboxChange,
     isChecked,
     isLoading = false,
-    numOfSkeletonItems = 5
+    numOfSkeletonItems = 5,
+    buttonProps,
+    sxs,
+    disabled = false
   } = props;
-
   return (
-    <section className={clsx(classes.root, props.classes?.root)}>
-      <header className={clsx(classes.itemHeader, props.classes?.header)}>
+    <Box className={props.classes?.root} sx={{ bgcolor: 'background.paper', ...sxs?.root }}>
+      <Box sx={{ bgcolor: 'action.selected', ...sxs?.container }}>
         <Checkbox
+          disabled={disabled}
+          sx={{ width: 48, ...sxs?.checkbox }}
           color="primary"
           indeterminate={isIndeterminate}
           checked={isChecked}
-          className={clsx(classes.checkbox, props.classes?.checkbox)}
-          onChange={toggleSelectAll}
+          className={clsx(props.classes?.checkbox)}
+          onChange={onCheckboxChange}
         />
         {isLoading
-          ? new Array(numOfSkeletonItems).fill(null).map((_, index) => (
-              <Button color="primary" key={index}>
+          ? new Array(numOfSkeletonItems).fill(null).map((nothing, index) => (
+              <Button
+                key={index}
+                color="primary"
+                className={props.classes?.button}
+                sx={sxs?.button}
+                disabled={disabled}
+                {...buttonProps}
+              >
                 <Skeleton animation="pulse" height="12px" width={`${rand(40, 60)}px`} />
               </Button>
             ))
           : options?.map((option: ActionsBarAction) => (
-              <Button color="primary" variant="text" key={option.id} onClick={() => onOptionClicked(option.id)}>
+              <Button
+                key={option.id}
+                color="primary"
+                variant="text"
+                className={props.classes?.button}
+                sx={sxs?.button}
+                disabled={disabled}
+                {...buttonProps}
+                onClick={() => onOptionClicked(option.id)}
+              >
                 {getPossibleTranslation(option.label, formatMessage)}
               </Button>
             ))}
-      </header>
-    </section>
+      </Box>
+    </Box>
   );
 }
 

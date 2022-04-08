@@ -16,7 +16,6 @@
 
 import Typography, { TypographyProps } from '@mui/material/Typography';
 import IconButton, { IconButtonProps } from '@mui/material/IconButton';
-import MuiDialogTitle from '@mui/material/DialogTitle';
 import makeStyles from '@mui/styles/makeStyles';
 import createStyles from '@mui/styles/createStyles';
 import CloseIconRounded from '@mui/icons-material/CloseRounded';
@@ -36,6 +35,7 @@ const dialogTitleStyles = makeStyles((theme) =>
     root: {
       margin: 0,
       display: 'flex',
+      flex: '0 0 auto',
       flexWrap: 'wrap',
       borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
       padding: theme.spacing(1),
@@ -159,7 +159,7 @@ export function DialogHeader(props: DialogHeaderProps) {
   } = props;
   // endregion
   return (
-    <MuiDialogTitle id={id} className={className} classes={{ root: clsx(classes.root, props.classes?.root) }}>
+    <div id={id} className={clsx(className, classes.root, props.classes?.root)}>
       <section className={clsx(classes.titleWrapper, props.classes?.titleWrapper)}>
         {(leftActions || onBack) && (
           <div className={classes.leftActions}>
@@ -228,7 +228,7 @@ export function DialogHeader(props: DialogHeaderProps) {
           {children}
         </section>
       )}
-    </MuiDialogTitle>
+    </div>
   );
 }
 

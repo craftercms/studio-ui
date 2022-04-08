@@ -160,6 +160,7 @@ export function createCodebaseBridge() {
       SearchComponent: lazy(() => import('../components/Search/Search')),
       Global: lazy(() => import('../pages/Global')),
       Preview: lazy(() => import('../pages/Preview')),
+      LegacySiteDashboard: lazy(() => import('../components/LegacySiteDashboard/LegacySiteDashboard')),
       SiteDashboard: lazy(() => import('../components/SiteDashboard/SiteDashboard')),
       SiteTools: lazy(() => import('../pages/SiteTools')),
       PublishDialog: lazy(() => import('../components/PublishDialog/PublishDialog')),
@@ -210,7 +211,7 @@ export function createCodebaseBridge() {
       ContentTypesManagement: lazy(() => import('../components/AccountManagement')),
       ConfigurationManagement: lazy(() => import('../components/AccountManagement')),
       ItemStatesManagement: lazy(() => import('../components/ItemStatesManagement')),
-      RemotesManagement: lazy(() => import('../components/RemoteRepositoriesManagement')),
+      GitManagement: lazy(() => import('../components/GitManagement/GitManagement')),
       GraphQLPlayground: lazy(() => import('../components/AccountManagement')),
       PublishingDashboard: lazy(() => import('../components/PublishingDashboard')),
       SiteConfigurationManagement: lazy(() => import('../components/SiteConfigurationManagement'))
