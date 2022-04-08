@@ -141,5 +141,13 @@ export const guestMessages = defineMessages({
   allowVideoUpload: {
     id: 'validations.allowImageUploadDS',
     defaultMessage: 'Upload video from desktop'
+  },
+  noDataSourcesSet: {
+    id: 'validations.noDataSourcesSet',
+    defaultMessage: 'There are no data sources set for this field'
+  },
+  noPathSetInDataSource: {
+    id: 'validations.noPathSetInDataSource',
+    defaultMessage: 'No path was set for the data source'
   }
 });

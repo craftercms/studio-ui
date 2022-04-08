@@ -164,7 +164,8 @@ import {
   contentTypeUpdated,
   lockContentEvent,
   pluginInstalled,
-  pluginUninstalled
+  pluginUninstalled,
+  showSystemNotification
 } from '../../state/actions/system';
 import { useSpreadState, useUpdateRefs } from '../../hooks';
 import { useHotkeys } from 'react-hotkeys-hook';
@@ -1052,39 +1053,59 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         case showRtePickerActions.type: {
           const onShowSingleFileUploadDialog = (path: string, type: 'image' | 'media') => {
             setDataSourceActionsListState(dataSourceActionsListInitialState);
-            dispatch(
-              showSingleFileUploadDialog({
-                site: siteId,
-                path,
-                fileTypes: type === 'image' ? ['image/*'] : ['video/*'],
-                onClose: batchActions([closeSingleFileUploadDialog(), dispatchDOMEvent({ id: 'fileUploadCanceled' })]),
-                onUploadComplete: batchActions([
-                  closeSingleFileUploadDialog(),
-                  dispatchDOMEvent({ id: 'fileUploaded' })
-                ])
-              })
-            );
 
-            let unsubscribe, cancelUnsubscribe;
-            unsubscribe = createCustomDocumentEventListener('fileUploaded', ({ successful: response }) => {
-              const file = response[0];
-              const filePath = `${file.meta.path}${file.meta.path.endsWith('/') ? '' : '/'}${file.meta.name}`;
-              onRtePickerResult({ path: filePath, name: file.meta.name });
-              cancelUnsubscribe();
-            });
+            if (path) {
+              dispatch(
+                showSingleFileUploadDialog({
+                  site: siteId,
+                  path,
+                  fileTypes: type === 'image' ? ['image/*'] : ['video/*'],
+                  onClose: batchActions([
+                    closeSingleFileUploadDialog(),
+                    dispatchDOMEvent({ id: 'fileUploadCanceled' })
+                  ]),
+                  onUploadComplete: batchActions([
+                    closeSingleFileUploadDialog(),
+                    dispatchDOMEvent({ id: 'fileUploaded' })
+                  ])
+                })
+              );
+              let unsubscribe, cancelUnsubscribe;
+              unsubscribe = createCustomDocumentEventListener('fileUploaded', ({ successful: response }) => {
+                const file = response[0];
+                const filePath = `${file.meta.path}${file.meta.path.endsWith('/') ? '' : '/'}${file.meta.name}`;
+                onRtePickerResult({ path: filePath, name: file.meta.name });
+                cancelUnsubscribe();
+              });
 
-            cancelUnsubscribe = createCustomDocumentEventListener('fileUploadCanceled', () => {
-              onRtePickerResult();
-              unsubscribe();
-            });
+              cancelUnsubscribe = createCustomDocumentEventListener('fileUploadCanceled', () => {
+                onRtePickerResult();
+                unsubscribe();
+              });
+            } else {
+              dispatch(
+                showSystemNotification({
+                  message: formatMessage(guestMessages.noPathSetInDataSource)
+                })
+              );
+            }
           };
 
           const onShowBrowseFilesDialog = (path: string, type: 'image' | 'media') => {
             const mimeTypes = type === 'image' ? ['image/png', 'image/jpeg', 'image/gif', 'image/jpg'] : ['video/mp4'];
             setDataSourceActionsListState(dataSourceActionsListInitialState);
-            setBrowseFilesDialogPath(path);
-            setBrowseFilesDialogMimeTypes(mimeTypes);
-            browseFilesDialogState.onOpen();
+
+            if (path) {
+              setBrowseFilesDialogPath(path);
+              setBrowseFilesDialogMimeTypes(mimeTypes);
+              browseFilesDialogState.onOpen();
+            } else {
+              dispatch(
+                showSystemNotification({
+                  message: formatMessage(guestMessages.noPathSetInDataSource)
+                })
+              );
+            }
           };
 
           const dataSourcesByType = {
@@ -1101,7 +1122,6 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           if (dataSourcesKeys.length === 1) {
             // determine if upload or browse
             const key = dataSourcesKeys[0];
-            // TODO: validate if value exists, otherwise cancel (show an error?)
             const processedPath = processPathMacros({ path: payload.datasources[key].value, model: payload.model });
             if (key === 'allowImageUpload' || key === 'allowVideoUpload') {
               onShowSingleFileUploadDialog(processedPath, payload.type);
@@ -1133,6 +1153,12 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
               },
               items: dataSourcesItems
             });
+          } else if (dataSourcesKeys.length === 0) {
+            dispatch(
+              showSystemNotification({
+                message: formatMessage(guestMessages.noDataSourcesSet)
+              })
+            );
           }
         }
       }
