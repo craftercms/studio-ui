@@ -1062,7 +1062,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
             let unsubscribe, cancelUnsubscribe;
             unsubscribe = createCustomDocumentEventListener('fileUploaded', ({ successful: response }) => {
               const file = response[0];
-              const filePath = `${file.meta.path}${file.meta.name}`;
+              const filePath = `${file.meta.path}${file.meta.path.endsWith('/') ? '' : '/'}${file.meta.name}`;
               onRtePickerResult(filePath, file.meta.name);
               cancelUnsubscribe();
             });
