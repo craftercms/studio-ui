@@ -126,3 +126,19 @@ export function getItemStateId(stateMap: ItemStateMap): ItemStates {
   };
   // endregion
 }
+
+export function isInWorkflow(stateMap: ItemStateMap): boolean {
+  return stateMap
+    ? stateMap.deleted ||
+        stateMap.disabled ||
+        stateMap.systemProcessing ||
+        stateMap.locked ||
+        stateMap.submittedToLive ||
+        stateMap.submittedToStaging ||
+        stateMap.submitted ||
+        stateMap.scheduled ||
+        stateMap.new ||
+        stateMap.modified ||
+        stateMap.publishing
+    : false;
+}

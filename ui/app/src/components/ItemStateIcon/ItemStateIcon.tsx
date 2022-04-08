@@ -34,7 +34,6 @@ import makeStyles from '@mui/styles/makeStyles';
 import palette from '../../styles/palette';
 import { CSSProperties } from '@mui/styles';
 import { DetailedItem, ItemStates, SandboxItem } from '../../models/Item';
-import { FormattedMessage } from 'react-intl';
 
 export type ItemStateIconClassKey =
   | 'root'
@@ -121,6 +120,9 @@ export function ItemStateIcon(props: ItemStateIconProps) {
   const { item, classes: propClasses, styles, className, displayTooltip = true } = props;
   const classes = useStyles(styles);
   const { Icon, stateSpecificClass } = useMemo(() => {
+    if (item.systemType === 'folder') {
+      return { Icon: NotInWorkflowIcon, stateSpecificClass: classes.stateNotInWorkflow };
+    }
     let map: { [key in ItemStates]: any };
     map = {
       new: { Icon: NewStateIcon, stateSpecificClass: classes.stateNewIcon },
@@ -146,16 +148,12 @@ export function ItemStateIcon(props: ItemStateIconProps) {
       translationPending: null,
       translationInProgress: null
     };
-    if (item.systemType === 'folder') {
-      return { Icon: NotInWorkflowIcon, stateSpecificClass: classes.stateNotInWorkflow };
-    } else {
-      return (
-        map[getItemStateId(item.stateMap)] ?? {
-          Icon: NotInWorkflowIcon,
-          stateSpecificClass: classes.stateNotInWorkflow
-        }
-      );
-    }
+    return (
+      map[getItemStateId(item.stateMap)] ?? {
+        Icon: NotInWorkflowIcon,
+        stateSpecificClass: classes.stateNotInWorkflow
+      }
+    );
   }, [
     classes.stateDeletedIcon,
     classes.stateLockedIcon,
@@ -171,21 +169,10 @@ export function ItemStateIcon(props: ItemStateIconProps) {
     classes.stateNotInWorkflow,
     item
   ]);
-  return Icon === null ? null : (
-    <Tooltip
-      title={
-        displayTooltip ? (
-          item.systemType === 'folder' ? (
-            <FormattedMessage id="itemState.notInWorkflow" defaultMessage="Not in workflow" />
-          ) : (
-            getItemStateText(item.stateMap)
-          )
-        ) : (
-          ''
-        )
-      }
-      open={displayTooltip ? void 0 : false}
-    >
+  return Icon === null ? null : item.systemType === 'folder' ? (
+    <Icon className={clsx(classes.root, propClasses?.root, className, stateSpecificClass)} />
+  ) : (
+    <Tooltip title={displayTooltip ? getItemStateText(item.stateMap) : ''} open={displayTooltip ? void 0 : false}>
       <Icon className={clsx(classes.root, propClasses?.root, className, stateSpecificClass)} />
     </Tooltip>
   );
