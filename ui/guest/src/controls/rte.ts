@@ -122,13 +122,14 @@ export function initTinyMCE(
     file_picker_callback: function (cb, value, meta) {
       // meta contains info about type (image, media, etc). Used to properly add DS to dialogs.
       // meta.filetype === 'file | image | media'
-      const datasources = pluckProps(
-        field.validations,
-        'allowImageUpload',
-        'allowImagesFromRepo',
-        'allowVideoUpload',
-        'allowVideosFromRepo'
-      );
+      const datasources = {};
+      Object.values(field.validations).forEach((validation) => {
+        if (
+          ['allowImageUpload', 'allowImagesFromRepo', 'allowVideoUpload', 'allowVideosFromRepo'].includes(validation.id)
+        ) {
+          datasources[validation.id] = validation;
+        }
+      });
       const browseBtn = document.querySelector('.tox-dialog .tox-browse-url');
 
       post({
