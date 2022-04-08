@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import DialogBody from '../../DialogBody/DialogBody';
 import DialogFooter from '../../DialogFooter/DialogFooter';
 import { FormattedMessage } from 'react-intl';
@@ -28,8 +28,17 @@ import { pull } from '../../../services/repositories';
 import SecondaryButton from '../../SecondaryButton';
 import PrimaryButton from '../../PrimaryButton';
 import { isBlank } from '../../../utils/string';
-import { useActiveSiteId } from '../../../hooks/useActiveSiteId';
 import { PullFromRemoteDialogContainerProps } from './utils';
+import {
+  getStoredPullBranch,
+  getStoredPullMergeStrategy,
+  removeStoredPullBranch,
+  removeStoredPullMergeStrategy,
+  setStoredPullBranch,
+  setStoredPullMergeStrategy
+} from '../../../utils/state';
+import useActiveSite from '../../../hooks/useActiveSite';
+import useActiveUser from '../../../hooks/useActiveUser';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -51,12 +60,14 @@ export function PullDialogContainer(props: PullFromRemoteDialogContainerProps) {
     disabled = false,
     isSubmitting = false
   } = props;
-  const [selectedBranch, setSelectedBranch] = useState(branches?.[0] ?? '');
-  const [selectedMergeStrategy, setSelectedMergeStrategy] = useState(mergeStrategies[0].key);
-  const classes = useStyles();
-  const siteId = useActiveSiteId();
 
-  const onChange = (e: any) => {
+  const [selectedBranch, setSelectedBranch] = useState('');
+  const [selectedMergeStrategy, setSelectedMergeStrategy] = useState('');
+  const classes = useStyles();
+  const { uuid, id: siteId } = useActiveSite();
+  const { username } = useActiveUser();
+
+  const onFormInputChange = (e: any) => {
     if (e.target.name === 'branch') {
       setSelectedBranch(e.target.value);
     } else if (e.target.name === 'mergeStrategy') {
@@ -86,6 +97,49 @@ export function PullDialogContainer(props: PullFromRemoteDialogContainerProps) {
     }
   };
 
+  useEffect(() => {
+    if (!selectedBranch && branches?.length) {
+      const storedPullBranch = getStoredPullBranch(uuid, username);
+      if (storedPullBranch) {
+        if (branches.includes(storedPullBranch)) {
+          setSelectedBranch(storedPullBranch);
+        } else {
+          removeStoredPullBranch(uuid, username);
+        }
+      } else {
+        setSelectedBranch(branches[0]);
+      }
+    }
+  }, [branches, selectedBranch, uuid, username]);
+
+  useEffect(() => {
+    if (selectedBranch) {
+      setStoredPullBranch(uuid, username, selectedBranch);
+    }
+  }, [selectedBranch, uuid, username]);
+
+  useEffect(() => {
+    if (!selectedMergeStrategy && mergeStrategies?.length) {
+      const storedPullMergeStrategy = getStoredPullMergeStrategy(uuid, username);
+      if (storedPullMergeStrategy) {
+        let strategy = mergeStrategies.find((ms) => ms.key === storedPullMergeStrategy);
+        if (strategy) {
+          setSelectedMergeStrategy(storedPullMergeStrategy);
+        } else {
+          removeStoredPullMergeStrategy(uuid, username);
+        }
+      } else {
+        setSelectedMergeStrategy(mergeStrategies[0].key);
+      }
+    }
+  }, [mergeStrategies, selectedMergeStrategy, uuid, username]);
+
+  useEffect(() => {
+    if (selectedMergeStrategy) {
+      setStoredPullMergeStrategy(uuid, username, selectedMergeStrategy);
+    }
+  }, [selectedMergeStrategy, uuid, username]);
+
   return (
     <form onSubmit={onSubmit}>
       <DialogBody>
@@ -97,7 +151,7 @@ export function PullDialogContainer(props: PullFromRemoteDialogContainerProps) {
             labelId="remoteBranchToPullLabel"
             name="branch"
             value={selectedBranch}
-            onChange={onChange}
+            onChange={onFormInputChange}
             label={<FormattedMessage id="repositories.remoteBranchToPull" defaultMessage="Remote Branch to Pull" />}
             fullWidth
           >
@@ -116,7 +170,7 @@ export function PullDialogContainer(props: PullFromRemoteDialogContainerProps) {
             labelId="mergeStrategyLabel"
             name="mergeStrategy"
             value={selectedMergeStrategy}
-            onChange={onChange}
+            onChange={onFormInputChange}
             label={<FormattedMessage id="repositories.mergeStrategyLabel" defaultMessage="Merge Strategy" />}
             fullWidth
           >

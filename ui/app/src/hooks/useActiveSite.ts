@@ -22,3 +22,5 @@ export function useActiveSite(): Site {
   const id = useSelector<GlobalState, string>((state) => state.sites.active);
   return useSelector<GlobalState, Site>((state) => state.sites.byId[id]);
 }
+
+export default useActiveSite;

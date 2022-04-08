@@ -43,9 +43,7 @@ import { useLocale } from '../../../hooks/useLocale';
 import { getStoredDashboardPreferences, setStoredDashboardPreferences } from '../../../utils/state';
 import { useDispatch, useSelector } from 'react-redux';
 import GlobalState from '../../../models/GlobalState';
-import { completeDetailedItem } from '../../../state/actions/content';
 import { showItemMegaMenu } from '../../../state/actions/dialogs';
-import { batchActions } from '../../../state/actions/misc';
 import { getEmptyStateStyleSet } from '../../EmptyState';
 import { useActiveSite } from '../../../hooks/useActiveSite';
 import { asLocalizedDateTime } from '../../../utils/datetime';
@@ -212,18 +210,15 @@ export default function RecentlyPublishedDashlet() {
   const onItemMenuClick = (event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, item: DetailedItem) => {
     const path = item.path;
     dispatch(
-      batchActions([
-        completeDetailedItem({ path }),
-        showItemMegaMenu({
-          path,
-          anchorReference: 'anchorPosition',
-          anchorPosition: { top: event.clientY, left: event.clientX },
-          numOfLoaderItems: getNumOfMenuOptionsForItem({
-            path: item.path,
-            systemType: getSystemTypeFromPath(item.path)
-          } as DetailedItem)
-        })
-      ])
+      showItemMegaMenu({
+        path,
+        anchorReference: 'anchorPosition',
+        anchorPosition: { top: event.clientY, left: event.clientX },
+        numOfLoaderItems: getNumOfMenuOptionsForItem({
+          path: item.path,
+          systemType: getSystemTypeFromPath(item.path)
+        } as DetailedItem)
+      })
     );
   };
 

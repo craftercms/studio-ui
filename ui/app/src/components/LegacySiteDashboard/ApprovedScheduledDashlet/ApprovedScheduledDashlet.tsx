@@ -46,13 +46,11 @@ import { getStoredDashboardPreferences, setStoredDashboardPreferences } from '..
 import { useDispatch, useSelector } from 'react-redux';
 import GlobalState from '../../../models/GlobalState';
 import { createPresenceTable } from '../../../utils/array';
-import { completeDetailedItem } from '../../../state/actions/content';
 import { showItemMegaMenu } from '../../../state/actions/dialogs';
 import { itemActionDispatcher } from '../../../utils/itemActions';
 import { useEnv } from '../../../hooks/useEnv';
 import ActionsBar from '../../ActionsBar';
 import translations from './translations';
-import { batchActions } from '../../../state/actions/misc';
 import { getEmptyStateStyleSet } from '../../EmptyState';
 import { useActiveSite } from '../../../hooks/useActiveSite';
 import { asLocalizedDateTime } from '../../../utils/datetime';
@@ -212,18 +210,15 @@ export function ApprovedScheduledDashlet() {
     const path = item.path;
 
     dispatch(
-      batchActions([
-        completeDetailedItem({ path }),
-        showItemMegaMenu({
-          path,
-          anchorReference: 'anchorPosition',
-          anchorPosition: { top: event.clientY, left: event.clientX },
-          numOfLoaderItems: getNumOfMenuOptionsForItem({
-            path: item.path,
-            systemType: getSystemTypeFromPath(item.path)
-          } as DetailedItem)
-        })
-      ])
+      showItemMegaMenu({
+        path,
+        anchorReference: 'anchorPosition',
+        anchorPosition: { top: event.clientY, left: event.clientX },
+        numOfLoaderItems: getNumOfMenuOptionsForItem({
+          path: item.path,
+          systemType: getSystemTypeFromPath(item.path)
+        } as DetailedItem)
+      })
     );
   };
 

@@ -35,6 +35,9 @@ export const completeDetailedItem =
   /*#__PURE__*/ createAction<{ path: string; force?: boolean }>('COMPLETE_DETAILED_ITEM');
 export const fetchDetailedItemComplete = /*#__PURE__*/ createAction<DetailedItem>('FETCH_DETAILED_ITEM_COMPLETE');
 export const fetchDetailedItemFailed = /*#__PURE__*/ createAction<AjaxError>('FETCH_DETAILED_ITEM_FAILED');
+export const fetchDetailedItems = /*#__PURE__*/ createAction<{ paths: string[] }>('COMPLETE_DETAILED_ITEMS');
+export const fetchDetailedItemsComplete = /*#__PURE__*/ createAction<DetailedItem[]>('FETCH_DETAILED_ITEMS_COMPLETE'); // TODO: update type
+export const fetchDetailedItemsFailed = /*#__PURE__*/ createAction<AjaxError>('FETCH_DETAILED_ITEMS_FAILED');
 // endregion
 
 // region Sandbox Item

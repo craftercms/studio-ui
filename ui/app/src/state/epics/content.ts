@@ -28,6 +28,9 @@ import {
   fetchDetailedItem,
   fetchDetailedItemComplete,
   fetchDetailedItemFailed,
+  fetchDetailedItems,
+  fetchDetailedItemsComplete,
+  fetchDetailedItemsFailed,
   fetchQuickCreateList as fetchQuickCreateListAction,
   fetchQuickCreateListComplete,
   fetchQuickCreateListFailed,
@@ -47,6 +50,7 @@ import { catchAjaxError } from '../../utils/ajax';
 import {
   duplicate,
   fetchDetailedItem as fetchDetailedItemService,
+  fetchDetailedItems as fetchDetailedItemsService,
   fetchItemByPath,
   fetchQuickCreateList,
   fetchSandboxItem as fetchSandboxItemService,
@@ -97,6 +101,7 @@ import { showErrorDialog } from '../reducers/dialogs/error';
 import { dissociateTemplate } from '../actions/preview';
 import { isBlank } from '../../utils/string';
 import { popTab, pushTab } from '../reducers/dialogs/minimizedTabs';
+import { DetailedItem } from '../../models';
 
 export const sitePolicyMessages = defineMessages({
   itemPastePolicyConfirm: {
@@ -175,6 +180,17 @@ const content: CrafterCMSEpic[] = [
         fetchDetailedItemService(state.sites.active, payload.path).pipe(
           map(fetchDetailedItemComplete),
           catchAjaxError(fetchDetailedItemFailed)
+        )
+      )
+    ),
+  (action$, state$) =>
+    action$.pipe(
+      ofType(fetchDetailedItems.type),
+      withLatestFrom(state$),
+      switchMap(([{ payload }, state]) =>
+        fetchDetailedItemsService(state.sites.active, payload.paths).pipe(
+          map((items) => fetchDetailedItemsComplete(items as DetailedItem[])),
+          catchAjaxError(fetchDetailedItemsFailed)
         )
       )
     ),
