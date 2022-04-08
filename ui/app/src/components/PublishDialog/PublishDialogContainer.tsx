@@ -181,7 +181,7 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
       publishingTargets,
       myPermissions
     }),
-    [detailedItems, state.error, isSubmitting, publishingTargets, myPermissions]
+    [detailedItems.isFetching, detailedItems.itemsByPath, state.error, isSubmitting, publishingTargets, myPermissions]
   );
 
   const resource = useLogicResource<PublishDialogResourceBody, PublishDialogResourceInput>(publishSource, {
