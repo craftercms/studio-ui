@@ -232,10 +232,10 @@ export function PathNavigator(props: PathNavigatorProps) {
           const parentPath = getParentPath(targetPath);
           if (parentPath === withoutIndex(state.currentPath)) {
             // If item is direct children of root (in current pathNavigator view)
-            dispatch(pathNavigatorRefresh({ id }));
+            dispatch(pathNavigatorBackgroundRefresh({ id }));
           } else if (withoutIndex(targetPath) === withoutIndex(state.currentPath)) {
             // If item is root (in current pathNavigator view)
-            dispatch(pathNavigatorRefresh({ id }));
+            dispatch(pathNavigatorBackgroundRefresh({ id }));
           } else if (getParentPath(parentPath) === withoutIndex(state.currentPath)) {
             // if item just belongs to parent item
             dispatch(fetchSandboxItem({ path: parentPath, force: true }));
@@ -257,7 +257,7 @@ export function PathNavigator(props: PathNavigatorProps) {
               })
             );
           } else if (state.itemsInPath.includes(targetPath)) {
-            dispatch(pathNavigatorRefresh({ id }));
+            dispatch(pathNavigatorBackgroundRefresh({ id }));
           }
           break;
         }
