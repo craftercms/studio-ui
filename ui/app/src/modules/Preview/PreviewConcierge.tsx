@@ -1116,13 +1116,13 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
               });
             });
 
-            const { left, top, width, height } = payload.btnRect;
+            const { left, top, height } = payload.btnRect;
             setDataSourceActionsListState({
               show: true,
               rect: {
                 ...payload.btnRect,
-                left: left + (showToolsPanel ? toolsPanelWidth : 0) - width,
-                top: top + height * 2 // To position correctly under the button
+                left: left + (showToolsPanel ? toolsPanelWidth : 0),
+                top: top + height * 3 // To position correctly under the button
               },
               items: dataSourcesItems
             });

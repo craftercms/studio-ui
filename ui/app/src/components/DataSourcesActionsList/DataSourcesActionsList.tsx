@@ -15,11 +15,8 @@
  */
 
 import React from 'react';
-import Dialog from '@mui/material/Dialog';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
-import ListItemButton from '@mui/material/ListItemButton';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 
 export interface DataSourcesActionsListProps {
   show: boolean;
@@ -33,47 +30,27 @@ export interface DataSourcesActionsListProps {
   onClose?(): void;
 }
 
-function getStyles() {
-  return {
-    paper: {
-      position: 'fixed'
-    },
-    backdrop: {
-      backgroundColor: 'transparent',
-      boxShadow: 'none'
-    }
-  };
-}
-
 export default function DataSourcesActionsList(props: DataSourcesActionsListProps) {
   const { show, rect, items, onClose } = props;
-  const sx = getStyles();
 
   return (
     <>
       {items.length > 0 && (
-        <Dialog
-          onClose={onClose}
+        <Menu
           open={show}
-          PaperProps={{
-            sx: sx.paper,
-            style: {
-              top: rect.top,
-              left: rect.left
-            }
+          anchorReference="anchorPosition"
+          anchorPosition={{
+            top: rect.top,
+            left: rect.left
           }}
-          BackdropProps={{ sx: sx.backdrop }}
+          onClose={onClose}
         >
-          <List dense={true}>
-            {items.map((item, index) => (
-              <ListItem key={index} disableGutters>
-                <ListItemButton onClick={() => item.action(item.path, item.type)}>
-                  <ListItemText primary={item.label} />
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
-        </Dialog>
+          {items.map((item, index) => (
+            <MenuItem key={index} onClick={() => item.action(item.path, item.type)}>
+              {item.label}
+            </MenuItem>
+          ))}
+        </Menu>
       )}
     </>
   );
