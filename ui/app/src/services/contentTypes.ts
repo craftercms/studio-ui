@@ -181,9 +181,6 @@ function getFieldDataSourceValidations(
     validations = asArray<LegacyFormDefinitionProperty>(fieldProperty).reduce<LookupTable<ContentTypeFieldValidation>>(
       (table, prop) => {
         if (prop.name === 'imageManager' || prop.name === 'videoManager') {
-          if (prop.name === 'videoManager') {
-            debugger;
-          }
           const dataSourcesNames = prop.value !== '' ? prop.value.split(',') : null;
           if (dataSourcesNames) {
             dataSourcesNames.forEach((name) => {
