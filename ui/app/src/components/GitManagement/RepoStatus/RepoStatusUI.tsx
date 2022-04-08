@@ -38,7 +38,7 @@ import Grid from '@mui/material/Grid';
 export interface RepoStatusUIProps {
   status: RepositoryStatus;
   onRevertPull(): void;
-  onClickCommit(): void;
+  onCommitClick(): void;
   onResolveConflict(strategy: string, path: string): void;
   onDiffClick(path: string): void;
 }
@@ -79,7 +79,7 @@ const useStyles = makeStyles((theme) =>
 );
 
 export function RepoStatusUI(props: RepoStatusUIProps) {
-  const { status, onRevertPull, onClickCommit, onResolveConflict, onDiffClick } = props;
+  const { status, onRevertPull, onCommitClick, onResolveConflict, onDiffClick } = props;
   const classes = useStyles();
   const { formatMessage } = useIntl();
   const hasConflictsOrUncommitted = status.conflicting.length > 0 || status.uncommittedChanges.length > 0;
@@ -103,7 +103,7 @@ export function RepoStatusUI(props: RepoStatusUIProps) {
               confirmHelperText={formatMessage(messages.confirmHelper)}
               onConfirm={onRevertPull}
             />
-            <Button variant="outlined" className={classes.commitButton} onClick={onClickCommit}>
+            <Button variant="outlined" className={classes.commitButton} onClick={onCommitClick}>
               <FormattedMessage id="repositories.commitResolution" defaultMessage="Commit Resolution" />
             </Button>
           </>

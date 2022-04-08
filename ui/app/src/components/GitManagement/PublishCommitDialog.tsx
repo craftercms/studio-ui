@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import DialogBody from '../DialogBody/DialogBody';
 import { EnhancedDialog, EnhancedDialogProps } from '../EnhancedDialog';
 import PublishOnDemandForm from '../PublishOnDemandForm';
@@ -53,7 +53,7 @@ export function PublishCommitDialog(props: PublishCommitDialogProps) {
     isSubmitting: false,
     publishingTargets: null,
     path: '',
-    commitIds: commitId,
+    commitIds: '',
     comment: '',
     environment: ''
   };
@@ -72,7 +72,7 @@ export function PublishCommitDialog(props: PublishCommitDialogProps) {
         data.comment
       ).subscribe({
         next() {
-          setState({ isSubmitting: true, publishSuccessful: true });
+          setState({ isSubmitting: false, publishSuccessful: true });
         },
         error({ response }) {
           setState({ isSubmitting: true });
@@ -102,6 +102,9 @@ export function PublishCommitDialog(props: PublishCommitDialogProps) {
       sub.unsubscribe();
     };
   });
+  useEffect(() => {
+    setState({ commitIds: commitId });
+  }, [commitId, setState]);
   return (
     <EnhancedDialog
       {...dialogProps}

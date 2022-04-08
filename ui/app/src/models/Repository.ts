@@ -27,9 +27,9 @@ export interface Repository {
 }
 
 export interface RepositoryStatus {
+  clean: boolean;
   conflicting: string[];
   uncommittedChanges: string[];
-  clean: boolean;
 }
 
 export interface FileDiff {

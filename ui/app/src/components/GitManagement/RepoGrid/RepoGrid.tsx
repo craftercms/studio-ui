@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Resource } from '../../../models/Resource';
 import { MergeStrategy, Repository } from '../../../models/Repository';
 import RepoGridUI from './RepoGridUI';
 import React, { useState } from 'react';
@@ -35,9 +34,10 @@ import { useSnackbar } from 'notistack';
 import { copyToClipboard } from '../../../utils/system';
 import { PublishCommitDialog } from '../PublishCommitDialog';
 import { useSpreadState } from '../../../hooks';
+import RepoGridSkeleton from './RepoGridSkeleton';
 
 export interface RepoGridProps {
-  resource: Resource<Array<Repository>>;
+  repositories: Array<Repository>;
   disableActions: boolean;
   fetchStatus(): void;
   fetchRepositories(): void;
@@ -76,7 +76,7 @@ const messages = defineMessages({
 });
 
 export function RepoGrid(props: RepoGridProps) {
-  const { resource, disableActions, fetchStatus, fetchRepositories } = props;
+  const { repositories, disableActions, fetchStatus, fetchRepositories } = props;
   const [repositoriesPullDialogBranches, setRepositoriesPullDialogBranches] = useState([]);
   const [repositoriesPushDialogBranches, setRepositoriesPushDialogBranches] = useState([]);
   const [pullRemoteName, setPullRemoteName] = useState(null);
@@ -179,13 +179,17 @@ export function RepoGrid(props: RepoGridProps) {
 
   return (
     <>
-      <RepoGridUI
-        resource={resource}
-        disableActions={disableActions}
-        onPullClick={onClickPull}
-        onPushClick={onClickPush}
-        onDeleteRemote={deleteRemote}
-      />
+      {repositories ? (
+        <RepoGridUI
+          repositories={repositories}
+          disableActions={disableActions}
+          onPullClick={onClickPull}
+          onPushClick={onClickPush}
+          onDeleteRemote={deleteRemote}
+        />
+      ) : (
+        <RepoGridSkeleton />
+      )}
       <Snackbar
         autoHideDuration={10000}
         onClose={onClosePostPullSnack}
@@ -226,6 +230,7 @@ export function RepoGrid(props: RepoGridProps) {
           }
         />
       </Snackbar>
+      {/* region PullDialog */}
       <PullDialog
         open={pullFromRemoteDialogState.open}
         onClose={pullFromRemoteDialogState.onClose}
@@ -238,6 +243,8 @@ export function RepoGrid(props: RepoGridProps) {
         isSubmitting={pullFromRemoteDialogState.isSubmitting}
         hasPendingChanges={pullFromRemoteDialogState.hasPendingChanges}
       />
+      {/* endregion */}
+      {/* region PushDialog */}
       <PushDialog
         open={pushToRemoteDialogState.open}
         branches={repositoriesPushDialogBranches}
@@ -250,6 +257,7 @@ export function RepoGrid(props: RepoGridProps) {
         hasPendingChanges={pushToRemoteDialogState.hasPendingChanges}
         onSubmittingChange={pushToRemoteDialogState.onSubmittingChange}
       />
+      {/* endregion */}
       <PublishCommitDialog
         commitId={postPullState.mergeCommitId}
         open={postPullState.openPublishCommitDialog}

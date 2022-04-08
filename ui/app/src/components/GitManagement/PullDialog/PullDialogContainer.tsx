@@ -40,7 +40,17 @@ const useStyles = makeStyles(() =>
 );
 
 export function PullDialogContainer(props: PullFromRemoteDialogContainerProps) {
-  const { branches, remoteName, mergeStrategies, onClose, onPullSuccess, onPullError } = props;
+  const {
+    branches,
+    remoteName,
+    mergeStrategies,
+    onClose,
+    onPullSuccess,
+    onPullError,
+    onPullStart,
+    disabled = false,
+    isSubmitting = false
+  } = props;
   const [selectedBranch, setSelectedBranch] = useState(branches?.[0] ?? '');
   const [selectedMergeStrategy, setSelectedMergeStrategy] = useState(mergeStrategies[0].key);
   const classes = useStyles();
@@ -59,6 +69,7 @@ export function PullDialogContainer(props: PullFromRemoteDialogContainerProps) {
   const onSubmit = (e) => {
     e.preventDefault();
     if (!isBlank(selectedBranch)) {
+      onPullStart?.();
       pull({
         siteId,
         remoteName,
@@ -78,7 +89,7 @@ export function PullDialogContainer(props: PullFromRemoteDialogContainerProps) {
   return (
     <form onSubmit={onSubmit}>
       <DialogBody>
-        <FormControl variant="outlined" fullWidth className={classes.formControl}>
+        <FormControl variant="outlined" fullWidth className={classes.formControl} disabled={disabled || isSubmitting}>
           <InputLabel id="remoteBranchToPullLabel">
             <FormattedMessage id="repositories.remoteBranchToPull" defaultMessage="Remote Branch to Pull" />
           </InputLabel>
@@ -97,7 +108,7 @@ export function PullDialogContainer(props: PullFromRemoteDialogContainerProps) {
             ))}
           </Select>
         </FormControl>
-        <FormControl variant="outlined" fullWidth>
+        <FormControl variant="outlined" fullWidth disabled={disabled || isSubmitting}>
           <InputLabel id="mergeStrategyLabel">
             <FormattedMessage id="repositories.mergeStrategyLabel" defaultMessage="Merge Strategy" />
           </InputLabel>
@@ -118,10 +129,10 @@ export function PullDialogContainer(props: PullFromRemoteDialogContainerProps) {
         </FormControl>
       </DialogBody>
       <DialogFooter>
-        <SecondaryButton onClick={onCloseButtonClick}>
+        <SecondaryButton onClick={onCloseButtonClick} disabled={disabled || isSubmitting}>
           <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
         </SecondaryButton>
-        <PrimaryButton type="submit" disabled={isBlank(selectedBranch)}>
+        <PrimaryButton type="submit" disabled={disabled || isBlank(selectedBranch)} loading={isSubmitting}>
           <FormattedMessage id="words.ok" defaultMessage="Ok" />
         </PrimaryButton>
       </DialogFooter>

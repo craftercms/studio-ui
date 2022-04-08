@@ -25,18 +25,20 @@ import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import { isBlank } from '../../utils/string';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
+import { RepositoryStatus } from '../../models';
+import { AjaxError } from 'rxjs/ajax';
 
 export interface CommitResolutionDialogContainerProps {
   open: boolean;
   setDisableQuickDismiss?(disable: boolean): void;
   onClose(): void;
-  onCommit?(): void;
-  onCommitSuccess?(status): void;
-  onCommitError?(status): void;
+  onCommitRequestSent?(): void;
+  onCommitSuccess?(status: RepositoryStatus): void;
+  onCommitError?(status: AjaxError): void;
 }
 
 export function CommitResolutionDialogContainer(props: CommitResolutionDialogContainerProps) {
-  const { onClose, onCommit, setDisableQuickDismiss, onCommitSuccess, onCommitError } = props;
+  const { onClose, onCommitRequestSent, setDisableQuickDismiss, onCommitSuccess, onCommitError } = props;
   const siteId = useActiveSiteId();
   const [message, setMessage] = useState('');
 
@@ -50,15 +52,15 @@ export function CommitResolutionDialogContainer(props: CommitResolutionDialogCon
     e.preventDefault();
 
     if (!isBlank(message)) {
-      onCommit?.();
-      commitResolution(siteId, message).subscribe(
-        (status) => {
+      onCommitRequestSent?.();
+      commitResolution(siteId, message).subscribe({
+        next(status) {
           onCommitSuccess?.(status);
         },
-        ({ response }) => {
+        error({ response }) {
           onCommitError?.(response);
         }
-      );
+      });
     }
   };
 

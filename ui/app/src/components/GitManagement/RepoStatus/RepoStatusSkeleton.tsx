@@ -14,36 +14,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Typography from '@mui/material/Typography';
-import Toolbar from '@mui/material/Toolbar';
 import React from 'react';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
 import Skeleton from '@mui/material/Skeleton';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
-
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    toolbar: {
-      paddingLeft: 0,
-      paddingRight: 0,
-      alignItems: 'center'
-    }
-  })
-);
+import { rand } from '../../PathNavigator/utils';
 
 export default function RepoStatusSkeleton() {
-  const classes = useStyles();
-
   return (
-    <>
-      <Toolbar className={classes.toolbar}>
-        <section style={{ width: '100%' }}>
-          <Typography variant="h5">
-            <Skeleton variant="text" width="30%" />
-          </Typography>
-          <Skeleton variant="text" width="20%" />
-        </section>
-      </Toolbar>
-    </>
+    <Box sx={{ p: 2 }}>
+      <section style={{ width: '100%' }}>
+        <Typography variant="h5">
+          <Skeleton variant="text" width="30%" />
+        </Typography>
+        {new Array(rand(5, 15)).fill(null).map((_, index) => (
+          <Skeleton key={index} variant="text" width={`${rand(20, 90)}%`} style={{ margin: '10px 0' }} />
+        ))}
+      </section>
+    </Box>
   );
 }

@@ -14,19 +14,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
 import AddIcon from '@mui/icons-material/Add';
 import { Repository, RepositoryStatus } from '../../models/Repository';
 import ApiResponse from '../../models/ApiResponse';
 import { fetchRepositories as fetchRepositoriesService, fetchStatus } from '../../services/repositories';
-import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
-import RepoGridSkeleton from './RepoGrid/RepoGridSkeleton';
 import RepoGrid from './RepoGrid';
 import RepoStatus from './RepoStatus/RepoStatus';
-import RepoStatusSkeleton from './RepoStatus/RepoStatusSkeleton';
 import NewRemoteRepositoryDialog from '../NewRemoteRepositoryDialog';
 import { showSystemNotification } from '../../state/actions/system';
 import { useDispatch } from 'react-redux';
@@ -35,14 +33,17 @@ import Typography from '@mui/material/Typography';
 import useStyles from './styles';
 import translations from './translations';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
-import { useLogicResource } from '../../hooks/useLogicResource';
 import Paper from '@mui/material/Paper';
 import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { useWithPendingChangesCloseRequest } from '../../hooks/useWithPendingChangesCloseRequest';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
-import { WarningRounded } from '@mui/icons-material';
+import WarningRounded from '@mui/icons-material/WarningRounded';
+import { useSpreadState } from '../../hooks';
+import { UNDEFINED } from '../../utils/constants';
+import RefreshRounded from '@mui/icons-material/RefreshRounded';
+import Tooltip from '@mui/material/Tooltip';
 
 export interface GitManagementProps {
   embedded?: boolean;
@@ -52,77 +53,91 @@ export interface GitManagementProps {
 function a11yProps(index: number) {
   return {
     id: `simple-tab-${index}`,
-    'aria-controls': `git-repos-tabpanel-${index}`
+    'aria-controls': `gitReposTabpanel_${index}`
   };
 }
 
+// TODO:
+//  - Accommodate area to display repo fetch errors
+//  - Accommodate area to display status fetch errors
+//  - Use/discard `loading` props
 export default function GitManagement(props: GitManagementProps) {
   const { embedded, showAppsButton = !embedded } = props;
-  const [fetchingRepositories, setFetchingRepositories] = useState(false);
-  const [errorRepositories, setErrorRepositories] = useState<ApiResponse>();
-  const [repositories, setRepositories] = useState<Array<Repository>>(null);
-  const [fetchingStatus, setFetchingStatus] = useState(false);
-  const [errorStatus, setErrorStatus] = useState<ApiResponse>();
-  const [repositoriesStatus, setRepositoriesStatus] = useState<RepositoryStatus>(null);
-  const [currentStatusValue, setCurrentStatusValue] = useState(null);
-  const siteId = useActiveSiteId();
-  const { formatMessage } = useIntl();
-  const dispatch = useDispatch();
   const classes = useStyles();
+  const siteId = useActiveSiteId();
+  const dispatch = useDispatch();
+  const { formatMessage } = useIntl();
   const [activeTab, setActiveTab] = useState(0);
-  const hasConflictsOrUncommitted = Boolean(
-    repositoriesStatus?.conflicting.length > 0 && repositoriesStatus?.uncommittedChanges.length > 0
-  );
 
-  const setCurrentStatus = (status) => {
-    if (status.clean) {
-      setCurrentStatusValue('noConflicts');
-    } else if (status.conflicting.length > 0) {
-      setCurrentStatusValue('conflictsExist');
-    } else if (status.uncommittedChanges.length > 0 && status.conflicting.length < 1) {
-      setCurrentStatusValue('pendingCommit');
-    } else if (status.uncommittedChanges.length < 1 && status.conflicting.length < 1) {
-      setCurrentStatusValue('unstagedFiles');
-    } else {
-      setCurrentStatusValue(null);
-    }
-  };
+  const [{ repositories }, setRepoState] = useSpreadState({
+    repositories: null as Array<Repository>,
+    loadingRepos: false,
+    reposFetchError: null as ApiResponse
+  });
+
+  const [{ loadingStatus, repoStatus, clean, hasConflicts, hasUncommitted, statusMessageKey }, setRepoStatusState] =
+    useSpreadState({
+      clean: true,
+      loadingStatus: false,
+      hasConflicts: false,
+      hasUncommitted: false,
+      statusFetchError: null as ApiResponse,
+      repoStatus: null as RepositoryStatus,
+      statusMessageKey: null as string
+    });
 
   const fetchRepositories = useCallback(() => {
-    setFetchingRepositories(true);
+    setRepoState({ loadingRepos: true, reposFetchError: null });
     fetchRepositoriesService(siteId).subscribe({
       next: (repositories) => {
-        setRepositories(repositories);
-        setFetchingRepositories(false);
+        setRepoState({ repositories, loadingRepos: false });
       },
       error: ({ response }) => {
-        setErrorRepositories(response);
-        setFetchingRepositories(false);
+        setRepoState({ loadingRepos: false, reposFetchError: response });
       }
     });
-  }, [siteId]);
+  }, [setRepoState, siteId]);
 
-  const fetchRepositoriesStatus = useCallback(() => {
-    setFetchingStatus(true);
+  const fetchRepoStatusReceiver = useCallback(
+    (repoStatus: RepositoryStatus) => {
+      let statusMessageKey = null;
+      if (repoStatus.clean) {
+        statusMessageKey = 'noConflicts';
+      } else if (repoStatus.conflicting.length > 0) {
+        statusMessageKey = 'conflictsExist';
+      } else if (repoStatus.uncommittedChanges.length > 0 && repoStatus.conflicting.length < 1) {
+        statusMessageKey = 'pendingCommit';
+      } else if (repoStatus.uncommittedChanges.length < 1 && repoStatus.conflicting.length < 1) {
+        statusMessageKey = 'unstagedFiles';
+      }
+      setRepoStatusState({
+        loadingStatus: false,
+        repoStatus,
+        statusMessageKey,
+        clean: repoStatus.clean,
+        hasConflicts: Boolean(repoStatus.conflicting.length),
+        hasUncommitted: Boolean(repoStatus.uncommittedChanges.length)
+      });
+    },
+    [setRepoStatusState]
+  );
+  const fetchRepoStatus = useCallback(() => {
+    setRepoStatusState({ loadingStatus: true, statusFetchError: null });
     fetchStatus(siteId).subscribe({
-      next(status) {
-        setRepositoriesStatus(status);
-        setCurrentStatus(status);
-        setFetchingStatus(false);
-      },
-      error({ response }) {
-        setErrorStatus(response);
-        setFetchingStatus(false);
+      next: fetchRepoStatusReceiver,
+      error(response) {
+        setRepoStatusState({ loadingStatus: false, statusFetchError: response });
+        dispatch(
+          showSystemNotification({
+            message: response.response.message,
+            options: { variant: 'error' }
+          })
+        );
       }
     });
-  }, [siteId]);
+  }, [dispatch, fetchRepoStatusReceiver, setRepoStatusState, siteId]);
 
-  const updateRepositoriesStatus = (status) => {
-    setRepositoriesStatus(status);
-    setCurrentStatus(status);
-  };
-
-  const onCreateSuccess = () => {
+  const onRepoCreatedSuccess = () => {
     fetchRepositories();
     newRemoteRepositoryDialogState.onClose();
     dispatch(
@@ -132,7 +147,7 @@ export default function GitManagement(props: GitManagementProps) {
     );
   };
 
-  const onCreateError = ({ response }) => {
+  const onRepoCreateError = ({ response }) => {
     dispatch(
       showSystemNotification({
         message: response.response.message,
@@ -150,42 +165,8 @@ export default function GitManagement(props: GitManagementProps) {
   }, [fetchRepositories]);
 
   useEffect(() => {
-    fetchRepositoriesStatus();
-  }, [fetchRepositoriesStatus]);
-
-  const resource = useLogicResource<
-    Array<Repository>,
-    { repositories: Array<Repository>; error: ApiResponse; fetching: boolean }
-  >(
-    useMemo(
-      () => ({ repositories, error: errorRepositories, fetching: fetchingRepositories }),
-      [repositories, errorRepositories, fetchingRepositories]
-    ),
-    {
-      shouldResolve: (source) => Boolean(source.repositories) && !fetchingRepositories,
-      shouldReject: ({ error }) => Boolean(error),
-      shouldRenew: (source, resource) => fetchingRepositories && resource.complete,
-      resultSelector: (source) => source.repositories,
-      errorSelector: () => errorRepositories
-    }
-  );
-
-  const statusResource = useLogicResource<
-    RepositoryStatus,
-    { status: RepositoryStatus; error: ApiResponse; fetching: boolean }
-  >(
-    useMemo(
-      () => ({ status: repositoriesStatus, error: errorStatus, fetching: fetchingStatus }),
-      [repositoriesStatus, errorStatus, fetchingStatus]
-    ),
-    {
-      shouldResolve: (source) => Boolean(source.status) && !fetchingStatus,
-      shouldReject: ({ error }) => Boolean(error),
-      shouldRenew: (source, resource) => fetchingStatus && resource.complete,
-      resultSelector: (source) => source.status,
-      errorSelector: () => errorRepositories
-    }
-  );
+    fetchRepoStatus();
+  }, [fetchRepoStatus]);
 
   const newRemoteRepositoryDialogState = useEnhancedDialogState();
   const newRemoteRepositoryDialogStatePendingChangesCloseRequest = useWithPendingChangesCloseRequest(
@@ -206,6 +187,18 @@ export default function GitManagement(props: GitManagementProps) {
             <FormattedMessage id="repositories.newRepository" defaultMessage="New Remote" />
           </Button>
         }
+        rightContent={
+          <Tooltip title={<FormattedMessage id="words.refresh" defaultMessage="Refresh" />}>
+            <IconButton
+              onClick={() => {
+                fetchRepositories();
+                fetchRepoStatus();
+              }}
+            >
+              <RefreshRounded />
+            </IconButton>
+          </Tooltip>
+        }
         showHamburgerMenuButton={!embedded}
         showAppsButton={showAppsButton}
       />
@@ -216,11 +209,16 @@ export default function GitManagement(props: GitManagementProps) {
             {...a11yProps(0)}
           />
           <Tab
-            sx={{ flexDirection: 'row', color: hasConflictsOrUncommitted ? 'error.main' : void 0 }}
+            sx={{
+              flexDirection: 'row',
+              color: hasConflicts ? 'error.main' : hasUncommitted ? 'warning.main' : UNDEFINED
+            }}
             label={
               <>
                 <FormattedMessage id="repository.repositoryStatusLabel" defaultMessage="Repository Status" />
-                {hasConflictsOrUncommitted && <WarningRounded sx={{ ml: 1 }} color="error" />}
+                {(hasConflicts || hasUncommitted) && (
+                  <WarningRounded sx={{ ml: 1 }} color={hasConflicts ? 'error' : 'warning'} />
+                )}
               </>
             }
             {...a11yProps(1)}
@@ -230,19 +228,15 @@ export default function GitManagement(props: GitManagementProps) {
       <section>
         {activeTab === 0 && (
           <Box padding={2}>
-            <Alert
-              severity={currentStatusValue ? (currentStatusValue === 'noConflicts' ? 'success' : 'warning') : 'info'}
-            >
-              {formatMessage(translations[currentStatusValue ?? 'fetchingStatus'])}
+            <Alert severity={loadingStatus ? 'info' : clean ? 'success' : 'warning'}>
+              {formatMessage(translations[loadingStatus ? 'fetchingStatus' : statusMessageKey ?? 'fetchingStatus'])}
             </Alert>
-            <SuspenseWithEmptyState resource={resource} suspenseProps={{ fallback: <RepoGridSkeleton /> }}>
-              <RepoGrid
-                resource={resource}
-                fetchStatus={fetchRepositoriesStatus}
-                fetchRepositories={fetchRepositories}
-                disableActions={!repositoriesStatus || repositoriesStatus.conflicting.length > 0}
-              />
-            </SuspenseWithEmptyState>
+            <RepoGrid
+              repositories={repositories}
+              fetchStatus={fetchRepoStatus}
+              fetchRepositories={fetchRepositories}
+              disableActions={!repoStatus || repoStatus.conflicting.length > 0}
+            />
             <Typography variant="caption" className={classes.statusNote}>
               <FormattedMessage
                 id="repository.statusNote"
@@ -252,18 +246,12 @@ export default function GitManagement(props: GitManagementProps) {
           </Box>
         )}
         {activeTab === 1 && (
-          <SuspenseWithEmptyState
-            resource={statusResource}
-            suspenseProps={{
-              fallback: <RepoStatusSkeleton />
-            }}
-          >
-            <RepoStatus
-              resource={statusResource}
-              setFetching={setFetchingStatus}
-              onActionSuccess={updateRepositoriesStatus}
-            />
-          </SuspenseWithEmptyState>
+          <RepoStatus
+            status={repoStatus}
+            onCommitSuccess={fetchRepoStatusReceiver}
+            onConflictResolved={fetchRepoStatusReceiver}
+            onFailedPullCancelled={fetchRepoStatusReceiver}
+          />
         )}
         <NewRemoteRepositoryDialog
           open={newRemoteRepositoryDialogState.open}
@@ -273,8 +261,8 @@ export default function GitManagement(props: GitManagementProps) {
           onSubmittingAndOrPendingChange={newRemoteRepositoryDialogState.onSubmittingAndOrPendingChange}
           onWithPendingChangesCloseRequest={newRemoteRepositoryDialogStatePendingChangesCloseRequest}
           onClose={newRemoteRepositoryDialogState.onClose}
-          onCreateSuccess={onCreateSuccess}
-          onCreateError={onCreateError}
+          onCreateSuccess={onRepoCreatedSuccess}
+          onCreateError={onRepoCreateError}
         />
       </section>
     </Paper>
