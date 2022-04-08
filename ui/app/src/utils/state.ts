@@ -240,3 +240,39 @@ export function getStoredSaveButtonSubAction(user: string, id: string): string {
 export function removeStoredSaveButtonSubAction(user: string, id: string): void {
   window.localStorage.removeItem(`craftercms.${user}.saveButtonSubAction.${id}`);
 }
+
+export function setStoredPushBranch(siteId: string, username: string, branchName: string): void {
+  localStorage.setItem(`craftercms.${username}.${siteId}.pushBranch`, branchName);
+}
+
+export function getStoredPushBranch(siteId: string, username: string): string {
+  return localStorage.getItem(`craftercms.${username}.${siteId}.pushBranch`);
+}
+
+export function removeStoredPushBranch(siteId: string, username: string): void {
+  localStorage.removeItem(`craftercms.${username}.${siteId}.pushBranch`);
+}
+
+export function setStoredPullBranch(siteId: string, username: string, branchName: string): void {
+  localStorage.setItem(`craftercms.${username}.${siteId}.pullBranch`, branchName);
+}
+
+export function getStoredPullBranch(siteId: string, username: string): string {
+  return localStorage.getItem(`craftercms.${username}.${siteId}.pullBranch`);
+}
+
+export function removeStoredPullBranch(siteId: string, username: string): void {
+  localStorage.removeItem(`craftercms.${username}.${siteId}.pullBranch`);
+}
+
+export function setStoredPullMergeStrategy(siteId: string, username: string, mergeStrategy: string): void {
+  localStorage.setItem(`craftercms.${username}.${siteId}.pullMergeStrategy`, mergeStrategy);
+}
+
+export function getStoredPullMergeStrategy(siteId: string, username: string): string {
+  return localStorage.getItem(`craftercms.${username}.${siteId}.pullMergeStrategy`);
+}
+
+export function removeStoredPullMergeStrategy(siteId: string, username: string): void {
+  localStorage.removeItem(`craftercms.${username}.${siteId}.pullMergeStrategy`);
+}

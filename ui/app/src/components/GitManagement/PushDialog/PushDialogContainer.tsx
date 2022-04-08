@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import DialogBody from '../../DialogBody/DialogBody';
 import DialogFooter from '../../DialogFooter/DialogFooter';
 import { FormattedMessage } from 'react-intl';
@@ -28,12 +28,14 @@ import { push } from '../../../services/repositories';
 import SecondaryButton from '../../SecondaryButton';
 import PrimaryButton from '../../PrimaryButton';
 import { isBlank } from '../../../utils/string';
-import { useActiveSiteId } from '../../../hooks/useActiveSiteId';
 import { PushDialogContainerProps } from './utils';
 import { FormControlLabel, Switch } from '@mui/material';
-import { useUpdateRefs } from '../../../hooks';
+import useActiveSite from '../../../hooks/useActiveSite';
+import useActiveUser from '../../../hooks/useActiveUser';
+import useUpdateRefs from '../../../hooks/useUpdateRefs';
 import FormHelperText from '@mui/material/FormHelperText';
 import { useTheme } from '@mui/material/styles';
+import { getStoredPushBranch, removeStoredPushBranch, setStoredPushBranch } from '../../../utils/state';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -45,16 +47,15 @@ const useStyles = makeStyles(() =>
 
 export function PushDialogContainer(props: PushDialogContainerProps) {
   const { branches, remoteName, onClose, onPushSuccess, onPushError, onSubmittingChange, isSubmitting } = props;
-  const [selectedBranch, setSelectedBranch] = useState(branches?.[0] ?? '');
+  const [selectedBranch, setSelectedBranch] = useState('');
   const classes = useStyles();
-  const siteId = useActiveSiteId();
+  const { id: siteId, uuid } = useActiveSite();
+  const { username } = useActiveUser();
   const [forcePush, setForcePush] = useState(false);
   const fnRefs = useUpdateRefs({ onSubmittingChange, onPushSuccess, onPushError });
   const theme = useTheme();
 
-  const onChange = (e: any) => {
-    setSelectedBranch(e.target.value);
-  };
+  const onChange = (e: any) => setSelectedBranch(e.target.value);
 
   const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
 
@@ -74,6 +75,27 @@ export function PushDialogContainer(props: PushDialogContainerProps) {
       });
     }
   };
+
+  useEffect(() => {
+    if (!selectedBranch && branches?.length) {
+      const storedPushBranch = getStoredPushBranch(uuid, username);
+      if (storedPushBranch) {
+        if (branches.includes(storedPushBranch)) {
+          setSelectedBranch(storedPushBranch);
+        } else {
+          removeStoredPushBranch(uuid, username);
+        }
+      } else {
+        setSelectedBranch(branches[0]);
+      }
+    }
+  }, [branches, selectedBranch, uuid, username]);
+
+  useEffect(() => {
+    if (selectedBranch) {
+      setStoredPushBranch(uuid, username, selectedBranch);
+    }
+  }, [branches, selectedBranch, uuid, username]);
 
   return (
     <form onSubmit={onSubmit}>
