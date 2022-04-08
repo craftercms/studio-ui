@@ -134,21 +134,26 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
     }),
     [pathNavigatorFetchPathComplete.type]: (state, { payload: { id, children, parent } }) => {
       const path = parent?.path ?? state[id].currentPath;
-      return {
-        ...state,
-        [id]: {
-          ...state[id],
-          currentPath: path,
-          breadcrumb: getIndividualPaths(withoutIndex(path), withoutIndex(state[id].rootPath)),
-          itemsInPath: children.length === 0 ? [] : children.map((item) => item.path),
-          levelDescriptor: children.levelDescriptor?.path,
-          total: children.total,
-          offset: children.offset,
-          limit: children.limit,
-          isFetching: false,
-          error: null
-        }
-      };
+
+      if (children.offset >= children.limit && children.length === 0) {
+        return state;
+      } else {
+        return {
+          ...state,
+          [id]: {
+            ...state[id],
+            currentPath: path,
+            breadcrumb: getIndividualPaths(withoutIndex(path), withoutIndex(state[id].rootPath)),
+            itemsInPath: children.length === 0 ? [] : children.map((item) => item.path),
+            levelDescriptor: children.levelDescriptor?.path,
+            total: children.total,
+            offset: children.offset,
+            limit: children.limit,
+            isFetching: false,
+            error: null
+          }
+        };
+      }
     },
     [pathNavigatorFetchPathFailed.type]: (state, { payload: { id, error } }) => ({
       ...state,
