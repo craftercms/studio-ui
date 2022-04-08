@@ -1095,7 +1095,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
             // determine if upload or browse
             const key = dataSourcesKeys[0];
             // TODO: validate if value exists, otherwise cancel (show an error?)
-            const processedPath = processPathMacros(payload.datasources[key].value, payload.model);
+            const processedPath = processPathMacros({ path: payload.datasources[key].value, model: payload.model });
             if (key === 'allowImageUpload' || key === 'allowVideoUpload') {
               onShowSingleFileUploadDialog(processedPath, payload.type);
             } else {
@@ -1106,8 +1106,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
             const dataSourcesItems = [];
             dataSourcesKeys.forEach((dataSourceKey) => {
               dataSourcesItems.push({
-                label: dataSourceKey, // Add a translation for that one?
-                path: processPathMacros(payload.datasources[dataSourceKey].value, payload.model),
+                label: dataSourceKey, // TODO: Add translations
+                path: processPathMacros({ path: payload.datasources[dataSourceKey].value, model: payload.model }),
                 action:
                   dataSourceKey === 'allowImageUpload' || dataSourceKey === 'allowVideoUpload'
                     ? onShowSingleFileUploadDialog

@@ -273,6 +273,8 @@ export const showKeyboardShortcutsDialog = /*#__PURE__*/ createAction('SHOW_KEYB
 // region Show Dialogs From DataSources
 export const showRtePickerActions = /*#__PURE__*/ createAction('SHOW_RTE_PICKER_ACTIONS');
 // endregion
+
 // region Rte Picker Action Result
 export const rtePickerActionResult =
   /*#__PURE__*/ createAction<{ path: string; name: string }>('RTE_PICKER_ACTION_RESULT');
+// endregion

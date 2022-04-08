@@ -22,6 +22,7 @@ import ContentType from '../models/ContentType';
 import { SystemType } from '../models';
 import { parseDescriptor } from '@craftercms/content';
 import { ContentInstance } from '@craftercms/models';
+import { v4 as uuid } from 'uuid';
 
 // Originally from ComponentPanel.getPreviewPagePath
 export function getPathFromPreviewURL(previewURL: string): string {
@@ -248,14 +249,19 @@ export function getControllerPath(type: SystemType): string {
   return `/scripts/${type === 'page' ? 'pages' : 'components'}`;
 }
 
-export function processPathMacros(path: string, model: any | ContentInstance, useUUID?: boolean): string {
+export function processPathMacros(dependencies: {
+  path: string;
+  model: any | ContentInstance;
+  useUUID?: boolean;
+  fullParentPath?: string;
+}): string {
+  const { path, model, useUUID, fullParentPath } = dependencies;
   const descriptor = model.craftercms?.descriptor ?? parseDescriptor(model);
   let processedPath = path;
 
   if (processedPath.indexOf('{objectId}') !== -1) {
     if (useUUID) {
-      // TODO: generateUUID function
-      // processedPath = processedPath.replace('{objectId}', CStudioAuthoring.Utils.generateUUID());
+      processedPath = processedPath.replace('{objectId}', uuid());
     } else {
       processedPath = path.replace('{objectId}', descriptor.craftercms.id);
     }
@@ -290,8 +296,6 @@ export function processPathMacros(path: string, model: any | ContentInstance, us
     processedPath = processedPath.replace('{dd}', ('0' + currentDate.getDate()).slice(-2));
   }
 
-  const urlParams = new URLSearchParams(window.location.search);
-  const fullParentPath = urlParams.get('path') ?? urlParams.get('parentPath');
   if (fullParentPath) {
     const parentPathPieces = fullParentPath.substr(1).split('/');
     processedPath = processedPath.replace(/{parentPath(\[\s*?(\d+)\s*?])?}/g, function (fullMatch, indexExp, index) {

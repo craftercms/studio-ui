@@ -2816,7 +2816,9 @@ var nodeOpen = false,
        * handle macros in file paths
        */
       processPathsForMacros: function (path, model, useUUID) {
-        return CrafterCMSNext.util.path.processPathMacros(path, model, useUUID);
+        const urlParams = new URLSearchParams(window.location.search);
+        const fullParentPath = urlParams.get('path') ?? urlParams.get('parentPath');
+        return CrafterCMSNext.util.path.processPathMacros({ path, model, useUUID, fullParentPath });
       },
 
       /**
