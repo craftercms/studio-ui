@@ -240,11 +240,13 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
                 const stream$ = new Subject();
                 const reader = new FileReader();
                 reader.onload = ((aImg: HTMLImageElement) => (event) => {
+                  const { field } = iceRegistry.getReferentialEntries(record.iceIds[0]);
                   post(desktopAssetDrop.type, {
                     dataUrl: event.target.result,
                     name: file.name,
                     type: file.type,
-                    record: reversePluckProps(record, 'element')
+                    record: reversePluckProps(record, 'element'),
+                    field
                   });
                   aImg.src = event.target.result;
                   // Timeout gives the browser a chance to render the image so later rect

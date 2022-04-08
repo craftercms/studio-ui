@@ -250,7 +250,7 @@ export function getControllerPath(type: SystemType): string {
 export function processPathMacros(dependencies: {
   path: string;
   objectId: string;
-  objectGroupId: string;
+  objectGroupId?: string;
   useUUID?: boolean;
   fullParentPath?: string;
 }): string {

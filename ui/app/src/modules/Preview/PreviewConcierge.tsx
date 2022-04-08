@@ -907,12 +907,22 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           enqueueSnackbar(formatMessage(guestMessages.assetUploadStarted));
           // @ts-ignore - TODO: type action accordingly
           hostToHost$.next(desktopAssetUploadStarted(payload));
+          const {
+            validations: { allowImageUpload }
+          } = payload.field;
 
-          // TODO: path should be updated here according to validation value
+          const path =
+            allowImageUpload && allowImageUpload.value
+              ? processPathMacros({
+                  path: allowImageUpload.value,
+                  objectId: payload.record.modelId
+                })
+              : `/static-assets/images/${payload.record.modelId}`;
+
           const uppySubscription = uploadDataUrl(
             siteId,
             pluckProps(payload, 'name', 'type', 'dataUrl'),
-            `/static-assets/images/${payload.record.modelId}`,
+            path,
             upToDateRefs.current.xsrfArgument
           )
             .pipe(
