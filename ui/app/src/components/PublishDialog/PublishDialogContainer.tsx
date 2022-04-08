@@ -45,7 +45,7 @@ import { pluckProps } from '../../utils/object';
 import moment from 'moment-timezone';
 import { updatePublishDialog } from '../../state/actions/dialogs';
 import { approve, publish, requestPublish } from '../../services/workflow';
-import { useDetailedItems } from '../../hooks';
+import useDetailedItems from '../../hooks/useDetailedItems';
 
 export function PublishDialogContainer(props: PublishDialogContainerProps) {
   const { items, scheduling = 'now', onSuccess, onClose, isSubmitting } = props;
