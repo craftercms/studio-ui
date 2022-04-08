@@ -247,7 +247,7 @@ export function PathNavigator(props: PathNavigatorProps) {
 
           if (withoutIndex(targetPath) === withoutIndex(path)) {
             // if path being deleted is the rootPath
-            dispatch(pathNavigatorBackgroundRefresh({ id }));
+            dispatch(pathNavigatorRefresh({ id }));
           } else if (withoutIndex(targetPath) === withoutIndex(state.currentPath)) {
             // if path is currentPath (current root path)
             dispatch(
