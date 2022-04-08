@@ -21,6 +21,8 @@ import {
   completeDetailedItem,
   fetchDetailedItem,
   fetchDetailedItemComplete,
+  fetchDetailedItems,
+  fetchDetailedItemsComplete,
   fetchQuickCreateList,
   fetchQuickCreateListComplete,
   fetchQuickCreateListFailed,
@@ -159,6 +161,36 @@ const reducer = createReducer<ContentState>(initialState, {
       ...reversePluckProps(state.itemsBeingFetchedByPath, payload.path)
     }
   }),
+  [fetchDetailedItems.type]: (state, { payload }) => {
+    const itemsFetchedByPath = {};
+    payload.paths.forEach((path) => {
+      itemsFetchedByPath[path] = true;
+    });
+    return {
+      ...state,
+      itemsBeingFetchedByPath: {
+        ...state.itemsBeingFetchedByPath,
+        ...itemsFetchedByPath
+      }
+    };
+  },
+  [fetchDetailedItemsComplete.type]: (state, { payload: items }) => {
+    const nextByPath = {};
+    items.forEach((item) => {
+      nextByPath[item.path] = item;
+    });
+
+    return {
+      ...state,
+      itemsByPath: {
+        ...state.itemsByPath,
+        ...nextByPath
+      },
+      itemsBeingFetchedByPath: {
+        ...reversePluckProps(state.itemsBeingFetchedByPath, ...items.map((item) => item.path))
+      }
+    };
+  },
   [fetchSandboxItemComplete.type]: (state, { payload: { item } }) => ({
     ...state,
     itemsByPath: {

@@ -44,7 +44,6 @@ import { LegacyDashboardPreferences } from '../../../models/Dashboard';
 import { useSpreadState } from '../../../hooks/useSpreadState';
 import { getStoredDashboardPreferences, setStoredDashboardPreferences } from '../../../utils/state';
 import { createPresenceTable } from '../../../utils/array';
-import { completeDetailedItem } from '../../../state/actions/content';
 import { showItemMegaMenu } from '../../../state/actions/dialogs';
 import {
   generateMultipleItemOptions,
@@ -55,7 +54,6 @@ import { useEnv } from '../../../hooks/useEnv';
 import ActionsBar, { ActionsBarAction } from '../../ActionsBar';
 import { useDetailedItems } from '../../../hooks/useDetailedItems';
 import translations from './translations';
-import { batchActions } from '../../../state/actions/misc';
 import { getEmptyStateStyleSet } from '../../EmptyState/EmptyState';
 import { useActiveSite } from '../../../hooks/useActiveSite';
 
@@ -218,18 +216,15 @@ export default function RecentActivityDashlet() {
   const onItemMenuClick = (event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, item: DetailedItem) => {
     const path = item.path;
     dispatch(
-      batchActions([
-        completeDetailedItem({ path }),
-        showItemMegaMenu({
-          path,
-          anchorReference: 'anchorPosition',
-          anchorPosition: { top: event.clientY, left: event.clientX },
-          numOfLoaderItems: getNumOfMenuOptionsForItem({
-            path: item.path,
-            systemType: getSystemTypeFromPath(item.path)
-          } as DetailedItem)
-        })
-      ])
+      showItemMegaMenu({
+        path,
+        anchorReference: 'anchorPosition',
+        anchorPosition: { top: event.clientY, left: event.clientX },
+        numOfLoaderItems: getNumOfMenuOptionsForItem({
+          path: item.path,
+          systemType: getSystemTypeFromPath(item.path)
+        } as DetailedItem)
+      })
     );
   };
 
