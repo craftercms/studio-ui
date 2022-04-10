@@ -292,13 +292,19 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
               })
             );
           } else {
-            dispatch(
-              pathNavigatorTreeFetchPathChildren({
-                id,
-                path: parentPath,
-                expand: user.username === payload.user.username
-              })
-            );
+            if (user.username === payload.user.username) {
+              // if it's current user then reload and expand folder (for example pasting in another folder)
+              dispatch(
+                pathNavigatorTreeFetchPathChildren({
+                  id,
+                  path: parentPath,
+                  expand: true
+                })
+              );
+            } else {
+              // if content editor is not current user do a silent refresh
+              dispatch(pathNavigatorTreeBackgroundRefresh({ id }));
+            }
           }
           break;
         }
