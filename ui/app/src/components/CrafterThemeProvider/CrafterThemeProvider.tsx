@@ -17,7 +17,7 @@
 import React, { PropsWithChildren, useMemo } from 'react';
 import { createTheme, StyledEngineProvider, Theme, ThemeOptions, ThemeProvider } from '@mui/material/styles';
 import StylesProvider from '@mui/styles/StylesProvider';
-import { defaultThemeOptions, generateClassName } from '../../styles/theme';
+import { createDefaultThemeOptions, generateClassName } from '../../styles/theme';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import palette from '../../styles/palette';
 import { GenerateId } from 'jss';
@@ -38,7 +38,7 @@ export function CrafterThemeProvider(props: CrafterThemeProviderProps) {
   const theme = useMemo(() => {
     const mode = prefersDarkMode ? 'dark' : 'light';
     const auxTheme = createTheme({ palette: { mode } });
-
+    const defaultThemeOptions = createDefaultThemeOptions({ mode });
     return createTheme({
       ...(props.themeOptions ?? defaultThemeOptions),
       palette: {

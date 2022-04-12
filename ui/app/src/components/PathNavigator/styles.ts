@@ -45,18 +45,16 @@ export const useStyles = makeStyles(
         visibility: 'visible'
       },
       headerTitle: {
-        marginLeft: '6px',
         flexGrow: 1
       },
       headerIcon: {
-        fontSize: '1.2em'
+        marginRight: 10,
+        color: theme.palette.action.active
       },
       accordion: {
         background: 'none'
       },
-      accordionSummary: {
-        padding: '0 0 0 10px'
-      },
+      accordionSummary: {},
       accordionSummaryContent: {
         alignItems: 'center',
         placeContent: 'center space-between',
