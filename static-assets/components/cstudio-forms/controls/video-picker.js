@@ -82,55 +82,15 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
    * create dialog
    */
   createDialog: function () {
-    YDom.removeClass('cstudio-wcm-popup-div', 'yui-pe-content');
-
-    var newdiv = YDom.get('cstudio-wcm-popup-div');
-    if (newdiv == undefined) {
-      newdiv = document.createElement('div');
-      document.body.appendChild(newdiv);
-    }
-
-    var divIdName = 'cstudio-wcm-popup-div';
-    newdiv.setAttribute('id', divIdName);
-    newdiv.className = 'yui-pe-content video-dialog';
-    var url = !this.external ? CStudioAuthoringContext.previewAppBaseUri : '' + this.inputEl.value;
-
-    newdiv.innerHTML =
-      '<embed src="' +
-      url +
-      '" width="500px" height="500px"></embed>' +
-      '<input type="button" class="zoom-button btn btn-primary cstudio-form-control-asset-picker-zoom-cancel-button" id="zoomCancelButton" value="Close"/>' +
-      '<input type="button" class="zoom-button btn btn-primary cstudio-form-control-asset-picker-zoom-full-button" id="zoomFullButton" value="Full"/>';
-
-    // Instantiate the Dialog
-    upload_dialog = new YAHOO.widget.Dialog('cstudio-wcm-popup-div', {
-      fixedcenter: true,
-      visible: false,
-      modal: true,
-      close: true,
-      constraintoviewport: true,
-      underlay: 'none',
-      keylisteners: new YAHOO.util.KeyListener(
-        document,
-        { ctrl: false, keys: 27 },
-        { fn: this.uploadPopupCancel, correctScope: true }
-      )
+    let url = this.inputEl.value;
+    craftercms.getStore().dispatch({
+      type: 'SHOW_PREVIEW_DIALOG',
+      payload: {
+        type: 'video',
+        title: CrafterCMSNext.util.path.getFileNameFromPath(url),
+        url
+      }
     });
-
-    // Render the Dialog
-    upload_dialog.render();
-    YAHOO.util.Event.addListener('zoomCancelButton', 'click', this.uploadPopupCancel, this, true);
-    YAHOO.util.Event.addListener(
-      'zoomFullButton',
-      'click',
-      function () {
-        this.fullImageTab(!this.external ? CStudioAuthoringContext.previewAppBaseUri : '' + this.inputEl.value);
-      },
-      this,
-      true
-    );
-    this.upload_dialog = upload_dialog;
-    upload_dialog.show();
   },
 
   /**
