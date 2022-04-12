@@ -179,7 +179,7 @@ export default function RecentActivityDashlet() {
                 items: paths.map((path) => ({
                   ...(itemLookup[path] ?? deleted[path]),
                   live: itemLookup[path].stateMap.live ? legacyItems[path].live : null,
-                  staging: itemLookup[path].stateMap.staging ? legacyItems[path].staging : null
+                  staging: itemLookup[path].stateMap.staged ? legacyItems[path].staging : null
                 }))
               };
             })
