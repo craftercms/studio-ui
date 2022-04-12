@@ -258,6 +258,7 @@ function parseLegacyFormDefinitionFields(
         };
         break;
       case 'input':
+      case 'textarea':
       case 'numeric-input':
       case 'image-picker':
         field.validations = {

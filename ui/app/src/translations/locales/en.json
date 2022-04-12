@@ -1466,7 +1466,7 @@
   "usersGrid.createUser": "Create User",
   "usersGrid.emptyStateMessage": "No Users Found",
   "validations.maxCount": "The max number of items is {maxCount}",
-  "validations.maxLength": "The max length ({maxLength}) reached",
+  "validations.maxLength": "Maximum length reached ({maxLength})",
   "validations.minCount": "The min number of items is {minCount}",
   "validations.required": "{field} is required",
   "viewVersionDialog.headerTitle": "Viewing item version",

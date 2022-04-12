@@ -31,7 +31,7 @@ export const guestMessages = defineMessages({
   },
   maxLength: {
     id: 'validations.maxLength',
-    defaultMessage: 'The max length ({maxLength}) reached'
+    defaultMessage: 'Maximum length reached ({maxLength})'
   },
   yes: {
     id: 'words.yes',
