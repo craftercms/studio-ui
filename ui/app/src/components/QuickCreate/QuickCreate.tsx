@@ -20,13 +20,11 @@ import IconButton from '@mui/material/IconButton';
 import AddCircleIcon from '@mui/icons-material/AddRounded';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import { useDispatch } from 'react-redux';
 import { newContentCreationComplete, showEditDialog, showNewContentDialog } from '../../state/actions/dialogs';
-
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
@@ -38,7 +36,7 @@ import Suspencified from '../Suspencified/Suspencified';
 import { getSimplifiedVersion } from '../../utils/string';
 import palette from '../../styles/palette';
 import Tooltip from '@mui/material/Tooltip';
-import { SandboxItem } from '../../models/Item';
+import { DetailedItem } from '../../models/Item';
 import { useSelection } from '../../hooks/useSelection';
 import { usePreviewState } from '../../hooks/usePreviewState';
 import { useQuickCreateListResource } from '../../hooks/useQuickCreateListResource';
@@ -106,6 +104,7 @@ const useStyles = makeStyles((theme) =>
 
 interface QuickCreateMenuProps {
   open: boolean;
+  item?: DetailedItem;
   anchorEl: HTMLElement;
   resource: {
     version: Resource<string>;
@@ -136,9 +135,10 @@ interface QuickCreateSectionProps {
 }
 
 export function QuickCreateMenu(props: QuickCreateMenuProps) {
-  const { open, onClose, anchorEl, resource, onNewContentSelected, onQuickCreateItemSelected } = props;
+  const { open, onClose, anchorEl, resource, onNewContentSelected, onQuickCreateItemSelected, item } = props;
   const classes = useStyles({});
   const authoringBase = useSelection<string>((state) => state.env.authoringBase);
+  const itemNewContentButton = item?.availableActionsMap.createContent;
 
   const onFormDisplay = ({ contentTypeId, path }: QuickCreateItem) => {
     const today = new Date();
@@ -156,10 +156,15 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
   return (
     <>
       <Menu classes={{ paper: classes.menu }} anchorEl={anchorEl} open={open} onClose={onClose}>
-        <MenuItem className={classes.menuTitle} onClick={onNewContentSelected}>
-          <FormattedMessage id="quickCreateMenu.title" defaultMessage="New Content" />
-        </MenuItem>
-        <Divider />
+        {itemNewContentButton && (
+          <MenuItem
+            className={classes.menuTitle}
+            onClick={onNewContentSelected}
+            sx={{ borderBottom: 1, borderBottomColor: 'divider' }}
+          >
+            <FormattedMessage id="quickCreateMenu.title" defaultMessage="New Content" />
+          </MenuItem>
+        )}
         <Typography component="h4" className={classes.menuSectionTitle}>
           <FormattedMessage id="quickCreateMenu.sectionTitle" defaultMessage="Quick Create" />
         </Typography>
@@ -234,9 +239,8 @@ const QuickCreateMenuButton = React.forwardRef<HTMLButtonElement, QuickCreateMen
   );
 });
 
-const QuickCreate = React.forwardRef<HTMLButtonElement, { item?: SandboxItem }>(function (props, ref) {
+const QuickCreate = React.forwardRef<HTMLButtonElement, { item?: DetailedItem }>(function (props, ref) {
   const { item } = props;
-  const disabled = !item?.availableActionsMap.createContent;
   const [anchorEl, setAnchorEl] = useState(null);
   const [currentPreviewItemPath, setCurrentPreviewItemPath] = useState<string>(null);
   const { guest } = usePreviewState();
@@ -284,8 +288,9 @@ const QuickCreate = React.forwardRef<HTMLButtonElement, { item?: SandboxItem }>(
 
   return (
     <>
-      <QuickCreateMenuButton disabled={disabled} ref={ref} onMenuBtnClick={onMenuBtnClick} />
+      <QuickCreateMenuButton ref={ref} onMenuBtnClick={onMenuBtnClick} />
       <QuickCreateMenu
+        item={item}
         open={Boolean(anchorEl)}
         anchorEl={anchorEl}
         onClose={onMenuClose}
