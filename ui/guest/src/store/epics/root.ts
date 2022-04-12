@@ -79,7 +79,6 @@ import {
   documentDrop,
   dropzoneEnter,
   dropzoneLeave,
-  exitComponentInlineEdit,
   setEditingStatus,
   startListening
 } from '../actions';
@@ -186,7 +185,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
         const dragContext = state.dragContext;
         const file = unwrapEvent<DragEvent>(event).dataTransfer.files[0];
 
-        const processDrop = () => {
+        const processDrop = (): Observable<any> => {
           switch (status) {
             case EditingStatus.PLACING_DETACHED_ASSET: {
               const { dropZone } = dragContext;
@@ -290,13 +289,12 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
                     filter((e) => e.type === requestWorkflowCancellationDialogOnResult.type),
                     take(1),
                     tap(({ payload }) => {
-                      if (payload.type === 'onContinue') {
-                        processDrop();
-                      } else {
+                      if (payload.type !== 'onContinue') {
                         post(unlockItem({ path }));
                       }
                     }),
-                    ignoreElements()
+                    filter(({ payload }) => payload.type === 'onContinue'),
+                    switchMap(() => processDrop())
                   );
                 } else {
                   if (item.commitId !== cachedSandboxItem.commitId) {
@@ -311,7 +309,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
                       window.location.reload();
                     });
                   } else {
-                    processDrop();
+                    return processDrop();
                   }
                   return NEVER;
                 }
