@@ -791,6 +791,19 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
       }),
       ignoreElements()
     );
+  },
+  // endregion
+  // region exitComponentInlineEdit
+  (action$: Observable<GuestStandardAction<{ path: string; saved: boolean }>>) => {
+    return action$.pipe(
+      ofType(exitComponentInlineEdit.type),
+      tap((action) => {
+        const { path, saved } = action.payload;
+        // When the content is saved, the api1/write-content api unlocks
+        !saved && path && post(unlockItem({ path }));
+      }),
+      ignoreElements()
+    );
   }
   // endregion
 );
