@@ -79,6 +79,7 @@ import {
   documentDrop,
   dropzoneEnter,
   dropzoneLeave,
+  exitComponentInlineEdit,
   setEditingStatus,
   startListening
 } from '../actions';
