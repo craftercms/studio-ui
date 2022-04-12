@@ -2822,8 +2822,8 @@ var nodeOpen = false,
           path,
           useUUID,
           fullParentPath,
-          objectId: model.objectId,
-          objectGroupId: model.objectGroupId
+          objectId: model?.objectId,
+          objectGroupId: model?.objectGroupId
         });
       },
 
