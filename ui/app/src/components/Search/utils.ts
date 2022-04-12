@@ -26,8 +26,6 @@ import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useEnv } from '../../hooks/useEnv';
 import { useDetailedItems } from '../../hooks/useDetailedItems';
 import { ContextMenuOption } from '../ContextMenu';
-import { batchActions } from '../../state/actions/misc';
-import { completeDetailedItem } from '../../state/actions/content';
 import { showEditDialog, showItemMegaMenu, showPreviewDialog, updatePreviewDialog } from '../../state/actions/dialogs';
 import { getNumOfMenuOptionsForItem, getSystemTypeFromPath } from '../../utils/content';
 import LookupTable from '../../models/LookupTable';
@@ -216,18 +214,15 @@ export const useSearchState = ({ searchParameters, onSelect }: useSearchStatePro
   const onHeaderButtonClick = (event: any, item: MediaItem) => {
     const path = item.path;
     dispatch(
-      batchActions([
-        completeDetailedItem({ path }),
-        showItemMegaMenu({
-          path,
-          anchorReference: 'anchorPosition',
-          anchorPosition: { top: event.clientY, left: event.clientX },
-          numOfLoaderItems: getNumOfMenuOptionsForItem({
-            path: item.path,
-            systemType: getSystemTypeFromPath(item.path)
-          } as DetailedItem)
-        })
-      ])
+      showItemMegaMenu({
+        path,
+        anchorReference: 'anchorPosition',
+        anchorPosition: { top: event.clientY, left: event.clientX },
+        numOfLoaderItems: getNumOfMenuOptionsForItem({
+          path: item.path,
+          systemType: getSystemTypeFromPath(item.path)
+        } as DetailedItem)
+      })
     );
   };
 

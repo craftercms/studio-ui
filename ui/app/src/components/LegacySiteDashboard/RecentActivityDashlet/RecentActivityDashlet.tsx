@@ -36,7 +36,7 @@ import RecentActivityDashletUiSkeleton from '../RecentActivityDashletGrid/Recent
 import GlobalState from '../../../models/GlobalState';
 import { deleteContentEvent, publishEvent, workflowEvent } from '../../../state/actions/system';
 import { getHostToHostBus } from '../../../modules/Preview/previewContext';
-import { filter } from 'rxjs/operators';
+import { filter, map, switchMap } from 'rxjs/operators';
 import TextField from '@mui/material/TextField';
 import { useLogicResource } from '../../../hooks/useLogicResource';
 import { useLocale } from '../../../hooks/useLocale';
@@ -44,7 +44,6 @@ import { LegacyDashboardPreferences } from '../../../models/Dashboard';
 import { useSpreadState } from '../../../hooks/useSpreadState';
 import { getStoredDashboardPreferences, setStoredDashboardPreferences } from '../../../utils/state';
 import { createPresenceTable } from '../../../utils/array';
-import { completeDetailedItem } from '../../../state/actions/content';
 import { showItemMegaMenu } from '../../../state/actions/dialogs';
 import {
   generateMultipleItemOptions,
@@ -55,9 +54,9 @@ import { useEnv } from '../../../hooks/useEnv';
 import ActionsBar, { ActionsBarAction } from '../../ActionsBar';
 import { useDetailedItems } from '../../../hooks/useDetailedItems';
 import translations from './translations';
-import { batchActions } from '../../../state/actions/misc';
 import { getEmptyStateStyleSet } from '../../EmptyState/EmptyState';
 import { useActiveSite } from '../../../hooks/useActiveSite';
+import { fetchItemsByPath } from '../../../services/content';
 
 const dashletInitialPreferences: LegacyDashboardPreferences = {
   filterBy: 'page',
@@ -150,19 +149,54 @@ export default function RecentActivityDashlet() {
       preferences.numItems,
       preferences.filterBy,
       preferences.excludeLiveItems
-    ).subscribe(
-      (activities) => {
-        setTotalItems(activities.total);
-        const itemsList = [];
-        activities.documents.forEach((item) => itemsList.push(parseLegacyItemToDetailedItem(item)));
-        setItems(itemsList);
-        setFetchingActivity(false);
-      },
-      (e) => {
-        setErrorActivity(e);
-        setFetchingActivity(false);
-      }
-    );
+    )
+      .pipe(
+        switchMap((activities) => {
+          const paths = [];
+          const pathsToFetch = [];
+          const deleted = {};
+          const legacyItems = {};
+          activities.documents.forEach((item) => {
+            let legacyToDetailedParsedItem = parseLegacyItemToDetailedItem(item);
+            let path = legacyToDetailedParsedItem.path;
+            legacyItems[path] = legacyToDetailedParsedItem;
+            paths.push(path);
+            if (item.isDeleted) {
+              deleted[path] = legacyToDetailedParsedItem;
+            } else {
+              pathsToFetch.push(path);
+            }
+          });
+          return fetchItemsByPath(siteId, pathsToFetch, { castAsDetailedItem: true }).pipe(
+            map((items) => {
+              // The idea is to present the items in the same order that the original call returned.
+              const itemLookup = items.reduce((lookup, item) => {
+                lookup[item.path] = item;
+                return lookup;
+              }, {});
+              return {
+                total: activities.total,
+                items: paths.map((path) => ({
+                  ...(itemLookup[path] ?? deleted[path]),
+                  live: itemLookup[path].stateMap.live ? legacyItems[path].live : null,
+                  staging: itemLookup[path].stateMap.staged ? legacyItems[path].staging : null
+                }))
+              };
+            })
+          );
+        })
+      )
+      .subscribe({
+        next(response) {
+          setTotalItems(response.total);
+          setItems(response.items);
+          setFetchingActivity(false);
+        },
+        error(e) {
+          setErrorActivity(e);
+          setFetchingActivity(false);
+        }
+      });
   }, [siteId, currentUser, preferences.numItems, preferences.filterBy, preferences.excludeLiveItems]);
 
   useEffect(() => {
@@ -218,18 +252,15 @@ export default function RecentActivityDashlet() {
   const onItemMenuClick = (event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, item: DetailedItem) => {
     const path = item.path;
     dispatch(
-      batchActions([
-        completeDetailedItem({ path }),
-        showItemMegaMenu({
-          path,
-          anchorReference: 'anchorPosition',
-          anchorPosition: { top: event.clientY, left: event.clientX },
-          numOfLoaderItems: getNumOfMenuOptionsForItem({
-            path: item.path,
-            systemType: getSystemTypeFromPath(item.path)
-          } as DetailedItem)
-        })
-      ])
+      showItemMegaMenu({
+        path,
+        anchorReference: 'anchorPosition',
+        anchorPosition: { top: event.clientY, left: event.clientX },
+        numOfLoaderItems: getNumOfMenuOptionsForItem({
+          path: item.path,
+          systemType: getSystemTypeFromPath(item.path)
+        } as DetailedItem)
+      })
     );
   };
 

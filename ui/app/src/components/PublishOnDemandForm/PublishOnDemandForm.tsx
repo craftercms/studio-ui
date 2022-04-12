@@ -77,7 +77,7 @@ export default function PublishOnDemandForm(props: PublishOnDemandFormProps) {
   const { formatMessage } = useIntl();
   const handleFormChange = (name: string) => (event: React.ChangeEvent<{ value: unknown }> | SelectChangeEvent) => {
     const value = event.target.value as string;
-    setFormData({ [name]: (name === 'path' ? `/${value}`.replace(/\/{2,}/g, '/') : value).trim() });
+    setFormData({ [name]: name === 'path' ? `/${value}`.replace(/\/{2,}/g, '/') : value });
   };
   return (
     <form>

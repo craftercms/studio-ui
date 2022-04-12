@@ -48,3 +48,5 @@ export function useDetailedItems(paths: string[]): { itemsByPath: LookupTable<De
   }, [fetchingLookup, dispatch, paths, itemsByPath]);
   return { itemsByPath: items, isFetching: paths.some((path) => fetchingLookup[path]) };
 }
+
+export default useDetailedItems;

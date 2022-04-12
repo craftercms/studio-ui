@@ -28,6 +28,9 @@ import {
   fetchDetailedItem,
   fetchDetailedItemComplete,
   fetchDetailedItemFailed,
+  fetchDetailedItems,
+  fetchDetailedItemsComplete,
+  fetchDetailedItemsFailed,
   fetchQuickCreateList as fetchQuickCreateListAction,
   fetchQuickCreateListComplete,
   fetchQuickCreateListFailed,
@@ -47,6 +50,7 @@ import { catchAjaxError } from '../../utils/ajax';
 import {
   duplicate,
   fetchDetailedItem as fetchDetailedItemService,
+  fetchDetailedItems as fetchDetailedItemsService,
   fetchItemByPath,
   fetchQuickCreateList,
   fetchSandboxItem as fetchSandboxItemService,
@@ -62,7 +66,8 @@ import {
   showCodeEditorDialog,
   showConfirmDialog,
   showDeleteDialog,
-  showEditDialog
+  showEditDialog,
+  showItemMegaMenu
 } from '../actions/dialogs';
 import { getEditorMode, isEditableAsset } from '../../utils/content';
 import {
@@ -97,6 +102,7 @@ import { showErrorDialog } from '../reducers/dialogs/error';
 import { dissociateTemplate } from '../actions/preview';
 import { isBlank } from '../../utils/string';
 import { popTab, pushTab } from '../reducers/dialogs/minimizedTabs';
+import { DetailedItem } from '../../models';
 
 export const sitePolicyMessages = defineMessages({
   itemPastePolicyConfirm: {
@@ -160,7 +166,14 @@ const content: CrafterCMSEpic[] = [
       )
     ),
   // endregion
-  // region Items fetchDetailedItem
+  // region showItemMegaMenu
+  (action$) =>
+    action$.pipe(
+      ofType(showItemMegaMenu.type),
+      map(({ payload }) => fetchSandboxItem({ path: payload.path }))
+    ),
+  // endregion
+  // region fetchDetailedItem, reloadDetailedItem
   (action$, state$) =>
     action$.pipe(
       ofType(fetchDetailedItem.type, reloadDetailedItem.type),
@@ -178,6 +191,21 @@ const content: CrafterCMSEpic[] = [
         )
       )
     ),
+  // endregion
+  // region fetchDetailedItems
+  (action$, state$) =>
+    action$.pipe(
+      ofType(fetchDetailedItems.type),
+      withLatestFrom(state$),
+      switchMap(([{ payload }, state]) =>
+        fetchDetailedItemsService(state.sites.active, payload.paths).pipe(
+          map((items) => fetchDetailedItemsComplete(items as DetailedItem[])),
+          catchAjaxError(fetchDetailedItemsFailed)
+        )
+      )
+    ),
+  // endregion
+  // region completeDetailedItem
   (action$, state$) =>
     action$.pipe(
       ofType(completeDetailedItem.type),
@@ -204,7 +232,7 @@ const content: CrafterCMSEpic[] = [
             payload: { path, force }
           },
           state
-        ]) => force || !state.content.itemsByPath[path]
+        ]) => Boolean(path) && (force || !state.content.itemsByPath[path])
       ),
       mergeMap(([{ payload }, state]) =>
         fetchSandboxItemService(state.sites.active, payload.path).pipe(

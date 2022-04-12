@@ -33,8 +33,6 @@ import MoreRounded from '@mui/icons-material/MoreVertRounded';
 // @ts-ignore
 import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover/Popover';
 import { withIndex } from '../../utils/path';
-import { batchActions } from '../../state/actions/misc';
-import { completeDetailedItem } from '../../state/actions/content';
 import { showItemMegaMenu } from '../../state/actions/dialogs';
 import { getNumOfMenuOptionsForItem } from '../../utils/content';
 import Tooltip from '@mui/material/Tooltip';
@@ -135,15 +133,12 @@ export function PreviewAddressBar(props: AddressBarProps) {
       path = withIndex(item.path);
     }
     dispatch(
-      batchActions([
-        completeDetailedItem({ path }),
-        showItemMegaMenu({
-          path: path,
-          anchorReference: 'anchorPosition',
-          anchorPosition: { top, left },
-          loaderItems: getNumOfMenuOptionsForItem(item)
-        })
-      ])
+      showItemMegaMenu({
+        path: path,
+        anchorReference: 'anchorPosition',
+        anchorPosition: { top, left },
+        loaderItems: getNumOfMenuOptionsForItem(item)
+      })
     );
   };
 

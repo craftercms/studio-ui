@@ -26,6 +26,8 @@ import Typography, { TypographyProps } from '@mui/material/Typography';
 import { isPreviewable } from '../PathNavigator/utils';
 import ItemStateIcon from '../ItemStateIcon';
 import ItemTypeIcon from '../ItemTypeIcon';
+import ItemPublishingTargetIcon from '../ItemPublishingTargetIcon';
+import { isInWorkflow } from './utils';
 
 export type ItemDisplayClassKey = 'root' | 'label' | 'labelPreviewable' | 'icon' | 'typeIcon';
 export type ItemDisplayStyles = Partial<Record<ItemDisplayClassKey, CSSProperties>>;
@@ -82,7 +84,8 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
     styles,
     classes: propClasses,
     // @see https://github.com/craftercms/craftercms/issues/5442
-    // showPublishingTarget = true,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    showPublishingTarget = true,
     showWorkflowState = true,
     showItemType = true,
     showNavigableAsLinks = true,
@@ -92,14 +95,15 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
     ...rest
   } = props;
   const classes = useStyles(props.styles);
+  const inWorkflow = isInWorkflow(item.stateMap) || item.systemType === 'folder';
   return (
     <span ref={ref} {...rest} className={clsx(classes.root, propClasses?.root, rest?.className)}>
-      {/* @see https://github.com/craftercms/craftercms/issues/5442
-      {showPublishingTarget && (
-        <ItemPublishingTargetIcon item={item} className={clsx(classes.icon, propClasses?.icon)} />
-      )}
-      */}
-      {showWorkflowState && <ItemStateIcon item={item} className={clsx(classes.icon, propClasses?.icon)} />}
+      {/* @see https://github.com/craftercms/craftercms/issues/5442 */}
+      {inWorkflow
+        ? showWorkflowState && <ItemStateIcon item={item} className={clsx(classes.icon, propClasses?.icon)} />
+        : showPublishingTarget && (
+            <ItemPublishingTargetIcon item={item} className={clsx(classes.icon, propClasses?.icon)} />
+          )}
       {showItemType && <ItemTypeIcon item={item} className={clsx(classes.icon, propClasses?.icon)} />}
       <Typography
         noWrap

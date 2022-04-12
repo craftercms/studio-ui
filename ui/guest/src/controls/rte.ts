@@ -155,11 +155,56 @@ export function initTinyMCE(
     },
 
     setup(editor: Editor) {
-      const pluginManager = window.tinymce.util.Tools.resolve('tinymce.PluginManager');
+      let changed = false;
+      let originalContent;
+      let pluginManager = window.tinymce.util.Tools.resolve('tinymce.PluginManager');
+
+      function save() {
+        const content = getContent();
+        if (changed) {
+          contentController.updateField(record.modelId, record.fieldId[0], record.index, content);
+        }
+      }
+
+      function getContent() {
+        return type === 'html' ? editor.getContent() : editor.getContent({ format: 'text' });
+      }
+
+      function destroyEditor() {
+        editor.destroy(false);
+      }
+
+      function cancel({ saved }: { saved: boolean }) {
+        const content = getContent();
+        destroyEditor();
+
+        // In case the user did some text bolding or other formatting which won't
+        // be honoured on plain text, revert the content to the edited plain text
+        // version of the input.
+        changed && type === 'text' && $element.html(content);
+
+        if (isRecordElInline) {
+          // Update original element and remove created blockElement
+          record.element.innerHTML = rteEl.innerHTML;
+          rteEl.remove();
+          $element.css('display', '');
+        }
+
+        if ($element.html().trim() === '') {
+          $element.addClass(emptyFieldClass);
+        }
+
+        // The timeout prevents clicking the edit menu to be shown when clicking out of an RTE
+        // with the intention to exit editing.
+        setTimeout(() => {
+          dispatch$.next(exitComponentInlineEdit({ path, saved }));
+          dispatch$.complete();
+          dispatch$.unsubscribe();
+        }, 150);
+      }
 
       editor.on('init', function () {
-        let changed = false;
-        let originalContent = getContent();
+        originalContent = getContent();
 
         editor.focus(false);
         editor.selection.select(editor.getBody(), true);
@@ -168,6 +213,7 @@ export function initTinyMCE(
         // In some cases the 'blur' event is getting caught somewhere along
         // the way. Focusout seems to be more reliable.
         editor.on('focusout', (e) => {
+          let saved = false;
           if (
             !e.relatedTarget?.closest('.tox-tinymce') &&
             !e.relatedTarget?.classList.contains('tox-dialog__body-nav-item')
@@ -182,10 +228,17 @@ export function initTinyMCE(
               );
               editor.setContent(originalContent);
             } else {
-              save();
+              // Replace new line char which is not honoured if the field is not html type
+              if (type !== 'html') {
+                editor.setContent(getContent().replace(/\n+/g, ' '));
+              }
+              if (getContent() !== originalContent) {
+                saved = true;
+                save();
+              }
             }
             e.stopImmediatePropagation();
-            cancel();
+            cancel({ saved });
           }
         });
 
@@ -197,75 +250,6 @@ export function initTinyMCE(
           changed = true;
         });
 
-        editor.on('keydown', (e) => {
-          if (e.key === 'Escape') {
-            e.stopImmediatePropagation();
-            editor.setContent(originalContent);
-            cancel();
-          } else if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-            editor.fire('focusout');
-          } else if (
-            validations?.maxLength &&
-            // TODO: Check/improve regex
-            /[a-zA-Z0-9-_ ]/.test(String.fromCharCode(e.keyCode)) &&
-            getContent().length + 1 > parseInt(validations.maxLength.value)
-          ) {
-            post(
-              validationMessage({
-                id: 'maxLength',
-                level: 'required',
-                values: { maxLength: validations.maxLength.value }
-              })
-            );
-            e.stopPropagation();
-            return false;
-          }
-        });
-
-        function save() {
-          const content = getContent();
-          if (changed) {
-            contentController.updateField(record.modelId, record.fieldId[0], record.index, content);
-          }
-        }
-
-        function getContent() {
-          return type === 'html' ? editor.getContent() : editor.getContent({ format: 'text' });
-        }
-
-        function destroyEditor() {
-          editor.destroy(false);
-        }
-
-        function cancel() {
-          const content = getContent();
-          destroyEditor();
-
-          // In case the user did some text bolding or other formatting which won't
-          // be honoured on plain text, revert the content to the edited plain text
-          // version of the input.
-          changed && type === 'text' && $element.html(content);
-
-          if (isRecordElInline) {
-            // Update original element and remove created blockElement
-            record.element.innerHTML = rteEl.innerHTML;
-            rteEl.remove();
-            $element.css('display', '');
-          }
-
-          if ($element.html().trim() === '') {
-            $element.addClass(emptyFieldClass);
-          }
-
-          // The timeout prevents clicking the edit menu to be shown when clicking out of an RTE
-          // with the intention to exit editing.
-          setTimeout(() => {
-            dispatch$.next(exitComponentInlineEdit({ path }));
-            dispatch$.complete();
-            dispatch$.unsubscribe();
-          }, 150);
-        }
-
         if (type !== 'html') {
           // For plain text fields, remove keyboard shortcuts for formatting text
           // meta is used in tinymce for Ctrl (PC) and Command (macOS)
@@ -275,20 +259,48 @@ export function initTinyMCE(
           editor.addShortcut('meta+u', '', '');
         }
       });
+
       editor.on('keydown', (e) => {
-        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        if (e.key === 'Escape') {
+          e.stopImmediatePropagation();
+          editor.setContent(originalContent);
+          cancel({ saved: false });
+        } else if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
           e.preventDefault();
+          // Timeout to avoid "Uncaught TypeError: Cannot read properties of null (reading 'getStart')"
+          // Hypothesis is the focusout destroys the editor before some internal tiny thing runs.
+          setTimeout(() => editor.fire('focusout'));
+        } else if (e.key === 'Enter' && type !== 'html') {
+          e.preventDefault();
+        } else if (
+          validations?.maxLength &&
+          // TODO: Check/improve regex
+          /[a-zA-Z0-9-_ ]/.test(String.fromCharCode(e.keyCode)) &&
+          getContent().length + 1 > parseInt(validations.maxLength.value)
+        ) {
+          post(
+            validationMessage({
+              id: 'maxLength',
+              level: 'required',
+              values: { maxLength: validations.maxLength.value }
+            })
+          );
+          e.stopPropagation();
+          return false;
         }
       });
+
       editor.on('DblClick', (e) => {
         e.stopPropagation();
         if (e.target.nodeName === 'IMG') {
           window.tinymce.activeEditor.execCommand('mceImage');
         }
       });
+
       editor.on('click', (e) => {
         e.stopPropagation();
       });
+
       // No point in waiting for `craftercms_tinymce_hooks` if the hook won't be loaded at all.
       external.craftercms_tinymce_hooks &&
         pluginManager.waitFor(

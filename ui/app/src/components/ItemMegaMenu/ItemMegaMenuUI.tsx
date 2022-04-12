@@ -21,8 +21,8 @@ import { FormattedMessage } from 'react-intl';
 import clsx from 'clsx';
 import Typography from '@mui/material/Typography';
 import ItemDisplay from '../ItemDisplay';
-import ItemStateIcon from '../ItemStateIcon';
-import { getItemStateText } from '../ItemDisplay/utils';
+import ItemStateIcon from '../ItemStateIcon/ItemStateIcon';
+import { getItemPublishingTargetText, getItemStateText, isInWorkflow } from '../ItemDisplay/utils';
 import React, { ReactNode } from 'react';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
@@ -34,6 +34,7 @@ import { ContextMenuOption } from '../ContextMenu/ContextMenu';
 import GlobalState from '../../models/GlobalState';
 import Skeleton from '@mui/material/Skeleton';
 import { CSSProperties } from '@mui/styles';
+import ItemPublishingTargetIcon from '../ItemPublishingTargetIcon/ItemPublishingTargetIcon';
 
 export type ItemMegaMenuUIClassKey =
   | 'root'
@@ -199,7 +200,8 @@ export default function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
     classes: propClasses
   } = props;
   const classes = useStyles(styles);
-
+  const isFolder = item?.systemType === 'folder';
+  const inWorkflow = isInWorkflow(item?.stateMap);
   return (
     <Popover
       open={open}
@@ -235,16 +237,23 @@ export default function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
           <Skeleton animation="wave" />
         ) : (
           <div className={classes.itemState}>
-            {/* @see https://github.com/craftercms/craftercms/issues/5442
-            <ItemPublishingTargetIcon item={item} className={classes.icon} />
-            <Typography variant="body2" component="span">
-              {getItemPublishingTargetText(item?.stateMap)}
-            </Typography>
-            */}
-            <ItemStateIcon item={item} className={classes.icon} />
-            <Typography variant="body2" component="span">
-              {getItemStateText(item?.stateMap)}
-            </Typography>
+            {/* @see https://github.com/craftercms/craftercms/issues/5442 */}
+            {!isFolder &&
+              (inWorkflow ? (
+                <>
+                  <ItemStateIcon item={item} className={classes.icon} />
+                  <Typography variant="body2" component="span">
+                    {getItemStateText(item?.stateMap)}
+                  </Typography>
+                </>
+              ) : (
+                <>
+                  <ItemPublishingTargetIcon item={item} className={classes.icon} />
+                  <Typography variant="body2" component="span">
+                    {getItemPublishingTargetText(item?.stateMap)}
+                  </Typography>
+                </>
+              ))}
           </div>
         )}
       </section>

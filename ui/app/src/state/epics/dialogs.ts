@@ -40,6 +40,7 @@ import {
   showConfirmDialog,
   showEditDialog,
   showPreviewDialog,
+  showPublishDialog,
   updateCodeEditorDialog,
   updateEditConfig,
   updatePreviewDialog
@@ -56,6 +57,7 @@ import { formEngineMessages } from '../../utils/i18n-legacy';
 import infoGraphic from '../../assets/information.svg';
 import { nnou, nou } from '../../utils/object';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
+import { fetchDetailedItems } from '../actions/content';
 
 function getDialogNameFromType(type: string): string {
   let name = getDialogActionNameFromType(type);
@@ -217,6 +219,14 @@ const dialogEpics: CrafterCMSEpic[] = [
         hostToGuest$.next(action);
       }),
       ignoreElements()
+    ),
+  // endregion
+  // region Show Publish Dialog
+  (action$) =>
+    action$.pipe(
+      ofType(showPublishDialog.type),
+      filter(({ payload }) => Boolean(payload.items?.length)),
+      map(({ payload }) => fetchDetailedItems({ paths: payload.items.map((item) => item.path) }))
     )
   // endregion
 ] as Epic[];

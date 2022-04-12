@@ -44,7 +44,6 @@ import PathNavigatorSkeletonTree from './PathNavigatorTreeSkeleton';
 import { getParentPath, withIndex, withoutIndex } from '../../utils/path';
 import { DetailedItem } from '../../models/Item';
 import { SystemIconDescriptor } from '../SystemIcon';
-import { completeDetailedItem } from '../../state/actions/content';
 import { useSelection } from '../../hooks/useSelection';
 import { useEnv } from '../../hooks/useEnv';
 import { useActiveUser } from '../../hooks/useActiveUser';
@@ -293,13 +292,19 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
               })
             );
           } else {
-            dispatch(
-              pathNavigatorTreeFetchPathChildren({
-                id,
-                path: parentPath,
-                expand: user.username === payload.user.username
-              })
-            );
+            if (user.username === payload.user.username) {
+              // if it's current user then reload and expand folder (for example pasting in another folder)
+              dispatch(
+                pathNavigatorTreeFetchPathChildren({
+                  id,
+                  path: parentPath,
+                  expand: true
+                })
+              );
+            } else {
+              // if content editor is not current user do a silent refresh
+              dispatch(pathNavigatorTreeBackgroundRefresh({ id }));
+            }
           }
           break;
         }
@@ -443,7 +448,6 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     const anchorRect = element.getBoundingClientRect();
     const top = anchorRect.top + getOffsetTop(anchorRect, 'top');
     const left = anchorRect.left + getOffsetLeft(anchorRect, 'left');
-    dispatch(completeDetailedItem({ path }));
     dispatch(
       showItemMegaMenu({
         path,
