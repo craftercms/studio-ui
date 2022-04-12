@@ -1466,7 +1466,7 @@
   "usersGrid.createUser": "Benutzer erstellen",
   "usersGrid.emptyStateMessage": "Keine Benutzer gefunden",
   "validations.maxCount": "Die maximale Anzahl von Elementen beträgt {maxCount}",
-  "validations.maxLength": "Die maximale Länge ({maxLength}) erreicht",
+  "validations.maxLength": "Maximale Länge erreicht({maxLength})",
   "validations.minCount": "Die Mindestanzahl der Elemente beträgt {minCount}",
   "validations.required": " {field} ist erforderlich",
   "viewVersionDialog.headerTitle": "Artikelversion anzeigen",
