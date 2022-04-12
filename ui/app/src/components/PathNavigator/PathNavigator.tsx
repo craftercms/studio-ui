@@ -256,7 +256,19 @@ export function PathNavigator(props: PathNavigatorProps) {
               })
             );
           } else if (state.itemsInPath.includes(targetPath)) {
-            dispatch(pathNavigatorBackgroundRefresh({ id }));
+            // current page is last one and only one item in current page
+            const goBackOnePage = state.offset >= state.limit && state.total === state.offset + 1;
+
+            if (goBackOnePage) {
+              dispatch(
+                pathNavigatorChangePage({
+                  id,
+                  offset: state.offset - state.limit
+                })
+              );
+            } else {
+              dispatch(pathNavigatorBackgroundRefresh({ id }));
+            }
           }
           break;
         }
@@ -266,7 +278,10 @@ export function PathNavigator(props: PathNavigatorProps) {
         }
         case workflowEvent.type:
         case publishEvent.type: {
-          dispatch(pathNavigatorBackgroundRefresh({ id }));
+          // If it's fetching, do not refresh
+          if (!state.isFetching) {
+            dispatch(pathNavigatorBackgroundRefresh({ id }));
+          }
         }
       }
     });
