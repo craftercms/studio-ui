@@ -221,9 +221,9 @@ export function initTinyMCE(
           editor.setContent(originalContent);
           cancel();
         } else if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-          // Prevent to avoid "Uncaught TypeError: Cannot read properties of null (reading 'getStart')"
-          // Hypothesis is the focusout destroys the editor before some internal tiny thing runs.
           e.preventDefault();
+          // Timeout to avoid "Uncaught TypeError: Cannot read properties of null (reading 'getStart')"
+          // Hypothesis is the focusout destroys the editor before some internal tiny thing runs.
           setTimeout(() => editor.fire('focusout'));
         } else if (e.key === 'Enter' && type !== 'html') {
           e.preventDefault();
