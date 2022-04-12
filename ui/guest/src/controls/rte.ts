@@ -134,7 +134,7 @@ export function initTinyMCE(
         editor.destroy(false);
       }
 
-      function cancel() {
+      function cancel({ saved }: { saved: boolean }) {
         const content = getContent();
         destroyEditor();
 
@@ -157,7 +157,7 @@ export function initTinyMCE(
         // The timeout prevents clicking the edit menu to be shown when clicking out of an RTE
         // with the intention to exit editing.
         setTimeout(() => {
-          dispatch$.next(exitComponentInlineEdit({ path }));
+          dispatch$.next(exitComponentInlineEdit({ path, saved }));
           dispatch$.complete();
           dispatch$.unsubscribe();
         }, 150);
@@ -173,6 +173,7 @@ export function initTinyMCE(
         // In some cases the 'blur' event is getting caught somewhere along
         // the way. Focusout seems to be more reliable.
         editor.on('focusout', (e) => {
+          let saved = false;
           if (!e.relatedTarget?.closest('.tox-tinymce')) {
             if (validations?.required && !getContent().trim()) {
               post(
@@ -189,11 +190,12 @@ export function initTinyMCE(
                 editor.setContent(getContent().replace(/\n+/g, ' '));
               }
               if (getContent() !== originalContent) {
+                saved = true;
                 save();
               }
             }
             e.stopImmediatePropagation();
-            cancel();
+            cancel({ saved });
           }
         });
 
@@ -219,7 +221,7 @@ export function initTinyMCE(
         if (e.key === 'Escape') {
           e.stopImmediatePropagation();
           editor.setContent(originalContent);
-          cancel();
+          cancel({ saved: false });
         } else if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
           e.preventDefault();
           // Timeout to avoid "Uncaught TypeError: Cannot read properties of null (reading 'getStart')"

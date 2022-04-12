@@ -66,7 +66,8 @@ import {
   showCodeEditorDialog,
   showConfirmDialog,
   showDeleteDialog,
-  showEditDialog
+  showEditDialog,
+  showItemMegaMenu
 } from '../actions/dialogs';
 import { getEditorMode, isEditableAsset } from '../../utils/content';
 import {
@@ -165,7 +166,14 @@ const content: CrafterCMSEpic[] = [
       )
     ),
   // endregion
-  // region Items fetchDetailedItem
+  // region showItemMegaMenu
+  (action$) =>
+    action$.pipe(
+      ofType(showItemMegaMenu.type),
+      map(({ payload }) => fetchSandboxItem({ path: payload.path }))
+    ),
+  // endregion
+  // region fetchDetailedItem, reloadDetailedItem
   (action$, state$) =>
     action$.pipe(
       ofType(fetchDetailedItem.type, reloadDetailedItem.type),
@@ -183,6 +191,8 @@ const content: CrafterCMSEpic[] = [
         )
       )
     ),
+  // endregion
+  // region fetchDetailedItems
   (action$, state$) =>
     action$.pipe(
       ofType(fetchDetailedItems.type),
@@ -194,6 +204,8 @@ const content: CrafterCMSEpic[] = [
         )
       )
     ),
+  // endregion
+  // region completeDetailedItem
   (action$, state$) =>
     action$.pipe(
       ofType(completeDetailedItem.type),
@@ -220,7 +232,7 @@ const content: CrafterCMSEpic[] = [
             payload: { path, force }
           },
           state
-        ]) => force || !state.content.itemsByPath[path]
+        ]) => Boolean(path) && (force || !state.content.itemsByPath[path])
       ),
       mergeMap(([{ payload }, state]) =>
         fetchSandboxItemService(state.sites.active, payload.path).pipe(
