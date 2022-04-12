@@ -157,12 +157,12 @@ export default function RecentActivityDashlet() {
           const deleted = {};
           const legacyItems = {};
           activities.documents.forEach((item) => {
-            let path = item.uri ?? item.path;
-            let legacyItem = parseLegacyItemToDetailedItem(item);
-            legacyItems[path] = legacyItem;
+            let legacyToDetailedParsedItem = parseLegacyItemToDetailedItem(item);
+            let path = legacyToDetailedParsedItem.path;
+            legacyItems[path] = legacyToDetailedParsedItem;
             paths.push(path);
             if (item.isDeleted) {
-              deleted[path] = legacyItem;
+              deleted[path] = legacyToDetailedParsedItem;
             } else {
               pathsToFetch.push(path);
             }
