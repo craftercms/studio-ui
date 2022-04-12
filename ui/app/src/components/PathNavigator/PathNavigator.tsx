@@ -278,7 +278,10 @@ export function PathNavigator(props: PathNavigatorProps) {
         }
         case workflowEvent.type:
         case publishEvent.type: {
-          dispatch(pathNavigatorBackgroundRefresh({ id }));
+          // If it's fetching, do not refresh
+          if (!state.isFetching) {
+            dispatch(pathNavigatorBackgroundRefresh({ id }));
+          }
         }
       }
     });

@@ -133,11 +133,11 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
       [payload.id]: { ...state[payload.id], isFetching: true, error: null }
     }),
     [pathNavigatorFetchPathComplete.type]: (state, { payload: { id, children, parent } }) => {
-      const path = parent?.path ?? state[id].currentPath;
-
+      // If it's not the first page, and the fetched data has no children, stay on the previous page.
       if (children.offset >= children.limit && children.length === 0) {
         return state;
       } else {
+        const path = parent?.path ?? state[id].currentPath;
         return {
           ...state,
           [id]: {
