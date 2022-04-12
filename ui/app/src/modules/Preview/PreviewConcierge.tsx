@@ -951,7 +951,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
                   type: desktopAssetUploadComplete.type,
                   payload: {
                     record: payload.record,
-                    path: `/static-assets/images/${payload.record.modelId}/${payload.name}`
+                    path: `${path}${path.endsWith('/') ? '' : '/'}${payload.name}`
                   }
                 });
               }
