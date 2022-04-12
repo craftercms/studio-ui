@@ -55,9 +55,8 @@ import { debounceTime, filter, map, pluck, switchMap, take, tap } from 'rxjs/ope
 import { IntlShape } from 'react-intl/src/types';
 import * as messages from './i18n-legacy';
 import { translateElements } from './i18n-legacy';
-import { DeprecatedThemeOptions as ThemeOptions } from '@mui/material/styles';
 import * as mui from '@mui/material';
-import { defaultThemeOptions, generateClassName } from '../styles/theme';
+import { createDefaultThemeOptions, generateClassName } from '../styles/theme';
 import getStore, { CrafterCMSStore } from '../state/store';
 import { useDispatch, useSelector, useStore } from 'react-redux';
 import { GenerateId } from 'jss';
@@ -118,7 +117,7 @@ interface CodebaseBridge {
   mui: object;
   system: {
     generateClassName: GenerateId;
-    defaultThemeOptions: ThemeOptions;
+    createDefaultThemeOptions: typeof createDefaultThemeOptions;
     palette: any;
     store: CrafterCMSStore;
     getHostToHostBus(): Subject<StandardAction>;
@@ -219,7 +218,7 @@ export function createCodebaseBridge() {
 
     system: {
       generateClassName,
-      defaultThemeOptions,
+      createDefaultThemeOptions,
       palette,
       store: null,
       getHostToHostBus,

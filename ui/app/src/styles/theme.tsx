@@ -22,8 +22,8 @@ import { GenerateId } from 'jss';
 export const backgroundColor = palette.gray.light1;
 export const RedColor = palette.red.main;
 
-export const defaultThemeOptions: ThemeOptions = (function () {
-  const defaultTheme = createTheme();
+export function createDefaultThemeOptions({ mode }: { mode: ThemeOptions['palette']['mode'] }) {
+  const defaultTheme = createTheme({ palette: { mode } });
   const theme: ThemeOptions = {
     typography: {
       button: {
@@ -111,7 +111,7 @@ export const defaultThemeOptions: ThemeOptions = (function () {
     }
   };
   return theme;
-})();
+}
 
 export const generateClassName: GenerateId = createGenerateClassName({
   productionPrefix: 'craftercms-'
