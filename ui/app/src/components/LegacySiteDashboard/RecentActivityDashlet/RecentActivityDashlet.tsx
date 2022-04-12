@@ -36,7 +36,7 @@ import RecentActivityDashletUiSkeleton from '../RecentActivityDashletGrid/Recent
 import GlobalState from '../../../models/GlobalState';
 import { deleteContentEvent, publishEvent, workflowEvent } from '../../../state/actions/system';
 import { getHostToHostBus } from '../../../modules/Preview/previewContext';
-import { filter } from 'rxjs/operators';
+import { filter, map, switchMap } from 'rxjs/operators';
 import TextField from '@mui/material/TextField';
 import { useLogicResource } from '../../../hooks/useLogicResource';
 import { useLocale } from '../../../hooks/useLocale';
@@ -56,6 +56,7 @@ import { useDetailedItems } from '../../../hooks/useDetailedItems';
 import translations from './translations';
 import { getEmptyStateStyleSet } from '../../EmptyState/EmptyState';
 import { useActiveSite } from '../../../hooks/useActiveSite';
+import { fetchItemsByPath } from '../../../services/content';
 
 const dashletInitialPreferences: LegacyDashboardPreferences = {
   filterBy: 'page',
@@ -148,19 +149,54 @@ export default function RecentActivityDashlet() {
       preferences.numItems,
       preferences.filterBy,
       preferences.excludeLiveItems
-    ).subscribe(
-      (activities) => {
-        setTotalItems(activities.total);
-        const itemsList = [];
-        activities.documents.forEach((item) => itemsList.push(parseLegacyItemToDetailedItem(item)));
-        setItems(itemsList);
-        setFetchingActivity(false);
-      },
-      (e) => {
-        setErrorActivity(e);
-        setFetchingActivity(false);
-      }
-    );
+    )
+      .pipe(
+        switchMap((activities) => {
+          const paths = [];
+          const pathsToFetch = [];
+          const deleted = {};
+          const legacyItems = {};
+          activities.documents.forEach((item) => {
+            let path = item.uri ?? item.path;
+            let legacyItem = parseLegacyItemToDetailedItem(item);
+            legacyItems[path] = legacyItem;
+            paths.push(path);
+            if (item.isDeleted) {
+              deleted[path] = legacyItem;
+            } else {
+              pathsToFetch.push(path);
+            }
+          });
+          return fetchItemsByPath(siteId, pathsToFetch, { castAsDetailedItem: true }).pipe(
+            map((items) => {
+              // The idea is to present the items in the same order that the original call returned.
+              const itemLookup = items.reduce((lookup, item) => {
+                lookup[item.path] = item;
+                return lookup;
+              }, {});
+              return {
+                total: activities.total,
+                items: paths.map((path) => ({
+                  ...(itemLookup[path] ?? deleted[path]),
+                  live: itemLookup[path].stateMap.live ? legacyItems[path].live : null,
+                  staging: itemLookup[path].stateMap.staging ? legacyItems[path].staging : null
+                }))
+              };
+            })
+          );
+        })
+      )
+      .subscribe({
+        next(response) {
+          setTotalItems(response.total);
+          setItems(response.items);
+          setFetchingActivity(false);
+        },
+        error(e) {
+          setErrorActivity(e);
+          setFetchingActivity(false);
+        }
+      });
   }, [siteId, currentUser, preferences.numItems, preferences.filterBy, preferences.excludeLiveItems]);
 
   useEffect(() => {
