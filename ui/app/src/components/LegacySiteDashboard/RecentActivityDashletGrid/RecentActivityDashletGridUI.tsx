@@ -196,7 +196,7 @@ export function RecentActivityDashletGridUI(props: RecentActivityDashletGridUIPr
                 />
               </GlobalAppGridCell>
               <GlobalAppGridCell className="ellipsis width40 pl0">
-                <ItemDisplay item={item} showNavigableAsLinks={false} />
+                <ItemDisplay item={item} showNavigableAsLinks={false} showPublishingTarget={false} />
                 <Typography
                   title={item.path}
                   variant="caption"
