@@ -70,7 +70,9 @@ const validationChecks: { [key in ValidationKeys]: Function } = {
   maxWidth() {},
   maxHeight() {},
   dropTargetsNotFound() {},
-  registerNotFound() {}
+  registerNotFound() {},
+  allowImagesFromRepo() {},
+  allowImageUpload() {}
 };
 
 let rid = 0;

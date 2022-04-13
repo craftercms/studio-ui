@@ -46,7 +46,11 @@ export type ValidationKeys =
   | 'minValue'
   | 'maxValue'
   | 'dropTargetsNotFound'
-  | 'registerNotFound';
+  | 'registerNotFound'
+  | 'allowImagesFromRepo'
+  | 'allowImageUpload'
+  | 'allowVideosFromRepo'
+  | 'allowVideoUpload';
 
 export type ContentTypeFieldValidations = {
   [key in ValidationKeys]: ContentTypeFieldValidation;

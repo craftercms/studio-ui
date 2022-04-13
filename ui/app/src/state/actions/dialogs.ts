@@ -269,3 +269,12 @@ export const updateWidgetDialog = /*#__PURE__*/ createAction<Partial<WidgetDialo
 // region Show Keyboard Shortcuts Dialog
 export const showKeyboardShortcutsDialog = /*#__PURE__*/ createAction('SHOW_KEYBOARD_SHORTCUTS_DIALOG');
 // endregion
+
+// region Show Dialogs From DataSources
+export const showRtePickerActions = /*#__PURE__*/ createAction('SHOW_RTE_PICKER_ACTIONS');
+// endregion
+
+// region Rte Picker Action Result
+export const rtePickerActionResult =
+  /*#__PURE__*/ createAction<{ path: string; name: string }>('RTE_PICKER_ACTION_RESULT');
+// endregion

@@ -26,7 +26,7 @@ import {
 } from '../../elementRegistry';
 import { dragOk } from '../util';
 import * as iceRegistry from '../../iceRegistry';
-import { findChildRecord, getById } from '../../iceRegistry';
+import { findChildRecord, getById, getReferentialEntries } from '../../iceRegistry';
 import { Reducer } from '@reduxjs/toolkit';
 import { GuestStandardAction } from '../models/GuestStandardAction';
 import { ElementRecord } from '../../models/InContextEditing';
@@ -567,7 +567,11 @@ const reducer = createReducer(initialState, {
       } else if (asset.type.includes('video/')) {
         type = 'video-picker';
       }
-      const dropTargets = iceRegistry.getMediaDropTargets(type);
+
+      const dropTargets = iceRegistry.getMediaDropTargets(type).filter((record) => {
+        let { field: { validations = [] } = {} } = getReferentialEntries(record);
+        return Boolean(validations['allowImageUpload']);
+      });
       const { players, containers, dropZones } = getDragContextFromDropTargets(dropTargets);
       const highlighted = getHighlighted(dropZones);
 
@@ -602,7 +606,10 @@ const reducer = createReducer(initialState, {
       } else if (asset.mimeType.includes('video/')) {
         type = 'video-picker';
       }
-      const dropTargets = iceRegistry.getMediaDropTargets(type);
+      const dropTargets = iceRegistry.getMediaDropTargets(type).filter((record) => {
+        let { field: { validations = [] } = {} } = getReferentialEntries(record);
+        return Boolean(validations['allowImagesFromRepo']);
+      });
       const { players, containers, dropZones } = getDragContextFromDropTargets(dropTargets);
       const highlighted = getHighlighted(dropZones);
 

@@ -20,6 +20,7 @@ import { toQueryString } from './object';
 import LookupTable from '../models/LookupTable';
 import ContentType from '../models/ContentType';
 import { SystemType } from '../models';
+import { v4 as uuid } from 'uuid';
 
 // Originally from ComponentPanel.getPreviewPagePath
 export function getPathFromPreviewURL(previewURL: string): string {
@@ -244,4 +245,67 @@ export function getItemTemplatePath(item: DetailedItem, contentTypes: LookupTabl
 
 export function getControllerPath(type: SystemType): string {
   return `/scripts/${type === 'page' ? 'pages' : 'components'}`;
+}
+
+export function processPathMacros(dependencies: {
+  path: string;
+  objectId: string;
+  objectGroupId?: string;
+  useUUID?: boolean;
+  fullParentPath?: string;
+}): string {
+  const { path, objectId, objectGroupId, useUUID, fullParentPath } = dependencies;
+  let processedPath = path;
+
+  if (processedPath.includes('{objectId}')) {
+    if (useUUID) {
+      processedPath = processedPath.replace('{objectId}', uuid());
+    } else {
+      processedPath = path.replace('{objectId}', objectId);
+    }
+  }
+
+  if (processedPath.includes('{objectGroupId}')) {
+    processedPath = processedPath.replace('{objectGroupId}', objectGroupId);
+  }
+
+  if (processedPath.includes('{objectGroupId2}')) {
+    processedPath = processedPath.replace('{objectGroupId2}', objectGroupId.substring(0, 2));
+  }
+
+  const currentDate = new Date();
+  if (processedPath.includes('{year}')) {
+    processedPath = processedPath.replace('{year}', `${currentDate.getFullYear()}`);
+  }
+
+  if (processedPath.includes('{month}')) {
+    processedPath = processedPath.replace('{month}', ('0' + (currentDate.getMonth() + 1)).slice(-2));
+  }
+
+  if (processedPath.includes('{yyyy}')) {
+    processedPath = processedPath.replace('{yyyy}', `${currentDate.getFullYear()}`);
+  }
+
+  if (processedPath.includes('{mm}')) {
+    processedPath = processedPath.replace('{mm}', ('0' + (currentDate.getMonth() + 1)).slice(-2));
+  }
+
+  if (processedPath.includes('{dd}')) {
+    processedPath = processedPath.replace('{dd}', ('0' + currentDate.getDate()).slice(-2));
+  }
+
+  if (fullParentPath) {
+    const parentPathPieces = fullParentPath.substr(1).split('/');
+    processedPath = processedPath.replace(/{parentPath(\[\s*?(\d+)\s*?])?}/g, function (fullMatch, indexExp, index) {
+      if (indexExp === void 0) {
+        // Handle simple exp `{parentPath}`
+        return fullParentPath.replace(/\/[^/]*\/[^/]*\/([^.]*)(\/[^/]*\.xml)?$/, '$1');
+      } else {
+        // Handle indexed exp `{parentPath[i]}`
+        return parentPathPieces[parseInt(index) + 2];
+      }
+    });
+  }
+
+  return processedPath;
 }

@@ -88,6 +88,7 @@ import { extractCollectionItem } from '@craftercms/studio-ui/utils/model';
 import { getParentModelId } from '../../utils/ice';
 import { fetchSandboxItem, lock } from '@craftercms/studio-ui/services/content';
 import { unlockItem } from '@craftercms/studio-ui/state/actions/content';
+import StandardAction from '@craftercms/studio-ui/models/StandardAction';
 
 const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
   // region mouseover, mouseleave
@@ -184,8 +185,9 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
         event.stopPropagation();
         const status = state.status;
         const dragContext = state.dragContext;
+        const file = unwrapEvent<DragEvent>(event).dataTransfer.files[0];
 
-        const processDrop = () => {
+        const processDrop = (): Observable<StandardAction> => {
           switch (status) {
             case EditingStatus.PLACING_DETACHED_ASSET: {
               const { dropZone } = dragContext;
@@ -236,15 +238,16 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
             }
             case EditingStatus.UPLOAD_ASSET_FROM_DESKTOP: {
               if (dragContext.inZone) {
-                const file = unwrapEvent<DragEvent>(event).dataTransfer.files[0];
-                const stream$ = new Subject();
+                const stream$ = new Subject<StandardAction>();
                 const reader = new FileReader();
                 reader.onload = ((aImg: HTMLImageElement) => (event) => {
+                  const { field } = iceRegistry.getReferentialEntries(record.iceIds[0]);
                   post(desktopAssetDrop.type, {
                     dataUrl: event.target.result,
                     name: file.name,
                     type: file.type,
-                    record: reversePluckProps(record, 'element')
+                    record: reversePluckProps(record, 'element'),
+                    field
                   });
                   aImg.src = event.target.result;
                   // Timeout gives the browser a chance to render the image so later rect
@@ -288,13 +291,12 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
                     filter((e) => e.type === requestWorkflowCancellationDialogOnResult.type),
                     take(1),
                     tap(({ payload }) => {
-                      if (payload.type === 'onContinue') {
-                        processDrop();
-                      } else {
+                      if (payload.type !== 'onContinue') {
                         post(unlockItem({ path }));
                       }
                     }),
-                    ignoreElements()
+                    filter(({ payload }) => payload.type === 'onContinue'),
+                    switchMap(() => processDrop())
                   );
                 } else {
                   if (item.commitId !== cachedSandboxItem.commitId) {
@@ -309,7 +311,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
                       window.location.reload();
                     });
                   } else {
-                    processDrop();
+                    return processDrop();
                   }
                   return NEVER;
                 }

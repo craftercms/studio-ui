@@ -19,7 +19,7 @@ import * as iceRegistry from '../iceRegistry';
 import { Editor } from 'tinymce';
 import * as contentController from '../contentController';
 import { ContentTypeFieldValidations } from '@craftercms/studio-ui/models/ContentType';
-import { post } from '../utils/communicator';
+import { post, message$ } from '../utils/communicator';
 import { GuestStandardAction } from '../store/models/GuestStandardAction';
 import { Observable, Subject } from 'rxjs';
 import { startWith } from 'rxjs/operators';
@@ -29,6 +29,8 @@ import { showEditDialog, validationMessage } from '@craftercms/studio-ui/state/a
 import { RteSetup } from '../models/Rte';
 import { editComponentInline, exitComponentInlineEdit } from '../store/actions';
 import { emptyFieldClass } from '../constants';
+import { rtePickerActionResult, showRtePickerActions } from '@craftercms/studio-ui/state/actions/dialogs';
+import { filter, take } from 'rxjs/operators';
 
 export function initTinyMCE(
   path: string,
@@ -37,7 +39,7 @@ export function initTinyMCE(
   rteSetup?: RteSetup
 ): Observable<GuestStandardAction> {
   const dispatch$ = new Subject<GuestStandardAction>();
-  const { field } = iceRegistry.getReferentialEntries(record.iceIds[0]);
+  const { field, model } = iceRegistry.getReferentialEntries(record.iceIds[0]);
   const type = field?.type;
   const elementDisplay = $(record.element).css('display');
   const inlineElsRegex =
@@ -114,6 +116,44 @@ export function initTinyMCE(
     external_plugins: external,
     code_editor_inline: false,
     skin: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'oxide-dark' : 'oxide',
+
+    media_live_embeds: true,
+    file_picker_types: 'image media',
+    file_picker_callback: function (cb, value, meta) {
+      // meta contains info about type (image, media, etc). Used to properly add DS to dialogs.
+      // meta.filetype === 'file | image | media'
+      const datasources = {};
+      Object.values(field.validations).forEach((validation) => {
+        if (
+          ['allowImageUpload', 'allowImagesFromRepo', 'allowVideoUpload', 'allowVideosFromRepo'].includes(validation.id)
+        ) {
+          datasources[validation.id] = validation;
+        }
+      });
+      const browseBtn = document.querySelector('.tox-dialog .tox-browse-url');
+
+      post({
+        type: showRtePickerActions.type,
+        payload: {
+          datasources,
+          model,
+          type: meta.filetype,
+          btnRect: browseBtn.getBoundingClientRect()
+        }
+      });
+
+      message$
+        .pipe(
+          filter((e) => e.type === rtePickerActionResult.type),
+          take(1)
+        )
+        .subscribe(({ payload }) => {
+          if (payload) {
+            cb(payload.path, { alt: payload.name });
+          }
+        });
+    },
+
     setup(editor: Editor) {
       let changed = false;
       let originalContent;
@@ -174,7 +214,11 @@ export function initTinyMCE(
         // the way. Focusout seems to be more reliable.
         editor.on('focusout', (e) => {
           let saved = false;
-          if (!e.relatedTarget?.closest('.tox-tinymce')) {
+          let relatedTarget = e.relatedTarget;
+          if (
+            !relatedTarget?.closest('.tox-tinymce') &&
+            !relatedTarget.classList.contains('tox-dialog__body-nav-item')
+          ) {
             if (validations?.required && !getContent().trim()) {
               post(
                 validationMessage({

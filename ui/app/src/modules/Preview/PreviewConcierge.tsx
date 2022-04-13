@@ -138,9 +138,13 @@ import { useActiveUser } from '../../hooks/useActiveUser';
 import { useMount } from '../../hooks/useMount';
 import { usePreviewNavigation } from '../../hooks/usePreviewNavigation';
 import { useActiveSite } from '../../hooks/useActiveSite';
-import { getControllerPath, getPathFromPreviewURL } from '../../utils/path';
+import { getControllerPath, getPathFromPreviewURL, processPathMacros } from '../../utils/path';
 import {
+  closeSingleFileUploadDialog,
+  rtePickerActionResult,
   showEditDialog,
+  showRtePickerActions,
+  showSingleFileUploadDialog,
   showWorkflowCancellationDialog,
   workflowCancellationDialogClosed
 } from '../../state/actions/dialogs';
@@ -160,17 +164,24 @@ import {
   contentTypeUpdated,
   lockContentEvent,
   pluginInstalled,
-  pluginUninstalled
+  pluginUninstalled,
+  showSystemNotification
 } from '../../state/actions/system';
-import { useUpdateRefs } from '../../hooks';
+import { useSpreadState, useUpdateRefs } from '../../hooks';
 import { useHotkeys } from 'react-hotkeys-hook';
-import { batchActions, editContentTypeTemplate, editController } from '../../state/actions/misc';
+import { batchActions, dispatchDOMEvent, editContentTypeTemplate, editController } from '../../state/actions/misc';
 import { popPiece } from '../../utils/string';
 import { fetchSandboxItem as fetchSandboxItemService } from '../../services/content';
 import SocketEventBase from '../../models/SocketEvent';
 import { RefreshRounded } from '@mui/icons-material';
 import { getPersonFullName } from '../../components/SiteDashboard';
 import { useTheme } from '@mui/material/styles';
+import { createCustomDocumentEventListener } from '../../utils/dom';
+import BrowseFilesDialog from '../../components/BrowseFilesDialog';
+import { MediaItem } from '../../models';
+import DataSourcesActionsList, {
+  DataSourcesActionsListProps
+} from '../../components/DataSourcesActionsList/DataSourcesActionsList';
 
 const originalDocDomain = document.domain;
 
@@ -266,6 +277,12 @@ const issueDescriptorRequest = (props) => {
 };
 // endregion
 
+const dataSourceActionsListInitialState = {
+  show: false,
+  rect: null,
+  items: []
+};
+
 export function PreviewConcierge(props: PropsWithChildren<{}>) {
   const dispatch = useDispatch();
   const { id: siteId, uuid } = useActiveSite();
@@ -291,6 +308,12 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   const rteConfig = useRTEConfig();
   const keyboardShortcutsDialogState = useEnhancedDialogState();
   const theme = useTheme();
+  const browseFilesDialogState = useEnhancedDialogState();
+  const [browseFilesDialogPath, setBrowseFilesDialogPath] = useState('/');
+  const [browseFilesDialogMimeTypes, setBrowseFilesDialogMimeTypes] = useState([]);
+  const [dataSourceActionsListState, setDataSourceActionsListState] = useSpreadState<DataSourcesActionsListProps>(
+    dataSourceActionsListInitialState
+  );
   const conditionallyToggleEditMode = (nextHighlightMode?: HighlightMode) => {
     if (item && !isItemLockedForMe(item, user.username) && hasEditAction(item.availableActions)) {
       dispatch(
@@ -324,8 +347,20 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
     editModePadding,
     cdataEscapedFieldPatterns,
     conditionallyToggleEditMode,
-    keyboardShortcutsDialogState
+    keyboardShortcutsDialogState,
+    setDataSourceActionsListState,
+    showToolsPanel,
+    toolsPanelWidth,
+    browseFilesDialogState
   });
+
+  const onRtePickerResult = (payload?: { path: string; name: string }) => {
+    const hostToGuest$ = getHostToGuestBus();
+    hostToGuest$.next({
+      type: rtePickerActionResult.type,
+      payload
+    });
+  };
 
   // Legacy Guest pencil repaint - When the guest screen size changes, pencils need to be repainted.
   useEffect(() => {
@@ -876,10 +911,22 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           enqueueSnackbar(formatMessage(guestMessages.assetUploadStarted));
           // @ts-ignore - TODO: type action accordingly
           hostToHost$.next(desktopAssetUploadStarted(payload));
+          const {
+            validations: { allowImageUpload }
+          } = payload.field;
+
+          const path =
+            allowImageUpload && allowImageUpload.value
+              ? processPathMacros({
+                  path: allowImageUpload.value,
+                  objectId: payload.record.modelId
+                })
+              : `/static-assets/images/${payload.record.modelId}`;
+
           const uppySubscription = uploadDataUrl(
             siteId,
             pluckProps(payload, 'name', 'type', 'dataUrl'),
-            `/static-assets/images/${payload.record.modelId}`,
+            path,
             upToDateRefs.current.xsrfArgument
           )
             .pipe(
@@ -908,7 +955,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
                   type: desktopAssetUploadComplete.type,
                   payload: {
                     record: payload.record,
-                    path: `/static-assets/images/${payload.record.modelId}/${payload.name}`
+                    path: `${path}${path.endsWith('/') ? '' : '/'}${payload.name}`
                   }
                 });
               }
@@ -927,9 +974,12 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           break;
         }
         case validationMessage.type: {
-          enqueueSnackbar(formatMessage(guestMessages[payload.id], payload.values ?? {}), {
-            variant: payload.level === 'required' ? 'error' : payload.level === 'suggestion' ? 'warning' : 'info'
-          });
+          enqueueSnackbar(
+            payload.id in guestMessages ? formatMessage(guestMessages[payload.id], payload.values ?? {}) : payload.id,
+            {
+              variant: payload.level === 'required' ? 'error' : payload.level === 'suggestion' ? 'warning' : 'info'
+            }
+          );
           break;
         }
         case hotKey.type: {
@@ -1014,6 +1064,127 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           break;
         }
         // endregion
+        case showRtePickerActions.type: {
+          const { setDataSourceActionsListState, showToolsPanel, toolsPanelWidth, browseFilesDialogState } =
+            upToDateRefs.current;
+          const onShowSingleFileUploadDialog = (path: string, type: 'image' | 'media') => {
+            setDataSourceActionsListState(dataSourceActionsListInitialState);
+
+            if (path) {
+              dispatch(
+                showSingleFileUploadDialog({
+                  site: siteId,
+                  path,
+                  fileTypes: type === 'image' ? ['image/*'] : ['video/*'],
+                  onClose: batchActions([
+                    closeSingleFileUploadDialog(),
+                    dispatchDOMEvent({ id: 'fileUploadCanceled' })
+                  ]),
+                  onUploadComplete: batchActions([
+                    closeSingleFileUploadDialog(),
+                    dispatchDOMEvent({ id: 'fileUploaded' })
+                  ])
+                })
+              );
+              let unsubscribe, cancelUnsubscribe;
+              unsubscribe = createCustomDocumentEventListener('fileUploaded', ({ successful: response }) => {
+                const file = response[0];
+                const filePath = `${file.meta.path}${file.meta.path.endsWith('/') ? '' : '/'}${file.meta.name}`;
+                onRtePickerResult({ path: filePath, name: file.meta.name });
+                cancelUnsubscribe();
+              });
+
+              cancelUnsubscribe = createCustomDocumentEventListener('fileUploadCanceled', () => {
+                onRtePickerResult();
+                unsubscribe();
+              });
+            } else {
+              dispatch(
+                showSystemNotification({
+                  message: formatMessage(guestMessages.noPathSetInDataSource)
+                })
+              );
+            }
+          };
+
+          const onShowBrowseFilesDialog = (path: string, type: 'image' | 'media') => {
+            const mimeTypes = type === 'image' ? ['image/png', 'image/jpeg', 'image/gif', 'image/jpg'] : ['video/mp4'];
+            setDataSourceActionsListState(dataSourceActionsListInitialState);
+
+            if (path) {
+              setBrowseFilesDialogPath(path);
+              setBrowseFilesDialogMimeTypes(mimeTypes);
+              browseFilesDialogState.onOpen();
+            } else {
+              dispatch(
+                showSystemNotification({
+                  message: formatMessage(guestMessages.noPathSetInDataSource)
+                })
+              );
+            }
+          };
+
+          const dataSourcesByType = {
+            image: ['allowImageUpload', 'allowImagesFromRepo'],
+            media: ['allowVideoUpload', 'allowVideosFromRepo']
+          };
+
+          // filter data sources to only the ones that match the type
+          const dataSourcesKeys = Object.keys(payload.datasources).filter((datasourceId) =>
+            dataSourcesByType[payload.type]?.includes(datasourceId)
+          );
+
+          // directly open corresponding dialog
+          if (dataSourcesKeys.length === 1) {
+            // determine if upload or browse
+            const key = dataSourcesKeys[0];
+            const processedPath = processPathMacros({
+              path: payload.datasources[key].value,
+              objectId: payload.model.craftercms.id,
+              objectGroupId: payload.model.objectGroupId
+            });
+            if (key === 'allowImageUpload' || key === 'allowVideoUpload') {
+              onShowSingleFileUploadDialog(processedPath, payload.type);
+            } else {
+              onShowBrowseFilesDialog(processedPath, payload.type);
+            }
+          } else if (dataSourcesKeys.length > 1) {
+            // create items for DataSourcesActionsList
+            const dataSourcesItems = [];
+            dataSourcesKeys.forEach((dataSourceKey) => {
+              dataSourcesItems.push({
+                label: formatMessage(guestMessages[dataSourceKey]),
+                path: processPathMacros({
+                  path: payload.datasources[dataSourceKey].value,
+                  objectId: payload.model.objectId,
+                  objectGroupId: payload.model.objectGroupId
+                }),
+                action:
+                  dataSourceKey === 'allowImageUpload' || dataSourceKey === 'allowVideoUpload'
+                    ? onShowSingleFileUploadDialog
+                    : onShowBrowseFilesDialog,
+                type: payload.type
+              });
+            });
+
+            const { left, top, height } = payload.btnRect;
+            setDataSourceActionsListState({
+              show: true,
+              rect: {
+                ...payload.btnRect,
+                left: left + (showToolsPanel ? toolsPanelWidth : 0),
+                top: top + height * 3 // To position correctly under the button
+              },
+              items: dataSourcesItems
+            });
+          } else if (dataSourcesKeys.length === 0) {
+            dispatch(
+              showSystemNotification({
+                message: formatMessage(guestMessages.noDataSourcesSet)
+              })
+            );
+          }
+        }
       }
     });
     return () => {
@@ -1165,6 +1336,26 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         hasPendingChanges={keyboardShortcutsDialogState.hasPendingChanges}
         shortcuts={previewKeyboardShortcuts}
         isSubmitting={keyboardShortcutsDialogState.isSubmitting}
+      />
+      <BrowseFilesDialog
+        open={browseFilesDialogState.open}
+        path={browseFilesDialogPath}
+        mimeTypes={browseFilesDialogMimeTypes}
+        onSuccess={(response: MediaItem) => {
+          browseFilesDialogState.onClose();
+          onRtePickerResult({ path: response.path, name: response.name });
+        }}
+        onClose={() => {
+          browseFilesDialogState.onClose();
+          onRtePickerResult();
+        }}
+        hasPendingChanges={browseFilesDialogState.hasPendingChanges}
+        isMinimized={browseFilesDialogState.isMinimized}
+        isSubmitting={browseFilesDialogState.isSubmitting}
+      />
+      <DataSourcesActionsList
+        {...dataSourceActionsListState}
+        onClose={() => setDataSourceActionsListState({ show: false })}
       />
     </>
   );

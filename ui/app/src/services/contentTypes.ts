@@ -17,6 +17,7 @@
 import {
   ContentType,
   ContentTypeField,
+  ContentTypeFieldValidation,
   ContentTypeFieldValidations,
   LegacyContentType,
   LegacyDataSource,
@@ -59,7 +60,11 @@ const systemValidationsNames = [
   'maxWidth',
   'maxHeight',
   'minValue',
-  'maxValue'
+  'maxValue',
+  'imgRepositoryUpload',
+  'imgDesktopUpload',
+  'videoDesktopUpload',
+  'videoBrowseRepo'
 ];
 
 const systemValidationsKeysMap = {
@@ -76,7 +81,11 @@ const systemValidationsKeysMap = {
   maxWidth: 'maxWidth',
   maxHeight: 'maxHeight',
   minValue: 'minValue',
-  maxValue: 'maxValue'
+  maxValue: 'maxValue',
+  imgRepositoryUpload: 'allowImagesFromRepo',
+  imgDesktopUpload: 'allowImageUpload',
+  videoDesktopUpload: 'allowVideoUpload',
+  videoBrowseRepo: 'allowVideosFromRepo'
 };
 
 function bestGuessParse(value: any) {
@@ -159,11 +168,47 @@ function getFieldValidations(
   return validations;
 }
 
+function getFieldDataSourceValidations(
+  fieldProperty: LegacyFormDefinitionProperty | LegacyFormDefinitionProperty[],
+  dataSources: LegacyDataSource[]
+): Partial<ContentTypeFieldValidations> {
+  let validations = {};
+  if (
+    dataSources &&
+    dataSources.length > 0 &&
+    asArray(fieldProperty).find((prop) => ['imageManager', 'videoManager'].includes(prop.name))
+  ) {
+    validations = asArray<LegacyFormDefinitionProperty>(fieldProperty).reduce<LookupTable<ContentTypeFieldValidation>>(
+      (table, prop) => {
+        if (prop.name === 'imageManager' || prop.name === 'videoManager') {
+          const dataSourcesNames = prop.value !== '' ? prop.value.split(',') : null;
+          if (dataSourcesNames) {
+            dataSourcesNames.forEach((name) => {
+              const dataSource = dataSources.find((datasource) => datasource.id === name);
+              if (dataSource && systemValidationsNames.includes(camelize(dataSource.type))) {
+                table[systemValidationsKeysMap[camelize(dataSource.type)]] = {
+                  id: systemValidationsKeysMap[camelize(dataSource.type)],
+                  value: asArray(dataSource.properties.property).find((prop) => prop.name === 'repoPath').value,
+                  level: 'required'
+                };
+              }
+            });
+          }
+        }
+        return table;
+      },
+      {}
+    );
+  }
+  return validations;
+}
+
 function parseLegacyFormDefinitionFields(
   legacyFieldsToBeParsed: LegacyFormDefinitionField[] | LegacyFormDefinitionField,
   currentFieldLookup: LookupTable<ContentTypeField>,
   dropTargetsLookup: LookupTable<LegacyDataSource>,
-  sectionFieldIds?: Array<string>
+  sectionFieldIds?: Array<string>,
+  dataSources?: LegacyDataSource[]
 ) {
   asArray<LegacyFormDefinitionField>(legacyFieldsToBeParsed).forEach((legacyField) => {
     const fieldId = ['file-name', 'internal-name'].includes(legacyField.id) ? camelize(legacyField.id) : legacyField.id;
@@ -244,7 +289,7 @@ function parseLegacyFormDefinitionFields(
             value: max,
             level: 'required'
           });
-        parseLegacyFormDefinitionFields(legacyField.fields.field, field.fields, dropTargetsLookup);
+        parseLegacyFormDefinitionFields(legacyField.fields.field, field.fields, dropTargetsLookup, null, dataSources);
         break;
       case 'node-selector':
         field.validations = {
@@ -263,9 +308,16 @@ function parseLegacyFormDefinitionFields(
       case 'image-picker':
         field.validations = {
           ...field.validations,
-          ...getFieldValidations(legacyField.properties.property)
+          ...getFieldValidations(legacyField.properties.property),
+          ...getFieldDataSourceValidations(legacyField.properties.property, dataSources)
         };
         break;
+      case 'video-picker':
+      case 'rte':
+        field.validations = {
+          ...field.validations,
+          ...getFieldDataSourceValidations(legacyField.properties.property, dataSources)
+        };
     }
 
     currentFieldLookup[fieldId] = field;
@@ -279,18 +331,25 @@ function parseLegacyFormDefinition(definition: LegacyFormDefinition): Partial<Co
 
   const fields: LookupTable<ContentTypeField> = {};
   const sections = [];
-  // const dataSources = {};
+  const dataSources = {};
   const dropTargetsLookup: LookupTable<LegacyDataSource> = {};
 
   // get receptacles dataSources
   asArray(definition.datasources?.datasource).forEach((datasource: LegacyDataSource) => {
     if (datasource.type === 'dropTargets') dropTargetsLookup[datasource.id] = datasource;
+    dataSources[datasource.id] = datasource;
   });
 
   // Parse Sections & Fields
   asArray<LegacyFormDefinitionSection>(definition.sections?.section).forEach((legacySection) => {
     const fieldIds = [];
-    parseLegacyFormDefinitionFields(legacySection.fields?.field, fields, dropTargetsLookup, fieldIds);
+    parseLegacyFormDefinitionFields(
+      legacySection.fields?.field,
+      fields,
+      dropTargetsLookup,
+      fieldIds,
+      asArray(definition.datasources.datasource)
+    );
     sections.push({
       description: legacySection.description,
       expandByDefault: legacySection.defaultOpen === 'true',
@@ -305,7 +364,7 @@ function parseLegacyFormDefinition(definition: LegacyFormDefinition): Partial<Co
     // Find display template
     displayTemplate: topLevelProps.find((prop) => prop.name === 'display-template')?.value,
     mergeStrategy: topLevelProps.find((prop) => prop.name === 'merge-strategy')?.value,
-    // dataSources: Object.values(dataSources),
+    dataSources: Object.values(dataSources),
     sections,
     fields
   };
