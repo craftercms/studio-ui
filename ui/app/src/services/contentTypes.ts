@@ -348,7 +348,7 @@ function parseLegacyFormDefinition(definition: LegacyFormDefinition): Partial<Co
       fields,
       dropTargetsLookup,
       fieldIds,
-      asArray(definition.datasources.datasource)
+      asArray(definition.datasources?.datasource)
     );
     sections.push({
       description: legacySection.description,
