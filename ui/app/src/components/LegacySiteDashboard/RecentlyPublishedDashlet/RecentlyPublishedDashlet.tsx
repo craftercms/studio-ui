@@ -123,12 +123,17 @@ export default function RecentlyPublishedDashlet() {
         const childrenLookup = {};
         history.documents.forEach((document) => {
           if (document.children.length) {
-            parentItems.push({
-              label: asLocalizedDateTime(
-                document.internalName,
+            // TODO: The backend is sending an improper date format.
+            let label = document.internalName.replace(/Z$/, '');
+            try {
+              label = asLocalizedDateTime(
+                label,
                 localeBranch.localeCode,
                 reversePluckProps(localeBranch.dateTimeFormatOptions, 'hour', 'minute', 'second')
-              ),
+              );
+            } catch {}
+            parentItems.push({
+              label,
               children: document.children.map((item) => {
                 const key = `${item.uri}:${item.eventDate}`;
                 childrenLookup[key] = parseLegacyItemToDetailedItem(item);
