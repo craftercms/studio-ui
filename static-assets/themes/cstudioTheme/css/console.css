@@ -589,6 +589,10 @@ input[type='checkbox'].content-type-selector--checkbox {
   background-color: #ffffff;
 }
 
+.property-label + div .text-prop {
+  width: 100%;
+}
+
 .property-label + input:disabled {
   color: #bbbbbb;
 }
