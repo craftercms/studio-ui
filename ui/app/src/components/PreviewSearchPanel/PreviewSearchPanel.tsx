@@ -48,6 +48,7 @@ import { useDebouncedInput } from '../../hooks/useDebouncedInput';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import { useSubject } from '../../hooks/useSubject';
 import Pagination from '../Pagination';
+import { getFileNameFromPath } from '../../utils/path';
 
 const translations = defineMessages({
   previewSearchPanelTitle: {
@@ -95,7 +96,7 @@ function SearchResults(props: SearchResultsProps) {
       {items.map((item: SearchItem) => (
         <DraggablePanelListItem
           key={item.path}
-          primaryText={item.name}
+          primaryText={item.name ?? getFileNameFromPath(item.path)}
           avatarSrc={item.type === 'Image' ? item.path : null}
           onDragStart={() => onDragStart(item)}
           onDragEnd={() => onDragEnd(item)}
