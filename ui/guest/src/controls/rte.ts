@@ -217,7 +217,7 @@ export function initTinyMCE(
           let relatedTarget = e.relatedTarget;
           if (
             !relatedTarget?.closest('.tox-tinymce') &&
-            !relatedTarget.classList.contains('tox-dialog__body-nav-item')
+            !relatedTarget?.classList.contains('tox-dialog__body-nav-item')
           ) {
             if (validations?.required && !getContent().trim()) {
               post(

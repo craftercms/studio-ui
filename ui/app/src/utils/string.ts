@@ -14,6 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import Person from '../models/Person';
+
 /**
  * Converts a string separated by dashes into a
  * camelCase equivalent. For instance, 'foo-bar'
@@ -71,14 +73,12 @@ export function hasUppercaseChars(str: string) {
   return /[A-Z]/.test(str);
 }
 
-interface Person {
-  firstName: string;
-  lastName: string;
-}
 export function getInitials(str: string): string;
 export function getInitials(person: Person): string;
 export function getInitials(str: string | Person): string {
-  if (typeof str === 'string') {
+  if (!str) {
+    return '';
+  } else if (typeof str === 'string') {
     const pieces = (str ?? '').split(' ');
     return `${pieces[0].substr(0, 1)}${pieces[1] ? pieces[1].substr(0, 1) : ''}`.toUpperCase();
   } else {

@@ -295,7 +295,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
                         post(unlockItem({ path }));
                       }
                     }),
-                    filter(({ payload }) => payload.type === 'onContinue'),
+                    filter(({ payload }) => payload.type === 'continue'),
                     switchMap(() => processDrop())
                   );
                 } else {

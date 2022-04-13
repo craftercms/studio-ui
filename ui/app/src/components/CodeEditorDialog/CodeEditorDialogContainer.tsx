@@ -128,8 +128,8 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
           isSubmitting: true
         })
       );
-      writeContent(site, path, editorRef.current.getValue(), { unlock: false }).subscribe(
-        () => {
+      writeContent(site, path, editorRef.current.getValue(), { unlock: false }).subscribe({
+        next() {
           setTimeout(callback);
           dispatch(
             batchActions([
@@ -144,10 +144,10 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
           );
           getHostToGuestBus().next({ type: reloadRequest.type });
         },
-        ({ response }) => {
+        error({ response }) {
           dispatch(showErrorDialog({ error: response }));
         }
-      );
+      });
     },
     [dispatch, formatMessage, path, site]
   );
