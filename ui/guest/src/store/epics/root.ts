@@ -88,6 +88,7 @@ import { extractCollectionItem } from '@craftercms/studio-ui/utils/model';
 import { getParentModelId } from '../../utils/ice';
 import { fetchSandboxItem, lock } from '@craftercms/studio-ui/services/content';
 import { unlockItem } from '@craftercms/studio-ui/state/actions/content';
+import StandardAction from '@craftercms/studio-ui/models/StandardAction';
 
 const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
   // region mouseover, mouseleave
@@ -186,7 +187,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
         const dragContext = state.dragContext;
         const file = unwrapEvent<DragEvent>(event).dataTransfer.files[0];
 
-        const processDrop = (): Observable<any> => {
+        const processDrop = (): Observable<StandardAction> => {
           switch (status) {
             case EditingStatus.PLACING_DETACHED_ASSET: {
               const { dropZone } = dragContext;
@@ -237,7 +238,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
             }
             case EditingStatus.UPLOAD_ASSET_FROM_DESKTOP: {
               if (dragContext.inZone) {
-                const stream$ = new Subject();
+                const stream$ = new Subject<StandardAction>();
                 const reader = new FileReader();
                 reader.onload = ((aImg: HTMLImageElement) => (event) => {
                   const { field } = iceRegistry.getReferentialEntries(record.iceIds[0]);

@@ -214,9 +214,10 @@ export function initTinyMCE(
         // the way. Focusout seems to be more reliable.
         editor.on('focusout', (e) => {
           let saved = false;
+          let relatedTarget = e.relatedTarget;
           if (
-            !e.relatedTarget?.closest('.tox-tinymce') &&
-            !e.relatedTarget?.classList.contains('tox-dialog__body-nav-item')
+            !relatedTarget?.closest('.tox-tinymce') &&
+            !relatedTarget.classList.contains('tox-dialog__body-nav-item')
           ) {
             if (validations?.required && !getContent().trim()) {
               post(

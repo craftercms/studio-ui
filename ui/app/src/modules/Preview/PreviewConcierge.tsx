@@ -347,7 +347,11 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
     editModePadding,
     cdataEscapedFieldPatterns,
     conditionallyToggleEditMode,
-    keyboardShortcutsDialogState
+    keyboardShortcutsDialogState,
+    setDataSourceActionsListState,
+    showToolsPanel,
+    toolsPanelWidth,
+    browseFilesDialogState
   });
 
   const onRtePickerResult = (payload?: { path: string; name: string }) => {
@@ -1061,6 +1065,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         }
         // endregion
         case showRtePickerActions.type: {
+          const { setDataSourceActionsListState, showToolsPanel, toolsPanelWidth, browseFilesDialogState } =
+            upToDateRefs.current;
           const onShowSingleFileUploadDialog = (path: string, type: 'image' | 'media') => {
             setDataSourceActionsListState(dataSourceActionsListInitialState);
 
@@ -1184,7 +1190,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
     return () => {
       guestToHostSubscription.unsubscribe();
     };
-  }, [upToDateRefs, setDataSourceActionsListState, showToolsPanel, toolsPanelWidth, browseFilesDialogState]);
+  }, [upToDateRefs]);
 
   // hostToHost$ subscription
   useEffect(() => {
