@@ -83,7 +83,7 @@ import LookupTable from '@craftercms/studio-ui/models/LookupTable';
 import { ThemeOptions, ThemeProvider } from '@mui/material';
 import { deepmerge } from '@mui/utils';
 import { DeepPartial } from 'redux';
-import MoveModeZoneMenu from './MoveModeZoneMenu';
+import ZoneMenu from './ZoneMenu';
 import {
   contentReady,
   desktopAssetDragStarted,
@@ -607,7 +607,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
                   }
                   menuItems={
                     isFieldSelectedMode ? (
-                      <MoveModeZoneMenu record={elementRecord} dispatch={dispatch} isHeadlessMode={isHeadlessMode} />
+                      <ZoneMenu record={elementRecord} dispatch={dispatch} isHeadlessMode={isHeadlessMode} />
                     ) : (
                       void 0
                     )

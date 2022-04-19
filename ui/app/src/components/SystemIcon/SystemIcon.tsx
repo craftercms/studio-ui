@@ -15,7 +15,7 @@
  */
 
 import React, { Suspense } from 'react';
-import CoreIcon, { IconProps } from '@mui/material/Icon';
+import MuiIcon, { IconProps } from '@mui/material/Icon';
 import ErrorRounded from '@mui/icons-material/ErrorRounded';
 import { components } from '../../services/plugin';
 import { SvgIconProps, Tooltip } from '@mui/material';
@@ -38,9 +38,8 @@ export function SystemIcon(props: SystemIconProps) {
     const IconComponent = components.get(icon.id) as typeof ErrorRounded;
     const iconStyle = { ...icon.style, ...style, ...props.svgIconProps?.style };
     const iconClassName = clsx(icon.class, className, props.svgIconProps?.className);
-
     return IconComponent ? (
-      <Suspense fallback={<Skeleton variant="rectangular" width="20px" />}>
+      <Suspense fallback={<Skeleton variant="rectangular" width="24px" style={iconStyle} className={iconClassName} />}>
         <IconComponent {...props.svgIconProps} style={iconStyle} className={iconClassName} />
       </Suspense>
     ) : (
@@ -50,7 +49,7 @@ export function SystemIcon(props: SystemIconProps) {
     );
   } else {
     return (
-      <CoreIcon
+      <MuiIcon
         className={icon.class}
         children={icon.content}
         {...props.fontIconProps}

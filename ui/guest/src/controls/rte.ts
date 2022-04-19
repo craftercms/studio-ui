@@ -116,7 +116,6 @@ export function initTinyMCE(
     external_plugins: external,
     code_editor_inline: false,
     skin: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'oxide-dark' : 'oxide',
-
     media_live_embeds: true,
     file_picker_types: 'image media',
     file_picker_callback: function (cb, value, meta) {
@@ -153,7 +152,6 @@ export function initTinyMCE(
           }
         });
     },
-
     setup(editor: Editor) {
       let changed = false;
       let originalContent;
@@ -319,30 +317,28 @@ export function initTinyMCE(
           'loaded'
         );
     },
-    ...(rteSetup?.tinymceOptions
-      ? {
-          ...reversePluckProps(
-            rteSetup.tinymceOptions,
-            'target', // Target can't be changed
-            'inline', // Not using inline view doesn't behave well on pageBuilder, this setting shouldn't be changed.
-            'setup',
-            'base_url',
-            'encoding',
-            'autosave_ask_before_unload', // Autosave options are removed since it is not supported in control.
-            'autosave_interval',
-            'autosave_prefix',
-            'autosave_restore_when_empty',
-            'autosave_retention',
-            'file_picker_callback', // No file picker is set by default, and functions are not supported in config file.
-            'height', // Height is set to the size of content
-            'file_picker_callback', // Files/images handlers currently not supported
-            'paste_postprocess',
-            'images_upload_handler',
-            'code_editor_inline',
-            'plugins' // Considered/used above, mixed with our options
-          )
-        }
-      : {}),
+    ...(rteSetup?.tinymceOptions && {
+      ...reversePluckProps(
+        rteSetup.tinymceOptions,
+        'target', // Target can't be changed
+        'inline', // Not using inline view doesn't behave well on pageBuilder, this setting shouldn't be changed.
+        'setup',
+        'base_url',
+        'encoding',
+        'autosave_ask_before_unload', // Autosave options are removed since it is not supported in control.
+        'autosave_interval',
+        'autosave_prefix',
+        'autosave_restore_when_empty',
+        'autosave_retention',
+        'file_picker_callback', // No file picker is set by default, and functions are not supported in config file.
+        'height', // Height is set to the size of content
+        'file_picker_callback', // Files/images handlers currently not supported
+        'paste_postprocess',
+        'images_upload_handler',
+        'code_editor_inline',
+        'plugins' // Considered/used above, mixed with our options
+      )
+    }),
     ...controlProps,
     openEditForm
   });
