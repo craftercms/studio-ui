@@ -55,13 +55,13 @@ import { getParentModelId } from '../utils/ice';
 import { iceRegistry } from '../index';
 import { fromICEId, get } from '../elementRegistry';
 
-export interface MoveModeZoneMenuProps {
+export interface ZoneMenuProps {
   record: ElementRecord;
   dispatch: Dispatch<AnyAction>;
   isHeadlessMode: boolean;
 }
 
-export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
+export function ZoneMenu(props: ZoneMenuProps) {
   const { record, dispatch, isHeadlessMode } = props;
   const {
     modelId,
@@ -129,7 +129,7 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
   const showAddItem = recordType === 'field' && field.type === 'repeat';
   const showDuplicate = ['repeat-item', 'component', 'node-selector-item'].includes(recordType);
 
-  // region callbacks
+  // region Callbacks
 
   const onCancel = () => {
     clearAndListen$.next();
@@ -387,4 +387,4 @@ export function MoveModeZoneMenu(props: MoveModeZoneMenuProps) {
 //   ));
 // }
 
-export default MoveModeZoneMenu;
+export default ZoneMenu;
