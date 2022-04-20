@@ -63,6 +63,9 @@ CStudioAuthoring.Module.requireModule(
           var _thisControl = this,
             configuration = 'generic';
 
+          const { operators } = CrafterCMSNext.rxjs;
+          const { filter, take } = operators;
+
           for (var i = 0; i < config.properties.length; i++) {
             var prop = config.properties[i];
 
@@ -75,17 +78,36 @@ CStudioAuthoring.Module.requireModule(
             }
           }
 
-          CStudioForms.Controls.RTEManager.getRteConfiguration(
-            configuration,
-            'no-role-support',
-            {
-              success: function (rteConfig) {
-                _thisControl._initializeRte(config, rteConfig, containerEl);
-              },
-              failure: function () {}
-            },
-            '/form-control-config/rte/rte-config.xml'
-          );
+          if (!Boolean(CrafterCMSNext.system.store?.getState().preview.richTextEditor)) {
+            // If textEditorConfig is not loaded
+            CrafterCMSNext.system.store.dispatch({
+              type: 'INIT_RICH_TEXT_EDITOR_CONFIG',
+              payload: {
+                configXml: CrafterCMSNext.system.store.getState().uiConfig.xml,
+                siteId: CStudioAuthoringContext.site
+              }
+            });
+            CrafterCMSNext.system
+              .getStore()
+              .pipe(
+                filter((store) => Boolean(store.getState().preview.richTextEditor)),
+                take(1)
+              )
+              .subscribe((store) => {
+                _thisControl._initializeRte(
+                  config,
+                  store.getState().preview.richTextEditor[configuration],
+                  containerEl
+                );
+              });
+          } else {
+            // If textEditorConfig is already loaded
+            _thisControl._initializeRte(
+              config,
+              CrafterCMSNext.system.store.getState().preview.richTextEditor[configuration],
+              containerEl
+            );
+          }
         },
 
         /**
@@ -215,21 +237,11 @@ CStudioAuthoring.Module.requireModule(
             callback,
             rteId = CStudioAuthoring.Utils.generateUUID(),
             inputEl,
-            pluginList,
-            rteStylesheets,
-            rteStyleOverride,
-            toolbarConfig1,
-            toolbarConfig2,
-            toolbarConfig3,
-            toolbarConfig4,
-            styleFormats,
-            styleFormatsMerge,
-            templates;
+            pluginList;
 
           containerEl.id = this.id;
           this.containerEl = containerEl;
           this.fieldConfig = config;
-          this.rteConfig = rteConfig;
           this.rteId = rteId;
 
           inputEl = this._renderInputMarkup(config, rteId);
@@ -273,60 +285,12 @@ CStudioAuthoring.Module.requireModule(
             }
           }
 
-          templates = rteConfig.templates && rteConfig.templates.template ? rteConfig.templates.template : null;
-
           // https://www.tiny.cloud/docs/plugins/
           // paste plugin is hardcoded in order to enable drag and drop functionality (and avoid it being removed from
           // configuration file).
-          pluginList = [rteConfig.plugins, 'paste', this.autoGrow && 'autoresize'].filter(Boolean).join(' ');
-
-          extendedValidElements = rteConfig.extendedElements ? rteConfig.extendedElements : '';
-          validChildren = rteConfig.validChildren ? rteConfig.validChildren : '';
-
-          toolbarConfig1 =
-            rteConfig.toolbarItems1 && rteConfig.toolbarItems1.length != 0
-              ? rteConfig.toolbarItems1
-              : 'bold italic | bullist numlist';
-          toolbarConfig2 =
-            rteConfig.toolbarItems2 && rteConfig.toolbarItems2.length != 0 ? rteConfig.toolbarItems2 : '';
-          toolbarConfig3 =
-            rteConfig.toolbarItems3 && rteConfig.toolbarItems3.length != 0 ? rteConfig.toolbarItems3 : '';
-          toolbarConfig4 =
-            rteConfig.toolbarItems4 && rteConfig.toolbarItems4.length != 0 ? rteConfig.toolbarItems4 : '';
-
-          rteStylesheets =
-            rteConfig.rteStylesheets && typeof rteConfig.rteStylesheets === 'object'
-              ? rteConfig.rteStylesheets.link
-              : null;
-
-          rteStyleOverride = rteConfig.rteStyleOverride ? rteConfig.rteStyleOverride : null;
-
-          try {
-            // use tinymce default if not set
-            styleFormats = rteConfig.styleFormats ? JSON.parse(rteConfig.styleFormats) : void 0;
-          } catch (e) {
-            // If there are multiple RTEs on the page, when the form loads, it would show N number
-            // of dialogs. One is sufficient.
-            if (!CStudioForms.Controls.RTE.styleFormatsParseErrorShown) {
-              CStudioForms.Controls.RTE.styleFormatsParseErrorShown = true;
-              let bundle = CStudioAuthoring.Messages.getBundle('forms', CStudioAuthoringContext.lang);
-              CStudioAuthoring.Operations.showSimpleDialog(
-                'message-dialog',
-                CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                CStudioAuthoring.Messages.format(bundle, 'notification'),
-                `<div>${CStudioAuthoring.Messages.format(
-                  bundle,
-                  'styleFormatsParseError',
-                  `<code>${e.message}</code>`
-                )}</div><pre>${rteConfig.styleFormats}</pre>`,
-                null,
-                YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                'studioDialog'
-              );
-            }
-          }
-
-          styleFormatsMerge = rteConfig.styleFormatsMerge === 'true';
+          pluginList = [rteConfig?.tinymceOptions?.plugins, 'paste', this.autoGrow && 'autoresize']
+            .filter(Boolean)
+            .join(' ');
 
           const $editorContainer = $(`#${rteId}`).parent(),
             editorContainerWidth = $editorContainer.width(),
@@ -354,20 +318,13 @@ CStudioAuthoring.Module.requireModule(
               imageDatasources.includes(datasource.id)
           );
 
-          const codeEditorWrap = rteConfig.codeEditorWrap ? rteConfig.codeEditorWrap === 'true' : false;
-
           const external = {
+            ...rteConfig?.tinymceOptions?.external_plugins,
             acecode: '/studio/static-assets/js/tinymce-plugins/ace/plugin.min.js',
             craftercms_paste_extension: '/studio/static-assets/js/tinymce-plugins/craftercms_paste_extension/plugin.js'
           };
-          if (rteConfig.external_plugins) {
-            Object.entries(rteConfig.external_plugins).forEach((entry) => {
-              external[entry[0]] = CStudioAuthoring.StringUtils.keyFormat(entry[1], {
-                site: CStudioAuthoringContext.site
-              });
-            });
-          }
-          editor = tinymce.init({
+
+          tinymce.init({
             selector: '#' + rteId,
             width: _thisControl.rteWidth,
             // As of 3.1.14, the toolbar is moved to be part of the editor text field (not stuck/floating at the top of the window).
@@ -376,63 +333,36 @@ CStudioAuthoring.Module.requireModule(
             min_height: _thisControl.rteHeight,
             theme: 'silver',
             plugins: pluginList,
-            toolbar1: toolbarConfig1,
-            toolbar2: toolbarConfig2,
-            toolbar3: toolbarConfig3,
-            toolbar4: toolbarConfig4,
             toolbar_sticky: true,
             image_advtab: true,
             encoding: 'xml',
             relative_urls: false,
             remove_script_host: false,
             convert_urls: false,
-            readonly: _thisControl.readonly,
-            force_br_newlines: forceBRTags,
-            forced_root_block: forceRootBlockPTag,
+            readonly: _thisControl.readonly, // comes from control props (not xml config)
+            force_br_newlines: forceBRTags, // comes from control props (not xml config)
+            forced_root_block: forceRootBlockPTag, // comes from control props (not xml config)
             remove_trailing_brs: false,
             media_live_embeds: true,
             autoresize_on_init: false,
             autoresize_bottom_margin: 0,
-            extended_valid_elements: extendedValidElements,
-            browser_spellcheck: this.enableSpellCheck,
-            contextmenu: !this.enableSpellCheck,
-            valid_children: validChildren,
-            image_uploadtab: this.editorImageDatasources.length > 0,
-            craftercms_paste_cleanup: rteConfig.craftercmsPasteCleanup?.trim() !== 'false',
-
-            menu: {
-              tools: { title: 'Tools', items: 'tinymcespellchecker code acecode wordcount' }
-            },
-
+            contextmenu: !this.enableSpellCheck, // comes from control props (not xml config)
+            image_uploadtab: this.editorImageDatasources.length > 0, // comes from control props (not xml config)
+            craftercms_paste_cleanup: rteConfig?.tinymceOptions?.craftercmsPasteCleanup ?? true, // If doesn't exist or if true => true
             automatic_uploads: true,
             file_picker_types: 'image media file',
-            file_picker_callback: function (cb, value, meta) {
-              // meta contains info about type (image, media, etc). Used to properly add DS to dialogs.
-              _thisControl.createControl(cb, meta);
-            },
-
-            paste_data_images: true,
-            images_upload_handler: function (blobInfo, success, failure) {
-              _thisControl.addDndImage(blobInfo, success, failure);
-            },
-
-            templates: templates,
             skin: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'oxide-dark' : 'oxide',
-            content_css: rteStylesheets
-              ? rteStylesheets
-              : window.matchMedia('(prefers-color-scheme: dark)').matches
-              ? 'dark'
-              : 'default',
-            content_style: rteStyleOverride,
-            code_editor_wrap: codeEditorWrap,
             code_editor_inline: true,
 
             external_plugins: external,
 
-            style_formats: styleFormats,
-
-            style_formats_merge: styleFormatsMerge,
-
+            file_picker_callback: function (cb, value, meta) {
+              // meta contains info about type (image, media, etc). Used to properly add DS to dialogs.
+              _thisControl.createControl(cb, meta);
+            },
+            images_upload_handler: function (blobInfo, success, failure) {
+              _thisControl.addDndImage(blobInfo, success, failure);
+            },
             setup: function (editor) {
               var pluginManager = tinymce.util.Tools.resolve('tinymce.PluginManager');
 
@@ -440,6 +370,9 @@ CStudioAuthoring.Module.requireModule(
                 amplify.publish('/field/init/completed');
                 _thisControl.editorId = editor.id;
                 _thisControl.editor = editor;
+                if (_thisControl.value && _thisControl.value !== '_not-set') {
+                  editor.setContent(_thisControl.value, { format: 'raw' });
+                }
                 _thisControl._onChange(null, _thisControl);
               });
 
@@ -500,7 +433,6 @@ CStudioAuthoring.Module.requireModule(
                   'loaded'
                 );
             },
-
             paste_preprocess(plugin, args) {
               _thisControl.editor.plugins.craftercms_paste_extension?.paste_preprocess(plugin, args);
             },
@@ -517,9 +449,33 @@ CStudioAuthoring.Module.requireModule(
               } else {
                 _thisControl.editor.plugins.craftercms_paste_extension?.paste_postprocess(plugin, args);
               }
-            }
+            },
+            ...(rteConfig?.tinymceOptions && {
+              ...CrafterCMSNext.util.object.reversePluckProps(
+                rteConfig.tinymceOptions,
+                'target', // Target can't be changed
+                'inline', // The control will always have the default (false) in forms-engine.
+                'setup',
+                'base_url',
+                'encoding',
+                'autosave_ask_before_unload', // Autosave options are removed since it is not supported in control.
+                'autosave_interval',
+                'autosave_prefix',
+                'autosave_restore_when_empty',
+                'autosave_retention',
+                'file_picker_callback', // File picker integration with our data sources is already implemented in the control
+                'height', // Height is set via control properties
+                'width', // Width is set via control properties
+                'paste_postprocess', // Already implemented for paste and drag&drop using our data sources.
+                'images_upload_handler', // Images upload integration with our data sources is already implemented in the control
+                'code_editor_inline', // Code editor will always be inline in forms-engine.
+                'plugins', // Considered/used above, mixed with our options
+                'toolbar_sticky', // Toolbar is configured and styled to be sticky in forms-engine
+                'relative_urls' // To avoid allowing convertion of urls to be relative to the document_base_url
+              )
+            })
           });
-          _thisControl.editor = editor;
+          // _thisControl.editor = editor;
 
           // Update all content before saving the form (all content is automatically updated on focusOut)
           callback = {};
