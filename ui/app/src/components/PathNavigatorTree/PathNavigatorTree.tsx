@@ -50,7 +50,7 @@ import { useActiveUser } from '../../hooks/useActiveUser';
 import { useItemsByPath } from '../../hooks/useItemsByPath';
 import { useSubject } from '../../hooks/useSubject';
 import { useDetailedItem } from '../../hooks/useDetailedItem';
-import { debounceTime, filter } from 'rxjs/operators';
+import { debounceTime } from 'rxjs/operators';
 import {
   contentEvent,
   deleteContentEvent,
@@ -306,20 +306,12 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
           const path = node?.id;
           if (path) {
             dispatch(
-              batchActions([
-                ...(state.expanded.includes(targetPath)
-                  ? [
-                      pathNavigatorTreeCollapsePath({
-                        id,
-                        path: targetPath
-                      })
-                    ]
-                  : []),
-                pathNavigatorTreeFetchPathChildren({
-                  id,
-                  path
-                })
-              ])
+              state.expanded.includes(targetPath)
+                ? batchActions([
+                    pathNavigatorTreeCollapsePath({ id, path: targetPath }),
+                    pathNavigatorTreeFetchPathChildren({ id, path })
+                  ])
+                : pathNavigatorTreeFetchPathChildren({ id, path })
             );
           }
           if (targetPath === rootPath) {

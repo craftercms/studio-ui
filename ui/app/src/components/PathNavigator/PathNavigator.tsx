@@ -42,7 +42,7 @@ import { showEditDialog, showItemMegaMenu, showPreviewDialog } from '../../state
 import { getEditorMode, isEditableViaFormEditor, isFolder, isImage, isNavigable, isPreviewable } from './utils';
 import { StateStylingProps } from '../../models/UiConfig';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
-import { debounceTime, filter } from 'rxjs/operators';
+import { debounceTime } from 'rxjs/operators';
 import {
   contentEvent,
   deleteContentEvent,
@@ -241,28 +241,17 @@ export function PathNavigator(props: PathNavigatorProps) {
         }
         case deleteContentEvent.type: {
           const targetPath = payload.targetPath;
-
           if (withoutIndex(targetPath) === withoutIndex(path)) {
             // if path being deleted is the rootPath
             dispatch(pathNavigatorRefresh({ id }));
           } else if (withoutIndex(targetPath) === withoutIndex(state.currentPath)) {
             // if path is currentPath (current root path)
-            dispatch(
-              pathNavigatorSetCurrentPath({
-                id,
-                path: getParentPath(withoutIndex(targetPath))
-              })
-            );
+            dispatch(pathNavigatorSetCurrentPath({ id, path: getParentPath(withoutIndex(targetPath)) }));
           } else if (state.itemsInPath.includes(targetPath)) {
             // current page is last one and only one item in current page
             const goBackOnePage = state.offset >= state.limit && state.total === state.offset + 1;
             if (goBackOnePage) {
-              dispatch(
-                pathNavigatorChangePage({
-                  id,
-                  offset: state.offset - state.limit
-                })
-              );
+              dispatch(pathNavigatorChangePage({ id, offset: state.offset - state.limit }));
             } else {
               dispatch(pathNavigatorBackgroundRefresh({ id }));
             }
