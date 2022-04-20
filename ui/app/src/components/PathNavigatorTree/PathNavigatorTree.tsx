@@ -269,29 +269,20 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
 
   // region Item Updates Propagation
   useEffect(() => {
-    const events = [
-      contentEvent.type,
-      deleteContentEvent.type,
-      folderRenamed.type,
-      pluginInstalled.type,
-      workflowEvent.type,
-      publishEvent.type
-    ];
     const hostToHost$ = getHostToHostBus();
-    const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
+    const subscription = hostToHost$.subscribe(({ type, payload }) => {
       switch (type) {
         case contentEvent.type: {
           const targetPath = payload.targetPath ?? payload.target;
           const parentPath = getParentPath(targetPath);
-
           if (withoutIndex(targetPath) === rootPath) {
             // If item is root
-            dispatch(
-              pathNavigatorTreeRefresh({
-                id
-              })
-            );
-          } else {
+            dispatch(pathNavigatorTreeRefresh({ id }));
+          } else if (
+            // The target path is rooted in this navigator's root
+            targetPath.startsWith(withoutIndex(rootPath))
+          ) {
+            // TODO: Research improving the reloads here; consider targetPath and opened paths?
             if (user.username === payload.user.username) {
               // if it's current user then reload and expand folder (for example pasting in another folder)
               dispatch(
