@@ -74,13 +74,17 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
     'craftercms.freemarkerCodeSnippets': freemarkerCodeSnippets,
     'craftercms.groovyCodeSnippets': groovyCodeSnippets
   } = useReferences();
+  const onChangeTimeoutRef = useRef<any>(null);
 
   const onEditorChanges = () => {
-    dispatch(
-      updateCodeEditorDialog({
-        hasPendingChanges: content !== editorRef.current.getValue()
-      })
-    );
+    clearTimeout(onChangeTimeoutRef.current);
+    onChangeTimeoutRef.current = setTimeout(() => {
+      dispatch(
+        updateCodeEditorDialog({
+          hasPendingChanges: content !== editorRef.current.getValue()
+        })
+      );
+    }, 150);
   };
 
   const save = (callback?: Function) => {
