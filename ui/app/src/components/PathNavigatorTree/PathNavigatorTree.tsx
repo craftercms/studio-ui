@@ -50,7 +50,7 @@ import { useActiveUser } from '../../hooks/useActiveUser';
 import { useItemsByPath } from '../../hooks/useItemsByPath';
 import { useSubject } from '../../hooks/useSubject';
 import { useDetailedItem } from '../../hooks/useDetailedItem';
-import { debounceTime, filter } from 'rxjs/operators';
+import { debounceTime } from 'rxjs/operators';
 import {
   contentEvent,
   deleteContentEvent,
@@ -269,29 +269,20 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
 
   // region Item Updates Propagation
   useEffect(() => {
-    const events = [
-      contentEvent.type,
-      deleteContentEvent.type,
-      folderRenamed.type,
-      pluginInstalled.type,
-      workflowEvent.type,
-      publishEvent.type
-    ];
     const hostToHost$ = getHostToHostBus();
-    const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
+    const subscription = hostToHost$.subscribe(({ type, payload }) => {
       switch (type) {
         case contentEvent.type: {
           const targetPath = payload.targetPath ?? payload.target;
           const parentPath = getParentPath(targetPath);
-
           if (withoutIndex(targetPath) === rootPath) {
             // If item is root
-            dispatch(
-              pathNavigatorTreeRefresh({
-                id
-              })
-            );
-          } else {
+            dispatch(pathNavigatorTreeRefresh({ id }));
+          } else if (
+            // The target path is rooted in this navigator's root
+            targetPath.startsWith(withoutIndex(rootPath))
+          ) {
+            // TODO: Research improving the reloads here; consider targetPath and opened paths?
             if (user.username === payload.user.username) {
               // if it's current user then reload and expand folder (for example pasting in another folder)
               dispatch(
@@ -315,20 +306,12 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
           const path = node?.id;
           if (path) {
             dispatch(
-              batchActions([
-                ...(state.expanded.includes(targetPath)
-                  ? [
-                      pathNavigatorTreeCollapsePath({
-                        id,
-                        path: targetPath
-                      })
-                    ]
-                  : []),
-                pathNavigatorTreeFetchPathChildren({
-                  id,
-                  path
-                })
-              ])
+              state.expanded.includes(targetPath)
+                ? batchActions([
+                    pathNavigatorTreeCollapsePath({ id, path: targetPath }),
+                    pathNavigatorTreeFetchPathChildren({ id, path })
+                  ])
+                : pathNavigatorTreeFetchPathChildren({ id, path })
             );
           }
           if (targetPath === rootPath) {
