@@ -522,7 +522,7 @@
   "itemState.notInWorkflow": "Not in workflow",
   "itemState.publishing": "Publishing",
   "itemState.scheduled": "Scheduled",
-  "itemState.scheduledForStaging": "Scheduled to staging",
+  "itemState.scheduledToStaging": "Scheduled to staging",
   "itemState.scheduledToGoLive": "Scheduled to live",
   "itemState.submitted": "Submitted",
   "itemState.submittedToLive": "Submitted to live",
