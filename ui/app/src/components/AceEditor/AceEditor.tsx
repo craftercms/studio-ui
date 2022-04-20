@@ -105,6 +105,7 @@ export interface AceEditorProps extends Partial<AceOptions> {
   autoFocus?: boolean;
   styles?: AceEditorStyles;
   onChange?(e: any): void;
+  onInit?(editor: AceAjax.Editor): void;
 }
 
 declare global {
@@ -192,7 +193,7 @@ const useStyles = makeStyles(() =>
 );
 
 function AceEditorComp(props: AceEditorProps, ref: MutableRef<AceAjax.Editor>) {
-  const { value = '', autoFocus = false, onChange, readOnly } = props;
+  const { value = '', autoFocus = false, onChange, readOnly, onInit } = props;
   const classes = useStyles(props.styles);
   const editorRootClasses = props.classes?.editorRoot;
   const refs = useRef({
@@ -231,6 +232,7 @@ function AceEditorComp(props: AceEditorProps, ref: MutableRef<AceAjax.Editor>) {
           autoFocus && aceEditor.focus();
         }
         refs.current.ace = aceEditor;
+        onInit?.(aceEditor);
         if (ref) {
           typeof ref === 'function' ? ref(aceEditor) : (ref.current = aceEditor);
         }
