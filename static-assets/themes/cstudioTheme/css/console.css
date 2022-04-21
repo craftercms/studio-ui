@@ -589,6 +589,10 @@ input[type='checkbox'].content-type-selector--checkbox {
   background-color: #ffffff;
 }
 
+.property-label + div .text-prop {
+  width: 100%;
+}
+
 .property-label + input:disabled {
   color: #bbbbbb;
 }
@@ -681,6 +685,19 @@ input[type='checkbox'].content-type-selector--checkbox {
   max-height: 945px;
 }
 
+#keyValueDialog {
+  width: 700px;
+  max-height: 80vh;
+  overflow: hidden;
+}
+
+#keyValueDialog .property-dialog-title,
+#keyValueDialog .property-dialog-button-container {
+  padding: 15px 10px;
+  margin: 0;
+  height: 62px;
+}
+
 #keyValueDialogContainer,
 #richTextDialog .property-dialog-body-container {
   max-height: 420px;
@@ -689,7 +706,28 @@ input[type='checkbox'].content-type-selector--checkbox {
 }
 
 #keyValueDialogContainer {
-  overflow-y: scroll;
+  max-height: calc(80vh - 124px); /* minus header and footer (62px each) */
+  overflow-y: auto;
+  padding: 20px 20px 12px;
+}
+
+#keyValueDialogContainer input {
+  color: #000;
+}
+
+#keyValueDialog .property-dialog-add-link.btn {
+  padding: 3px 12px;
+  color: #414141 !important;
+  background-color: #fff !important;
+}
+
+#keyValueDialog .property-dialog-button-container .btn-default {
+  color: #414141 !important;
+}
+
+#keyValueDialogContainer .deleteControl {
+  top: 0;
+  left: 0;
 }
 
 #richTextDialog .property-dialog-body-container {
@@ -740,10 +778,6 @@ input[type='checkbox'].content-type-selector--checkbox {
   padding: 3px 12px;
 }
 
-#keyValueDialog .property-dialog-add-link.btn {
-  padding: 3px 12px;
-}
-
 #keyValueDialogMask,
 #channelsDialogMask {
   background-color: rgb(68, 68, 68) !important;
@@ -754,15 +788,6 @@ input[type='checkbox'].content-type-selector--checkbox {
   position: fixed;
   left: 0;
   top: 0;
-}
-
-#keyValueDialogContainer input {
-  color: #000;
-}
-
-#keyValueDialogContainer .deleteControl {
-  top: -3px;
-  left: -14px;
 }
 
 .cstudio-seethrough-dialog-button {

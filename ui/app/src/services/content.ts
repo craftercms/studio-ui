@@ -83,8 +83,23 @@ export function fetchDescriptorDOM(
   return fetchDescriptorXML(site, path, options).pipe(map(fromString));
 }
 
-export function fetchSandboxItem(site: string, path: string): Observable<SandboxItem> {
-  return fetchItemsByPath(site, [path]).pipe(pluck(0));
+export function fetchSandboxItem(site: string, path: string): Observable<SandboxItem>;
+export function fetchSandboxItem(
+  site: string,
+  path: string,
+  options: FetchItemsByPathOptions & { castAsDetailedItem?: false }
+): Observable<SandboxItem>;
+export function fetchSandboxItem(
+  site: string,
+  path: string,
+  options: FetchItemsByPathOptions & { castAsDetailedItem: true }
+): Observable<DetailedItem>;
+export function fetchSandboxItem(
+  site: string,
+  path: string,
+  options?: FetchItemsByPathOptions
+): Observable<SandboxItem | DetailedItem> {
+  return fetchItemsByPath(site, [path], options).pipe(pluck(0));
 }
 
 export function fetchDetailedItem(

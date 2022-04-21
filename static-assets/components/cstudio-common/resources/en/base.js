@@ -284,7 +284,7 @@ CStudioAuthoring.Messages.registerBundle('siteDropdown', 'en', {
   renameFolder: 'Rename Folder',
   createTemplate: 'Create Template',
   templateFilename: 'Provide a filename for the template',
-  folderName: 'Provide a new foldername',
+  folderName: 'Provide a new folder name',
   createController: 'Create Controller',
   controllerFilename: 'Provide a filename for the script',
   bulkUploadAssets: 'Bulk Upload Assets',

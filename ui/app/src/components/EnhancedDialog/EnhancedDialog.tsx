@@ -64,7 +64,7 @@ export function EnhancedDialog(props: EnhancedDialogProps) {
     onClose(e, reason) {
       if (hasPendingChanges) {
         onWithPendingChangesCloseRequest?.(e, reason);
-      } else {
+      } else if (!isSubmitting) {
         dialogProps.onClose?.(e, reason);
       }
     },

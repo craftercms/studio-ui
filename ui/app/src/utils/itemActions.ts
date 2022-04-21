@@ -113,6 +113,9 @@ import { previewItem } from '../state/actions/preview';
 import { createPresenceTable } from './array';
 import { fetchPublishingStatus } from '../state/actions/publishingStatus';
 import { Clipboard } from '../models/GlobalState';
+import { Dispatch } from 'redux';
+import SystemType from '../models/SystemType';
+import StandardAction from '../models/StandardAction';
 
 export type ContextMenuOptionDescriptor<ID extends string = string> = {
   id: ID;
@@ -500,17 +503,19 @@ export const itemActionDispatcher = ({
   formatMessage,
   clipboard,
   onActionSuccess,
-  event
+  event,
+  extraPayload
 }: {
   site: string;
   item: DetailedItem | DetailedItem[];
   option: AllItemActions;
   authoringBase: string;
-  dispatch;
+  dispatch: Dispatch;
   formatMessage;
   clipboard?: Clipboard;
   onActionSuccess?: any;
   event?: React.MouseEvent<Element, MouseEvent>;
+  extraPayload?: any;
 }) => {
   let item: DetailedItem;
   let items: DetailedItem[];
@@ -534,35 +539,21 @@ export const itemActionDispatcher = ({
         // const src = `${defaultSrc}site=${site}&path=${embeddedParentPath}&isHidden=true&modelId=${modelId}&type=form`
         const path = item.path;
         fetchWorkflowAffectedItems(site, path).subscribe((items) => {
+          let actionToDispatch = showEditDialog({
+            site,
+            path,
+            authoringBase,
+            onSaveSuccess: batchActions([
+              showEditItemSuccessNotification(),
+              reloadDetailedItem({ path }),
+              ...(onActionSuccess ? [onActionSuccess] : [])
+            ]),
+            ...extraPayload
+          });
           if (items?.length > 0) {
-            dispatch(
-              showWorkflowCancellationDialog({
-                items,
-                onContinue: showEditDialog({
-                  site,
-                  path,
-                  authoringBase,
-                  onSaveSuccess: batchActions([
-                    showEditItemSuccessNotification(),
-                    reloadDetailedItem({ path }),
-                    ...(onActionSuccess ? [onActionSuccess] : [])
-                  ])
-                })
-              })
-            );
+            dispatch(showWorkflowCancellationDialog({ items, onContinue: actionToDispatch }));
           } else {
-            dispatch(
-              showEditDialog({
-                site,
-                path,
-                authoringBase,
-                onSaveSuccess: batchActions([
-                  showEditItemSuccessNotification(),
-                  reloadDetailedItem({ path }),
-                  ...(onActionSuccess ? [onActionSuccess] : [])
-                ])
-              })
-            );
+            dispatch(actionToDispatch);
           }
         });
         break;
@@ -785,14 +776,7 @@ export const itemActionDispatcher = ({
         break;
       }
       case 'editController': {
-        dispatch(
-          editController({
-            path: getControllerPath(item.systemType),
-            fileName: `${popPiece(item.contentTypeId, '/')}.groovy`,
-            mode: 'groovy',
-            contentType: item.contentTypeId
-          })
-        );
+        dispatch(editControllerActionCreator(item.systemType, item.contentTypeId));
         break;
       }
       case 'createTemplate':
@@ -959,3 +943,12 @@ export const itemActionDispatcher = ({
     }
   }
 };
+
+export function editControllerActionCreator(systemType: SystemType, contentTypeId: string): StandardAction {
+  return editController({
+    path: getControllerPath(systemType),
+    fileName: `${popPiece(contentTypeId, '/')}.groovy`,
+    mode: 'groovy',
+    contentType: contentTypeId
+  });
+}

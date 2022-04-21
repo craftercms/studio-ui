@@ -291,11 +291,11 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
                     filter((e) => e.type === requestWorkflowCancellationDialogOnResult.type),
                     take(1),
                     tap(({ payload }) => {
-                      if (payload.type !== 'onContinue') {
+                      if (payload.type !== 'continue') {
                         post(unlockItem({ path }));
                       }
                     }),
-                    filter(({ payload }) => payload.type === 'onContinue'),
+                    filter(({ payload }) => payload.type === 'continue'),
                     switchMap(() => processDrop())
                   );
                 } else {
@@ -459,7 +459,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
                             filter((e) => e.type === requestWorkflowCancellationDialogOnResult.type),
                             take(1),
                             switchMap(({ payload }) => {
-                              if (payload.type === 'onContinue') {
+                              if (payload.type === 'continue') {
                                 return initTinyMCE(path, record, validations, type === 'html' ? setup : {});
                               } else {
                                 post(unlockItem({ path }));

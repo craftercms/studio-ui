@@ -172,7 +172,10 @@ export function ItemStateIcon(props: ItemStateIconProps) {
   return Icon === null ? null : item.systemType === 'folder' ? (
     <Icon className={clsx(classes.root, propClasses?.root, className, stateSpecificClass)} />
   ) : (
-    <Tooltip title={displayTooltip ? getItemStateText(item.stateMap) : ''} open={displayTooltip ? void 0 : false}>
+    <Tooltip
+      title={displayTooltip ? getItemStateText(item.stateMap, { user: item.lockOwner }) : ''}
+      open={displayTooltip ? void 0 : false}
+    >
       <Icon className={clsx(classes.root, propClasses?.root, className, stateSpecificClass)} />
     </Tooltip>
   );

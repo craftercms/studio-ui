@@ -28,13 +28,18 @@ export function getItemPublishingTargetText(stateMap: ItemStateMap) {
   );
 }
 
-export function getItemStateText(stateMap: ItemStateMap) {
+export function getItemStateText(stateMap: ItemStateMap, values?: Record<string, any>) {
   let map: { [key in ItemStates]: any };
   map = {
     new: () => <FormattedMessage id="itemState.new" defaultMessage="New" />,
     modified: () => <FormattedMessage id="itemState.modified" defaultMessage="Modified" />,
     deleted: () => <FormattedMessage id="itemState.deleted" defaultMessage="Deleted" />,
-    locked: () => <FormattedMessage id="itemState.locked" defaultMessage="Locked" />,
+    locked: () =>
+      values?.user ? (
+        <FormattedMessage id="itemState.lockedBy" defaultMessage="Locked by {user}" values={values} />
+      ) : (
+        <FormattedMessage id="itemState.locked" defaultMessage="Locked" />
+      ),
     systemProcessing: () => <FormattedMessage id="itemState.systemProcessing" defaultMessage="System Processing" />,
     submitted: () => <FormattedMessage id="itemState.submitted" defaultMessage="Submitted" />,
     scheduled: () => <FormattedMessage id="itemState.scheduled" defaultMessage="Scheduled" />,

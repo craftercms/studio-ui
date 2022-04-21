@@ -56,7 +56,9 @@ const useStyles = makeStyles((theme) =>
       },
       '& .uppy-Dashboard-browse': {
         color: theme.palette.primary.main,
-        textDecoration: 'underline'
+        '&:hover': {
+          textDecoration: 'underline'
+        }
       },
       '& .uppy-Dashboard-dropFilesHereHint': {
         border: `1px dashed ${theme.palette.primary.main}`,
@@ -172,7 +174,9 @@ const useStyles = makeStyles((theme) =>
       // region File list
       '& .uppy-Dashboard-files': {},
       '& .uppy-Dashboard-AddFiles-title': {
-        color: theme.palette.text.primary
+        color: theme.palette.text.primary,
+        position: 'relative',
+        zIndex: 1
       },
       '& .uppy-dashboard-files-list-row': {
         marginBottom: '20px',

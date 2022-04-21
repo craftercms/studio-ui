@@ -126,16 +126,20 @@ const epics = [
                 const destinationPath = editContentTypeTemplate.type === type ? getParentPath(path) : payload.path;
                 return createFile(state.sites.active, destinationPath, fileName).pipe(
                   map(() =>
-                    batchActions([
-                      associateTemplate({ contentTypeId: contentType, displayTemplate: path }),
-                      showCodeEditorDialog({
-                        site: state.sites.active,
-                        path,
-                        mode,
-                        contentType
-                      }),
-                      popTab({ id })
-                    ])
+                    batchActions(
+                      [
+                        // Only editing templates should associate. Groovy controllers are not on the content type definition.
+                        type !== editController.type &&
+                          associateTemplate({ contentTypeId: contentType, displayTemplate: path }),
+                        showCodeEditorDialog({
+                          site: state.sites.active,
+                          path,
+                          mode,
+                          contentType
+                        }),
+                        popTab({ id })
+                      ].filter(Boolean)
+                    )
                   )
                 );
               }

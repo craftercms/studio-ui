@@ -83,6 +83,7 @@ import {
   fetchContentInstance,
   fetchContentInstanceDescriptor,
   fetchItemsByPath,
+  fetchSandboxItem as fetchSandboxItemService,
   fetchWorkflowAffectedItems,
   insertComponent,
   insertInstance,
@@ -96,7 +97,7 @@ import { filter, map, pluck, switchMap, takeUntil } from 'rxjs/operators';
 import { forkJoin, Observable, of } from 'rxjs';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { getGuestToHostBus, getHostToGuestBus, getHostToHostBus } from './previewContext';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useStore } from 'react-redux';
 import { nnou, pluckProps } from '../../utils/object';
 import { findParentModelId, getModelIdFromInheritedField, isInheritedField } from '../../utils/model';
 import RubbishBin from '../../components/RubbishBin/RubbishBin';
@@ -138,7 +139,7 @@ import { useActiveUser } from '../../hooks/useActiveUser';
 import { useMount } from '../../hooks/useMount';
 import { usePreviewNavigation } from '../../hooks/usePreviewNavigation';
 import { useActiveSite } from '../../hooks/useActiveSite';
-import { getControllerPath, getPathFromPreviewURL, processPathMacros } from '../../utils/path';
+import { getPathFromPreviewURL, processPathMacros } from '../../utils/path';
 import {
   closeSingleFileUploadDialog,
   rtePickerActionResult,
@@ -153,7 +154,7 @@ import { useCurrentPreviewItem } from '../../hooks/useCurrentPreviewItem';
 import { useSiteUIConfig } from '../../hooks/useSiteUIConfig';
 import { useRTEConfig } from '../../hooks/useRTEConfig';
 import { guestMessages } from '../../assets/guestMessages';
-import { HighlightMode } from '../../models/GlobalState';
+import { GlobalState, HighlightMode } from '../../models/GlobalState';
 import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import KeyboardShortcutsDialog from '../../components/KeyboardShortcutsDialog';
 import { previewKeyboardShortcuts } from '../../assets/keyboardShortcuts';
@@ -169,19 +170,18 @@ import {
 } from '../../state/actions/system';
 import { useSpreadState, useUpdateRefs } from '../../hooks';
 import { useHotkeys } from 'react-hotkeys-hook';
-import { batchActions, dispatchDOMEvent, editContentTypeTemplate, editController } from '../../state/actions/misc';
-import { popPiece } from '../../utils/string';
-import { fetchSandboxItem as fetchSandboxItemService } from '../../services/content';
+import { batchActions, dispatchDOMEvent, editContentTypeTemplate } from '../../state/actions/misc';
 import SocketEventBase from '../../models/SocketEvent';
 import { RefreshRounded } from '@mui/icons-material';
 import { getPersonFullName } from '../../components/SiteDashboard';
 import { useTheme } from '@mui/material/styles';
 import { createCustomDocumentEventListener } from '../../utils/dom';
 import BrowseFilesDialog from '../../components/BrowseFilesDialog';
-import { MediaItem } from '../../models';
+import { DetailedItem, MediaItem } from '../../models';
 import DataSourcesActionsList, {
   DataSourcesActionsListProps
 } from '../../components/DataSourcesActionsList/DataSourcesActionsList';
+import { editControllerActionCreator, itemActionDispatcher } from '../../utils/itemActions';
 
 const originalDocDomain = document.domain;
 
@@ -285,6 +285,7 @@ const dataSourceActionsListInitialState = {
 
 export function PreviewConcierge(props: PropsWithChildren<{}>) {
   const dispatch = useDispatch();
+  const store = useStore<GlobalState>();
   const { id: siteId, uuid } = useActiveSite();
   const user = useActiveUser();
   const { guest, editMode, highlightMode, editModePadding, icePanelWidth, toolsPanelWidth, hostSize, showToolsPanel } =
@@ -327,6 +328,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   };
 
   const upToDateRefs = useUpdateRefs({
+    store,
+    item,
     theme,
     guest,
     models,
@@ -386,7 +389,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   // Fetch active item
   useEffect(() => {
     if (currentItemPath && siteId) {
-      dispatch(fetchSandboxItem({ path: currentItemPath, force: true }));
+      dispatch(fetchSandboxItem({ path: currentItemPath }));
     }
   }, [dispatch, currentItemPath, siteId]);
 
@@ -1016,30 +1019,35 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           break;
         }
         case requestEdit.type: {
+          let { store } = upToDateRefs.current;
           const { modelId, parentModelId, fields, typeOfEdit: type } = payload;
+          const path = models[parentModelId ? parentModelId : modelId].craftercms.path;
+          let item = store.getState().content.itemsByPath[path];
           const model = models[modelId] as ContentInstance;
           const contentType = contentTypes[model.craftercms.contentTypeId];
           if (type === 'content') {
-            dispatch(
-              showEditDialog({
+            // Not quite sure if it ever happens that the item isn't already loaded.
+            (item
+              ? (of(item) as Observable<DetailedItem>)
+              : fetchSandboxItemService(siteId, path, { castAsDetailedItem: true })
+            ).subscribe((item) => {
+              itemActionDispatcher({
+                item,
                 site: siteId,
-                modelId: parentModelId ? modelId : null,
+                option: 'edit',
+                dispatch,
                 authoringBase,
-                selectedFields: fields,
-                path: models[parentModelId ? parentModelId : modelId].craftercms.path
-              })
-            );
+                formatMessage,
+                extraPayload: {
+                  modelId: parentModelId ? modelId : null,
+                  selectedFields: fields
+                }
+              });
+            });
           } else if (type === 'template') {
             dispatch(editContentTypeTemplate({ contentTypeId: contentType.id }));
           } else {
-            dispatch(
-              editController({
-                path: getControllerPath(contentType.type),
-                fileName: `${popPiece(contentType.id, '/')}.groovy`,
-                mode: 'groovy',
-                contentType: contentType.id
-              })
-            );
+            dispatch(editControllerActionCreator(contentType.type, contentType.id));
           }
           break;
         }

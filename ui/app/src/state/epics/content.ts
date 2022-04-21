@@ -225,15 +225,6 @@ const content: CrafterCMSEpic[] = [
     action$.pipe(
       ofType(fetchSandboxItem.type),
       withLatestFrom(state$),
-      // Only fetch if force is true or the item isn't loaded
-      filter(
-        ([
-          {
-            payload: { path, force }
-          },
-          state
-        ]) => Boolean(path) && (force || !state.content.itemsByPath[path])
-      ),
       mergeMap(([{ payload }, state]) =>
         fetchSandboxItemService(state.sites.active, payload.path).pipe(
           map((item) => fetchSandboxItemComplete({ item })),
