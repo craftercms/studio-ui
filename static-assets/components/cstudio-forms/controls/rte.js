@@ -78,36 +78,32 @@ CStudioAuthoring.Module.requireModule(
             }
           }
 
-          if (!Boolean(CrafterCMSNext.system.store?.getState().preview.richTextEditor)) {
-            // If textEditorConfig is not loaded
-            CrafterCMSNext.system.store.dispatch({
-              type: 'INIT_RICH_TEXT_EDITOR_CONFIG',
-              payload: {
-                configXml: CrafterCMSNext.system.store.getState().uiConfig.xml,
-                siteId: CStudioAuthoringContext.site
-              }
-            });
-            CrafterCMSNext.system
-              .getStore()
-              .pipe(
-                filter((store) => Boolean(store.getState().preview.richTextEditor)),
-                take(1)
-              )
-              .subscribe((store) => {
-                _thisControl._initializeRte(
-                  config,
-                  store.getState().preview.richTextEditor[configuration],
-                  containerEl
-                );
+          CrafterCMSNext.system.getStore().subscribe((store) => {
+            if (!Boolean(store?.getState().preview.richTextEditor)) {
+              // If textEditorConfig is not loaded
+              const unsubscribe = store.subscribe(() => {
+                if (Boolean(store?.getState().preview.richTextEditor)) {
+                  _thisControl._initializeRte(
+                    config,
+                    store.getState().preview.richTextEditor[configuration],
+                    containerEl
+                  );
+                  unsubscribe();
+                }
               });
-          } else {
-            // If textEditorConfig is already loaded
-            _thisControl._initializeRte(
-              config,
-              CrafterCMSNext.system.store.getState().preview.richTextEditor[configuration],
-              containerEl
-            );
-          }
+
+              store.dispatch({
+                type: 'INIT_RICH_TEXT_EDITOR_CONFIG',
+                payload: {
+                  configXml: CrafterCMSNext.system.store.getState().uiConfig.xml,
+                  siteId: CStudioAuthoringContext.site
+                }
+              });
+            } else {
+              // If textEditorConfig is already loaded
+              _thisControl._initializeRte(config, store.getState().preview.richTextEditor[configuration], containerEl);
+            }
+          });
         },
 
         /**
@@ -475,7 +471,6 @@ CStudioAuthoring.Module.requireModule(
               )
             })
           });
-          // _thisControl.editor = editor;
 
           // Update all content before saving the form (all content is automatically updated on focusOut)
           callback = {};
