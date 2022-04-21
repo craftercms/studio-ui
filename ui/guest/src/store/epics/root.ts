@@ -849,6 +849,13 @@ const moveComponent = (dragContext) => {
           containerRecord.fieldId.includes('.') ? `${containerRecord.index}.${targetIndex}` : targetIndex
         );
       });
+    } else {
+      // if draggedElementIndex equals targetIndex it means that item wasn't moved, but it was locked, so it needs
+      // to be unlocked.
+      const models = contentController.getCachedModels();
+      const id = dragged.modelId;
+      const path = models[id].craftercms.path;
+      post(unlockItem({ path }));
     }
   } else {
     // Different drop zone: Move identified
