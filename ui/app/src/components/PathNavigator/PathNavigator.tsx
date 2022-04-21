@@ -235,7 +235,7 @@ export function PathNavigator(props: PathNavigatorProps) {
             // updated and becomes navigable (in case that it didn't have children before this event).
             getParentPath(parentPathOfTargetPath) === withoutIndex(state.currentPath)
           ) {
-            dispatch(fetchSandboxItem({ path: parentPathOfTargetPath, force: true }));
+            dispatch(fetchSandboxItem({ path: parentPathOfTargetPath }));
           }
           break;
         }

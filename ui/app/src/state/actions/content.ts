@@ -41,7 +41,7 @@ export const fetchDetailedItemsFailed = /*#__PURE__*/ createAction<AjaxError>('F
 // endregion
 
 // region Sandbox Item
-export type FetchSandboxItemPayload = { path: string; force?: boolean };
+export type FetchSandboxItemPayload = { path: string };
 export const fetchSandboxItem = /*#__PURE__*/ createAction<FetchSandboxItemPayload>('FETCH_SANDBOX_ITEM');
 export const fetchSandboxItemComplete =
   /*#__PURE__*/ createAction<{ item: SandboxItem }>('FETCH_SANDBOX_ITEM_COMPLETE');
