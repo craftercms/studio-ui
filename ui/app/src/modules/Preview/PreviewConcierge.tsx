@@ -389,7 +389,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   // Fetch active item
   useEffect(() => {
     if (currentItemPath && siteId) {
-      dispatch(fetchSandboxItem({ path: currentItemPath, force: true }));
+      dispatch(fetchSandboxItem({ path: currentItemPath }));
     }
   }, [dispatch, currentItemPath, siteId]);
 

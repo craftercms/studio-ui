@@ -97,15 +97,15 @@ export default function RecentActivityDashlet() {
   const { authoringBase } = useEnv();
   const { itemsByPath, isFetching } = useDetailedItems(Object.keys(selectedLookup));
 
-  const isAllChecked = useMemo(
-    () =>
-      items.length > 1
-        ? !items.some((item) => !item.stateMap.deleted && !selectedLookup[item.path])
-        : items[0]
-        ? selectedLookup[items[0].path] ?? false
-        : false,
-    [items, selectedLookup]
-  );
+  const isAllChecked = useMemo(() => {
+    const nonDeletedItems = items.filter((item) => !item.stateMap.deleted);
+    if (nonDeletedItems.length) {
+      // Is there at least one (non deleted item) that's not checked? If so, they're NOT all checked.
+      return !nonDeletedItems.some((item) => !selectedLookup[item.path]);
+    } else {
+      return false;
+    }
+  }, [items, selectedLookup]);
 
   const isIndeterminate = useMemo(
     () => items.some((item) => selectedLookup[item.path] && !isAllChecked),
