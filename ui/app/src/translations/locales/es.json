@@ -1375,7 +1375,6 @@
   "siteSearch.noOptionsAvailable": "No hay opciones disponibles.",
   "siteSearch.unknownErrorSearching": "Ocurrió un error con el servicio de búsqueda.",
   "siteSwitcherSelected.siteSelectorNoSiteSelected": "Elija proyecto",
-  "siteTools.workflowStates": "Estados de flujo de trabajo",
   "siteTools.selectTool": "Por favor, elija una herramienta de la izquierda.",
   "siteTools.title": "Herramientas del Proyecto",
   "siteTools.toolListingNotConfigured": "No se ha configurado la lista de herramientas del proyecto",
