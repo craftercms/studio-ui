@@ -268,7 +268,7 @@ export default function ItemStatesManagement(props: ItemStatesManagementProps) {
   return (
     <section ref={rootRef} className={classes.root}>
       <GlobalAppToolbar
-        title={!embedded && <FormattedMessage id="siteTools.itemStates" defaultMessage="Item States" />}
+        title={!embedded && <FormattedMessage id="workflowStates.title" defaultMessage="Workflow States" />}
         rightContent={
           <SecondaryButton
             className={embedded ? '' : classes.filterButton}

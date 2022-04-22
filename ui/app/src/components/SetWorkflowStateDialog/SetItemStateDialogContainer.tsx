@@ -167,7 +167,7 @@ export function SetItemStateDialogContainer(props: SetItemStateDialogProps) {
                 label={
                   <FormattedMessage
                     id="setWorkflowStateDialog.clearAsPublishedToStaging"
-                    defaultMessage="Clear as published from staging"
+                    defaultMessage="Clear as published to staging"
                   />
                 }
               />
