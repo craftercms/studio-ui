@@ -270,67 +270,74 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 
         const models = getCachedModels();
         const dropZone = dragContext.dropZone;
-        const { modelId } = iceRegistry.getById(dropZone.iceId);
-        const path = models[modelId].craftercms.path;
-        const cachedSandboxItem = getCachedSandboxItem(path);
 
-        // TODO: In the case of "move", only locking the source dropzone currently.
-        // The item unlock happens with write content API
-        return lock(state.activeSite, path).pipe(
-          switchMap(() =>
-            fetchSandboxItem(state.activeSite, path).pipe(
-              switchMap((item) => {
-                if (item.stateMap.submitted || item.stateMap.scheduled) {
-                  post(
-                    requestWorkflowCancellationDialog({
-                      siteId: state.activeSite,
-                      path
-                    })
-                  );
-                  return message$.pipe(
-                    filter((e) => e.type === requestWorkflowCancellationDialogOnResult.type),
-                    take(1),
-                    tap(({ payload }) => {
-                      if (payload.type !== 'continue') {
-                        post(unlockItem({ path }));
-                      }
-                    }),
-                    filter(({ payload }) => payload.type === 'continue'),
-                    switchMap(() => processDrop())
-                  );
-                } else {
-                  if (item.commitId !== cachedSandboxItem.commitId) {
+        // If dropzone doesn't exist it means that the item was dropped in an invalid section
+        // so there should be no lock or other actions.
+        if (dropZone) {
+          const { modelId } = iceRegistry.getById(dropZone.iceId);
+          const path = models[modelId].craftercms.path;
+          const cachedSandboxItem = getCachedSandboxItem(path);
+
+          // TODO: In the case of "move", only locking the source dropzone currently.
+          // The item unlock happens with write content API
+          return lock(state.activeSite, path).pipe(
+            switchMap(() =>
+              fetchSandboxItem(state.activeSite, path).pipe(
+                switchMap((item) => {
+                  if (item.stateMap.submitted || item.stateMap.scheduled) {
                     post(
-                      validationMessage({
-                        id: 'outOfSyncContent',
-                        level: 'suggestion'
+                      requestWorkflowCancellationDialog({
+                        siteId: state.activeSite,
+                        path
                       })
                     );
-                    post(unlockItem({ path }));
-                    setTimeout(() => {
-                      window.location.reload();
-                    });
+                    return message$.pipe(
+                      filter((e) => e.type === requestWorkflowCancellationDialogOnResult.type),
+                      take(1),
+                      tap(({ payload }) => {
+                        if (payload.type !== 'continue') {
+                          post(unlockItem({ path }));
+                        }
+                      }),
+                      filter(({ payload }) => payload.type === 'continue'),
+                      switchMap(() => processDrop())
+                    );
                   } else {
-                    return processDrop();
+                    if (item.commitId !== cachedSandboxItem.commitId) {
+                      post(
+                        validationMessage({
+                          id: 'outOfSyncContent',
+                          level: 'suggestion'
+                        })
+                      );
+                      post(unlockItem({ path }));
+                      setTimeout(() => {
+                        window.location.reload();
+                      });
+                    } else {
+                      return processDrop();
+                    }
+                    return NEVER;
                   }
-                  return NEVER;
-                }
-              })
-            )
-          ),
-          catchError(({ response, status }) => {
-            if (status === 409) {
-              post(
-                validationMessage({
-                  id: 'itemLocked',
-                  level: 'suggestion',
-                  values: { lockOwner: response.person }
                 })
-              );
-            }
-            return NEVER;
-          })
-        );
+              )
+            ),
+            catchError(({ response, status }) => {
+              if (status === 409) {
+                post(
+                  validationMessage({
+                    id: 'itemLocked',
+                    level: 'suggestion',
+                    values: { lockOwner: response.person }
+                  })
+                );
+              }
+              return NEVER;
+            })
+          );
+        } else {
+          return NEVER;
+        }
       })
     );
   },
