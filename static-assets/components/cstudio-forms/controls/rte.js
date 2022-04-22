@@ -351,7 +351,7 @@ CStudioAuthoring.Module.requireModule(
             autoresize_bottom_margin: 0,
             contextmenu: !this.enableSpellCheck, // comes from control props (not xml config)
             image_uploadtab: this.editorImageDatasources.length > 0, // comes from control props (not xml config)
-            craftercms_paste_cleanup: rteConfig?.tinymceOptions?.craftercmsPasteCleanup ?? true, // If doesn't exist or if true => true
+            craftercms_paste_cleanup: rteConfig?.tinymceOptions?.craftercms_paste_cleanup ?? true, // If doesn't exist or if true => true
             automatic_uploads: true,
             file_picker_types: 'image media file',
             skin: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'oxide-dark' : 'oxide',
