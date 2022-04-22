@@ -64,7 +64,7 @@ CStudioAuthoring.Module.requireModule(
             configuration = 'generic';
 
           const { operators } = CrafterCMSNext.rxjs;
-          const { filter, take } = operators;
+          const { take } = operators;
 
           for (var i = 0; i < config.properties.length; i++) {
             var prop = config.properties[i];
@@ -78,32 +78,39 @@ CStudioAuthoring.Module.requireModule(
             }
           }
 
-          CrafterCMSNext.system.getStore().subscribe((store) => {
-            if (!Boolean(store?.getState().preview.richTextEditor)) {
-              // If textEditorConfig is not loaded
-              const unsubscribe = store.subscribe(() => {
-                if (Boolean(store?.getState().preview.richTextEditor)) {
-                  _thisControl._initializeRte(
-                    config,
-                    store.getState().preview.richTextEditor[configuration],
-                    containerEl
-                  );
-                  unsubscribe();
-                }
-              });
+          CrafterCMSNext.system
+            .getStore()
+            .pipe(take(1))
+            .subscribe((store) => {
+              if (!Boolean(store.getState().preview.richTextEditor)) {
+                // If textEditorConfig is not loaded
+                const unsubscribe = store.subscribe(() => {
+                  if (Boolean(store.getState().preview.richTextEditor)) {
+                    _thisControl._initializeRte(
+                      config,
+                      store.getState().preview.richTextEditor[configuration],
+                      containerEl
+                    );
+                    unsubscribe();
+                  }
+                });
 
-              store.dispatch({
-                type: 'INIT_RICH_TEXT_EDITOR_CONFIG',
-                payload: {
-                  configXml: CrafterCMSNext.system.store.getState().uiConfig.xml,
-                  siteId: CStudioAuthoringContext.site
-                }
-              });
-            } else {
-              // If textEditorConfig is already loaded
-              _thisControl._initializeRte(config, store.getState().preview.richTextEditor[configuration], containerEl);
-            }
-          });
+                store.dispatch({
+                  type: 'INIT_RICH_TEXT_EDITOR_CONFIG',
+                  payload: {
+                    configXml: CrafterCMSNext.system.store.getState().uiConfig.xml,
+                    siteId: CStudioAuthoringContext.site
+                  }
+                });
+              } else {
+                // If textEditorConfig is already loaded
+                _thisControl._initializeRte(
+                  config,
+                  store.getState().preview.richTextEditor[configuration],
+                  containerEl
+                );
+              }
+            });
         },
 
         /**
@@ -284,7 +291,7 @@ CStudioAuthoring.Module.requireModule(
           // https://www.tiny.cloud/docs/plugins/
           // paste plugin is hardcoded in order to enable drag and drop functionality (and avoid it being removed from
           // configuration file).
-          pluginList = [rteConfig?.tinymceOptions?.plugins, 'paste', this.autoGrow && 'autoresize']
+          pluginList = [rteConfig.tinymceOptions?.plugins, 'paste', this.autoGrow && 'autoresize']
             .filter(Boolean)
             .join(' ');
 
@@ -315,7 +322,7 @@ CStudioAuthoring.Module.requireModule(
           );
 
           const external = {
-            ...rteConfig?.tinymceOptions?.external_plugins,
+            ...rteConfig.tinymceOptions?.external_plugins,
             acecode: '/studio/static-assets/js/tinymce-plugins/ace/plugin.min.js',
             craftercms_paste_extension: '/studio/static-assets/js/tinymce-plugins/craftercms_paste_extension/plugin.js'
           };
