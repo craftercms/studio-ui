@@ -18,6 +18,7 @@ import prettierXmlPlugin from '@prettier/plugin-xml';
 import prettier from 'prettier/standalone';
 import { nnou } from './object';
 import parser, { X2jOptionsOptional } from 'fast-xml-parser';
+import { legacyUnEscapeXml } from './string';
 
 export function fromString(xml: string): XMLDocument {
   return xml != null ? new DOMParser().parseFromString(xml, 'text/xml') : null;
@@ -55,7 +56,15 @@ export function beautify(xml: string, options?: Partial<BeautifyOptions>): strin
   });
 }
 
-export function getInnerHtml(element: Element, options = { trim: true }) {
+interface GetInnerHtmlOptions {
+  trim: boolean;
+  applyLegacyUnEscaping: boolean;
+}
+
+export function getInnerHtml(element: Element): string;
+export function getInnerHtml(element: Element, options: Partial<GetInnerHtmlOptions>): string;
+export function getInnerHtml(element: Element, options?: Partial<GetInnerHtmlOptions>): string {
+  let opts = Object.assign({ trim: true, applyLegacyUnEscaping: false } as GetInnerHtmlOptions, options);
   let content = element?.innerHTML;
   if (content) {
     // @ts-ignore downlevelIteration
@@ -63,8 +72,14 @@ export function getInnerHtml(element: Element, options = { trim: true }) {
     if (matches.length > 0) {
       content = matches[0][1].trim();
     }
+    if (opts.trim) {
+      content = content.trim();
+    }
+    if (opts.applyLegacyUnEscaping) {
+      content = legacyUnEscapeXml(content);
+    }
   }
-  return nnou(content) ? (options.trim ? content.trim() : content) : null;
+  return nnou(content) ? content : null;
 }
 
 export function getInnerHtmlNumber(element: Element, parser = parseInt): number {

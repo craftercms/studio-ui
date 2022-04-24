@@ -362,7 +362,8 @@ export function parseContentXML(
   };
   if (nnou(doc)) {
     current.craftercms.label = getInnerHtml(
-      doc.querySelector(':scope > internal-name') ?? doc.querySelector(':scope > file-name')
+      doc.querySelector(':scope > internal-name') ?? doc.querySelector(':scope > file-name'),
+      { applyLegacyUnEscaping: true }
     );
     current.craftercms.dateCreated = getInnerHtml(doc.querySelector(':scope > createdDate_dt'));
     current.craftercms.dateModified = getInnerHtml(doc.querySelector(':scope > lastModifiedDate_dt'));
@@ -468,8 +469,9 @@ function parseElementByContentType(
       return Array.isArray(extract) ? extract : [extract];
     }
     case 'text':
-    case 'image':
     case 'textarea':
+      return getInnerHtml(element, { applyLegacyUnEscaping: true });
+    case 'image':
     case 'dropdown':
     case 'date-time':
     case 'time':
