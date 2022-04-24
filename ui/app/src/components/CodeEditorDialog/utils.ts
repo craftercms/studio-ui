@@ -19,7 +19,6 @@ import { ContentTypeField } from '../../models/ContentType';
 import StandardAction from '../../models/StandardAction';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
-import React from 'react';
 
 export interface CodeEditorDialogBaseProps {
   path: string;
@@ -47,7 +46,6 @@ export interface CodeEditorDialogContainerProps
     Pick<CodeEditorDialogProps, 'onMinimize' | 'isSubmitting' | 'onSuccess' | 'onClose'> {
   title: string;
   onFullScreen(): void;
-  onSaveClose?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
 }
 
 export const contentTypePropsMap = {

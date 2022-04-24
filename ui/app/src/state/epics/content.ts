@@ -15,7 +15,7 @@
  */
 
 import { ofType } from 'redux-observable';
-import { catchError, filter, map, mergeMap, switchMap, withLatestFrom } from 'rxjs/operators';
+import { filter, map, mapTo, mergeMap, switchMap, withLatestFrom } from 'rxjs/operators';
 import {
   clearClipboard,
   completeDetailedItem,
@@ -58,9 +58,8 @@ import {
   paste,
   unlock
 } from '../../services/content';
-import { merge, NEVER, Observable, of } from 'rxjs';
+import { merge, Observable, of } from 'rxjs';
 import {
-  closeCodeEditorDialog,
   closeConfirmDialog,
   closeDeleteDialog,
   showCodeEditorDialog,
@@ -257,12 +256,14 @@ const content: CrafterCMSEpic[] = [
     action$.pipe(
       ofType(unlockItem.type),
       withLatestFrom(state$),
-      switchMap(([{ payload }, state]) => {
-        return unlock(state.sites.active, payload.path).pipe(
-          map(() => batchActions([payload.notify === false && showUnlockItemSuccessNotification()].filter(Boolean))),
-          catchError(() => NEVER)
-        );
-      })
+      switchMap(([{ payload }, state]) =>
+        unlock(state.sites.active, payload.path).pipe(
+          // Not using the boolean return of the service. If the item it's already unlocked,
+          // notify anyway of successful unlock as not notifying can be confusing (i.e. "what happened?").
+          filter(() => payload.notify),
+          mapTo(showUnlockItemSuccessNotification())
+        )
+      )
     ),
   // endregion
   // region lockItem
@@ -287,11 +288,7 @@ const content: CrafterCMSEpic[] = [
       ofType(conditionallyUnlockItem.type),
       withLatestFrom(state$),
       filter(([{ payload }, state]) => state.content.itemsByPath[payload.path].lockOwner === state.user.username),
-      switchMap(([{ payload }, state]) =>
-        unlock(state.sites.active, payload.path).pipe(
-          map(() => batchActions([payload.notify === false && showUnlockItemSuccessNotification()].filter(Boolean)))
-        )
-      )
+      mapTo(unlockItem())
     ),
   // endregion
   // region Asset Duplicate
@@ -310,8 +307,7 @@ const content: CrafterCMSEpic[] = [
                 site: state.sites.active,
                 path,
                 mode,
-                onSuccess: payload.onSuccess,
-                onClose: batchActions([closeCodeEditorDialog(), conditionallyUnlockItem({ path })])
+                onSuccess: payload.onSuccess
               });
             }
           })
