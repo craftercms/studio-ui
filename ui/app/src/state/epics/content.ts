@@ -288,7 +288,7 @@ const content: CrafterCMSEpic[] = [
       ofType(conditionallyUnlockItem.type),
       withLatestFrom(state$),
       filter(([{ payload }, state]) => state.content.itemsByPath[payload.path].lockOwner === state.user.username),
-      mapTo(unlockItem())
+      map(([{ payload }]) => unlockItem(payload))
     ),
   // endregion
   // region Asset Duplicate
