@@ -50,7 +50,7 @@ import { MultiChoiceSaveButton } from '../MultiChoiceSaveButton';
 import useUpToDateRefs from '../../hooks/useUpdateRefs';
 
 export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps) {
-  const { path, onMinimize, onClose, onSaveClose, mode, isSubmitting, readonly, contentType, onFullScreen } = props;
+  const { path, onMinimize, onClose, mode, isSubmitting, readonly, contentType, onFullScreen } = props;
   const item = useDetailedItem(path);
   const site = useActiveSiteId();
   const user = useActiveUser();
@@ -115,20 +115,6 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 
   const onSave = () => save(() => setContent(editorRef.current.getValue()));
 
-  const onSaveAndMinimize = () => {
-    save(() => {
-      setContent(editorRef.current.getValue());
-      onMinimize?.();
-    });
-  };
-
-  const saveAndClose = () => {
-    save(() => {
-      onSaveClose?.(null);
-      pathLocked && unlock(site, pathLocked).subscribe();
-    });
-  };
-
   const onAddSnippet = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -155,10 +141,13 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
         onSave();
         break;
       case 'saveAndClose':
-        saveAndClose();
+        save(() => onCloseButtonClick(null));
         break;
       case 'saveAndMinimize':
-        onSaveAndMinimize();
+        save(() => {
+          setContent(editorRef.current.getValue());
+          onMinimize?.();
+        });
         break;
     }
   };

@@ -1254,7 +1254,17 @@ export function lock(siteId: string, path: string): Observable<boolean> {
 }
 
 export function unlock(siteId: string, path: string): Observable<boolean> {
-  return postJSON('/studio/api/2/content/item_unlock_by_path', { siteId, path }).pipe(mapTo(true));
+  return postJSON('/studio/api/2/content/item_unlock_by_path', { siteId, path }).pipe(
+    mapTo(true),
+    // Do not throw/report 409 (item is already unlocked) as an error.
+    catchError((error) => {
+      if (error.status === 409) {
+        return of(false);
+      } else {
+        throw new Error(error);
+      }
+    })
+  );
 }
 
 export function fetchWorkflowAffectedItems(site: string, path: string): Observable<SandboxItem[]> {

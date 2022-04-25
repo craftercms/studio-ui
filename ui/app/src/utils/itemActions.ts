@@ -20,7 +20,6 @@ import { ContextMenuOption } from '../components/ContextMenu';
 import { getControllerPath, getRootPath, withoutIndex } from './path';
 import {
   closeChangeContentTypeDialog,
-  closeCodeEditorDialog,
   closeConfirmDialog,
   closeCreateFileDialog,
   closeCreateFolderDialog,
@@ -67,7 +66,6 @@ import {
   unblockUI
 } from '../state/actions/system';
 import {
-  conditionallyUnlockItem,
   deleteController,
   deleteTemplate,
   duplicateWithPolicyValidation,
@@ -804,31 +802,22 @@ export const itemActionDispatcher = ({
           })
         );
         fetchWorkflowAffectedItems(site, path).subscribe((items) => {
+          const editorShowAction = showCodeEditorDialog({
+            path: item.path,
+            mode: getEditorMode(item)
+          });
           if (items?.length > 0) {
             dispatch(
               batchActions([
                 unblockUI(),
                 showWorkflowCancellationDialog({
                   items,
-                  onContinue: showCodeEditorDialog({
-                    path: item.path,
-                    mode: getEditorMode(item),
-                    onClose: batchActions([closeCodeEditorDialog(), conditionallyUnlockItem({ path: item.path })])
-                  })
+                  onContinue: editorShowAction
                 })
               ])
             );
           } else {
-            dispatch(
-              batchActions([
-                unblockUI(),
-                showCodeEditorDialog({
-                  path: item.path,
-                  mode: getEditorMode(item),
-                  onClose: batchActions([closeCodeEditorDialog(), conditionallyUnlockItem({ path: item.path })])
-                })
-              ])
-            );
+            dispatch(batchActions([unblockUI(), editorShowAction]));
           }
         });
         break;
