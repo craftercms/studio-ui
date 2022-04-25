@@ -92,18 +92,13 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
       dispatch(updateCodeEditorDialog({ isSubmitting: true }));
       writeContent(site, path, editorRef.current.getValue(), { unlock: false }).subscribe({
         next() {
-          setTimeout(callback);
           dispatch(
             batchActions([
-              showSystemNotification({
-                message: formatMessage(translations.saved)
-              }),
-              updateCodeEditorDialog({
-                isSubmitting: false,
-                hasPendingChanges: false
-              })
+              showSystemNotification({ message: formatMessage(translations.saved) }),
+              updateCodeEditorDialog({ isSubmitting: false, hasPendingChanges: false })
             ])
           );
+          setTimeout(callback);
           getHostToGuestBus().next(reloadRequest());
         },
         error({ response }) {
@@ -131,7 +126,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
   };
 
   const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    onClose(e, null);
+    fnRefs.current.onClose(e, null);
     pathLocked && unlock(site, pathLocked).subscribe();
   };
 
@@ -161,7 +156,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
     });
   };
 
-  const fnRefs = useUpToDateRefs({ onSave });
+  const fnRefs = useUpToDateRefs({ onSave, onClose });
 
   // add content model variables
   useEffect(() => {
