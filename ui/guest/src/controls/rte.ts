@@ -168,6 +168,10 @@ export function initTinyMCE(
         return type === 'html' ? editor.getContent() : editor.getContent({ format: 'text' });
       }
 
+      function getSelectionContent() {
+        return type === 'html' ? editor.selection.getContent() : editor.selection.getContent({ format: 'text' });
+      }
+
       function destroyEditor() {
         editor.destroy(false);
       }
@@ -259,6 +263,11 @@ export function initTinyMCE(
         }
       });
 
+      // TODO: The max-length can be bypassed by pasting.
+      // editor.on('paste', (e) => {
+      //   // ...
+      // });
+
       editor.on('keydown', (e) => {
         if (e.key === 'Escape') {
           e.stopImmediatePropagation();
@@ -275,7 +284,10 @@ export function initTinyMCE(
           validations?.maxLength &&
           // TODO: Check/improve regex
           /[a-zA-Z0-9-_ ]/.test(String.fromCharCode(e.keyCode)) &&
-          getContent().length + 1 > parseInt(validations.maxLength.value)
+          getContent().length + 1 > parseInt(validations.maxLength.value) &&
+          // If everything is selected and a key is pressed, essentially, it will
+          // delete everything so no max-length problem
+          getContent() !== getSelectionContent()
         ) {
           post(
             validationMessage({
