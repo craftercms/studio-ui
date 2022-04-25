@@ -268,24 +268,26 @@ export default [
       ofType(
         pathNavigatorFetchPathComplete.type,
         pathNavigatorConditionallySetPathComplete.type,
-        pathNavigatorSetCollapsed.type
+        pathNavigatorSetCollapsed.type,
+        pathNavigatorChangeLimit.type
       ),
       withLatestFrom(state$),
       tap(
         ([
           {
             type,
-            payload: { id, children, parent }
+            payload: { id, parent }
           },
           state
         ]) => {
-          if (parent?.childrenCount > 0 || type === pathNavigatorSetCollapsed.type) {
+          if (type !== pathNavigatorConditionallySetPathComplete.type || parent?.childrenCount > 0) {
             const uuid = state.sites.byId[state.sites.active].uuid;
             setStoredPathNavigator(uuid, state.user.username, id, {
               currentPath: state.pathNavigator[id].currentPath,
               collapsed: state.pathNavigator[id].collapsed,
               keyword: state.pathNavigator[id].keyword,
-              offset: state.pathNavigator[id].offset
+              offset: state.pathNavigator[id].offset,
+              limit: state.pathNavigator[id].limit
             });
           }
         }
