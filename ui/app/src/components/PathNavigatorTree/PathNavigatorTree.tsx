@@ -285,13 +285,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
             // TODO: Research improving the reloads here; consider targetPath and opened paths?
             if (user.username === payload.user.username) {
               // if it's current user then reload and expand folder (for example pasting in another folder)
-              dispatch(
-                pathNavigatorTreeFetchPathChildren({
-                  id,
-                  path: parentPath,
-                  expand: true
-                })
-              );
+              dispatch(pathNavigatorTreeFetchPathChildren({ id, path: parentPath, expand: false }));
             } else {
               // if content editor is not current user do a silent refresh
               dispatch(pathNavigatorTreeBackgroundRefresh({ id }));
@@ -343,15 +337,12 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
           dispatch(pathNavigatorTreeBackgroundRefresh({ id }));
           break;
         }
-        default: {
-          break;
-        }
       }
     });
     return () => {
       subscription.unsubscribe();
     };
-  }, [id, rootPath, dispatch, totalByPath, limit, childrenByParentPath, state?.expanded, user, rootPathExists]);
+  }, [id, rootPath, dispatch, state?.expanded, user, rootPathExists]);
   // endregion
 
   if ((!rootItem || !Boolean(state) || !rootNode) && !error) {
