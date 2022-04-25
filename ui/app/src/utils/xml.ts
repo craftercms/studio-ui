@@ -18,7 +18,7 @@ import prettierXmlPlugin from '@prettier/plugin-xml';
 import prettier from 'prettier/standalone';
 import { nnou } from './object';
 import parser, { X2jOptionsOptional } from 'fast-xml-parser';
-import { legacyUnEscapeXml } from './string';
+import { legacyUnescapeXml } from './string';
 
 export function fromString(xml: string): XMLDocument {
   return xml != null ? new DOMParser().parseFromString(xml, 'text/xml') : null;
@@ -58,13 +58,13 @@ export function beautify(xml: string, options?: Partial<BeautifyOptions>): strin
 
 interface GetInnerHtmlOptions {
   trim: boolean;
-  applyLegacyUnEscaping: boolean;
+  applyLegacyUnescaping: boolean;
 }
 
 export function getInnerHtml(element: Element): string;
 export function getInnerHtml(element: Element, options: Partial<GetInnerHtmlOptions>): string;
 export function getInnerHtml(element: Element, options?: Partial<GetInnerHtmlOptions>): string {
-  let opts = Object.assign({ trim: true, applyLegacyUnEscaping: false } as GetInnerHtmlOptions, options);
+  let opts = Object.assign({ trim: true, applyLegacyUnescaping: false } as GetInnerHtmlOptions, options);
   let content = element?.innerHTML;
   if (content) {
     // @ts-ignore downlevelIteration
@@ -75,8 +75,8 @@ export function getInnerHtml(element: Element, options?: Partial<GetInnerHtmlOpt
     if (opts.trim) {
       content = content.trim();
     }
-    if (opts.applyLegacyUnEscaping) {
-      content = legacyUnEscapeXml(content);
+    if (opts.applyLegacyUnescaping) {
+      content = legacyUnescapeXml(content);
     }
   }
   return nnou(content) ? content : null;

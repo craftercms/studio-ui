@@ -363,7 +363,7 @@ export function parseContentXML(
   if (nnou(doc)) {
     current.craftercms.label = getInnerHtml(
       doc.querySelector(':scope > internal-name') ?? doc.querySelector(':scope > file-name'),
-      { applyLegacyUnEscaping: true }
+      { applyLegacyUnescaping: true }
     );
     current.craftercms.dateCreated = getInnerHtml(doc.querySelector(':scope > createdDate_dt'));
     current.craftercms.dateModified = getInnerHtml(doc.querySelector(':scope > lastModifiedDate_dt'));
@@ -470,7 +470,7 @@ function parseElementByContentType(
     }
     case 'text':
     case 'textarea':
-      return getInnerHtml(element, { applyLegacyUnEscaping: true });
+      return getInnerHtml(element, { applyLegacyUnescaping: true });
     case 'image':
     case 'dropdown':
     case 'date-time':

@@ -149,7 +149,7 @@ export function legacyEscapeXml(value: string): string {
   return value;
 }
 
-export function legacyUnEscapeXml(value: string): string {
+export function legacyUnescapeXml(value: string): string {
   if (typeof value === 'string') {
     return value
       .replace(/&lt;/g, '<')
