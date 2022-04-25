@@ -142,6 +142,24 @@ export function unescapeHTML(html: string): string {
   return element.textContent;
 }
 
+export function legacyEscapeXml(value: string): string {
+  if (typeof value === 'string') {
+    return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+  return value;
+}
+
+export function legacyUnescapeXml(value: string): string {
+  if (typeof value === 'string') {
+    return value
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&amp;/g, '&');
+  }
+  return value;
+}
+
 export function bytesToSize(bytes: number, separator: string = '') {
   const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
   if (bytes === 0) return 'n/a';
