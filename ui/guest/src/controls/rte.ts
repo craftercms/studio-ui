@@ -41,7 +41,6 @@ export function initTinyMCE(
   const dispatch$ = new Subject<GuestStandardAction>();
   const { field, model } = iceRegistry.getReferentialEntries(record.iceIds[0]);
   const type = field?.type;
-  const elementDisplay = $(record.element).css('display');
   const inlineElsRegex =
     /B|BIG|I|SMALL|TT|ABBR|ACRINYM|CITE|CODE|DFN|EM|KBD|STRONG|SAMP|VAR|A|BDO|BR|IMG|MAP|OBJECT|Q|SCRIPT|SPAN|SUB|SUP|BUTTON|INPUT|LABEL|SELECT|TEXTAREA/;
   let rteEl = record.element;
@@ -291,6 +290,7 @@ export function initTinyMCE(
       });
 
       editor.on('DblClick', (e) => {
+        e.preventDefault();
         e.stopPropagation();
         if (e.target.nodeName === 'IMG') {
           window.tinymce.activeEditor.execCommand('mceImage');
@@ -298,6 +298,7 @@ export function initTinyMCE(
       });
 
       editor.on('click', (e) => {
+        e.preventDefault();
         e.stopPropagation();
       });
 
