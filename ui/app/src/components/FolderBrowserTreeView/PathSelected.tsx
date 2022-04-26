@@ -83,7 +83,7 @@ export function PathSelected(props: PathSelectedProps) {
       </section>
       {invalidPath && (
         <FormHelperText error>
-          <FormattedMessage id="folderBrowserTreeView.invalidPath" defaultMessage="The entered path doesn’t exist." />
+          <FormattedMessage id="folderBrowserTreeView.invalidPath" defaultMessage="The entered path doesn't exist." />
         </FormHelperText>
       )}
     </>
