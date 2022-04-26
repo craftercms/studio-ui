@@ -87,28 +87,28 @@ export default function PathSelector(props: PathSelectorProps) {
   const { onPathSelected, value, disabled } = props;
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
-  const classes = useStyles({});
-  const [keyword, setKeyword] = useState(value ?? '');
-  const rootPath = keyword.split('/')[1] ? `/${keyword.split('/')[1]}` : null;
+  const classes = useStyles();
+  const [path, setPath] = useState<string>(value ?? '');
   const idSuccess = 'pathSelectionSuccess';
   const idCancel = 'pathSelectionCancel';
 
   useEffect(() => {
-    setKeyword(value ?? '');
+    setPath(value ?? '');
   }, [value]);
 
   const onClean = (e) => {
     e.stopPropagation();
     e.preventDefault();
-    setKeyword('');
+    setPath('');
     onPathSelected(undefined);
   };
 
   const onOpenPathSelectionDialog = () => {
+    const rootPath = path.split('/')[1] ? `/${path.split('/')[1]}` : '/site';
     dispatch(
       showPathSelectionDialog({
-        rootPath: rootPath ?? '/',
-        initialPath: rootPath ? keyword : null,
+        rootPath,
+        initialPath: path || rootPath,
         showCreateFolderOption: false,
         onClosed: {
           type: 'BATCH_ACTIONS',
@@ -122,9 +122,9 @@ export default function PathSelector(props: PathSelectorProps) {
     );
 
     const successCallback = (e) => {
-      const keyword = e.detail.path;
-      setKeyword(keyword);
-      onPathSelected(keyword);
+      const path = e.detail.path;
+      setPath(path);
+      onPathSelected(path);
 
       document.removeEventListener(idSuccess, successCallback, false);
       document.removeEventListener(idCancel, cancelCallback, false);
@@ -149,7 +149,7 @@ export default function PathSelector(props: PathSelectorProps) {
         classes={{ root: classes.pathSelectorInputRoot, input: classes.invisibleInput }}
         disabled={disabled}
         readOnly
-        value={keyword}
+        value={path}
         placeholder={formatMessage(messages.searchIn)}
         startAdornment={<SearchIcon className={classes.pathSelectorSearchIcon} />}
         endAdornment={

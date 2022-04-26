@@ -180,7 +180,7 @@ export function PathSelectionDialogBody(props: PathSelectionDialogBodyProps) {
                   nodesLookup[child.id] = child;
                 });
               });
-              rootNode && setTreeNodes({ ...rootNode });
+              setTreeNodes({ ...rootNode });
             },
             error: (response) => {
               setError(response);

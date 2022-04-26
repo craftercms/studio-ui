@@ -71,13 +71,14 @@ export const useTreeNodeStyles = makeStyles(() =>
   })
 );
 
-export const usePathSelectedStyles = makeStyles(() =>
+export const usePathSelectedStyles = makeStyles((theme) =>
   createStyles({
     wrapper: {
       display: 'flex',
       padding: '10px 12px',
       border: `1px solid  ${palette.gray.light1}`,
       borderRadius: '5px',
+      backgroundColor: theme.palette.background.paper,
       '&.invalid': {
         borderColor: palette.red.main
       }
