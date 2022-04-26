@@ -58,7 +58,7 @@ export function ConfirmDialogContainer(props: ConfirmDialogContainerProps) {
         )}
         {children}
       </DialogContent>
-      <DialogFooter className={classes.dialogFooter}>
+      <DialogFooter className={classes.dialogFooter} sx={{ mt: 2 }}>
         {onOk && (
           <PrimaryButton onClick={onOk} autoFocus fullWidth size="large" disabled={disableOkButton}>
             {formatMessage(translations.accept)}
