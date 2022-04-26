@@ -39,7 +39,15 @@ import {
 } from '../../state/actions/pathNavigator';
 import { fetchSandboxItem } from '../../state/actions/content';
 import { showEditDialog, showItemMegaMenu, showPreviewDialog } from '../../state/actions/dialogs';
-import { getEditorMode, isEditableViaFormEditor, isFolder, isImage, isNavigable, isPreviewable } from './utils';
+import {
+  getEditorMode,
+  isEditableViaFormEditor,
+  isFolder,
+  isImage,
+  isNavigable,
+  isPreviewable,
+  isVideo
+} from './utils';
 import { StateStylingProps } from '../../models/UiConfig';
 import { getHostToHostBus } from '../../modules/Preview/previewContext';
 import { debounceTime } from 'rxjs/operators';
@@ -295,10 +303,10 @@ export function PathNavigator(props: PathNavigatorProps) {
   const onPreview = (item: DetailedItem) => {
     if (isEditableViaFormEditor(item)) {
       dispatch(showEditDialog({ path: item.path, authoringBase, site: siteId, readonly: true }));
-    } else if (isImage(item)) {
+    } else if (isImage(item) || isVideo(item)) {
       dispatch(
         showPreviewDialog({
-          type: 'image',
+          type: isImage(item) ? 'image' : 'video',
           title: item.label,
           url: item.path
         })
