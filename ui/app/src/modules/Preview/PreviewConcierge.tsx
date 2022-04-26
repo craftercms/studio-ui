@@ -1218,7 +1218,11 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         case contentEvent.type: {
           const { user: person, targetPath } = payload as SocketEventBase;
           const { theme } = upToDateRefs.current;
-          if (guest?.path === targetPath && person.username !== user.username) {
+          if (
+            person.username !== user.username &&
+            guest &&
+            (guest.path === targetPath || guest.modelIdByPath[targetPath])
+          ) {
             enqueueSnackbar(
               formatMessage(guestMessages.contentWasChangedByAnotherUser, {
                 name: getPersonFullName(person)
