@@ -96,7 +96,7 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
   } = props;
   const classes = useStyles(props.styles);
   if (!item) {
-    // Avoids crashing if the item is nullish. This prevents the crash.
+    // Prevents crashing if the item is nullish
     return null;
   }
   const inWorkflow = isInWorkflow(item.stateMap) || item.systemType === 'folder';
