@@ -48,6 +48,7 @@ export function EditModesSwitcherUI(props: EditModesSwitcherUIProps) {
   return (
     <Box
       sx={{
+        minWidth: 104,
         borderRadius: 20,
         display: 'inline-block',
         border: (theme) => `1px solid ${disabled ? theme.palette.grey[200] : theme.palette.grey[300]}`,
