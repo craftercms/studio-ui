@@ -95,6 +95,10 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
     ...rest
   } = props;
   const classes = useStyles(props.styles);
+  if (!item) {
+    // Prevents crashing if the item is nullish
+    return null;
+  }
   const inWorkflow = isInWorkflow(item.stateMap) || item.systemType === 'folder';
   return (
     <span ref={ref} {...rest} className={clsx(classes.root, propClasses?.root, rest?.className)}>

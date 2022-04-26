@@ -166,7 +166,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     // Adding uiConfig as means to stop navigator from trying to
     // initialize with previous state information when switching sites
     if (!state && uiConfig.currentSite === siteId && rootPath) {
-      nodesByPathRef.current[rootPath] = undefined;
+      nodesByPathRef.current = {};
       const { expanded, collapsed, keywordByPath } = storedState;
       dispatch(
         pathNavigatorTreeInit({
@@ -379,34 +379,18 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   };
 
   const onToggleNodeClick = (path: string) => {
-    // If the path is already expanded should be collapsed
+    // If the path is already expanded, should be collapsed
     if (state.expanded.includes(path)) {
-      dispatch(
-        pathNavigatorTreeCollapsePath({
-          id,
-          path
-        })
-      );
+      dispatch(pathNavigatorTreeCollapsePath({ id, path }));
     } else {
-      // If the item have children should be expanded
+      // If the item's children have been loaded, should simply be expanded
       if (childrenByParentPath[path]) {
-        dispatch(
-          pathNavigatorTreeExpandPath({
-            id,
-            path
-          })
-        );
+        dispatch(pathNavigatorTreeExpandPath({ id, path }));
       } else {
-        // Otherwise the item doesn't have children and should be fetched
-        dispatch(
-          pathNavigatorTreeFetchPathChildren({
-            id,
-            path
-          })
-        );
+        // Children not fetched yet, should be fetched
+        dispatch(pathNavigatorTreeFetchPathChildren({ id, path }));
       }
     }
-    dispatch(pathNavigatorTreeBackgroundRefresh({ id }));
   };
 
   const onHeaderButtonClick = (element: Element) => {
