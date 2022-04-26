@@ -126,6 +126,10 @@ body {
 				.jstree-open > .jstree-icon {
 					background-position: 4px 0;
 				}
+
+        .jstree-node > .jstree-icon.load {
+          background: url('/studio/static-assets/themes/cstudioTheme/images/treeview-loading.gif') no-repeat center;
+        }
 			}
 
 		}

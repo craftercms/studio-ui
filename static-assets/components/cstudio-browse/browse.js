@@ -484,6 +484,16 @@
             // If content already exists in treeDataLookup
             setItems(CStudioBrowse.treeDataLookup[currentPath]);
           } else {
+            // root node (there's already a loading state for root)
+            if (node.id !== '#') {
+              const $icon = $(`#${node.id} > .jstree-icon`);
+              // no removal of class is needed since in this case after loading folders it re-sets the icon state to
+              // open (overriding the load class)
+              $icon.addClass('load');
+              // This sets the right panel in a loading state. After fetching the content it already cleans the state.
+              CStudioBrowse.setContentLoading()
+            }
+
             var foldersPromise = me._lookupSiteFolders(site, currentPath);
             foldersPromise.then(function (treeData) {
               setItems(treeData);
@@ -499,6 +509,15 @@
       plugins: ['state', 'types']
     });
   };
+
+  CStudioBrowse.setContentLoading = function () {
+    const $resultsContainer = $('#cstudio-wcm-search-result .results'),
+      $resultsActions = $('#cstudio-wcm-search-result .cstudio-results-actions');
+
+    $resultsContainer.empty();
+    $resultsActions.empty();
+    $resultsContainer.html('<span class="cstudio-spinner"></span>' + CMgs.format(browseLangBundle, 'loading') + '...');
+  }
 
   CStudioBrowse._lookupSiteFolders = function (site, path) {
     var d = new $.Deferred();
@@ -521,11 +540,12 @@
       $resultsContainer = $('#cstudio-wcm-search-result .results'),
       $resultsActions = $('#cstudio-wcm-search-result .cstudio-results-actions');
 
-    $resultsContainer.empty();
-    $resultsActions.empty();
-    $resultsContainer.html('<span class="cstudio-spinner"></span>' + CMgs.format(browseLangBundle, 'loading') + '...');
+    CStudioBrowse.setContentLoading();
 
     function setResults(results) {
+      $resultsContainer.empty();
+      $resultsActions.empty();
+
       if (results) {
         var filesPresent = false;
         var currentResults = results.item.children;
@@ -556,9 +576,6 @@
         me.currentResultsPath = path;
       }
     }
-
-    $resultsContainer.empty();
-    $resultsActions.empty();
 
     // If content already exists in treeDataLookup
     if (CStudioBrowse.treeDataLookup[path]) {
