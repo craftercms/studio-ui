@@ -113,7 +113,7 @@ CStudioAuthoring.Dialogs.UploadCMISDialog = CStudioAuthoring.Dialogs.UploadCMISD
     // Instantiate the Dialog
     upload_dialog = new YAHOO.widget.Dialog('cstudio-wcm-popup-div', {
       width: '410px',
-      height: '255px',
+      'min-height': '255px',
       effect: {
         effect: YAHOO.widget.ContainerEffect.FADE,
         duration: 0.25
@@ -168,8 +168,8 @@ CStudioAuthoring.Dialogs.UploadCMISDialog = CStudioAuthoring.Dialogs.UploadCMISD
         me.callback.success(uploaded);
         CStudioAuthoring.Dialogs.UploadCMISDialog.closeDialog();
       },
-      onError: function (file, error, response) {
-        const res = response.body.response,
+      onError: function ({ response }) {
+        const res = JSON.parse(response.body.response).response,
           errorMsg = `${res.message}. ${res.remedialAction}`;
 
         me.uploadingFile = false;
