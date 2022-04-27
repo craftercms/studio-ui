@@ -1441,7 +1441,35 @@
           }
         };
 
-        CStudioAuthoring.Service.lookupSiteContent(site, path, 1, 'default', serviceCb);
+        const parentCannedSearch = node.instance.cannedSearchCache[node.treeNodeTO.path];
+        let replaceAllChildFolders = false;
+
+        if (parentCannedSearch) {
+          for (let i = 0; i < parentCannedSearch.length; i++) {
+            if (parentCannedSearch[i].insertAs === 'replaceAllChildFolders') {
+              replaceAllChildFolders = true;
+              break;
+            }
+          }
+        }
+
+        if (replaceAllChildFolders) { // no need to load children
+          // draw canned search, node is not leaf
+          node.isLeaf = false;
+
+          // draw subtree without any children except the canned search
+          Self.drawSubtree([], node, pathToOpenTo, node.instance);
+
+          fnLoadComplete();
+
+          /* wire up new to search items */
+          Self.wireUpCannedSearches();
+
+          //add hover effect to nodes
+          Self.nodeHoverEffects(this);
+        } else {  // load children then draw sub tree
+          CStudioAuthoring.Service.lookupSiteContent(site, path, 1, 'default', serviceCb);
+        }
       },
 
       expandTree: function (node, fnLoadComplete) {

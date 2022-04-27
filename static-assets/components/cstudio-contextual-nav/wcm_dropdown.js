@@ -507,6 +507,16 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
       });
       CStudioAuthoring.Events.widgetScriptLoaded.fire('wcm-site-dropdown');
     }
+
+
+    window.addEventListener(
+      'hashchange',
+      function (e) {
+        e.preventDefault();
+        navBarSiteNameEl.innerHTML = CStudioAuthoringContext.site;
+      },
+      false
+    );
   }
 };
 
