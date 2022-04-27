@@ -435,8 +435,13 @@
       };
 
       var getUsers = function (site) {
+        const params = {
+          limit: 60,
+          ...(site ? { site } : {})
+        };
+
         adminService
-          .getUsers(site)
+          .getUsers(params)
           .success(function (data) {
             audit.users = data.users;
             audit.userSelected = '';

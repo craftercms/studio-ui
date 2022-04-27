@@ -41,13 +41,13 @@
             </div>
         </div>
 
-        <div class="nav-containers mb20">
+        <div class="nav-containers mb20 audit-users">
             <label>{{ 'admin.audit.USER' | translate }}: </label>
             <div class="btn-group" uib-dropdown is-open="usersDropdown.isopen" style="margin-right: 5px;">
                 <button type="button" class="btn btn-default dropdown-toggle text-capitalize" uib-dropdown-toggle  title="{{audit.userSelected || 'admin.audit.ALL_USERS' | translate}}">
                     {{audit.userSelected || 'admin.audit.ALL_USERS' | translate }}  <span class="caret"></span>
                 </button>
-                <ul class="dropdown-menu" role="menu">
+                <ul class="dropdown-menu users-list" role="menu">
                     <li>
                         <a ng-click="audit.updateUser()">{{ 'admin.audit.ALL_USERS' | translate }}</a>
                     </li>

@@ -464,6 +464,7 @@ CStudioAuthoring.Messages.registerBundle('forms', 'en', {
 
   itemsForPublish: 'Items to Publish',
   selectAll: 'Select All',
+  deselectAll: 'Deselect All',
   hardDependencies: 'Hard Dependencies',
   submissionMandatory: 'Submission mandatory',
   softDependencies: 'Soft Dependencies',
@@ -665,8 +666,8 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'en', {
   saveFailed: 'Save Failed',
   formSection: 'Form Section',
   repeatingGroup: 'Repeating Group',
-  minOccurs: 'Minimum Occurances',
-  maxOccurs: 'Maximum Occurances',
+  minOccurs: 'Minimum Occurrences',
+  maxOccurs: 'Maximum Occurrences',
   formBasics: 'Form Basics',
   formTitle: 'Title',
   description: 'Description',

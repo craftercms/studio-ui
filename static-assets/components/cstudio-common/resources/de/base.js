@@ -467,6 +467,7 @@ CStudioAuthoring.Messages.registerBundle('forms', 'de', {
 
   itemsForPublish: 'Zu veröffentlichende Elemente',
   selectAll: 'Wählen Sie Alle',
+  deselectAll: 'Alle abwählen',
   hardDependencies: 'Harte Abhängigkeiten',
   submissionMandatory: 'Vorlage obligatorisch',
   softDependencies: 'Weiche Abhängigkeiten',

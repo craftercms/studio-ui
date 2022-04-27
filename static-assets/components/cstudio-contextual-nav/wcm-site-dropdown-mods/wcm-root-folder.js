@@ -228,42 +228,23 @@
           }
           this.addContentTreeRootFolder(instance);
 
-          var contOpenTreeTimes = 0;
           var openTreeFn = function (instance, thisComponent) {
-            var readyToLoad = true;
-            if (instance.mods.length > 0) {
-              for (var m = 0; m < instance.mods.length; m++) {
-                var mod = instance.mods[m];
-                if (mod.readyToLoad == false) {
-                  readyToLoad = false;
-                  break;
-                }
-              }
+            if (YAHOO.util.Dom.getStyle('acn-dropdown-menu-wrapper', 'display') != 'none') {
+              window.firstClick = true;
+              thisComponent.openLatest(instance);
             }
-
-            if (readyToLoad || contOpenTreeTimes < 5) {
-              contOpenTreeTimes = 0;
-              if (YAHOO.util.Dom.getStyle('acn-dropdown-menu-wrapper', 'display') != 'none') {
+            YEvent.on('acn-dropdown-toggler', 'click', function () {
+              if (!window.firstClick && YAHOO.util.Dom.getStyle('acn-dropdown-menu-wrapper', 'display') != 'none') {
                 window.firstClick = true;
                 thisComponent.openLatest(instance);
               }
-              YEvent.on('acn-dropdown-toggler', 'click', function () {
-                if (!window.firstClick && YAHOO.util.Dom.getStyle('acn-dropdown-menu-wrapper', 'display') != 'none') {
-                  window.firstClick = true;
-                  thisComponent.openLatest(instance);
-                }
-                this.blur();
-              });
+              this.blur();
+            });
 
-              Self.wireUpCannedSearches();
-            } else {
-              // give mods a bit of time to load then try again
-              contOpenTreeTimes++;
-              setTimeout(openTreeFn, 1000, instance, thisComponent);
-            }
+            Self.wireUpCannedSearches();
           };
 
-          setTimeout(openTreeFn, 1000, instance, this);
+          setTimeout(openTreeFn, 0, instance, this);
         }
       },
 
@@ -1109,14 +1090,16 @@
         for (n = 0; nodes.length > n; n++) {
           var el = nodes[n].getEl(),
             num;
-          num = el.getAttribute('num');
-          if (!num) {
-            while ((el = el.parentElement) && !el.hasAttribute('num'));
-          }
-          try {
-            num = el.getAttribute('num') ? el.getAttribute('num') : null;
-          } catch (e) {
-            num = null;
+          if (el) {
+            num = el.getAttribute('num');
+            if (!num) {
+              while ((el = el.parentElement) && !el.hasAttribute('num')) {}
+            }
+            try {
+              num = el.getAttribute('num') ? el.getAttribute('num') : null;
+            } catch (e) {
+              num = null;
+            }
           }
           if (num == key) {
             callback(nodes[n]);
@@ -1360,7 +1343,9 @@
             newEl.searchTO = searchesToWire[i].searchTO;
           }
 
-          searchEl.searchTO = searchesToWire[i].searchTO;
+          if (searchEl) {
+            searchEl.searchTO = searchesToWire[i].searchTO;
+          }
 
           var createCb = {
             success: function () {
@@ -1385,18 +1370,20 @@
             };
           }
 
-          searchEl.onclick = function () {
-            var url =
-              CStudioAuthoringContext.authoringAppBaseUri + '/search?site=' + CStudioAuthoringContext.site + '&s=';
+          if (searchEl) {
+            searchEl.onclick = function () {
+              var url =
+                CStudioAuthoringContext.authoringAppBaseUri + '/search?site=' + CStudioAuthoringContext.site + '&s=';
 
-            var queryParams = this.searchTO.queryParams.queryParam;
+              var queryParams = this.searchTO.queryParams.queryParam;
 
-            for (var i = 0; i < queryParams.length; i++) {
-              url += '&' + encodeURIComponent(queryParams[i].name) + '=' + encodeURIComponent(queryParams[i].value);
-            }
+              for (var i = 0; i < queryParams.length; i++) {
+                url += '&' + encodeURIComponent(queryParams[i].name) + '=' + encodeURIComponent(queryParams[i].value);
+              }
 
-            window.location = url;
-          };
+              window.location = url;
+            };
+          }
         }
         /* free up once current ones registered */
         Self.searchesToWire = new Array();
@@ -1454,7 +1441,35 @@
           }
         };
 
-        CStudioAuthoring.Service.lookupSiteContent(site, path, 1, 'default', serviceCb);
+        const parentCannedSearch = node.instance.cannedSearchCache[node.treeNodeTO.path];
+        let replaceAllChildFolders = false;
+
+        if (parentCannedSearch) {
+          for (let i = 0; i < parentCannedSearch.length; i++) {
+            if (parentCannedSearch[i].insertAs === 'replaceAllChildFolders') {
+              replaceAllChildFolders = true;
+              break;
+            }
+          }
+        }
+
+        if (replaceAllChildFolders) { // no need to load children
+          // draw canned search, node is not leaf
+          node.isLeaf = false;
+
+          // draw subtree without any children except the canned search
+          Self.drawSubtree([], node, pathToOpenTo, node.instance);
+
+          fnLoadComplete();
+
+          /* wire up new to search items */
+          Self.wireUpCannedSearches();
+
+          //add hover effect to nodes
+          Self.nodeHoverEffects(this);
+        } else {  // load children then draw sub tree
+          CStudioAuthoring.Service.lookupSiteContent(site, path, 1, 'default', serviceCb);
+        }
       },
 
       expandTree: function (node, fnLoadComplete) {
@@ -3821,7 +3836,7 @@
       setChildrenStyles: function (treeNode) {
         var parentNode = treeNode.getContentEl();
         if (
-          parentNode.children[0] &&
+          parentNode && parentNode.children[0] &&
           (parentNode.children[0].style.color == Self.CUT_STYLE_RGB ||
             parentNode.children[0].style.color == Self.CUT_STYLE)
         ) {
