@@ -360,8 +360,10 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
       const isComponent = item.key.includes('/site') || item.inline;
       const editBtnLabel = this.readonly ? 'View' : 'Edit';
       const editBtnIconClass = this.readonly ? 'fa-eye' : 'fa-pencil';
+
+      const $actionsContainer = $(`<span class="actions-container ml-auto" />`);
       const editBtn = $(
-        `<span class="fa ${editBtnIconClass} node-selector-item-icon ml-auto" title="${editBtnLabel}" aria-label="${editBtnLabel}" role="button" data-index="${i}"></span>`
+        `<span class="fa ${editBtnIconClass} node-selector-item-icon" title="${editBtnLabel}" aria-label="${editBtnLabel}" role="button" data-index="${i}"></span>`
       );
       const deleteBtn = $(
         '<span class="fa fa-trash node-selector-item-icon" title="Delete" aria-label="Delete" role="button"></span>'
@@ -369,7 +371,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
 
       if (this.allowEdit) {
         if (isComponent || !this.readonly) {
-          $(itemEl).append(editBtn);
+          $actionsContainer.append(editBtn);
           editBtn.on('click', function () {
             const elIndex = $(this).data('index');
             let selectedDatasource =
@@ -377,17 +379,18 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
             selectedDatasource.edit(item.key, _self, elIndex);
           });
         }
-
-        if (this.readonly != true) {
-          $(itemEl).append(deleteBtn);
-          deleteBtn.on('click', function () {
-            _self.deleteItem(itemIndex);
-            _self._renderItems();
-          });
-        }
-
-        itemEl._onMouseDown = function () {};
       }
+      if (this.readonly != true) {
+        $actionsContainer.append(deleteBtn);
+        deleteBtn.on('click', function () {
+          _self.deleteItem(itemIndex);
+          _self._renderItems();
+        });
+      }
+
+      $(itemEl).append($actionsContainer);
+      itemEl._onMouseDown = function () {};
+
       itemsContainerEl.appendChild(itemEl);
     }
   },
