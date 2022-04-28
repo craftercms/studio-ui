@@ -103,7 +103,7 @@ YAHOO.extend(CStudioForms.Datasources.CMISRepo, CStudioForms.CStudioFormDatasour
                 if (!selectedTOs[i].clone) {
                   uri = repo['download-url-regex'].replace('{item_id}', item.itemId);
                 } else {
-                  uri = _self.studioPath + fileName;
+                  uri = _self.studioPath + (_self.studioPath.endsWith('/') ? '' : '/') + fileName;
                   uri = uri.startsWith('/') ? uri : '/' + uri;
                 }
 

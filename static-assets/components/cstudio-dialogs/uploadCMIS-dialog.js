@@ -159,8 +159,8 @@ CStudioAuthoring.Dialogs.UploadCMISDialog = CStudioAuthoring.Dialogs.UploadCMISD
         me.uploadingFile = true;
         $('#uploadCancelButton').attr('disabled', true);
       },
-      onComplete: function (result) {
-        let uploaded = result.successful[0].response.body.item;
+      onComplete: function ({ successful }) {
+        let uploaded = JSON.parse(successful[0].response.body.response).item;
 
         $('#uploadCancelButton').attr('disabled', false);
         me.uploadingFile = false;
