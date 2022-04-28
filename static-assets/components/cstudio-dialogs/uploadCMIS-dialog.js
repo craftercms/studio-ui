@@ -91,7 +91,6 @@ CStudioAuthoring.Dialogs.UploadCMISDialog = CStudioAuthoring.Dialogs.UploadCMISD
       '<div class="contentTypePopupHeader">Upload</div> ' +
       '<div><form id="asset_upload_form">' +
       '<div class="contentTypeOuter">' +
-      '<div id="uploadContainer"></div>' +
       '<div><table><tr><td><input type="hidden" name="siteId" value="' +
       site +
       '"/></td>' +
@@ -102,6 +101,7 @@ CStudioAuthoring.Dialogs.UploadCMISDialog = CStudioAuthoring.Dialogs.UploadCMISD
       repositoryId +
       '"/></td></tr>' +
       '</table></div>' +
+      '<div id="uploadContainer"></div>' +
       '</div>' +
       '<div class="contentTypePopupBtn"> ' +
       '<input type="button" class="btn btn-default cstudio-xform-button" id="uploadCancelButton" value="Cancel"  />' +
