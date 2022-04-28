@@ -107,10 +107,15 @@
         YDom.addClass(catEl, 'work-area-active');
       });
 
-      if (config.tools.tool.length) {
+      const toolsArray = Boolean(config.tools.tool)
+        ? Array.isArray(config.tools.tool)
+          ? config.tools.tool
+          : [config.tools.tool]
+        : [];
+      if (toolsArray.length) {
         this.toolsModules = {};
-        this.initRouter(config.tools.tool);
-        for (var j = 0; j < config.tools.tool.length; j++) {
+        this.initRouter(toolsArray);
+        for (var j = 0; j < toolsArray.length; j++) {
           try {
             var toolContainerEl = document.createElement('div');
             this.toolContainerEls[this.toolContainerEls.length] = toolContainerEl;
@@ -143,7 +148,7 @@
               context: this,
               toolContainerEl: toolContainerEl
             };
-            const tool = config.tools.tool[j];
+            const tool = toolsArray[j];
             CStudioAuthoring.Module.requireModule(
               `cstudio-console-tools-${tool.name}`,
               `/static-assets/components/cstudio-admin/mods/${tool.name}.js`,
