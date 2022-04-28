@@ -85,11 +85,6 @@
         $('#createNewContentTypeButton').click(() => {
           this.onNewClick();
         });
-
-        CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions([
-          { name: CMgs.format(langBundle, 'openExistingType'), context: this, method: this.onOpenExistingClick },
-          { name: CMgs.format(langBundle, 'createNewType'), context: this, method: this.onNewClick }
-        ]);
       },
 
       componentsValidation: function (formDef) {
