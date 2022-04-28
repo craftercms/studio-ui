@@ -59,22 +59,24 @@
         <span class="path"></span>
       </p>
 
-      <div id="cstudio-wcm-search-filter-controls">
+      <div class="content">
+        <div id="cstudio-wcm-search-filter-controls">
           <div id="data" class="demo"></div>
-      </div>
+        </div>
 
-      <div id="cstudio-wcm-search-result">
+        <div id="cstudio-wcm-search-result">
 
           <div class="cstudio-results-actions"></div>
-          
+
           <div class="results"></div>
 
           <div id="cstudio-wcm-search-render-finish">
-          
+
           </div>
+        </div>
       </div>
 
-    </div>    
+    </div>
 
       <style>
       #cstudio-wcm-search-result .results > * {
