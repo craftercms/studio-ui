@@ -15,7 +15,7 @@
  */
 
 import { CommonDashletProps } from '../SiteDashboard/utils';
-import DashletTemplate from '../SiteDashboard/DashletTemplate';
+import DashletCard from '../DashletCard/DashletCard';
 import palette from '../../styles/palette';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import React, { useEffect, useMemo } from 'react';
@@ -26,11 +26,13 @@ import {
   ListItem,
   ListItemAvatar,
   PersonAvatar
-} from '../SiteDashboard/dashletCommons';
+} from '../DashletCard/dashletCommons';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import { LIVE_COLOUR, STAGING_COLOUR } from '../ItemPublishingTargetIcon/styles';
-import { useActiveSiteId, useLocale, useSpreadState } from '../../hooks';
+import useSpreadState from '../../hooks/useSpreadState';
+import useLocale from '../../hooks/useLocale';
+import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { fetchPublishingHistory } from '../../services/dashboard';
 import { DashboardPublishingPackage } from '../../models';
 import { asLocalizedDateTime } from '../../utils/datetime';
@@ -78,7 +80,7 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
     onRefresh();
   }, [onRefresh]);
   return (
-    <DashletTemplate
+    <DashletCard
       {...props}
       borderLeftColor={borderLeftColor}
       title={<FormattedMessage id="recentlyPublishedDashlet.widgetTitle" defaultMessage="Recently Published" />}
@@ -160,7 +162,7 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
           />
         </DashletEmptyMessage>
       )}
-    </DashletTemplate>
+    </DashletCard>
   );
 }
 

@@ -24,3 +24,5 @@ export function useLegacyPreviewPreference() {
     Boolean(state.uiConfig.useLegacyPreviewLookup[site])
   );
 }
+
+export default useLegacyPreviewPreference;

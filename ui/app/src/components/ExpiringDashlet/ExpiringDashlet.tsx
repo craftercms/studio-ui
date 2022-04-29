@@ -16,14 +16,16 @@
 
 import React, { useEffect } from 'react';
 import { CommonDashletProps } from '../SiteDashboard/utils';
-import DashletTemplate from '../SiteDashboard/DashletTemplate';
-import { DashletEmptyMessage, getItemSkeleton, List, ListItem, ListSubheader } from '../SiteDashboard/dashletCommons';
+import DashletCard from '../DashletCard/DashletCard';
+import { DashletEmptyMessage, getItemSkeleton, List, ListItem, ListSubheader } from '../DashletCard/dashletCommons';
 import palette from '../../styles/palette';
 import { FormattedMessage } from 'react-intl';
 import Typography from '@mui/material/Typography';
 import ListItemText from '@mui/material/ListItemText';
 import { ExpiredItem, fetchExpired, fetchExpiring } from '../../services/dashboard';
-import { useActiveSiteId, useLocale, useSpreadState } from '../../hooks';
+import useSpreadState from '../../hooks/useSpreadState';
+import useLocale from '../../hooks/useLocale';
+import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { RefreshRounded } from '@mui/icons-material';
 import IconButton from '@mui/material/IconButton';
 import { asLocalizedDateTime } from '../../utils/datetime';
@@ -90,7 +92,7 @@ export function ExpiringDashlet(props: ExpiringDashletProps) {
     });
   }, [setState, site, days, state.refresh]);
   return (
-    <DashletTemplate
+    <DashletCard
       {...props}
       borderLeftColor={borderLeftColor}
       title={<FormattedMessage id="words.expiring" defaultMessage="Expiring" />}
@@ -141,7 +143,7 @@ export function ExpiringDashlet(props: ExpiringDashletProps) {
             {renderExpiredItems(state.expiring, locale)}
           </List>
         ))}
-    </DashletTemplate>
+    </DashletCard>
   );
 }
 

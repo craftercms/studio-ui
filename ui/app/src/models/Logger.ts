@@ -15,8 +15,9 @@
  */
 
 export interface Logger {
-  level: string;
+  level: LoggerLevel;
   name: string;
 }
 
-export type LoggerLevel = 'debug' | 'warn' | 'info' | 'error';
+// 'fatal' and 'critical' not supported by our logger
+export type LoggerLevel = 'off' | 'error' | 'warn' | 'info' | 'debug' | 'trace';

@@ -20,3 +20,5 @@ import { useSelector } from 'react-redux';
 export function usePreviewState(): GlobalState['preview'] {
   return useSelector<GlobalState, GlobalState['preview']>((state) => state.preview);
 }
+
+export default usePreviewState;

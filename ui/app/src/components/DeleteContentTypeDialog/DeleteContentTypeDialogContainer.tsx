@@ -25,7 +25,7 @@ import { deleteContentType, fetchContentTypeUsage } from '../../services/content
 import { showSystemNotification } from '../../state/actions/system';
 import Suspencified from '../Suspencified/Suspencified';
 import DeleteContentTypeDialogBody from './DeleteContentTypeDialogBody';
-import { useUpdateRefs } from '../../hooks';
+import useUpdateRefs from '../../hooks/useUpdateRefs';
 
 const messages = defineMessages({
   deleteComplete: {

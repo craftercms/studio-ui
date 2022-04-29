@@ -32,7 +32,7 @@ import { getInitials } from '../../utils/string';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItemText from '@mui/material/ListItemText';
 import CircularProgress from '@mui/material/CircularProgress';
-import { getHostToGuestBus } from '../../modules/Preview/previewContext';
+import { getHostToGuestBus } from '../../utils/subjects';
 import EmptyState from '../EmptyState/EmptyState';
 import { Resource } from '../../models/Resource';
 import { useSelection } from '../../hooks/useSelection';

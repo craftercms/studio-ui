@@ -42,7 +42,7 @@ import { useActiveUser } from '../../hooks/useActiveUser';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useDetailedItem } from '../../hooks/useDetailedItem';
 import { useReferences } from '../../hooks/useReferences';
-import { getHostToGuestBus } from '../../modules/Preview/previewContext';
+import { getHostToGuestBus } from '../../utils/subjects';
 import { reloadRequest } from '../../state/actions/preview';
 import { CodeEditorDialogContainerProps, getContentModelSnippets } from './utils';
 import { batchActions } from '../../state/actions/misc';

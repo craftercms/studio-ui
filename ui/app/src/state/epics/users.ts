@@ -42,7 +42,7 @@ import {
   fetchSitePropertiesFailed
 } from '../actions/user';
 import { CrafterCMSEpic } from '../store';
-import { changeSite } from '../reducers/sites';
+import { changeSite } from '../actions/sites';
 import { catchAjaxError } from '../../utils/ajax';
 
 export default [

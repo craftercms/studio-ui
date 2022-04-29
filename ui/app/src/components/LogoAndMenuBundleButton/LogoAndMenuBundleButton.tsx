@@ -19,7 +19,7 @@ import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 import { Button } from '@mui/material';
-import CrafterIcon from '../../icons/CrafterIcon';
+import CrafterCMSIcon from '../../icons/CrafterCMSIcon';
 import MenuRounded from '@mui/icons-material/MenuRounded';
 import { ButtonProps } from '@mui/material/Button';
 import clsx from 'clsx';
@@ -50,7 +50,7 @@ const LogoAndMenuBundleButton = React.forwardRef<HTMLButtonElement, LogoAndMenuB
   return (
     <Button ref={ref} {...buttonProps}>
       {showCrafterIcon && (
-        <CrafterIcon sx={{ mr: 0.5 }} className={clsx(classes.crafterIcon, props.classes?.crafterIcon)} />
+        <CrafterCMSIcon sx={{ mr: 0.5 }} className={clsx(classes.crafterIcon, props.classes?.crafterIcon)} />
       )}
       {showMenuIcon && <MenuRounded className={props.classes?.menuIcon} />}
     </Button>

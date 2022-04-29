@@ -22,7 +22,7 @@ import {
   removeStoredSaveButtonSubAction,
   setStoredSaveButtonSubAction
 } from '../../utils/state';
-import { useActiveUser } from '../../hooks';
+import useActiveUser from '../../hooks/useActiveUser';
 
 export function SplitButton(props: SplitButtonProps) {
   const { options, defaultSelected = options[0].id, disablePortal = true, disabled, loading, storageKey } = props;

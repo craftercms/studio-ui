@@ -20,7 +20,7 @@ import { initDashboardConfig } from '../actions/dashboard';
 import { deserialize, fromString } from '../../utils/xml';
 import { applyDeserializedXMLTransforms } from '../../utils/object';
 import { defineMessages } from 'react-intl';
-import { changeSite } from './sites';
+import { changeSite } from '../actions/sites';
 
 const messages = defineMessages({
   noUiConfigMessageTitle: {

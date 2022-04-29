@@ -19,7 +19,7 @@ import GlobalState from '../../../models/GlobalState';
 import { closeEditDialog, editDialogClosed, showEditDialog, updateEditConfig } from '../../actions/dialogs';
 import { nnou } from '../../../utils/object';
 import { LegacyFormDialogStateProps } from '../../../components/LegacyFormDialog/utils';
-import { changeSite } from '../sites';
+import { changeSite } from '../../actions/sites';
 
 const initialState: LegacyFormDialogStateProps = {
   open: false,

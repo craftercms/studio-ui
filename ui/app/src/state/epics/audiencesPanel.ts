@@ -34,7 +34,7 @@ import {
 } from '../../services/configuration';
 import { Observable } from 'rxjs';
 import GlobalState from '../../models/GlobalState';
-import { getHostToGuestBus } from '../../modules/Preview/previewContext';
+import { getHostToGuestBus } from '../../utils/subjects';
 
 const fetchAudiencesPanel: Epic = (action$, state$: Observable<GlobalState>) =>
   action$.pipe(

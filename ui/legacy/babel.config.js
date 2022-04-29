@@ -135,7 +135,7 @@ function TransformImports(babel) {
         const cleanName = name.substr(1);
         if (babelHelperList.includes(cleanName)) {
           /* Use this console.log to identify which babel helpers are required
-           * to export from on babelHelpers-legacy.ts */
+           * to export from on babel.ts */
           // console.log(cleanName);
           path.replaceWithSourceString(`CrafterCMSNext.util.babel.${cleanName}`);
         }

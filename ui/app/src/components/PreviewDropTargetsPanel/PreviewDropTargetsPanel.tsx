@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
-import { getHostToGuestBus } from '../../modules/Preview/previewContext';
+import { getHostToGuestBus } from '../../utils/subjects';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import { ContentTypeDropTarget } from '../../models/ContentTypeDropTarget';

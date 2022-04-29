@@ -34,7 +34,7 @@ import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { translations } from './translations';
 import { ApiResponse } from '../../models/ApiResponse';
 import { contentEvent, deleteContentEvent } from '../../state/actions/system';
-import { getHostToHostBus } from '../../modules/Preview/previewContext';
+import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
 import { getPreviewURLFromPath } from '../../utils/path';
 import { fetchContentXML } from '../../services/content';

@@ -756,8 +756,7 @@ var CStudioForms =
       LEGACY_FORM_DIALOG_CANCEL_REQUEST = 'LEGACY_FORM_DIALOG_CANCEL_REQUEST',
       CHILD_FORM_SUCCESS = 'CHILD_FORM_SUCCESS';
 
-    const { fromEvent, operators } = CrafterCMSNext.rxjs;
-    const { map, filter, take } = operators;
+    const { fromEvent, map, filter, take } = CrafterCMSNext.rxjs;
     const FlattenerState = {};
     const i18n = CrafterCMSNext.i18n;
     const formatMessage = i18n.intl.formatMessage;

@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useSpreadState } from '../../hooks';
+import useSpreadState from '../../hooks/useSpreadState';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import { FormattedMessage } from 'react-intl';

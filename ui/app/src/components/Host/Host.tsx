@@ -18,7 +18,7 @@ import React, { useMemo } from 'react';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
-import { getGuestToHostBus, getHostToGuestBus } from '../../modules/Preview/previewContext';
+import { getGuestToHostBus, getHostToGuestBus } from '../../utils/subjects';
 import { StandardAction } from '../../models/StandardAction';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { usePreviewState } from '../../hooks/usePreviewState';

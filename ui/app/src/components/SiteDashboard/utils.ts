@@ -17,7 +17,7 @@
 import { UNDEFINED } from '../../utils/constants';
 import Person from '../../models/Person';
 import { Dispatch, SetStateAction } from 'react';
-import { useSpreadState } from '../../hooks';
+import useSpreadState from '../../hooks/useSpreadState';
 
 export interface CommonDashletProps {
   contentHeight?: number | string;

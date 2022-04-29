@@ -15,7 +15,7 @@
  */
 
 import { CommonDashletProps, useSpreadStateWithSelected, WithSelectedState } from '../SiteDashboard/utils';
-import DashletTemplate from '../SiteDashboard/DashletTemplate';
+import DashletCard from '../DashletCard/DashletCard';
 import palette from '../../styles/palette';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import React, { useEffect, useMemo } from 'react';
@@ -28,8 +28,8 @@ import {
   ListItemAvatar,
   ListItemIcon,
   PersonAvatar
-} from '../SiteDashboard/dashletCommons';
-import { useActiveSiteId } from '../../hooks';
+} from '../DashletCard/dashletCommons';
+import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { fetchScheduled } from '../../services/dashboard';
 import { DashboardPublishingPackage } from '../../models';
 import IconButton from '@mui/material/IconButton';
@@ -82,7 +82,7 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
     onRefresh();
   }, [onRefresh]);
   return (
-    <DashletTemplate
+    <DashletCard
       {...props}
       borderLeftColor={borderLeftColor}
       title={<FormattedMessage id="scheduledDashlet.widgetTitle" defaultMessage="Scheduled for Publish" />}
@@ -151,7 +151,7 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
           />
         </DashletEmptyMessage>
       )}
-    </DashletTemplate>
+    </DashletCard>
   );
 }
 

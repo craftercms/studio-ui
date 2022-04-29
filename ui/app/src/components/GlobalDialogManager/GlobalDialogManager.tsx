@@ -20,7 +20,7 @@ import { Dispatch } from 'redux';
 import { useDispatch } from 'react-redux';
 import { isPlainObject } from '../../utils/object';
 import { useSnackbar } from 'notistack';
-import { getHostToHostBus } from '../../modules/Preview/previewContext';
+import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
 import { showSystemNotification } from '../../state/actions/system';
 import Launcher from '../Launcher/Launcher';

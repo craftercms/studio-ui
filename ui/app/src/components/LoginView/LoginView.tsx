@@ -38,7 +38,7 @@ import { parse } from 'query-string';
 import TextField from '@mui/material/TextField';
 import Snackbar from '@mui/material/Snackbar';
 import PasswordTextField from '../PasswordTextField/PasswordTextField';
-import { passwordRequirementMessages } from '../../utils/i18n-legacy';
+import { passwordRequirementMessages } from '../../env/i18n-legacy';
 import clsx from 'clsx';
 import { filter } from 'rxjs/operators';
 import palette from '../../styles/palette';

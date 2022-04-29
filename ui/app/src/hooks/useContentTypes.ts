@@ -34,3 +34,5 @@ export function useContentTypes(): LookupTable<ContentType> {
 
   return byId;
 }
+
+export default useContentTypes;

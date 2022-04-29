@@ -44,7 +44,7 @@ import {
   deleteItemOperationComplete,
   sortItemOperationComplete
 } from '../../state/actions/preview';
-import { getHostToGuestBus, getHostToHostBus } from '../../modules/Preview/previewContext';
+import { getHostToGuestBus, getHostToHostBus } from '../../utils/subjects';
 import Suspencified from '../Suspencified/Suspencified';
 import { Resource } from '../../models/Resource';
 import palette from '../../styles/palette';

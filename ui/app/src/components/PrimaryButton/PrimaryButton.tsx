@@ -17,7 +17,7 @@
 import * as React from 'react';
 import LoadingButton, { LoadingButtonProps } from '@mui/lab/LoadingButton';
 
-interface PrimaryButtonProps extends LoadingButtonProps {}
+export interface PrimaryButtonProps extends LoadingButtonProps {}
 
 const PrimaryButton = React.forwardRef<HTMLButtonElement, PrimaryButtonProps>((props, ref) => {
   return <LoadingButton ref={ref} {...props} variant="contained" color="primary" />;

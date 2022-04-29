@@ -28,7 +28,7 @@ import {
   compareVersion,
   versionsChangeItem,
   versionsChangePage
-} from '../../state/reducers/versions';
+} from '../../state/actions/versions';
 import VersionList from '../VersionList';
 import DialogBody from '../DialogBody/DialogBody';
 import clsx from 'clsx';

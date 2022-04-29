@@ -17,7 +17,7 @@
 import React from 'react';
 import { HashRouter } from 'react-router-dom';
 import { GlobalAppContextProvider } from '../components/GlobalApp';
-import UrlDrivenSiteTools from '../components/SiteToolsApp/UrlDrivenSiteTools';
+import UrlDrivenSiteTools from '../components/SiteTools/UrlDrivenSiteTools/UrlDrivenSiteTools';
 
 export default function SiteTools(topProps: any) {
   return (

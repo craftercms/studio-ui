@@ -30,3 +30,5 @@ export function useResolveWhenNotNullResource<ResultType = unknown>(source: Resu
   }, [source, resource, resolve]);
   return resource;
 }
+
+export default useResolveWhenNotNullResource;

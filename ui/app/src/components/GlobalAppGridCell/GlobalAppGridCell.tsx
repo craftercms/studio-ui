@@ -14,12 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Theme } from '@mui/material/styles';
 import createStyles from '@mui/styles/createStyles';
 import withStyles from '@mui/styles/withStyles';
 import TableCell from '@mui/material/TableCell';
 
-const GlobalAppGridCell = withStyles((theme: Theme) =>
+const GlobalAppGridCell = withStyles(() =>
   createStyles({
     root: {
       '&.action': {

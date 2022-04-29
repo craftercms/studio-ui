@@ -20,7 +20,7 @@ import GlobalState from '../../models/GlobalState';
 import { LookupTable } from '../../models/LookupTable';
 import { isBlank } from '../../utils/string';
 import { update } from '../../services/sites';
-import { fetchSites } from '../../state/reducers/sites';
+import { fetchSites } from '../../state/actions/sites';
 import { EditSiteDialogContainerProps } from './utils';
 import {
   closeSingleFileUploadDialog,

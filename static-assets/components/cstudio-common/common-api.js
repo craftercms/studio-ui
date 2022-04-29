@@ -3888,19 +3888,15 @@ var nodeOpen = false,
 
         CrafterCMSNext.system
           .getStore()
-          .pipe(
-            CrafterCMSNext.rxjs.operators.switchMap(() =>
-              CrafterCMSNext.util.ajax.get(this.createServiceUri(serviceUri))
-            )
-          )
-          .subscribe(
-            function (response) {
+          .pipe(CrafterCMSNext.rxjs.switchMap(() => CrafterCMSNext.util.ajax.get(this.createServiceUri(serviceUri))))
+          .subscribe({
+            next: function (response) {
               callback.success(response.response, callback.argument);
             },
-            function () {
+            error: function () {
               callback.failure(response, callback.argument);
             }
-          );
+          });
       },
 
       /**

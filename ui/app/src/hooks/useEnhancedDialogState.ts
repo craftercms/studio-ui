@@ -93,3 +93,5 @@ export function useEnhancedDialogState(initialState?: Partial<EnhancedDialogStat
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setState, state]);
 }
+
+export default useEnhancedDialogState;

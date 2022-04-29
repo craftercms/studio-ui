@@ -18,7 +18,11 @@ import { Activity } from '../../models/Activity';
 import React, { useEffect, useMemo } from 'react';
 import { MoreVertRounded, RefreshRounded } from '@mui/icons-material';
 import { LEGACY_PREVIEW_URL_PATH, PREVIEW_URL_PATH, UNDEFINED } from '../../utils/constants';
-import { useActiveSiteId, useEnv, useLegacyPreviewPreference, useLocale, useSpreadState } from '../../hooks';
+import useActiveSiteId from '../../hooks/useActiveSiteId';
+import useEnv from '../../hooks/useEnv';
+import useLegacyPreviewPreference from '../../hooks/useLegacyPreviewPreference';
+import useLocale from '../../hooks/useLocale';
+import useSpreadState from '../../hooks/useSpreadState';
 import { fetchActivity } from '../../services/dashboard';
 import IconButton from '@mui/material/IconButton';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -43,9 +47,9 @@ import Skeleton from '@mui/material/Skeleton';
 import { styled } from '@mui/material/styles';
 import { RangePickerModal } from './RangePickerModal';
 import Tooltip from '@mui/material/Tooltip';
-import DashletTemplate from '../SiteDashboard/DashletTemplate';
+import DashletCard from '../DashletCard/DashletCard';
 import { asLocalizedDateTime } from '../../utils/datetime';
-import { DashletAvatar, DashletEmptyMessage, PersonAvatar, PersonFullName } from '../SiteDashboard/dashletCommons';
+import { DashletAvatar, DashletEmptyMessage, PersonAvatar, PersonFullName } from '../DashletCard/dashletCommons';
 import { getSystemLink } from '../../utils/system';
 import { useDispatch } from 'react-redux';
 import { changeCurrentUrl } from '../../state/actions/preview';
@@ -258,7 +262,7 @@ export function ActivityDashlet(props: ActivityDashletProps) {
     onRefresh();
   }, [onRefresh, setState]);
   return (
-    <DashletTemplate
+    <DashletCard
       {...props}
       borderLeftColor={borderLeftColor}
       title={<FormattedMessage id="words.activity" defaultMessage="Activity" />}
@@ -450,7 +454,7 @@ export function ActivityDashlet(props: ActivityDashletProps) {
         onClosed={() => setState({ selectedPackageId: null })}
         packageId={selectedPackageId}
       />
-    </DashletTemplate>
+    </DashletCard>
   );
 }
 

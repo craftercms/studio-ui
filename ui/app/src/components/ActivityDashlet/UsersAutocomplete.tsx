@@ -18,7 +18,7 @@ import React, { useEffect, useState } from 'react';
 import Chip from '@mui/material/Chip';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
-import { useDebouncedInput } from '../../hooks';
+import useDebouncedInput from '../../hooks/useDebouncedInput';
 import { fetchAll } from '../../services/users';
 import CircularProgress from '@mui/material/CircularProgress';
 import { FormattedMessage } from 'react-intl';

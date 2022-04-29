@@ -21,7 +21,7 @@ import ContextMenu, { ContextMenuOption } from '../ContextMenu/ContextMenu';
 import { useDispatch } from 'react-redux';
 import { getParentPath, withIndex, withoutIndex } from '../../utils/path';
 import { translations } from './translations';
-import { languages } from '../../utils/i18n-legacy';
+import { languages } from '../../env/i18n-legacy';
 import {
   pathNavigatorBackgroundRefresh,
   pathNavigatorChangeLimit,
@@ -49,7 +49,7 @@ import {
   isVideo
 } from './utils';
 import { StateStylingProps } from '../../models/UiConfig';
-import { getHostToHostBus } from '../../modules/Preview/previewContext';
+import { getHostToHostBus } from '../../utils/subjects';
 import { debounceTime } from 'rxjs/operators';
 import {
   contentEvent,

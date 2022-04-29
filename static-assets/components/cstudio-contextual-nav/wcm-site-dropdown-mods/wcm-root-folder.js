@@ -661,7 +661,7 @@
         CrafterCMSNext.system
           .getHostToHostBus()
           .pipe(
-            CrafterCMSNext.rxjs.operators.filter((e) =>
+            CrafterCMSNext.rxjs.filter((e) =>
               [
                 'ITEM_CUT',
                 'ITEMS_PASTED',

@@ -73,7 +73,7 @@ import {
 } from '../../utils/object';
 import { ContentInstancePage, ElasticParams, MediaItem, SearchResult } from '../../models/Search';
 import ContentInstance from '../../models/ContentInstance';
-import { changeSite } from './sites';
+import { changeSite } from '../actions/sites';
 import { deserialize, fromString } from '../../utils/xml';
 import { defineMessages } from 'react-intl';
 import LookupTable from '../../models/LookupTable';

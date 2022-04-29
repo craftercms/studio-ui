@@ -20,7 +20,7 @@ import List from '@mui/material/List';
 import ContentType from '../../models/ContentType';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
-import { getHostToGuestBus } from '../../modules/Preview/previewContext';
+import { getHostToGuestBus } from '../../utils/subjects';
 import {
   componentDragEnded,
   componentDragStarted,

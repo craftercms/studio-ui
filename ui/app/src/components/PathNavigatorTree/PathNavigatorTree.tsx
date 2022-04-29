@@ -59,7 +59,7 @@ import {
   publishEvent,
   workflowEvent
 } from '../../state/actions/system';
-import { getHostToHostBus } from '../../modules/Preview/previewContext';
+import { getHostToHostBus } from '../../utils/subjects';
 import { useActiveSite } from '../../hooks/useActiveSite';
 import { fetchSandboxItem } from '../../services/content';
 import { ApiResponse } from '../../models';

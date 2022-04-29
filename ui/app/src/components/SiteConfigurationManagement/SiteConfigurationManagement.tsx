@@ -48,7 +48,7 @@ import informationGraphicUrl from '../../assets/information.svg';
 import Typography from '@mui/material/Typography';
 import clsx from 'clsx';
 import { useDispatch } from 'react-redux';
-import { fetchItemVersions } from '../../state/reducers/versions';
+import { fetchItemVersions } from '../../state/actions/versions';
 import { fetchItemByPath } from '../../services/content';
 import SearchBar from '../SearchBar/SearchBar';
 import Alert from '@mui/material/Alert';
@@ -56,7 +56,7 @@ import { showHistoryDialog } from '../../state/actions/dialogs';
 import { batchActions } from '../../state/actions/misc';
 import { capitalize } from '../../utils/string';
 import { itemReverted, showSystemNotification } from '../../state/actions/system';
-import { getHostToHostBus } from '../../modules/Preview/previewContext';
+import { getHostToHostBus } from '../../utils/subjects';
 import { filter, map } from 'rxjs/operators';
 import { parseValidateDocument, serialize } from '../../utils/xml';
 import { forkJoin } from 'rxjs';
@@ -70,7 +70,7 @@ import { useMount } from '../../hooks/useMount';
 import { ConfirmDialogProps } from '../ConfirmDialog';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 import { findPendingEncryption } from './utils';
-import { useUpdateRefs } from '../../hooks';
+import useUpdateRefs from '../../hooks/useUpdateRefs';
 import { UNDEFINED } from '../../utils/constants';
 
 interface SiteConfigurationManagementProps {

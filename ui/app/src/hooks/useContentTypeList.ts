@@ -37,3 +37,5 @@ export function useContentTypeList(filterFn: (type: ContentType) => boolean = nu
     [byId]
   );
 }
+
+export default useContentTypeList;
