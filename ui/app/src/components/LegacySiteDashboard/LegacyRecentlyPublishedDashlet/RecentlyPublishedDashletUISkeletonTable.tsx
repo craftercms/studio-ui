@@ -37,7 +37,7 @@ export interface RecentlyPublishedWidgetUiSkeletonTableProps {
   expandedLookup?: LookupTable<boolean>;
 }
 
-export default function RecentlyPublishedDashletUISkeletonTable(props: RecentlyPublishedWidgetUiSkeletonTableProps) {
+export function RecentlyPublishedDashletUISkeletonTable(props: RecentlyPublishedWidgetUiSkeletonTableProps) {
   const classes = useStyles();
   const { numOfItems = 2 } = props;
 
@@ -130,3 +130,6 @@ export default function RecentlyPublishedDashletUISkeletonTable(props: RecentlyP
     </TableContainer>
   );
 }
+
+export default RecentlyPublishedDashletUISkeletonTable;
+

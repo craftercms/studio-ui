@@ -28,7 +28,7 @@ export type PublishingStatusDisplayProps = PublishingStatus & {
   isFetching: boolean;
 };
 
-export default function PublishingStatusDisplay(props: PublishingStatusDisplayProps) {
+export function PublishingStatusDisplay(props: PublishingStatusDisplayProps) {
   const { isFetching, status, lockOwner, lockTTL } = props;
   const { formatMessage } = useIntl();
   return (
@@ -59,3 +59,6 @@ export default function PublishingStatusDisplay(props: PublishingStatusDisplayPr
     </>
   );
 }
+
+export default PublishingStatusDisplay;
+

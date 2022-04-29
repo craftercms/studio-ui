@@ -65,7 +65,7 @@ const translations = defineMessages({
   }
 });
 
-export default function AuditGridFilterPopoverBody(props: AuditGridFilterPopoverProps) {
+export function AuditGridFilterPopoverBody(props: AuditGridFilterPopoverProps) {
   const { filterId, value, onFilterChange, timezone, onTimezoneSelected, onResetFilter, onClose } = props;
   const classes = useStyles();
   const { sites, users, operations, origins, timezones } = props.options;
@@ -292,3 +292,6 @@ export default function AuditGridFilterPopoverBody(props: AuditGridFilterPopover
     </>
   );
 }
+
+export default AuditGridFilterPopoverBody;
+

@@ -30,7 +30,7 @@ export interface DataSourcesActionsListProps {
   onClose?(): void;
 }
 
-export default function DataSourcesActionsList(props: DataSourcesActionsListProps) {
+export function DataSourcesActionsList(props: DataSourcesActionsListProps) {
   const { show, rect, items, onClose } = props;
 
   return (
@@ -55,3 +55,6 @@ export default function DataSourcesActionsList(props: DataSourcesActionsListProp
     </>
   );
 }
+
+export default DataSourcesActionsList;
+

@@ -186,7 +186,7 @@ interface ContentLocalizationDialogProps {
   onClosed?(): void;
 }
 
-export default function ContentLocalizationDialog(props: ContentLocalizationDialogProps) {
+export function ContentLocalizationDialog(props: ContentLocalizationDialogProps) {
   const { open, onClose } = props;
   return (
     <Dialog open={open} onClose={onClose} fullWidth>
@@ -357,3 +357,6 @@ function ContentLocalizationDialogUI(props: ContentLocalizationDialogProps) {
     </>
   );
 }
+
+export default ContentLocalizationDialog;
+

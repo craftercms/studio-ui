@@ -120,7 +120,7 @@ interface FilterDropdownProps {
   handleEnterKey(path: string): any;
 }
 
-export default function FilterDropdown(props: FilterDropdownProps) {
+export function FilterDropdown(props: FilterDropdownProps) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const classes = useStyles({});
   const { text, className, handleFilterChange, handleEnterKey, currentFilters, filters } = props;
@@ -248,3 +248,6 @@ export default function FilterDropdown(props: FilterDropdownProps) {
     </div>
   );
 }
+
+export default FilterDropdown;
+

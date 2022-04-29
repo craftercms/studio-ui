@@ -123,7 +123,7 @@ interface PublishOnDemandWidgetProps {
   siteId: string;
 }
 
-export default function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
+export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
   const { siteId } = props;
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -357,3 +357,6 @@ export default function PublishOnDemandWidget(props: PublishOnDemandWidgetProps)
     </Paper>
   );
 }
+
+export default PublishOnDemandWidget;
+

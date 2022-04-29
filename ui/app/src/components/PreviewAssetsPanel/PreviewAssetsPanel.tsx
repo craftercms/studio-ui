@@ -126,7 +126,7 @@ interface AssetResource {
   items: Array<MediaItem>;
 }
 
-export default function PreviewAssetsPanel() {
+export function PreviewAssetsPanel() {
   const classes = assetsPanelStyles({});
   const initialKeyword = useSelection((state) => state.preview.assets.query.keywords);
   const [keyword, setKeyword] = useState(initialKeyword);
@@ -347,3 +347,6 @@ export function AssetsPanelUI(props: AssetsPanelUIProps) {
     </div>
   );
 }
+
+export default PreviewAssetsPanel;
+

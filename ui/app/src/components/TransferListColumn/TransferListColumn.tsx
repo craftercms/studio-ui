@@ -41,7 +41,7 @@ export interface TransferListColumnProps {
   onCheckAllClicked?(items: TransferListItem[], checked: boolean): void;
 }
 
-export default function TransferListColumn(props: TransferListColumnProps) {
+export function TransferListColumn(props: TransferListColumnProps) {
   const { title, items, onItemClick, checkedList, isAllChecked, onCheckAllClicked, inProgressIds, emptyStateMessage } =
     props;
   const classes = useStyles();
@@ -110,3 +110,6 @@ export default function TransferListColumn(props: TransferListColumnProps) {
     </Paper>
   );
 }
+
+export default TransferListColumn;
+

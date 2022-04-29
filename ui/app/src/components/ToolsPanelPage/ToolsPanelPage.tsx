@@ -32,7 +32,7 @@ export interface ToolsPanelPageDescriptor {
 
 export interface ToolsPanelPageProps extends ToolsPanelPageDescriptor {}
 
-export default function ToolsPanelPage(props: ToolsPanelPageProps) {
+export function ToolsPanelPage(props: ToolsPanelPageProps) {
   const { target = 'toolsPanel' } = props;
   const dispatch = useDispatch();
   const site = useActiveSiteId();
@@ -45,3 +45,6 @@ export default function ToolsPanelPage(props: ToolsPanelPageProps) {
     </ToolPanel>
   );
 }
+
+export default ToolsPanelPage;
+

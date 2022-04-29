@@ -60,7 +60,7 @@ const translations = defineMessages({
 
 type ComponentsPanelUIProps = PropsWithResource<ContentType[]>;
 
-export default function PreviewComponentsPanel() {
+export function PreviewComponentsPanel() {
   const resource = useSelectorResource<ContentType[], EntityState<ContentType>>((state) => state.contentTypes, {
     shouldRenew: (source, resource) => resource.complete,
     shouldResolve: (source) => !source.isFetching && nnou(source.byId),
@@ -187,3 +187,6 @@ export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
     </>
   );
 };
+
+export default PreviewComponentsPanel;
+

@@ -70,7 +70,7 @@ const states: ItemStates[] = [
   'live'
 ];
 
-export default function WorkflowStateManagement(props: WorkflowStateManagementProps) {
+export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
   const { embedded, showAppsButton = !embedded } = props;
   const [fetching, setFetching] = useState(false);
   const [items, setItems] = useState<PagedArray<SandboxItem>>(null);
@@ -472,3 +472,6 @@ export default function WorkflowStateManagement(props: WorkflowStateManagementPr
     </section>
   );
 }
+
+export default WorkflowStateManagement;
+

@@ -60,7 +60,7 @@ const dashletInitialPreferences: LegacyDashboardPreferences = {
   expanded: true
 };
 
-export default function RecentlyPublishedDashlet() {
+export function RecentlyPublishedDashlet() {
   const [fetchingHistory, setFetchingHistory] = useState(false);
   const [errorHistory, setErrorHistory] = useState<ApiResponse>();
   const [parentItems, setParentItems] = useState<RecentlyPublishedDashletDashboardItem[]>();
@@ -334,3 +334,6 @@ export default function RecentlyPublishedDashlet() {
     </LegacyDashletCard>
   );
 }
+
+export default RecentlyPublishedDashlet;
+

@@ -20,7 +20,7 @@ import { NewRemoteRepositoryDialogProps } from './utils';
 import EnhancedDialog from '../EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
 
-export default function NewRemoteRepositoryDialog(props: NewRemoteRepositoryDialogProps) {
+export function NewRemoteRepositoryDialog(props: NewRemoteRepositoryDialogProps) {
   const { onCreateSuccess, isSubmitting, onCreateError, onSubmittingAndOrPendingChange, ...rest } = props;
 
   return (
@@ -38,3 +38,6 @@ export default function NewRemoteRepositoryDialog(props: NewRemoteRepositoryDial
     </EnhancedDialog>
   );
 }
+
+export default NewRemoteRepositoryDialog;
+

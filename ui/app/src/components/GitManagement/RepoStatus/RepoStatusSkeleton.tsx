@@ -20,7 +20,7 @@ import Box from '@mui/material/Box';
 import Skeleton from '@mui/material/Skeleton';
 import { rand } from '../../PathNavigator/utils';
 
-export default function RepoStatusSkeleton() {
+export function RepoStatusSkeleton() {
   return (
     <Box sx={{ p: 2 }}>
       <section style={{ width: '100%' }}>
@@ -34,3 +34,6 @@ export default function RepoStatusSkeleton() {
     </Box>
   );
 }
+
+export default RepoStatusSkeleton;
+

@@ -183,7 +183,7 @@ const filterToFacet = (filterKey, filterValue) => {
   };
 };
 
-export default function SiteSearchFilters(props: SiteSearchFiltersProps) {
+export function SiteSearchFilters(props: SiteSearchFiltersProps) {
   const classes = useStyles();
   const {
     sortBy,
@@ -325,3 +325,6 @@ export default function SiteSearchFilters(props: SiteSearchFiltersProps) {
     </div>
   );
 }
+
+export default SiteSearchFilters;
+

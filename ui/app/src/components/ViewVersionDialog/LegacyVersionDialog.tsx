@@ -19,7 +19,7 @@ import { useSelection } from '../../hooks/useSelection';
 import React from 'react';
 import { getLegacyDialogStyles } from './ViewVersionDialog';
 
-export default function LegacyVersionDialog(props: VersionViewProps) {
+export function LegacyVersionDialog(props: VersionViewProps) {
   const { version } = props.resource.read();
   const classes = getLegacyDialogStyles();
   const authoringUrl = useSelection<string>((state) => state.env.authoringBase);
@@ -33,3 +33,6 @@ export default function LegacyVersionDialog(props: VersionViewProps) {
     />
   );
 }
+
+export default LegacyVersionDialog;
+

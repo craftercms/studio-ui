@@ -40,7 +40,7 @@ export interface UserManagementProps {
   passwordRequirementsRegex?: string;
 }
 
-export default function UserManagement(props: UserManagementProps) {
+export function UserManagement(props: UserManagementProps) {
   const {
     passwordRequirementsRegex = '^(?=(?<hasNumbers>.*[0-9]))(?=(?<hasLowercase>.*[a-z]))(?=(?<hasUppercase>.*[A-Z]))(?=(?<hasSpecialChars>.*[~|!`,;/@#$%^&+=]))(?<minLength>.{8,})$'
   } = props;
@@ -208,3 +208,6 @@ export default function UserManagement(props: UserManagementProps) {
     </Paper>
   );
 }
+
+export default UserManagement;
+

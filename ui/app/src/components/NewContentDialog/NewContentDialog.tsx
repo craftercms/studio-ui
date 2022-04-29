@@ -23,7 +23,7 @@ import { NewContentDialogContainer } from './NewContentDialogContainer';
 import EnhancedDialog from '../EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
 
-export default function NewContentDialog(props: NewContentDialogProps) {
+export function NewContentDialog(props: NewContentDialogProps) {
   const { item, rootPath, compact, onContentTypeSelected, ...rest } = props;
   return (
     <EnhancedDialog
@@ -83,3 +83,6 @@ export function ContentTypesGrid(props: ContentTypesGridProps) {
     </Grid>
   );
 }
+
+export default NewContentDialog;
+

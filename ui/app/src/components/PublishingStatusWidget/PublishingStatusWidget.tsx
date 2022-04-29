@@ -26,7 +26,7 @@ type PublishingStatusWidgetProps = {
   siteId: string;
 };
 
-export default function PublishingStatusWidget(props: PublishingStatusWidgetProps) {
+export function PublishingStatusWidget(props: PublishingStatusWidgetProps) {
   const { siteId } = props;
   const state = useSelection((state) => state.dialogs.publishingStatus);
   const { enabled, status, lockOwner, published, lockTTL, numberOfItems, publishingTarget, submissionId, totalItems } =
@@ -72,3 +72,6 @@ export default function PublishingStatusWidget(props: PublishingStatusWidgetProp
     </Paper>
   );
 }
+
+export default PublishingStatusWidget;
+
