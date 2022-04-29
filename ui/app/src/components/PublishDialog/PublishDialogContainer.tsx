@@ -29,7 +29,7 @@ import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { usePermissionsBySite } from '../../hooks/usePermissionsBySite';
 import { useDispatch } from 'react-redux';
 import { fetchPublishingTargets } from '../../services/publishing';
-import { getComputedPublishingTarget, getDateScheduled } from '../../utils/detailedItem';
+import { getComputedPublishingTarget, getDateScheduled } from '../../utils/content';
 import { FormattedMessage } from 'react-intl';
 import { useLogicResource } from '../../hooks/useLogicResource';
 import { createPresenceTable } from '../../utils/array';

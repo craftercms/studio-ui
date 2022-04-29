@@ -32,7 +32,9 @@ import { forEach } from '@craftercms/studio-ui/utils/array';
 import { determineRecordType, findComponentContainerFields } from './utils/ice';
 import { isSimple, removeLastPiece } from '@craftercms/studio-ui/utils/string';
 
-const validationChecks: { [key in ValidationKeys]: Function } = {
+const validationChecks: Record<ValidationKeys, Function> = {
+  allowVideoUpload(p0) {},
+  allowVideosFromRepo(p0) {},
   // TODO: implement max/min value.
   maxValue(p0) {},
   minValue(p0) {},

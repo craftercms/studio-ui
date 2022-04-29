@@ -39,7 +39,7 @@ import ApiResponseErrorState from '../ApiResponseErrorState';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import ConfirmDropdown from '../ConfirmDropdown';
 import { publishEvent, workflowEvent } from '../../state/actions/system';
-import { getHostToHostBus } from '../../modules/Preview/previewContext';
+import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
 
 const messages = defineMessages({

@@ -20,3 +20,5 @@ import { useSelector } from 'react-redux';
 export function useLauncherState(): GlobalState['launcher'] {
   return useSelector<GlobalState, GlobalState['launcher']>((state) => state.launcher);
 }
+
+export default useLauncherState;

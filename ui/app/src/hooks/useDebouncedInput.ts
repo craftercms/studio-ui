@@ -30,3 +30,5 @@ export function useDebouncedInput<T = string>(observer: (keywords: T) => any, ti
   }, [time]);
   return subject$Ref.current;
 }
+
+export default useDebouncedInput;

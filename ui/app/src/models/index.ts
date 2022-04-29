@@ -14,6 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+export * from './Activity';
 export * from './ApiResponse';
 export * from './Audit';
 export * from './Aws';
@@ -39,8 +40,10 @@ export * from './Logger';
 export * from './LookupTable';
 export * from './MarketplacePlugin';
 export * from './MinimizedTab';
+export * from './MutableRef';
 export * from './PagedArray';
 export * from './PaginationOptions';
+export * from './Person';
 export * from './Plugin';
 export * from './Publishing';
 export * from './Repository';
@@ -48,6 +51,7 @@ export * from './Resource';
 export * from './Search';
 export * from './Site';
 export * from './SiteConfigurationFile';
+export * from './SocketEvent';
 export * from './StandardAction';
 export * from './SystemType';
 export * from './Token';
@@ -59,11 +63,8 @@ export * from './User';
 export * from './Version';
 export * from './WebDAV';
 export * from './WidthAndHeight';
-
+export * from './content/QuickCreateItem';
 export * from './monitoring/LogEvent';
 export * from './monitoring/Memory';
 export * from './monitoring/Status';
 export * from './monitoring/Version';
-
-export * from './content/QuickCreateItem';
-export * from './MutableRef';

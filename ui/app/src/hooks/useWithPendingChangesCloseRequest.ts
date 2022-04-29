@@ -39,3 +39,5 @@ export function useWithPendingChangesCloseRequest(onClose: DialogProps['onClose'
     });
   };
 }
+
+export default useWithPendingChangesCloseRequest;

@@ -19,7 +19,7 @@ import { ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operat
 import { setSiteCookie } from '../../utils/auth';
 import { fetchAll } from '../../services/sites';
 import { catchAjaxError } from '../../utils/ajax';
-import { changeSite, fetchSites as fetchSitesAction, fetchSitesComplete, fetchSitesFailed } from '../reducers/sites';
+import { changeSite, fetchSites as fetchSitesAction, fetchSitesComplete, fetchSitesFailed } from '../actions/sites';
 import GlobalState from '../../models/GlobalState';
 import { CrafterCMSEpic } from '../store';
 

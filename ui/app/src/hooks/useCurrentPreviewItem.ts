@@ -23,3 +23,5 @@ export function useCurrentPreviewItem() {
   const items = useItemsByPath();
   return items?.[path];
 }
+
+export default useCurrentPreviewItem;

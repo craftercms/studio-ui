@@ -25,7 +25,7 @@ import Typography from '@mui/material/Typography';
 import List from '@mui/material/List';
 import Box from '@mui/material/Box';
 import ItemStateIcon from '../ItemStateIcon';
-import { getDateScheduled } from '../../utils/detailedItem';
+import { getDateScheduled } from '../../utils/content';
 import { FormattedMessage } from 'react-intl';
 import { asLocalizedDateTime } from '../../utils/datetime';
 import ItemPublishingTargetIcon from '../ItemPublishingTargetIcon';

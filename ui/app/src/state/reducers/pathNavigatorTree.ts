@@ -33,7 +33,7 @@ import {
   pathNavigatorTreeToggleExpanded,
   pathNavigatorTreeUpdate
 } from '../actions/pathNavigatorTree';
-import { changeSite } from './sites';
+import { changeSite } from '../actions/sites';
 import { createPresenceTable } from '../../utils/array';
 import { fetchSiteUiConfig } from '../actions/configuration';
 import { reversePluckProps } from '../../utils/object';

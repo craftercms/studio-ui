@@ -17,8 +17,9 @@
 import * as React from 'react';
 import LookupTable from '../models/LookupTable';
 import { augmentTranslations } from '../utils/i18n';
-import { CrafterCMSGlobal } from '../utils/craftercms';
+import { CrafterCMSGlobal } from '../env/craftercms';
 import { DeprecatedThemeOptions } from '@mui/material/styles';
+import { components, plugins } from '../utils/constants';
 
 export interface PluginFileBuilder {
   site: string;
@@ -53,10 +54,6 @@ export type NonReactComponentRecord = {
 
 export type ComponentRecord = NonReactComponentRecord | React.ComponentType<any>;
 // export type ComponentRecord = { type: 'react', component: TheComponent };
-
-export const plugins = new Map<string, ExtendedPluginDescriptor>();
-
-export const components = new Map<string, ComponentRecord>();
 
 const DEFAULT_FILE_NAME = 'index.js';
 
@@ -192,7 +189,7 @@ export function registerPlugin(plugin: PluginDescriptor, source?: PluginFileBuil
   }
 }
 
-export function registerComponents(widgets: LookupTable<ComponentRecord>) {
+export function registerComponents(widgets: LookupTable<ComponentRecord>): void {
   Object.entries(widgets).forEach(([id, widget]) => {
     // Skip registration if component with same id already exists
     if (!components.has(id)) {

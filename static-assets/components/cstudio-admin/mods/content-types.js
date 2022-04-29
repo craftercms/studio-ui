@@ -584,10 +584,7 @@
 
         let $controls = null;
         let $dataSources = null;
-        const {
-          fromEvent,
-          operators: { map, debounceTime }
-        } = CrafterCMSNext.rxjs;
+        const { fromEvent, map, debounceTime } = CrafterCMSNext.rxjs;
         fromEvent(document.querySelector('#controlsSearchInput'), 'keyup')
           .pipe(
             debounceTime(200),

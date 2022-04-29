@@ -15,15 +15,17 @@
  */
 
 import { CommonDashletProps, useSpreadStateWithSelected, WithSelectedState } from '../SiteDashboard/utils';
-import DashletTemplate from '../SiteDashboard/DashletTemplate';
+import DashletCard from '../DashletCard/DashletCard';
 import palette from '../../styles/palette';
 import { FormattedMessage, useIntl } from 'react-intl';
 import React, { useEffect, useMemo } from 'react';
 import IconButton from '@mui/material/IconButton';
 import { RefreshRounded } from '@mui/icons-material';
-import { useActiveSiteId, useEnv, useLocale } from '../../hooks';
+import useLocale from '../../hooks/useLocale';
+import useEnv from '../../hooks/useEnv';
+import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { fetchUnpublished } from '../../services/dashboard';
-import { DashletEmptyMessage, getItemSkeleton, List, ListItem, ListItemIcon } from '../SiteDashboard/dashletCommons';
+import { DashletEmptyMessage, getItemSkeleton, List, ListItem, ListItemIcon } from '../DashletCard/dashletCommons';
 import Checkbox from '@mui/material/Checkbox';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
@@ -83,7 +85,7 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
     onRefresh();
   }, [onRefresh]);
   return (
-    <DashletTemplate
+    <DashletCard
       {...props}
       borderLeftColor={borderLeftColor}
       title={<FormattedMessage id="unpublishedDashlet.widgetTitle" defaultMessage="Unpublished Work" />}
@@ -153,7 +155,7 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
           />
         </DashletEmptyMessage>
       )}
-    </DashletTemplate>
+    </DashletCard>
   );
 }
 

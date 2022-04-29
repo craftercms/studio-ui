@@ -19,7 +19,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import ToolsPanel from '../ToolsPanel/ToolsPanel';
 import Host from '../Host/Host';
 import ToolBar from '../ToolBar/ToolBar';
-import { PreviewConcierge } from '../../modules/Preview/PreviewConcierge';
+import PreviewConcierge from '../PreviewConcierge/PreviewConcierge';
 import usePreviewUrlControl from '../../hooks/usePreviewUrlControl';
 import ICEToolsPanel from '../ICEToolsPanel';
 

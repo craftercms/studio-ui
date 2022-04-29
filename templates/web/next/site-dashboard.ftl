@@ -37,21 +37,18 @@
 <script>
   (function (CrafterCMSNext) {
     const { createElement } = craftercms.libs.React;
-    const { AppBar, Typography, Toolbar, Box } = craftercms.libs.MaterialUI;
-    const { LauncherOpenerButton, CrafterIcon } = CrafterCMSNext.components;
+    const { Typography, Box } = craftercms.libs.MaterialUI;
+    const { ViewToolbar, LauncherOpenerButton } = CrafterCMSNext.components;
+    const CrafterCMSIcon = craftercms.components.get('craftercms.icons.CrafterCMSIcon');
     function DashboardImprovisedToolbar() {
       return createElement(
-        AppBar,
-        { position: 'static', color: 'transparent' },
-        createElement(
-          Toolbar,
-          { sx: { display: 'flex', justifyContent: 'space-between' } },
-          createElement(Box, { sx: { display: 'flex', alignItems: 'center' } },
-            createElement(CrafterIcon, { style: { marginRight: '5px' } }, 'Site Dashboard'),
-            createElement(Typography, { variant: 'h5' }, 'Site Dashboard')
-          ),
-          createElement(LauncherOpenerButton, { siteRailPosition: 'left', icon: 'apps' })
-        )
+        ViewToolbar,
+        {},
+        createElement(Box, { sx: { display: 'flex', alignItems: 'center' } },
+          createElement(CrafterCMSIcon, { style: { marginRight: '5px' } }, 'Site Dashboard'),
+          createElement(Typography, { variant: 'h5' }, 'Site Dashboard')
+        ),
+        createElement(LauncherOpenerButton, { siteRailPosition: 'left', icon: 'apps' })
       );
     }
     CrafterCMSNext.render('#toolbar', DashboardImprovisedToolbar, {}, false);

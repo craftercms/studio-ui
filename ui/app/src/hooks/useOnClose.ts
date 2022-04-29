@@ -31,3 +31,5 @@ export function useOnClose({ onClose, disableBackdropClick = false, disableEscap
     }
   };
 }
+
+export default useOnClose;

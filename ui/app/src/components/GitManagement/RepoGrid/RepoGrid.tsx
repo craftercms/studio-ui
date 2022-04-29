@@ -32,8 +32,8 @@ import Button from '@mui/material/Button';
 import Snackbar from '@mui/material/Snackbar';
 import { useSnackbar } from 'notistack';
 import { copyToClipboard } from '../../../utils/system';
-import { PublishCommitDialog } from '../PublishCommitDialog';
-import { useSpreadState } from '../../../hooks';
+import PublishCommitDialog from '../PublishCommitDialog/PublishCommitDialog';
+import useSpreadState from '../../../hooks/useSpreadState';
 import RepoGridSkeleton from './RepoGridSkeleton';
 
 export interface RepoGridProps {

@@ -20,3 +20,5 @@ import GlobalState from '../models/GlobalState';
 export function useEditMode(): boolean {
   return useSelector<GlobalState, boolean>((state) => state.preview.editMode);
 }
+
+export default useEditMode;

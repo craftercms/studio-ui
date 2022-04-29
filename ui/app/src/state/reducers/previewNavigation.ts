@@ -17,7 +17,7 @@
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../models/GlobalState';
 import { changeCurrentUrl, goToLastPage, goToNextPage, guestCheckIn } from '../actions/preview';
-import { changeSite } from './sites';
+import { changeSite } from '../actions/sites';
 import { deleteContentEvent, emitSystemEvent } from '../actions/system';
 import { getPreviewURLFromPath } from '../../utils/path';
 

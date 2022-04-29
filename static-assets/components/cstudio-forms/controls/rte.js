@@ -63,8 +63,7 @@ CStudioAuthoring.Module.requireModule(
           var _thisControl = this,
             configuration = 'generic';
 
-          const { operators } = CrafterCMSNext.rxjs;
-          const { take } = operators;
+          const { take } = CrafterCMSNext.rxjs;
 
           for (var i = 0; i < config.properties.length; i++) {
             var prop = config.properties[i];

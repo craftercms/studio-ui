@@ -22,3 +22,5 @@ export function useHistoryBackStack(): GlobalState['previewNavigation']['history
     (state) => state.previewNavigation.historyBackStack
   );
 }
+
+export default useHistoryBackStack;

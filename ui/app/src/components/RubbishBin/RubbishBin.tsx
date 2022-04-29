@@ -18,7 +18,7 @@ import React, { useEffect, useState } from 'react';
 import Grow from '@mui/material/Grow';
 import Paper from '@mui/material/Paper';
 import DeleteRounded from '@mui/icons-material/DeleteRounded';
-import DeleteRoundedTilted from '../../icons/DeleteRoundedTilted';
+import DeleteRoundedTilted from '../../icons/OpenRubbishBinTiltedLeftFilled';
 import { Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import createStyles from '@mui/styles/createStyles';

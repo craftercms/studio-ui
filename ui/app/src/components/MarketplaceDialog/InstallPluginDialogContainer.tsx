@@ -17,7 +17,10 @@
 import makeStyles from '@mui/styles/makeStyles';
 import createStyles from '@mui/styles/createStyles';
 import { InstallPluginDialogProps } from './utils';
-import { useActiveSiteId, useLogicResource, useSpreadState, useSubject } from '../../hooks';
+import useActiveSiteId from '../../hooks/useActiveSiteId';
+import useLogicResource from '../../hooks/useLogicResource';
+import useSpreadState from '../../hooks/useSpreadState';
+import useSubject from '../../hooks/useSubject';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { MarketplacePlugin, PagedArray } from '../../models';
 import { useDispatch } from 'react-redux';

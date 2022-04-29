@@ -14,6 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { createElement } from 'react';
+
 export * from './CheckboxGroup';
 
 export * from './DateTime';
@@ -21,3 +23,7 @@ export * from './DateTime';
 export * from './Dropdown';
 
 export * from './Input';
+
+// Dummy export just to be able to export this as React.lazy module.
+// eslint-disable-next-line import/no-anonymous-default-export
+export default () => createElement('div');

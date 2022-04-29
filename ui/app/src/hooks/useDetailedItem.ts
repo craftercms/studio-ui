@@ -34,3 +34,5 @@ export function useDetailedItem(path: string): DetailedItem {
   }, [beingFetching, dispatch, item, path]);
   return item;
 }
+
+export default useDetailedItem;

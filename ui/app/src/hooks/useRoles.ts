@@ -20,3 +20,5 @@ import { useSelection } from './useSelection';
 export function useRoles(): GlobalState['user']['rolesBySite'] {
   return useSelection((state) => state.user.rolesBySite);
 }
+
+export default useRoles;

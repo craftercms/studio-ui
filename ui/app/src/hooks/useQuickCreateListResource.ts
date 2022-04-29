@@ -36,3 +36,5 @@ export function useQuickCreateListResource() {
     shouldRenew: (source) => Boolean(source.items) && source.isFetching
   });
 }
+
+export default useQuickCreateListResource;

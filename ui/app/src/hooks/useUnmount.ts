@@ -25,3 +25,5 @@ export function useUnmount(onUnmount: () => any) {
     []
   );
 }
+
+export default useUnmount;

@@ -40,7 +40,7 @@ import {
   pathNavigatorSetLocaleCode,
   pathNavigatorUpdate
 } from '../actions/pathNavigator';
-import { changeSite } from './sites';
+import { changeSite } from '../actions/sites';
 import { fetchSiteUiConfig } from '../actions/configuration';
 
 const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(

@@ -40,7 +40,7 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 import WarningRounded from '@mui/icons-material/WarningRounded';
-import { useSpreadState } from '../../hooks';
+import useSpreadState from '../../hooks/useSpreadState';
 import { UNDEFINED } from '../../utils/constants';
 import RefreshRounded from '@mui/icons-material/RefreshRounded';
 import Tooltip from '@mui/material/Tooltip';

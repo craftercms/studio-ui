@@ -20,7 +20,7 @@ import CompareVersionsDialogContainer from './CompareVersionsDialogContainer';
 import EnhancedDialog from '../EnhancedDialog/EnhancedDialog';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { AsDayMonthDateTime } from '../VersionList';
-import { compareVersion } from '../../state/reducers/versions';
+import { compareVersion } from '../../state/actions/versions';
 import { translations } from './translations';
 import { useDispatch } from 'react-redux';
 

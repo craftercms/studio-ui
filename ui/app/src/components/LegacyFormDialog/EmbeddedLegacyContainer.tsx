@@ -38,7 +38,7 @@ import {
   EMBEDDED_LEGACY_MINIMIZE_REQUEST,
   reloadRequest
 } from '../../state/actions/preview';
-import { getHostToGuestBus } from '../../modules/Preview/previewContext';
+import { getHostToGuestBus } from '../../utils/subjects';
 import { updateEditConfig } from '../../state/actions/dialogs';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useUnmount } from '../../hooks/useUnmount';
@@ -47,7 +47,7 @@ import clsx from 'clsx';
 import ErrorDialog from '../ErrorDialog/ErrorDialog';
 import { translations } from './translations';
 import { useStyles } from './styles';
-import { useDetailedItem } from '../../hooks';
+import useDetailedItem from '../../hooks/useDetailedItem';
 import { hasEditAction } from '../../utils/content';
 import { nnou } from '../../utils/object';
 

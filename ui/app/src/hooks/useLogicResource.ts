@@ -41,3 +41,5 @@ export function useLogicResource<ReturnType = unknown, SourceType = unknown, Err
 
   return resource;
 }
+
+export default useLogicResource;

@@ -104,7 +104,7 @@ const StyledTableCell = withStyles((theme: Theme) =>
   })
 )(TableCell);
 
-interface PluginManagementProps {
+export interface PluginManagementProps {
   embedded?: boolean;
   showAppsButton?: boolean;
 }

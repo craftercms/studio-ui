@@ -26,7 +26,7 @@ import { defineMessages, useIntl } from 'react-intl';
 import ViewToolbar, { ViewToolbarClassKey } from '../ViewToolbar/ViewToolbar';
 import { useGlobalAppState } from '../GlobalApp';
 
-type GlobalAppToolbarClassKey =
+export type GlobalAppToolbarClassKey =
   | ViewToolbarClassKey
   | 'title'
   | 'subtitle'
@@ -34,9 +34,9 @@ type GlobalAppToolbarClassKey =
   | 'rightContent'
   | 'ellipsis';
 
-type GlobalAppToolbarStyles = Partial<Record<GlobalAppToolbarClassKey, CSSProperties>>;
+export type GlobalAppToolbarStyles = Partial<Record<GlobalAppToolbarClassKey, CSSProperties>>;
 
-interface GlobalAppToolbarProps {
+export interface GlobalAppToolbarProps {
   elevation?: number;
   title?: React.ReactNode;
   subtitle?: React.ReactNode;

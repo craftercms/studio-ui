@@ -34,7 +34,7 @@ import { useDispatch } from 'react-redux';
 import Typography from '@mui/material/Typography';
 import clsx from 'clsx';
 import Button from '@mui/material/Button';
-import { useSiteUIConfig } from '../../hooks';
+import useSiteUIConfig from '../../hooks/useSiteUIConfig';
 
 const messages = defineMessages({
   chooseFile: {

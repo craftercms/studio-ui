@@ -20,3 +20,5 @@ import { shallowEqual, useSelector } from 'react-redux';
 export function useShallowEqualSelector<T = any>(selector: (state: GlobalState) => T): T {
   return useSelector<GlobalState, T>(selector, shallowEqual);
 }
+
+export default useShallowEqualSelector;
