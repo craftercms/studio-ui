@@ -45,7 +45,7 @@ interface AuditManagementProps {
   showAppsButton?: boolean;
 }
 
-export default function AuditManagement(props: AuditManagementProps) {
+export function AuditManagement(props: AuditManagementProps) {
   const { site, embedded, showAppsButton } = props;
   const [fetching, setFetching] = useState(false);
   const [auditLogs, setAuditLogs] = useState<PagedArray<AuditLogEntry>>(null);
@@ -216,3 +216,6 @@ export default function AuditManagement(props: AuditManagementProps) {
     </Paper>
   );
 }
+
+export default AuditManagement;
+

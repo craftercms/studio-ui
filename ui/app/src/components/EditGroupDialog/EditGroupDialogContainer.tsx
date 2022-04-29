@@ -59,7 +59,7 @@ const translations = defineMessages({
   }
 });
 
-export default function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
+export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
   const { onClose, onGroupSaved, onGroupDeleted, onSubmittingAndOrPendingChange } = props;
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
@@ -221,3 +221,6 @@ export default function EditGroupDialogContainer(props: EditGroupDialogContainer
     />
   );
 }
+
+export default EditGroupDialogContainer;
+

@@ -65,7 +65,7 @@ const useStyles = makeStyles((theme) =>
   })
 );
 
-export default function ToolsPanel() {
+export function ToolsPanel() {
   const dispatch = useDispatch();
   const { id: siteId, uuid } = useActiveSite();
   const classes = useStyles();
@@ -151,3 +151,6 @@ function ToolsPaneBody(props: ToolsPaneBodyProps) {
     </>
   );
 }
+
+export default ToolsPanel;
+

@@ -62,7 +62,7 @@ interface PublishOnDemandFormProps {
   disabled: boolean;
 }
 
-export default function PublishOnDemandForm(props: PublishOnDemandFormProps) {
+export function PublishOnDemandForm(props: PublishOnDemandFormProps) {
   const {
     mode,
     formData,
@@ -180,3 +180,6 @@ export default function PublishOnDemandForm(props: PublishOnDemandFormProps) {
     </form>
   );
 }
+
+export default PublishOnDemandForm;
+

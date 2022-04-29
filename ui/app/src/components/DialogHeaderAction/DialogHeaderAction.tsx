@@ -24,7 +24,7 @@ interface ActionProps extends IconButtonProps {
   tooltip: string;
 }
 
-export default function DialogHeaderAction(props: ActionProps) {
+export function DialogHeaderAction(props: ActionProps) {
   const { icon, tooltip, disabled = false, ...rest } = props;
   return tooltip ? (
     <Tooltip title={disabled ? '' : tooltip}>
@@ -38,3 +38,6 @@ export default function DialogHeaderAction(props: ActionProps) {
     </IconButton>
   );
 }
+
+export default DialogHeaderAction;
+

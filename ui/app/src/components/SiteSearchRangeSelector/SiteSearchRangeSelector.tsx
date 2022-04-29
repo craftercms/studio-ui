@@ -64,7 +64,7 @@ interface RangeSelectorProps {
   handleFilterChange(filter: FilterType, isFilter: boolean): any;
 }
 
-export default function SiteSearchRangeSelector(props: RangeSelectorProps) {
+export function SiteSearchRangeSelector(props: RangeSelectorProps) {
   const classes = useStyles({});
   const { formatMessage } = useIntl();
   const { facet, handleFilterChange, checkedFilters } = props;
@@ -127,3 +127,6 @@ export default function SiteSearchRangeSelector(props: RangeSelectorProps) {
     </div>
   );
 }
+
+export default SiteSearchRangeSelector;
+

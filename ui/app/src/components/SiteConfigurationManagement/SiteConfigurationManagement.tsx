@@ -80,7 +80,7 @@ interface SiteConfigurationManagementProps {
   onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
-export default function SiteConfigurationManagement(props: SiteConfigurationManagementProps) {
+export function SiteConfigurationManagement(props: SiteConfigurationManagementProps) {
   const { embedded, showAppsButton, onSubmittingAndOrPendingChange, isSubmitting } = props;
   const site = useActiveSiteId();
   const baseUrl = useSelection<string>((state) => state.env.authoringBase);
@@ -707,3 +707,6 @@ export default function SiteConfigurationManagement(props: SiteConfigurationMana
     </section>
   );
 }
+
+export default SiteConfigurationManagement;
+

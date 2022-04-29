@@ -61,7 +61,7 @@ function a11yProps(index: number) {
 //  - Accommodate area to display repo fetch errors
 //  - Accommodate area to display status fetch errors
 //  - Use/discard `loading` props
-export default function GitManagement(props: GitManagementProps) {
+export function GitManagement(props: GitManagementProps) {
   const { embedded, showAppsButton = !embedded } = props;
   const classes = useStyles();
   const siteId = useActiveSiteId();
@@ -268,3 +268,6 @@ export default function GitManagement(props: GitManagementProps) {
     </Paper>
   );
 }
+
+export default GitManagement;
+

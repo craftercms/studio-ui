@@ -105,7 +105,7 @@ export const getLegacyDialogStyles = makeStyles(() => ({
   );
 } */
 
-export default function ViewVersionDialog(props: ViewVersionDialogProps) {
+export function ViewVersionDialog(props: ViewVersionDialogProps) {
   const { rightActions, leftActions, contentTypesBranch, error, isFetching, version, ...rest } = props;
 
   return (
@@ -126,3 +126,6 @@ export default function ViewVersionDialog(props: ViewVersionDialogProps) {
     </EnhancedDialog>
   );
 }
+
+export default ViewVersionDialog;
+

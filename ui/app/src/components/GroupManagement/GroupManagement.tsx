@@ -35,7 +35,7 @@ import clsx from 'clsx';
 import useStyles from '../UserManagement/styles';
 import useDebouncedInput from '../../hooks/useDebouncedInput';
 
-export default function GroupManagement() {
+export function GroupManagement() {
   const [offset, setOffset] = useState(0);
   const [limit, setLimit] = useState(10);
   const [fetching, setFetching] = useState(false);
@@ -187,3 +187,6 @@ export default function GroupManagement() {
     </Paper>
   );
 }
+
+export default GroupManagement;
+

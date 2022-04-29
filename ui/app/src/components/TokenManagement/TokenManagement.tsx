@@ -146,7 +146,7 @@ const translations = defineMessages({
   }
 });
 
-export default function TokenManagement() {
+export function TokenManagement() {
   const classes = styles();
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
@@ -478,3 +478,6 @@ export default function TokenManagement() {
     </Paper>
   );
 }
+
+export default TokenManagement;
+

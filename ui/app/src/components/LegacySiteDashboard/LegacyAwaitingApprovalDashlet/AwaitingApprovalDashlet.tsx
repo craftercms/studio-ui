@@ -60,7 +60,7 @@ const dashletInitialPreferences: LegacyDashboardPreferences = {
   showUnpublished: false
 };
 
-export default function AwaitingApprovalDashlet() {
+export function AwaitingApprovalDashlet() {
   const { id: siteId, uuid } = useActiveSite();
   const classes = useStyles();
   const [state, setState] = useState<{
@@ -343,3 +343,6 @@ export default function AwaitingApprovalDashlet() {
     </LegacyDashletCard>
   );
 }
+
+export default AwaitingApprovalDashlet;
+

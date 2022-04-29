@@ -51,7 +51,7 @@ interface IFrameProps {
   onLoadComplete?(): void;
 }
 
-export default function IFrame(props: IFrameProps) {
+export function IFrame(props: IFrameProps) {
   const classes = useStyles({});
   const { url, title, width, height, border, className, onLoadComplete } = props;
 
@@ -72,3 +72,6 @@ export default function IFrame(props: IFrameProps) {
     />
   );
 }
+
+export default IFrame;
+

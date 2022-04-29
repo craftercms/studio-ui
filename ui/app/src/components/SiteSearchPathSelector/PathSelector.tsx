@@ -83,7 +83,7 @@ interface PathSelectorProps {
   onPathSelected(path: string): void;
 }
 
-export default function PathSelector(props: PathSelectorProps) {
+export function PathSelector(props: PathSelectorProps) {
   const { onPathSelected, value, disabled } = props;
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
@@ -163,3 +163,6 @@ export default function PathSelector(props: PathSelectorProps) {
     </Paper>
   );
 }
+
+export default PathSelector;
+

@@ -57,7 +57,7 @@ interface SortOrderProps {
   handleFilterChange(filter: FilterType, isFilter?: boolean): any;
 }
 
-export default function SiteSearchSortOrder(props: SortOrderProps) {
+export function SiteSearchSortOrder(props: SortOrderProps) {
   const classes = useStyles({});
   const { formatMessage } = useIntl();
   const { handleFilterChange, sortBy, sortOrder = 'desc' } = props;
@@ -95,3 +95,6 @@ export default function SiteSearchSortOrder(props: SortOrderProps) {
     </Select>
   );
 }
+
+export default SiteSearchSortOrder;
+

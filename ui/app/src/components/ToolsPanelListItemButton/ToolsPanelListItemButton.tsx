@@ -35,7 +35,7 @@ export interface ToolsPanelListItemButtonProps {
   onSecondaryActionClick?(): void;
 }
 
-export default function ToolsPanelListItemButton(props: ToolsPanelListItemButtonProps) {
+export function ToolsPanelListItemButton(props: ToolsPanelListItemButtonProps) {
   const {
     icon,
     title,
@@ -68,3 +68,6 @@ export default function ToolsPanelListItemButton(props: ToolsPanelListItemButton
     </ListItem>
   );
 }
+
+export default ToolsPanelListItemButton;
+

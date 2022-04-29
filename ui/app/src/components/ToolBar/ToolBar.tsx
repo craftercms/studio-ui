@@ -45,7 +45,7 @@ const translations = defineMessages({
   }
 });
 
-export default function ToolBar() {
+export function ToolBar() {
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
   const site = useActiveSiteId();
@@ -84,3 +84,6 @@ export default function ToolBar() {
     </ViewToolbar>
   );
 }
+
+export default ToolBar;
+

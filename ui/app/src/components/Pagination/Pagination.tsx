@@ -97,7 +97,7 @@ function getStyles(sx: PaginationPartialSx): PaginationFullSx {
   } as Record<PaginationClassKey, SxProps<Theme>>;
 }
 
-export default function Pagination(props: PaginationProps) {
+export function Pagination(props: PaginationProps) {
   const {
     count,
     rowsPerPage,
@@ -141,3 +141,6 @@ export default function Pagination(props: PaginationProps) {
     />
   );
 }
+
+export default Pagination;
+

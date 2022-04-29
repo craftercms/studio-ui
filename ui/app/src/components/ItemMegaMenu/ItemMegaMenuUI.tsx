@@ -179,7 +179,7 @@ const useStyles = makeStyles((theme) =>
   })
 );
 
-export default function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
+export function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
   const {
     open,
     styles,
@@ -340,3 +340,6 @@ export default function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
     </Popover>
   );
 }
+
+export default ItemMegaMenuUI;
+

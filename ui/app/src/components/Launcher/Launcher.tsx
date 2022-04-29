@@ -336,7 +336,7 @@ const SiteRailSkeleton = ({ classes, formatMessage, version }) => (
 
 // endregion
 
-export default function Launcher(props: LauncherStateProps) {
+export function Launcher(props: LauncherStateProps) {
   const classes = useLauncherStyles();
   const siteId = useActiveSiteId();
   const sites = useSiteList();
@@ -515,3 +515,6 @@ export default function Launcher(props: LauncherStateProps) {
     </Popover>
   );
 }
+
+export default Launcher;
+

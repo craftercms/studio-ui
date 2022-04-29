@@ -61,7 +61,7 @@ interface PreviewCompatibilityDialogProps {
   isPreviewNext: boolean;
 }
 
-export default function LegacyContainer(props) {
+export function LegacyContainer(props) {
   const [open, setOpen] = useState(true);
   return (
     <PreviewCompatibilityDialogContainer
@@ -111,3 +111,6 @@ export function PreviewCompatibilityDialog(props: PreviewCompatibilityDialogProp
     </>
   );
 }
+
+export default LegacyContainer;
+

@@ -50,7 +50,7 @@ export interface RecentlyPublishedWidgetUIProps {
   setExpandedItems(itemExpanded): void;
 }
 
-export default function RecentlyPublishedDashletUI(props: RecentlyPublishedWidgetUIProps) {
+export function RecentlyPublishedDashletUI(props: RecentlyPublishedWidgetUIProps) {
   const { resource, expandedItems, setExpandedItems, itemsLookup, onItemMenuClick, localeBranch } = props;
   const parentItems = resource.read();
   const classes = useStyles();
@@ -178,3 +178,6 @@ export default function RecentlyPublishedDashletUI(props: RecentlyPublishedWidge
     </TableContainer>
   );
 }
+
+export default RecentlyPublishedDashletUI;
+
