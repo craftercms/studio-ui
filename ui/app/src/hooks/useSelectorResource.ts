@@ -34,3 +34,5 @@ export function useSelectorResource<ReturnType = unknown, SourceType = GlobalSta
   const state = useSelection<SourceType>(sourceSelector);
   return useLogicResource<ReturnType, SourceType, ErrorType>(state, checkers);
 }
+
+export default useSelectorResource;

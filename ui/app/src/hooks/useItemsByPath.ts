@@ -20,3 +20,5 @@ import { useSelection } from './useSelection';
 export function useItemsByPath(): GlobalState['content']['itemsByPath'] {
   return useSelection((state) => state.content.itemsByPath);
 }
+
+export default useItemsByPath;

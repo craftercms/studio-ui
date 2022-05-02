@@ -44,7 +44,7 @@ import {
 import { parseSandBoxItemToDetailedItem } from '../../utils/content';
 import { createLookupTable, reversePluckProps } from '../../utils/object';
 import { DetailedItem, SandboxItem } from '../../models/Item';
-import { changeSite } from './sites';
+import { changeSite } from '../actions/sites';
 import {
   pathNavigatorTreeFetchPathChildrenComplete,
   pathNavigatorTreeFetchPathPageComplete,

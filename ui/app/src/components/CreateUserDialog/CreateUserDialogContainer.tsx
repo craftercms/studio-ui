@@ -38,7 +38,7 @@ import { forkJoin, of } from 'rxjs';
 import { addUserToGroup } from '../../services/groups';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import { CreateUserDialogContainerProps } from './utils';
-import { useUpdateRefs } from '../../hooks';
+import useUpdateRefs from '../../hooks/useUpdateRefs';
 
 const useStyles = makeStyles((theme) =>
   createStyles({

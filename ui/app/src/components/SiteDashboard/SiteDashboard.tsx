@@ -17,7 +17,10 @@
 import Box from '@mui/material/Box';
 import React from 'react';
 // import { useEffect, Suspense } from 'react';
-// import { useActiveSiteId, useActiveUser, useDashboardState, useSiteUIConfig } from '../../hooks';
+// import useSiteUIConfig from '../../hooks/useSiteUIConfig';
+// import useDashboardState from '../../hooks/useDashboardState';
+// import useActiveUser from '../../hooks/useActiveUser';
+// import useActiveSiteId from '../../hooks/useActiveSiteId';
 // import { useDispatch } from 'react-redux';
 // import { initDashboardConfig } from '../../state/actions/dashboard';
 // import { renderWidgets } from '../Widget';

@@ -14,28 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createAction, createReducer } from '@reduxjs/toolkit';
+import { createReducer } from '@reduxjs/toolkit';
 import { GlobalState } from '../../models/GlobalState';
-import { StandardAction } from '../../models/StandardAction';
-import { Site } from '../../models/Site';
 import { createLookupTable, reversePluckProps } from '../../utils/object';
 import { storeInitialized } from '../actions/system';
-
-const CHANGE_SITE = 'CHANGE_SITE';
-
-export function changeSite(nextSite: string, nextUrl: string = '/'): StandardAction {
-  return {
-    type: CHANGE_SITE,
-    payload: { nextSite, nextUrl }
-  };
-}
-
-changeSite.type = CHANGE_SITE;
-
-export const fetchSites = /*#__PURE__*/ createAction('FETCH_SITES');
-export const fetchSitesComplete = /*#__PURE__*/ createAction<Site[]>('FETCH_SITES_COMPLETE');
-export const fetchSitesFailed = /*#__PURE__*/ createAction('FETCH_SITES_FAILED');
-export const popSite = /*#__PURE__*/ createAction<{ siteId: string }>('POP_SITE');
+import { changeSite, fetchSites, fetchSitesComplete, fetchSitesFailed, popSite } from '../actions/sites';
 
 export const initialState: GlobalState['sites'] = {
   byId: {},
@@ -49,7 +32,7 @@ const reducer = /*#__PURE__*/ createReducer<GlobalState['sites']>(initialState, 
     byId: createLookupTable(payload.sites),
     active: payload.activeSiteId
   }),
-  [CHANGE_SITE]: (state, { payload }) =>
+  [changeSite.type]: (state, { payload }) =>
     payload.nextSite === state.active
       ? state
       : {

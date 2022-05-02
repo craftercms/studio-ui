@@ -68,8 +68,9 @@ import {
   pageControllersFieldId
 } from './constants';
 import { SystemType } from '../models/SystemType';
-import { getStateBitmap } from '../components/ItemStatesManagement/utils';
+import { getStateBitmap } from '../components/WorkflowStateManagement/utils';
 import { forEach } from './array';
+import { PublishingTargets } from '../models';
 
 export function isEditableAsset(path: string) {
   return (
@@ -921,4 +922,21 @@ export function prepareVirtualItemProps(item: SandboxItem | DetailedItem): Sandb
     stateMap: createItemStateMap(item.state),
     availableActionsMap: createItemActionMap(item.availableActions)
   };
+}
+
+export function getDateScheduled(item: DetailedItem): string {
+  return item.live?.dateScheduled ?? item.staging?.dateScheduled ?? null;
+}
+
+export function getDatePublished(item: DetailedItem): string {
+  return item.live?.datePublished ?? item.staging?.datePublished ?? null;
+}
+
+export function getComputedPublishingTarget(item: DetailedItem): PublishingTargets | null {
+  // prettier-ignore
+  return item.stateMap.submittedToLive
+    ? 'live'
+    : item.stateMap.submittedToStaging
+      ? 'staging'
+      : null;
 }

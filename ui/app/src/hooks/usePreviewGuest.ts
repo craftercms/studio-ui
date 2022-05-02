@@ -20,3 +20,5 @@ import { useSelector } from 'react-redux';
 export function usePreviewGuest(): GuestData {
   return useSelector<GlobalState, GuestData>((state) => state.preview.guest);
 }
+
+export default usePreviewGuest;

@@ -15,7 +15,7 @@
  */
 
 import { createContext, useContext } from 'react';
-import { EnhancedDialogState } from '../../hooks';
+import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 
 export const EnhancedDialogContext = createContext<EnhancedDialogState>(void 0);
 

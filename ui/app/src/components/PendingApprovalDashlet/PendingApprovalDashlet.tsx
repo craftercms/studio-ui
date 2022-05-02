@@ -16,7 +16,7 @@
 
 import React, { useEffect, useMemo } from 'react';
 import { CommonDashletProps, useSpreadStateWithSelected, WithSelectedState } from '../SiteDashboard/utils';
-import DashletTemplate from '../SiteDashboard/DashletTemplate';
+import DashletCard from '../DashletCard/DashletCard';
 import {
   DashletEmptyMessage,
   DenseCheckbox,
@@ -26,14 +26,14 @@ import {
   ListItemAvatar,
   ListItemIcon,
   PersonAvatar
-} from '../SiteDashboard/dashletCommons';
+} from '../DashletCard/dashletCommons';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import palette from '../../styles/palette';
 import Typography from '@mui/material/Typography';
 import ListItemText from '@mui/material/ListItemText';
 import Checkbox from '@mui/material/Checkbox';
 import { fetchPendingApproval } from '../../services/dashboard';
-import { useActiveSiteId } from '../../hooks';
+import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { DashboardPublishingPackage } from '../../models';
 import { LIVE_COLOUR, STAGING_COLOUR } from '../ItemPublishingTargetIcon/styles';
 import IconButton from '@mui/material/IconButton';
@@ -77,7 +77,7 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
     onRefresh();
   }, [onRefresh]);
   return (
-    <DashletTemplate
+    <DashletCard
       {...props}
       borderLeftColor={borderLeftColor}
       title={
@@ -158,7 +158,7 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
           />
         </DashletEmptyMessage>
       )}
-    </DashletTemplate>
+    </DashletCard>
   );
 }
 

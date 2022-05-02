@@ -20,7 +20,7 @@ import { FormattedMessage } from 'react-intl';
 import Select, { SelectProps } from '@mui/material/Select';
 import useStyles from './styles';
 import { isBlank } from '../../utils/string';
-import { changeSite } from '../../state/reducers/sites';
+import { changeSite } from '../../state/actions/sites';
 import { setSiteCookie } from '../../utils/auth';
 import { useDispatch } from 'react-redux';
 import { useEnv } from '../../hooks/useEnv';

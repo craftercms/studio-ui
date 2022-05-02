@@ -16,7 +16,7 @@
 
 import React, { useMemo } from 'react';
 import IconButton from '@mui/material/IconButton';
-import CrafterIcon from '../../icons/CrafterIcon';
+import CrafterCMSIcon from '../../icons/CrafterCMSIcon';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import { defineMessages, useIntl } from 'react-intl';
@@ -72,7 +72,7 @@ export function LauncherOpenerButton(props: LauncherOpenerButtonProps) {
         className={icon === 'logo' ? classes.logoIconButton : void 0}
         size="large"
       >
-        {icon === 'logo' ? <CrafterIcon className={classes.crafterIcon} /> : <AppsRounded />}
+        {icon === 'logo' ? <CrafterCMSIcon className={classes.crafterIcon} /> : <AppsRounded />}
       </IconButton>
     </Tooltip>
   );

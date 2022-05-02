@@ -17,7 +17,7 @@
 import { MarketplacePlugin } from '../../models';
 import React, { useEffect, useState } from 'react';
 import { marked } from 'marked';
-import hljs from '../../utils/hljs';
+import hljs from '../../env/hljs';
 import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
 import { FormattedMessage } from 'react-intl';

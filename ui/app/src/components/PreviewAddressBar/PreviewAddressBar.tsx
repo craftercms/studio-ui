@@ -37,7 +37,7 @@ import { showItemMegaMenu } from '../../state/actions/dialogs';
 import { getNumOfMenuOptionsForItem } from '../../utils/content';
 import Tooltip from '@mui/material/Tooltip';
 import { changeCurrentUrl, reloadRequest } from '../../state/actions/preview';
-import { getHostToGuestBus } from '../../modules/Preview/previewContext';
+import { getHostToGuestBus } from '../../utils/subjects';
 import PreviewBackButton from '../PreviewBackButton';
 import PreviewForwardButton from '../PreviewForwardButton';
 import { usePreviewNavigation } from '../../hooks/usePreviewNavigation';

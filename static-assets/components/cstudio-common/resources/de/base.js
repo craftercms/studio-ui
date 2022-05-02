@@ -937,8 +937,9 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'de', {
   confTabRoleMappingsDesc: 'Definiert Benutzerrollen im Projekt',
   confTabSiteConfiguration: 'Projekt Konfiguration',
   confTabSiteConfigurationDesc: 'Definiert allgemeine Projekteinstellungen',
-  confTabSiteConf: 'Projekt Administration',
-  confTabSiteConfDesc: 'Konfiguriert administrative Werkzeuge im Projekt',
+  confTabSiteConf: 'Inhaltstyp-Editor-Konfig',
+  confTabSiteConfDesc:
+    'Definiert Steuerelemente und Datenquellen, die für die Bearbeitung von Inhaltstypen verfügbar sind',
   confTabWorkflowConf: 'Workflow',
   confTabWorkflowConfDesc: 'Definiert den Workflow für das Projekt',
   confCacheCleared: 'Konfigurationsdateien neu eingelesen.',

@@ -76,7 +76,6 @@ import {
   unlockItem
 } from '../state/actions/content';
 import { showErrorDialog } from '../state/reducers/dialogs/error';
-import { fetchItemVersions } from '../state/reducers/versions';
 import { popPiece } from './string';
 import { IntlFormatters, MessageDescriptor } from 'react-intl';
 import {
@@ -114,6 +113,7 @@ import { Clipboard } from '../models/GlobalState';
 import { Dispatch } from 'redux';
 import SystemType from '../models/SystemType';
 import StandardAction from '../models/StandardAction';
+import { fetchItemVersions } from '../state/actions/versions';
 
 export type ContextMenuOptionDescriptor<ID extends string = string> = {
   id: ID;

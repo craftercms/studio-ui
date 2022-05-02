@@ -15,7 +15,8 @@
  */
 
 import React, { useEffect } from 'react';
-import { useActiveSiteId, useSpreadState } from '../../hooks';
+import useSpreadState from '../../hooks/useSpreadState';
+import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { fetchPublishingHistoryPackageItems } from '../../services/dashboard';
 import { delay } from 'rxjs/operators';
 import { FormattedMessage } from 'react-intl';

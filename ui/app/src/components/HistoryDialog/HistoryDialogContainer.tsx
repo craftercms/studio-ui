@@ -47,7 +47,7 @@ import {
   versionsChangeItem,
   versionsChangeLimit,
   versionsChangePage
-} from '../../state/reducers/versions';
+} from '../../state/actions/versions';
 import { asDayMonthDateTime } from '../../utils/datetime';
 import DialogBody from '../DialogBody/DialogBody';
 import SingleItemSelector from '../SingleItemSelector';

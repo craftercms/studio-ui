@@ -31,3 +31,5 @@ export function useSiteLocales(): GlobalState['uiConfig']['siteLocales'] {
   }, [dispatch, siteLocales.error, siteLocales.isFetching, siteLocales.localeCodes]);
   return siteLocales;
 }
+
+export default useSiteLocales;

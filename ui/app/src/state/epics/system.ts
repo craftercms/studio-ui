@@ -27,8 +27,8 @@ import {
   tap,
   withLatestFrom
 } from 'rxjs/operators';
-import { getHostToHostBus } from '../../modules/Preview/previewContext';
-import { itemSuccessMessages } from '../../utils/i18n-legacy';
+import { getHostToHostBus } from '../../utils/subjects';
+import { itemSuccessMessages } from '../../env/i18n-legacy';
 import {
   emitSystemEvent,
   fetchGlobalMenu,
@@ -65,7 +65,6 @@ import {
 } from '../actions/publishingStatus';
 import { fetchStatus } from '../../services/publishing';
 import { catchAjaxError } from '../../utils/ajax';
-import { changeSite } from '../reducers/sites';
 import { interval } from 'rxjs';
 import { sessionTimeout } from '../actions/user';
 import { sharedWorkerUnauthenticated } from '../actions/auth';
@@ -77,6 +76,7 @@ import { fetchSiteConfig } from '../actions/configuration';
 import { getStoredShowToolsPanel } from '../../utils/state';
 import { closeToolsPanel, openToolsPanel } from '../actions/preview';
 import { getXSRFToken } from '../../utils/auth';
+import { changeSite } from '../actions/sites';
 
 const systemEpics: CrafterCMSEpic[] = [
   // region storeInitialized

@@ -53,10 +53,10 @@ import StandardAction from '../../models/StandardAction';
 import { asArray } from '../../utils/array';
 import { changeCurrentUrl, requestWorkflowCancellationDialogOnResult } from '../actions/preview';
 import { CrafterCMSEpic } from '../store';
-import { formEngineMessages } from '../../utils/i18n-legacy';
+import { formEngineMessages } from '../../env/i18n-legacy';
 import infoGraphic from '../../assets/information.svg';
 import { nnou, nou } from '../../utils/object';
-import { getHostToGuestBus } from '../../modules/Preview/previewContext';
+import { getHostToGuestBus } from '../../utils/subjects';
 import { fetchDetailedItems } from '../actions/content';
 
 function getDialogNameFromType(type: string): string {

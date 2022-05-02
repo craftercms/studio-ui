@@ -15,6 +15,7 @@
  */
 
 export { default } from './PathNavigator';
+
 export * from './PathNavigator';
 
 export * from './PathNavigatorBreadcrumbs';

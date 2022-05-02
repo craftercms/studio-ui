@@ -17,7 +17,7 @@
 import React, { Suspense } from 'react';
 import MuiIcon, { IconProps } from '@mui/material/Icon';
 import ErrorRounded from '@mui/icons-material/ErrorRounded';
-import { components } from '../../services/plugin';
+import { components } from '../../utils/constants';
 import { SvgIconProps, Tooltip } from '@mui/material';
 import clsx from 'clsx';
 import { Skeleton } from '@mui/material';

@@ -47,11 +47,24 @@ body {
   }
 
   .cstudio-browse-container {
+    display: flex;
+    flex-direction: column;
     width: 100%;
     max-width: 1370px;
     margin: 0 auto;
-    padding: 0 20px 40px;
+    padding: 0px 20px 20px;
     background-color: #fff;
+    height: calc(100vh - 82px);
+
+    .content {
+      flex: 1;
+      overflow: hidden;
+
+      #cstudio-wcm-search-filter-controls,
+      #cstudio-wcm-browse-result {
+        height: 100%;
+      }
+    }
 
     #cstudio-wcm-search-filter-controls {
       [data-display='hidden-node'] {
@@ -67,7 +80,6 @@ body {
       padding: 20px 20px 20px 0;
       border-radius: 5px;
       float: left;
-      height: calc(100vh - 160px);
 
       .jstree-default {
         .jstree-node > .jstree-icon {

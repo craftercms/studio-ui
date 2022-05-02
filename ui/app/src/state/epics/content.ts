@@ -88,14 +88,13 @@ import {
   withIndex,
   withoutIndex
 } from '../../utils/path';
-import { getHostToHostBus } from '../../modules/Preview/previewContext';
+import { getHostToHostBus } from '../../utils/subjects';
 import { validateActionPolicy } from '../../services/sites';
 import { defineMessages } from 'react-intl';
 import { CrafterCMSEpic } from '../store';
 import { nanoid as uuid } from 'nanoid';
 import StandardAction from '../../models/StandardAction';
 import { asArray } from '../../utils/array';
-import { getIntl } from '../../utils/craftercms';
 import { AjaxError } from 'rxjs/ajax';
 import { showErrorDialog } from '../reducers/dialogs/error';
 import { dissociateTemplate } from '../actions/preview';
@@ -467,7 +466,7 @@ const content: CrafterCMSEpic[] = [
     ),
   // endregion
   // region Delete Controller/Template
-  (action$, state$) =>
+  (action$, state$, { getIntl }) =>
     action$.pipe(
       ofType(deleteController.type, deleteTemplate.type),
       withLatestFrom(state$),

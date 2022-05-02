@@ -20,7 +20,7 @@ import Typography from '@mui/material/Typography';
 import clsx from 'clsx';
 import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlineRounded';
 import ErrorOutlineRoundedIcon from '@mui/icons-material/ErrorOutlineRounded';
-import { passwordRequirementMessages } from '../../utils/i18n-legacy';
+import { passwordRequirementMessages } from '../../env/i18n-legacy';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import palette from '../../styles/palette';

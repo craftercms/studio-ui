@@ -17,18 +17,19 @@
 import Grid, { GridProps } from '@mui/material/Grid';
 import React from 'react';
 import { renderWidgets, WidgetDescriptor } from '../Widget';
-import { useActiveSiteId, useActiveUser } from '../../hooks';
+import useActiveSiteId from '../../hooks/useActiveSiteId';
+import useActiveUser from '../../hooks/useActiveUser';
 
 export interface WidgetsGridProps extends GridProps {
   widgets: WidgetDescriptor[];
 }
 
 export function WidgetsGrid(props: WidgetsGridProps) {
-  const { widgets } = props;
+  const { widgets, ...gridProps } = props;
   const site = useActiveSiteId();
   const user = useActiveUser();
   const userRoles = user.rolesBySite[site];
-  return <Grid {...props}>{renderWidgets(widgets, { userRoles })}</Grid>;
+  return <Grid {...gridProps}>{renderWidgets(widgets, { userRoles })}</Grid>;
 }
 
 export default WidgetsGrid;

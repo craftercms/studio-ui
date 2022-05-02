@@ -35,7 +35,7 @@ import {
   getStoredICEToolsPanelWidth,
   setStoredICEToolsPanelWidth
 } from '../../utils/state';
-import { useActiveSite } from '../../hooks';
+import useActiveSite from '../../hooks/useActiveSite';
 
 export function ICEToolsPanel() {
   const dispatch = useDispatch();

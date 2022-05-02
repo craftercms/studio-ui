@@ -29,7 +29,7 @@ import {
   setPreviewEditMode,
   toggleEditModePadding
 } from '../actions/preview';
-import { getHostToGuestBus } from '../../modules/Preview/previewContext';
+import { getHostToGuestBus } from '../../utils/subjects';
 import {
   removeStoredICEToolsPanelPage,
   removeStoredPreviewToolsPanelPage,

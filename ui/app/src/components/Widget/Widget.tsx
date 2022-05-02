@@ -16,7 +16,8 @@
 
 import React, { ComponentType, memo } from 'react';
 import NonReactWidget from '../NonReactWidget/NonReactWidget';
-import { components, importPlugin, PluginFileBuilder } from '../../services/plugin';
+import { importPlugin, PluginFileBuilder } from '../../services/plugin';
+import { components } from '../../utils/constants';
 import EmptyState from '../EmptyState/EmptyState';
 import { defineMessages, useIntl } from 'react-intl';
 import ErrorState from '../ErrorState';
@@ -30,7 +31,7 @@ export interface WidgetDescriptor {
   configuration?: any;
 }
 
-interface WidgetProps extends WidgetDescriptor {
+export interface WidgetProps extends WidgetDescriptor {
   /** Props applied to all widgets; supersedes widget props. */
   overrideProps?: object;
   /** Props applied to all widgets. Widget props supersede defaultProps. */

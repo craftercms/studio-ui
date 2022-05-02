@@ -25,7 +25,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import GlobalState, { PagedEntityState } from '../../models/GlobalState';
 import { fromEvent, interval } from 'rxjs';
 import { filter, mapTo, share, switchMap, takeUntil, tap } from 'rxjs/operators';
-import { getHostToGuestBus } from '../../modules/Preview/previewContext';
+import { getHostToGuestBus } from '../../utils/subjects';
 import {
   assetDragEnded,
   assetDragStarted,

@@ -20,3 +20,5 @@ import { useSelector } from 'react-redux';
 export function useDashboardState(): GlobalState['dashboard'] {
   return useSelector<GlobalState, GlobalState['dashboard']>((state) => state.dashboard);
 }
+
+export default useDashboardState;

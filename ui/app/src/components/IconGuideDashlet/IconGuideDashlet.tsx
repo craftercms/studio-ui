@@ -15,7 +15,7 @@
  */
 
 import React, { useState } from 'react';
-import Dashlet from '../Dashlet';
+import LegacyDashletCard from '../LegacySiteDashboard/LegacyDashletCard';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
@@ -116,7 +116,7 @@ export default function IconGuideDashlet(props: IconGuideDashletProps) {
   const classes = useStyles();
   const { formatMessage } = useIntl();
   return (
-    <Dashlet
+    <LegacyDashletCard
       title={<FormattedMessage id="iconGuide.title" defaultMessage="Icon Guide" />}
       expanded={expanded}
       onToggleExpanded={() => setExpanded(!expanded)}
@@ -164,6 +164,6 @@ export default function IconGuideDashlet(props: IconGuideDashletProps) {
           ))}
         </Grid>
       </div>
-    </Dashlet>
+    </LegacyDashletCard>
   );
 }

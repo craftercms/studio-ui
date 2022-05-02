@@ -50,17 +50,32 @@ export const useStyles = makeStyles((theme) =>
       }
     },
     leftWrapper: {
-      width: '200px',
+      width: '220px',
       paddingRight: '16px'
     },
     rightWrapper: {
       flexGrow: 1
+    },
+    treeView: {
+      overflow: 'auto'
     },
     treeItemLabel: {
       width: '100%'
     },
     bodyEmptyState: {
       height: '60vh'
+    },
+    currentPath: {
+      '& input': {
+        width: '100%',
+        background: 'none',
+        border: 'none',
+        fontFamily: theme.typography.fontFamily,
+        fontWeight: theme.typography.fontWeightMedium,
+        color: theme.palette.text.primary,
+        fontSize: '1.25rem',
+        lineHeight: '1.6'
+      }
     }
   })
 );

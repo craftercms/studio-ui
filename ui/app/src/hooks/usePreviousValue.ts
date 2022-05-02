@@ -23,3 +23,5 @@ export function usePreviousValue<T = any>(value: T) {
   });
   return ref.current;
 }
+
+export default usePreviousValue;

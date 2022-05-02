@@ -20,3 +20,5 @@ import { useResolveWhenNotNullResource } from './useResolveWhenNotNullResource';
 export function useSystemVersionResource() {
   return useResolveWhenNotNullResource(useSystemVersion());
 }
+
+export default useSystemVersionResource;

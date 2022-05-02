@@ -19,12 +19,12 @@ import { useEffect, useRef } from 'react';
 import { parse, stringify } from 'query-string';
 import { LookupTable } from '../models/LookupTable';
 import { changeCurrentUrl } from '../state/actions/preview';
-import { changeSite } from '../state/reducers/sites';
+import { changeSite } from '../state/actions/sites';
 import { useActiveSiteId } from './useActiveSiteId';
 import { useEnv } from './useEnv';
 import { usePreviewNavigation } from './usePreviewNavigation';
 
-export default function usePreviewUrlControl(history) {
+export function usePreviewUrlControl(history) {
   const {
     location: { search },
     push
@@ -127,3 +127,5 @@ export default function usePreviewUrlControl(history) {
     }
   }, [currentUrlPath, dispatch, previewLandingBase, push, search, site]);
 }
+
+export default usePreviewUrlControl;

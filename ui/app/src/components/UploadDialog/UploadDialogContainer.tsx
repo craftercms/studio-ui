@@ -30,7 +30,7 @@ import DialogBody from '../DialogBody/DialogBody';
 import UppyDashboard from '../UppyDashboard';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
-import { useSiteUIConfig } from '../../hooks';
+import useSiteUIConfig from '../../hooks/useSiteUIConfig';
 
 const useStyles = makeStyles(() =>
   createStyles({

@@ -30,7 +30,7 @@ import {
 } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 import SearchBar from '../SearchBar/SearchBar';
-import { getHostToGuestBus } from '../../modules/Preview/previewContext';
+import { getHostToGuestBus } from '../../utils/subjects';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import ContentType from '../../models/ContentType';

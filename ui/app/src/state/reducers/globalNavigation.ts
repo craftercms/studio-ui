@@ -16,7 +16,7 @@
 
 import GlobalState from '../../models/GlobalState';
 import { createReducer } from '@reduxjs/toolkit';
-import { changeSite } from './sites';
+import { changeSite } from '../actions/sites';
 import { fetchGlobalMenu, fetchGlobalMenuComplete, fetchGlobalMenuFailed } from '../actions/system';
 
 const initialState: GlobalState['globalNavigation'] = {

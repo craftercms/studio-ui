@@ -22,3 +22,5 @@ export function useSiteList(): Site[] {
   const state = useSitesBranch();
   return useMemo(() => (state.byId ? Object.values(state.byId) : null), [state.byId]);
 }
+
+export default useSiteList;

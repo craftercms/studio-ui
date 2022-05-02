@@ -35,3 +35,5 @@ export function useSiteUIConfig(): GlobalState['uiConfig'] {
   }, [dispatch, site, sites, config.isFetching, config.currentSite]);
   return config;
 }
+
+export default useSiteUIConfig;

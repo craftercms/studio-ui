@@ -181,7 +181,7 @@ export function fetchGlobalMenuItems(): Observable<GlobalState['globalNavigation
           ? { id: legacyToNextMenuIconMap[item.icon] }
           : { baseClass: item.icon.includes('fa') ? `fa ${item.icon}` : item.icon }
       })),
-      { id: 'home.globalMenu.about-us', icon: { id: 'craftercms.icons.CrafterIcon' }, label: 'About' },
+      { id: 'home.globalMenu.about-us', icon: { id: 'craftercms.icons.About' }, label: 'About' },
       { id: 'home.globalMenu.settings', icon: { id: '@mui/icons-material/AccountCircleRounded' }, label: 'Account' }
     ])
   );

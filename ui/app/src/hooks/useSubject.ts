@@ -20,3 +20,5 @@ import { useMemo } from 'react';
 export function useSubject<T = unknown>(): Subject<T> {
   return useMemo(() => new Subject<T>(), []);
 }
+
+export default useSubject;

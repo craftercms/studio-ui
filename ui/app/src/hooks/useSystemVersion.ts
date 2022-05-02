@@ -37,3 +37,5 @@ export function useSystemVersion() {
   }, [dispatch, env.version]);
   return env.version;
 }
+
+export default useSystemVersion;

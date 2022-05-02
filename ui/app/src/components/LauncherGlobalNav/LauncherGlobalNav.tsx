@@ -25,7 +25,7 @@ import { messages } from '../LauncherSection/utils';
 import { closeLauncher } from '../../state/actions/dialogs';
 import { useDispatch } from 'react-redux';
 import ApiResponseErrorState from '../ApiResponseErrorState';
-import { globalMenuMessages } from '../../utils/i18n-legacy';
+import { globalMenuMessages } from '../../env/i18n-legacy';
 import Skeleton from '@mui/material/Skeleton';
 import { useEnv } from '../../hooks/useEnv';
 import { useSystemVersion } from '../../hooks/useSystemVersion';
