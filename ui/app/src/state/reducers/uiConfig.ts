@@ -23,7 +23,7 @@ import {
   fetchSiteUiConfigComplete,
   fetchSiteUiConfigFailed
 } from '../actions/configuration';
-import { changeSite } from './sites';
+import { changeSite } from '../actions/sites';
 import { fetchUseLegacyPreviewPreferenceComplete } from '../actions/system';
 import { fetchSiteLocales, fetchSiteLocalesComplete, fetchSiteLocalesFailed } from '../actions/translation';
 import { deserialize, fromString, serialize } from '../../utils/xml';

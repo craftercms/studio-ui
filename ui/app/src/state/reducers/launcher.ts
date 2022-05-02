@@ -19,7 +19,7 @@ import { createReducer } from '@reduxjs/toolkit';
 import { initLauncherConfig } from '../actions/launcher';
 import { deserialize, fromString } from '../../utils/xml';
 import { applyDeserializedXMLTransforms } from '../../utils/object';
-import { changeSite } from './sites';
+import { changeSite } from '../actions/sites';
 import { fetchSiteUiConfig } from '../actions/configuration';
 
 const reducer = createReducer<GlobalState['launcher']>(null, {

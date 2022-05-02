@@ -34,7 +34,7 @@ import Box from '@mui/material/Box';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import Paper from '@mui/material/Paper';
 
-interface EncryptToolProps {
+export interface EncryptToolProps {
   site?: string;
   embedded?: boolean;
   showAppsButton?: boolean;

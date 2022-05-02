@@ -26,7 +26,7 @@ import DialogFooter from '../DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import { FormattedMessage } from 'react-intl';
 import PrimaryButton from '../PrimaryButton';
-import { useDetailedItem } from '../../hooks';
+import useDetailedItem from '../../hooks/useDetailedItem';
 import { DialogBody } from '../DialogBody';
 import { useDispatch } from 'react-redux';
 import { closeCodeEditorDialog, closePreviewDialog, showCodeEditorDialog } from '../../state/actions/dialogs';

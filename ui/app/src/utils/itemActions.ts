@@ -20,7 +20,6 @@ import { ContextMenuOption } from '../components/ContextMenu';
 import { getControllerPath, getRootPath, withoutIndex } from './path';
 import {
   closeChangeContentTypeDialog,
-  closeCodeEditorDialog,
   closeConfirmDialog,
   closeCreateFileDialog,
   closeCreateFolderDialog,
@@ -67,7 +66,6 @@ import {
   unblockUI
 } from '../state/actions/system';
 import {
-  conditionallyUnlockItem,
   deleteController,
   deleteTemplate,
   duplicateWithPolicyValidation,
@@ -78,7 +76,6 @@ import {
   unlockItem
 } from '../state/actions/content';
 import { showErrorDialog } from '../state/reducers/dialogs/error';
-import { fetchItemVersions } from '../state/reducers/versions';
 import { popPiece } from './string';
 import { IntlFormatters, MessageDescriptor } from 'react-intl';
 import {
@@ -116,6 +113,7 @@ import { Clipboard } from '../models/GlobalState';
 import { Dispatch } from 'redux';
 import SystemType from '../models/SystemType';
 import StandardAction from '../models/StandardAction';
+import { fetchItemVersions } from '../state/actions/versions';
 
 export type ContextMenuOptionDescriptor<ID extends string = string> = {
   id: ID;
@@ -804,31 +802,22 @@ export const itemActionDispatcher = ({
           })
         );
         fetchWorkflowAffectedItems(site, path).subscribe((items) => {
+          const editorShowAction = showCodeEditorDialog({
+            path: item.path,
+            mode: getEditorMode(item)
+          });
           if (items?.length > 0) {
             dispatch(
               batchActions([
                 unblockUI(),
                 showWorkflowCancellationDialog({
                   items,
-                  onContinue: showCodeEditorDialog({
-                    path: item.path,
-                    mode: getEditorMode(item),
-                    onClose: batchActions([closeCodeEditorDialog(), conditionallyUnlockItem({ path: item.path })])
-                  })
+                  onContinue: editorShowAction
                 })
               ])
             );
           } else {
-            dispatch(
-              batchActions([
-                unblockUI(),
-                showCodeEditorDialog({
-                  path: item.path,
-                  mode: getEditorMode(item),
-                  onClose: batchActions([closeCodeEditorDialog(), conditionallyUnlockItem({ path: item.path })])
-                })
-              ])
-            );
+            dispatch(batchActions([unblockUI(), editorShowAction]));
           }
         });
         break;

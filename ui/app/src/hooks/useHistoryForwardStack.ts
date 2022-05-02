@@ -22,3 +22,5 @@ export function useHistoryForwardStack(): GlobalState['previewNavigation']['hist
     (state) => state.previewNavigation.historyForwardStack
   );
 }
+
+export default useHistoryForwardStack;

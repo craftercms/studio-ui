@@ -19,16 +19,12 @@ import StandardAction from '../../models/StandardAction';
 import { Dispatch } from 'redux';
 import { useDispatch } from 'react-redux';
 import { isPlainObject } from '../../utils/object';
-import PathSelectionDialog from '../PathSelectionDialog';
 import { useSnackbar } from 'notistack';
-import { getHostToHostBus } from '../../modules/Preview/previewContext';
+import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
 import { showSystemNotification } from '../../state/actions/system';
 import Launcher from '../Launcher/Launcher';
-import UnlockPublisherDialog from '../UnlockPublisherDialog';
-import WidgetDialog from '../WidgetDialog';
 import useSelection from '../../hooks/useSelection';
-import CodeEditorDialog from '../CodeEditorDialog';
 import { useWithPendingChangesCloseRequest } from '../../hooks/useWithPendingChangesCloseRequest';
 import MinimizedBar from '../MinimizedBar';
 
@@ -57,6 +53,10 @@ const ItemMegaMenu = lazy(() => import('../ItemMegaMenu'));
 const AuthMonitor = lazy(() => import('../AuthMonitor'));
 const PublishingStatusDialog = lazy(() => import('../PublishingStatusDialog'));
 const UIBlocker = lazy(() => import('../UIBlocker'));
+const PathSelectionDialog = lazy(() => import('../PathSelectionDialog'));
+const UnlockPublisherDialog = lazy(() => import('../UnlockPublisherDialog'));
+const WidgetDialog = lazy(() => import('../WidgetDialog'));
+const CodeEditorDialog = lazy(() => import('../CodeEditorDialog'));
 
 // @formatter:off
 function createCallback(action: StandardAction, dispatch: Dispatch): (output?: unknown) => void {

@@ -15,7 +15,7 @@
  */
 
 import { ofType } from 'redux-observable';
-import { catchError, filter, map, mergeMap, switchMap, withLatestFrom } from 'rxjs/operators';
+import { filter, map, mapTo, mergeMap, switchMap, withLatestFrom } from 'rxjs/operators';
 import {
   clearClipboard,
   completeDetailedItem,
@@ -58,9 +58,8 @@ import {
   paste,
   unlock
 } from '../../services/content';
-import { merge, NEVER, Observable, of } from 'rxjs';
+import { merge, Observable, of } from 'rxjs';
 import {
-  closeCodeEditorDialog,
   closeConfirmDialog,
   closeDeleteDialog,
   showCodeEditorDialog,
@@ -89,14 +88,13 @@ import {
   withIndex,
   withoutIndex
 } from '../../utils/path';
-import { getHostToHostBus } from '../../modules/Preview/previewContext';
+import { getHostToHostBus } from '../../utils/subjects';
 import { validateActionPolicy } from '../../services/sites';
 import { defineMessages } from 'react-intl';
 import { CrafterCMSEpic } from '../store';
 import { nanoid as uuid } from 'nanoid';
 import StandardAction from '../../models/StandardAction';
 import { asArray } from '../../utils/array';
-import { getIntl } from '../../utils/craftercms';
 import { AjaxError } from 'rxjs/ajax';
 import { showErrorDialog } from '../reducers/dialogs/error';
 import { dissociateTemplate } from '../actions/preview';
@@ -225,15 +223,6 @@ const content: CrafterCMSEpic[] = [
     action$.pipe(
       ofType(fetchSandboxItem.type),
       withLatestFrom(state$),
-      // Only fetch if force is true or the item isn't loaded
-      filter(
-        ([
-          {
-            payload: { path, force }
-          },
-          state
-        ]) => Boolean(path) && (force || !state.content.itemsByPath[path])
-      ),
       mergeMap(([{ payload }, state]) =>
         fetchSandboxItemService(state.sites.active, payload.path).pipe(
           map((item) => fetchSandboxItemComplete({ item })),
@@ -266,12 +255,14 @@ const content: CrafterCMSEpic[] = [
     action$.pipe(
       ofType(unlockItem.type),
       withLatestFrom(state$),
-      switchMap(([{ payload }, state]) => {
-        return unlock(state.sites.active, payload.path).pipe(
-          map(() => batchActions([payload.notify === false && showUnlockItemSuccessNotification()].filter(Boolean))),
-          catchError(() => NEVER)
-        );
-      })
+      switchMap(([{ payload }, state]) =>
+        unlock(state.sites.active, payload.path).pipe(
+          // Not using the boolean return of the service. If the item it's already unlocked,
+          // notify anyway of successful unlock as not notifying can be confusing (i.e. "what happened?").
+          filter(() => payload.notify),
+          mapTo(showUnlockItemSuccessNotification())
+        )
+      )
     ),
   // endregion
   // region lockItem
@@ -296,11 +287,7 @@ const content: CrafterCMSEpic[] = [
       ofType(conditionallyUnlockItem.type),
       withLatestFrom(state$),
       filter(([{ payload }, state]) => state.content.itemsByPath[payload.path].lockOwner === state.user.username),
-      switchMap(([{ payload }, state]) =>
-        unlock(state.sites.active, payload.path).pipe(
-          map(() => batchActions([payload.notify === false && showUnlockItemSuccessNotification()].filter(Boolean)))
-        )
-      )
+      map(([{ payload }]) => unlockItem(payload))
     ),
   // endregion
   // region Asset Duplicate
@@ -319,8 +306,7 @@ const content: CrafterCMSEpic[] = [
                 site: state.sites.active,
                 path,
                 mode,
-                onSuccess: payload.onSuccess,
-                onClose: batchActions([closeCodeEditorDialog(), conditionallyUnlockItem({ path })])
+                onSuccess: payload.onSuccess
               });
             }
           })
@@ -480,7 +466,7 @@ const content: CrafterCMSEpic[] = [
     ),
   // endregion
   // region Delete Controller/Template
-  (action$, state$) =>
+  (action$, state$, { getIntl }) =>
     action$.pipe(
       ofType(deleteController.type, deleteTemplate.type),
       withLatestFrom(state$),

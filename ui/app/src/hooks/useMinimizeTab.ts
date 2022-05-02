@@ -38,3 +38,5 @@ export function useMinimizeTab(initialTab: MinimizedTab) {
 
   return state?.minimized ?? initialTab.minimized;
 }
+
+export default useMinimizeTab;

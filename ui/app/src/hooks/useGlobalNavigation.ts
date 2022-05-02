@@ -31,3 +31,5 @@ export function useGlobalNavigation(): GlobalState['globalNavigation'] {
   }, [data.error, data.isFetching, data.items, dispatch]);
   return data;
 }
+
+export default useGlobalNavigation;

@@ -27,7 +27,7 @@ import IconButton from '@mui/material/IconButton';
 import Hidden from '@mui/material/Hidden';
 import { useDispatch } from 'react-redux';
 import { getInitials } from '../../utils/string';
-import { changeSite } from '../../state/reducers/sites';
+import { changeSite } from '../../state/actions/sites';
 import palette from '../../styles/palette';
 import Avatar from '@mui/material/Avatar';
 import ExitToAppRoundedIcon from '@mui/icons-material/ExitToAppRounded';

@@ -34,7 +34,7 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import Divider from '@mui/material/Divider';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import { styled } from '@mui/material/styles';
-import { useContentTypes } from '../../hooks';
+import useContentTypes from '../../hooks/useContentTypes';
 import { getMimeTypeTranslation } from '../../utils/mimeTypes';
 
 interface SiteSearchFiltersProps {

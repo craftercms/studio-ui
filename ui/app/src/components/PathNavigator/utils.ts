@@ -33,6 +33,10 @@ export function isImage(item: DetailedItem | SandboxItem): boolean {
   return item?.mimeType.startsWith('image/');
 }
 
+export function isVideo(item: DetailedItem | SandboxItem): boolean {
+  return item?.mimeType.startsWith('video/');
+}
+
 export function isPreviewable(item: DetailedItem | SandboxItem): boolean {
   return ['page', 'component', 'asset', 'renderingTemplate', 'script', 'taxonomy'].includes(item?.systemType);
 }

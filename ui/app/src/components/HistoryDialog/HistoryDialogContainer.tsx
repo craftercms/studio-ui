@@ -23,7 +23,6 @@ import { HistoryDialogContainerProps, Menu, menuInitialState, menuOptions } from
 import { useLogicResource } from '../../hooks/useLogicResource';
 import { LegacyVersion, VersionsStateProps } from '../../models/Version';
 import ContextMenu, { ContextMenuOption } from '../ContextMenu';
-import { hasRevertAction } from '../../utils/content';
 import {
   closeConfirmDialog,
   fetchContentVersion,
@@ -48,7 +47,7 @@ import {
   versionsChangeItem,
   versionsChangeLimit,
   versionsChangePage
-} from '../../state/reducers/versions';
+} from '../../state/actions/versions';
 import { asDayMonthDateTime } from '../../utils/datetime';
 import DialogBody from '../DialogBody/DialogBody';
 import SingleItemSelector from '../SingleItemSelector';
@@ -57,11 +56,14 @@ import VersionList from '../VersionList';
 import DialogFooter from '../DialogFooter/DialogFooter';
 import { Pagination } from './Pagination';
 import { historyStyles } from './HistoryDialog';
+import useSelection from '../../hooks/useSelection';
 
 export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
   const { versionsBranch } = props;
-  const { count, page, limit, current, item, rootPath, isConfig } = versionsBranch;
-  const path = item ? item.path : '';
+  const { count, page, limit, current, rootPath, isConfig } = versionsBranch;
+  // TODO: It'd be best for the dialog to directly receive a live item. Must change versions branch to only hold the path.
+  const item = useSelection((state) => state.content.itemsByPath[versionsBranch.item.path]);
+  const path = item?.path ?? '';
   const [openSelector, setOpenSelector] = useState(false);
   const { formatMessage } = useIntl();
   const classes = historyStyles({});
@@ -104,7 +106,7 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
             ]);
           }
         }
-        if (hasRevertAction(item.availableActions) || isConfig) {
+        if (!item.stateMap.locked && (item.availableActionsMap.revert || isConfig)) {
           sections.push([isCurrent ? contextMenuOptions.revertToPrevious : contextMenuOptions.revertToThisVersion]);
         }
       }
@@ -114,7 +116,7 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
         activeItem: version
       });
     },
-    [item.systemType, item.availableActions, count, setMenu, formatMessage, isConfig]
+    [item.systemType, item.availableActionsMap.revert, count, setMenu, formatMessage, isConfig, item.stateMap.locked]
   );
 
   const compareVersionDialogWithActions = () =>

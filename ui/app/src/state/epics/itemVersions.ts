@@ -33,14 +33,14 @@ import {
   revertContentFailed,
   revertToPreviousVersion,
   versionsChangeItem
-} from '../reducers/versions';
+} from '../actions/versions';
 import { NEVER, of } from 'rxjs';
 import { historyDialogClosed } from '../actions/dialogs';
 import { fetchHistory as getConfigurationHistory } from '../../services/configuration';
 import { reloadDetailedItem } from '../actions/content';
 import { emitSystemEvent, itemReverted, showRevertItemSuccessNotification } from '../actions/system';
 import { batchActions } from '../actions/misc';
-import { getHostToGuestBus } from '../../modules/Preview/previewContext';
+import { getHostToGuestBus } from '../../utils/subjects';
 import { reloadRequest } from '../actions/preview';
 
 export default [

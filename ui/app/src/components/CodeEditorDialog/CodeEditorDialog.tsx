@@ -39,7 +39,6 @@ export function CodeEditorDialog(props: CodeEditorDialogProps) {
       <CodeEditorDialogContainer
         path={path}
         mode={mode}
-        onSaveClose={(e) => onClose(e, null)}
         title={title}
         isSubmitting={isSubmitting}
         onMinimize={onMinimize}

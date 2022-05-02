@@ -22,7 +22,7 @@ import SearchBar from '../SearchBar/SearchBar';
 import { ComponentsContentTypeParams, ElasticParams, SearchItem } from '../../models/Search';
 import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
 import { DraggablePanelListItem } from '../DraggablePanelListItem/DraggablePanelListItem';
-import { getHostToGuestBus } from '../../modules/Preview/previewContext';
+import { getHostToGuestBus } from '../../utils/subjects';
 import {
   assetDragEnded,
   assetDragStarted,

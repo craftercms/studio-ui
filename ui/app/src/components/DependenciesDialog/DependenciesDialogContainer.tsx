@@ -24,7 +24,7 @@ import { useDispatch } from 'react-redux';
 import { DetailedItem } from '../../models/Item';
 import { showCodeEditorDialog, showEditDialog, showHistoryDialog } from '../../state/actions/dialogs';
 import { batchActions } from '../../state/actions/misc';
-import { fetchItemVersions } from '../../state/reducers/versions';
+import { fetchItemVersions } from '../../state/actions/versions';
 import { getRootPath } from '../../utils/path';
 import { useLogicResource } from '../../hooks/useLogicResource';
 import { fetchDependant, fetchSimpleDependencies } from '../../services/dependencies';

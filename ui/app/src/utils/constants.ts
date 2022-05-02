@@ -17,6 +17,8 @@
 // region State
 //                                                          6 |    5    |    4    |    3    |    2    |    1    |     0
 //                                                         321|987654321|987654321|987654321|987654321|987654321|9876543210
+import { ComponentRecord, ExtendedPluginDescriptor } from '../services/plugin';
+
 export const STATE_NEW_MASK /*                      */ = 0b0000000000000000000000000000000000000000000000000000000000000001;
 export const STATE_MODIFIED_MASK /*                 */ = 0b0000000000000000000000000000000000000000000000000000000000000010;
 export const STATE_DELETED_MASK /*                  */ = 0b0000000000000000000000000000000000000000000000000000000000000100;
@@ -93,3 +95,7 @@ export const SHARED_WORKER_NAME = 'CrafterCMS-Worker';
 export const SITE_COOKIE_NAME = 'crafterSite';
 export const XSRF_TOKEN_HEADER_NAME = 'X-XSRF-TOKEN';
 export const XSRF_TOKEN_COOKIE_NAME = 'XSRF-TOKEN';
+
+export const plugins = new Map<string, ExtendedPluginDescriptor>();
+
+export const components = new Map<string, ComponentRecord>();

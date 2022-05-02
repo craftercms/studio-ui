@@ -21,3 +21,5 @@ import { useSitesBranch } from './useSitesBranch';
 export function useSiteLookup(): LookupTable<Site> {
   return useSitesBranch().byId;
 }
+
+export default useSiteLookup;

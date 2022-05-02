@@ -105,7 +105,12 @@ export function removeStoredPreviewToolsPanelPage(siteIdentifier: string, user: 
   return window.localStorage.removeItem(`craftercms.${user}.previewToolsPanelPage.${siteIdentifier}`);
 }
 
-export function setStoredPathNavigator(siteIdentifier: string, user: string, id: string, value: object): void {
+export function setStoredPathNavigator(
+  siteIdentifier: string,
+  user: string,
+  id: string,
+  value: { collapsed: boolean; currentPath: string; keyword: string; offset: number; limit: number }
+): void {
   window.localStorage.setItem(`craftercms.${user}.pathNavigator.${siteIdentifier}.${id}`, JSON.stringify(value));
 }
 

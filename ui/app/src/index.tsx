@@ -15,12 +15,14 @@
  */
 
 import './styles/index.scss';
-import { registerComponents } from './utils/registerComponents';
+import { registerComponents } from './env/registerComponents';
+import { publishCrafterGlobal } from './env/craftercms';
 
+publishCrafterGlobal();
 registerComponents();
 
 if (process.env.NODE_ENV === 'production') {
-  require('./utils/codebase-bridge').createCodebaseBridge();
+  require('./env/codebase-bridge').createCodebaseBridge();
 } else {
   const React = require('react');
   const ReactDOM = require('react-dom');

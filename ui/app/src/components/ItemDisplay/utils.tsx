@@ -48,13 +48,13 @@ export function getItemStateText(stateMap: ItemStateMap, values?: Record<string,
       stateMap.submitted ? (
         <FormattedMessage id="itemState.submittedToStaging" defaultMessage="Submitted to staging" />
       ) : (
-        <FormattedMessage id="itemState.scheduledForStaging" defaultMessage="Scheduled for staging" />
+        <FormattedMessage id="itemState.scheduledToStaging" defaultMessage="Scheduled to staging" />
       ),
     submittedToLive: () =>
       stateMap.submitted ? (
-        <FormattedMessage id="itemState.submittedToLive" defaultMessage="Submitted for live" />
+        <FormattedMessage id="itemState.submittedToLive" defaultMessage="Submitted to live" />
       ) : (
-        <FormattedMessage id="itemState.scheduledToGoLive" defaultMessage="Scheduled for live" />
+        <FormattedMessage id="itemState.scheduledToGoLive" defaultMessage="Scheduled to live" />
       ),
     staged: () => void 0,
     live: () => void 0,

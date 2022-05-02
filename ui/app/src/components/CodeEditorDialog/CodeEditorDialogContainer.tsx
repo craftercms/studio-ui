@@ -14,10 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import DialogHeader from '../DialogHeader/DialogHeader';
 import DialogBody from '../DialogBody/DialogBody';
-import { fetchContentXML, writeContent } from '../../services/content';
+import { fetchContentXML, lock, unlock, writeContent } from '../../services/content';
 import { ConditionalLoadingState } from '../LoadingState/LoadingState';
 import AceEditor from '../AceEditor/AceEditor';
 import useStyles from './styles';
@@ -42,19 +42,25 @@ import { useActiveUser } from '../../hooks/useActiveUser';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useDetailedItem } from '../../hooks/useDetailedItem';
 import { useReferences } from '../../hooks/useReferences';
-import { getHostToGuestBus } from '../../modules/Preview/previewContext';
+import { getHostToGuestBus } from '../../utils/subjects';
 import { reloadRequest } from '../../state/actions/preview';
 import { CodeEditorDialogContainerProps, getContentModelSnippets } from './utils';
 import { batchActions } from '../../state/actions/misc';
 import { MultiChoiceSaveButton } from '../MultiChoiceSaveButton';
+import useUpToDateRefs from '../../hooks/useUpdateRefs';
 
 export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps) {
-  const { path, onMinimize, onClose, onSaveClose, mode, isSubmitting, readonly, contentType, onFullScreen } = props;
+  const { path, onMinimize, onClose, mode, isSubmitting, readonly, contentType, onFullScreen } = props;
   const item = useDetailedItem(path);
   const site = useActiveSiteId();
   const user = useActiveUser();
   const [loading, setLoading] = useState(false);
   const [content, setContent] = useState(null);
+  const [pathLocked, setPathLocked] = useState('');
+  const itemLoaded = Boolean(item); // isLocked and isLockedForMe only hold accurate value if item was already loaded.
+  const isLocked = isLockedState(item?.state);
+  const isLockedForMe = isItemLockedForMe(item, user.username);
+  const shouldPerformLock = itemLoaded && !readonly && !isLockedForMe && !isLocked && pathLocked !== path;
   const classes = useStyles();
   const editorRef = useRef<any>();
   const dispatch = useDispatch();
@@ -68,6 +74,89 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
     'craftercms.freemarkerCodeSnippets': freemarkerCodeSnippets,
     'craftercms.groovyCodeSnippets': groovyCodeSnippets
   } = useReferences();
+  const onChangeTimeoutRef = useRef<any>(null);
+
+  const onEditorChanges = () => {
+    clearTimeout(onChangeTimeoutRef.current);
+    onChangeTimeoutRef.current = setTimeout(() => {
+      dispatch(
+        updateCodeEditorDialog({
+          hasPendingChanges: content !== editorRef.current.getValue()
+        })
+      );
+    }, 150);
+  };
+
+  const save = (callback?: Function) => {
+    if (!isLockedForMe && !readonly) {
+      dispatch(updateCodeEditorDialog({ isSubmitting: true }));
+      writeContent(site, path, editorRef.current.getValue(), { unlock: false }).subscribe({
+        next() {
+          dispatch(
+            batchActions([
+              showSystemNotification({ message: formatMessage(translations.saved) }),
+              updateCodeEditorDialog({ isSubmitting: false, hasPendingChanges: false })
+            ])
+          );
+          setTimeout(callback);
+          getHostToGuestBus().next(reloadRequest());
+        },
+        error({ response }) {
+          dispatch(showErrorDialog({ error: response }));
+        }
+      });
+    }
+  };
+
+  const onSave = () => save(() => setContent(editorRef.current.getValue()));
+
+  const onAddSnippet = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const closeSnippets = () => {
+    setAnchorEl(null);
+  };
+
+  const onSnippetSelected = (snippet: { label: string; value: string }) => {
+    const cursorPosition = editorRef.current.getCursorPosition();
+    editorRef.current.session.insert(cursorPosition, snippet.value);
+    editorRef.current.focus();
+    closeSnippets();
+  };
+
+  const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    fnRefs.current.onClose(e, null);
+    pathLocked && unlock(site, pathLocked).subscribe();
+  };
+
+  const onMultiChoiceSaveButtonClick = (e, type) => {
+    switch (type) {
+      case 'save':
+        onSave();
+        break;
+      case 'saveAndClose':
+        save(() => onCloseButtonClick(null));
+        break;
+      case 'saveAndMinimize':
+        save(() => {
+          setContent(editorRef.current.getValue());
+          onMinimize?.();
+        });
+        break;
+    }
+  };
+
+  const onAceInit = (editor: AceAjax.Editor) => {
+    editor.commands.addCommand({
+      name: 'saveToCrafter',
+      bindKey: { win: 'Ctrl-S', mac: 'Command-S' },
+      exec: () => fnRefs.current.onSave(),
+      readOnly: false
+    });
+  };
+
+  const fnRefs = useUpToDateRefs({ onSave, onClose });
 
   // add content model variables
   useEffect(() => {
@@ -91,125 +180,28 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
     }
   }, [contentTypes, contentType, mode, item, freemarkerCodeSnippets, groovyCodeSnippets]);
 
-  const disableEdit = isItemLockedForMe(item, user.username);
-
   useEffect(() => {
-    if (item && content === null) {
+    if (content === null) {
       setLoading(true);
-      dispatch(
-        updateCodeEditorDialog({
-          isSubmitting: true
-        })
-      );
-      fetchContentXML(site, item.path, { ...(!isLockedState(item.state) && { lock: !readonly }) }).subscribe((xml) => {
+      dispatch(updateCodeEditorDialog({ isSubmitting: true }));
+      const subscription = fetchContentXML(site, path).subscribe((xml) => {
         setContent(xml);
         setLoading(false);
-        dispatch(
-          updateCodeEditorDialog({
-            isSubmitting: false
-          })
-        );
+        dispatch(updateCodeEditorDialog({ isSubmitting: false }));
       });
+      return () => {
+        subscription.unsubscribe();
+      };
     }
-  }, [site, item, content, dispatch, user.username, readonly]);
-
-  const onEditorChanges = () => {
-    dispatch(
-      updateCodeEditorDialog({
-        hasPendingChanges: content !== editorRef.current.getValue()
-      })
-    );
-  };
-
-  const save = useCallback(
-    (callback?: Function) => {
-      dispatch(
-        updateCodeEditorDialog({
-          isSubmitting: true
-        })
-      );
-      writeContent(site, path, editorRef.current.getValue(), { unlock: false }).subscribe({
-        next() {
-          setTimeout(callback);
-          dispatch(
-            batchActions([
-              showSystemNotification({
-                message: formatMessage(translations.saved)
-              }),
-              updateCodeEditorDialog({
-                isSubmitting: false,
-                hasPendingChanges: false
-              })
-            ])
-          );
-          getHostToGuestBus().next({ type: reloadRequest.type });
-        },
-        error({ response }) {
-          dispatch(showErrorDialog({ error: response }));
-        }
-      });
-    },
-    [dispatch, formatMessage, path, site]
-  );
-
-  const onSave = useCallback(() => {
-    save(() => {
-      setContent(editorRef.current.getValue());
-    });
-  }, [save]);
-
-  const onSaveAndMinimize = () => {
-    save(() => {
-      setContent(editorRef.current.getValue());
-      onMinimize?.();
-    });
-  };
-
-  const saveAndClose = () => {
-    save(onSaveClose);
-  };
-
-  const onAddSnippet = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const closeSnippets = () => {
-    setAnchorEl(null);
-  };
-
-  const onSnippetSelected = (snippet: { label: string; value: string }) => {
-    const cursorPosition = editorRef.current.getCursorPosition();
-    editorRef.current.session.insert(cursorPosition, snippet.value);
-    editorRef.current.focus();
-    closeSnippets();
-  };
+  }, [content, dispatch, path, site]);
 
   useEffect(() => {
-    if (!readonly && !disableEdit && content !== null) {
-      editorRef.current?.commands.addCommand({
-        name: 'myCommand',
-        bindKey: { win: 'Ctrl-S', mac: 'Command-S' },
-        exec: onSave,
-        readOnly: false
+    if (shouldPerformLock) {
+      lock(site, path).subscribe(() => {
+        setPathLocked(path);
       });
     }
-  }, [readonly, content, disableEdit, onSave]);
-
-  const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
-
-  const onMultiChoiceSaveButtonClick = (e, type) => {
-    switch (type) {
-      case 'save':
-        onSave();
-        break;
-      case 'saveAndClose':
-        saveAndClose();
-        break;
-      case 'saveAndMinimize':
-        onSaveAndMinimize();
-        break;
-    }
-  };
+  }, [path, shouldPerformLock, site]);
 
   return (
     <>
@@ -218,6 +210,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
         onCloseButtonClick={onCloseButtonClick}
         onMinimizeButtonClick={onMinimize}
         onFullScreenButtonClick={onFullScreen}
+        disabled={isSubmitting}
       />
       <DialogBody
         className={classes.dialogBody}
@@ -234,30 +227,31 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
             mode={`ace/mode/${mode}`}
             value={content ?? ''}
             onChange={onEditorChanges}
-            readOnly={disableEdit || readonly}
+            readOnly={isLockedForMe || readonly}
             classes={{ editorRoot: classes.aceRoot }}
             enableBasicAutocompletion
             enableSnippets
             enableLiveAutocompletion
+            onInit={onAceInit}
           />
         </ConditionalLoadingState>
       </DialogBody>
       {!readonly && (
         <DialogFooter>
-          <Button onClick={onAddSnippet} endIcon={<ExpandMoreRoundedIcon />} className={classes.addSnippet}>
+          <Button
+            onClick={onAddSnippet}
+            endIcon={<ExpandMoreRoundedIcon />}
+            className={classes.addSnippet}
+            disabled={isSubmitting}
+          >
             <FormattedMessage id="codeEditor.insertCode" defaultMessage="Insert Code" />
           </Button>
-          <SecondaryButton
-            onClick={onCloseButtonClick}
-            sx={{
-              mr: '8px'
-            }}
-          >
+          <SecondaryButton onClick={onCloseButtonClick} sx={{ mr: '8px' }} disabled={isSubmitting}>
             <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
           </SecondaryButton>
           <MultiChoiceSaveButton
             loading={isSubmitting}
-            disabled={disableEdit}
+            disabled={isLockedForMe}
             storageKey={storedId}
             onClick={onMultiChoiceSaveButtonClick}
           />

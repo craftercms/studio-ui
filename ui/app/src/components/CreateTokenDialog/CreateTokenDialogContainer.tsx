@@ -36,7 +36,7 @@ import { CreateTokenContainerProps } from './utils';
 import { createToken } from '../../services/tokens';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';
-import { useUpdateRefs } from '../../hooks';
+import useUpdateRefs from '../../hooks/useUpdateRefs';
 
 const translations = defineMessages({
   placeholder: {

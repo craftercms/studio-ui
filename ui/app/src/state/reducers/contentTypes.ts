@@ -25,7 +25,7 @@ import {
   FETCH_CONTENT_TYPES_FAILED
 } from '../actions/preview';
 import ContentType from '../../models/ContentType';
-import { changeSite } from './sites';
+import { changeSite } from '../actions/sites';
 
 const reducer = createReducer<GlobalState['contentTypes']>(createEntityState(), {
   [changeSite.type]: () => createEntityState(),

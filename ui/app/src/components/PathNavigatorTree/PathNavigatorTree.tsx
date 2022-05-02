@@ -50,7 +50,7 @@ import { useActiveUser } from '../../hooks/useActiveUser';
 import { useItemsByPath } from '../../hooks/useItemsByPath';
 import { useSubject } from '../../hooks/useSubject';
 import { useDetailedItem } from '../../hooks/useDetailedItem';
-import { debounceTime, filter } from 'rxjs/operators';
+import { debounceTime } from 'rxjs/operators';
 import {
   contentEvent,
   deleteContentEvent,
@@ -59,7 +59,7 @@ import {
   publishEvent,
   workflowEvent
 } from '../../state/actions/system';
-import { getHostToHostBus } from '../../modules/Preview/previewContext';
+import { getHostToHostBus } from '../../utils/subjects';
 import { useActiveSite } from '../../hooks/useActiveSite';
 import { fetchSandboxItem } from '../../services/content';
 import { ApiResponse } from '../../models';
@@ -166,7 +166,7 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     // Adding uiConfig as means to stop navigator from trying to
     // initialize with previous state information when switching sites
     if (!state && uiConfig.currentSite === siteId && rootPath) {
-      nodesByPathRef.current[rootPath] = undefined;
+      nodesByPathRef.current = {};
       const { expanded, collapsed, keywordByPath } = storedState;
       dispatch(
         pathNavigatorTreeInit({
@@ -269,38 +269,23 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
 
   // region Item Updates Propagation
   useEffect(() => {
-    const events = [
-      contentEvent.type,
-      deleteContentEvent.type,
-      folderRenamed.type,
-      pluginInstalled.type,
-      workflowEvent.type,
-      publishEvent.type
-    ];
     const hostToHost$ = getHostToHostBus();
-    const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
+    const subscription = hostToHost$.subscribe(({ type, payload }) => {
       switch (type) {
         case contentEvent.type: {
           const targetPath = payload.targetPath ?? payload.target;
           const parentPath = getParentPath(targetPath);
-
           if (withoutIndex(targetPath) === rootPath) {
             // If item is root
-            dispatch(
-              pathNavigatorTreeRefresh({
-                id
-              })
-            );
-          } else {
+            dispatch(pathNavigatorTreeRefresh({ id }));
+          } else if (
+            // The target path is rooted in this navigator's root
+            targetPath.startsWith(withoutIndex(rootPath))
+          ) {
+            // TODO: Research improving the reloads here; consider targetPath and opened paths?
             if (user.username === payload.user.username) {
               // if it's current user then reload and expand folder (for example pasting in another folder)
-              dispatch(
-                pathNavigatorTreeFetchPathChildren({
-                  id,
-                  path: parentPath,
-                  expand: true
-                })
-              );
+              dispatch(pathNavigatorTreeFetchPathChildren({ id, path: parentPath, expand: false }));
             } else {
               // if content editor is not current user do a silent refresh
               dispatch(pathNavigatorTreeBackgroundRefresh({ id }));
@@ -315,20 +300,12 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
           const path = node?.id;
           if (path) {
             dispatch(
-              batchActions([
-                ...(state.expanded.includes(targetPath)
-                  ? [
-                      pathNavigatorTreeCollapsePath({
-                        id,
-                        path: targetPath
-                      })
-                    ]
-                  : []),
-                pathNavigatorTreeFetchPathChildren({
-                  id,
-                  path
-                })
-              ])
+              state.expanded.includes(targetPath)
+                ? batchActions([
+                    pathNavigatorTreeCollapsePath({ id, path: targetPath }),
+                    pathNavigatorTreeFetchPathChildren({ id, path })
+                  ])
+                : pathNavigatorTreeFetchPathChildren({ id, path })
             );
           }
           if (targetPath === rootPath) {
@@ -360,15 +337,12 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
           dispatch(pathNavigatorTreeBackgroundRefresh({ id }));
           break;
         }
-        default: {
-          break;
-        }
       }
     });
     return () => {
       subscription.unsubscribe();
     };
-  }, [id, rootPath, dispatch, totalByPath, limit, childrenByParentPath, state?.expanded, user, rootPathExists]);
+  }, [id, rootPath, dispatch, state?.expanded, user, rootPathExists]);
   // endregion
 
   if ((!rootItem || !Boolean(state) || !rootNode) && !error) {
@@ -405,34 +379,18 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
   };
 
   const onToggleNodeClick = (path: string) => {
-    // If the path is already expanded should be collapsed
+    // If the path is already expanded, should be collapsed
     if (state.expanded.includes(path)) {
-      dispatch(
-        pathNavigatorTreeCollapsePath({
-          id,
-          path
-        })
-      );
+      dispatch(pathNavigatorTreeCollapsePath({ id, path }));
     } else {
-      // If the item have children should be expanded
+      // If the item's children have been loaded, should simply be expanded
       if (childrenByParentPath[path]) {
-        dispatch(
-          pathNavigatorTreeExpandPath({
-            id,
-            path
-          })
-        );
+        dispatch(pathNavigatorTreeExpandPath({ id, path }));
       } else {
-        // Otherwise the item doesn't have children and should be fetched
-        dispatch(
-          pathNavigatorTreeFetchPathChildren({
-            id,
-            path
-          })
-        );
+        // Children not fetched yet, should be fetched
+        dispatch(pathNavigatorTreeFetchPathChildren({ id, path }));
       }
     }
-    dispatch(pathNavigatorTreeBackgroundRefresh({ id }));
   };
 
   const onHeaderButtonClick = (element: Element) => {

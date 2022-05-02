@@ -19,7 +19,11 @@
 <#assign pName = RequestParameters.name!''>
 <#assign pFile = RequestParameters.file!'index.js'>
 <#assign pPluginId = RequestParameters.pluginId!''>
-<#if pSite?? && pType?? && pName?? && pFile?ends_with('.html')>
+<#if pSite == '' || pType == '' || pName == ''>
+    <div style="font-family: sans-serif; text-align: center; margin: 50px;">
+      <h1>Query arguments site, type and name are mandatory to render a plugin</h1>
+    </div>
+<#elseif pSite?? && pType?? && pName?? && pFile?ends_with('.html')>
   <#assign html = applicationContext.configurationService.getConfigurationAsString(
       pSite,
       "studio",

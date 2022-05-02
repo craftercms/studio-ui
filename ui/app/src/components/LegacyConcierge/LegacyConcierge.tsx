@@ -18,7 +18,7 @@ import { useDispatch } from 'react-redux';
 import { useEffect } from 'react';
 import { fetchContentTypes, guestPathUpdated, reloadRequest } from '../../state/actions/preview';
 import { filter } from 'rxjs/operators';
-import { getHostToGuestBus } from '../../modules/Preview/previewContext';
+import { getHostToGuestBus } from '../../utils/subjects';
 import { LegacyItem } from '../../models/Item';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 

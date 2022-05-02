@@ -31,8 +31,8 @@ import Pagination from '../Pagination';
 import FolderBrowserTreeView from '../FolderBrowserTreeView';
 import Box from '@mui/material/Box';
 import { BrowseFilesDialogUIProps } from './utils';
-import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
+import InputUnstyled from '@mui/base/InputUnstyled';
 
 export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
   const {
@@ -68,16 +68,14 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
         <Box display="flex">
           <section className={classes.leftWrapper}>
             <FolderBrowserTreeView
-              classes={{ treeItemLabel: classes.treeItemLabel }}
+              classes={{ root: classes.treeView, treeItemLabel: classes.treeItemLabel }}
               rootPath={path}
               showPathTextBox={false}
               onPathSelected={onPathSelected}
             />
           </section>
           <section className={classes.rightWrapper}>
-            <Typography component="h2" variant="h6">
-              {currentPath}
-            </Typography>
+            <InputUnstyled value={currentPath} className={classes.currentPath} disabled title={currentPath} />
             <Divider />
             <Box display="flex" alignItems="center" marginTop="16px" marginBottom="16px" gap="8px">
               <SecondaryButton onClick={onUpload}>

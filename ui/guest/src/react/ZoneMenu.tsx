@@ -139,11 +139,12 @@ export function ZoneMenu(props: ZoneMenuProps) {
   const commonEdit = (e, typeOfEdit) => {
     e.stopPropagation();
     e.preventDefault();
-    const parentModelId = getParentModelId(modelId, getCachedModels(), modelHierarchyMap);
     if (recordType === 'node-selector-item') {
       // If it's a node selector item, we transform it into the actual item.
+      const parentModelId = getParentModelId(componentId, getCachedModels(), modelHierarchyMap);
       post(requestEdit({ typeOfEdit, modelId: componentId, parentModelId }));
     } else {
+      const parentModelId = getParentModelId(modelId, getCachedModels(), modelHierarchyMap);
       post(requestEdit({ typeOfEdit, modelId, parentModelId, fields: record.fieldId }));
     }
     onCancel();

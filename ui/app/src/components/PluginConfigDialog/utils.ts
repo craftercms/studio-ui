@@ -15,7 +15,7 @@
  */
 
 import { EnhancedDialogProps } from '../EnhancedDialog';
-import { onSubmittingAndOrPendingChangeProps } from '../../hooks';
+import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 
 export interface PluginConfigDialogBaseProps {
   pluginId: string;

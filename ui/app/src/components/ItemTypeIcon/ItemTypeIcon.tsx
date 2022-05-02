@@ -28,6 +28,7 @@ import Tooltip from '@mui/material/Tooltip';
 import * as React from 'react';
 import { ItemDisplayProps } from '../ItemDisplay';
 import ImageIcon from '@mui/icons-material/ImageOutlined';
+import VideoIcon from '@mui/icons-material/PlayCircleFilledWhiteOutlined';
 import CodeRounded from '@mui/icons-material/CodeRounded';
 import FontIcon from '@mui/icons-material/FontDownloadOutlined';
 import TextIcon from '@mui/icons-material/SubjectRounded';
@@ -61,6 +62,8 @@ export function ItemTypeIcon(props: ItemTypeIconProps) {
     case 'asset':
       if (item.mimeType.includes('image/')) {
         TheIcon = ImageIcon;
+      } else if (item.mimeType.includes('video/')) {
+        TheIcon = VideoIcon;
       } else {
         switch (item.mimeType) {
           case 'application/javascript':

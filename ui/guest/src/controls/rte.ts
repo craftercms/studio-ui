@@ -41,7 +41,6 @@ export function initTinyMCE(
   const dispatch$ = new Subject<GuestStandardAction>();
   const { field, model } = iceRegistry.getReferentialEntries(record.iceIds[0]);
   const type = field?.type;
-  const elementDisplay = $(record.element).css('display');
   const inlineElsRegex =
     /B|BIG|I|SMALL|TT|ABBR|ACRINYM|CITE|CODE|DFN|EM|KBD|STRONG|SAMP|VAR|A|BDO|BR|IMG|MAP|OBJECT|Q|SCRIPT|SPAN|SUB|SUP|BUTTON|INPUT|LABEL|SELECT|TEXTAREA/;
   let rteEl = record.element;
@@ -169,6 +168,10 @@ export function initTinyMCE(
         return type === 'html' ? editor.getContent() : editor.getContent({ format: 'text' });
       }
 
+      function getSelectionContent() {
+        return type === 'html' ? editor.selection.getContent() : editor.selection.getContent({ format: 'text' });
+      }
+
       function destroyEditor() {
         editor.destroy(false);
       }
@@ -260,6 +263,11 @@ export function initTinyMCE(
         }
       });
 
+      // TODO: The max-length can be bypassed by pasting.
+      // editor.on('paste', (e) => {
+      //   // ...
+      // });
+
       editor.on('keydown', (e) => {
         if (e.key === 'Escape') {
           e.stopImmediatePropagation();
@@ -276,7 +284,10 @@ export function initTinyMCE(
           validations?.maxLength &&
           // TODO: Check/improve regex
           /[a-zA-Z0-9-_ ]/.test(String.fromCharCode(e.keyCode)) &&
-          getContent().length + 1 > parseInt(validations.maxLength.value)
+          getContent().length + 1 > parseInt(validations.maxLength.value) &&
+          // If everything is selected and a key is pressed, essentially, it will
+          // delete everything so no max-length problem
+          getContent() !== getSelectionContent()
         ) {
           post(
             validationMessage({
@@ -291,6 +302,7 @@ export function initTinyMCE(
       });
 
       editor.on('DblClick', (e) => {
+        e.preventDefault();
         e.stopPropagation();
         if (e.target.nodeName === 'IMG') {
           window.tinymce.activeEditor.execCommand('mceImage');
@@ -298,6 +310,7 @@ export function initTinyMCE(
       });
 
       editor.on('click', (e) => {
+        e.preventDefault();
         e.stopPropagation();
       });
 

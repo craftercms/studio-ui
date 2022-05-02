@@ -14,12 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import DashletTemplate from '../SiteDashboard/DashletTemplate';
+import DashletCard from '../DashletCard/DashletCard';
 import { CommonDashletProps } from '../SiteDashboard/utils';
 import palette from '../../styles/palette';
 import { FormattedMessage } from 'react-intl';
 import React, { useEffect, useMemo } from 'react';
-import { useActiveSiteId, useSpreadState } from '../../hooks';
+import useSpreadState from '../../hooks/useSpreadState';
+import useActiveSiteId from '../../hooks/useActiveSiteId';
 import IconButton from '@mui/material/IconButton';
 import { RefreshRounded } from '@mui/icons-material';
 import { fetchPublishingStats } from '../../services/dashboard';
@@ -56,7 +57,7 @@ export function DevContentOpsDashlet(props: DevContentOpsDashletProps) {
     onRefresh();
   }, [onRefresh]);
   return (
-    <DashletTemplate
+    <DashletCard
       {...props}
       sxs={{ content: { pt: 2 } }}
       borderLeftColor={borderLeftColor}
@@ -89,7 +90,7 @@ export function DevContentOpsDashlet(props: DevContentOpsDashletProps) {
           </Box>
         </Stack>
       )}
-    </DashletTemplate>
+    </DashletCard>
   );
 }
 

@@ -15,51 +15,27 @@
  */
 
 import GlobalState from '../../models/GlobalState';
-import { createAction, createReducer } from '@reduxjs/toolkit';
-import { AjaxError, AjaxResponse } from 'rxjs/ajax';
-import { FetchContentVersion, VersionsResponse, VersionsStateProps } from '../../models/Version';
+import { createReducer } from '@reduxjs/toolkit';
+import { VersionsStateProps } from '../../models/Version';
 import { createLookupTable } from '../../utils/object';
-import { DetailedItem } from '../../models/Item';
-
-interface HistoryConfigProps {
-  item: Partial<DetailedItem>;
-  rootPath?: string;
-  environment?: string;
-  module?: string;
-  isConfig?: boolean;
-}
-
-export const fetchItemVersions = /*#__PURE__*/ createAction<HistoryConfigProps>('FETCH_ITEM_VERSIONS');
-
-export const fetchItemVersionsComplete = /*#__PURE__*/ createAction<VersionsResponse>('FETCH_ITEM_VERSIONS_COMPLETE');
-
-export const fetchItemVersionsFailed = /*#__PURE__*/ createAction<AjaxError>('FETCH_ITEM_VERSIONS_FAILED');
-
-export const versionsChangePage = /*#__PURE__*/ createAction<{ page: number }>('VERSIONS_CHANGE_PAGE');
-
-export const versionsChangeLimit = /*#__PURE__*/ createAction<{ limit: number }>('VERSIONS_CHANGE_LIMIT');
-
-export const versionsChangeItem = /*#__PURE__*/ createAction<{ item: DetailedItem }>('VERSIONS_CHANGE_ITEM');
-
-export const compareVersion = /*#__PURE__*/ createAction<{ id: string }>('COMPARE_VERSIONS');
-
-export const compareToPreviousVersion = /*#__PURE__*/ createAction<{ id: string }>('COMPARE_TO_PREVIOUS_VERSION');
-
-export const resetVersionsState = /*#__PURE__*/ createAction('RESET_VERSIONS_STATE');
-
-export const compareBothVersions = /*#__PURE__*/ createAction<{ versions: string[] }>('COMPARE_BOTH_VERSIONS');
-
-export const compareBothVersionsComplete = /*#__PURE__*/ createAction<any>('COMPARE_BOTH_VERSIONS_COMPLETE');
-
-export const compareBothVersionsFailed = /*#__PURE__*/ createAction<any>('COMPARE_BOTH_VERSIONS_FAILED');
-
-export const revertContent = /*#__PURE__*/ createAction<FetchContentVersion>('REVERT_CONTENT');
-
-export const revertContentComplete = /*#__PURE__*/ createAction<{ path: string }>('REVERT_CONTENT_COMPLETE');
-
-export const revertContentFailed = /*#__PURE__*/ createAction<AjaxResponse<unknown>>('REVERT_CONTENT_FAILED');
-
-export const revertToPreviousVersion = /*#__PURE__*/ createAction<{ id: string }>('REVERT_TO_PREVIOUS_VERSION');
+import {
+  compareBothVersions,
+  compareBothVersionsComplete,
+  compareBothVersionsFailed,
+  compareToPreviousVersion,
+  compareVersion,
+  fetchItemVersions,
+  fetchItemVersionsComplete,
+  fetchItemVersionsFailed,
+  resetVersionsState,
+  revertContent,
+  revertContentComplete,
+  revertContentFailed,
+  revertToPreviousVersion,
+  versionsChangeItem,
+  versionsChangeLimit,
+  versionsChangePage
+} from '../actions/versions';
 
 const initialState: VersionsStateProps = {
   byId: null,

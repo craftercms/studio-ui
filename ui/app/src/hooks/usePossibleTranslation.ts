@@ -48,3 +48,5 @@ export function usePossibleTranslation(
   const { formatMessage } = useIntl();
   return getPossibleTranslation(titleOrDescriptor, formatMessage, values);
 }
+
+export default usePossibleTranslation;

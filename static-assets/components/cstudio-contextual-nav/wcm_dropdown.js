@@ -59,7 +59,7 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
 
     if (window.location.pathname.indexOf('browse') > -1 || window.location.pathname.indexOf('site-config') > -1) {
       mainContainerEl.innerHTML = '';
-      CrafterCMSNext.render('#acn-dropdown-wrapper', 'CrafterIcon', {
+      CrafterCMSNext.render('#acn-dropdown-wrapper', 'CrafterCMSIcon', {
         style: { fontSize: '33px', margin: '9px 5px 5px' }
       });
     } else {

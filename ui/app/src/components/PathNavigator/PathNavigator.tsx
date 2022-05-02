@@ -21,7 +21,7 @@ import ContextMenu, { ContextMenuOption } from '../ContextMenu/ContextMenu';
 import { useDispatch } from 'react-redux';
 import { getParentPath, withIndex, withoutIndex } from '../../utils/path';
 import { translations } from './translations';
-import { languages } from '../../utils/i18n-legacy';
+import { languages } from '../../env/i18n-legacy';
 import {
   pathNavigatorBackgroundRefresh,
   pathNavigatorChangeLimit,
@@ -39,10 +39,18 @@ import {
 } from '../../state/actions/pathNavigator';
 import { fetchSandboxItem } from '../../state/actions/content';
 import { showEditDialog, showItemMegaMenu, showPreviewDialog } from '../../state/actions/dialogs';
-import { getEditorMode, isEditableViaFormEditor, isFolder, isImage, isNavigable, isPreviewable } from './utils';
+import {
+  getEditorMode,
+  isEditableViaFormEditor,
+  isFolder,
+  isImage,
+  isNavigable,
+  isPreviewable,
+  isVideo
+} from './utils';
 import { StateStylingProps } from '../../models/UiConfig';
-import { getHostToHostBus } from '../../modules/Preview/previewContext';
-import { debounceTime, filter } from 'rxjs/operators';
+import { getHostToHostBus } from '../../utils/subjects';
+import { debounceTime } from 'rxjs/operators';
 import {
   contentEvent,
   deleteContentEvent,
@@ -216,56 +224,42 @@ export function PathNavigator(props: PathNavigatorProps) {
 
   // Item Updates Propagation
   useEffect(() => {
-    const events = [
-      contentEvent.type,
-      deleteContentEvent.type,
-      pluginInstalled.type,
-      workflowEvent.type,
-      publishEvent.type
-    ];
     const hostToHost$ = getHostToHostBus();
-    const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
+    const subscription = hostToHost$.subscribe(({ type, payload }) => {
       switch (type) {
         case contentEvent.type: {
           const targetPath = payload.targetPath;
-          const parentPath = getParentPath(targetPath);
-          if (parentPath === withoutIndex(state.currentPath)) {
-            // If item is direct children of root (in current pathNavigator view)
+          const parentPathOfTargetPath = getParentPath(targetPath);
+          if (
+            // If content event target is a direct child of the current path in the navigator
+            parentPathOfTargetPath === withoutIndex(state.currentPath) ||
+            // If content event target is the current path in the navigator
+            withoutIndex(targetPath) === withoutIndex(state.currentPath)
+          ) {
             dispatch(pathNavigatorBackgroundRefresh({ id }));
-          } else if (withoutIndex(targetPath) === withoutIndex(state.currentPath)) {
-            // If item is root (in current pathNavigator view)
-            dispatch(pathNavigatorBackgroundRefresh({ id }));
-          } else if (getParentPath(parentPath) === withoutIndex(state.currentPath)) {
-            // if item just belongs to parent item
-            dispatch(fetchSandboxItem({ path: parentPath, force: true }));
+          } else if (
+            // If content event target is a child of a child of the current path in the navigator,
+            // then, the parent item of the event target needs refreshing, so it's child count is
+            // updated and becomes navigable (in case that it didn't have children before this event).
+            getParentPath(parentPathOfTargetPath) === withoutIndex(state.currentPath)
+          ) {
+            dispatch(fetchSandboxItem({ path: parentPathOfTargetPath }));
           }
           break;
         }
         case deleteContentEvent.type: {
           const targetPath = payload.targetPath;
-
           if (withoutIndex(targetPath) === withoutIndex(path)) {
             // if path being deleted is the rootPath
             dispatch(pathNavigatorRefresh({ id }));
           } else if (withoutIndex(targetPath) === withoutIndex(state.currentPath)) {
             // if path is currentPath (current root path)
-            dispatch(
-              pathNavigatorSetCurrentPath({
-                id,
-                path: getParentPath(withoutIndex(targetPath))
-              })
-            );
+            dispatch(pathNavigatorSetCurrentPath({ id, path: getParentPath(withoutIndex(targetPath)) }));
           } else if (state.itemsInPath.includes(targetPath)) {
             // current page is last one and only one item in current page
             const goBackOnePage = state.offset >= state.limit && state.total === state.offset + 1;
-
             if (goBackOnePage) {
-              dispatch(
-                pathNavigatorChangePage({
-                  id,
-                  offset: state.offset - state.limit
-                })
-              );
+              dispatch(pathNavigatorChangePage({ id, offset: state.offset - state.limit }));
             } else {
               dispatch(pathNavigatorBackgroundRefresh({ id }));
             }
@@ -309,10 +303,10 @@ export function PathNavigator(props: PathNavigatorProps) {
   const onPreview = (item: DetailedItem) => {
     if (isEditableViaFormEditor(item)) {
       dispatch(showEditDialog({ path: item.path, authoringBase, site: siteId, readonly: true }));
-    } else if (isImage(item)) {
+    } else if (isImage(item) || isVideo(item)) {
       dispatch(
         showPreviewDialog({
-          type: 'image',
+          type: isImage(item) ? 'image' : 'video',
           title: item.label,
           url: item.path
         })

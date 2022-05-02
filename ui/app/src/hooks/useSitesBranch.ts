@@ -20,3 +20,5 @@ import { useSelection } from './useSelection';
 export function useSitesBranch(): GlobalState['sites'] {
   return useSelection((state) => state.sites);
 }
+
+export default useSitesBranch;
