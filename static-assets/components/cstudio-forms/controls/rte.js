@@ -472,6 +472,7 @@ CStudioAuthoring.Module.requireModule(
                 'images_upload_handler', // Images upload integration with our data sources is already implemented in the control
                 'code_editor_inline', // Code editor will always be inline in forms-engine.
                 'plugins', // Considered/used above, mixed with our options
+                'external_plugins', // Considered/used above, mixed with our options
                 'toolbar_sticky', // Toolbar is configured and styled to be sticky in forms-engine
                 'relative_urls', // To avoid allowing convertion of urls to be relative to the document_base_url
                 'readonly', // Comes from form control props, can't be overridden.
