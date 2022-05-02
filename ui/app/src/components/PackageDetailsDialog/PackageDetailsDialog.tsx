@@ -85,7 +85,7 @@ export function PackageDetailsDialog(props: PackageDetailsDialogProps) {
               subtitle={
                 <FormattedMessage
                   id="packageDetailsDialog.emptyPackageMessage"
-                  defaultMessage="Fetch package id is {packageId}"
+                  defaultMessage="Fetched package id is {packageId}"
                   values={{ packageId }}
                 />
               }

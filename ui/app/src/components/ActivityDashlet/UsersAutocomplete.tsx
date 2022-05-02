@@ -56,7 +56,7 @@ export function UsersAutocomplete(props: UsersAutocompleteProps) {
         keyword ? (
           <FormattedMessage
             id="activityDashlet.noUsersMatchKeywordsMessage"
-            defaultMessage='"No users match "{user}""'
+            defaultMessage='No users match "{user}"'
             values={{ user: keyword }}
           />
         ) : (
