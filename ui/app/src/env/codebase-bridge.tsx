@@ -19,6 +19,7 @@ import ReactDOM from 'react-dom';
 
 import CrafterCMSNextBridge from '../components/CrafterCMSNextBridge/CrafterCMSNextBridge';
 import { nou } from '../utils/object';
+import * as babel from '../env/babel';
 import * as rxjs from 'rxjs';
 import { Observable, Subject } from 'rxjs';
 import { IntlShape } from 'react-intl/src/types';
@@ -140,7 +141,7 @@ export function createCodebaseBridge() {
       logoIcon: require('../assets/crafter-icon.svg')
     },
 
-    util: utils,
+    util: { ...utils, babel },
 
     i18n: {
       intl: getCurrentIntl(),
