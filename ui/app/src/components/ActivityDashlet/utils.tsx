@@ -94,7 +94,7 @@ export function renderActivity(
       );
     case 'DELETE':
       return item.label === null ? (
-        <FormattedMessage id="activityDashlet.deletedItemUpdateActivityMessage" defaultMessage="Deleted an item" />
+        <FormattedMessage id="activityDashlet.deletedItemDeleteActivityMessage" defaultMessage="Deleted an item" />
       ) : (
         <FormattedMessage
           id="activityDashlet.deleteActivityMessage"

@@ -145,6 +145,7 @@ import {
   rtePickerActionResult,
   showEditDialog,
   showRtePickerActions,
+  ShowRtePickerActionsPayload,
   showSingleFileUploadDialog,
   showWorkflowCancellationDialog,
   workflowCancellationDialogClosed
@@ -1072,6 +1073,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         }
         // endregion
         case showRtePickerActions.type: {
+          const typedPayload: ShowRtePickerActionsPayload = payload;
           const { setDataSourceActionsListState, showToolsPanel, toolsPanelWidth, browseFilesDialogState } =
             upToDateRefs.current;
           const onShowSingleFileUploadDialog = (path: string, type: 'image' | 'media') => {
@@ -1137,8 +1139,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           };
 
           // filter data sources to only the ones that match the type
-          const dataSourcesKeys = Object.keys(payload.datasources).filter((datasourceId) =>
-            dataSourcesByType[payload.type]?.includes(datasourceId)
+          const dataSourcesKeys = Object.keys(typedPayload.datasources).filter((datasourceId) =>
+            dataSourcesByType[typedPayload.type]?.includes(datasourceId)
           );
 
           // directly open corresponding dialog
@@ -1146,14 +1148,14 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
             // determine if upload or browse
             const key = dataSourcesKeys[0];
             const processedPath = processPathMacros({
-              path: payload.datasources[key].value,
-              objectId: payload.model.craftercms.id,
-              objectGroupId: payload.model.objectGroupId
+              path: typedPayload.datasources[key].value,
+              objectId: typedPayload.model.craftercms.id,
+              objectGroupId: typedPayload.model.objectGroupId
             });
             if (key === 'allowImageUpload' || key === 'allowVideoUpload') {
-              onShowSingleFileUploadDialog(processedPath, payload.type);
+              onShowSingleFileUploadDialog(processedPath, typedPayload.type);
             } else {
-              onShowBrowseFilesDialog(processedPath, payload.type);
+              onShowBrowseFilesDialog(processedPath, typedPayload.type);
             }
           } else if (dataSourcesKeys.length > 1) {
             // create items for DataSourcesActionsList
@@ -1162,27 +1164,27 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
               dataSourcesItems.push({
                 label: formatMessage(guestMessages[dataSourceKey]),
                 path: processPathMacros({
-                  path: payload.datasources[dataSourceKey].value,
-                  objectId: payload.model.objectId,
-                  objectGroupId: payload.model.objectGroupId
+                  path: typedPayload.datasources[dataSourceKey].value,
+                  objectId: typedPayload.model.objectId,
+                  objectGroupId: typedPayload.model.objectGroupId
                 }),
                 action:
                   dataSourceKey === 'allowImageUpload' || dataSourceKey === 'allowVideoUpload'
                     ? onShowSingleFileUploadDialog
                     : onShowBrowseFilesDialog,
-                type: payload.type
+                type: typedPayload.type
               });
             });
 
-            const { left, top, height } = payload.btnRect;
+            const { left, top, height } = typedPayload.rect;
             setDataSourceActionsListState({
               show: true,
+              items: dataSourcesItems,
               rect: {
-                ...payload.btnRect,
+                ...typedPayload.rect,
                 left: left + (showToolsPanel ? toolsPanelWidth : 0),
                 top: top + height * 3 // To position correctly under the button
-              },
-              items: dataSourcesItems
+              }
             });
           } else if (dataSourcesKeys.length === 0) {
             dispatch(

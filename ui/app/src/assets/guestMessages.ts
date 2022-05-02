@@ -127,19 +127,19 @@ export const guestMessages = defineMessages({
     defaultMessage: 'The item was locked by {name}. Edit mode disabled until lock is released.'
   },
   allowImagesFromRepo: {
-    id: 'validations.allowImagesFromRepoDS',
+    id: 'datasourceActionList.imageFromRepoLabel',
     defaultMessage: 'Image from repository'
   },
   allowImageUpload: {
-    id: 'validations.allowImageUploadDS',
+    id: 'datasourceActionList.imageFromDesktopLabel',
     defaultMessage: 'Upload image from desktop'
   },
   allowVideosFromRepo: {
-    id: 'validations.allowImagesFromRepoDS',
+    id: 'datasourceActionList.videoFromRepoLabel',
     defaultMessage: 'Video from repository'
   },
   allowVideoUpload: {
-    id: 'validations.allowImageUploadDS',
+    id: 'datasourceActionList.videoFromDesktopLabel',
     defaultMessage: 'Upload video from desktop'
   },
   noDataSourcesSet: {

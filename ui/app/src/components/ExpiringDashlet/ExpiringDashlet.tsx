@@ -136,7 +136,11 @@ export function ExpiringDashlet(props: ExpiringDashletProps) {
           <List
             subheader={
               <ListSubheader>
-                <FormattedMessage id="words.expiring" defaultMessage="Expiring (next {days} days)" values={{ days }} />
+                <FormattedMessage
+                  id="expiringDashlet.expiringNextNDays"
+                  defaultMessage="Expiring (next {days} days)"
+                  values={{ days }}
+                />
               </ListSubheader>
             }
           >

@@ -45,6 +45,8 @@ import { PreviewDialogStateProps } from '../../components/PreviewDialog/utils';
 import { EditSiteDialogStateProps } from '../../components/EditSiteDialog/utils';
 import { LegacyFormDialogStateProps } from '../../components/LegacyFormDialog/utils';
 import { SingleFileUploadDialogStateProps } from '../../components/SingleFileUploadDialog';
+import ContentInstance from '../../models/ContentInstance';
+import { ContentTypeFieldValidation } from '../../models';
 
 // region History
 export const showHistoryDialog = /*#__PURE__*/ createAction<Partial<HistoryDialogStateProps>>('SHOW_HISTORY_DIALOG');
@@ -271,7 +273,13 @@ export const showKeyboardShortcutsDialog = /*#__PURE__*/ createAction('SHOW_KEYB
 // endregion
 
 // region Show Dialogs From DataSources
-export const showRtePickerActions = /*#__PURE__*/ createAction('SHOW_RTE_PICKER_ACTIONS');
+export interface ShowRtePickerActionsPayload {
+  datasources: Record<string, ContentTypeFieldValidation>;
+  model: ContentInstance;
+  type: 'image' | 'media';
+  rect: DOMRect;
+}
+export const showRtePickerActions = /*#__PURE__*/ createAction<ShowRtePickerActionsPayload>('SHOW_RTE_PICKER_ACTIONS');
 // endregion
 
 // region Rte Picker Action Result

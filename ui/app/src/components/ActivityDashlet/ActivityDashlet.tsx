@@ -286,7 +286,7 @@ export function ActivityDashlet(props: ActivityDashletProps) {
               <FormattedMessage id="activityDashlet.showActivityByEveryone" defaultMessage="All activities" />
             ) : (
               <FormattedMessage
-                id="activityDashlet.showActivityByEveryone"
+                id="activityDashlet.showSelectedActivities"
                 defaultMessage="Selected activities ({count})"
                 values={{ count: activities.length }}
               />
