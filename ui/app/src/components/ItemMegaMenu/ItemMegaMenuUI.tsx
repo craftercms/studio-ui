@@ -342,4 +342,3 @@ export function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
 }
 
 export default ItemMegaMenuUI;
-

@@ -14,10 +14,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './LegacyRecentlyPublishedDashlet';
+export interface PluginFileBuilder {
+  site: string;
+  type: string;
+  name: string;
+  file?: string;
+  id?: string;
+}
 
-export * from './LegacyRecentlyPublishedDashlet';
-
-export * from './LegacyRecentlyPublishedDashletUI';
-
-export * from './LegacyRecentlyPublishedDashletUISkeletonTable';
+export default PluginFileBuilder;

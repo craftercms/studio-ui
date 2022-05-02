@@ -40,4 +40,3 @@ export function NewRemoteRepositoryDialog(props: NewRemoteRepositoryDialogProps)
 }
 
 export default NewRemoteRepositoryDialog;
-

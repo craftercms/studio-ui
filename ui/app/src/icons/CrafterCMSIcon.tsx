@@ -36,7 +36,7 @@ export interface CrafterCMSIconProps extends Omit<SvgIconProps, 'classes'> {
   classes?: SvgIconProps['classes'] & { gear?: string; letter?: string; chevron?: string };
 }
 
-export default function CrafterCMSIcon(props: CrafterCMSIconProps) {
+export function CrafterCMSIcon(props: CrafterCMSIconProps) {
   const classes = useStyles();
   const themeClass = classes.themedFill;
   return (
@@ -58,3 +58,5 @@ export default function CrafterCMSIcon(props: CrafterCMSIconProps) {
     </SvgIcon>
   );
 }
+
+export default CrafterCMSIcon;

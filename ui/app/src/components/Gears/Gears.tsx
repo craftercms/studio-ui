@@ -163,4 +163,3 @@ Gear.defaultProps = {
 };
 
 export default Gears;
-

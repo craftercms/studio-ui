@@ -112,4 +112,3 @@ export function TransferListColumn(props: TransferListColumnProps) {
 }
 
 export default TransferListColumn;
-

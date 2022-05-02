@@ -97,4 +97,3 @@ export function SiteSearchSortOrder(props: SortOrderProps) {
 }
 
 export default SiteSearchSortOrder;
-

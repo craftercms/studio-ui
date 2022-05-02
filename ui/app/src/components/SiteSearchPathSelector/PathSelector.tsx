@@ -77,7 +77,7 @@ const messages = defineMessages({
   }
 });
 
-interface PathSelectorProps {
+export interface PathSelectorProps {
   value: string;
   disabled: boolean;
   onPathSelected(path: string): void;
@@ -165,4 +165,3 @@ export function PathSelector(props: PathSelectorProps) {
 }
 
 export default PathSelector;
-

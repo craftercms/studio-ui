@@ -122,4 +122,3 @@ export function SiteSearchFilterRadios(props: FilterRadiosProps) {
 }
 
 export default SiteSearchFilterRadios;
-

@@ -189,4 +189,3 @@ export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
 };
 
 export default PreviewComponentsPanel;
-

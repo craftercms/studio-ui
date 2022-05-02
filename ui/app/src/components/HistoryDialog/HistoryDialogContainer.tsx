@@ -54,7 +54,7 @@ import SingleItemSelector from '../SingleItemSelector';
 import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
 import VersionList from '../VersionList';
 import DialogFooter from '../DialogFooter/DialogFooter';
-import { Pagination } from './Pagination';
+import { HistoryDialogPagination } from './HistoryDialogPagination';
 import { historyStyles } from './HistoryDialog';
 import useSelection from '../../hooks/useSelection';
 
@@ -316,7 +316,7 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
       </DialogBody>
       <DialogFooter classes={{ root: classes.dialogFooter }}>
         {count > 0 && (
-          <Pagination
+          <HistoryDialogPagination
             count={count}
             page={page}
             rowsPerPage={limit}

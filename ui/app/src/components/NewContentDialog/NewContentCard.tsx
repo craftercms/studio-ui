@@ -148,4 +148,3 @@ export function ContentSkeletonCard(props: { isCompact: boolean }) {
 }
 
 export default NewContentCard;
-

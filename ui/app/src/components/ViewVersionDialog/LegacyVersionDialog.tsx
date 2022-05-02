@@ -35,4 +35,3 @@ export function LegacyVersionDialog(props: VersionViewProps) {
 }
 
 export default LegacyVersionDialog;
-

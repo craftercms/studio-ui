@@ -16,7 +16,8 @@
 
 import { EntityState } from '../../models/EntityState';
 import ContentType from '../../models/ContentType';
-import { DialogHeaderAction, DialogHeaderStateAction } from '../DialogHeader';
+import { DialogHeaderStateAction } from '../DialogHeader';
+import { DialogHeaderActionProps } from '../DialogHeaderAction';
 import { ApiResponse } from '../../models/ApiResponse';
 import StandardAction from '../../models/StandardAction';
 import { LookupTable } from '../../models/LookupTable';
@@ -41,8 +42,8 @@ export interface ViewVersionDialogBaseProps {
 
 export interface ViewVersionDialogProps extends ViewVersionDialogBaseProps, EnhancedDialogProps {
   contentTypesBranch: EntityState<ContentType>;
-  leftActions?: DialogHeaderAction[];
-  rightActions?: DialogHeaderAction[];
+  leftActions?: DialogHeaderActionProps[];
+  rightActions?: DialogHeaderActionProps[];
 }
 
 export interface ViewVersionDialogStateProps extends ViewVersionDialogBaseProps, EnhancedDialogState {

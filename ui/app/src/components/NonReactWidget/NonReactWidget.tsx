@@ -16,11 +16,11 @@
 
 import React, { useRef } from 'react';
 import { craftercms } from '../../env/craftercms';
-import { NonReactComponentRecord } from '../../services/plugin';
+import { NonReactWidgetRecord } from '../../models/NonReactWidgetRecord';
 import { useMount } from '../../hooks/useMount';
 
 interface NonReactWidgetProps {
-  widget: NonReactComponentRecord;
+  widget: NonReactWidgetRecord;
   configuration: any;
 }
 

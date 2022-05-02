@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import ListItem from '@mui/material/ListItem';
+import ListItemButton, { ListItemButtonProps } from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
@@ -25,13 +25,11 @@ import SystemIcon, { SystemIconDescriptor } from '../SystemIcon';
 import { usePossibleTranslation } from '../../hooks/usePossibleTranslation';
 import TranslationOrText from '../../models/TranslationOrText';
 
-export interface ToolsPanelListItemButtonProps {
+export interface ToolsPanelListItemButtonProps extends Omit<ListItemButtonProps, 'title'> {
   title: TranslationOrText;
   subtitle?: string;
-  icon: SystemIconDescriptor;
-  displaySecondaryAction?: boolean;
+  icon?: SystemIconDescriptor;
   secondaryActionIcon?: React.ReactNode;
-  onClick(): void;
   onSecondaryActionClick?(): void;
 }
 
@@ -41,33 +39,34 @@ export function ToolsPanelListItemButton(props: ToolsPanelListItemButtonProps) {
     title,
     subtitle,
     onClick,
-    displaySecondaryAction = false,
     secondaryActionIcon = <ChevronRounded />,
-    onSecondaryActionClick
+    onSecondaryActionClick,
+    ...listItemButtonProps
   } = props;
   return (
-    <ListItem button onClick={onClick} ContainerComponent="div">
-      <ListItemIcon>
-        <SystemIcon icon={icon} fontIconProps={{ fontSize: 'small' }} />
-      </ListItemIcon>
+    <ListItemButton {...listItemButtonProps} onClick={onClick}>
+      {icon && (
+        <ListItemIcon>
+          <SystemIcon icon={icon} fontIconProps={{ fontSize: 'small' }} />
+        </ListItemIcon>
+      )}
       <ListItemText
         primary={usePossibleTranslation(title)}
         secondary={subtitle}
         primaryTypographyProps={{ noWrap: true }}
         secondaryTypographyProps={{ noWrap: true }}
       />
-      {displaySecondaryAction ? (
+      {onSecondaryActionClick ? (
         <ListItemSecondaryAction style={{ right: '5px' }}>
-          <IconButton size="small" onClick={onSecondaryActionClick ?? onClick}>
+          <IconButton size="small" onClick={onSecondaryActionClick}>
             {secondaryActionIcon}
           </IconButton>
         </ListItemSecondaryAction>
       ) : (
         <ChevronRounded />
       )}
-    </ListItem>
+    </ListItemButton>
   );
 }
 
 export default ToolsPanelListItemButton;
-

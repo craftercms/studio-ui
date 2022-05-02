@@ -74,4 +74,3 @@ export function PublishingStatusWidget(props: PublishingStatusWidgetProps) {
 }
 
 export default PublishingStatusWidget;
-

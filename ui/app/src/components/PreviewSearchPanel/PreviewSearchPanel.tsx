@@ -291,4 +291,3 @@ export function PreviewSearchPanel() {
 }
 
 export default PreviewSearchPanel;
-

@@ -62,7 +62,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-interface SiteSearchToolBarProps {
+export interface SiteSearchToolBarProps {
   keyword: string[] | string;
   showActionButton?: boolean;
   showTitle?: boolean;
@@ -116,4 +116,3 @@ export function SiteSearchToolBar(props: SiteSearchToolBarProps) {
 }
 
 export default SiteSearchToolBar;
-

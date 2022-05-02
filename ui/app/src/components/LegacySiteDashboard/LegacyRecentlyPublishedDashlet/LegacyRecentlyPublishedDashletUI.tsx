@@ -30,7 +30,7 @@ import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import GlobalState from '../../../models/GlobalState';
 import LookupTable from '../../../models/LookupTable';
 import Collapse from '@mui/material/Collapse';
-import { RecentlyPublishedDashletDashboardItem } from './RecentlyPublishedDashlet';
+import { RecentlyPublishedDashletDashboardItem } from './LegacyRecentlyPublishedDashlet';
 import { DetailedItem } from '../../../models/Item';
 import ItemDisplay from '../../ItemDisplay';
 import MoreVertRounded from '@mui/icons-material/MoreVertRounded';
@@ -50,7 +50,7 @@ export interface RecentlyPublishedWidgetUIProps {
   setExpandedItems(itemExpanded): void;
 }
 
-export function RecentlyPublishedDashletUI(props: RecentlyPublishedWidgetUIProps) {
+export function LegacyRecentlyPublishedDashletUI(props: RecentlyPublishedWidgetUIProps) {
   const { resource, expandedItems, setExpandedItems, itemsLookup, onItemMenuClick, localeBranch } = props;
   const parentItems = resource.read();
   const classes = useStyles();
@@ -179,5 +179,4 @@ export function RecentlyPublishedDashletUI(props: RecentlyPublishedWidgetUIProps
   );
 }
 
-export default RecentlyPublishedDashletUI;
-
+export default LegacyRecentlyPublishedDashletUI;

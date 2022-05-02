@@ -513,4 +513,3 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
 }
 
 export default PathNavigatorTree;
-

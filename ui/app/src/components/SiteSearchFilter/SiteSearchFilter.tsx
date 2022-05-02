@@ -140,4 +140,3 @@ export function SiteSearchFilter(props: FilterProps) {
 }
 
 export default SiteSearchFilter;
-

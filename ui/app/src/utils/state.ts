@@ -15,7 +15,7 @@
  */
 
 import { ItemStateMap, LegacyItem } from '../models/Item';
-import { WidgetDescriptor } from '../components/Widget';
+import { WidgetDescriptor } from '../models';
 import { nanoid as uuid } from 'nanoid';
 import TranslationOrText from '../models/TranslationOrText';
 import { LegacyDashboardPreferences } from '../models/Dashboard';

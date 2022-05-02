@@ -19,5 +19,4 @@ export interface Logger {
   name: string;
 }
 
-// 'fatal' and 'critical' not supported by our logger
-export type LoggerLevel = 'off' | 'error' | 'warn' | 'info' | 'debug' | 'trace';
+export type LoggerLevel = 'off' | 'fatal' | 'error' | 'warn' | 'info' | 'debug' | 'trace' | 'all';

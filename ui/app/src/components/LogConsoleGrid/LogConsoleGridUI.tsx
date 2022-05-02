@@ -111,4 +111,3 @@ export function LogConsoleGridUI(props: LogConsoleGridUIProps) {
 }
 
 export default LogConsoleGridUI;
-

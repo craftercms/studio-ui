@@ -128,4 +128,3 @@ export function CrafterCMSNextBridge(
 }
 
 export default CrafterCMSNextBridge;
-

@@ -22,7 +22,8 @@ import * as ReactIntl from 'react-intl';
 import * as rxjs from 'rxjs';
 import createEmotion from '@emotion/css/create-instance';
 import { CrafterCMSStore, getStoreSync } from '../state/store';
-import { PluginDescriptor, registerPlugin } from '../services/plugin';
+import { registerPlugin } from '../services/plugin';
+import { PluginDescriptor } from '../models/PluginDescriptor';
 import { components, icons, services, utils } from './studioUI';
 
 // TODO:

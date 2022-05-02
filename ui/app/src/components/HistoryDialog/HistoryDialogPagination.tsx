@@ -23,7 +23,7 @@ import { PaginationProps } from './utils';
 
 // TODO: Check if we can use the components/Pagination component
 
-export function Pagination(props: PaginationProps) {
+export function HistoryDialogPagination(props: PaginationProps) {
   const classes = paginationStyles({});
   const { formatMessage } = useIntl();
   const { count, page, rowsPerPage, onRowsPerPageChange } = props;
@@ -52,3 +52,5 @@ export function Pagination(props: PaginationProps) {
     />
   );
 }
+
+export default HistoryDialogPagination;

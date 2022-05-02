@@ -296,4 +296,3 @@ function Option(props) {
 }
 
 export default PagesSearchAhead;
-

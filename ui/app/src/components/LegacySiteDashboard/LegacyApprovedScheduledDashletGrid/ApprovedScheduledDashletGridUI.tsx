@@ -205,4 +205,3 @@ export function ApprovedScheduledDashletGridUI(props: ApprovedScheduledDashletGr
 }
 
 export default ApprovedScheduledDashletGridUI;
-

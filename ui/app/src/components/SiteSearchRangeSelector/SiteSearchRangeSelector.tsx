@@ -57,7 +57,7 @@ const messages = defineMessages({
   }
 });
 
-interface RangeSelectorProps {
+export interface RangeSelectorProps {
   facet: string;
   checkedFilters: LookupTable;
 
@@ -129,4 +129,3 @@ export function SiteSearchRangeSelector(props: RangeSelectorProps) {
 }
 
 export default SiteSearchRangeSelector;
-

@@ -37,4 +37,3 @@ export function DialogFooter(props: DialogActionsProps) {
 }
 
 export default DialogFooter;
-

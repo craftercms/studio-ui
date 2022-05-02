@@ -115,4 +115,3 @@ export function RubbishBin(props: any) {
 }
 
 export default RubbishBin;
-

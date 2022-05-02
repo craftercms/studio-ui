@@ -327,4 +327,3 @@ export function SiteSearchFilters(props: SiteSearchFiltersProps) {
 }
 
 export default SiteSearchFilters;
-

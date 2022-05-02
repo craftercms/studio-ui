@@ -61,4 +61,3 @@ export function PublishingStatusDisplay(props: PublishingStatusDisplayProps) {
 }
 
 export default PublishingStatusDisplay;
-

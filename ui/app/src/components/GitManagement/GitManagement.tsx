@@ -270,4 +270,3 @@ export function GitManagement(props: GitManagementProps) {
 }
 
 export default GitManagement;
-

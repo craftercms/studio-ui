@@ -89,4 +89,3 @@ export function NewRemoteRepositoryDialogContainer(props: NewRemoteRepositoryDia
 }
 
 export default NewRemoteRepositoryDialogContainer;
-

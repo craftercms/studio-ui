@@ -357,4 +357,3 @@ export function PluginDetailsView(props: PluginDetailsViewProps) {
 }
 
 export default PluginDetailsView;
-

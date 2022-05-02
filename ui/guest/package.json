@@ -2,6 +2,11 @@
   "name": "@craftercms/experience-builder",
   "description": "CrafterCMS' Experience Builder integration sdk.",
   "version": "1.0.0-beta.3",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/craftercms/studio-ui.git",
+    "directory": "ui/guest/src"
+  },
   "private": true,
   "main": "build_tsc/node/index.js",
   "module": "build_tsc/index.js",
@@ -83,7 +88,7 @@
     "clean:npm": "rimraf ./build_tsc ./tsconfig.tsbuildinfo",
     "build:node": "tsc --build tsconfig.node.json",
     "create-package-file": "node ./scripts/package.js",
-    "build:package": "run-s clean:npm build:modern build:node create-package-file"
+    "build:npm": "run-s clean:npm build:modern create-package-file"
   },
   "dependencies": {
     "@craftercms/classes": "^2.0.6",

@@ -14,46 +14,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as React from 'react';
 import LookupTable from '../models/LookupTable';
 import { augmentTranslations } from '../utils/i18n';
-import { CrafterCMSGlobal } from '../env/craftercms';
-import { DeprecatedThemeOptions } from '@mui/material/styles';
 import { components, plugins } from '../utils/constants';
-
-export interface PluginFileBuilder {
-  site: string;
-  type: string;
-  name: string;
-  file?: string;
-  id?: string;
-}
-
-export interface PluginDescriptor {
-  id: string;
-  name: string;
-  version: string;
-  description: string;
-  author: string;
-  logo: string;
-  locales: LookupTable<object>;
-  apps: { route: string; widget: { id: string; configuration: any } }[];
-  widgets: LookupTable<ComponentRecord>;
-  scripts: Array<string | object>;
-  stylesheets: Array<string | object>;
-  themes: Array<{ id: string; name: string; themeOptions: DeprecatedThemeOptions[] }>;
-}
-
-export interface ExtendedPluginDescriptor extends PluginDescriptor {
-  source: PluginFileBuilder;
-}
-
-export type NonReactComponentRecord = {
-  main(context: { craftercms: CrafterCMSGlobal; element: HTMLElement; configuration: object }): void | (() => void);
-};
-
-export type ComponentRecord = NonReactComponentRecord | React.ComponentType<any>;
-// export type ComponentRecord = { type: 'react', component: TheComponent };
+import PluginDescriptor from '../models/PluginDescriptor';
+import PluginFileBuilder from '../models/PluginFileBuilder';
+import { WidgetRecord } from '../models/WidgetRecord';
 
 const DEFAULT_FILE_NAME = 'index.js';
 
@@ -189,7 +155,7 @@ export function registerPlugin(plugin: PluginDescriptor, source?: PluginFileBuil
   }
 }
 
-export function registerComponents(widgets: LookupTable<ComponentRecord>): void {
+export function registerComponents(widgets: LookupTable<WidgetRecord>): void {
   Object.entries(widgets).forEach(([id, widget]) => {
     // Skip registration if component with same id already exists
     if (!components.has(id)) {

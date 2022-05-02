@@ -421,4 +421,3 @@ export function RecentActivityDashlet() {
 }
 
 export default RecentActivityDashlet;
-

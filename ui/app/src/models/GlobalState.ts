@@ -33,7 +33,7 @@ import { PathNavigatorStateProps } from '../components/PathNavigator';
 import { DetailedItem } from './Item';
 import { CopyDialogStateProps } from '../components/CopyDialog/utils';
 import { PathSelectionDialogStateProps } from '../components/PathSelectionDialog/PathSelectionDialog';
-import { WidgetDescriptor } from '../components/Widget';
+import { WidgetDescriptor } from './WidgetDescriptor';
 import { ItemMenuStateProps } from '../components/ItemActionsMenu';
 import { ItemMegaMenuStateProps } from '../components/ItemMegaMenu';
 import { LauncherStateProps } from '../components/Launcher';

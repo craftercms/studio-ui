@@ -85,4 +85,3 @@ export function ContentTypesGrid(props: ContentTypesGridProps) {
 }
 
 export default NewContentDialog;
-

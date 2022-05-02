@@ -42,7 +42,7 @@ import { StandardAction } from '../models/StandardAction';
 import { createCustomDocumentEventListener } from '../utils/dom';
 import { components as studioUIComponents, services, utils } from './studioUI';
 
-const ErrorState = lazy(() => import('../components/ErrorState/ErrorState'));
+const ErrorState = studioUIComponents.ErrorState;
 
 /**
  *
@@ -112,7 +112,6 @@ export function createCodebaseBridge() {
 
     components: {
       ...studioUIComponents,
-      ErrorState,
       CrafterCMSNextBridge,
       SearchPage: lazy(() => import('../pages/Search')),
       Global: lazy(() => import('../pages/Global')),

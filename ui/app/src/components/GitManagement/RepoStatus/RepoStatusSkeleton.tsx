@@ -36,4 +36,3 @@ export function RepoStatusSkeleton() {
 }
 
 export default RepoStatusSkeleton;
-

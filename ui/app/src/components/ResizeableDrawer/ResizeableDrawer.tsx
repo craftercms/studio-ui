@@ -221,4 +221,3 @@ export function ResizeableDrawer(props: ResizeableDrawerProps) {
 }
 
 export default ResizeableDrawer;
-

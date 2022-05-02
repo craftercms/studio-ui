@@ -42,4 +42,3 @@ export function RejectDialog(props: RejectDialogProps) {
 }
 
 export default RejectDialog;
-

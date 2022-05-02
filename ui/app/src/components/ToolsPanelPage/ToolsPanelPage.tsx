@@ -16,7 +16,8 @@
 
 import React from 'react';
 import ToolPanel from '../ToolPanel/ToolPanel';
-import { renderWidgets, WidgetDescriptor } from '../Widget';
+import { renderWidgets } from '../Widget';
+import { WidgetDescriptor } from '../../models';
 import { useDispatch } from 'react-redux';
 import { popIcePanelPage, popToolsPanelPage } from '../../state/actions/preview';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
@@ -47,4 +48,3 @@ export function ToolsPanelPage(props: ToolsPanelPageProps) {
 }
 
 export default ToolsPanelPage;
-

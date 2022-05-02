@@ -191,4 +191,3 @@ function DropTargetsList(props: DropTargetsListProps) {
 }
 
 export default PreviewDropTargetsPanel;
-

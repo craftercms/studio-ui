@@ -74,4 +74,3 @@ export function IFrame(props: IFrameProps) {
 }
 
 export default IFrame;
-
