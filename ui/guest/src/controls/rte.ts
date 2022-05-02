@@ -350,7 +350,8 @@ export function initTinyMCE(
         'paste_postprocess',
         'images_upload_handler',
         'code_editor_inline',
-        'plugins' // Considered/used above, mixed with our options
+        'plugins', // Considered/used above, mixed with our options
+        'external_plugins' // Considered/used above, mixed with our options
       )
     }),
     ...controlProps,
