@@ -58,7 +58,7 @@ interface FilterRadiosProps {
   handleRadioClick(value: string, facet: string): any;
 }
 
-export default function SiteSearchFilterRadios(props: FilterRadiosProps) {
+export function SiteSearchFilterRadios(props: FilterRadiosProps) {
   const { facetData, facet, handleRadioClick, checkedFilters } = props;
   const items = facetData.values;
   const classes = useStyles({});
@@ -120,3 +120,5 @@ export default function SiteSearchFilterRadios(props: FilterRadiosProps) {
     </RadioGroup>
   );
 }
+
+export default SiteSearchFilterRadios;

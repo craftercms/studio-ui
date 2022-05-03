@@ -20,7 +20,7 @@ import { RejectDialogProps } from './utils';
 import EnhancedDialog from '../EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
 
-export default function RejectDialog(props: RejectDialogProps) {
+export function RejectDialog(props: RejectDialogProps) {
   const { items, onRejectSuccess, isSubmitting, ...rest } = props;
   return (
     <EnhancedDialog
@@ -40,3 +40,5 @@ export default function RejectDialog(props: RejectDialogProps) {
     </EnhancedDialog>
   );
 }
+
+export default RejectDialog;

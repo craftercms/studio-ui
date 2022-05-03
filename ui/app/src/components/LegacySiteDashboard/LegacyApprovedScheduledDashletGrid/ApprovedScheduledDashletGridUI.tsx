@@ -54,7 +54,7 @@ interface ApprovedScheduledDashletGridUIProps {
   onItemMenuClick(event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, item: DetailedItem): void;
 }
 
-export default function ApprovedScheduledDashletGridUI(props: ApprovedScheduledDashletGridUIProps) {
+export function ApprovedScheduledDashletGridUI(props: ApprovedScheduledDashletGridUIProps) {
   const {
     resource,
     onExpandedRow,
@@ -203,3 +203,5 @@ export default function ApprovedScheduledDashletGridUI(props: ApprovedScheduledD
     </TableContainer>
   );
 }
+
+export default ApprovedScheduledDashletGridUI;

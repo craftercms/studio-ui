@@ -90,7 +90,7 @@ function Bridge(
   );
 }
 
-export default function CrafterCMSNextBridge(
+export function CrafterCMSNextBridge(
   props: PropsWithChildren<{
     mountGlobalDialogManager?: boolean;
     mountSnackbarProvider?: boolean;
@@ -126,3 +126,5 @@ export default function CrafterCMSNextBridge(
     </CrafterThemeProvider>
   );
 }
+
+export default CrafterCMSNextBridge;

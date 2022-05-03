@@ -389,8 +389,8 @@ const content: CrafterCMSEpic[] = [
           return false;
         }
       }),
-      switchMap(([{ payload }, state]) => {
-        return merge(
+      switchMap(([{ payload }, state]) =>
+        merge(
           of(
             blockUI({
               progress: 'indeterminate',
@@ -398,10 +398,14 @@ const content: CrafterCMSEpic[] = [
             })
           ),
           paste(state.sites.active, payload.path, state.content.clipboard).pipe(
-            map(() => batchActions([clearClipboard(), showPasteItemSuccessNotification(), unblockUI()]))
+            map(() => batchActions([unblockUI(), clearClipboard(), showPasteItemSuccessNotification()])),
+            catchAjaxError(
+              () => unblockUI(),
+              (error) => showErrorDialog({ error: error.response })
+            )
           )
-        );
-      })
+        )
+      )
     ),
   // endregion
   // region Item Paste with validation policy

@@ -14,10 +14,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './LegacyRecentlyPublishedDashlet';
+import WidgetRecord from './WidgetRecord';
 
-export * from './LegacyRecentlyPublishedDashlet';
+export interface PluginDescriptor {
+  id: string;
+  // name: string;
+  // version: string;
+  // description: string;
+  // author: string;
+  // logo: string;
+  locales: Record<string, object>;
+  // apps: Array<{ route: string; widget: { id: string; configuration: any } }>;
+  widgets: Record<string, WidgetRecord>;
+  scripts: Array<string | object>;
+  stylesheets: Array<string | object>;
+  // themes: Array<{ id: string; name: string; themeOptions: ThemeOptions[] }>;
+}
 
-export * from './LegacyRecentlyPublishedDashletUI';
-
-export * from './LegacyRecentlyPublishedDashletUISkeletonTable';
+export default PluginDescriptor;

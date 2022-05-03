@@ -17,7 +17,8 @@
 // region State
 //                                                          6 |    5    |    4    |    3    |    2    |    1    |     0
 //                                                         321|987654321|987654321|987654321|987654321|987654321|9876543210
-import { ComponentRecord, ExtendedPluginDescriptor } from '../services/plugin';
+import PluginDescriptorWithSource from '../models/PluginDescriptorWithSource';
+import WidgetRecord from '../models/WidgetRecord';
 
 export const STATE_NEW_MASK /*                      */ = 0b0000000000000000000000000000000000000000000000000000000000000001;
 export const STATE_MODIFIED_MASK /*                 */ = 0b0000000000000000000000000000000000000000000000000000000000000010;
@@ -96,6 +97,6 @@ export const SITE_COOKIE_NAME = 'crafterSite';
 export const XSRF_TOKEN_HEADER_NAME = 'X-XSRF-TOKEN';
 export const XSRF_TOKEN_COOKIE_NAME = 'XSRF-TOKEN';
 
-export const plugins = new Map<string, ExtendedPluginDescriptor>();
+export const plugins = new Map<string, PluginDescriptorWithSource>();
 
-export const components = new Map<string, ComponentRecord>();
+export const components = new Map<string, WidgetRecord>();

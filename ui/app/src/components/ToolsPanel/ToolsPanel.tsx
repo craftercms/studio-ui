@@ -19,7 +19,8 @@ import { defineMessages, FormattedMessage } from 'react-intl';
 import { initToolsPanelConfig, updateToolsPanelWidth } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 import ResizeableDrawer from '../ResizeableDrawer/ResizeableDrawer';
-import { renderWidgets, WidgetDescriptor } from '../Widget';
+import { renderWidgets } from '../Widget';
+import { WidgetDescriptor } from '../../models';
 import { Resource } from '../../models/Resource';
 import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
 import createStyles from '@mui/styles/createStyles';
@@ -65,7 +66,7 @@ const useStyles = makeStyles((theme) =>
   })
 );
 
-export default function ToolsPanel() {
+export function ToolsPanel() {
   const dispatch = useDispatch();
   const { id: siteId, uuid } = useActiveSite();
   const classes = useStyles();
@@ -151,3 +152,5 @@ function ToolsPaneBody(props: ToolsPaneBodyProps) {
     </>
   );
 }
+
+export default ToolsPanel;

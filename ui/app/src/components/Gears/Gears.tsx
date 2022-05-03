@@ -76,7 +76,7 @@ interface GearProps {
   fill?: string;
 }
 
-export default function Gears(props: GearsProps) {
+export function Gears(props: GearsProps) {
   const { addElevation = true, width = '100%', fill = '#f00', className } = props;
   const classes = useStyles({});
   const opacity = 0.05;
@@ -161,3 +161,5 @@ Gear.defaultProps = {
   type: 'A',
   speed: '6s'
 };
+
+export default Gears;

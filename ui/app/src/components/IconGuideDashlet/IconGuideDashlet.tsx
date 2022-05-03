@@ -110,7 +110,7 @@ const types = {
   icon: { systemType: 'asset', mimeType: 'image/vnd.microsoft.icon' }
 };
 
-export default function IconGuideDashlet(props: IconGuideDashletProps) {
+export function IconGuideDashlet(props: IconGuideDashletProps) {
   const { contentHeight } = props;
   const [expanded, setExpanded] = useState(true);
   const classes = useStyles();
@@ -167,3 +167,5 @@ export default function IconGuideDashlet(props: IconGuideDashletProps) {
     </LegacyDashletCard>
   );
 }
+
+export default IconGuideDashlet;

@@ -50,7 +50,7 @@ export interface ItemMegaMenuStateProps extends ItemMegaMenuBaseProps {
   onClose?: StandardAction;
 }
 
-export default function ItemMegaMenu(props: ItemMegaMenuProps) {
+export function ItemMegaMenu(props: ItemMegaMenuProps) {
   const {
     open,
     path,
@@ -105,3 +105,5 @@ export default function ItemMegaMenu(props: ItemMegaMenuProps) {
     />
   );
 }
+
+export default ItemMegaMenu;

@@ -38,7 +38,7 @@ import EmptyState from '../EmptyState/EmptyState';
 import { setSiteCookie } from '../../utils/auth';
 import List from '@mui/material/List';
 import CrafterCMSLogo from '../../icons/CrafterCMSLogo';
-import { renderWidgets, WidgetDescriptor } from '../Widget';
+import { renderWidgets } from '../Widget';
 import { logout } from '../../state/actions/auth';
 import { ListItem, Tooltip } from '@mui/material';
 import { closeLauncher } from '../../state/actions/dialogs';
@@ -61,6 +61,7 @@ import { getSystemLink } from '../../utils/system';
 import { PREVIEW_URL_PATH } from '../../utils/constants';
 import { useLegacyPreviewPreference } from '../../hooks/useLegacyPreviewPreference';
 import { fetchUseLegacyPreviewPreference } from '../../services/configuration';
+import { WidgetDescriptor } from '../../models';
 
 export interface LauncherStateProps {
   open: boolean;
@@ -336,7 +337,7 @@ const SiteRailSkeleton = ({ classes, formatMessage, version }) => (
 
 // endregion
 
-export default function Launcher(props: LauncherStateProps) {
+export function Launcher(props: LauncherStateProps) {
   const classes = useLauncherStyles();
   const siteId = useActiveSiteId();
   const sites = useSiteList();
@@ -515,3 +516,5 @@ export default function Launcher(props: LauncherStateProps) {
     </Popover>
   );
 }
+
+export default Launcher;

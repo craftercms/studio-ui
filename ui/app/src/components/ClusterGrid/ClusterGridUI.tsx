@@ -35,7 +35,7 @@ export interface ClusterGridProps {
   onDeleteCluster(cluster: ClusterMember): void;
 }
 
-export default function ClusterGridUI(props: ClusterGridProps) {
+export function ClusterGridUI(props: ClusterGridProps) {
   const { resource, onDeleteCluster } = props;
   const classes = useStyles();
   const clusters = resource.read();
@@ -116,3 +116,5 @@ export default function ClusterGridUI(props: ClusterGridProps) {
     </TableContainer>
   );
 }
+
+export default ClusterGridUI;

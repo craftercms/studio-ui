@@ -14,11 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { WidgetDescriptor } from '../Widget';
+import { WidgetDescriptor } from '../../models';
 import StandardAction from '../../models/StandardAction';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState, onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
-import { LookupTable } from '../../models';
 
 interface WidgetDialogBaseProps {
   title: string;

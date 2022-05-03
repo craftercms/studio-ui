@@ -15,7 +15,7 @@
  */
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import RecentlyPublishedWidgetUI from './RecentlyPublishedDashletUI';
+import RecentlyPublishedWidgetUI from './LegacyRecentlyPublishedDashletUI';
 import ApiResponse from '../../../models/ApiResponse';
 import { LegacyDashboardPreferences } from '../../../models/Dashboard';
 import { fetchLegacyDeploymentHistory } from '../../../services/dashboard';
@@ -32,7 +32,7 @@ import {
 import LookupTable from '../../../models/LookupTable';
 import LegacyDashletCard from '../LegacyDashletCard';
 import useStyles from './styles';
-import RecentlyPublishedDashletUISkeletonTable from './RecentlyPublishedDashletUISkeletonTable';
+import LegacyRecentlyPublishedDashletUISkeletonTable from './LegacyRecentlyPublishedDashletUISkeletonTable';
 import TextField from '@mui/material/TextField';
 import { deleteContentEvent, publishEvent } from '../../../state/actions/system';
 import { getHostToHostBus } from '../../../utils/subjects';
@@ -60,7 +60,7 @@ const dashletInitialPreferences: LegacyDashboardPreferences = {
   expanded: true
 };
 
-export default function RecentlyPublishedDashlet() {
+export function LegacyRecentlyPublishedDashlet() {
   const [fetchingHistory, setFetchingHistory] = useState(false);
   const [errorHistory, setErrorHistory] = useState<ApiResponse>();
   const [parentItems, setParentItems] = useState<RecentlyPublishedDashletDashboardItem[]>();
@@ -305,7 +305,7 @@ export default function RecentlyPublishedDashlet() {
       <SuspenseWithEmptyState
         resource={resource}
         suspenseProps={{
-          fallback: <RecentlyPublishedDashletUISkeletonTable items={parentItems} expandedLookup={expandedItems} />
+          fallback: <LegacyRecentlyPublishedDashletUISkeletonTable items={parentItems} expandedLookup={expandedItems} />
         }}
         withEmptyStateProps={{
           emptyStateProps: {
@@ -334,3 +334,5 @@ export default function RecentlyPublishedDashlet() {
     </LegacyDashletCard>
   );
 }
+
+export default LegacyRecentlyPublishedDashlet;

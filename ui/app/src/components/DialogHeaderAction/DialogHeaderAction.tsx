@@ -19,12 +19,12 @@ import React from 'react';
 import Tooltip from '@mui/material/Tooltip';
 import SystemIcon, { SystemIconDescriptor } from '../SystemIcon';
 
-interface ActionProps extends IconButtonProps {
+export interface DialogHeaderActionProps extends IconButtonProps {
   icon: SystemIconDescriptor;
-  tooltip: string;
+  tooltip?: string;
 }
 
-export default function DialogHeaderAction(props: ActionProps) {
+export function DialogHeaderAction(props: DialogHeaderActionProps) {
   const { icon, tooltip, disabled = false, ...rest } = props;
   return tooltip ? (
     <Tooltip title={disabled ? '' : tooltip}>
@@ -38,3 +38,5 @@ export default function DialogHeaderAction(props: ActionProps) {
     </IconButton>
   );
 }
+
+export default DialogHeaderAction;

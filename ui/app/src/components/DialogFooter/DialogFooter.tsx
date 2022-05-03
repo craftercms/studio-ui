@@ -31,7 +31,9 @@ const styles = makeStyles((theme) =>
   })
 );
 
-export default function DialogFooter(props: DialogActionsProps) {
+export function DialogFooter(props: DialogActionsProps) {
   const classes = styles();
   return <MuiDialogActions {...props} className={clsx(classes.root, props.className)} />;
 }
+
+export default DialogFooter;

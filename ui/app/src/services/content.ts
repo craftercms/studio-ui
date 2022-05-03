@@ -1040,7 +1040,19 @@ export function revertTo(site: string, path: string, versionNumber: string): Obs
     `/studio/api/1/services/api/1/content/revert-content.json?site=${site}&path=${encodeURIComponent(
       path
     )}&version=${versionNumber}`
-  ).pipe(pluck('response'), catchError(errorSelectorApi1));
+  ).pipe(
+    pluck('response'),
+    catchError((ajaxError) => {
+      ajaxError.response = {
+        response: {
+          code: 1000,
+          message: 'Unable to revert content at this time.',
+          remedialAction: 'Content may be locked. Try again later.'
+        }
+      };
+      throw ajaxError;
+    })
+  );
 }
 
 interface VersionDescriptor {

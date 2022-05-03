@@ -35,7 +35,7 @@ export interface RepoStatusProps {
   onFailedPullCancelled?(status: RepositoryStatus): void;
 }
 
-export default function RepoStatus(props: RepoStatusProps) {
+export function RepoStatus(props: RepoStatusProps) {
   const { status, onCommitSuccess: onCommitSuccessProp, onFailedPullCancelled, onConflictResolved } = props;
   const siteId = useActiveSiteId();
   const [openCommitResolutionDialog, setOpenCommitResolutionDialog] = useState(false);
@@ -126,3 +126,5 @@ export default function RepoStatus(props: RepoStatusProps) {
     </>
   );
 }
+
+export default RepoStatus;

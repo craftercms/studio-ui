@@ -40,7 +40,7 @@ const translations = defineMessages({
   }
 });
 
-export default function ClusterManagement() {
+export function ClusterManagement() {
   const [clusters, setClusters] = useState<ClusterMember[]>();
   const [fetching, setFetching] = useState(false);
   const [error, setError] = useState<ApiResponse>();
@@ -123,3 +123,5 @@ export default function ClusterManagement() {
     </Paper>
   );
 }
+
+export default ClusterManagement;

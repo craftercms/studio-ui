@@ -76,7 +76,7 @@ const actionsToBeShown: AllItemActions[] = [
   'history'
 ];
 
-export default function RecentActivityDashlet() {
+export function RecentActivityDashlet() {
   const [fetchingActivity, setFetchingActivity] = useState(false);
   const [errorActivity, setErrorActivity] = useState<ApiResponse>();
   const [items, setItems] = useState<DetailedItem[]>([]);
@@ -419,3 +419,5 @@ export default function RecentActivityDashlet() {
     </LegacyDashletCard>
   );
 }
+
+export default RecentActivityDashlet;

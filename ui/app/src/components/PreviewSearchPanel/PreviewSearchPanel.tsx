@@ -115,7 +115,7 @@ const initialSearchParameters: Partial<ElasticParams> = {
 
 const mimeTypes = ['image/png', 'image/jpeg', 'image/gif', 'video/mp4', 'image/svg+xml'];
 
-export default function PreviewSearchPanel() {
+export function PreviewSearchPanel() {
   const classes = useStyles({});
   const { formatMessage } = useIntl();
   const [keyword, setKeyword] = useState('');
@@ -289,3 +289,5 @@ export default function PreviewSearchPanel() {
     </>
   );
 }
+
+export default PreviewSearchPanel;

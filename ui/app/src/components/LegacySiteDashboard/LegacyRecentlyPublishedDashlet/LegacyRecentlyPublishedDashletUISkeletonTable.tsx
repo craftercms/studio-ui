@@ -29,7 +29,7 @@ import Skeleton from '@mui/material/Skeleton';
 import LookupTable from '../../../models/LookupTable';
 import { rand } from '../../PathNavigator/utils';
 import Typography from '@mui/material/Typography';
-import { RecentlyPublishedDashletDashboardItem } from './RecentlyPublishedDashlet';
+import { RecentlyPublishedDashletDashboardItem } from './LegacyRecentlyPublishedDashlet';
 
 export interface RecentlyPublishedWidgetUiSkeletonTableProps {
   numOfItems?: number;
@@ -37,7 +37,7 @@ export interface RecentlyPublishedWidgetUiSkeletonTableProps {
   expandedLookup?: LookupTable<boolean>;
 }
 
-export default function RecentlyPublishedDashletUISkeletonTable(props: RecentlyPublishedWidgetUiSkeletonTableProps) {
+export function LegacyRecentlyPublishedDashletUISkeletonTable(props: RecentlyPublishedWidgetUiSkeletonTableProps) {
   const classes = useStyles();
   const { numOfItems = 2 } = props;
 
@@ -130,3 +130,5 @@ export default function RecentlyPublishedDashletUISkeletonTable(props: RecentlyP
     </TableContainer>
   );
 }
+
+export default LegacyRecentlyPublishedDashletUISkeletonTable;

@@ -45,7 +45,7 @@ const translations = defineMessages({
   }
 });
 
-export default function ResetPasswordDialog(props: ResetPasswordDialogProps) {
+export function ResetPasswordDialog(props: ResetPasswordDialogProps) {
   const { open, onClose } = props;
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
@@ -130,3 +130,5 @@ function ResetPasswordDialogUI(props: ResetPasswordDialogProps) {
     </form>
   );
 }
+
+export default ResetPasswordDialog;

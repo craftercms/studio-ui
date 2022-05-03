@@ -16,20 +16,13 @@
 
 import React, { ComponentType, memo } from 'react';
 import NonReactWidget from '../NonReactWidget/NonReactWidget';
-import { importPlugin, PluginFileBuilder } from '../../services/plugin';
+import { importPlugin } from '../../services/plugin';
 import { components } from '../../utils/constants';
 import EmptyState from '../EmptyState/EmptyState';
 import { defineMessages, useIntl } from 'react-intl';
 import ErrorState from '../ErrorState';
-import * as ReactIs from 'react-is';
-
-export interface WidgetDescriptor {
-  id: string;
-  uiKey?: string | number;
-  permittedRoles?: string[];
-  plugin?: PluginFileBuilder;
-  configuration?: any;
-}
+import { isValidElementType } from 'react-is';
+import WidgetDescriptor from '../../models/WidgetDescriptor';
 
 export interface WidgetProps extends WidgetDescriptor {
   /** Props applied to all widgets; supersedes widget props. */
@@ -57,16 +50,12 @@ const messages = defineMessages({
   }
 });
 
-function isComponent(record): record is React.ComponentType<any> {
-  return ReactIs.isValidElementType(record);
-}
-
 const Widget = memo(function (props: WidgetProps) {
   const { id, plugin, configuration } = props;
   const record = components.get(id);
   const { formatMessage } = useIntl();
   if (record) {
-    if (isComponent(record)) {
+    if (isValidElementType(record)) {
       const Component = record;
       return <Component {...{ ...props.defaultProps, ...configuration, ...props.overrideProps }} />;
     } else {

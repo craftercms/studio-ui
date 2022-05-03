@@ -26,7 +26,7 @@ export interface PluginDocumentationProps {
   plugin: MarketplacePlugin;
 }
 
-export default function PluginDocumentation(props: PluginDocumentationProps) {
+export function PluginDocumentation(props: PluginDocumentationProps) {
   const { plugin } = props;
   const [markdown, setMarkdown] = useState(null);
   const [link, setLink] = useState(null);
@@ -69,3 +69,5 @@ export default function PluginDocumentation(props: PluginDocumentationProps) {
     </>
   );
 }
+
+export default PluginDocumentation;

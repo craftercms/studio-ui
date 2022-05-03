@@ -186,7 +186,7 @@ interface PluginDetailsViewProps {
 
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 
-export default function PluginDetailsView(props: PluginDetailsViewProps) {
+export function PluginDetailsView(props: PluginDetailsViewProps) {
   const classes = useStyles({});
   const [play, setPlay] = useState(false);
   const {
@@ -355,3 +355,5 @@ export default function PluginDetailsView(props: PluginDetailsViewProps) {
     </div>
   );
 }
+
+export default PluginDetailsView;

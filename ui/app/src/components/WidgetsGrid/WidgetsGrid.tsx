@@ -16,7 +16,8 @@
 
 import Grid, { GridProps } from '@mui/material/Grid';
 import React from 'react';
-import { renderWidgets, WidgetDescriptor } from '../Widget';
+import { renderWidgets } from '../Widget';
+import { WidgetDescriptor } from '../../models';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import useActiveUser from '../../hooks/useActiveUser';
 

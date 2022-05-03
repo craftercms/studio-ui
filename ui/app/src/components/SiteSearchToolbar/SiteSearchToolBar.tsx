@@ -62,7 +62,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-interface SiteSearchToolBarProps {
+export interface SiteSearchToolBarProps {
   keyword: string[] | string;
   showActionButton?: boolean;
   showTitle?: boolean;
@@ -73,7 +73,7 @@ interface SiteSearchToolBarProps {
   onMenuIconClick(): void;
 }
 
-export default function SiteSearchToolBar(props: SiteSearchToolBarProps) {
+export function SiteSearchToolBar(props: SiteSearchToolBarProps) {
   const { onChange, keyword, showActionButton, showTitle, handleChangeView, currentView, onMenuIconClick, embedded } =
     props;
   const { formatMessage } = useIntl();
@@ -114,3 +114,5 @@ export default function SiteSearchToolBar(props: SiteSearchToolBarProps) {
     </ViewToolbar>
   );
 }
+
+export default SiteSearchToolBar;

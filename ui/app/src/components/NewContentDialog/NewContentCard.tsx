@@ -98,7 +98,7 @@ const CompactCardContent = (props) => {
   );
 };
 
-export default function NewContentCard(props: NewContentCardProps) {
+export function NewContentCard(props: NewContentCardProps) {
   const { onClick, isCompact, isSelected } = props;
   const classes = useStyles();
   const rootClass = !isCompact ? classes.defaultCard : classes.compactCard;
@@ -146,3 +146,5 @@ export function ContentSkeletonCard(props: { isCompact: boolean }) {
     </Card>
   );
 }
+
+export default NewContentCard;

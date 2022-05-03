@@ -18,6 +18,6 @@ export { default } from './HistoryDialog';
 
 export * from './HistoryDialog';
 
-export * from './Pagination';
+export * from './HistoryDialogPagination';
 
 export * from './HistoryDialogContainer';

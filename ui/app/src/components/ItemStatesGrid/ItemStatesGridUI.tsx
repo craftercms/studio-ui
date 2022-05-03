@@ -47,7 +47,7 @@ export interface WorkflowStatesGridUIProps {
   onRowsPerPageChange?: React.ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
 }
 
-export default function ItemStatesGridUI(props: WorkflowStatesGridUIProps) {
+export function ItemStatesGridUI(props: WorkflowStatesGridUIProps) {
   const {
     resource,
     onPageChange,
@@ -192,3 +192,5 @@ export default function ItemStatesGridUI(props: WorkflowStatesGridUIProps) {
     </>
   );
 }
+
+export default ItemStatesGridUI;

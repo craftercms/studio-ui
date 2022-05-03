@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { WidgetDescriptor } from '../Widget';
+import { WidgetDescriptor } from '../../models';
 import React from 'react';
 import TranslationOrText from '../../models/TranslationOrText';
 import LauncherSectionUI from './LauncherSectionUI';

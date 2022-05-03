@@ -14,10 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './LegacyRecentlyPublishedDashlet';
+import { CrafterCMSGlobal } from '../env/craftercms';
 
-export * from './LegacyRecentlyPublishedDashlet';
+export interface NonReactWidgetRecord {
+  main(context: { craftercms: CrafterCMSGlobal; element: HTMLElement; configuration: object }): void;
+  main(context: { craftercms: CrafterCMSGlobal; element: HTMLElement; configuration: object }): () => void;
+}
 
-export * from './LegacyRecentlyPublishedDashletUI';
-
-export * from './LegacyRecentlyPublishedDashletUISkeletonTable';
+export default NonReactWidgetRecord;

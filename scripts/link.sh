@@ -79,7 +79,7 @@ done
 
 echo ""
 
-if [[ $LINK_ONLY != true && $RESTORE_ONLY != true ]]; then
+if [[ $LINK_ONLY != true && $RESTORE_ONLY != true && $REMOVE_ONLY != true ]]; then
   echo "Backup directories"
   mkdir "$DEFAULT_SITE/link-backup"
   mv "$STATIC_ASSETS/modules" "$DEFAULT_SITE/link-backup/modules"

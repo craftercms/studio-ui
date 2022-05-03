@@ -139,51 +139,47 @@ export const catchAjaxError = (
 export const errorSelectorApi1: <T, O extends ObservableInput<any>>(err: any, caught: Observable<T>) => O = (
   error: any
 ) => {
+  let response: any = {
+    code: 1000,
+    message: 'Internal system failure',
+    remedialAction: 'Contact support'
+  };
   if (error.name === 'AjaxError') {
     switch (error.status) {
       case 400:
         // eslint-disable-next-line no-throw-literal
-        throw {
+        response = {
           code: 1001,
           message: 'Invalid parameter(s)',
           remedialAction: "Check API and make sure you're sending the correct parameters"
         };
+        break;
       case 401:
         // eslint-disable-next-line no-throw-literal
-        throw {
+        response = {
           code: 2000,
           message: 'Unauthenticated',
           remedialAction: 'Please login first'
         };
+        break;
       case 403:
         // eslint-disable-next-line no-throw-literal
-        throw {
+        response = {
           code: 2001,
           message: 'Unauthorized',
           remedialAction: "You don't have permission to perform this task, please contact your administrator"
         };
+        break;
       case 404: {
         // eslint-disable-next-line no-throw-literal
-        throw {
+        response = {
           code: 404,
           message: 'Resource not found'
         };
+        break;
       }
-      case 500:
-      default:
-        // eslint-disable-next-line no-throw-literal
-        throw {
-          code: 1000,
-          message: 'Internal system failure',
-          remedialAction: 'Contact support'
-        };
     }
-  } else {
-    // eslint-disable-next-line no-throw-literal
-    throw {
-      code: 1000,
-      message: 'Internal system failure',
-      remedialAction: 'Contact support'
-    };
   }
+  error.response = { response };
+  throw error;
 };

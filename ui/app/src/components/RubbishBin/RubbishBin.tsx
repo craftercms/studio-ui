@@ -58,7 +58,7 @@ const useStyles = makeStyles((theme) =>
   })
 );
 
-export default function RubbishBin(props: any) {
+export function RubbishBin(props: any) {
   const classes = useStyles({});
   const [over, setOver] = useState(false);
   const [trashed, setTrashed] = useState(false);
@@ -113,3 +113,5 @@ export default function RubbishBin(props: any) {
     </Grow>
   );
 }
+
+export default RubbishBin;

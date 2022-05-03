@@ -131,15 +131,14 @@ export function initTinyMCE(
       });
       const browseBtn = document.querySelector('.tox-dialog .tox-browse-url');
 
-      post({
-        type: showRtePickerActions.type,
-        payload: {
+      post(
+        showRtePickerActions({
           datasources,
           model,
           type: meta.filetype,
-          btnRect: browseBtn.getBoundingClientRect()
-        }
-      });
+          rect: browseBtn.getBoundingClientRect()
+        })
+      );
 
       message$
         .pipe(

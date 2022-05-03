@@ -125,7 +125,7 @@ const useStyles = makeStyles((theme) =>
   })
 );
 
-export default function ResizeableDrawer(props: ResizeableDrawerProps) {
+export function ResizeableDrawer(props: ResizeableDrawerProps) {
   const classes = useStyles(props.styles);
   const [resizeActive, setResizeActive] = useState(false);
 
@@ -219,3 +219,5 @@ export default function ResizeableDrawer(props: ResizeableDrawerProps) {
     </Drawer>
   );
 }
+
+export default ResizeableDrawer;

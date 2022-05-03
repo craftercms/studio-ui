@@ -144,7 +144,8 @@ const reducer = createReducer<GlobalState['versions']>(initialState, {
     isFetching: true
   }),
   [revertContentComplete.type]: (state) => ({
-    ...state
+    ...state,
+    isFetching: false
   }),
   [revertContentFailed.type]: (state, { payload }) => ({
     ...state,

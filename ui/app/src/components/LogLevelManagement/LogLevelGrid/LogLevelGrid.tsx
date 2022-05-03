@@ -45,7 +45,7 @@ export interface LoggingLevelsGridUIProps {
   onChangeLevel(logger: Logger, level: LoggerLevel): void;
 }
 
-const levels: LoggerLevel[] = ['off', 'error', 'warn', 'info', 'debug', 'error', 'trace'];
+const levels: LoggerLevel[] = ['off', 'fatal', 'error', 'warn', 'info', 'debug', 'error', 'trace', 'all'];
 const capitalizedLevels = levels.map(capitalize) as LoggerLevel[];
 
 const CHUNK_SIZE = 30;
@@ -73,7 +73,7 @@ export function LogLevelGrid(props: LoggingLevelsGridUIProps) {
         <Table className={classes.tableRoot}>
           <TableHead>
             <GlobalAppGridRow className="hoverDisabled">
-              <GlobalAppGridCell className="width60">
+              <GlobalAppGridCell className="width50">
                 <Typography variant="subtitle2">
                   <FormattedMessage id="words.logger" defaultMessage="Logger" />
                 </Typography>
@@ -84,44 +84,46 @@ export function LogLevelGrid(props: LoggingLevelsGridUIProps) {
                 </Typography>
               </GlobalAppGridCell>
             </GlobalAppGridRow>
-            <GlobalAppGridRow className="hoverDisabled">
-              {onLoggerFilterChange && (
-                <GlobalAppGridCell>
-                  <TextField
-                    autoFocus
-                    fullWidth
-                    label={<FormattedMessage id="loggingLevels.loggersFilterLabel" defaultMessage="Logger filter" />}
-                    size="small"
-                    value={loggerFilter}
-                    onChange={(e) => onLoggerFilterChange(e.target.value)}
-                  />
-                </GlobalAppGridCell>
-              )}
-              {onLevelFilterChange && (
-                <GlobalAppGridCell>
-                  <Select
-                    fullWidth
-                    label={<FormattedMessage id="loggingLevels.levelFilterLabel" defaultMessage="Level filter" />}
-                    value={levelFilter}
-                    size="small"
-                    variant="outlined"
-                    displayEmpty
-                    onChange={(e) => {
-                      onLevelFilterChange(e.target.value);
-                    }}
-                  >
-                    <MenuItem key="empty" value="">
-                      <FormattedMessage id="loggingLevels.levelFilterSelectEmptyLabel" defaultMessage="Any level" />
-                    </MenuItem>
-                    {levels.map((level, index) => (
-                      <MenuItem key={level} value={level}>
-                        {capitalizedLevels[index]}
+            {(onLoggerFilterChange || onLevelFilterChange) && (
+              <GlobalAppGridRow className="hoverDisabled">
+                {onLoggerFilterChange && (
+                  <GlobalAppGridCell>
+                    <TextField
+                      autoFocus
+                      fullWidth
+                      label={<FormattedMessage id="loggingLevels.loggersFilterLabel" defaultMessage="Logger filter" />}
+                      size="small"
+                      value={loggerFilter}
+                      onChange={(e) => onLoggerFilterChange(e.target.value)}
+                    />
+                  </GlobalAppGridCell>
+                )}
+                {onLevelFilterChange && (
+                  <GlobalAppGridCell>
+                    <Select
+                      fullWidth
+                      label={<FormattedMessage id="loggingLevels.levelFilterLabel" defaultMessage="Level filter" />}
+                      value={levelFilter}
+                      size="small"
+                      variant="outlined"
+                      displayEmpty
+                      onChange={(e) => {
+                        onLevelFilterChange(e.target.value);
+                      }}
+                    >
+                      <MenuItem key="empty" value="">
+                        <FormattedMessage id="loggingLevels.levelFilterSelectEmptyLabel" defaultMessage="Any level" />
                       </MenuItem>
-                    ))}
-                  </Select>
-                </GlobalAppGridCell>
-              )}
-            </GlobalAppGridRow>
+                      {levels.map((level, index) => (
+                        <MenuItem key={level} value={level}>
+                          {capitalizedLevels[index]}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </GlobalAppGridCell>
+                )}
+              </GlobalAppGridRow>
+            )}
           </TableHead>
           <TableBody>
             {loggers.length === 0 && (
@@ -131,8 +133,10 @@ export function LogLevelGrid(props: LoggingLevelsGridUIProps) {
             )}
             {(displayAll ? loggers : loggers.slice(0, 30)).map((logger) => (
               <GlobalAppGridRow key={logger.name} className="hoverDisabled">
-                <GlobalAppGridCell align="left">{logger.name}</GlobalAppGridCell>
-                <GlobalAppGridCell align="left" className="action">
+                <GlobalAppGridCell align="left" title={logger.name} className="ellipsis">
+                  {logger.name}
+                </GlobalAppGridCell>
+                <GlobalAppGridCell align="left" className="action scroll-x">
                   <ButtonGroup disableElevation variant="outlined">
                     {levels.map((level, index) => (
                       <Button

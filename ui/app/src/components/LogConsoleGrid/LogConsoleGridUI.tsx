@@ -34,7 +34,7 @@ interface LogConsoleGridUIProps {
   onLogEventDetails(logEvent: LogEvent): void;
 }
 
-export default function LogConsoleGridUI(props: LogConsoleGridUIProps) {
+export function LogConsoleGridUI(props: LogConsoleGridUIProps) {
   const { logEvents, onLogEventDetails, showSiteColumn } = props;
   const localeBranch = useSelection((state) => state.uiConfig.locale);
 
@@ -109,3 +109,5 @@ export default function LogConsoleGridUI(props: LogConsoleGridUIProps) {
     </TableContainer>
   );
 }
+
+export default LogConsoleGridUI;

@@ -48,6 +48,12 @@ const GlobalAppGridCell = withStyles(() =>
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap'
       },
+      '&.scroll-y': {
+        overflowY: 'auto'
+      },
+      '&.scroll-x': {
+        overflowX: 'auto'
+      },
       '&.padded0': {
         padding: 0
       },

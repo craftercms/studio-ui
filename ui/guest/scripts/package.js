@@ -58,7 +58,7 @@ async function run() {
       keywords,
       repository,
       license,
-      main: './node/index.js',
+      main: './index.js',
       module: './index.js',
       typings: './index.d.ts',
       dependencies: {},

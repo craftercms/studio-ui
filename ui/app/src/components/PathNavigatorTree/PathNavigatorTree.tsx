@@ -113,7 +113,7 @@ interface Menu {
 //   }
 // };
 
-export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
+export function PathNavigatorTree(props: PathNavigatorTreeProps) {
   const {
     label,
     id = props.label.replace(/\s/g, ''),
@@ -511,3 +511,5 @@ export default function PathNavigatorTree(props: PathNavigatorTreeProps) {
     </>
   );
 }
+
+export default PathNavigatorTree;

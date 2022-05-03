@@ -23,8 +23,10 @@ interface SiteAuditManagementProps {
   showAppsButton?: boolean;
 }
 
-export default function SiteAuditManagement(props: SiteAuditManagementProps) {
+export function SiteAuditManagement(props: SiteAuditManagementProps) {
   const { embedded, showAppsButton = !embedded } = props;
   const site = useActiveSiteId();
   return <AuditManagement site={site} embedded={embedded} showAppsButton={showAppsButton} />;
 }
+
+export default SiteAuditManagement;

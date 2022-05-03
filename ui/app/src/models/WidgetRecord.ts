@@ -14,10 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './LegacyRecentlyPublishedDashlet';
+import * as React from 'react';
+import NonReactWidgetRecord from './NonReactWidgetRecord';
 
-export * from './LegacyRecentlyPublishedDashlet';
+export type WidgetRecord = NonReactWidgetRecord | React.ComponentType<any>;
 
-export * from './LegacyRecentlyPublishedDashletUI';
-
-export * from './LegacyRecentlyPublishedDashletUISkeletonTable';
+export default WidgetRecord;

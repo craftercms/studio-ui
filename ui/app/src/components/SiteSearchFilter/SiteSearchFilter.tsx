@@ -55,7 +55,7 @@ interface FilterProps {
   setCheckedFilters(checkedFilters: object): any;
 }
 
-export default function SiteSearchFilter(props: FilterProps) {
+export function SiteSearchFilter(props: FilterProps) {
   const classes = useStyles({});
   const { formatMessage } = useIntl();
   const {
@@ -138,3 +138,5 @@ export default function SiteSearchFilter(props: FilterProps) {
     </div>
   );
 }
+
+export default SiteSearchFilter;

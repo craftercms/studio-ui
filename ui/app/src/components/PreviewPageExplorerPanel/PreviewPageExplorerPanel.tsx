@@ -478,7 +478,7 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
   );
 }
 
-export default function PreviewPageExplorerPanel() {
+export function PreviewPageExplorerPanel() {
   const dispatch = useDispatch();
   const guest = usePreviewGuest();
   const currentModelId = guest?.modelId;
@@ -894,3 +894,5 @@ function PageExplorerUI(props: PageExplorerUIProps) {
     </>
   );
 }
+
+export default PreviewPageExplorerPanel;

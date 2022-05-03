@@ -75,7 +75,7 @@ const useStyles = makeStyles((theme) =>
   })
 );
 
-export default function PreviewDropTargetsPanel() {
+export function PreviewDropTargetsPanel() {
   const classes = useStyles({});
   const hostToGuest$ = getHostToGuestBus();
   const dropTargetsBranch = useSelection((state) => state.preview.dropTargets);
@@ -189,3 +189,5 @@ function DropTargetsList(props: DropTargetsListProps) {
     </>
   );
 }
+
+export default PreviewDropTargetsPanel;

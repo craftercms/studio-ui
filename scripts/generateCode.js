@@ -21,8 +21,8 @@ const prettier = require('prettier');
 const prettierConfig = require('../prettier.config');
 const childProcess = require('child_process');
 const rootPath = __dirname.replace('/scripts', '');
-const srcPath = `${rootPath}/ui/app/src`;
-const componentsPath = `${srcPath}/components`;
+const appSrcPath = `${rootPath}/ui/app/src`;
+const componentsPath = `${appSrcPath}/components`;
 const isDirectoryFilter = (directory) => directory.isDirectory();
 const withFileTypes = true;
 const args = process.argv.slice(2);
@@ -70,14 +70,14 @@ function studioUI() {
 
   builder.push(fs.readFileSync('./copyright.js'));
   builder.push(`import { lazy } from 'react';`);
-  fs.readdirSync(`${srcPath}/services`, { withFileTypes }).forEach((file) => {
+  fs.readdirSync(`${appSrcPath}/services`, { withFileTypes }).forEach((file) => {
     if (file.name !== 'index.ts' && file.name !== '.DS_Store') {
       const name = file.name.replace(/(\.ts|\.tsx)$/, '');
       services.push(name);
       builder.push(`import * as ${name}Service from '../services/${name}';`);
     }
   });
-  fs.readdirSync(`${srcPath}/utils`, { withFileTypes }).forEach((file) => {
+  fs.readdirSync(`${appSrcPath}/utils`, { withFileTypes }).forEach((file) => {
     if (
       ![
         'index.ts',
@@ -115,7 +115,7 @@ function studioUI() {
     });
   builder.push('};');
   builder.push(`export const icons = {`);
-  fs.readdirSync(`${srcPath}/icons`, { withFileTypes }).forEach((file) => {
+  fs.readdirSync(`${appSrcPath}/icons`, { withFileTypes }).forEach((file) => {
     if (file.name !== 'index.ts' && file.name !== '.DS_Store') {
       const name = file.name.replace(/(\.ts|\.tsx)$/, '');
       const path = name;
@@ -169,7 +169,7 @@ function componentsIndex() {
 }
 
 function iconsIndex() {
-  const iconsPath = `${srcPath}/icons`;
+  const iconsPath = `${appSrcPath}/icons`;
   const builder = [];
   const createExport = (name) => `export { default as ${name} } from './${name}';`;
 
@@ -196,7 +196,7 @@ function iconsIndex() {
 }
 
 function modelsIndex() {
-  const modelsPath = `${srcPath}/models`;
+  const modelsPath = `${appSrcPath}/models`;
   const builder = [];
   const createExport = (name) => `export * from './${name}';`;
 
@@ -224,6 +224,33 @@ function modelsIndex() {
     'utf8',
     () => {
       console.log('Models index created successfully.');
+    }
+  );
+}
+
+function xbReactIndex() {
+  const path = `${rootPath}/ui/guest/src/react`;
+  const builder = [];
+  const createExport = (name) => `export * from './${name}';`;
+
+  builder.push(fs.readFileSync('./copyright.js'));
+  builder.push('\n');
+
+  fs.readdirSync(path).forEach((file) => {
+    if (!['index.ts', '.DS_Store', 'package.json'].includes(file)) {
+      builder.push(createExport(file.replace(/(\.ts|\.tsx)$/, '')));
+    }
+  });
+
+  fs.writeFile(
+    `${path}/index.ts`,
+    prettier.format(builder.join(''), {
+      ...prettierConfig,
+      parser: 'babel'
+    }),
+    'utf8',
+    () => {
+      console.log('xb/react index created successfully.');
     }
   );
 }
@@ -302,12 +329,17 @@ function main(...args) {
       modelsIndex();
       break;
     }
+    case 'xb-react-index': {
+      xbReactIndex();
+      break;
+    }
     case 'all': {
       studioUI();
       main('muiicons');
       componentsIndex();
       iconsIndex();
       modelsIndex();
+      xbReactIndex();
       break;
     }
   }

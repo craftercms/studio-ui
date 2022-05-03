@@ -22,7 +22,7 @@ import { getHostToGuestBus } from '../../utils/subjects';
 import { LegacyItem } from '../../models/Item';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 
-export default function LegacyConcierge() {
+export function LegacyConcierge() {
   // As it stands, this should be a hook, but creating as a component for the convenience of mounting it
   // only once on the CrafterCMSNextBridge component. As a hook, it would be out of the StoreProvider.
   const site = useActiveSiteId();
@@ -59,3 +59,5 @@ export default function LegacyConcierge() {
 
   return null;
 }
+
+export default LegacyConcierge;

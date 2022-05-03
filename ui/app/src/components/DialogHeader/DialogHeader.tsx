@@ -15,7 +15,7 @@
  */
 
 import Typography, { TypographyProps } from '@mui/material/Typography';
-import IconButton, { IconButtonProps } from '@mui/material/IconButton';
+import IconButton from '@mui/material/IconButton';
 import makeStyles from '@mui/styles/makeStyles';
 import createStyles from '@mui/styles/createStyles';
 import CloseIconRounded from '@mui/icons-material/CloseRounded';
@@ -26,7 +26,7 @@ import clsx from 'clsx';
 import Tooltip from '@mui/material/Tooltip';
 import { defineMessages, useIntl } from 'react-intl';
 import StandardAction from '../../models/StandardAction';
-import Action from '../DialogHeaderAction/DialogHeaderAction';
+import Action, { DialogHeaderActionProps } from '../DialogHeaderAction/DialogHeaderAction';
 import OpenInFullIcon from '@mui/icons-material/OpenInFullRounded';
 import { SystemIconDescriptor } from '../SystemIcon';
 
@@ -72,11 +72,6 @@ const dialogTitleStyles = makeStyles((theme) =>
   })
 );
 
-export interface DialogHeaderAction extends IconButtonProps {
-  icon: SystemIconDescriptor;
-  tooltip?: string;
-}
-
 export interface DialogHeaderStateAction {
   icon: SystemIconDescriptor;
   'aria-label': string;
@@ -112,8 +107,8 @@ export type DialogHeaderProps<
   titleTypographyProps?: TypographyProps<PrimaryTypographyComponent, { component?: PrimaryTypographyComponent }>;
   subtitleTypographyProps?: TypographyProps<SecondaryTypographyComponent, { component?: SecondaryTypographyComponent }>;
   subtitle?: ReactNode;
-  leftActions?: DialogHeaderAction[];
-  rightActions?: DialogHeaderAction[];
+  leftActions?: DialogHeaderActionProps[];
+  rightActions?: DialogHeaderActionProps[];
   closeIcon?: ElementType;
   minimizeIcon?: ElementType;
   fullScreenIcon?: ElementType;
@@ -176,7 +171,7 @@ export function DialogHeader(props: DialogHeaderProps) {
                 </IconButton>
               </Tooltip>
             )}
-            {leftActions?.map(({ icon, 'aria-label': tooltip, ...rest }: DialogHeaderAction, i: number) => (
+            {leftActions?.map(({ icon, 'aria-label': tooltip, ...rest }: DialogHeaderActionProps, i: number) => (
               <Action key={i} icon={icon} tooltip={tooltip} disabled={disabled} {...rest} />
             ))}
           </div>
@@ -186,7 +181,7 @@ export function DialogHeader(props: DialogHeaderProps) {
         </Typography>
         {(rightActions || onCloseButtonClick || onMinimizeButtonClick || onFullScreenButtonClick) && (
           <div className={classes.rightActions}>
-            {rightActions?.map(({ icon, 'aria-label': tooltip, ...rest }: DialogHeaderAction, i: number) => (
+            {rightActions?.map(({ icon, 'aria-label': tooltip, ...rest }: DialogHeaderActionProps, i: number) => (
               <Action key={i} icon={icon} tooltip={tooltip} disabled={disabled} {...rest} />
             ))}
             {onMinimizeButtonClick && (

@@ -50,7 +50,7 @@ interface PublishingDashboardProps {
   showAppsButton?: boolean;
 }
 
-export default function PublishingDashboard(props: PublishingDashboardProps) {
+export function PublishingDashboard(props: PublishingDashboardProps) {
   const { embedded, showAppsButton } = props;
   const classes = useStyles();
   const site = useActiveSiteId();
@@ -77,3 +77,5 @@ export default function PublishingDashboard(props: PublishingDashboardProps) {
     </section>
   );
 }
+
+export default PublishingDashboard;

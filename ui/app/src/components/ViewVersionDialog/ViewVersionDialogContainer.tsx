@@ -21,7 +21,7 @@ import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
 import React from 'react';
 import LegacyVersionDialog from './LegacyVersionDialog';
 
-export default function ViewVersionDialogContainer(props: ViewVersionDialogContainerProps) {
+export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProps) {
   const resource = useLogicResource<VersionResource, ViewVersionDialogContainerProps>(props, {
     shouldResolve: (source) =>
       source.version && source.contentTypesBranch.byId && !source.isFetching && !source.contentTypesBranch.isFetching,
@@ -44,3 +44,5 @@ export default function ViewVersionDialogContainer(props: ViewVersionDialogConta
     </>
   );
 }
+
+export default ViewVersionDialogContainer;

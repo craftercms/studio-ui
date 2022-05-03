@@ -65,7 +65,7 @@ const translations = defineMessages({
   }
 });
 
-export default function SiteManagement() {
+export function SiteManagement() {
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const { authoringBase } = useEnv();
@@ -264,3 +264,5 @@ export default function SiteManagement() {
     </Paper>
   );
 }
+
+export default SiteManagement;

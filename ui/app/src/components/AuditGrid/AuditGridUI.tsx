@@ -118,7 +118,7 @@ export const fieldIdMapping = {
   clusterNodeId: 'clusterNodeId'
 };
 
-export default function AuditGridUI(props: AuditGridUIProps) {
+export function AuditGridUI(props: AuditGridUIProps) {
   const {
     page,
     resource,
@@ -427,3 +427,5 @@ export default function AuditGridUI(props: AuditGridUIProps) {
     </Box>
   );
 }
+
+export default AuditGridUI;

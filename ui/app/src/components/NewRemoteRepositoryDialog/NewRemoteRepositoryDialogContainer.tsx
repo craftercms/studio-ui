@@ -22,7 +22,7 @@ import { useSpreadState } from '../../hooks/useSpreadState';
 import { inputsInitialState, isFormValid, NewRemoteRepositoryDialogContainerProps } from './utils';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 
-export default function NewRemoteRepositoryDialogContainer(props: NewRemoteRepositoryDialogContainerProps) {
+export function NewRemoteRepositoryDialogContainer(props: NewRemoteRepositoryDialogContainerProps) {
   const { onClose, onCreateSuccess, onCreateError, isSubmitting, onSubmittingAndOrPendingChange } = props;
   const siteId = useActiveSiteId();
   const [inputs, setInputs] = useSpreadState(inputsInitialState);
@@ -87,3 +87,5 @@ export default function NewRemoteRepositoryDialogContainer(props: NewRemoteRepos
     />
   );
 }
+
+export default NewRemoteRepositoryDialogContainer;

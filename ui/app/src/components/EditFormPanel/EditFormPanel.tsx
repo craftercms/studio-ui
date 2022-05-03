@@ -99,7 +99,7 @@ const translations = defineMessages({
   }
 });
 
-export default function EditFormPanel(props: EditFormPanelProps) {
+export function EditFormPanel(props: EditFormPanelProps) {
   const { showToolsPanel, guest } = usePreviewState();
   const { selected, models, hierarchyMap, modelIdByPath } = guest ?? {};
   const getAnchorPosition = () => {
@@ -236,3 +236,5 @@ function EditFormPanelBody(props: EditFormPanelBodyProps) {
     </>
   );
 }
+
+export default EditFormPanel;

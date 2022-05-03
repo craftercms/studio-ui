@@ -247,7 +247,7 @@ const fetchChildrenByPathComplete = /*#__PURE__*/ createAction<{
 
 const fetchChildrenByPathFailed = /*#__PURE__*/ createAction<any>('FETCH_CHILDREN_BY_PATH_FAILED');
 
-export default function SingleItemSelector(props: SingleItemSelectorProps) {
+export function SingleItemSelector(props: SingleItemSelectorProps) {
   const {
     selectIcon: SelectIcon = ExpandMoreRoundedIcon,
     classes: propClasses,
@@ -478,3 +478,5 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
     </Wrapper>
   );
 }
+
+export default SingleItemSelector;

@@ -55,7 +55,7 @@ const translations = defineMessages({
   }
 });
 
-export default function AccountManagement(props: AccountManagementProps) {
+export function AccountManagement(props: AccountManagementProps) {
   const {
     passwordRequirementsRegex = '^(?=(?<hasNumbers>.*[0-9]))(?=(?<hasLowercase>.*[a-z]))(?=(?<hasUppercase>.*[A-Z]))(?=(?<hasSpecialChars>.*[~|!`,;/@#$%^&+=]))(?<minLength>.{8,})$'
   } = props;
@@ -223,3 +223,5 @@ export default function AccountManagement(props: AccountManagementProps) {
     </Paper>
   );
 }
+
+export default AccountManagement;

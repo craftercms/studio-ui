@@ -37,7 +37,7 @@ import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
 import EmptyState from '../EmptyState/EmptyState';
 import Typography from '@mui/material/Typography';
 import DialogFooter from '../DialogFooter/DialogFooter';
-import { Pagination } from '../HistoryDialog';
+import { HistoryDialogPagination } from '../HistoryDialog';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 
@@ -169,7 +169,7 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
       </DialogBody>
       {!compareMode && item?.path && (
         <DialogFooter>
-          <Pagination count={count} page={page} rowsPerPage={limit} onPageChanged={onPageChanged} />
+          <HistoryDialogPagination count={count} page={page} rowsPerPage={limit} onPageChanged={onPageChanged} />
         </DialogFooter>
       )}
     </>

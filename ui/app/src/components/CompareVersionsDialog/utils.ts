@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { DialogHeaderAction, DialogHeaderStateAction } from '../DialogHeader';
+import { DialogHeaderStateAction } from '../DialogHeader';
 import StandardAction from '../../models/StandardAction';
 import ApiResponse from '../../models/ApiResponse';
 import { LegacyVersion, VersionsStateProps } from '../../models/Version';
@@ -22,6 +22,7 @@ import { EntityState } from '../../models/EntityState';
 import ContentType from '../../models/ContentType';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
+import { DialogHeaderActionProps } from '../DialogHeaderAction';
 
 export interface CompareVersionsDialogBaseProps {
   error: ApiResponse;
@@ -34,7 +35,7 @@ export interface CompareVersionsDialogProps extends CompareVersionsDialogBasePro
   selectedA: LegacyVersion;
   selectedB: LegacyVersion;
   contentTypesBranch?: EntityState<ContentType>;
-  rightActions?: DialogHeaderAction[];
+  rightActions?: DialogHeaderActionProps[];
 }
 
 export interface CompareVersionsDialogStateProps extends CompareVersionsDialogBaseProps, EnhancedDialogState {

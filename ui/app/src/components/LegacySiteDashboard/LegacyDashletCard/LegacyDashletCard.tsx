@@ -50,7 +50,7 @@ const Summary = styled(AccordionSummary)(() => {
   };
 });
 
-export default function LegacyDashletCard(props: LegacyDashletProps) {
+export function LegacyDashletCard(props: LegacyDashletProps) {
   const {
     icon: Icon = ExpandMoreIcon,
     title,
@@ -87,3 +87,5 @@ export default function LegacyDashletCard(props: LegacyDashletProps) {
     </Accordion>
   );
 }
+
+export default LegacyDashletCard;
