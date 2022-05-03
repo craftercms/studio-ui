@@ -116,7 +116,7 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
         activeItem: version
       });
     },
-    [item?.systemType, item.availableActionsMap.revert, count, setMenu, formatMessage, isConfig, item.stateMap.locked]
+    [item?.systemType, item?.availableActionsMap.revert, count, setMenu, formatMessage, isConfig, item.stateMap.locked]
   );
 
   const compareVersionDialogWithActions = () =>
