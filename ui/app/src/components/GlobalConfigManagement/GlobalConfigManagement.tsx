@@ -196,7 +196,7 @@ export function GlobalConfigManagement() {
               onConfirm={onResetClick}
             />
             <PrimaryButton disabled={!hasChanges} onClick={onSaveClick}>
-              <FormattedMessage id="words" defaultMessage="Save" />
+              <FormattedMessage id="words.save" defaultMessage="Save" />
             </PrimaryButton>
           </Box>
         </section>

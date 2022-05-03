@@ -109,7 +109,7 @@ export function RangePickerModal(props: RangePickerModalProps) {
           disabled={!(pickerDateFrom && pickerDateTo && pickerDateFrom.getTime() !== pickerDateTo.getTime())}
           onClick={onRangePickerAccept}
         >
-          <FormattedMessage id="words.Accept" defaultMessage="Accept" />
+          <FormattedMessage id="words.accept" defaultMessage="Accept" />
         </PrimaryButton>
       </DialogActions>
     </Dialog>

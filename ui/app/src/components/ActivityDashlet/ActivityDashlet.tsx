@@ -314,7 +314,7 @@ export function ActivityDashlet(props: ActivityDashletProps) {
               }
             }}
           >
-            <FormattedMessage id="words.Timeline" defaultMessage="Timeline" />
+            <FormattedMessage id="words.timeline" defaultMessage="Timeline" />
           </DropDownMenu>
         </>
       }
