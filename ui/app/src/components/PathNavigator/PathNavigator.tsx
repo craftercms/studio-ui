@@ -295,7 +295,8 @@ export function PathNavigator(props: PathNavigatorProps) {
     dispatch(
       pathNavigatorFetchPath({
         id,
-        path: item.path
+        path: item.path,
+        limit: state.limit
       })
     );
   };

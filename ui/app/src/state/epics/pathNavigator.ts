@@ -107,11 +107,14 @@ export default [
         ([
           {
             type,
-            payload: { id, path }
+            payload: { id, path, limit }
           },
           state
         ]) =>
-          fetchItemWithChildrenByPath(state.sites.active, path, { excludes: state.pathNavigator[id].excludes }).pipe(
+          fetchItemWithChildrenByPath(state.sites.active, path, {
+            excludes: state.pathNavigator[id].excludes,
+            ...(limit && { limit })
+          }).pipe(
             map(({ item, children }) => pathNavigatorFetchPathComplete({ id, parent: item, children })),
             catchAjaxError(
               (error) => pathNavigatorFetchPathFailed({ id, error }),
