@@ -62,7 +62,7 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
   const { versionsBranch } = props;
   const { count, page, limit, current, rootPath, isConfig } = versionsBranch;
   // TODO: It'd be best for the dialog to directly receive a live item. Must change versions branch to only hold the path.
-  const item = useSelection((state) => state.content.itemsByPath[versionsBranch.item.path]);
+  const item = useSelection((state) => state.content.itemsByPath[versionsBranch.item.path]) ?? versionsBranch.item;
   const path = item?.path ?? '';
   const [openSelector, setOpenSelector] = useState(false);
   const { formatMessage } = useIntl();
@@ -116,7 +116,7 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
         activeItem: version
       });
     },
-    [item.systemType, item.availableActionsMap.revert, count, setMenu, formatMessage, isConfig, item.stateMap.locked]
+    [item?.systemType, item.availableActionsMap.revert, count, setMenu, formatMessage, isConfig, item.stateMap.locked]
   );
 
   const compareVersionDialogWithActions = () =>
