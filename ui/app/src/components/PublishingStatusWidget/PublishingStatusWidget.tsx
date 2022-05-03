@@ -34,7 +34,7 @@ export function PublishingStatusWidget(props: PublishingStatusWidgetProps) {
   const dispatch = useDispatch();
 
   const onStartStop = () => {
-    const action = state.status === 'ready' ? stop : start;
+    const action = state.enabled ? stop : start;
 
     action(siteId).subscribe(() => {
       dispatch(fetchPublishingStatus());

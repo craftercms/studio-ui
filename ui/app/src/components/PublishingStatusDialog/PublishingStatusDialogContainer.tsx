@@ -64,12 +64,11 @@ export function PublishingStatusDialogContainer(props: PublishingStatusDialogCon
             tooltip: formatMessage(publishingStatusMessages.unlock)
           },
           onStartStop && {
-            icon:
-              status === 'ready'
-                ? { id: '@mui/icons-material/PauseCircleOutlineOutlined' }
-                : { id: '@mui/icons-material/PlayCircleOutlineOutlined' },
+            icon: enabled
+              ? { id: '@mui/icons-material/PauseCircleOutlineOutlined' }
+              : { id: '@mui/icons-material/PlayCircleOutlineOutlined' },
             onClick: onStartStop,
-            tooltip: formatMessage(status === 'ready' ? publishingStatusMessages.stop : publishingStatusMessages.start)
+            tooltip: formatMessage(enabled ? publishingStatusMessages.stop : publishingStatusMessages.start)
           },
           onRefresh && {
             icon: { id: '@mui/icons-material/RefreshRounded' },
