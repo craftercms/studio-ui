@@ -64,7 +64,7 @@ import {
 } from '@craftercms/studio-ui/state/actions/preview';
 import { MouseEventActionObservable } from '../models/Actions';
 import { GuestState } from '../models/GuestStore';
-import { notNullOrUndefined, nullOrUndefined, reversePluckProps } from '@craftercms/studio-ui/utils/object';
+import { notNullOrUndefined, nou, nullOrUndefined, reversePluckProps } from '@craftercms/studio-ui/utils/object';
 import { ElementRecord, ICEProps } from '../../models/InContextEditing';
 import * as ElementRegistry from '../../elementRegistry';
 import { get, getElementFromICEProps } from '../../elementRegistry';
@@ -431,6 +431,11 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
           const { field } = iceRegistry.getReferentialEntries(record.iceIds[0]);
           const validations = field?.validations;
           const type = field?.type;
+
+          if (nou(type)) {
+            return NEVER;
+          }
+
           switch (type) {
             case 'html':
             case 'text':
