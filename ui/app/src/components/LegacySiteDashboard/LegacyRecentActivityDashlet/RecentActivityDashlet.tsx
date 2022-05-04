@@ -177,7 +177,7 @@ export function RecentActivityDashlet() {
               return {
                 total: activities.total,
                 items: paths.map((path) => ({
-                  ...(itemLookup[path] ?? deleted[path]),
+                  ...(itemLookup[path] ?? deleted[path] ?? legacyItems[path]),
                   live: itemLookup[path]?.stateMap.live ? legacyItems[path].live : null,
                   staging: itemLookup[path]?.stateMap.staged ? legacyItems[path].staging : null
                 }))
@@ -208,6 +208,9 @@ export function RecentActivityDashlet() {
     const events = [deleteContentEvent.type, workflowEvent.type, publishEvent.type];
     const hostToHost$ = getHostToHostBus();
     const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
+      if (type === deleteContentEvent.type) {
+        setSelectedLookup({});
+      }
       fetchActivity();
     });
     return () => {
