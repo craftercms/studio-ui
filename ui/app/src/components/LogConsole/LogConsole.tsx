@@ -25,7 +25,7 @@ import PauseRoundedIcon from '@mui/icons-material/PauseRounded';
 import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded';
 import moment from 'moment-timezone';
 import LogConsoleGridUI from '../LogConsoleGrid';
-import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import { ConditionalLoadingState } from '../LoadingState/LoadingState';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
@@ -53,21 +53,20 @@ export function LogConsole(props: LogConsoleManagementProps) {
   const refresh = useCallback(
     (since?: number) => {
       since = since ?? moment().subtract(1, 'hour').valueOf();
-
-      (logType === 'studio' ? fetchLog(since) : fetchPreviewLog(site, since)).subscribe(
-        (newLogEvents) => {
+      (logType === 'studio' ? fetchLog(since) : fetchPreviewLog(site, since)).subscribe({
+        next(newLogEvents) {
           if (logEvents) {
             setLogEvents([...logEvents, ...newLogEvents]);
           } else {
             setLogEvents(newLogEvents);
           }
         },
-        (response) => {
+        error(response) {
           response = response.response ? response.response.response : response;
           setError(response);
           dispatch(showErrorDialog({ error: response }));
         }
-      );
+      });
     },
     [dispatch, logEvents, logType, site]
   );
@@ -108,7 +107,7 @@ export function LogConsole(props: LogConsoleManagementProps) {
   };
 
   return (
-    <Box>
+    <Paper elevation={0}>
       <GlobalAppToolbar
         title={!embedded && <FormattedMessage id="globalMenu.logConsoleEntryLabel" defaultMessage="Log Console" />}
         rightContent={
@@ -149,7 +148,7 @@ export function LogConsole(props: LogConsoleManagementProps) {
         onClose={onCloseLogEventDetailsDialog}
         onClosed={onLogEventDetailsDialogClosed}
       />
-    </Box>
+    </Paper>
   );
 }
 
