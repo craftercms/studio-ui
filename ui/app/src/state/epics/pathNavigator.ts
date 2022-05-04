@@ -107,7 +107,7 @@ export default [
         ([
           {
             type,
-            payload: { id, path, limit }
+            payload: { id, path }
           },
           state
         ]) =>
