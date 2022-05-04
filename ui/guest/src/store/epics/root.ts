@@ -507,7 +507,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
               break;
             }
             default: {
-              return merge(
+              const sources: Observable<StandardAction>[] = [
                 escape$.pipe(
                   takeUntil(clearAndListen$),
                   tap(() => post(clearSelectedZones.type)),
@@ -515,7 +515,13 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
                   take(1)
                 ),
                 of(setEditingStatus({ status: EditingStatus.FIELD_SELECTED }))
-              );
+              ];
+              // Rapid clicking (double-clicking) outside an RTE will cause the normal
+              // FIELD_SELECTED status but without a previous mouseover setting the highlight.
+              if (Object.values(state.highlighted).length === 0) {
+                sources.unshift(of({ type: 'mouseover', payload: { record, event } }));
+              }
+              return merge(...sources);
             }
           }
         } else if (state.highlightMode === HighlightMode.MOVE_TARGETS && state.status === EditingStatus.LISTENING) {
