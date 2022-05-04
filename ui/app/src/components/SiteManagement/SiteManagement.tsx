@@ -187,6 +187,7 @@ export function SiteManagement() {
     event.preventDefault();
     event.stopPropagation();
     setSelectedSiteStatus(publishingStatusLookup[site.id]);
+    publishingStatusDialogState.onOpen();
   };
 
   const handleChangeView = () => {
