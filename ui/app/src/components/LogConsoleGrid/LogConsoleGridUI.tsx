@@ -37,9 +37,8 @@ interface LogConsoleGridUIProps {
 export function LogConsoleGridUI(props: LogConsoleGridUIProps) {
   const { logEvents, onLogEventDetails, showSiteColumn } = props;
   const localeBranch = useSelection((state) => state.uiConfig.locale);
-
   return (
-    <TableContainer sx={{ bgcolor: 'background.paper' }}>
+    <TableContainer>
       <Table>
         <TableHead>
           <GlobalAppGridRow className="hoverDisabled">
