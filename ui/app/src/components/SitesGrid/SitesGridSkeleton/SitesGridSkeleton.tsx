@@ -14,17 +14,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useSitesGridStyles } from './styles';
+import { useSitesGridStyles } from '../styles';
 import Grid from '@mui/material/Grid';
-import { SiteCardSkeleton } from './SiteCardSkeleton';
+import { SiteCardSkeleton } from '../../SiteCard/SiteCardSkeleton/SiteCardSkeleton';
 import React from 'react';
 
-interface SkeletonSitesGridProps {
+interface SitesGridSkeletonProps {
   numOfItems?: number;
   currentView: 'grid' | 'list';
 }
 
-export function SkeletonSitesGrid(props: SkeletonSitesGridProps) {
+export function SitesGridSkeleton(props: SitesGridSkeletonProps) {
   const classes = useSitesGridStyles();
   const { numOfItems = 5, currentView } = props;
   const items = new Array(numOfItems).fill(null);
@@ -40,3 +40,5 @@ export function SkeletonSitesGrid(props: SkeletonSitesGridProps) {
     </section>
   );
 }
+
+export default SitesGridSkeleton;

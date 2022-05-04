@@ -14,6 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './SitesGrid';
+export { default } from './SitesGridSkeleton';
 
-export * from './SitesGrid';
+export * from './SitesGridSkeleton';

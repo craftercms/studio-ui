@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useSiteCardStyles } from './styles';
+import { useSiteCardStyles } from '../../SitesGrid/styles';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import Skeleton from '@mui/material/Skeleton';
@@ -22,7 +22,7 @@ import CardActions from '@mui/material/CardActions';
 import React from 'react';
 import clsx from 'clsx';
 
-interface SiteCardSkeletonProps {
+export interface SiteCardSkeletonProps {
   compact?: boolean;
 }
 
@@ -44,3 +44,5 @@ export function SiteCardSkeleton(props: SiteCardSkeletonProps) {
     </Card>
   );
 }
+
+export default SiteCardSkeleton;

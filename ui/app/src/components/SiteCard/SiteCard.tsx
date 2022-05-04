@@ -29,7 +29,7 @@ import CardActionArea from '@mui/material/CardActionArea';
 import { Typography } from '@mui/material';
 import ConfirmDropdown from '../ConfirmDropdown';
 import clsx from 'clsx';
-import { useSiteCardStyles } from './styles';
+import { useSiteCardStyles } from '../SitesGrid/styles';
 import { PublishingStatus } from '../../models/Publishing';
 import { PublishingStatusButtonUI } from '../PublishingStatusButton';
 
@@ -41,7 +41,7 @@ interface SiteCardProps {
   onPublishButtonClick(event: React.MouseEvent<HTMLButtonElement, MouseEvent>, site: Site): void;
   fallbackImageSrc?: string;
   compact?: boolean;
-  publishingStatus: PublishingStatus;
+  publishingStatus: PublishingStatus | false;
 }
 
 const translations = defineMessages({
@@ -109,16 +109,18 @@ export function SiteCard(props: SiteCardProps) {
         )}
       </CardActionArea>
       <CardActions className={classes.cardActions} disableSpacing>
-        <PublishingStatusButtonUI
-          isFetching={!publishingStatus}
-          enabled={publishingStatus?.enabled}
-          status={publishingStatus?.status}
-          totalItems={publishingStatus?.totalItems}
-          numberOfItems={publishingStatus?.numberOfItems}
-          variant="icon"
-          size={compact ? 'small' : 'medium'}
-          onClick={(e) => onPublishButtonClick(e, site)}
-        />
+        {publishingStatus !== false && (
+          <PublishingStatusButtonUI
+            isFetching={!publishingStatus}
+            enabled={publishingStatus?.enabled}
+            status={publishingStatus?.status}
+            totalItems={publishingStatus?.totalItems}
+            numberOfItems={publishingStatus?.numberOfItems}
+            variant="icon"
+            size={compact ? 'small' : 'medium'}
+            onClick={(e) => onPublishButtonClick(e, site)}
+          />
+        )}
         {onEditSiteClick && (
           <Tooltip title={<FormattedMessage id="words.edit" defaultMessage="Edit" />}>
             <IconButton onClick={() => onEditSiteClick(site)} size={compact ? 'small' : 'medium'}>
