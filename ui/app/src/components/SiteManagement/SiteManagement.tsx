@@ -17,7 +17,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import AddIcon from '@mui/icons-material/Add';
-import { SkeletonSitesGrid } from '../SitesGrid';
+import SkeletonSitesGrid from '../SitesGrid/SitesGridSkeleton';
 import CreateSiteDialog from '../CreateSiteDialog/CreateSiteDialog';
 import ListViewIcon from '@mui/icons-material/ViewStreamRounded';
 import GridViewIcon from '@mui/icons-material/GridOnRounded';
@@ -39,7 +39,7 @@ import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { closeEditSiteDialog, showEditSiteDialog } from '../../state/actions/dialogs';
 import { ErrorBoundary } from '../ErrorBoundary/ErrorBoundary';
 import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
-import SitesGridUI from '../SitesGrid/SitesGridUI';
+import SitesGrid from '../SitesGrid/SitesGrid';
 import PublishingStatusDialog from '../PublishingStatusDialog';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import Button from '@mui/material/Button';
@@ -187,6 +187,7 @@ export function SiteManagement() {
     event.preventDefault();
     event.stopPropagation();
     setSelectedSiteStatus(publishingStatusLookup[site.id]);
+    publishingStatusDialogState.onOpen();
   };
 
   const handleChangeView = () => {
@@ -237,7 +238,7 @@ export function SiteManagement() {
             }
           }}
         >
-          <SitesGridUI
+          <SitesGrid
             resource={resource}
             publishingStatusLookup={publishingStatusLookup}
             onSiteClick={onSiteClick}
