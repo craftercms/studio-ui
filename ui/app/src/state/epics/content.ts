@@ -182,7 +182,7 @@ const content: CrafterCMSEpic[] = [
           // request (via reloadDetailedItem action)
           !state.content.itemsByPath[payload.path] || type === reloadDetailedItem.type
       ),
-      switchMap(([{ payload }, state]) =>
+      mergeMap(([{ payload }, state]) =>
         fetchDetailedItemService(state.sites.active, payload.path).pipe(
           map(fetchDetailedItemComplete),
           catchAjaxError(fetchDetailedItemFailed)

@@ -43,6 +43,7 @@ import { GetChildrenResponse } from '../models/GetChildrenResponse';
 import { GetItemWithChildrenResponse } from '../models/GetItemWithChildrenResponse';
 import { FetchItemsByPathOptions } from '../models/FetchItemsByPath';
 import { v4 as uuid } from 'uuid';
+import FetchItemsByPathArray from '../models/FetchItemsByPathArray';
 
 export function fetchComponentInstanceHTML(path: string): Observable<string> {
   return getText(`/crafter-controller/component.html?path=${path}`).pipe(pluck('response'));
@@ -1140,38 +1141,40 @@ export function fetchChildrenByPaths(
   );
 }
 
-export function fetchItemsByPath(siteId: string, paths: string[]): Observable<SandboxItem[]>;
+export function fetchItemsByPath(siteId: string, paths: string[]): Observable<FetchItemsByPathArray<SandboxItem>>;
 export function fetchItemsByPath(
   siteId: string,
   paths: string[],
   options: FetchItemsByPathOptions & { castAsDetailedItem: false }
-): Observable<SandboxItem[]>;
+): Observable<FetchItemsByPathArray<SandboxItem>>;
 export function fetchItemsByPath(
   siteId: string,
   paths: string[],
   options: FetchItemsByPathOptions & { castAsDetailedItem: true }
-): Observable<DetailedItem[]>;
+): Observable<FetchItemsByPathArray<DetailedItem>>;
 export function fetchItemsByPath(
   siteId: string,
   paths: string[],
   options: FetchItemsByPathOptions
-): Observable<SandboxItem[]>;
+): Observable<FetchItemsByPathArray<SandboxItem>>;
 export function fetchItemsByPath(
   siteId: string,
   paths: string[],
   options?: FetchItemsByPathOptions
-): Observable<SandboxItem[] | DetailedItem[]> {
+): Observable<FetchItemsByPathArray<SandboxItem | DetailedItem>> {
   if (!paths?.length) {
-    return of([]);
+    return of([] as FetchItemsByPathArray<SandboxItem | DetailedItem>);
   }
   const { castAsDetailedItem = false, preferContent = true } = options ?? {};
   return postJSON('/studio/api/2/content/sandbox_items_by_path', { siteId, paths, preferContent }).pipe(
-    pluck('response', 'items'),
-    map(
-      (items: SandboxItem[]) =>
+    pluck('response'),
+    map(({ items, missingItems }) =>
+      Object.assign(
         items.map((item) =>
           prepareVirtualItemProps(castAsDetailedItem ? parseSandBoxItemToDetailedItem(item) : item)
-        ) as SandboxItem[] | DetailedItem[]
+        ) as SandboxItem[] | DetailedItem[],
+        { missingItems }
+      )
     )
   );
 }
