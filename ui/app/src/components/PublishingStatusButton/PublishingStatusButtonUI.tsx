@@ -38,7 +38,7 @@ export const PublishingStatusButtonUI = forwardRef<HTMLButtonElement, Publishing
   return (
     <Tooltip
       title={`${formatMessage(publishingStatusMessages.publishingStatus)}: ${getPublishingStatusText(
-        status,
+        props,
         formatMessage
       )}`}
     >
@@ -56,6 +56,7 @@ export const PublishingStatusButtonUI = forwardRef<HTMLButtonElement, Publishing
           style={{ padding: rest.size === 'small' ? 0 : 4, ...style }}
         >
           <PublishingStatusAvatar
+            enabled={enabled}
             status={isFetching ? null : status}
             variant={variant}
             styles={rest.size === 'small' ? { root: { width: 30, height: 30 } } : null}

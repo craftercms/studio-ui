@@ -28,8 +28,7 @@ type PublishingStatusAvatarClassKey = 'root' | 'icon';
 
 type PublishingStatusAvatarStyles = Partial<Record<PublishingStatusAvatarClassKey, CSSProperties>>;
 
-export interface PublishingStatusAvatarProps {
-  status: PublishingStatus['status'];
+export interface PublishingStatusAvatarProps extends Pick<PublishingStatus, 'enabled' | 'status'> {
   className?: string;
   classes?: Partial<Record<PublishingStatusAvatarClassKey, string>>;
   styles?: PublishingStatusAvatarStyles;
@@ -78,10 +77,14 @@ const targets: { [prop in PublishingStatusAvatarProps['variant']]: 'backgroundCo
 };
 
 export const PublishingStatusAvatar = React.forwardRef<HTMLDivElement, PublishingStatusAvatarProps>((props, ref) => {
-  const { status, styles, variant = 'icon' } = props;
+  const { status, enabled, styles, variant = 'icon' } = props;
   const classes = useStyles({ styles, stylingTarget: targets[variant] });
   return (
-    <Avatar ref={ref} variant="circular" className={clsx(classes.root, props.className, props.classes?.root, status)}>
+    <Avatar
+      ref={ref}
+      variant="circular"
+      className={clsx(classes.root, props.className, props.classes?.root, enabled ? status : 'error')}
+    >
       <CloudUploadOutlined className={clsx(props.classes?.icon)} />
     </Avatar>
   );

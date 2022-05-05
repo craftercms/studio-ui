@@ -25,15 +25,15 @@ import { ElementType } from 'react';
 import Skeleton from '@mui/material/Skeleton';
 import { PublishingStatus } from '../../models/Publishing';
 import PublishingStatusAvatar from '../PublishingStatusAvatar/PublishingStatusAvatar';
-import { publishingStatusMessages } from '../PublishingStatusDisplay';
-import { capitalize } from '@mui/material';
+import { getPublishingStatusText } from '../PublishingStatusDisplay';
 
 type PublishingStatusTileClassKey = 'root' | 'avatar' | 'text';
 
 type PublishingStatusTileStyles = Partial<Record<PublishingStatusTileClassKey, CSSProperties>>;
 
-export interface PublishingStatusTileProps extends React.HTMLAttributes<HTMLDivElement | HTMLButtonElement> {
-  status: PublishingStatus['status'];
+export interface PublishingStatusTileProps
+  extends React.HTMLAttributes<HTMLDivElement | HTMLButtonElement>,
+    Pick<PublishingStatus, 'status' | 'enabled'> {
   isFetching?: boolean;
   styles?: PublishingStatusTileStyles;
   classes?: Partial<Record<PublishingStatusTileClassKey, string>>;
@@ -80,11 +80,9 @@ const PublishingStatusTile = React.forwardRef<HTMLDivElement | HTMLButtonElement
 ) {
   const classes = usePublishingStatusTileStyles(props.styles);
   const { formatMessage } = useIntl();
-  const { status, onClick, isFetching, classes: propClasses, ...rest } = props;
+  const { enabled, status, onClick, isFetching, classes: propClasses, ...rest } = props;
   const Component = onClick ? ('button' as ElementType) : ('div' as ElementType);
-  const statusText = publishingStatusMessages[status]
-    ? formatMessage(publishingStatusMessages[status])
-    : capitalize(status ?? '');
+  const statusText = getPublishingStatusText(props, formatMessage);
   return (
     <Component
       ref={ref}
@@ -93,6 +91,7 @@ const PublishingStatusTile = React.forwardRef<HTMLDivElement | HTMLButtonElement
       className={clsx(classes.root, propClasses?.root, !isFetching && status)}
     >
       <PublishingStatusAvatar
+        enabled={enabled}
         status={isFetching ? null : status}
         className={clsx(classes.avatar, propClasses?.avatar)}
       />

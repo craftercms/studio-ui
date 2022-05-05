@@ -43,6 +43,14 @@ export const publishingStatusMessages = defineMessages({
     id: 'words.error',
     defaultMessage: 'Error'
   },
+  disabled: {
+    id: 'words.disabled',
+    defaultMessage: 'Disabled'
+  },
+  unknown: {
+    id: 'words.unknown',
+    defaultMessage: 'Unknown'
+  },
   processingMessage: {
     id: 'publishingStatusMessages.processingMessage',
     defaultMessage: 'Preparing items for publishing. {numberOfItems} out of {totalItems} processed so far.'
@@ -92,19 +100,20 @@ export const publishingStatusMessages = defineMessages({
     id: 'publishingStatusMessages.lockTTLMessage',
     defaultMessage: 'TTL {lockTTL}'
   },
-  disabled: {
+  disabledMessage: {
     id: 'publishingStatusMessages.isDisabledMessage',
     defaultMessage: 'The publisher is disabled.'
   }
 });
 
 export function getPublishingStatusText(
-  status: PublishingStatus['status'],
+  status: Pick<PublishingStatus, 'status' | 'enabled'>,
   formatMessage: IntlShape['formatMessage']
 ): string {
-  return publishingStatusMessages[status]
-    ? formatMessage(publishingStatusMessages[status])
-    : capitalize(status ?? 'Unknown');
+  if (!status.enabled) {
+    return formatMessage(publishingStatusMessages.disabled);
+  }
+  return formatMessage(publishingStatusMessages[status.status] ?? publishingStatusMessages.unknown);
 }
 
 export function getPublishingStatusMessage(
@@ -114,6 +123,9 @@ export function getPublishingStatusMessage(
   >,
   formatMessage: IntlShape['formatMessage']
 ): string {
+  if (!props.enabled) {
+    return formatMessage(publishingStatusMessages.disabledMessage);
+  }
   switch (props.status) {
     case 'ready':
       return formatMessage(publishingStatusMessages.ready);
