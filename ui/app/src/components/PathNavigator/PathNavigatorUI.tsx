@@ -85,6 +85,10 @@ export interface PathNavigatorUIProps {
    **/
   computeActiveItems?: (items: DetailedItem[]) => string[];
   /**
+   * Prop used to determine if the Path Navigator will be collapsible or not.
+   **/
+  collapsible: boolean;
+  /**
    * Prop fired when the widget's accordion header is clicked
    **/
   onChangeCollapsed: (collapsed: boolean) => void;
@@ -154,6 +158,7 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
     icon,
     container,
     title,
+    collapsible,
     onChangeCollapsed,
     onHeaderButtonClick,
     onCurrentParentMenu,
@@ -218,7 +223,7 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
       disableGutters
       elevation={0}
       TransitionProps={{ unmountOnExit: true }}
-      expanded={!state.collapsed}
+      expanded={collapsible ? !state.collapsed : true}
       onChange={() => onChangeCollapsed(!state.collapsed)}
       className={clsx(
         classes.accordion,
@@ -231,20 +236,22 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
         ...(container ? (state.collapsed ? container.collapsedStyle : container.expandedStyle) : void 0)
       }}
     >
-      <Header
-        icon={icon}
-        title={title}
-        locale={state.localeCode}
-        // @see https://github.com/craftercms/craftercms/issues/5360
-        menuButtonIcon={<RefreshRounded />}
-        onMenuButtonClick={onHeaderButtonClick ? (anchor) => onHeaderButtonClick(anchor, 'options') : null}
-        onLanguageMenu={
-          onHeaderButtonClick && siteLocales?.localeCodes?.length
-            ? (anchor) => onHeaderButtonClick(anchor, 'language')
-            : null
-        }
-        collapsed={state.collapsed}
-      />
+      {collapsible && (
+        <Header
+          icon={icon}
+          title={title}
+          locale={state.localeCode}
+          // @see https://github.com/craftercms/craftercms/issues/5360
+          menuButtonIcon={<RefreshRounded />}
+          onMenuButtonClick={onHeaderButtonClick ? (anchor) => onHeaderButtonClick(anchor, 'options') : null}
+          onLanguageMenu={
+            onHeaderButtonClick && siteLocales?.localeCodes?.length
+              ? (anchor) => onHeaderButtonClick(anchor, 'language')
+              : null
+          }
+          collapsed={state.collapsed}
+        />
+      )}
       <AccordionDetails className={clsx(classes.accordionDetails, props.classes?.body)}>
         <Breadcrumbs
           keyword={keyword}

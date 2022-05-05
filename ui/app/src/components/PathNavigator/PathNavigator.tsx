@@ -103,6 +103,8 @@ export interface PathNavigatorProps {
   classes?: Partial<Record<'root' | 'body' | 'searchRoot', string>>;
   onItemClicked?(item: DetailedItem, event?: React.MouseEvent): void;
   computeActiveItems?: (items: DetailedItem[]) => string[];
+  showItemMenu?: boolean;
+  collapsible?: boolean;
   createItemClickedHandler?: (
     defaultHandler: (item: DetailedItem, event?: React.MouseEvent) => void
   ) => (item: DetailedItem) => void;
@@ -151,7 +153,9 @@ export function PathNavigator(props: PathNavigatorProps) {
     initialCollapsed,
     onItemClicked: onItemClickedProp,
     createItemClickedHandler = (defaultHandler) => defaultHandler,
-    computeActiveItems: computeActiveItemsProp
+    computeActiveItems: computeActiveItemsProp,
+    showItemMenu = true,
+    collapsible = true
   } = props;
   const state = useSelection((state) => state.pathNavigator)[id];
   const itemsByPath = useItemsByPath();
@@ -471,9 +475,10 @@ export function PathNavigator(props: PathNavigatorProps) {
         icon={expandedIcon && collapsedIcon ? (state.collapsed ? collapsedIcon : expandedIcon) : icon}
         container={container}
         title={label}
+        collapsible={collapsible}
         onChangeCollapsed={onChangeCollapsed}
         onHeaderButtonClick={state.collapsed ? void 0 : onHeaderButtonClick}
-        onCurrentParentMenu={onCurrentParentMenu}
+        onCurrentParentMenu={showItemMenu ? onCurrentParentMenu : null}
         siteLocales={siteLocales}
         keyword={keyword}
         onSearch={onSearch}
@@ -481,7 +486,7 @@ export function PathNavigator(props: PathNavigatorProps) {
         onSelectItem={onSelectItem}
         onPathSelected={onPathSelected}
         onPreview={onPreview}
-        onOpenItemMenu={onOpenItemMenu}
+        onOpenItemMenu={showItemMenu ? onOpenItemMenu : null}
         onItemClicked={onItemClicked}
         onPageChanged={onPageChanged}
         onRowsPerPageChange={onRowsPerPageChange}

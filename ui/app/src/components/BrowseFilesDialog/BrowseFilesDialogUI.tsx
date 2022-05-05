@@ -33,6 +33,8 @@ import Box from '@mui/material/Box';
 import { BrowseFilesDialogUIProps } from './utils';
 import Divider from '@mui/material/Divider';
 import InputUnstyled from '@mui/base/InputUnstyled';
+import { PathNavigator } from '../PathNavigator';
+import { isFolder } from '../PathNavigator/utils';
 
 export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
   const {
@@ -67,11 +69,23 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
       <DialogBody className={classes.dialogBody}>
         <Box display="flex">
           <section className={classes.leftWrapper}>
-            <FolderBrowserTreeView
+            {/* <FolderBrowserTreeView
               classes={{ root: classes.treeView, treeItemLabel: classes.treeItemLabel }}
               rootPath={path}
               showPathTextBox={false}
               onPathSelected={onPathSelected}
+            /> */}
+            <PathNavigator
+              id="browseFilesDialog"
+              label=""
+              rootPath={path}
+              collapsible={false}
+              showItemMenu={false}
+              onItemClicked={(item) => {
+                if (isFolder(item)) {
+                  onPathSelected(item.path);
+                }
+              }}
             />
           </section>
           <section className={classes.rightWrapper}>
