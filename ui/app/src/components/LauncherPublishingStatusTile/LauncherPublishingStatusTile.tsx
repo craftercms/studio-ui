@@ -31,6 +31,7 @@ function LauncherPublishingStatusTile() {
   return (
     <Tooltip title={formatMessage(publishingStatusMessages.publishingStatus)} disableFocusListener disableTouchListener>
       <PublishingStatusTile
+        enabled={state.enabled}
         status={state.status}
         isFetching={state.isFetching}
         onClick={() => dispatch(batchActions([closeLauncher(), showPublishingStatusDialog({})]))}

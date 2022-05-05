@@ -29,13 +29,13 @@ export type PublishingStatusDisplayProps = PublishingStatus & {
 };
 
 export function PublishingStatusDisplay(props: PublishingStatusDisplayProps) {
-  const { isFetching, status, lockOwner, lockTTL } = props;
+  const { isFetching, status, enabled, lockOwner, lockTTL } = props;
   const { formatMessage } = useIntl();
   return (
     <>
       <ListItem component="div">
         <ListItemAvatar>
-          <PublishingStatusAvatar status={isFetching ? null : status} />
+          <PublishingStatusAvatar enabled={enabled} status={isFetching ? null : status} />
         </ListItemAvatar>
         <ListItemText
           primary={isFetching ? <Skeleton /> : getPublishingStatusMessage(props, formatMessage)}
