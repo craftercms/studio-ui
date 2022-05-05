@@ -20,6 +20,7 @@ import * as MaterialUI from '@mui/material';
 import * as ReactRedux from 'react-redux';
 import * as ReactIntl from 'react-intl';
 import * as rxjs from 'rxjs';
+import { createAction } from '@reduxjs/toolkit';
 import createEmotion from '@emotion/css/create-instance';
 import { CrafterCMSStore, getStoreSync } from '../state/store';
 import { registerPlugin } from '../services/plugin';
@@ -50,6 +51,7 @@ export interface CrafterCMSGlobal {
     ReactRedux: typeof ReactRedux;
     ReactIntl: typeof ReactIntl;
     createEmotion: typeof createEmotion;
+    ReduxToolkit: { createAction: typeof createAction };
     // Include also package name aliases for builds that might use those
     // when invoking require('...') or define([...], factory).
     react: typeof React;
@@ -59,6 +61,7 @@ export interface CrafterCMSGlobal {
     'react-intl': typeof ReactIntl;
     '@mui/material': typeof MaterialUI;
     '@emotion/css/create-instance': typeof createEmotion;
+    '@reduxjs/toolkit': { createAction: typeof createAction };
   };
   components: typeof components;
   icons: typeof icons;
@@ -73,6 +76,8 @@ export interface CrafterCMSGlobal {
 
 let UND;
 
+const ReduxToolkit = { createAction };
+
 export const libs: CrafterCMSGlobal['libs'] = {
   rxjs,
   React,
@@ -80,13 +85,15 @@ export const libs: CrafterCMSGlobal['libs'] = {
   ReactIntl,
   MaterialUI,
   ReactRedux,
+  ReduxToolkit,
   createEmotion,
   react: React,
   'react-dom': ReactDOM,
   'react-redux': ReactRedux,
   'react-intl': ReactIntl,
   '@mui/material': MaterialUI,
-  '@emotion/css/create-instance': createEmotion
+  '@emotion/css/create-instance': createEmotion,
+  '@reduxjs/toolkit': ReduxToolkit
 };
 
 // UMD builds wouldn't give the chance to track the file builder the plugin loads from
