@@ -355,7 +355,11 @@ CStudioAuthoring.Module.requireModule(
             file_picker_types: 'image media file',
             skin: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'oxide-dark' : 'oxide',
             code_editor_inline: true,
-
+            content_css: Boolean(rteConfig.tinymceOptions?.content_css?.length)
+              ? rteConfig.tinymceOptions.content_css
+              : window.matchMedia('(prefers-color-scheme: dark)').matches
+              ? 'dark'
+              : 'default',
             external_plugins: external,
 
             file_picker_callback: function (cb, value, meta) {
@@ -477,7 +481,8 @@ CStudioAuthoring.Module.requireModule(
                 'relative_urls', // To avoid allowing convertion of urls to be relative to the document_base_url
                 'readonly', // Comes from form control props, can't be overridden.
                 'force_br_newlines', // Comes from form control props, can't be overridden.
-                'forced_root_block' // Comes from form control props, can't be overridden.
+                'forced_root_block', // Comes from form control props, can't be overridden.
+                'content_css' // Handled above, if no content_css is found it will use dark/default styles.
               )
             })
           });
