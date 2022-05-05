@@ -84,7 +84,12 @@ export function ChangeContentTypeDialogContainer(props: ChangeContentTypeDialogC
     if (selectedItem.path) {
       fetchLegacyContentTypes(site, selectedItem.path).subscribe(
         (response) => {
-          setContentTypes(response.filter((contentType) => contentType.type === selectedItem.systemType));
+          setContentTypes(
+            response.filter(
+              (contentType) =>
+                contentType.type === selectedItem.systemType && contentType.name !== selectedItem.contentTypeId
+            )
+          );
         },
         (response) => {
           dispatch(showErrorDialog({ error: response }));
