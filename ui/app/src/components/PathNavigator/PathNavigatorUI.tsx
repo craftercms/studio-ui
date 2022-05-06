@@ -137,7 +137,7 @@ export interface PathNavigatorUIProps {
   onRowsPerPageChange?: (e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => void;
 }
 
-const NavLoader = React.memo((props: { numOfItems?: number }) => {
+export const NavLoader = React.memo((props: { numOfItems?: number }) => {
   const { numOfItems = 5 } = props;
   const items = new Array(numOfItems).fill(null);
   return (

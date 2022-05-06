@@ -28,13 +28,11 @@ import clsx from 'clsx';
 import MediaSkeletonCard from './MediaSkeletonCard';
 import EmptyState from '../EmptyState/EmptyState';
 import Pagination from '../Pagination';
-import FolderBrowserTreeView from '../FolderBrowserTreeView';
 import Box from '@mui/material/Box';
 import { BrowseFilesDialogUIProps } from './utils';
 import Divider from '@mui/material/Divider';
 import InputUnstyled from '@mui/base/InputUnstyled';
-import { PathNavigator } from '../PathNavigator';
-import { isFolder } from '../PathNavigator/utils';
+import { FolderBrowserPathNavigator } from '../FolderBrowserPathNavigator';
 
 export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
   const {
@@ -75,18 +73,7 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
               showPathTextBox={false}
               onPathSelected={onPathSelected}
             /> */}
-            <PathNavigator
-              id="browseFilesDialog"
-              label=""
-              rootPath={path}
-              collapsible={false}
-              showItemMenu={false}
-              onItemClicked={(item) => {
-                if (isFolder(item)) {
-                  onPathSelected(item.path);
-                }
-              }}
-            />
+            <FolderBrowserPathNavigator rootPath={path} onPathSelected={onPathSelected} />
           </section>
           <section className={classes.rightWrapper}>
             <InputUnstyled value={currentPath} className={classes.currentPath} disabled title={currentPath} />
