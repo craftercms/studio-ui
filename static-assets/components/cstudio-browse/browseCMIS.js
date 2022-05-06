@@ -279,14 +279,13 @@
             CStudioAuthoring.SelectedContent.selectContent(contentTO);
             me.saveContent();
           },
-          function () {
+          function ({ response: error }) {
             $('#cloneCMISLoader, #cloneCMISLoader_mask').remove();
-            const error = JSON.parse(response.responseText);
             CStudioAuthoring.Operations.showSimpleDialog(
               'error-dialog',
               CStudioAuthoring.Operations.simpleDialogTypeINFO,
               CMgs.format(browseLangBundle, 'notification'),
-              error.response.remedialAction,
+              error.response.message,
               null,
               YAHOO.widget.SimpleDialog.ICON_BLOCK,
               'studioDialog'
@@ -515,13 +514,17 @@
       success: function (response) {
         cb.success(response);
       },
-      failure: function (response) {
-        var message = CMgs.format(browseLangBundle, '' + response.status + '');
-        var error = JSON.parse(response.responseText);
+      failure: function (error) {
+        // remove loading state
+        const $resultsContainer = $('#cstudio-wcm-search-result .results');
+        $resultsContainer.empty();
+
+        let message = CMgs.format(browseLangBundle, '' + error.status + '');
+        const errorMessage = error.response.response.message;
 
         message +=
           "</br></br><div id='errorCode' style='display: none; padding-left: 26px; width: calc(100% - 26px);'>" +
-          error.message +
+          errorMessage +
           '</div>';
 
         message +=
