@@ -76,7 +76,6 @@ import { useLegacyPreviewPreference } from '../../hooks/useLegacyPreviewPreferen
 import { getStoredPathNavigator } from '../../utils/state';
 import { useActiveSite } from '../../hooks/useActiveSite';
 import { useActiveUser } from '../../hooks/useActiveUser';
-import { nnou } from '../../utils/object';
 
 interface Menu {
   path?: string;
@@ -104,9 +103,6 @@ export interface PathNavigatorProps {
   classes?: Partial<Record<'root' | 'body' | 'searchRoot', string>>;
   onItemClicked?(item: DetailedItem, event?: React.MouseEvent): void;
   computeActiveItems?: (items: DetailedItem[]) => string[];
-  showItemMenu?: boolean;
-  collapsible?: boolean;
-  storedProps?: string[];
   createItemClickedHandler?: (
     defaultHandler: (item: DetailedItem, event?: React.MouseEvent) => void
   ) => (item: DetailedItem) => void;
@@ -155,10 +151,7 @@ export function PathNavigator(props: PathNavigatorProps) {
     initialCollapsed,
     onItemClicked: onItemClickedProp,
     createItemClickedHandler = (defaultHandler) => defaultHandler,
-    computeActiveItems: computeActiveItemsProp,
-    showItemMenu = true,
-    collapsible = true,
-    storedProps
+    computeActiveItems: computeActiveItemsProp
   } = props;
   const state = useSelection((state) => state.pathNavigator)[id];
   const itemsByPath = useItemsByPath();
@@ -182,20 +175,9 @@ export function PathNavigator(props: PathNavigatorProps) {
     // Adding uiConfig as means to stop navigator from trying to
     // initialize with previous state information when switching sites
     if (!state && uiConfig.currentSite === siteId) {
-      let storedState = getStoredPathNavigator(uuid, user.username, id);
+      const storedState = getStoredPathNavigator(uuid, user.username, id);
       if (storedState?.keyword) {
         setKeyword(storedState.keyword);
-      }
-
-      if (storedProps) {
-        const customStoredProps = {};
-
-        storedProps.forEach((prop) => {
-          if (nnou(storedState[prop])) {
-            customStoredProps[prop] = storedState[prop];
-          }
-        });
-        storedState = customStoredProps;
       }
 
       dispatch(pathNavigatorInit({ id, path, locale, excludes, limit, collapsed: initialCollapsed, ...storedState }));
@@ -490,10 +472,9 @@ export function PathNavigator(props: PathNavigatorProps) {
         icon={expandedIcon && collapsedIcon ? (state.collapsed ? collapsedIcon : expandedIcon) : icon}
         container={container}
         title={label}
-        collapsible={collapsible}
         onChangeCollapsed={onChangeCollapsed}
         onHeaderButtonClick={state.collapsed ? void 0 : onHeaderButtonClick}
-        onCurrentParentMenu={showItemMenu ? onCurrentParentMenu : null}
+        onCurrentParentMenu={onCurrentParentMenu}
         siteLocales={siteLocales}
         keyword={keyword}
         onSearch={onSearch}
@@ -501,7 +482,7 @@ export function PathNavigator(props: PathNavigatorProps) {
         onSelectItem={onSelectItem}
         onPathSelected={onPathSelected}
         onPreview={onPreview}
-        onOpenItemMenu={showItemMenu ? onOpenItemMenu : null}
+        onOpenItemMenu={onOpenItemMenu}
         onItemClicked={onItemClicked}
         onPageChanged={onPageChanged}
         onRowsPerPageChange={onRowsPerPageChange}
