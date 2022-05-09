@@ -29,6 +29,8 @@ import { folderBrowserPathNavigatorFetchParentItemsComplete } from '../../state/
 import LookupTable from '../../models/LookupTable';
 import useLogicResource from '../../hooks/useLogicResource';
 import FolderBrowserPathNavigatorUI from './FolderBrowserPathNavigatorUI';
+import { getStoredFolderBrowserPathNavigator, setStoredFolderBrowserPathNavigator } from '../../utils/state';
+import useActiveUser from '../../hooks/useActiveUser';
 
 export interface FolderBrowserPathNavigatorProps {
   rootPath: string;
@@ -49,8 +51,18 @@ export function FolderBrowserPathNavigator(props: FolderBrowserPathNavigatorProp
   const siteLocales = useSiteLocales();
   const siteId = useActiveSiteId();
   const dispatch = useDispatch();
+  const user = useActiveUser();
 
   // region useEffects
+  useEffect(() => {
+    if (siteId && user?.username) {
+      const stored = getStoredFolderBrowserPathNavigator(siteId, user.username);
+      if (stored?.limit) {
+        setLimit(stored.limit);
+      }
+    }
+  }, [siteId, user?.username]);
+
   useEffect(() => {
     const parentsPath = getIndividualPaths(currentPath, rootPath);
     setIsFetching(true);
@@ -96,6 +108,7 @@ export function FolderBrowserPathNavigator(props: FolderBrowserPathNavigatorProp
   const onRowsPerPageChange = (e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
     const limit = Number(e.target.value);
     setLimit(limit);
+    setStoredFolderBrowserPathNavigator(siteId, user.username, { limit });
   };
 
   const onPageChanged = (page: number) => {

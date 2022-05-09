@@ -126,6 +126,18 @@ export function getStoredPathNavigatorTree(siteIdentifier: string, user: string,
   return JSON.parse(window.localStorage.getItem(`craftercms.${user}.pathNavigatorTree.${siteIdentifier}.${id}`));
 }
 
+export function setStoredFolderBrowserPathNavigator(
+  siteIdentifier: string,
+  user: string,
+  value: { limit: number }
+): void {
+  window.localStorage.setItem(`craftercms.${user}.folderBrowserPathNavigator.${siteIdentifier}`, JSON.stringify(value));
+}
+
+export function getStoredFolderBrowserPathNavigator(siteIdentifier: string, user: string) {
+  return JSON.parse(window.localStorage.getItem(`craftercms.${user}.folderBrowserPathNavigator.${siteIdentifier}`));
+}
+
 export function setStoredGlobalAppOpenSidebar(user: string, value: boolean) {
   window.localStorage.setItem(`craftercms.${user}.globalAppOpenSidebar`, JSON.stringify(value));
 }
