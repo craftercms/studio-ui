@@ -179,7 +179,6 @@ export function PathNavigator(props: PathNavigatorProps) {
       if (storedState?.keyword) {
         setKeyword(storedState.keyword);
       }
-
       dispatch(pathNavigatorInit({ id, path, locale, excludes, limit, collapsed: initialCollapsed, ...storedState }));
     }
   }, [
