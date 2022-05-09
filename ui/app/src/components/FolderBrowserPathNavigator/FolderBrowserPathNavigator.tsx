@@ -15,8 +15,8 @@
  */
 
 import { isFolder } from '../PathNavigator/utils';
-import { NavLoader, PathNavigator } from '../PathNavigator';
-import React, { useEffect, useMemo, useState } from 'react';
+import { NavLoader } from '../PathNavigator';
+import React, { ChangeEvent, useEffect, useMemo, useState } from 'react';
 import { DetailedItem } from '../../models';
 import { getIndividualPaths, withoutIndex } from '../../utils/path';
 import PathNavigatorBreadcrumbs from '../PathNavigator/PathNavigatorBreadcrumbs';
@@ -32,8 +32,13 @@ import { folderBrowserPathNavigatorFetchParentItemsComplete } from '../../state/
 import LookupTable from '../../models/LookupTable';
 import useLogicResource from '../../hooks/useLogicResource';
 import { SuspenseWithEmptyState } from '../Suspencified';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import PathNavigatorList from '../PathNavigator/PathNavigatorList';
+import { createFakeResource } from '../../utils/resource';
+import TablePagination from '@mui/material/TablePagination';
+import { translations } from '../PathNavigator/translations';
+import { useStyles } from '../PathNavigator/styles';
+import clsx from 'clsx';
 
 export interface FolderBrowserPathNavigatorProps {
   rootPath: string;
@@ -47,12 +52,15 @@ export function FolderBrowserPathNavigator(props: FolderBrowserPathNavigatorProp
   const [limit, setLimit] = useState(10);
   const [offset, setOffset] = useState(0);
   const [isFetching, setIsFetching] = useState(false);
-  const [itemsInPath, setItemsInPath] = useState([]);
+  const [itemsInPath, setItemsInPath] = useState(null);
+  const [total, setTotal] = useState(0);
   const [error, setError] = useState();
   const itemsByPath = useItemsByPath();
   const siteLocales = useSiteLocales();
   const siteId = useActiveSiteId();
   const dispatch = useDispatch();
+  const classes = useStyles();
+  const { formatMessage } = useIntl();
 
   // region useEffects
   useEffect(() => {
@@ -70,6 +78,7 @@ export function FolderBrowserPathNavigator(props: FolderBrowserPathNavigatorProp
         setIsFetching(false);
         dispatch(folderBrowserPathNavigatorFetchParentItemsComplete({ items, children }));
         setItemsInPath(children.length === 0 ? [] : children.map((item) => item.path));
+        setTotal(children.total);
       },
       error: (e) => {
         setIsFetching(false);
@@ -82,14 +91,11 @@ export function FolderBrowserPathNavigator(props: FolderBrowserPathNavigatorProp
 
   const onSearch = (keyword: string) => {
     setKeyword(keyword);
-    // TODO: search pending
   };
 
   const onBreadcrumbSelected = (item: DetailedItem) => {
-    console.log('breadcrumbSelected');
     if (withoutIndex(item.path) !== withoutIndex(currentPath)) {
       setCurrentPath(item.path);
-      // dispatch(pathNavigatorConditionallySetPath({ id, path: item.path }));
     }
   };
 
@@ -97,6 +103,16 @@ export function FolderBrowserPathNavigator(props: FolderBrowserPathNavigatorProp
     if (isFolder(item)) {
       onPathSelected?.(item.path);
     }
+  };
+
+  const onRowsPerPageChange = (e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+    const limit = Number(e.target.value);
+    setLimit(limit);
+  };
+
+  const onPageChanged = (page: number) => {
+    const offset = page * limit;
+    setOffset(offset);
   };
 
   const resource = useLogicResource<
@@ -126,12 +142,17 @@ export function FolderBrowserPathNavigator(props: FolderBrowserPathNavigatorProp
     }
   );
 
+  const itemsResource = useMemo(
+    () => createFakeResource(itemsInPath ? itemsInPath.map((path) => itemsByPath[path]) : []),
+    [itemsByPath, itemsInPath]
+  );
+
   return (
     <>
       <PathNavigatorBreadcrumbs
         keyword={keyword}
         breadcrumb={getIndividualPaths(withoutIndex(currentPath), withoutIndex(rootPath))
-          .map((path) => lookupItemByPath(currentPath, itemsByPath))
+          .map((path) => lookupItemByPath(path, itemsByPath))
           .filter(Boolean)}
         onSearch={onSearch}
         onCrumbSelected={onBreadcrumbSelected}
@@ -163,8 +184,33 @@ export function FolderBrowserPathNavigator(props: FolderBrowserPathNavigatorProp
           fallback: <NavLoader numOfItems={itemsInPath?.length > 0 ? itemsInPath.length : limit} />
         }}
       >
-        {/* TODO: add PathNavigatorList */}
+        <PathNavigatorList
+          isSelectMode={false}
+          locale={siteLocales.defaultLocaleCode}
+          resource={itemsResource}
+          onItemClicked={onItemClicked}
+          onPathSelected={(item) => {
+            setCurrentPath(item.path);
+          }}
+        />
       </SuspenseWithEmptyState>
+      {total !== null && total > 0 && (
+        <TablePagination
+          classes={{
+            root: classes.pagination,
+            toolbar: clsx(classes.paginationToolbar, classes.widgetSection)
+          }}
+          component="div"
+          labelRowsPerPage=""
+          count={total}
+          rowsPerPage={limit}
+          page={Math.ceil(offset / limit)}
+          backIconButtonProps={{ 'aria-label': formatMessage(translations.previousPage) }}
+          nextIconButtonProps={{ 'aria-label': formatMessage(translations.nextPage) }}
+          onRowsPerPageChange={onRowsPerPageChange}
+          onPageChange={(e, page: number) => onPageChanged(page)}
+        />
+      )}
     </>
   );
 }

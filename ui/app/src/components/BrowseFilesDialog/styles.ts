@@ -50,7 +50,7 @@ export const useStyles = makeStyles((theme) =>
       }
     },
     leftWrapper: {
-      width: '260px',
+      width: '270px',
       paddingRight: '16px'
     },
     rightWrapper: {

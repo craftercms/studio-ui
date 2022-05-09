@@ -76,6 +76,7 @@ import { useLegacyPreviewPreference } from '../../hooks/useLegacyPreviewPreferen
 import { getStoredPathNavigator } from '../../utils/state';
 import { useActiveSite } from '../../hooks/useActiveSite';
 import { useActiveUser } from '../../hooks/useActiveUser';
+import { nnou } from '../../utils/object';
 
 interface Menu {
   path?: string;
@@ -105,6 +106,7 @@ export interface PathNavigatorProps {
   computeActiveItems?: (items: DetailedItem[]) => string[];
   showItemMenu?: boolean;
   collapsible?: boolean;
+  storedProps?: string[];
   createItemClickedHandler?: (
     defaultHandler: (item: DetailedItem, event?: React.MouseEvent) => void
   ) => (item: DetailedItem) => void;
@@ -155,7 +157,8 @@ export function PathNavigator(props: PathNavigatorProps) {
     createItemClickedHandler = (defaultHandler) => defaultHandler,
     computeActiveItems: computeActiveItemsProp,
     showItemMenu = true,
-    collapsible = true
+    collapsible = true,
+    storedProps
   } = props;
   const state = useSelection((state) => state.pathNavigator)[id];
   const itemsByPath = useItemsByPath();
@@ -179,10 +182,22 @@ export function PathNavigator(props: PathNavigatorProps) {
     // Adding uiConfig as means to stop navigator from trying to
     // initialize with previous state information when switching sites
     if (!state && uiConfig.currentSite === siteId) {
-      const storedState = getStoredPathNavigator(uuid, user.username, id);
+      let storedState = getStoredPathNavigator(uuid, user.username, id);
       if (storedState?.keyword) {
         setKeyword(storedState.keyword);
       }
+
+      if (storedProps) {
+        const customStoredProps = {};
+
+        storedProps.forEach((prop) => {
+          if (nnou(storedState[prop])) {
+            customStoredProps[prop] = storedState[prop];
+          }
+        });
+        storedState = customStoredProps;
+      }
+
       dispatch(pathNavigatorInit({ id, path, locale, excludes, limit, collapsed: initialCollapsed, ...storedState }));
     }
   }, [

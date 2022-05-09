@@ -67,12 +67,6 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
       <DialogBody className={classes.dialogBody}>
         <Box display="flex">
           <section className={classes.leftWrapper}>
-            {/* <FolderBrowserTreeView
-              classes={{ root: classes.treeView, treeItemLabel: classes.treeItemLabel }}
-              rootPath={path}
-              showPathTextBox={false}
-              onPathSelected={onPathSelected}
-            /> */}
             <FolderBrowserPathNavigator rootPath={path} onPathSelected={onPathSelected} />
           </section>
           <section className={classes.rightWrapper}>
