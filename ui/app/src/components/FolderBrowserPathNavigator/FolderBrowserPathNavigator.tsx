@@ -15,14 +15,11 @@
  */
 
 import { isFolder } from '../PathNavigator/utils';
-import { NavLoader } from '../PathNavigator';
 import React, { ChangeEvent, useEffect, useMemo, useState } from 'react';
 import { DetailedItem } from '../../models';
 import { getIndividualPaths, withoutIndex } from '../../utils/path';
-import PathNavigatorBreadcrumbs from '../PathNavigator/PathNavigatorBreadcrumbs';
 import useItemsByPath from '../../hooks/useItemsByPath';
 import { lookupItemByPath } from '../../utils/content';
-import PathNavigatorItem from '../PathNavigator/PathNavigatorItem';
 import useSiteLocales from '../../hooks/useSiteLocales';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { forkJoin } from 'rxjs';
@@ -31,14 +28,7 @@ import { useDispatch } from 'react-redux';
 import { folderBrowserPathNavigatorFetchParentItemsComplete } from '../../state/actions/pathNavigator';
 import LookupTable from '../../models/LookupTable';
 import useLogicResource from '../../hooks/useLogicResource';
-import { SuspenseWithEmptyState } from '../Suspencified';
-import { FormattedMessage, useIntl } from 'react-intl';
-import PathNavigatorList from '../PathNavigator/PathNavigatorList';
-import { createFakeResource } from '../../utils/resource';
-import TablePagination from '@mui/material/TablePagination';
-import { translations } from '../PathNavigator/translations';
-import { useStyles } from '../PathNavigator/styles';
-import clsx from 'clsx';
+import FolderBrowserPathNavigatorUI from './FolderBrowserPathNavigatorUI';
 
 export interface FolderBrowserPathNavigatorProps {
   rootPath: string;
@@ -59,8 +49,6 @@ export function FolderBrowserPathNavigator(props: FolderBrowserPathNavigatorProp
   const siteLocales = useSiteLocales();
   const siteId = useActiveSiteId();
   const dispatch = useDispatch();
-  const classes = useStyles();
-  const { formatMessage } = useIntl();
 
   // region useEffects
   useEffect(() => {
@@ -142,76 +130,25 @@ export function FolderBrowserPathNavigator(props: FolderBrowserPathNavigatorProp
     }
   );
 
-  const itemsResource = useMemo(
-    () => createFakeResource(itemsInPath ? itemsInPath.map((path) => itemsByPath[path]) : []),
-    [itemsByPath, itemsInPath]
-  );
-
   return (
-    <>
-      <PathNavigatorBreadcrumbs
-        keyword={keyword}
-        breadcrumb={getIndividualPaths(withoutIndex(currentPath), withoutIndex(rootPath))
-          .map((path) => lookupItemByPath(path, itemsByPath))
-          .filter(Boolean)}
-        onSearch={onSearch}
-        onCrumbSelected={onBreadcrumbSelected}
-      />
-      {lookupItemByPath(currentPath, itemsByPath) && (
-        <PathNavigatorItem
-          item={lookupItemByPath(currentPath, itemsByPath)}
-          locale={siteLocales.defaultLocaleCode}
-          isLevelDescriptor={false}
-          onItemClicked={onItemClicked}
-          showItemNavigateToButton={false}
-          isCurrentPath
-        />
-      )}
-      <SuspenseWithEmptyState
-        resource={resource}
-        errorBoundaryProps={{
-          errorStateProps: { imageUrl: null }
-        }}
-        withEmptyStateProps={{
-          /* If there are no children and no level descriptor => empty */
-          isEmpty: (children) => children.length === 0,
-          emptyStateProps: {
-            title: <FormattedMessage id="pathNavigator.noItemsAtLocation" defaultMessage="No items at this location" />,
-            image: null
-          }
-        }}
-        suspenseProps={{
-          fallback: <NavLoader numOfItems={itemsInPath?.length > 0 ? itemsInPath.length : limit} />
-        }}
-      >
-        <PathNavigatorList
-          isSelectMode={false}
-          locale={siteLocales.defaultLocaleCode}
-          resource={itemsResource}
-          onItemClicked={onItemClicked}
-          onPathSelected={(item) => {
-            setCurrentPath(item.path);
-          }}
-        />
-      </SuspenseWithEmptyState>
-      {total !== null && total > 0 && (
-        <TablePagination
-          classes={{
-            root: classes.pagination,
-            toolbar: clsx(classes.paginationToolbar, classes.widgetSection)
-          }}
-          component="div"
-          labelRowsPerPage=""
-          count={total}
-          rowsPerPage={limit}
-          page={Math.ceil(offset / limit)}
-          backIconButtonProps={{ 'aria-label': formatMessage(translations.previousPage) }}
-          nextIconButtonProps={{ 'aria-label': formatMessage(translations.nextPage) }}
-          onRowsPerPageChange={onRowsPerPageChange}
-          onPageChange={(e, page: number) => onPageChanged(page)}
-        />
-      )}
-    </>
+    <FolderBrowserPathNavigatorUI
+      resource={resource}
+      keyword={keyword}
+      currentPath={currentPath}
+      rootPath={rootPath}
+      itemsByPath={itemsByPath}
+      itemsInPath={itemsInPath}
+      locale={siteLocales.defaultLocaleCode}
+      limit={limit}
+      offset={offset}
+      total={total}
+      onSearch={onSearch}
+      onBreadcrumbSelected={onBreadcrumbSelected}
+      onItemClicked={onItemClicked}
+      onPathSelected={setCurrentPath}
+      onRowsPerPageChange={onRowsPerPageChange}
+      onPageChanged={onPageChanged}
+    />
   );
 }
 

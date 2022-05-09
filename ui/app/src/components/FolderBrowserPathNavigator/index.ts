@@ -17,3 +17,5 @@
 export { default } from './FolderBrowserPathNavigator';
 
 export * from './FolderBrowserPathNavigator';
+
+export * from './FolderBrowserPathNavigatorUI';
