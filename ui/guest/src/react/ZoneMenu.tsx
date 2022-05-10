@@ -97,7 +97,9 @@ export function ZoneMenu(props: ZoneMenuProps) {
     // If the record is a component, get the index from searching the
     // model id inside the container collection (previously computed).
     return recordType === 'component'
-      ? collection.indexOf(modelId)
+      ? collection
+        ? collection.indexOf(modelId)
+        : null
       : parseInt(isSimple(index) ? String(index) : popPiece(String(index)));
   }, [recordType, collection, modelId, index]);
   const nodeSelectorItemRecord = useMemo(
@@ -127,7 +129,7 @@ export function ZoneMenu(props: ZoneMenuProps) {
   const showCodeEditOptions = ['component', 'page', 'node-selector-item'].includes(recordType) && !isHeadlessMode;
   const isTrashable = recordType !== 'field' && recordType !== 'page';
   const showAddItem = recordType === 'field' && field.type === 'repeat';
-  const showDuplicate = ['repeat-item', 'component', 'node-selector-item'].includes(recordType);
+  const showDuplicate = collection && ['repeat-item', 'component', 'node-selector-item'].includes(recordType);
 
   // region Callbacks
 
