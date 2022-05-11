@@ -129,7 +129,7 @@ export function ZoneMenu(props: ZoneMenuProps) {
   const showCodeEditOptions = ['component', 'page', 'node-selector-item'].includes(recordType) && !isHeadlessMode;
   const isTrashable = recordType !== 'field' && recordType !== 'page';
   const showAddItem = recordType === 'field' && field.type === 'repeat';
-  const showDuplicate = collection && ['repeat-item', 'component', 'node-selector-item'].includes(recordType);
+  const showDuplicate = Boolean(collection) && ['repeat-item', 'component', 'node-selector-item'].includes(recordType);
 
   // region Callbacks
 
