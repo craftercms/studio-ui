@@ -413,7 +413,7 @@ export function duplicateItem(
       }
 
       const item: Element = extractNode(parentElement, fieldId, targetIndex).cloneNode(true) as Element;
-      const itemPath = item.querySelector(':scope > key').textContent;
+      const itemPath = item.querySelector(':scope > key').textContent.trim();
       const isEmbedded = Boolean(item.querySelector(':scope > component'));
       // removing last piece to get the parent of the item
       const field: Element = extractNode(parentElement, fieldId, removeLastPiece(`${targetIndex}`));
