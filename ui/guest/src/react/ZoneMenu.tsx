@@ -97,9 +97,7 @@ export function ZoneMenu(props: ZoneMenuProps) {
     // If the record is a component, get the index from searching the
     // model id inside the container collection (previously computed).
     return recordType === 'component'
-      ? collection
-        ? collection.indexOf(modelId)
-        : null
+      ? collection?.indexOf(modelId)
       : parseInt(isSimple(index) ? String(index) : popPiece(String(index)));
   }, [recordType, collection, modelId, index]);
   const nodeSelectorItemRecord = useMemo(
