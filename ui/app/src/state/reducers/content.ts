@@ -215,7 +215,10 @@ const reducer = createReducer<ContentState>(initialState, {
   }),
   [pathNavigatorConditionallySetPathComplete.type]: updateItemByPath,
   [pathNavigatorFetchPathComplete.type]: updateItemByPath,
-  [pathNavigatorFetchParentItemsComplete.type]: (state: ContentState, { payload: { items, children } }) => {
+  [pathNavigatorFetchParentItemsComplete.type]: (
+    state,
+    { payload: { items, children } }: { payload: { items: DetailedItem[]; children: GetChildrenResponse } }
+  ) => {
     return {
       ...state,
       itemsByPath: {
