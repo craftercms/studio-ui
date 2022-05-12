@@ -37,7 +37,6 @@ import QuickCreateItem from '../../models/content/QuickCreateItem';
 import StandardAction from '../../models/StandardAction';
 import { AjaxError } from 'rxjs/ajax';
 import {
-  folderBrowserPathNavigatorFetchParentItemsComplete,
   pathNavigatorConditionallySetPathComplete,
   pathNavigatorFetchParentItemsComplete,
   pathNavigatorFetchPathComplete
@@ -120,32 +119,6 @@ const updateItemsBeingFetchedByPath = (state: ContentState, { payload: { path } 
     itemsBeingFetchedByPath: {
       ...state.itemsBeingFetchedByPath,
       [path]: true
-    }
-  };
-};
-
-const updateParentItems = (state: ContentState, { payload: { items, children } }) => {
-  return {
-    ...state,
-    itemsByPath: {
-      ...state.itemsByPath,
-      ...createLookupTable(parseSandBoxItemToDetailedItem(children, state.itemsByPath), 'path'),
-      ...(children.levelDescriptor && {
-        [children.levelDescriptor.path]: parseSandBoxItemToDetailedItem(
-          children.levelDescriptor,
-          state.itemsByPath[children.levelDescriptor.path]
-        )
-      }),
-      ...createLookupTable(
-        items.reduce((items, item) => {
-          if (state.itemsByPath[item.path]?.live) {
-            item.live = state.itemsByPath[item.path].live;
-            item.staging = state.itemsByPath[item.path].staging;
-          }
-          return items;
-        }, items),
-        'path'
-      )
     }
   };
 };
@@ -242,7 +215,31 @@ const reducer = createReducer<ContentState>(initialState, {
   }),
   [pathNavigatorConditionallySetPathComplete.type]: updateItemByPath,
   [pathNavigatorFetchPathComplete.type]: updateItemByPath,
-  [pathNavigatorFetchParentItemsComplete.type]: updateParentItems,
+  [pathNavigatorFetchParentItemsComplete.type]: (state: ContentState, { payload: { items, children } }) => {
+    return {
+      ...state,
+      itemsByPath: {
+        ...state.itemsByPath,
+        ...createLookupTable(parseSandBoxItemToDetailedItem(children, state.itemsByPath), 'path'),
+        ...(children.levelDescriptor && {
+          [children.levelDescriptor.path]: parseSandBoxItemToDetailedItem(
+            children.levelDescriptor,
+            state.itemsByPath[children.levelDescriptor.path]
+          )
+        }),
+        ...createLookupTable(
+          items.reduce((items, item) => {
+            if (state.itemsByPath[item.path]?.live) {
+              item.live = state.itemsByPath[item.path].live;
+              item.staging = state.itemsByPath[item.path].staging;
+            }
+            return items;
+          }, items),
+          'path'
+        )
+      }
+    };
+  },
   [pathNavigatorTreeFetchPathChildrenComplete.type]: updateItemByPath,
   [pathNavigatorTreeFetchPathPageComplete.type]: updateItemByPath,
   [pathNavigatorTreeRestoreComplete.type]: (
@@ -295,8 +292,7 @@ const reducer = createReducer<ContentState>(initialState, {
       path: payload.targetPath,
       username: payload.user.username,
       locked: payload.locked
-    }),
-  [folderBrowserPathNavigatorFetchParentItemsComplete.type]: updateParentItems
+    })
 });
 
 export default reducer;

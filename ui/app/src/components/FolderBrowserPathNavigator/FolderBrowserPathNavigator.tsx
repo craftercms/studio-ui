@@ -18,19 +18,18 @@ import { isFolder } from '../PathNavigator/utils';
 import React, { ChangeEvent, useEffect, useMemo, useState } from 'react';
 import { DetailedItem } from '../../models';
 import { getIndividualPaths, withoutIndex } from '../../utils/path';
-import useItemsByPath from '../../hooks/useItemsByPath';
-import { lookupItemByPath } from '../../utils/content';
+import { lookupItemByPath, parseSandBoxItemToDetailedItem } from '../../utils/content';
 import useSiteLocales from '../../hooks/useSiteLocales';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { forkJoin } from 'rxjs';
 import { fetchChildrenByPath, fetchItemsByPath } from '../../services/content';
 import { useDispatch } from 'react-redux';
-import { folderBrowserPathNavigatorFetchParentItemsComplete } from '../../state/actions/pathNavigator';
 import LookupTable from '../../models/LookupTable';
 import useLogicResource from '../../hooks/useLogicResource';
 import FolderBrowserPathNavigatorUI from './FolderBrowserPathNavigatorUI';
 import { getStoredFolderBrowserPathNavigator, setStoredFolderBrowserPathNavigator } from '../../utils/state';
 import useActiveUser from '../../hooks/useActiveUser';
+import { createLookupTable } from '../../utils/object';
 
 export interface FolderBrowserPathNavigatorProps {
   rootPath: string;
@@ -46,8 +45,8 @@ export function FolderBrowserPathNavigator(props: FolderBrowserPathNavigatorProp
   const [isFetching, setIsFetching] = useState(false);
   const [itemsInPath, setItemsInPath] = useState(null);
   const [total, setTotal] = useState(0);
+  const [itemsByPath, setItemsByPath] = useState({});
   const [error, setError] = useState();
-  const itemsByPath = useItemsByPath();
   const siteLocales = useSiteLocales();
   const siteId = useActiveSiteId();
   const dispatch = useDispatch();
@@ -75,10 +74,13 @@ export function FolderBrowserPathNavigator(props: FolderBrowserPathNavigatorProp
       })
     ]).subscribe({
       next: ([items, children]) => {
-        setIsFetching(false);
-        dispatch(folderBrowserPathNavigatorFetchParentItemsComplete({ items, children }));
+        setItemsByPath({
+          ...createLookupTable(parseSandBoxItemToDetailedItem(children), 'path'),
+          ...createLookupTable(items, 'path')
+        });
         setItemsInPath(children.length === 0 ? [] : children.map((item) => item.path));
         setTotal(children.total);
+        setIsFetching(false);
       },
       error: (e) => {
         setIsFetching(false);
@@ -123,7 +125,7 @@ export function FolderBrowserPathNavigator(props: FolderBrowserPathNavigatorProp
     useMemo(
       () => ({
         itemsByPath,
-        itemsInPath: itemsInPath,
+        itemsInPath,
         isFetching: isFetching,
         error: error
       }),

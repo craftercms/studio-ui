@@ -29,10 +29,10 @@ import React, { ChangeEvent, useMemo } from 'react';
 import { createFakeResource } from '../../utils/resource';
 import { useStyles } from '../PathNavigator/styles';
 import LookupTable from '../../models/LookupTable';
-import { DetailedItem } from '../../models';
+import { DetailedItem, Resource } from '../../models';
 
 export interface FolderBrowserPathNavigatorUIProps {
-  resource: any; // TODO: type
+  resource: Resource<DetailedItem[]>;
   keyword: string;
   currentPath: string;
   rootPath: string;
@@ -43,7 +43,7 @@ export interface FolderBrowserPathNavigatorUIProps {
   limit: number;
   offset: number;
   onItemClicked?(item: DetailedItem, event?: React.MouseEvent): void;
-  itemsInPath: any; // TODO: type
+  itemsInPath: string[];
   onPathSelected: (path: string) => void;
   total: number;
   onRowsPerPageChange?: (e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => void;

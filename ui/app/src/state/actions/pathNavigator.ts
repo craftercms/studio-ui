@@ -97,8 +97,3 @@ export const pathNavigatorChangePage =
 
 export const pathNavigatorChangeLimit =
   /*#__PURE__*/ createAction<PayloadWithId<{ limit: number; offset: number }>>('PATH_NAVIGATOR_CHANGE_LIMIT');
-
-export const folderBrowserPathNavigatorFetchParentItemsComplete = /*#__PURE__*/ createAction<{
-  items: DetailedItem[];
-  children: GetChildrenResponse;
-}>('FOLDER_BROWSER_PATH_NAVIGATOR_FETCH_PARENT_ITEMS_COMPLETE');
