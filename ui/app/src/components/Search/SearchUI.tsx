@@ -248,14 +248,15 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     padding: '14px 20px',
     justifyContent: 'flex-end',
-    borderTop: `1px solid ${palette.gray.light3}`,
+    borderTop: `1px solid ${theme.palette.divider}`,
     '& > :not(:first-child)': {
       marginLeft: '12px'
     }
   },
   container: {
     height: '100%',
-    position: 'relative'
+    position: 'relative',
+    background: theme.palette.background.default
   }
 }));
 
