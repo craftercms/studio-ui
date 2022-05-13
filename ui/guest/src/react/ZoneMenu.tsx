@@ -133,9 +133,7 @@ export function ZoneMenu(props: ZoneMenuProps) {
       showDuplicate: false
     };
 
-    const nodeSelectorEntries = Boolean(nodeSelectorItemRecord)
-      ? iceRegistry.getReferentialEntries(nodeSelectorItemRecord)
-      : null;
+    const nodeSelectorEntries = Boolean(nodeSelectorItemRecord) ? getReferentialEntries(nodeSelectorItemRecord) : null;
 
     if (Boolean(collection)) {
       const validations = nodeSelectorEntries?.field?.validations;
