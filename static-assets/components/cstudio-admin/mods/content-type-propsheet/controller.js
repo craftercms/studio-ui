@@ -94,10 +94,24 @@ YAHOO.extend(
         this.controlsContainerEl = controlsContainerEl;
 
         editEl.onclick = function () {
-          var contentType = _self.contentType,
-            path = '/config/studio/content-types' + contentType + '/controller.groovy';
+          const contentType = _self.contentType,
+            fileName = 'controller.groovy',
+            path = `/config/studio/content-types${contentType}/`,
+            fullPath = `${path}${fileName}`;
 
-          CStudioAuthoring.Operations.openCodeEditor({ path, contentType, mode: 'groovy' });
+          CrafterCMSNext.services.content
+            .checkPathExistence(CStudioAuthoringContext.site, fullPath)
+            .subscribe((exists) => {
+              if (exists) {
+                CStudioAuthoring.Operations.openCodeEditor({ path: fullPath, contentType, mode: 'groovy' });
+              } else {
+                CrafterCMSNext.services.content
+                  .createFile(CStudioAuthoringContext.site, path, fileName)
+                  .subscribe(() => {
+                    CStudioAuthoring.Operations.openCodeEditor({ path: fullPath, contentType, mode: 'groovy' });
+                  });
+              }
+            });
         };
       }
     }

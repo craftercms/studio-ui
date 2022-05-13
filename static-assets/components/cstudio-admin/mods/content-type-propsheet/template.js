@@ -138,7 +138,21 @@ YAHOO.extend(
               }
             });
           } else {
-            CStudioAuthoring.Operations.openCodeEditor({ path, contentType, mode: 'ftl' });
+            CrafterCMSNext.services.content
+              .checkPathExistence(CStudioAuthoringContext.site, path)
+              .subscribe((exists) => {
+                if (exists) {
+                  CStudioAuthoring.Operations.openCodeEditor({ path, contentType, mode: 'ftl' });
+                } else {
+                  const fileName = CrafterCMSNext.util.path.getFileNameFromPath(path);
+                  const pathNoFileName = path.replace(fileName, '');
+                  CrafterCMSNext.services.content
+                    .createFile(CStudioAuthoringContext.site, pathNoFileName, fileName)
+                    .subscribe(() => {
+                      CStudioAuthoring.Operations.openCodeEditor({ path, contentType, mode: 'ftl' });
+                    });
+                }
+              });
           }
         };
 
