@@ -127,8 +127,8 @@
 
     _onChangeVal: function (evt, obj) {
       obj.edited = true;
-      if (this._onChange) {
-        this._onChange(evt, obj);
+      if (obj._onChange) {
+        obj._onChange(evt, obj);
       }
     },
 
