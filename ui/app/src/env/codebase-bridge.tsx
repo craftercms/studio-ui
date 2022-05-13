@@ -235,7 +235,11 @@ export function createCodebaseBridge() {
             document.body.removeChild(element);
           };
           ReactDOM.render(
-            <CrafterCMSNextBridge mountLegacyConcierge={mountLegacyConcierge} suspenseFallback="" />,
+            <CrafterCMSNextBridge
+              mountCssBaseline={false}
+              mountLegacyConcierge={mountLegacyConcierge}
+              suspenseFallback=""
+            />,
             element,
             () =>
               resolve({
