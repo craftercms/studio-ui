@@ -30,29 +30,33 @@
   <title>${contentModel['internal-name']} - ${contentModel['common-title']!''}</title>
 </head>
 <body>
-<div id="toolbar"></div>
 <div id="root"></div>
 <#include "/templates/web/common/js-next-scripts.ftl" />
 <script src="/studio/static-assets/libs/monaco/monaco.0.20.0.js" async defer></script>
 <script>
+  <#assign component = next?then('SiteDashboard', 'LegacySiteDashboard') />
   (function (CrafterCMSNext) {
-    const { createElement } = craftercms.libs.React;
+    const { createElement, Fragment } = craftercms.libs.React;
     const { Typography, Box } = craftercms.libs.MaterialUI;
-    const { ViewToolbar, LauncherOpenerButton } = CrafterCMSNext.components;
-    const CrafterCMSIcon = craftercms.components.get('craftercms.icons.CrafterCMSIcon');
-    function DashboardImprovisedToolbar() {
+    const { ViewToolbar, LauncherOpenerButton, ${component} } = CrafterCMSNext.components;
+    const CrafterCMSIcon = craftercms.icons.CrafterCMSIcon;
+    function Root() {
       return createElement(
-        ViewToolbar,
+        Fragment,
         {},
-        createElement(Box, { sx: { display: 'flex', alignItems: 'center' } },
-          createElement(CrafterCMSIcon, { style: { marginRight: '5px' } }, 'Site Dashboard'),
-          createElement(Typography, { variant: 'h5' }, 'Site Dashboard')
+        createElement(
+          ViewToolbar,
+          {},
+          createElement(Box, { sx: { display: 'flex', alignItems: 'center' } },
+            createElement(CrafterCMSIcon, { style: { marginRight: '5px' } }, 'Site Dashboard'),
+            createElement(Typography, { variant: 'h5' }, 'Site Dashboard')
+          ),
+          createElement(LauncherOpenerButton, { siteRailPosition: 'left', icon: 'apps' })
         ),
-        createElement(LauncherOpenerButton, { siteRailPosition: 'left', icon: 'apps' })
+        createElement(${component})
       );
     }
-    CrafterCMSNext.render('#toolbar', DashboardImprovisedToolbar, {}, false);
-    CrafterCMSNext.render('#root', "${next?then('SiteDashboard', 'LegacySiteDashboard')}", {}, false);
+    CrafterCMSNext.render('#root', Root, {}, false);
   })(CrafterCMSNext);
 </script>
 </body>

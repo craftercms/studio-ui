@@ -45,14 +45,13 @@ import { extractCollection } from '@craftercms/studio-ui/utils/model';
 import { isSimple, popPiece } from '@craftercms/studio-ui/utils/string';
 import { AnyAction } from '@reduxjs/toolkit';
 import useRef from '@craftercms/studio-ui/hooks/useUpdateRefs';
-import { exists, findContainerRecord, getById, runValidation } from '../iceRegistry';
+import { exists, findContainerRecord, getById, runValidation, getReferentialEntries } from '../iceRegistry';
 import { post } from '../utils/communicator';
 import { requestEdit, validationMessage } from '@craftercms/studio-ui/state/actions/preview';
 import Menu from '@mui/material/Menu';
 import Typography from '@mui/material/Typography';
 import MenuItem from '@mui/material/MenuItem';
 import { getParentModelId } from '../utils/ice';
-import { iceRegistry } from '../index';
 import { fromICEId, get } from '../elementRegistry';
 
 export interface ZoneMenuProps {
@@ -115,7 +114,7 @@ export function ZoneMenu(props: ZoneMenuProps) {
   );
   const componentId =
     recordType === 'component' ? modelId : recordType === 'node-selector-item' ? collection[elementIndex] : null;
-  const { field, contentType } = useMemo(() => iceRegistry.getReferentialEntries(record.iceIds[0]), [record.iceIds]);
+  const { field, contentType } = useMemo(() => getReferentialEntries(record.iceIds[0]), [record.iceIds]);
   const isMovable =
     ['node-selector-item', 'repeat-item'].includes(recordType) ||
     Boolean(recordType === 'component' && nodeSelectorItemRecord);

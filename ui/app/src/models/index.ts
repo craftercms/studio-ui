@@ -28,6 +28,7 @@ export * from './CustomRecord';
 export * from './Dashboard';
 export * from './EntityState';
 export * from './FetchItemsByPath';
+export * from './FetchItemsByPathArray';
 export * from './FormsEngine';
 export * from './GetChildrenOptions';
 export * from './GetChildrenResponse';

@@ -14,14 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Dispatch, SetStateAction, useReducer } from 'react';
+export { default } from './GlobalStyles';
 
-export function useSpreadState<S>(initialState: S, init?: (args: S) => S): [S, Dispatch<SetStateAction<Partial<S>>>] {
-  return useReducer(
-    (state, nextState) => (nextState === '$RESET$' ? { ...initialState } : { ...state, ...nextState }),
-    initialState,
-    init
-  );
-}
-
-export default useSpreadState;
+export * from './GlobalStyles';

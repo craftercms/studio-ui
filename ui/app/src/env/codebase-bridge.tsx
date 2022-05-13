@@ -194,7 +194,7 @@ export function createCodebaseBridge() {
             <CrafterCMSNextBridge
               mountGlobalDialogManager={!isLegacy}
               mountSnackbarProvider={!isLegacy}
-              suspenseFallback={isLegacy ? '' : void 0}
+              mountCssBaseline={!isLegacy}
             >
               <Component {...props} />
             </CrafterCMSNextBridge>,

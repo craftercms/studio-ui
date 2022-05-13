@@ -100,6 +100,7 @@ export * from './GlobalAppGridRow';
 export * from './GlobalAppToolbar';
 export * from './GlobalConfigManagement';
 export * from './GlobalDialogManager';
+export * from './GlobalStyles';
 export * from './GraphiQL';
 export * from './GroupManagement';
 export * from './GroupsGrid';
