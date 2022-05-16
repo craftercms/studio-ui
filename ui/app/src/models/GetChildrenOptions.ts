@@ -22,4 +22,5 @@ export interface GetChildrenOptions extends PaginationOptions {
   order: 'ASC' | 'DESC';
   keyword: string;
   excludes?: string[];
+  systemTypes?: string[];
 }

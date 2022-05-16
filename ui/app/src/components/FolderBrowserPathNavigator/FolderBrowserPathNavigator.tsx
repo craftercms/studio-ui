@@ -33,11 +33,12 @@ import { createLookupTable } from '../../utils/object';
 
 export interface FolderBrowserPathNavigatorProps {
   rootPath: string;
+  selectedPath?: string;
   onPathSelected?(path: string): void;
 }
 
 export function FolderBrowserPathNavigator(props: FolderBrowserPathNavigatorProps) {
-  const { rootPath, onPathSelected } = props;
+  const { rootPath, selectedPath, onPathSelected } = props;
   const [keyword, setKeyword] = useState('');
   const [currentPath, setCurrentPath] = useState(rootPath);
   const [limit, setLimit] = useState(10);
@@ -70,7 +71,8 @@ export function FolderBrowserPathNavigator(props: FolderBrowserPathNavigatorProp
       fetchChildrenByPath(siteId, currentPath, {
         limit,
         offset,
-        keyword
+        keyword,
+        systemTypes: ['folder']
       })
     ]).subscribe({
       next: ([items, children]) => {
@@ -151,6 +153,7 @@ export function FolderBrowserPathNavigator(props: FolderBrowserPathNavigatorProp
       keyword={keyword}
       currentPath={currentPath}
       rootPath={rootPath}
+      selectedPath={selectedPath}
       itemsByPath={itemsByPath}
       itemsInPath={itemsInPath}
       locale={siteLocales.defaultLocaleCode}

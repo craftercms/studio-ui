@@ -36,6 +36,7 @@ export interface FolderBrowserPathNavigatorUIProps {
   keyword: string;
   currentPath: string;
   rootPath: string;
+  selectedPath: string;
   itemsByPath: LookupTable<DetailedItem>;
   onSearch?: (keyword: string) => void;
   onBreadcrumbSelected: (item: DetailedItem, event: React.SyntheticEvent) => void;
@@ -56,6 +57,7 @@ export function FolderBrowserPathNavigatorUI(props: FolderBrowserPathNavigatorUI
     keyword,
     currentPath,
     rootPath,
+    selectedPath,
     itemsByPath,
     onSearch,
     onBreadcrumbSelected,
@@ -95,6 +97,7 @@ export function FolderBrowserPathNavigatorUI(props: FolderBrowserPathNavigatorUI
           onItemClicked={onItemClicked}
           showItemNavigateToButton={false}
           isCurrentPath
+          isActive={lookupItemByPath(currentPath, itemsByPath).path === selectedPath}
         />
       )}
       <SuspenseWithEmptyState
@@ -118,6 +121,9 @@ export function FolderBrowserPathNavigatorUI(props: FolderBrowserPathNavigatorUI
           isSelectMode={false}
           locale={locale}
           resource={itemsResource}
+          computeActiveItems={(items) => {
+            return items.filter((item) => item.path === selectedPath).map((item) => item.path);
+          }}
           onItemClicked={onItemClicked}
           onPathSelected={(item) => {
             onPathSelected(item.path);

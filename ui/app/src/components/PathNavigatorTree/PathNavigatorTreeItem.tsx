@@ -46,7 +46,7 @@ export interface PathNavigatorTreeItemProps {
   classes?: Partial<Record<PathNavigatorTreeBreadcrumbsClassKey, string>>;
   onLabelClick(event: React.MouseEvent<Element, MouseEvent>, path: string): void;
   onIconClick(path: string): void;
-  onOpenItemMenu(element: Element, path: string): void;
+  onOpenItemMenu?(element: Element, path: string): void;
   onFilterChange(keyword: string, path: string): void;
   onMoreClick(path: string): void;
 }
@@ -311,20 +311,22 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
                   labelTypographyProps={{ variant: 'body2' }}
                 />
                 <section className={clsx(classes.optionsWrapper, over && classes.optionsWrapperOver)}>
-                  <Tooltip title={<FormattedMessage id="words.options" defaultMessage="Options" />}>
-                    <IconButton
-                      size="small"
-                      className={classes.iconButton}
-                      data-item-menu
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        onOpenItemMenu(e.currentTarget, node.id);
-                      }}
-                    >
-                      <MoreVertRoundedIcon />
-                    </IconButton>
-                  </Tooltip>
+                  {onOpenItemMenu && (
+                    <Tooltip title={<FormattedMessage id="words.options" defaultMessage="Options" />}>
+                      <IconButton
+                        size="small"
+                        className={classes.iconButton}
+                        data-item-menu
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          onOpenItemMenu(e.currentTarget, node.id);
+                        }}
+                      >
+                        <MoreVertRoundedIcon />
+                      </IconButton>
+                    </Tooltip>
+                  )}
                   {(Boolean(node.children.length) || showFilter) && (
                     <Tooltip title={<FormattedMessage id="words.filter" defaultMessage="Filter" />}>
                       <IconButton

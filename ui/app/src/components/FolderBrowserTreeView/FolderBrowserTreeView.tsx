@@ -14,135 +14,190 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { getIndividualPaths } from '../../utils/path';
-import FolderBrowserTreeViewUI, { FolderBrowserTreeViewNode } from './FolderBrowserTreeViewUI';
+import useSpreadState from '../../hooks/useSpreadState';
 import LookupTable from '../../models/LookupTable';
-import { ApiResponse } from '../../models/ApiResponse';
-import { forkJoin, Observable } from 'rxjs';
-import { useActiveSiteId } from '../../hooks/useActiveSiteId';
-import { useLogicResource } from '../../hooks/useLogicResource';
-import Suspencified from '../Suspencified/Suspencified';
-import FolderBrowserTreeViewSkeleton from './FolderBrowserTreeViewSkeleton';
-import { LegacyItem } from '../../models/Item';
-import { fetchLegacyItemsTree } from '../../services/content';
-import { legacyItemsToTreeNodes } from './utils';
+import useDetailedItem from '../../hooks/useDetailedItem';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { ApiResponse } from '../../models';
+import PathNavigatorSkeletonTree from '../PathNavigatorTree/PathNavigatorTreeSkeleton';
+import { fetchChildrenByPath, fetchItemByPath, fetchSandboxItem } from '../../services/content';
+import useActiveSite from '../../hooks/useActiveSite';
+import { PathNavigatorTreeItem, PathNavigatorTreeNode } from '../PathNavigatorTree';
+import { lookupItemByPath, parseSandBoxItemToDetailedItem } from '../../utils/content';
+import { ApiResponseErrorState } from '../ApiResponseErrorState';
+import TreeView from '@mui/lab/TreeView';
+import { createLookupTable } from '../../utils/object';
 
 export interface FolderBrowserTreeViewProps {
   rootPath: string;
-  initialPath?: string;
-  showPathTextBox?: boolean;
-  classes?: Partial<Record<'root' | 'treeViewRoot' | 'treeItemLabel', string>>;
+  selectedPath?: string;
   onPathSelected?(path: string): void;
 }
 
 export function FolderBrowserTreeView(props: FolderBrowserTreeViewProps) {
-  const site = useActiveSiteId();
-  const { rootPath, initialPath, showPathTextBox = true, classes, onPathSelected } = props;
-  const [currentPath, setCurrentPath] = useState(initialPath ?? rootPath);
-  const [expanded, setExpanded] = useState(initialPath ? getIndividualPaths(initialPath) : [rootPath]);
-  const [treeNodes, setTreeNodes] = useState<FolderBrowserTreeViewNode>(null);
-  const nodesLookupRef = useRef<LookupTable<FolderBrowserTreeViewNode>>({});
-  const [error, setError] = useState<Partial<ApiResponse>>(null);
+  const { rootPath, selectedPath, onPathSelected } = props;
+  const { id: siteId, uuid } = useActiveSite();
+  const nodesByPathRef = useRef<LookupTable<PathNavigatorTreeNode>>({});
+  const [keywordByPath, setKeywordByPath] = useSpreadState<LookupTable<string>>({});
+  const [totalByPath, setTotalByPath] = useSpreadState<LookupTable<number>>({});
+  const [childrenByParentPath, setChildrenByParentPath] = useSpreadState<LookupTable<string[]>>({});
+  const [fetchingByPath, setFetchingByPath] = useSpreadState<LookupTable<boolean>>({});
+  const [itemsByPath, setItemsByPath] = useState({});
+  const [rootItem, setRootItem] = useState(null);
+  const [rootNode, setRootNode] = useState(null); // TODO: set root node (check in PathNavigatorTree)
+  const [error, setError] = useState<ApiResponse>();
+
+  const rootPathExists = useCallback(() => {
+    setFetchingByPath({
+      [rootPath]: true
+    });
+    fetchItemByPath(siteId, rootPath, { castAsDetailedItem: true }).subscribe({
+      next(item) {
+        setRootItem(item);
+        setItemsByPath({
+          [rootPath]: item
+        });
+        setFetchingByPath({
+          [rootPath]: false
+        });
+      },
+      error({ response }) {
+        setFetchingByPath({
+          [rootPath]: false
+        });
+        setError(response.response);
+      }
+    });
+  }, [siteId, rootPath, setFetchingByPath]);
+
+  // region useEffects
+  useEffect(() => {
+    rootPathExists();
+  }, [rootPathExists]);
 
   useEffect(() => {
-    if (currentPath) {
-      let nodesLookup = nodesLookupRef.current;
-      if (!nodesLookup[currentPath] || !nodesLookup[currentPath]?.fetched) {
-        const allPaths = getIndividualPaths(currentPath, rootPath).filter(
-          (path) => !nodesLookup[path] || !nodesLookup[path].fetched
-        );
-        const requests: Observable<LegacyItem>[] = [];
-        allPaths.forEach((nextPath) => {
-          requests.push(fetchLegacyItemsTree(site, nextPath, { depth: 1, order: 'default' }));
-        });
+    if (rootItem && nodesByPathRef.current[rootItem.path] === undefined) {
+      const rootNode = {
+        id: rootItem.path,
+        children: [{ id: 'loading' }]
+      };
+      nodesByPathRef.current[rootItem.path] = rootNode;
+      setRootNode(rootNode);
+    }
+  }, [rootItem]);
 
-        if (requests.length) {
-          forkJoin(requests).subscribe(
-            (responses) => {
-              let rootNode;
-              responses.forEach((item, i) => {
-                let parent;
-
-                if (item.deleted) {
-                  return;
+  useEffect(() => {
+    // This effect will update the expanded nodes on the tree
+    if (rootPath) {
+      Object.keys(fetchingByPath).forEach((path) => {
+        if (fetchingByPath[path]) {
+          // if the node doest exist, we will create it, otherwise will add loading to the children
+          if (!nodesByPathRef.current[path]) {
+            nodesByPathRef.current[path] = {
+              id: path,
+              children: [{ id: 'loading' }]
+            };
+          } else {
+            nodesByPathRef.current[path].children = [{ id: 'loading' }];
+          }
+        } else {
+          // Checking and setting children for the path
+          if (childrenByParentPath[path]) {
+            // If the children are empty and there are filtered search, we will add a empty node
+            if (Boolean(keywordByPath[path]) && totalByPath[path] === 0) {
+              nodesByPathRef.current[path].children = [
+                {
+                  id: 'empty'
                 }
-
-                if (!nodesLookup['root']) {
-                  parent = {
-                    id: item.path,
-                    name: item.name ? item.name : 'root',
-                    fetched: true,
-                    children: legacyItemsToTreeNodes(item.children)
-                  };
-                  rootNode = parent;
-                  nodesLookup[item.path] = parent;
-                  nodesLookup['root'] = parent;
-                } else {
-                  rootNode = nodesLookup['root'];
-                  parent = nodesLookup[item.path];
-                  parent.fetched = true;
-                  parent.children = legacyItemsToTreeNodes(item.children);
-                }
-
-                parent.children.forEach((child) => {
-                  nodesLookup[child.id] = child;
-                });
-              });
-              rootNode && setTreeNodes({ ...rootNode });
-            },
-            (response) => {
-              setError(response);
+              ];
+              return;
             }
-          );
+
+            lookupItemByPath(path, nodesByPathRef.current).children = [];
+            lookupItemByPath(path, childrenByParentPath)?.forEach((childPath) => {
+              // if the node doest exist, we will create it, otherwise will add loading to the children
+              if (!nodesByPathRef.current[childPath]) {
+                nodesByPathRef.current[childPath] = {
+                  id: childPath,
+                  children: totalByPath[childPath] === 0 ? [] : [{ id: 'loading' }]
+                };
+              }
+              nodesByPathRef.current[path].children.push(nodesByPathRef.current[childPath]);
+            });
+
+            // Checking node children total is less than the total items for the children we will add a more node
+            if (nodesByPathRef.current[path].children.length < totalByPath[path]) {
+              nodesByPathRef.current[path].children.push({ id: 'more', parentPath: path });
+            }
+          }
         }
+      });
+      if (nodesByPathRef.current[rootPath]) {
+        setRootNode({ ...nodesByPathRef.current[rootPath] });
       }
     }
-  }, [currentPath, rootPath, site]);
+  }, [childrenByParentPath, fetchingByPath, keywordByPath, rootPath, totalByPath]);
+  // endregion
 
-  const onIconClick = (event: React.ChangeEvent<{}>, node: FolderBrowserTreeViewNode) => {
-    event.preventDefault();
-    setCurrentPath(node.id);
-    onPathSelected(node.id);
-    let nextExpanded = expanded.includes(node.id) ? expanded.filter((id) => id !== node.id) : [...expanded, node.id];
-    setExpanded(nextExpanded);
-  };
+  if ((!rootItem || !rootNode) && !error) {
+    return <PathNavigatorSkeletonTree numOfItems={1} />;
+  }
 
-  const onLabelClick = (event: React.ChangeEvent<{}>, node: FolderBrowserTreeViewNode) => {
-    event.preventDefault();
-    setCurrentPath(node.id);
-    onPathSelected(node.id);
-  };
-
-  const resource = useLogicResource<
-    FolderBrowserTreeViewNode,
-    { treeNodes: FolderBrowserTreeViewNode; error?: ApiResponse }
-  >(
-    useMemo(() => ({ treeNodes, error }), [treeNodes, error]),
-    {
-      shouldResolve: ({ treeNodes }) => Boolean(treeNodes),
-      shouldReject: ({ error }) => Boolean(error),
-      shouldRenew: ({ treeNodes }, resource) => treeNodes === null && resource.complete,
-      resultSelector: ({ treeNodes }) => treeNodes,
-      errorSelector: ({ error }) => error
+  // region Handlers
+  const onToggleNodeClick = (path: string) => {
+    // If the item's children have been loaded, should simply be expanded
+    if (childrenByParentPath[path]) {
+      // TODO: should I keep track of the expanded state? (look at PathNavigatorTree, there's one more condition)
+    } else {
+      setFetchingByPath({
+        [path]: true
+      });
+      fetchChildrenByPath(siteId, path, { systemTypes: ['folder'] }).subscribe((children) => {
+        setTotalByPath({
+          [path]: children.total
+        });
+        setItemsByPath({
+          ...createLookupTable(parseSandBoxItemToDetailedItem(children), 'path')
+        });
+        const nextChildren = [];
+        children.forEach((item) => {
+          nextChildren.push(item.path);
+          totalByPath[item.path] = item.childrenCount;
+        });
+        setChildrenByParentPath({
+          [path]: nextChildren
+        });
+        // TODO: OffsetByPath
+        setFetchingByPath({
+          [path]: false
+        });
+      });
     }
-  );
+  };
+  // endregion
 
   return (
-    <Suspencified suspenseProps={{ fallback: <FolderBrowserTreeViewSkeleton /> }}>
-      <FolderBrowserTreeViewUI
-        onIconClick={onIconClick}
-        onLabelClick={onLabelClick}
-        rootPath={rootPath}
-        currentPath={currentPath}
-        expanded={expanded}
-        selected={currentPath.replace(/\/$/, '')}
-        resource={resource}
-        showPathTextBox={showPathTextBox}
-        classes={classes}
-        disableSelection={true}
-      />
-    </Suspencified>
+    <>
+      {error ? (
+        <ApiResponseErrorState error={error} imageUrl={null} />
+      ) : (
+        <div>
+          <TreeView disableSelection>
+            <PathNavigatorTreeItem
+              node={rootNode}
+              itemsByPath={itemsByPath}
+              keywordByPath={keywordByPath}
+              totalByPath={totalByPath}
+              childrenByParentPath={childrenByParentPath}
+              onLabelClick={null}
+              onIconClick={onToggleNodeClick}
+              onFilterChange={null}
+              onMoreClick={null}
+            />
+          </TreeView>
+        </div>
+      )}
+    </>
   );
 }
 
