@@ -194,7 +194,7 @@ export function createCodebaseBridge() {
             <CrafterCMSNextBridge
               mountGlobalDialogManager={!isLegacy}
               mountSnackbarProvider={!isLegacy}
-              suspenseFallback={isLegacy ? '' : void 0}
+              mountCssBaseline={!isLegacy}
             >
               <Component {...props} />
             </CrafterCMSNextBridge>,
@@ -235,7 +235,11 @@ export function createCodebaseBridge() {
             document.body.removeChild(element);
           };
           ReactDOM.render(
-            <CrafterCMSNextBridge mountLegacyConcierge={mountLegacyConcierge} suspenseFallback="" />,
+            <CrafterCMSNextBridge
+              mountCssBaseline={false}
+              mountLegacyConcierge={mountLegacyConcierge}
+              suspenseFallback=""
+            />,
             element,
             () =>
               resolve({

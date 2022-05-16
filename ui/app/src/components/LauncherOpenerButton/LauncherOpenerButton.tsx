@@ -58,7 +58,7 @@ interface LauncherOpenerButtonProps {
 
 export function LauncherOpenerButton(props: LauncherOpenerButtonProps) {
   const classes = useStyles({});
-  const { sitesRailPosition = 'right', icon = 'logo', closeButtonPosition = 'right' } = props;
+  const { sitesRailPosition = 'right', icon = 'apps', closeButtonPosition = 'right' } = props;
   const { formatMessage } = useIntl();
   const id = useMemo(() => `toolbarLauncherButton${instanceCount++}`, []);
   const dispatch = useDispatch();

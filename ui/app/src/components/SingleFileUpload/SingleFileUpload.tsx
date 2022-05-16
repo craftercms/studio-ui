@@ -87,7 +87,31 @@ const singleFileUploadStyles = makeStyles((theme) =>
   })
 );
 
-interface SingleFileUploadProps {
+export interface FileUpload {
+  data: File;
+  extension: string;
+  id: string;
+  isPaused: boolean;
+  isRemote: boolean;
+  meta: { name: string; path: string; site: string; type: string };
+  name: string;
+  preview: any;
+  progress: { uploadStarted: number; uploadComplete: boolean; percentage: 100; bytesUploaded: number };
+  remote: string;
+  response: { status: number; body: any; uploadUrl: string };
+  size: number;
+  source: string;
+  type: string;
+  uploadUrl: string;
+}
+
+export interface FileUploadResult {
+  successful: FileUpload[];
+  failed: FileUpload[];
+  uploadID: string;
+}
+
+export interface SingleFileUploadProps {
   site: string;
   formTarget?: string;
   url?: string;
@@ -95,7 +119,7 @@ interface SingleFileUploadProps {
   customFileName?: string;
   fileTypes?: [string];
   onUploadStart?(): void;
-  onComplete?(result: any): void;
+  onComplete?(result: FileUploadResult): void;
   onError?({ file, error, response }): void;
 }
 

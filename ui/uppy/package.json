@@ -1,18 +1,18 @@
 {
-  "private": true,
+  "private": false,
   "name": "@craftercms/uppy",
   "description": "CrafterCMS UI Uppy extensions.",
-  "version": "1.0.0",
+  "version": "1.0.0-beta",
   "license": "MIT",
   "main": "lib/index.js",
-  "style": "dist/style.min.css",
   "types": "types/index.d.ts",
   "keywords": [
     "file uploader",
     "uppy",
     "uppy-plugin",
     "dashboard",
-    "xhr"
+    "xhr",
+    "craftercms"
   ],
   "homepage": "https://craftercms.org",
   "bugs": {
@@ -20,7 +20,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/craftercms/studio-ui.git"
+    "url": "git+https://github.com/craftercms/studio-ui.git",
+    "directory": "ui/uppy"
   },
   "bic": {
     "skip": [
@@ -42,5 +43,9 @@
   },
   "peerDependencies": {
     "uppy": "^2.2.1"
-  }
+  },
+  "files": [
+    "lib/*",
+    "types/*"
+  ]
 }

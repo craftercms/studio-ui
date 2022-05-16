@@ -59,6 +59,7 @@ SRC=$(pwd)
 LINK_ONLY=false
 REMOVE_ONLY=false
 RESTORE_ONLY=false
+SYNC_ONLY=false
 for ARG in "$@"; do
   case "$ARG" in
   --link)
@@ -70,6 +71,9 @@ for ARG in "$@"; do
   --restore)
     RESTORE_ONLY=true
     ;;
+  --sync)
+    SYNC_ONLY=true
+    ;;
   *)
     echo "Unknown option $ARG."
     exit 1
@@ -79,7 +83,7 @@ done
 
 echo ""
 
-if [[ $LINK_ONLY != true && $RESTORE_ONLY != true && $REMOVE_ONLY != true ]]; then
+if [[ $LINK_ONLY != true && $RESTORE_ONLY != true && $REMOVE_ONLY != true && $SYNC_ONLY != true ]]; then
   echo "Backup directories"
   mkdir "$DEFAULT_SITE/link-backup"
   mv "$STATIC_ASSETS/modules" "$DEFAULT_SITE/link-backup/modules"
@@ -132,7 +136,7 @@ if [[ $RESTORE_ONLY == true ]]; then
   rm -rf "$DEFAULT_SITE/link-backup"
 fi
 
-if [[ $REMOVE_ONLY != true && $RESTORE_ONLY != true ]]; then
+if [[ $REMOVE_ONLY != true && $RESTORE_ONLY != true && $SYNC_ONLY != true ]]; then
   echo "Linking directories"
   ln -s "$SRC/static-assets/modules" "$STATIC_ASSETS/"
   ln -s "$SRC/static-assets/components" "$STATIC_ASSETS/"
@@ -147,6 +151,23 @@ if [[ $REMOVE_ONLY != true && $RESTORE_ONLY != true ]]; then
   ln -s "$SRC/static-assets/yui" "$STATIC_ASSETS/yui"
   ln -s "$SRC/static-assets/css" "$STATIC_ASSETS/css"
   ln -s "$SRC/static-assets/js" "$STATIC_ASSETS/js"
+fi
+
+if [[ $SYNC_ONLY == true ]]; then
+  echo "Synchronizing directories"
+  cp -r "$SRC/static-assets/modules" "$STATIC_ASSETS"
+  cp -r "$SRC/static-assets/components" "$STATIC_ASSETS"
+  cp -r "$SRC/static-assets/next" "$STATIC_ASSETS"
+  cp -r "$SRC/static-assets/scripts" "$STATIC_ASSETS"
+  cp -r "$SRC/static-assets/styles" "$STATIC_ASSETS"
+  cp -r "$SRC/templates" "$DEFAULT_SITE"
+  cp -r "$SRC/static-assets/themes" "$STATIC_ASSETS"
+  cp -r "$SRC/static-assets/libs" "$STATIC_ASSETS"
+  cp -r "$SRC/static-assets/images" "$STATIC_ASSETS"
+  cp -r "$SRC/site" "$DEFAULT_SITE"
+  cp -r "$SRC/static-assets/yui" "$STATIC_ASSETS"
+  cp -r "$SRC/static-assets/css" "$STATIC_ASSETS"
+  cp -r "$SRC/static-assets/js" "$STATIC_ASSETS"
 fi
 
 cd "$currentDir" || exit 1

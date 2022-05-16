@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, Suspense } from 'react';
 import ViewToolbar from '../ViewToolbar';
 import LauncherOpenerButton from '../LauncherOpenerButton';
 import { closeToolsPanel, initToolbarConfig, openToolsPanel } from '../../state/actions/preview';
@@ -74,12 +74,20 @@ export function ToolBar() {
             onClick={() => dispatch(showToolsPanel ? closeToolsPanel() : openToolsPanel())}
           />
         </Tooltip>
-        {renderWidgets(toolbar.leftSection?.widgets, { userRoles, overrideProps: { site, item } })}
+        <Suspense fallback="">
+          {renderWidgets(toolbar.leftSection?.widgets, { userRoles, overrideProps: { site, item } })}
+        </Suspense>
       </section>
-      <section>{renderWidgets(toolbar.middleSection?.widgets, { userRoles, overrideProps: { site, item } })}</section>
       <section>
-        {renderWidgets(toolbar.rightSection?.widgets, { userRoles, overrideProps: { site, item } })}
-        <LauncherOpenerButton sitesRailPosition="left" icon="apps" />
+        <Suspense fallback="">
+          {renderWidgets(toolbar.middleSection?.widgets, { userRoles, overrideProps: { site, item } })}
+        </Suspense>
+      </section>
+      <section>
+        <Suspense fallback="">
+          {renderWidgets(toolbar.rightSection?.widgets, { userRoles, overrideProps: { site, item } })}
+        </Suspense>
+        <LauncherOpenerButton sitesRailPosition="left" />
       </section>
     </ViewToolbar>
   );
