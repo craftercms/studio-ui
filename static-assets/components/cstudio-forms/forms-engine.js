@@ -2109,7 +2109,7 @@ var CStudioForms =
                 onDone();
               } else {
                 jQuery
-                  .getScript(script)
+                  .getScript({ url: script, cache: false })
                   .done(onDone)
                   .fail(
                     (function (datasourceDef) {

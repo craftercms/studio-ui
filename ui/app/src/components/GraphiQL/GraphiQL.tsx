@@ -118,7 +118,7 @@ function Graphi(props: GraphiQLProps) {
     <Box display="flex" flexDirection="column" height="100vh">
       {!embedded && (
         <GlobalAppToolbar
-          title={<FormattedMessage id="GraphiQL.title" defaultMessage="GraphiQL" />}
+          title={<FormattedMessage id="words.graphQL" defaultMessage="GraphQL" />}
           showAppsButton={showAppsButton}
         />
       )}

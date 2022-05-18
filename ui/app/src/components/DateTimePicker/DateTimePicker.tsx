@@ -258,7 +258,9 @@ function DateTimePicker(props: DateTimePickerProps) {
       {controls.includes('timeZone') && (
         <Autocomplete
           options={timeZones}
-          getOptionLabel={(timezone) => `${timezone.name} (GMT${timezone.offset})`}
+          getOptionLabel={(timezone) =>
+            typeof timezone === 'string' ? timezone : `${timezone.name} (GMT${timezone.offset})`
+          }
           defaultValue={currentTimeZoneDesc}
           onChange={handleTimezoneChange}
           size="small"
