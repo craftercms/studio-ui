@@ -49,7 +49,6 @@ import Menu from '@mui/material/Menu';
 import PasswordRequirementsDisplay from '../PasswordRequirementsDisplay';
 import { useMount } from '../../hooks/useMount';
 import { useDebouncedInput } from '../../hooks/useDebouncedInput';
-import { visuallyHidden } from '@mui/utils';
 
 export interface SystemLang {
   id: string;
