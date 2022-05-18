@@ -107,17 +107,15 @@ export const GlobalAppToolbar = React.memo<GlobalAppToolbarProps>(function (prop
   } = props;
   const classes = useStyles(styles);
   const { formatMessage } = useIntl();
-
   const [{ openSidebar }, setState] = useGlobalAppState();
 
   return (
     <ViewToolbar elevation={props.elevation} styles={styles} classes={props.classes}>
-      {showHamburgerMenuButton && (
+      {showHamburgerMenuButton && Boolean(setState) && (
         <LogoAndMenuBundleButton
-          showMenuIcon={Boolean(setState)}
           showCrafterIcon={showAppsButton}
           aria-label={formatMessage(translations.toggleSidebar)}
-          onClick={() => setState?.({ openSidebar: !openSidebar })}
+          onClick={() => setState({ openSidebar: !openSidebar })}
         />
       )}
       {startContent}
@@ -142,7 +140,7 @@ export const GlobalAppToolbar = React.memo<GlobalAppToolbarProps>(function (prop
       )}
       <section className={clsx(classes.leftContent, props.classes?.leftContent)}>{leftContent}</section>
       <section className={clsx(classes.rightContent, props.classes?.rightContent)}>{rightContent}</section>
-      {showAppsButton && <LauncherOpenerButton sitesRailPosition="left" icon="apps" />}
+      {showAppsButton && <LauncherOpenerButton sitesRailPosition="left" />}
     </ViewToolbar>
   );
 });

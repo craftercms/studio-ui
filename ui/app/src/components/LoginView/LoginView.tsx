@@ -575,8 +575,7 @@ export function LoginViewContainer(props: LoginViewProps) {
         aria-labelledby="loginDialog"
       >
         <DialogTitle id="loginDialog">
-          <Typography style={visuallyHidden}>{formatMessage(translations.loginDialogTitle)}</Typography>
-          <CrafterCMSLogo className={classes.logo} width="auto" />
+          <CrafterCMSLogo className={classes.logo} width="auto" alt={formatMessage(translations.loginDialogTitle)} />
         </DialogTitle>
         <CurrentView {...currentViewProps} />
         <LanguageDropDown language={language} languages={languages} onChange={setLanguage} />

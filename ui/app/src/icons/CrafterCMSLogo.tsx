@@ -20,6 +20,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 
 interface CrafterCMSLogoProps {
+  alt?: string;
   className?: string;
   width?: number | 'auto';
 }
@@ -52,7 +53,13 @@ export default function CrafterCMSLogo(props: CrafterCMSLogoProps) {
   const classes = useStyles(props);
   const themeClass = classes.crafter;
   return (
-    <svg className={clsx(classes.root, props.className)} viewBox="0 0 850 207" aria-hidden="true" focusable="false">
+    <svg
+      aria-label={props.alt ?? ''}
+      className={clsx(classes.root, props.className)}
+      viewBox="0 0 850 207"
+      aria-hidden="true"
+      focusable="false"
+    >
       <path
         className={classes.redStuff}
         d="M658,66c10.5,0,18.1,3.6,25.2,9.7c0.8,0.8,0.9,2.1,0.1,2.9l-2.8,2.8c-0.8,1-1.7,0.9-2.7-0.1
