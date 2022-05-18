@@ -97,7 +97,7 @@ export function CrafterCMSNextBridge(
               )}
             </StoreProvider>
           ) : (
-            <LoadingState styles={{ root: { minHeight: '100%' } }} />
+            <LoadingState />
           )}
         </SnackbarOrFragment>
       </I18nProvider>

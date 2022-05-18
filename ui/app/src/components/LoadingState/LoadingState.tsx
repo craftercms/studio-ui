@@ -35,6 +35,7 @@ const useStyles = makeStyles((theme) =>
       flexDirection: 'column',
       justifyContent: 'center',
       margin: `${theme.spacing(2)} auto`,
+      minHeight: '100%',
       ...styles.root
     }),
     graphicRoot: (styles) => ({
