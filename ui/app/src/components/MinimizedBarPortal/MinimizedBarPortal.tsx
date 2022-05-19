@@ -14,48 +14,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
 import { PropsWithChildren, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { decrementMinimizedBarCount, incrementMinimizedBarCount } from './minimizedBarCounter';
 
 let portalEl;
 
 function createPortalEl() {
   if (!portalEl) {
     portalEl = document.createElement('div');
+    portalEl.setAttribute('class', 'minimized-bar-portal-root');
     document.body.appendChild(portalEl);
-    portalEl.classList.add('THE-CRAFTERCMS-PORTAL');
   }
   return portalEl;
 }
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    wrapper: {
-      right: '0',
-      bottom: '20px',
-      display: 'flex',
-      position: 'fixed',
-      flexDirection: 'row-reverse',
-      width: '100%',
-      overflow: 'auto',
-      padding: '2px 20px',
-      zIndex: theme.zIndex.modal,
-      pointerEvents: 'none',
-      '& > *': {
-        pointerEvents: 'all'
-      }
-    }
-  })
-);
-
 export function MinimizedBarPortal(props: PropsWithChildren<{}>) {
-  const classes = useStyles();
   const el = createPortalEl();
   useEffect(() => {
-    el.setAttribute('class', classes.wrapper);
-  }, [el, classes.wrapper]);
+    incrementMinimizedBarCount();
+    return () => decrementMinimizedBarCount();
+  }, []);
   return createPortal(props.children, el) as JSX.Element;
 }
 

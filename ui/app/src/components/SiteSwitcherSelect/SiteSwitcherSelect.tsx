@@ -29,6 +29,7 @@ import clsx from 'clsx';
 import { getSystemLink } from '../../utils/system';
 import { PREVIEW_URL_PATH } from '../../utils/constants';
 import { useLegacyPreviewPreference } from '../../hooks/useLegacyPreviewPreference';
+import useMinimizedDialogWarning from '../../hooks/useMinimizedDialogWarning';
 
 export interface SiteSwitcherSelectProps extends SelectProps {
   site: string;
@@ -41,9 +42,10 @@ function SiteSwitcherSelect(props: SiteSwitcherSelectProps) {
   const { authoringBase } = useEnv();
   const dispatch = useDispatch();
   const useLegacy = useLegacyPreviewPreference();
+  const checkMinimized = useMinimizedDialogWarning();
 
   const onSiteChange = ({ target: { value } }) => {
-    if (!isBlank(value) && site !== value) {
+    if (!isBlank(value) && site !== value && !checkMinimized()) {
       if (window.location.href.includes(PREVIEW_URL_PATH)) {
         dispatch(changeSite(value));
       } else {

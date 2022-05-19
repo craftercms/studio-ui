@@ -28,12 +28,10 @@ import {
 import { changeContentType, createFile, fetchWorkflowAffectedItems } from '../../services/content';
 import { showCodeEditorDialog, showEditDialog, showWorkflowCancellationDialog } from '../actions/dialogs';
 import { reloadDetailedItem } from '../actions/content';
-import { showEditItemSuccessNotification } from '../actions/system';
+import { blockUI, showEditItemSuccessNotification, unblockUI } from '../actions/system';
 import { CrafterCMSEpic } from '../store';
-import { nanoid as uuid } from 'nanoid';
 import { translations } from '../../components/ItemActionsMenu/translations';
 import { showErrorDialog } from '../reducers/dialogs/error';
-import { popTab, pushTab } from '../reducers/dialogs/minimizedTabs';
 import { getFileNameFromPath, getParentPath } from '../../utils/path';
 import { popPiece } from '../../utils/string';
 import { associateTemplate } from '../actions/preview';
@@ -69,7 +67,6 @@ const epics = [
       withLatestFrom(state$),
       switchMap(([action, state]) => {
         const { payload, type } = action;
-        const id = uuid();
         let path;
         let mode;
         let contentType;
@@ -89,14 +86,7 @@ const epics = [
           contentType = payload.contentType;
         }
         return merge(
-          of(
-            pushTab({
-              minimized: true,
-              id,
-              status: 'indeterminate',
-              title: getIntl().formatMessage(translations.verifyingAffectedWorkflows)
-            })
-          ),
+          of(blockUI({ message: getIntl().formatMessage(translations.verifyingAffectedWorkflows) })),
           fetchWorkflowAffectedItems(state.sites.active, path).pipe(
             map((items) =>
               items?.length > 0
@@ -108,7 +98,7 @@ const epics = [
                         contentType
                       })
                     }),
-                    popTab({ id })
+                    unblockUI()
                   ])
                 : batchActions([
                     showCodeEditorDialog({
@@ -117,7 +107,7 @@ const epics = [
                       mode,
                       contentType
                     }),
-                    popTab({ id })
+                    unblockUI()
                   ])
             ),
             catchError(({ response }) => {
@@ -137,7 +127,7 @@ const epics = [
                           mode,
                           contentType
                         }),
-                        popTab({ id })
+                        unblockUI()
                       ].filter(Boolean)
                     )
                   )
@@ -148,7 +138,7 @@ const epics = [
                   showErrorDialog({
                     error: response.response
                   }),
-                  popTab({ id })
+                  unblockUI()
                 ])
               );
             })
