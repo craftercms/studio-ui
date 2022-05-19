@@ -40,7 +40,7 @@ export function AboutCrafterCMSView() {
             <CrafterCMSLogo width={250} className={classes.logo} />
             <div className={classes.row}>
               <Typography variant="subtitle2" className={'aboutLabel'}>
-                <FormattedMessage id="about.studioVersionNumber" defaultMessage="Studio Version Number" />:
+                <FormattedMessage id="about.versionNumber" defaultMessage="Version Number" />:
               </Typography>
               <Typography variant="body2">{`${env.packageVersion}-${env.packageBuild?.substring(0, 6)}`}</Typography>
             </div>
