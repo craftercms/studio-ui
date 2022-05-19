@@ -62,6 +62,7 @@ import { PREVIEW_URL_PATH } from '../../utils/constants';
 import { useLegacyPreviewPreference } from '../../hooks/useLegacyPreviewPreference';
 import { fetchUseLegacyPreviewPreference } from '../../services/configuration';
 import { WidgetDescriptor } from '../../models';
+import useMinimizedDialogWarning from '../../hooks/useMinimizedDialogWarning';
 
 export interface LauncherStateProps {
   open: boolean;
@@ -380,6 +381,7 @@ export function Launcher(props: LauncherStateProps) {
         : null,
     [siteCardMenuLinks, userRoles, formatMessage, authoringBase, useLegacy]
   );
+  const checkMinimized = useMinimizedDialogWarning();
 
   useEffect(() => {
     if (uiConfig.xml && !launcher) {
@@ -388,24 +390,26 @@ export function Launcher(props: LauncherStateProps) {
   }, [uiConfig.xml, launcher, dispatch]);
 
   const onSiteCardClick = (site: string) => {
-    setSiteCookie(site);
-    fetchUseLegacyPreviewPreference(site).subscribe((useLegacy) => {
-      if (!useLegacy && window.location.href.includes(PREVIEW_URL_PATH)) {
-        // If user is in UI next and switching to a site that's viewed in 4.
-        dispatch(batchActions([changeSite(site), closeLauncher()]));
-      } else {
-        // If we're in legacy preview already (i.e. switching from a legacy-preview site to another legacy-preview
-        // site) only the hash will change and the page won't reload or do anything perceivable since legacy isn't
-        // fully integrated with the URL. In these cases, we need to programmatically reload.
-        window.location.href = getSystemLink({
-          systemLinkId: 'preview',
-          authoringBase,
-          useLegacy,
-          site
-        });
-        useLegacy && window.location.reload();
-      }
-    });
+    if (!checkMinimized()) {
+      setSiteCookie(site);
+      fetchUseLegacyPreviewPreference(site).subscribe((useLegacy) => {
+        if (!useLegacy && window.location.href.includes(PREVIEW_URL_PATH)) {
+          // If user is in UI next and switching to a site that's viewed in 4.
+          dispatch(batchActions([changeSite(site), closeLauncher()]));
+        } else {
+          // If we're in legacy preview already (i.e. switching from a legacy-preview site to another legacy-preview
+          // site) only the hash will change and the page won't reload or do anything perceivable since legacy isn't
+          // fully integrated with the URL. In these cases, we need to programmatically reload.
+          window.location.href = getSystemLink({
+            systemLinkId: 'preview',
+            authoringBase,
+            useLegacy,
+            site
+          });
+          useLegacy && window.location.reload();
+        }
+      });
+    }
   };
 
   const onMenuClose = () => dispatch(closeLauncher());

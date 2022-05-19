@@ -28,7 +28,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import LookupTable from '../../models/LookupTable';
 import { fetchMarketplacePlugins, installMarketplacePlugin } from '../../services/marketplace';
 import { debounceTime } from 'rxjs/operators';
-import { popTab, pushTab } from '../../state/reducers/dialogs/minimizedTabs';
+import { blockUI, unblockUI } from '../../state/actions/system';
 import { translations } from './translations';
 import { batchActions } from '../../state/actions/misc';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
@@ -55,6 +55,7 @@ const useStyles = makeStyles(() =>
     }
   })
 );
+
 export function InstallPluginDialogContainer(props: InstallPluginDialogProps) {
   const siteId = useActiveSiteId();
   const { installPermission = false, onInstall, installedPlugins = {} } = props;
@@ -137,39 +138,19 @@ export function InstallPluginDialogContainer(props: InstallPluginDialogProps) {
 
   const onInstallPlugin = (plugin: MarketplacePlugin, parameters?: LookupTable<string>) => {
     setInstallingLookup({ [plugin.id]: true });
-    dispatch(
-      pushTab({
-        minimized: true,
-        id: plugin.id,
-        status: 'indeterminate',
-        title: formatMessage(translations.installing, { name: plugin.name })
-      })
-    );
-    installMarketplacePlugin(siteId, plugin.id, plugin.version, parameters).subscribe(
-      () => {
+    dispatch(blockUI({ message: formatMessage(translations.installing, { name: plugin.name }) }));
+    installMarketplacePlugin(siteId, plugin.id, plugin.version, parameters).subscribe({
+      next() {
         setInstallingLookup({ [plugin.id]: false });
         onInstall(plugin);
         onPluginFormClose();
-        dispatch(
-          popTab({
-            id: plugin.id
-          })
-        );
+        dispatch(unblockUI());
       },
-      ({ response }) => {
+      error({ response }) {
         setInstallingLookup({ [plugin.id]: false });
-        dispatch(
-          batchActions([
-            showErrorDialog({
-              error: response.response
-            }),
-            popTab({
-              id: plugin.id
-            })
-          ])
-        );
+        dispatch(batchActions([showErrorDialog({ error: response.response }), unblockUI()]));
       }
-    );
+    });
   };
 
   const onPluginFieldChange = (key: string, value: string) => {

@@ -16,10 +16,11 @@
 
 import * as React from 'react';
 import { CssBaseline } from '@mui/material';
-import { Global } from '@emotion/react';
+import { Global, Theme } from '@emotion/react';
 import { staticGlobalStyles } from './css';
 import { useTheme } from '@mui/material/styles';
 import { useMemo } from 'react';
+import { Interpolation } from '@emotion/styled';
 
 export interface GlobalStylesProps {
   cssBaseline?: boolean;
@@ -29,8 +30,26 @@ export function GlobalStyles(props: GlobalStylesProps) {
   const { cssBaseline = true } = props;
   const theme = useTheme();
   const dynamicStyles = useMemo(
-    () => ({ body: { background: theme.palette.background.paper } }),
-    [theme.palette.background.paper]
+    () =>
+      ({
+        body: { background: theme.palette.background.paper },
+        '.minimized-bar-portal-root': {
+          right: '0',
+          bottom: '20px',
+          display: 'flex',
+          position: 'fixed',
+          flexDirection: 'row-reverse',
+          width: '100%',
+          overflow: 'auto',
+          padding: '2px 20px',
+          zIndex: theme.zIndex.modal,
+          pointerEvents: 'none',
+          '& > *': {
+            pointerEvents: 'all'
+          }
+        }
+      } as Interpolation<Theme>),
+    [theme.palette.background.paper, theme.zIndex.modal]
   );
   return (
     <>

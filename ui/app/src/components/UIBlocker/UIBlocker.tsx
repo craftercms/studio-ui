@@ -28,7 +28,8 @@ export interface UIBlockerProps extends Omit<ModalProps, 'children' | 'component
   progress?: 'indeterminate' | number;
 }
 
-export interface UIBlockerStateProps extends Pick<UIBlockerProps, 'progress' | 'open' | 'className' | 'sx' | 'style'> {}
+export interface UIBlockerStateProps
+  extends Pick<UIBlockerProps, 'progress' | 'open' | 'className' | 'sx' | 'style' | 'message'> {}
 
 export function UIBlocker(props: UIBlockerProps) {
   const { message, progress = 'indeterminate', ...modalProps } = props;

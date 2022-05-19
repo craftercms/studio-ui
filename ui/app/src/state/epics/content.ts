@@ -92,14 +92,12 @@ import { getHostToHostBus } from '../../utils/subjects';
 import { validateActionPolicy } from '../../services/sites';
 import { defineMessages } from 'react-intl';
 import { CrafterCMSEpic } from '../store';
-import { nanoid as uuid } from 'nanoid';
 import StandardAction from '../../models/StandardAction';
 import { asArray } from '../../utils/array';
 import { AjaxError } from 'rxjs/ajax';
 import { showErrorDialog } from '../reducers/dialogs/error';
 import { dissociateTemplate } from '../actions/preview';
 import { isBlank } from '../../utils/string';
-import { popTab, pushTab } from '../reducers/dialogs/minimizedTabs';
 import { DetailedItem } from '../../models';
 
 export const sitePolicyMessages = defineMessages({
@@ -489,16 +487,8 @@ const content: CrafterCMSEpic[] = [
             })
           );
         } else {
-          const id = uuid();
           return merge(
-            of(
-              pushTab({
-                minimized: true,
-                id,
-                status: 'indeterminate',
-                title: getIntl().formatMessage(inProgressMessages.processing)
-              })
-            ),
+            of(blockUI({ message: getIntl().formatMessage(inProgressMessages.processing) })),
             fetchItemByPath(state.sites.active, path).pipe(
               switchMap((itemToDelete) => [
                 showDeleteDialog({
@@ -512,11 +502,11 @@ const content: CrafterCMSEpic[] = [
                     ].filter(Boolean)
                   )
                 }),
-                popTab({ id })
+                unblockUI()
               ]),
               catchAjaxError((error: AjaxError) =>
                 batchActions([
-                  popTab({ id }),
+                  unblockUI(),
                   error.status === 404
                     ? showConfirmDialog({
                         body: getIntl().formatMessage(
