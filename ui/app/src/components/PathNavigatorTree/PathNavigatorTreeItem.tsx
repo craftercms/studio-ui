@@ -36,6 +36,7 @@ import ErrorOutlineRoundedIcon from '@mui/icons-material/ErrorOutlineRounded';
 import Button from '@mui/material/Button';
 import ArrowRightRoundedIcon from '@mui/icons-material/ArrowRightRounded';
 import ArrowDropDownRoundedIcon from '@mui/icons-material/ArrowDropDownRounded';
+import palette from '../../styles/palette';
 
 export interface PathNavigatorTreeItemProps {
   node: PathNavigatorTreeNode;
@@ -43,6 +44,7 @@ export interface PathNavigatorTreeItemProps {
   keywordByPath: LookupTable<string>;
   totalByPath: LookupTable<number>;
   childrenByParentPath: LookupTable<string[]>;
+  active?: string;
   classes?: Partial<Record<PathNavigatorTreeBreadcrumbsClassKey, string>>;
   onLabelClick(event: React.MouseEvent<Element, MouseEvent>, path: string): void;
   onIconClick(path: string): void;
@@ -180,6 +182,9 @@ const useStyles = makeStyles((theme) =>
     },
     iconButton: {
       padding: '2px 3px'
+    },
+    active: {
+      backgroundColor: palette.blue.highlight
     }
   })
 );
@@ -191,6 +196,7 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
     keywordByPath,
     totalByPath,
     childrenByParentPath,
+    active,
     onLabelClick,
     onIconClick,
     onOpenItemMenu,
@@ -223,8 +229,10 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
   };
 
   const onContextMenu = (e) => {
-    e.preventDefault();
-    onOpenItemMenu(e.currentTarget.querySelector('[data-item-menu]'), node.id);
+    if (onOpenItemMenu) {
+      e.preventDefault();
+      onOpenItemMenu(e.currentTarget.querySelector('[data-item-menu]'), node.id);
+    }
   };
 
   switch (node.id) {
@@ -387,7 +395,7 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
           classes={{
             root: classes.root,
             content: classes.content,
-            label: classes.labelContainer,
+            label: clsx(classes.labelContainer, active === node.id ? classes.active : null),
             iconContainer: classes.iconContainer,
             focused: classes.focused
           }}
@@ -400,6 +408,7 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
               keywordByPath={keywordByPath}
               totalByPath={totalByPath}
               childrenByParentPath={childrenByParentPath}
+              active={active}
               onLabelClick={onLabelClick}
               onIconClick={onIconClick}
               onOpenItemMenu={onOpenItemMenu}

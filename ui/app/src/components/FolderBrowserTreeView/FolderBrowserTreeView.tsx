@@ -16,17 +16,17 @@
 
 import useSpreadState from '../../hooks/useSpreadState';
 import LookupTable from '../../models/LookupTable';
-import useDetailedItem from '../../hooks/useDetailedItem';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ApiResponse } from '../../models';
 import PathNavigatorSkeletonTree from '../PathNavigatorTree/PathNavigatorTreeSkeleton';
-import { fetchChildrenByPath, fetchItemByPath, fetchSandboxItem } from '../../services/content';
+import { fetchChildrenByPath, fetchItemByPath } from '../../services/content';
 import useActiveSite from '../../hooks/useActiveSite';
 import { PathNavigatorTreeItem, PathNavigatorTreeNode } from '../PathNavigatorTree';
 import { lookupItemByPath, parseSandBoxItemToDetailedItem } from '../../utils/content';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import TreeView from '@mui/lab/TreeView';
-import { createLookupTable } from '../../utils/object';
+import { createLookupTable, nnou } from '../../utils/object';
+import { isFolder } from '../PathNavigator/utils';
 
 export interface FolderBrowserTreeViewProps {
   rootPath: string;
@@ -36,44 +36,91 @@ export interface FolderBrowserTreeViewProps {
 
 export function FolderBrowserTreeView(props: FolderBrowserTreeViewProps) {
   const { rootPath, selectedPath, onPathSelected } = props;
-  const { id: siteId, uuid } = useActiveSite();
+  const { id: siteId } = useActiveSite();
   const nodesByPathRef = useRef<LookupTable<PathNavigatorTreeNode>>({});
   const [keywordByPath, setKeywordByPath] = useSpreadState<LookupTable<string>>({});
   const [totalByPath, setTotalByPath] = useSpreadState<LookupTable<number>>({});
   const [childrenByParentPath, setChildrenByParentPath] = useSpreadState<LookupTable<string[]>>({});
   const [fetchingByPath, setFetchingByPath] = useSpreadState<LookupTable<boolean>>({});
-  const [itemsByPath, setItemsByPath] = useState({});
+  const [itemsByPath, setItemsByPath] = useSpreadState({});
+  const [offsetByPath, setOffsetByPath] = useSpreadState({});
   const [rootItem, setRootItem] = useState(null);
-  const [rootNode, setRootNode] = useState(null); // TODO: set root node (check in PathNavigatorTree)
+  const [rootNode, setRootNode] = useState(null);
+  const [expanded, setExpanded] = useState<string[]>([]);
   const [error, setError] = useState<ApiResponse>();
-
-  const rootPathExists = useCallback(() => {
-    setFetchingByPath({
-      [rootPath]: true
-    });
-    fetchItemByPath(siteId, rootPath, { castAsDetailedItem: true }).subscribe({
-      next(item) {
-        setRootItem(item);
-        setItemsByPath({
-          [rootPath]: item
+  const limit = 5;
+  const fetchChildren = useCallback(
+    (path: string, options = {}) => {
+      setFetchingByPath({
+        [path]: true
+      });
+      fetchChildrenByPath(siteId, path, {
+        systemTypes: ['folder'],
+        ...(nnou(options.keyword)
+          ? { keyword: options.keyword }
+          : keywordByPath[path]
+          ? { keyword: keywordByPath[path] }
+          : {}),
+        limit,
+        ...(nnou(options.offset)
+          ? { offset: options.offset }
+          : offsetByPath[path]
+          ? { offset: offsetByPath[path] }
+          : {})
+      }).subscribe((children) => {
+        const newTotalByPath = { ...totalByPath };
+        newTotalByPath[path] = children.total;
+        setItemsByPath(createLookupTable(parseSandBoxItemToDetailedItem(children), 'path'));
+        const nextChildren = childrenByParentPath[path] && options.mergeResults ? childrenByParentPath[path] : [];
+        children.forEach((item) => {
+          nextChildren.push(item.path);
+          newTotalByPath[item.path] = item.childrenCount;
+        });
+        setTotalByPath({ ...newTotalByPath });
+        setChildrenByParentPath({
+          [path]: nextChildren
+        });
+        setOffsetByPath({
+          [path]: nnou(offsetByPath[path]) && options.mergeResults ? offsetByPath[path] + limit : 0
         });
         setFetchingByPath({
-          [rootPath]: false
+          [path]: false
         });
-      },
-      error({ response }) {
-        setFetchingByPath({
-          [rootPath]: false
-        });
-        setError(response.response);
-      }
-    });
-  }, [siteId, rootPath, setFetchingByPath]);
+      });
+    },
+    [
+      setItemsByPath,
+      setChildrenByParentPath,
+      setFetchingByPath,
+      setTotalByPath,
+      setOffsetByPath,
+      siteId,
+      totalByPath,
+      keywordByPath,
+      childrenByParentPath,
+      offsetByPath
+    ]
+  );
 
   // region useEffects
   useEffect(() => {
-    rootPathExists();
-  }, [rootPathExists]);
+    if (!rootItem || rootItem?.id === rootPath) {
+      fetchItemByPath(siteId, rootPath, { castAsDetailedItem: true }).subscribe({
+        next(item) {
+          setRootItem(item);
+          setItemsByPath({
+            [rootPath]: item
+          });
+          // This expands the first level
+          setExpanded([rootPath]);
+          fetchChildren(rootPath);
+        },
+        error({ response }) {
+          setError(response.response);
+        }
+      });
+    }
+  }, [rootPath, rootItem, siteId, fetchChildren, setItemsByPath]);
 
   useEffect(() => {
     if (rootItem && nodesByPathRef.current[rootItem.path] === undefined) {
@@ -145,34 +192,37 @@ export function FolderBrowserTreeView(props: FolderBrowserTreeViewProps) {
 
   // region Handlers
   const onToggleNodeClick = (path: string) => {
-    // If the item's children have been loaded, should simply be expanded
-    if (childrenByParentPath[path]) {
-      // TODO: should I keep track of the expanded state? (look at PathNavigatorTree, there's one more condition)
+    if (expanded.includes(path)) {
+      setExpanded(expanded.filter((expPath) => expPath !== path));
     } else {
-      setFetchingByPath({
-        [path]: true
-      });
-      fetchChildrenByPath(siteId, path, { systemTypes: ['folder'] }).subscribe((children) => {
-        setTotalByPath({
-          [path]: children.total
-        });
-        setItemsByPath({
-          ...createLookupTable(parseSandBoxItemToDetailedItem(children), 'path')
-        });
-        const nextChildren = [];
-        children.forEach((item) => {
-          nextChildren.push(item.path);
-          totalByPath[item.path] = item.childrenCount;
-        });
-        setChildrenByParentPath({
-          [path]: nextChildren
-        });
-        // TODO: OffsetByPath
-        setFetchingByPath({
-          [path]: false
-        });
-      });
+      if (!childrenByParentPath[path]) {
+        fetchChildren(path);
+      }
+      setExpanded([...expanded, path]);
     }
+  };
+
+  const onItemClicked = (event: React.MouseEvent<Element, MouseEvent>, path: string) => {
+    if (isFolder(itemsByPath[path])) {
+      onPathSelected?.(path);
+    }
+  };
+
+  const onFilterChange = (keyword: string, path: string) => {
+    setKeywordByPath({
+      [path]: keyword
+    });
+    fetchChildren(path, { keyword });
+    if (!expanded.includes(path)) {
+      setExpanded([...expanded, path]);
+    }
+  };
+
+  const onMoreClick = (path: string) => {
+    nodesByPathRef.current[path].children.pop();
+    nodesByPathRef.current[path].children.push({ id: 'loading' });
+    const offset = offsetByPath[path] ? offsetByPath[path] + limit : limit;
+    fetchChildren(path, { offset, mergeResults: true });
   };
   // endregion
 
@@ -181,21 +231,20 @@ export function FolderBrowserTreeView(props: FolderBrowserTreeViewProps) {
       {error ? (
         <ApiResponseErrorState error={error} imageUrl={null} />
       ) : (
-        <div>
-          <TreeView disableSelection>
-            <PathNavigatorTreeItem
-              node={rootNode}
-              itemsByPath={itemsByPath}
-              keywordByPath={keywordByPath}
-              totalByPath={totalByPath}
-              childrenByParentPath={childrenByParentPath}
-              onLabelClick={null}
-              onIconClick={onToggleNodeClick}
-              onFilterChange={null}
-              onMoreClick={null}
-            />
-          </TreeView>
-        </div>
+        <TreeView disableSelection expanded={expanded}>
+          <PathNavigatorTreeItem
+            node={rootNode}
+            itemsByPath={itemsByPath}
+            keywordByPath={keywordByPath}
+            totalByPath={totalByPath}
+            childrenByParentPath={childrenByParentPath}
+            active={selectedPath}
+            onLabelClick={onItemClicked}
+            onIconClick={onToggleNodeClick}
+            onFilterChange={onFilterChange}
+            onMoreClick={onMoreClick}
+          />
+        </TreeView>
       )}
     </>
   );
