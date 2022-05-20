@@ -1838,7 +1838,7 @@ var CStudioForms =
                 unlockBeforeCancel(path);
               } else {
                 if (!form.readOnly && path && path.indexOf('.xml') != -1 && !me.config.isInclude) {
-                  let entityId = buildEntityIdFn(null, Boolean(CStudioForms.currentValidFolder));
+                  const entityId = buildEntityIdFn(null, Boolean(CStudioForms.currentValidFolder));
                   CrafterCMSNext.services.content
                     .unlock(CStudioAuthoringContext.site, entityId)
                     .subscribe((response) => {
