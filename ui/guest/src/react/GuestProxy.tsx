@@ -366,12 +366,22 @@ export function GuestProxy() {
           const { modelId, fieldId, targetIndex, instance } = op.args;
 
           const $spinner = $(`
-            <svg class="craftercms-placeholder-spinner" width=50 height=50 viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
-              <circle class="path" fill="none" stroke-width=5 stroke-linecap="round" cx="25" cy="25" r="20"/>
-            </svg>
+            <div style="display: flex; align-items: center; justify-content: center;">
+              <svg class="craftercms-placeholder-spinner" width=50 height=50 viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+                <circle class="path" fill="none" stroke-width=5 stroke-linecap="round" cx="25" cy="25" r="20"/>
+              </svg>
+            </div>
           `);
 
           const $daddy = getParentElementFromICEProps(modelId, fieldId, targetIndex);
+
+          // If $daddy has children, get the closest  one to the one that is being added, and get its width to set it
+          // to the spinner container.
+          const childrenLength = $daddy.children().length;
+          if (childrenLength) {
+            const child = $daddy.children()[targetIndex <= childrenLength ? targetIndex : childrenLength];
+            $spinner.css({ width: `${child.offsetWidth}px` });
+          }
 
           $daddy.removeClass(emptyCollectionClass);
           insertElement($spinner, $daddy, targetIndex);
