@@ -303,7 +303,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
                       switchMap(() => processDrop())
                     );
                   } else {
-                    if (item.commitId !== cachedSandboxItem.commitId) {
+                    if (item.commitId !== cachedSandboxItem.commitId && item.lockOwner !== state.username) {
                       post(
                         validationMessage({
                           id: 'outOfSyncContent',
