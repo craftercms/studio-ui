@@ -1313,15 +1313,17 @@ var CStudioForms =
             }
           }
 
-          var buildEntityIdFn = function (draft) {
+          var buildEntityIdFn = function (draft, useCurrentValidFolder) {
             var entityId = path.replace('.html', '.xml');
             var changeTemplate = CStudioAuthoring.Utils.getQueryVariable(location.search, 'changeTemplate');
             var length = entityId.length;
             var index_html = '';
             var fileName = form.model['file-name'];
             var folderName =
-              form.definition.contentAsFolder || form.definition.contentAsFolder == 'true'
-                ? form.model['folder-name']
+              form.definition.contentAsFolder || form.definition.contentAsFolder === 'true'
+                ? useCurrentValidFolder
+                  ? CStudioForms.currentValidFolder ?? CStudioForms.initialModel['folder-name']
+                  : form.model['folder-name']
                 : undefined;
             /*
              * No folderName means it is NOT a content-as-folder content type.
@@ -1495,6 +1497,7 @@ var CStudioForms =
               const saveContent = () => {
                 CrafterCMSNext.util.ajax.post(CStudioAuthoring.Service.createServiceUri(serviceUrl), xml).subscribe(
                   function () {
+                    CStudioForms.currentValidFolder = CStudioForms.updatedModel['folder-name'];
                     YAHOO.util.Event.removeListener(window, 'beforeunload', unloadFn, me);
 
                     var getContentItemCb = {
@@ -1611,6 +1614,9 @@ var CStudioForms =
                     }
                   },
                   function (err) {
+                    if (!CStudioForms.currentValidFolder) {
+                      CStudioForms.currentValidFolder = CStudioForms.initialModel['folder-name'];
+                    }
                     try {
                       CStudioAuthoring.Operations.showSimpleDialog(
                         'error-dialog',
@@ -1832,7 +1838,7 @@ var CStudioForms =
                 unlockBeforeCancel(path);
               } else {
                 if (!form.readOnly && path && path.indexOf('.xml') != -1 && !me.config.isInclude) {
-                  var entityId = buildEntityIdFn(null);
+                  const entityId = buildEntityIdFn(null, Boolean(CStudioForms.currentValidFolder));
                   CrafterCMSNext.services.content
                     .unlock(CStudioAuthoringContext.site, entityId)
                     .subscribe((response) => {
