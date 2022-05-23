@@ -50,10 +50,12 @@ import { useDebouncedInput } from '../../hooks/useDebouncedInput';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import ItemActionsSnackbar from '../ItemActionsSnackbar';
 import SecondaryButton from '../SecondaryButton';
+import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 
 export interface WorkflowStateManagementProps {
   embedded?: boolean;
   showAppsButton?: boolean;
+  onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 const drawerWidth = 260;
@@ -71,7 +73,7 @@ const states: ItemStates[] = [
 ];
 
 export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
-  const { embedded, showAppsButton = !embedded } = props;
+  const { embedded, showAppsButton = !embedded, onSubmittingAndOrPendingChange } = props;
   const [fetching, setFetching] = useState(false);
   const [items, setItems] = useState<PagedArray<SandboxItem>>(null);
   const [error, setError] = useState<ApiResponse>();
@@ -122,6 +124,12 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
   useEffect(() => {
     fetchStates();
   }, [fetchStates]);
+
+  useEffect(() => {
+    onSubmittingAndOrPendingChange?.({
+      hasPendingChanges: Boolean(selectedItemsLength)
+    });
+  }, [selectedItemsLength, onSubmittingAndOrPendingChange]);
 
   const resource = useLogicResource<
     PagedArray<SandboxItem>,

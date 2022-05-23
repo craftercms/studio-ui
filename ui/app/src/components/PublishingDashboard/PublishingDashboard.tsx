@@ -25,6 +25,7 @@ import GlobalAppToolbar from '../GlobalAppToolbar';
 import { FormattedMessage } from 'react-intl';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import clsx from 'clsx';
+import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -48,10 +49,11 @@ const useStyles = makeStyles((theme) =>
 interface PublishingDashboardProps {
   embedded?: boolean;
   showAppsButton?: boolean;
+  onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 export function PublishingDashboard(props: PublishingDashboardProps) {
-  const { embedded, showAppsButton } = props;
+  const { embedded, showAppsButton, onSubmittingAndOrPendingChange } = props;
   const classes = useStyles();
   const site = useActiveSiteId();
 
