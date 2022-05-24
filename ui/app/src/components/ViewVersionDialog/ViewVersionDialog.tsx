@@ -46,7 +46,6 @@ import { FormattedMessage } from 'react-intl';
   }
 })); */
 
-// TODO jss-to-tss-react codemod: usages of this hook outside of this file will not be converted.
 export const getLegacyDialogStyles = makeStyles()(() => ({
   iframe: {
     border: 'none',
