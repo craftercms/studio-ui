@@ -1,5 +1,4 @@
 {
-  "private": false,
   "name": "@craftercms/uppy",
   "description": "CrafterCMS UI Uppy extensions.",
   "version": "1.0.0-beta",

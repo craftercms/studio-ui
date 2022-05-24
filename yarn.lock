@@ -3943,6 +3943,7 @@ __metadata:
     "@babel/cli": ^7.8.4
     "@babel/core": 7.12.3
     "@babel/runtime": ^7.15.4
+    "@craftercms/uppy": "workspace:^"
     "@date-io/core": ^1.3.6
     "@date-io/date-fns": ^1.3.11
     "@emotion/css": ^11.5.0
@@ -4007,6 +4008,7 @@ __metadata:
     rollup: ^2.59.0
     rxjs: ^7.4.0
     slugify: ^1.6.5
+    tss-react: ^3.6.2
     typescript: ^4.1.2
     uppy: ^2.3.3
     video.js: ^7.16.0
@@ -4042,7 +4044,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@craftercms/uppy@workspace:ui/uppy":
+"@craftercms/uppy@workspace:^, @craftercms/uppy@workspace:ui/uppy":
   version: 0.0.0-use.local
   resolution: "@craftercms/uppy@workspace:ui/uppy"
   dependencies:
@@ -4187,6 +4189,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@emotion/cache@npm:*, @emotion/cache@npm:^11.7.1":
+  version: 11.7.1
+  resolution: "@emotion/cache@npm:11.7.1"
+  dependencies:
+    "@emotion/memoize": ^0.7.4
+    "@emotion/sheet": ^1.1.0
+    "@emotion/utils": ^1.0.0
+    "@emotion/weak-memoize": ^0.2.5
+    stylis: 4.0.13
+  checksum: cf7aa8fe3bacfdedcda94b53e76a7635e122043439715fcfbf7f1a81340cfe6099a59134481a03ec3e0437466566d18528577d1e6ea92f5b98c372b8b38a8f35
+  languageName: node
+  linkType: hard
+
 "@emotion/cache@npm:^11.5.0":
   version: 11.5.0
   resolution: "@emotion/cache@npm:11.5.0"
@@ -4197,19 +4212,6 @@ __metadata:
     "@emotion/weak-memoize": ^0.2.5
     stylis: ^4.0.10
   checksum: 8b3fac281ea201d617b594d79e4b38903ee538e9aa2117f3f99a4f952b3f93d92659a569b3b934efa31ae450b2ddd9ae435b6c77db70aa99ac8cae4cbd71450b
-  languageName: node
-  linkType: hard
-
-"@emotion/cache@npm:^11.7.1":
-  version: 11.7.1
-  resolution: "@emotion/cache@npm:11.7.1"
-  dependencies:
-    "@emotion/memoize": ^0.7.4
-    "@emotion/sheet": ^1.1.0
-    "@emotion/utils": ^1.0.0
-    "@emotion/weak-memoize": ^0.2.5
-    stylis: 4.0.13
-  checksum: cf7aa8fe3bacfdedcda94b53e76a7635e122043439715fcfbf7f1a81340cfe6099a59134481a03ec3e0437466566d18528577d1e6ea92f5b98c372b8b38a8f35
   languageName: node
   linkType: hard
 
@@ -4286,6 +4288,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@emotion/serialize@npm:*":
+  version: 1.0.3
+  resolution: "@emotion/serialize@npm:1.0.3"
+  dependencies:
+    "@emotion/hash": ^0.8.0
+    "@emotion/memoize": ^0.7.4
+    "@emotion/unitless": ^0.7.5
+    "@emotion/utils": ^1.0.0
+    csstype: ^3.0.2
+  checksum: 99a9053bd98c99d63af542ebee029281eeaf653e3a12e97ee79bad7330c68408104c30be6fc07a528e38bb69aba680655181744b76ec6c6f459c121cb805fac2
+  languageName: node
+  linkType: hard
+
 "@emotion/serialize@npm:^1.0.0, @emotion/serialize@npm:^1.0.2":
   version: 1.0.2
   resolution: "@emotion/serialize@npm:1.0.2"
@@ -4339,6 +4354,13 @@ __metadata:
   version: 0.7.5
   resolution: "@emotion/unitless@npm:0.7.5"
   checksum: f976e5345b53fae9414a7b2e7a949aa6b52f8bdbcc84458b1ddc0729e77ba1d1dfdff9960e0da60183877873d3a631fa24d9695dd714ed94bcd3ba5196586a6b
+  languageName: node
+  linkType: hard
+
+"@emotion/utils@npm:*":
+  version: 1.1.0
+  resolution: "@emotion/utils@npm:1.1.0"
+  checksum: d3b681ca3a23b07033ac6c6937e71010a5549ac8ccec325eb6c91a7e48d9a73db83fa5dadc58be981bb125d7c00fedca868ea4362b1da9e02866615f96be4df1
   languageName: node
   linkType: hard
 
@@ -20647,6 +20669,24 @@ resolve@^2.0.0-next.3:
   version: 2.1.0
   resolution: "tslib@npm:2.1.0"
   checksum: aa189c8179de0427b0906da30926fd53c59d96ec239dff87d6e6bc831f608df0cbd6f77c61dabc074408bd0aa0b9ae4ec35cb2c15f729e32f37274db5730cb78
+  languageName: node
+  linkType: hard
+
+"tss-react@npm:^3.6.2":
+  version: 3.6.2
+  resolution: "tss-react@npm:3.6.2"
+  dependencies:
+    "@emotion/cache": "*"
+    "@emotion/serialize": "*"
+    "@emotion/utils": "*"
+  peerDependencies:
+    "@emotion/react": ^11.4.1
+    "@emotion/server": ^11.4.0
+    react: ^16.8.0 || ^17.0.2 || ^18.0.0
+  peerDependenciesMeta:
+    "@emotion/server":
+      optional: true
+  checksum: 7576e8ccea9b0538b2965287fbc58d37ddfe89497eb07a469895bf2e6aa3c707a266257fd02c059886dbd2e4edead1f85e73af450fa89edca7e4e1953e860104
   languageName: node
   linkType: hard
 
