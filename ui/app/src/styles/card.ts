@@ -14,8 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-const cardTitleStyles = {
-  fontWeight: '600',
+import { CSSObject } from 'tss-react';
+
+const cardTitleStyles: CSSObject = {
+  fontWeight: 600,
   lineHeight: '1.5rem',
   overflow: 'hidden',
   display: '-webkit-box',

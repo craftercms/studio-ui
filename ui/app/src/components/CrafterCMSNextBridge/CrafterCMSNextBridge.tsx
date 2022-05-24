@@ -32,7 +32,6 @@ import I18nProvider from '../I18nProvider';
 import StoreProvider from '../StoreProvider';
 import CrafterThemeProvider from '../CrafterThemeProvider';
 import SnackbarCloseButton from '../SnackbarCloseButton';
-import { GenerateId } from 'jss';
 import { publishCrafterGlobal } from '../../env/craftercms';
 import { registerComponents } from '../../env/registerComponents';
 import LoadingState from '../LoadingState';
@@ -47,7 +46,6 @@ export function CrafterCMSNextBridge(
     mountSnackbarProvider?: boolean;
     mountLegacyConcierge?: boolean;
     mountCssBaseline?: boolean;
-    generateClassName?: GenerateId;
     suspenseFallback?: ReactNode;
     themeOptions?: DeprecatedThemeOptions;
   }>
@@ -56,7 +54,6 @@ export function CrafterCMSNextBridge(
   const {
     children,
     themeOptions,
-    generateClassName,
     suspenseFallback = '',
     mountCssBaseline = true,
     mountGlobalDialogManager = true,
@@ -79,7 +76,7 @@ export function CrafterCMSNextBridge(
     getStore().subscribe((store) => setStore(store));
   }, []);
   return (
-    <CrafterThemeProvider themeOptions={themeOptions} generateClassName={generateClassName}>
+    <CrafterThemeProvider themeOptions={themeOptions}>
       <I18nProvider>
         <SnackbarOrFragment {...snackbarOrFragmentProps}>
           {store ? (

@@ -17,9 +17,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { darken, lighten } from '@mui/material/styles';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
-import withStyles from '@mui/styles/withStyles';
+import { makeStyles } from 'tss-react/mui';
+import { withStyles } from 'tss-react/mui';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/DeleteOutline';
 import { AsDayMonthDateTime } from '../VersionList';
@@ -27,7 +26,6 @@ import { deleteToken, fetchTokens as fetchTokensService, updateToken } from '../
 import { useDispatch } from 'react-redux';
 import { Token } from '../../models/Token';
 import CreateTokenDialog from '../CreateTokenDialog';
-import clsx from 'clsx';
 import { showSystemNotification } from '../../state/actions/system';
 import ConfirmDropdown from '../ConfirmDropdown';
 import ActionsBar from '../ActionsBar';
@@ -53,51 +51,45 @@ import Paper from '@mui/material/Paper';
 import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { useWithPendingChangesCloseRequest } from '../../hooks/useWithPendingChangesCloseRequest';
 
-const styles = makeStyles((theme) =>
-  createStyles({
-    table: {
-      minWidth: 650
-    },
-    actions: {
-      width: '150px',
-      padding: '5px 20px'
-    },
-    actionsBar: {
-      position: 'absolute',
-      left: 0,
-      right: 0,
-      zIndex: 1
-    },
-    chip: {
+const styles = makeStyles()((theme) => ({
+  table: {
+    minWidth: 650
+  },
+  actions: {
+    width: '150px',
+    padding: '5px 20px'
+  },
+  actionsBar: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    zIndex: 1
+  },
+  chip: {
+    backgroundColor:
+      theme.palette.mode === 'light'
+        ? lighten(theme.palette.success.main, 0.9)
+        : darken(theme.palette.success.main, 0.9),
+    height: 'auto',
+    padding: '4px 6.5px',
+    '&.disabled': {
       backgroundColor:
         theme.palette.mode === 'light'
-          ? lighten(theme.palette.success.main, 0.9)
-          : darken(theme.palette.success.main, 0.9),
-      height: 'auto',
-      padding: '4px 6.5px',
-      '&.disabled': {
-        backgroundColor:
-          theme.palette.mode === 'light'
-            ? lighten(theme.palette.warning.main, 0.9)
-            : darken(theme.palette.warning.main, 0.9)
-      },
-      '&.expired': {
-        backgroundColor:
-          theme.palette.mode === 'light'
-            ? lighten(theme.palette.error.main, 0.9)
-            : darken(theme.palette.error.main, 0.9)
-      }
+          ? lighten(theme.palette.warning.main, 0.9)
+          : darken(theme.palette.warning.main, 0.9)
+    },
+    '&.expired': {
+      backgroundColor:
+        theme.palette.mode === 'light' ? lighten(theme.palette.error.main, 0.9) : darken(theme.palette.error.main, 0.9)
     }
-  })
-);
+  }
+}));
 
-const StyledTableCell = withStyles(() =>
-  createStyles({
-    root: {
-      padding: '5px'
-    }
-  })
-)(TableCell);
+const StyledTableCell = withStyles(TableCell, () => ({
+  root: {
+    padding: '5px'
+  }
+}));
 
 const translations = defineMessages({
   tokenCreated: {
@@ -147,7 +139,7 @@ const translations = defineMessages({
 });
 
 export function TokenManagement() {
-  const classes = styles();
+  const { classes, cx } = styles();
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const [tokens, setTokens] = useState<Token[]>(null);
@@ -403,7 +395,7 @@ export function TokenManagement() {
                             <FormattedMessage id="words.disabled" defaultMessage="Disabled" />
                           )
                         }
-                        className={clsx(
+                        className={cx(
                           classes.chip,
                           !token.enabled && 'disabled',
                           moment(token.expiresAt) < moment() && 'expired'

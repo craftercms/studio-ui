@@ -15,10 +15,8 @@
  */
 
 import { useIntl } from 'react-intl';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
-import { CSSProperties } from '@mui/styles';
-import clsx from 'clsx';
+import { makeStyles } from 'tss-react/mui';
+import { CSSObject as CSSProperties } from 'tss-react';
 import Typography from '@mui/material/Typography';
 import * as React from 'react';
 import { ElementType } from 'react';
@@ -39,9 +37,9 @@ export interface PublishingStatusTileProps
   classes?: Partial<Record<PublishingStatusTileClassKey, string>>;
 }
 
-const usePublishingStatusTileStyles = makeStyles((theme) =>
-  createStyles<PublishingStatusTileClassKey, PublishingStatusTileStyles>({
-    root: (styles) => ({
+const usePublishingStatusTileStyles = makeStyles<PublishingStatusTileStyles, PublishingStatusTileClassKey>()(
+  (theme, { root, avatar, text } = {} as PublishingStatusTileStyles) => ({
+    root: {
       width: '120px',
       height: '100px',
       display: 'flex',
@@ -61,16 +59,16 @@ const usePublishingStatusTileStyles = makeStyles((theme) =>
           boxShadow: theme.shadows[2]
         }
       },
-      ...styles.root
-    }),
-    avatar: (styles) => ({
+      ...root
+    },
+    avatar: {
       margin: 5,
-      ...styles.avatar
-    }),
-    text: (styles) => ({
+      ...avatar
+    },
+    text: {
       width: '100%',
-      ...styles.text
-    })
+      ...text
+    }
   })
 );
 
@@ -78,7 +76,7 @@ const PublishingStatusTile = React.forwardRef<HTMLDivElement | HTMLButtonElement
   props,
   ref
 ) {
-  const classes = usePublishingStatusTileStyles(props.styles);
+  const { classes, cx } = usePublishingStatusTileStyles(props.styles);
   const { formatMessage } = useIntl();
   const { enabled, status, onClick, isFetching, classes: propClasses, ...rest } = props;
   const Component = onClick ? ('button' as ElementType) : ('div' as ElementType);
@@ -88,14 +86,14 @@ const PublishingStatusTile = React.forwardRef<HTMLDivElement | HTMLButtonElement
       ref={ref}
       {...rest}
       onClick={onClick}
-      className={clsx(classes.root, propClasses?.root, !isFetching && status)}
+      className={cx(classes.root, propClasses?.root, !isFetching && status)}
     >
       <PublishingStatusAvatar
         enabled={enabled}
         status={isFetching ? null : status}
-        className={clsx(classes.avatar, propClasses?.avatar)}
+        className={cx(classes.avatar, propClasses?.avatar)}
       />
-      <Typography className={clsx(classes.text, propClasses?.text)} noWrap title={statusText} color="textPrimary">
+      <Typography className={cx(classes.text, propClasses?.text)} noWrap title={statusText} color="textPrimary">
         {isFetching ? <Skeleton /> : statusText}
       </Typography>
     </Component>

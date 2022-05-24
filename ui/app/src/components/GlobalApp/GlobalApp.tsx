@@ -53,7 +53,7 @@ interface GlobalAppProps {
 }
 
 export function GlobalApp(props: GlobalAppProps) {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { passwordRequirementsRegex, footerHtml } = props;
   const [width, setWidth] = useState(240);
   const globalNavigation = useGlobalNavigation();

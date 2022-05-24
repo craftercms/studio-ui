@@ -16,24 +16,20 @@
 
 import React from 'react';
 import MuiDialogActions, { DialogActionsProps } from '@mui/material/DialogActions';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
-import clsx from 'clsx';
+import { makeStyles } from 'tss-react/mui';
 
-const styles = makeStyles((theme) =>
-  createStyles({
-    root: {
-      minHeight: '50px',
-      backgroundColor: theme.palette.background.paper,
-      borderTop: '1px solid rgba(0, 0, 0, 0.12)',
-      padding: `${theme.spacing(1)} ${theme.spacing(1.8)}`
-    }
-  })
-);
+const styles = makeStyles()((theme) => ({
+  root: {
+    minHeight: '50px',
+    backgroundColor: theme.palette.background.paper,
+    borderTop: '1px solid rgba(0, 0, 0, 0.12)',
+    padding: `${theme.spacing(1)} ${theme.spacing(1.8)}`
+  }
+}));
 
 export function DialogFooter(props: DialogActionsProps) {
-  const classes = styles();
-  return <MuiDialogActions {...props} className={clsx(classes.root, props.className)} />;
+  const { classes, cx } = styles();
+  return <MuiDialogActions {...props} className={cx(classes.root, props.className)} />;
 }
 
 export default DialogFooter;

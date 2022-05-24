@@ -16,7 +16,6 @@
 import { DetailedItem } from '../../models/Item';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import clsx from 'clsx';
 import { isImage } from '../../utils/content';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
@@ -29,7 +28,7 @@ import { assetsTypes, DependenciesListProps } from './utils';
 
 export function DependenciesList(props: DependenciesListProps) {
   const { resource, compactView, showTypes, handleContextMenuClick } = props;
-  const classes = dependenciesDialogStyles({});
+  const { classes, cx } = dependenciesDialogStyles();
   const dependencies: DetailedItem[] = resource.read();
 
   return (
@@ -40,7 +39,7 @@ export function DependenciesList(props: DependenciesListProps) {
           <ListItem
             key={dependency.path}
             divider={dependencies.length - 1 !== i}
-            className={clsx(classes.dependenciesListItem, {
+            className={cx(classes.dependenciesListItem, {
               [classes.dependenciesCompactListItem]: compactView
             })}
           >

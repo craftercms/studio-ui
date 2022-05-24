@@ -15,8 +15,7 @@
  */
 
 import React, { IframeHTMLAttributes } from 'react';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import { useEnv } from '../../hooks/useEnv';
 
 export interface LegacyIFrameProps {
@@ -25,21 +24,19 @@ export interface LegacyIFrameProps {
   iframeProps?: IframeHTMLAttributes<any>;
 }
 
-const useStyles = makeStyles(() =>
-  createStyles({
-    iframe: {
-      width: '100%',
-      height: '100%',
-      border: 'none',
-      display: 'block'
-    }
-  })
-);
+const useStyles = makeStyles()(() => ({
+  iframe: {
+    width: '100%',
+    height: '100%',
+    border: 'none',
+    display: 'block'
+  }
+}));
 
 function LegacyIFrame(props: LegacyIFrameProps) {
   const { path, title = '', iframeProps } = props;
   const authoringUrl = useEnv().authoringBase;
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   const iframeSrc = `${authoringUrl}${path.startsWith('/') ? '' : '/'}${path}`;
 

@@ -18,7 +18,6 @@ import React from 'react';
 import { useStyles } from './styles';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import DialogBody from '../DialogBody/DialogBody';
-import clsx from 'clsx';
 import Typography from '@mui/material/Typography';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import Divider from '@mui/material/Divider';
@@ -51,7 +50,7 @@ const translations = defineMessages({
 });
 
 export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
-  const classes = useStyles();
+  const { classes, cx: clsx } = useStyles();
   const { formatMessage } = useIntl();
   const {
     title,

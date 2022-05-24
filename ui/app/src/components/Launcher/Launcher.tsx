@@ -16,8 +16,7 @@
 
 import React, { Suspense, useEffect, useMemo } from 'react';
 import { defineMessages, FormattedMessage, IntlShape, useIntl } from 'react-intl';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import Popover from '@mui/material/Popover';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
@@ -45,7 +44,6 @@ import { closeLauncher } from '../../state/actions/dialogs';
 import { EnhancedUser } from '../../models/User';
 import LookupTable from '../../models/LookupTable';
 import { batchActions } from '../../state/actions/misc';
-import clsx from 'clsx';
 import LauncherGlobalNav from '../LauncherGlobalNav';
 import GlobalState from '../../models/GlobalState';
 import Skeleton from '@mui/material/Skeleton';
@@ -100,89 +98,87 @@ const messages = defineMessages({
   }
 });
 
-const useLauncherStyles = makeStyles((theme) =>
-  createStyles({
-    popover: {
-      maxWidth: 1065,
-      borderRadius: '10px',
-      overflowY: 'hidden'
-    },
-    launcherSkeletonWrapper: {
-      display: 'flex',
-      '@media(min-width: 1097px)': {
-        width: 1065
-      }
-    },
-    appsSkeletonTile: {
-      margin: 5,
-      width: 120,
-      height: 100,
-      display: 'inline-flex'
-    },
-    sitesRail: {
-      backgroundColor: theme.palette.mode === 'dark' ? palette.gray.dark1 : palette.gray.light1
-    },
-    appsRail: {},
-    railTop: {
-      padding: '30px',
-      overflow: 'auto',
-      height: 'calc(100% - 65px)',
-      maxHeight: 'calc(100vh - 95px)'
-    },
-    railTopExtraPadded: {
-      paddingTop: 70
-    },
-    railBottom: {
-      height: 65,
-      display: 'flex',
-      alignItems: 'center',
-      padding: '0 20px',
-      placeContent: 'center space-between'
-    },
-    gridContainer: {
-      height: '100%',
-      maxHeight: '100%'
-    },
-    versionText: {},
-    titleCard: {
-      marginBottom: '20px'
-    },
-    closeButton: {
-      position: 'absolute',
-      top: '10px',
-      right: '10px',
-      '&.left': {
-        right: 'auto',
-        left: '10px'
-      }
-    },
-    simpleGear: {
-      margin: 'auto'
-    },
-    userCardRoot: {
-      width: '100%',
-      boxShadow: 'none'
-    },
-    userCardHeader: {
-      padding: 0
-    },
-    userCardActions: {
-      marginTop: 0,
-      marginRight: 0
-    },
-    userCardAvatar: {
-      color: palette.white,
-      textTransform: 'uppercase',
-      backgroundColor: palette.red.main
-    },
-    username: {
-      maxWidth: '300px',
-      overflow: 'hidden',
-      textOverflow: 'ellipsis'
-    },
-    mySitesTitle: { marginBottom: '24px', textTransform: 'uppercase', fontWeight: 600 }
-  })
-);
+const useLauncherStyles = makeStyles()((theme) => ({
+  popover: {
+    maxWidth: 1065,
+    borderRadius: '10px',
+    overflowY: 'hidden'
+  },
+  launcherSkeletonWrapper: {
+    display: 'flex',
+    '@media(min-width: 1097px)': {
+      width: 1065
+    }
+  },
+  appsSkeletonTile: {
+    margin: 5,
+    width: 120,
+    height: 100,
+    display: 'inline-flex'
+  },
+  sitesRail: {
+    backgroundColor: theme.palette.mode === 'dark' ? palette.gray.dark1 : palette.gray.light1
+  },
+  appsRail: {},
+  railTop: {
+    padding: '30px',
+    overflow: 'auto',
+    height: 'calc(100% - 65px)',
+    maxHeight: 'calc(100vh - 95px)'
+  },
+  railTopExtraPadded: {
+    paddingTop: 70
+  },
+  railBottom: {
+    height: 65,
+    display: 'flex',
+    alignItems: 'center',
+    padding: '0 20px',
+    placeContent: 'center space-between'
+  },
+  gridContainer: {
+    height: '100%',
+    maxHeight: '100%'
+  },
+  versionText: {},
+  titleCard: {
+    marginBottom: '20px'
+  },
+  closeButton: {
+    position: 'absolute',
+    top: '10px',
+    right: '10px',
+    '&.left': {
+      right: 'auto',
+      left: '10px'
+    }
+  },
+  simpleGear: {
+    margin: 'auto'
+  },
+  userCardRoot: {
+    width: '100%',
+    boxShadow: 'none'
+  },
+  userCardHeader: {
+    padding: 0
+  },
+  userCardActions: {
+    marginTop: 0,
+    marginRight: 0
+  },
+  userCardAvatar: {
+    color: palette.white,
+    textTransform: 'uppercase',
+    backgroundColor: palette.red.main
+  },
+  username: {
+    maxWidth: '300px',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis'
+  },
+  mySitesTitle: { marginBottom: '24px', textTransform: 'uppercase', fontWeight: 600 }
+}));
 
 // region AppsRail
 
@@ -195,6 +191,7 @@ interface AppsRailProps {
   closeButtonPosition: LauncherStateProps['closeButtonPosition'];
   globalNavigationPosition: GlobalState['launcher']['globalNavigationPosition'];
   userRoles: string[];
+  clsx: any;
 }
 
 const UserDisplaySection = ({ classes, formatMessage, user, onLogout }) => (
@@ -237,7 +234,8 @@ const AppsRail = ({
   onLogout,
   closeButtonPosition,
   userRoles,
-  globalNavigationPosition
+  globalNavigationPosition,
+  clsx
 }: AppsRailProps) => (
   <Grid item xs={12} md={8} className={classes.appsRail}>
     <div className={clsx(classes.railTop, closeButtonPosition === 'left' && classes.railTopExtraPadded)}>
@@ -250,7 +248,7 @@ const AppsRail = ({
   </Grid>
 );
 
-const AppsRailSkeleton = ({ classes, closeButtonPosition, formatMessage, onLogout, user }) => (
+const AppsRailSkeleton = ({ classes, closeButtonPosition, formatMessage, onLogout, user, clsx }) => (
   <Grid item xs={12} md={8} className={classes.appsRail}>
     <div className={clsx(classes.railTop, closeButtonPosition === 'left' && classes.railTopExtraPadded)}>
       <Skeleton variant="text" width="150px" style={{ marginBottom: 20 }} />
@@ -339,7 +337,7 @@ const SiteRailSkeleton = ({ classes, formatMessage, version }) => (
 // endregion
 
 export function Launcher(props: LauncherStateProps) {
-  const classes = useLauncherStyles();
+  const { classes, cx } = useLauncherStyles();
   const siteId = useActiveSiteId();
   const sites = useSiteList();
   const user = useActiveUser();
@@ -438,6 +436,7 @@ export function Launcher(props: LauncherStateProps) {
       closeButtonPosition={closeButtonPosition}
       userRoles={userRoles}
       globalNavigationPosition={globalNavigationPosition}
+      clsx={cx}
     />
   );
 
@@ -452,6 +451,7 @@ export function Launcher(props: LauncherStateProps) {
       closeButtonPosition={closeButtonPosition}
       onLogout={onLogout}
       user={user}
+      clsx={cx}
     />
   );
 
@@ -474,7 +474,7 @@ export function Launcher(props: LauncherStateProps) {
       <Tooltip title={formatMessage(messages.closeMenu)}>
         <IconButton
           aria-label={formatMessage(messages.closeMenu)}
-          className={clsx(classes.closeButton, closeButtonPosition)}
+          className={cx(classes.closeButton, closeButtonPosition)}
           onClick={onMenuClose}
           size="large"
         >

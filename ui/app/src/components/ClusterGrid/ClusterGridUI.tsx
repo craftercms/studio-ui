@@ -37,7 +37,7 @@ export interface ClusterGridProps {
 
 export function ClusterGridUI(props: ClusterGridProps) {
   const { resource, onDeleteCluster } = props;
-  const classes = useStyles();
+  const { classes } = useStyles();
   const clusters = resource.read();
 
   return (

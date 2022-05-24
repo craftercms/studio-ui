@@ -22,8 +22,7 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import PrimaryButton from '../PrimaryButton';
 import React from 'react';
 import { Theme } from '@mui/material/styles';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import { ContentTypeField } from '../../models/ContentType';
 import Input from '../FormEngineControls/Input';
 import Dropdown from '../FormEngineControls/Dropdown';
@@ -41,20 +40,18 @@ interface AudiencesPanelUIProps {
   onSaveModel: Function;
 }
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    panelMargin: {
-      margin: theme.spacing(1)
-    },
-    actionButtons: {
-      margin: '10px 0',
-      textAlign: 'right',
-      '& .MuiButton-root': {
-        marginRight: theme.spacing(1)
-      }
+const useStyles = makeStyles()((theme: Theme) => ({
+  panelMargin: {
+    margin: theme.spacing(1)
+  },
+  actionButtons: {
+    margin: '10px 0',
+    textAlign: 'right',
+    '& .MuiButton-root': {
+      marginRight: theme.spacing(1)
     }
-  })
-);
+  }
+}));
 
 const controlsMap = {
   dropdown: Dropdown,
@@ -87,7 +84,7 @@ const UndefinedControlType = () => {
 };
 
 export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { model, modelApplying, onChange, onSaveModel, fields } = props;
 
   const onFieldChange = (fieldId: string, type: string) => (value: any) => {

@@ -18,14 +18,12 @@ import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
 import EmptyState from '../EmptyState/EmptyState';
 import { FormattedMessage } from 'react-intl';
-import clsx from 'clsx';
 import Typography from '@mui/material/Typography';
 import ItemDisplay from '../ItemDisplay';
 import ItemStateIcon from '../ItemStateIcon/ItemStateIcon';
 import { getItemPublishingTargetText, getItemStateText, isInWorkflow } from '../ItemDisplay/utils';
 import React, { ReactNode } from 'react';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import Popover, { PopoverOrigin, PopoverPosition, PopoverProps, PopoverReference } from '@mui/material/Popover';
 import palette from '../../styles/palette';
 import { SystemIconDescriptor } from '../SystemIcon';
@@ -33,7 +31,7 @@ import { DetailedItem } from '../../models/Item';
 import { ContextMenuOption } from '../ContextMenu/ContextMenu';
 import GlobalState from '../../models/GlobalState';
 import Skeleton from '@mui/material/Skeleton';
-import { CSSProperties } from '@mui/styles';
+import { CSSObject as CSSProperties } from 'tss-react';
 import ItemPublishingTargetIcon from '../ItemPublishingTargetIcon/ItemPublishingTargetIcon';
 
 export type ItemMegaMenuUIClassKey =
@@ -83,24 +81,45 @@ export interface ItemMegaMenuUIProps {
   onMenuItemClicked(option: string, event: React.MouseEvent<Element, MouseEvent>): void;
 }
 
-const useStyles = makeStyles((theme) =>
-  createStyles<ItemMegaMenuUIClassKey, ItemMegaMenuUIStyles>({
-    root: (styles) => ({
+const useStyles = makeStyles<ItemMegaMenuUIStyles, ItemMegaMenuUIClassKey>()(
+  (
+    theme,
+    {
+      root,
+      mainItem,
+      actionsContainer,
+      actionsColumn,
+      emptyRoot,
+      itemsList,
+      itemInfo,
+      itemInfoContentType,
+      itemEdited,
+      itemEditedText,
+      itemState,
+      infoItem,
+      menuItem,
+      itemDisplayRoot,
+      itemTypeIcon,
+      itemTypography,
+      icon
+    } = {} as ItemMegaMenuUIStyles
+  ) => ({
+    root: {
       maxWidth: 400,
       borderRadius: '12px',
-      ...styles.root
-    }),
-    mainItem: (styles) => ({
+      ...root
+    },
+    mainItem: {
       padding: '10px 20px',
-      ...styles.mainItem
-    }),
-    actionsContainer: (styles) => ({
+      ...mainItem
+    },
+    actionsContainer: {
       display: 'flex',
       flexDirection: 'row',
       padding: '10px',
-      ...styles.actionsContainer
-    }),
-    actionsColumn: (styles) => ({
+      ...actionsContainer
+    },
+    actionsColumn: {
       display: 'flex',
       flexDirection: 'column',
       flexBasis: '100%',
@@ -108,74 +127,74 @@ const useStyles = makeStyles((theme) =>
       '&:first-child': {
         marginRight: '60px'
       },
-      ...styles.actionsColumn
-    }),
-    emptyRoot: (styles) => ({
+      ...actionsColumn
+    },
+    emptyRoot: {
       display: 'block',
       padding: '10px',
       textAlign: 'center',
-      ...styles.emptyRoot
-    }),
-    itemsList: (styles) => ({
+      ...emptyRoot
+    },
+    itemsList: {
       padding: 0,
-      ...styles.itemsList
-    }),
-    itemInfo: (styles) => ({
+      ...itemsList
+    },
+    itemInfo: {
       display: 'block',
       borderBottom: `1px solid ${palette.gray.light4}`,
-      ...styles.itemInfo
-    }),
-    itemInfoContentType: (styles) => ({
+      ...itemInfo
+    },
+    itemInfoContentType: {
       color: theme.palette.text.secondary,
       marginBottom: '4px',
-      ...styles.itemInfoContentType
-    }),
-    itemEdited: (styles) => ({
+      ...itemInfoContentType
+    },
+    itemEdited: {
       paddingTop: '12px',
       borderTop: `1px solid ${palette.gray.light4}`,
-      ...styles.itemEdited
-    }),
-    itemEditedText: (styles) => ({
+      ...itemEdited
+    },
+    itemEditedText: {
       color: theme.palette.text.secondary,
       fontWeight: 600,
-      ...styles.itemEditedText
-    }),
-    itemState: (styles) => ({
+      ...itemEditedText
+    },
+    itemState: {
       '&> *': {
         marginRight: '5px'
       },
-      ...styles.itemState
-    }),
-    infoItem: (styles) => ({
+      ...itemState
+    },
+    infoItem: {
       cursor: 'default',
       backgroundColor: 'inherit !important',
       '&:hover': {
         backgroundColor: 'inherit'
       },
-      ...styles.infoItem
-    }),
-    menuItem: (styles) => ({
+      ...infoItem
+    },
+    menuItem: {
       minWidth: '100px',
-      ...styles.menuItem
-    }),
-    itemDisplayRoot: (styles) => ({
+      ...menuItem
+    },
+    itemDisplayRoot: {
       marginBottom: 5,
-      ...styles.itemDisplayRoot
-    }),
-    itemTypeIcon: (styles) => ({
+      ...itemDisplayRoot
+    },
+    itemTypeIcon: {
       color: palette.teal.main,
       marginRight: '2px',
-      ...styles.itemTypeIcon
-    }),
-    itemTypography: (styles) => ({
+      ...itemTypeIcon
+    },
+    itemTypography: {
       color: theme.palette.text.primary,
-      ...styles.itemTypography
-    }),
-    icon: (styles) => ({
+      ...itemTypography
+    },
+    icon: {
       fontSize: '0.8rem',
       verticalAlign: 'middle',
-      ...styles.icon
-    })
+      ...icon
+    }
   })
 );
 
@@ -199,7 +218,7 @@ export function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
     onMenuItemClicked,
     classes: propClasses
   } = props;
-  const classes = useStyles(styles);
+  const { classes, cx } = useStyles(styles);
   const isFolder = item?.systemType === 'folder';
   const inWorkflow = isInWorkflow(item?.stateMap);
   return (
@@ -215,7 +234,7 @@ export function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
         ...propClasses
       }}
     >
-      <section className={clsx(classes.itemInfo, classes.infoItem, classes.mainItem)}>
+      <section className={cx(classes.itemInfo, classes.infoItem, classes.mainItem)}>
         <Typography variant="body2" className={classes.itemInfoContentType}>
           {isLoading ? <Skeleton animation="wave" /> : contentType}
         </Typography>
@@ -258,11 +277,11 @@ export function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
         )}
       </section>
       {isLoading ? (
-        <div className={clsx(classes.actionsContainer)}>
+        <div className={cx(classes.actionsContainer)}>
           {new Array(2).fill(null).map((value, i) => (
-            <MenuList key={i} className={clsx(classes.actionsColumn, classes.itemsList)}>
+            <MenuList key={i} className={cx(classes.actionsColumn, classes.itemsList)}>
               {new Array(Math.ceil(numOfLoaderItems / 2)).fill(null).map((value, j) => (
-                <MenuItem key={j} className={clsx(classes.menuItem, propClasses?.menuItem)}>
+                <MenuItem key={j} className={cx(classes.menuItem, propClasses?.menuItem)}>
                   <Skeleton animation="wave" width="100%" />
                 </MenuItem>
               ))}
@@ -276,15 +295,15 @@ export function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
           }
         />
       ) : (
-        <div className={clsx(classes.actionsContainer)}>
-          <MenuList className={clsx(classes.actionsColumn, classes.itemsList)}>
+        <div className={cx(classes.actionsContainer)}>
+          <MenuList className={cx(classes.actionsColumn, classes.itemsList)}>
             {editorialOptions.map((option: MenuOption, y: number) => (
               <MenuItem
                 dense
                 autoFocus={y === 0}
                 key={option.id}
                 onClick={(e) => onMenuItemClicked(option.id, e)}
-                className={clsx(classes.menuItem, propClasses?.menuItem)}
+                className={cx(classes.menuItem, propClasses?.menuItem)}
                 children={option.label}
               />
             ))}
@@ -298,7 +317,7 @@ export function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
                     key={option.id}
                     divider={i !== nonEditorialOptions.length - 1 && y === section.length - 1}
                     onClick={(e) => onMenuItemClicked(option.id, e)}
-                    className={clsx(classes.menuItem, propClasses?.menuItem)}
+                    className={cx(classes.menuItem, propClasses?.menuItem)}
                     children={option.label}
                   />
                 ))}
@@ -307,7 +326,7 @@ export function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
           </div>
         </div>
       )}
-      <section className={clsx(classes.itemEdited, classes.infoItem, classes.mainItem)}>
+      <section className={cx(classes.itemEdited, classes.infoItem, classes.mainItem)}>
         {isLoading ? (
           <Skeleton animation="wave" width="100%" />
         ) : (

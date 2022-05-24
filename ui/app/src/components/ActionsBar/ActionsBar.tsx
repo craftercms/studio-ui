@@ -18,7 +18,6 @@ import { useIntl } from 'react-intl';
 import Checkbox, { CheckboxProps } from '@mui/material/Checkbox';
 import React from 'react';
 import { getPossibleTranslation } from '../../utils/i18n';
-import clsx from 'clsx';
 import Button, { ButtonProps } from '@mui/material/Button';
 import TranslationOrText from '../../models/TranslationOrText';
 import Skeleton from '@mui/material/Skeleton';
@@ -72,7 +71,7 @@ export function ActionsBar(props: ActionsBarProps) {
           color="primary"
           indeterminate={isIndeterminate}
           checked={isChecked}
-          className={clsx(props.classes?.checkbox)}
+          className={props.classes?.checkbox}
           onChange={onCheckboxChange}
         />
         {isLoading

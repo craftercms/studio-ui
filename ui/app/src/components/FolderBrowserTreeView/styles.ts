@@ -14,39 +14,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import palette from '../../styles/palette';
 
-const useStyles = makeStyles(() =>
-  createStyles({
-    wrapper: {
-      display: 'flex',
-      flexDirection: 'column'
-    },
-    loadingState: {
-      flexGrow: 1,
-      flexDirection: 'unset'
-    }
-  })
-);
+const useStyles = makeStyles()(() => ({
+  wrapper: {
+    display: 'flex',
+    flexDirection: 'column'
+  },
+  loadingState: {
+    flexGrow: 1,
+    flexDirection: 'unset'
+  }
+}));
 
-export const useSkeletonStyles = makeStyles(() =>
-  createStyles({
-    iconContainer: {
-      display: 'none'
-    },
-    label: {
-      background: 'none',
-      '&:hover': {
-        background: 'none'
-      }
-    }
-  })
-);
+export const useSkeletonStyles = makeStyles()(() => ({
+  iconContainer: {
+    display: 'none'
+  },
 
-export const useTreeNodeStyles = makeStyles(() =>
-  createStyles({
+  label: {
+    background: 'none',
+    '&:hover': {
+      background: 'none'
+    }
+  }
+}));
+
+export const useTreeNodeStyles = makeStyles<void, 'treeItemContent' | 'treeItemSelected'>()(
+  (_theme, _params, classes) => ({
     loading: {
       display: 'flex',
       alignItems: 'center',
@@ -57,7 +53,7 @@ export const useTreeNodeStyles = makeStyles(() =>
       }
     },
     treeItemRoot: {
-      '&:focus > $treeItemContent, &$treeItemSelected > $treeItemContent': {
+      [`&:focus > .${classes.treeItemContent}, &.${classes.treeItemSelected} > .${classes.treeItemContent}`]: {
         color: `${palette.blue.main}`
       }
     },
@@ -71,41 +67,39 @@ export const useTreeNodeStyles = makeStyles(() =>
   })
 );
 
-export const usePathSelectedStyles = makeStyles((theme) =>
-  createStyles({
-    wrapper: {
-      display: 'flex',
-      padding: '10px 12px',
-      border: `1px solid  ${palette.gray.light1}`,
-      borderRadius: '5px',
-      backgroundColor: theme.palette.background.paper,
-      '&.invalid': {
-        borderColor: palette.red.main
-      }
-    },
-    selected: {
-      fontWeight: 600,
-      marginRight: '10px'
-    },
-    root: {
-      flexGrow: 1
-    },
-    invisibleInput: {
-      padding: 0,
-      border: 0,
-      background: 'none',
-      height: '100%',
-      '&:focus': {
-        borderColor: 'none',
-        boxShadow: 'inherit'
-      }
-    },
-    invalid: {
-      '& $invisibleInput': {
-        color: palette.red.main
-      }
+export const usePathSelectedStyles = makeStyles<void, 'invisibleInput'>()((theme, _params, classes) => ({
+  wrapper: {
+    display: 'flex',
+    padding: '10px 12px',
+    border: `1px solid  ${palette.gray.light1}`,
+    borderRadius: '5px',
+    backgroundColor: theme.palette.background.paper,
+    '&.invalid': {
+      borderColor: palette.red.main
     }
-  })
-);
+  },
+  selected: {
+    fontWeight: 600,
+    marginRight: '10px'
+  },
+  root: {
+    flexGrow: 1
+  },
+  invisibleInput: {
+    padding: 0,
+    border: 0,
+    background: 'none',
+    height: '100%',
+    '&:focus': {
+      borderColor: 'none',
+      boxShadow: 'inherit'
+    }
+  },
+  invalid: {
+    [`& .${classes.invisibleInput}`]: {
+      color: palette.red.main
+    }
+  }
+}));
 
 export default useStyles;

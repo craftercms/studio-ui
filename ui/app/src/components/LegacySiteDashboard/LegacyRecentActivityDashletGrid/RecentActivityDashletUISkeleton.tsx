@@ -32,7 +32,7 @@ export interface RecentActivityDashletUiSkeletonProps {
 }
 
 export function RecentActivityDashletUiSkeleton(props: RecentActivityDashletUiSkeletonProps) {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { numOfItems = 2 } = props;
   const items = new Array(numOfItems).fill(null);
 

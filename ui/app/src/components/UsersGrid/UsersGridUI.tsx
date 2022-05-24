@@ -40,7 +40,7 @@ export interface UsersGridUIProps {
 
 export function UsersGridUI(props: UsersGridUIProps) {
   const { resource, onRowClicked, onPageChange, onRowsPerPageChange } = props;
-  const classes = useStyles();
+  const { classes } = useStyles();
   const users = resource.read();
   return (
     <Box display="flex" flexDirection="column">

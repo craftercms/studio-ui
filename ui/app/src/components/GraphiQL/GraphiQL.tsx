@@ -17,9 +17,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 // @ts-ignore
 import GraphiQL from 'graphiql';
-
 import 'graphiql/graphiql.min.css';
-
 // @ts-ignore
 import GraphiQLExplorer from 'graphiql-explorer';
 import { buildClientSchema, getIntrospectionQuery, GraphQLSchema } from 'graphql';
@@ -27,7 +25,6 @@ import GlobalAppToolbar from '../GlobalAppToolbar';
 import { FormattedMessage } from 'react-intl';
 import Box from '@mui/material/Box';
 import { useStyles } from './styles';
-import clsx from 'clsx';
 
 export interface GraphiQLProps {
   url?: string;
@@ -92,7 +89,7 @@ function Graphi(props: GraphiQLProps) {
   const [schema, setSchema] = useState<GraphQLSchema>(null);
   const [explorerIsOpen, setExplorerIsOpen] = useState<boolean>(false);
   const graphiql = useRef<GraphiQL>();
-  const classes = useStyles();
+  const { classes, cx: clsx } = useStyles();
 
   // Updates localStorage and query variable used by graphiQL and graphiQL explorer
   function onEditQuery(newQuery: string) {

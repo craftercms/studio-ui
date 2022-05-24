@@ -15,10 +15,8 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import clsx from 'clsx';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import TreeView from '@mui/lab/TreeView';
 import IconButton from '@mui/material/IconButton';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMoreRounded';
@@ -81,119 +79,115 @@ const translations = defineMessages({
   }
 });
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    root: {
-      '& > li > ul': {
-        marginLeft: '0'
-      }
-    },
-    searchWrapper: {
-      padding: '10px'
-    },
-    divider: {
-      marginTop: '10px'
-    },
-    rootIcon: {
-      fontSize: '1.2em',
-      color: theme.palette.mode === 'dark' ? palette.white : palette.gray.medium7
-    },
-    breadcrumbs: {
-      display: 'flex',
-      alignItems: 'center'
-    },
-    breadcrumbsList: {
-      display: 'flex',
-      alignItems: 'center',
-      padding: '9px 10px 2px 8px'
-    },
-    breadcrumbsSeparator: {
-      margin: '0 2px'
-    },
-    breadcrumbsButton: {
-      display: 'flex'
-    },
-    breadcrumbsTypography: {
-      color: theme.palette.mode === 'dark' ? palette.white : palette.gray.medium4
-    },
-    currentContentItems: {
-      fontWeight: 600,
-      color: theme.palette.mode === 'dark' ? palette.white : palette.gray.medium7,
-      padding: '0 12px 2px 12px'
-    },
-    chevron: {
-      color: theme.palette.mode === 'dark' ? palette.white : palette.gray.medium3,
-      fontSize: '1.4rem'
+const useStyles = makeStyles()((theme) => ({
+  root: {
+    '& > li > ul': {
+      marginLeft: '0'
     }
-  })
-);
+  },
+  searchWrapper: {
+    padding: '10px'
+  },
+  divider: {
+    marginTop: '10px'
+  },
+  rootIcon: {
+    fontSize: '1.2em',
+    color: theme.palette.mode === 'dark' ? palette.white : palette.gray.medium7
+  },
+  breadcrumbs: {
+    display: 'flex',
+    alignItems: 'center'
+  },
+  breadcrumbsList: {
+    display: 'flex',
+    alignItems: 'center',
+    padding: '9px 10px 2px 8px'
+  },
+  breadcrumbsSeparator: {
+    margin: '0 2px'
+  },
+  breadcrumbsButton: {
+    display: 'flex'
+  },
+  breadcrumbsTypography: {
+    color: theme.palette.mode === 'dark' ? palette.white : palette.gray.medium4
+  },
+  currentContentItems: {
+    fontWeight: 600,
+    color: theme.palette.mode === 'dark' ? palette.white : palette.gray.medium7,
+    padding: '0 12px 2px 12px'
+  },
+  chevron: {
+    color: theme.palette.mode === 'dark' ? palette.white : palette.gray.medium3,
+    fontSize: '1.4rem'
+  }
+}));
 
-const treeItemStyles = makeStyles((theme) =>
-  createStyles({
-    icon: {
-      color: palette.teal.main
-    },
-    displayNone: {
-      display: 'none'
-    },
-    treeItemIconContainer: {},
-    treeItemRoot: {
-      '&:focus > .MuiTreeItem-content': {
-        '& .MuiTreeItem-label': {
-          backgroundColor: 'inherit'
-        },
-        '& .MuiTreeItem-label:hover': {
-          backgroundColor: 'rgba(0, 0, 0, 0.04)'
-        }
-      }
-    },
-    treeItemContent: {
-      paddingLeft: '8px',
-      '&.padded': {
-        paddingLeft: '15px'
+const treeItemStyles = makeStyles<void, 'treeItemLabelRoot'>()((theme, _params, classes) => ({
+  icon: {
+    color: palette.teal.main
+  },
+  displayNone: {
+    display: 'none'
+  },
+  treeItemIconContainer: {},
+  treeItemRoot: {
+    '&:focus > .MuiTreeItem-content': {
+      '& .MuiTreeItem-label': {
+        backgroundColor: 'inherit'
       },
-      '&.root': {
-        paddingLeft: 0,
-        '& $treeItemLabelRoot': {
-          paddingLeft: '6px'
-        }
+      '& .MuiTreeItem-label:hover': {
+        backgroundColor: 'rgba(0, 0, 0, 0.04)'
       }
-    },
-    treeItemGroup: {},
-    treeItemExpanded: {},
-    treeItemSelected: {},
-    treeItemLabelRoot: {
-      paddingLeft: 0
-    },
-    treeItemLabel: {
-      display: 'flex',
-      alignItems: 'center',
-      height: '36px',
-      '& p': {
-        marginTop: 0,
-        marginLeft: '5px',
-        marginRight: '5px',
-        overflow: 'hidden',
-        display: '-webkit-box',
-        '-webkit-line-clamp': 1,
-        '-webkit-box-orient': 'vertical',
-        marginBottom: 0,
-        wordBreak: 'break-all'
-      }
-    },
-    options: {
-      marginLeft: 'auto',
-      padding: '6px'
-    },
-    chevron: {
-      color: theme.palette.mode === 'dark' ? palette.white : palette.gray.medium3,
-      fontSize: '1.4rem'
-    },
-    nameLabel: {
-      color: theme.palette.mode === 'dark' ? palette.white : palette.gray.medium4
     }
-  })
-);
+  },
+  treeItemContent: {
+    paddingLeft: '8px',
+    '&.padded': {
+      paddingLeft: '15px'
+    },
+    '&.root': {
+      paddingLeft: 0,
+      [`& .${classes.treeItemLabelRoot}`]: {
+        paddingLeft: '6px'
+      }
+    }
+  },
+  treeItemGroup: {},
+  treeItemExpanded: {},
+  treeItemSelected: {},
+  treeItemLabelRoot: {
+    paddingLeft: 0
+  },
+  treeItemLabel: {
+    display: 'flex',
+    alignItems: 'center',
+    height: '36px',
+    '& p': {
+      marginTop: 0,
+      marginLeft: '5px',
+      marginRight: '5px',
+      overflow: 'hidden',
+      display: '-webkit-box',
+      '-webkit-line-clamp': 1,
+      '-webkit-box-orient': 'vertical',
+      marginBottom: 0,
+      wordBreak: 'break-all'
+    }
+  },
+  options: {
+    marginLeft: 'auto',
+    padding: '6px'
+  },
+  chevron: {
+    color: theme.palette.mode === 'dark' ? palette.white : palette.gray.medium3,
+    fontSize: '1.4rem'
+  },
+  nameLabel: {
+    color: theme.palette.mode === 'dark' ? palette.white : palette.gray.medium4
+  }
+}));
 
 export interface RenderTree {
   id: string;
@@ -357,7 +351,7 @@ interface TreeItemCustomInterface {
 
 function TreeItemCustom(props: TreeItemCustomInterface) {
   const { nodeLookup, node, handleScroll, handleClick, handleOptions, isRootChild, keyword } = props;
-  const classes = treeItemStyles({});
+  const { classes, cx } = treeItemStyles();
   const [over, setOver] = useState(false);
   let timeout = React.useRef<any>();
   const isMounted = useRef(null);
@@ -455,7 +449,7 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
       classes={{
         root: classes.treeItemRoot,
         label: classes.treeItemLabelRoot,
-        content: clsx(
+        content: cx(
           classes.treeItemContent,
           isPageOrComponent(node.type) && !isRootChild && 'padded',
           isRoot(node.id) && 'root'
@@ -482,7 +476,7 @@ export function PreviewPageExplorerPanel() {
   const dispatch = useDispatch();
   const guest = usePreviewGuest();
   const currentModelId = guest?.modelId;
-  const classes = useStyles({});
+  const { classes, cx } = useStyles();
   const { formatMessage } = useIntl();
   const contentTypesBranch = useSelection((state) => state.contentTypes);
   const hostToGuest$ = getHostToGuestBus();
@@ -730,8 +724,8 @@ export function PreviewPageExplorerPanel() {
     <>
       <TreeView
         className={classes.root}
-        defaultCollapseIcon={<ExpandMoreIcon className={clsx('toggle', classes.chevron)} />}
-        defaultExpandIcon={<ChevronRightIcon className={clsx('toggle', classes.chevron)} />}
+        defaultCollapseIcon={<ExpandMoreIcon className={cx('toggle', classes.chevron)} />}
+        defaultExpandIcon={<ChevronRightIcon className={cx('toggle', classes.chevron)} />}
         disableSelection
         expanded={state.expanded}
         onNodeToggle={handleChange}
@@ -798,7 +792,7 @@ function PageExplorerUI(props: PageExplorerUIProps) {
     breadcrumbs,
     rootChildren
   } = props;
-  const classes = useStyles({});
+  const { classes } = useStyles();
   const { formatMessage } = useIntl();
 
   resource.read();

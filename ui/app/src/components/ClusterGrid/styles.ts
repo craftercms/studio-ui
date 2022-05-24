@@ -14,21 +14,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    active: {
-      color: theme.palette.success.main
-    },
-    inactive: {
-      color: theme.palette.error.main
-    },
-    marginCenter: {
-      margin: '0 auto'
-    }
-  })
-);
+const useStyles = makeStyles()((theme) => ({
+  active: {
+    color: theme.palette.success.main
+  },
+  inactive: {
+    color: theme.palette.error.main
+  },
+  marginCenter: {
+    margin: '0 auto'
+  }
+}));
 
 export default useStyles;

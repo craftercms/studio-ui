@@ -13,32 +13,30 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+
+import { makeStyles } from 'tss-react/mui';
 import palette from '../../styles/palette';
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    resizeHandle: {
-      width: '2px',
-      minWidth: '2px',
-      margin: '0px 5px',
-      cursor: 'ew-resize',
-      padding: '4px 0 0',
-      backgroundColor: 'rgba(0, 0, 0, 0.12)',
-      transition: 'width 200ms',
-      '&:hover': {
-        width: '4px',
-        visibility: 'visible',
-        backgroundColor: palette.blue.tint
-      }
-    },
-    resizeHandleActive: {
+const useStyles = makeStyles()(() => ({
+  resizeHandle: {
+    width: '2px',
+    minWidth: '2px',
+    margin: '0px 5px',
+    cursor: 'ew-resize',
+    padding: '4px 0 0',
+    backgroundColor: 'rgba(0, 0, 0, 0.12)',
+    transition: 'width 200ms',
+    '&:hover': {
       width: '4px',
       visibility: 'visible',
       backgroundColor: palette.blue.tint
     }
-  })
-);
+  },
+  resizeHandleActive: {
+    width: '4px',
+    visibility: 'visible',
+    backgroundColor: palette.blue.tint
+  }
+}));
 
 export default useStyles;

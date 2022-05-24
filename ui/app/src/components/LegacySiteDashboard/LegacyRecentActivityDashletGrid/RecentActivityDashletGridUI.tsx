@@ -31,7 +31,6 @@ import Typography from '@mui/material/Typography';
 import ItemDisplay from '../../ItemDisplay';
 import IconButton from '@mui/material/IconButton';
 import MoreVertRounded from '@mui/icons-material/MoreVertRounded';
-import clsx from 'clsx';
 import LookupTable from '../../../models/LookupTable';
 import GlobalState from '../../../models/GlobalState';
 import { asLocalizedDateTime } from '../../../utils/datetime';
@@ -69,7 +68,7 @@ export function RecentActivityDashletGridUI(props: RecentActivityDashletGridUIPr
     onClickSelectAll
   } = props;
   const items = resource.read();
-  const classes = useStyles();
+  const { classes, cx: clsx } = useStyles();
 
   const comparator = useCallback(
     (fieldA, fieldB) => {

@@ -23,16 +23,15 @@ import {
   showPathSelectionDialog
 } from '../../state/actions/dialogs';
 import { dispatchDOMEvent } from '../../state/actions/misc';
-import clsx from 'clsx';
 import InputBase from '@mui/material/InputBase';
 import SearchIcon from '@mui/icons-material/SearchRounded';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import Paper from '@mui/material/Paper';
 import palette from '../../styles/palette';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   pathSelectorInputRoot: {
     flexGrow: 1
   },
@@ -87,7 +86,7 @@ export function PathSelector(props: PathSelectorProps) {
   const { onPathSelected, value, disabled } = props;
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
-  const classes = useStyles();
+  const { classes, cx } = useStyles();
   const [path, setPath] = useState<string>(value ?? '');
   const idSuccess = 'pathSelectionSuccess';
   const idCancel = 'pathSelectionCancel';
@@ -143,7 +142,7 @@ export function PathSelector(props: PathSelectorProps) {
     <Paper
       variant="outlined"
       onClick={disabled ? null : onOpenPathSelectionDialog}
-      className={clsx(classes.pathSelectorWrapper, disabled && 'disabled')}
+      className={cx(classes.pathSelectorWrapper, disabled && 'disabled')}
     >
       <InputBase
         classes={{ root: classes.pathSelectorInputRoot, input: classes.invisibleInput }}

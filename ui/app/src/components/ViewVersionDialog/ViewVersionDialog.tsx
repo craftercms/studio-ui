@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import { ViewVersionDialogProps } from './utils';
 import ViewVersionDialogContainer from './ViewVersionDialogContainer';
 import EnhancedDialog from '../EnhancedDialog/EnhancedDialog';
@@ -46,7 +46,8 @@ import { FormattedMessage } from 'react-intl';
   }
 })); */
 
-export const getLegacyDialogStyles = makeStyles(() => ({
+// TODO jss-to-tss-react codemod: usages of this hook outside of this file will not be converted.
+export const getLegacyDialogStyles = makeStyles()(() => ({
   iframe: {
     border: 'none',
     height: '80vh'

@@ -17,12 +17,11 @@
 import * as React from 'react';
 import { forwardRef, useState } from 'react';
 import { MenuItem, StandardProps } from '@mui/material';
-import clsx from 'clsx';
 import Fab from '@mui/material/Fab';
 import Menu from '@mui/material/Menu';
 import Button from '@mui/material/Button';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
+
 import { ContextMenuOption } from '../ContextMenu';
 
 export type ActionsGroupPropsClassKey = 'root' | 'action' | 'more';
@@ -40,29 +39,27 @@ const SPACINGS = {
   medium: 10
 };
 
-const useStyles = makeStyles(() =>
-  createStyles({
-    action: {
-      minWidth: '40px'
-    }
-  })
-);
+const useStyles = makeStyles()(() => ({
+  action: {
+    minWidth: '40px'
+  }
+}));
 
 const ActionsGroup = forwardRef<HTMLDivElement, ActionsGroupProps>(function ActionsGroup(props, ref) {
   const { actions, classes: propClasses, className, max = 5, spacing, onActionClicked, ...other } = props;
   const clampedMax = max < 2 ? 2 : max;
   const extraActions = actions.length > clampedMax ? actions.length - clampedMax + 1 : 0;
   const marginLeft = spacing && SPACINGS[spacing] !== undefined ? SPACINGS[spacing] : spacing;
-  const classes = useStyles();
+  const { classes, cx } = useStyles();
   const [showMenu, setShowMenu] = useState<any>();
   return (
-    <div className={clsx(propClasses?.root, className)} {...other} ref={ref}>
+    <div className={cx(propClasses?.root, className)} {...other} ref={ref}>
       {actions.slice(0, actions.length - extraActions).map((child, index) => (
         <Button
           key={child.id}
           onClick={(e) => onActionClicked?.(child.id, e)}
           style={{ marginLeft: index === 0 ? undefined : marginLeft }}
-          className={clsx(classes.action, propClasses?.action)}
+          className={cx(classes.action, propClasses?.action)}
           color="primary"
           variant="text"
           size="small"

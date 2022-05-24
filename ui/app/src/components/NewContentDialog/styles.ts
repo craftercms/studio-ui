@@ -14,49 +14,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import createStyles from '@mui/styles/createStyles';
+import { makeStyles } from 'tss-react/mui';
 
-import makeStyles from '@mui/styles/makeStyles';
-import palette from '../../styles/palette';
-
-const useStyles = makeStyles(() =>
-  createStyles({
-    compact: {
-      marginRight: 'auto'
-    },
-    dialogContent: {
-      minHeight: 455
-    },
-    cardsContainer: {
-      marginTop: 14
-    },
-    searchBox: {
-      minWidth: '33%'
-    },
-    emptyStateImg: {
-      width: 250,
-      marginBottom: 17
-    }
-  })
-);
-
-export const useContentCardStyles = makeStyles(() => ({
-  defaultCard: {
-    maxWidth: 345,
-    cursor: 'pointer'
+const useStyles = makeStyles()(() => ({
+  compact: {
+    marginRight: 'auto'
   },
-  compactCard: {
-    display: 'flex',
-    cursor: 'pointer'
+  dialogContent: {
+    minHeight: 455
   },
-  media: {
-    paddingTop: '75%'
+  cardsContainer: {
+    marginTop: 14
   },
-  compactMedia: {
-    width: 151
+  searchBox: {
+    minWidth: '33%'
   },
-  selected: {
-    border: `1px solid ${palette.blue.tint}`
+  emptyStateImg: {
+    width: 250,
+    marginBottom: 17
   }
 }));
 

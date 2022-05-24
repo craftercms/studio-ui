@@ -17,8 +17,7 @@
 import React, { useMemo } from 'react';
 import IconButton from '@mui/material/IconButton';
 import CrafterCMSIcon from '../../icons/CrafterCMSIcon';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import { defineMessages, useIntl } from 'react-intl';
 import Tooltip from '@mui/material/Tooltip';
 import { useDispatch } from 'react-redux';
@@ -26,16 +25,14 @@ import { showLauncher } from '../../state/actions/dialogs';
 import { LauncherStateProps } from '../Launcher/Launcher';
 import AppsRounded from '@mui/icons-material/AppsRounded';
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    logoIconButton: {
-      padding: '7px'
-    },
-    crafterIcon: {
-      fontSize: '1.4em'
-    }
-  })
-);
+const useStyles = makeStyles()(() => ({
+  logoIconButton: {
+    padding: '7px'
+  },
+  crafterIcon: {
+    fontSize: '1.4em'
+  }
+}));
 
 const messages = defineMessages({
   menu: {
@@ -57,7 +54,7 @@ interface LauncherOpenerButtonProps {
 }
 
 export function LauncherOpenerButton(props: LauncherOpenerButtonProps) {
-  const classes = useStyles({});
+  const { classes } = useStyles();
   const { sitesRailPosition = 'right', icon = 'apps', closeButtonPosition = 'right' } = props;
   const { formatMessage } = useIntl();
   const id = useMemo(() => `toolbarLauncherButton${instanceCount++}`, []);

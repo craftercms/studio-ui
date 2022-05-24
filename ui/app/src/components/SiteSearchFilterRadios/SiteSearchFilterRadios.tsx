@@ -23,10 +23,9 @@ import { nnou } from '../../utils/object';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Radio from '@mui/material/Radio';
 import React from 'react';
-import { Theme } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()(() => ({
   checkboxLabel: {
     width: '100%',
     overflow: 'hidden',
@@ -61,7 +60,7 @@ interface FilterRadiosProps {
 export function SiteSearchFilterRadios(props: FilterRadiosProps) {
   const { facetData, facet, handleRadioClick, checkedFilters } = props;
   const items = facetData.values;
-  const classes = useStyles({});
+  const { classes } = useStyles();
   const { formatMessage } = useIntl();
 
   const formatValue = (facet: string, key: string, value: any) => {

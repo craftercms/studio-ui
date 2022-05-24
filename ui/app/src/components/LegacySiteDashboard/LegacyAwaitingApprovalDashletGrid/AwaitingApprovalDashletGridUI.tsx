@@ -34,7 +34,6 @@ import LookupTable from '../../../models/LookupTable';
 import Checkbox from '@mui/material/Checkbox';
 import MoreVertRounded from '@mui/icons-material/MoreVertRounded';
 import ItemDisplay from '../../ItemDisplay';
-import clsx from 'clsx';
 import { AwaitingApprovalDashletDashboardItem } from '../LegacyAwaitingApprovalDashlet';
 import ExpandLessIcon from '@mui/icons-material/ExpandLessRounded';
 import { asLocalizedDateTime } from '../../../utils/datetime';
@@ -71,7 +70,7 @@ export function AwaitingApprovalDashletGridUI(props: AwaitingApprovalDashletGrid
     onToggleCheckedAll
   } = props;
   const items = resource.read();
-  const classes = useStyles();
+  const { classes, cx: clsx } = useStyles();
   const locale = useLocale();
 
   return (

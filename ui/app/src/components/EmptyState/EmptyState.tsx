@@ -15,12 +15,10 @@
  */
 
 import React, { ReactNode } from 'react';
-import { CSSProperties } from '@mui/styles';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { CSSObject as CSSProperties } from 'tss-react';
+import { makeStyles } from 'tss-react/mui';
 import Typography from '@mui/material/Typography';
 import emptyImage from '../../assets/desert.svg';
-import clsx from 'clsx';
 import { MessageDescriptor, useIntl } from 'react-intl';
 import { nou } from '../../utils/object';
 
@@ -28,29 +26,29 @@ type EmptyStateClassKey = 'root' | 'title' | 'subtitle' | 'image';
 
 type EmptyStateStyles = Partial<Record<EmptyStateClassKey, CSSProperties>>;
 
-const useStyles = makeStyles((theme) =>
-  createStyles<EmptyStateClassKey, EmptyStateStyles>({
-    root: (styles) => ({
+const useStyles = makeStyles<EmptyStateStyles, EmptyStateClassKey>()(
+  (theme, { root, title, subtitle, image } = {} as EmptyStateStyles) => ({
+    root: {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       flexDirection: 'column',
       margin: theme.spacing(2),
-      ...styles.root
-    }),
-    title: (styles) => ({
+      ...root
+    },
+    title: {
       margin: `${theme.spacing(1)} 0`,
-      ...styles.title
-    }),
-    subtitle: (styles) => ({
+      ...title
+    },
+    subtitle: {
       textAlign: 'center',
-      ...styles.subtitle
-    }),
-    image: (styles) => ({
+      ...subtitle
+    },
+    image: {
       width: 100,
       maxWidth: '80%',
-      ...styles.image
-    })
+      ...image
+    }
   })
 );
 
@@ -90,19 +88,19 @@ export function getEmptyStateStyleSet(setName: 'horizontal' | 'image-sm'): Empty
 }
 
 export function EmptyState(props: EmptyStateProps) {
-  const classes = useStyles(props.styles);
+  const { classes, cx } = useStyles(props.styles);
   const { formatMessage } = useIntl();
   const { image = emptyImage, classes: propClasses, children } = props;
   const title = isValidElement(props.title) ? props.title : formatMessage(props.title as MessageDescriptor);
   const subtitle = isValidElement(props.subtitle) ? props.subtitle : formatMessage(props.subtitle as MessageDescriptor);
   return (
-    <div className={clsx(classes.root, propClasses?.root)}>
-      {image && <img className={clsx(classes.image, propClasses?.image)} src={image} alt="" />}
+    <div className={cx(classes.root, propClasses?.root)}>
+      {image && <img className={cx(classes.image, propClasses?.image)} src={image} alt="" />}
       {title && (
         <Typography
           variant="body1"
           component="h3"
-          className={clsx(classes.title, propClasses?.title)}
+          className={cx(classes.title, propClasses?.title)}
           color="textSecondary"
         >
           {title}
@@ -112,7 +110,7 @@ export function EmptyState(props: EmptyStateProps) {
         <Typography
           variant="body2"
           component="p"
-          className={clsx(classes.subtitle, propClasses?.subtitle)}
+          className={cx(classes.subtitle, propClasses?.subtitle)}
           color="textSecondary"
         >
           {subtitle}

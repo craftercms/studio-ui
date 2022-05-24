@@ -23,28 +23,25 @@ import DialogFooter from '../DialogFooter/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import { CopyTokenContainerProps } from './utils';
-import makeStyles from '@mui/styles/makeStyles';
-import createStyles from '@mui/styles/createStyles';
+import { makeStyles } from 'tss-react/mui';
 import { copyToClipboard } from '../../utils/system';
 import useMount from '../../hooks/useMount';
 
-const useStyles = makeStyles(() =>
-  createStyles({
-    footer: {
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between'
-    },
-    input: {
-      marginTop: '16px',
-      marginBottom: '8px'
-    }
-  })
-);
+const useStyles = makeStyles()(() => ({
+  footer: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between'
+  },
+  input: {
+    marginTop: '16px',
+    marginBottom: '8px'
+  }
+}));
 
 export function CopyTokenContainer(props: CopyTokenContainerProps) {
   const { onClose, token, onCopy } = props;
-  const classes = useStyles();
+  const { classes } = useStyles();
   const inputRef = useRef<HTMLInputElement>();
 
   const copyToken = () => {

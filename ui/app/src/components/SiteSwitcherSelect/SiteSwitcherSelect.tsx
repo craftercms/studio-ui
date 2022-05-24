@@ -25,7 +25,6 @@ import { setSiteCookie } from '../../utils/auth';
 import { useDispatch } from 'react-redux';
 import { useEnv } from '../../hooks/useEnv';
 import { useSiteList } from '../../hooks/useSiteList';
-import clsx from 'clsx';
 import { getSystemLink } from '../../utils/system';
 import { PREVIEW_URL_PATH } from '../../utils/constants';
 import { useLegacyPreviewPreference } from '../../hooks/useLegacyPreviewPreference';
@@ -38,7 +37,7 @@ export interface SiteSwitcherSelectProps extends SelectProps {
 function SiteSwitcherSelect(props: SiteSwitcherSelectProps) {
   const { site, ...rest } = props;
   const sites = useSiteList();
-  const classes = useStyles();
+  const { classes, cx: clsx } = useStyles();
   const { authoringBase } = useEnv();
   const dispatch = useDispatch();
   const useLegacy = useLegacyPreviewPreference();

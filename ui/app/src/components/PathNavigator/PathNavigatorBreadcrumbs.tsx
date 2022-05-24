@@ -17,7 +17,6 @@
 import { DetailedItem } from '../../models/Item';
 import { useStyles } from './styles';
 import React, { useState } from 'react';
-import clsx from 'clsx';
 import SearchBar from '../SearchBar/SearchBar';
 import MuiBreadcrumbs from '@mui/material/Breadcrumbs';
 import NavigateNextIcon from '@mui/icons-material/NavigateNextRounded';
@@ -49,7 +48,7 @@ const messages = defineMessages({
 
 // PathBreadcrumbs + PathOptions + (Path)Search
 function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
-  const classes = useStyles();
+  const { classes, cx: clsx } = useStyles();
   const { formatMessage } = useIntl();
   const { breadcrumb, onCrumbSelected, keyword, onSearch } = props;
   const [showSearch, setShowSearch] = useState(Boolean(keyword));

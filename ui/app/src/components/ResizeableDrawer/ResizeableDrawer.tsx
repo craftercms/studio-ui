@@ -17,11 +17,9 @@
 import { DrawerProps } from '@mui/material';
 import Drawer from '@mui/material/Drawer';
 import React, { useCallback, useRef, useState } from 'react';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
-import clsx from 'clsx';
+import { makeStyles } from 'tss-react/mui';
 import palette from '../../styles/palette';
-import { CSSProperties } from '@mui/styles';
+import { CSSObject as CSSProperties } from 'tss-react';
 
 export type ResizeableDrawerClassKey =
   | 'root'
@@ -48,39 +46,54 @@ interface ResizeableDrawerProps extends DrawerProps {
   onWidthChange?(width: number): void;
 }
 
-const useStyles = makeStyles((theme) =>
-  createStyles<ResizeableDrawerClassKey, ResizeableDrawerStyles>({
-    root: (styles) => ({
+const useStyles = makeStyles<ResizeableDrawerStyles, ResizeableDrawerClassKey>()(
+  (
+    theme,
+    {
+      root,
+      drawerBody,
+      drawerPaper,
+      drawerPaperBelowToolbar,
+      drawerPaperLeft,
+      drawerPaperRight,
+      resizeHandle,
+      resizeHandleLeft,
+      resizeHandleRight,
+      resizeHandleActive,
+      resizingOverlay
+    } = {} as any
+  ) => ({
+    root: {
       flexShrink: 0,
-      ...styles.root
-    }),
-    drawerBody: (styles) => ({
+      ...root
+    },
+    drawerBody: {
       width: '100%',
       height: '100%',
       overflowY: 'auto',
-      ...styles.drawerBody
-    }),
-    drawerPaper: (styles) => ({
+      ...drawerBody
+    },
+    drawerPaper: {
       bottom: 0,
       overflow: 'hidden',
       maxWidth: '95% !important',
-      ...styles.drawerPaper
-    }),
-    drawerPaperBelowToolbar: (styles) => ({
+      ...drawerPaper
+    },
+    drawerPaperBelowToolbar: {
       top: 65,
       height: 'auto',
       zIndex: theme.zIndex.appBar - 1,
-      ...styles.drawerPaperBelowToolbar
-    }),
-    drawerPaperLeft: (styles) => ({
+      ...drawerPaperBelowToolbar
+    },
+    drawerPaperLeft: {
       borderRight: 'none',
-      ...styles.drawerPaperLeft
-    }),
-    drawerPaperRight: (styles) => ({
+      ...drawerPaperLeft
+    },
+    drawerPaperRight: {
       borderLeft: 'none',
-      ...styles.drawerPaperRight
-    }),
-    resizeHandle: (styles) => ({
+      ...drawerPaperRight
+    },
+    resizeHandle: {
       width: '1px',
       cursor: 'ew-resize',
       padding: '4px 0 0',
@@ -95,23 +108,23 @@ const useStyles = makeStyles((theme) =>
         visibility: 'visible',
         backgroundColor: palette.blue.tint
       },
-      ...styles.resizeHandle
-    }),
-    resizeHandleLeft: (styles) => ({
+      ...resizeHandle
+    },
+    resizeHandleLeft: {
       left: 0,
-      ...styles.resizeHandleLeft
-    }),
-    resizeHandleRight: (styles) => ({
+      ...resizeHandleLeft
+    },
+    resizeHandleRight: {
       right: 0,
-      ...styles.resizeHandleRight
-    }),
-    resizeHandleActive: (styles) => ({
+      ...resizeHandleRight
+    },
+    resizeHandleActive: {
       width: '4px',
       visibility: 'visible',
       backgroundColor: palette.blue.tint,
-      ...styles.resizeHandleActive
-    }),
-    resizingOverlay: (styles) => ({
+      ...resizeHandleActive
+    },
+    resizingOverlay: {
       '&::before': {
         content: '""',
         position: 'fixed',
@@ -119,14 +132,14 @@ const useStyles = makeStyles((theme) =>
         bottom: 0,
         left: 0,
         right: 0,
-        ...styles.resizingOverlay
+        ...resizingOverlay
       }
-    })
+    }
   })
 );
 
 export function ResizeableDrawer(props: ResizeableDrawerProps) {
-  const classes = useStyles(props.styles);
+  const { classes, cx } = useStyles(props.styles);
   const [resizeActive, setResizeActive] = useState(false);
 
   const drawerRef = useRef<HTMLDivElement>();
@@ -190,10 +203,10 @@ export function ResizeableDrawer(props: ResizeableDrawerProps) {
       ref={drawerRef}
       anchor={anchor}
       variant="persistent"
-      className={clsx(classes.root, className)}
+      className={cx(classes.root, className)}
       classes={{
         ...drawerClasses,
-        paper: clsx(
+        paper: cx(
           classes.drawerPaper,
           belowToolbar && classes.drawerPaperBelowToolbar,
           drawerPaper,
@@ -208,14 +221,14 @@ export function ResizeableDrawer(props: ResizeableDrawerProps) {
       {onWidthChange && (
         <div
           onMouseDown={handleMouseDown}
-          className={clsx(
+          className={cx(
             classes.resizeHandle,
             resizeActive && classes.resizeHandleActive,
             anchor === 'left' ? classes.resizeHandleRight : classes.resizeHandleLeft
           )}
         />
       )}
-      <section className={clsx(classes.drawerBody, drawerBody)}>{children}</section>
+      <section className={cx(classes.drawerBody, drawerBody)}>{children}</section>
     </Drawer>
   );
 }

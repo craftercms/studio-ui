@@ -18,10 +18,7 @@ import Typography from '@mui/material/Typography';
 import React, { useCallback, useEffect, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import AddIcon from '@mui/icons-material/Add';
-import { Theme } from '@mui/material/styles';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
-import withStyles from '@mui/styles/withStyles';
+import { makeStyles, withStyles } from 'tss-react/mui';
 import { PluginRecord } from '../../models/Plugin';
 import { ConditionalLoadingState } from '../LoadingState/LoadingState';
 import TableContainer from '@mui/material/TableContainer';
@@ -84,25 +81,21 @@ const messages = defineMessages({
   }
 });
 
-const styles = makeStyles((theme) =>
-  createStyles({
-    table: {
-      minWidth: 650
-    },
-    actions: {
-      width: '150px',
-      padding: '5px 20px'
-    }
-  })
-);
+const styles = makeStyles()(() => ({
+  table: {
+    minWidth: 650
+  },
+  actions: {
+    width: '150px',
+    padding: '5px 20px'
+  }
+}));
 
-const StyledTableCell = withStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      padding: '5px'
-    }
-  })
-)(TableCell);
+const StyledTableCell = withStyles(TableCell, () => ({
+  root: {
+    padding: '5px'
+  }
+}));
 
 export interface PluginManagementProps {
   embedded?: boolean;
@@ -111,7 +104,7 @@ export interface PluginManagementProps {
 
 export const PluginManagement = (props: PluginManagementProps) => {
   const { embedded = false, showAppsButton = !embedded } = props;
-  const classes = styles();
+  const { classes } = styles();
   const dispatch = useDispatch();
   const siteId = useActiveSiteId();
   const { formatMessage } = useIntl();

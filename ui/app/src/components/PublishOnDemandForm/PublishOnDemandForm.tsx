@@ -15,8 +15,7 @@
  */
 
 import * as React from 'react';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import FormControl from '@mui/material/FormControl';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import TextField from '@mui/material/TextField';
@@ -29,22 +28,20 @@ import ApiResponse from '../../models/ApiResponse';
 import Typography from '@mui/material/Typography';
 import InputLabel from '@mui/material/InputLabel';
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    formHelperText: {
-      marginLeft: '5px'
-    },
-    environmentLoaderContainer: {
-      display: 'inline-flex'
-    },
-    environmentLoader: {
-      border: `1px solid ${theme.palette.divider}`,
-      padding: '15px',
-      borderRadius: theme.shape.borderRadius,
-      width: '100%'
-    }
-  })
-);
+const useStyles = makeStyles()((theme) => ({
+  formHelperText: {
+    marginLeft: '5px'
+  },
+  environmentLoaderContainer: {
+    display: 'inline-flex'
+  },
+  environmentLoader: {
+    border: `1px solid ${theme.palette.divider}`,
+    padding: '15px',
+    borderRadius: theme.shape.borderRadius,
+    width: '100%'
+  }
+}));
 
 const messages = defineMessages({
   staging: { id: 'words.staging', defaultMessage: 'Staging' },
@@ -73,7 +70,7 @@ export function PublishOnDemandForm(props: PublishOnDemandFormProps) {
     bulkPublishCommentRequired,
     publishByCommitCommentRequired
   } = props;
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { formatMessage } = useIntl();
   const handleFormChange = (name: string) => (event: React.ChangeEvent<{ value: unknown }> | SelectChangeEvent) => {
     const value = event.target.value as string;

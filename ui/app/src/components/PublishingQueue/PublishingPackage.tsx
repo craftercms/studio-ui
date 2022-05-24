@@ -18,7 +18,7 @@ import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import React, { ChangeEvent, useRef, useState } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import { defineMessages, useIntl } from 'react-intl';
 import SelectButton from '../ConfirmDropdown';
 import Typography from '@mui/material/Typography';
@@ -27,13 +27,12 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import CircularProgress from '@mui/material/CircularProgress';
 import '../../styles/animations.scss';
-import clsx from 'clsx';
 import { READY_FOR_LIVE } from './constants';
 import { alpha } from '@mui/material/styles';
 import palette from '../../styles/palette';
 import PrimaryButton from '../PrimaryButton';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   package: {
     padding: '20px 8px 20px 0',
     '& .loading-header': {
@@ -212,7 +211,7 @@ interface PublishingPackageProps {
 }
 
 export function PublishingPackage(props: PublishingPackageProps) {
-  const classes = useStyles({});
+  const { classes, cx } = useStyles();
   const { formatMessage } = useIntl();
   const {
     id,
@@ -291,7 +290,7 @@ export function PublishingPackage(props: PublishingPackageProps) {
 
   const checked = selected[id] ? selected[id] : false;
   return (
-    <div className={clsx(classes.package, pending[id] && classes.packageLoading)}>
+    <div className={cx(classes.package, pending[id] && classes.packageLoading)}>
       <section className="name">
         {pending[id] ? (
           <header className={'loading-header'}>

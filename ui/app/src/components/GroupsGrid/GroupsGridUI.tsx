@@ -39,7 +39,7 @@ export interface GroupsGridUIProps {
 
 export function GroupsGridUI(props: GroupsGridUIProps) {
   const { resource, onRowClicked, onPageChange, onRowsPerPageChange } = props;
-  const classes = useStyles();
+  const { classes } = useStyles();
   const groups = resource.read();
 
   return (

@@ -15,7 +15,7 @@
  */
 
 import React, { useState } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import Typography from '@mui/material/Typography';
 import SwipeableViews from 'react-swipeable-views';
 // @ts-ignore
@@ -29,13 +29,12 @@ import Grid from '@mui/material/Grid';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import Alert from '@mui/material/Alert';
 import { backgroundColor } from '../../styles/theme';
-import clsx from 'clsx';
 // @ts-ignore
 import { fadeIn } from 'react-animations';
 import PrimaryButton from '../PrimaryButton';
 import PluginDocumentation from '../PluginDocumentation';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   '@keyframes fadeIn': fadeIn,
   fadeIn: {
     animationName: '$fadeIn',
@@ -187,7 +186,7 @@ interface PluginDetailsViewProps {
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 
 export function PluginDetailsView(props: PluginDetailsViewProps) {
-  const classes = useStyles({});
+  const { classes, cx } = useStyles();
   const [play, setPlay] = useState(false);
   const {
     plugin,
@@ -260,7 +259,7 @@ export function PluginDetailsView(props: PluginDetailsViewProps) {
   plugin.media && plugin.media.videos ? (steps += plugin.media.videos.length) : (steps += 0);
 
   return (
-    <div className={clsx(classes.detailsView, classes.fadeIn)}>
+    <div className={cx(classes.detailsView, classes.fadeIn)}>
       <div className={classes.topBar}>
         <Fab aria-label="back" className={classes.circleBtn} onClick={onCloseDetails}>
           <ArrowBackIcon />

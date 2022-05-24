@@ -20,10 +20,9 @@ import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import React from 'react';
-import makeStyles from '@mui/styles/makeStyles';
-import { Theme } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()(() => ({
   checkboxLabel: {
     width: '100%',
     overflow: 'hidden',
@@ -41,15 +40,13 @@ interface FilterCheckboxesProps {
   facet: string;
   checkedFilters: LookupTable;
   facetLabelLookup: LookupTable;
-
   handleCheckboxClick(key: string, checked: boolean, facet: string): any;
 }
 
 export function SiteSearchFilterCheckboxes(props: FilterCheckboxesProps) {
   const { facetData, facet, handleCheckboxClick, checkedFilters, facetLabelLookup } = props;
   const items = facetData.values;
-  const classes = useStyles({});
-
+  const { classes } = useStyles();
   return (
     <FormGroup>
       {Object.keys(items).map((key) => {

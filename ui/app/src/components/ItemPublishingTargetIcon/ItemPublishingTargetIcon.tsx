@@ -16,10 +16,9 @@
 
 import Tooltip from '@mui/material/Tooltip';
 import PublishingTargetIcon from '@mui/icons-material/FiberManualRecordRounded';
-import clsx from 'clsx';
 import * as React from 'react';
 import { getItemPublishingTargetText } from '../ItemDisplay/utils';
-import { CSSProperties } from '@mui/styles';
+import { CSSObject as CSSProperties } from 'tss-react';
 import { DetailedItem, SandboxItem } from '../../models/Item';
 import { useStyles } from './styles';
 
@@ -40,7 +39,7 @@ export interface ItemPublishingTargetIconProps {
 
 export function ItemPublishingTargetIcon(props: ItemPublishingTargetIconProps) {
   const { item, classes: propClasses, styles, className, displayTooltip = true } = props;
-  const classes = useStyles(styles);
+  const { classes, cx } = useStyles(styles);
 
   return (
     <Tooltip
@@ -48,7 +47,7 @@ export function ItemPublishingTargetIcon(props: ItemPublishingTargetIconProps) {
       open={displayTooltip ? void 0 : false}
     >
       <PublishingTargetIcon
-        className={clsx(
+        className={cx(
           classes.root,
           classes.publishingIcon,
           propClasses?.root,

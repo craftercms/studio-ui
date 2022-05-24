@@ -34,7 +34,7 @@ export interface LoggingLevelsGridSkeletonTableProps {
 export const LogLevelGridSkeleton = React.memo((props: LoggingLevelsGridSkeletonTableProps) => {
   const { numOfItems = 10 } = props;
   const items = new Array(numOfItems).fill(null);
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   return (
     <TableContainer>

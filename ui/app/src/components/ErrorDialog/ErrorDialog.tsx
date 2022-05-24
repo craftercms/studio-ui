@@ -18,8 +18,7 @@ import React, { PropsWithChildren } from 'react';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/CloseRounded';
 import Dialog from '@mui/material/Dialog';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import StandardAction from '../../models/StandardAction';
 import { ApiResponse } from '../../models/ApiResponse';
 import ApiResponseErrorState from '../ApiResponseErrorState';
@@ -44,22 +43,20 @@ export interface ErrorDialogStateProps extends ErrorDialogBaseProps {
   onDismiss?: StandardAction;
 }
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    closeButton: {
-      position: 'absolute',
-      right: theme.spacing(1),
-      top: theme.spacing(1)
-    },
-    body: {
-      padding: theme.spacing(2)
-    }
-  })
-);
+const useStyles = makeStyles()((theme) => ({
+  closeButton: {
+    position: 'absolute',
+    right: theme.spacing(1),
+    top: theme.spacing(1)
+  },
+  body: {
+    padding: theme.spacing(2)
+  }
+}));
 
 function ErrorDialogBody(props: ErrorDialogProps) {
   const { onDismiss, error } = props;
-  const classes = useStyles();
+  const { classes } = useStyles();
   useUnmount(props.onClosed);
   return (
     <div className={classes.body}>

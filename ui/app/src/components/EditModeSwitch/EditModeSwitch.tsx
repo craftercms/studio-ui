@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import withStyles from '@mui/styles/withStyles';
+import { withStyles } from 'tss-react/mui';
 import Switch, { SwitchProps } from '@mui/material/Switch';
 import Tooltip from '@mui/material/Tooltip';
 import React from 'react';
@@ -27,7 +27,7 @@ import { useSelection } from '../../hooks/useSelection';
 import { isItemLockedForMe } from '../../utils/content';
 import { useActiveUser } from '../../hooks/useActiveUser';
 
-const EditSwitch = withStyles((theme) => {
+const EditSwitch = withStyles(Switch, (theme, _params, classes) => {
   const green = theme.palette.success.main;
   return {
     root: {
@@ -38,23 +38,23 @@ const EditSwitch = withStyles((theme) => {
     },
     switchBase: {
       padding: 1,
-      '&$disabled': {
+      [`&.${classes.disabled}`]: {
         opacity: 0.5,
-        '& + $track': {
+        [`& + .${classes.track}`]: {
           opacity: 0.5
         },
-        '& $thumb': {
+        [`& .${classes.thumb}`]: {
           opacity: 0.5
         }
       },
-      '&$checked': {
+      [`&.${classes.checked}`]: {
         transform: 'translateX(16px)',
-        '& + $track': {
+        [`& + .${classes.track}`]: {
           backgroundColor: green,
           opacity: 1,
           border: 'none'
         },
-        '& $thumb': {
+        [`& .${classes.thumb}`]: {
           color: theme.palette.common.white,
           backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="15" viewBox="0 0 24 24" width="15"><path fill="${encodeURIComponent(
             theme.palette.success.dark
@@ -83,7 +83,7 @@ const EditSwitch = withStyles((theme) => {
       transition: theme.transitions.create(['background-color', 'border'])
     }
   };
-})(Switch);
+});
 
 export interface EditModeSwitchProps extends Partial<SwitchProps> {
   item?: SandboxItem | DetailedItem;

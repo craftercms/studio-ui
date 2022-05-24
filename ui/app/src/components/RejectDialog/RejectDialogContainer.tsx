@@ -27,42 +27,40 @@ import { reject } from '../../services/workflow';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import { nnou, pluckProps } from '../../utils/object';
 import { fetchStatus } from '../../services/publishing';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    itemsList: {
-      border: `1px solid ${theme.palette.divider}`,
-      background: theme.palette.background.paper,
-      padding: 0,
-      height: '100%'
-    },
-    submissionTextField: {
-      marginTop: '10px'
-    },
-    ellipsis: {
-      overflow: 'hidden',
-      textOverflow: 'ellipsis',
-      whiteSpace: 'nowrap'
-    },
-    submittedBy: {
-      flexGrow: 0,
-      width: '100px',
-      textAlign: 'right',
-      alignSelf: 'flex-start'
-    },
-    listSubHeader: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      borderBottom: `1px solid ${theme.palette.divider}`,
-      lineHeight: '30px'
-    },
-    subHeaderItem: {
-      marginLeft: '40px'
-    }
-  })
-);
+const useStyles = makeStyles()((theme) => ({
+  itemsList: {
+    border: `1px solid ${theme.palette.divider}`,
+    background: theme.palette.background.paper,
+    padding: 0,
+    height: '100%'
+  },
+  submissionTextField: {
+    marginTop: '10px'
+  },
+  ellipsis: {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap'
+  },
+  submittedBy: {
+    flexGrow: 0,
+    width: '100px',
+    textAlign: 'right',
+    alignSelf: 'flex-start'
+  },
+  listSubHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    borderBottom: `1px solid ${theme.palette.divider}`,
+    lineHeight: '30px'
+  },
+  subHeaderItem: {
+    marginLeft: '40px'
+  }
+}));
+
 export function RejectDialogContainer(props: RejectDialogContainerProps) {
   const typeCustomReason = 'typeCustomReason';
   const { items, onClose, onRejectSuccess, isSubmitting } = props;

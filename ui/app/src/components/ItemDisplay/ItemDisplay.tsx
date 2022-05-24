@@ -17,10 +17,8 @@
 import * as React from 'react';
 import { ElementType, forwardRef } from 'react';
 import { DetailedItem, SandboxItem } from '../../models/Item';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
-import { CSSProperties } from '@mui/styles';
-import clsx from 'clsx';
+import { makeStyles } from 'tss-react/mui';
+import { CSSObject as CSSProperties } from 'tss-react';
 import palette from '../../styles/palette';
 import Typography, { TypographyProps } from '@mui/material/Typography';
 import { isPreviewable } from '../PathNavigator/utils';
@@ -46,9 +44,9 @@ export interface ItemDisplayProps<LabelTypographyComponent extends React.Element
   labelComponent?: ElementType;
 }
 
-const useStyles = makeStyles((theme) =>
-  createStyles<ItemDisplayClassKey, ItemDisplayStyles>({
-    root: (styles) => ({
+const useStyles = makeStyles<ItemDisplayStyles, ItemDisplayClassKey>()(
+  (theme, { root, label, labelPreviewable, icon, typeIcon } = {} as ItemDisplayStyles) => ({
+    root: {
       display: 'inline-flex',
       alignItems: 'center',
       placeContent: 'left center',
@@ -56,25 +54,25 @@ const useStyles = makeStyles((theme) =>
       '& .MuiSvgIcon-root': {
         fontSize: '1.1rem'
       },
-      ...styles.root
-    }),
-    label: (styles) => ({
+      ...root
+    },
+    label: {
       marginLeft: 2,
       display: 'inline-block',
-      ...styles.label
-    }),
-    labelPreviewable: (styles) => ({
+      ...label
+    },
+    labelPreviewable: {
       color: theme.palette.mode === 'dark' ? palette.teal.tint : palette.teal.shade,
-      ...styles.labelPreviewable
-    }),
-    icon: (styles) => ({
+      ...labelPreviewable
+    },
+    icon: {
       fontSize: '1rem',
-      ...styles.icon
-    }),
-    typeIcon: (styles) => ({
+      ...icon
+    },
+    typeIcon: {
       marginRight: 3,
-      ...styles.typeIcon
-    })
+      ...typeIcon
+    }
   })
 );
 
@@ -94,26 +92,26 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
     labelComponent = 'span',
     ...rest
   } = props;
-  const classes = useStyles(props.styles);
+  const { classes, cx } = useStyles(props.styles);
   if (!item) {
     // Prevents crashing if the item is nullish
     return null;
   }
   const inWorkflow = isInWorkflow(item.stateMap) || item.systemType === 'folder';
   return (
-    <span ref={ref} {...rest} className={clsx(classes.root, propClasses?.root, rest?.className)}>
+    <span ref={ref} {...rest} className={cx(classes.root, propClasses?.root, rest?.className)}>
       {/* @see https://github.com/craftercms/craftercms/issues/5442 */}
       {inWorkflow
-        ? showWorkflowState && <ItemStateIcon item={item} className={clsx(classes.icon, propClasses?.icon)} />
+        ? showWorkflowState && <ItemStateIcon item={item} className={cx(classes.icon, propClasses?.icon)} />
         : showPublishingTarget && (
-            <ItemPublishingTargetIcon item={item} className={clsx(classes.icon, propClasses?.icon)} />
+            <ItemPublishingTargetIcon item={item} className={cx(classes.icon, propClasses?.icon)} />
           )}
-      {showItemType && <ItemTypeIcon item={item} className={clsx(classes.icon, propClasses?.icon)} />}
+      {showItemType && <ItemTypeIcon item={item} className={cx(classes.icon, propClasses?.icon)} />}
       <Typography
         noWrap
         component={labelComponent}
         {...labelTypographyProps}
-        className={clsx(
+        className={cx(
           classes.label,
           showNavigableAsLinks && isNavigableFn(item) && classes.labelPreviewable,
           labelTypographyProps?.className

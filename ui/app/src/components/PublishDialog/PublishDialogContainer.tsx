@@ -381,7 +381,7 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
       onSelectAll={onSelectAll}
       onSelectAllSoftDependencies={onSelectAllSoft}
       onClickShowAllDeps={onFetchDependenciesClick}
-      classes={useStyles()}
+      classes={useStyles().classes}
       showEmailCheckbox={!hasPublishPermission || state.requestApproval}
       showRequestApproval={hasPublishPermission && items.every((item) => !item.stateMap.submitted)}
       submitLabel={

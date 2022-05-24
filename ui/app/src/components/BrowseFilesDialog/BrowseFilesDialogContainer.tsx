@@ -70,7 +70,7 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
   const [currentPath, setCurrentPath] = useState(browsePath);
   const [fetchingBrowsePathExists, setFetchingBrowsePathExists] = useState(false);
   const [browsePathExists, setBrowsePathExists] = useState(false);
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   const fetchItems = useCallback(
     () =>

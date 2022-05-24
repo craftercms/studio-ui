@@ -28,7 +28,7 @@ import { useEnv } from '../../hooks/useEnv';
 
 export function AboutCrafterCMSView() {
   const env = useEnv();
-  const classes = useStyles();
+  const { classes } = useStyles();
   const localeBranch = useSelection((state) => state.uiConfig.locale);
 
   return (

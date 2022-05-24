@@ -33,7 +33,7 @@ export interface ClustersGridSkeletonTableProps {
 
 export const ClustersGridSkeletonTable = React.memo((props: ClustersGridSkeletonTableProps) => {
   const { numOfItems = 5 } = props;
-  const classes = useStyles();
+  const { classes } = useStyles();
   const items = new Array(numOfItems).fill(null);
   return (
     <TableContainer>

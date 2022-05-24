@@ -23,8 +23,7 @@ import { renderWidgets } from '../Widget';
 import { WidgetDescriptor } from '../../models';
 import { Resource } from '../../models/Resource';
 import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import { useSelection } from '../../hooks/useSelection';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { usePreviewState } from '../../hooks/usePreviewState';
@@ -47,29 +46,27 @@ defineMessages({
   }
 });
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    emptyState: {
-      margin: `${theme.spacing(4)} ${theme.spacing(1)}`
-    },
-    emptyStateImage: {
-      width: '50%',
-      marginBottom: theme.spacing(1)
-    },
-    loadingViewRoot: {
-      flex: 1,
-      flexDirection: 'row'
-    },
-    drawerBody: {
-      paddingBottom: 50
-    }
-  })
-);
+const useStyles = makeStyles()((theme) => ({
+  emptyState: {
+    margin: `${theme.spacing(4)} ${theme.spacing(1)}`
+  },
+  emptyStateImage: {
+    width: '50%',
+    marginBottom: theme.spacing(1)
+  },
+  loadingViewRoot: {
+    flex: 1,
+    flexDirection: 'row'
+  },
+  drawerBody: {
+    paddingBottom: 50
+  }
+}));
 
 export function ToolsPanel() {
   const dispatch = useDispatch();
   const { id: siteId, uuid } = useActiveSite();
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { showToolsPanel, toolsPanel } = usePreviewState();
   const toolsPanelWidth = useSelection<number>((state) => state.preview.toolsPanelWidth);
   const pages = useSelection<WidgetDescriptor[]>((state) => state.preview.toolsPanelPageStack);

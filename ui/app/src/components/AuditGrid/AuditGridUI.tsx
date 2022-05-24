@@ -139,7 +139,7 @@ export function AuditGridUI(props: AuditGridUIProps) {
     siteMode = false
   } = props;
   const auditLogs = resource.read();
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { formatMessage } = useIntl();
   const [anchorPosition, setAnchorPosition] = useState(null);
   const [openedFilter, setOpenedFilter] = useState<string>();

@@ -15,8 +15,7 @@
  */
 
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import React, { useEffect, useState } from 'react';
 import GlobalState from '../../models/GlobalState';
 import DialogBody from '../DialogBody/DialogBody';
@@ -49,18 +48,16 @@ const translations = defineMessages({
   }
 });
 
-const useStyles = makeStyles(() =>
-  createStyles({
-    expiresWrapper: {
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between'
-    }
-  })
-);
+const useStyles = makeStyles()(() => ({
+  expiresWrapper: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between'
+  }
+}));
 
 export function CreateTokenDialogContainer(props: CreateTokenContainerProps) {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { isSubmitting, onCreated, onClose, onSubmittingAndOrPendingChange } = props;
   const [expires, setExpires] = useState(false);
   const [expiresAt, setExpiresAt] = useState(new Date());

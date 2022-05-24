@@ -15,8 +15,7 @@
  */
 
 import React, { useMemo, useState } from 'react';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import { defineMessages, useIntl } from 'react-intl';
 import moment from 'moment-timezone';
 import PublicRoundedIcon from '@mui/icons-material/PublicRounded';
@@ -82,15 +81,13 @@ const translations = defineMessages({
   }
 });
 
-const useStyles = makeStyles(() =>
-  createStyles({
-    popupIndicator: {
-      padding: ' 8px',
-      marginTop: '-6px',
-      marginRight: '-7px'
-    }
-  })
-);
+const useStyles = makeStyles()(() => ({
+  popupIndicator: {
+    padding: ' 8px',
+    marginTop: '-6px',
+    marginRight: '-7px'
+  }
+}));
 
 function DateTimePicker(props: DateTimePickerProps) {
   const {
@@ -120,7 +117,7 @@ function DateTimePicker(props: DateTimePickerProps) {
     return new Date(`${dateWithoutOffset}${localOffset}`);
   }, [value, timeZone]);
   const timeZones = getTimezones();
-  const classes = useStyles();
+  const { classes } = useStyles();
   const hour12 = dateTimeFormatOptions?.hour12 ?? true;
   const currentTimeZoneDesc = timeZones.find((tz) => tz.name === unescape(timeZone));
   const [datePickerOpen, setDatePickerOpen] = useState(false);

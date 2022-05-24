@@ -17,8 +17,8 @@
 import React, { lazy, Suspense } from 'react';
 import CrafterCMSNextBridge from './CrafterCMSNextBridge/CrafterCMSNextBridge';
 import crafterIconUrl from '../assets/crafter-icon.svg';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
+
 import palette from '../styles/palette';
 import AuthBoundary from './AuthBoundary';
 
@@ -38,49 +38,48 @@ export default function App() {
   );
 }
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    '@global': {
-      'body, html, #root': {
-        display: 'flex',
-        height: '100%',
-        textAlign: 'center',
-        placeContent: 'center',
-        fontFamily: 'sans-serif'
-      },
-      em: {
-        border: `1px solid ${palette.gray.light4}`,
-        backgroundColor: palette.gray.light1,
-        padding: '0 5px',
-        borderRadius: 4,
-        display: 'inline-block'
-      }
-    },
-    container: {
+const useStyles = makeStyles()((theme) => ({
+  '@global': {
+    'body, html, #root': {
       display: 'flex',
+      height: '100%',
       textAlign: 'center',
-      flexDirection: 'column',
       placeContent: 'center',
-      alignItems: 'center',
-      maxWidth: 500,
-      margin: 'auto'
+      fontFamily: 'sans-serif'
     },
-    logo: {
-      width: 100
-    },
-    code: {
+    em: {
       border: `1px solid ${palette.gray.light4}`,
       backgroundColor: palette.gray.light1,
-      padding: theme.spacing(1),
+      padding: '0 5px',
       borderRadius: 4,
-      textAlign: 'left'
-    },
-    hint: {}
-  })
-);
+      display: 'inline-block'
+    }
+  },
+  container: {
+    display: 'flex',
+    textAlign: 'center',
+    flexDirection: 'column',
+    placeContent: 'center',
+    alignItems: 'center',
+    maxWidth: 500,
+    margin: 'auto'
+  },
+  logo: {
+    width: 100
+  },
+  code: {
+    border: `1px solid ${palette.gray.light4}`,
+    backgroundColor: palette.gray.light1,
+    padding: theme.spacing(1),
+    borderRadius: 4,
+    textAlign: 'left'
+  },
+
+  hint: {}
+}));
 
 function Intro() {
-  const classes = useStyles({});
+  const { classes } = useStyles();
   return (
     <section className={classes.container}>
       <img className={classes.logo} src={crafterIconUrl} alt="" />
