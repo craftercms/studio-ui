@@ -47,21 +47,14 @@ export function getXSRFToken(): string {
   return Cookies.get(XSRF_TOKEN_COOKIE_NAME);
 }
 
-export function getCookieDomain(useBaseDomain: boolean = true): string {
-  let hostname = window.location.hostname;
-  let domain = hostname.includes('.') ? hostname : '';
-
+export function getCookieDomain(useBaseDomain: boolean = false): string {
+  let domainName = window.location.hostname;
   if (useBaseDomain) {
-    const ipRegex = /\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b/gm;
-    const isHostnameIp = Boolean(hostname.match(ipRegex));
-
-    if (hostname.includes('.') && !isHostnameIp) {
-      domain = hostname.replace(/^(.*?)\./, '');
-      domain = `.${domain.includes('.') ? domain : hostname}`;
-    }
+    let segments = domainName.split('.');
+    return segments.length <= 2 ? domainName : segments.slice(-2).join('.');
+  } else {
+    return domainName;
   }
-
-  return domain;
 }
 
 export function setSiteCookie(value: string, useBaseDomain: boolean = true): void {
