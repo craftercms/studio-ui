@@ -600,7 +600,7 @@
 
     if (hash.site) {
       CrafterCMSNext.system.getStore().subscribe((store) => {
-        CrafterCMSNext.util.auth.setSiteCookie(hash.site, store.env.useBaseDomain);
+        CrafterCMSNext.util.auth.setSiteCookie(hash.site, store.getState().env.useBaseDomain);
       });
       siteChanged = site !== hash.site;
     }
