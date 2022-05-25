@@ -347,7 +347,7 @@ export function Launcher(props: LauncherStateProps) {
   const version = useSystemVersion();
   const useLegacy = useLegacyPreviewPreference();
   const { formatMessage } = useIntl();
-  const { authoringBase } = useEnv();
+  const { authoringBase, useBaseDomain } = useEnv();
   const { open, anchor: anchorSelector, sitesRailPosition = 'left', closeButtonPosition = 'right' } = props;
   const uiConfig = useSiteUIConfig();
   const launcher = useLauncherState();
@@ -375,11 +375,11 @@ export function Launcher(props: LauncherStateProps) {
                   site
                 }),
               onClick(site) {
-                setSiteCookie(site);
+                setSiteCookie(site, useBaseDomain);
               }
             }))
         : null,
-    [siteCardMenuLinks, userRoles, formatMessage, authoringBase, useLegacy]
+    [siteCardMenuLinks, userRoles, formatMessage, authoringBase, useLegacy, useBaseDomain]
   );
   const checkMinimized = useMinimizedDialogWarning();
 
@@ -391,7 +391,7 @@ export function Launcher(props: LauncherStateProps) {
 
   const onSiteCardClick = (site: string) => {
     if (!checkMinimized()) {
-      setSiteCookie(site);
+      setSiteCookie(site, useBaseDomain);
       fetchUseLegacyPreviewPreference(site).subscribe((useLegacy) => {
         if (!useLegacy && window.location.href.includes(PREVIEW_URL_PATH)) {
           // If user is in UI next and switching to a site that's viewed in 4.

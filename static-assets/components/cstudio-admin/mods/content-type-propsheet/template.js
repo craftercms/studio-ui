@@ -138,7 +138,19 @@ YAHOO.extend(
               }
             });
           } else {
-            CStudioAuthoring.Operations.openCodeEditor({ path, contentType, mode: 'ftl' });
+            const fileName = CrafterCMSNext.util.path.getFileNameFromPath(path);
+            const pathNoFileName = path.replace(fileName, '');
+
+            CrafterCMSNext.system.store.dispatch({
+              type: 'EDIT_TEMPLATE',
+              payload: {
+                path: pathNoFileName,
+                fileName,
+                mode: 'ftl',
+                contentType,
+                openOnSuccess: true
+              }
+            });
           }
         };
 

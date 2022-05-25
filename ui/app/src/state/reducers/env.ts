@@ -27,6 +27,7 @@ export const envInitialState: GlobalState['env'] = ((origin: string) => ({
   guestBase: process.env.REACT_APP_GUEST_BASE ?? origin,
   xsrfHeader: document.querySelector('#xsrfHeader')?.textContent ?? 'X-XSRF-TOKEN',
   xsrfArgument: document.querySelector('#xsrfArgument')?.textContent ?? '_csrf',
+  useBaseDomain: document.querySelector('#useBaseDomain')?.textContent === 'true',
   siteCookieName: 'crafterSite',
   previewLandingBase: process.env.REACT_APP_PREVIEW_LANDING ?? `${origin}/studio/preview-landing`,
   version: null,
