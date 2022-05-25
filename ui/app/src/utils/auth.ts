@@ -47,7 +47,7 @@ export function getXSRFToken(): string {
   return Cookies.get(XSRF_TOKEN_COOKIE_NAME);
 }
 
-export function getCookieDomain(useBaseDomain: boolean = true): string {
+export function getCookieDomain(useBaseDomain: boolean = false): string {
   let hostname = window.location.hostname;
   let domain = hostname.includes('.') ? hostname : '';
 
@@ -64,7 +64,7 @@ export function getCookieDomain(useBaseDomain: boolean = true): string {
   return domain;
 }
 
-export function setSiteCookie(value: string, useBaseDomain: boolean = true): void {
+export function setSiteCookie(value: string, useBaseDomain: boolean = false): void {
   Cookies.set(SITE_COOKIE_NAME, value, {
     domain: getCookieDomain(useBaseDomain),
     path: '/'
