@@ -57,7 +57,7 @@ export function getCookieDomain(useBaseDomain: boolean = false): string {
   }
 }
 
-export function setSiteCookie(value: string, useBaseDomain: boolean = true): void {
+export function setSiteCookie(value: string, useBaseDomain: boolean = false): void {
   Cookies.set(SITE_COOKIE_NAME, value, {
     domain: getCookieDomain(useBaseDomain),
     path: '/'
