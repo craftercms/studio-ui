@@ -42,7 +42,7 @@ import { SHARED_WORKER_NAME } from '../utils/constants';
 
 export type EpicMiddlewareDependencies = { getIntl: () => IntlShape; worker: SharedWorker };
 
-export type CrafterCMSStore = EnhancedStore<GlobalState, StandardAction>;
+export type CrafterCMSStore = EnhancedStore<GlobalState, StandardAction, any>;
 
 export type CrafterCMSEpic = Epic<StandardAction, StandardAction, GlobalState, EpicMiddlewareDependencies>;
 
