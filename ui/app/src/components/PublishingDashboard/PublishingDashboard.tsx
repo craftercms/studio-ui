@@ -70,7 +70,7 @@ export function PublishingDashboard(props: PublishingDashboardProps) {
           <PublishingStatusWidget siteId={site} />
         </Grid>
         <Grid className={classes.rowSpacing} item xs={12}>
-          <PublishOnDemandWidget siteId={site} />
+          <PublishOnDemandWidget siteId={site} onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange} />
         </Grid>
         <Grid item xs={12}>
           <PublishingQueueWidget siteId={site} />

@@ -44,6 +44,7 @@ import { isBlank } from '../../utils/string';
 import PrimaryButton from '../PrimaryButton';
 import SecondaryButton from '../SecondaryButton';
 import { createCustomDocumentEventListener } from '../../utils/dom';
+import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -121,10 +122,11 @@ const initialPublishGitFormData = {
 
 interface PublishOnDemandWidgetProps {
   siteId: string;
+  onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
-  const { siteId } = props;
+  const { siteId, onSubmittingAndOrPendingChange } = props;
   const classes = useStyles();
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
@@ -155,6 +157,13 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
       });
     }
   };
+
+  useEffect(() => {
+    onSubmittingAndOrPendingChange?.({
+      hasPendingChanges: mode === 'studio' ? publishStudioFormValid : publishGitFormValid,
+      isSubmitting
+    });
+  }, [isSubmitting, mode, publishStudioFormValid, publishGitFormValid, onSubmittingAndOrPendingChange]);
 
   useEffect(() => {
     fetchPublishingTargets(siteId).subscribe({
