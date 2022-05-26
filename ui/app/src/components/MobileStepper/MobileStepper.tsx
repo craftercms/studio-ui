@@ -22,7 +22,23 @@ import { withStyles } from 'tss-react/mui';
 import { RedColor } from '../../styles/theme';
 import { capitalize } from '../../utils/string';
 
-const MobileStepperCmp = React.forwardRef<HTMLDivElement, MobileStepperProps>(function MobileStepper(props, ref) {
+export interface MobileStepperProps {
+  activeStep?: number;
+  backButton?: ReactNode;
+  onDotClick?: Function;
+  classes?: any;
+  className?: string;
+  LinearProgressProps?: any;
+  nextButton?: ReactNode;
+  position?: 'bottom' | 'top' | 'static';
+  steps: number;
+  variant: 'text' | 'dots' | 'progress';
+}
+
+export const UnstyledMobileStepper = React.forwardRef<HTMLDivElement, MobileStepperProps>(function MobileStepper(
+  props,
+  ref
+) {
   const {
     activeStep = 0,
     backButton,
@@ -78,21 +94,8 @@ const MobileStepperCmp = React.forwardRef<HTMLDivElement, MobileStepperProps>(fu
   );
 });
 
-interface MobileStepperProps {
-  activeStep?: number;
-  backButton?: ReactNode;
-  onDotClick?: Function;
-  classes?: any;
-  className?: string;
-  LinearProgressProps?: any;
-  nextButton?: ReactNode;
-  position?: 'bottom' | 'top' | 'static';
-  steps: number;
-  variant: 'text' | 'dots' | 'progress';
-}
-
-const MobileStepper = withStyles(
-  MobileStepperCmp,
+export const MobileStepper = withStyles(
+  UnstyledMobileStepper,
   (theme) => ({
     /* Styles applied to the root element. */
     root: {

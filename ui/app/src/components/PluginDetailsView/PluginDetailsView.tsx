@@ -35,10 +35,8 @@ import PrimaryButton from '../PrimaryButton';
 import PluginDocumentation from '../PluginDocumentation';
 
 const useStyles = makeStyles()((theme) => ({
-  '@keyframes fadeIn': fadeIn,
   fadeIn: {
-    animationName: '$fadeIn',
-    animationDuration: '1s'
+    animation: `${fadeIn} 1s`
   },
   detailsView: {
     height: '100%',

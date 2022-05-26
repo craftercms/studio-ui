@@ -26,7 +26,7 @@ import { useGlobalAppState } from '../GlobalApp';
 
 export type GlobalAppToolbarClassKey =
   | ViewToolbarClassKey
-  | 'title'
+  | 'headings'
   | 'subtitle'
   | 'leftContent'
   | 'rightContent'
@@ -55,17 +55,16 @@ const translations = defineMessages({
 });
 
 const useStyles = makeStyles<GlobalAppToolbarStyles, GlobalAppToolbarClassKey>()(
-  (theme, { title, subtitle, leftContent, rightContent } = {} as GlobalAppToolbarStyles) => ({
+  (theme, { headings, subtitle, leftContent, rightContent } = {} as GlobalAppToolbarStyles) => ({
     appBar: {},
     toolbar: {},
-    title: {
+    headings: {
       marginLeft: '10px',
       display: 'flex',
       flexDirection: 'column',
-      justifyContent: 'center',
+      alignItems: 'flex-start!important',
       overflow: 'hidden',
-      marginBottom: theme.spacing(1),
-      ...title
+      ...headings
     },
     subtitle: {
       ...subtitle
@@ -118,7 +117,7 @@ export const GlobalAppToolbar = React.memo<GlobalAppToolbarProps>(function (prop
       )}
       {startContent}
       {Boolean(title || subtitle) && (
-        <section className={cx(classes.title, props.classes?.title)}>
+        <section className={cx(classes.headings, props.classes?.headings)}>
           {title && (
             <Typography variant="h5" component="h1" className={classes.ellipsis}>
               {title}
@@ -138,7 +137,7 @@ export const GlobalAppToolbar = React.memo<GlobalAppToolbarProps>(function (prop
       )}
       <section className={cx(classes.leftContent, props.classes?.leftContent)}>{leftContent}</section>
       <section className={cx(classes.rightContent, props.classes?.rightContent)}>{rightContent}</section>
-      {showAppsButton && <LauncherOpenerButton sitesRailPosition="left" />}
+      {showAppsButton && <LauncherOpenerButton />}
     </ViewToolbar>
   );
 });

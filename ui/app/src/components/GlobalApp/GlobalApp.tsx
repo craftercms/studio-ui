@@ -150,7 +150,7 @@ export function GlobalApp(props: GlobalAppProps) {
                 return (
                   <Box display="flex" flexDirection="column" height="100%">
                     <section className={classes.launcher}>
-                      <LauncherOpenerButton sitesRailPosition="left" icon="apps" />
+                      <LauncherOpenerButton />
                     </section>
                     <EmptyState
                       styles={{

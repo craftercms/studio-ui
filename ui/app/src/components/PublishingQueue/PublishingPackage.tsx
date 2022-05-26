@@ -85,7 +85,7 @@ const useStyles = makeStyles()((theme) => ({
     color: theme.palette.text.secondary
   },
   packageLoading: {
-    '-webkit-animation': 'pulse 3s infinite ease-in-out',
+    WebkitAnimation: 'pulse 3s infinite ease-in-out',
     animation: 'pulse 3s infinite ease-in-out',
     pointerEvents: 'none'
   },

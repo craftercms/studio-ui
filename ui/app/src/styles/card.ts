@@ -21,8 +21,8 @@ const cardTitleStyles: CSSObject = {
   lineHeight: '1.5rem',
   overflow: 'hidden',
   display: '-webkit-box',
-  '-webkit-line-clamp': 1,
-  '-webkit-box-orient': 'vertical',
+  WebkitLineClamp: 1,
+  WebkitBoxOrient: 'vertical',
   marginBottom: 0,
   wordBreak: 'break-all'
 };

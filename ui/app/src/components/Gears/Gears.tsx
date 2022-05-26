@@ -16,45 +16,42 @@
 
 import { makeStyles } from 'tss-react/mui';
 import React from 'react';
+import { keyframes } from 'tss-react';
 
-const useStyles = makeStyles()(() => ({
-  small: {
-    animation: '$rotation 3s infinite linear',
-    transformOrigin: '34.5px 81.5px'
-  },
-  smallShadow: {
-    animation: '$rotation 3s infinite linear',
-    transformOrigin: '37.5px 84.5px'
-  },
-  narrow: {
-    animation: '$counter-rotation 6s infinite linear',
-    transformOrigin: '106.46px 136.83px'
-  },
-  narrowShadow: {
-    animation: '$counter-rotation 6s infinite linear',
-    transformOrigin: '109.46px 139.83px'
-  },
-  wide: {
-    animation: '$rotation 6s infinite linear',
-    transformOrigin: '198.69px 61.69px'
-  },
-  wideShadow: {
-    animation: '$rotation 6s infinite linear',
-    transformOrigin: '201.69px 64.69px'
-  },
-  spinnerGear: {
-    animation: `$rotation 6s infinite linear`,
-    transformOrigin: '50% 50%'
-  },
-  '@keyframes rotation': {
-    from: { transform: 'rotate(0deg)' },
-    to: { transform: 'rotate(360deg)' }
-  },
-  '@keyframes counter-rotation': {
-    from: { transform: 'rotate(360deg)' },
-    to: { transform: 'rotate(0deg)' }
-  }
-}));
+const useStyles = makeStyles()(() => {
+  const rotation = keyframes`from { transform: rotate(0deg) } to { transform: rotate(360deg) }`;
+  const counterRotation = keyframes`from { transform: rotate(360deg) } to { transform: rotate(0deg) }`;
+  return {
+    small: {
+      animation: `${rotation} 3s infinite linear`,
+      transformOrigin: '34.5px 81.5px'
+    },
+    smallShadow: {
+      animation: `${rotation} 3s infinite linear`,
+      transformOrigin: '37.5px 84.5px'
+    },
+    narrow: {
+      animation: `${counterRotation} 6s infinite linear`,
+      transformOrigin: '106.46px 136.83px'
+    },
+    narrowShadow: {
+      animation: `${counterRotation} 6s infinite linear`,
+      transformOrigin: '109.46px 139.83px'
+    },
+    wide: {
+      animation: `${rotation} 6s infinite linear`,
+      transformOrigin: '198.69px 61.69px'
+    },
+    wideShadow: {
+      animation: `${rotation} 6s infinite linear`,
+      transformOrigin: '201.69px 64.69px'
+    },
+    spinnerGear: {
+      animation: `${rotation} 6s infinite linear`,
+      transformOrigin: '50% 50%'
+    }
+  };
+});
 
 interface GearsProps {
   fill?: string;

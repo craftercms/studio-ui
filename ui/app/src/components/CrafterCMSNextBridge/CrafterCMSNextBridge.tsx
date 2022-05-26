@@ -24,7 +24,7 @@ import React, {
   useLayoutEffect,
   useState
 } from 'react';
-import { DeprecatedThemeOptions } from '@mui/material/styles';
+import { ThemeOptions } from '@mui/material/styles';
 import { setRequestForgeryToken } from '../../utils/auth';
 import { CrafterCMSStore, getStore } from '../../state/store';
 import { SnackbarProvider } from 'notistack';
@@ -47,7 +47,7 @@ export function CrafterCMSNextBridge(
     mountLegacyConcierge?: boolean;
     mountCssBaseline?: boolean;
     suspenseFallback?: ReactNode;
-    themeOptions?: DeprecatedThemeOptions;
+    themeOptions?: ThemeOptions;
   }>
 ) {
   const [store, setStore] = useState<CrafterCMSStore>(null);

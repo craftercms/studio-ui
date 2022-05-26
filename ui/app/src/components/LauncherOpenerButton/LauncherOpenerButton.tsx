@@ -50,16 +50,16 @@ let instanceCount = 0;
 interface LauncherOpenerButtonProps {
   icon?: 'logo' | 'apps';
   sitesRailPosition?: LauncherStateProps['sitesRailPosition'];
-  closeButtonPosition?: 'left' | 'right';
+  closeButtonPosition?: LauncherStateProps['closeButtonPosition'];
 }
 
 export function LauncherOpenerButton(props: LauncherOpenerButtonProps) {
   const { classes } = useStyles();
-  const { sitesRailPosition = 'right', icon = 'apps', closeButtonPosition = 'right' } = props;
+  const { icon = 'apps', ...launcherProps } = props;
   const { formatMessage } = useIntl();
   const id = useMemo(() => `toolbarLauncherButton${instanceCount++}`, []);
   const dispatch = useDispatch();
-  const onMenuClick = () => dispatch(showLauncher({ anchor: `#${id}`, sitesRailPosition, closeButtonPosition }));
+  const onMenuClick = () => dispatch(showLauncher({ anchor: `#${id}`, ...launcherProps }));
   return (
     <Tooltip title={formatMessage(messages.menu)}>
       <IconButton

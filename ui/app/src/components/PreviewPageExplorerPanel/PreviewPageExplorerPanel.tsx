@@ -170,8 +170,8 @@ const treeItemStyles = makeStyles<void, 'treeItemLabelRoot'>()((theme, _params, 
       marginRight: '5px',
       overflow: 'hidden',
       display: '-webkit-box',
-      '-webkit-line-clamp': 1,
-      '-webkit-box-orient': 'vertical',
+      WebkitLineClamp: 1,
+      WebkitBoxOrient: 'vertical',
       marginBottom: 0,
       wordBreak: 'break-all'
     }

@@ -57,6 +57,7 @@ import { useEnv } from '../../hooks/useEnv';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import { getSystemLink } from '../../utils/system';
 import { fetchUseLegacyPreviewPreference } from '../../services/configuration';
+import { keyframes } from 'tss-react';
 
 const messages = defineMessages({
   privateBlueprints: {
@@ -187,10 +188,8 @@ const CustomTabs = withStyles(Tabs, {
 });
 
 const useStyles = makeStyles()((theme) => ({
-  '@keyframes fadeIn': fadeIn,
   fadeIn: {
-    animationName: '$fadeIn',
-    animationDuration: '1s'
+    animation: `${keyframes`${fadeIn}`} 1s`
   },
   paperScrollPaper: {
     height: 'calc(100% - 100px)',

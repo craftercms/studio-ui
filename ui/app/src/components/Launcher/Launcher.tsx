@@ -45,7 +45,6 @@ import { EnhancedUser } from '../../models/User';
 import LookupTable from '../../models/LookupTable';
 import { batchActions } from '../../state/actions/misc';
 import LauncherGlobalNav from '../LauncherGlobalNav';
-import GlobalState from '../../models/GlobalState';
 import Skeleton from '@mui/material/Skeleton';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useEnv } from '../../hooks/useEnv';
@@ -54,21 +53,32 @@ import { useActiveUser } from '../../hooks/useActiveUser';
 import { useSiteList } from '../../hooks/useSiteList';
 import { useSiteUIConfig } from '../../hooks/useSiteUIConfig';
 import { initLauncherConfig } from '../../state/actions/launcher';
-import { useLauncherState } from '../../hooks/useLauncherState';
-import { getSystemLink } from '../../utils/system';
+import { getSystemLink, SystemLinkId } from '../../utils/system';
 import { PREVIEW_URL_PATH } from '../../utils/constants';
 import { useLegacyPreviewPreference } from '../../hooks/useLegacyPreviewPreference';
 import { fetchUseLegacyPreviewPreference } from '../../services/configuration';
 import { WidgetDescriptor } from '../../models';
 import useMinimizedDialogWarning from '../../hooks/useMinimizedDialogWarning';
+import TranslationOrText from '../../models/TranslationOrText';
+import { SystemIconDescriptor } from '../SystemIcon';
 
 export interface LauncherStateProps {
   open: boolean;
   anchor: string;
   sitesRailPosition?: 'left' | 'right' | 'hidden';
   closeButtonPosition?: 'left' | 'right';
-  // Keeping prop @ GlobalState['uiConfig']['launcher']['globalNavigationPosition']
-  // globalNavigationPosition?: 'before' | 'after';
+  widgets: WidgetDescriptor[];
+  /**
+   * Whether to render the global nav before or after
+   * the additional widgets coming from configuration
+   **/
+  globalNavigationPosition?: 'before' | 'after';
+  siteCardMenuLinks?: Array<{
+    title: TranslationOrText;
+    systemLinkId: SystemLinkId;
+    icon?: SystemIconDescriptor;
+    permittedRoles?: string[];
+  }>;
 }
 
 const messages = defineMessages({
@@ -189,9 +199,10 @@ interface AppsRailProps {
   user: EnhancedUser;
   onLogout(): void;
   closeButtonPosition: LauncherStateProps['closeButtonPosition'];
-  globalNavigationPosition: GlobalState['launcher']['globalNavigationPosition'];
+  globalNavigationPosition: LauncherStateProps['globalNavigationPosition'];
   userRoles: string[];
   clsx: any;
+  lonely: boolean;
 }
 
 const UserDisplaySection = ({ classes, formatMessage, user, onLogout }) => (
@@ -235,9 +246,10 @@ const AppsRail = ({
   closeButtonPosition,
   userRoles,
   globalNavigationPosition,
-  clsx
+  clsx,
+  lonely
 }: AppsRailProps) => (
-  <Grid item xs={12} md={8} className={classes.appsRail}>
+  <Grid item xs={12} md={lonely ? 12 : 8} className={classes.appsRail}>
     <div className={clsx(classes.railTop, closeButtonPosition === 'left' && classes.railTopExtraPadded)}>
       {globalNavigationPosition === 'before' && <LauncherGlobalNav />}
       {renderWidgets(widgets, { userRoles })}
@@ -346,12 +358,16 @@ export function Launcher(props: LauncherStateProps) {
   const useLegacy = useLegacyPreviewPreference();
   const { formatMessage } = useIntl();
   const { authoringBase } = useEnv();
-  const { open, anchor: anchorSelector, sitesRailPosition = 'left', closeButtonPosition = 'right' } = props;
+  const {
+    open,
+    anchor: anchorSelector,
+    sitesRailPosition = 'left',
+    closeButtonPosition = 'right',
+    globalNavigationPosition = 'after',
+    siteCardMenuLinks,
+    widgets
+  } = props;
   const uiConfig = useSiteUIConfig();
-  const launcher = useLauncherState();
-  const siteCardMenuLinks = launcher?.siteCardMenuLinks;
-  const widgets = launcher?.widgets;
-  const globalNavigationPosition = launcher?.globalNavigationPosition ?? 'after';
   const userRoles = user.rolesBySite[siteId];
   const anchor = useMemo(() => (anchorSelector ? document.querySelector(anchorSelector) : null), [anchorSelector]);
   const cardActions = useMemo<LauncherSiteCardOption[]>(
@@ -382,10 +398,10 @@ export function Launcher(props: LauncherStateProps) {
   const checkMinimized = useMinimizedDialogWarning();
 
   useEffect(() => {
-    if (uiConfig.xml && !launcher) {
+    if (uiConfig.xml) {
       dispatch(initLauncherConfig({ configXml: uiConfig.xml }));
     }
-  }, [uiConfig.xml, launcher, dispatch]);
+  }, [uiConfig.xml, dispatch]);
 
   const onSiteCardClick = (site: string) => {
     if (!checkMinimized()) {
@@ -437,6 +453,7 @@ export function Launcher(props: LauncherStateProps) {
       userRoles={userRoles}
       globalNavigationPosition={globalNavigationPosition}
       clsx={cx}
+      lonely={sitesRailPosition === 'hidden'}
     />
   );
 

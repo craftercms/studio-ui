@@ -106,7 +106,7 @@ export function SiteSearchToolBar(props: SiteSearchToolBarProps) {
             {currentView === 'grid' ? <ListViewIcon /> : <GridViewIcon />}
           </IconButton>
         </Tooltip>
-        {!embedded && <LauncherOpenerButton sitesRailPosition="left" icon="apps" />}
+        {!embedded && <LauncherOpenerButton />}
       </section>
     </ViewToolbar>
   );

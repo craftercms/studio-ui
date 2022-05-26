@@ -38,10 +38,10 @@ import { useSpreadState } from '../../hooks/useSpreadState';
 import { CreateUserDialogContainerProps } from './utils';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 
-const useStyles = makeStyles<void, 'arrow'>()((theme, _params, classes) => ({
+const useStyles = makeStyles()((theme) => ({
   popper: {
     zIndex: theme.zIndex.modal,
-    [`&[x-placement*="bottom"] .${classes.arrow}`]: {
+    [`&[data-popper-placement*="bottom"] [class*="-arrow"]`]: {
       top: 0,
       left: 0,
       marginTop: '-0.71em',
@@ -51,7 +51,7 @@ const useStyles = makeStyles<void, 'arrow'>()((theme, _params, classes) => ({
         transformOrigin: '0 100%'
       }
     },
-    [`&[x-placement*="top"] .${classes.arrow}`]: {
+    [`&[data-popper-placement*="top"] [class*="-arrow"]`]: {
       bottom: 0,
       left: 0,
       marginBottom: '-0.71em',
@@ -61,7 +61,7 @@ const useStyles = makeStyles<void, 'arrow'>()((theme, _params, classes) => ({
         transformOrigin: '100% 0'
       }
     },
-    [`&[x-placement*="right"] .${classes.arrow}`]: {
+    [`&[data-popper-placement*="right"] [class*="-arrow"]`]: {
       left: 0,
       marginLeft: '-0.71em',
       height: '1em',
@@ -72,7 +72,7 @@ const useStyles = makeStyles<void, 'arrow'>()((theme, _params, classes) => ({
         transformOrigin: '100% 100%'
       }
     },
-    [`&[x-placement*="left"] .${classes.arrow}`]: {
+    [`&[data-popper-placement*="left"] [class*="-arrow"]`]: {
       right: 0,
       marginRight: '-0.71em',
       height: '1em',
