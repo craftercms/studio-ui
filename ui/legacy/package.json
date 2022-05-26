@@ -31,7 +31,7 @@
     "@babel/preset-env": "7.16.5",
     "@babel/preset-react": "7.16.5",
     "@babel/preset-typescript": "^7.16.5",
-    "@babel/runtime": "^7.16.5",
+    "@babel/runtime": "^7.17.2",
     "babel-plugin-dynamic-import-node": "2.3.3",
     "babel-plugin-macros": "2.8.0",
     "babel-plugin-transform-react-remove-prop-types": "0.4.24",
