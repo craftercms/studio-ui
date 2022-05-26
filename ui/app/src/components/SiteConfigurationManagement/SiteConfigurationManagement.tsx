@@ -501,6 +501,7 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
               {environment ? (
                 <>
                   <Tooltip
+                    placement="top"
                     title={
                       <FormattedMessage
                         id="siteConfigurationManagement.environment"
