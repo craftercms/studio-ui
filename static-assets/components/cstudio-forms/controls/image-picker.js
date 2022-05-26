@@ -58,6 +58,8 @@ CStudioForms.Controls.ImagePicker =
     this.previewBoxWidth = 300;
     this.external = null;
     this.supportedPostFixes = ['_s'];
+    this.CMgs = CStudioAuthoring.Messages;
+    this.langBundle = CStudioAuthoring.Messages.getBundle('contentTypes', CStudioAuthoringContext.lang);
 
     return this;
   };
@@ -332,7 +334,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
             if (this.imagePicker.validExtensions.indexOf(imageData.fileExtension) !== -1) {
               valid = true;
             } else {
-              message = 'The uploaded file is not of type image';
+              message = self.CMgs.format(self.langBundle, 'fileNotImage');
             }
 
             if (!valid) {
@@ -618,6 +620,10 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
       if (prop.name === 'readonly' && prop.value === 'true') {
         this.readonly = true;
       }
+
+      if (prop.name === 'allowSVG' && prop.value === 'false') {
+        this.validExtensions = this.validExtensions.filter((extension) => extension !== 'svg');
+      }
     }
 
     YAHOO.util.Dom.setStyle(this.imageEl, 'height', this.previewBoxHeight + 'px');
@@ -871,7 +877,8 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
         name: 'imageManager',
         type: 'datasource:image'
       },
-      { label: CMgs.format(langBundle, 'readonly'), name: 'readonly', type: 'boolean' }
+      { label: CMgs.format(langBundle, 'readonly'), name: 'readonly', type: 'boolean' },
+      { label: CMgs.format(langBundle, 'allowSVG'), name: 'allowSVG', type: 'boolean', defaultValue: 'true' }
     ];
   },
 

@@ -785,6 +785,8 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'kr', {
   enableBrowseExisting: '쇼 기존 항목 찾아보기',
   enableSearchExisting: '쇼 기존 검색',
   useSearch: '검색 사용',
+  allowEditWithoutWarning: '경고 없이 편집 허용',
+  allowSVG: 'SVG 허용',
 
   /*Restrictions*/
   required: '필요',
