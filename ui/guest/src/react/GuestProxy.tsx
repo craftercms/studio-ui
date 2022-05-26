@@ -366,7 +366,7 @@ export function GuestProxy() {
           const { modelId, fieldId, targetIndex, instance } = op.args;
 
           const $spinner = $(`
-            <div style="display: flex; align-items: center; justify-content: center;">
+            <div style="text-align: center">
               <svg class="craftercms-placeholder-spinner" width=50 height=50 viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
                 <circle class="path" fill="none" stroke-width=5 stroke-linecap="round" cx="25" cy="25" r="20"/>
               </svg>
@@ -379,8 +379,23 @@ export function GuestProxy() {
           // to the spinner container.
           const childrenLength = $daddy.children().length;
           if (childrenLength) {
-            const child = $daddy.children()[targetIndex <= childrenLength ? targetIndex : childrenLength];
-            $spinner.css({ width: `${child.offsetWidth}px` });
+            const index = typeof targetIndex === 'number' ? targetIndex : parseInt(popPiece(targetIndex));
+            const child = $daddy.children()[index < childrenLength ? index : childrenLength - 1];
+            const daddyDisplay = $daddy.css('display');
+            // set spinner styles according to the parent display
+            $spinner.css(
+              daddyDisplay === 'flex'
+                ? {
+                    display: 'flex',
+                    width: `${child.offsetWidth}px`,
+                    'align-items': 'center',
+                    'justify-content': 'center'
+                  }
+                : {
+                    display: 'inline-block',
+                    width: `${child.offsetWidth}px`
+                  }
+            );
           }
 
           $daddy.removeClass(emptyCollectionClass);
