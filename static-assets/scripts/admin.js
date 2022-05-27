@@ -204,6 +204,10 @@
         return $http.post(repositories('cancel_failed_pull'), data);
       };
 
+      this.getSite = function(site) {
+        return $http.get(`${Constants.SERVICE}site/get.json?site_id=${site}`);
+      }
+
       //AUDIT
 
       this.getAudit = function (data) {
@@ -2211,6 +2215,7 @@
       }
 
       this.init = function () {
+        $scope.sandboxBranch = '';
         $scope.showError = function (error) {
           $scope.messageTitle = `${$translate.instant('common.ERROR')} ${$translate.instant('common.CODE')}: ${
             error.code
@@ -2266,6 +2271,10 @@
           .error(function (error) {
             $scope.showError(error.response);
           });
+
+        adminService.getSite(repositories.site).success(({ sandboxBranch }) => {
+          $scope.sandboxBranch = sandboxBranch;
+        })
       };
       this.init();
 
@@ -2331,12 +2340,12 @@
       $scope.pullRepo = function (repo) {
         $scope.branch = repo.branches[0];
         $scope.branches = repo.branches;
-        var pullRepo = function (branch) {
+        var pullRepo = function () {
           repositories.spinnerOverlay = $scope.spinnerOverlay();
           var currentRepo = {};
           currentRepo.siteId = repositories.site;
           currentRepo.remoteName = repo.name;
-          currentRepo.remoteBranch = branch;
+          currentRepo.remoteBranch = $scope.sandboxBranch;
           currentRepo.mergeStrategy = repositories.mergeStrategy;
 
           adminService
@@ -2356,7 +2365,7 @@
         repositories.repoAction = 'pull';
         $scope.confirmationAction = pullRepo;
         $scope.confirmationText = $translate.instant('admin.repositories.REMOTE_BRANCH_PULL') + ':';
-        $scope.dialogTitle = $translate.instant('admin.repositories.PULL');
+        $scope.dialogTitle = `${$translate.instant('admin.repositories.PULL_FROM')} ${repo.name}`;
 
         $scope.adminModal = $scope.showModal('pushPull.html', 'sm', true, 'studioMedium');
       };

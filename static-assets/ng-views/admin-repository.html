@@ -473,15 +473,21 @@
   <div class="modal-header">
     <h3 class="modal-title">{{dialogTitle}}</h3>
   </div>
-  <form name="pullPushForm" novalidate class="ng-dirty ng-invalid ng-invalid-required">
+  <form name="pullPushForm" novalidate class="ng-dirty ng-invalid ng-invalid-required pull-push-form">
     <div class="modal-body">
       <div class="form-group">
-        <label for="branch">{{ confirmationText }}</label>
-        <select class="form-control" id="branch" name="branch" ng-model="branch" required>
-          <option ng-repeat="branch in branches" value="{{branch}}">{{branch}}</option>
-        </select>
-
+        <div ng-if="repositories.repoAction == 'push'">
+          <label for="branch">{{ confirmationText }}</label>
+          <select class="form-control" id="branch" name="branch" ng-model="branch" required>
+            <option ng-repeat="branch in branches" value="{{branch}}">{{branch}}</option>
+          </select>
+        </div>
         <div ng-if="repositories.repoAction == 'pull'">
+          <label class="pull-branch-label">
+            <span class="heading">{{ 'admin.repositories.BRANCH' | translate }}</span>
+            {{ sandboxBranch }}
+          </label>
+          <input type="hidden" id="branch" name="branch" ng-model="sandboxBranch" required />
           <label
             class="mt15" for="branch"
           >{{ 'admin.repositories.MERGE_STRATEGY_LABEL' | translate }}</label>
@@ -503,6 +509,13 @@
             </option>
           </select>
           <div class="mt10">{{ repositories.mergeStrategyDescription }}</div>
+
+          <div class="pull-info text-info mt15">
+            <i class="fa fa-info-circle mr10" aria-hidden="true"></i>
+            <p class="mb0">
+              {{ 'admin.repositories.PULL_INFO' | translate }}
+            </p>
+          </div>
         </div>
 
         <div
