@@ -47,13 +47,19 @@ export function getXSRFToken(): string {
   return Cookies.get(XSRF_TOKEN_COOKIE_NAME);
 }
 
-export function getCookieDomain(): string {
-  return window.location.hostname.includes('.') ? window.location.hostname : '';
+export function getCookieDomain(useBaseDomain: boolean = false): string {
+  let domainName = window.location.hostname;
+  if (useBaseDomain) {
+    let segments = domainName.split('.');
+    return segments.length <= 2 ? domainName : segments.slice(-2).join('.');
+  } else {
+    return domainName;
+  }
 }
 
-export function setSiteCookie(value: string): void {
+export function setSiteCookie(value: string, useBaseDomain: boolean = false): void {
   Cookies.set(SITE_COOKIE_NAME, value, {
-    domain: getCookieDomain(),
+    domain: getCookieDomain(useBaseDomain),
     path: '/'
   });
 }

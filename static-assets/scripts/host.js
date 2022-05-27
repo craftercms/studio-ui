@@ -599,7 +599,9 @@
     var siteChanged = false;
 
     if (hash.site) {
-      CrafterCMSNext.util.auth.setSiteCookie(hash.site);
+      CrafterCMSNext.system.getStore().subscribe((store) => {
+        CrafterCMSNext.util.auth.setSiteCookie(hash.site, store.getState().env.useBaseDomain);
+      });
       siteChanged = site !== hash.site;
     }
 

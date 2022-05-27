@@ -38,7 +38,7 @@ function SiteSwitcherSelect(props: SiteSwitcherSelectProps) {
   const { site, ...rest } = props;
   const sites = useSiteList();
   const { classes, cx: clsx } = useStyles();
-  const { authoringBase } = useEnv();
+  const { authoringBase, useBaseDomain } = useEnv();
   const dispatch = useDispatch();
   const useLegacy = useLegacyPreviewPreference();
   const checkMinimized = useMinimizedDialogWarning();
@@ -48,7 +48,7 @@ function SiteSwitcherSelect(props: SiteSwitcherSelectProps) {
       if (window.location.href.includes(PREVIEW_URL_PATH)) {
         dispatch(changeSite(value));
       } else {
-        setSiteCookie(value);
+        setSiteCookie(value, useBaseDomain);
         setTimeout(
           () =>
             (window.location.href = getSystemLink({

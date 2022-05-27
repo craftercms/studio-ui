@@ -7980,7 +7980,8 @@ CStudioAuthoring.FilesDiff = {
   YAHOO.util.Event.onDOMReady(function (e, args, win) {
     //
     if (!(!window.ActiveXObject && 'ActiveXObject' in window)) {
-      CrafterCMSNext.util.auth.setSiteCookie(win.CStudioAuthoringContext.site);
+      const state = CrafterCMSNext.system.store.getState();
+      CrafterCMSNext.util.auth.setSiteCookie(win.CStudioAuthoringContext.site, state.env.useBaseDomain);
     }
 
     const getInitialConfiguration = () => {

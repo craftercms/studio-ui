@@ -324,7 +324,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
   const { current: refts } = useRef<any>({});
   refts.setSite = setSite;
   const { formatMessage } = useIntl();
-  const { authoringBase } = useEnv();
+  const { authoringBase, useBaseDomain } = useEnv();
 
   useEffect(() => {
     setDialog({ open: props.open });
@@ -673,7 +673,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
       setApiState({ creatingSite: false });
       handleClose();
       // Prop differs between regular site and marketplace site due to API versions 1 vs 2 differences
-      setSiteCookie(site.siteId);
+      setSiteCookie(site.siteId, useBaseDomain);
       // TODO: Revisit this when site creation becomes asynchronous
       fetchUseLegacyPreviewPreference(site.siteId).subscribe((useLegacy) => {
         window.location.href = getSystemLink({

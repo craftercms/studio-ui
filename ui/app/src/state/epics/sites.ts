@@ -35,9 +35,9 @@ export default [
             payload: { nextSite }
           },
           {
-            env: { siteCookieName }
+            env: { useBaseDomain }
           }
-        ]) => setSiteCookie(nextSite)
+        ]) => setSiteCookie(nextSite, useBaseDomain)
       ),
       ignoreElements()
     ),
