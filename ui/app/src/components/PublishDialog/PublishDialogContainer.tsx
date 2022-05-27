@@ -75,7 +75,7 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
   const [submitDisabled, setSubmitDisabled] = useState(true);
 
   const siteId = useActiveSiteId();
-  const hasPublishPermission = items?.every((item) => item.availableActionsMap.publish);
+  const hasPublishPermission = !items?.some((item) => !item.availableActionsMap.publish);
   const dispatch = useDispatch();
   const submissionCommentRequired = useSelection((state) => state.uiConfig.publishing.publishCommentRequired);
   const isApprove = hasPublishPermission && items.every((item) => item.stateMap.submitted);
