@@ -44,6 +44,7 @@ import useSpreadState from '../../hooks/useSpreadState';
 import { UNDEFINED } from '../../utils/constants';
 import RefreshRounded from '@mui/icons-material/RefreshRounded';
 import Tooltip from '@mui/material/Tooltip';
+import { fetchSite } from '../../services/sites';
 
 export interface GitManagementProps {
   embedded?: boolean;
@@ -68,6 +69,7 @@ export function GitManagement(props: GitManagementProps) {
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const [activeTab, setActiveTab] = useState(0);
+  const [sandboxBranch, setSandboxBranch] = useState('');
 
   const [{ repositories }, setRepoState] = useSpreadState({
     repositories: null as Array<Repository>,
@@ -168,6 +170,17 @@ export function GitManagement(props: GitManagementProps) {
     fetchRepoStatus();
   }, [fetchRepoStatus]);
 
+  useEffect(() => {
+    fetchSite(siteId).subscribe({
+      next: ({ sandboxBranch }) => {
+        setSandboxBranch(sandboxBranch);
+      },
+      error: (error) => {
+        console.error(error);
+      }
+    });
+  }, [siteId]);
+
   const newRemoteRepositoryDialogState = useEnhancedDialogState();
   const newRemoteRepositoryDialogStatePendingChangesCloseRequest = useWithPendingChangesCloseRequest(
     newRemoteRepositoryDialogState.onClose
@@ -232,6 +245,7 @@ export function GitManagement(props: GitManagementProps) {
               {formatMessage(translations[loadingStatus ? 'fetchingStatus' : statusMessageKey ?? 'fetchingStatus'])}
             </Alert>
             <RepoGrid
+              sandboxBranch={sandboxBranch}
               repositories={repositories}
               fetchStatus={fetchRepoStatus}
               fetchRepositories={fetchRepositories}

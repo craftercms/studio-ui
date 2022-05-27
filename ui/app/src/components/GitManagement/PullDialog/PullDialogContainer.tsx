@@ -30,27 +30,42 @@ import PrimaryButton from '../../PrimaryButton';
 import { isBlank } from '../../../utils/string';
 import { PullFromRemoteDialogContainerProps } from './utils';
 import {
-  getStoredPullBranch,
   getStoredPullMergeStrategy,
-  removeStoredPullBranch,
   removeStoredPullMergeStrategy,
-  setStoredPullBranch,
   setStoredPullMergeStrategy
 } from '../../../utils/state';
 import useActiveSite from '../../../hooks/useActiveSite';
 import useActiveUser from '../../../hooks/useActiveUser';
+import Alert from '@mui/material/Alert';
+import FormLabel from '@mui/material/FormLabel';
+import { Typography } from '@mui/material';
 
-const useStyles = makeStyles(() =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     formControl: {
       marginBottom: '15px'
+    },
+    pullBranchLabel: {
+      padding: '14px 16px',
+      border: `1px solid ${theme.palette.grey['400']}`,
+      borderRadius: 4,
+      color: theme.palette.text.primary
+    },
+    pullBranchLabelHeading: {
+      display: 'inline-block',
+      fontWeight: theme.typography.fontWeightMedium,
+      marginRight: theme.spacing(1)
+    },
+    pullInfo: {
+      alignItems: 'center',
+      marginTop: theme.spacing(2)
     }
   })
 );
 
 export function PullDialogContainer(props: PullFromRemoteDialogContainerProps) {
   const {
-    branches,
+    sandboxBranch,
     remoteName,
     mergeStrategies,
     onClose,
@@ -61,16 +76,13 @@ export function PullDialogContainer(props: PullFromRemoteDialogContainerProps) {
     isSubmitting = false
   } = props;
 
-  const [selectedBranch, setSelectedBranch] = useState('');
   const [selectedMergeStrategy, setSelectedMergeStrategy] = useState('');
   const classes = useStyles();
   const { uuid, id: siteId } = useActiveSite();
   const { username } = useActiveUser();
 
   const onFormInputChange = (e: any) => {
-    if (e.target.name === 'branch') {
-      setSelectedBranch(e.target.value);
-    } else if (e.target.name === 'mergeStrategy') {
+    if (e.target.name === 'mergeStrategy') {
       setSelectedMergeStrategy(e.target.value);
     }
   };
@@ -79,12 +91,12 @@ export function PullDialogContainer(props: PullFromRemoteDialogContainerProps) {
 
   const onSubmit = (e) => {
     e.preventDefault();
-    if (!isBlank(selectedBranch)) {
+    if (!isBlank(sandboxBranch)) {
       onPullStart?.();
       pull({
         siteId,
         remoteName,
-        remoteBranch: selectedBranch,
+        remoteBranch: sandboxBranch,
         mergeStrategy: selectedMergeStrategy
       }).subscribe({
         next(result) {
@@ -96,27 +108,6 @@ export function PullDialogContainer(props: PullFromRemoteDialogContainerProps) {
       });
     }
   };
-
-  useEffect(() => {
-    if (!selectedBranch && branches?.length) {
-      const storedPullBranch = getStoredPullBranch(uuid, username);
-      if (storedPullBranch) {
-        if (branches.includes(storedPullBranch)) {
-          setSelectedBranch(storedPullBranch);
-        } else {
-          removeStoredPullBranch(uuid, username);
-        }
-      } else {
-        setSelectedBranch(branches[0]);
-      }
-    }
-  }, [branches, selectedBranch, uuid, username]);
-
-  useEffect(() => {
-    if (selectedBranch) {
-      setStoredPullBranch(uuid, username, selectedBranch);
-    }
-  }, [selectedBranch, uuid, username]);
 
   useEffect(() => {
     if (!selectedMergeStrategy && mergeStrategies?.length) {
@@ -144,23 +135,12 @@ export function PullDialogContainer(props: PullFromRemoteDialogContainerProps) {
     <form onSubmit={onSubmit}>
       <DialogBody>
         <FormControl variant="outlined" fullWidth className={classes.formControl} disabled={disabled || isSubmitting}>
-          <InputLabel id="remoteBranchToPullLabel">
-            <FormattedMessage id="repositories.remoteBranchToPull" defaultMessage="Remote Branch to Pull" />
-          </InputLabel>
-          <Select
-            labelId="remoteBranchToPullLabel"
-            name="branch"
-            value={selectedBranch}
-            onChange={onFormInputChange}
-            label={<FormattedMessage id="repositories.remoteBranchToPull" defaultMessage="Remote Branch to Pull" />}
-            fullWidth
-          >
-            {branches.map((branch) => (
-              <MenuItem key={branch} value={branch}>
-                {branch}
-              </MenuItem>
-            ))}
-          </Select>
+          <FormLabel className={classes.pullBranchLabel}>
+            <Typography color="textSecondary" variant="body1" className={classes.pullBranchLabelHeading}>
+              <FormattedMessage id="words.branch" defaultMessage="Branch" />
+            </Typography>
+            {sandboxBranch}
+          </FormLabel>
         </FormControl>
         <FormControl variant="outlined" fullWidth disabled={disabled || isSubmitting}>
           <InputLabel id="mergeStrategyLabel">
@@ -181,12 +161,22 @@ export function PullDialogContainer(props: PullFromRemoteDialogContainerProps) {
             ))}
           </Select>
         </FormControl>
+
+        <Alert severity="info" variant="outlined" className={classes.pullInfo}>
+          <Typography>
+            <FormattedMessage
+              id="repositories.pullInfo"
+              defaultMessage="You may only pull from the branch the site was created from; any feature branch work should be merged
+          upstream."
+            />
+          </Typography>
+        </Alert>
       </DialogBody>
       <DialogFooter>
         <SecondaryButton onClick={onCloseButtonClick} disabled={disabled || isSubmitting}>
           <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
         </SecondaryButton>
-        <PrimaryButton type="submit" disabled={disabled || isBlank(selectedBranch)} loading={isSubmitting}>
+        <PrimaryButton type="submit" disabled={disabled || isBlank(sandboxBranch)} loading={isSubmitting}>
           <FormattedMessage id="words.ok" defaultMessage="Ok" />
         </PrimaryButton>
       </DialogFooter>

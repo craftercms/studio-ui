@@ -126,3 +126,7 @@ export function validateActionPolicy(
     }
   ).pipe(pluck(...toPluck));
 }
+
+export function fetchSite(siteId: string): Observable<any> {
+  return get(`/studio/api/1/services/api/1/site/get.json?site_id=${siteId}`).pipe(pluck('response'));
+}

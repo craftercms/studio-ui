@@ -21,18 +21,20 @@ import { PullFromRemoteDialogProps } from './utils';
 import { FormattedMessage } from 'react-intl';
 
 export function PullDialog(props: PullFromRemoteDialogProps) {
-  const { branches, remoteName, mergeStrategies, onPullSuccess, onPullError, ...rest } = props;
+  const { sandboxBranch, remoteName, mergeStrategies, onPullSuccess, onPullError, ...rest } = props;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const computedIsSubmitting = isSubmitting || rest.isSubmitting;
   return (
     <EnhancedDialog
-      title={<FormattedMessage id="words.pull" defaultMessage="Pull" />}
+      title={
+        <FormattedMessage id="pullDialog.pullFrom" defaultMessage="Pull from {remoteName}" values={{ remoteName }} />
+      }
       maxWidth="xs"
       {...rest}
       isSubmitting={computedIsSubmitting}
     >
       <PullDialogContainer
-        branches={branches}
+        sandboxBranch={sandboxBranch}
         remoteName={remoteName}
         isSubmitting={computedIsSubmitting}
         mergeStrategies={mergeStrategies}
