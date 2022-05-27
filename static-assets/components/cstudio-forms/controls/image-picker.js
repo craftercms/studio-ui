@@ -878,7 +878,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
         type: 'datasource:image'
       },
       { label: CMgs.format(langBundle, 'readonly'), name: 'readonly', type: 'boolean' },
-      { label: CMgs.format(langBundle, 'allowSVG'), name: 'allowSVG', type: 'boolean', defaultValue: 'true' }
+      { label: CMgs.format(langBundle, 'allowSVG'), name: 'allowSVG', type: 'boolean', defaultValue: 'false' }
     ];
   },
 
