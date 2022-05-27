@@ -26,7 +26,6 @@ import {
   PublishDialogResourceInput
 } from './utils';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
-import { usePermissionsBySite } from '../../hooks/usePermissionsBySite';
 import { useDispatch } from 'react-redux';
 import { fetchPublishingTargets } from '../../services/publishing';
 import { getComputedPublishingTarget, getDateScheduled } from '../../utils/content';
@@ -76,9 +75,7 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
   const [submitDisabled, setSubmitDisabled] = useState(true);
 
   const siteId = useActiveSiteId();
-  const permissionsBySite = usePermissionsBySite();
-  const myPermissions = permissionsBySite[siteId];
-  const hasPublishPermission = myPermissions?.includes('publish');
+  const hasPublishPermission = items?.every((item) => item.availableActionsMap.publish);
   const dispatch = useDispatch();
   const submissionCommentRequired = useSelection((state) => state.uiConfig.publishing.publishCommentRequired);
   const isApprove = hasPublishPermission && items.every((item) => item.stateMap.submitted);
@@ -178,14 +175,13 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
       items: !detailedItems.isFetching ? Object.values(detailedItems.itemsByPath) : null,
       error: state.error,
       submitting: isSubmitting,
-      publishingTargets,
-      myPermissions
+      publishingTargets
     }),
-    [detailedItems.isFetching, detailedItems.itemsByPath, state.error, isSubmitting, publishingTargets, myPermissions]
+    [detailedItems.isFetching, detailedItems.itemsByPath, state.error, isSubmitting, publishingTargets]
   );
 
   const resource = useLogicResource<PublishDialogResourceBody, PublishDialogResourceInput>(publishSource, {
-    shouldResolve: (source) => Boolean(source.items && source.publishingTargets && myPermissions.length),
+    shouldResolve: (source) => Boolean(source.items && source.publishingTargets),
     shouldReject: (source) => Boolean(source.error),
     shouldRenew: (source, resource) => source.submitting && resource.complete,
     resultSelector: (source) => pluckProps(source, 'items', 'publishingTargets'),
