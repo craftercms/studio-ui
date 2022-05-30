@@ -21,15 +21,13 @@ import LookupTable from '../../models/LookupTable';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Typography } from '@mui/material';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import ItemDisplay from '../ItemDisplay';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import { PathNavigatorTreeNode } from './PathNavigatorTreeUI';
-import clsx from 'clsx';
 import SearchBar from '../SearchBar/SearchBar';
 import CloseIconRounded from '@mui/icons-material/CloseRounded';
 import ErrorOutlineRoundedIcon from '@mui/icons-material/ErrorOutlineRounded';
@@ -74,120 +72,118 @@ const translations = defineMessages({
   }
 });
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    root: {
-      '&:focus > $content $labelContainer': {
-        background: 'none'
-      }
-    },
-    content: {
-      alignItems: 'flex-start',
-      paddingRight: 0,
-      '&:hover': {
-        background: 'none'
-      }
-    },
-    labelContainer: {
-      display: 'flex',
-      paddingLeft: 0,
-      flexWrap: 'wrap',
-      overflow: 'hidden',
-      '&:hover': {
-        background: 'none'
-      },
-      '& .MuiSvgIcon-root': {
-        fontSize: '1.1rem'
-      }
-    },
-    itemDisplaySection: {
-      width: '100%',
-      display: 'flex',
-      alignItems: 'center',
-      minHeight: '23.5px',
-      '&:hover': {
-        backgroundColor: theme.palette.mode === 'dark' ? theme.palette.action.hover : theme.palette.grey['A200']
-      }
-    },
-    filterSection: {
-      width: '100%',
-      display: 'flex',
-      alignItems: 'center'
-    },
-    empty: {
-      color: theme.palette.text.secondary,
-      display: 'flex',
-      alignItems: 'center',
-      minHeight: '23.5px',
-      marginLeft: '10px',
-      '& svg': {
-        marginRight: '5px',
-        fontSize: '1.1rem'
-      }
-    },
-    more: {
-      color: theme.palette.text.primary,
-      display: 'flex',
-      alignItems: 'center',
-      minHeight: '23.5px',
-      marginLeft: '10px'
-    },
-    iconContainer: {
-      width: '26px',
-      marginRight: 0,
-      '& svg': {
-        fontSize: '23.5px !important',
-        color: theme.palette.text.secondary
-      }
-    },
-    focused: {
-      background: 'none !important'
-    },
-    optionsWrapper: {
-      top: 0,
-      right: 0,
-      visibility: 'hidden',
-      position: 'absolute',
-      marginLeft: 'auto',
-      display: 'flex',
-      minHeight: '23.5px',
-      alignItems: 'center'
-    },
-    optionsWrapperOver: {
-      visibility: 'visible'
-    },
-    loading: {
-      display: 'flex',
-      alignItems: 'center',
-      minHeight: '23.5px',
-      marginLeft: '10px',
-      '& span': {
-        marginLeft: '10px'
-      }
-    },
-    searchRoot: {
-      margin: '5px 10px 5px 0',
-      height: '25px',
-      width: '100%'
-    },
-    searchInput: {
-      fontSize: '12px',
-      padding: '5px !important'
-    },
-    searchCloseButton: {
-      marginRight: '10px'
-    },
-    searchCloseIcon: {
-      fontSize: '12px !important'
-    },
-    iconButton: {
-      padding: '2px 3px'
-    },
-    active: {
-      backgroundColor: palette.blue.highlight
+const useStyles = makeStyles<void, 'content' | 'labelContainer'>()((theme, _params, classes) => ({
+  root: {
+    [`&:focus > .${classes.content} .${classes.labelContainer}`]: {
+      background: 'none'
     }
-  })
-);
+  },
+  content: {
+    alignItems: 'flex-start',
+    paddingRight: 0,
+    '&:hover': {
+      background: 'none'
+    }
+  },
+  labelContainer: {
+    display: 'flex',
+    paddingLeft: 0,
+    flexWrap: 'wrap',
+    overflow: 'hidden',
+    '&:hover': {
+      background: 'none'
+    },
+    '& .MuiSvgIcon-root': {
+      fontSize: '1.1rem'
+    }
+  },
+  itemDisplaySection: {
+    width: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    minHeight: '23.5px',
+    '&:hover': {
+      backgroundColor: theme.palette.mode === 'dark' ? theme.palette.action.hover : theme.palette.grey['A200']
+    }
+  },
+  filterSection: {
+    width: '100%',
+    display: 'flex',
+    alignItems: 'center'
+  },
+  empty: {
+    color: theme.palette.text.secondary,
+    display: 'flex',
+    alignItems: 'center',
+    minHeight: '23.5px',
+    marginLeft: '10px',
+    '& svg': {
+      marginRight: '5px',
+      fontSize: '1.1rem'
+    }
+  },
+  more: {
+    color: theme.palette.text.primary,
+    display: 'flex',
+    alignItems: 'center',
+    minHeight: '23.5px',
+    marginLeft: '10px'
+  },
+  iconContainer: {
+    width: '26px',
+    marginRight: 0,
+    '& svg': {
+      fontSize: '23.5px !important',
+      color: theme.palette.text.secondary
+    }
+  },
+  focused: {
+    background: 'none !important'
+  },
+  optionsWrapper: {
+    top: 0,
+    right: 0,
+    visibility: 'hidden',
+    position: 'absolute',
+    marginLeft: 'auto',
+    display: 'flex',
+    minHeight: '23.5px',
+    alignItems: 'center'
+  },
+  optionsWrapperOver: {
+    visibility: 'visible'
+  },
+  loading: {
+    display: 'flex',
+    alignItems: 'center',
+    minHeight: '23.5px',
+    marginLeft: '10px',
+    '& span': {
+      marginLeft: '10px'
+    }
+  },
+  searchRoot: {
+    margin: '5px 10px 5px 0',
+    height: '25px',
+    width: '100%'
+  },
+  searchInput: {
+    fontSize: '12px',
+    padding: '5px !important'
+  },
+  searchCloseButton: {
+    marginRight: '10px'
+  },
+  searchCloseIcon: {
+    fontSize: '12px !important'
+  },
+  iconButton: {
+    padding: '2px 3px'
+  },
+  active: {
+    backgroundColor: palette.blue.highlight
+  }
+}));
 
 export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
   const {
@@ -203,7 +199,7 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
     onFilterChange,
     onMoreClick
   } = props;
-  const classes = useStyles();
+  const { classes, cx } = useStyles();
   const [over, setOver] = useState(false);
   const [showFilter, setShowFilter] = useState(Boolean(keywordByPath[node.id]));
   const [keyword, setKeyword] = useState(keywordByPath[node.id] ?? '');
@@ -318,7 +314,7 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
                   item={itemsByPath[node.id]}
                   labelTypographyProps={{ variant: 'body2' }}
                 />
-                <section className={clsx(classes.optionsWrapper, over && classes.optionsWrapperOver)}>
+                <section className={cx(classes.optionsWrapper, over && classes.optionsWrapperOver)}>
                   {onOpenItemMenu && (
                     <Tooltip title={<FormattedMessage id="words.options" defaultMessage="Options" />}>
                       <IconButton
@@ -371,9 +367,9 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
                       }}
                       showActionButton={keyword && true}
                       classes={{
-                        root: clsx(classes.searchRoot, props.classes?.searchRoot),
-                        inputInput: clsx(classes.searchInput, props.classes?.searchInput),
-                        actionIcon: clsx(classes.searchCloseIcon, props.classes?.searchCleanButton)
+                        root: cx(classes.searchRoot, props.classes?.searchRoot),
+                        inputInput: cx(classes.searchInput, props.classes?.searchInput),
+                        actionIcon: cx(classes.searchCloseIcon, props.classes?.searchCleanButton)
                       }}
                     />
                     <IconButton
@@ -383,7 +379,7 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
                         onCloseFilterBox();
                         setShowFilter(false);
                       }}
-                      className={clsx(classes.searchCloseButton, props.classes?.searchCloseButton)}
+                      className={cx(classes.searchCloseButton, props.classes?.searchCloseButton)}
                     >
                       <CloseIconRounded />
                     </IconButton>
@@ -395,7 +391,7 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
           classes={{
             root: classes.root,
             content: classes.content,
-            label: clsx(classes.labelContainer, active[node.id] ? classes.active : null),
+            label: cx(classes.labelContainer, active[node.id] ? classes.active : null),
             iconContainer: classes.iconContainer,
             focused: classes.focused
           }}

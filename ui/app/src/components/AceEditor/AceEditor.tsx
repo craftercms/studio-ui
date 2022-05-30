@@ -15,10 +15,9 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import { pluckProps } from '../../utils/object';
-import { CSSProperties } from '@mui/styles';
+import { CSSObject as CSSProperties } from 'tss-react';
 import { useMount } from '../../hooks/useMount';
 import { useTheme } from '@mui/material/styles';
 import clsx from 'clsx';
@@ -171,14 +170,14 @@ const aceOptions: Array<keyof AceOptions> = [
 // const aceModes = [];
 // const aceThemes = [];
 
-const useStyles = makeStyles(() =>
-  createStyles<AceEditorClassKey, AceEditorStyles>({
-    root: (styles) => ({
+const useStyles = makeStyles<AceEditorStyles, AceEditorClassKey>()(
+  (_theme, { root, editorRoot } = {} as AceEditorStyles) => ({
+    root: {
       position: 'relative',
       display: 'contents',
-      ...styles.root
-    }),
-    editorRoot: (styles) => ({
+      ...root
+    },
+    editorRoot: {
       top: 0,
       left: 0,
       right: 0,
@@ -187,14 +186,14 @@ const useStyles = makeStyles(() =>
       width: '100%',
       height: '100%',
       position: 'relative',
-      ...styles.editorRoot
-    })
+      ...editorRoot
+    }
   })
 );
 
 function AceEditorComp(props: AceEditorProps, ref: MutableRef<AceAjax.Editor>) {
   const { value = '', autoFocus = false, onChange, readOnly, onInit } = props;
-  const classes = useStyles(props.styles);
+  const { classes, cx } = useStyles(props.styles);
   const editorRootClasses = props.classes?.editorRoot;
   const refs = useRef({
     ace: null,
@@ -220,7 +219,7 @@ function AceEditorComp(props: AceEditorProps, ref: MutableRef<AceAjax.Editor>) {
     const init = () => {
       if (!unmounted) {
         const pre = document.createElement('pre');
-        pre.className = clsx(classes.editorRoot, editorRootClasses);
+        pre.className = cx(classes.editorRoot, editorRootClasses);
         refs.current.pre = pre;
         refs.current.elem.appendChild(pre);
         // @ts-ignore - Ace types are incorrect; they don't implement the constructor that receives options.
@@ -305,7 +304,7 @@ function AceEditorComp(props: AceEditorProps, ref: MutableRef<AceAjax.Editor>) {
           refs.current.elem = e;
         }
       }}
-      className={clsx(classes.root, props.classes?.root)}
+      className={cx(classes.root, props.classes?.root)}
     />
   );
 }

@@ -146,6 +146,7 @@ export const components = {
   GlobalAppToolbar: lazy(() => import('../components/GlobalAppToolbar')),
   GlobalConfigManagement: lazy(() => import('../components/GlobalConfigManagement')),
   GlobalDialogManager: lazy(() => import('../components/GlobalDialogManager')),
+  GlobalStyles: lazy(() => import('../components/GlobalStyles')),
   GraphiQL: lazy(() => import('../components/GraphiQL')),
   GroupManagement: lazy(() => import('../components/GroupManagement')),
   GroupsGrid: lazy(() => import('../components/GroupsGrid')),

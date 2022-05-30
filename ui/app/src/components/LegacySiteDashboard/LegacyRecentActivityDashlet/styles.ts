@@ -14,24 +14,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    rightAction: {
-      marginRight: theme.spacing(1)
-    },
-    actionsBarRoot: {
-      left: '0',
-      right: '0',
-      zIndex: 2,
-      position: 'absolute'
-    },
-    actionsBarCheckbox: {
-      margin: '2px'
-    }
-  })
-);
+const useStyles = makeStyles()((theme) => ({
+  rightAction: {
+    marginRight: theme.spacing(1)
+  },
+  actionsBarRoot: {
+    left: '0',
+    right: '0',
+    zIndex: 2,
+    position: 'absolute'
+  },
+  actionsBarCheckbox: {
+    margin: '2px'
+  }
+}));
 
 export default useStyles;

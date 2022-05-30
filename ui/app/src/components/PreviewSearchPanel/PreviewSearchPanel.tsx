@@ -16,7 +16,6 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
-import makeStyles from '@mui/styles/makeStyles';
 import List from '@mui/material/List';
 import SearchBar from '../SearchBar/SearchBar';
 import { ComponentsContentTypeParams, ElasticParams, SearchItem } from '../../models/Search';
@@ -49,6 +48,7 @@ import { useSpreadState } from '../../hooks/useSpreadState';
 import { useSubject } from '../../hooks/useSubject';
 import Pagination from '../Pagination';
 import { getFileNameFromPath } from '../../utils/path';
+import { makeStyles } from 'tss-react/mui';
 
 const translations = defineMessages({
   previewSearchPanelTitle: {
@@ -65,7 +65,7 @@ const translations = defineMessages({
   }
 });
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles()(() => ({
   searchContainer: {
     padding: '16px'
   },
@@ -89,8 +89,7 @@ interface SearchResultsProps {
 function SearchResults(props: SearchResultsProps) {
   const { resource, onDragStart, onDragEnd } = props;
   const items = resource.read();
-  const classes = useStyles({});
-
+  const { classes } = useStyles();
   return (
     <List className={classes.searchResultsList}>
       {items.map((item: SearchItem) => (
@@ -116,7 +115,7 @@ const initialSearchParameters: Partial<ElasticParams> = {
 const mimeTypes = ['image/png', 'image/jpeg', 'image/gif', 'video/mp4', 'image/svg+xml'];
 
 export function PreviewSearchPanel() {
-  const classes = useStyles({});
+  const { classes } = useStyles();
   const { formatMessage } = useIntl();
   const [keyword, setKeyword] = useState('');
   const [error, setError] = useState<ApiResponse>(null);

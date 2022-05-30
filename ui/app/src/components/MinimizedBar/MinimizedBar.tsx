@@ -14,10 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import createStyles from '@mui/styles/createStyles';
-
-import makeStyles from '@mui/styles/makeStyles';
-import { Slide, Theme } from '@mui/material';
+import { Slide } from '@mui/material';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -35,53 +32,48 @@ export interface MinimizedBarProps {
   onMaximize?(): void;
 }
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      display: 'flex',
-      padding: `${theme.spacing(2)} ${theme.spacing(2.5)}`,
-      alignItems: 'center',
-      marginLeft: '20px',
-      position: 'relative',
-      border: `1px solid ${theme.palette.divider}`
-    },
-    title: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center'
-    },
-    subtitle: {
-      fontSize: '14px',
-      marginLeft: '15px'
-    },
-    indeterminateProgressBar: {
-      position: 'absolute',
-      bottom: '0',
-      width: '100%',
-      left: '0',
-      borderBottomLeftRadius: '3px',
-      borderBottomRightRadius: '3px'
-    }
-  })
-);
-
 export function MinimizedBar(props: MinimizedBarProps) {
   const { open, title, onMaximize, subtitle, status } = props;
-  const classes = useStyles();
   return open ? (
     <MinimizedBarPortal>
       <Slide direction="left" in mountOnEnter unmountOnExit>
-        <Paper className={classes.root} elevation={4}>
+        <Paper
+          elevation={4}
+          sx={(theme) => ({
+            display: 'flex',
+            padding: `${theme.spacing(2)} ${theme.spacing(2.5)}`,
+            alignItems: 'center',
+            marginLeft: '20px',
+            position: 'relative',
+            border: `1px solid ${theme.palette.divider}`
+          })}
+        >
           <Box>
             <Typography variant="body1" children={title} />
-            {subtitle && <Typography variant="body2" className={classes.subtitle} children={subtitle} />}
+            {subtitle && (
+              <Typography
+                variant="body2"
+                sx={{
+                  fontSize: '14px',
+                  marginLeft: '15px'
+                }}
+                children={subtitle}
+              />
+            )}
           </Box>
           {onMaximize ? (
             <IconButton aria-label="Maximize" onClick={onMaximize} children={<MaximizeIcon />} size="large" />
           ) : null}
           {status && (
             <LinearProgress
-              className={classes.indeterminateProgressBar}
+              sx={{
+                position: 'absolute',
+                bottom: '0',
+                width: '100%',
+                left: '0',
+                borderBottomLeftRadius: '3px',
+                borderBottomRightRadius: '3px'
+              }}
               variant={status === 'indeterminate' ? 'indeterminate' : 'determinate'}
               value={status === 'indeterminate' ? null : status}
             />

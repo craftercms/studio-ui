@@ -15,23 +15,24 @@
  */
 
 import React, { PropsWithChildren, useMemo } from 'react';
-import { createTheme, StyledEngineProvider, Theme, ThemeOptions, ThemeProvider } from '@mui/material/styles';
-import StylesProvider from '@mui/styles/StylesProvider';
-import { createDefaultThemeOptions, generateClassName } from '../../styles/theme';
+import { createTheme, ThemeOptions, ThemeProvider } from '@mui/material/styles';
+import { createDefaultThemeOptions } from '../../styles/theme';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import palette from '../../styles/palette';
-import { GenerateId } from 'jss';
 import { deepmerge } from '@mui/utils';
+import createCache from '@emotion/cache';
+import { CacheProvider } from '@emotion/react';
+import { TssCacheProvider } from 'tss-react';
 
-declare module '@mui/styles/defaultTheme' {
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
-  interface DefaultTheme extends Theme {}
-}
+export type CrafterThemeProviderProps = PropsWithChildren<{ themeOptions?: ThemeOptions }>;
 
-export type CrafterThemeProviderProps = PropsWithChildren<{
-  themeOptions?: ThemeOptions;
-  generateClassName?: GenerateId;
-}>;
+const muiCache = createCache({ key: 'mui', prepend: true });
+
+const tssCache = createCache({ key: 'craftercms' });
+
+// .compat = true to avoid console warnings regarding first-child
+tssCache.compat = true;
+muiCache.compat = true;
 
 export function CrafterThemeProvider(props: CrafterThemeProviderProps) {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
@@ -93,11 +94,11 @@ export function CrafterThemeProvider(props: CrafterThemeProviderProps) {
     });
   }, [prefersDarkMode, props.themeOptions]);
   return (
-    <StyledEngineProvider injectFirst>
-      <ThemeProvider theme={theme}>
-        <StylesProvider generateClassName={props.generateClassName ?? generateClassName} children={props.children} />
-      </ThemeProvider>
-    </StyledEngineProvider>
+    <CacheProvider value={muiCache}>
+      <TssCacheProvider value={tssCache}>
+        <ThemeProvider theme={theme} children={props.children} />
+      </TssCacheProvider>
+    </CacheProvider>
   );
 }
 

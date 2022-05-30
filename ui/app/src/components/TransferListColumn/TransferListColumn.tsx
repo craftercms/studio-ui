@@ -44,7 +44,7 @@ export interface TransferListColumnProps {
 export function TransferListColumn(props: TransferListColumnProps) {
   const { title, items, onItemClick, checkedList, isAllChecked, onCheckAllClicked, inProgressIds, emptyStateMessage } =
     props;
-  const classes = useStyles();
+  const { classes } = useStyles();
   const [keyword, setKeyword] = useState('');
 
   const onSearch = (value) => {

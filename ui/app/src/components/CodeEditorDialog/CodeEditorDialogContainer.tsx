@@ -61,7 +61,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
   const isLocked = isLockedState(item?.state);
   const isLockedForMe = isItemLockedForMe(item, user.username);
   const shouldPerformLock = itemLoaded && !readonly && !isLockedForMe && !isLocked && pathLocked !== path;
-  const classes = useStyles();
+  const { classes } = useStyles();
   const editorRef = useRef<any>();
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();

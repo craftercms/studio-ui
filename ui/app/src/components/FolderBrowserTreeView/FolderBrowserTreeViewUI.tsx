@@ -20,7 +20,6 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import LoadingState from '../LoadingState/LoadingState';
 import { Resource } from '../../models/Resource';
-import clsx from 'clsx';
 import { RenderTreeNode } from './RenderTreeNode';
 import useStyles from './styles';
 import { PathSelected } from './PathSelected';
@@ -52,7 +51,7 @@ export interface FolderBrowserTreeViewUIProps {
 }
 
 export function FolderBrowserTreeViewUI(props: FolderBrowserTreeViewUIProps) {
-  const classes = useStyles({});
+  const { classes, cx: clsx } = useStyles();
   const {
     rootPath,
     currentPath,

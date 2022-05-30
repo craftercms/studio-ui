@@ -20,9 +20,11 @@
 <#assign pFile = RequestParameters.file!'index.js'>
 <#assign pPluginId = RequestParameters.pluginId!''>
 <#if pSite == '' || pType == '' || pName == ''>
-    <div style="font-family: sans-serif; text-align: center; margin: 50px;">
-      <h1>Query arguments site, type and name are mandatory to render a plugin</h1>
-    </div>
+  <@layout title="Error - ${contentModel['common-title']!''}">
+    <script>
+      printError({ title: 'Query arguments site, type and name are mandatory to render a plugin' })
+    </script>
+  </@layout>
 <#elseif pSite?? && pType?? && pName?? && pFile?ends_with('.html')>
   <#assign html = applicationContext.configurationService.getConfigurationAsString(
       pSite,
@@ -34,25 +36,13 @@
   <#if html = "CONTENT_NOT_FOUND">
     <@layout title="Not Found - ${contentModel['common-title']!''}">
       <script>
-        (function () {
-          const { render } = CrafterCMSNext;
-          const elem = document.createElement('div');
-          document.body.appendChild(elem);
-          render(elem, 'ErrorState', {
-            graphicUrl: '/studio/static-assets/images/warning_state.svg',
-            classes: {
-              root: 'craftercms-error-state'
-            },
-            error: {
-              code: '',
-              message: 'Unable to render the requested plugin.',
-              remedialAction: (
-                'Please check that the url has all the necessary params (site, type, name and file), ' +
-                'that these values are correct and that you\'ve committed all your work to the site repo.'
-              )
-            }
-          });
-        })();
+        printError({
+          title: 'Unable to render the requested plugin.',
+          message: (
+            'Please check that the url has all the necessary params (site, type, name and file), ' +
+            'that these values are correct and that you\'ve committed all your work to the site repo.'
+          )
+        })
       </script>
     </@layout>
   <#else>
@@ -63,13 +53,12 @@
     <script>
       window.CRAFTER_CMS_PLUGIN_PAGE = true;
       (function () {
-        const { render, util } = CrafterCMSNext;
-        const qs = util.path.parseQueryString();
-        util.auth.setRequestForgeryToken();
+        const { render } = CrafterCMSNext;
+        const { utils } = craftercms;
+        const qs = utils.path.parseQueryString();
+        utils.auth.setRequestForgeryToken();
 
         const script = document.createElement('script');
-
-
 
         script.src = '/studio/1/plugin/file?siteId=${pSite}&type=${pType}&name=${pName}&filename=${pFile}<#if pPluginId?has_content>&pluginId=${pPluginId}</#if>';
 
@@ -83,21 +72,12 @@
 
         script.onerror = function () {
           console.error('Script failed to load. The query string is attached to this error.', qs);
-          const elem = document.createElement('div');
-          document.body.appendChild(elem);
-          render(elem, 'ErrorState', {
-            graphicUrl: '/studio/static-assets/images/warning_state.svg',
-            classes: {
-              root: 'craftercms-error-state'
-            },
-            error: {
-              code: '',
-              message: 'Unable to render the requested plugin.',
-              remedialAction: (
-                'Please check that the url has all the necessary params (site, type, name and file), ' +
-                'that these values are correct and that you\'ve committed all your work to the site repo.'
-              )
-            }
+          printError({
+            title: 'Unable to render the requested plugin.',
+            message: (
+              'Please check that the url has all the necessary params (site, type, name and file), ' +
+              'that these values are correct and that you\'ve committed all your work to the site repo.'
+            )
           });
         };
 
@@ -130,10 +110,24 @@
         max-width: 500px;
         margin: 40px auto;
       }
+      .craftercms-error-state-image {
+        width: 300px
+      }
     </style>
   </head>
   <body>
   <#include "/templates/web/common/js-next-scripts.ftl" />
+  <script>
+    function printError(props) {
+      const elem = document.createElement('div');
+      document.body.appendChild(elem);
+      CrafterCMSNext.render(elem, 'ErrorState', {
+        imageUrl: '/studio/static-assets/images/warning_state.svg',
+        classes: { root: 'craftercms-error-state', image: 'craftercms-error-state-image' },
+        ...props
+      });
+    }
+  </script>
   <#nested />
   </body>
   </html>

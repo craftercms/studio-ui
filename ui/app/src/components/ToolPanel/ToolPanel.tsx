@@ -17,8 +17,7 @@
 import { useIntl } from 'react-intl';
 import React, { ElementType, FunctionComponent, PropsWithChildren, ReactElement } from 'react';
 import { Theme } from '@mui/material';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import Typography from '@mui/material/Typography';
 import ChevronLeftRounded from '@mui/icons-material/ChevronLeftRounded';
 import Divider from '@mui/material/Divider';
@@ -26,6 +25,7 @@ import IconButton from '@mui/material/IconButton';
 import { popToolsPanelPage } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 import TranslationOrText from '../../models/TranslationOrText';
+import { CSSObject } from 'tss-react';
 
 type ToolPanelProps = PropsWithChildren<{
   title: TranslationOrText;
@@ -42,20 +42,18 @@ interface PanelHeaderProps {
   onBack: () => void;
 }
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    panelHeader: {
-      display: 'flex',
-      alignItems: 'center',
-      padding: theme.spacing(0, 1),
-      ...theme.mixins.toolbar,
-      justifyContent: 'flex-start'
-    }
-  })
-);
+const useStyles = makeStyles()((theme: Theme) => ({
+  panelHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    padding: theme.spacing(0, 1),
+    ...(theme.mixins.toolbar as CSSObject),
+    justifyContent: 'flex-start'
+  }
+}));
 
 export const PanelHeader: FunctionComponent<PanelHeaderProps> = (props) => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { title, BackIcon = ChevronLeftRounded, onBack } = props;
   return (
     <>

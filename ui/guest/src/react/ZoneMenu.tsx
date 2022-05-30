@@ -45,14 +45,13 @@ import { extractCollection } from '@craftercms/studio-ui/utils/model';
 import { isSimple, popPiece } from '@craftercms/studio-ui/utils/string';
 import { AnyAction } from '@reduxjs/toolkit';
 import useRef from '@craftercms/studio-ui/hooks/useUpdateRefs';
-import { exists, findContainerRecord, getById, runValidation } from '../iceRegistry';
+import { exists, findContainerRecord, getById, runValidation, getReferentialEntries } from '../iceRegistry';
 import { post } from '../utils/communicator';
 import { requestEdit, validationMessage } from '@craftercms/studio-ui/state/actions/preview';
 import Menu from '@mui/material/Menu';
 import Typography from '@mui/material/Typography';
 import MenuItem from '@mui/material/MenuItem';
 import { getParentModelId } from '../utils/ice';
-import { iceRegistry } from '../index';
 import { fromICEId, get } from '../elementRegistry';
 
 export interface ZoneMenuProps {
@@ -97,7 +96,7 @@ export function ZoneMenu(props: ZoneMenuProps) {
     // If the record is a component, get the index from searching the
     // model id inside the container collection (previously computed).
     return recordType === 'component'
-      ? collection.indexOf(modelId)
+      ? collection?.indexOf(modelId)
       : parseInt(isSimple(index) ? String(index) : popPiece(String(index)));
   }, [recordType, collection, modelId, index]);
   const nodeSelectorItemRecord = useMemo(
@@ -110,12 +109,14 @@ export function ZoneMenu(props: ZoneMenuProps) {
               index: modelHierarchyMap[modelId].parentContainerFieldIndex
             })
           )
+        : ['node-selector-item', 'repeat-item'].includes(recordType)
+        ? iceRecord
         : null,
-    [modelId, recordType]
+    [modelId, recordType, iceRecord]
   );
   const componentId =
     recordType === 'component' ? modelId : recordType === 'node-selector-item' ? collection[elementIndex] : null;
-  const { field, contentType } = useMemo(() => iceRegistry.getReferentialEntries(record.iceIds[0]), [record.iceIds]);
+  const { field, contentType } = useMemo(() => getReferentialEntries(record.iceIds[0]), [record.iceIds]);
   const isMovable =
     ['node-selector-item', 'repeat-item'].includes(recordType) ||
     Boolean(recordType === 'component' && nodeSelectorItemRecord);
@@ -125,9 +126,29 @@ export function ZoneMenu(props: ZoneMenuProps) {
   const isOnlyItem = isMovable ? isFirstItem && isLastItem : null;
   const isEmbedded = useMemo(() => !Boolean(getCachedModel(modelId)?.craftercms.path), [modelId]);
   const showCodeEditOptions = ['component', 'page', 'node-selector-item'].includes(recordType) && !isHeadlessMode;
-  const isTrashable = recordType !== 'field' && recordType !== 'page';
   const showAddItem = recordType === 'field' && field.type === 'repeat';
-  const showDuplicate = ['repeat-item', 'component', 'node-selector-item'].includes(recordType);
+  const { isTrashable, showDuplicate } = useMemo(() => {
+    const actions = {
+      isTrashable: false,
+      showDuplicate: false
+    };
+
+    const nodeSelectorEntries = Boolean(nodeSelectorItemRecord) ? getReferentialEntries(nodeSelectorItemRecord) : null;
+
+    if (Boolean(collection)) {
+      const validations = nodeSelectorEntries?.field?.validations;
+      const maxValidation = validations?.maxCount?.value;
+      const minValidation = validations?.minCount?.value;
+      const trashableValidation = minValidation ? minValidation < numOfItemsInContainerCollection : true;
+      const duplicateValidation = maxValidation ? maxValidation > numOfItemsInContainerCollection : true;
+
+      actions.isTrashable = trashableValidation && recordType !== 'field' && recordType !== 'page';
+      actions.showDuplicate =
+        duplicateValidation && ['repeat-item', 'component', 'node-selector-item'].includes(recordType);
+    }
+
+    return actions;
+  }, [collection, numOfItemsInContainerCollection, recordType, nodeSelectorItemRecord]);
 
   // region Callbacks
 

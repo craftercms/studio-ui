@@ -24,7 +24,6 @@ import { SearchItem } from '../../models';
 import MediaCard from '../MediaCard/MediaCard';
 import { useStyles } from './styles';
 import SearchBar from '../SearchBar/SearchBar';
-import clsx from 'clsx';
 import MediaSkeletonCard from './MediaSkeletonCard';
 import EmptyState from '../EmptyState/EmptyState';
 import Pagination from '../Pagination';
@@ -61,7 +60,7 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
     onRefresh,
     onUpload
   } = props;
-  const classes = useStyles();
+  const { classes, cx: clsx } = useStyles();
   return (
     <>
       <DialogBody className={classes.dialogBody}>

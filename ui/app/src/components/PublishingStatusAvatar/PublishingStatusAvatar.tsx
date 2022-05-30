@@ -15,13 +15,11 @@
  */
 
 import Avatar from '@mui/material/Avatar';
-import clsx from 'clsx';
 import CloudUploadOutlined from '@mui/icons-material/CloudUploadOutlined';
 import * as React from 'react';
 import { CSSProperties } from 'react';
 import { PublishingStatus } from '../../models/Publishing';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import { getPublishingStatusCodeColor } from './util';
 
 type PublishingStatusAvatarClassKey = 'root' | 'icon';
@@ -35,12 +33,9 @@ export interface PublishingStatusAvatarProps extends Pick<PublishingStatus, 'ena
   variant?: 'background' | 'icon';
 }
 
-const useStyles = makeStyles((theme) =>
-  createStyles<
-    PublishingStatusAvatarClassKey,
-    { styles: PublishingStatusAvatarStyles; stylingTarget: 'backgroundColor' | 'color' }
-  >({
-    root: ({ styles, stylingTarget }) => ({
+const useStyles = makeStyles<{ styles: PublishingStatusAvatarStyles; stylingTarget: 'backgroundColor' | 'color' }>()(
+  (theme, { styles, stylingTarget } = {} as any) => ({
+    root: {
       ...(stylingTarget === 'color' && {
         background: 'none',
         color: theme.palette.text.secondary
@@ -64,10 +59,10 @@ const useStyles = makeStyles((theme) =>
         [stylingTarget]: getPublishingStatusCodeColor('error', theme)
       },
       ...styles?.root
-    }),
-    icon: ({ styles, stylingTarget }) => ({
+    },
+    icon: {
       ...styles?.icon
-    })
+    }
   })
 );
 
@@ -78,14 +73,14 @@ const targets: { [prop in PublishingStatusAvatarProps['variant']]: 'backgroundCo
 
 export const PublishingStatusAvatar = React.forwardRef<HTMLDivElement, PublishingStatusAvatarProps>((props, ref) => {
   const { status, enabled, styles, variant = 'icon' } = props;
-  const classes = useStyles({ styles, stylingTarget: targets[variant] });
+  const { classes, cx } = useStyles({ styles, stylingTarget: targets[variant] });
   return (
     <Avatar
       ref={ref}
       variant="circular"
-      className={clsx(classes.root, props.className, props.classes?.root, enabled ? status : 'error')}
+      className={cx(classes.root, props.className, props.classes?.root, enabled ? status : 'error')}
     >
-      <CloudUploadOutlined className={clsx(props.classes?.icon)} />
+      <CloudUploadOutlined className={cx(props.classes?.icon)} />
     </Avatar>
   );
 });

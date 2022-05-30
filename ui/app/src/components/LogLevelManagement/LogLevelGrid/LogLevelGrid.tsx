@@ -45,7 +45,7 @@ export interface LoggingLevelsGridUIProps {
   onChangeLevel(logger: Logger, level: LoggerLevel): void;
 }
 
-const levels: LoggerLevel[] = ['off', 'fatal', 'error', 'warn', 'info', 'debug', 'error', 'trace', 'all'];
+const levels: LoggerLevel[] = ['off', 'fatal', 'error', 'warn', 'info', 'debug', 'trace', 'all'];
 const capitalizedLevels = levels.map(capitalize) as LoggerLevel[];
 
 const CHUNK_SIZE = 30;
@@ -59,7 +59,7 @@ export function LogLevelGrid(props: LoggingLevelsGridUIProps) {
     loggerFilter = '',
     levelFilter = ''
   } = props;
-  const classes = useStyles();
+  const { classes } = useStyles();
   const [displayAll, setDisplayAll] = useState(false);
   const onShowAllClick = () => setDisplayAll(true);
   useEffect(() => {

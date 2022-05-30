@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import Graphi from '../GraphiQL';
+import GraphiQL from '../GraphiQL';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useEnv } from '../../hooks/useEnv';
 
@@ -28,7 +28,7 @@ export function SiteGraphiQL(props: SiteGraphiQLProps) {
   const site = useActiveSiteId();
   const { guestBase } = useEnv();
   return (
-    <Graphi
+    <GraphiQL
       storageKey={site}
       url={`${guestBase}/api/1/site/graphql`}
       embedded={props.embedded}

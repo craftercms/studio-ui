@@ -62,7 +62,7 @@ const dashletInitialPreferences: LegacyDashboardPreferences = {
 
 export function AwaitingApprovalDashlet() {
   const { id: siteId, uuid } = useActiveSite();
-  const classes = useStyles();
+  const { classes } = useStyles();
   const [state, setState] = useState<{
     itemsLookup: LookupTable<DetailedItem>;
     publishingTargetLookup: LookupTable<string>;

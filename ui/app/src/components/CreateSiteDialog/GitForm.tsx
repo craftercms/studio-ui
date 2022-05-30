@@ -16,13 +16,13 @@
 
 import React from 'react';
 import Grid from '@mui/material/Grid';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import TextField from '@mui/material/TextField';
 import { SiteState } from '../../models/Site';
 import { defineMessages, useIntl } from 'react-intl';
 import GitAuthForm from '../GitAuthForm';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()(() => ({
   formControl: {
     width: '100%',
     '& .MuiFormGroup-root': {
@@ -108,7 +108,7 @@ const messages = defineMessages({
 });
 
 function GitForm(props: GitFormProps) {
-  const classes = useStyles({});
+  const { classes } = useStyles();
   const { inputs, setInputs, handleInputChange, onKeyPress } = props;
   const { formatMessage } = useIntl();
 

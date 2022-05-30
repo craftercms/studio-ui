@@ -28,8 +28,8 @@ import ConflictedPathDiffDialogUI from './ConflictedPathDiffDialogUI';
 import SecondaryButton from '../SecondaryButton';
 import ConfirmDropdown from '../ConfirmDropdown';
 import { messages } from '../GitManagement/RepoStatus/translations';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
+
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
@@ -42,36 +42,34 @@ export interface RemoteRepositoriesDiffDialogProps {
   onClose(): void;
 }
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    conflictActionButton: {
-      color: theme.palette.warning.dark,
-      borderColor: theme.palette.warning.main
-    },
-    dialogHeader: {
-      paddingBottom: 0
-    },
-    dialogHeaderChildren: {
-      padding: 0
-    },
-    dialogContent: {
-      padding: 0
-    },
-    tabs: {
-      minHeight: 'inherit'
-    },
-    tab: {
-      minWidth: '80px',
-      minHeight: '0',
-      padding: '0 0 5px 0',
-      marginRight: '20px',
-      opacity: 1,
-      '& span': {
-        textTransform: 'none'
-      }
+const useStyles = makeStyles()((theme) => ({
+  conflictActionButton: {
+    color: theme.palette.warning.dark,
+    borderColor: theme.palette.warning.main
+  },
+  dialogHeader: {
+    paddingBottom: 0
+  },
+  dialogHeaderChildren: {
+    padding: 0
+  },
+  dialogContent: {
+    padding: 0
+  },
+  tabs: {
+    minHeight: 'inherit'
+  },
+  tab: {
+    minWidth: '80px',
+    minHeight: '0',
+    padding: '0 0 5px 0',
+    marginRight: '20px',
+    opacity: 1,
+    '& span': {
+      textTransform: 'none'
     }
-  })
-);
+  }
+}));
 
 export function ConflictedPathDiffDialog(props: RemoteRepositoriesDiffDialogProps) {
   const { open, path, onResolveConflict, onClose } = props;
@@ -81,7 +79,7 @@ export function ConflictedPathDiffDialog(props: RemoteRepositoriesDiffDialogProp
   const [fetching, setFetching] = useState(false);
   const [error, setError] = useState<ApiResponse>();
   const { formatMessage } = useIntl();
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   useEffect(() => {
     if (path) {

@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import { FormControl, FormControlLabel, FormHelperText, FormLabel, Radio, RadioGroup } from '@mui/material';
 import { setEditModePadding, setHighlightMode } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
@@ -63,7 +63,7 @@ const translations = defineMessages({
   }
 });
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles()(() => ({
   root: {
     padding: '15px'
   },
@@ -83,7 +83,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 export function PreviewSettingsPanel() {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { formatMessage } = useIntl();
   const { highlightMode, editModePadding } = usePreviewState();
   const item = useCurrentPreviewItem();

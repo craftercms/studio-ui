@@ -94,10 +94,20 @@ YAHOO.extend(
         this.controlsContainerEl = controlsContainerEl;
 
         editEl.onclick = function () {
-          var contentType = _self.contentType,
-            path = '/config/studio/content-types' + contentType + '/controller.groovy';
+          const contentType = _self.contentType,
+            fileName = 'controller.groovy',
+            path = `/config/studio/content-types${contentType}/`;
 
-          CStudioAuthoring.Operations.openCodeEditor({ path, contentType, mode: 'groovy' });
+          CrafterCMSNext.system.store.dispatch({
+            type: 'EDIT_CONTROLLER',
+            payload: {
+              path,
+              fileName,
+              mode: 'groovy',
+              contentType,
+              openOnSuccess: true
+            }
+          });
         };
       }
     }

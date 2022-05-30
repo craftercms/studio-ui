@@ -32,35 +32,30 @@ import SearchBar from '../SearchBar/SearchBar';
 import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
 import { ContentTypesGrid, ContentTypesLoader } from '../NewContentDialog';
 import DialogFooter from '../DialogFooter/DialogFooter';
-import { Theme } from '@mui/material/styles';
+import { makeStyles } from 'tss-react/mui';
 
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    compact: {
-      marginRight: 'auto',
-      paddingLeft: '20px'
-    },
-    dialogContent: {
-      minHeight: 455
-    },
-    searchBox: {
-      minWidth: '33%'
-    },
-    emptyStateImg: {
-      width: 250,
-      marginBottom: 17
-    }
-  })
-);
+const useStyles = makeStyles()(() => ({
+  compact: {
+    marginRight: 'auto',
+    paddingLeft: '20px'
+  },
+  dialogContent: {
+    minHeight: 455
+  },
+  searchBox: {
+    minWidth: '33%'
+  },
+  emptyStateImg: {
+    width: 250,
+    marginBottom: 17
+  }
+}));
 
 export function ChangeContentTypeDialogContainer(props: ChangeContentTypeDialogContainerProps) {
   const { item, onContentTypeSelected, compact = false, rootPath, selectedContentType } = props;
   const site = useActiveSiteId();
   const dispatch = useDispatch();
-  const classes = useStyles({});
+  const { classes } = useStyles();
 
   const [isCompact, setIsCompact] = useState(compact);
   const [openSelector, setOpenSelector] = useState(false);
@@ -84,7 +79,12 @@ export function ChangeContentTypeDialogContainer(props: ChangeContentTypeDialogC
     if (selectedItem.path) {
       fetchLegacyContentTypes(site, selectedItem.path).subscribe(
         (response) => {
-          setContentTypes(response.filter((contentType) => contentType.type === selectedItem.systemType));
+          setContentTypes(
+            response.filter(
+              (contentType) =>
+                contentType.type === selectedItem.systemType && contentType.name !== selectedItem.contentTypeId
+            )
+          );
         },
         (response) => {
           dispatch(showErrorDialog({ error: response }));

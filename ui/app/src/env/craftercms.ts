@@ -16,10 +16,12 @@
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import * as MaterialUI from '@mui/material';
 import * as ReactRedux from 'react-redux';
 import * as ReactIntl from 'react-intl';
 import * as rxjs from 'rxjs';
+import { createAction } from '@reduxjs/toolkit';
 import createEmotion from '@emotion/css/create-instance';
 import { CrafterCMSStore, getStoreSync } from '../state/store';
 import { registerPlugin } from '../services/plugin';
@@ -46,19 +48,23 @@ export interface CrafterCMSGlobal {
   libs: {
     React: typeof React;
     ReactDOM: typeof ReactDOM;
+    ReactDOMClient: { createRoot: typeof createRoot };
     MaterialUI: typeof MaterialUI;
     ReactRedux: typeof ReactRedux;
     ReactIntl: typeof ReactIntl;
     createEmotion: typeof createEmotion;
+    ReduxToolkit: { createAction: typeof createAction };
     // Include also package name aliases for builds that might use those
     // when invoking require('...') or define([...], factory).
     react: typeof React;
     rxjs: typeof rxjs;
     'react-dom': typeof ReactDOM;
+    'react-dom/client': CrafterCMSGlobal['libs']['ReactDOMClient'];
     'react-redux': typeof ReactRedux;
     'react-intl': typeof ReactIntl;
     '@mui/material': typeof MaterialUI;
     '@emotion/css/create-instance': typeof createEmotion;
+    '@reduxjs/toolkit': { createAction: typeof createAction };
   };
   components: typeof components;
   icons: typeof icons;
@@ -73,20 +79,27 @@ export interface CrafterCMSGlobal {
 
 let UND;
 
+const ReduxToolkit = { createAction };
+const ReactDOMClient = { createRoot };
+
 export const libs: CrafterCMSGlobal['libs'] = {
   rxjs,
   React,
   ReactDOM,
+  ReactDOMClient,
   ReactIntl,
   MaterialUI,
   ReactRedux,
+  ReduxToolkit,
   createEmotion,
   react: React,
   'react-dom': ReactDOM,
+  'react-dom/client': ReactDOMClient,
   'react-redux': ReactRedux,
   'react-intl': ReactIntl,
   '@mui/material': MaterialUI,
-  '@emotion/css/create-instance': createEmotion
+  '@emotion/css/create-instance': createEmotion,
+  '@reduxjs/toolkit': ReduxToolkit
 };
 
 // UMD builds wouldn't give the chance to track the file builder the plugin loads from

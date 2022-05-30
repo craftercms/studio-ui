@@ -22,7 +22,7 @@ import SnackbarContent from '@mui/material/SnackbarContent';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import { Theme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ErrorIcon from '@mui/icons-material/Error';
 import { green, red } from '@mui/material/colors';
@@ -63,7 +63,7 @@ const messages = defineMessages({
   }
 });
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   form: {
     padding: '20px'
   },
@@ -109,7 +109,7 @@ function copyToClipboard(input: HTMLInputElement) {
 
 export const EncryptTool = (props: EncryptToolProps) => {
   const { site, embedded = false, showAppsButton } = props;
-  const classes = useStyles({});
+  const { classes } = useStyles();
   const inputRef = useRef();
   const [text, setText] = useState('');
   const [result, setResult] = useState(null);

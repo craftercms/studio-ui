@@ -32,7 +32,7 @@ interface RenderTree {
 }
 
 export function FolderBrowserTreeViewSkeleton(props: FolderBrowserTreeViewSkeletonProps) {
-  const classes = useSkeletonStyles();
+  const { classes } = useSkeletonStyles();
   const {
     data = [
       {

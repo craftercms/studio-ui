@@ -22,8 +22,7 @@ import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import { pull } from '../../../services/repositories';
 import SecondaryButton from '../../SecondaryButton';
 import PrimaryButton from '../../PrimaryButton';
@@ -40,13 +39,11 @@ import {
 import useActiveSite from '../../../hooks/useActiveSite';
 import useActiveUser from '../../../hooks/useActiveUser';
 
-const useStyles = makeStyles(() =>
-  createStyles({
-    formControl: {
-      marginBottom: '15px'
-    }
-  })
-);
+const useStyles = makeStyles()(() => ({
+  formControl: {
+    marginBottom: '15px'
+  }
+}));
 
 export function PullDialogContainer(props: PullFromRemoteDialogContainerProps) {
   const {
@@ -63,7 +60,7 @@ export function PullDialogContainer(props: PullFromRemoteDialogContainerProps) {
 
   const [selectedBranch, setSelectedBranch] = useState('');
   const [selectedMergeStrategy, setSelectedMergeStrategy] = useState('');
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { uuid, id: siteId } = useActiveSite();
   const { username } = useActiveUser();
 

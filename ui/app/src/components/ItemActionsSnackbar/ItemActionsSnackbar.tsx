@@ -15,7 +15,7 @@
  */
 
 import React, { ReactNode } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import { ListItem, ListItemText, Snackbar } from '@mui/material';
 import palette from '../../styles/palette';
 import { defineMessages, useIntl } from 'react-intl';
@@ -33,7 +33,7 @@ export interface ItemActionsSnackbarProps {
   prepend?: ReactNode;
 }
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   actionsBar: {
     zIndex: theme.zIndex.modal,
     '& .MuiSnackbarContent-root': {
@@ -72,7 +72,7 @@ const messages = defineMessages({
 
 function ItemActionsSnackbar(props: ItemActionsSnackbarProps) {
   const { open, options, onActionClicked, append, prepend } = props;
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { formatMessage } = useIntl();
   return (
     <Snackbar

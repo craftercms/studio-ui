@@ -31,7 +31,6 @@ import Paper from '@mui/material/Paper';
 import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { useWithPendingChangesCloseRequest } from '../../hooks/useWithPendingChangesCloseRequest';
 import SearchBar from '../SearchBar';
-import clsx from 'clsx';
 import useStyles from '../UserManagement/styles';
 import useDebouncedInput from '../../hooks/useDebouncedInput';
 
@@ -44,7 +43,7 @@ export function GroupManagement() {
   const [selectedGroup, setSelectedGroup] = useState<Group>(null);
   const [showSearchBox, setShowSearchBox] = useState(false);
   const [keyword, setKeyword] = useState('');
-  const classes = useStyles();
+  const { classes, cx: clsx } = useStyles();
 
   const fetchGroups = useCallback(
     (keyword = '', _offset = offset) => {

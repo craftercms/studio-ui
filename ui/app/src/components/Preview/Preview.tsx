@@ -15,36 +15,32 @@
  */
 
 import React from 'react';
-import makeStyles from '@mui/styles/makeStyles';
 import ToolsPanel from '../ToolsPanel/ToolsPanel';
 import Host from '../Host/Host';
 import ToolBar from '../ToolBar/ToolBar';
 import PreviewConcierge from '../PreviewConcierge/PreviewConcierge';
 import usePreviewUrlControl from '../../hooks/usePreviewUrlControl';
 import ICEToolsPanel from '../ICEToolsPanel';
-
-const useStyles = makeStyles(() => ({
-  root: {
-    height: '100%',
-    display: 'flex',
-    flexDirection: 'column'
-  }
-}));
+import Box from '@mui/material/Box';
 
 function Preview(props) {
-  const classes = useStyles();
   usePreviewUrlControl(props.history);
   return (
-    <>
-      <PreviewConcierge>
-        <section className={classes.root}>
-          <ToolBar />
-          <Host />
-          <ToolsPanel />
-          <ICEToolsPanel />
-        </section>
-      </PreviewConcierge>
-    </>
+    <PreviewConcierge>
+      <Box
+        component="section"
+        sx={{
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column'
+        }}
+      >
+        <ToolBar />
+        <Host />
+        <ToolsPanel />
+        <ICEToolsPanel />
+      </Box>
+    </PreviewConcierge>
   );
 }
 

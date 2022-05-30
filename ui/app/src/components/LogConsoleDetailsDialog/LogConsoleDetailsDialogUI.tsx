@@ -28,7 +28,7 @@ import { useUnmount } from '../../hooks/useUnmount';
 export function LogConsoleDetailsDialogUI(props: LogConsoleDetailsDialogProps) {
   const { logEvent, onClose, onClosed } = props;
   const localeBranch = useSelection((state) => state.uiConfig.locale);
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   useUnmount(onClosed);
 

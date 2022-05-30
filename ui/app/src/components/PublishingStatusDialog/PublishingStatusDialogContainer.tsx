@@ -14,9 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import createStyles from '@mui/styles/createStyles';
-
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import { useIntl } from 'react-intl';
 import DialogHeader from '../DialogHeader';
 import DialogBody from '../DialogBody/DialogBody';
@@ -24,14 +22,12 @@ import * as React from 'react';
 import PublishingStatusDisplay, { publishingStatusMessages } from '../PublishingStatusDisplay';
 import { PublishingStatusDialogContainerProps } from './utils';
 
-const useStyles = makeStyles(() =>
-  createStyles({
-    body: {
-      minHeight: 145,
-      placeContent: 'center'
-    }
-  })
-);
+const useStyles = makeStyles()(() => ({
+  body: {
+    minHeight: 145,
+    placeContent: 'center'
+  }
+}));
 
 export function PublishingStatusDialogContainer(props: PublishingStatusDialogContainerProps) {
   const {
@@ -50,7 +46,7 @@ export function PublishingStatusDialogContainer(props: PublishingStatusDialogCon
     onStartStop,
     isFetching
   } = props;
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { formatMessage } = useIntl();
   return (
     <>

@@ -14,9 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import createStyles from '@mui/styles/createStyles';
-
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import { useLogicResource } from '../../hooks/useLogicResource';
 import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
 import { FormattedMessage } from 'react-intl';
@@ -24,25 +22,23 @@ import { WorkflowCancellationDialogUI } from './WorkflowCancellationDialogUI';
 import React from 'react';
 import { Return, Source, WorkflowCancellationDialogContainerProps } from './utils';
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    suspense: {
-      minHeight: '442px',
-      margin: 0,
-      justifyContent: 'center'
-    },
-    filesList: {
-      height: '100%',
-      border: `1px solid ${theme.palette.divider}`,
-      background: theme.palette.background.paper,
-      padding: 0
-    }
-  })
-);
+const useStyles = makeStyles()((theme) => ({
+  suspense: {
+    minHeight: '442px',
+    margin: 0,
+    justifyContent: 'center'
+  },
+  filesList: {
+    height: '100%',
+    border: `1px solid ${theme.palette.divider}`,
+    background: theme.palette.background.paper,
+    padding: 0
+  }
+}));
 
 export function WorkflowCancellationDialogContainer(props: WorkflowCancellationDialogContainerProps) {
   const { items, onClose, onContinue } = props;
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   const resource = useLogicResource<Return, Source>(items, {
     shouldResolve: (source) => Boolean(source),

@@ -19,7 +19,13 @@ import registerRoundedIcons from './registerRoundedIcons';
 import registerOutlinedIcons from './registerOutlinedIcons';
 import { components as registry } from '../utils/constants';
 
+// To prevent running registration more than once.
+let registered = false;
+
 export const registerComponents = () => {
+  if (registered) {
+    return false;
+  }
   registerRoundedIcons();
   registerOutlinedIcons();
   Object.entries(components).forEach(([name, component]) => {
@@ -48,4 +54,5 @@ export const registerComponents = () => {
   Object.entries(icons).forEach(([name, component]) => {
     registry.set(`craftercms.icons.${name}`, component);
   });
+  return true;
 };

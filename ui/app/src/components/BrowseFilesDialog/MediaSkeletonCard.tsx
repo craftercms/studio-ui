@@ -21,7 +21,7 @@ import { useCardStyles } from './styles';
 import Skeleton from '@mui/material/Skeleton';
 
 export function MediaSkeletonCard() {
-  const classes = useCardStyles();
+  const { classes } = useCardStyles();
   return (
     <Card className={classes.root}>
       <CardHeader

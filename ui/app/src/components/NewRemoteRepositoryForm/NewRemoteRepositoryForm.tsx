@@ -15,24 +15,21 @@
  */
 
 import React from 'react';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import GitAuthForm from '../GitAuthForm';
 import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 import { FormattedMessage } from 'react-intl';
 import { SiteState } from '../../models/Site';
 
-const useStyles = makeStyles(() =>
-  createStyles({
-    gitInfo: {
-      width: '100%',
-      '& .MuiGrid-item': {
-        padding: '12px'
-      }
+const useStyles = makeStyles()(() => ({
+  gitInfo: {
+    width: '100%',
+    '& .MuiGrid-item': {
+      padding: '12px'
     }
-  })
-);
+  }
+}));
 
 export interface NewRemoteRepositoryFormProps {
   inputs: Partial<SiteState>;
@@ -40,7 +37,7 @@ export interface NewRemoteRepositoryFormProps {
 }
 
 export function NewRemoteRepositoryForm(props: NewRemoteRepositoryFormProps) {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { inputs, setInputs } = props;
 
   const handleInputChange = (e: any) => {

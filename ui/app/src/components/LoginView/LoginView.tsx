@@ -21,8 +21,7 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import {
   sendPasswordRecovery,
   setPassword as setPasswordService,
@@ -39,7 +38,6 @@ import TextField from '@mui/material/TextField';
 import Snackbar from '@mui/material/Snackbar';
 import PasswordTextField from '../PasswordTextField/PasswordTextField';
 import { passwordRequirementMessages } from '../../env/i18n-legacy';
-import clsx from 'clsx';
 import { filter } from 'rxjs/operators';
 import palette from '../../styles/palette';
 import { buildStoredLanguageKey, dispatchLanguageChange, getCurrentLocale, setStoredLanguage } from '../../utils/i18n';
@@ -49,7 +47,6 @@ import Menu from '@mui/material/Menu';
 import PasswordRequirementsDisplay from '../PasswordRequirementsDisplay';
 import { useMount } from '../../hooks/useMount';
 import { useDebouncedInput } from '../../hooks/useDebouncedInput';
-import { visuallyHidden } from '@mui/utils';
 
 export interface SystemLang {
   id: string;
@@ -130,54 +127,52 @@ const translations = defineMessages({
   }
 });
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    dialogRoot: {
-      transition: 'all 600ms ease',
-      '& .MuiInput-input': { backgroundColor: theme.palette.background.paper },
-      '& .MuiFormControl-root, & .MuiButton-root': {
-        marginBottom: theme.spacing(1),
-        '&.last-before-button': { marginBottom: theme.spacing(2) }
-      }
-    },
-    dialogRootFetching: {
-      opacity: 0.2
-    },
-    dialogPaper: {
-      minWidth: 300,
-      overflow: 'visible',
-      backgroundColor: theme.palette.mode === 'dark' ? 'rgba(0, 0, 0, .8)' : 'rgba(255, 255, 255, .8)'
-    },
-    logo: {
-      maxWidth: 250,
-      display: 'block',
-      margin: `${theme.spacing(2)} auto ${theme.spacing(1)}`
-    },
-    recoverInfoMessage: {
-      maxWidth: 300,
-      textAlign: 'center',
-      margin: `0 auto ${theme.spacing(1.5)}`
-    },
-    errorMessage: {
-      backgroundColor: palette.red.tint,
-      color: palette.white,
+const useStyles = makeStyles()((theme) => ({
+  dialogRoot: {
+    transition: 'all 600ms ease',
+    '& .MuiInput-input': { backgroundColor: theme.palette.background.paper },
+    '& .MuiFormControl-root, & .MuiButton-root': {
       marginBottom: theme.spacing(1),
-      padding: theme.spacing(1),
-      borderRadius: theme.spacing(1),
-      border: `1px solid ${palette.red.main}`,
-      display: 'flex',
-      placeContent: 'center',
-      lineHeight: 1.7,
-      '& .MuiSvgIcon-root': {
-        marginRight: theme.spacing(0.5),
-        color: palette.white
-      }
-    },
-    resetPassword: {
-      marginBottom: 10
+      '&.last-before-button': { marginBottom: theme.spacing(2) }
     }
-  })
-);
+  },
+  dialogRootFetching: {
+    opacity: 0.2
+  },
+  dialogPaper: {
+    minWidth: 300,
+    overflow: 'visible',
+    backgroundColor: theme.palette.mode === 'dark' ? 'rgba(0, 0, 0, .8)' : 'rgba(255, 255, 255, .8)'
+  },
+  logo: {
+    maxWidth: 250,
+    display: 'block',
+    margin: `${theme.spacing(2)} auto ${theme.spacing(1)}`
+  },
+  recoverInfoMessage: {
+    maxWidth: 300,
+    textAlign: 'center',
+    margin: `0 auto ${theme.spacing(1.5)}`
+  },
+  errorMessage: {
+    backgroundColor: palette.red.tint,
+    color: palette.white,
+    marginBottom: theme.spacing(1),
+    padding: theme.spacing(1),
+    borderRadius: theme.spacing(1),
+    border: `1px solid ${palette.red.main}`,
+    display: 'flex',
+    placeContent: 'center',
+    lineHeight: 1.7,
+    '& .MuiSvgIcon-root': {
+      marginRight: theme.spacing(0.5),
+      color: palette.white
+    }
+  },
+  resetPassword: {
+    marginBottom: 10
+  }
+}));
 
 const retrieveStoredLangPreferences = () =>
   Object.keys(window.localStorage).filter((key) => key.includes('_crafterStudioLanguage'));
@@ -493,7 +488,7 @@ function LanguageDropDown(props: LanguageDropDownProps) {
 
 export function LoginViewContainer(props: LoginViewProps) {
   const { formatMessage } = useIntl();
-  const classes = useStyles();
+  const { classes, cx } = useStyles();
   const token = parse(window.location.search).token as string;
   const { passwordRequirementsRegex, xsrfToken, xsrfParamName } = props;
 
@@ -570,13 +565,12 @@ export function LoginViewContainer(props: LoginViewProps) {
         fullWidth
         open={true}
         maxWidth="xs"
-        className={clsx(classes.dialogRoot, isFetching && classes.dialogRootFetching)}
+        className={cx(classes.dialogRoot, isFetching && classes.dialogRootFetching)}
         PaperProps={{ className: classes.dialogPaper }}
         aria-labelledby="loginDialog"
       >
         <DialogTitle id="loginDialog">
-          <Typography style={visuallyHidden}>{formatMessage(translations.loginDialogTitle)}</Typography>
-          <CrafterCMSLogo className={classes.logo} width="auto" />
+          <CrafterCMSLogo className={classes.logo} width="auto" alt={formatMessage(translations.loginDialogTitle)} />
         </DialogTitle>
         <CurrentView {...currentViewProps} />
         <LanguageDropDown language={language} languages={languages} onChange={setLanguage} />

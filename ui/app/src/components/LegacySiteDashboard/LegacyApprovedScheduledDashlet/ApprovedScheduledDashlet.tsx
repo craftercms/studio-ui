@@ -65,7 +65,7 @@ export function ApprovedScheduledDashlet() {
   const [error, setError] = useState<ApiResponse>();
   const { id: siteId, uuid } = useActiveSite();
   const currentUser = useSelector<GlobalState, string>((state) => state.user.username);
-  const classes = useStyles();
+  const { classes } = useStyles();
   const [state, setState] = useState<{
     itemsLookup: LookupTable<DetailedItem>;
     targetLookup: LookupTable<{ target: string; packageId: string }>;

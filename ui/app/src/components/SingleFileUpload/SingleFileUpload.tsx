@@ -20,19 +20,16 @@ import XHRUpload from '@uppy/xhr-upload';
 import ProgressBar from '@uppy/progress-bar';
 import Form from '@uppy/form';
 import { defineMessages, useIntl } from 'react-intl';
-
 import '@uppy/core/src/style.scss';
 import '@uppy/progress-bar/src/style.scss';
 import '@uppy/file-input/src/style.scss';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import { getGlobalHeaders } from '../../utils/ajax';
 import { validateActionPolicy } from '../../services/sites';
 import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
 import { UppyFile } from '@uppy/utils';
 import { useDispatch } from 'react-redux';
 import Typography from '@mui/material/Typography';
-import clsx from 'clsx';
 import Button from '@mui/material/Button';
 import useSiteUIConfig from '../../hooks/useSiteUIConfig';
 
@@ -68,26 +65,48 @@ const messages = defineMessages({
   }
 });
 
-const singleFileUploadStyles = makeStyles((theme) =>
-  createStyles({
-    fileNameTrimmed: {
-      overflow: 'hidden',
-      textOverflow: 'ellipsis',
-      whiteSpace: 'nowrap'
-    },
-    description: {
-      margin: '10px 0'
-    },
-    input: {
-      display: 'none !important'
-    },
-    inputContainer: {
-      marginBottom: '10px'
-    }
-  })
-);
+const singleFileUploadStyles = makeStyles()(() => ({
+  fileNameTrimmed: {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap'
+  },
+  description: {
+    margin: '10px 0'
+  },
+  input: {
+    display: 'none !important'
+  },
+  inputContainer: {
+    marginBottom: '10px'
+  }
+}));
 
-interface SingleFileUploadProps {
+export interface FileUpload {
+  data: File;
+  extension: string;
+  id: string;
+  isPaused: boolean;
+  isRemote: boolean;
+  meta: { name: string; path: string; site: string; type: string };
+  name: string;
+  preview: any;
+  progress: { uploadStarted: number; uploadComplete: boolean; percentage: 100; bytesUploaded: number };
+  remote: string;
+  response: { status: number; body: any; uploadUrl: string };
+  size: number;
+  source: string;
+  type: string;
+  uploadUrl: string;
+}
+
+export interface FileUploadResult {
+  successful: FileUpload[];
+  failed: FileUpload[];
+  uploadID: string;
+}
+
+export interface SingleFileUploadProps {
   site: string;
   formTarget?: string;
   url?: string;
@@ -95,7 +114,7 @@ interface SingleFileUploadProps {
   customFileName?: string;
   fileTypes?: [string];
   onUploadStart?(): void;
-  onComplete?(result: any): void;
+  onComplete?(result: FileUploadResult): void;
   onError?({ file, error, response }): void;
 }
 
@@ -123,7 +142,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
     error?: boolean;
   }>(null);
 
-  const classes = singleFileUploadStyles();
+  const { classes, cx } = singleFileUploadStyles();
   const uppy = useMemo(
     () =>
       new Core({
@@ -289,7 +308,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
           {description}
           {file && (
             <em
-              className={clsx('single-file-upload--filename', fileNameErrorClass, classes.fileNameTrimmed)}
+              className={cx('single-file-upload--filename', fileNameErrorClass, classes.fileNameTrimmed)}
               title={file.name}
             >
               {file.name}

@@ -49,7 +49,7 @@ export function EditSiteDialogUI(props: EditSiteDialogUIProps) {
     onEditSiteImage
   } = props;
   const { formatMessage } = useIntl();
-  const classes = useSiteDialogStyles();
+  const { classes } = useSiteDialogStyles();
   return (
     <>
       <DialogBody>

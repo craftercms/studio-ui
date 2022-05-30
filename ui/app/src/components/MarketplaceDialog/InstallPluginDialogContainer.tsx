@@ -14,8 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import makeStyles from '@mui/styles/makeStyles';
-import createStyles from '@mui/styles/createStyles';
+import { makeStyles } from 'tss-react/mui';
 import { InstallPluginDialogProps } from './utils';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import useLogicResource from '../../hooks/useLogicResource';
@@ -28,7 +27,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import LookupTable from '../../models/LookupTable';
 import { fetchMarketplacePlugins, installMarketplacePlugin } from '../../services/marketplace';
 import { debounceTime } from 'rxjs/operators';
-import { popTab, pushTab } from '../../state/reducers/dialogs/minimizedTabs';
+import { blockUI, unblockUI } from '../../state/actions/system';
 import { translations } from './translations';
 import { batchActions } from '../../state/actions/misc';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
@@ -44,17 +43,16 @@ import { PluginParametersForm } from '../PluginParametersForm';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 
-const useStyles = makeStyles(() =>
-  createStyles({
-    searchWrapper: {
-      marginBottom: '16px'
-    },
-    loadingWrapper: {
-      flexGrow: 1,
-      justifyContent: 'center'
-    }
-  })
-);
+const useStyles = makeStyles()(() => ({
+  searchWrapper: {
+    marginBottom: '16px'
+  },
+  loadingWrapper: {
+    flexGrow: 1,
+    justifyContent: 'center'
+  }
+}));
+
 export function InstallPluginDialogContainer(props: InstallPluginDialogProps) {
   const siteId = useActiveSiteId();
   const { installPermission = false, onInstall, installedPlugins = {} } = props;
@@ -77,7 +75,7 @@ export function InstallPluginDialogContainer(props: InstallPluginDialogProps) {
     submitted: false,
     error: {}
   });
-  const classes = useStyles();
+  const { classes } = useStyles();
   const onSearch$ = useSubject<string>();
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
@@ -137,39 +135,19 @@ export function InstallPluginDialogContainer(props: InstallPluginDialogProps) {
 
   const onInstallPlugin = (plugin: MarketplacePlugin, parameters?: LookupTable<string>) => {
     setInstallingLookup({ [plugin.id]: true });
-    dispatch(
-      pushTab({
-        minimized: true,
-        id: plugin.id,
-        status: 'indeterminate',
-        title: formatMessage(translations.installing, { name: plugin.name })
-      })
-    );
-    installMarketplacePlugin(siteId, plugin.id, plugin.version, parameters).subscribe(
-      () => {
+    dispatch(blockUI({ message: formatMessage(translations.installing, { name: plugin.name }) }));
+    installMarketplacePlugin(siteId, plugin.id, plugin.version, parameters).subscribe({
+      next() {
         setInstallingLookup({ [plugin.id]: false });
         onInstall(plugin);
         onPluginFormClose();
-        dispatch(
-          popTab({
-            id: plugin.id
-          })
-        );
+        dispatch(unblockUI());
       },
-      ({ response }) => {
+      error({ response }) {
         setInstallingLookup({ [plugin.id]: false });
-        dispatch(
-          batchActions([
-            showErrorDialog({
-              error: response.response
-            }),
-            popTab({
-              id: plugin.id
-            })
-          ])
-        );
+        dispatch(batchActions([showErrorDialog({ error: response.response }), unblockUI()]));
       }
-    );
+    });
   };
 
   const onPluginFieldChange = (key: string, value: string) => {

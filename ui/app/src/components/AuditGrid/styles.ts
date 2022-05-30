@@ -14,43 +14,40 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 
-export const useStyles = makeStyles((theme) =>
-  createStyles({
-    activeFilter: {
-      color: theme.palette.primary.main,
-      '& button': {
-        color: theme.palette.primary.main
-      }
-    },
-    cellRoot: {
-      '&:focus-within': {
-        outline: 'none !important'
-      }
-    },
-    ellipsis: {
-      textOverflow: 'ellipsis',
-      overflow: 'hidden'
-    },
-    gridRoot: {
-      border: '0 !important',
-      minHeight: '300px',
-      '& .MuiDataGrid-menuIcon': {
-        width: 'auto !important',
-        visibility: 'visible !important'
-      },
-      '& .MuiDataGrid-colCell:focus': {
-        outline: 'none !important'
-      }
-    },
-    gridOverlay: {
-      zIndex: 1
-    },
-    paginationRoot: {
-      marginLeft: 'auto',
-      marginRight: '20px'
+export const useStyles = makeStyles()((theme) => ({
+  activeFilter: {
+    color: theme.palette.primary.main,
+    '& button': {
+      color: theme.palette.primary.main
     }
-  })
-);
+  },
+  cellRoot: {
+    '&:focus-within': {
+      outline: 'none !important'
+    }
+  },
+  ellipsis: {
+    textOverflow: 'ellipsis',
+    overflow: 'hidden'
+  },
+  gridRoot: {
+    border: '0 !important',
+    minHeight: '300px',
+    '& .MuiDataGrid-menuIcon': {
+      width: 'auto !important',
+      visibility: 'visible !important' as 'visible'
+    },
+    '& .MuiDataGrid-colCell:focus': {
+      outline: 'none !important'
+    }
+  },
+  gridOverlay: {
+    zIndex: 1
+  },
+  paginationRoot: {
+    marginLeft: 'auto',
+    marginRight: '20px'
+  }
+}));

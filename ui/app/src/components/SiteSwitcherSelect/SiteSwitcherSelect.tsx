@@ -25,10 +25,10 @@ import { setSiteCookie } from '../../utils/auth';
 import { useDispatch } from 'react-redux';
 import { useEnv } from '../../hooks/useEnv';
 import { useSiteList } from '../../hooks/useSiteList';
-import clsx from 'clsx';
 import { getSystemLink } from '../../utils/system';
 import { PREVIEW_URL_PATH } from '../../utils/constants';
 import { useLegacyPreviewPreference } from '../../hooks/useLegacyPreviewPreference';
+import useMinimizedDialogWarning from '../../hooks/useMinimizedDialogWarning';
 
 export interface SiteSwitcherSelectProps extends SelectProps {
   site: string;
@@ -37,17 +37,18 @@ export interface SiteSwitcherSelectProps extends SelectProps {
 function SiteSwitcherSelect(props: SiteSwitcherSelectProps) {
   const { site, ...rest } = props;
   const sites = useSiteList();
-  const classes = useStyles();
-  const { authoringBase } = useEnv();
+  const { classes, cx: clsx } = useStyles();
+  const { authoringBase, useBaseDomain } = useEnv();
   const dispatch = useDispatch();
   const useLegacy = useLegacyPreviewPreference();
+  const checkMinimized = useMinimizedDialogWarning();
 
   const onSiteChange = ({ target: { value } }) => {
-    if (!isBlank(value) && site !== value) {
+    if (!isBlank(value) && site !== value && !checkMinimized()) {
       if (window.location.href.includes(PREVIEW_URL_PATH)) {
         dispatch(changeSite(value));
       } else {
-        setSiteCookie(value);
+        setSiteCookie(value, useBaseDomain);
         setTimeout(
           () =>
             (window.location.href = getSystemLink({

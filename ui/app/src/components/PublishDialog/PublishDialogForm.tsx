@@ -15,8 +15,7 @@
  */
 
 import React from 'react';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
@@ -90,79 +89,77 @@ const messages = defineMessages({
   }
 });
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    root: {
-      width: 'auto'
-    },
-    title: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center'
-    },
-    checkboxes: {
-      marginBottom: '10px'
-    },
-    formSection: {
-      width: '100%',
-      marginBottom: '20px'
-    },
-    formInputs: {
-      fontSize: '14px'
-    },
-    selectInput: {
-      padding: '10px 12px'
-    },
-    publishingTargetLoaderContainer: {
-      paddingTop: '24px',
-      display: 'inline-flex'
-    },
-    publishingTargetLoader: {
-      border: '1px solid #ced4da',
-      padding: '10px 12px',
-      borderRadius: '4px',
-      width: '100%'
-    },
-    publishingTargetEmpty: {
-      padding: '10px 12px',
-      borderRadius: '4px',
-      width: '100%'
-    },
-    datePicker: {
-      position: 'relative',
-      paddingLeft: '30px',
-      paddingBottom: '20px',
-      '&::before': {
-        content: '""',
-        position: 'absolute',
-        width: '5px',
-        height: '100%',
-        top: '0',
-        left: '7px',
-        backgroundColor: theme.palette.background.paper,
-        borderRadius: '5px'
-      }
-    },
-    radioGroup: {
-      paddingTop: '10px',
-      fontSize: '14px'
-    },
-    radioInput: {
-      padding: '4px',
-      marginLeft: '5px',
-      marginRight: '5px'
-    },
-    selectIcon: {
-      right: '12px'
-    },
-    mixedDatesWarningMessage: {
-      marginBottom: '10px'
-    },
-    mixedTargetsWarningMessage: {
-      marginTop: '10px'
+const useStyles = makeStyles()((theme) => ({
+  root: {
+    width: 'auto'
+  },
+  title: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  checkboxes: {
+    marginBottom: '10px'
+  },
+  formSection: {
+    width: '100%',
+    marginBottom: '20px'
+  },
+  formInputs: {
+    fontSize: '14px'
+  },
+  selectInput: {
+    padding: '10px 12px'
+  },
+  publishingTargetLoaderContainer: {
+    paddingTop: '24px',
+    display: 'inline-flex'
+  },
+  publishingTargetLoader: {
+    border: '1px solid #ced4da',
+    padding: '10px 12px',
+    borderRadius: '4px',
+    width: '100%'
+  },
+  publishingTargetEmpty: {
+    padding: '10px 12px',
+    borderRadius: '4px',
+    width: '100%'
+  },
+  datePicker: {
+    position: 'relative',
+    paddingLeft: '30px',
+    paddingBottom: '20px',
+    '&::before': {
+      content: '""',
+      position: 'absolute',
+      width: '5px',
+      height: '100%',
+      top: '0',
+      left: '7px',
+      backgroundColor: theme.palette.background.paper,
+      borderRadius: '5px'
     }
-  })
-);
+  },
+  radioGroup: {
+    paddingTop: '10px',
+    fontSize: '14px'
+  },
+  radioInput: {
+    padding: '4px',
+    marginLeft: '5px',
+    marginRight: '5px'
+  },
+  selectIcon: {
+    right: '12px'
+  },
+  mixedDatesWarningMessage: {
+    marginBottom: '10px'
+  },
+  mixedTargetsWarningMessage: {
+    marginTop: '10px'
+  }
+}));
 
 export type PublishFormProps = Pick<
   PublishDialogUIProps,
@@ -183,7 +180,7 @@ export type PublishFormProps = Pick<
 };
 
 export function PublishDialogForm(props: PublishFormProps) {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { formatMessage } = useIntl();
   const {
     state,

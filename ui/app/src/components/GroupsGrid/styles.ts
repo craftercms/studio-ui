@@ -14,17 +14,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 
-export const useStyles = makeStyles(() =>
-  createStyles({
-    tableRoot: {
-      tableLayout: 'fixed'
-    },
-    paginationRoot: {
-      marginLeft: 'auto',
-      marginRight: '20px'
-    }
-  })
-);
+export const useStyles = makeStyles()(() => ({
+  tableRoot: {
+    tableLayout: 'fixed'
+  },
+  paginationRoot: {
+    marginLeft: 'auto',
+    marginRight: '20px'
+  }
+}));
