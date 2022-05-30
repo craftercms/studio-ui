@@ -278,6 +278,10 @@
         "REMOTE_BRANCH": "Sucursal remota",
         "PULL": "Halar",
         "PUSH": "Empujar",
+        "PULL_FROM": "Jalar de",
+        "BRANCH": "Rama",
+        "PULL_INFO": "Solo puede extraer de la rama desde la que se creó el sitio; cualquier trabajo de rama de características debe fusionarse anteriormente.",
+        "SANDBOX_BRANCH_ERROR": "No se puede recuperar la rama del proyecto",
         "REMOTE_BRANCH_PULL":"Sucursal remota para jalar",
         "REMOTE_BRANCH_PUSH":"Sucursal remota para empujar a ",
         "SUCCESSFULLY_PUSHED": "Empujado con éxito",
@@ -390,6 +394,7 @@
     "GLOBAL_MENU": "Menu Global",
     "MAIN_MENU": "Menu Principal",
     "RESET_PASSWORD": "Restablecer la contraseña",
-    "CLOSE": "Cerrar"
+    "CLOSE": "Cerrar",
+    "RETRY": "Reintentar"
   }
 }
