@@ -14,9 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { JSXElementConstructor, lazy } from 'react';
-import ReactDOM from 'react-dom';
-
+import * as React from 'react';
+import { JSXElementConstructor, lazy } from 'react';
+import * as ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import CrafterCMSNextBridge from '../components/CrafterCMSNextBridge/CrafterCMSNextBridge';
 import { nou } from '../utils/object';
 import * as babel from '../env/babel';
@@ -67,6 +68,7 @@ const ErrorState = studioUIComponents.ErrorState;
 interface CodebaseBridge {
   React: typeof React;
   ReactDOM: typeof ReactDOM;
+  ReactDOMClient: { createRoot: typeof createRoot };
   components: { [key: string]: JSXElementConstructor<any> };
   assets: { [key: string]: () => Promise<any> };
   util: object;
@@ -108,6 +110,7 @@ export function createCodebaseBridge() {
     // React
     React,
     ReactDOM,
+    ReactDOMClient: { createRoot },
 
     rxjs,
 
@@ -186,37 +189,36 @@ export function createCodebaseBridge() {
 
       return new Promise((resolve, reject) => {
         try {
+          const root = createRoot(element);
           const unmount = (options) => {
-            ReactDOM.unmountComponentAtNode(element);
+            root.unmount();
             options.removeContainer && element.parentNode.removeChild(element);
           };
-          ReactDOM.render(
+          root.render(
             <CrafterCMSNextBridge
               mountGlobalDialogManager={!isLegacy}
               mountSnackbarProvider={!isLegacy}
               mountCssBaseline={!isLegacy}
             >
               <Component {...props} />
-            </CrafterCMSNextBridge>,
-            element,
-            () =>
-              resolve({
-                unmount: (options) => {
-                  options = Object.assign(
-                    {
-                      delay: false,
-                      removeContainer: false
-                    },
-                    options || {}
-                  );
-                  if (options.delay) {
-                    setTimeout(() => unmount(options), options.delay);
-                  } else {
-                    unmount(options);
-                  }
-                }
-              })
+            </CrafterCMSNextBridge>
           );
+          resolve({
+            unmount: (options) => {
+              options = Object.assign(
+                {
+                  delay: false,
+                  removeContainer: false
+                },
+                options || {}
+              );
+              if (options.delay) {
+                setTimeout(() => unmount(options), options.delay);
+              } else {
+                unmount(options);
+              }
+            }
+          });
         } catch (e) {
           reject(e);
         }
@@ -226,33 +228,32 @@ export function createCodebaseBridge() {
     renderBackgroundUI(options) {
       const { mountLegacyConcierge = false } = options ?? {};
       const element = document.createElement('div');
+      const root = createRoot(element);
       element.setAttribute('class', 'craftercms-background-ui');
       document.body.appendChild(element);
       return new Promise((resolve, reject) => {
         try {
           const unmount = () => {
-            ReactDOM.unmountComponentAtNode(element);
+            root.unmount();
             document.body.removeChild(element);
           };
-          ReactDOM.render(
+          root.render(
             <CrafterCMSNextBridge
               mountCssBaseline={false}
               mountLegacyConcierge={mountLegacyConcierge}
               suspenseFallback=""
-            />,
-            element,
-            () =>
-              resolve({
-                unmount: (options) => {
-                  options = Object.assign({ delay: false }, options || {});
-                  if (options.delay) {
-                    setTimeout(unmount, options.delay);
-                  } else {
-                    unmount();
-                  }
-                }
-              })
+            />
           );
+          resolve({
+            unmount: (options) => {
+              options = Object.assign({ delay: false }, options || {});
+              if (options.delay) {
+                setTimeout(unmount, options.delay);
+              } else {
+                unmount();
+              }
+            }
+          });
         } catch (e) {
           reject(e);
         }

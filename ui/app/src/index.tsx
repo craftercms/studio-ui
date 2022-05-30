@@ -20,10 +20,9 @@ if (process.env.NODE_ENV === 'production') {
   require('./env/codebase-bridge').createCodebaseBridge();
 } else {
   const React = require('react');
-  const ReactDOM = require('react-dom');
+  const { createRoot } = require('react-dom/client');
   const App = require('./components/App').default;
-  const elem = document.getElementById('root');
-  ReactDOM.render(<App />, elem);
+  createRoot(document.getElementById('root')).render(<App />);
 }
 
 export {};

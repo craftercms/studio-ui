@@ -151,7 +151,7 @@ export function AuditGridUI(props: AuditGridUIProps) {
     if (props.open && anchorPosition === null) {
       setTimeout(() => {
         setOpenedFilter(props.currentColumn.field);
-        const element = document.querySelector(`#${props.labelledby}`);
+        const element = document.getElementById(props.labelledby);
         const anchorRect = element.getBoundingClientRect();
         const top = anchorRect.top + getOffsetTop(anchorRect, 'top');
         const left = anchorRect.left + getOffsetLeft(anchorRect, 'left');
