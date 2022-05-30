@@ -31,7 +31,7 @@ import LookupTable from '../../models/LookupTable';
 import { DetailedItem, Resource } from '../../models';
 import NavLoader from '../PathNavigator/NavLoader';
 
-export interface FolderBrowserPathNavigatorUIProps {
+export interface FolderBrowserPathViewUIProps {
   resource: Resource<DetailedItem[]>;
   keyword: string;
   currentPath: string;
@@ -51,7 +51,7 @@ export interface FolderBrowserPathNavigatorUIProps {
   onPageChanged?: (page: number) => void;
 }
 
-export function FolderBrowserPathNavigatorUI(props: FolderBrowserPathNavigatorUIProps) {
+export function FolderBrowserPathViewUI(props: FolderBrowserPathViewUIProps) {
   const {
     resource,
     keyword,
@@ -151,4 +151,4 @@ export function FolderBrowserPathNavigatorUI(props: FolderBrowserPathNavigatorUI
   );
 }
 
-export default FolderBrowserPathNavigatorUI;
+export default FolderBrowserPathViewUI;

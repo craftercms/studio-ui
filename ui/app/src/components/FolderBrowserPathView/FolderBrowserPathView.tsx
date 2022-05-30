@@ -26,18 +26,18 @@ import { fetchChildrenByPath, fetchItemsByPath } from '../../services/content';
 import { useDispatch } from 'react-redux';
 import LookupTable from '../../models/LookupTable';
 import useLogicResource from '../../hooks/useLogicResource';
-import FolderBrowserPathNavigatorUI from './FolderBrowserPathNavigatorUI';
-import { getStoredFolderBrowserPathNavigator, setStoredFolderBrowserPathNavigator } from '../../utils/state';
+import FolderBrowserPathViewUI from './FolderBrowserPathViewUI';
+import { getStoredFolderBrowserPathView, setStoredFolderBrowserPathView } from '../../utils/state';
 import useActiveUser from '../../hooks/useActiveUser';
 import { createLookupTable } from '../../utils/object';
 
-export interface FolderBrowserPathNavigatorProps {
+export interface FolderBrowserPathViewProps {
   rootPath: string;
   selectedPath?: string;
   onPathSelected?(path: string): void;
 }
 
-export function FolderBrowserPathNavigator(props: FolderBrowserPathNavigatorProps) {
+export function FolderBrowserPathView(props: FolderBrowserPathViewProps) {
   const { rootPath, selectedPath, onPathSelected } = props;
   const [keyword, setKeyword] = useState('');
   const [currentPath, setCurrentPath] = useState(rootPath);
@@ -56,7 +56,7 @@ export function FolderBrowserPathNavigator(props: FolderBrowserPathNavigatorProp
   // region useEffects
   useEffect(() => {
     if (siteId && user?.username) {
-      const stored = getStoredFolderBrowserPathNavigator(siteId, user.username);
+      const stored = getStoredFolderBrowserPathView(siteId, user.username);
       if (stored?.limit) {
         setLimit(stored.limit);
       }
@@ -112,7 +112,7 @@ export function FolderBrowserPathNavigator(props: FolderBrowserPathNavigatorProp
   const onRowsPerPageChange = (e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
     const limit = Number(e.target.value);
     setLimit(limit);
-    setStoredFolderBrowserPathNavigator(siteId, user.username, { limit });
+    setStoredFolderBrowserPathView(siteId, user.username, { limit });
   };
 
   const onPageChanged = (page: number) => {
@@ -148,7 +148,7 @@ export function FolderBrowserPathNavigator(props: FolderBrowserPathNavigatorProp
   );
 
   return (
-    <FolderBrowserPathNavigatorUI
+    <FolderBrowserPathViewUI
       resource={resource}
       keyword={keyword}
       currentPath={currentPath}
@@ -170,4 +170,4 @@ export function FolderBrowserPathNavigator(props: FolderBrowserPathNavigatorProp
   );
 }
 
-export default FolderBrowserPathNavigator;
+export default FolderBrowserPathView;

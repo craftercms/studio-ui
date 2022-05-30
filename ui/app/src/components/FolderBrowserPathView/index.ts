@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './FolderBrowserPathNavigator';
+export { default } from './FolderBrowserPathView';
 
-export * from './FolderBrowserPathNavigator';
+export * from './FolderBrowserPathView';
 
-export * from './FolderBrowserPathNavigatorUI';
+export * from './FolderBrowserPathViewUI';
