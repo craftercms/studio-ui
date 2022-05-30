@@ -15,18 +15,16 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import CardMedia from '@mui/material/CardMedia';
 import Divider from '@mui/material/Divider';
-
-import clsx from 'clsx';
 import Skeleton from '@mui/material/Skeleton';
 import palette from '../../styles/palette';
 import { getBinary } from '../../utils/ajax';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles()(() => ({
   defaultCard: {
     maxWidth: 345,
     cursor: 'pointer'
@@ -100,13 +98,13 @@ const CompactCardContent = (props) => {
 
 export function NewContentCard(props: NewContentCardProps) {
   const { onClick, isCompact, isSelected } = props;
-  const classes = useStyles();
+  const { classes, cx } = useStyles();
   const rootClass = !isCompact ? classes.defaultCard : classes.compactCard;
   const [hover, setHover] = useState(false);
 
   return (
     <Card
-      className={clsx(rootClass, isSelected && classes.selected)}
+      className={cx(rootClass, isSelected && classes.selected)}
       onClick={onClick}
       elevation={hover ? 3 : 1}
       onMouseEnter={() => setHover(true)}
@@ -122,7 +120,7 @@ export function NewContentCard(props: NewContentCardProps) {
 }
 
 export function ContentSkeletonCard(props: { isCompact: boolean }) {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const rootClass = !props.isCompact ? classes.defaultCard : classes.compactCard;
   return (
     <Card className={rootClass}>

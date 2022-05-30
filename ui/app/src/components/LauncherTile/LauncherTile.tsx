@@ -15,14 +15,12 @@
  */
 
 import Link from '@mui/material/Link';
-import clsx from 'clsx';
 import Avatar from '@mui/material/Avatar';
 import SystemIcon, { SystemIconDescriptor } from '../SystemIcon';
 import Typography from '@mui/material/Typography';
 import React from 'react';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
-import { CSSProperties } from '@mui/styles';
+import { makeStyles } from 'tss-react/mui';
+import { CSSObject as CSSProperties } from 'tss-react';
 
 export type LauncherTileClassKey = 'tile' | 'tileActive' | 'title' | 'iconAvatar';
 
@@ -40,9 +38,9 @@ export interface LauncherTileProps {
   onClick?(e: React.MouseEvent<HTMLAnchorElement | HTMLSpanElement>): any;
 }
 
-const useStyles = makeStyles((theme) =>
-  createStyles<LauncherTileClassKey, LauncherTileStyles>({
-    tile: (styles) => ({
+const useStyles = makeStyles<LauncherTileStyles, LauncherTileClassKey>()(
+  (theme, { tile, title, iconAvatar, tileActive } = {} as LauncherTileStyles) => ({
+    tile: {
       width: '120px',
       height: '100px',
       display: 'flex',
@@ -65,43 +63,43 @@ const useStyles = makeStyles((theme) =>
         background: theme.palette.action.disabled,
         pointerEvents: 'none'
       },
-      ...styles.tile
-    }),
-    title: (styles) => ({
+      ...tile
+    },
+    title: {
       lineHeight: 1,
-      ...styles.title
-    }),
-    iconAvatar: (styles) => ({
+      ...title
+    },
+    iconAvatar: {
       backgroundColor: 'transparent',
       color: theme.palette.text.secondary,
       margin: 5,
-      ...styles.iconAvatar
-    }),
-    tileActive: (styles) => ({
+      ...iconAvatar
+    },
+    tileActive: {
       '&, &:hover, &:focus': {
         boxShadow: 'none',
         cursor: 'default',
         background: theme.palette.action.selected
       },
-      ...styles.tileActive
-    })
+      ...tileActive
+    }
   })
 );
 
 function LauncherTile(props: LauncherTileProps) {
   const { title, icon, link, target, onClick, disabled = false, active } = props;
-  const classes = useStyles(props.styles);
+  const { classes, cx } = useStyles(props.styles);
   return (
     <Link
-      className={clsx(classes.tile, props.classes?.tile, disabled && 'disabled', active && classes.tileActive)}
+      className={cx(classes.tile, props.classes?.tile, disabled && 'disabled', active && classes.tileActive)}
       href={disabled ? null : link}
       onClick={(e) => (!disabled && onClick ? onClick(e) : null)}
       target={target ? target : '_self'}
     >
-      <Avatar variant="rounded" className={clsx(classes.iconAvatar, props.classes?.iconAvatar)}>
+      <Avatar variant="rounded" className={cx(classes.iconAvatar, props.classes?.iconAvatar)}>
         <SystemIcon icon={icon} />
       </Avatar>
-      <Typography color="textPrimary" className={clsx(classes.title, props.classes?.title)}>
+      <Typography color="textPrimary" className={cx(classes.title, props.classes?.title)}>
         {title}
       </Typography>
     </Link>

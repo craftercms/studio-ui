@@ -63,7 +63,7 @@ function a11yProps(index: number) {
 //  - Use/discard `loading` props
 export function GitManagement(props: GitManagementProps) {
   const { embedded, showAppsButton = !embedded } = props;
-  const classes = useStyles();
+  const { classes } = useStyles();
   const siteId = useActiveSiteId();
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();

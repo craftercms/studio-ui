@@ -31,38 +31,34 @@ import {
 } from '../../state/actions/versions';
 import VersionList from '../VersionList';
 import DialogBody from '../DialogBody/DialogBody';
-import clsx from 'clsx';
 import SingleItemSelector from '../SingleItemSelector';
 import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
 import EmptyState from '../EmptyState/EmptyState';
 import Typography from '@mui/material/Typography';
 import DialogFooter from '../DialogFooter/DialogFooter';
 import { HistoryDialogPagination } from '../HistoryDialog';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 
-const useStyles = makeStyles(() =>
-  createStyles({
-    dialogBody: {
-      overflow: 'auto',
-      minHeight: '50vh'
-    },
-    noPadding: {
-      padding: 0
-    },
-    singleItemSelector: {
-      marginBottom: '10px'
-    },
-    typography: {
-      lineHeight: '1.5'
-    }
-  })
-);
+const useStyles = makeStyles()(() => ({
+  dialogBody: {
+    overflow: 'auto',
+    minHeight: '50vh'
+  },
+  noPadding: {
+    padding: 0
+  },
+  singleItemSelector: {
+    marginBottom: '10px'
+  },
+  typography: {
+    lineHeight: '1.5'
+  }
+}));
 
 export function CompareVersionsDialogContainer(props: CompareVersionsDialogContainerProps) {
   const { selectedA, selectedB, versionsBranch, disableItemSwitching = false, contentTypesBranch } = props;
   const { count, page, limit, selected, compareVersionsBranch, current, item, rootPath } = versionsBranch;
-  const classes = useStyles({});
+  const { classes, cx } = useStyles();
   const [openSelector, setOpenSelector] = useState(false);
   const dispatch = useDispatch();
   const compareMode = selectedA && selectedB;
@@ -120,7 +116,7 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
 
   return (
     <>
-      <DialogBody className={clsx(classes.dialogBody, compareMode && classes.noPadding)}>
+      <DialogBody className={cx(classes.dialogBody, compareMode && classes.noPadding)}>
         {!compareMode && (
           <SingleItemSelector
             classes={{ root: classes.singleItemSelector }}

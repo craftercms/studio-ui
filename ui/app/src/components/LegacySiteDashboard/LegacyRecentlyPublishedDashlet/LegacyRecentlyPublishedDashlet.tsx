@@ -73,7 +73,7 @@ export function LegacyRecentlyPublishedDashlet() {
   );
   const [expandedItems, setExpandedItems] = useSpreadState<LookupTable<boolean>>({});
   const localeBranch = useLocale();
-  const classes = useStyles();
+  const { classes } = useStyles();
   const dispatch = useDispatch();
 
   const allCollapsed = useMemo(

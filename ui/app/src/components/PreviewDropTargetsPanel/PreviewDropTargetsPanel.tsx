@@ -17,8 +17,7 @@
 import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { getHostToGuestBus } from '../../utils/subjects';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import { ContentTypeDropTarget } from '../../models/ContentTypeDropTarget';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItem from '@mui/material/ListItem';
@@ -63,20 +62,18 @@ const translations = defineMessages({
   }
 });
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    select: {
-      width: '100%',
-      padding: '15px',
-      '& > div': {
-        width: '100%'
-      }
+const useStyles = makeStyles()(() => ({
+  select: {
+    width: '100%',
+    padding: '15px',
+    '& > div': {
+      width: '100%'
     }
-  })
-);
+  }
+}));
 
 export function PreviewDropTargetsPanel() {
-  const classes = useStyles({});
+  const { classes } = useStyles();
   const hostToGuest$ = getHostToGuestBus();
   const dropTargetsBranch = useSelection((state) => state.preview.dropTargets);
   const contentTypesBranch = useSelection((state) => state.contentTypes);

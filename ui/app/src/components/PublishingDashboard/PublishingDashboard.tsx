@@ -16,34 +16,30 @@
 
 import * as React from 'react';
 import PublishingStatusWidget from '../PublishingStatusWidget';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import Grid from '@mui/material/Grid';
 import { PublishingQueueWidget } from '../PublishingQueue';
 import PublishOnDemandWidget from '../PublishOnDemandWidget';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import { FormattedMessage } from 'react-intl';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
-import clsx from 'clsx';
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    root: {},
-    grid: {
-      padding: '20px'
-    },
-    gridNoEmbedded: {
-      height: 'calc(100vh - 65px)', // full viewport height - toolbar height
-      overflowY: 'auto'
-    },
-    warningText: {
-      display: 'block'
-    },
-    rowSpacing: {
-      marginBottom: theme.spacing(3)
-    }
-  })
-);
+const useStyles = makeStyles()((theme) => ({
+  root: {},
+  grid: {
+    padding: '20px'
+  },
+  gridNoEmbedded: {
+    height: 'calc(100vh - 65px)', // full viewport height - toolbar height
+    overflowY: 'auto'
+  },
+  warningText: {
+    display: 'block'
+  },
+  rowSpacing: {
+    marginBottom: theme.spacing(3)
+  }
+}));
 
 interface PublishingDashboardProps {
   embedded?: boolean;
@@ -52,7 +48,7 @@ interface PublishingDashboardProps {
 
 export function PublishingDashboard(props: PublishingDashboardProps) {
   const { embedded, showAppsButton } = props;
-  const classes = useStyles();
+  const { classes, cx } = useStyles();
   const site = useActiveSiteId();
 
   return (
@@ -63,7 +59,7 @@ export function PublishingDashboard(props: PublishingDashboardProps) {
           showAppsButton={showAppsButton}
         />
       )}
-      <Grid container className={clsx(classes.grid, !embedded && classes.gridNoEmbedded)}>
+      <Grid container className={cx(classes.grid, !embedded && classes.gridNoEmbedded)}>
         <Grid className={classes.rowSpacing} item xs={12}>
           <PublishingStatusWidget siteId={site} />
         </Grid>

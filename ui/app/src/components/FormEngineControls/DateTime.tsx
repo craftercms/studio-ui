@@ -25,7 +25,7 @@ import { useSelection } from '../../hooks/useSelection';
 
 export function DateTime(props: DateTimeControl) {
   const { field, value, timeZone, onChange, disabled } = props;
-  const classes = useStyles();
+  const { classes } = useStyles();
   const locale = useSelection<GlobalState['uiConfig']['locale']>((state) => state.uiConfig.locale);
 
   return (

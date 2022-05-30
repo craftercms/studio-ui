@@ -14,26 +14,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import createStyles from '@mui/styles/createStyles';
-
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import React from 'react';
 import { Button } from '@mui/material';
 import CrafterCMSIcon from '../../icons/CrafterCMSIcon';
 import MenuRounded from '@mui/icons-material/MenuRounded';
 import { ButtonProps } from '@mui/material/Button';
-import clsx from 'clsx';
 
-const useStyles = makeStyles(() =>
-  createStyles({
-    button: {
-      padding: '7px'
-    },
-    crafterIcon: {
-      fontSize: '33px'
-    }
-  })
-);
+const useStyles = makeStyles()(() => ({
+  button: {
+    padding: '7px'
+  },
+  crafterIcon: {
+    fontSize: '33px'
+  }
+}));
 
 export type LogoAndMenuBundleButtonProps = ButtonProps & {
   classes?: ButtonProps['classes'] & Partial<Record<'crafterIcon' | 'menuIcon', string>>;
@@ -45,12 +40,12 @@ const LogoAndMenuBundleButton = React.forwardRef<HTMLButtonElement, LogoAndMenuB
   props,
   ref
 ) {
-  const classes = useStyles();
+  const { classes, cx } = useStyles();
   const { showCrafterIcon = true, showMenuIcon = true, ...buttonProps } = props;
   return (
     <Button ref={ref} {...buttonProps}>
       {showCrafterIcon && (
-        <CrafterCMSIcon sx={{ mr: 0.5 }} className={clsx(classes.crafterIcon, props.classes?.crafterIcon)} />
+        <CrafterCMSIcon sx={{ mr: 0.5 }} className={cx(classes.crafterIcon, props.classes?.crafterIcon)} />
       )}
       {showMenuIcon && <MenuRounded className={props.classes?.menuIcon} />}
     </Button>

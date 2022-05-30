@@ -21,45 +21,41 @@ import DeleteRounded from '@mui/icons-material/DeleteRounded';
 import DeleteRoundedTilted from '../../icons/OpenRubbishBinTiltedLeftFilled';
 import { Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import palette from '../../styles/palette';
-import clsx from 'clsx';
 import { useSelection } from '../../hooks/useSelection';
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    rubbishBin: {
-      height: 250,
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      background: palette.orange.main,
-      margin: theme.spacing(1),
-      position: 'absolute',
-      right: theme.spacing(1),
-      bottom: theme.spacing(1),
-      color: palette.white,
-      zIndex: theme.zIndex.drawer
-    },
-    rubbishBinHover: {
-      background: palette.red.main
-    },
-    rubbishIcon: {
-      width: '100%',
-      height: '50%',
-      color: palette.white,
-      pointerEvents: 'none'
-    },
-    rubbishLabel: {
-      pointerEvents: 'none'
-    }
-  })
-);
+const useStyles = makeStyles()((theme) => ({
+  rubbishBin: {
+    height: 250,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    background: palette.orange.main,
+    margin: theme.spacing(1),
+    position: 'absolute',
+    right: theme.spacing(1),
+    bottom: theme.spacing(1),
+    color: palette.white,
+    zIndex: theme.zIndex.drawer
+  },
+  rubbishBinHover: {
+    background: palette.red.main
+  },
+  rubbishIcon: {
+    width: '100%',
+    height: '50%',
+    color: palette.white,
+    pointerEvents: 'none'
+  },
+  rubbishLabel: {
+    pointerEvents: 'none'
+  }
+}));
 
 export function RubbishBin(props: any) {
-  const classes = useStyles({});
+  const { classes, cx } = useStyles();
   const [over, setOver] = useState(false);
   const [trashed, setTrashed] = useState(false);
   const toolsPanelWidth = useSelection<number>((state) => state.preview.toolsPanelWidth);
@@ -74,7 +70,7 @@ export function RubbishBin(props: any) {
       <Paper
         elevation={2}
         style={{ width: toolsPanelWidth - 30 }}
-        className={clsx(classes.rubbishBin, over && classes.rubbishBinHover)}
+        className={cx(classes.rubbishBin, over && classes.rubbishBinHover)}
         onDragOver={(e) => {
           e.preventDefault();
         }}

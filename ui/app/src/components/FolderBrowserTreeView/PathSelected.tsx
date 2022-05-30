@@ -15,7 +15,6 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import clsx from 'clsx';
 import { FormHelperText, InputBase, Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -32,7 +31,7 @@ export interface PathSelectedProps {
 
 export function PathSelected(props: PathSelectedProps) {
   const { rootPath, currentPath, onPathChanged, invalidPath, isFetching, onKeyPress: onInputChanges } = props;
-  const classes = usePathSelectedStyles();
+  const { classes, cx: clsx } = usePathSelectedStyles();
   const [focus, setFocus] = useState(false);
   const [value, setValue] = useState(null);
 

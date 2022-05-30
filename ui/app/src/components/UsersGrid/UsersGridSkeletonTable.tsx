@@ -34,7 +34,7 @@ export interface UsersGridSkeletonTableProps {
 export const UsersGridSkeletonTable = React.memo((props: UsersGridSkeletonTableProps) => {
   const { numOfItems = 5 } = props;
   const items = new Array(numOfItems).fill(null);
-  const classes = useStyles();
+  const { classes } = useStyles();
   return (
     <TableContainer>
       <Table className={classes.tableRoot}>

@@ -19,13 +19,11 @@ import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
 import { rand } from '../PathNavigator/utils';
 import Skeleton from '@mui/material/Skeleton';
 
-import clsx from 'clsx';
 import { SystemIconDescriptor } from '../SystemIcon';
 
 export interface ContextMenuOption {
@@ -46,22 +44,20 @@ export interface ContextMenuProps extends MenuProps {
   onMenuItemClicked(optionId: string, event: React.MouseEvent<Element, MouseEvent>): void;
 }
 
-const useStyles = makeStyles(() =>
-  createStyles({
-    emptyRoot: {
-      display: 'block',
-      padding: '10px',
-      textAlign: 'center'
-    },
-    loadingRoot: {
-      width: '135px',
-      padding: '0 15px'
-    }
-  })
-);
+const useStyles = makeStyles()(() => ({
+  emptyRoot: {
+    display: 'block',
+    padding: '10px',
+    textAlign: 'center'
+  },
+  loadingRoot: {
+    width: '135px',
+    padding: '0 15px'
+  }
+}));
 
 export function ContextMenu(props: ContextMenuProps) {
-  const classes = useStyles();
+  const { classes, cx } = useStyles();
   const {
     options,
     classes: propClasses,
@@ -74,7 +70,7 @@ export function ContextMenu(props: ContextMenuProps) {
   return (
     <Menu {...menuProps} classes={propClasses}>
       {isLoading ? (
-        <div className={clsx(classes.loadingRoot, propClasses?.loadingRoot)}>
+        <div className={cx(classes.loadingRoot, propClasses?.loadingRoot)}>
           {new Array(numOfLoaderItems).fill(null).map((value, i) => (
             <Typography key={i} variant="body2" style={{ width: `${rand(85, 100)}%`, padding: '6px 0' }}>
               <Skeleton animation="wave" width="100%" />
@@ -82,7 +78,7 @@ export function ContextMenu(props: ContextMenuProps) {
           ))}
         </div>
       ) : options.flatMap((i) => i).length === 0 ? (
-        <div className={clsx(classes.emptyRoot, propClasses?.emptyRoot)}>
+        <div className={cx(classes.emptyRoot, propClasses?.emptyRoot)}>
           <ErrorOutlineOutlinedIcon fontSize="small" />
           <Typography variant="caption" display="block">
             {emptyState?.message || (

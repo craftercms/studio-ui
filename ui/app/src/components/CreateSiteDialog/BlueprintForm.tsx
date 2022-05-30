@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -26,9 +26,8 @@ import PluginFormEngine from '../PluginFormBuilder';
 import { fetchAll } from '../../services/sites';
 import Switch from '@mui/material/Switch';
 import Typography from '@mui/material/Typography';
-import clsx from 'clsx';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   form: {
     maxWidth: '600px',
     margin: '0 auto'
@@ -108,7 +107,7 @@ const messages = defineMessages({
 });
 
 function BlueprintForm(props: BlueprintFormProps) {
-  const classes = useStyles({});
+  const { classes, cx } = useStyles();
   const { inputs, setInputs, onSubmit, blueprint, onCheckNameExist, classes: classesProp } = props;
   const [sites, setSites] = useState(null);
   const { formatMessage } = useIntl();
@@ -220,7 +219,7 @@ function BlueprintForm(props: BlueprintFormProps) {
   }
 
   return (
-    <form className={clsx(classes.form, classesProp?.root)}>
+    <form className={cx(classes.form, classesProp?.root)}>
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <TextField

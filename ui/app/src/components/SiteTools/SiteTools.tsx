@@ -34,7 +34,6 @@ import SiteSwitcherSelect from '../SiteSwitcherSelect';
 import Tooltip from '@mui/material/Tooltip';
 import Paper from '@mui/material/Paper';
 import TranslationOrText from '../../models/TranslationOrText';
-import clsx from 'clsx';
 import Suspencified from '../Suspencified/Suspencified';
 import LauncherOpenerButton from '../LauncherOpenerButton';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
@@ -88,7 +87,7 @@ export function SiteTools(props: SiteToolsProps) {
     onSubmittingAndOrPendingChange,
     onMinimize
   } = props;
-  const classes = useStyles();
+  const { classes, cx: clsx } = useStyles();
   const { formatMessage } = useIntl();
 
   const tool = tools?.find((tool) => tool.url === activeToolId)?.widget;
@@ -177,7 +176,7 @@ export function SiteTools(props: SiteToolsProps) {
           ) : (
             <Box display="flex" flexDirection="column" height="100%">
               <section className={classes.launcher}>
-                <LauncherOpenerButton sitesRailPosition="left" icon="apps" />
+                <LauncherOpenerButton />
               </section>
               <EmptyState
                 styles={{

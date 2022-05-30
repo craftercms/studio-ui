@@ -25,7 +25,6 @@ import IconButton from '@mui/material/IconButton';
 import { FormattedMessage } from 'react-intl';
 import Tooltip from '@mui/material/Tooltip';
 import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
-import clsx from 'clsx';
 import { styled } from '@mui/material/styles';
 
 export type LegacyDashletProps = PropsWithChildren<
@@ -61,7 +60,7 @@ export function LegacyDashletCard(props: LegacyDashletProps) {
     onRefresh,
     ...rest
   } = props;
-  const classes = useStyles();
+  const { classes, cx: clsx } = useStyles();
   return (
     <Accordion {...rest}>
       <Summary expandIcon={<Icon />} onClick={onToggleExpanded}>

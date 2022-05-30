@@ -15,9 +15,7 @@
  */
 
 import { createTheme, ThemeOptions } from '@mui/material/styles';
-import createGenerateClassName from '@mui/styles/createGenerateClassName';
 import palette from './palette';
-import { GenerateId } from 'jss';
 
 export const backgroundColor = palette.gray.light1;
 export const RedColor = palette.red.main;
@@ -112,7 +110,3 @@ export function createDefaultThemeOptions({ mode }: { mode: ThemeOptions['palett
   };
   return theme;
 }
-
-export const generateClassName: GenerateId = createGenerateClassName({
-  productionPrefix: 'craftercms-'
-});

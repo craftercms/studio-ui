@@ -18,7 +18,7 @@ import { defineMessages, useIntl } from 'react-intl';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/KeyboardArrowDown';
 import { camelize } from '../../utils/string';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import { Filter as FilterType, SearchFacet } from '../../models/Search';
 import CheckIcon from '@mui/icons-material/Check';
 import { LookupTable } from '../../models/LookupTable';
@@ -65,7 +65,7 @@ const Accordion = styled(MuiAccordion)(() => ({
   [`&.${accordionClasses.expanded}`]: { margin: 'auto' }
 }));
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   header: {
     width: '100%',
     padding: '10px 15px 10px 20px',
@@ -184,7 +184,7 @@ const filterToFacet = (filterKey, filterValue) => {
 };
 
 export function SiteSearchFilters(props: SiteSearchFiltersProps) {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const {
     sortBy,
     sortOrder,

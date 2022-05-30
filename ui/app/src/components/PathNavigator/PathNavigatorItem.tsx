@@ -18,7 +18,6 @@ import { DetailedItem } from '../../models/Item';
 import React, { useState } from 'react';
 import { useStyles } from './styles';
 import ListItem from '@mui/material/ListItem';
-import clsx from 'clsx';
 import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import MoreVertIcon from '@mui/icons-material/MoreVertRounded';
@@ -60,7 +59,7 @@ const translations = defineMessages({
 
 // PathNavigatorListItem
 function PathNavigatorItem(props: NavItemProps) {
-  const classes = useStyles();
+  const { classes, cx: clsx } = useStyles();
   const {
     item,
     isActive = false,

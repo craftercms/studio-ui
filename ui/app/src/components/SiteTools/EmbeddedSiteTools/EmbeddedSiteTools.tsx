@@ -37,7 +37,7 @@ export const EmbeddedSiteToolsContainer = (props: EmbeddedSiteToolsProps) => {
   const siteTools = useReference('craftercms.siteTools');
   const tools: Tool[] = siteTools?.tools;
   const site = useActiveSiteId();
-  const classes = embeddedStyles();
+  const { classes } = embeddedStyles();
   const dispatch = useDispatch();
 
   const onNavItemClick = (id: string) => {

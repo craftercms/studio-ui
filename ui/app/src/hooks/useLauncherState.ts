@@ -17,8 +17,10 @@
 import GlobalState from '../models/GlobalState';
 import { useSelector } from 'react-redux';
 
-export function useLauncherState(): GlobalState['launcher'] {
-  return useSelector<GlobalState, GlobalState['launcher']>((state) => state.launcher);
+type Type = GlobalState['dialogs']['launcher'];
+
+export function useLauncherState(): Type {
+  return useSelector<GlobalState, Type>((state) => state.dialogs.launcher);
 }
 
 export default useLauncherState;

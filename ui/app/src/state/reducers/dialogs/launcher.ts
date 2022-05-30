@@ -18,20 +18,45 @@ import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
 import { LauncherStateProps } from '../../../components/Launcher';
 import { closeLauncher, showLauncher } from '../../actions/dialogs';
+import { initLauncherConfig } from '../../actions/launcher';
+import { deserialize, fromString } from '../../../utils/xml';
+import { applyDeserializedXMLTransforms } from '../../../utils/object';
 
 const initialState: LauncherStateProps = {
   open: false,
   anchor: null,
   sitesRailPosition: 'left',
-  closeButtonPosition: 'right'
+  closeButtonPosition: 'right',
+  widgets: null,
+  siteCardMenuLinks: null
 };
 
 const launcher = createReducer<GlobalState['dialogs']['launcher']>(initialState, {
   [showLauncher.type]: (state, { payload }) => ({
+    ...state,
     ...payload,
     open: true
   }),
-  [closeLauncher.type]: () => initialState
+  [initLauncherConfig.type]: (state, { payload }) => {
+    const configDOM = fromString(payload.configXml);
+    const launcher = configDOM.querySelector('[id="craftercms.components.Launcher"] > configuration');
+    if (launcher) {
+      let launcherConfig = applyDeserializedXMLTransforms(deserialize(launcher), {
+        arrays: ['widgets', 'permittedRoles', 'siteCardMenuLinks']
+      }).configuration;
+      return {
+        ...state,
+        ...launcherConfig
+      };
+    } else {
+      return state;
+    }
+  },
+  [closeLauncher.type]: (state) => ({
+    ...state,
+    open: false,
+    anchor: null
+  })
 });
 
 export default launcher;

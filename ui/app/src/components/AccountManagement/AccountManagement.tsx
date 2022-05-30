@@ -37,7 +37,6 @@ import { setMyPassword } from '../../services/users';
 import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { showSystemNotification } from '../../state/actions/system';
-import clsx from 'clsx';
 import { useActiveUser } from '../../hooks/useActiveUser';
 
 interface AccountManagementProps {
@@ -60,7 +59,7 @@ export function AccountManagement(props: AccountManagementProps) {
     passwordRequirementsRegex = '^(?=(?<hasNumbers>.*[0-9]))(?=(?<hasLowercase>.*[a-z]))(?=(?<hasUppercase>.*[A-Z]))(?=(?<hasSpecialChars>.*[~|!`,;/@#$%^&+=]))(?<minLength>.{8,})$'
   } = props;
 
-  const classes = useStyles();
+  const { classes, cx: clsx } = useStyles();
   const user = useActiveUser();
   const [language, setLanguage] = useState(() => getCurrentLocale());
   const [languages, setLanguages] = useState<SystemLang[]>();

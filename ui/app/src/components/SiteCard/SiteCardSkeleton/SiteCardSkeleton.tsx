@@ -20,14 +20,13 @@ import CardHeader from '@mui/material/CardHeader';
 import Skeleton from '@mui/material/Skeleton';
 import CardActions from '@mui/material/CardActions';
 import React from 'react';
-import clsx from 'clsx';
 
 export interface SiteCardSkeletonProps {
   compact?: boolean;
 }
 
 export function SiteCardSkeleton(props: SiteCardSkeletonProps) {
-  const classes = useSiteCardStyles();
+  const { classes, cx: clsx } = useSiteCardStyles();
   return (
     <Card className={clsx(classes.card, props.compact && 'compact')}>
       <CardHeader

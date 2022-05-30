@@ -46,7 +46,6 @@ import ButtonGroup from '@mui/material/ButtonGroup';
 import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
 import informationGraphicUrl from '../../assets/information.svg';
 import Typography from '@mui/material/Typography';
-import clsx from 'clsx';
 import { useDispatch } from 'react-redux';
 import { fetchItemVersions } from '../../state/actions/versions';
 import { fetchItemByPath } from '../../services/content';
@@ -84,7 +83,7 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
   const { embedded, showAppsButton, onSubmittingAndOrPendingChange, isSubmitting } = props;
   const site = useActiveSiteId();
   const baseUrl = useSelection<string>((state) => state.env.authoringBase);
-  const classes = useStyles();
+  const { classes, cx: clsx } = useStyles();
   const { formatMessage } = useIntl();
   const [environment, setEnvironment] = useState<string>();
   const [files, setFiles] = useState<SiteConfigurationFileWithId[]>();
@@ -107,7 +106,6 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
   const functionRefs = useUpdateRefs({
     onSubmittingAndOrPendingChange
   });
-
   const editorRef = useRef<any>({
     container: null
   });
@@ -503,6 +501,7 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
               {environment ? (
                 <>
                   <Tooltip
+                    placement="top"
                     title={
                       <FormattedMessage
                         id="siteConfigurationManagement.environment"

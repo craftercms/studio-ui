@@ -18,8 +18,7 @@ import React, { useEffect, useState } from 'react';
 import DialogBody from '../../DialogBody/DialogBody';
 import DialogFooter from '../../DialogFooter/DialogFooter';
 import { FormattedMessage } from 'react-intl';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import MenuItem from '@mui/material/MenuItem';
@@ -37,18 +36,16 @@ import FormHelperText from '@mui/material/FormHelperText';
 import { useTheme } from '@mui/material/styles';
 import { getStoredPushBranch, removeStoredPushBranch, setStoredPushBranch } from '../../../utils/state';
 
-const useStyles = makeStyles(() =>
-  createStyles({
-    formControl: {
-      marginBottom: '15px'
-    }
-  })
-);
+const useStyles = makeStyles()(() => ({
+  formControl: {
+    marginBottom: '15px'
+  }
+}));
 
 export function PushDialogContainer(props: PushDialogContainerProps) {
   const { branches, remoteName, onClose, onPushSuccess, onPushError, onSubmittingChange, isSubmitting } = props;
   const [selectedBranch, setSelectedBranch] = useState('');
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { id: siteId, uuid } = useActiveSite();
   const { username } = useActiveUser();
   const [forcePush, setForcePush] = useState(false);

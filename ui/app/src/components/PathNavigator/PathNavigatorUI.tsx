@@ -18,7 +18,6 @@ import React, { ChangeEvent, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import TablePagination from '@mui/material/TablePagination';
 import { DetailedItem } from '../../models/Item';
-import clsx from 'clsx';
 import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
 import { useStyles } from './styles';
 import { translations } from './translations';
@@ -146,7 +145,7 @@ const NavLoader = React.memo((props: { numOfItems?: number }) => {
 });
 
 export function PathNavigatorUI(props: PathNavigatorUIProps) {
-  const classes = useStyles();
+  const { classes, cx: clsx } = useStyles();
   // region consts {...} = props
   const {
     state,

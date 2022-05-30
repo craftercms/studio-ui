@@ -43,7 +43,6 @@ import { updateEditConfig } from '../../state/actions/dialogs';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useUnmount } from '../../hooks/useUnmount';
 import LoadingState from '../LoadingState/LoadingState';
-import clsx from 'clsx';
 import ErrorDialog from '../ErrorDialog/ErrorDialog';
 import { translations } from './translations';
 import { useStyles } from './styles';
@@ -76,7 +75,7 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
   } = props;
 
   const { formatMessage } = useIntl();
-  const classes = useStyles({});
+  const { classes, cx: clsx } = useStyles();
   const iframeRef = useRef(null);
   const dispatch = useDispatch();
   const [error, setError] = useState<ApiResponse>(null);

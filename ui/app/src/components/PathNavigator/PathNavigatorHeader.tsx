@@ -35,7 +35,7 @@ interface HeaderProps {
 
 // PathNavigatorHeader
 export function PathNavigatorHeader(props: HeaderProps) {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const {
     title,
     icon,

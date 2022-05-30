@@ -24,27 +24,24 @@ import ListItemText from '@mui/material/ListItemText';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import IconButton from '@mui/material/IconButton';
 import MoreVertRounded from '@mui/icons-material/MoreVertRounded';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 
-const useStyles = makeStyles(() =>
-  createStyles({
-    root: {},
-    noWrapping: {
-      overflow: 'hidden',
-      whiteSpace: 'nowrap',
-      textOverflow: 'ellipsis',
-      display: 'block'
-    },
-    component: {
-      cursor: 'move'
-    },
-    avatarRootOver: {
-      color: 'black',
-      background: 'white'
-    }
-  })
-);
+const useStyles = makeStyles()(() => ({
+  root: {},
+  noWrapping: {
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
+    textOverflow: 'ellipsis',
+    display: 'block'
+  },
+  component: {
+    cursor: 'move'
+  },
+  avatarRootOver: {
+    color: 'black',
+    background: 'white'
+  }
+}));
 
 interface PanelListItemProps {
   primaryText: string;
@@ -56,7 +53,7 @@ interface PanelListItemProps {
 }
 
 export function DraggablePanelListItem(props: PanelListItemProps) {
-  const classes = useStyles({});
+  const { classes } = useStyles();
   const { onMenu, primaryText, avatarSrc, secondaryText, onDragStart, onDragEnd } = props;
   const [over, setOver] = useState(false);
   return (

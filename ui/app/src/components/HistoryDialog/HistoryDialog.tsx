@@ -15,58 +15,53 @@
  */
 
 import React from 'react';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import { EnhancedDialog } from '../EnhancedDialog';
 import { HistoryDialogContainer } from './HistoryDialogContainer';
 import { HistoryDialogProps } from './utils';
 import { FormattedMessage } from 'react-intl';
 
-export const historyStyles = makeStyles(() =>
-  createStyles({
-    dialogBody: {
-      overflow: 'auto',
-      minHeight: '50vh'
-    },
-    dialogFooter: {
+export const historyStyles = makeStyles()(() => ({
+  dialogBody: {
+    overflow: 'auto',
+    minHeight: '50vh'
+  },
+  dialogFooter: {
+    padding: 0
+  },
+  singleItemSelector: {
+    marginBottom: '10px'
+  }
+}));
+
+export const paginationStyles = makeStyles()((theme) => ({
+  pagination: {
+    marginLeft: 'auto',
+    background: theme.palette.background.paper,
+    color: theme.palette.text.primary,
+    '& p': {
       padding: 0
     },
-    singleItemSelector: {
-      marginBottom: '10px'
-    }
-  })
-);
-
-export const paginationStyles = makeStyles((theme) =>
-  createStyles({
-    pagination: {
-      marginLeft: 'auto',
-      background: theme.palette.background.paper,
-      color: theme.palette.text.primary,
-      '& p': {
-        padding: 0
-      },
-      '& svg': {
-        top: 'inherit'
-      },
-      '& .hidden': {
-        display: 'none'
-      }
+    '& svg': {
+      top: 'inherit'
     },
-    toolbar: {
-      padding: 0,
-      display: 'flex',
-      justifyContent: 'space-between',
-      paddingLeft: '20px',
-      '& .MuiTablePagination-spacer': {
-        display: 'none'
-      },
-      '& .MuiTablePagination-spacer + p': {
-        display: 'none'
-      }
+    '& .hidden': {
+      display: 'none'
     }
-  })
-);
+  },
+  toolbar: {
+    padding: 0,
+    display: 'flex',
+    justifyContent: 'space-between',
+    paddingLeft: '20px',
+    '& .MuiTablePagination-spacer': {
+      display: 'none'
+    },
+    '& .MuiTablePagination-spacer + p': {
+      display: 'none'
+    }
+  }
+}));
 
 export function HistoryDialog(props: HistoryDialogProps) {
   const { versionsBranch, ...rest } = props;

@@ -14,33 +14,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    tableRoot: {
-      tableLayout: 'fixed'
-    },
-    itemPath: {
-      color: theme.palette.text.secondary
-    },
-    ellipsis: {
-      overflow: 'hidden',
-      textOverflow: 'ellipsis',
-      whiteSpace: 'nowrap'
-    },
-    showSelectRoot: {
-      paddingTop: '8.5px',
-      paddingBottom: '8.5px'
-    },
-    showLabel: {
-      marginRight: theme.spacing(1)
-    },
-    skeletonCheckbox: {
-      margin: '6px 10px'
-    }
-  })
-);
+const useStyles = makeStyles()((theme) => ({
+  tableRoot: {
+    tableLayout: 'fixed'
+  },
+  itemPath: {
+    color: theme.palette.text.secondary
+  },
+  ellipsis: {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap'
+  },
+  showSelectRoot: {
+    paddingTop: '8.5px',
+    paddingBottom: '8.5px'
+  },
+  showLabel: {
+    marginRight: theme.spacing(1)
+  },
+  skeletonCheckbox: {
+    margin: '6px 10px'
+  }
+}));
 
 export default useStyles;

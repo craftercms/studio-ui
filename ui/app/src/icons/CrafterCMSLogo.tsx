@@ -15,9 +15,7 @@
  */
 
 import React from 'react';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
-import clsx from 'clsx';
+import { makeStyles } from 'tss-react/mui';
 
 interface CrafterCMSLogoProps {
   alt?: string;
@@ -27,35 +25,32 @@ interface CrafterCMSLogoProps {
 
 let UND;
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    root: {
-      // aspect ratio = 4.1062801932
-      width: (props: CrafterCMSLogoProps) => props.width ?? 200,
-      height: (props: CrafterCMSLogoProps) =>
-        props.width !== UND ? (props.width === 'auto' ? 'auto' : props.width / 4.1062801932) : 48.7,
-      fill: 'currentColor',
-      display: 'inline-block',
-      transition: 'fill 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
-      flexShrink: 0,
-      userSelect: 'none'
-    },
-    crafter: {
-      fill: theme.palette.mode === 'dark' ? '#fff' : '#000'
-    },
-    redStuff: {
-      fill: '#f00'
-    }
-  })
-);
+const useStyles = makeStyles<{ width?: number | 'auto' }>()((theme, { width } = {} as any) => ({
+  root: {
+    // aspect ratio = 4.1062801932
+    width: width ?? 200,
+    height: width !== UND ? (width === 'auto' ? 'auto' : (width as number) / 4.1062801932) : 48.7,
+    fill: 'currentColor',
+    display: 'inline-block',
+    transition: 'fill 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
+    flexShrink: 0,
+    userSelect: 'none'
+  },
+  crafter: {
+    fill: theme.palette.mode === 'dark' ? '#fff' : '#000'
+  },
+  redStuff: {
+    fill: '#f00'
+  }
+}));
 
 export default function CrafterCMSLogo(props: CrafterCMSLogoProps) {
-  const classes = useStyles(props);
+  const { classes, cx } = useStyles(props);
   const themeClass = classes.crafter;
   return (
     <svg
       aria-label={props.alt ?? ''}
-      className={clsx(classes.root, props.className)}
+      className={cx(classes.root, props.className)}
       viewBox="0 0 850 207"
       aria-hidden="true"
       focusable="false"

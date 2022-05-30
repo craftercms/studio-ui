@@ -267,20 +267,6 @@ export interface GlobalState {
   pathNavigatorTree: {
     [id: string]: PathNavigatorTreeStateProps;
   };
-  launcher: {
-    widgets: WidgetDescriptor[];
-    /**
-     * Whether to render the global nav before or after
-     * the additional widgets coming from configuration
-     **/
-    globalNavigationPosition?: 'before' | 'after';
-    siteCardMenuLinks: Array<{
-      title: TranslationOrText;
-      systemLinkId: SystemLinkId;
-      icon?: SystemIconDescriptor;
-      permittedRoles?: string[];
-    }>;
-  };
   dashboard: {
     widgets: WidgetDescriptor[];
   };
