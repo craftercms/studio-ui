@@ -2214,6 +2214,17 @@
         repositories.spinnerOverlay && repositories.spinnerOverlay.close();
       }
 
+      $scope.getSite = function () {
+        $scope.sandboxBranchError = null;
+        adminService.getSite(repositories.site)
+          .success(({ sandboxBranch }) => {
+            $scope.sandboxBranch = sandboxBranch;
+          })
+          .error((error) => {
+            $scope.sandboxBranchError = error;
+          })
+      }
+
       this.init = function () {
         $scope.sandboxBranch = '';
         $scope.showError = function (error) {
@@ -2272,9 +2283,7 @@
             $scope.showError(error.response);
           });
 
-        adminService.getSite(repositories.site).success(({ sandboxBranch }) => {
-          $scope.sandboxBranch = sandboxBranch;
-        })
+        $scope.getSite();
       };
       this.init();
 

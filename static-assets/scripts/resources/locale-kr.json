@@ -278,6 +278,10 @@
         "REMOTE_BRANCH": "원격 지점",
         "PULL": "당겨서",
         "PUSH": "푸시",
+        "PULL_FROM": "에서 가져오기",
+        "BRANCH": "나뭇가지",
+        "PULL_INFO": "사이트가 생성된 지점에서만 가져올 수 있습니다. 모든 기능 분기 작업은 업스트림에 병합되어야 합니다.",
+        "SANDBOX_BRANCH_ERROR": "프로젝트의 분기를 검색할 수 없습니다.",
         "REMOTE_BRANCH_PULL":"당겨 받기위한 원격 지점",
         "REMOTE_BRANCH_PUSH":"푸시 할 원격 지점 ",
         "SUCCESSFULLY_PUSHED": "성공적으로 푸시 됨",
@@ -388,6 +392,7 @@
     "GLOBAL_MENU": "글로벌 메뉴",
     "MAIN_MENU": "기본 메뉴",
     "RESET_PASSWORD": "암호를 재설정",
-    "CLOSE": "닫기"
+    "CLOSE": "닫기",
+    "RETRY": "다시 해 보다"
   }
 }

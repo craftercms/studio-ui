@@ -484,8 +484,14 @@
         </div>
         <div ng-if="repositories.repoAction == 'pull'">
           <label class="pull-branch-label">
-            <span class="heading">{{ 'admin.repositories.BRANCH' | translate }}</span>
-            {{ sandboxBranch }}
+            <span ng-if="!sandboxBranchError">
+              <span class="heading">{{ 'admin.repositories.BRANCH' | translate }}</span>
+              {{ sandboxBranch }}
+            </span>
+            <span ng-if="sandboxBranchError" class="text-danger">
+              {{ 'admin.repositories.SANDBOX_BRANCH_ERROR' | translate }} •
+              <a ng-click="getSite()">{{ 'common.RETRY' | translate }}</a>
+            </span>
           </label>
           <input type="hidden" id="branch" name="branch" ng-model="sandboxBranch" required />
           <label
