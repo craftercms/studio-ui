@@ -14,20 +14,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './PathNavigator';
+import React from 'react';
+import List from '@mui/material/List';
+import PathNavigatorSkeletonItem from './PathNavigatorSkeletonItem';
 
-export * from './PathNavigator';
+export function NavLoader(props: { numOfItems?: number }) {
+  const { numOfItems = 5 } = props;
+  const items = new Array(numOfItems).fill(null);
+  return (
+    <List component="nav" disablePadding>
+      {items.map((value, i) => (
+        <PathNavigatorSkeletonItem key={i} />
+      ))}
+    </List>
+  );
+}
 
-export * from './PathNavigatorBreadcrumbs';
-
-export * from './PathNavigatorHeader';
-
-export * from './PathNavigatorItem';
-
-export * from './PathNavigatorSkeleton';
-
-export * from './PathNavigatorSkeletonItem';
-
-export * from './PathNavigatorUI';
-
-export * from './NavLoader';
+export default NavLoader;

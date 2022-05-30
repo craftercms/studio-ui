@@ -20,7 +20,6 @@ import { lookupItemByPath } from '../../utils/content';
 import PathNavigatorItem from '../PathNavigator/PathNavigatorItem';
 import { SuspenseWithEmptyState } from '../Suspencified';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { NavLoader } from '../PathNavigator';
 import PathNavigatorList from '../PathNavigator/PathNavigatorList';
 import TablePagination from '@mui/material/TablePagination';
 import clsx from 'clsx';
@@ -30,6 +29,7 @@ import { createFakeResource } from '../../utils/resource';
 import { useStyles } from '../PathNavigator/styles';
 import LookupTable from '../../models/LookupTable';
 import { DetailedItem, Resource } from '../../models';
+import NavLoader from '../PathNavigator/NavLoader';
 
 export interface FolderBrowserPathNavigatorUIProps {
   resource: Resource<DetailedItem[]>;
