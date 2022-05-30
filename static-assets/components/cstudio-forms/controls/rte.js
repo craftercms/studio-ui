@@ -77,7 +77,7 @@ CStudioForms.Controls.RTE.rteConfigManager =
         manager
           .getState$(store)
           .pipe(
-            filter(() => manager.getRTEState(store)),
+            filter(() => Boolean(manager.getRTEState(store))),
             take(1)
           )
           .subscribe(() => callback());
@@ -140,7 +140,7 @@ CStudioAuthoring.Module.requireModule(
                 manager
                   .getState$(store)
                   .pipe(
-                    filter(() => manager.getUiConfigXml(store)),
+                    filter(() => Boolean(manager.getUiConfigXml(store))),
                     take(1)
                   )
                   .subscribe(() => {
