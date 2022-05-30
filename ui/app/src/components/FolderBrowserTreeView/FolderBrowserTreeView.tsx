@@ -27,6 +27,7 @@ import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import TreeView from '@mui/lab/TreeView';
 import { createLookupTable, nnou } from '../../utils/object';
 import { isFolder } from '../PathNavigator/utils';
+import { createPresenceTable } from '../../utils/array';
 
 export interface FolderBrowserTreeViewProps {
   rootPath: string;
@@ -47,6 +48,7 @@ export function FolderBrowserTreeView(props: FolderBrowserTreeViewProps) {
   const [rootItem, setRootItem] = useState(null);
   const [rootNode, setRootNode] = useState(null);
   const [expanded, setExpanded] = useState<string[]>([]);
+  const activeItems = createPresenceTable([selectedPath]);
   const [error, setError] = useState<ApiResponse>();
   const limit = 5;
   const fetchChildren = useCallback(
@@ -238,7 +240,7 @@ export function FolderBrowserTreeView(props: FolderBrowserTreeViewProps) {
             keywordByPath={keywordByPath}
             totalByPath={totalByPath}
             childrenByParentPath={childrenByParentPath}
-            active={selectedPath}
+            active={activeItems}
             onLabelClick={onItemClicked}
             onIconClick={onToggleNodeClick}
             onFilterChange={onFilterChange}

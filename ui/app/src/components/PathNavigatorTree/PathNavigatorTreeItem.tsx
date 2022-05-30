@@ -44,7 +44,7 @@ export interface PathNavigatorTreeItemProps {
   keywordByPath: LookupTable<string>;
   totalByPath: LookupTable<number>;
   childrenByParentPath: LookupTable<string[]>;
-  active?: string;
+  active?: Record<string, boolean>;
   classes?: Partial<Record<PathNavigatorTreeBreadcrumbsClassKey, string>>;
   onLabelClick(event: React.MouseEvent<Element, MouseEvent>, path: string): void;
   onIconClick(path: string): void;
@@ -395,7 +395,7 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
           classes={{
             root: classes.root,
             content: classes.content,
-            label: clsx(classes.labelContainer, active === node.id ? classes.active : null),
+            label: clsx(classes.labelContainer, active[node.id] ? classes.active : null),
             iconContainer: classes.iconContainer,
             focused: classes.focused
           }}
