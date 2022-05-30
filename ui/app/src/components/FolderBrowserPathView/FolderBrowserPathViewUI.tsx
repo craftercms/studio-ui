@@ -22,7 +22,6 @@ import { SuspenseWithEmptyState } from '../Suspencified';
 import { FormattedMessage, useIntl } from 'react-intl';
 import PathNavigatorList from '../PathNavigator/PathNavigatorList';
 import TablePagination from '@mui/material/TablePagination';
-import clsx from 'clsx';
 import { translations } from '../PathNavigator/translations';
 import React, { ChangeEvent, useMemo } from 'react';
 import { createFakeResource } from '../../utils/resource';
@@ -72,7 +71,7 @@ export function FolderBrowserPathViewUI(props: FolderBrowserPathViewUIProps) {
     onPageChanged
   } = props;
   const { formatMessage } = useIntl();
-  const classes = useStyles();
+  const { classes, cx } = useStyles();
 
   const itemsResource = useMemo(
     () => createFakeResource(itemsInPath ? itemsInPath.map((path) => itemsByPath[path]) : []),
@@ -134,7 +133,7 @@ export function FolderBrowserPathViewUI(props: FolderBrowserPathViewUIProps) {
         <TablePagination
           classes={{
             root: classes.pagination,
-            toolbar: clsx(classes.paginationToolbar, classes.widgetSection)
+            toolbar: cx(classes.paginationToolbar, classes.widgetSection)
           }}
           component="div"
           labelRowsPerPage=""
