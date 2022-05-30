@@ -39,6 +39,7 @@ import useActiveUser from '../../../hooks/useActiveUser';
 import Alert from '@mui/material/Alert';
 import FormLabel from '@mui/material/FormLabel';
 import { Typography } from '@mui/material';
+import Link from '@mui/material/Link';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -56,6 +57,9 @@ const useStyles = makeStyles((theme) =>
       fontWeight: theme.typography.fontWeightMedium,
       marginRight: theme.spacing(1)
     },
+    pullBranchLabelError: {
+      color: theme.palette.error.main
+    },
     pullInfo: {
       alignItems: 'center',
       marginTop: theme.spacing(2)
@@ -66,12 +70,14 @@ const useStyles = makeStyles((theme) =>
 export function PullDialogContainer(props: PullFromRemoteDialogContainerProps) {
   const {
     sandboxBranch,
+    sandboxBranchError,
     remoteName,
     mergeStrategies,
     onClose,
     onPullSuccess,
     onPullError,
     onPullStart,
+    onFetchSandboxBranch,
     disabled = false,
     isSubmitting = false
   } = props;
@@ -136,10 +142,28 @@ export function PullDialogContainer(props: PullFromRemoteDialogContainerProps) {
       <DialogBody>
         <FormControl variant="outlined" fullWidth className={classes.formControl} disabled={disabled || isSubmitting}>
           <FormLabel className={classes.pullBranchLabel}>
-            <Typography color="textSecondary" variant="body1" className={classes.pullBranchLabelHeading}>
-              <FormattedMessage id="words.branch" defaultMessage="Branch" />
-            </Typography>
-            {sandboxBranch}
+            {!sandboxBranchError ? (
+              <>
+                <Typography color="textSecondary" variant="body1" className={classes.pullBranchLabelHeading}>
+                  <FormattedMessage id="words.branch" defaultMessage="Branch" />
+                </Typography>
+                {sandboxBranch}
+              </>
+            ) : (
+              <Typography variant="body1" className={classes.pullBranchLabelError}>
+                <FormattedMessage
+                  id="repositories.sandboxBranchError"
+                  defaultMessage="Unable to retrieve project’s branch • {retry}"
+                  values={{
+                    retry: (
+                      <Link sx={{ cursor: 'pointer' }} onClick={onFetchSandboxBranch}>
+                        <FormattedMessage id="words.retry" defaultMessage="Retry" />
+                      </Link>
+                    )
+                  }}
+                />
+              </Typography>
+            )}
           </FormLabel>
         </FormControl>
         <FormControl variant="outlined" fullWidth disabled={disabled || isSubmitting}>

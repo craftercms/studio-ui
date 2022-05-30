@@ -21,8 +21,10 @@ import { PullResponse } from '../../../services/repositories';
 
 export interface PullFromRemoteBaseProps {
   sandboxBranch: string;
+  sandboxBranchError: ApiResponse;
   remoteName: string;
   mergeStrategies: MergeStrategy[];
+  onFetchSandboxBranch(): void;
 }
 
 export interface PullFromRemoteDialogProps extends PullFromRemoteBaseProps, EnhancedDialogProps {

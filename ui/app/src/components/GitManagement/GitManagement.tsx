@@ -70,6 +70,7 @@ export function GitManagement(props: GitManagementProps) {
   const { formatMessage } = useIntl();
   const [activeTab, setActiveTab] = useState(0);
   const [sandboxBranch, setSandboxBranch] = useState('');
+  const [sandboxBranchError, setSandboxBranchError] = useState<ApiResponse>(null);
 
   const [{ repositories }, setRepoState] = useSpreadState({
     repositories: null as Array<Repository>,
@@ -139,6 +140,18 @@ export function GitManagement(props: GitManagementProps) {
     });
   }, [dispatch, fetchRepoStatusReceiver, setRepoStatusState, siteId]);
 
+  const fetchSandboxBranch = useCallback(() => {
+    fetchSite(siteId).subscribe({
+      next: ({ sandboxBranch }) => {
+        setSandboxBranchError(null);
+        setSandboxBranch(sandboxBranch);
+      },
+      error: (error) => {
+        setSandboxBranchError(error);
+      }
+    });
+  }, [siteId]);
+
   const onRepoCreatedSuccess = () => {
     fetchRepositories();
     newRemoteRepositoryDialogState.onClose();
@@ -171,15 +184,8 @@ export function GitManagement(props: GitManagementProps) {
   }, [fetchRepoStatus]);
 
   useEffect(() => {
-    fetchSite(siteId).subscribe({
-      next: ({ sandboxBranch }) => {
-        setSandboxBranch(sandboxBranch);
-      },
-      error: (error) => {
-        console.error(error);
-      }
-    });
-  }, [siteId]);
+    fetchSandboxBranch();
+  }, [fetchSandboxBranch]);
 
   const newRemoteRepositoryDialogState = useEnhancedDialogState();
   const newRemoteRepositoryDialogStatePendingChangesCloseRequest = useWithPendingChangesCloseRequest(
@@ -246,10 +252,12 @@ export function GitManagement(props: GitManagementProps) {
             </Alert>
             <RepoGrid
               sandboxBranch={sandboxBranch}
+              sandboxBranchError={sandboxBranchError}
               repositories={repositories}
               fetchStatus={fetchRepoStatus}
               fetchRepositories={fetchRepositories}
               disableActions={!repoStatus || repoStatus.conflicting.length > 0}
+              onFetchSandboxBranch={fetchSandboxBranch}
             />
             <Typography variant="caption" className={classes.statusNote}>
               <FormattedMessage
