@@ -56,12 +56,6 @@ export const useStyles = makeStyles((theme) =>
     rightWrapper: {
       flexGrow: 1
     },
-    treeView: {
-      overflow: 'auto'
-    },
-    treeItemLabel: {
-      width: '100%'
-    },
     bodyEmptyState: {
       height: '60vh'
     },
