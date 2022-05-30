@@ -34,7 +34,6 @@ import ErrorOutlineRoundedIcon from '@mui/icons-material/ErrorOutlineRounded';
 import Button from '@mui/material/Button';
 import ArrowRightRoundedIcon from '@mui/icons-material/ArrowRightRounded';
 import ArrowDropDownRoundedIcon from '@mui/icons-material/ArrowDropDownRounded';
-import palette from '../../styles/palette';
 
 export interface PathNavigatorTreeItemProps {
   node: PathNavigatorTreeNode;
@@ -181,7 +180,7 @@ const useStyles = makeStyles<void, 'content' | 'labelContainer'>()((theme, _para
     padding: '2px 3px'
   },
   active: {
-    backgroundColor: palette.blue.highlight
+    backgroundColor: theme.palette.action.selected
   }
 }));
 
