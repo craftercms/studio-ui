@@ -852,6 +852,8 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'de', {
   enableBrowseExisting: "Zeige 'Auswählen'",
   enableSearchExisting: "Zeige 'Suchen'",
   useSearch: 'Suche verwenden',
+  allowEditWithoutWarning: 'Bearbeiten ohne Warnung zulassen',
+  allowSVG: 'SVG zulassen',
 
   /*Restrictions*/
   required: 'Erforderlich',
