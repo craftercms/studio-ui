@@ -27,9 +27,8 @@ import { IntlShape } from 'react-intl/src/types';
 import * as messages from './i18n-legacy';
 import { translateElements } from './i18n-legacy';
 import * as mui from '@mui/material';
-import { createDefaultThemeOptions, generateClassName } from '../styles/theme';
+import { createDefaultThemeOptions } from '../styles/theme';
 import getStore, { CrafterCMSStore } from '../state/store';
-import { GenerateId } from 'jss';
 import palette from '../styles/palette';
 import {
   buildStoredLanguageKey,
@@ -88,7 +87,6 @@ interface CodebaseBridge {
   services: object;
   mui: object;
   system: {
-    generateClassName: GenerateId;
     createDefaultThemeOptions: typeof createDefaultThemeOptions;
     palette: any;
     store: CrafterCMSStore;
@@ -129,7 +127,6 @@ export function createCodebaseBridge() {
     },
 
     system: {
-      generateClassName,
       createDefaultThemeOptions,
       palette,
       store: null,
@@ -267,7 +264,7 @@ export function createCodebaseBridge() {
   window.CrafterCMSNext = Bridge;
 
   // The login screen 1. doesn't need redux at all 2. there's no token yet (i.e. not loggeed in)
-  // and the store creation is dependant on successfully retrieving the JWT.
+  // and the store creation is dependent on successfully retrieving the JWT.
   if (!window.location.pathname.includes('/studio/login')) {
     getStore().subscribe((store) => {
       Bridge.system.store = store;
