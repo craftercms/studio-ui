@@ -32,7 +32,7 @@ import Box from '@mui/material/Box';
 import { BrowseFilesDialogUIProps } from './utils';
 import Divider from '@mui/material/Divider';
 import InputUnstyled from '@mui/base/InputUnstyled';
-import { FolderBrowserTreeView } from '../FolderBrowserTreeView';
+import FolderBrowserTreeView from '../FolderBrowserTreeView';
 
 export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
   const {
