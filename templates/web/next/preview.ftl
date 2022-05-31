@@ -26,7 +26,6 @@
 <body>
 <div id="root"></div>
 <#include "/templates/web/common/js-next-scripts.ftl" />
-<script src="/studio/static-assets/libs/monaco/monaco.0.20.0.js" async defer></script>
 <script>
   CrafterCMSNext.render('#root', 'Preview', {}, false);
 </script>
