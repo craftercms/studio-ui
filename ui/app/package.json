@@ -107,7 +107,7 @@
     "test": "react-scripts test",
     "i18n:extract": "NODE_ENV=production babel ./src --extensions '.ts,.tsx' --out-file /dev/null",
     "i18n:manage": "node scripts/i18n.js",
-    "prettier": "node ../../scripts/prettier.js"
+    "custom-prettier": "node ../../scripts/prettier.js"
   },
   "dependencies": {
     "@craco/craco": "6.4.3",
